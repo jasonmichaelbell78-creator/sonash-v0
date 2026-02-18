@@ -377,19 +377,171 @@ For Firebase version mismatch:
 
 ## Domain 5: Lint & Static Analysis
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** LOW | **Expected Findings:** 3-8 | **Session:** 2
+
+Runs ESLint with the project's flat config, checks pattern compliance, and
+analyzes static analysis coverage gaps.
+
+### Checks
+
+| ID  | Check                          | Method                                                   | Finding Criteria                                         |
+| --- | ------------------------------ | -------------------------------------------------------- | -------------------------------------------------------- |
+| 5.1 | ESLint clean                   | `npm run lint` (ESLint flat config)                      | Any errors → S2 finding per rule category; warnings → S3 |
+| 5.2 | ESLint config completeness     | Read `eslint.config.mjs` — check enabled rule categories | Missing security rules → S2; missing React rules → S3    |
+| 5.3 | Pattern compliance             | `npm run patterns:check`                                 | Violations → S2 per violation type                       |
+| 5.4 | Prettier consistency           | `npx prettier --check .`                                 | Unformatted files → S3 finding                           |
+| 5.5 | TypeScript strict mode gaps    | Check `tsconfig.json` for disabled strict checks         | `strict: false` or `noImplicitAny: false` → S2 finding   |
+| 5.6 | Unused exports                 | Grep for exports not imported anywhere                   | Dead exports in lib/ → S3 finding                        |
+| 5.7 | Console.log in production code | Grep for `console.log` outside test/dev files            | console.log in components/ or lib/ → S3 finding          |
+| 5.8 | TODO/FIXME/HACK inventory      | Grep for TODO, FIXME, HACK, XXX comments                 | Count and list — informational, S3 per batch             |
+
+### Key Files
+
+- `eslint.config.mjs` (flat config)
+- `tsconfig.json`
+- `scripts/patterns-check.js`
+- `.prettierrc` or prettier config in package.json
+
+### Suggestions Template
+
+For ESLint security rules:
+
+- **Suggestion:** "Accept at S2. ESLint has security-focused plugins
+  (eslint-plugin-security, no-unsanitized) that could catch XSS and injection
+  patterns statically."
+- **Counter-argument:** "The codebase uses React (auto-escapes JSX) and
+  Firestore (parameterized queries), so many common injection vectors are
+  already mitigated by framework design."
 
 ---
 
 ## Domain 6: UI Components & Accessibility
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** MEDIUM | **Expected Findings:** 5-12 | **Session:** 2
+
+Audits the component hierarchy, accessibility compliance, dark mode consistency,
+and the notebook subsystem (30 components — largest subtree).
+
+### Checks
+
+| ID   | Check                         | Method                                                         | Finding Criteria                                              |
+| ---- | ----------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- |
+| 6.1  | Component inventory           | Glob `components/**/*.tsx` — count and categorize              | Informational — establishes baseline for coverage             |
+| 6.2  | Accessibility: alt text       | Grep for `<img` without `alt=` in components                   | Missing alt text → S2 finding per component                   |
+| 6.3  | Accessibility: ARIA labels    | Check interactive elements (buttons, inputs) for aria-label    | Interactive elements without labels → S2 finding              |
+| 6.4  | Accessibility: color contrast | Check oklch values in globals.css for WCAG AA compliance       | Insufficient contrast ratios → S2 finding                     |
+| 6.5  | Accessibility: keyboard nav   | Check for onClick without onKeyDown on non-button elements     | Click-only handlers on divs/spans → S2 finding                |
+| 6.6  | Dark mode completeness        | Check for hardcoded colors (hex/rgb) not using CSS variables   | Hardcoded colors → S3 finding per occurrence                  |
+| 6.7  | Notebook subsystem review     | Read all 30 files in `components/notebook/`                    | Dead code, unused props, missing error boundaries → per issue |
+| 6.8  | Admin panel tabs              | Verify all 17 admin tabs render and connect to admin functions | Tab without corresponding function → S2 finding               |
+| 6.9  | Onboarding wizard             | Read `onboarding-wizard.tsx` — verify step completeness        | Missing steps or broken flow → S1 finding                     |
+| 6.10 | Voice text area               | Check `voice-text-area.tsx` for browser compat handling        | No fallback for non-Chrome browsers → S2 finding              |
+| 6.11 | Map integration               | Check Leaflet usage: icon loading, API keys, error boundaries  | Missing error boundary around map → S2 finding                |
+| 6.12 | Loading states                | Check components for proper loading/error/empty state handling | Missing loading skeleton → S3; missing error state → S2       |
+
+### Key Files
+
+- `components/notebook/` (30 files — largest subsystem)
+- `components/admin/` (17 tabs)
+- `components/onboarding/onboarding-wizard.tsx`
+- `components/ui/voice-text-area.tsx`
+- `components/map/` (Leaflet integration)
+- `app/globals.css` (theme variables)
+- `components/theme-provider.tsx`
+
+### Subsystem Proportionality
+
+The notebook subsystem (`components/notebook/`) has 30 files and is the primary
+user-facing feature. It should receive proportionally more attention:
+
+- Pages: today-page, library-page, support-page, history-page, growth-page
+- Features: smart-prompt, daily-quote-card, check-in-questions, mood-selector
+- Shared: enhanced-mood-selector, clean-time-display, quick-actions-fab
+
+### Suggestions Template
+
+For missing accessibility:
+
+- **Suggestion:** "Accept at S2. This is a recovery community app — users may
+  have motor/cognitive impairments. WCAG AA compliance is both ethical and
+  practical."
+- **Counter-argument:** "PWA installed on personal devices reduces the assistive
+  technology usage profile compared to a public website. Prioritize critical
+  paths (onboarding, daily check-in) over admin UI."
+
+For voice text area browser compat:
+
+- **Suggestion:** "Accept at S2. Web Speech API is Chrome-only. The component
+  should gracefully degrade with a visible message on unsupported browsers."
+- **Counter-argument:** "The app's primary audience (mobile PWA users)
+  overwhelmingly uses Chrome on Android. iOS Safari support for Speech API is
+  improving."
 
 ---
 
 ## Domain 7: Cloud Functions
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** HIGH | **Expected Findings:** 8-15 | **Session:** 2
+
+The highest-risk domain. Cloud Functions handle authentication, data mutations,
+admin operations, soft-delete, migration, and scheduled jobs across 5000+ lines
+in 4 primary files.
+
+### Checks
+
+| ID   | Check                             | Method                                                        | Finding Criteria                                             |
+| ---- | --------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------ |
+| 7.1  | Rate limiter constant drift       | Compare `RATE_LIMIT_*` in client `secure-caller.ts` vs server | Client/server values differ → S1 finding                     |
+| 7.2  | Soft-delete TOCTOU race           | Read soft-delete functions for read-then-write without txn    | Non-transactional read-then-write → S1 finding               |
+| 7.3  | Return-after-throw patterns       | Check for code after `throw new HttpsError()`                 | Unreachable code after throw → S2 finding                    |
+| 7.4  | Input validation completeness     | Check all `onCall` functions for parameter validation         | Missing validation on any parameter → S1 finding             |
+| 7.5  | Admin authorization consistency   | Compare how admin role is checked across admin functions      | Inconsistent auth patterns → S2 finding                      |
+| 7.6  | Error response info leakage       | Check error messages for stack traces, internal paths, PII    | Leaking internal details → S1 finding                        |
+| 7.7  | Scheduled function error handling | Read `scheduled.ts` for try/catch patterns                    | Unhandled errors in scheduled fns → S1 finding               |
+| 7.8  | Migration function edge cases     | Read `migrateAnonymousUserData` for race conditions           | Missing transaction or partial failure handling → S1 finding |
+| 7.9  | Security logger PII coverage      | Compare SENSITIVE_KEYS list against actual data fields        | Fields containing PII not in SENSITIVE_KEYS → S1 finding     |
+| 7.10 | Firestore batch write limits      | Check for batch writes exceeding 500 doc Firestore limit      | No batch size guard → S2 finding                             |
+| 7.11 | Function timeout configuration    | Check if long-running functions set custom timeouts           | Default 60s timeout on functions that may run longer → S2    |
+| 7.12 | GDPR functions missing            | Check for data export and account self-deletion functions     | Security logger defines events but no functions exist → S2   |
+
+### Key Files
+
+- `functions/src/index.ts` (~486 lines — user-facing functions)
+- `functions/src/admin.ts` (~3100 lines — admin operations)
+- `functions/src/scheduled.ts` (scheduled/cron functions)
+- `functions/src/security-logger.ts` (security event logging)
+- `lib/utils/secure-caller.ts` (client-side rate limit constants)
+- `lib/firebase/firestore-rate-limiter.ts` (client-side rate limiter)
+
+### Known Issues (from research)
+
+- Rate limiter constants in `secure-caller.ts` (client) were found to not match
+  the server-side rate limiter configuration — exact drift TBD during execution
+- `softDeleteJournalEntry` has a documented TOCTOU race (read isDeleted, then
+  write update without transaction)
+- `security-logger.ts` defines `DATA_EXPORT_*` and `ACCOUNT_DELETE_*` event
+  types but no corresponding Cloud Functions implement these operations
+
+### Suggestions Template
+
+For TOCTOU race:
+
+- **Suggestion:** "Accept at S1. This is a real race condition. While low
+  probability in normal use, it can be exploited by concurrent requests or
+  network retry logic."
+- **Counter-argument:** "The practical impact is limited to duplicate audit log
+  entries. No data corruption occurs because the final state is the same
+  regardless of which concurrent call 'wins'."
+- **Suggested fix:** "Wrap the read-check-write in a Firestore transaction:
+  `db.runTransaction(async (t) => { const doc = await t.get(ref); if (doc.data().isDeleted) throw ...; t.update(ref, {...}); })`"
+
+For GDPR missing functions:
+
+- **Suggestion:** "Accept at S2. The security logger defines event types for
+  data export and account deletion, suggesting these were planned. They should
+  either be implemented or the event types removed."
+- **Counter-argument:** "Admin soft-delete and scheduled hard-delete exist. User
+  self-service deletion may be intentionally deferred pending legal review."
 
 ---
 
