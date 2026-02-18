@@ -427,6 +427,36 @@ identify known chains.
   ```
   and fix ALL instances before committing
 
+### Pattern 6: Filesystem Guard Lifecycle (realpathSync Edge Cases)
+
+- **Frequency:** PR #374 (4 rounds), PR #370 (3 rounds)
+- **Root cause:** Implementing filesystem guard functions (isSafeToWrite, path
+  validation) without testing the full file existence lifecycle
+- **Signature:** Qodo flags "realpathSync crash", "ENOENT", "missing directory",
+  "fresh checkout" in successive rounds
+- **Known fix:** Before committing any guard function, verify with test matrix:
+  (1) file exists, (2) file doesn't exist but parent does, (3) parent doesn't
+  exist, (4) fresh checkout with no directory tree, (5) symlink in path
+- **Status as of PR #374:** FIX_TEMPLATES #31 (realpathSync lifecycle) added.
+  pr-review SKILL.md Step 0.5 updated with filesystem guard pre-check.
+- **Related patterns:** Often co-occurs with Pattern 2 (security hardening) and
+  Pattern 5 (propagation failures)
+
+### Pattern 7: Path Containment Direction Flip-Flop
+
+- **Frequency:** PR #374 (4 rounds: R1-R4)
+- **Root cause:** Implementing path containment without upfront design of which
+  directions (ancestor vs descendant) are needed and why
+- **Signature:** Containment check oscillates between "too permissive" and "too
+  restrictive" across consecutive rounds
+- **Known fix:** Before writing containment code, answer the decision matrix:
+  (1) Can candidate be child of root? (2) Can candidate be parent of root? (3)
+  Windows case-insensitive? (4) Max ancestor depth? Then implement all
+  requirements in one pass.
+- **Status as of PR #374:** FIX_TEMPLATES #33 (path containment decision matrix)
+  added. pr-review SKILL.md Step 0.5 updated with containment pre-check.
+- **Templates:** FIX_TEMPLATES #33 (containment), #9 (startsWith separator)
+
 ---
 
 ## COMPLIANCE MECHANISMS
@@ -493,9 +523,10 @@ The retro connects to other session workflows:
 
 ## Version History
 
-| Version | Date       | Description                                                       |
-| ------- | ---------- | ----------------------------------------------------------------- |
-| 2.2     | 2026-02-17 | Update patterns 1+3 status: CC enforced, Qodo suppression fixed   |
-| 2.1     | 2026-02-17 | Add known patterns, TDMS enforcement, compliance mechanisms       |
-| 2.0     | 2026-02-17 | Comprehensive format canonical: mandatory sections, display rules |
-| 1.0     | 2026-02-12 | Initial version                                                   |
+| Version | Date       | Description                                                                              |
+| ------- | ---------- | ---------------------------------------------------------------------------------------- |
+| 2.3     | 2026-02-18 | Add Patterns 6-7 (realpathSync lifecycle, containment flip-flop). Source: PR #374 retro. |
+| 2.2     | 2026-02-17 | Update patterns 1+3 status: CC enforced, Qodo suppression fixed                          |
+| 2.1     | 2026-02-17 | Add known patterns, TDMS enforcement, compliance mechanisms                              |
+| 2.0     | 2026-02-17 | Comprehensive format canonical: mandatory sections, display rules                        |
+| 1.0     | 2026-02-12 | Initial version                                                                          |
