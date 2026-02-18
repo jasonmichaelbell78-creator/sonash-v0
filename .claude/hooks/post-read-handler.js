@@ -347,14 +347,14 @@ function gatherGitContext() {
   return {
     branch: gitExec(["rev-parse", "--abbrev-ref", "HEAD"]),
     lastCommit: gitExec(["log", "--oneline", "-1"]),
-    uncommittedFiles: gitExec(["diff", "-z", "--name-only"])
+    uncommittedFiles: gitExec(["diff", "-z", "--name-only"], { trim: false })
       .split("\0")
       .filter((f) => f.length > 0),
-    untrackedFiles: gitExec(["ls-files", "-z", "--others", "--exclude-standard"])
+    untrackedFiles: gitExec(["ls-files", "-z", "--others", "--exclude-standard"], { trim: false })
       .split("\0")
       .filter((f) => f.length > 0)
       .slice(0, 20), // Cap at 20
-    stagedFiles: gitExec(["diff", "-z", "--cached", "--name-only"])
+    stagedFiles: gitExec(["diff", "-z", "--cached", "--name-only"], { trim: false })
       .split("\0")
       .filter((f) => f.length > 0),
   };

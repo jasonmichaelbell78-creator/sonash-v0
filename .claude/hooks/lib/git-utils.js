@@ -26,7 +26,14 @@ function resolveProjectDir() {
     // Containment: allow resolved to be cwd/descendant OR an ancestor of cwd
     const resolvedInsideCwd = a === b || a.startsWith(b + path.sep);
     const cwdInsideResolved = b.startsWith(a + path.sep);
-    if (resolvedInsideCwd || cwdInsideResolved) return resolved;
+    if (resolvedInsideCwd || cwdInsideResolved) {
+      // Depth limit: reject ancestors more than 10 levels up (defense-in-depth)
+      if (cwdInsideResolved && !resolvedInsideCwd) {
+        const depth = b.slice(a.length).split(path.sep).filter(Boolean).length;
+        if (depth > 10) return fallback;
+      }
+      return resolved;
+    }
     return fallback;
   } catch {
     return fallback;
@@ -48,7 +55,8 @@ function gitExec(args, opts = {}) {
       encoding: "utf8",
       timeout: opts.timeout || 5000,
     });
-    return opts.trim === false ? out : out.trim();
+    const shouldTrim = opts.trim !== false && !out.includes("\0");
+    return shouldTrim ? out.trim() : out;
   } catch {
     return "";
   }

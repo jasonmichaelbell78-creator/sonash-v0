@@ -368,10 +368,13 @@ try {
   }
 } catch (err) {
   // Stat failed (permissions, race condition, etc.) — rebuild as fallback
-  if (process.env.DEBUG)
-    console.log(
-      `  dist-tests stat failed: ${err instanceof Error ? err.code || "unknown" : "unknown"}`
-    );
+  if (process.env.DEBUG) {
+    const code =
+      err && typeof err === "object" && "code" in err && typeof err.code === "string"
+        ? err.code
+        : "unknown";
+    console.log(`  dist-tests stat failed (${code})`);
+  }
 }
 if (needsTestBuild) {
   runCommand("Building test files", "npm run test:build", 60000);

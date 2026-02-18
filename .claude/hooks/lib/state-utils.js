@@ -105,11 +105,12 @@ function backupSwap(filePath, tmpPath, bakPath) {
 function saveJson(filePath, data) {
   const tmpPath = `${filePath}.tmp`;
   const bakPath = `${filePath}.bak`;
+  let safeToWrite = false;
   try {
     // Ensure parent dir exists before isSafeToWrite (which needs realpathSync)
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    if (!isSafeToWrite(filePath) || !isSafeToWrite(tmpPath) || !isSafeToWrite(bakPath))
-      return false;
+    safeToWrite = isSafeToWrite(filePath) && isSafeToWrite(tmpPath) && isSafeToWrite(bakPath);
+    if (!safeToWrite) return false;
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
     backupSwap(filePath, tmpPath, bakPath);
     return true;
@@ -123,6 +124,7 @@ function saveJson(filePath, data) {
       /* ignore */
     }
     // Fallback: direct write if rename fails (Windows cross-drive)
+    if (!safeToWrite) return false;
     try {
       fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
       silentRm(tmpPath);

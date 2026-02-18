@@ -126,7 +126,7 @@ function gatherGitContext() {
   const lastCommit = recentCommits[0] || "";
 
   // Call 3: git status --porcelain -z (NUL-separated for filenames with spaces — Review #289)
-  const statusOutput = gitExec(["status", "--porcelain", "-z"]);
+  const statusOutput = gitExec(["status", "--porcelain", "-z"], { trim: false });
   const statusFields = statusOutput.split("\0").filter((l) => l.length > 0);
 
   const uncommittedFiles = [];

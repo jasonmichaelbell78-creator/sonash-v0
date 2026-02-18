@@ -3781,3 +3781,49 @@ before isSafeToWrite.
   checks catch data loss early
 
 ---
+
+### Review #354: PR #374 R5 — saveJson Guard Bypass, NUL Trim Propagation, Ancestor Depth Limit
+
+**Date:** 2026-02-18 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #374
+
+**Summary:** 6 suggestions (5 fixed, 1 rejected). Key security fix: saveJson
+fallback write path bypassed isSafeToWrite guard — hoisted safety flag to
+function scope so catch block respects it. Propagation fix: all 5 git -z calls
+across 3 hook files now pass {trim: false}. Defense-in-depth: ancestor
+containment capped at 10 levels.
+
+**Patterns Identified:**
+
+1. **Fallback code bypasses safety guard**: saveJson's catch block had a direct
+   writeFileSync without re-checking isSafeToWrite. Fixed by hoisting
+   `safeToWrite` flag to function scope so the fallback path respects the
+   initial check.
+2. **Auto-trim corrupts NUL-delimited output**: gitExec always called .trim()
+   which strips NUL bytes from git -z output. Fixed with auto-detect:
+   `!out.includes("\0")` skips trim when NUL bytes are present.
+3. **Propagation miss on {trim: false}**: R4 added the trim opt-out but only
+   callers in the same file used it. 3 calls in post-read-handler.js and 1 in
+   pre-compaction-save.js also use -z but were not updated. Fixed all 4.
+4. **Ancestor depth unlimited**: resolveProjectDir accepted any ancestor (even
+   `/`). Added depth limit: reject ancestors more than 10 levels up.
+
+**Resolution:**
+
+- Fixed: 5 items (saveJson guard bypass, gitExec NUL auto-detect,
+  post-read-handler -z trim, pre-compaction-save -z trim, ancestor depth limit)
+- Rejected: 1 item (CLAUDE_PROJECT_DIR attacker-controlled — env is set by
+  Claude runtime, not user input; if attacker controls env they have code exec)
+
+**Key Learnings:**
+
+- Fallback/catch paths MUST respect the same safety guards as the happy path —
+  hoisting a boolean flag is the cleanest pattern
+- When adding opt-out behavior to shared utilities, propagation check must cover
+  ALL callers across all files, not just the file being modified
+- Auto-detect (checking for NUL bytes) is more robust than opt-in flags for
+  preventing trim corruption — callers can't forget to pass the flag
+- Defense-in-depth for path traversal: even when the threat model doesn't
+  support attacker control, cheap mitigations (depth limit) are worth adding
+
+---
