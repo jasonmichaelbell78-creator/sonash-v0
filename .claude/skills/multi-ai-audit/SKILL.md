@@ -849,11 +849,34 @@ Remaining Manual Steps:
 
 ### Step 9.2: Reset Audit Triggers
 
+Determine whether this was a **full** or **partial** audit based on the scope
+selected in Step 1.3:
+
+**Full audit (all 9 categories):**
+
 ```bash
 node scripts/reset-audit-triggers.js --type=multi-ai --apply
 ```
 
-This resets all category thresholds and multi-AI counters in AUDIT_TRACKER.md.
+This resets ALL category thresholds AND multi-AI global counters (commits/time).
+
+**Partial audit (subset of categories):**
+
+For each audited category, reset only that category:
+
+```bash
+node scripts/reset-audit-triggers.js --type=multi-ai-single --category=<cat> --apply
+```
+
+This resets the audited category with a "Multi-AI" label but does NOT reset
+multi-AI global counters or other categories. Run once per audited category.
+
+Example for a 2-category partial audit (security + performance):
+
+```bash
+node scripts/reset-audit-triggers.js --type=multi-ai-single --category=security --apply
+node scripts/reset-audit-triggers.js --type=multi-ai-single --category=performance --apply
+```
 
 ### Step 9.3: Complete Session
 
