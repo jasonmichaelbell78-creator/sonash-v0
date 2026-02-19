@@ -27,9 +27,12 @@ function parseArgs() {
 
   try {
     const parsed = JSON.parse(arg);
+    const rawExitCode =
+      parsed.exit_code ?? (parsed.tool_output && parsed.tool_output.exit_code) ?? 0;
+    const exitCode = Number(rawExitCode);
     return {
       command: typeof parsed.command === "string" ? parsed.command : "",
-      exitCode: parsed.exit_code ?? (parsed.tool_output && parsed.tool_output.exit_code) ?? 0,
+      exitCode: Number.isFinite(exitCode) ? exitCode : 0,
     };
   } catch {
     return null;
@@ -42,14 +45,13 @@ function parseArgs() {
  */
 function readFreshLog() {
   try {
-    if (!fs.existsSync(LOG_FILE)) return null;
-
     const stats = fs.statSync(LOG_FILE);
     if (stats.size === 0 || Date.now() - stats.mtimeMs > MAX_AGE_MS) return null;
 
     const content = fs.readFileSync(LOG_FILE, "utf8").trim();
     return content || null;
-  } catch {
+  } catch (err) {
+    if (err.code === "ENOENT") return null;
     return null;
   }
 }

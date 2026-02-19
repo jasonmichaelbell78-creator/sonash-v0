@@ -306,7 +306,8 @@ tests pass."
 | 3.4 | Cloud Functions test gap    | Check if `functions/src/*.ts` have corresponding tests       | No function tests at all → S1 finding             |
 | 3.5 | Test for security utilities | Check if `secure-caller.ts`, `callable-errors.ts` have tests | Security utils without tests → S1 finding         |
 | 3.6 | Snapshot test freshness     | Check for stale snapshots                                    | Outdated snapshots → S3 finding                   |
-| 3.7 | Test configuration review   | Read `vitest.config.ts` for misconfigurations                | Coverage thresholds not set → S3 finding          |
+| 3.7 | Skipped / todo tests        | Grep for `it.skip`, `test.skip`, `it.todo`, `test.todo`      | Skipped tests without linked issue → S3 finding   |
+| 3.8 | Test configuration review   | Read `vitest.config.ts` for misconfigurations                | Coverage thresholds not set → S3 finding          |
 
 ### Key Files
 
@@ -605,18 +606,19 @@ validation, consistency with application logic, and CANON reference validity.
 
 ### Checks
 
-| ID   | Check                           | Method                                                         | Finding Criteria                                       |
-| ---- | ------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------ |
-| 9.1  | Rules file syntax               | `firebase emulators:exec` or manual parse of `firestore.rules` | Syntax errors → S0 finding                             |
-| 9.2  | Over-permissive reads           | Check for `allow read: if true` or broad collection access     | Unauthenticated reads on user data → S0 finding        |
-| 9.3  | Over-permissive writes          | Check for `allow write: if true` or missing field validation   | Missing field-level validation → S1 finding            |
-| 9.4  | Admin-only paths                | Verify admin collections require admin custom claim            | Admin data readable by non-admins → S0 finding         |
-| 9.5  | User data isolation             | Verify users can only read/write their own data                | Cross-user data access possible → S0 finding           |
-| 9.6  | Soft-delete rules               | Check if rules prevent reading soft-deleted documents          | Soft-deleted docs still readable → S2 finding          |
-| 9.7  | CANON reference validation      | Check CANON-0002, CANON-0034 refs in rules comments            | Referenced CANON docs don't exist → S3 finding         |
-| 9.8  | Rules match application queries | Compare rules with actual Firestore queries in app code        | App queries that would be denied by rules → S1 finding |
-| 9.9  | Rate limiting at rules level    | Check if rules implement any rate limiting                     | No rate limiting at rules level → S3 (informational)   |
-| 9.10 | Storage rules existence         | Check if Firebase Storage rules exist                          | No storage rules file → S1 if storage is used          |
+| ID   | Check                           | Method                                                         | Finding Criteria                                        |
+| ---- | ------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------- |
+| 9.1  | Rules file syntax               | `firebase emulators:exec` or manual parse of `firestore.rules` | Syntax errors → S0 finding                              |
+| 9.2  | Over-permissive reads           | Check for `allow read: if true` or broad collection access     | Unauthenticated reads on user data → S0 finding         |
+| 9.3  | Over-permissive writes          | Check for `allow write: if true` or missing field validation   | Missing field-level validation → S1 finding             |
+| 9.4  | Admin-only paths                | Verify admin collections require admin custom claim            | Admin data readable by non-admins → S0 finding          |
+| 9.5  | User data isolation             | Verify users can only read/write their own data                | Cross-user data access possible → S0 finding            |
+| 9.6  | Soft-delete rules               | Check if rules prevent reading soft-deleted documents          | Soft-deleted docs still readable → S2 finding           |
+| 9.7  | CANON reference validation      | Check CANON-0002, CANON-0034 refs in rules comments            | Referenced CANON docs don't exist → S3 finding          |
+| 9.8  | Rules match application queries | Compare rules with actual Firestore queries in app code        | App queries that would be denied by rules → S1 finding  |
+| 9.9  | Rate limiting at rules level    | Check if rules implement any rate limiting                     | No rate limiting at rules level → S3 (informational)    |
+| 9.10 | Query complexity / DoS          | Check for queries without limits or with unbounded `in` arrays | Unbounded queries on user-controlled input → S1 finding |
+| 9.11 | Storage rules existence         | Check if Firebase Storage rules exist                          | No storage rules file → S1 if storage is used           |
 
 ### Key Files
 

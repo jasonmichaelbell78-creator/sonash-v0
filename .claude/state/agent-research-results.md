@@ -360,13 +360,13 @@ testing opportunities:
 
 **Files Found Requiring Testing:**
 
-- `/home/user/sonash-v0/eslint-plugin-sonash/` (3 rule files)
-- `/home/user/sonash-v0/scripts/lib/` (5 utility files, varying quality)
-- `/home/user/sonash-v0/.husky/pre-commit` (372 lines, multiple gates)
-- `/home/user/sonash-v0/.husky/pre-push` (220 lines, multiple gates)
-- `/home/user/sonash-v0/firestore.rules` (23 lines, security-critical)
-- `/home/user/sonash-v0/storage.rules` (23 lines, security-critical)
-- `/home/user/sonash-v0/functions/src/` (8 TypeScript files, Cloud Functions)
+- `eslint-plugin-sonash/` (3 rule files)
+- `scripts/lib/` (5 utility files, varying quality)
+- `.husky/pre-commit` (372 lines, multiple gates)
+- `.husky/pre-push` (220 lines, multiple gates)
+- `firestore.rules` (23 lines, security-critical)
+- `storage.rules` (23 lines, security-critical)
+- `functions/src/` (8 TypeScript files, Cloud Functions)
 
 === AGENT a2d34d2 === Now I have comprehensive information. Let me compile the
 final gap analysis report:
@@ -1875,66 +1875,65 @@ All integrated with milestone planning (e.g., M2.1, Track-E references).
 
 ---
 
-## **ALL ABSOLUTE FILE PATHS**
+## **KEY REPO PATHS (relative)**
 
 ### TDMS Files
 
-- `/home/user/sonash-v0/docs/technical-debt/MASTER_DEBT.jsonl`
-- `/home/user/sonash-v0/docs/technical-debt/FALSE_POSITIVES.jsonl`
-- `/home/user/sonash-v0/docs/technical-debt/LEGACY_ID_MAPPING.json`
-- `/home/user/sonash-v0/docs/technical-debt/metrics.json`
-- `/home/user/sonash-v0/docs/technical-debt/METRICS.md`
-- `/home/user/sonash-v0/docs/technical-debt/INDEX.md`
-- `/home/user/sonash-v0/docs/technical-debt/PROCEDURE.md`
-- `/home/user/sonash-v0/docs/technical-debt/FINAL_SYSTEM_AUDIT.md`
-- `/home/user/sonash-v0/docs/technical-debt/views/` (5 markdown files)
-- `/home/user/sonash-v0/docs/technical-debt/raw/` (6 JSONL files)
-- `/home/user/sonash-v0/docs/technical-debt/logs/` (20+ files)
+- `docs/technical-debt/MASTER_DEBT.jsonl`
+- `docs/technical-debt/FALSE_POSITIVES.jsonl`
+- `docs/technical-debt/LEGACY_ID_MAPPING.json`
+- `docs/technical-debt/metrics.json`
+- `docs/technical-debt/METRICS.md`
+- `docs/technical-debt/INDEX.md`
+- `docs/technical-debt/PROCEDURE.md`
+- `docs/technical-debt/FINAL_SYSTEM_AUDIT.md`
+- `docs/technical-debt/views/` (5 markdown files)
+- `docs/technical-debt/raw/` (6 JSONL files)
+- `docs/technical-debt/logs/` (20+ files)
 
 ### Debt Scripts
 
-- `/home/user/sonash-v0/scripts/debt/` (18 .js files)
+- `scripts/debt/` (18 .js files)
 
 ### Roadmap Files
 
-- `/home/user/sonash-v0/ROADMAP.md`
-- `/home/user/sonash-v0/ROADMAP_FUTURE.md`
-- `/home/user/sonash-v0/ROADMAP_LOG.md`
+- `ROADMAP.md`
+- `ROADMAP_FUTURE.md`
+- `ROADMAP_LOG.md`
 
 ### Hooks & Workflows
 
-- `/home/user/sonash-v0/.husky/pre-commit`
-- `/home/user/sonash-v0/.husky/pre-push`
-- `/home/user/sonash-v0/.github/workflows/` (8 .yml files)
+- `.husky/pre-commit`
+- `.husky/pre-push`
+- `.github/workflows/` (8 .yml files)
 
 ### ESLint Plugin
 
-- `/home/user/sonash-v0/eslint-plugin-sonash/index.js`
-- `/home/user/sonash-v0/eslint-plugin-sonash/rules/` (3 .js files)
-- `/home/user/sonash-v0/eslint.config.mjs`
+- `eslint-plugin-sonash/index.js`
+- `eslint-plugin-sonash/rules/` (3 .js files)
+- `eslint.config.mjs`
 
 ### Audit System
 
-- `/home/user/sonash-v0/docs/audits/AUDIT_STANDARDS.md`
-- `/home/user/sonash-v0/docs/audits/AUDIT_TRACKER.md`
-- `/home/user/sonash-v0/docs/audits/README.md`
-- `/home/user/sonash-v0/docs/audits/single-session/` (9 category dirs with audit
-  reports)
-- `/home/user/sonash-v0/docs/audits/multi-ai/` (templates + execution dirs)
+- `docs/audits/AUDIT_STANDARDS.md`
+- `docs/audits/AUDIT_TRACKER.md`
+- `docs/audits/README.md`
+- `docs/audits/single-session/` (9 category dirs with audit reports)
+- `docs/audits/multi-ai/` (templates + execution dirs)
 
 ### Skills
 
-- `/home/user/sonash-v0/.claude/skills/pr-retro/SKILL.md`
-- `/home/user/sonash-v0/.claude/skills/audit-code/SKILL.md`
-- `/home/user/sonash-v0/.claude/skills/system-test/SKILL.md`
-- `/home/user/sonash-v0/.claude/skills/SKILL_INDEX.md`
-- 54 total skills in `/home/user/sonash-v0/.claude/skills/`
+- `.claude/skills/pr-retro/SKILL.md`
+- `.claude/skills/audit-code/SKILL.md`
+- `.claude/skills/system-test/SKILL.md`
+- `.claude/skills/SKILL_INDEX.md`
+- 54 total skills in `.claude/skills/`
 
 ### Reference Documentation
 
-- `/home/user/sonash-v0/docs/agent_docs/CODE_PATTERNS.md`
-- `/home/user/sonash-v0/scripts/mcp/manifest.json`
-- `/home/user/sonash-v0/scripts/mcp/sonarcloud-server.js`
+- `docs/agent_docs/CODE_PATTERNS.md`
+- `scripts/mcp/manifest.json`
+- `scripts/mcp/sonarcloud-server.js`
 
 This completes the SECOND GAP ANALYSIS PASS for Domains 16-21 with comprehensive
 field-level detail, enumerated values, integration points, and test coverage

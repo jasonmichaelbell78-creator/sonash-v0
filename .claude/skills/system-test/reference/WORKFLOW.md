@@ -125,6 +125,7 @@ Check 0.2: Output directory exists and is writable
 Check 0.3: TDMS accessible (can read MASTER_DEBT.jsonl)
 Check 0.4: Git working tree clean (or warn)
 Check 0.5: Required tools available (next, tsc, npm, firebase)
+Check 0.6: PLAN_INDEX.md written (skeleton created successfully)
 ```
 
 Output: Pass/fail table displayed to user.
@@ -152,7 +153,7 @@ Check 1.5: Firebase CLI available and project configured
 │  ✅ Node v22.22.0 matches engines            │
 │                                              │
 │  Findings from pre-flight: 1                 │
-│  → P-001 [S1] npm audit: 2 high-severity     │
+│  → D01-001 [S1] npm audit: 2 high-severity   │
 │    vulnerabilities in production deps         │
 │                                              │
 │  Suggestion: The 2 high vulns are in         │
