@@ -1,12 +1,12 @@
 # Review Decisions — System Test 2026-02-19
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.3
+**Document Version:** 1.4
 **Last Updated:** 2026-02-19
 **Status:** IN PROGRESS
 <!-- prettier-ignore-end -->
 
-**Reviewer:** User **Started:** 2026-02-19 **Total Findings:** 57
+**Reviewer:** User **Started:** 2026-02-19 **Total Findings:** 71
 
 ## Domain 1: Prerequisites (4 findings) — Session 1, Reviewed
 
@@ -136,14 +136,74 @@
 - [x] Domain 10: Environment & Config (Session 3 — batch accepted)
 - [x] Domain 11: Auth & Session Management (Session 3 — batch accepted)
 
+## Domain 12: Performance (4 findings) — Session 4, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D12-001 | S2  | ACCEPTED | Batch accepted in Session 4 |
+| D12-002 | S2  | ACCEPTED | Batch accepted in Session 4 |
+| D12-003 | S3  | ACCEPTED | Batch accepted in Session 4 |
+| D12-004 | S3  | ACCEPTED | Batch accepted in Session 4 |
+
+## Domain 13: Config File Consistency (3 findings) — Session 4, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D13-001 | S2  | ACCEPTED | Batch accepted in Session 4 |
+| D13-002 | S3  | ACCEPTED | Batch accepted in Session 4 |
+| D13-003 | S3  | ACCEPTED | Batch accepted in Session 4 |
+
+## Domain 14: Documentation & Canon (1 finding) — Session 4, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D14-001 | S3  | ACCEPTED | Batch accepted in Session 4 |
+
+## Domain 15: PWA & Offline (3 findings) — Session 4, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D15-001 | S1  | ACCEPTED | Batch accepted in Session 4 |
+| D15-002 | S2  | ACCEPTED | Batch accepted in Session 4 |
+| D15-003 | S3  | ACCEPTED | Batch accepted in Session 4 |
+
+## Domain 16: TDMS Integrity (3 findings) — Session 4, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D16-001 | S2  | ACCEPTED | Batch accepted in Session 4 |
+| D16-002 | S3  | ACCEPTED | Batch accepted in Session 4 |
+| D16-003 | S3  | ACCEPTED | Batch accepted in Session 4 |
+
+## Progress
+
+- [x] Domain 1: Prerequisites (Session 1 — reviewed, all accepted)
+- [x] Domain 2: Build & Compilation (Session 1 — reviewed, all accepted)
+- [x] Domain 3: Test Suite (Session 1 — reviewed, all accepted)
+- [x] Domain 4: Dependency Health (Session 1 — reviewed, all accepted)
+- [x] Domain 5: Lint & Static Analysis (Session 2 — retroactive review, all
+      accepted)
+- [x] Domain 6: UI Components & Accessibility (Session 2 — retroactive review,
+      all accepted)
+- [x] Domain 7: Cloud Functions (Session 2 — retroactive review, batch accepted)
+- [x] Domain 8: Security Headers & CSP (Session 3 — batch accepted)
+- [x] Domain 9: Firestore Rules (Session 3 — batch accepted)
+- [x] Domain 10: Environment & Config (Session 3 — batch accepted)
+- [x] Domain 11: Auth & Session Management (Session 3 — batch accepted)
+- [x] Domain 12: Performance (Session 4 — batch accepted)
+- [x] Domain 13: Config File Consistency (Session 4 — batch accepted)
+- [x] Domain 14: Documentation & Canon (Session 4 — batch accepted)
+- [x] Domain 15: PWA & Offline (Session 4 — batch accepted)
+- [x] Domain 16: TDMS Integrity (Session 4 — batch accepted)
+
 ## Summary
 
 | Metric         | Count |
 | -------------- | ----- |
-| Total findings | 57    |
-| Accepted       | 57    |
+| Total findings | 71    |
+| Accepted       | 71    |
 | Rejected       | 0     |
 | Deferred       | 0     |
-| S1 findings    | 12    |
-| S2 findings    | 31    |
-| S3 findings    | 14    |
+| S1 findings    | 13    |
+| S2 findings    | 36    |
+| S3 findings    | 22    |
