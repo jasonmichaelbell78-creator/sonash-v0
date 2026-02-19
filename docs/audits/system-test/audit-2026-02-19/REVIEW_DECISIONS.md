@@ -1,12 +1,12 @@
 # Review Decisions — System Test 2026-02-19
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Last Updated:** 2026-02-19
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 <!-- prettier-ignore-end -->
 
-**Reviewer:** User **Started:** 2026-02-19 **Total Findings:** 71
+**Reviewer:** User **Started:** 2026-02-19 **Total Findings:** 82
 
 ## Domain 1: Prerequisites (4 findings) — Session 1, Reviewed
 
@@ -195,15 +195,61 @@
 - [x] Domain 14: Documentation & Canon (Session 4 — batch accepted)
 - [x] Domain 15: PWA & Offline (Session 4 — batch accepted)
 - [x] Domain 16: TDMS Integrity (Session 4 — batch accepted)
+- [x] Domain 17: Prior Audit Findings (Session 5+6 — batch accepted)
+- [x] Domain 18: Admin Panel (Session 5+6 — 0 findings, all checks pass)
+- [x] Domain 19: Data Integrity & Migration (Session 5+6 — batch accepted)
+- [x] Domain 20: Final Report & Cross-Cutting (Session 5+6 — batch accepted)
+- [x] Domain 21: Post-Test Self-Audit (Session 5+6 — batch accepted)
+- [x] Domain 22: Sentry & Monitoring (Session 5+6 — batch accepted)
+
+## Domain 17: Prior Audit Findings (2 findings) — Session 5+6, Reviewed
+
+| ID      | Sev | Decision | Notes                         |
+| ------- | --- | -------- | ----------------------------- |
+| D17-001 | S2  | ACCEPTED | Batch accepted in Session 5+6 |
+| D17-002 | S3  | ACCEPTED | Batch accepted in Session 5+6 |
+
+## Domain 18: Admin Panel (0 findings) — Session 5+6, All Checks Pass
+
+All 5 checks (18.1-18.5) passed. No findings produced. Flagged by D21-001.
+
+## Domain 19: Data Integrity & Migration (2 findings) — Session 5+6, Reviewed
+
+| ID      | Sev | Decision | Notes                         |
+| ------- | --- | -------- | ----------------------------- |
+| D19-001 | S2  | ACCEPTED | Batch accepted in Session 5+6 |
+| D19-002 | S2  | ACCEPTED | Batch accepted in Session 5+6 |
+
+## Domain 20: Final Report & Cross-Cutting (2 findings) — Session 5+6, Reviewed
+
+| ID      | Sev | Decision | Notes                         |
+| ------- | --- | -------- | ----------------------------- |
+| D20-001 | S2  | ACCEPTED | Batch accepted in Session 5+6 |
+| D20-002 | S2  | ACCEPTED | Batch accepted in Session 5+6 |
+
+## Domain 21: Post-Test Self-Audit (2 findings) — Session 5+6, Reviewed
+
+| ID      | Sev | Decision | Notes                         |
+| ------- | --- | -------- | ----------------------------- |
+| D21-001 | S3  | ACCEPTED | Batch accepted in Session 5+6 |
+| D21-002 | S3  | ACCEPTED | Batch accepted in Session 5+6 |
+
+## Domain 22: Sentry & Monitoring (3 findings) — Session 5+6, Reviewed
+
+| ID      | Sev | Decision | Notes                         |
+| ------- | --- | -------- | ----------------------------- |
+| D22-001 | S1  | ACCEPTED | Batch accepted in Session 5+6 |
+| D22-002 | S2  | ACCEPTED | Batch accepted in Session 5+6 |
+| D22-003 | S2  | ACCEPTED | Batch accepted in Session 5+6 |
 
 ## Summary
 
 | Metric         | Count |
 | -------------- | ----- |
-| Total findings | 71    |
-| Accepted       | 71    |
+| Total findings | 82    |
+| Accepted       | 82    |
 | Rejected       | 0     |
 | Deferred       | 0     |
-| S1 findings    | 13    |
-| S2 findings    | 36    |
-| S3 findings    | 22    |
+| S1 findings    | 14    |
+| S2 findings    | 43    |
+| S3 findings    | 25    |
