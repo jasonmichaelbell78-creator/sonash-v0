@@ -1,12 +1,12 @@
 # Review Decisions — System Test 2026-02-19
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Last Updated:** 2026-02-19
-**Status:** COMPLETE
+**Status:** IN PROGRESS
 <!-- prettier-ignore-end -->
 
-**Reviewer:** User **Started:** 2026-02-19 **Total Findings:** 40
+**Reviewer:** User **Started:** 2026-02-19 **Total Findings:** 57
 
 ## Domain 1: Prerequisites (4 findings) — Session 1, Reviewed
 
@@ -83,6 +83,43 @@
 | D07-009 | S2  | ACCEPTED | Retroactive review — batch accepted |
 | D07-010 | S2  | ACCEPTED | Retroactive review — batch accepted |
 
+## Domain 8: Security Headers & CSP (4 findings) — Session 3, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D08-001 | S1  | ACCEPTED | Batch accepted in Session 3 |
+| D08-002 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D08-003 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D08-004 | S3  | ACCEPTED | Batch accepted in Session 3 |
+
+## Domain 9: Firestore Rules (5 findings) — Session 3, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D09-001 | S1  | ACCEPTED | Batch accepted in Session 3 |
+| D09-002 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D09-003 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D09-004 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D09-005 | S3  | ACCEPTED | Batch accepted in Session 3 |
+
+## Domain 10: Environment & Config (3 findings) — Session 3, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D10-001 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D10-002 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D10-003 | S3  | ACCEPTED | Batch accepted in Session 3 |
+
+## Domain 11: Auth & Session Management (5 findings) — Session 3, Reviewed
+
+| ID      | Sev | Decision | Notes                       |
+| ------- | --- | -------- | --------------------------- |
+| D11-001 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D11-002 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D11-003 | S1  | ACCEPTED | Batch accepted in Session 3 |
+| D11-004 | S2  | ACCEPTED | Batch accepted in Session 3 |
+| D11-005 | S2  | ACCEPTED | Batch accepted in Session 3 |
+
 ## Progress
 
 - [x] Domain 1: Prerequisites (Session 1 — reviewed, all accepted)
@@ -94,15 +131,19 @@
 - [x] Domain 6: UI Components & Accessibility (Session 2 — retroactive review,
       all accepted)
 - [x] Domain 7: Cloud Functions (Session 2 — retroactive review, batch accepted)
+- [x] Domain 8: Security Headers & CSP (Session 3 — batch accepted)
+- [x] Domain 9: Firestore Rules (Session 3 — batch accepted)
+- [x] Domain 10: Environment & Config (Session 3 — batch accepted)
+- [x] Domain 11: Auth & Session Management (Session 3 — batch accepted)
 
 ## Summary
 
 | Metric         | Count |
 | -------------- | ----- |
-| Total findings | 40    |
-| Accepted       | 40    |
+| Total findings | 57    |
+| Accepted       | 57    |
 | Rejected       | 0     |
 | Deferred       | 0     |
-| S1 findings    | 9     |
-| S2 findings    | 20    |
-| S3 findings    | 11    |
+| S1 findings    | 12    |
+| S2 findings    | 31    |
+| S3 findings    | 14    |
