@@ -132,7 +132,7 @@
 | DEBT-2547 | Shell script hooks may be redundant with Node.js versions     | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-2549 | Filesystem MCP server configured but noted as unused          | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (1557)
+## code-quality (1589)
 
 | ID        | Title                                                          | Severity | File                                                                                                                                                                        | Line |
 | --------- | -------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -459,6 +459,13 @@
 | DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes           | S1       | home/user/sonash-v0/docs/agent_docs/FIX_TEMPLATES.md                                                                                                                        | 0    |
 | DEBT-2482 | Technical debt view files - generated views without integ...   | S1       | home/user/sonash-v0/docs/technical-debt/views/                                                                                                                              | 0    |
 | DEBT-3136 | Cloud Functions have zero test coverage — 5000+ lines of ...   | S1       | functions/src/                                                                                                                                                              | 0    |
+| DEBT-3210 | No service worker — app cannot function offline despite P...   | S1       | public/manifest.json                                                                                                                                                        | 1    |
+| DEBT-3174 | Admin CRUD for sober_living broken — rules block all clie...   | S1       | firestore.rules                                                                                                                                                             | 98   |
+| DEBT-3163 | Node.js engine version mismatch — package.json says node ...   | S1       | functions/package.json                                                                                                                                                      | 14   |
+| DEBT-3164 | Rate limiter reset() uses wrong Firestore document key — ...   | S1       | functions/src/firestore-rate-limiter.ts                                                                                                                                     | 149  |
+| DEBT-3153 | Single root ErrorBoundary — no granular error boundaries ...   | S1       | app/layout.tsx                                                                                                                                                              | 92   |
+| DEBT-3154 | any type on Firestore DocumentSnapshot in today-page.tsx:533   | S1       | components/notebook/pages/today-page.tsx                                                                                                                                    | 533  |
+| DEBT-3149 | functions/src/admin.ts has 1 ESLint error — unused variab...   | S1       | functions/src/admin.ts                                                                                                                                                      | 2163 |
 | DEBT-0001 | Untitled                                                       | S2       | N/A                                                                                                                                                                         | 0    |
 | DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | app/meetings/all/page.tsx                                                                                                                                                   | 45   |
 | DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | components/admin/links-tab.tsx                                                                                                                                              | 250  |
@@ -1272,6 +1279,21 @@
 | DEBT-3133 | 5 packages behind by major version — recharts 2→3, react-...   | S2       | package.json                                                                                                                                                                | 0    |
 | DEBT-3138 | No coverage configuration or thresholds — coverage is not...   | S2       | package.json                                                                                                                                                                | 0    |
 | DEBT-3139 | Security utilities partially tested — secure-caller teste...   | S2       | lib/firebase/account-linking.ts                                                                                                                                             | 0    |
+| DEBT-3208 | No source map upload to Sentry — production stack traces ...   | S2       | next.config.mjs                                                                                                                                                             | 1    |
+| DEBT-3203 | Cross-cutting pattern: validation and security boundary g...   | S2       | functions/src/security-wrapper.ts                                                                                                                                           | 1    |
+| DEBT-3204 | Cross-cutting pattern: incomplete observability pipeline ...   | S2       | public/manifest.json                                                                                                                                                        | 1    |
+| DEBT-3201 | No automated Firestore backup/export strategy — recovery ...   | S2       | firebase.json                                                                                                                                                               | 72   |
+| DEBT-3202 | Anonymous user migration uses batch writes without transa...   | S2       | functions/src/index.ts                                                                                                                                                      | 486  |
+| DEBT-3196 | 172 duplicate source_ids in MASTER_DEBT.jsonl — deduplica...   | S2       | docs/technical-debt/MASTER_DEBT.jsonl                                                                                                                                       | 1    |
+| DEBT-3194 | No Firestore offline persistence — offline indicator prom...   | S2       | lib/firebase.ts                                                                                                                                                             | 54   |
+| DEBT-3190 | Node.js runtime mismatch — firebase.json says nodejs24, f...   | S2       | firebase.json                                                                                                                                                               | 68   |
+| DEBT-3182 | Anonymous-to-auth migration has partial failure risk with...   | S2       | functions/src/index.ts                                                                                                                                                      | 688  |
+| DEBT-3166 | saveInventoryEntry uses wrong TypeScript generic — typeof...   | S2       | functions/src/index.ts                                                                                                                                                      | 356  |
+| DEBT-3156 | Console.log/error debug statements in production componen...   | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 639  |
+| DEBT-3157 | useEffect async fetch without cleanup — memory leak in to...   | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 740  |
+| DEBT-3159 | Hardcoded magic numbers and placeholder content in meetin...   | S2       | components/widgets/meeting-countdown.tsx                                                                                                                                    | 19   |
+| DEBT-3160 | Hardcoded external URLs duplicated across 5 files              | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 903  |
+| DEBT-3148 | 1360 ESLint warnings (0 errors) across root codebase           | S2       | eslint.config.mjs                                                                                                                                                           | 0    |
 | DEBT-2124 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | multiple                                                                                                                                                                    | 0    |
 | DEBT-2125 | Firebase deployment lacks rollback on partial failure          | S2       | 1                                                                                                                                                                           | 0    |
 | DEBT-2127 | SonarCloud not enforced in CI gates                            | S2       | 1                                                                                                                                                                           | 0    |
@@ -1667,6 +1689,16 @@
 | DEBT-3143 | images.unoptimized: true — expected for static export but...   | S3       | next.config.mjs                                                                                                                                                             | 15   |
 | DEBT-3144 | Next.js build warns about workspace root detection             | S3       | next.config.ts                                                                                                                                                              | 0    |
 | DEBT-3147 | No engines field in package.json — Node version not pinned     | S3       | package.json                                                                                                                                                                | 0    |
+| DEBT-3205 | Domain 18 (Admin Panel, MEDIUM risk) produced 0 findings ...   | S3       | docs/audits/system-test/audit-2026-02-19/domains/d18-admin.jsonl                                                                                                            | 1    |
+| DEBT-3206 | 7 checks across 3 domains not fully executable in static ...   | S3       | docs/audits/system-test/audit-2026-02-19/PLAN_INDEX.md                                                                                                                      | 1    |
+| DEBT-3197 | 144 TDMS items with empty descriptions and 1 untitled item     | S3       | docs/technical-debt/MASTER_DEBT.jsonl                                                                                                                                       | 1    |
+| DEBT-3198 | 298 RESOLVED items missing resolved_at timestamp               | S3       | docs/technical-debt/MASTER_DEBT.jsonl                                                                                                                                       | 1    |
+| DEBT-3195 | PWA manifest icon sizes mismatch — declares 192x192/512x5...   | S3       | public/manifest.json                                                                                                                                                        | 11   |
+| DEBT-3191 | Stale functions/tsconfig.dev.json references non-existent...   | S3       | functions/tsconfig.dev.json                                                                                                                                                 | 1    |
+| DEBT-3192 | Root package.json has no engines field — no Node.js versi...   | S3       | package.json                                                                                                                                                                | 1    |
+| DEBT-3161 | Missing or unstable key props in map renders                   | S3       | components/growth/SpotCheckCard.tsx                                                                                                                                         | 207  |
+| DEBT-3151 | 76 madge warnings during circular dependency check (no ci...   | S3       | lib/                                                                                                                                                                        | 0    |
+| DEBT-3152 | Pattern compliance --all reports 1137 new warnings across...   | S3       | scripts/check-pattern-compliance.js                                                                                                                                         | 0    |
 | DEBT-0013 | Refactor this function to reduce its Cognitive Complexity...   | S0       | functions/src/admin.ts                                                                                                                                                      | 576  |
 | DEBT-0038 | Refactor this function to reduce its Cognitive Complexity...   | S0       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 69   |
 | DEBT-0851 | Multiple CI quality gates configured as non-blocking (con...   | S0       | .github/workflows/ci.yml                                                                                                                                                    | 0    |
@@ -1694,7 +1726,7 @@
 | DEBT-3079 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | N/A                                                                                                                                                                         | 0    |
 | DEBT-3080 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | .claude/hooks/commit-tracker.js                                                                                                                                             | 0    |
 
-## documentation (468)
+## documentation (470)
 
 | ID        | Title                                                          | Severity | File                                                               | Line |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------------------------------------------------ | ---- |
@@ -1771,6 +1803,7 @@
 | DEBT-1779 | Gap: Undocumented core lib modules                             | S2       | lib/firestore-service.ts                                           | 0    |
 | DEBT-2183 | Documentation effectiveness metrics — track which docs ar...   | S2       | docs                                                               | 0    |
 | DEBT-2188 | Audit all manual CLI tools and add to COMMAND_REFERENCE.md     | S2       | .claude/COMMAND_REFERENCE.md                                       | 0    |
+| DEBT-3150 | 30 markdownlint errors across docs/ — broken links, empha...   | S2       | docs/                                                              | 0    |
 | DEBT-2811 | Documentation effectiveness metrics — track which docs ar...   | S2       | docs                                                               | 0    |
 | DEBT-0805 | Archive docs contain significant link rot after moves          | S3       | docs/archive/                                                      | 0    |
 | DEBT-0806 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi...   | S3       | docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md      | 1    |
@@ -2166,6 +2199,7 @@
 | DEBT-1819 | Gap: Missing troubleshooting guide                             | S3       | DEVELOPMENT.md                                                     | 0    |
 | DEBT-1820 | Gap: No migration guide for legacy patterns                    | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 | DEBT-2290 | Document atomic write pattern as reusable helper               | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
+| DEBT-3193 | CANON system uses JSONL output model — templates referenc...   | S3       | docs/templates/CANON_QUICK_REFERENCE.md                            | 1    |
 
 ## engineering-productivity (9)
 
@@ -2206,7 +2240,7 @@
 | DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                            | 0    |
 | DEBT-2814 | Pre-push duplicates pre-commit pattern checks                | S2       | .husky/pre-push                           | 1    |
 
-## performance (52)
+## performance (58)
 
 | ID        | Title                                                        | Severity | File                                         | Line |
 | --------- | ------------------------------------------------------------ | -------- | -------------------------------------------- | ---- |
@@ -2258,353 +2292,361 @@
 | DEBT-1292 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/verify-skill-usage.js                | 222  |
 | DEBT-3140 | Total bundle size 15.5MB — 8.2MB from unoptimized images     | S2       | out/images/                                  | 0    |
 | DEBT-3141 | JS chunk at 625KB — likely contains heavy library (Leafle... | S2       | out/\_next/static/chunks/9d44679c11cfa7b4.js | 0    |
+| DEBT-3186 | Image optimization disabled — no alternative optimization... | S2       | next.config.mjs                              | 14   |
+| DEBT-3187 | Multiple unbounded Firestore queries without limit() — de... | S2       | lib/db/meetings.ts                           | 133  |
+| DEBT-3177 | Unbounded reads on public collections (slogans, sober_liv... | S2       | components/growth/DailySloganWidget.tsx      | 26   |
+| DEBT-3158 | Firestore onSnapshot listener churns on every keystroke —... | S2       | components/notebook/pages/today-page.tsx     | 605  |
 | DEBT-0808 | Only 6 dynamic imports despite 101 client components         | S3       | components                                   | 0    |
 | DEBT-0809 | useMemo/useCallback usage is inconsistent                    | S3       | components                                   | 0    |
 | DEBT-0810 | Image optimization disabled (unoptimized: true)              | S3       | next.config.mjs                              | 14   |
+| DEBT-3188 | Inline SVG data URIs in style props for book texture effects | S3       | components/notebook/book-cover.tsx           | 246  |
+| DEBT-3189 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx           | 1    |
 | DEBT-0857 | useJournal creates redundant auth listener + potential me... | S0       | hooks/use-journal.ts                         | 0    |
 
-## process (338)
+## process (340)
 
-| ID        | Title                                                         | Severity | File                                                | Line |
-| --------- | ------------------------------------------------------------- | -------- | --------------------------------------------------- | ---- |
-| DEBT-0133 | Offline Queue Infrastructure                                  | S1       | hooks/use-journal.ts                                | 319  |
-| DEBT-0882 | Tests Not Run for Config Changes (eslint, firebase.json, ...  | S1       | N/A                                                 | 0    |
-| DEBT-0883 | Doc-Only Commit Detection Misclassifies Critical JSONL        | S1       | N/A                                                 | 0    |
-| DEBT-0884 | Cross-Document Override SKIP_CROSS_DOC_CHECK Not Implemented  | S1       | N/A                                                 | 0    |
-| DEBT-0886 | Functions Directory Not Linted in CI                          | S1       | N/A                                                 | 0    |
-| DEBT-1334 | Firebase Functions use Node 20 but CI uses Node 22 — vers...  | S1       | .github/workflows/ci.yml                            | 21   |
-| DEBT-1830 | Orphaned: assign-review-tier.js disabled in workflow          | S1       | .github/workflows/auto-label-review-tier.yml        | 56   |
-| DEBT-1835 | Obsolete: backlog-enforcement.yml checks deleted file         | S1       | .github/workflows/backlog-enforcement.yml           | 32   |
-| DEBT-1842 | Duplicated: Test execution in pre-commit AND CI               | S1       | 59-87                                               | 0    |
-| DEBT-1843 | Duplicated: Path validation logic across 16+ hooks            | S1       | 18-63                                               | 0    |
-| DEBT-1845 | Duplicated: Error message extraction pattern across 42+ f...  | S1       | scripts/check-pattern-compliance.js                 | 40   |
-| DEBT-1854 | Duplicated: check-edit-requirements and check-write-requi...  | S1       | 1-108                                               | 0    |
-| DEBT-1879 | CI gap: No test coverage thresholds enforced                  | S1       | .github/workflows/ci.yml                            | 115  |
-| DEBT-1921 | Skill issue: gh-fix-ci references non-existent inspect_pr...  | S1       | .claude/skills/gh-fix-ci/SKILL.md                   | 36   |
-| DEBT-1955 | Perf: check-docs-light.js - Synchronous file reads in map()   | S1       | scripts/check-docs-light.js                         | 825  |
-| DEBT-1958 | Perf: generate-documentation-index.js - Synchronous file ...  | S1       | scripts/generate-documentation-index.js             | 913  |
-| DEBT-1961 | Perf: aggregate-audit-findings.js - O(n^2) deduplication ...  | S1       | scripts/aggregate-audit-findings.js                 | 1309 |
-| DEBT-1968 | Error handling: Empty catch blocks swallow errors in gsd-...  | S1       | .claude/hooks/global/gsd-check-update.js            | 38   |
-| DEBT-1969 | Error handling: 200+ empty catch blocks across hooks and ...  | S1       | .claude/hooks/component-size-check.js               | 47   |
-| DEBT-1971 | Error handling: readFileSync without try/catch in multipl...  | S1       | scripts/verify-sonar-phase.js                       | 134  |
-| DEBT-1972 | Error handling: execSync without timeout or error handling    | S1       | scripts/validate-audit.js                           | 651  |
-| DEBT-1974 | Error handling: State file operations fail silently           | S1       | .claude/hooks/state-utils.js                        | 75   |
-| DEBT-1979 | Error handling: Hook execution errors not propagated to user  | S1       | .claude/hooks/component-size-check.js               | 47   |
-| DEBT-1980 | Error handling: generate-pending-alerts.js throws error o...  | S1       | scripts/generate-pending-alerts.js                  | 389  |
-| DEBT-1982 | Error handling: execSync in validation scripts can hang o...  | S1       | scripts/validate-audit.js                           | 651  |
-| DEBT-1983 | Quality: TOCTOU race condition in ai-review.js                | S1       | scripts/ai-review.js                                | 139  |
-| DEBT-1984 | Quality: TOCTOU race condition in check-consolidation-sta...  | S1       | scripts/check-consolidation-status.js               | 89   |
-| DEBT-1985 | Quality: TOCTOU race condition in resolve-item.js             | S1       | scripts/debt/resolve-item.js                        | 53   |
-| DEBT-1993 | Quality: Missing validation on parsed JSON objects            | S1       | scripts/debt/intake-audit.js                        | 119  |
-| DEBT-1994 | Quality: Unsafe regex patterns in pattern checker             | S1       | 106-300                                             | 0    |
-| DEBT-2077 | Quality: Unsafe regex patterns in pattern checker             | S1       | scripts/check-pattern-compliance.js                 | 106  |
-| DEBT-2108 | Duplicated: Test execution in pre-commit AND CI               | S1       | .husky/pre-commit                                   | 59   |
-| DEBT-2109 | Duplicated: Path validation logic across 16+ hooks            | S1       | .claude/hooks/check-edit-requirements.js            | 18   |
-| DEBT-2117 | Duplicated: check-edit-requirements and check-write-requi...  | S1       | .claude/hooks/check-edit-requirements.js            | 1    |
-| DEBT-0444 | GitHub Actions using version tags instead of commit SHAs      | S2       | .github/workflows/auto-label-review-tier.yml        | 18   |
-| DEBT-0456 | 28 scripts have 715 console.log/error/warn calls without ...  | S2       | scripts/                                            | 0    |
-| DEBT-0457 | Artifact upload without retention policy                      | S2       | .github/workflows/ci.yml                            | 99   |
-| DEBT-0458 | Git diff with @{u}...HEAD fails on new branches without u...  | S2       | .husky/pre-push                                     | 48   |
-| DEBT-0470 | GitHub Actions using version tags instead of commit SHAs      | S2       | N/A                                                 | 0    |
-| DEBT-0515 | Add Correlation IDs to Logger                                 | S2       | lib/logger.ts                                       | 1    |
-| DEBT-0516 | Add Network Status to Logs                                    | S2       | lib/logger.ts                                       | 45   |
-| DEBT-0517 | Create Smoke Test Script                                      | S2       | scripts/smoke-test.js                               | 1    |
-| DEBT-0518 | Add Bug Report GitHub Template                                | S2       | .github/ISSUE_TEMPLATE/bug_report.md                | 1    |
-| DEBT-0519 | Offline Tests                                                 | S2       | tests/offline/                                      | 1    |
-| DEBT-0520 | Network Failure Error Handling Tests                          | S2       | tests/admin/network-failure.test.ts                 | 1    |
-| DEBT-0891 | Backlog Enforcement Job Obsolete After TDMS Migration         | S2       | N/A                                                 | 0    |
-| DEBT-0896 | Function Deletion with Force Flag Lacks Validation            | S2       | N/A                                                 | 0    |
-| DEBT-0897 | Pre-Commit Total Time 15-30s - Developer Friction             | S2       | N/A                                                 | 0    |
-| DEBT-1371 | Oversized scripts: aggregate-audit-findings.js (63KB), ch...  | S2       | scripts/aggregate-audit-findings.js                 | 1    |
-| DEBT-1821 | Orphaned: seed-commit-log.js                                  | S2       | scripts/seed-commit-log.js                          | 1    |
-| DEBT-1822 | Orphaned: sync-claude-settings.js                             | S2       | scripts/sync-claude-settings.js                     | 1    |
-| DEBT-1823 | Orphaned: update-legacy-lines.js                              | S2       | scripts/update-legacy-lines.js                      | 1    |
-| DEBT-1824 | Orphaned: create-canonical-findings.js                        | S2       | scripts/create-canonical-findings.js                | 1    |
-| DEBT-1825 | Orphaned: generate-detailed-sonar-report.js                   | S2       | scripts/generate-detailed-sonar-report.js           | 1    |
-| DEBT-1826 | Orphaned: generate-placement-report.js                        | S2       | scripts/generate-placement-report.js                | 1    |
-| DEBT-1827 | Orphaned: migrate-existing-findings.js                        | S2       | scripts/migrate-existing-findings.js                | 1    |
-| DEBT-1828 | Orphaned: regenerate-findings-index.js                        | S2       | scripts/regenerate-findings-index.js                | 1    |
-| DEBT-1829 | Orphaned: verify-sonar-phase.js                               | S2       | scripts/verify-sonar-phase.js                       | 1    |
-| DEBT-1831 | Orphaned: TypeScript migration scripts (14 files)             | S2       | scripts/dedupe-quotes.ts                            | 1    |
-| DEBT-1832 | Orphaned npm script: learning:category                        | S2       | package.json                                        | 38   |
-| DEBT-1833 | Orphaned npm script: learning:since                           | S2       | package.json                                        | 39   |
-| DEBT-1834 | Orphaned npm script: phase:complete:auto                      | S2       | package.json                                        | 23   |
-| DEBT-1836 | Narrow trigger: validate-plan.yml for specific archived file  | S2       | .github/workflows/validate-plan.yml                 | 6    |
-| DEBT-1838 | Duplicated: ESLint validation in pre-commit AND CI            | S2       | .husky/pre-commit                                   | 9    |
-| DEBT-1839 | Duplicated: Pattern compliance check in pre-commit AND CI     | S2       | .husky/pre-commit                                   | 35   |
-| DEBT-1840 | Duplicated: Technical debt schema validation in pre-commi...  | S2       | .husky/pre-commit                                   | 248  |
-| DEBT-1841 | Duplicated: CANON schema validation in pre-commit AND CI      | S2       | .husky/pre-commit                                   | 97   |
-| DEBT-1844 | Duplicated: File reading logic across 5 hooks                 | S2       | 114-124                                             | 0    |
-| DEBT-1847 | Duplicated: Security validations across all hooks             | S2       | 40-62                                               | 0    |
-| DEBT-1850 | Duplicated: Base directory resolution across hooks            | S2       | .claude/hooks/check-edit-requirements.js            | 18   |
-| DEBT-1853 | Duplicated: ALLOWED_PATHS pattern matching across hooks       | S2       | 30-38                                               | 0    |
-| DEBT-1855 | Duplicated: Pattern check implementation between hook and...  | S2       | 1-223                                               | 0    |
-| DEBT-1856 | Duplicated: Validation between validate-audit.js and vali...  | S2       | 1-80                                                | 0    |
-| DEBT-1864 | Never executes: validate-plan workflow for archived file      | S2       | .github/workflows/validate-plan.yml                 | 7    |
-| DEBT-1865 | Ineffective: audit-s0s1-validator defaults to WARN mode       | S2       | .claude/hooks/audit-s0s1-validator.js               | 21   |
-| DEBT-1866 | Ineffective: pattern-check hook never blocks violations       | S2       | .claude/hooks/pattern-check.js                      | 221  |
-| DEBT-1868 | Ineffective: Pre-commit bypass conditions too easy            | S2       | .husky/pre-commit                                   | 46   |
-| DEBT-1873 | Ineffective: large-context-warning warningShown flag prev...  | S2       | .claude/hooks/large-context-warning.js              | 146  |
-| DEBT-1874 | Ineffective: check-remote-session-context always succeeds     | S2       | .claude/hooks/check-remote-session-context.js       | 32   |
-| DEBT-1876 | Ineffective: commit-tracker continueOnError makes failure...  | S2       | .claude/settings.json                               | 251  |
-| DEBT-1880 | CI gap: continue-on-error bypasses critical validations       | S2       | .github/workflows/ci.yml                            | 74   |
-| DEBT-1881 | CI gap: Missing secrets cause silent build success            | S2       | 154-159                                             | 0    |
-| DEBT-1882 | CI gap: Pattern compliance only checks changed files in PRs   | S2       | 58-68                                               | 0    |
-| DEBT-1883 | CI gap: Build job re-installs dependencies wastefully         | S2       | 136-149                                             | 0    |
-| DEBT-1884 | CI gap: Race condition in tier label assignment               | S2       | 77-150                                              | 0    |
-| DEBT-1885 | CI gap: Inline tier assignment logic creates maintenance ...  | S2       | 60-75                                               | 0    |
-| DEBT-1886 | CI gap: Fork PRs completely skip SonarCloud analysis          | S2       | 22-24                                               | 0    |
-| DEBT-1887 | CI gap: Firebase deployment has no success validation         | S2       | 140-147                                             | 0    |
-| DEBT-1888 | CI gap: Deployment has no rollback mechanism                  | S2       | 140-147                                             | 0    |
-| DEBT-1889 | CI gap: Service account credentials written to filesystem     | S2       | 120-124                                             | 0    |
-| DEBT-1908 | CI gap: Tier comment spam on every synchronize event          | S2       | .github/workflows/auto-label-review-tier.yml        | 186  |
-| DEBT-1909 | Bug: check-review-needed.js - getNextDay() fails silently...  | S2       | scripts/check-review-needed.js                      | 170  |
-| DEBT-1910 | Bug: check-cross-doc-deps.js - checkDiffPattern() silentl...  | S2       | scripts/check-cross-doc-deps.js                     | 100  |
-| DEBT-1911 | Bug: check-cross-doc-deps.js - inconsistent behavior with...  | S2       | scripts/check-cross-doc-deps.js                     | 69   |
-| DEBT-1912 | Bug: security-check.js - getStagedFiles() returns empty a...  | S2       | scripts/security-check.js                           | 310  |
-| DEBT-1919 | Skill issue: episodic memory MCP not configured but refer...  | S2       | audit-process/SKILL.md                              | 1    |
-| DEBT-1920 | Skill issue: audit skills reference non-existent FALSE_PO...  | S2       | audit-process/SKILL.md                              | 172  |
-| DEBT-1922 | Skill issue: systematic-debugging references non-existent...  | S2       | systematic-debugging/SKILL.md                       | 229  |
-| DEBT-1924 | Skill issue: audit-process has complex 7-stage orchestrat...  | S2       | audit-process/SKILL.md                              | 1    |
-| DEBT-1927 | Slow: ESLint full codebase scan in pre-commit                 | S2       | .husky/pre-commit                                   | 9    |
-| DEBT-1928 | Duplicate: Pattern compliance runs in both pre-commit and...  | S2       | .husky/pre-commit                                   | 35   |
-| DEBT-1929 | Slow: TypeScript full project type check on every push        | S2       | .husky/pre-push                                     | 83   |
-| DEBT-1930 | Slow: Circular dependency scan on entire codebase every push  | S2       | .husky/pre-push                                     | 12   |
-| DEBT-1931 | Slow: Test suite rebuilds TypeScript on every test run        | S2       | package.json                                        | 11   |
-| DEBT-1933 | Performance: 10 Claude hooks run on every Write/Edit oper...  | S2       | 57-111                                              | 0    |
-| DEBT-1940 | CI slow: Build job waits unnecessarily for all lint/test ...  | S2       | .github/workflows/ci.yml                            | 136  |
-| DEBT-1941 | CI slow: Redundant npm ci in build job                        | S2       | .github/workflows/ci.yml                            | 149  |
-| DEBT-1942 | CI slow: No Next.js build cache                               | S2       | .github/workflows/ci.yml                            | 152  |
-| DEBT-1943 | CI slow: No path filters on main CI workflow                  | S2       | .github/workflows/ci.yml                            | 3    |
-| DEBT-1944 | CI slow: Firebase deploy builds app twice                     | S2       | .github/workflows/deploy-firebase.yml               | 47   |
-| DEBT-1952 | Perf: check-pattern-compliance.js - Synchronous file read...  | S2       | scripts/check-pattern-compliance.js                 | 799  |
-| DEBT-1953 | Perf: check-pattern-compliance.js - O(n\*m) pattern matchi... | S2       | scripts/check-pattern-compliance.js                 | 733  |
-| DEBT-1956 | Perf: check-docs-light.js - O(n^2) anchor link validation     | S2       | scripts/check-docs-light.js                         | 411  |
-| DEBT-1957 | Perf: check-docs-light.js - Repeated realpath/stat calls      | S2       | scripts/check-docs-light.js                         | 686  |
-| DEBT-1960 | Perf: generate-documentation-index.js - O(n\*m) reference ... | S2       | scripts/generate-documentation-index.js             | 524  |
-| DEBT-1962 | Perf: aggregate-audit-findings.js - Synchronous JSONL fil...  | S2       | scripts/aggregate-audit-findings.js                 | 1201 |
-| DEBT-1963 | Perf: aggregate-audit-findings.js - Expensive Levenshtein...  | S2       | scripts/aggregate-audit-findings.js                 | 1013 |
-| DEBT-1965 | Perf: check-content-accuracy.js - Synchronous file reads ...  | S2       | scripts/check-content-accuracy.js                   | 458  |
-| DEBT-1966 | Perf: check-content-accuracy.js - Regex compilation in ho...  | S2       | scripts/check-content-accuracy.js                   | 114  |
-| DEBT-1967 | Perf: check-content-accuracy.js - O(lines \* patterns) nes... | S2       | scripts/check-content-accuracy.js                   | 136  |
-| DEBT-1970 | Error handling: Hook validation exits with 0 on security ...  | S2       | .claude/hooks/typescript-strict-check.js            | 28   |
-| DEBT-1973 | Error handling: Error messages expose full system paths       | S2       | scripts/validate-audit.js                           | 110  |
-| DEBT-1975 | Error handling: JSON.parse failures without validation co...  | S2       | scripts/verify-skill-usage.js                       | 136  |
-| DEBT-1976 | Error handling: Missing error messages in file write oper...  | S2       | scripts/update-readme-status.js                     | 107  |
-| DEBT-1977 | Error handling: Validation scripts exit 0 with violations...  | S2       | scripts/verify-skill-usage.js                       | 232  |
-| DEBT-1978 | Error handling: Multiple exit(0) calls suggest unclear co...  | S2       | .claude/hooks/typescript-strict-check.js            | 28   |
-| DEBT-1981 | Error handling: sync-sonarcloud.js API errors expose impl...  | S2       | scripts/debt/sync-sonarcloud.js                     | 290  |
-| DEBT-1986 | Quality: Magic number - hardcoded port without explanation    | S2       | .claude/hooks/stop-serena-dashboard.js              | 30   |
-| DEBT-1987 | Quality: Magic number - MAX_LENGTH without explanation        | S2       | .claude/hooks/analyze-user-request.js               | 37   |
-| DEBT-1988 | Quality: Magic number - SINGLE_FILE_LINE_LIMIT without ex...  | S2       | .claude/hooks/large-context-warning.js              | 20   |
-| DEBT-1989 | Quality: Magic number - ARCHIVE_LINE_THRESHOLD without ex...  | S2       | scripts/check-consolidation-status.js               | 26   |
-| DEBT-1990 | Quality: Magic number - REQUEST_TIMEOUT_MS without explan...  | S2       | scripts/mcp/sonarcloud-server.js                    | 68   |
-| DEBT-1991 | Quality: Hardcoded path should be configurable                | S2       | .claude/hooks/state-utils.js                        | 22   |
-| DEBT-1992 | Quality: Multiple hardcoded debt paths                        | S2       | scripts/debt/intake-audit.js                        | 53   |
-| DEBT-2002 | Inconsistent: File path validation and sanitization           | S2       | scripts/archive-doc.js                              | 83   |
-| DEBT-2003 | Inconsistent: Error sanitization approaches                   | S2       | scripts/archive-doc.js                              | 41   |
-| DEBT-2004 | Gap: Shell scripts not linted or validated                    | S2       | .claude/hooks/analyze-user-request.sh               | 1    |
-| DEBT-2006 | Gap: Scripts directory missing test coverage                  | S2       | scripts/                                            | 1    |
-| DEBT-2007 | Gap: Firebase functions lack integration tests                | S2       | functions/src/admin.ts                              | 1    |
-| DEBT-2010 | Gap: Environment files not validated                          | S2       | .env.local.example                                  | 1    |
-| DEBT-2012 | Gap: No syntax validation for committed shell scripts in CI   | S2       | .github/workflows/ci.yml                            | 1    |
-| DEBT-2079 | Performance: 10 Claude hooks run on every Write/Edit oper...  | S2       | .claude/settings.json                               | 57   |
-| DEBT-2085 | Skill issue: episodic memory MCP not configured but refer...  | S2       | .claude/skills/audit-process/SKILL.md               | 1    |
-| DEBT-2086 | Skill issue: audit skills reference non-existent FALSE_PO...  | S2       | .claude/skills/audit-process/SKILL.md               | 172  |
-| DEBT-2087 | Skill issue: systematic-debugging references non-existent...  | S2       | .claude/skills/systematic-debugging/SKILL.md        | 229  |
-| DEBT-2089 | Skill issue: audit-process has complex 7-stage orchestrat...  | S2       | .claude/skills/audit-process/SKILL.md               | 1    |
-| DEBT-2092 | CI gap: Missing secrets cause silent build success            | S2       | .github/workflows/ci.yml                            | 154  |
-| DEBT-2093 | CI gap: Pattern compliance only checks changed files in PRs   | S2       | .github/workflows/ci.yml                            | 58   |
-| DEBT-2094 | CI gap: Build job re-installs dependencies wastefully         | S2       | .github/workflows/ci.yml                            | 136  |
-| DEBT-2095 | CI gap: Race condition in tier label assignment               | S2       | .github/workflows/auto-label-review-tier.yml        | 77   |
-| DEBT-2096 | CI gap: Inline tier assignment logic creates maintenance ...  | S2       | .github/workflows/auto-label-review-tier.yml        | 60   |
-| DEBT-2097 | CI gap: Fork PRs completely skip SonarCloud analysis          | S2       | .github/workflows/sonarcloud.yml                    | 22   |
-| DEBT-2098 | CI gap: Firebase deployment has no success validation         | S2       | .github/workflows/deploy-firebase.yml               | 140  |
-| DEBT-2099 | CI gap: Deployment has no rollback mechanism                  | S2       | .github/workflows/deploy-firebase.yml               | 140  |
-| DEBT-2100 | CI gap: Service account credentials written to filesystem     | S2       | .github/workflows/deploy-firebase.yml               | 120  |
-| DEBT-2110 | Duplicated: File reading logic across 5 hooks                 | S2       | .claude/hooks/firestore-write-block.js              | 114  |
-| DEBT-2112 | Duplicated: Security validations across all hooks             | S2       | .claude/hooks/check-edit-requirements.js            | 40   |
-| DEBT-2116 | Duplicated: ALLOWED_PATHS pattern matching across hooks       | S2       | .claude/hooks/firestore-write-block.js              | 30   |
-| DEBT-2118 | Duplicated: Pattern check implementation between hook and...  | S2       | .claude/hooks/pattern-check.js                      | 1    |
-| DEBT-2119 | Duplicated: Validation between validate-audit.js and vali...  | S2       | scripts/validate-audit.js                           | 1    |
-| DEBT-3091 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                 | 0    |
-| DEBT-2192 | Add automatic ROADMAP.md completion detection                 | S2       | scripts/                                            | 0    |
-| DEBT-2313 | Automate archival of completed ROADMAP.md items to ROADMA...  | S2       | scripts/                                            | 0    |
-| DEBT-2175 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                 | 0    |
-| DEBT-2803 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                 | 0    |
-| DEBT-0811 | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                     | 36   |
-| DEBT-0812 | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                   | 21   |
-| DEBT-0813 | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                      | 245  |
-| DEBT-0814 | Script has minimal console output (1 call)                    | S3       | scripts/check-cross-doc-deps.js                     | 1    |
-| DEBT-0815 | TRIGGERS.md last updated 2026-01-02 but hooks updated since   | S3       | docs/TRIGGERS.md                                    | 1    |
-| DEBT-0816 | All 12 slash commands have frontmatter descriptions           | S3       | .claude/commands/                                   | 0    |
-| DEBT-1837 | Manual-only scripts not in automation                         | S3       | scripts/ai-review.js                                | 1    |
-| DEBT-1846 | Duplicated: TTY-aware color code across 3+ scripts            | S3       | 48-56                                               | 0    |
-| DEBT-1848 | Duplicated: Git staged files retrieval across scripts         | S3       | 83-97                                               | 0    |
-| DEBT-1849 | Duplicated: Config loading pattern across 17+ files           | S3       | 34-43                                               | 0    |
-| DEBT-1851 | Duplicated: JSON argument parsing across hooks                | S3       | 20-31                                               | 0    |
-| DEBT-1852 | Duplicated: File extension checks across hooks                | S3       | .claude/hooks/firestore-write-block.js              | 102  |
-| DEBT-1857 | Never executes: AUDIT_FINDINGS_BACKLOG.md backlog check       | S3       | .github/workflows/backlog-enforcement.yml           | 32   |
-| DEBT-1858 | Never executes: npm script test:coverage:report               | S3       | package.json                                        | 13   |
-| DEBT-1859 | Never executes: npm script learning:category                  | S3       | package.json                                        | 38   |
-| DEBT-1860 | Never executes: npm script config:validate                    | S3       | package.json                                        | 52   |
-| DEBT-1861 | Never executes: npm script session:summary                    | S3       | package.json                                        | 41   |
-| DEBT-1862 | Never executes: npm script override:list                      | S3       | package.json                                        | 43   |
-| DEBT-1863 | Never executes: GitHub workflow master branch trigger         | S3       | .github/workflows/backlog-enforcement.yml           | 5    |
-| DEBT-1867 | Ineffective: Small file bypass in pattern-check               | S3       | .claude/hooks/pattern-check.js                      | 138  |
-| DEBT-1869 | Ineffective: Network failures treated as success in pre-push  | S3       | .husky/pre-push                                     | 107  |
-| DEBT-1870 | Ineffective: check-write-requirements POST-TASK not enforced  | S3       | .claude/hooks/check-write-requirements.js           | 72   |
-| DEBT-1871 | Ineffective: component-size-check always succeeds             | S3       | .claude/hooks/component-size-check.js               | 142  |
-| DEBT-1872 | Ineffective: agent-trigger-enforcer Phase 2/3 not impleme...  | S3       | .claude/hooks/agent-trigger-enforcer.js             | 295  |
-| DEBT-1875 | Ineffective: audit-s0s1-validator allows parse errors         | S3       | .claude/hooks/audit-s0s1-validator.js               | 84   |
-| DEBT-1877 | Ineffective: Pre-push SKIP_TRIGGERS bypass has no budget      | S3       | .husky/pre-push                                     | 123  |
-| DEBT-1890 | CI gap: Deleting functions uses continue-on-error hiding ...  | S3       | 131-138                                             | 0    |
-| DEBT-1891 | CI gap: Preview and production use different env var sources  | S3       | .github/workflows/deploy-firebase.yml               | 51   |
-| DEBT-1892 | CI gap: Backlog check gracefully skips with no replacemen...  | S3       | 35-42                                               | 0    |
-| DEBT-1893 | CI gap: Security pattern check runs file-by-file ineffici...  | S3       | 147-150                                             | 0    |
-| DEBT-1894 | CI gap: Documentation linting skips archive files entirely    | S3       | 78-81                                               | 0    |
-| DEBT-1895 | CI gap: Resolve debt workflow only runs on merged PRs         | S3       | .github/workflows/resolve-debt.yml                  | 11   |
-| DEBT-1896 | CI gap: Debt resolution skips CI with [skip ci]               | S3       | .github/workflows/resolve-debt.yml                  | 88   |
-| DEBT-1897 | CI gap: Debt resolution has race condition on rebase          | S3       | .github/workflows/resolve-debt.yml                  | 92   |
-| DEBT-1898 | CI gap: Review trigger check has fragile JSON validation      | S3       | 46-50                                               | 0    |
-| DEBT-1899 | CI gap: Review check uses continue-on-error hiding crashes    | S3       | .github/workflows/review-check.yml                  | 33   |
-| DEBT-1900 | CI gap: Phase validation workflow is likely dead code         | S3       | .github/workflows/validate-plan.yml                 | 7    |
-| DEBT-1901 | CI gap: Sync README has fragile retry logic                   | S3       | 64-78                                               | 0    |
-| DEBT-1902 | CI gap: Sync README uses --no-verify bypassing hooks          | S3       | .github/workflows/sync-readme.yml                   | 57   |
-| DEBT-1903 | CI gap: Inconsistent GitHub Action version pinning            | S3       | .github/workflows/ci.yml                            | 45   |
-| DEBT-1904 | CI gap: No validation of Node.js version consistency          | S3       | .github/workflows/ci.yml                            | 21   |
-| DEBT-1905 | CI gap: Template file exclusion is brittle regex              | S3       | 72-75                                               | 0    |
-| DEBT-1906 | CI gap: Markdown injection sanitization incomplete            | S3       | .github/workflows/docs-lint.yml                     | 91   |
-| DEBT-1907 | CI gap: Changed files detection could miss merge commits      | S3       | .github/workflows/backlog-enforcement.yml           | 127  |
-| DEBT-1913 | Bug: validate-audit.js - wildcard file patterns not valid...  | S3       | scripts/validate-audit.js                           | 370  |
-| DEBT-1914 | Enhancement: generate-documentation-index.js - no visibil...  | S3       | scripts/generate-documentation-index.js             | 417  |
-| DEBT-1915 | Enhancement: check-pattern-compliance.js - silent filteri...  | S3       | scripts/check-pattern-compliance.js                 | 494  |
-| DEBT-1916 | Bug: aggregate-audit-findings.js - potential long-running...  | S3       | scripts/aggregate-audit-findings.js                 | 1446 |
-| DEBT-1917 | Skill issue: skill-registry.json does not exist               | S3       | .claude                                             | 1    |
-| DEBT-1918 | Skill issue: SKILL_INDEX.md has incorrect skill count         | S3       | .claude/skills/SKILL_INDEX.md                       | 3    |
-| DEBT-1923 | Skill issue: code-reviewer scripts may be non-functional ...  | S3       | code-reviewer/scripts/pr_analyzer.py                | 1    |
-| DEBT-1925 | Skill issue: multiple audit skills have duplicate functio...  | S3       | audit-process/SKILL.md                              | 100  |
-| DEBT-1926 | Skill issue: session-begin references deprecated TECHNICA...  | S3       | session-begin/SKILL.md                              | 301  |
-| DEBT-1932 | Inefficient: Sequential security checks in pre-push           | S3       | 50-65                                               | 0    |
-| DEBT-1934 | Inefficient: Pattern check runs on every file write via C...  | S3       | .claude/hooks/pattern-check.js                      | 1    |
-| DEBT-1935 | Inefficient: Multiple git status/diff scans in pre-commit     | S3       | 47,94,138,159,194                                   | 0    |
-| DEBT-1936 | Risk: No timeout on npm test in pre-commit                    | S3       | 59,80                                               | 0    |
-| DEBT-1937 | Optimization: Doc-only commit detection could be smarter      | S3       | 68-88                                               | 0    |
-| DEBT-1938 | Slow: Session start hooks add 2-5s latency to every session   | S3       | 8-44                                                | 0    |
-| DEBT-1939 | Optimization: UserPromptSubmit hooks run before every use...  | S3       | 265-290                                             | 0    |
-| DEBT-1945 | CI slow: Firebase deploys run sequentially                    | S3       | .github/workflows/deploy-firebase.yml               | 141  |
-| DEBT-1946 | CI slow: SonarCloud runs on all changes including docs        | S3       | .github/workflows/sonarcloud.yml                    | 7    |
-| DEBT-1947 | CI slow: Full git history fetched unnecessarily               | S3       | .github/workflows/sonarcloud.yml                    | 31   |
-| DEBT-1948 | CI slow: Backlog workflow installs deps twice                 | S3       | .github/workflows/backlog-enforcement.yml           | 26   |
-| DEBT-1949 | CI slow: Review check runs on all PRs without path filters    | S3       | .github/workflows/review-check.yml                  | 3    |
-| DEBT-1950 | CI slow: Auto-label workflow has no npm cache                 | S3       | .github/workflows/auto-label-review-tier.yml        | 22   |
-| DEBT-1951 | CI slow: Docs lint processes files sequentially               | S3       | .github/workflows/docs-lint.yml                     | 58   |
-| DEBT-1954 | Perf: check-pattern-compliance.js - Regex recompilation i...  | S3       | scripts/check-pattern-compliance.js                 | 659  |
-| DEBT-1959 | Perf: generate-documentation-index.js - Regex compilation...  | S3       | scripts/generate-documentation-index.js             | 376  |
-| DEBT-1964 | Perf: aggregate-audit-findings.js - Repeated string norma...  | S3       | scripts/aggregate-audit-findings.js                 | 1044 |
-| DEBT-1995 | Inconsistent: Mixed CommonJS and ESM module systems           | S3       | scripts/append-hook-warning.js                      | 1    |
-| DEBT-1996 | Inconsistent: node: prefix usage in imports                   | S3       | scripts/validate-audit.js                           | 18   |
-| DEBT-1997 | Inconsistent: Emoji usage in console output                   | S3       | scripts/seed-commit-log.js                          | 105  |
-| DEBT-1998 | Inconsistent: Exit code handling patterns                     | S3       | scripts/check-agent-compliance.js                   | 192  |
-| DEBT-1999 | Inconsistent: Verbose/debug logging approaches                | S3       | scripts/archive-doc.js                              | 72   |
-| DEBT-2000 | Inconsistent: Error message formatting                        | S3       | scripts/check-agent-compliance.js                   | 163  |
-| DEBT-2001 | Inconsistent: Command line argument parsing                   | S3       | scripts/check-agent-compliance.js                   | 29   |
-| DEBT-2005 | Gap: Config .mjs files excluded from linting                  | S3       | eslint.config.mjs                                   | 25   |
-| DEBT-2008 | Gap: Skills missing usage documentation                       | S3       | .claude/skills/                                     | 1    |
-| DEBT-2009 | Gap: YAML workflow files not linted                           | S3       | .github/workflows/ci.yml                            | 1    |
-| DEBT-2011 | Gap: Firebase functions TypeScript not type-checked in pr...  | S3       | .husky/pre-push                                     | 82   |
-| DEBT-2013 | Gap: No validation that new files are covered by appropri...  | S3       | .husky/pre-commit                                   | 1    |
-| DEBT-2014 | Improve: Consolidate duplicate script patterns into singl...  | S3       | package.json                                        | 1    |
-| DEBT-2015 | Improve: Reduce pre-commit hook check duplication with CI     | S3       | .husky/pre-commit                                   | 1    |
-| DEBT-2016 | Improve: Eliminate redundant npm run then re-run pattern ...  | S3       | .husky/pre-commit                                   | 9    |
-| DEBT-2017 | Improve: Add CI caching for test build artifacts              | S3       | .github/workflows/ci.yml                            | 114  |
-| DEBT-2018 | Improve: Combine test:build and type check into single ts...  | S3       | package.json                                        | 11   |
-| DEBT-2019 | Improve: Parallelize independent CI jobs                      | S3       | .github/workflows/ci.yml                            | 1    |
-| DEBT-2020 | Improve: Make npm audit scheduled instead of on every push    | S3       | .husky/pre-push                                     | 92   |
-| DEBT-2021 | Improve: Auto-update DOCUMENTATION_INDEX.md in pre-commit...  | S3       | .husky/pre-commit                                   | 134  |
-| DEBT-2022 | Improve: Combine docs-lint.yml checks into main CI workflow   | S3       | .github/workflows/docs-lint.yml                     | 1    |
-| DEBT-2023 | Improve: Use task runner (turbo/nx) for script orchestration  | S3       | package.json                                        | 1    |
-| DEBT-2024 | Improve: Simplify Firebase deployment workflow                | S3       | .github/workflows/deploy-firebase.yml               | 73   |
-| DEBT-2025 | Improve: Backlog enforcement workflow references archived...  | S3       | .github/workflows/backlog-enforcement.yml           | 32   |
-| DEBT-2026 | Improve: Add hook timing instrumentation                      | S3       | .husky/pre-commit                                   | 1    |
-| DEBT-2027 | Improve: Consolidate security checking into single workflow   | S3       | .github/workflows/backlog-enforcement.yml           | 103  |
-| DEBT-2028 | Improve: Use lint-staged for more than just formatting        | S3       | package.json                                        | 78   |
-| DEBT-2029 | Improve: Add commit message validation hook                   | S3       | .husky/\_/commit-msg                                | 1    |
-| DEBT-2030 | Improve: Add GitHub Actions workflow caching strategy         | S3       | .github/workflows/ci.yml                            | 22   |
-| DEBT-2031 | Improve: Migrate manual documentation tasks to automated ...  | S3       | package.json                                        | 14   |
-| DEBT-2032 | Improve: Add workflow for stale branch cleanup                | S3       | N/A                                                 | 0    |
-| DEBT-2033 | Improve: Replace manual trigger checks with GitHub Action...  | S3       | .github/workflows/ci.yml                            | 42   |
-| DEBT-2034 | Docs: Missing README in scripts/lib/                          | S3       | scripts/lib/                                        | 1    |
-| DEBT-2035 | Docs: Missing README in scripts/config/                       | S3       | scripts/config/                                     | 1    |
-| DEBT-2036 | Docs: Missing README in scripts/debt/                         | S3       | scripts/debt/                                       | 1    |
-| DEBT-2037 | Docs: Missing README in scripts/audit/                        | S3       | scripts/audit/                                      | 1    |
-| DEBT-2038 | Docs: No header comment in enrich-addresses.ts                | S3       | scripts/enrich-addresses.ts                         | 1    |
-| DEBT-2039 | Docs: No header comment in test-geocode.ts                    | S3       | scripts/test-geocode.ts                             | 1    |
-| DEBT-2040 | Docs: No header comment in sync-geocache.ts                   | S3       | scripts/sync-geocache.ts                            | 1    |
-| DEBT-2041 | Docs: No header comment in retry-failures.ts                  | S3       | scripts/retry-failures.ts                           | 1    |
-| DEBT-2042 | Docs: No header comment in migrate-library-content.ts         | S3       | scripts/migrate-library-content.ts                  | 1    |
-| DEBT-2043 | Docs: No header comment in seed-real-data.ts                  | S3       | scripts/seed-real-data.ts                           | 1    |
-| DEBT-2044 | Docs: Inadequate header in dedupe-quotes.ts                   | S3       | scripts/dedupe-quotes.ts                            | 1    |
-| DEBT-2045 | Docs: Config file ai-patterns.json lacks inline documenta...  | S3       | scripts/config/ai-patterns.json                     | 1    |
-| DEBT-2046 | Docs: Config file audit-config.json lacks inline document...  | S3       | scripts/config/audit-config.json                    | 1    |
-| DEBT-2047 | Docs: Config file audit-schema.json lacks inline document...  | S3       | scripts/config/audit-schema.json                    | 1    |
-| DEBT-2048 | Docs: Config file skill-config.json lacks inline document...  | S3       | scripts/config/skill-config.json                    | 1    |
-| DEBT-2049 | Docs: Excessively long file aggregate-audit-findings.js (...  | S3       | scripts/aggregate-audit-findings.js                 | 1    |
-| DEBT-2050 | Docs: Excessively long file analyze-learning-effectivenes...  | S3       | scripts/analyze-learning-effectiveness.js           | 1    |
-| DEBT-2051 | Docs: Excessively long file validate-audit-integration.js...  | S3       | scripts/audit/validate-audit-integration.js         | 1    |
-| DEBT-2052 | Docs: Excessively long file check-review-needed.js (1056 ...  | S3       | scripts/check-review-needed.js                      | 1    |
-| DEBT-2053 | Docs: Excessively long file multi-ai/normalize-format.js ...  | S3       | scripts/multi-ai/normalize-format.js                | 1    |
-| DEBT-2054 | Docs: Excessively long file validate-audit.js (980 lines)     | S3       | scripts/validate-audit.js                           | 1    |
-| DEBT-2055 | Docs: Excessively long file generate-documentation-index....  | S3       | scripts/generate-documentation-index.js             | 1    |
-| DEBT-2056 | Docs: Excessively long file check-docs-light.js (866 lines)   | S3       | scripts/check-docs-light.js                         | 1    |
-| DEBT-2057 | Docs: Excessively long file check-pattern-compliance.js (...  | S3       | scripts/check-pattern-compliance.js                 | 1    |
-| DEBT-2058 | Docs: Excessively long file debt/sync-sonarcloud.js (770 ...  | S3       | scripts/debt/sync-sonarcloud.js                     | 1    |
-| DEBT-2059 | Docs: Excessively long file audit/transform-jsonl-schema....  | S3       | scripts/audit/transform-jsonl-schema.js             | 1    |
-| DEBT-2060 | Docs: Excessively long file run-consolidation.js (743 lines)  | S3       | scripts/run-consolidation.js                        | 1    |
-| DEBT-2061 | Docs: Excessively long file multi-ai/unify-findings.js (7...  | S3       | scripts/multi-ai/unify-findings.js                  | 1    |
-| DEBT-2062 | Docs: Excessively long file archive-doc.js (712 lines)        | S3       | scripts/archive-doc.js                              | 1    |
-| DEBT-2063 | Docs: Excessively long file check-external-links.js (701 ...  | S3       | scripts/check-external-links.js                     | 1    |
-| DEBT-2064 | Docs: Excessively long file phase-complete-check.js (690 ...  | S3       | scripts/phase-complete-check.js                     | 1    |
-| DEBT-2065 | Docs: Excessively long file check-doc-placement.js (616 l...  | S3       | scripts/check-doc-placement.js                      | 1    |
-| DEBT-2066 | Docs: Excessively long file multi-ai/fix-schema.js (615 l...  | S3       | scripts/multi-ai/fix-schema.js                      | 1    |
-| DEBT-2067 | Docs: Excessively long file multi-ai/aggregate-category.j...  | S3       | scripts/multi-ai/aggregate-category.js              | 1    |
-| DEBT-2068 | Docs: Excessively long file verify-sonar-phase.js (597 li...  | S3       | scripts/verify-sonar-phase.js                       | 1    |
-| DEBT-2069 | Docs: Excessively long file update-readme-status.js (597 ...  | S3       | scripts/update-readme-status.js                     | 1    |
-| DEBT-2070 | Docs: Excessively long file debt/intake-audit.js (586 lines)  | S3       | scripts/debt/intake-audit.js                        | 1    |
-| DEBT-2071 | Docs: Excessively long file generate-detailed-sonar-repor...  | S3       | scripts/generate-detailed-sonar-report.js           | 1    |
-| DEBT-2072 | Docs: Excessively long file lib/ai-pattern-checks.js (554...  | S3       | scripts/lib/ai-pattern-checks.js                    | 1    |
-| DEBT-2073 | Docs: Excessively long file migrate-existing-findings.js ...  | S3       | scripts/migrate-existing-findings.js                | 1    |
-| DEBT-2074 | Docs: Excessively long file check-content-accuracy.js (51...  | S3       | scripts/check-content-accuracy.js                   | 1    |
-| DEBT-2075 | Docs: Excessively long file sync-claude-settings.js (501 ...  | S3       | scripts/sync-claude-settings.js                     | 1    |
-| DEBT-2076 | Improve: Add workflow for stale branch cleanup                | S3       | .github/workflows/\*                                | 1    |
-| DEBT-2078 | Inefficient: Sequential security checks in pre-push           | S3       | .husky/pre-push                                     | 50   |
-| DEBT-2080 | Inefficient: Multiple git status/diff scans in pre-commit     | S3       | .husky/pre-commit                                   | 47   |
-| DEBT-2081 | Risk: No timeout on npm test in pre-commit                    | S3       | .husky/pre-commit                                   | 59   |
-| DEBT-2082 | Optimization: Doc-only commit detection could be smarter      | S3       | .husky/pre-commit                                   | 68   |
-| DEBT-2083 | Slow: Session start hooks add 2-5s latency to every session   | S3       | .claude/settings.json                               | 8    |
-| DEBT-2084 | Optimization: UserPromptSubmit hooks run before every use...  | S3       | .claude/settings.json                               | 265  |
-| DEBT-2088 | Skill issue: code-reviewer scripts may be non-functional ...  | S3       | .claude/skills/code-reviewer/scripts/pr_analyzer.py | 1    |
-| DEBT-2090 | Skill issue: multiple audit skills have duplicate functio...  | S3       | .claude/skills/audit-process/SKILL.md               | 100  |
-| DEBT-2091 | Skill issue: session-begin references deprecated TECHNICA...  | S3       | .claude/skills/session-begin/SKILL.md               | 301  |
-| DEBT-2101 | CI gap: Deleting functions uses continue-on-error hiding ...  | S3       | .github/workflows/deploy-firebase.yml               | 131  |
-| DEBT-2102 | CI gap: Backlog check gracefully skips with no replacemen...  | S3       | .github/workflows/backlog-enforcement.yml           | 35   |
-| DEBT-2103 | CI gap: Security pattern check runs file-by-file ineffici...  | S3       | .github/workflows/backlog-enforcement.yml           | 147  |
-| DEBT-2104 | CI gap: Documentation linting skips archive files entirely    | S3       | .github/workflows/docs-lint.yml                     | 78   |
-| DEBT-2105 | CI gap: Review trigger check has fragile JSON validation      | S3       | .github/workflows/review-check.yml                  | 46   |
-| DEBT-2106 | CI gap: Sync README has fragile retry logic                   | S3       | .github/workflows/sync-readme.yml                   | 64   |
-| DEBT-2107 | CI gap: Template file exclusion is brittle regex              | S3       | .github/workflows/docs-lint.yml                     | 72   |
-| DEBT-2111 | Duplicated: TTY-aware color code across 3+ scripts            | S3       | scripts/check-doc-headers.js                        | 48   |
-| DEBT-2113 | Duplicated: Git staged files retrieval across scripts         | S3       | scripts/check-cross-doc-deps.js                     | 83   |
-| DEBT-2114 | Duplicated: Config loading pattern across 17+ files           | S3       | scripts/check-pattern-compliance.js                 | 34   |
-| DEBT-2115 | Duplicated: JSON argument parsing across hooks                | S3       | .claude/hooks/check-edit-requirements.js            | 20   |
-| DEBT-2288 | Add audit logging for state file rotation events              | S3       | .claude/hooks/lib/rotate-state.js                   | 0    |
-| DEBT-2293 | Hook scripts lack durable audit trail logging                 | S3       | N/A                                                 | 0    |
-| DEBT-2314 | Add validation that completed ROADMAP items have been arc...  | S3       | scripts/check-roadmap-health.js                     | 0    |
-| DEBT-2315 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...  | S3       | scripts/check-cross-doc-deps.js                     | 0    |
-| DEBT-0858 | CI quality gates non-blocking allowing regressions            | S0       | .github/workflows/ci.yml                            | 0    |
-| DEBT-1878 | CI gap: pull_request_target security vulnerability allows...  | S0       | .github/workflows/deploy-firebase.yml               | 7    |
-| DEBT-2120 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                               | 24   |
-| DEBT-2121 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                        | 21   |
+| ID        | Title                                                         | Severity | File                                                                    | Line |
+| --------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
+| DEBT-0133 | Offline Queue Infrastructure                                  | S1       | hooks/use-journal.ts                                                    | 319  |
+| DEBT-0882 | Tests Not Run for Config Changes (eslint, firebase.json, ...  | S1       | N/A                                                                     | 0    |
+| DEBT-0883 | Doc-Only Commit Detection Misclassifies Critical JSONL        | S1       | N/A                                                                     | 0    |
+| DEBT-0884 | Cross-Document Override SKIP_CROSS_DOC_CHECK Not Implemented  | S1       | N/A                                                                     | 0    |
+| DEBT-0886 | Functions Directory Not Linted in CI                          | S1       | N/A                                                                     | 0    |
+| DEBT-1334 | Firebase Functions use Node 20 but CI uses Node 22 — vers...  | S1       | .github/workflows/ci.yml                                                | 21   |
+| DEBT-1830 | Orphaned: assign-review-tier.js disabled in workflow          | S1       | .github/workflows/auto-label-review-tier.yml                            | 56   |
+| DEBT-1835 | Obsolete: backlog-enforcement.yml checks deleted file         | S1       | .github/workflows/backlog-enforcement.yml                               | 32   |
+| DEBT-1842 | Duplicated: Test execution in pre-commit AND CI               | S1       | 59-87                                                                   | 0    |
+| DEBT-1843 | Duplicated: Path validation logic across 16+ hooks            | S1       | 18-63                                                                   | 0    |
+| DEBT-1845 | Duplicated: Error message extraction pattern across 42+ f...  | S1       | scripts/check-pattern-compliance.js                                     | 40   |
+| DEBT-1854 | Duplicated: check-edit-requirements and check-write-requi...  | S1       | 1-108                                                                   | 0    |
+| DEBT-1879 | CI gap: No test coverage thresholds enforced                  | S1       | .github/workflows/ci.yml                                                | 115  |
+| DEBT-1921 | Skill issue: gh-fix-ci references non-existent inspect_pr...  | S1       | .claude/skills/gh-fix-ci/SKILL.md                                       | 36   |
+| DEBT-1955 | Perf: check-docs-light.js - Synchronous file reads in map()   | S1       | scripts/check-docs-light.js                                             | 825  |
+| DEBT-1958 | Perf: generate-documentation-index.js - Synchronous file ...  | S1       | scripts/generate-documentation-index.js                                 | 913  |
+| DEBT-1961 | Perf: aggregate-audit-findings.js - O(n^2) deduplication ...  | S1       | scripts/aggregate-audit-findings.js                                     | 1309 |
+| DEBT-1968 | Error handling: Empty catch blocks swallow errors in gsd-...  | S1       | .claude/hooks/global/gsd-check-update.js                                | 38   |
+| DEBT-1969 | Error handling: 200+ empty catch blocks across hooks and ...  | S1       | .claude/hooks/component-size-check.js                                   | 47   |
+| DEBT-1971 | Error handling: readFileSync without try/catch in multipl...  | S1       | scripts/verify-sonar-phase.js                                           | 134  |
+| DEBT-1972 | Error handling: execSync without timeout or error handling    | S1       | scripts/validate-audit.js                                               | 651  |
+| DEBT-1974 | Error handling: State file operations fail silently           | S1       | .claude/hooks/state-utils.js                                            | 75   |
+| DEBT-1979 | Error handling: Hook execution errors not propagated to user  | S1       | .claude/hooks/component-size-check.js                                   | 47   |
+| DEBT-1980 | Error handling: generate-pending-alerts.js throws error o...  | S1       | scripts/generate-pending-alerts.js                                      | 389  |
+| DEBT-1982 | Error handling: execSync in validation scripts can hang o...  | S1       | scripts/validate-audit.js                                               | 651  |
+| DEBT-1983 | Quality: TOCTOU race condition in ai-review.js                | S1       | scripts/ai-review.js                                                    | 139  |
+| DEBT-1984 | Quality: TOCTOU race condition in check-consolidation-sta...  | S1       | scripts/check-consolidation-status.js                                   | 89   |
+| DEBT-1985 | Quality: TOCTOU race condition in resolve-item.js             | S1       | scripts/debt/resolve-item.js                                            | 53   |
+| DEBT-1993 | Quality: Missing validation on parsed JSON objects            | S1       | scripts/debt/intake-audit.js                                            | 119  |
+| DEBT-1994 | Quality: Unsafe regex patterns in pattern checker             | S1       | 106-300                                                                 | 0    |
+| DEBT-2077 | Quality: Unsafe regex patterns in pattern checker             | S1       | scripts/check-pattern-compliance.js                                     | 106  |
+| DEBT-2108 | Duplicated: Test execution in pre-commit AND CI               | S1       | .husky/pre-commit                                                       | 59   |
+| DEBT-2109 | Duplicated: Path validation logic across 16+ hooks            | S1       | .claude/hooks/check-edit-requirements.js                                | 18   |
+| DEBT-2117 | Duplicated: check-edit-requirements and check-write-requi...  | S1       | .claude/hooks/check-edit-requirements.js                                | 1    |
+| DEBT-0444 | GitHub Actions using version tags instead of commit SHAs      | S2       | .github/workflows/auto-label-review-tier.yml                            | 18   |
+| DEBT-0456 | 28 scripts have 715 console.log/error/warn calls without ...  | S2       | scripts/                                                                | 0    |
+| DEBT-0457 | Artifact upload without retention policy                      | S2       | .github/workflows/ci.yml                                                | 99   |
+| DEBT-0458 | Git diff with @{u}...HEAD fails on new branches without u...  | S2       | .husky/pre-push                                                         | 48   |
+| DEBT-0470 | GitHub Actions using version tags instead of commit SHAs      | S2       | N/A                                                                     | 0    |
+| DEBT-0515 | Add Correlation IDs to Logger                                 | S2       | lib/logger.ts                                                           | 1    |
+| DEBT-0516 | Add Network Status to Logs                                    | S2       | lib/logger.ts                                                           | 45   |
+| DEBT-0517 | Create Smoke Test Script                                      | S2       | scripts/smoke-test.js                                                   | 1    |
+| DEBT-0518 | Add Bug Report GitHub Template                                | S2       | .github/ISSUE_TEMPLATE/bug_report.md                                    | 1    |
+| DEBT-0519 | Offline Tests                                                 | S2       | tests/offline/                                                          | 1    |
+| DEBT-0520 | Network Failure Error Handling Tests                          | S2       | tests/admin/network-failure.test.ts                                     | 1    |
+| DEBT-0891 | Backlog Enforcement Job Obsolete After TDMS Migration         | S2       | N/A                                                                     | 0    |
+| DEBT-0896 | Function Deletion with Force Flag Lacks Validation            | S2       | N/A                                                                     | 0    |
+| DEBT-0897 | Pre-Commit Total Time 15-30s - Developer Friction             | S2       | N/A                                                                     | 0    |
+| DEBT-1371 | Oversized scripts: aggregate-audit-findings.js (63KB), ch...  | S2       | scripts/aggregate-audit-findings.js                                     | 1    |
+| DEBT-1821 | Orphaned: seed-commit-log.js                                  | S2       | scripts/seed-commit-log.js                                              | 1    |
+| DEBT-1822 | Orphaned: sync-claude-settings.js                             | S2       | scripts/sync-claude-settings.js                                         | 1    |
+| DEBT-1823 | Orphaned: update-legacy-lines.js                              | S2       | scripts/update-legacy-lines.js                                          | 1    |
+| DEBT-1824 | Orphaned: create-canonical-findings.js                        | S2       | scripts/create-canonical-findings.js                                    | 1    |
+| DEBT-1825 | Orphaned: generate-detailed-sonar-report.js                   | S2       | scripts/generate-detailed-sonar-report.js                               | 1    |
+| DEBT-1826 | Orphaned: generate-placement-report.js                        | S2       | scripts/generate-placement-report.js                                    | 1    |
+| DEBT-1827 | Orphaned: migrate-existing-findings.js                        | S2       | scripts/migrate-existing-findings.js                                    | 1    |
+| DEBT-1828 | Orphaned: regenerate-findings-index.js                        | S2       | scripts/regenerate-findings-index.js                                    | 1    |
+| DEBT-1829 | Orphaned: verify-sonar-phase.js                               | S2       | scripts/verify-sonar-phase.js                                           | 1    |
+| DEBT-1831 | Orphaned: TypeScript migration scripts (14 files)             | S2       | scripts/dedupe-quotes.ts                                                | 1    |
+| DEBT-1832 | Orphaned npm script: learning:category                        | S2       | package.json                                                            | 38   |
+| DEBT-1833 | Orphaned npm script: learning:since                           | S2       | package.json                                                            | 39   |
+| DEBT-1834 | Orphaned npm script: phase:complete:auto                      | S2       | package.json                                                            | 23   |
+| DEBT-1836 | Narrow trigger: validate-plan.yml for specific archived file  | S2       | .github/workflows/validate-plan.yml                                     | 6    |
+| DEBT-1838 | Duplicated: ESLint validation in pre-commit AND CI            | S2       | .husky/pre-commit                                                       | 9    |
+| DEBT-1839 | Duplicated: Pattern compliance check in pre-commit AND CI     | S2       | .husky/pre-commit                                                       | 35   |
+| DEBT-1840 | Duplicated: Technical debt schema validation in pre-commi...  | S2       | .husky/pre-commit                                                       | 248  |
+| DEBT-1841 | Duplicated: CANON schema validation in pre-commit AND CI      | S2       | .husky/pre-commit                                                       | 97   |
+| DEBT-1844 | Duplicated: File reading logic across 5 hooks                 | S2       | 114-124                                                                 | 0    |
+| DEBT-1847 | Duplicated: Security validations across all hooks             | S2       | 40-62                                                                   | 0    |
+| DEBT-1850 | Duplicated: Base directory resolution across hooks            | S2       | .claude/hooks/check-edit-requirements.js                                | 18   |
+| DEBT-1853 | Duplicated: ALLOWED_PATHS pattern matching across hooks       | S2       | 30-38                                                                   | 0    |
+| DEBT-1855 | Duplicated: Pattern check implementation between hook and...  | S2       | 1-223                                                                   | 0    |
+| DEBT-1856 | Duplicated: Validation between validate-audit.js and vali...  | S2       | 1-80                                                                    | 0    |
+| DEBT-1864 | Never executes: validate-plan workflow for archived file      | S2       | .github/workflows/validate-plan.yml                                     | 7    |
+| DEBT-1865 | Ineffective: audit-s0s1-validator defaults to WARN mode       | S2       | .claude/hooks/audit-s0s1-validator.js                                   | 21   |
+| DEBT-1866 | Ineffective: pattern-check hook never blocks violations       | S2       | .claude/hooks/pattern-check.js                                          | 221  |
+| DEBT-1868 | Ineffective: Pre-commit bypass conditions too easy            | S2       | .husky/pre-commit                                                       | 46   |
+| DEBT-1873 | Ineffective: large-context-warning warningShown flag prev...  | S2       | .claude/hooks/large-context-warning.js                                  | 146  |
+| DEBT-1874 | Ineffective: check-remote-session-context always succeeds     | S2       | .claude/hooks/check-remote-session-context.js                           | 32   |
+| DEBT-1876 | Ineffective: commit-tracker continueOnError makes failure...  | S2       | .claude/settings.json                                                   | 251  |
+| DEBT-1880 | CI gap: continue-on-error bypasses critical validations       | S2       | .github/workflows/ci.yml                                                | 74   |
+| DEBT-1881 | CI gap: Missing secrets cause silent build success            | S2       | 154-159                                                                 | 0    |
+| DEBT-1882 | CI gap: Pattern compliance only checks changed files in PRs   | S2       | 58-68                                                                   | 0    |
+| DEBT-1883 | CI gap: Build job re-installs dependencies wastefully         | S2       | 136-149                                                                 | 0    |
+| DEBT-1884 | CI gap: Race condition in tier label assignment               | S2       | 77-150                                                                  | 0    |
+| DEBT-1885 | CI gap: Inline tier assignment logic creates maintenance ...  | S2       | 60-75                                                                   | 0    |
+| DEBT-1886 | CI gap: Fork PRs completely skip SonarCloud analysis          | S2       | 22-24                                                                   | 0    |
+| DEBT-1887 | CI gap: Firebase deployment has no success validation         | S2       | 140-147                                                                 | 0    |
+| DEBT-1888 | CI gap: Deployment has no rollback mechanism                  | S2       | 140-147                                                                 | 0    |
+| DEBT-1889 | CI gap: Service account credentials written to filesystem     | S2       | 120-124                                                                 | 0    |
+| DEBT-1908 | CI gap: Tier comment spam on every synchronize event          | S2       | .github/workflows/auto-label-review-tier.yml                            | 186  |
+| DEBT-1909 | Bug: check-review-needed.js - getNextDay() fails silently...  | S2       | scripts/check-review-needed.js                                          | 170  |
+| DEBT-1910 | Bug: check-cross-doc-deps.js - checkDiffPattern() silentl...  | S2       | scripts/check-cross-doc-deps.js                                         | 100  |
+| DEBT-1911 | Bug: check-cross-doc-deps.js - inconsistent behavior with...  | S2       | scripts/check-cross-doc-deps.js                                         | 69   |
+| DEBT-1912 | Bug: security-check.js - getStagedFiles() returns empty a...  | S2       | scripts/security-check.js                                               | 310  |
+| DEBT-1919 | Skill issue: episodic memory MCP not configured but refer...  | S2       | audit-process/SKILL.md                                                  | 1    |
+| DEBT-1920 | Skill issue: audit skills reference non-existent FALSE_PO...  | S2       | audit-process/SKILL.md                                                  | 172  |
+| DEBT-1922 | Skill issue: systematic-debugging references non-existent...  | S2       | systematic-debugging/SKILL.md                                           | 229  |
+| DEBT-1924 | Skill issue: audit-process has complex 7-stage orchestrat...  | S2       | audit-process/SKILL.md                                                  | 1    |
+| DEBT-1927 | Slow: ESLint full codebase scan in pre-commit                 | S2       | .husky/pre-commit                                                       | 9    |
+| DEBT-1928 | Duplicate: Pattern compliance runs in both pre-commit and...  | S2       | .husky/pre-commit                                                       | 35   |
+| DEBT-1929 | Slow: TypeScript full project type check on every push        | S2       | .husky/pre-push                                                         | 83   |
+| DEBT-1930 | Slow: Circular dependency scan on entire codebase every push  | S2       | .husky/pre-push                                                         | 12   |
+| DEBT-1931 | Slow: Test suite rebuilds TypeScript on every test run        | S2       | package.json                                                            | 11   |
+| DEBT-1933 | Performance: 10 Claude hooks run on every Write/Edit oper...  | S2       | 57-111                                                                  | 0    |
+| DEBT-1940 | CI slow: Build job waits unnecessarily for all lint/test ...  | S2       | .github/workflows/ci.yml                                                | 136  |
+| DEBT-1941 | CI slow: Redundant npm ci in build job                        | S2       | .github/workflows/ci.yml                                                | 149  |
+| DEBT-1942 | CI slow: No Next.js build cache                               | S2       | .github/workflows/ci.yml                                                | 152  |
+| DEBT-1943 | CI slow: No path filters on main CI workflow                  | S2       | .github/workflows/ci.yml                                                | 3    |
+| DEBT-1944 | CI slow: Firebase deploy builds app twice                     | S2       | .github/workflows/deploy-firebase.yml                                   | 47   |
+| DEBT-1952 | Perf: check-pattern-compliance.js - Synchronous file read...  | S2       | scripts/check-pattern-compliance.js                                     | 799  |
+| DEBT-1953 | Perf: check-pattern-compliance.js - O(n\*m) pattern matchi... | S2       | scripts/check-pattern-compliance.js                                     | 733  |
+| DEBT-1956 | Perf: check-docs-light.js - O(n^2) anchor link validation     | S2       | scripts/check-docs-light.js                                             | 411  |
+| DEBT-1957 | Perf: check-docs-light.js - Repeated realpath/stat calls      | S2       | scripts/check-docs-light.js                                             | 686  |
+| DEBT-1960 | Perf: generate-documentation-index.js - O(n\*m) reference ... | S2       | scripts/generate-documentation-index.js                                 | 524  |
+| DEBT-1962 | Perf: aggregate-audit-findings.js - Synchronous JSONL fil...  | S2       | scripts/aggregate-audit-findings.js                                     | 1201 |
+| DEBT-1963 | Perf: aggregate-audit-findings.js - Expensive Levenshtein...  | S2       | scripts/aggregate-audit-findings.js                                     | 1013 |
+| DEBT-1965 | Perf: check-content-accuracy.js - Synchronous file reads ...  | S2       | scripts/check-content-accuracy.js                                       | 458  |
+| DEBT-1966 | Perf: check-content-accuracy.js - Regex compilation in ho...  | S2       | scripts/check-content-accuracy.js                                       | 114  |
+| DEBT-1967 | Perf: check-content-accuracy.js - O(lines \* patterns) nes... | S2       | scripts/check-content-accuracy.js                                       | 136  |
+| DEBT-1970 | Error handling: Hook validation exits with 0 on security ...  | S2       | .claude/hooks/typescript-strict-check.js                                | 28   |
+| DEBT-1973 | Error handling: Error messages expose full system paths       | S2       | scripts/validate-audit.js                                               | 110  |
+| DEBT-1975 | Error handling: JSON.parse failures without validation co...  | S2       | scripts/verify-skill-usage.js                                           | 136  |
+| DEBT-1976 | Error handling: Missing error messages in file write oper...  | S2       | scripts/update-readme-status.js                                         | 107  |
+| DEBT-1977 | Error handling: Validation scripts exit 0 with violations...  | S2       | scripts/verify-skill-usage.js                                           | 232  |
+| DEBT-1978 | Error handling: Multiple exit(0) calls suggest unclear co...  | S2       | .claude/hooks/typescript-strict-check.js                                | 28   |
+| DEBT-1981 | Error handling: sync-sonarcloud.js API errors expose impl...  | S2       | scripts/debt/sync-sonarcloud.js                                         | 290  |
+| DEBT-1986 | Quality: Magic number - hardcoded port without explanation    | S2       | .claude/hooks/stop-serena-dashboard.js                                  | 30   |
+| DEBT-1987 | Quality: Magic number - MAX_LENGTH without explanation        | S2       | .claude/hooks/analyze-user-request.js                                   | 37   |
+| DEBT-1988 | Quality: Magic number - SINGLE_FILE_LINE_LIMIT without ex...  | S2       | .claude/hooks/large-context-warning.js                                  | 20   |
+| DEBT-1989 | Quality: Magic number - ARCHIVE_LINE_THRESHOLD without ex...  | S2       | scripts/check-consolidation-status.js                                   | 26   |
+| DEBT-1990 | Quality: Magic number - REQUEST_TIMEOUT_MS without explan...  | S2       | scripts/mcp/sonarcloud-server.js                                        | 68   |
+| DEBT-1991 | Quality: Hardcoded path should be configurable                | S2       | .claude/hooks/state-utils.js                                            | 22   |
+| DEBT-1992 | Quality: Multiple hardcoded debt paths                        | S2       | scripts/debt/intake-audit.js                                            | 53   |
+| DEBT-2002 | Inconsistent: File path validation and sanitization           | S2       | scripts/archive-doc.js                                                  | 83   |
+| DEBT-2003 | Inconsistent: Error sanitization approaches                   | S2       | scripts/archive-doc.js                                                  | 41   |
+| DEBT-2004 | Gap: Shell scripts not linted or validated                    | S2       | .claude/hooks/analyze-user-request.sh                                   | 1    |
+| DEBT-2006 | Gap: Scripts directory missing test coverage                  | S2       | scripts/                                                                | 1    |
+| DEBT-2007 | Gap: Firebase functions lack integration tests                | S2       | functions/src/admin.ts                                                  | 1    |
+| DEBT-2010 | Gap: Environment files not validated                          | S2       | .env.local.example                                                      | 1    |
+| DEBT-2012 | Gap: No syntax validation for committed shell scripts in CI   | S2       | .github/workflows/ci.yml                                                | 1    |
+| DEBT-2079 | Performance: 10 Claude hooks run on every Write/Edit oper...  | S2       | .claude/settings.json                                                   | 57   |
+| DEBT-2085 | Skill issue: episodic memory MCP not configured but refer...  | S2       | .claude/skills/audit-process/SKILL.md                                   | 1    |
+| DEBT-2086 | Skill issue: audit skills reference non-existent FALSE_PO...  | S2       | .claude/skills/audit-process/SKILL.md                                   | 172  |
+| DEBT-2087 | Skill issue: systematic-debugging references non-existent...  | S2       | .claude/skills/systematic-debugging/SKILL.md                            | 229  |
+| DEBT-2089 | Skill issue: audit-process has complex 7-stage orchestrat...  | S2       | .claude/skills/audit-process/SKILL.md                                   | 1    |
+| DEBT-2092 | CI gap: Missing secrets cause silent build success            | S2       | .github/workflows/ci.yml                                                | 154  |
+| DEBT-2093 | CI gap: Pattern compliance only checks changed files in PRs   | S2       | .github/workflows/ci.yml                                                | 58   |
+| DEBT-2094 | CI gap: Build job re-installs dependencies wastefully         | S2       | .github/workflows/ci.yml                                                | 136  |
+| DEBT-2095 | CI gap: Race condition in tier label assignment               | S2       | .github/workflows/auto-label-review-tier.yml                            | 77   |
+| DEBT-2096 | CI gap: Inline tier assignment logic creates maintenance ...  | S2       | .github/workflows/auto-label-review-tier.yml                            | 60   |
+| DEBT-2097 | CI gap: Fork PRs completely skip SonarCloud analysis          | S2       | .github/workflows/sonarcloud.yml                                        | 22   |
+| DEBT-2098 | CI gap: Firebase deployment has no success validation         | S2       | .github/workflows/deploy-firebase.yml                                   | 140  |
+| DEBT-2099 | CI gap: Deployment has no rollback mechanism                  | S2       | .github/workflows/deploy-firebase.yml                                   | 140  |
+| DEBT-2100 | CI gap: Service account credentials written to filesystem     | S2       | .github/workflows/deploy-firebase.yml                                   | 120  |
+| DEBT-2110 | Duplicated: File reading logic across 5 hooks                 | S2       | .claude/hooks/firestore-write-block.js                                  | 114  |
+| DEBT-2112 | Duplicated: Security validations across all hooks             | S2       | .claude/hooks/check-edit-requirements.js                                | 40   |
+| DEBT-2116 | Duplicated: ALLOWED_PATHS pattern matching across hooks       | S2       | .claude/hooks/firestore-write-block.js                                  | 30   |
+| DEBT-2118 | Duplicated: Pattern check implementation between hook and...  | S2       | .claude/hooks/pattern-check.js                                          | 1    |
+| DEBT-2119 | Duplicated: Validation between validate-audit.js and vali...  | S2       | scripts/validate-audit.js                                               | 1    |
+| DEBT-3091 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                                     | 0    |
+| DEBT-2192 | Add automatic ROADMAP.md completion detection                 | S2       | scripts/                                                                | 0    |
+| DEBT-2313 | Automate archival of completed ROADMAP.md items to ROADMA...  | S2       | scripts/                                                                | 0    |
+| DEBT-3199 | 19 non-resolved S0 critical items and 383 open S1 items i...  | S2       | docs/technical-debt/MASTER_DEBT.jsonl                                   | 1    |
+| DEBT-2175 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                                     | 0    |
+| DEBT-2803 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                                     | 0    |
+| DEBT-0811 | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
+| DEBT-0812 | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
+| DEBT-0813 | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |
+| DEBT-0814 | Script has minimal console output (1 call)                    | S3       | scripts/check-cross-doc-deps.js                                         | 1    |
+| DEBT-0815 | TRIGGERS.md last updated 2026-01-02 but hooks updated since   | S3       | docs/TRIGGERS.md                                                        | 1    |
+| DEBT-0816 | All 12 slash commands have frontmatter descriptions           | S3       | .claude/commands/                                                       | 0    |
+| DEBT-1837 | Manual-only scripts not in automation                         | S3       | scripts/ai-review.js                                                    | 1    |
+| DEBT-1846 | Duplicated: TTY-aware color code across 3+ scripts            | S3       | 48-56                                                                   | 0    |
+| DEBT-1848 | Duplicated: Git staged files retrieval across scripts         | S3       | 83-97                                                                   | 0    |
+| DEBT-1849 | Duplicated: Config loading pattern across 17+ files           | S3       | 34-43                                                                   | 0    |
+| DEBT-1851 | Duplicated: JSON argument parsing across hooks                | S3       | 20-31                                                                   | 0    |
+| DEBT-1852 | Duplicated: File extension checks across hooks                | S3       | .claude/hooks/firestore-write-block.js                                  | 102  |
+| DEBT-1857 | Never executes: AUDIT_FINDINGS_BACKLOG.md backlog check       | S3       | .github/workflows/backlog-enforcement.yml                               | 32   |
+| DEBT-1858 | Never executes: npm script test:coverage:report               | S3       | package.json                                                            | 13   |
+| DEBT-1859 | Never executes: npm script learning:category                  | S3       | package.json                                                            | 38   |
+| DEBT-1860 | Never executes: npm script config:validate                    | S3       | package.json                                                            | 52   |
+| DEBT-1861 | Never executes: npm script session:summary                    | S3       | package.json                                                            | 41   |
+| DEBT-1862 | Never executes: npm script override:list                      | S3       | package.json                                                            | 43   |
+| DEBT-1863 | Never executes: GitHub workflow master branch trigger         | S3       | .github/workflows/backlog-enforcement.yml                               | 5    |
+| DEBT-1867 | Ineffective: Small file bypass in pattern-check               | S3       | .claude/hooks/pattern-check.js                                          | 138  |
+| DEBT-1869 | Ineffective: Network failures treated as success in pre-push  | S3       | .husky/pre-push                                                         | 107  |
+| DEBT-1870 | Ineffective: check-write-requirements POST-TASK not enforced  | S3       | .claude/hooks/check-write-requirements.js                               | 72   |
+| DEBT-1871 | Ineffective: component-size-check always succeeds             | S3       | .claude/hooks/component-size-check.js                                   | 142  |
+| DEBT-1872 | Ineffective: agent-trigger-enforcer Phase 2/3 not impleme...  | S3       | .claude/hooks/agent-trigger-enforcer.js                                 | 295  |
+| DEBT-1875 | Ineffective: audit-s0s1-validator allows parse errors         | S3       | .claude/hooks/audit-s0s1-validator.js                                   | 84   |
+| DEBT-1877 | Ineffective: Pre-push SKIP_TRIGGERS bypass has no budget      | S3       | .husky/pre-push                                                         | 123  |
+| DEBT-1890 | CI gap: Deleting functions uses continue-on-error hiding ...  | S3       | 131-138                                                                 | 0    |
+| DEBT-1891 | CI gap: Preview and production use different env var sources  | S3       | .github/workflows/deploy-firebase.yml                                   | 51   |
+| DEBT-1892 | CI gap: Backlog check gracefully skips with no replacemen...  | S3       | 35-42                                                                   | 0    |
+| DEBT-1893 | CI gap: Security pattern check runs file-by-file ineffici...  | S3       | 147-150                                                                 | 0    |
+| DEBT-1894 | CI gap: Documentation linting skips archive files entirely    | S3       | 78-81                                                                   | 0    |
+| DEBT-1895 | CI gap: Resolve debt workflow only runs on merged PRs         | S3       | .github/workflows/resolve-debt.yml                                      | 11   |
+| DEBT-1896 | CI gap: Debt resolution skips CI with [skip ci]               | S3       | .github/workflows/resolve-debt.yml                                      | 88   |
+| DEBT-1897 | CI gap: Debt resolution has race condition on rebase          | S3       | .github/workflows/resolve-debt.yml                                      | 92   |
+| DEBT-1898 | CI gap: Review trigger check has fragile JSON validation      | S3       | 46-50                                                                   | 0    |
+| DEBT-1899 | CI gap: Review check uses continue-on-error hiding crashes    | S3       | .github/workflows/review-check.yml                                      | 33   |
+| DEBT-1900 | CI gap: Phase validation workflow is likely dead code         | S3       | .github/workflows/validate-plan.yml                                     | 7    |
+| DEBT-1901 | CI gap: Sync README has fragile retry logic                   | S3       | 64-78                                                                   | 0    |
+| DEBT-1902 | CI gap: Sync README uses --no-verify bypassing hooks          | S3       | .github/workflows/sync-readme.yml                                       | 57   |
+| DEBT-1903 | CI gap: Inconsistent GitHub Action version pinning            | S3       | .github/workflows/ci.yml                                                | 45   |
+| DEBT-1904 | CI gap: No validation of Node.js version consistency          | S3       | .github/workflows/ci.yml                                                | 21   |
+| DEBT-1905 | CI gap: Template file exclusion is brittle regex              | S3       | 72-75                                                                   | 0    |
+| DEBT-1906 | CI gap: Markdown injection sanitization incomplete            | S3       | .github/workflows/docs-lint.yml                                         | 91   |
+| DEBT-1907 | CI gap: Changed files detection could miss merge commits      | S3       | .github/workflows/backlog-enforcement.yml                               | 127  |
+| DEBT-1913 | Bug: validate-audit.js - wildcard file patterns not valid...  | S3       | scripts/validate-audit.js                                               | 370  |
+| DEBT-1914 | Enhancement: generate-documentation-index.js - no visibil...  | S3       | scripts/generate-documentation-index.js                                 | 417  |
+| DEBT-1915 | Enhancement: check-pattern-compliance.js - silent filteri...  | S3       | scripts/check-pattern-compliance.js                                     | 494  |
+| DEBT-1916 | Bug: aggregate-audit-findings.js - potential long-running...  | S3       | scripts/aggregate-audit-findings.js                                     | 1446 |
+| DEBT-1917 | Skill issue: skill-registry.json does not exist               | S3       | .claude                                                                 | 1    |
+| DEBT-1918 | Skill issue: SKILL_INDEX.md has incorrect skill count         | S3       | .claude/skills/SKILL_INDEX.md                                           | 3    |
+| DEBT-1923 | Skill issue: code-reviewer scripts may be non-functional ...  | S3       | code-reviewer/scripts/pr_analyzer.py                                    | 1    |
+| DEBT-1925 | Skill issue: multiple audit skills have duplicate functio...  | S3       | audit-process/SKILL.md                                                  | 100  |
+| DEBT-1926 | Skill issue: session-begin references deprecated TECHNICA...  | S3       | session-begin/SKILL.md                                                  | 301  |
+| DEBT-1932 | Inefficient: Sequential security checks in pre-push           | S3       | 50-65                                                                   | 0    |
+| DEBT-1934 | Inefficient: Pattern check runs on every file write via C...  | S3       | .claude/hooks/pattern-check.js                                          | 1    |
+| DEBT-1935 | Inefficient: Multiple git status/diff scans in pre-commit     | S3       | 47,94,138,159,194                                                       | 0    |
+| DEBT-1936 | Risk: No timeout on npm test in pre-commit                    | S3       | 59,80                                                                   | 0    |
+| DEBT-1937 | Optimization: Doc-only commit detection could be smarter      | S3       | 68-88                                                                   | 0    |
+| DEBT-1938 | Slow: Session start hooks add 2-5s latency to every session   | S3       | 8-44                                                                    | 0    |
+| DEBT-1939 | Optimization: UserPromptSubmit hooks run before every use...  | S3       | 265-290                                                                 | 0    |
+| DEBT-1945 | CI slow: Firebase deploys run sequentially                    | S3       | .github/workflows/deploy-firebase.yml                                   | 141  |
+| DEBT-1946 | CI slow: SonarCloud runs on all changes including docs        | S3       | .github/workflows/sonarcloud.yml                                        | 7    |
+| DEBT-1947 | CI slow: Full git history fetched unnecessarily               | S3       | .github/workflows/sonarcloud.yml                                        | 31   |
+| DEBT-1948 | CI slow: Backlog workflow installs deps twice                 | S3       | .github/workflows/backlog-enforcement.yml                               | 26   |
+| DEBT-1949 | CI slow: Review check runs on all PRs without path filters    | S3       | .github/workflows/review-check.yml                                      | 3    |
+| DEBT-1950 | CI slow: Auto-label workflow has no npm cache                 | S3       | .github/workflows/auto-label-review-tier.yml                            | 22   |
+| DEBT-1951 | CI slow: Docs lint processes files sequentially               | S3       | .github/workflows/docs-lint.yml                                         | 58   |
+| DEBT-1954 | Perf: check-pattern-compliance.js - Regex recompilation i...  | S3       | scripts/check-pattern-compliance.js                                     | 659  |
+| DEBT-1959 | Perf: generate-documentation-index.js - Regex compilation...  | S3       | scripts/generate-documentation-index.js                                 | 376  |
+| DEBT-1964 | Perf: aggregate-audit-findings.js - Repeated string norma...  | S3       | scripts/aggregate-audit-findings.js                                     | 1044 |
+| DEBT-1995 | Inconsistent: Mixed CommonJS and ESM module systems           | S3       | scripts/append-hook-warning.js                                          | 1    |
+| DEBT-1996 | Inconsistent: node: prefix usage in imports                   | S3       | scripts/validate-audit.js                                               | 18   |
+| DEBT-1997 | Inconsistent: Emoji usage in console output                   | S3       | scripts/seed-commit-log.js                                              | 105  |
+| DEBT-1998 | Inconsistent: Exit code handling patterns                     | S3       | scripts/check-agent-compliance.js                                       | 192  |
+| DEBT-1999 | Inconsistent: Verbose/debug logging approaches                | S3       | scripts/archive-doc.js                                                  | 72   |
+| DEBT-2000 | Inconsistent: Error message formatting                        | S3       | scripts/check-agent-compliance.js                                       | 163  |
+| DEBT-2001 | Inconsistent: Command line argument parsing                   | S3       | scripts/check-agent-compliance.js                                       | 29   |
+| DEBT-2005 | Gap: Config .mjs files excluded from linting                  | S3       | eslint.config.mjs                                                       | 25   |
+| DEBT-2008 | Gap: Skills missing usage documentation                       | S3       | .claude/skills/                                                         | 1    |
+| DEBT-2009 | Gap: YAML workflow files not linted                           | S3       | .github/workflows/ci.yml                                                | 1    |
+| DEBT-2011 | Gap: Firebase functions TypeScript not type-checked in pr...  | S3       | .husky/pre-push                                                         | 82   |
+| DEBT-2013 | Gap: No validation that new files are covered by appropri...  | S3       | .husky/pre-commit                                                       | 1    |
+| DEBT-2014 | Improve: Consolidate duplicate script patterns into singl...  | S3       | package.json                                                            | 1    |
+| DEBT-2015 | Improve: Reduce pre-commit hook check duplication with CI     | S3       | .husky/pre-commit                                                       | 1    |
+| DEBT-2016 | Improve: Eliminate redundant npm run then re-run pattern ...  | S3       | .husky/pre-commit                                                       | 9    |
+| DEBT-2017 | Improve: Add CI caching for test build artifacts              | S3       | .github/workflows/ci.yml                                                | 114  |
+| DEBT-2018 | Improve: Combine test:build and type check into single ts...  | S3       | package.json                                                            | 11   |
+| DEBT-2019 | Improve: Parallelize independent CI jobs                      | S3       | .github/workflows/ci.yml                                                | 1    |
+| DEBT-2020 | Improve: Make npm audit scheduled instead of on every push    | S3       | .husky/pre-push                                                         | 92   |
+| DEBT-2021 | Improve: Auto-update DOCUMENTATION_INDEX.md in pre-commit...  | S3       | .husky/pre-commit                                                       | 134  |
+| DEBT-2022 | Improve: Combine docs-lint.yml checks into main CI workflow   | S3       | .github/workflows/docs-lint.yml                                         | 1    |
+| DEBT-2023 | Improve: Use task runner (turbo/nx) for script orchestration  | S3       | package.json                                                            | 1    |
+| DEBT-2024 | Improve: Simplify Firebase deployment workflow                | S3       | .github/workflows/deploy-firebase.yml                                   | 73   |
+| DEBT-2025 | Improve: Backlog enforcement workflow references archived...  | S3       | .github/workflows/backlog-enforcement.yml                               | 32   |
+| DEBT-2026 | Improve: Add hook timing instrumentation                      | S3       | .husky/pre-commit                                                       | 1    |
+| DEBT-2027 | Improve: Consolidate security checking into single workflow   | S3       | .github/workflows/backlog-enforcement.yml                               | 103  |
+| DEBT-2028 | Improve: Use lint-staged for more than just formatting        | S3       | package.json                                                            | 78   |
+| DEBT-2029 | Improve: Add commit message validation hook                   | S3       | .husky/\_/commit-msg                                                    | 1    |
+| DEBT-2030 | Improve: Add GitHub Actions workflow caching strategy         | S3       | .github/workflows/ci.yml                                                | 22   |
+| DEBT-2031 | Improve: Migrate manual documentation tasks to automated ...  | S3       | package.json                                                            | 14   |
+| DEBT-2032 | Improve: Add workflow for stale branch cleanup                | S3       | N/A                                                                     | 0    |
+| DEBT-2033 | Improve: Replace manual trigger checks with GitHub Action...  | S3       | .github/workflows/ci.yml                                                | 42   |
+| DEBT-2034 | Docs: Missing README in scripts/lib/                          | S3       | scripts/lib/                                                            | 1    |
+| DEBT-2035 | Docs: Missing README in scripts/config/                       | S3       | scripts/config/                                                         | 1    |
+| DEBT-2036 | Docs: Missing README in scripts/debt/                         | S3       | scripts/debt/                                                           | 1    |
+| DEBT-2037 | Docs: Missing README in scripts/audit/                        | S3       | scripts/audit/                                                          | 1    |
+| DEBT-2038 | Docs: No header comment in enrich-addresses.ts                | S3       | scripts/enrich-addresses.ts                                             | 1    |
+| DEBT-2039 | Docs: No header comment in test-geocode.ts                    | S3       | scripts/test-geocode.ts                                                 | 1    |
+| DEBT-2040 | Docs: No header comment in sync-geocache.ts                   | S3       | scripts/sync-geocache.ts                                                | 1    |
+| DEBT-2041 | Docs: No header comment in retry-failures.ts                  | S3       | scripts/retry-failures.ts                                               | 1    |
+| DEBT-2042 | Docs: No header comment in migrate-library-content.ts         | S3       | scripts/migrate-library-content.ts                                      | 1    |
+| DEBT-2043 | Docs: No header comment in seed-real-data.ts                  | S3       | scripts/seed-real-data.ts                                               | 1    |
+| DEBT-2044 | Docs: Inadequate header in dedupe-quotes.ts                   | S3       | scripts/dedupe-quotes.ts                                                | 1    |
+| DEBT-2045 | Docs: Config file ai-patterns.json lacks inline documenta...  | S3       | scripts/config/ai-patterns.json                                         | 1    |
+| DEBT-2046 | Docs: Config file audit-config.json lacks inline document...  | S3       | scripts/config/audit-config.json                                        | 1    |
+| DEBT-2047 | Docs: Config file audit-schema.json lacks inline document...  | S3       | scripts/config/audit-schema.json                                        | 1    |
+| DEBT-2048 | Docs: Config file skill-config.json lacks inline document...  | S3       | scripts/config/skill-config.json                                        | 1    |
+| DEBT-2049 | Docs: Excessively long file aggregate-audit-findings.js (...  | S3       | scripts/aggregate-audit-findings.js                                     | 1    |
+| DEBT-2050 | Docs: Excessively long file analyze-learning-effectivenes...  | S3       | scripts/analyze-learning-effectiveness.js                               | 1    |
+| DEBT-2051 | Docs: Excessively long file validate-audit-integration.js...  | S3       | scripts/audit/validate-audit-integration.js                             | 1    |
+| DEBT-2052 | Docs: Excessively long file check-review-needed.js (1056 ...  | S3       | scripts/check-review-needed.js                                          | 1    |
+| DEBT-2053 | Docs: Excessively long file multi-ai/normalize-format.js ...  | S3       | scripts/multi-ai/normalize-format.js                                    | 1    |
+| DEBT-2054 | Docs: Excessively long file validate-audit.js (980 lines)     | S3       | scripts/validate-audit.js                                               | 1    |
+| DEBT-2055 | Docs: Excessively long file generate-documentation-index....  | S3       | scripts/generate-documentation-index.js                                 | 1    |
+| DEBT-2056 | Docs: Excessively long file check-docs-light.js (866 lines)   | S3       | scripts/check-docs-light.js                                             | 1    |
+| DEBT-2057 | Docs: Excessively long file check-pattern-compliance.js (...  | S3       | scripts/check-pattern-compliance.js                                     | 1    |
+| DEBT-2058 | Docs: Excessively long file debt/sync-sonarcloud.js (770 ...  | S3       | scripts/debt/sync-sonarcloud.js                                         | 1    |
+| DEBT-2059 | Docs: Excessively long file audit/transform-jsonl-schema....  | S3       | scripts/audit/transform-jsonl-schema.js                                 | 1    |
+| DEBT-2060 | Docs: Excessively long file run-consolidation.js (743 lines)  | S3       | scripts/run-consolidation.js                                            | 1    |
+| DEBT-2061 | Docs: Excessively long file multi-ai/unify-findings.js (7...  | S3       | scripts/multi-ai/unify-findings.js                                      | 1    |
+| DEBT-2062 | Docs: Excessively long file archive-doc.js (712 lines)        | S3       | scripts/archive-doc.js                                                  | 1    |
+| DEBT-2063 | Docs: Excessively long file check-external-links.js (701 ...  | S3       | scripts/check-external-links.js                                         | 1    |
+| DEBT-2064 | Docs: Excessively long file phase-complete-check.js (690 ...  | S3       | scripts/phase-complete-check.js                                         | 1    |
+| DEBT-2065 | Docs: Excessively long file check-doc-placement.js (616 l...  | S3       | scripts/check-doc-placement.js                                          | 1    |
+| DEBT-2066 | Docs: Excessively long file multi-ai/fix-schema.js (615 l...  | S3       | scripts/multi-ai/fix-schema.js                                          | 1    |
+| DEBT-2067 | Docs: Excessively long file multi-ai/aggregate-category.j...  | S3       | scripts/multi-ai/aggregate-category.js                                  | 1    |
+| DEBT-2068 | Docs: Excessively long file verify-sonar-phase.js (597 li...  | S3       | scripts/verify-sonar-phase.js                                           | 1    |
+| DEBT-2069 | Docs: Excessively long file update-readme-status.js (597 ...  | S3       | scripts/update-readme-status.js                                         | 1    |
+| DEBT-2070 | Docs: Excessively long file debt/intake-audit.js (586 lines)  | S3       | scripts/debt/intake-audit.js                                            | 1    |
+| DEBT-2071 | Docs: Excessively long file generate-detailed-sonar-repor...  | S3       | scripts/generate-detailed-sonar-report.js                               | 1    |
+| DEBT-2072 | Docs: Excessively long file lib/ai-pattern-checks.js (554...  | S3       | scripts/lib/ai-pattern-checks.js                                        | 1    |
+| DEBT-2073 | Docs: Excessively long file migrate-existing-findings.js ...  | S3       | scripts/migrate-existing-findings.js                                    | 1    |
+| DEBT-2074 | Docs: Excessively long file check-content-accuracy.js (51...  | S3       | scripts/check-content-accuracy.js                                       | 1    |
+| DEBT-2075 | Docs: Excessively long file sync-claude-settings.js (501 ...  | S3       | scripts/sync-claude-settings.js                                         | 1    |
+| DEBT-2076 | Improve: Add workflow for stale branch cleanup                | S3       | .github/workflows/\*                                                    | 1    |
+| DEBT-2078 | Inefficient: Sequential security checks in pre-push           | S3       | .husky/pre-push                                                         | 50   |
+| DEBT-2080 | Inefficient: Multiple git status/diff scans in pre-commit     | S3       | .husky/pre-commit                                                       | 47   |
+| DEBT-2081 | Risk: No timeout on npm test in pre-commit                    | S3       | .husky/pre-commit                                                       | 59   |
+| DEBT-2082 | Optimization: Doc-only commit detection could be smarter      | S3       | .husky/pre-commit                                                       | 68   |
+| DEBT-2083 | Slow: Session start hooks add 2-5s latency to every session   | S3       | .claude/settings.json                                                   | 8    |
+| DEBT-2084 | Optimization: UserPromptSubmit hooks run before every use...  | S3       | .claude/settings.json                                                   | 265  |
+| DEBT-2088 | Skill issue: code-reviewer scripts may be non-functional ...  | S3       | .claude/skills/code-reviewer/scripts/pr_analyzer.py                     | 1    |
+| DEBT-2090 | Skill issue: multiple audit skills have duplicate functio...  | S3       | .claude/skills/audit-process/SKILL.md                                   | 100  |
+| DEBT-2091 | Skill issue: session-begin references deprecated TECHNICA...  | S3       | .claude/skills/session-begin/SKILL.md                                   | 301  |
+| DEBT-2101 | CI gap: Deleting functions uses continue-on-error hiding ...  | S3       | .github/workflows/deploy-firebase.yml                                   | 131  |
+| DEBT-2102 | CI gap: Backlog check gracefully skips with no replacemen...  | S3       | .github/workflows/backlog-enforcement.yml                               | 35   |
+| DEBT-2103 | CI gap: Security pattern check runs file-by-file ineffici...  | S3       | .github/workflows/backlog-enforcement.yml                               | 147  |
+| DEBT-2104 | CI gap: Documentation linting skips archive files entirely    | S3       | .github/workflows/docs-lint.yml                                         | 78   |
+| DEBT-2105 | CI gap: Review trigger check has fragile JSON validation      | S3       | .github/workflows/review-check.yml                                      | 46   |
+| DEBT-2106 | CI gap: Sync README has fragile retry logic                   | S3       | .github/workflows/sync-readme.yml                                       | 64   |
+| DEBT-2107 | CI gap: Template file exclusion is brittle regex              | S3       | .github/workflows/docs-lint.yml                                         | 72   |
+| DEBT-2111 | Duplicated: TTY-aware color code across 3+ scripts            | S3       | scripts/check-doc-headers.js                                            | 48   |
+| DEBT-2113 | Duplicated: Git staged files retrieval across scripts         | S3       | scripts/check-cross-doc-deps.js                                         | 83   |
+| DEBT-2114 | Duplicated: Config loading pattern across 17+ files           | S3       | scripts/check-pattern-compliance.js                                     | 34   |
+| DEBT-2115 | Duplicated: JSON argument parsing across hooks                | S3       | .claude/hooks/check-edit-requirements.js                                | 20   |
+| DEBT-2288 | Add audit logging for state file rotation events              | S3       | .claude/hooks/lib/rotate-state.js                                       | 0    |
+| DEBT-2293 | Hook scripts lack durable audit trail logging                 | S3       | N/A                                                                     | 0    |
+| DEBT-2314 | Add validation that completed ROADMAP items have been arc...  | S3       | scripts/check-roadmap-health.js                                         | 0    |
+| DEBT-2315 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...  | S3       | scripts/check-cross-doc-deps.js                                         | 0    |
+| DEBT-3200 | Multi-AI audit (maa-2026-02-17) incomplete — 65 unified f...  | S3       | docs/audits/multi-ai/maa-2026-02-17-182d43/final/UNIFIED-FINDINGS.jsonl | 1    |
+| DEBT-0858 | CI quality gates non-blocking allowing regressions            | S0       | .github/workflows/ci.yml                                                | 0    |
+| DEBT-1878 | CI gap: pull_request_target security vulnerability allows...  | S0       | .github/workflows/deploy-firebase.yml                                   | 7    |
+| DEBT-2120 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                                                   | 24   |
+| DEBT-2121 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 
 ## refactoring (22)
 
@@ -2633,7 +2675,7 @@
 | DEBT-0817 | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx | 12   |
 | DEBT-0818 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                      | 86   |
 
-## security (88)
+## security (112)
 
 | ID        | Title                                                        | Severity | File                                             | Line |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------------------------------ | ---- |
@@ -2664,6 +2706,12 @@
 | DEBT-0881 | Firebase Credentials Written to Disk in Deployment           | S1       | N/A                                              | 0    |
 | DEBT-0885 | Trigger Override Logging Silently Fails with \|\| true       | S1       | N/A                                              | 0    |
 | DEBT-0887 | GitHub Actions Secrets Not Rotated Regularly                 | S1       | N/A                                              | 0    |
+| DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI... | S1       | lib/logger.ts                                    | 7    |
+| DEBT-3183 | Sign-in and sign-up lack reCAPTCHA protection — primary a... | S1       | components/auth/sign-in-modal.tsx                | 49   |
+| DEBT-3171 | Permissions-Policy blocks microphone despite voice-text-a... | S1       | firebase.json                                    | 53   |
+| DEBT-3213 | App Check globally disabled on all 5 user-callable functi... | S1       | functions/src/index.ts                           | 84   |
+| DEBT-3162 | migrateAnonymousUserData bypasses security wrapper — reCA... | S1       | functions/src/index.ts                           | 486  |
+| DEBT-3155 | Direct client-side Firestore write in auth-context.tsx — ... | S1       | components/providers/auth-context.tsx            | 100  |
 | DEBT-0376 | Zod schemas missing .strict() (unknown fields accepted)      | S2       | functions/src/schemas.ts                         | 0    |
 | DEBT-0377 | Hardcoded fallback reCAPTCHA site key in server verificat... | S2       | functions/src/recaptcha-verify.ts                | 0    |
 | DEBT-0378 | Server-side journal entry type enum missing 'step-1-works... | S2       | functions/src/schemas.ts                         | 0    |
@@ -2698,6 +2746,21 @@
 | DEBT-2295 | Symlink file overwrite in rotate-state.js rotation/prunin... | S2       | .claude/hooks/lib/rotate-state.js                | 25   |
 | DEBT-3142 | Source map file present in production build output           | S2       | out/\_next/static/chunks/a6dad97d9634a72d.js.map | 0    |
 | DEBT-3145 | fast-xml-parser DoS via entity expansion (high severity) ... | S2       | functions/package.json                           | 0    |
+| DEBT-3209 | Server logger (security-logger.ts) does not strip control... | S2       | functions/src/security-logger.ts                 | 119  |
+| DEBT-3181 | Implicit localStorage persistence — no session management... | S2       | lib/firebase.ts                                  | 54   |
+| DEBT-3184 | Password requirements minimal — 6 characters only, no com... | S2       | components/auth/account-link-modal.tsx           | 45   |
+| DEBT-3185 | Account linking error messages reveal user existence for ... | S2       | lib/auth/account-linking.ts                      | 82   |
+| DEBT-3211 | .env.production tracked in git with Firebase config and S... | S2       | .env.production                                  | 1    |
+| DEBT-3179 | .gitignore pattern doesn't cover .env.production             | S2       | .gitignore                                       | 34   |
+| DEBT-3175 | No field-level validation in rules for admin-writable pub... | S2       | firestore.rules                                  | 104  |
+| DEBT-3176 | Soft-deleted documents still readable via Firestore rules    | S2       | firestore.rules                                  | 34   |
+| DEBT-3212 | No Content-Security-Policy header configured                 | S2       | firebase.json                                    | 30   |
+| DEBT-3172 | HSTS missing preload and includeSubDomains directives        | S2       | firebase.json                                    | 37   |
+| DEBT-3165 | reCAPTCHA site key hard-coded as fallback literal in reca... | S2       | functions/src/recaptcha-verify.ts                | 66   |
+| DEBT-3167 | Zod data fields are unbounded z.record — saveJournalEntry... | S2       | functions/src/schemas.ts                         | 32   |
+| DEBT-3168 | Admin functions have no enforceAppCheck in onCall config     | S2       | functions/src/admin.ts                           | 707  |
+| DEBT-3169 | Rate limiter console.warn leaks un-hashed user ID in logs    | S2       | functions/src/firestore-rate-limiter.ts          | 108  |
+| DEBT-3170 | migrateAnonymousUserData logs raw UIDs to Sentry (PII in ... | S2       | functions/src/index.ts                           | 556  |
 | DEBT-0774 | App Check disabled on Functions and client init disabled ... | S3       | functions/src/index.ts                           | 0    |
 | DEBT-0800 | SonarCloud: Potentially hard-coded password pattern          | S3       | lib/utils/errors.ts                              | 69   |
 | DEBT-0801 | Math.random for visual effects                               | S3       | components/celebrations/confetti-burst.tsx       | 39   |
@@ -2716,6 +2779,9 @@
 | DEBT-2286 | Add symlink audit trail logging to atomic write helpers      | S3       | .claude/hooks/lib/rotate-state.js                | 0    |
 | DEBT-2294 | Hook validators log code snippets that could expose secrets  | S3       | N/A                                              | 0    |
 | DEBT-3146 | 26 high-severity vulns in dev/build dependencies (eslint,... | S3       | package.json                                     | 0    |
+| DEBT-3180 | Sentry DSN committed in .env.production                      | S3       | .env.production                                  | 20   |
+| DEBT-3178 | No rate limiting at Firestore rules level                    | S3       | firestore.rules                                  | 1    |
+| DEBT-3173 | Referrer-Policy set to strict-origin could be stricter       | S3       | firebase.json                                    | 49   |
 | DEBT-0849 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                                  | 0    |
 | DEBT-0853 | App Check disabled on all production Cloud Functions         | S0       | functions/src/index.ts                           | 0    |
 | DEBT-0854 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                                  | 0    |

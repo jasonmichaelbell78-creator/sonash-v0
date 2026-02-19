@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 83
+**Items Needing Verification:** 149
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -30,6 +30,19 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes         | S1       | home/user/sonash-v0/docs/agent_docs/FIX_TEMPLATES.md                                 | 0    |
 | DEBT-2482 | Technical debt view files - generated views without integ... | S1       | home/user/sonash-v0/docs/technical-debt/views/                                       | 0    |
 | DEBT-3136 | Cloud Functions have zero test coverage — 5000+ lines of ... | S1       | functions/src/                                                                       | 0    |
+| DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI... | S1       | lib/logger.ts                                                                        | 7    |
+| DEBT-3210 | No service worker — app cannot function offline despite P... | S1       | public/manifest.json                                                                 | 1    |
+| DEBT-3183 | Sign-in and sign-up lack reCAPTCHA protection — primary a... | S1       | components/auth/sign-in-modal.tsx                                                    | 49   |
+| DEBT-3174 | Admin CRUD for sober_living broken — rules block all clie... | S1       | firestore.rules                                                                      | 98   |
+| DEBT-3171 | Permissions-Policy blocks microphone despite voice-text-a... | S1       | firebase.json                                                                        | 53   |
+| DEBT-3213 | App Check globally disabled on all 5 user-callable functi... | S1       | functions/src/index.ts                                                               | 84   |
+| DEBT-3162 | migrateAnonymousUserData bypasses security wrapper — reCA... | S1       | functions/src/index.ts                                                               | 486  |
+| DEBT-3163 | Node.js engine version mismatch — package.json says node ... | S1       | functions/package.json                                                               | 14   |
+| DEBT-3164 | Rate limiter reset() uses wrong Firestore document key — ... | S1       | functions/src/firestore-rate-limiter.ts                                              | 149  |
+| DEBT-3153 | Single root ErrorBoundary — no granular error boundaries ... | S1       | app/layout.tsx                                                                       | 92   |
+| DEBT-3154 | any type on Firestore DocumentSnapshot in today-page.tsx:533 | S1       | components/notebook/pages/today-page.tsx                                             | 533  |
+| DEBT-3155 | Direct client-side Firestore write in auth-context.tsx — ... | S1       | components/providers/auth-context.tsx                                                | 100  |
+| DEBT-3149 | functions/src/admin.ts has 1 ESLint error — unused variab... | S1       | functions/src/admin.ts                                                               | 2163 |
 | DEBT-0001 | Untitled                                                     | S2       | N/A                                                                                  | 0    |
 | DEBT-2132 | Untitled finding                                             | S2       | N/A                                                                                  | 0    |
 | DEBT-2180 | Date formats inconsistent across the app                     | S2       | src/components                                                                       | 0    |
@@ -69,6 +82,42 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-3141 | JS chunk at 625KB — likely contains heavy library (Leafle... | S2       | out/\_next/static/chunks/9d44679c11cfa7b4.js                                         | 0    |
 | DEBT-3142 | Source map file present in production build output           | S2       | out/\_next/static/chunks/a6dad97d9634a72d.js.map                                     | 0    |
 | DEBT-3145 | fast-xml-parser DoS via entity expansion (high severity) ... | S2       | functions/package.json                                                               | 0    |
+| DEBT-3208 | No source map upload to Sentry — production stack traces ... | S2       | next.config.mjs                                                                      | 1    |
+| DEBT-3209 | Server logger (security-logger.ts) does not strip control... | S2       | functions/src/security-logger.ts                                                     | 119  |
+| DEBT-3203 | Cross-cutting pattern: validation and security boundary g... | S2       | functions/src/security-wrapper.ts                                                    | 1    |
+| DEBT-3204 | Cross-cutting pattern: incomplete observability pipeline ... | S2       | public/manifest.json                                                                 | 1    |
+| DEBT-3201 | No automated Firestore backup/export strategy — recovery ... | S2       | firebase.json                                                                        | 72   |
+| DEBT-3202 | Anonymous user migration uses batch writes without transa... | S2       | functions/src/index.ts                                                               | 486  |
+| DEBT-3199 | 19 non-resolved S0 critical items and 383 open S1 items i... | S2       | docs/technical-debt/MASTER_DEBT.jsonl                                                | 1    |
+| DEBT-3196 | 172 duplicate source_ids in MASTER_DEBT.jsonl — deduplica... | S2       | docs/technical-debt/MASTER_DEBT.jsonl                                                | 1    |
+| DEBT-3194 | No Firestore offline persistence — offline indicator prom... | S2       | lib/firebase.ts                                                                      | 54   |
+| DEBT-3190 | Node.js runtime mismatch — firebase.json says nodejs24, f... | S2       | firebase.json                                                                        | 68   |
+| DEBT-3186 | Image optimization disabled — no alternative optimization... | S2       | next.config.mjs                                                                      | 14   |
+| DEBT-3187 | Multiple unbounded Firestore queries without limit() — de... | S2       | lib/db/meetings.ts                                                                   | 133  |
+| DEBT-3181 | Implicit localStorage persistence — no session management... | S2       | lib/firebase.ts                                                                      | 54   |
+| DEBT-3182 | Anonymous-to-auth migration has partial failure risk with... | S2       | functions/src/index.ts                                                               | 688  |
+| DEBT-3184 | Password requirements minimal — 6 characters only, no com... | S2       | components/auth/account-link-modal.tsx                                               | 45   |
+| DEBT-3185 | Account linking error messages reveal user existence for ... | S2       | lib/auth/account-linking.ts                                                          | 82   |
+| DEBT-3211 | .env.production tracked in git with Firebase config and S... | S2       | .env.production                                                                      | 1    |
+| DEBT-3179 | .gitignore pattern doesn't cover .env.production             | S2       | .gitignore                                                                           | 34   |
+| DEBT-3175 | No field-level validation in rules for admin-writable pub... | S2       | firestore.rules                                                                      | 104  |
+| DEBT-3176 | Soft-deleted documents still readable via Firestore rules    | S2       | firestore.rules                                                                      | 34   |
+| DEBT-3177 | Unbounded reads on public collections (slogans, sober_liv... | S2       | components/growth/DailySloganWidget.tsx                                              | 26   |
+| DEBT-3212 | No Content-Security-Policy header configured                 | S2       | firebase.json                                                                        | 30   |
+| DEBT-3172 | HSTS missing preload and includeSubDomains directives        | S2       | firebase.json                                                                        | 37   |
+| DEBT-3165 | reCAPTCHA site key hard-coded as fallback literal in reca... | S2       | functions/src/recaptcha-verify.ts                                                    | 66   |
+| DEBT-3166 | saveInventoryEntry uses wrong TypeScript generic — typeof... | S2       | functions/src/index.ts                                                               | 356  |
+| DEBT-3167 | Zod data fields are unbounded z.record — saveJournalEntry... | S2       | functions/src/schemas.ts                                                             | 32   |
+| DEBT-3168 | Admin functions have no enforceAppCheck in onCall config     | S2       | functions/src/admin.ts                                                               | 707  |
+| DEBT-3169 | Rate limiter console.warn leaks un-hashed user ID in logs    | S2       | functions/src/firestore-rate-limiter.ts                                              | 108  |
+| DEBT-3170 | migrateAnonymousUserData logs raw UIDs to Sentry (PII in ... | S2       | functions/src/index.ts                                                               | 556  |
+| DEBT-3156 | Console.log/error debug statements in production componen... | S2       | components/notebook/pages/today-page.tsx                                             | 639  |
+| DEBT-3157 | useEffect async fetch without cleanup — memory leak in to... | S2       | components/notebook/pages/today-page.tsx                                             | 740  |
+| DEBT-3158 | Firestore onSnapshot listener churns on every keystroke —... | S2       | components/notebook/pages/today-page.tsx                                             | 605  |
+| DEBT-3159 | Hardcoded magic numbers and placeholder content in meetin... | S2       | components/widgets/meeting-countdown.tsx                                             | 19   |
+| DEBT-3160 | Hardcoded external URLs duplicated across 5 files            | S2       | components/notebook/pages/today-page.tsx                                             | 903  |
+| DEBT-3148 | 1360 ESLint warnings (0 errors) across root codebase         | S2       | eslint.config.mjs                                                                    | 0    |
+| DEBT-3150 | 30 markdownlint errors across docs/ — broken links, empha... | S2       | docs/                                                                                | 0    |
 | DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components                                                                       | 0    |
 | DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src                                                                                  | 0    |
 | DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs                                                                                 | 0    |
@@ -95,6 +144,23 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-3144 | Next.js build warns about workspace root detection           | S3       | next.config.ts                                                                       | 0    |
 | DEBT-3146 | 26 high-severity vulns in dev/build dependencies (eslint,... | S3       | package.json                                                                         | 0    |
 | DEBT-3147 | No engines field in package.json — Node version not pinned   | S3       | package.json                                                                         | 0    |
+| DEBT-3205 | Domain 18 (Admin Panel, MEDIUM risk) produced 0 findings ... | S3       | docs/audits/system-test/audit-2026-02-19/domains/d18-admin.jsonl                     | 1    |
+| DEBT-3206 | 7 checks across 3 domains not fully executable in static ... | S3       | docs/audits/system-test/audit-2026-02-19/PLAN_INDEX.md                               | 1    |
+| DEBT-3200 | Multi-AI audit (maa-2026-02-17) incomplete — 65 unified f... | S3       | docs/audits/multi-ai/maa-2026-02-17-182d43/final/UNIFIED-FINDINGS.jsonl              | 1    |
+| DEBT-3197 | 144 TDMS items with empty descriptions and 1 untitled item   | S3       | docs/technical-debt/MASTER_DEBT.jsonl                                                | 1    |
+| DEBT-3198 | 298 RESOLVED items missing resolved_at timestamp             | S3       | docs/technical-debt/MASTER_DEBT.jsonl                                                | 1    |
+| DEBT-3195 | PWA manifest icon sizes mismatch — declares 192x192/512x5... | S3       | public/manifest.json                                                                 | 11   |
+| DEBT-3193 | CANON system uses JSONL output model — templates referenc... | S3       | docs/templates/CANON_QUICK_REFERENCE.md                                              | 1    |
+| DEBT-3191 | Stale functions/tsconfig.dev.json references non-existent... | S3       | functions/tsconfig.dev.json                                                          | 1    |
+| DEBT-3192 | Root package.json has no engines field — no Node.js versi... | S3       | package.json                                                                         | 1    |
+| DEBT-3188 | Inline SVG data URIs in style props for book texture effects | S3       | components/notebook/book-cover.tsx                                                   | 246  |
+| DEBT-3189 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                                                   | 1    |
+| DEBT-3180 | Sentry DSN committed in .env.production                      | S3       | .env.production                                                                      | 20   |
+| DEBT-3178 | No rate limiting at Firestore rules level                    | S3       | firestore.rules                                                                      | 1    |
+| DEBT-3173 | Referrer-Policy set to strict-origin could be stricter       | S3       | firebase.json                                                                        | 49   |
+| DEBT-3161 | Missing or unstable key props in map renders                 | S3       | components/growth/SpotCheckCard.tsx                                                  | 207  |
+| DEBT-3151 | 76 madge warnings during circular dependency check (no ci... | S3       | lib/                                                                                 | 0    |
+| DEBT-3152 | Pattern compliance --all reports 1137 new warnings across... | S3       | scripts/check-pattern-compliance.js                                                  | 0    |
 | DEBT-2457 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | S0       | All 57 files with AI Instructions sections                                           | 0    |
 | DEBT-2458 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | S0       | home/user/sonash-v0/.claude/hooks/commit-tracker.js                                  | 0    |
 | DEBT-2459 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | S0       | home/user/sonash-v0/.claude/hooks/auto-save-context.js                               | 0    |

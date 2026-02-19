@@ -30,8 +30,8 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 2672  |
-| Open Items      | 2102  |
+| Total Items     | 2738  |
+| Open Items      | 2168  |
 | Resolved        | 298   |
 | False Positives | 272   |
 | Resolution Rate | 11%   |
@@ -42,7 +42,7 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 83    |
+| NEW            | 149   |
 | VERIFIED       | 2019  |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 298   |
@@ -55,9 +55,9 @@ distribution.
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 40    | 1%         |
-| S1 (High)     | 439   | 16%        |
-| S2 (Medium)   | 1257  | 47%        |
-| S3 (Low)      | 936   | 35%        |
+| S1 (High)     | 452   | 17%        |
+| S2 (Medium)   | 1293  | 47%        |
+| S3 (Low)      | 953   | 35%        |
 
 ---
 
@@ -65,12 +65,12 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1557  |
-| documentation            | 468   |
-| process                  | 338   |
+| code-quality             | 1589  |
+| documentation            | 470   |
+| process                  | 340   |
 | ai-optimization          | 118   |
-| security                 | 88    |
-| performance              | 52    |
+| security                 | 112   |
+| performance              | 58    |
 | refactoring              | 22    |
 | enhancements             | 20    |
 | engineering-productivity | 9     |
@@ -102,7 +102,7 @@ distribution.
 - **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
   (N/A:0)
 
-### S1 High Priority Alerts (397)
+### S1 High Priority Alerts (410)
 
 - **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -125,7 +125,7 @@ distribution.
 - **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 387 more S1 items_
+_...and 400 more S1 items_
 
 ---
 
@@ -133,8 +133,8 @@ _...and 387 more S1 items_
 
 | Metric               | Value     |
 | -------------------- | --------- |
-| Verification Queue   | 83 items  |
-| Avg Age (Open Items) | 14 days   |
+| Verification Queue   | 149 items |
+| Avg Age (Open Items) | 13 days   |
 | Oldest Item Age      | 20 days   |
 | Oldest Item          | DEBT-0002 |
 
@@ -144,7 +144,7 @@ _...and 387 more S1 items_
 
 | Source  | Count |
 | ------- | ----- |
-| unknown | 2672  |
+| unknown | 2738  |
 
 ---
 
