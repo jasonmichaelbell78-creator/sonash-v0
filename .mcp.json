@@ -1,10 +1,6 @@
 {
-  "_note_auto_discovered_plugins": "Firebase, GitHub, Context7, Serena, and Episodic Memory MCP tools are auto-discovered by Claude Code's plugin system and do NOT need entries here.",
+  "_note_auto_discovered_plugins": "Firebase, GitHub, Context7, Playwright, Serena, and Episodic Memory MCP tools are auto-discovered by Claude Code's plugin system and do NOT need entries here. Serena plugin is disabled via settings.json.",
   "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
-    },
     "memory": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"]
