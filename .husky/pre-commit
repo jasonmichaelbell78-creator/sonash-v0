@@ -4,8 +4,11 @@
 
 # Log all output to .git/hook-output.log for debugging
 # (hook stderr is often invisible in CI/agent contexts like Claude Code)
+# Note: Husky v9 runs hooks with `sh -e`, so must be POSIX-compatible.
+# Cannot use bash process substitution >() since sh doesn't support it.
+# Simple redirect to log file; caller can read the log after.
 HOOK_OUTPUT_LOG="$(git rev-parse --show-toplevel 2>/dev/null || echo .)/.git/hook-output.log"
-exec > >(tee "$HOOK_OUTPUT_LOG") 2>&1
+exec > "$HOOK_OUTPUT_LOG" 2>&1
 
 # Shared guard: any SKIP_ override requires SKIP_REASON (Session #162)
 require_skip_reason() {
