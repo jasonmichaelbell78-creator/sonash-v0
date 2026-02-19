@@ -11,9 +11,9 @@
 | 2      | Build & Compilation           | 1       | LOW    | complete | 4        | d02-build.jsonl      |
 | 3      | Test Suite                    | 1       | LOW    | complete | 4        | d03-tests.jsonl      |
 | 4      | Dependency Health             | 1       | MEDIUM | complete | 4        | d04-deps.jsonl       |
-| 5      | Lint & Static Analysis        | 2       | LOW    | pending  | -        | d05-lint.jsonl       |
-| 6      | UI Components & Accessibility | 2       | MEDIUM | pending  | -        | d06-ui.jsonl         |
-| 7      | Cloud Functions               | 2       | HIGH   | pending  | -        | d07-functions.jsonl  |
+| 5      | Lint & Static Analysis        | 2       | LOW    | complete | 5        | d05-lint.jsonl       |
+| 6      | UI Components & Accessibility | 2       | MEDIUM | complete | 9        | d06-ui.jsonl         |
+| 7      | Cloud Functions               | 2       | HIGH   | complete | 10       | d07-functions.jsonl  |
 | 8      | Security Headers & CSP        | 3       | HIGH   | pending  | -        | d08-security.jsonl   |
 | 9      | Firestore Rules               | 3       | HIGH   | pending  | -        | d09-rules.jsonl      |
 | 10     | Environment & Config          | 3       | MEDIUM | pending  | -        | d10-env.jsonl        |
@@ -32,12 +32,13 @@
 
 ## Session Log
 
-| Session | Date       | Domains | Duration | Notes                                               |
-| ------- | ---------- | ------- | -------- | --------------------------------------------------- |
-| 1       | 2026-02-19 | 0-4     | ~35 min  | 16 findings (0 S0, 1 S1, 7 S2, 8 S3). All accepted. |
+| Session | Date       | Domains | Duration | Notes                                                |
+| ------- | ---------- | ------- | -------- | ---------------------------------------------------- |
+| 1       | 2026-02-19 | 0-4     | ~35 min  | 16 findings (0 S0, 1 S1, 7 S2, 8 S3). All accepted.  |
+| 2       | 2026-02-19 | 5-7     | ~25 min  | 24 findings (0 S0, 8 S1, 13 S2, 3 S3). All accepted. |
 
 ## Recovery Info
 
-- **Last completed domain:** 4 (Dependency Health)
-- **Resume from:** Domain 5
+- **Last completed domain:** 7 (Cloud Functions)
+- **Resume from:** Domain 8
 - **Checkpoint commit:** (see below)
