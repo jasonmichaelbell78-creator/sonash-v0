@@ -1,0 +1,43 @@
+# System Test Plan Index — audit-2026-02-19
+
+**Started:** 2026-02-19T01:24:58Z **Status:** IN PROGRESS **Skill Version:** 4.0
+
+## Domain Progress
+
+| Domain | Name                          | Session | Risk   | Status   | Findings | JSONL File           |
+| ------ | ----------------------------- | ------- | ------ | -------- | -------- | -------------------- |
+| 0      | Self-Validation               | 1       | NONE   | complete | 0 (pass) | (gate only)          |
+| 1      | Prerequisites                 | 1       | LOW    | complete | 4        | d01-prereqs.jsonl    |
+| 2      | Build & Compilation           | 1       | LOW    | complete | 4        | d02-build.jsonl      |
+| 3      | Test Suite                    | 1       | LOW    | complete | 4        | d03-tests.jsonl      |
+| 4      | Dependency Health             | 1       | MEDIUM | complete | 4        | d04-deps.jsonl       |
+| 5      | Lint & Static Analysis        | 2       | LOW    | pending  | -        | d05-lint.jsonl       |
+| 6      | UI Components & Accessibility | 2       | MEDIUM | pending  | -        | d06-ui.jsonl         |
+| 7      | Cloud Functions               | 2       | HIGH   | pending  | -        | d07-functions.jsonl  |
+| 8      | Security Headers & CSP        | 3       | HIGH   | pending  | -        | d08-security.jsonl   |
+| 9      | Firestore Rules               | 3       | HIGH   | pending  | -        | d09-rules.jsonl      |
+| 10     | Environment & Config          | 3       | MEDIUM | pending  | -        | d10-env.jsonl        |
+| 11     | Auth & Session Management     | 3       | HIGH   | pending  | -        | d11-auth.jsonl       |
+| 12     | Performance                   | 4       | MEDIUM | pending  | -        | d12-perf.jsonl       |
+| 13     | Config File Consistency       | 4       | LOW    | pending  | -        | d13-config.jsonl     |
+| 14     | Documentation & Canon         | 4       | LOW    | pending  | -        | d14-docs.jsonl       |
+| 15     | PWA & Offline                 | 4       | MEDIUM | pending  | -        | d15-pwa.jsonl        |
+| 16     | TDMS Integrity                | 4       | LOW    | pending  | -        | d16-tdms.jsonl       |
+| 17     | Prior Audit Findings          | 5       | MEDIUM | pending  | -        | d17-prior.jsonl      |
+| 18     | Admin Panel                   | 5       | MEDIUM | pending  | -        | d18-admin.jsonl      |
+| 19     | Data Integrity & Migration    | 5       | HIGH   | pending  | -        | d19-data.jsonl       |
+| 20     | Final Report & Cross-Cutting  | 6       | NONE   | pending  | -        | d20-report.jsonl     |
+| 21     | Post-Test Self-Audit          | 6       | NONE   | pending  | -        | d21-self-audit.jsonl |
+| 22     | Sentry & Monitoring           | 6       | MEDIUM | pending  | -        | d22-sentry.jsonl     |
+
+## Session Log
+
+| Session | Date       | Domains | Duration | Notes                                               |
+| ------- | ---------- | ------- | -------- | --------------------------------------------------- |
+| 1       | 2026-02-19 | 0-4     | ~35 min  | 16 findings (0 S0, 1 S1, 7 S2, 8 S3). All accepted. |
+
+## Recovery Info
+
+- **Last completed domain:** 4 (Dependency Health)
+- **Resume from:** Domain 5
+- **Checkpoint commit:** (see below)
