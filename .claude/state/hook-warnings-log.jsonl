@@ -26,3 +26,4 @@
 {"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T01:10:08.843Z"}
 {"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-19T01:10:10.052Z"}
 {"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T11:46:36.139Z"}
+{"hook":"pre-commit","type":"debt-location","severity":"warning","message":"Debt files outside canonical location","action":"Move to docs/technical-debt/ or docs/audits/single-session/","timestamp":"2026-02-19T12:12:30.954Z"}
