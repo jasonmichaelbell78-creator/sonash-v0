@@ -14,7 +14,14 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const LOG_FILE = path.join(process.cwd(), ".git", "hook-output.log");
+const gitDir = (() => {
+  const envGitDir = process.env.GIT_DIR;
+  if (typeof envGitDir === "string" && envGitDir.length > 0) {
+    return path.isAbsolute(envGitDir) ? envGitDir : path.resolve(process.cwd(), envGitDir);
+  }
+  return path.join(process.cwd(), ".git");
+})();
+const LOG_FILE = path.join(gitDir, "hook-output.log");
 const MAX_AGE_MS = 60000;
 
 /**
