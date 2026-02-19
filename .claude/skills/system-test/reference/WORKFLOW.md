@@ -4,11 +4,11 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
-# Comprehensive Audit — Complete Interactive Workflow
+# System Test — Complete Interactive Workflow
 
-Full reference for the 23-domain interactive comprehensive audit skill (v4.0).
-This document describes every step, every decision point, and every interaction
-in the audit lifecycle.
+Full reference for the 23-domain interactive system test skill (v4.0). This
+document describes every step, every decision point, and every interaction in
+the audit lifecycle.
 
 ---
 
@@ -74,7 +74,7 @@ Runs on **every invocation** regardless of mode.
     → Show progress summary
     → INTERACTIVE DECISION 1: Confirm resume point
 1c. Create/verify directory structure:
-    docs/audits/comprehensive/audit-YYYY-MM-DD/
+    docs/audits/system-test/audit-YYYY-MM-DD/
     ├── PLAN_INDEX.md             (master tracking — recovery anchor)
     ├── SUMMARY.md                (final report — written at end)
     ├── unified-findings.jsonl    (merged — written at end)
@@ -226,7 +226,7 @@ Each finding gets a preliminary assignment:
 
 ```jsonl
 {
-  "id": "COMP-2026-02-18-D07-003",
+  "id": "SYST-2026-02-18-D07-003",
   "domain": 7,
   "domain_name": "Cloud Functions",
   "check_id": "7.2",
@@ -723,7 +723,7 @@ Preview what would change in MASTER_DEBT.jsonl, then ask.
   creating duplicate entries for issues already tracked.
 
   Sample new entry:
-  {"id":"COMP-2026-02-18-D07-003","severity":"S1","effort":"E2",
+  {"id":"SYST-2026-02-18-D07-003","severity":"S1","effort":"E2",
    "title":"Soft-delete TOCTOU race","source":"system-test",
    "domain":"cloud-functions","file":"functions/src/index.ts:287"}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -782,18 +782,18 @@ Checks:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  COMPREHENSIVE AUDIT COMPLETE
+  SYSTEM TEST COMPLETE
 
   Duration:   N sessions over N days
   Domains:    23/23 ✅
   Findings:   XXX accepted, XX rejected, XX deferred→resolved
 
   Report:
-    docs/audits/comprehensive/audit-2026-02-18/SUMMARY.md
+    docs/audits/system-test/audit-YYYY-MM-DD/SUMMARY.md
 
   Data:
-    docs/audits/comprehensive/audit-2026-02-18/unified-findings.jsonl
-    docs/audits/comprehensive/audit-2026-02-18/domains/ (23 files)
+    docs/audits/system-test/audit-YYYY-MM-DD/unified-findings.jsonl
+    docs/audits/system-test/audit-YYYY-MM-DD/domains/ (23 files)
 
   TDMS:
     XXX items synced to MASTER_DEBT.jsonl
@@ -862,7 +862,7 @@ Every finding across all domains uses this schema:
 
 ```jsonl
 {
-  "id": "COMP-2026-02-18-D07-003",
+  "id": "SYST-2026-02-18-D07-003",
   "domain": 7,
   "domain_name": "Cloud Functions",
   "check_id": "7.2",
@@ -895,7 +895,7 @@ Every finding across all domains uses this schema:
 
 | Field                    | Type     | Required | Description                                                                                       |
 | ------------------------ | -------- | -------- | ------------------------------------------------------------------------------------------------- |
-| `id`                     | string   | Yes      | Unique ID: `COMP-{date}-D{NN}-{NNN}`                                                              |
+| `id`                     | string   | Yes      | Unique ID: `SYST-{date}-D{NN}-{NNN}`                                                              |
 | `domain`                 | number   | Yes      | Domain number (0-22)                                                                              |
 | `domain_name`            | string   | Yes      | Human-readable domain name                                                                        |
 | `check_id`               | string   | Yes      | Which check found this (e.g., "7.2")                                                              |
