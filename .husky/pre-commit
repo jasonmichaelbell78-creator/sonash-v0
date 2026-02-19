@@ -66,6 +66,8 @@ echo "  ✅ ESLint passed (0 errors)"
 # 1b. CC check on NEW JS files (error-level, blocks new CC >15 functions)
 # Only checks newly added files (diff-filter=A) to avoid pre-existing violations.
 # Uses --no-config-lookup (ESLint 9 flat config compatible; replaces --no-eslintrc).
+# Note: xargs -r is GNU (not POSIX) but safe here — guarded by [ -n "$new_js" ]
+# and both target platforms (Linux GNU, Windows MSYS2) include GNU findutils.
 # Recommended in 5 consecutive retros (#367-#371).
 new_js=$(git diff --cached --name-only --diff-filter=A | grep '\.js$' || true)
 if [ -n "$new_js" ]; then
