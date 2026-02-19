@@ -29,3 +29,6 @@
 {"hook":"pre-commit","type":"debt-location","severity":"warning","message":"Debt files outside canonical location","action":"Move to docs/technical-debt/ or docs/audits/single-session/","timestamp":"2026-02-19T12:12:30.954Z"}
 {"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T12:48:59.571Z"}
 {"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-19T13:18:28.289Z"}
+{"hook":"pre-commit","type":"debt-location","severity":"warning","message":"Debt files outside canonical location","action":"Move to docs/technical-debt/ or docs/audits/single-session/","timestamp":"2026-02-19T16:44:31.536Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T16:45:00.943Z"}
+{"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-19T16:45:01.887Z"}
