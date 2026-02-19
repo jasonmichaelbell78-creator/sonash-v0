@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.35 **Created:** 2026-01-02 **Last Updated:** 2026-02-18
+**Document Version:** 17.37 **Created:** 2026-01-02 **Last Updated:** 2026-02-19
 
 ## Purpose
 
@@ -31,6 +31,8 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.37    | 2026-02-19               | Review #356: PR #378 R2 — GIT_DIR resolution, broken table row. 2 fixed, 3 rejected, 1 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 17.36    | 2026-02-18               | Review #355: PR #378 R1 — exit code coercion, TOCTOU race, absolute paths, system-test checklist gaps. 7 fixed, 4 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.35    | 2026-02-18               | Review #354: SonarCloud + Qodo R2 — CC reduction (extractReviewIds 22→~8 via helper extraction), nested ternary→lookup, error log sanitization (4 catches), DoS caps (range expansion + gap scan). 5 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 17.34    | 2026-02-18               | Review #353: Qodo review of check-review-archive.js — silent catch logging (5 catches), groupConsecutive sort/dedupe. 3 fixed + 2 propagation, 1 rejected (false positive).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.33    | 2026-02-17               | Overhaul: removed stale Quick Index, collapsed version history, removed Pattern Effectiveness Audit, cleaned stale placeholders, fixed JSONL data quality, added retro parsing, added archive-reviews.js + promote-patterns.js automation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -4078,5 +4080,81 @@ containment capped at 10 levels.
   preventing trim corruption — callers can't forget to pass the flag
 - Defense-in-depth for path traversal: even when the threat model doesn't
   support attacker control, cheap mitigations (depth limit) are worth adding
+
+---
+
+### Review #355: PR #378 R1 — Exit Code Coercion, TOCTOU Race, Absolute Paths, Checklist Gaps
+
+**Date:** 2026-02-18 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #378
+
+**Summary:** 11 suggestions (7 fixed, 4 rejected). Key bug fix: exit code from
+hook JSON could be string, causing `=== 0` to always fail — added `Number()`
+coercion with `Number.isFinite()` guard. TOCTOU fix: removed `existsSync` +
+`statSync` double-check, catching `ENOENT` instead. Stripped 41 absolute paths
+from agent research results. Added missing Domain 0/3/9 checks to system-test
+skill.
+
+**Patterns Identified:**
+
+1. **String-to-number coercion on exit codes**: JSON-parsed exit codes may
+   arrive as strings. `"0" === 0` is false in JS — always coerce with `Number()`
+   and guard with `Number.isFinite()`.
+2. **TOCTOU on file existence**: `existsSync()` + `statSync()` has a race
+   window. Better: single `statSync()` in try/catch, handle `ENOENT`.
+3. **Absolute paths in committed artifacts**: Agent research output contained 41
+   instances of `/home/user/sonash-v0/` — use relative paths only.
+4. **Checklist completeness**: System test domains should cover query
+   complexity/DoS (Firestore) and skipped/todo tests (test suite).
+
+**Resolution:**
+
+- Fixed: 7 items (exit code coercion, TOCTOU race, absolute paths, finding ID,
+  Domain 0 check, Domain 3 skipped tests, Domain 9 query complexity)
+- Rejected: 4 items (log exposure — log is in .gitignore; log exfiltration —
+  attacker can't influence log path; PWA caching — app is SPA not PWA; state
+  file removal — file serves a purpose)
+
+**Key Learnings:**
+
+- Hook argument JSON has no type guarantees — always coerce numeric fields
+- Prefer single-operation + catch over exists-check + operation patterns
+- Research artifacts should use relative paths for portability
+
+---
+
+### Review #356: PR #378 R2 — GIT_DIR Resolution, Broken Table Row
+
+**Date:** 2026-02-19 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #378
+
+**Summary:** 6 suggestions (2 fixed, 3 rejected, 1 deferred). Key fix: hardcoded
+`.git` path replaced with `GIT_DIR`-aware resolution for worktree and
+non-standard git directory support.
+
+**Patterns Identified:**
+
+1. **GIT_DIR env var for git directory resolution**: `process.cwd() + ".git"` is
+   fragile — fails in worktrees or when `GIT_DIR` is set. Use `GIT_DIR` env var
+   with fallback.
+2. **Auto-generated file quirks**: `DOCUMENTATION_INDEX.md` is regenerated by
+   `npm run docs:index`. Generator had a broken table row — fixed manually but
+   root cause is in the generator.
+
+**Resolution:**
+
+- Fixed: 2 items (GIT_DIR-aware path resolution, broken markdown table row)
+- Rejected: 3 items (log exposure — repeat from R1; stderr for errors — defeats
+  hook's purpose since Claude Code reads stdout; err.code guard —
+  over-engineering for Node.js fs errors)
+- Deferred: 1 item (exclude transient docs from index — requires generator
+  changes)
+
+**Key Learnings:**
+
+- Always use `GIT_DIR` env var when resolving git directory paths in hooks
+- Claude Code PostToolUse hooks communicate via stdout — stderr is invisible
+- When rejecting reviewer suggestions, verify the tool's communication protocol
+  before accepting "best practice" advice that would break functionality
 
 ---
