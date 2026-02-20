@@ -238,26 +238,32 @@ function loadExistingHashes() {
 // --- Block comment state tracking ---
 
 /**
+ * Advance index past a string-literal character, handling escapes.
+ * Returns the next index to process.
+ */
+function advanceStringChar(line, i, quoteChar) {
+  if (line[i] === "\\") return { i: i + 2, quoteChar };
+  if (line[i] === quoteChar) return { i: i + 1, quoteChar: null };
+  return { i: i + 1, quoteChar };
+}
+
+/**
  * Parse block comment state in a line up to a given position.
  * Shared implementation for both end-of-line state and position-specific queries.
- * Uses a while loop with explicit index control to avoid dead-store warnings.
  */
 function parseBlockCommentState(line, entering, stopAt) {
   let inBlock = entering;
   let quoteChar = null;
   let i = 0;
-  const end = stopAt !== undefined ? Math.min(stopAt, line.length - 1) : line.length - 1;
+  const end = stopAt === undefined ? line.length - 1 : Math.min(stopAt, line.length - 1);
   while (i < end) {
-    const ch = line[i];
     if (quoteChar) {
-      if (ch === "\\") {
-        i += 2;
-        continue;
-      }
-      if (ch === quoteChar) quoteChar = null;
-      i++;
+      const result = advanceStringChar(line, i, quoteChar);
+      i = result.i;
+      quoteChar = result.quoteChar;
       continue;
     }
+    const ch = line[i];
     if (!inBlock && QUOTE_CHARS.has(ch)) {
       quoteChar = ch;
       i++;

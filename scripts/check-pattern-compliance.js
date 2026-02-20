@@ -1187,7 +1187,6 @@ const ANTI_PATTERNS = [
           /join\s*\(/.test(line) ||
           /`[^`]{0,200}\$\{/.test(line) ||
           /\/\S{0,100}session/.test(line) ||
-          line.includes(".json") ||
           line.includes("writeFileSync") ||
           line.includes("readFileSync");
         if (hasSessionId && hasPathUse) {
@@ -1196,7 +1195,8 @@ const ANTI_PATTERNS = [
           const hasValidation =
             (/(?:validate|isValid|assert)\s*\(/.test(context) &&
               /session[_-]?[Ii]d/.test(context)) ||
-            /session[_-]?[Ii]d\s*\.\s*(?:match|test)/.test(context) ||
+            /session[_-]?[Ii]d\s*\.\s*(?:match|test)\s*\(/.test(context) ||
+            /\/\^[^/]+\/\.\s*test\s*\(\s*session[_-]?[Ii]d\s*\)/.test(context) ||
             (/(?:\/\^|new RegExp)/.test(context) && /session/.test(context));
           if (!hasValidation) {
             matches.push({

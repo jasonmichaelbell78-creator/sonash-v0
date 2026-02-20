@@ -138,7 +138,11 @@ function isStateFileValid(sf) {
       .filter((l) => l.trim().length > 0);
     if (lines.length === 0) return false;
     for (const line of lines) {
-      JSON.parse(line);
+      try {
+        JSON.parse(line);
+      } catch {
+        return false;
+      }
     }
     return true;
   }

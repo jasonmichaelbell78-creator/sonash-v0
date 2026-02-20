@@ -45,7 +45,7 @@ const ACTIVE_STATUSES = new Set(["NEW", "VERIFIED", "IN_PROGRESS", "PENDING"]);
 function parseBacklogItems(content) {
   const items = [];
   const corruptLines = [];
-  const normalized = content.replaceAll("\uFEFF", "");
+  const normalized = content.replace(/\uFEFF/g, "");
   const lines = normalized.split(/\r?\n/);
 
   for (let i = 0; i < lines.length; i++) {
@@ -61,9 +61,16 @@ function parseBacklogItems(content) {
         continue;
       }
 
-      items.push(entry);
+      items.push({
+        ...entry,
+        severity: String(entry.severity).toUpperCase(),
+        status: entry.status ? String(entry.status).toUpperCase() : entry.status,
+      });
     } catch (err) {
-      corruptLines.push({ lineNumber: i + 1, error: err.message });
+      corruptLines.push({
+        lineNumber: i + 1,
+        error: err && err.message ? err.message : String(err),
+      });
     }
   }
 

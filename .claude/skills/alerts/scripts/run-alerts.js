@@ -2232,39 +2232,39 @@ function checkHookHealth() {
 
       // Extract check results from output
       const checkPatterns = [
-        { name: "ESLint", pass: /ESLint passed/, fail: /ESLint has errors/ },
-        { name: "lint-staged", pass: /Lint-staged passed/, fail: /Lint-staged failed/ },
+        { name: "ESLint", pass: /ESLint passed/i, fail: /ESLint has errors/i },
+        { name: "lint-staged", pass: /Lint-staged passed/i, fail: /Lint-staged failed/i },
         {
           name: "pattern-compliance",
-          pass: /Pattern compliance passed/,
-          fail: /Pattern compliance failed/,
+          pass: /Pattern compliance passed/i,
+          fail: /Pattern compliance failed/i,
         },
-        { name: "tests", pass: /Tests passed/, fail: /Tests failed/ },
+        { name: "tests", pass: /Tests passed/i, fail: /Tests failed/i },
         {
           name: "cross-doc-deps",
-          pass: /Cross-document dependencies satisfied/,
-          fail: /Cross-document dependency check failed/,
+          pass: /Cross-document dependencies satisfied/i,
+          fail: /Cross-document dependency check failed/i,
         },
         {
           name: "doc-index",
-          pass: /Documentation index updated/,
-          fail: /Documentation index generation failed/,
+          pass: /Documentation index updated/i,
+          fail: /Documentation index generation failed/i,
         },
-        { name: "doc-headers", pass: /Document headers validated/, fail: /check-doc-headers/ },
+        { name: "doc-headers", pass: /Document headers validated/i, fail: /check-doc-headers/i },
         {
           name: "audit-s0s1",
-          pass: /Audit S0\/S1 validation passed/,
-          fail: /S0\/S1 validation failed/,
+          pass: /Audit S0\/S1 validation passed/i,
+          fail: /S0\/S1 validation failed/i,
         },
         {
           name: "debt-schema",
-          pass: /Technical debt schema passed/,
-          fail: /Technical debt schema validation failed/,
+          pass: /Technical debt schema passed/i,
+          fail: /Technical debt schema validation failed/i,
         },
         {
           name: "agent-compliance",
-          pass: /Agent compliance check passed/,
-          fail: /Agent compliance.*failed/,
+          pass: /Agent compliance check passed/i,
+          fail: /Agent compliance.*failed/i,
         },
       ];
 
@@ -2311,9 +2311,10 @@ function checkHookHealth() {
   }
 
   // --- 5. Compute metrics ---
-  const failureRate7d = warnings7d.filter(
-    (w) => w.severity === "error" || w.severity === "warning"
-  ).length;
+  const failureRate7d = warnings7d.filter((w) => {
+    const sev = String(w.severity || "").toLowerCase();
+    return sev === "error" || sev === "warning";
+  }).length;
   const overrideRate7d = overrides7d.length;
 
   // False-positive indicator: high override-to-warning ratio suggests checks are too aggressive

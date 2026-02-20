@@ -499,7 +499,10 @@ function loadJsonl(filePath) {
     const stat = fs.statSync(filePath);
     if (stat.size > 10 * 1024 * 1024) return [];
     const content = fs.readFileSync(filePath, "utf8");
-    const lines = content.trim().split("\n").filter(Boolean);
+    const lines = content
+      .split("\n")
+      .map((l) => l.replace(/\r$/, ""))
+      .filter((l) => l.trim().length > 0);
     let skipped = 0;
     const results = [];
     for (const line of lines) {

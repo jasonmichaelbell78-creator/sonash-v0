@@ -87,15 +87,40 @@ function createStateManager(rootDir, isSafeToWrite) {
         // Rotate: keep most recent MAX_ENTRIES - 1, then add new
         const trimmed = existing.slice(-(MAX_ENTRIES - 1));
         const tmpPath = STATE_FILE + ".tmp";
+        const bakPath = STATE_FILE + ".bak";
         if (!isSafeToWrite(tmpPath)) return false;
+        if (!isSafeToWrite(bakPath)) return false;
         const content = trimmed.map((e) => JSON.stringify(e)).join("\n") + "\n" + line;
         fs.writeFileSync(tmpPath, content, "utf8");
-        if (fs.existsSync(STATE_FILE)) fs.rmSync(STATE_FILE, { force: true });
         try {
+          if (fs.existsSync(STATE_FILE)) {
+            try {
+              fs.rmSync(bakPath, { force: true });
+            } catch {
+              /* ignore */
+            }
+            fs.renameSync(STATE_FILE, bakPath);
+          }
           fs.renameSync(tmpPath, STATE_FILE);
+          try {
+            fs.rmSync(bakPath, { force: true });
+          } catch {
+            /* ignore */
+          }
         } catch {
-          fs.copyFileSync(tmpPath, STATE_FILE);
-          fs.rmSync(tmpPath, { force: true });
+          try {
+            if (fs.existsSync(bakPath) && !fs.existsSync(STATE_FILE)) {
+              fs.renameSync(bakPath, STATE_FILE);
+            }
+          } catch {
+            /* ignore */
+          }
+          try {
+            fs.rmSync(tmpPath, { force: true });
+          } catch {
+            /* ignore */
+          }
+          return false;
         }
       } else {
         if (!isSafeToWrite(STATE_FILE)) {

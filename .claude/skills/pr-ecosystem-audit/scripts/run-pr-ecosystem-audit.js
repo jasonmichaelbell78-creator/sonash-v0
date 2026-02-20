@@ -174,7 +174,20 @@ for (const checker of checkers) {
     const findingCount = result.findings.length;
     console.error(`    ✓ ${categoryCount} categories, ${findingCount} findings`);
   } catch (err) {
-    console.error(`    ✗ ${domainName} failed: ${err.message || err}`);
+    const msg = err && err.message ? err.message : String(err);
+    console.error(`    ✗ ${domainName} failed: ${msg}`);
+
+    allFindings.push({
+      id: `PEA-DOMAIN-FAIL-${domainName}`,
+      category: "audit_runtime",
+      domain: domainName,
+      severity: "error",
+      message: `Domain checker failed: ${DOMAIN_LABELS[domainName] || domainName}`,
+      details: msg.slice(0, 500),
+      impactScore: 90,
+      frequency: 1,
+      blastRadius: 5,
+    });
   }
 }
 

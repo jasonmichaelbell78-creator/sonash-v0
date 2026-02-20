@@ -214,7 +214,7 @@ function checkFileLocation(filePath) {
   const fileName = basename(filePath);
 
   // Skip archived files — they are intentionally in docs/archive/
-  if (relativePath.includes("archive/")) {
+  if (relativePath.startsWith("docs/archive/")) {
     return findings;
   }
 

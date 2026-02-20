@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.42 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
+**Document Version:** 17.43 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
 
 ## Purpose
 
@@ -1513,6 +1513,55 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #359: PR #379 R5 — CC Helper Extraction, Checker Failure Surfacing, CRLF Propagation, .bak Rotation (2026-02-20)
+
+**Source:** SonarCloud + Qodo (Round 3 on this branch) **PR/Branch:** PR #379 /
+claude/cherry-pick-commits-thZGO **Suggestions:** 22 total + 3 propagation
+(Critical: 1, Major: 4, Minor: 10, Trivial: 1, Rejected: 8 Info false positives,
+Duplicate: 1) (Fixed: 14 + 3 propagation, Rejected: 8, Duplicate: 1)
+
+**Patterns Identified:**
+
+1. **CC regression from helper merge** (CRITICAL): Merging two CC-17/18
+   functions into one shared `parseBlockCommentState` created a CC-19 function —
+   worse than the originals. Fix: extract `advanceStringChar` sub-helper per
+   Template 30. **Root cause**: Template 30 verification checklist ("run CC
+   check on entire file after extraction") was not executed in Round 2.
+2. **CRLF propagation miss across loadJsonl copies** (MINOR): Fixed CRLF in
+   effectiveness-metrics.js but 3 identical `loadJsonl` functions in
+   process-compliance.js, feedback-integration.js, pattern-lifecycle.js were
+   missed. **Root cause**: Step 5.6 propagation check was skipped in Round 2
+   because the protocol wasn't followed.
+3. **Silent checker failures in audit runner** (MAJOR): When a domain checker
+   threw, the error was logged to stderr but no finding was created — the audit
+   report showed a clean pass. Fix: push a high-severity `PEA-DOMAIN-FAIL-*`
+   finding into allFindings on catch.
+4. **Case-insensitive severity normalization** (MAJOR): JSONL entries with
+   lowercase `s1` or `warning` were silently ignored by filters checking for
+   uppercase. Two separate instances: backlog parser and alerts failureRate7d.
+
+**Resolution:**
+
+- Fixed: 17 items (14 direct + 3 propagation)
+- Rejected: 8 items (TODO false positives in TODO-extractor script)
+- Duplicate: 1 item (Qodo #12 = incremental variant of #7)
+- Deferred: 0
+
+**Key Learnings:**
+
+- Always run CC check on the ENTIRE file after extracting helpers, not just the
+  refactored function. A merge that reduces two 17+18 CC functions to one 19 CC
+  function is a regression, not an improvement.
+- The `/pr-review` protocol exists because every skipped step costs a future
+  review round. Rounds 1-2 skipped the protocol entirely, causing Round 3 to
+  catch propagation misses and CC regressions that the protocol would have
+  prevented.
+- When fixing a JSONL parsing issue (CRLF), always `grep -rn "loadJsonl"` to
+  find ALL copies. The pr-ecosystem-audit checkers have 6 nearly-identical
+  `loadJsonl` functions — a dedup opportunity for future refactoring.
 
 ---
 
