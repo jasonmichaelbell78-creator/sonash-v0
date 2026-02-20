@@ -4325,3 +4325,37 @@ replaceAll per SonarCloud es2021 rules.
 - Always validate env vars with trim check, not just truthiness
 
 ---
+
+### Review #360: PR #379 R6 — Depth Cap, Evidence Wrapping, Fallback Keys
+
+**Date:** 2026-02-20 **Source:** Qodo Security + PR Suggestions **PR/Branch:**
+PR #379
+
+**Summary:** 7 suggestions → 3 unique after dedup. 3 fixed, 4 rejected
+(compliance repeat x1, impossible types x1, replaceAll compat x1,
+over-engineered path guard x1). Key fixes: depth cap on canonicalize to prevent
+algorithmic DoS, non-array evidence wrapping to prevent data loss, richer
+fallback keys for unserializable objects.
+
+**Patterns Identified:**
+
+1. **Always cap recursive traversal depth**: Even when input is "trusted" JSONL,
+   adding a depth parameter is cheap insurance against DoS. Cap at 20 levels.
+2. **Wrap non-array scalars defensively**: When merging arrays, if existing
+   value is a non-null scalar, wrap it in `[value]` rather than discarding.
+3. **Qodo repeat rejection pattern**: Same Date/RegExp/Map/Set suggestion
+   rejected 4 consecutive rounds (R3-R6) — impossible from JSON.parse.
+
+**Resolution:**
+
+- Fixed: 3 items (depth cap, evidence wrapping, richer fallback key)
+- Rejected: 4 items (compliance repeat, impossible types, replaceAll compat,
+  over-engineered path guard)
+
+**Key Learnings:**
+
+- Recursive traversal functions should always have a depth parameter
+- Defensive wrapping of non-array values prevents silent data loss
+- Track repeated rejections to identify persistent false positive patterns
+
+---

@@ -177,16 +177,18 @@ function isCrossSourceMatch(a, b) {
 }
 
 // Canonicalize a value for order-independent deep equality comparison
-function canonicalize(v, seen = new WeakSet()) {
+// depth parameter caps recursion to prevent algorithmic DoS from deeply nested input
+function canonicalize(v, seen = new WeakSet(), depth = 0) {
+  if (depth > 20) return "[TooDeep]";
   if (!v || typeof v !== "object") return v;
   if (seen.has(v)) return "[Circular]";
   seen.add(v);
   try {
-    if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen));
+    if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen, depth + 1));
     const out = Object.create(null);
     for (const k of Object.keys(v).sort()) {
       if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
-      out[k] = canonicalize(v[k], seen);
+      out[k] = canonicalize(v[k], seen, depth + 1);
     }
     return out;
   } finally {
@@ -201,14 +203,21 @@ function evidenceToKey(e) {
   try {
     return `json:${JSON.stringify(canonicalize(e))}`;
   } catch {
-    return `[unserializable:${Object.prototype.toString.call(e)}]`;
+    const keys = (() => {
+      try {
+        return Object.keys(e).sort().join(",");
+      } catch {
+        return "";
+      }
+    })();
+    return `[unserializable:${Object.prototype.toString.call(e)}:keys=${keys}]`;
   }
 }
 
 // Merge evidence arrays with deep deduplication
 function mergeEvidence(existing, incoming) {
   if (!Array.isArray(incoming)) return existing;
-  const base = Array.isArray(existing) ? existing : [];
+  const base = Array.isArray(existing) ? existing : existing == null ? [] : [existing];
   const seen = new Set(base.map(evidenceToKey));
   const added = [];
   for (const e of incoming) {
