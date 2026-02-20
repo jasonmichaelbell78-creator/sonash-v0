@@ -78,7 +78,7 @@ function gatherPrRoundCounts(reviewsJsonl) {
  * Compute average fix ratio from metrics JSONL entries.
  */
 function computeAvgFixRatio(metricsJsonl) {
-  if (metricsJsonl.length === 0) return 0;
+  if (metricsJsonl.length === 0) return null;
 
   const ratios = metricsJsonl
     .map((m) => m.fix_ratio ?? m.fixRatio)
@@ -87,7 +87,7 @@ function computeAvgFixRatio(metricsJsonl) {
 
   return ratios.length > 0
     ? Math.round((ratios.reduce((a, b) => a + b, 0) / ratios.length) * 100) / 100
-    : 0;
+    : null;
 }
 
 /**
@@ -95,13 +95,18 @@ function computeAvgFixRatio(metricsJsonl) {
  */
 function computeChurnPct(learnings) {
   const churnMatches = learnings.match(/avoidable.*?(\d+)%/gi) || [];
-  if (churnMatches.length === 0) return 0;
+  if (churnMatches.length === 0) return null;
 
-  const churnValues = churnMatches.map((m) => {
-    const numMatch = m.match(/(\d+)%/);
-    return numMatch ? parseInt(numMatch[1], 10) : 0;
-  });
-  return Math.round(churnValues.reduce((a, b) => a + b, 0) / churnValues.length);
+  const churnValues = churnMatches
+    .map((m) => {
+      const numMatch = m.match(/(\d+)%/);
+      return numMatch ? parseInt(numMatch[1], 10) : null;
+    })
+    .filter((v) => typeof v === "number" && Number.isFinite(v));
+
+  return churnValues.length > 0
+    ? Math.round(churnValues.reduce((a, b) => a + b, 0) / churnValues.length)
+    : null;
 }
 
 /**
@@ -162,13 +167,23 @@ function checkReviewCycleEfficiency(reviewsJsonl, metricsJsonl, learnings, findi
   const churnPct = computeChurnPct(learnings);
   const bySource = buildBySourceBreakdown(reviewsJsonl);
 
-  const r1 = scoreMetric(avgRounds, bench.avg_rounds_per_pr, "lower-is-better");
-  const r2 = scoreMetric(avgFixRatio, bench.fix_ratio, "lower-is-better");
-  const r3 = scoreMetric(churnPct, bench.churn_pct, "lower-is-better");
+  const metricResults = [
+    roundCounts.length > 0
+      ? scoreMetric(avgRounds, bench.avg_rounds_per_pr, "lower-is-better")
+      : null,
+    avgFixRatio !== null ? scoreMetric(avgFixRatio, bench.fix_ratio, "lower-is-better") : null,
+    churnPct !== null ? scoreMetric(churnPct, bench.churn_pct, "lower-is-better") : null,
+  ].filter(Boolean);
 
-  const avgScore = Math.round((r1.score + r2.score + r3.score) / 3);
+  const avgScore =
+    metricResults.length > 0
+      ? Math.round(metricResults.reduce((sum, r) => sum + r.score, 0) / metricResults.length)
+      : 0;
 
-  pushCycleEfficiencyFindings(findings, r1, churnPct, avgRounds, roundCounts, bench);
+  const r1 = metricResults[0] || { score: 0, rating: "poor" };
+  if (churnPct !== null) {
+    pushCycleEfficiencyFindings(findings, r1, churnPct, avgRounds, roundCounts, bench);
+  }
 
   return {
     score: avgScore,

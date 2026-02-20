@@ -182,6 +182,8 @@ function createPatchGenerator(rootDir) {
   function getNextDebtId() {
     try {
       const debtPath = path.join(rootDir, "docs", "technical-debt", "MASTER_DEBT.jsonl");
+      const stat = fs.statSync(debtPath);
+      if (stat.size > 5 * 1024 * 1024) return `DEBT-${Date.now()}`;
       const content = fs.readFileSync(debtPath, "utf8");
       const lines = content.trim().split("\n").filter(Boolean);
       let maxId = 0;

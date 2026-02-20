@@ -92,6 +92,14 @@ function createStateManager(rootDir, isSafeToWrite) {
         if (!isSafeToWrite(bakPath)) return false;
         const content = trimmed.map((e) => JSON.stringify(e)).join("\n") + "\n" + line;
         fs.writeFileSync(tmpPath, content, "utf8");
+        const safeRename = (src, dest) => {
+          try {
+            fs.renameSync(src, dest);
+          } catch {
+            fs.copyFileSync(src, dest);
+            fs.unlinkSync(src);
+          }
+        };
         try {
           if (fs.existsSync(STATE_FILE)) {
             try {
@@ -99,9 +107,9 @@ function createStateManager(rootDir, isSafeToWrite) {
             } catch {
               /* ignore */
             }
-            fs.renameSync(STATE_FILE, bakPath);
+            safeRename(STATE_FILE, bakPath);
           }
-          fs.renameSync(tmpPath, STATE_FILE);
+          safeRename(tmpPath, STATE_FILE);
           try {
             fs.rmSync(bakPath, { force: true });
           } catch {
@@ -110,7 +118,7 @@ function createStateManager(rootDir, isSafeToWrite) {
         } catch {
           try {
             if (fs.existsSync(bakPath) && !fs.existsSync(STATE_FILE)) {
-              fs.renameSync(bakPath, STATE_FILE);
+              safeRename(bakPath, STATE_FILE);
             }
           } catch {
             /* ignore */

@@ -155,6 +155,7 @@ function countEnforcementIssues(rootDir) {
   } catch (err) {
     const output = `${(err.stdout || "").toString()}\n${(err.stderr || "").toString()}`;
     const violations = output.match(/\[(?:error|warning)\]/gi) || [];
+    if (violations.length === 0) return 1;
     return violations.length;
   }
 }
@@ -163,7 +164,7 @@ function countEnforcementIssues(rootDir) {
 function computeGraduationRate(rootDir) {
   const warnedFilesPath = path.join(rootDir, ".claude", "state", "warned-files.json");
   try {
-    if (!fs.existsSync(warnedFilesPath)) return 0;
+    if (!fs.existsSync(warnedFilesPath)) return 50;
     const warned = JSON.parse(fs.readFileSync(warnedFilesPath, "utf8"));
     const total = Object.keys(warned).length;
     const graduated = Object.values(warned).filter(

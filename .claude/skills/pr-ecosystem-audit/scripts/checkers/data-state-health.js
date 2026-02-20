@@ -70,8 +70,12 @@ function extractMaxReviewId(reviewLines) {
   return reviewLines.reduce((max, line) => {
     try {
       const entry = JSON.parse(line);
-      const match = (entry.id || "").match(/(\d+)/);
-      return match ? Math.max(max, parseInt(match[1], 10)) : max;
+      const id = typeof entry.id === "string" ? entry.id : "";
+      const reviewMatch = id.match(/review(?:[-_#\s])?(\d+)/i);
+      if (reviewMatch) return Math.max(max, parseInt(reviewMatch[1], 10));
+      const nums = id.match(/\d+/g);
+      const last = nums && nums.length > 0 ? nums[nums.length - 1] : null;
+      return last ? Math.max(max, parseInt(last, 10)) : max;
     } catch {
       return max;
     }

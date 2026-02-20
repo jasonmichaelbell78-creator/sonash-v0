@@ -159,7 +159,7 @@ for (const checker of checkers) {
 
     // Collect findings with computed impact scores
     for (const finding of result.findings) {
-      finding.impactScore = finding.impactScore || impactScore(finding);
+      finding.impactScore = finding.impactScore ?? impactScore(finding);
 
       // Generate patches for patchable findings
       if (finding.patchType) {

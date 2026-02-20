@@ -2250,7 +2250,11 @@ function checkHookHealth() {
           pass: /Documentation index updated/i,
           fail: /Documentation index generation failed/i,
         },
-        { name: "doc-headers", pass: /Document headers validated/i, fail: /check-doc-headers/i },
+        {
+          name: "doc-headers",
+          pass: /Document headers validated/i,
+          fail: /Document headers.*(failed|error)|check-doc-headers.*(failed|error)/i,
+        },
         {
           name: "audit-s0s1",
           pass: /Audit S0\/S1 validation passed/i,
@@ -2311,9 +2315,12 @@ function checkHookHealth() {
   }
 
   // --- 5. Compute metrics ---
-  const failureRate7d = warnings7d.filter((w) => {
+  const warningsCount7d = warnings7d.length;
+  const failureRate7d = warningsCount7d;
+
+  const errorsCount7d = warnings7d.filter((w) => {
     const sev = String(w.severity || "").toLowerCase();
-    return sev === "error" || sev === "warning";
+    return sev === "error";
   }).length;
   const overrideRate7d = overrides7d.length;
 

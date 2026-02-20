@@ -449,10 +449,12 @@ function main() {
     return;
   }
 
-  // Write output
+  // Write output atomically
   fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
   const jsonlContent = newFindings.map((f) => JSON.stringify(f)).join("\n") + "\n";
-  fs.writeFileSync(OUTPUT_FILE, jsonlContent, "utf-8");
+  const tmpPath = OUTPUT_FILE + ".tmp";
+  fs.writeFileSync(tmpPath, jsonlContent, "utf-8");
+  fs.renameSync(tmpPath, OUTPUT_FILE);
   console.log(
     `\n   Wrote ${newFindings.length} items to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
   );

@@ -55,6 +55,12 @@ function parseBacklogItems(content) {
     try {
       const entry = JSON.parse(line);
 
+      // Reject non-object JSON values (strings, numbers, arrays, null)
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+        corruptLines.push({ lineNumber: i + 1, error: "Entry is not a JSON object" });
+        continue;
+      }
+
       // Validate minimum required fields
       if (!entry.id || !entry.severity) {
         corruptLines.push({ lineNumber: i + 1, error: "Missing required field (id or severity)" });
@@ -115,6 +121,7 @@ function getOldestItemAgeDays(items) {
     const created = new Date(item.created);
     if (Number.isNaN(created.getTime())) continue;
     const ageDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+    if (ageDays < 0) continue;
     if (oldest === null || ageDays > oldest) {
       oldest = ageDays;
     }
@@ -278,8 +285,20 @@ function main() {
     const content = readFileSync(BACKLOG_FILE, "utf8");
     const { items: allItems, corruptLines } = parseBacklogItems(content);
 
-    // Bail out if file is completely unparseable
+    // Treat empty file as valid "no debt" state; only fail when content exists but is fully corrupt
+    const hasAnyNonEmptyLine = content
+      .replace(/\uFEFF/g, "")
+      .split(/\r?\n/)
+      .some((l) => l.trim() !== "");
     if (allItems.length === 0) {
+      if (!hasAnyNonEmptyLine) {
+        if (!isQuiet) {
+          outputHealthSummary(0, [], categorizeBySeverity([]), []);
+          outputFinalStatus(0, [], isPrePush);
+        }
+        process.exitCode = 0;
+        return;
+      }
       if (!isQuiet) console.error("No valid entries found in MASTER_DEBT.jsonl");
       process.exitCode = 2;
       return;

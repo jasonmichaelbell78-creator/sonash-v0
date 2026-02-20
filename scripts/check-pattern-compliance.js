@@ -1150,9 +1150,15 @@ const ANTI_PATTERNS = [
         if (/\brenameSync\s*\(/.test(line)) {
           // Check if within a try block (look back up to 15 lines)
           const contextBefore = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
-          // Check if followed by a catch with writeFileSync fallback (look ahead up to 20 lines)
-          const contextAfter = lines.slice(i, Math.min(lines.length, i + 20)).join("\n");
-          if (!/\btry\s*\{/.test(contextBefore) || !/\bwriteFileSync\b/.test(contextAfter)) {
+          // Check if followed by a catch with copy fallback + cleanup (look ahead up to 30 lines)
+          const contextAfter = lines.slice(i, Math.min(lines.length, i + 30)).join("\n");
+          const hasTry = /\btry\s*\{/.test(contextBefore);
+          const hasCatch = /\bcatch\s*[({]/.test(contextAfter);
+          const hasCopyFallback =
+            /\bcopyFileSync\b/.test(contextAfter) ||
+            (/\breadFileSync\b/.test(contextAfter) && /\bwriteFileSync\b/.test(contextAfter));
+          const hasCleanup = /\b(?:unlinkSync|rmSync)\b/.test(contextAfter);
+          if (!hasTry || !hasCatch || !hasCopyFallback || !hasCleanup) {
             matches.push({
               line: i + 1,
               match: line.trim().slice(0, 100),
@@ -1162,8 +1168,8 @@ const ANTI_PATTERNS = [
       }
       return matches;
     },
-    message: "renameSync without try/catch + writeFileSync fallback — fails on cross-drive moves",
-    fix: "Wrap in try/catch: try { renameSync(src, dest); } catch { writeFileSync(dest, readFileSync(src)); unlinkSync(src); }",
+    message: "renameSync without try/catch + fallback copy/unlink — fails on cross-drive moves",
+    fix: "Wrap in try/catch: try { renameSync(src, dest); } catch { copyFileSync(src, dest); unlinkSync(src); }",
     review: "#265 (recurred: #339, #340, #341, #342, #345)",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
@@ -1195,7 +1201,7 @@ const ANTI_PATTERNS = [
           const hasValidation =
             (/(?:validate|isValid|assert)\s*\(/.test(context) &&
               /session[_-]?[Ii]d/.test(context)) ||
-            /session[_-]?[Ii]d\s*\.\s*(?:match|test)\s*\(/.test(context) ||
+            /session[_-]?[Ii]d\s*\.\s*match\s*\(/.test(context) ||
             /\/\^[^/]+\/\.\s*test\s*\(\s*session[_-]?[Ii]d\s*\)/.test(context) ||
             (/(?:\/\^|new RegExp)/.test(context) && /session/.test(context));
           if (!hasValidation) {

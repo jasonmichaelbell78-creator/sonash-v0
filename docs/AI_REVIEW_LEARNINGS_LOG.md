@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.43 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
+**Document Version:** 17.44 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
 
 ## Purpose
 
@@ -1513,6 +1513,57 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #360: PR #379 R6 — Null Metrics, safeRenameSync, Linter False Positives, Edge Guards (2026-02-20)
+
+**Source:** SonarCloud + Qodo + Gemini (Round 4 on this branch) **PR/Branch:**
+PR #379 / claude/cherry-pick-commits-thZGO **Suggestions:** 30 total (Qodo: 15,
+SonarCloud: 11, Gemini: 3, Security: 1) (Fixed: 15, Rejected: 12, Already
+addressed: 3, Architectural: 1 flagged)
+
+**Patterns Identified:**
+
+1. **Null-safe metric aggregation** (MAJOR): `computeAvgFixRatio` and
+   `computeChurnPct` returned 0 when no data existed, inflating composite scores
+   to appear healthy. Fix: return `null` for missing data, filter nulls from
+   aggregation, compute average only from available metrics.
+2. **Linter rule self-flagging** (MAJOR): `rename-no-fallback` rule only checked
+   for `writeFileSync` fallback, missing `copyFileSync` (which the fix template
+   actually recommends). Also missed `catch` block validation and cleanup
+   (`unlinkSync/rmSync`). Fix: require try + catch + copy fallback + cleanup.
+3. **safeRenameSync propagation to own code** (MAJOR): Round 5 added `.bak`
+   rotation with bare `renameSync` calls — exactly the pattern the linter rule
+   detects. Fix: inline `safeRename` helper with copyFileSync + unlinkSync
+   fallback.
+4. **Empty backlog = healthy, not error** (MINOR): An empty MASTER_DEBT.jsonl
+   was treated as corrupt (exit code 2). Fix: detect truly empty files and
+   output "no debt" summary with exit code 0.
+5. **Future-dated timestamps bypass aging alerts** (MINOR): Negative `ageDays`
+   values from future `created` dates would never be "oldest" but could confuse
+   metrics. Fix: `if (ageDays < 0) continue`.
+
+**Resolution:**
+
+- Fixed: 15 items (6 Major, 7 Minor, 2 Trivial)
+- Rejected: 12 items (1 SonarCloud tool conflict, 10 persistent TODO FPs, 1 dup)
+- Already addressed: 3 items (Gemini outdated)
+- Architectural: 1 (repo code execution via execFileSync — flagged to user)
+- Deferred: 0
+
+**Key Learnings:**
+
+- When building linter rules, test them against the project's OWN fix patterns.
+  The `rename-no-fallback` rule only accepted `writeFileSync` but the project's
+  standard fix uses `copyFileSync` — the rule would flag its own recommended
+  fix.
+- Metric functions returning 0 for "no data" vs "measured at zero" is a semantic
+  bug that inflates composite scores. Always use null/undefined to represent
+  absence, not zero.
+- First round to follow the full `/pr-review` protocol from Step 0. Caught 3
+  more items via categorization discipline than the previous skip-protocol
+  rounds averaged.
 
 ---
 
