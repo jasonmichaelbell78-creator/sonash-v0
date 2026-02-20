@@ -4,7 +4,7 @@ description: |
   Intelligent health dashboard with scoring, benchmarks, trends, and interactive
   alert-by-alert workflow. Triggers: "alerts", "check alerts", "what needs
   attention", "system health", "show warnings", "pending issues". Default mode
-  (--limited) checks 12 categories. Use --full for comprehensive reporting with
+  (--limited) checks 13 categories. Use --full for comprehensive reporting with
   all 33 categories.
 ---
 
@@ -24,7 +24,7 @@ visual dashboard and walks through alerts one at a time.
 ## Usage
 
 ```
-/alerts           # Limited mode (default) - quick health check (12 categories)
+/alerts           # Limited mode (default) - quick health check (13 categories)
 /alerts --full    # Full mode - comprehensive reporting (33 categories)
 ```
 
@@ -276,7 +276,7 @@ Cleanup: `npm run alerts:cleanup` deletes session logs older than 7 days.
 
 ## Modes
 
-### Limited Mode (Default) — 12 Categories
+### Limited Mode (Default) — 13 Categories
 
 Quick health check:
 
@@ -289,25 +289,26 @@ Quick health check:
 7. **Hook Warnings** — Deduplicated warnings, age tracking
 8. **Skip Abuse** — Override tracking, trends
 9. **Test Results** — Pass/fail/error counts, staleness
-10. **Session State** — Uncommitted files, stale branches
-11. **Pattern Hotspots** — Repeat-offender files
-12. **Context Usage** — Files-read count, excessive context warning
+10. **Hook Health** — Failure analysis, override correlation, false-positive
+    detection, commit noise ratio
+11. **Session State** — Uncommitted files, stale branches
+12. **Pattern Hotspots** — Repeat-offender files
+13. **Context Usage** — Files-read count, excessive context warning
 
 ### Full Mode (--full) — 33 Categories
 
-Everything in Limited plus 21 additional categories:
+Everything in Limited plus 20 additional categories:
 
-13. **Debt Intake** — 30-day intake velocity, source effectiveness
-14. **Debt Resolution** — Resolution velocity, enhancement of existing checker
-15. **Documentation Health** — CANON, cross-doc deps, staleness
-16. **Roadmap/Planning** — Blocked/overdue items
-17. **Review Quality** — PR rounds, fix ratios
-18. **Consolidation** — Reviews pending, suggested rules
-19. **Velocity** — Items/session, acceleration detection
-20. **Session Activity** — Files, commits, skills last session
-21. **Commit Activity** — 24h commits, attribution, last commit age
-22. **Roadmap Validation** — `npm run roadmap:validate`
-23. **Hook Health** — Registration status, session completion rate
+14. **Debt Intake** — 30-day intake velocity, source effectiveness
+15. **Debt Resolution** — Resolution velocity, enhancement of existing checker
+16. **Documentation Health** — CANON, cross-doc deps, staleness
+17. **Roadmap/Planning** — Blocked/overdue items
+18. **Review Quality** — PR rounds, fix ratios
+19. **Consolidation** — Reviews pending, suggested rules
+20. **Velocity** — Items/session, acceleration detection
+21. **Session Activity** — Files, commits, skills last session
+22. **Commit Activity** — 24h commits, attribution, last commit age
+23. **Roadmap Validation** — `npm run roadmap:validate`
 24. **Roadmap Hygiene** — `npm run roadmap:hygiene`
 25. **Trigger Compliance** — `npm run triggers:check`
 26. **Pattern Sync** — `npm run patterns:sync`
@@ -374,6 +375,15 @@ All ratings use three tiers: 🟢 Good, 🟡 Average, 🔴 Poor.
 | Fix ratio  | <15%    | <25%       | >35%    | Lower is better |
 | Max rounds | <2      | <3         | >5      | Lower is better |
 
+### Hook Health Benchmarks
+
+| Metric           | 🟢 Good | 🟡 Average | 🔴 Poor | Direction       |
+| ---------------- | ------- | ---------- | ------- | --------------- |
+| Warnings (7d)    | 0       | <5         | >15     | Lower is better |
+| Overrides (7d)   | 0       | <2         | >5      | Lower is better |
+| False positive % | 0%      | <30%       | >60%    | Lower is better |
+| Commit noise %   | 0%      | <5%        | >15%    | Lower is better |
+
 ### Other Benchmarks
 
 | Category         | Metric           | 🟢 Good | 🟡 Average | 🔴 Poor |
@@ -398,9 +408,10 @@ The overall health score is a weighted average of category scores:
 | Debt        | 12%    |
 | Tests       | 10%    |
 | Learning    | 8%     |
-| Skip Abuse  | 3%     |
+| Skip Abuse  | 2%     |
 | Session     | 3%     |
 | Agents      | 4%     |
+| Hook Health | 3%     |
 
 **New state (8%):**
 
