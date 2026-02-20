@@ -2215,70 +2215,81 @@ function checkHookHealth() {
   const hookOutputPath = path.join(ROOT_DIR, ".git", "hook-output.log");
   let lastHookResult = { passed: null, failedChecks: [], passedChecks: [], timestamp: null };
   try {
-    const hookOutput = fs.readFileSync(hookOutputPath, "utf8");
-    const passed = hookOutput.includes("All pre-commit checks passed");
-    const failedChecks = [];
-    const passedChecks = [];
-
-    // Extract check results from output
-    const checkPatterns = [
-      { name: "ESLint", pass: /ESLint passed/, fail: /ESLint has errors/ },
-      { name: "lint-staged", pass: /Lint-staged passed/, fail: /Lint-staged failed/ },
-      {
-        name: "pattern-compliance",
-        pass: /Pattern compliance passed/,
-        fail: /Pattern compliance failed/,
-      },
-      { name: "tests", pass: /Tests passed/, fail: /Tests failed/ },
-      {
-        name: "cross-doc-deps",
-        pass: /Cross-document dependencies satisfied/,
-        fail: /Cross-document dependency check failed/,
-      },
-      {
-        name: "doc-index",
-        pass: /Documentation index updated/,
-        fail: /Documentation index generation failed/,
-      },
-      { name: "doc-headers", pass: /Document headers validated/, fail: /check-doc-headers/ },
-      {
-        name: "audit-s0s1",
-        pass: /Audit S0\/S1 validation passed/,
-        fail: /S0\/S1 validation failed/,
-      },
-      {
-        name: "debt-schema",
-        pass: /Technical debt schema passed/,
-        fail: /Technical debt schema validation failed/,
-      },
-      {
-        name: "agent-compliance",
-        pass: /Agent compliance check passed/,
-        fail: /Agent compliance.*failed/,
-      },
-    ];
-
-    for (const cp of checkPatterns) {
-      if (cp.fail.test(hookOutput)) failedChecks.push(cp.name);
-      else if (cp.pass.test(hookOutput)) passedChecks.push(cp.name);
-    }
-
-    // Detect skipped checks
-    const skipPattern = /Skipping (\S+)/g;
-    const skippedChecks = [];
-    let skipMatch;
-    while ((skipMatch = skipPattern.exec(hookOutput)) !== null) {
-      skippedChecks.push(skipMatch[1]);
-    }
-
     const stat = fs.statSync(hookOutputPath);
-    lastHookResult = {
-      passed,
-      failedChecks,
-      passedChecks,
-      skippedChecks,
-      timestamp: stat.mtime.toISOString(),
-    };
+    if (stat.size > 2 * 1024 * 1024) {
+      lastHookResult = {
+        passed: null,
+        failedChecks: [],
+        passedChecks: [],
+        skippedChecks: [],
+        timestamp: stat.mtime.toISOString(),
+      };
+    } else {
+      const hookOutput = fs.readFileSync(hookOutputPath, "utf8");
+      const passed = hookOutput.includes("All pre-commit checks passed");
+      const failedChecks = [];
+      const passedChecks = [];
+
+      // Extract check results from output
+      const checkPatterns = [
+        { name: "ESLint", pass: /ESLint passed/, fail: /ESLint has errors/ },
+        { name: "lint-staged", pass: /Lint-staged passed/, fail: /Lint-staged failed/ },
+        {
+          name: "pattern-compliance",
+          pass: /Pattern compliance passed/,
+          fail: /Pattern compliance failed/,
+        },
+        { name: "tests", pass: /Tests passed/, fail: /Tests failed/ },
+        {
+          name: "cross-doc-deps",
+          pass: /Cross-document dependencies satisfied/,
+          fail: /Cross-document dependency check failed/,
+        },
+        {
+          name: "doc-index",
+          pass: /Documentation index updated/,
+          fail: /Documentation index generation failed/,
+        },
+        { name: "doc-headers", pass: /Document headers validated/, fail: /check-doc-headers/ },
+        {
+          name: "audit-s0s1",
+          pass: /Audit S0\/S1 validation passed/,
+          fail: /S0\/S1 validation failed/,
+        },
+        {
+          name: "debt-schema",
+          pass: /Technical debt schema passed/,
+          fail: /Technical debt schema validation failed/,
+        },
+        {
+          name: "agent-compliance",
+          pass: /Agent compliance check passed/,
+          fail: /Agent compliance.*failed/,
+        },
+      ];
+
+      for (const cp of checkPatterns) {
+        if (cp.fail.test(hookOutput)) failedChecks.push(cp.name);
+        else if (cp.pass.test(hookOutput)) passedChecks.push(cp.name);
+      }
+
+      // Detect skipped checks
+      const skipPattern = /Skipping\s+([^\r\n(]+)/g;
+      const skippedChecks = [];
+      let skipMatch;
+      while ((skipMatch = skipPattern.exec(hookOutput)) !== null) {
+        const name = skipMatch[1].trim();
+        if (name) skippedChecks.push(name);
+      }
+
+      lastHookResult = {
+        passed,
+        failedChecks,
+        passedChecks,
+        skippedChecks,
+        timestamp: stat.mtime.toISOString(),
+      };
+    }
   } catch {
     // No hook output log available
   }

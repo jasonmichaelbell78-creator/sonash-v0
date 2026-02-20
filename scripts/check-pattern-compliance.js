@@ -1182,19 +1182,23 @@ const ANTI_PATTERNS = [
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         // Detect sessionId/session_id used in path construction (join, template literal, concat)
-        if (
-          /(?:session[_-]?[Ii]d|sessionId)\b/.test(line) &&
-          /(?:join\s*\(|`[^`]*\$\{|\/\S*session|\.json|\.jsonl|writeFileSync|readFileSync)/.test(
-            line
-          )
-        ) {
+        const hasSessionId = /(?:session[_-]?[Ii]d|sessionId)\b/.test(line);
+        const hasPathUse =
+          /join\s*\(/.test(line) ||
+          /`[^`]{0,200}\$\{/.test(line) ||
+          /\/\S{0,100}session/.test(line) ||
+          line.includes(".json") ||
+          line.includes("writeFileSync") ||
+          line.includes("readFileSync");
+        if (hasSessionId && hasPathUse) {
           // Check if validation exists nearby (look back up to 15 lines)
           const context = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
-          if (
-            !/(?:validate|isValid|assert)\s*\(\s*(?:\w+\.)*session[_-]?[Ii]d\b|session[_-]?[Ii]d\b\s*\.\s*(?:match|test)|(?:\/\^|new RegExp).{0,40}session/.test(
-              context
-            )
-          ) {
+          const hasValidation =
+            (/(?:validate|isValid|assert)\s*\(/.test(context) &&
+              /session[_-]?[Ii]d/.test(context)) ||
+            /session[_-]?[Ii]d\s*\.\s*(?:match|test)/.test(context) ||
+            (/(?:\/\^|new RegExp)/.test(context) && /session/.test(context));
+          if (!hasValidation) {
             matches.push({
               line: i + 1,
               match: line.trim().slice(0, 100),

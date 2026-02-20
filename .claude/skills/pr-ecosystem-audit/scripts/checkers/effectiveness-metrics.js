@@ -81,8 +81,9 @@ function computeAvgFixRatio(metricsJsonl) {
   if (metricsJsonl.length === 0) return 0;
 
   const ratios = metricsJsonl
-    .map((m) => m.fix_ratio || m.fixRatio)
-    .filter((v) => typeof v === "number");
+    .map((m) => m.fix_ratio ?? m.fixRatio)
+    .filter((v) => typeof v === "number" && Number.isFinite(v))
+    .map((v) => Math.max(0, Math.min(1, v)));
 
   return ratios.length > 0
     ? Math.round((ratios.reduce((a, b) => a + b, 0) / ratios.length) * 100) / 100
@@ -199,7 +200,7 @@ function checkAgentUtilization(reviewsJsonl, learnings, findings) {
   ).length;
 
   const parallelPct =
-    largeReviews.length > 0 ? Math.round((parallelUsed / largeReviews.length) * 100) : 100; // No large reviews = not applicable
+    largeReviews.length > 0 ? Math.round((parallelUsed / largeReviews.length) * 100) : null;
 
   // Specialist match: check if agents were used for appropriate tasks
   const specialistKeywords = ["security", "performance", "accessibility", "testing"];
@@ -223,7 +224,10 @@ function checkAgentUtilization(reviewsJsonl, learnings, findings) {
       ? Math.round((specialistMatch / specialistOpportunities) * 100)
       : 80; // Default if no opportunities
 
-  const r1 = scoreMetric(parallelPct, bench.parallel_usage_pct, "higher-is-better");
+  const r1 =
+    parallelPct !== null
+      ? scoreMetric(parallelPct, bench.parallel_usage_pct, "higher-is-better")
+      : { score: 100, rating: "good" };
   const r2 = scoreMetric(specialistPct, bench.specialist_match_pct, "higher-is-better");
 
   const avgScore = Math.round((r1.score + r2.score) / 2);
@@ -422,7 +426,10 @@ function loadJsonl(filePath) {
     const stat = fs.statSync(filePath);
     if (stat.size > 10 * 1024 * 1024) return [];
     const content = fs.readFileSync(filePath, "utf8");
-    const lines = content.trim().split("\n").filter(Boolean);
+    const lines = content
+      .split("\n")
+      .map((l) => l.replace(/\r$/, ""))
+      .filter((l) => l.trim().length > 0);
     let skipped = 0;
     const results = [];
     for (const line of lines) {

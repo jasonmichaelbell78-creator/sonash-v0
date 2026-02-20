@@ -81,20 +81,22 @@ const QUOTE_CHARS = new Set(["'", '"', "`"]);
  */
 function findCommentStart(line) {
   let quoteChar = null;
-  for (let i = 0; i < line.length - 1; i++) {
+  let i = 0;
+  const len = line.length - 1;
+  while (i < len) {
     const ch = line[i];
-    // Inside a string: handle escape or closing quote
     if (quoteChar) {
       if (ch === "\\") {
-        i++;
+        i += 2;
         continue;
       }
       if (ch === quoteChar) quoteChar = null;
+      i++;
       continue;
     }
-    // Outside a string: check for comment start or string opening
     if (ch === "/" && (line[i + 1] === "/" || line[i + 1] === "*")) return i;
     if (QUOTE_CHARS.has(ch)) quoteChar = ch;
+    i++;
   }
   return -1;
 }
@@ -236,67 +238,52 @@ function loadExistingHashes() {
 // --- Block comment state tracking ---
 
 /**
- * Scan a line to determine block comment state at end of line.
- * Tracks string literals to avoid treating `/*` inside a string as a comment.
+ * Parse block comment state in a line up to a given position.
+ * Shared implementation for both end-of-line state and position-specific queries.
+ * Uses a while loop with explicit index control to avoid dead-store warnings.
  */
-function updateBlockCommentState(line, entering) {
+function parseBlockCommentState(line, entering, stopAt) {
   let inBlock = entering;
   let quoteChar = null;
-  for (let c = 0; c < line.length - 1; c++) {
-    const ch = line[c];
+  let i = 0;
+  const end = stopAt !== undefined ? Math.min(stopAt, line.length - 1) : line.length - 1;
+  while (i < end) {
+    const ch = line[i];
     if (quoteChar) {
       if (ch === "\\") {
-        c += 1;
+        i += 2;
         continue;
       }
       if (ch === quoteChar) quoteChar = null;
+      i++;
       continue;
     }
     if (!inBlock && QUOTE_CHARS.has(ch)) {
       quoteChar = ch;
+      i++;
       continue;
     }
-    if (!inBlock && ch === "/" && line[c + 1] === "*") {
+    if (!inBlock && ch === "/" && line[i + 1] === "*") {
       inBlock = true;
-      c += 1;
-    } else if (inBlock && ch === "*" && line[c + 1] === "/") {
-      inBlock = false;
-      c += 1;
+      i += 2;
+      continue;
     }
+    if (inBlock && ch === "*" && line[i + 1] === "/") {
+      inBlock = false;
+      i += 2;
+      continue;
+    }
+    i++;
   }
   return inBlock;
 }
 
-/**
- * Determine if a specific position on a line is inside a block comment.
- * Tracks string literals to avoid treating `/*` inside a string as a comment.
- */
+function updateBlockCommentState(line, entering) {
+  return parseBlockCommentState(line, entering);
+}
+
 function isPositionInBlockComment(line, position, entering) {
-  let inBlock = entering;
-  let quoteChar = null;
-  for (let c = 0; c < position && c < line.length - 1; c++) {
-    const ch = line[c];
-    if (quoteChar) {
-      if (ch === "\\") {
-        c += 1;
-        continue;
-      }
-      if (ch === quoteChar) quoteChar = null;
-      continue;
-    }
-    if (!inBlock && QUOTE_CHARS.has(ch)) {
-      quoteChar = ch;
-      continue;
-    }
-    if (!inBlock && ch === "/" && line[c + 1] === "*") {
-      inBlock = true;
-      c += 1;
-    } else if (inBlock && ch === "*" && line[c + 1] === "/") {
-      inBlock = false;
-      c += 1;
-    }
-  }
-  return inBlock;
+  return parseBlockCommentState(line, entering, position);
 }
 
 // --- Build a TDMS finding from a keyword match ---
@@ -332,6 +319,8 @@ function buildFinding(relPath, lineNum, keyword, commentText, seq, today) {
 function scanFile(filePath, relPath, findings, falsePositives, nextSeq, today) {
   let content;
   try {
+    const stat = fs.statSync(filePath);
+    if (stat.size > 2 * 1024 * 1024) return nextSeq;
     content = fs.readFileSync(filePath, "utf8").replaceAll("\uFEFF", "");
   } catch {
     return nextSeq;

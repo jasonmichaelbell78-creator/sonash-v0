@@ -132,7 +132,11 @@ function isStateFileValid(sf) {
     return true;
   }
   if (sf.type === "jsonl") {
-    const lines = content.trim().split("\n").filter(Boolean);
+    const lines = content
+      .split("\n")
+      .map((l) => l.replace(/\r$/, ""))
+      .filter((l) => l.trim().length > 0);
+    if (lines.length === 0) return false;
     for (const line of lines) {
       JSON.parse(line);
     }

@@ -91,7 +91,12 @@ function createStateManager(rootDir, isSafeToWrite) {
         const content = trimmed.map((e) => JSON.stringify(e)).join("\n") + "\n" + line;
         fs.writeFileSync(tmpPath, content, "utf8");
         if (fs.existsSync(STATE_FILE)) fs.rmSync(STATE_FILE, { force: true });
-        fs.renameSync(tmpPath, STATE_FILE);
+        try {
+          fs.renameSync(tmpPath, STATE_FILE);
+        } catch {
+          fs.copyFileSync(tmpPath, STATE_FILE);
+          fs.rmSync(tmpPath, { force: true });
+        }
       } else {
         if (!isSafeToWrite(STATE_FILE)) {
           console.error("  [warn] State file failed symlink guard, skipping write");

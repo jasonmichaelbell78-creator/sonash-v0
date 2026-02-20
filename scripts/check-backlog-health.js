@@ -45,7 +45,8 @@ const ACTIVE_STATUSES = new Set(["NEW", "VERIFIED", "IN_PROGRESS", "PENDING"]);
 function parseBacklogItems(content) {
   const items = [];
   const corruptLines = [];
-  const lines = content.split("\n");
+  const normalized = content.replaceAll("\uFEFF", "");
+  const lines = normalized.split(/\r?\n/);
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
