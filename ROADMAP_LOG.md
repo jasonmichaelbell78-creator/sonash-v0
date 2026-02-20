@@ -1,7 +1,7 @@
 # SoNash Roadmap Log
 
 **Document Version:** 2.0 **Status:** ACTIVE (append-only archive) **Last
-Updated:** 2026-02-08
+Updated:** 2026-02-20
 
 ---
 
@@ -53,6 +53,43 @@ For **active work**, see [ROADMAP.md](./ROADMAP.md).
 ---
 
 ## 📋 Recent Completions
+
+### Session #174 - Archived 12 Completed Roadmap Items
+
+**Track B — Dev Dashboard (Core Setup):**
+
+- [x] **B1**: Create `/dev` route with auth gate (2hr) (Session #174)
+- [x] **B2**: PERF-001 - Lighthouse audit script (2hr) (Session #174)
+
+**Track D — CI Reliability & Automation (Phase 3):**
+
+- [x] **D5.5**: Golden-path E2E test (3hr) [CTO Advisory] - Consolidated into
+      Track T (T2.1-T2.5) (Session #174)
+
+**Track E — Solo Developer Automations:**
+
+- [x] **E15**: Create SKILL_INDEX.md (30min) - Session #113 (Session #174)
+- [x] **E17**: claude.md context optimization (1hr) - Slimmed 497->~130 lines,
+      extracted to AGENT_ORCHESTRATION.md + CONTEXT_PRESERVATION.md - PR #356
+      (Session #174)
+- [x] **E18**: Dependency-aware task ordering (2hr) - `/task-next` skill +
+      Kahn's topological sort via `scripts/tasks/resolve-dependencies.js` - PR
+      #356 (Session #174)
+- [x] **E19**: JSONL-based velocity tracking (2hr) -
+      `scripts/velocity/track-session.js` + `generate-report.js` - PR #356
+      (Session #174)
+
+**Track T — Testing Infrastructure (Phase 1):**
+
+- [x] **T1.1**: Install and configure Playwright (via MCP plugin) (Session #174)
+- [x] **T1.2**: Create test protocol system (27 feature protocols) (Session
+      #174)
+- [x] **T1.3**: Create `/test-suite` skill with 5-phase pipeline (Session #174)
+- [x] **T1.4**: Configure Firebase Preview Channels for PR testing (Session
+      #174)
+- [x] **T1.5**: Testing User Manual + doc cross-references (Session #174)
+
+---
 
 ### January 2, 2026 - Documentation Standardization Phase 3 & 4 Complete
 

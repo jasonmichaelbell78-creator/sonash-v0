@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-02-17T16:25:41.746Z",
+  "timestamp": "2026-02-20T11:44:06.492Z",
   "healthScore": {
-    "grade": "A",
-    "score": 90,
+    "grade": "B",
+    "score": 89,
     "breakdown": {
       "code": {
-        "score": 90,
+        "score": 100,
         "weight": 0.15,
         "measured": true
       },
       "security": {
-        "score": 100,
+        "score": 80,
         "weight": 0.15,
         "measured": true
       },
@@ -30,7 +30,7 @@
         "measured": true
       },
       "skip-abuse": {
-        "score": 70,
+        "score": 90,
         "weight": 0.03,
         "measured": true
       },
@@ -45,9 +45,9 @@
         "measured": true
       },
       "session-state": {
-        "score": 100,
+        "score": null,
         "weight": 0.03,
-        "measured": true
+        "measured": false
       },
       "pattern-hotspots": {
         "score": 100,
@@ -60,9 +60,9 @@
         "measured": false
       },
       "velocity": {
-        "score": null,
+        "score": 100,
         "weight": 0.03,
-        "measured": false
+        "measured": true
       },
       "review-quality": {
         "score": 100,
@@ -100,7 +100,7 @@
         "measured": true
       },
       "external-links": {
-        "score": 70,
+        "score": 100,
         "weight": 0.01,
         "measured": true
       },
@@ -132,19 +132,19 @@
     }
   },
   "summary": {
-    "errors": 3,
-    "warnings": 4,
+    "errors": 1,
+    "warnings": 6,
     "info": 10
   },
   "categoryScores": {
     "code": {
       "errors": 0,
-      "warnings": 1,
+      "warnings": 0,
       "info": 0
     },
     "security": {
       "errors": 0,
-      "warnings": 0,
+      "warnings": 2,
       "info": 0
     },
     "session": {
@@ -169,12 +169,12 @@
     },
     "hook-warnings": {
       "errors": 0,
-      "warnings": 0,
+      "warnings": 1,
       "info": 1
     },
     "skip-abuse": {
-      "errors": 1,
-      "warnings": 0,
+      "errors": 0,
+      "warnings": 1,
       "info": 0
     },
     "session-state": {
@@ -212,14 +212,19 @@
       "warnings": 0,
       "info": 1
     },
+    "velocity": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 1
+    },
     "commit-activity": {
       "errors": 0,
       "warnings": 0,
-      "info": 2
+      "info": 1
     },
     "roadmap-health": {
       "errors": 0,
-      "warnings": 1,
+      "warnings": 0,
       "info": 0
     },
     "hook-health": {
@@ -258,7 +263,7 @@
       "info": 0
     },
     "external-links": {
-      "errors": 1,
+      "errors": 0,
       "warnings": 0,
       "info": 0
     },
@@ -288,11 +293,6 @@
       "info": 0
     },
     "test-results": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "velocity": {
       "errors": 0,
       "warnings": 0,
       "info": 0
