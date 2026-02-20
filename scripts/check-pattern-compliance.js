@@ -1103,6 +1103,126 @@ const ANTI_PATTERNS = [
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
     pathExcludeList: verifiedPatterns["atomic-write-missing-tmp-guard"] || [],
   },
+
+  // === Patterns automated from LEARNING_METRICS.md failing patterns ===
+
+  // Pattern: "JSONL line parsing" — 14 recurrences (Reviews: 319, 336, 337, 339, 342)
+  // JSONL files must be parsed line-by-line with per-line try/catch
+  {
+    id: "jsonl-parse-no-try-catch",
+    testFn: (content, filePath) => {
+      const matches = [];
+      const lines = content.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Detect JSON.parse(line) not wrapped in try/catch
+        if (/JSON\.parse\s*\(\s*(?:line|l|entry|row)\b/.test(line)) {
+          // Check if within a try block (look back up to 15 lines)
+          const context = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
+          if (!/\btry\s*\{/.test(context)) {
+            matches.push({
+              line: i + 1,
+              match: line.trim().slice(0, 100),
+            });
+          }
+        }
+      }
+      return matches;
+    },
+    message: "JSONL line parsing without try/catch — single corrupt line crashes entire script",
+    fix: "Wrap JSON.parse(line) in try/catch with line number tracking: try { JSON.parse(line); } catch (e) { console.warn(`Skipping corrupt line ${lineNum}`); }",
+    review: "#218 (recurred: #319, #336, #337, #339, #342)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["jsonl-parse-no-try-catch"] || [],
+  },
+
+  // Pattern: "Rename fallback guard" — 14 recurrences (Reviews: 339, 340, 341, 342, 345)
+  // renameSync can fail on cross-drive moves; needs writeFileSync+unlinkSync fallback
+  {
+    id: "rename-no-fallback",
+    testFn: (content, filePath) => {
+      const matches = [];
+      const lines = content.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (/\brenameSync\s*\(/.test(line)) {
+          // Check if within a try block (look back up to 15 lines)
+          const contextBefore = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
+          // Check if followed by a catch with copy fallback + cleanup (look ahead up to 30 lines)
+          const contextAfter = lines.slice(i, Math.min(lines.length, i + 30)).join("\n");
+          const hasTry = /\btry\s*\{/.test(contextBefore);
+          const hasCatch = /\bcatch\s*[({]/.test(contextAfter);
+          const hasCopyFallback =
+            /\bcopyFileSync\b/.test(contextAfter) ||
+            (/\breadFileSync\b/.test(contextAfter) && /\bwriteFileSync\b/.test(contextAfter));
+          const hasCleanup = /\b(?:unlinkSync|rmSync)\b/.test(contextAfter);
+          if (!hasTry || !hasCatch || !hasCopyFallback || !hasCleanup) {
+            matches.push({
+              line: i + 1,
+              match: line.trim().slice(0, 100),
+            });
+          }
+        }
+      }
+      return matches;
+    },
+    message: "renameSync without try/catch + fallback copy/unlink — fails on cross-drive moves",
+    fix: "Wrap in try/catch: try { renameSync(src, dest); } catch { copyFileSync(src, dest); unlinkSync(src); }",
+    review: "#265 (recurred: #339, #340, #341, #342, #345)",
+    fileTypes: [".js"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["rename-no-fallback"] || [],
+  },
+
+  // Pattern: "Session identity check" — 17 recurrences (Reviews: 324, 328, 329, 344, 345)
+  // Session IDs used in file paths must be validated to prevent path traversal
+  {
+    id: "session-id-no-validation",
+    testFn: (content, filePath) => {
+      const matches = [];
+      const lines = content.split("\n");
+      // Look for sessionId being interpolated into file paths without prior validation
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Detect sessionId/session_id used in path construction (join, template literal, concat)
+        const hasSessionId = /(?:session[_-]?[Ii]d|sessionId)\b/.test(line);
+        const hasPathUse =
+          /join\s*\(/.test(line) ||
+          /`[^`]{0,200}\$\{/.test(line) ||
+          /\/\S{0,100}session/.test(line) ||
+          line.includes("writeFileSync") ||
+          line.includes("readFileSync");
+        if (hasSessionId && hasPathUse) {
+          // Check if validation exists nearby (look back up to 15 lines)
+          const context = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
+          const hasValidation =
+            (/(?:validate|isValid|assert)\s*\(/.test(context) &&
+              /session[_-]?[Ii]d/.test(context)) ||
+            /session[_-]?[Ii]d\s*\.\s*match\s*\(/.test(context) ||
+            /\/\^[^/]+\/\.\s*test\s*\(\s*session[_-]?[Ii]d\s*\)/.test(context) ||
+            (/(?:\/\^|new RegExp)/.test(context) && /session/.test(context));
+          if (!hasValidation) {
+            matches.push({
+              line: i + 1,
+              match: line.trim().slice(0, 100),
+            });
+          }
+        }
+      }
+      return matches;
+    },
+    message:
+      "Session ID used in file path without format validation — risks path traversal or cross-session pollution",
+    fix: "Validate sessionId format before use: if (!/^[a-zA-Z0-9_-]+$/.test(sessionId)) throw new Error('Invalid session ID');",
+    review: "#209 (recurred: #324, #328, #329, #344, #345)",
+    fileTypes: [".js"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["session-id-no-validation"] || [],
+  },
 ];
 
 /**

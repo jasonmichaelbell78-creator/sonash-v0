@@ -55,7 +55,7 @@ function findCompletedItems(roadmapContent) {
     const itemMatch = line.match(/^-\s+\[x\]\s+\*\*(.+?)\*\*[:\s]*(.*)/i);
     if (itemMatch) {
       completed.push({
-        id: itemMatch[1].trim(),
+        id: itemMatch[1].trim().replace(/:$/, ""),
         description: itemMatch[2].trim().slice(0, 80),
         track: currentTrack,
         line: i + 1,
@@ -81,7 +81,7 @@ function findOpenItems(roadmapContent) {
     const itemMatch = line.match(/^-\s+\[\s\]\s+\*\*(.+?)\*\*[:\s]*(.*)/);
     if (itemMatch) {
       open.push({
-        id: itemMatch[1].trim(),
+        id: itemMatch[1].trim().replace(/:$/, ""),
         description: itemMatch[2].trim().slice(0, 80),
         track: currentTrack,
         line: i + 1,
@@ -97,7 +97,7 @@ function checkArchived(completedItems, logContent) {
   for (const item of completedItems) {
     const escapedId = item.id.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
     const idRegex = new RegExp(
-      String.raw`(^|[\s\[\]():,./-])` + escapedId + String.raw`([\s\]():,./-]|$)`,
+      String.raw`(^|[\s\[\]():,./*-])` + escapedId + String.raw`([\s\]():,./*-]|$)`,
       "i"
     );
     if (!idRegex.test(logContent)) {

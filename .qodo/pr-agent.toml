@@ -1,6 +1,6 @@
 # Qodo PR-Agent Configuration
 # Created: 2026-02-17
-# Updated: 2026-02-17 (PR #371 retro — add pr_compliance suppression)
+# Updated: 2026-02-19 (PR #379 retro — add actor/outcome + impossible-type suppressions)
 # Purpose: Suppress recurring false-positive review items that add noise
 # without actionable value. Each suppression has evidence from PR retros.
 
@@ -43,6 +43,11 @@ When reviewing files in scripts/ or .claude/hooks/:
    Any absolute paths in older entries are pre-existing data, not introduced
    by current PRs.
    (Rejected in PR #371 R2)
+
+7. Do NOT flag "Missing actor/outcome" or "incomplete audit context" in intake
+   log JSONL entries. Intake logs record what was ingested, not who did it.
+   Actor context lives in resolution-log.jsonl and commit metadata.
+   (Rejected in PR #379, 5+ rounds with same rationale)
 """
 
 [pr_code_suggestions]
@@ -58,6 +63,11 @@ When suggesting changes to JSONL data files under docs/technical-debt/:
 
 3. Do NOT suggest changing "file" fields to include line numbers when
    the item refers to a directory or multiple files.
+
+4. Do NOT suggest adding Date/RegExp/Map/Set/BigInt handling in code that
+   processes JSON.parse output. JSON.parse can only produce string, number,
+   boolean, null, array, and plain object — these other types are impossible.
+   (Rejected in PR #379, 5 consecutive rounds with same rationale)
 """
 
 # Compliance section — suppresses Qodo Compliance Guide repeat items

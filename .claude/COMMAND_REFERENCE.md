@@ -1,8 +1,8 @@
 # Claude Code Command Reference (Index)
 
 <!-- prettier-ignore-start -->
-**Version:** 5.0
-**Last Updated:** 2026-02-17
+**Version:** 5.1
+**Last Updated:** 2026-02-20
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -40,6 +40,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/session-begin`                  | Session startup verification checklist               |
 | `/session-end`                    | Session end verification checklist                   |
 | `/alerts`                         | Intelligent health dashboard with scoring            |
+| `/pr-ecosystem-audit`             | PR ecosystem diagnostic (18 categories, 5 domains)   |
 | `/checkpoint`                     | Save session state for recovery                      |
 | `/quick-fix`                      | Auto-suggest fixes for pre-commit failures           |
 | `/pre-commit-fixer`               | Fix pre-commit hook failures and retry               |
@@ -134,6 +135,7 @@ Source: `.husky/`
 
 | Version | Date         | Change                                     |
 | ------- | ------------ | ------------------------------------------ |
+| 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill            |
 | 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)    |
 | 4.0     | Session #140 | Added all plugins, GSD, SuperClaude skills |
 | 3.0     | Session #135 | Added multi-AI audit, comprehensive audit  |

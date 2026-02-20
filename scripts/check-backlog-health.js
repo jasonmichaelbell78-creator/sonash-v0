@@ -2,7 +2,7 @@
 /**
  * check-backlog-health.js
  *
- * Checks AUDIT_FINDINGS_BACKLOG.md for aging issues and threshold violations.
+ * Checks MASTER_DEBT.jsonl for aging issues and threshold violations.
  * Run: npm run backlog:check
  *
  * Exit codes:
@@ -13,7 +13,7 @@
  * Thresholds (configurable via env vars):
  *   BACKLOG_S1_MAX_DAYS=7      - S1 findings older than this trigger warning
  *   BACKLOG_S2_MAX_DAYS=14     - S2 findings older than this trigger warning
- *   BACKLOG_MAX_ITEMS=25       - Total items exceeding this trigger warning
+ *   BACKLOG_MAX_ITEMS=25       - Total active items exceeding this trigger warning
  *   BACKLOG_BLOCK_S1_DAYS=14   - S1 findings older than this block push (pre-push)
  */
 
@@ -32,6 +32,67 @@ const CONFIG = {
   BLOCK_S1_DAYS: Number.parseInt(process.env.BACKLOG_BLOCK_S1_DAYS, 10) || 14,
 };
 
+const BACKLOG_FILE = join(__dirname, "..", "docs", "technical-debt", "MASTER_DEBT.jsonl");
+
+// Statuses that count as "active" (not resolved / not false positive)
+const ACTIVE_STATUSES = new Set(["NEW", "VERIFIED", "IN_PROGRESS", "PENDING"]);
+
+/**
+ * Parse backlog items from JSONL content.
+ * Returns { items, corruptLines } where items are successfully parsed entries
+ * and corruptLines is an array of { lineNumber, error } for bad lines.
+ */
+function parseBacklogItems(content) {
+  const items = [];
+  const corruptLines = [];
+  const normalized = content.replace(/\uFEFF/g, "");
+  const lines = normalized.split(/\r?\n/);
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line === "") continue;
+
+    try {
+      const entry = JSON.parse(line);
+
+      // Reject non-object JSON values (strings, numbers, arrays, null)
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+        corruptLines.push({ lineNumber: i + 1, error: "Entry is not a JSON object" });
+        continue;
+      }
+
+      // Validate minimum required fields
+      if (!entry.id || !entry.severity) {
+        corruptLines.push({ lineNumber: i + 1, error: "Missing required field (id or severity)" });
+        continue;
+      }
+
+      items.push({
+        ...entry,
+        severity: String(entry.severity).toUpperCase(),
+        status: entry.status ? String(entry.status).toUpperCase() : entry.status,
+      });
+    } catch (err) {
+      corruptLines.push({
+        lineNumber: i + 1,
+        error: err && err.message ? err.message : String(err),
+      });
+    }
+  }
+
+  return { items, corruptLines };
+}
+
+/**
+ * Filter to only active backlog items (not resolved, not false positives).
+ */
+function filterActiveItems(items) {
+  return items.filter((item) => {
+    const status = (item.status || "NEW").toUpperCase();
+    return ACTIVE_STATUSES.has(status);
+  });
+}
+
 /**
  * Categorize items by severity level
  */
@@ -45,40 +106,64 @@ function categorizeBySeverity(items) {
 }
 
 /**
+ * Calculate the oldest item age in days for a given set of items.
+ * Uses the "created" field from each entry.
+ * Returns null if no items have a parseable date.
+ */
+function getOldestItemAgeDays(items) {
+  if (items.length === 0) return null;
+
+  const now = new Date();
+  let oldest = null;
+
+  for (const item of items) {
+    if (!item.created) continue;
+    const created = new Date(item.created);
+    if (Number.isNaN(created.getTime())) continue;
+    const ageDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+    if (ageDays < 0) continue;
+    if (oldest === null || ageDays > oldest) {
+      oldest = ageDays;
+    }
+  }
+
+  return oldest;
+}
+
+/**
  * Check thresholds and generate warnings/blockers
  */
-function checkThresholds(severityGroups, daysSinceUpdate, config, isPrePush) {
+function checkThresholds(severityGroups, config, isPrePush) {
   const warnings = [];
   const blockers = [];
   let exitCode = 0;
 
-  // Check for S0 items (should never be in backlog)
+  // Check for S0 items (should never be in active backlog)
   if (severityGroups.s0.length > 0) {
-    const msg = `S0 (Critical) items in backlog: ${severityGroups.s0.map((i) => i.canonId).join(", ")}`;
+    const ids = severityGroups.s0.map((i) => i.id).join(", ");
+    const msg = `S0 (Critical) active items in backlog: ${ids}`;
     blockers.push(msg);
     exitCode = 1;
   }
 
   // Check S1 aging
-  if (severityGroups.s1.length > 0 && daysSinceUpdate !== null) {
-    if (daysSinceUpdate > config.BLOCK_S1_DAYS && isPrePush) {
-      const msg = `S1 items aging ${daysSinceUpdate} days (block threshold: ${config.BLOCK_S1_DAYS})`;
+  const s1Age = getOldestItemAgeDays(severityGroups.s1);
+  if (severityGroups.s1.length > 0 && s1Age !== null) {
+    if (s1Age > config.BLOCK_S1_DAYS && isPrePush) {
+      const msg = `S1 items aging ${s1Age} days (block threshold: ${config.BLOCK_S1_DAYS})`;
       blockers.push(msg);
       exitCode = 1;
-    } else if (daysSinceUpdate > config.S1_MAX_DAYS) {
-      const msg = `S1 items aging ${daysSinceUpdate} days (warn threshold: ${config.S1_MAX_DAYS})`;
+    } else if (s1Age > config.S1_MAX_DAYS) {
+      const msg = `S1 items aging ${s1Age} days (warn threshold: ${config.S1_MAX_DAYS})`;
       warnings.push(msg);
       exitCode = Math.max(exitCode, 1);
     }
   }
 
   // Check S2 aging
-  if (
-    severityGroups.s2.length > 0 &&
-    daysSinceUpdate !== null &&
-    daysSinceUpdate > config.S2_MAX_DAYS
-  ) {
-    const msg = `S2 items aging ${daysSinceUpdate} days (warn threshold: ${config.S2_MAX_DAYS})`;
+  const s2Age = getOldestItemAgeDays(severityGroups.s2);
+  if (severityGroups.s2.length > 0 && s2Age !== null && s2Age > config.S2_MAX_DAYS) {
+    const msg = `S2 items aging ${s2Age} days (warn threshold: ${config.S2_MAX_DAYS})`;
     warnings.push(msg);
     exitCode = Math.max(exitCode, 1);
   }
@@ -91,7 +176,7 @@ function checkThresholds(severityGroups, daysSinceUpdate, config, isPrePush) {
  */
 function checkItemCountThreshold(itemCount, maxItems) {
   if (itemCount > maxItems) {
-    return `Total items (${itemCount}) exceeds threshold (${maxItems})`;
+    return `Total active items (${itemCount}) exceeds threshold (${maxItems})`;
   }
   return null;
 }
@@ -99,16 +184,18 @@ function checkItemCountThreshold(itemCount, maxItems) {
 /**
  * Output health summary
  */
-function outputHealthSummary(items, severityGroups, daysSinceUpdate) {
-  console.log("📊 Backlog Health Check");
-  console.log("═".repeat(50));
-  console.log(`   Total active items: ${items.length}`);
+function outputHealthSummary(totalItems, activeItems, severityGroups, corruptLines) {
+  console.log("Backlog Health Check");
+  console.log("=".repeat(50));
+  console.log(`   Source: MASTER_DEBT.jsonl`);
+  console.log(`   Total entries: ${totalItems}`);
+  console.log(`   Active items:  ${activeItems.length}`);
   console.log(`   S0 (Critical): ${severityGroups.s0.length}`);
   console.log(`   S1 (Major):    ${severityGroups.s1.length}`);
   console.log(`   S2 (Medium):   ${severityGroups.s2.length}`);
   console.log(`   S3 (Minor):    ${severityGroups.s3.length}`);
-  if (daysSinceUpdate !== null) {
-    console.log(`   Days since last update: ${daysSinceUpdate}`);
+  if (corruptLines.length > 0) {
+    console.log(`   Corrupt entries: ${corruptLines.length}`);
   }
   console.log("");
 }
@@ -118,13 +205,13 @@ function outputHealthSummary(items, severityGroups, daysSinceUpdate) {
  */
 function outputIssues(blockers, warnings) {
   if (blockers.length > 0) {
-    console.log("🛑 BLOCKERS (must address before push):");
+    console.log("BLOCKERS (must address before push):");
     blockers.forEach((b) => console.log(`   - ${b}`));
     console.log("");
   }
 
   if (warnings.length > 0) {
-    console.log("⚠️  WARNINGS:");
+    console.log("WARNINGS:");
     warnings.forEach((w) => console.log(`   - ${w}`));
     console.log("");
   }
@@ -135,104 +222,14 @@ function outputIssues(blockers, warnings) {
  */
 function outputFinalStatus(exitCode, blockers, isPrePush) {
   if (exitCode === 0) {
-    console.log("✅ Backlog health OK");
+    console.log("Backlog health OK");
   } else if (blockers.length > 0 && isPrePush) {
-    console.log("🛑 Push blocked - address critical backlog items first");
+    console.log("Push blocked - address critical backlog items first");
     console.log("   Use --force to override (not recommended)");
   } else {
-    console.log("⚠️  Backlog needs attention - consider addressing items soon");
+    console.log("Backlog needs attention - consider addressing items soon");
   }
   console.log("");
-}
-
-const BACKLOG_FILE = join(__dirname, "..", "docs", "AUDIT_FINDINGS_BACKLOG.md");
-
-/**
- * Parse backlog items from markdown content
- */
-function parseBacklogItems(content) {
-  const items = [];
-
-  // Remove markdown code blocks to avoid parsing templates/examples
-  const contentWithoutCodeBlocks = content.replace(/```[\s\S]*?```/g, "");
-
-  // Match item headers like "### [Category] Item Name"
-  const sections = contentWithoutCodeBlocks.split(/^### \[/gm);
-
-  for (let i = 1; i < sections.length; i++) {
-    const section = "### [" + sections[i];
-    const headerMatch = section.match(/^### \[([^\]]+)\] (.+)$/m);
-    if (!headerMatch) continue;
-
-    const category = headerMatch[1];
-    const name = headerMatch[2];
-
-    // Skip template/example items
-    if (category === "Category" && name === "Item Name") continue;
-
-    // Skip completed/rejected items
-    if (section.includes("## Completed Items") || section.includes("## Rejected Items")) {
-      continue;
-    }
-
-    // Extract severity (P003 fix: optional bold markers, flexible colon/spacing)
-    const severityMatch = section.match(/\*{0,2}Severity\*{0,2}\s{0,10}:?\s{0,10}(S[0-3])/i);
-    const severity = severityMatch ? severityMatch[1].toUpperCase() : "UNKNOWN";
-
-    // Skip items with template severity (S1/S2/S3)
-    if (section.includes("S1/S2/S3")) continue;
-
-    // Extract status (P003 fix: optional bold markers, flexible colon/spacing)
-    const statusMatch = section.match(
-      /\*{0,2}Status\*{0,2}\s{0,10}:?\s{0,10}(PENDING|IN_PROGRESS|DONE|DEFERRED)/i
-    );
-    const status = statusMatch ? statusMatch[1].toUpperCase() : "UNKNOWN";
-
-    // Extract CANON-ID (P003 fix: optional bold markers, flexible separator/spacing)
-    const canonMatch = section.match(/\*{0,2}CANON[- ]?ID\*{0,2}\s{0,10}:?\s{0,10}([A-Z]+-\d+)/i);
-    const canonId = canonMatch ? canonMatch[1] : "UNKNOWN";
-
-    // Skip items with template CANON-ID
-    if (canonId === "UNKNOWN" || section.includes("CANON-NNN")) continue;
-
-    // Only track pending/in-progress items
-    if (status === "DONE" || status === "DEFERRED") continue;
-
-    items.push({
-      category,
-      name,
-      severity,
-      status,
-      canonId,
-    });
-  }
-
-  return items;
-}
-
-/**
- * Calculate days since last update
- */
-function getDaysSinceUpdate(content) {
-  const dateMatch = content.match(/\*\*Last Updated\*\*:\s*(\d{4}-\d{2}-\d{2})/);
-  if (!dateMatch) return null;
-
-  const lastUpdated = new Date(dateMatch[1]);
-  const now = new Date();
-  const diffMs = now - lastUpdated;
-  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
-}
-
-/**
- * Get the cut index for active content (before Completed/Rejected sections)
- */
-function getActiveSectionCutIndex(content) {
-  const completedIndex = content.indexOf("## Completed Items");
-  const rejectedIndex = content.indexOf("## Rejected Items");
-
-  if (completedIndex === -1) return rejectedIndex;
-  if (rejectedIndex === -1) return completedIndex;
-  return Math.min(completedIndex, rejectedIndex);
 }
 
 /**
@@ -246,6 +243,32 @@ function determineFinalExitCode(isPrePush, blockers, exitCode) {
 }
 
 /**
+ * Warn about corrupt lines found during parsing (shown unless quiet mode).
+ */
+function warnCorruptLines(corruptLines, isQuiet) {
+  if (corruptLines.length === 0 || isQuiet) return;
+  console.log(`Note: ${corruptLines.length} corrupt line(s) skipped in MASTER_DEBT.jsonl`);
+  const preview = corruptLines.slice(0, 3);
+  preview.forEach((c) => console.log(`   Line ${c.lineNumber}: ${c.error}`));
+  if (corruptLines.length > 3) {
+    console.log(`   ... and ${corruptLines.length - 3} more`);
+  }
+  console.log("");
+}
+
+/**
+ * Merge item-count threshold result into warnings list and return final exit code.
+ */
+function applyItemCountThreshold(warnings, exitCode, activeItemCount, maxItems) {
+  const itemCountWarning = checkItemCountThreshold(activeItemCount, maxItems);
+  if (itemCountWarning) {
+    warnings.push(itemCountWarning);
+    return Math.max(exitCode, 1);
+  }
+  return exitCode;
+}
+
+/**
  * Main function
  */
 function main() {
@@ -254,39 +277,56 @@ function main() {
 
   try {
     if (!existsSync(BACKLOG_FILE)) {
-      if (!isQuiet) console.error("❌ AUDIT_FINDINGS_BACKLOG.md not found");
+      if (!isQuiet) console.error("MASTER_DEBT.jsonl not found at: " + BACKLOG_FILE);
       process.exitCode = 2;
       return;
     }
 
-    // Normalize CRLF to LF for cross-platform compatibility
-    const content = readFileSync(BACKLOG_FILE, "utf8").replace(/\r\n/g, "\n");
-    const daysSinceUpdate = getDaysSinceUpdate(content);
+    const content = readFileSync(BACKLOG_FILE, "utf8");
+    const { items: allItems, corruptLines } = parseBacklogItems(content);
 
-    // Parse items (only from active backlog section)
-    const cutIndex = getActiveSectionCutIndex(content);
-    const activeContent = cutIndex !== -1 ? content.slice(0, cutIndex) : content;
-    const items = parseBacklogItems(activeContent);
+    // Treat empty file as valid "no debt" state; only fail when content exists but is fully corrupt
+    const hasAnyNonEmptyLine = content
+      .replace(/\uFEFF/g, "")
+      .split(/\r?\n/)
+      .some((l) => l.trim() !== "");
+    if (allItems.length === 0) {
+      if (!hasAnyNonEmptyLine) {
+        if (!isQuiet) {
+          outputHealthSummary(0, [], categorizeBySeverity([]), []);
+          outputFinalStatus(0, [], isPrePush);
+        }
+        process.exitCode = 0;
+        return;
+      }
+      if (!isQuiet) console.error("No valid entries found in MASTER_DEBT.jsonl");
+      process.exitCode = 2;
+      return;
+    }
 
-    // Categorize and check thresholds
-    const severityGroups = categorizeBySeverity(items);
-    const { warnings, blockers, exitCode } = checkThresholds(
-      severityGroups,
-      daysSinceUpdate,
-      CONFIG,
-      isPrePush
+    // Warn on corrupt lines but don't fail
+    warnCorruptLines(corruptLines, isQuiet);
+
+    // Filter to active items only
+    const activeItems = filterActiveItems(allItems);
+
+    // Categorize active items by severity
+    const severityGroups = categorizeBySeverity(activeItems);
+
+    // Check thresholds
+    const { warnings, blockers, exitCode } = checkThresholds(severityGroups, CONFIG, isPrePush);
+
+    // Check item count threshold and calculate final exit code
+    const finalExitCode = applyItemCountThreshold(
+      warnings,
+      exitCode,
+      activeItems.length,
+      CONFIG.MAX_ITEMS
     );
-
-    // Check item count threshold
-    const itemCountWarning = checkItemCountThreshold(items.length, CONFIG.MAX_ITEMS);
-    if (itemCountWarning) warnings.push(itemCountWarning);
-
-    // Calculate final exit code
-    const finalExitCode = itemCountWarning ? Math.max(exitCode, 1) : exitCode;
 
     // Output results
     if (!isQuiet) {
-      outputHealthSummary(items, severityGroups, daysSinceUpdate);
+      outputHealthSummary(allItems.length, activeItems, severityGroups, corruptLines);
       outputIssues(blockers, warnings);
       outputFinalStatus(finalExitCode, blockers, isPrePush);
     }
@@ -294,7 +334,7 @@ function main() {
     process.exitCode = determineFinalExitCode(isPrePush, blockers, finalExitCode);
   } catch (err) {
     if (!isQuiet) {
-      console.error(`❌ Error: ${err instanceof Error ? err.message : String(err)}`);
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     }
     process.exitCode = 2;
   }

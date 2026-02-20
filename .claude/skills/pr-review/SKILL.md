@@ -168,6 +168,31 @@ changes but callers in other files aren't updated. PR #374 R4→R5 had a trim
 behavior change in `gitExec()` that wasn't propagated to 4 callers in other
 files.
 
+### Algorithm Design Pre-Check (NEW — PR #379 Retro)
+
+**Trigger:** PR introduces non-trivial algorithm logic (dedup, merge,
+canonicalization, hashing, reconciliation, diffing).
+
+Before pushing, verify the algorithm was **designed upfront**, not evolved
+through reviewer feedback:
+
+1. **Define invariants**: What properties must always hold? (e.g., "no duplicate
+   evidence entries", "deterministic key ordering")
+2. **Enumerate edge cases**: null/undefined inputs, empty arrays, circular
+   references, nested objects, prototype pollution, depth overflow
+3. **Handle all input types**: If consuming `JSON.parse` output, only
+   string/number/boolean/null/array/object are possible — skip
+   Date/RegExp/Map/Set
+4. **Add depth/size caps**: Any recursive traversal needs `maxDepth` with a
+   sensible default (e.g., 10) and circular reference detection via `WeakSet`
+5. **Design the full algorithm before committing**: Write pseudocode or comments
+   describing the complete approach, then implement. Don't commit a partial
+   algorithm expecting reviewer iteration to complete it.
+
+**Evidence:** PR #379 had 7 rounds of incremental evidence dedup refinement. 4
+rounds (~57%) were avoidable with upfront algorithm design. See FIX_TEMPLATES
+#34 for the complete evidence merge pattern.
+
 ---
 
 ## STEP 0: CONTEXT LOADING (Tiered Access)
@@ -627,6 +652,7 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 | Version | Date       | Description                                                                                               |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.6     | 2026-02-19 | Add Algorithm Design Pre-Check (Step 0.5). Source: PR #379 retro.                                         |
 | 2.5     | 2026-02-18 | Add filesystem guard pre-check, shared utility caller audit, propagation patterns. Source: PR #374 retro. |
 | 2.4     | 2026-02-17 | CC now enforced via pre-commit hook (error on staged files). Source: PR #371 retro.                       |
 | 2.3     | 2026-02-17 | Add CC Pre-Push Check (Step 0.5) + Path Test Matrix (Step 5.8). Source: PR #370 retro.                    |

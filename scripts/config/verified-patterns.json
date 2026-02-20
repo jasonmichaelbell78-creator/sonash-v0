@@ -190,6 +190,7 @@
   "missing-array-isarray": ["validate-schema.js"],
   "missing-bom-handling": ["validate-schema.js"],
   "unbounded-file-read": ["track-session.js"],
+  "rename-no-fallback": ["archive-doc.js", "run-consolidation.js"],
   "rename-without-remove": [
     "append-hook-warning.js",
     "transform-jsonl-schema.js",

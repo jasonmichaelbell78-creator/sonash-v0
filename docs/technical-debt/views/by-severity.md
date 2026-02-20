@@ -523,7 +523,7 @@
 | DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes          | docs/agent_docs/FIX_TEMPLATES.md                                                                                                                   | 0    | code-quality             | E0     |
 | DEBT-2482 | Technical debt view files - generated views without integ...  | docs/technical-debt/views/                                                                                                                         | 0    | code-quality             | E1     |
 
-## S2 - Medium (1587)
+## S2 - Medium (1588)
 
 | ID        | Title                                                          | File                                                                                                                                                                        | Line | Category                 | Effort |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -2114,11 +2114,17 @@
 | DEBT-3465 | Generic button labels - Submit used instead of action-spe...   | components/journal/journal-entry-form.tsx                                                                                                                                   | 1    | enhancements             | E0     |
 | DEBT-3466 | Security guidance consolidation - multiple overlapping se...   | docs/SECURITY.md                                                                                                                                                            | 1    | enhancements             | E2     |
 | DEBT-3467 | Pre-push duplicates pre-commit pattern checks                  | .husky/pre-push                                                                                                                                                             | 1    | enhancements             | E0     |
+| DEBT-3526 | Repo code execution risk via execFileSync in audit checker     | .claude/skills/pr-ecosystem-audit/scripts/checkers/pattern-lifecycle.js                                                                                                     | 145  | security                 | E1     |
 
-## S3 - Low (954)
+## S3 - Low (959)
 
 | ID        | Title                                                          | File                                                                                             | Line | Category                 | Effort |
 | --------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---- | ------------------------ | ------ |
+| DEBT-3521 | Make action buttons customizable by user (save preference...   | components/notebook/features/quick-actions-fab.tsx                                               | 12   | code-quality             | E1     |
+| DEBT-3522 | Pass limit to FirestoreService when it supports configura...   | lib/database/firestore-adapter.ts                                                                | 51   | code-quality             | E1     |
+| DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta...   | scripts/check-content-accuracy.js                                                                | 188  | refactoring              | E1     |
+| DEBT-3524 | Create a userIdHash → uid lookup collection for better pe...   | functions/src/admin.ts                                                                           | 2769 | performance              | E1     |
+| DEBT-3525 | Consider pre-computing cohort retention in a daily job         | functions/src/admin.ts                                                                           | 3936 | code-quality             | E1     |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/errors-tab.tsx                                                                  | 37   | code-quality             | E0     |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | components/admin/users-tab.tsx                                                                   | 563  | code-quality             | E0     |
 | DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/seed-meetings.ts                                                                         | 79   | code-quality             | E0     |

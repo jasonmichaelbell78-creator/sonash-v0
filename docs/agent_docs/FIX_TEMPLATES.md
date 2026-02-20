@@ -1651,10 +1651,135 @@ function isContained(candidate, root) {
 
 ---
 
+## Template 34: Evidence/Array Merge with Deep Dedup
+
+**When to use:** Merging arrays of evidence objects (or similar structured data)
+where duplicates must be eliminated using deep content comparison, not reference
+equality.
+
+**Source:** PR #379 (7 rounds of incremental evidence dedup refinement)
+
+### Bad Code
+
+```javascript
+// Shallow dedup — misses deep duplicates
+const merged = [...existing, ...incoming];
+const unique = [...new Set(merged)]; // Only dedupes by reference
+
+// No depth cap — stack overflow on circular refs
+function canonicalize(obj) {
+  return JSON.stringify(
+    Object.keys(obj)
+      .sort()
+      .reduce((acc, k) => ({ ...acc, [k]: canonicalize(obj[k]) }), {})
+  );
+}
+
+// Type-unstable keys — {a:1} and {a:"1"} collide
+function toKey(obj) {
+  return Object.values(obj).join("|");
+}
+```
+
+### Good Code
+
+```javascript
+/**
+ * Normalize any value to an array. Handles null, undefined, non-array.
+ */
+function toArray(v) {
+  if (v == null) return [];
+  return Array.isArray(v) ? v : [v];
+}
+
+/**
+ * Produce a canonical string for deep comparison.
+ * - Depth cap prevents stack overflow
+ * - WeakSet detects circular references
+ * - Only handles JSON-safe types (string/number/boolean/null/array/object)
+ */
+function canonicalize(val, depth = 0, seen = new WeakSet()) {
+  if (depth > 10) return '"[MAX_DEPTH]"';
+  if (val === null || val === undefined) return "null";
+
+  const t = typeof val;
+  if (t === "boolean" || t === "number") return String(val);
+  if (t === "string") return JSON.stringify(val);
+
+  if (t === "object") {
+    if (seen.has(val)) return '"[CIRCULAR]"';
+    seen.add(val);
+
+    if (Array.isArray(val)) {
+      return (
+        "[" + val.map((v) => canonicalize(v, depth + 1, seen)).join(",") + "]"
+      );
+    }
+
+    const keys = Object.keys(val).sort();
+    return (
+      "{" +
+      keys
+        .map(
+          (k) => JSON.stringify(k) + ":" + canonicalize(val[k], depth + 1, seen)
+        )
+        .join(",") +
+      "}"
+    );
+  }
+
+  return '"[UNSERIALIZABLE]"'; // fallback for functions, symbols, etc.
+}
+
+/**
+ * Type-stable key: prefix with type to prevent cross-type collisions.
+ * e.g., "s:hello" vs "n:123" vs "b:true"
+ */
+function evidenceToKey(item) {
+  if (item == null) return "null:null";
+  if (typeof item === "string") return "s:" + item;
+  if (typeof item !== "object") return typeof item + ":" + String(item);
+  return "o:" + canonicalize(item);
+}
+
+/**
+ * Merge two evidence arrays with Set-based dedup.
+ */
+function mergeEvidence(existing, incoming) {
+  const arr = [...toArray(existing), ...toArray(incoming)];
+  const seen = new Set();
+  const result = [];
+
+  for (const item of arr) {
+    const key = evidenceToKey(item);
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(item);
+    }
+  }
+
+  return result;
+}
+```
+
+### Checklist (Verify All Before Committing)
+
+1. **Depth cap**: Recursive canonicalization has `maxDepth` (default 10)
+2. **Circular refs**: `WeakSet` tracks visited objects
+3. **Prototype pollution**: Only iterate `Object.keys()`, never `for...in`
+4. **Null/non-array input**: `toArray()` normalizes before merging
+5. **Type-stable keys**: Prefix with type character to prevent `"1"` vs `1`
+   collision
+6. **Fallback for unserializable**: Functions, Symbols, BigInt produce
+   `[UNSERIALIZABLE]` instead of throwing
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                                    |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.0     | 2026-02-19 | Add Template 34 (evidence/array merge with deep dedup). Source: PR #379 retro.                            |
 | 1.9     | 2026-02-18 | Add Templates 31-33 (realpathSync lifecycle, safety flag hoist, path containment). Source: PR #374 retro. |
 | 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                        |
 | 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.           |

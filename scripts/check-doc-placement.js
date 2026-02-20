@@ -213,6 +213,11 @@ function checkFileLocation(filePath) {
   const relativePath = relative(ROOT, filePath).replaceAll(/\\/g, "/");
   const fileName = basename(filePath);
 
+  // Skip archived files — they are intentionally in docs/archive/
+  if (relativePath.startsWith("docs/archive/")) {
+    return findings;
+  }
+
   for (const [type, config] of Object.entries(EXPECTED_LOCATIONS)) {
     if (config.pattern.test(fileName)) {
       const inExpectedLocation = config.expected.some((loc) => relativePath.startsWith(loc));
@@ -420,8 +425,8 @@ function checkCleanupCandidate(filePath, content) {
     }
   }
 
-  // Check for temp/test files
-  if (/^(temp|test|tmp|scratch|delete|remove)/i.test(fileName)) {
+  // Check for temp/test files (match exact prefixes with separator, not substrings)
+  if (/^(temp[-_.]|tmp[-_.]|scratch[-_.]|delete[-_.]|remove[-_.])/i.test(fileName)) {
     findings.push({
       id: `DOC-LIFECYCLE-TEMP-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
       category: "documentation",

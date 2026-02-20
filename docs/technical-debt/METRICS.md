@@ -30,11 +30,11 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 2738  |
-| Open Items      | 2168  |
-| Resolved        | 298   |
+| Total Items     | 3050  |
+| Open Items      | 2462  |
+| Resolved        | 316   |
 | False Positives | 272   |
-| Resolution Rate | 11%   |
+| Resolution Rate | 10%   |
 
 ---
 
@@ -42,10 +42,10 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 149   |
-| VERIFIED       | 2019  |
+| NEW            | 154   |
+| VERIFIED       | 2308  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 298   |
+| RESOLVED       | 316   |
 | FALSE_POSITIVE | 272   |
 
 ---
@@ -54,10 +54,10 @@ distribution.
 
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
-| S0 (Critical) | 40    | 1%         |
-| S1 (High)     | 452   | 17%        |
-| S2 (Medium)   | 1293  | 47%        |
-| S3 (Low)      | 953   | 35%        |
+| S0 (Critical) | 52    | 2%         |
+| S1 (High)     | 452   | 15%        |
+| S2 (Medium)   | 1587  | 52%        |
+| S3 (Low)      | 959   | 31%        |
 
 ---
 
@@ -65,21 +65,21 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1589  |
+| code-quality             | 1868  |
 | documentation            | 470   |
-| process                  | 340   |
+| process                  | 347   |
 | ai-optimization          | 118   |
 | security                 | 112   |
-| performance              | 58    |
-| refactoring              | 22    |
-| enhancements             | 20    |
+| performance              | 59    |
+| enhancements             | 44    |
+| refactoring              | 23    |
 | engineering-productivity | 9     |
 
 ---
 
 ## Alerts
 
-### S0 Critical Alerts (19)
+### S0 Critical Alerts (31)
 
 - **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity fr
   (functions/src/admin.ts:576)
@@ -133,8 +133,8 @@ _...and 400 more S1 items_
 
 | Metric               | Value     |
 | -------------------- | --------- |
-| Verification Queue   | 149 items |
-| Avg Age (Open Items) | 14 days   |
+| Verification Queue   | 154 items |
+| Avg Age (Open Items) | 13 days   |
 | Oldest Item Age      | 21 days   |
 | Oldest Item          | DEBT-0002 |
 
@@ -144,7 +144,7 @@ _...and 400 more S1 items_
 
 | Source  | Count |
 | ------- | ----- |
-| unknown | 2738  |
+| unknown | 3050  |
 
 ---
 

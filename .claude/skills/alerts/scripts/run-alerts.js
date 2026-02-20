@@ -169,6 +169,12 @@ const BENCHMARKS = {
   sonarcloud: {
     failed_conditions: { good: 0, average: 1, poor: 3 },
   },
+  hook_health: {
+    warnings_7d: { good: 0, average: 5, poor: 15 },
+    overrides_7d: { good: 0, average: 2, poor: 5 },
+    false_positive_pct: { good: 0, average: 30, poor: 60 },
+    noise_ratio: { good: 0, average: 5, poor: 15 },
+  },
 };
 
 // ============================================================================
@@ -2150,55 +2156,325 @@ function checkRoadmapValidation() {
 }
 
 // ============================================================================
-// HOOK HEALTH (Full mode, Informational)
+// HOOK HEALTH (Limited mode — deep analysis of failures, overrides, false positives)
 // ============================================================================
 
 function checkHookHealth() {
   console.error("  Checking hook health...");
 
-  const result = runCommandSafe("npm", ["run", "hooks:health"], { timeout: 30000 });
-  const output = `${result.output || ""}\n${result.stderr || ""}`;
+  const now = Date.now();
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const cutoff7d = now - 7 * DAY_MS;
+  const cutoff24h = now - DAY_MS;
 
-  const hookCountMatch = output.match(/All (\d+) hooks valid/i);
-  const hookCount = hookCountMatch ? Number.parseInt(hookCountMatch[1], 10) : null;
+  // --- 1. Parse hook-warnings-log.jsonl (permanent audit trail of hook warnings) ---
+  const warningsLogPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
+  const warningLines = safeReadLines(warningsLogPath);
+  const allWarnings = warningLines.map((l) => safeParse(l)).filter(Boolean);
 
-  const sessionsStarted = output.match(/Total sessions started:\s*(\d+)/i);
-  const sessionsCompleted = output.match(/Sessions completed:\s*(\d+)/i);
-  const started = sessionsStarted ? Number.parseInt(sessionsStarted[1], 10) : 0;
-  const completed = sessionsCompleted ? Number.parseInt(sessionsCompleted[1], 10) : 0;
+  const warnings7d = allWarnings.filter((w) => {
+    const t = new Date(w.timestamp).getTime();
+    return !isNaN(t) && t > cutoff7d;
+  });
+  const warnings24h = allWarnings.filter((w) => {
+    const t = new Date(w.timestamp).getTime();
+    return !isNaN(t) && t > cutoff24h;
+  });
 
-  if (hookCount) {
-    addAlert("hook-health", "info", `${hookCount} hooks registered and valid`, null, null);
+  // Group by hook:type for frequency analysis
+  const warningsByType = Object.create(null);
+  for (const w of warnings7d) {
+    const key = `${w.hook || "unknown"}:${w.type || "unknown"}`;
+    if (!warningsByType[key]) warningsByType[key] = [];
+    warningsByType[key].push(w);
   }
 
-  let completionRate = 0;
-  if (started > 0) {
-    completionRate = completed > 0 ? Math.round((completed / started) * 100) : 0;
+  // --- 2. Parse override-log.jsonl (SKIP_* audit trail) ---
+  const overrideLogPath = path.join(ROOT_DIR, ".claude", "override-log.jsonl");
+  const overrideLines = safeReadLines(overrideLogPath);
+  const allOverrides = overrideLines.map((l) => safeParse(l)).filter(Boolean);
+
+  const overrides7d = allOverrides.filter((o) => {
+    const t = new Date(o.timestamp).getTime();
+    return !isNaN(t) && t > cutoff7d;
+  });
+  const overrides24h = allOverrides.filter((o) => {
+    const t = new Date(o.timestamp).getTime();
+    return !isNaN(t) && t > cutoff24h;
+  });
+
+  // Group overrides by check type
+  const overridesByCheck = Object.create(null);
+  for (const o of overrides7d) {
+    const key = String(o.check || "unknown");
+    if (!overridesByCheck[key]) overridesByCheck[key] = [];
+    overridesByCheck[key].push(o);
+  }
+
+  // --- 3. Parse .git/hook-output.log (most recent pre-commit result) ---
+  const hookOutputPath = path.join(ROOT_DIR, ".git", "hook-output.log");
+  let lastHookResult = { passed: null, failedChecks: [], passedChecks: [], timestamp: null };
+  try {
+    const stat = fs.statSync(hookOutputPath);
+    if (stat.size > 2 * 1024 * 1024) {
+      lastHookResult = {
+        passed: null,
+        failedChecks: [],
+        passedChecks: [],
+        skippedChecks: [],
+        timestamp: stat.mtime.toISOString(),
+      };
+    } else {
+      const hookOutput = fs.readFileSync(hookOutputPath, "utf8");
+      const passed = hookOutput.includes("All pre-commit checks passed");
+      const failedChecks = [];
+      const passedChecks = [];
+
+      // Extract check results from output
+      const checkPatterns = [
+        { name: "ESLint", pass: /ESLint passed/i, fail: /ESLint has errors/i },
+        { name: "lint-staged", pass: /Lint-staged passed/i, fail: /Lint-staged failed/i },
+        {
+          name: "pattern-compliance",
+          pass: /Pattern compliance passed/i,
+          fail: /Pattern compliance failed/i,
+        },
+        { name: "tests", pass: /Tests passed/i, fail: /Tests failed/i },
+        {
+          name: "cross-doc-deps",
+          pass: /Cross-document dependencies satisfied/i,
+          fail: /Cross-document dependency check failed/i,
+        },
+        {
+          name: "doc-index",
+          pass: /Documentation index updated/i,
+          fail: /Documentation index generation failed/i,
+        },
+        {
+          name: "doc-headers",
+          pass: /Document headers validated/i,
+          fail: /Document headers.*(failed|error)|check-doc-headers.*(failed|error)/i,
+        },
+        {
+          name: "audit-s0s1",
+          pass: /Audit S0\/S1 validation passed/i,
+          fail: /S0\/S1 validation failed/i,
+        },
+        {
+          name: "debt-schema",
+          pass: /Technical debt schema passed/i,
+          fail: /Technical debt schema validation failed/i,
+        },
+        {
+          name: "agent-compliance",
+          pass: /Agent compliance check passed/i,
+          fail: /Agent compliance.*failed/i,
+        },
+      ];
+
+      for (const cp of checkPatterns) {
+        if (cp.fail.test(hookOutput)) failedChecks.push(cp.name);
+        else if (cp.pass.test(hookOutput)) passedChecks.push(cp.name);
+      }
+
+      // Detect skipped checks
+      const skipPattern = /Skipping\s+([^\r\n(]+)/g;
+      const skippedChecks = [];
+      let skipMatch;
+      while ((skipMatch = skipPattern.exec(hookOutput)) !== null) {
+        const name = skipMatch[1].trim();
+        if (name) skippedChecks.push(name);
+      }
+
+      lastHookResult = {
+        passed,
+        failedChecks,
+        passedChecks,
+        skippedChecks,
+        timestamp: stat.mtime.toISOString(),
+      };
+    }
+  } catch {
+    // No hook output log available
+  }
+
+  // --- 4. Analyze git log for commit noise (chore: update hook/state commits) ---
+  let noiseCommits7d = 0;
+  let totalCommits7d = 0;
+  try {
+    const since7d = new Date(cutoff7d).toISOString().split("T")[0];
+    const logResult = runCommandSafe("git", ["log", "--oneline", `--since=${since7d}`], {
+      timeout: 10000,
+    });
+    const logLines = (logResult.output || "").trim().split("\n").filter(Boolean);
+    totalCommits7d = logLines.length;
+    const noisePattern = /\bchore:.*(?:update (?:hook|fetch)|rotate|housekeeping.*state)/i;
+    noiseCommits7d = logLines.filter((l) => noisePattern.test(l)).length;
+  } catch {
+    // git log failure is non-fatal
+  }
+
+  // --- 5. Compute metrics ---
+  const warningsCount7d = warnings7d.length;
+  const failureRate7d = warningsCount7d;
+
+  const errorsCount7d = warnings7d.filter((w) => {
+    const sev = String(w.severity || "").toLowerCase();
+    return sev === "error";
+  }).length;
+  const overrideRate7d = overrides7d.length;
+
+  // False-positive indicator: high override-to-warning ratio suggests checks are too aggressive
+  const falsePositiveRatio =
+    failureRate7d === 0
+      ? overrideRate7d > 0
+        ? 100
+        : 0
+      : Math.round((overrideRate7d / failureRate7d) * 100);
+
+  // Noise ratio: % of commits that are hook state housekeeping
+  const noiseRatio = totalCommits7d > 0 ? Math.round((noiseCommits7d / totalCommits7d) * 100) : 0;
+
+  // Most-overridden check (likely false-positive candidate)
+  let topOverriddenCheck = null;
+  let topOverriddenCount = 0;
+  for (const [check, entries] of Object.entries(overridesByCheck)) {
+    if (entries.length > topOverriddenCount) {
+      topOverriddenCount = entries.length;
+      topOverriddenCheck = check;
+    }
+  }
+
+  // Most-warned hook:type combo
+  let topWarningType = null;
+  let topWarningCount = 0;
+  for (const [type, entries] of Object.entries(warningsByType)) {
+    if (entries.length > topWarningCount) {
+      topWarningCount = entries.length;
+      topWarningType = type;
+    }
+  }
+
+  // --- 6. Generate alerts based on benchmarks ---
+
+  // Last hook run failed
+  if (lastHookResult.passed === false) {
+    const failList = lastHookResult.failedChecks.join(", ") || "unknown checks";
     addAlert(
       "hook-health",
-      "info",
-      `Session completion rate: ${completionRate}% (${completed}/${started} sessions completed)`,
-      null,
-      completionRate < 50 ? "Run /session-end consistently to improve completion rate" : null
+      "error",
+      `Last pre-commit run failed: ${failList}`,
+      `Hook output: .git/hook-output.log`,
+      "Run: /pre-commit-fixer or review .git/hook-output.log"
     );
   }
 
-  if (output.includes("invalid") || output.includes("ERROR")) {
+  // High warning volume (7d)
+  if (failureRate7d >= BENCHMARKS.hook_health.warnings_7d.poor) {
+    addAlert(
+      "hook-health",
+      "error",
+      `${failureRate7d} hook warnings in last 7 days (threshold: ${BENCHMARKS.hook_health.warnings_7d.average})`,
+      `Top warning: ${topWarningType || "none"} (${topWarningCount}x)`,
+      "Review hook-warnings-log.jsonl for recurring patterns"
+    );
+  } else if (failureRate7d >= BENCHMARKS.hook_health.warnings_7d.average) {
     addAlert(
       "hook-health",
       "warning",
-      "Hook health check found issues",
-      null,
-      "Run: npm run hooks:health"
+      `${failureRate7d} hook warnings in last 7 days`,
+      `Top: ${topWarningType || "none"} (${topWarningCount}x)`,
+      "Review .claude/state/hook-warnings-log.jsonl"
     );
   }
 
+  // High override rate
+  if (overrideRate7d >= BENCHMARKS.hook_health.overrides_7d.poor) {
+    addAlert(
+      "hook-health",
+      "warning",
+      `${overrideRate7d} hook overrides in last 7 days — checks may be too aggressive`,
+      topOverriddenCheck ? `Most overridden: ${topOverriddenCheck} (${topOverriddenCount}x)` : null,
+      "Consider tuning check rules or adding gitignore entries"
+    );
+  }
+
+  // High false-positive ratio
+  if (overrideRate7d >= 3 && falsePositiveRatio >= BENCHMARKS.hook_health.false_positive_pct.poor) {
+    addAlert(
+      "hook-health",
+      "warning",
+      `Override-to-warning ratio at ${falsePositiveRatio}% — suggests false positives`,
+      `${overrideRate7d} overrides vs ${failureRate7d} warnings in 7d`,
+      "Audit check rules for overly broad triggers"
+    );
+  }
+
+  // Commit noise
+  if (noiseRatio >= BENCHMARKS.hook_health.noise_ratio.poor) {
+    addAlert(
+      "hook-health",
+      "warning",
+      `${noiseRatio}% of commits (${noiseCommits7d}/${totalCommits7d}) are hook state housekeeping`,
+      null,
+      "Ensure ephemeral state files are in .gitignore"
+    );
+  } else if (noiseRatio >= BENCHMARKS.hook_health.noise_ratio.average) {
+    addAlert(
+      "hook-health",
+      "info",
+      `${noiseRatio}% of commits (${noiseCommits7d}/${totalCommits7d}) are hook state housekeeping`,
+      null,
+      "Check .gitignore for missing ephemeral files"
+    );
+  }
+
+  // All clear
+  if (
+    failureRate7d === 0 &&
+    overrideRate7d === 0 &&
+    lastHookResult.passed !== false &&
+    noiseRatio < BENCHMARKS.hook_health.noise_ratio.average
+  ) {
+    addAlert(
+      "hook-health",
+      "info",
+      "Hooks healthy — no failures, overrides, or noise detected",
+      null,
+      null
+    );
+  }
+
+  // --- 7. Rate and context ---
+  const warningRating = rateLowerBetter(failureRate7d, BENCHMARKS.hook_health.warnings_7d);
+  const overrideRating = rateLowerBetter(overrideRate7d, BENCHMARKS.hook_health.overrides_7d);
+  const noiseRating = rateLowerBetter(noiseRatio, BENCHMARKS.hook_health.noise_ratio);
+
   addContext("hook-health", {
+    benchmarks: {
+      warnings_7d: BENCHMARKS.hook_health.warnings_7d,
+      overrides_7d: BENCHMARKS.hook_health.overrides_7d,
+      false_positive_pct: BENCHMARKS.hook_health.false_positive_pct,
+      noise_ratio: BENCHMARKS.hook_health.noise_ratio,
+    },
+    ratings: {
+      warnings: warningRating,
+      overrides: overrideRating,
+      noise: noiseRating,
+    },
     totals: {
-      hook_count: hookCount,
-      sessions_started: started,
-      sessions_completed: completed,
-      completion_rate: completionRate,
+      warnings_24h: warnings24h.length,
+      warnings_7d: failureRate7d,
+      overrides_24h: overrides24h.length,
+      overrides_7d: overrideRate7d,
+      false_positive_pct: falsePositiveRatio,
+      noise_commits_7d: noiseCommits7d,
+      total_commits_7d: totalCommits7d,
+      noise_ratio: noiseRatio,
+      top_warning_type: topWarningType,
+      top_overridden_check: topOverriddenCheck,
+      last_hook_passed: lastHookResult.passed,
+      last_hook_failed_checks: lastHookResult.failedChecks,
     },
   });
 }
@@ -2989,9 +3265,10 @@ function computeHealthScore() {
     "debt-metrics": 0.11,
     "test-results": 0.1,
     learning: 0.07,
-    "skip-abuse": 0.03,
+    "skip-abuse": 0.02,
     session: 0.03,
     "agent-compliance": 0.04,
+    "hook-health": 0.03,
     // New state (8%)
     "session-state": 0.03,
     "pattern-hotspots": 0.03,
@@ -3100,6 +3377,7 @@ function main() {
   checkHookWarnings();
   checkSkipAbuse();
   checkTestResults();
+  checkHookHealth();
   // New limited-mode checkers (A1, A2, A5)
   checkSessionState();
   checkPatternHotspots();
@@ -3115,7 +3393,6 @@ function main() {
     checkSessionActivity();
     checkCommitActivity();
     checkRoadmapValidation();
-    checkHookHealth();
     // New full-mode checkers (A3, A4, B1-B8, C1, C2)
     checkDebtIntake();
     checkDebtResolution();
@@ -3141,6 +3418,7 @@ function main() {
   ensureCategory("hook-warnings", "Hook Warnings");
   ensureCategory("skip-abuse", "Skip Abuse");
   ensureCategory("test-results", "Test Results");
+  ensureCategory("hook-health", "Hook Health");
   ensureCategory("session-state", "Session State");
   ensureCategory("pattern-hotspots", "Pattern Hotspots");
   ensureCategory("context-usage", "Context Usage");
@@ -3154,7 +3432,6 @@ function main() {
     ensureCategory("session-activity", "Session Activity");
     ensureCategory("commit-activity", "Commit Activity");
     ensureCategory("roadmap-health", "Roadmap Validation");
-    ensureCategory("hook-health", "Hook Health");
     ensureCategory("debt-intake", "Debt Intake");
     ensureCategory("debt-resolution", "Debt Resolution");
     ensureCategory("roadmap-hygiene", "Roadmap Hygiene");

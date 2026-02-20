@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.41 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
+**Document Version:** 17.44 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
 
 ## Purpose
 
@@ -1513,6 +1513,186 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #360: PR #379 R6 — Null Metrics, safeRenameSync, Linter False Positives, Edge Guards (2026-02-20)
+
+**Source:** SonarCloud + Qodo + Gemini (Round 4 on this branch) **PR/Branch:**
+PR #379 / claude/cherry-pick-commits-thZGO **Suggestions:** 30 total (Qodo: 15,
+SonarCloud: 11, Gemini: 3, Security: 1) (Fixed: 15, Rejected: 12, Already
+addressed: 3, Architectural: 1 flagged)
+
+**Patterns Identified:**
+
+1. **Null-safe metric aggregation** (MAJOR): `computeAvgFixRatio` and
+   `computeChurnPct` returned 0 when no data existed, inflating composite scores
+   to appear healthy. Fix: return `null` for missing data, filter nulls from
+   aggregation, compute average only from available metrics.
+2. **Linter rule self-flagging** (MAJOR): `rename-no-fallback` rule only checked
+   for `writeFileSync` fallback, missing `copyFileSync` (which the fix template
+   actually recommends). Also missed `catch` block validation and cleanup
+   (`unlinkSync/rmSync`). Fix: require try + catch + copy fallback + cleanup.
+3. **safeRenameSync propagation to own code** (MAJOR): Round 5 added `.bak`
+   rotation with bare `renameSync` calls — exactly the pattern the linter rule
+   detects. Fix: inline `safeRename` helper with copyFileSync + unlinkSync
+   fallback.
+4. **Empty backlog = healthy, not error** (MINOR): An empty MASTER_DEBT.jsonl
+   was treated as corrupt (exit code 2). Fix: detect truly empty files and
+   output "no debt" summary with exit code 0.
+5. **Future-dated timestamps bypass aging alerts** (MINOR): Negative `ageDays`
+   values from future `created` dates would never be "oldest" but could confuse
+   metrics. Fix: `if (ageDays < 0) continue`.
+
+**Resolution:**
+
+- Fixed: 15 items (6 Major, 7 Minor, 2 Trivial)
+- Rejected: 12 items (1 SonarCloud tool conflict, 10 persistent TODO FPs, 1 dup)
+- Already addressed: 3 items (Gemini outdated)
+- Architectural: 1 (repo code execution via execFileSync — flagged to user)
+- Deferred: 0
+
+**Key Learnings:**
+
+- When building linter rules, test them against the project's OWN fix patterns.
+  The `rename-no-fallback` rule only accepted `writeFileSync` but the project's
+  standard fix uses `copyFileSync` — the rule would flag its own recommended
+  fix.
+- Metric functions returning 0 for "no data" vs "measured at zero" is a semantic
+  bug that inflates composite scores. Always use null/undefined to represent
+  absence, not zero.
+- First round to follow the full `/pr-review` protocol from Step 0. Caught 3
+  more items via categorization discipline than the previous skip-protocol
+  rounds averaged.
+
+---
+
+#### Review #359: PR #379 R5 — CC Helper Extraction, Checker Failure Surfacing, CRLF Propagation, .bak Rotation (2026-02-20)
+
+**Source:** SonarCloud + Qodo (Round 3 on this branch) **PR/Branch:** PR #379 /
+claude/cherry-pick-commits-thZGO **Suggestions:** 22 total + 3 propagation
+(Critical: 1, Major: 4, Minor: 10, Trivial: 1, Rejected: 8 Info false positives,
+Duplicate: 1) (Fixed: 14 + 3 propagation, Rejected: 8, Duplicate: 1)
+
+**Patterns Identified:**
+
+1. **CC regression from helper merge** (CRITICAL): Merging two CC-17/18
+   functions into one shared `parseBlockCommentState` created a CC-19 function —
+   worse than the originals. Fix: extract `advanceStringChar` sub-helper per
+   Template 30. **Root cause**: Template 30 verification checklist ("run CC
+   check on entire file after extraction") was not executed in Round 2.
+2. **CRLF propagation miss across loadJsonl copies** (MINOR): Fixed CRLF in
+   effectiveness-metrics.js but 3 identical `loadJsonl` functions in
+   process-compliance.js, feedback-integration.js, pattern-lifecycle.js were
+   missed. **Root cause**: Step 5.6 propagation check was skipped in Round 2
+   because the protocol wasn't followed.
+3. **Silent checker failures in audit runner** (MAJOR): When a domain checker
+   threw, the error was logged to stderr but no finding was created — the audit
+   report showed a clean pass. Fix: push a high-severity `PEA-DOMAIN-FAIL-*`
+   finding into allFindings on catch.
+4. **Case-insensitive severity normalization** (MAJOR): JSONL entries with
+   lowercase `s1` or `warning` were silently ignored by filters checking for
+   uppercase. Two separate instances: backlog parser and alerts failureRate7d.
+
+**Resolution:**
+
+- Fixed: 17 items (14 direct + 3 propagation)
+- Rejected: 8 items (TODO false positives in TODO-extractor script)
+- Duplicate: 1 item (Qodo #12 = incremental variant of #7)
+- Deferred: 0
+
+**Key Learnings:**
+
+- Always run CC check on the ENTIRE file after extracting helpers, not just the
+  refactored function. A merge that reduces two 17+18 CC functions to one 19 CC
+  function is a regression, not an improvement.
+- The `/pr-review` protocol exists because every skipped step costs a future
+  review round. Rounds 1-2 skipped the protocol entirely, causing Round 3 to
+  catch propagation misses and CC regressions that the protocol would have
+  prevented.
+- When fixing a JSONL parsing issue (CRLF), always `grep -rn "loadJsonl"` to
+  find ALL copies. The pr-ecosystem-audit checkers have 6 nearly-identical
+  `loadJsonl` functions — a dedup opportunity for future refactoring.
+
+---
+
+#### Review #358: PR #379 R4 — ReDoS Bounded Quantifiers, Dead Store Elimination, CRLF/BOM Normalization (2026-02-20)
+
+**Source:** SonarCloud + Qodo + Gemini **PR/Branch:** PR #379 /
+claude/cherry-pick-commits-thZGO **Suggestions:** 30 total (Critical: 1, Major:
+9, Minor: 9, Info: 8, Incremental: 3) (Fixed: 12 code smells + 9 PR suggestions,
+Rejected: 8 Info false positives)
+
+**Process Failure:** This review was handled WITHOUT invoking the `/pr-review`
+skill. No proper intake, no categorization table, no learning log entry was
+created at commit time. This entry is being written retroactively. The same
+failure occurred in Review #357.
+
+**Patterns Identified:**
+
+1. **ReDoS via unbounded quantifiers in alternation** (CRITICAL): Regex
+   `/(?:join\s*\(|`[^`]*\$\{|\/\S*session|...)`had two backtracking-prone quantifiers:`[^`]_`and`\S_` followed by literals. Fix: split into individual tests with bounded quantifiers (`[^`]{0,200}`, `\S{0,100}`) and simple `includes()`
+   for literal matches.
+2. **Dead store false positives in for-loop index manipulation** (MAJOR):
+   SonarCloud flagged `c += 1` inside for-loops as dead stores (8 instances
+   across 2 functions). The increments were correct (skip 2-char tokens like
+   `/*` and `*/`) but SonarCloud's dataflow analysis doesn't model for-loop
+   header interactions. Fix: refactored to while-loops with explicit `i += 2`
+   and merged duplicate functions into shared `parseBlockCommentState`.
+3. **Not-applicable metrics inflating scores** (MAJOR): When no large reviews
+   exist, `parallelPct` defaulted to 100 instead of null, inflating the agent
+   utilization score. Fix: return null and short-circuit to neutral
+   `{ score: 100, rating: "good" }`.
+4. **CRLF/BOM in JSONL parsers** (MINOR): Three JSONL parsers split on `\n`
+   without handling `\r\n` or BOM bytes. Cross-platform files would produce
+   JSON.parse errors from trailing `\r`. Fixed in backlog health, data-state
+   health, and effectiveness metrics parsers.
+5. **Cross-device rename failure** (MINOR): `fs.renameSync` fails with EXDEV on
+   cross-device moves (e.g., tmp on different partition). Added try/catch with
+   `copyFileSync` + `rmSync` fallback.
+
+**Key Learning:** Skipping the `/pr-review` protocol is false economy — it
+creates more work in follow-up rounds because categorization and learning
+capture are deferred but still required. The 9-step protocol exists because
+every shortcut eventually costs more than the ceremony.
+
+---
+
+#### Review #357: PR #379 R3 — SonarCloud + Qodo + Gemini Mixed Review (2026-02-20)
+
+**Source:** SonarCloud + Qodo + Gemini **PR/Branch:** PR #379 /
+claude/cherry-pick-commits-thZGO **Suggestions:** ~40 total (Critical: 2, Major:
+8, Minor: 15, Trivial: 2, Architectural: ~13) (Fixed: 27, Rejected: ~13)
+
+**Process Failure:** This review was handled WITHOUT invoking the `/pr-review`
+skill. Jumped directly to fixing without proper intake, categorization, or
+learning capture. This entry is retroactive.
+
+**Patterns Identified:**
+
+1. **ReDoS in extract-scattered-debt.js** (CRITICAL): `KEYWORD_RE` used
+   `\b(TODO|FIXME|...)(?=[:(\s])` with a lookahead that could backtrack.
+   Replaced with anchored `(?=[:(])` without `\s` alternative.
+2. **Cognitive complexity via monolithic main()** (MAJOR): Both
+   check-backlog-health.js and extract-scattered-debt.js had main() functions
+   with CC >15 due to inline result reporting and file scanning. Extracted
+   `reportResults`, `collectAllFiles`, `scanFile` helpers.
+3. **Block comment detection missing string tracking** (MAJOR): Original
+   `updateBlockCommentState` didn't track string literals, so `/*` inside a
+   string would toggle comment state. Added `quoteChar` tracking with escape
+   handling.
+4. **Widen look-back windows for heuristic checks** (MINOR): Gemini flagged
+   5-line and 10-line windows as too narrow for detecting try-blocks and
+   fallback patterns. Widened to 15 and 20 lines per Gemini suggestion.
+5. **appendFileSync without symlink guard** (MAJOR): state-manager.js guarded
+   writeFileSync but not appendFileSync, leaving a symlink-attack surface. Added
+   `isSafeToWrite` check before append.
+
+**Key Learning:** When a file introduces new functions (like
+`updateBlockCommentState`), the function needs the SAME safety invariants as
+existing functions in the file. String-literal tracking was present in
+`findCommentStart` but absent from the new block-comment functions — a
+propagation failure caught only by external review.
 
 ---
 

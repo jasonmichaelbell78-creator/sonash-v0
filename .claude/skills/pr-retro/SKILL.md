@@ -457,6 +457,24 @@ identify known chains.
   added. pr-review SKILL.md Step 0.5 updated with containment pre-check.
 - **Templates:** FIX_TEMPLATES #33 (containment), #9 (startsWith separator)
 
+### Pattern 8: Incremental Algorithm Hardening
+
+- **Frequency:** PR #379 (7 rounds, 4 avoidable — ~57%)
+- **Root cause:** Non-trivial algorithm logic (evidence dedup, canonicalization,
+  merge) refined incrementally through reviewer feedback instead of being
+  designed upfront. Each round adds one more edge case (circular refs, depth
+  overflow, type instability) that a pre-design phase would have caught.
+- **Signature:** Same function/algorithm modified in 3+ consecutive rounds with
+  progressively harder edge cases (e.g., R3 adds depth cap, R4 fixes circular
+  refs, R5 fixes type coercion, R6 fixes String.raw, R7 extracts nested ternary)
+- **Known fix:** Algorithm Design Pre-Check added to pr-review Step 0.5 —
+  requires defining invariants, enumerating edge cases, and designing the full
+  algorithm before committing when PR introduces non-trivial algorithm logic.
+- **Status as of PR #379:** FIX_TEMPLATES #34 (evidence/array merge with deep
+  dedup) added. pr-review Step 0.5 updated with Algorithm Design Pre-Check. Qodo
+  pr-agent.toml updated with 2 new suppression rules.
+- **Templates:** FIX_TEMPLATES #34 (evidence merge)
+
 ---
 
 ## COMPLIANCE MECHANISMS
@@ -525,6 +543,7 @@ The retro connects to other session workflows:
 
 | Version | Date       | Description                                                                              |
 | ------- | ---------- | ---------------------------------------------------------------------------------------- |
+| 2.4     | 2026-02-19 | Add Pattern 8 (incremental algorithm hardening). Source: PR #379 retro.                  |
 | 2.3     | 2026-02-18 | Add Patterns 6-7 (realpathSync lifecycle, containment flip-flop). Source: PR #374 retro. |
 | 2.2     | 2026-02-17 | Update patterns 1+3 status: CC enforced, Qodo suppression fixed                          |
 | 2.1     | 2026-02-17 | Add known patterns, TDMS enforcement, compliance mechanisms                              |
