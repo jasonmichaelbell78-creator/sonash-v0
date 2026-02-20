@@ -1769,6 +1769,36 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #362: PR #382 R1 — Regex DoS, Severity Mapping Bug, Table Parsing, 49 Items (2026-02-20)
+
+**Source:** SonarCloud (23) + Gemini Code Assist (3) + Qodo PR Suggestions (23)
+**PR/Branch:** PR #382 / claude/fix-tool-use-ids-EfyvE **Total:** 49 raw →
+42 fixed, 4 rejected (compliance not-applicable), 3 flagged to user
+(architectural)
+
+**Patterns Identified:**
+
+- TWO-STRIKES regex: `matchNumberedHeading` L548 flagged for both DoS (S5852)
+  and complexity (31>20) — replaced with string parsing per CLAUDE.md rule
+- Severity mapping bug: `critical→S1` instead of `S0` caused 374 items to be
+  mis-prioritized in initial extraction
+- `filter(Boolean)` on table splits drops empty cells, shifting column indexes
+- Title-only dedup key causes distinct findings (same title, different files) to
+  merge incorrectly
+- Explicit severity markers (S0-S3) must be checked before keyword heuristics
+- `source_id` sequence suffix != source file line number (false positive)
+
+**Key Learnings:**
+
+- Regex complexity >20 from large alternation sets → replace with Set + function
+- Severity mapping in extraction scripts should always prefer explicit markers
+- Table parsing must strip outer pipes before split, not filter(Boolean) after
+- CRLF handling needed even for repo-internal files on Windows
+- Compliance checks (audit trails, input validation) don't apply to one-shot
+  offline scripts processing trusted repo files
+
+---
+
 #### Review #361: PR #381 R1+R2 — Empty Catch Logging, Filter Safety, Regex Broadening, Propagation Fix (2026-02-20)
 
 **Source:** Qodo Compliance + Qodo Code Suggestions + Gemini Code Assist (R1+R2)

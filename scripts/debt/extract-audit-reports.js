@@ -177,17 +177,43 @@ function loadExistingIntakeIds() {
   return ids;
 }
 
+function loadExistingOutputHashes() {
+  const hashes = new Set();
+  if (!fs.existsSync(OUTPUT_FILE)) return hashes;
+  let content;
+  try {
+    content = fs.readFileSync(OUTPUT_FILE, "utf8").replaceAll("\uFEFF", "");
+  } catch {
+    return hashes;
+  }
+  for (const line of content.split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const item = JSON.parse(line);
+      if (item.content_hash) hashes.add(item.content_hash);
+    } catch {
+      // skip
+    }
+  }
+  return hashes;
+}
+
 // --- Severity detection from markdown context ---
 
 function detectSeverity(text, sectionContext) {
   const combined = `${sectionContext} ${text}`.toLowerCase();
-  // Emoji-based severity
-  if (/🔴|critical|s0|severity:\s*critical/i.test(combined)) return "S1";
-  if (/🟡|⚠️|high|s1|severity:\s*high/i.test(combined)) return "S2";
-  if (/🟢|🔵|medium|low|s2|s3/i.test(combined)) return "S3";
-  // Language-based
-  if (/\b(crash|data.?loss|security.?vuln|exploit|bypass)\b/i.test(combined)) return "S1";
-  if (/\b(memory.?leak|race.?condition|inconsistent|missing)\b/i.test(combined)) return "S2";
+
+  // Prefer explicit severity markers (e.g., "(S2)", "- S1")
+  const explicit = combined.match(/(?:^|[\s(,-])s([0-3])(?:[\s),.-]|$)/);
+  if (explicit) return `S${explicit[1]}`;
+
+  // Emoji/keyword-based severity
+  if (/🔴|critical|severity:\s*critical/.test(combined)) return "S0";
+  if (/🟡|⚠️|high|severity:\s*high/.test(combined)) return "S1";
+  if (/🟢|🔵|medium|low/.test(combined)) return "S3";
+  // Language-based fallback
+  if (/\b(crash|data.?loss|security.?vuln|exploit|bypass)\b/.test(combined)) return "S0";
+  if (/\b(memory.?leak|race.?condition|inconsistent|missing)\b/.test(combined)) return "S1";
   return "S3";
 }
 
@@ -257,7 +283,8 @@ function isNonActionableHeading(text) {
     /^(deployment|migration)\s+checklist$/,
     /^(cost-?benefit|backward\s+compat)/,
     /^key\s+(learnings|deliverables|documents)/,
-    /^(immediate|short.?term|medium.?term|long.?term)\s*(actions?|next\s+steps?)?$/,
+    /^(?:immediate|long.?term)\s*(?:actions?|next\s+steps?)?$/,
+    /^(?:short|medium).?term\s*(?:actions?|next\s+steps?)?$/,
     /^(week|phase|sprint)\s+\d/,
     /^(before|after)\s+(refactoring|phase|this)/,
     /^for\s+each\s+fix/,
@@ -305,8 +332,8 @@ function extractFilePath(text) {
   // Match patterns like: `file.tsx`, **File**: `file.tsx`, file.tsx:123
   const patterns = [
     /`([a-zA-Z0-9_/-]+\.[a-zA-Z]{1,5}(?::\d+)?)`/,
-    /\*\*File\*\*:?\s*`?([a-zA-Z0-9_/-]+\.[a-zA-Z]{1,5})`?/i,
-    /\*\*Location\*\*:?\s*`?([a-zA-Z0-9_/-]+\.[a-zA-Z]{1,5})`?/i,
+    /\*\*File\*\*:?\s*`?([a-z0-9_/-]+\.[a-z]{1,5})`?/i,
+    /\*\*Location\*\*:?\s*`?([a-z0-9_/-]+\.[a-z]{1,5})`?/i,
     /\b((?:src|app|components|lib|hooks|scripts|functions)\/[a-zA-Z0-9_/-]+\.[a-zA-Z]{1,5})/,
   ];
   for (const pattern of patterns) {
@@ -326,14 +353,14 @@ function extractFilePath(text) {
 
 function extractLineNumber(text) {
   const patterns = [
-    /:(\d+)(?:-\d+)?[`\s)]/,
+    /:(\d+)(?:-\d+)?(?:[`\s)]|$)/,
     /\bline\s+(\d+)/i,
     /\bLine\s+(\d+)/i,
     /\(line\s+(\d+)\)/i,
   ];
   for (const pattern of patterns) {
     const match = text.match(pattern);
-    if (match) return parseInt(match[1], 10);
+    if (match) return Number.parseInt(match[1], 10);
   }
   return 0;
 }
@@ -385,7 +412,7 @@ function safeCol(cols, idx, fallback) {
 function extractTableLocation(cols, rowLine, colIndexes) {
   const filePath = colValueOrFallback(cols, colIndexes.fileColIdx, rowLine, extractFilePath);
   const rawLineVal = safeCol(cols, colIndexes.lineColIdx, "");
-  const lineNum = rawLineVal ? parseInt(rawLineVal, 10) || 0 : extractLineNumber(rowLine);
+  const lineNum = rawLineVal ? Number.parseInt(rawLineVal, 10) || 0 : extractLineNumber(rowLine);
   return { filePath, lineNum };
 }
 
@@ -395,7 +422,7 @@ function extractTableLocation(cols, rowLine, colIndexes) {
 function buildTableTitle(cols, colIndexes) {
   const actionText = safeCol(cols, colIndexes.actionColIdx, "");
   const issueText = safeCol(cols, colIndexes.issueColIdx, "");
-  return (actionText || issueText || cols.join(" — ")).replace(/`/g, "").trim();
+  return (actionText || issueText || cols.join(" — ")).replaceAll("`", "").trim();
 }
 
 /**
@@ -403,7 +430,7 @@ function buildTableTitle(cols, colIndexes) {
  */
 function cleanFilePath(filePath) {
   if (!filePath) return "";
-  return filePath.replace(/^`|`$/g, "").replace(/^\*\*|\*\*$/g, "");
+  return filePath.replace(/^`/g, "").replace(/`$/g, "").replace(/^\*\*/g, "").replace(/\*\*$/g, "");
 }
 
 /**
@@ -411,9 +438,10 @@ function cleanFilePath(filePath) {
  */
 function parseTableRow(rowLine, colIndexes) {
   const cols = rowLine
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
     .split("|")
-    .map((c) => c.trim())
-    .filter(Boolean);
+    .map((c) => c.trim());
 
   if (cols.length < 2) return null;
 
@@ -435,7 +463,9 @@ function parseTableRow(rowLine, colIndexes) {
  */
 function isTableHeaderLine(lines, i) {
   return (
-    lines[i].includes("|") && i + 1 < lines.length && /^\s*\|[\s-:|]+\|\s*$/.test(lines[i + 1])
+    lines[i].includes("|") &&
+    i + 1 < lines.length &&
+    /^\s*\|?[\s-:|]+\|?\s*$/.test(lines[i + 1])
   );
 }
 
@@ -444,9 +474,10 @@ function isTableHeaderLine(lines, i) {
  */
 function parseTableHeaders(line) {
   return line
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
     .split("|")
-    .map((h) => h.trim().toLowerCase())
-    .filter(Boolean);
+    .map((h) => h.trim().toLowerCase());
 }
 
 /**
@@ -455,7 +486,9 @@ function parseTableHeaders(line) {
 function consumeTableDataRows(lines, startIdx, colIndexes) {
   const findings = [];
   let i = startIdx;
-  while (i < lines.length && lines[i].includes("|") && lines[i].trim().startsWith("|")) {
+  while (i < lines.length && lines[i].includes("|") && !/^#{1,6}\s/.test(lines[i].trim())) {
+    const trimmed = lines[i].trim();
+    if (!trimmed) break;
     const finding = parseTableRow(lines[i], colIndexes);
     if (finding) findings.push(finding);
     i++;
@@ -544,12 +577,23 @@ function shouldSkipHeading(trimmedLine, heading) {
  * Returns the matched heading text or null.
  */
 function matchNumberedHeading(trimmed) {
-  const numberedMatch = trimmed.match(
-    /^#{2,5}\s*(?:\d+\.?\s+|[A-F]\d*[.:]\s+)?(?:🔴|🟡|🔵|⚠️)?\s*(?:\*\*)?(.+?)(?:\*\*)?$/
-  );
-  if (!numberedMatch) return null;
+  // TWO-STRIKES: replaced regex with string parsing (SonarCloud S5852 + complexity 31>20)
+  if (!trimmed.startsWith("#")) return null;
 
-  const heading = numberedMatch[1].replace(/\*\*/g, "").trim();
+  // Strip leading ##-##### and whitespace
+  let rest = trimmed.replace(/^#{2,5}\s*/, "");
+  if (!rest) return null;
+
+  // Strip optional number prefix like "1. " or "A1: "
+  rest = rest.replace(/^\d+\.?\s+/, "").replace(/^[A-F]\d*[.:]\s+/, "");
+
+  // Strip optional emoji prefix
+  rest = rest.replace(/^(?:🔴|🟡|🔵|⚠️)\s*/, "");
+
+  // Strip optional bold markers
+  rest = rest.replace(/^\*\*/, "").replace(/\*\*$/, "");
+
+  const heading = rest.replaceAll("**", "").trim();
 
   if (shouldSkipHeading(trimmed, heading)) return null;
   if (heading.length <= 10 || !/[a-z]/i.test(heading)) return null;
@@ -601,10 +645,21 @@ function extractFromSections(lines, reportConfig) {
  * Strategy 3: Extract from bullet points with actionable language
  * Patterns: "- Fix ...", "- Add ...", "- Remove ...", etc.
  */
+const ACTION_WORDS = new Set([
+  "fix", "add", "remove", "refactor", "implement", "create", "update", "replace",
+  "migrate", "extract", "split", "optimize", "reduce", "eliminate", "address",
+  "resolve", "handle", "validate", "enforce", "prevent", "secure", "enable",
+  "disable", "deprecate", "cleanup", "simplify", "improve"
+]);
+
+function isActionableBullet(trimmed) {
+  const bulletMatch = trimmed.match(/^\s*[-*+]\s+(?:\[ \]\s+)?(\S+)/);
+  if (!bulletMatch) return false;
+  return ACTION_WORDS.has(bulletMatch[1].toLowerCase());
+}
+
 function extractFromBullets(lines, reportConfig) {
   const findings = [];
-  const actionWords =
-    /^\s*[-*]\s+(?:\[ \]\s+)?(?:fix|add|remove|refactor|implement|create|update|replace|migrate|extract|split|optimize|reduce|eliminate|address|resolve|handle|validate|enforce|prevent|secure|enable|disable|deprecate|cleanup|simplify|improve)\b/i;
 
   let currentSection = "";
   let inCodeBlock = false;
@@ -629,14 +684,18 @@ function extractFromBullets(lines, reportConfig) {
     if (isCompleted(trimmed)) continue;
 
     // Match actionable bullets
-    if (actionWords.test(trimmed)) {
+    if (isActionableBullet(trimmed)) {
       const text = trimmed
-        .replace(/^\s*[-*]\s+(?:\[ \]\s+)?/, "")
-        .replace(/`/g, "")
+        .replace(/^\s*[-*+]\s+(?:\[ \]\s+)?/, "")
+        .replaceAll("`", "")
         .trim();
 
       if (text.length > 15) {
-        const filePath = extractFilePath(trimmed) || extractFilePath(lines[i + 1] || "");
+        let filePath = extractFilePath(trimmed);
+        const nextLine = lines[i + 1] || "";
+        if (!filePath && nextLine && !/^\s*[-*+#]/.test(nextLine)) {
+          filePath = extractFilePath(nextLine);
+        }
         const lineNum = extractLineNumber(trimmed);
 
         findings.push({
@@ -662,7 +721,7 @@ function extractReport(reportPath, reportName, config, seq, today) {
     return { findings: [], seq };
   }
 
-  const lines = content.split("\n");
+  const lines = content.split(/\r?\n/);
   const rawFindings = [];
 
   // Run all three strategies
@@ -678,8 +737,10 @@ function extractReport(reportPath, reportName, config, seq, today) {
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "")
       .substring(0, 60);
-    if (seenTitles.has(normalizedTitle)) return;
-    seenTitles.add(normalizedTitle);
+    const normalizedFile = (finding.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
+    const key = `${normalizedTitle}|${normalizedFile}|${finding.line || 0}`;
+    if (seenTitles.has(key)) return;
+    seenTitles.add(key);
     rawFindings.push(finding);
   }
 
@@ -809,7 +870,7 @@ function printSummary(allFindings, totalSkipped) {
   const sevCounts = countByField(allFindings, "severity");
   if (Object.keys(sevCounts).length > 0) {
     console.log("\n   By severity:");
-    for (const sev of ["S1", "S2", "S3"]) {
+    for (const sev of ["S0", "S1", "S2", "S3"]) {
       if (sevCounts[sev]) console.log(`     ${sev}: ${sevCounts[sev]}`);
     }
   }
@@ -836,9 +897,10 @@ function readReportFiles() {
  */
 function computeNextSeq(existingIntakeIds, prefix) {
   let nextSeq = 1;
+  const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   for (const id of existingIntakeIds) {
-    const match = id.match(new RegExp(`${prefix}(\\d+)`));
-    if (match) nextSeq = Math.max(nextSeq, parseInt(match[1], 10) + 1);
+    const match = id.match(new RegExp(`${escapedPrefix}(\\d+)`));
+    if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
   }
   return nextSeq;
 }
@@ -848,8 +910,8 @@ function computeNextSeq(existingIntakeIds, prefix) {
 /**
  * Iterate over all report files, extract findings, and accumulate results.
  */
-function processAllReports(reportFiles, existingHashes, verbose) {
-  let nextSeq = computeNextSeq(loadExistingIntakeIds(), "INTAKE-REPORT-");
+function processAllReports(reportFiles, existingHashes, existingIntakeIds, verbose) {
+  let nextSeq = computeNextSeq(existingIntakeIds, "INTAKE-REPORT-");
   const today = new Date().toISOString().split("T")[0];
   const allFindings = [];
   let totalSkipped = 0;
@@ -892,6 +954,8 @@ function main() {
 
   // Load existing data for dedup
   const existingHashes = loadExistingHashes();
+  const existingOutputHashes = loadExistingOutputHashes();
+  for (const h of existingOutputHashes) existingHashes.add(h);
   const existingIntakeIds = loadExistingIntakeIds();
   console.log(`   Existing MASTER_DEBT hashes: ${existingHashes.size}`);
   console.log(`   Existing intake items: ${existingIntakeIds.size}`);
@@ -899,7 +963,7 @@ function main() {
   const reportFiles = readReportFiles();
   console.log(`\n   Processing ${reportFiles.length} reports...\n`);
 
-  const { allFindings, totalSkipped } = processAllReports(reportFiles, existingHashes, verbose);
+  const { allFindings, totalSkipped } = processAllReports(reportFiles, existingHashes, existingIntakeIds, verbose);
 
   printSummary(allFindings, totalSkipped);
 

@@ -198,13 +198,14 @@ function classifyItem(text) {
  * Detect severity from text content
  */
 function detectSeverity(text) {
-  const lower = text.toLowerCase();
-  if (/\bs0\b|\bcritical\b/i.test(lower)) return "S0";
-  if (/\bs1\b|\bhigh\b|\bblocking\b/i.test(lower)) return "S1";
-  if (/\bs2\b|\bmedium\b/i.test(lower)) return "S2";
-  // Extract explicit severity from ROADMAP patterns like "- S1" or "(S2,"
+  // Prefer explicit severity markers (e.g., "- S1" or "(S2,")
   const sevMatch = text.match(/[-(\s](S[0-3])[\s,)]/);
   if (sevMatch) return sevMatch[1];
+
+  const lower = text.toLowerCase();
+  if (/\bs0\b|\bcritical\b/.test(lower)) return "S0";
+  if (/\bs1\b|\bhigh\b|\bblocking\b/.test(lower)) return "S1";
+  if (/\bs2\b|\bmedium\b/.test(lower)) return "S2";
   return "S3";
 }
 
@@ -241,7 +242,7 @@ function extractFromRoadmap(lines) {
     if (/^#{1,4}\s/.test(trimmed)) {
       const heading = trimmed
         .replace(/^#+\s*/, "")
-        .replace(/[*`]/g, "")
+        .replaceAll("*", "").replaceAll("`", "")
         .trim();
       if (/milestone|sprint|^m\d|grand\s+plan|operational/i.test(heading)) {
         currentMilestone = heading;
@@ -250,7 +251,7 @@ function extractFromRoadmap(lines) {
     }
 
     // Match checkbox items: - [ ] or - [x]
-    const checkboxMatch = trimmed.match(/^-\s*\[([ xX])\]\s+(.+)/);
+    const checkboxMatch = trimmed.match(/^[-*+]\s*\[([ xX])\]\s+(.+)/);
     if (!checkboxMatch) continue;
 
     const isChecked = checkboxMatch[1].toLowerCase() === "x";
@@ -285,7 +286,7 @@ function extractFromRoadmap(lines) {
 function readRoadmapLines() {
   try {
     const content = fs.readFileSync(ROADMAP_FILE, "utf8").replaceAll("\uFEFF", "");
-    return content.split("\n");
+    return content.split(/\r?\n/);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`   Error reading ROADMAP.md: ${msg}`);
@@ -299,9 +300,9 @@ function readRoadmapLines() {
 function cleanItemTitle(text) {
   return text
     .replace(/^\*\*[A-Z0-9.]+:\*\*\s*/, "") // remove task codes like **P1.1:**
-    .replace(/\(\d+h(?:r|ours?)?\)/g, "") // remove time estimates
-    .replace(/\[depends:.*?\]/g, "") // remove dependency refs
-    .replace(/\*\*/g, "")
+    .replaceAll(/\(\d+h(?:r|ours?)?\)/g, "") // remove time estimates
+    .replaceAll(/\[depends:.*?\]/g, "") // remove dependency refs
+    .replaceAll("**", "")
     .trim();
 }
 
@@ -322,7 +323,7 @@ function buildTdmsEntry(item, seqNum, today) {
     severity,
     type: "tech-debt",
     file: filePath,
-    line: 0,
+    line: item.lineNum,
     title: cleanTitle.substring(0, 200),
     description: `ROADMAP item (${item.milestone || item.section}): ${cleanTitle.substring(0, 150)}`,
     recommendation: `Address ROADMAP item at line ${item.lineNum}.`,
@@ -414,7 +415,7 @@ function computeNextSeq(existingIntakeIds) {
   let nextSeq = 1;
   for (const id of existingIntakeIds) {
     const match = id.match(/INTAKE-ROAD-(\d+)/);
-    if (match) nextSeq = Math.max(nextSeq, parseInt(match[1], 10) + 1);
+    if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
   }
   return nextSeq;
 }
