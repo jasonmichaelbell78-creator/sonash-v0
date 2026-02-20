@@ -84,6 +84,7 @@ serviceAccountKey.json
 .claude/state/reviews.jsonl
 .claude/state/health-score-log.jsonl
 .claude/state/hook-warnings-log.jsonl
+.claude/state/pr-ecosystem-audit.jsonl
 
 # Claude Code session runtime data (per-session, not tracked)
 .claude/tmp/
