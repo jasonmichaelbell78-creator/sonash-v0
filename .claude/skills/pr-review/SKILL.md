@@ -408,7 +408,10 @@ After all fixes:
 - **Pass 1**: Re-read each modified file
 - **Pass 2**: Run linter if available (`npm run lint`)
 - **Pass 3**: Run tests if available (`npm run test`)
-- **Pass 4**: Cross-reference original suggestions - confirm each is addressed
+- **Pass 4**: Run pattern compliance check (`npm run patterns:check`) — catches
+  cases where your own fixes violate the project's pattern rules. Evidence: PR
+  #379 R10 introduced bare `renameSync` that R11's pattern checker flagged.
+- **Pass 5**: Cross-reference original suggestions - confirm each is addressed
 
 ### 5.5 Batch Rule for Repetitive Files
 
@@ -474,6 +477,14 @@ rounds. When fixing env var handling, always:
 
 1. `grep -rn "ENV_VAR_NAME" scripts/ .claude/hooks/ .husky/ --include="*.js" --include="*.sh"`
 2. Fix ALL consumers in one pass, not just the reported file
+
+**BLOCKING (PR #379 retro — 5th recommendation):** Propagation checks have been
+recommended in PRs #366, #367, #369, #374, and #379 but are still missed when
+the protocol is skipped. The root cause is that propagation is a manual protocol
+step. When fixing any pattern-based issue, ALWAYS grep before committing — even
+if you think it's a one-off. PR #379 R9 fixed CRLF in 3 parsers but missed 3
+identical `loadJsonl` functions in other files, causing R10 cleanup. The fix is
+discipline, not automation: grep is fast, re-review is slow.
 
 ---
 
@@ -652,6 +663,7 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 | Version | Date       | Description                                                                                               |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.7     | 2026-02-20 | Add patterns:check to Step 5.4, propagation enforcement escalation in Step 5.6. Source: PR #379 retro.    |
 | 2.6     | 2026-02-19 | Add Algorithm Design Pre-Check (Step 0.5). Source: PR #379 retro.                                         |
 | 2.5     | 2026-02-18 | Add filesystem guard pre-check, shared utility caller audit, propagation patterns. Source: PR #374 retro. |
 | 2.4     | 2026-02-17 | CC now enforced via pre-commit hook (error on staged files). Source: PR #371 retro.                       |

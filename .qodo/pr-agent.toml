@@ -1,6 +1,6 @@
 # Qodo PR-Agent Configuration
 # Created: 2026-02-17
-# Updated: 2026-02-19 (PR #379 retro — add actor/outcome + impossible-type suppressions)
+# Updated: 2026-02-20 (PR #379 retro — add impossible-type suppression to reviewer section)
 # Purpose: Suppress recurring false-positive review items that add noise
 # without actionable value. Each suppression has evidence from PR retros.
 
@@ -48,6 +48,11 @@ When reviewing files in scripts/ or .claude/hooks/:
    log JSONL entries. Intake logs record what was ingested, not who did it.
    Actor context lives in resolution-log.jsonl and commit metadata.
    (Rejected in PR #379, 5+ rounds with same rationale)
+
+8. Do NOT suggest adding Date/RegExp/Map/Set/BigInt handling in code that
+   processes JSON.parse output. JSON.parse can only produce string, number,
+   boolean, null, array, and plain object — these other types are impossible.
+   (Rejected in PR #379, 5 consecutive rounds R3-R7 with same rationale)
 """
 
 [pr_code_suggestions]

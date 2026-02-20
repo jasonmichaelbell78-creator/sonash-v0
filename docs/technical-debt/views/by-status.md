@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (155)
+## NEW (156)
 
 | ID        | Title                                                        | Severity | Category                 |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------ |
@@ -92,6 +92,7 @@
 | DEBT-3211 | .env.production tracked in git with Firebase config and S... | S2       | security                 |
 | DEBT-3212 | No Content-Security-Policy header configured                 | S2       | security                 |
 | DEBT-2548 | Dead Documentation: Code Review Checklist references         | S2       | ai-optimization          |
+| DEBT-3527 | Extract shared loadJsonl to lib/ module — 4 identical cop... | S2       | refactoring              |
 | DEBT-2436 | DOCUMENT_DEPENDENCIES.md sync status tracking                | S2       | code-quality             |
 | DEBT-2437 | SESSION_CONTEXT.md quick status table                        | S2       | code-quality             |
 | DEBT-2438 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2       | code-quality             |

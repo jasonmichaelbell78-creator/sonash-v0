@@ -523,7 +523,7 @@
 | DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes          | docs/agent_docs/FIX_TEMPLATES.md                                                                                                                   | 0    | code-quality             | E0     |
 | DEBT-2482 | Technical debt view files - generated views without integ...  | docs/technical-debt/views/                                                                                                                         | 0    | code-quality             | E1     |
 
-## S2 - Medium (1588)
+## S2 - Medium (1589)
 
 | ID        | Title                                                          | File                                                                                                                                                                        | Line | Category                 | Effort |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -1695,6 +1695,7 @@
 | DEBT-3211 | .env.production tracked in git with Firebase config and S...   | .env.production                                                                                                                                                             | 1    | security                 | E1     |
 | DEBT-3212 | No Content-Security-Policy header configured                   | firebase.json                                                                                                                                                               | 30   | security                 | E1     |
 | DEBT-2548 | Dead Documentation: Code Review Checklist references           | 140                                                                                                                                                                         | 0    | ai-optimization          | E1     |
+| DEBT-3527 | Extract shared loadJsonl to lib/ module — 4 identical cop...   | .claude/skills/pr-ecosystem-audit/scripts/checkers/effectiveness-metrics.js                                                                                                 | 439  | refactoring              | E1     |
 | DEBT-2124 | Duplicate hook validation for Write+Edit+MultiEdit tools       | multiple                                                                                                                                                                    | 0    | code-quality             | E2     |
 | DEBT-2125 | Firebase deployment lacks rollback on partial failure          | 1                                                                                                                                                                           | 0    | code-quality             | E2     |
 | DEBT-2127 | SonarCloud not enforced in CI gates                            | 1                                                                                                                                                                           | 0    | code-quality             | E1     |

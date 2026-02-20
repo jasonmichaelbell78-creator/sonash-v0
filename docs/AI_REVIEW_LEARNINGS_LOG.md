@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.44 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
+**Document Version:** 17.46 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
 
 ## Purpose
 
@@ -31,6 +31,9 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.46    | 2026-02-20               | PR #379 Retrospective: 11 rounds across 2 branches, ~190 raw suggestions (106 fixed, ~61 rejected, 4 deferred). 4 ping-pong chains: evidence algorithm hardening (R2-R7, 4 avoidable), protocol non-compliance cascade (R8-R10, 2 avoidable), CRLF propagation miss (R9-R10, 1 avoidable), linter self-flagging (R10-R11, 1 avoidable). ~73% avoidable rounds. New Pattern 8: Incremental Algorithm Hardening.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 17.45    | 2026-02-20               | Reviews #357-#361: PR #379 R3-R7 on cherry-pick branch. Protocol compliance restored from R10 onward.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 17.44    | 2026-02-20               | Reviews #357-#360 (retroactive): PR #379 R3-R6 on cherry-pick branch. Process failures documented.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 17.37    | 2026-02-19               | Review #356: PR #378 R2 — GIT_DIR resolution, broken table row. 2 fixed, 3 rejected, 1 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 17.36    | 2026-02-18               | Review #355: PR #378 R1 — exit code coercion, TOCTOU race, absolute paths, system-test checklist gaps. 7 fixed, 4 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.35    | 2026-02-18               | Review #354: SonarCloud + Qodo R2 — CC reduction (extractReviewIds 22→~8 via helper extraction), nested ternary→lookup, error log sanitization (4 catches), DoS caps (range expansion + gap scan). 5 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -549,6 +552,250 @@ Access archives only for historical investigation of specific patterns.
 ---
 
 ## Active Reviews
+
+### PR #379 Retrospective (2026-02-20)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                        |
+| -------------- | ------------------------------------------------------------ |
+| Rounds         | 11 (R1 2026-02-19 through R11 2026-02-20)                    |
+| Branches       | 2 (claude/new-session-DQVDk R1-R7, cherry-pick-thZGO R8-R11) |
+| Total items    | ~190 raw, ~119 unique after dedup                            |
+| Fixed          | 106                                                          |
+| Deferred       | 4 (JSONL schema migration, timestamp mutation, pipeline)     |
+| Rejected       | ~61 (mostly Qodo compliance repeats + impossible type FPs)   |
+| Review sources | Gemini, SonarCloud, Qodo Compliance + Code, Qodo Security    |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source              | Branch      | Items (unique) | Fixed   | Rejected | Deferred | Key Patterns                                               |
+| --------- | ---------- | ------------------- | ----------- | -------------- | ------- | -------- | -------- | ---------------------------------------------------------- |
+| R1        | 2026-02-19 | Gemini              | new-session | 4              | 3       | 0        | 1        | EXIT trap, evidence dedup, mktemp guards                   |
+| R2        | 2026-02-19 | Gemini              | new-session | 9              | 6       | 2        | 0        | Key-order canonicalize, backslash paths, absolute paths    |
+| R3        | 2026-02-20 | SonarCloud+Qodo     | new-session | 12             | 6       | 4        | 2        | Prototype pollution, type-stable keys, circular ref        |
+| R4        | 2026-02-20 | Qodo                | new-session | 4              | 3       | 2        | 1        | try/finally circular ref, regex escaping, internal dedup   |
+| R5        | 2026-02-20 | SonarCloud+Qodo     | new-session | 5              | 3       | 2        | 0        | CC extraction (mergeItems 18→<15), String.raw, env guard   |
+| R6        | 2026-02-20 | Qodo                | new-session | 3              | 3       | 4        | 0        | Depth cap, non-array wrapping, fallback keys               |
+| R7        | 2026-02-20 | SonarCloud+Qodo     | new-session | 2              | 2       | 6        | 0        | Nested ternary→toArray(), incoming evidence wrapping       |
+| R8        | 2026-02-20 | SonarCloud+Qodo+Gem | cherry-pick | 27             | 27      | 13       | 0        | ReDoS, CC monolith, block comment string tracking, symlink |
+| R9        | 2026-02-20 | SonarCloud+Qodo+Gem | cherry-pick | 21             | 21      | 8        | 0        | ReDoS bounded quantifiers, dead store, CRLF/BOM, EXDEV     |
+| R10       | 2026-02-20 | SonarCloud+Qodo     | cherry-pick | 17             | 17      | 9        | 0        | CC regression fix, CRLF propagation, checker failures      |
+| R11       | 2026-02-20 | SonarCloud+Qodo+Gem | cherry-pick | 15             | 15      | 12       | 0        | Null metrics, safeRename, linter self-flag, empty backlog  |
+| **Total** |            |                     |             | **~119**       | **106** | **~61**  | **4**    |                                                            |
+
+**Note on round numbering:** R1-R7 occurred on the original branch
+(claude/new-session-DQVDk). Code was then cherry-picked to a new branch
+(claude/cherry-pick-commits-thZGO), where R8-R11 reflect new CI reviews on the
+combined changes. R8-R9 were processed WITHOUT the `/pr-review` protocol
+(retroactive entries written later); R10-R11 followed the full protocol.
+
+#### Ping-Pong Chains
+
+##### Chain 1: Evidence Algorithm Incremental Hardening (R2→R7, 6 rounds)
+
+| Round | What Happened                                                                 | Files Affected   | Root Cause                           |
+| ----- | ----------------------------------------------------------------------------- | ---------------- | ------------------------------------ |
+| R2    | Added `canonicalize()` for key-order-sensitive JSON.stringify evidence dedup  | normalize-all.js | Initial — no dedup existed           |
+| R3    | Prototype pollution in canonicalize (`Object.create(null)`), type-stable keys | normalize-all.js | Algorithm not designed for untrusted |
+| R4    | try/finally for circular ref detection, regex escaping, internal array dedup  | normalize-all.js | Edge cases missed incrementally      |
+| R5    | CC extraction: mergeItems CC 18→<15. String coercion, String.raw              | normalize-all.js | Accumulated complexity from R2-R4    |
+| R6    | Depth cap on canonicalize (DoS), non-array evidence wrapping, fallback keys   | normalize-all.js | More edge cases: depth, type safety  |
+| R7    | Nested ternary→toArray() helper, incoming evidence symmetric wrapping         | normalize-all.js | Defensive coding creates nesting     |
+
+**Avoidable rounds:** 4 (R4-R7). If R2-R3 had designed the full algorithm
+upfront (invariants: no prototype pollution, circular ref detection, depth cap,
+type-stable keys, both-sides dedup), R4-R7 would not have been needed.
+
+**Prevention:** Algorithm Design Pre-Check — before committing non-trivial
+algorithm logic, define invariants, enumerate edge cases, handle all input
+types, add depth/size caps. Now documented in pr-review Step 0.5.
+
+##### Chain 2: Protocol Non-Compliance Cascade (R8-R9 → R10, 3 rounds)
+
+| Round | What Happened                                                                  | Files Affected                                      | Root Cause                      |
+| ----- | ------------------------------------------------------------------------------ | --------------------------------------------------- | ------------------------------- |
+| R8    | Processed ~40 items WITHOUT pr-review protocol. CC regression: merged 2 CC-17  | extract-scattered-debt.js, state-manager.js +9 more | No protocol = no verification   |
+|       | functions into CC-19. CRLF fix applied to 3 of 6 loadJsonl copies.             |                                                     |                                 |
+| R9    | Also no protocol. More CC regressions. ReDoS in regex. CRLF still incomplete.  | extract-scattered-debt.js, 3 parsers                | Skipped propagation check again |
+| R10   | Protocol restored. Fixed CC regression from R8 (advanceStringChar extraction). | extract-scattered-debt.js + 3 CRLF files            | Cleanup of R8-R9 shortcuts      |
+|       | Propagated CRLF to remaining 3 loadJsonl copies. Surfaced checker failures.    |                                                     |                                 |
+
+**Avoidable rounds:** 2 (R10 was entirely cleanup from R8-R9). If R8-R9 had
+followed the protocol, CC regression would have been caught by Step 0.5 CC
+pre-check, and CRLF propagation would have been caught by Step 5.6.
+
+**Prevention:** Always follow `/pr-review` protocol. The protocol exists because
+every skipped step creates a deferred cost in the next round.
+
+##### Chain 3: CRLF Propagation Miss (R9 → R10, 2 rounds)
+
+| Round | What Happened                                                                     | Files Affected                                                       | Root Cause                        |
+| ----- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------- |
+| R9    | Fixed CRLF in 3 JSONL parsers (effectiveness-metrics, backlog-health, data-state) | effectiveness-metrics.js, backlog-health.js, data-state-health.js    | Partial fix — only reported files |
+| R10   | Found 3 MORE identical `loadJsonl` functions missing CRLF fix                     | process-compliance.js, feedback-integration.js, pattern-lifecycle.js | Propagation check skipped         |
+
+**Avoidable rounds:** 1 (R10 CRLF portion). A `grep -rn "loadJsonl"` at R9 would
+have found all 6 copies.
+
+**Prevention:** Step 5.6 propagation check — when fixing a pattern in one file,
+grep for ALL instances. This has been recommended in PRs #366, #367, #369, #374,
+and now #379. **This is the 5th time this recommendation appears.**
+
+##### Chain 4: Linter Self-Flagging (R10 → R11, 2 rounds)
+
+| Round | What Happened                                                                   | Files Affected               | Root Cause                     |
+| ----- | ------------------------------------------------------------------------------- | ---------------------------- | ------------------------------ |
+| R10   | Added .bak rotation with bare `renameSync` — the exact pattern the linter flags | state-manager.js             | Didn't test own code vs linter |
+| R11   | rename-no-fallback rule flagged R10's code. Also: rule only accepted            | check-pattern-compliance.js, | Rule spec incomplete +         |
+|       | writeFileSync fallback, not copyFileSync (which fix template recommends)        | state-manager.js             | didn't test against own fix    |
+
+**Avoidable rounds:** 1 (R11 linter portion). If R10 had run
+`npm run patterns:check` before pushing, both the self-flagging and the
+incomplete rule spec would have been caught.
+
+**Prevention:** Run linter/pattern checks against your own code before pushing.
+Add to the pre-push verification list.
+
+**Total avoidable rounds across all chains: ~8 out of 11 (~73%)**
+
+#### Rejection Analysis
+
+| Category                         | Count | Rounds    | Examples                                                                |
+| -------------------------------- | ----- | --------- | ----------------------------------------------------------------------- |
+| Impossible types from JSON.parse | ~15   | R3-R7     | "Handle Date/RegExp/Map/Set" — impossible from JSON.parse output        |
+| Qodo compliance repeats          | ~12   | R3-R7,R11 | Same intake-manual user ID, operator "root" label — rejected 5+ times   |
+| TODO false positives             | ~16   | R8-R10    | TODO-extractor script flagging its own TODO keyword patterns            |
+| SonarCloud tool conflict         | 1     | R11       | globals → \_\_dirname conflict with SonarCloud env expectations         |
+| Gemini outdated suggestions      | 3     | R11       | Already addressed in earlier rounds                                     |
+| Over-engineering                 | ~5    | R3-R7     | WeakMap for IDs, key length caps, array sorting that corrupts semantics |
+| Threat model mismatch            | ~2    | R8,R11    | Env vars set by runtime, not attacker-controlled                        |
+| Data quality / style             | ~7    | R2,R8-R11 | Intentional audit data, project conventions                             |
+
+**Rejection accuracy:** ~58/61 rejections were correct (~95% accuracy). 3
+borderline cases where the reviewer had a point but the fix was disproportionate
+to the risk.
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                       | Rounds            | Already Automated? | Recommended Action                                                   | Est. Effort |
+| ----------------------------- | ----------------- | ------------------ | -------------------------------------------------------------------- | ----------- |
+| Impossible JSON.parse types   | R3,R4,R5,R6,R7    | No (Qodo config)   | Add suppression rule to `.qodo/pr-agent.toml` for JSON.parse context | ~5 min      |
+| loadJsonl code duplication    | R9,R10            | No                 | Extract shared `loadJsonl` to lib/ module used by all 6 checkers     | ~30 min     |
+| Protocol non-compliance       | R8,R9             | No (human issue)   | Add protocol-compliance note to session-begin checklist              | ~5 min      |
+| Evidence algorithm edge cases | R2,R3,R4,R5,R6,R7 | Now: Step 0.5      | Algorithm Design Pre-Check (added post-retro)                        | Done        |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                             | Implemented?       | Impact on #379                                      |
+| ------- | ---------------------------------------------- | ------------------ | --------------------------------------------------- |
+| PR #374 | FIX_TEMPLATES: realpathSync lifecycle (#31)    | **YES**            | No realpathSync issues in #379                      |
+| PR #374 | FIX_TEMPLATES: Hoist safety flag (#32)         | **YES**            | Applied correctly in state-manager.js               |
+| PR #374 | pr-review Step 0.5: filesystem guard pre-check | **YES**            | Not triggered (no new guard functions in #379)      |
+| PR #374 | Propagation check enforcement                  | **NOT DONE**       | CRLF propagation miss R9→R10 (~1 avoidable round)   |
+| PR #371 | CC from warn to error (pre-commit)             | **YES**            | CC caught at R5 before it would have gone to CI     |
+| PR #371 | Qodo suppression for compliance rules          | **YES**            | Reduced but didn't eliminate compliance noise       |
+| PR #370 | Path normalization test matrix                 | **YES** (Step 5.8) | Applied correctly in normalize-all.js path handling |
+
+**Total avoidable rounds from unimplemented retro actions: ~1** (Propagation
+enforcement would have prevented the CRLF chain R9→R10)
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Algorithm Rounds | Protocol Rounds | Rejections | Key Issue                         |
+| -------- | ------ | ----------- | ---------------- | --------------- | ---------- | --------------------------------- |
+| #366     | 8      | ~90         | 0                | 0               | ~20        | Symlink ping-pong                 |
+| #367     | 7      | ~193        | 0                | 0               | ~24        | SKIP_REASON validation            |
+| #368     | 6      | ~65         | 0                | 0               | ~15        | TOCTOU fd-based write             |
+| #369     | 9      | 119         | 0                | 0               | 41         | CC + symlink combined             |
+| #370     | 5      | 53          | 0                | 0               | 6          | Path normalization                |
+| #371     | 2      | 45          | 0                | 0               | 7          | CC extraction + S5852             |
+| #374     | 5      | 40          | 0                | 0               | 5          | Path containment                  |
+| **#379** | **11** | **~119**    | **6**            | **2**           | **~61**    | **Evidence algorithm + protocol** |
+
+**Persistent cross-PR patterns:**
+
+| Pattern                        | PRs Affected    | Times Recommended | Status                                     | Required Action                                               |
+| ------------------------------ | --------------- | ----------------- | ------------------------------------------ | ------------------------------------------------------------- |
+| CC lint rule                   | #366-#371       | 5x                | **RESOLVED** (pre-commit error since #371) | None — CC caught locally                                      |
+| Qodo suppression               | #369-#371       | 3x                | **RESOLVED** (pr-agent.toml)               | None — reduced noise                                          |
+| Propagation check              | #366-#379       | **5x**            | Documented but still missed                | **BLOCKING — 5x recommended, still causing avoidable rounds** |
+| Incremental security hardening | #366-#374       | 4x                | Improved (test matrix)                     | Resolved for security; new variant: algorithm hardening       |
+| Impossible type FP             | #379 (5 rounds) | New               | Not suppressed                             | Add Qodo suppression for JSON.parse impossible types          |
+
+#### Skills/Templates to Update
+
+1. **FIX_TEMPLATES.md:** Added Template #34 — evidence/array merge with deep
+   dedup (canonicalize, depth cap, circular ref, type-stable keys). (~Done
+   during retro)
+2. **pr-review SKILL.md Step 0.5:** Added Algorithm Design Pre-Check for
+   non-trivial algorithm logic. (~Done during retro)
+3. **pr-retro SKILL.md:** Added Pattern 8 (Incremental Algorithm Hardening) to
+   Known Churn Patterns. (~Done during retro)
+4. **`.qodo/pr-agent.toml`:** Add 2 new suppression rules for impossible
+   JSON.parse type suggestions. (~Done during retro)
+5. **Shared loadJsonl refactor:** Extract shared `loadJsonl` to
+   `pr-ecosystem-audit/scripts/lib/load-jsonl.js` used by all 6 checkers. (~30
+   min, create DEBT entry)
+
+#### Process Improvements
+
+1. **Algorithm design before implementation** — The evidence dedup algorithm
+   (canonicalize + merge + dedup) evolved over 6 rounds of reviewer feedback
+   instead of being designed upfront. Each round added one more edge case
+   (prototype pollution → circular refs → depth cap → type coercion → String.raw
+   → nested ternary). An upfront design phase enumerating invariants and edge
+   cases would have reduced this to 2-3 rounds. Evidence: R2-R7 algorithm chain.
+
+2. **Protocol compliance is non-negotiable** — R8-R9 skipped the `/pr-review`
+   protocol entirely, creating CC regressions and CRLF propagation misses that
+   required R10 to clean up. The protocol's CC pre-check (Step 0.5) and
+   propagation check (Step 5.6) exist specifically to prevent these issues.
+   Evidence: R8-R9 → R10 cascade.
+
+3. **Propagation enforcement still missing** — Despite being recommended in PRs
+   #366, #367, #369, #374, and now #379, propagation checks are still missed
+   when the protocol is skipped. The root cause is that propagation is a
+   protocol step, not an automated check. Consider adding a pre-commit hook or
+   CI check that detects duplicate function signatures across files. Evidence:
+   CRLF chain R9→R10, 5th recommendation.
+
+4. **Test your own code against your own linter** — R10 introduced bare
+   `renameSync` that R11's linter flagged. Running `npm run patterns:check`
+   before pushing would have caught this. Evidence: R10→R11 linter chain.
+
+#### Verdict
+
+PR #379 had a **high-churn review cycle** — 11 rounds across 2 branches with
+~119 unique items, making it the most review-intensive PR since #369 (9 rounds,
+119 items). **~8 of 11 rounds (~73%) were avoidable.**
+
+The primary churn driver was a **new pattern** not seen in previous PRs:
+incremental algorithm hardening, where a non-trivial evidence dedup algorithm
+was designed through reviewer iteration rather than upfront planning. This
+accounted for 6 of 11 rounds. The secondary driver was protocol non-compliance
+in R8-R9, which cascaded into R10 cleanup.
+
+The **single highest-impact change** is the Algorithm Design Pre-Check added to
+pr-review Step 0.5 — requiring upfront invariant definition, edge case
+enumeration, and full algorithm design before committing non-trivial logic. This
+would have prevented ~4 of the 6 algorithm rounds.
+
+**Comparison to previous retros:** The trend shows resolved systemic patterns
+(CC: 0 rounds, Qodo compliance: reduced) but new patterns emerging (algorithm
+hardening). Round counts: #366(8) → #367(7) → #368(6) → #369(9) → #370(5) →
+#371(2) → #374(5) → #379(11). The spike to 11 is partly due to spanning 2
+branches (7+4) and partly due to the algorithm chain being a genuinely new
+failure mode. Rejection noise remains high (~61 items, ~51% of raw suggestions)
+driven primarily by Qodo impossible-type false positives.
+
+**Key insight:** The retro-driven improvement cycle works for known patterns (CC
+resolved after 5 retros, security hardening improved after 4 retros) but cannot
+prevent novel failure modes. The Algorithm Design Pre-Check is a proactive
+defense against the class of "incremental refinement" problems, not just the
+specific evidence dedup instance.
+
+---
 
 ### PR #374 Retrospective (2026-02-18)
 
