@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 4.8 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 4.9 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-19 (Session #171)
+2026-02-19 (Session #172)
 
 ## Purpose
 
@@ -42,7 +42,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 171 (since Jan 1, 2026)
+**Current Session Count**: 172 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -51,6 +51,17 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 ---
 
 ## Recent Session Summaries
+
+**Session #172 Summary** (MCP/PLUGIN TOKEN OPTIMIZATION):
+
+- Analyzed MCP server token overhead — identified duplicate servers and heavy
+  instructions consuming ~6,000+ tokens/turn
+- Removed duplicate playwright from `.mcp.json` (plugin already provides it)
+- Disabled serena plugin (~800 tokens/turn in server instructions)
+- Disabled 15 unused workflow plugins (SEO, content-marketing, multi-platform,
+  deployment-strategies, framework-migration, etc.) — ~42 skills removed
+- Estimated savings: ~5,000-6,000 tokens/turn
+- TDMS: 2,738 items (298 resolved), 19 S0, 410 S1
 
 **Session #171 Summary** (SYSTEM TEST COMPLETE — ALL 23 DOMAINS):
 
@@ -191,17 +202,18 @@ npm run docs:check   # Documentation linting
 
 ## Version History
 
-| Version | Date       | Changes                                                     | Author |
-| ------- | ---------- | ----------------------------------------------------------- | ------ |
-| 4.8     | 2026-02-19 | Session #171: System test complete (82 findings, TDMS sync) | Claude |
-| 4.7     | 2026-02-19 | Session #171: PR reviews + system test Session 1            | Claude |
-| 4.6     | 2026-02-18 | Session #170: Comprehensive system test planning            | Claude |
-| 4.4     | 2026-02-17 | Session #167: Alerts full scan + S0 sprint integration      | Claude |
-| 4.3     | 2026-02-16 | Session #164: Audit ecosystem remediation waves 1-8         | Claude |
-| 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit     | Claude |
-| 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements        | Claude |
-| 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed    | Claude |
-| 3.61    | 2026-02-11 | Session #149: Counter increment                             | Claude |
+| Version | Date       | Changes                                                             | Author |
+| ------- | ---------- | ------------------------------------------------------------------- | ------ |
+| 4.9     | 2026-02-19 | Session #172: MCP/plugin token optimization (~5K tokens/turn saved) | Claude |
+| 4.8     | 2026-02-19 | Session #171: System test complete (82 findings, TDMS sync)         | Claude |
+| 4.7     | 2026-02-19 | Session #171: PR reviews + system test Session 1                    | Claude |
+| 4.6     | 2026-02-18 | Session #170: Comprehensive system test planning                    | Claude |
+| 4.4     | 2026-02-17 | Session #167: Alerts full scan + S0 sprint integration              | Claude |
+| 4.3     | 2026-02-16 | Session #164: Audit ecosystem remediation waves 1-8                 | Claude |
+| 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit             | Claude |
+| 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements                | Claude |
+| 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed            | Claude |
+| 3.61    | 2026-02-11 | Session #149: Counter increment                                     | Claude |
 
 > For older version history, see
 > [SESSION_HISTORY.md](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)
