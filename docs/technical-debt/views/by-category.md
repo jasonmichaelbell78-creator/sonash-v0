@@ -132,7 +132,7 @@
 | DEBT-2547 | Shell script hooks may be redundant with Node.js versions     | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-2549 | Filesystem MCP server configured but noted as unused          | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (1865)
+## code-quality (1868)
 
 | ID        | Title                                                          | Severity | File                                                                                                                                                                        | Line |
 | --------- | -------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -1646,6 +1646,9 @@
 | DEBT-3460 | Standardize export style - 38 default vs 69 named exports...   | S2       | multiple                                                                                                                                                                    | 0    |
 | DEBT-3462 | writeFileSync without atomic write pattern and missing en...   | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 397  |
 | DEBT-3463 | writeFileSync without atomic write pattern                     | S2       | scripts/archive-doc.js                                                                                                                                                      | 182  |
+| DEBT-3521 | Make action buttons customizable by user (save preference...   | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 12   |
+| DEBT-3522 | Pass limit to FirestoreService when it supports configura...   | S3       | lib/database/firestore-adapter.ts                                                                                                                                           | 51   |
+| DEBT-3525 | Consider pre-computing cohort retention in a daily job         | S3       | functions/src/admin.ts                                                                                                                                                      | 3936 |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
 | DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/seed-meetings.ts                                                                                                                                                    | 79   |
@@ -2540,7 +2543,7 @@
 | DEBT-3466 | Security guidance consolidation - multiple overlapping se... | S2       | docs/SECURITY.md                          | 1    |
 | DEBT-3467 | Pre-push duplicates pre-commit pattern checks                | S2       | .husky/pre-push                           | 1    |
 
-## performance (58)
+## performance (59)
 
 | ID        | Title                                                        | Severity | File                                         | Line |
 | --------- | ------------------------------------------------------------ | -------- | -------------------------------------------- | ---- |
@@ -2596,6 +2599,7 @@
 | DEBT-3177 | Unbounded reads on public collections (slogans, sober_liv... | S2       | components/growth/DailySloganWidget.tsx      | 26   |
 | DEBT-3186 | Image optimization disabled — no alternative optimization... | S2       | next.config.mjs                              | 14   |
 | DEBT-3187 | Multiple unbounded Firestore queries without limit() — de... | S2       | lib/db/meetings.ts                           | 133  |
+| DEBT-3524 | Create a userIdHash → uid lookup collection for better pe... | S3       | functions/src/admin.ts                       | 2769 |
 | DEBT-0808 | Only 6 dynamic imports despite 101 client components         | S3       | components                                   | 0    |
 | DEBT-0809 | useMemo/useCallback usage is inconsistent                    | S3       | components                                   | 0    |
 | DEBT-0810 | Image optimization disabled (unoptimized: true)              | S3       | next.config.mjs                              | 14   |
@@ -2955,7 +2959,7 @@
 | DEBT-2120 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                                                   | 24   |
 | DEBT-2121 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 
-## refactoring (22)
+## refactoring (23)
 
 | ID        | Title                                                        | Severity | File                                               | Line |
 | --------- | ------------------------------------------------------------ | -------- | -------------------------------------------------- | ---- |
@@ -2979,6 +2983,7 @@
 | DEBT-0528 | Repository pattern violations                                | S2       | lib/firestore-service.ts                           | 1    |
 | DEBT-0894 | useJournal Hook Has 7 Responsibilities (438 lines)           | S2       | N/A                                                | 0    |
 | DEBT-2291 | HookRunner framework — centralized hook orchestration wit... | S2       | .claude/hooks/post-write-validator.js              | 0    |
+| DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                  | 188  |
 | DEBT-0817 | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx | 12   |
 | DEBT-0818 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                      | 86   |
 

@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 4.9 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 5.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-19 (Session #173)
+2026-02-20 (Session #173 end)
 
 ## Purpose
 
@@ -62,7 +62,9 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
     types)
   - FIX_TEMPLATES.md v2.0: Template #34 (evidence/array merge with deep dedup)
   - pr-retro SKILL.md v2.4: Pattern 8 (incremental algorithm hardening)
-- TDMS: 2,738 items (298 resolved), 40 S0, 452 S1
+- Built `extract-scattered-debt.js` — Step 0a of tech debt plan (extracts
+  TODO/FIXME/HACK from code into TDMS)
+- TDMS: 3,050 items (316 resolved), 31 S0, 410 S1
 
 **Session #172 Summary** (MCP/PLUGIN TOKEN OPTIMIZATION):
 
@@ -103,10 +105,11 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | Track C: UI/UX & Analytics        | Planned  | 0%               |
 | **Integrated Improvement Plan**   | COMPLETE | 100% (9/9 steps) |
 | **GRAND PLAN: Debt Elimination**  | Active   | ~68% (1176/1727) |
+| **Tech Debt Resolution Plan**     | Started  | Step 0a done     |
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/new-session-DQVDk`
+**Current Branch**: `claude/new-session-1vr6t`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -116,9 +119,10 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-1. **Triage system test S1 findings** — 14 S1 findings need resolution planning
-2. **Process PR #378 R3** if Qodo CI feedback arrives
-3. **Address 19 open S0 critical items** from TDMS backlog (D17-001)
+1. **Continue Technical Debt Resolution Plan** — Step 0a done, proceed with
+   triage and resolution steps
+2. **Triage system test S1 findings** — 14 S1 findings need resolution planning
+3. **Address 31 open S0 critical items** from TDMS backlog
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -202,7 +206,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                             | Author |
 | ------- | ---------- | ------------------------------------------------------------------- | ------ |
-| 5.0     | 2026-02-19 | Session #173: PR #379 retro action items (4 files, 5 actions)       | Claude |
+| 5.0     | 2026-02-20 | Session #173 end: retro actions + scattered debt extractor          | Claude |
 | 4.9     | 2026-02-19 | Session #172: MCP/plugin token optimization (~5K tokens/turn saved) | Claude |
 | 4.8     | 2026-02-19 | Session #171: System test complete (82 findings, TDMS sync)         | Claude |
 | 4.7     | 2026-02-19 | Session #171: PR reviews + system test Session 1                    | Claude |
