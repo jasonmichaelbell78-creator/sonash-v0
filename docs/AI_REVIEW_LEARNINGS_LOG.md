@@ -4286,3 +4286,42 @@ arrays.
 - Array dedup must handle both cross-array and intra-array duplicates
 
 ---
+
+### Review #359: PR #379 R5 — CC Extraction, String Coercion, String.raw
+
+**Date:** 2026-02-20 **Source:** SonarCloud + Qodo PR Suggestions **PR/Branch:**
+PR #379
+
+**Summary:** 7 suggestions → 5 unique after dedup. 3 fixed, 2 rejected
+(impossible types from JSON.parse, compliance repeat). Key fixes: extracted 3
+functions from mergeItems to reduce CC from 18 to under 15, added String
+coercion and empty env var guard in normalizeFilePath, used String.raw and
+replaceAll per SonarCloud es2021 rules.
+
+**Patterns Identified:**
+
+1. **Extract helpers early to avoid CC creep**: Accumulated R1-R4 changes to
+   evidence merge logic inside mergeItems pushed CC to 18. Extracting
+   canonicalize, evidenceToKey, mergeEvidence as standalone functions resolved
+   cleanly.
+2. **String.raw for regex escape replacements**: SonarCloud es2021 flags
+   `"\\$&"` — use `String.raw` template literal instead to avoid escape
+   confusion.
+3. **Always coerce + trim env vars**: Non-string inputs and whitespace-only env
+   vars should be handled defensively at the top of path normalization.
+
+**Resolution:**
+
+- Fixed: 3 items (CC extraction, String coercion + env var guard, String.raw +
+  replaceAll)
+- Rejected: 2 items (safeStringify for impossible types, compliance repeat)
+
+**Key Learnings:**
+
+- When iterative review rounds add logic to the same function, check CC before
+  committing — extract helpers proactively
+- `String.raw` is the idiomatic way to write regex replacement strings with
+  backslashes
+- Always validate env vars with trim check, not just truthiness
+
+---

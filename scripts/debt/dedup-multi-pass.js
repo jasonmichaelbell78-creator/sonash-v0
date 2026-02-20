@@ -176,6 +176,50 @@ function isCrossSourceMatch(a, b) {
   return descSim > 0.7;
 }
 
+// Canonicalize a value for order-independent deep equality comparison
+function canonicalize(v, seen = new WeakSet()) {
+  if (!v || typeof v !== "object") return v;
+  if (seen.has(v)) return "[Circular]";
+  seen.add(v);
+  try {
+    if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen));
+    const out = Object.create(null);
+    for (const k of Object.keys(v).sort()) {
+      if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
+      out[k] = canonicalize(v[k], seen);
+    }
+    return out;
+  } finally {
+    seen.delete(v);
+  }
+}
+
+// Generate a type-stable dedup key for an evidence entry
+function evidenceToKey(e) {
+  if (typeof e === "string") return `str:${e}`;
+  if (e == null || typeof e !== "object") return `prim:${typeof e}:${String(e)}`;
+  try {
+    return `json:${JSON.stringify(canonicalize(e))}`;
+  } catch {
+    return `[unserializable:${Object.prototype.toString.call(e)}]`;
+  }
+}
+
+// Merge evidence arrays with deep deduplication
+function mergeEvidence(existing, incoming) {
+  if (!Array.isArray(incoming)) return existing;
+  const base = Array.isArray(existing) ? existing : [];
+  const seen = new Set(base.map(evidenceToKey));
+  const added = [];
+  for (const e of incoming) {
+    const k = evidenceToKey(e);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    added.push(e);
+  }
+  return [...base, ...added];
+}
+
 // Merge two items, preferring more detailed one
 function mergeItems(primary, secondary) {
   const merged = { ...primary };
@@ -209,44 +253,7 @@ function mergeItems(primary, secondary) {
     }
   }
 
-  // Merge evidence arrays — canonicalize keys for order-independent deep equality
-  if (Array.isArray(secondary.evidence)) {
-    const canonicalize = (v, seen = new WeakSet()) => {
-      if (!v || typeof v !== "object") return v;
-      if (seen.has(v)) return "[Circular]";
-      seen.add(v);
-      try {
-        if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen));
-        const out = Object.create(null);
-        for (const k of Object.keys(v).sort()) {
-          if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
-          out[k] = canonicalize(v[k], seen);
-        }
-        return out;
-      } finally {
-        seen.delete(v);
-      }
-    };
-    const toKey = (e) => {
-      if (typeof e === "string") return `str:${e}`;
-      if (e == null || typeof e !== "object") return `prim:${typeof e}:${String(e)}`;
-      try {
-        return `json:${JSON.stringify(canonicalize(e))}`;
-      } catch {
-        return `[unserializable:${Object.prototype.toString.call(e)}]`;
-      }
-    };
-    const mergedEvidence = Array.isArray(merged.evidence) ? merged.evidence : [];
-    const existing = new Set(mergedEvidence.map(toKey));
-    const newEvidence = [];
-    for (const e of secondary.evidence) {
-      const k = toKey(e);
-      if (existing.has(k)) continue;
-      existing.add(k);
-      newEvidence.push(e);
-    }
-    merged.evidence = [...mergedEvidence, ...newEvidence];
-  }
+  merged.evidence = mergeEvidence(merged.evidence, secondary.evidence);
 
   return merged;
 }
