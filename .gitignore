@@ -82,6 +82,8 @@ serviceAccountKey.json
 .claude/hooks/.agent-trigger-state.json
 .claude/hooks/.fetch-cache.json
 .claude/state/reviews.jsonl
+.claude/state/health-score-log.jsonl
+.claude/state/hook-warnings-log.jsonl
 
 # Claude Code session runtime data (per-session, not tracked)
 .claude/tmp/
