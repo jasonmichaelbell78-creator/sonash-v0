@@ -16,19 +16,6 @@ This queue contains items with status=NEW that require verification. Run
 
 | ID        | Title                                                        | Severity | File                                                                    | Line |
 | --------- | ------------------------------------------------------------ | -------- | ----------------------------------------------------------------------- | ---- |
-| DEBT-2432 | ROADMAP.md milestone tracking tables                         | S1       | ROADMAP.md                                                              | 0    |
-| DEBT-2433 | AUDIT_TRACKER.md audit log tables                            | S1       | docs/AUDIT_TRACKER.md                                                   | 0    |
-| DEBT-2434 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas  | S1       | docs/EXPANSION_EVALUATION_TRACKER.md                                    | 0    |
-| DEBT-2435 | AUDIT_TRACKER.md threshold matrix and version history        | S1       | docs/AUDIT_TRACKER.md                                                   | 0    |
-| DEBT-2455 | sync-claude-settings.js - Unused Claude Code settings syn... | S1       | scripts/sync-claude-settings.js                                         | 0    |
-| DEBT-2460 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl... | S1       | scripts/check-backlog-health.js                                         | 0    |
-| DEBT-2461 | Markdown table parsing in update-readme-status.js with pi... | S1       | scripts/update-readme-status.js                                         | 0    |
-| DEBT-2462 | check-session-gaps.js relies on hardcoded Session Context... | S1       | scripts/check-session-gaps.js                                           | 0    |
-| DEBT-2463 | aggregate-audit-findings.js markdown parsing fragility in... | S1       | scripts/aggregate-audit-findings.js                                     | 0    |
-| DEBT-2464 | generate-pending-alerts.js fragile DEFERRED item extraction  | S1       | scripts/generate-pending-alerts.js                                      | 0    |
-| DEBT-2469 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused       | S1       | docs/HOOKIFY_STRATEGY.md                                                | 0    |
-| DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes         | S1       | docs/agent_docs/FIX_TEMPLATES.md                                        | 0    |
-| DEBT-2482 | Technical debt view files - generated views without integ... | S1       | docs/technical-debt/views/                                              | 0    |
 | DEBT-3136 | Cloud Functions have zero test coverage — 5000+ lines of ... | S1       | functions/src/                                                          | 0    |
 | DEBT-3149 | functions/src/admin.ts has 1 ESLint error — unused variab... | S1       | functions/src/admin.ts                                                  | 2163 |
 | DEBT-3153 | Single root ErrorBoundary — no granular error boundaries ... | S1       | app/layout.tsx                                                          | 92   |
@@ -42,6 +29,19 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI... | S1       | lib/logger.ts                                                           | 7    |
 | DEBT-3210 | No service worker — app cannot function offline despite P... | S1       | public/manifest.json                                                    | 1    |
 | DEBT-3213 | App Check globally disabled on all 5 user-callable functi... | S1       | functions/src/index.ts                                                  | 84   |
+| DEBT-2432 | ROADMAP.md milestone tracking tables                         | S1       | ROADMAP.md                                                              | 0    |
+| DEBT-2433 | AUDIT_TRACKER.md audit log tables                            | S1       | docs/AUDIT_TRACKER.md                                                   | 0    |
+| DEBT-2434 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas  | S1       | docs/EXPANSION_EVALUATION_TRACKER.md                                    | 0    |
+| DEBT-2435 | AUDIT_TRACKER.md threshold matrix and version history        | S1       | docs/AUDIT_TRACKER.md                                                   | 0    |
+| DEBT-2455 | sync-claude-settings.js - Unused Claude Code settings syn... | S1       | scripts/sync-claude-settings.js                                         | 0    |
+| DEBT-2460 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl... | S1       | scripts/check-backlog-health.js                                         | 0    |
+| DEBT-2461 | Markdown table parsing in update-readme-status.js with pi... | S1       | scripts/update-readme-status.js                                         | 0    |
+| DEBT-2462 | check-session-gaps.js relies on hardcoded Session Context... | S1       | scripts/check-session-gaps.js                                           | 0    |
+| DEBT-2463 | aggregate-audit-findings.js markdown parsing fragility in... | S1       | scripts/aggregate-audit-findings.js                                     | 0    |
+| DEBT-2464 | generate-pending-alerts.js fragile DEFERRED item extraction  | S1       | scripts/generate-pending-alerts.js                                      | 0    |
+| DEBT-2469 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused       | S1       | docs/HOOKIFY_STRATEGY.md                                                | 0    |
+| DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes         | S1       | docs/agent_docs/FIX_TEMPLATES.md                                        | 0    |
+| DEBT-2482 | Technical debt view files - generated views without integ... | S1       | docs/technical-debt/views/                                              | 0    |
 | DEBT-0001 | Untitled                                                     | S2       | N/A                                                                     | 0    |
 | DEBT-2132 | Untitled finding                                             | S2       | N/A                                                                     | 0    |
 | DEBT-2180 | Date formats inconsistent across the app                     | S2       | src/components                                                          | 0    |
@@ -50,35 +50,7 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-2184 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                                                            | 0    |
 | DEBT-2186 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                                                          | 0    |
 | DEBT-2429 | Add shellcheck to pre-commit hooks for shell script linting  | S2       | .husky/                                                                 | 0    |
-| DEBT-2436 | DOCUMENT_DEPENDENCIES.md sync status tracking                | S2       | docs/DOCUMENT_DEPENDENCIES.md                                           | 0    |
-| DEBT-2437 | SESSION_CONTEXT.md quick status table                        | S2       | SESSION_CONTEXT.md                                                      | 0    |
-| DEBT-2438 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2       | docs/DOCUMENT_DEPENDENCIES.md                                           | 0    |
-| DEBT-2439 | ROADMAP.md detailed milestone specifications embedded        | S2       | ROADMAP.md                                                              | 0    |
-| DEBT-2440 | PR_WORKFLOW_CHECKLIST.md version history table               | S2       | docs/PR_WORKFLOW_CHECKLIST.md                                           | 0    |
-| DEBT-2441 | EXPANSION_EVALUATION_TRACKER.md command reference table      | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                                    | 0    |
-| DEBT-2446 | ai-review.js - Unused AI review prompt applicator            | S2       | scripts/ai-review.js                                                    | 0    |
-| DEBT-2448 | create-canonical-findings.js - Unused canonical findings ... | S2       | scripts/create-canonical-findings.js                                    | 0    |
-| DEBT-2449 | generate-pending-alerts.js - Unused session-start alert g... | S2       | scripts/generate-pending-alerts.js                                      | 0    |
-| DEBT-2451 | migrate-existing-findings.js - Unused legacy findings mig... | S2       | scripts/migrate-existing-findings.js                                    | 0    |
-| DEBT-2453 | regenerate-findings-index.js - Unused canonical findings ... | S2       | scripts/regenerate-findings-index.js                                    | 0    |
-| DEBT-2456 | update-legacy-lines.js - Unused legacy findings line numb... | S2       | scripts/update-legacy-lines.js                                          | 0    |
-| DEBT-2465 | check-roadmap-health.js version parsing regex scoped to s... | S2       | scripts/check-roadmap-health.js                                         | 0    |
-| DEBT-2466 | Multi-AI normalize-format.js markdown table detection and... | S2       | scripts/multi-ai/normalize-format.js                                    | 0    |
-| DEBT-2467 | verify-sonar-phase.js hardcoded security section header d... | S2       | scripts/verify-sonar-phase.js                                           | 0    |
-| DEBT-2470 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con... | S2       | docs/RECAPTCHA_REMOVAL_GUIDE.md                                         | 0    |
-| DEBT-2471 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ... | S2       | docs/REVIEW_POLICY_INDEX.md                                             | 0    |
-| DEBT-2472 | PLAN_MAP.md - 242 lines documentation hierarchy map never... | S2       | docs/PLAN_MAP.md                                                        | 0    |
-| DEBT-2473 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev... | S2       | docs/MCP_SERVER_AUDIT.md                                                | 0    |
-| DEBT-2478 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy | S2       | docs/agent_docs/SKILL_AGENT_POLICY.md                                   | 0    |
-| DEBT-2479 | Audit inventory stage files (6 files) - generated but unr... | S2       | docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md        | 0    |
-| DEBT-2481 | Plan documents with zero inbound refs - 5 planning files ... | S2       | docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                       | 0    |
 | DEBT-2531 | Subprocess Overhead: Node spawning in hooks                  | S2       | .claude/hooks/session-start.js                                          | 0    |
-| DEBT-2548 | Dead Documentation: Code Review Checklist references         | S2       | .claude/skills/code-reviewer/SKILL.md                                   | 140  |
-| DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components                                                          | 0    |
-| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src                                                                     | 0    |
-| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs                                                                    | 0    |
-| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                                                            | 0    |
-| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                                                          | 0    |
 | DEBT-3133 | 5 packages behind by major version — recharts 2→3, react-... | S2       | package.json                                                            | 0    |
 | DEBT-3138 | No coverage configuration or thresholds — coverage is not... | S2       | package.json                                                            | 0    |
 | DEBT-3139 | Security utilities partially tested — secure-caller teste... | S2       | lib/firebase/account-linking.ts                                         | 0    |
@@ -122,18 +94,34 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-3209 | Server logger (security-logger.ts) does not strip control... | S2       | functions/src/security-logger.ts                                        | 119  |
 | DEBT-3211 | .env.production tracked in git with Firebase config and S... | S2       | .env.production                                                         | 1    |
 | DEBT-3212 | No Content-Security-Policy header configured                 | S2       | firebase.json                                                           | 30   |
-| DEBT-2442 | SESSION_CONTEXT.md recent session summaries                  | S3       | SESSION_CONTEXT.md                                                      | 0    |
-| DEBT-2443 | PLAN_MAP.md version history table                            | S3       | docs/PLAN_MAP.md                                                        | 0    |
-| DEBT-2444 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                         | 0    |
-| DEBT-2445 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines)   | S3       | ROADMAP_LOG.md                                                          | 0    |
-| DEBT-2447 | check-review-triggers.sh - Dead shell script for multi-AI... | S3       | scripts/check-review-triggers.sh                                        | 0    |
-| DEBT-2450 | generate-placement-report.js - Unused roadmap placement s... | S3       | scripts/generate-placement-report.js                                    | 0    |
-| DEBT-2452 | redeploy-admin-dashboard.sh - Firebase deployment helper ... | S3       | scripts/redeploy-admin-dashboard.sh                                     | 0    |
-| DEBT-2454 | seed-commit-log.js - One-time commit log backfill utility    | S3       | scripts/seed-commit-log.js                                              | 0    |
-| DEBT-2474 | MCP_SETUP.md - 178 lines configuration guide without trac... | S3       | docs/MCP_SETUP.md                                                       | 0    |
-| DEBT-2475 | LEARNING_METRICS.md - 84 lines metrics tracking document     | S3       | docs/LEARNING_METRICS.md                                                | 0    |
-| DEBT-2476 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve... | S3       | docs/AUTOMATION_AUDIT_REPORT.md                                         | 0    |
-| DEBT-2480 | ADR template and decisions/README - decision framework un... | S3       | docs/decisions/                                                         | 0    |
+| DEBT-2548 | Dead Documentation: Code Review Checklist references         | S2       | 140                                                                     | 0    |
+| DEBT-2436 | DOCUMENT_DEPENDENCIES.md sync status tracking                | S2       | docs/DOCUMENT_DEPENDENCIES.md                                           | 0    |
+| DEBT-2437 | SESSION_CONTEXT.md quick status table                        | S2       | SESSION_CONTEXT.md                                                      | 0    |
+| DEBT-2438 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2       | docs/DOCUMENT_DEPENDENCIES.md                                           | 0    |
+| DEBT-2439 | ROADMAP.md detailed milestone specifications embedded        | S2       | ROADMAP.md                                                              | 0    |
+| DEBT-2440 | PR_WORKFLOW_CHECKLIST.md version history table               | S2       | docs/PR_WORKFLOW_CHECKLIST.md                                           | 0    |
+| DEBT-2441 | EXPANSION_EVALUATION_TRACKER.md command reference table      | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                                    | 0    |
+| DEBT-2446 | ai-review.js - Unused AI review prompt applicator            | S2       | scripts/ai-review.js                                                    | 0    |
+| DEBT-2448 | create-canonical-findings.js - Unused canonical findings ... | S2       | scripts/create-canonical-findings.js                                    | 0    |
+| DEBT-2449 | generate-pending-alerts.js - Unused session-start alert g... | S2       | scripts/generate-pending-alerts.js                                      | 0    |
+| DEBT-2451 | migrate-existing-findings.js - Unused legacy findings mig... | S2       | scripts/migrate-existing-findings.js                                    | 0    |
+| DEBT-2453 | regenerate-findings-index.js - Unused canonical findings ... | S2       | scripts/regenerate-findings-index.js                                    | 0    |
+| DEBT-2456 | update-legacy-lines.js - Unused legacy findings line numb... | S2       | scripts/update-legacy-lines.js                                          | 0    |
+| DEBT-2465 | check-roadmap-health.js version parsing regex scoped to s... | S2       | scripts/check-roadmap-health.js                                         | 0    |
+| DEBT-2466 | Multi-AI normalize-format.js markdown table detection and... | S2       | scripts/multi-ai/normalize-format.js                                    | 0    |
+| DEBT-2467 | verify-sonar-phase.js hardcoded security section header d... | S2       | scripts/verify-sonar-phase.js                                           | 0    |
+| DEBT-2470 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con... | S2       | docs/RECAPTCHA_REMOVAL_GUIDE.md                                         | 0    |
+| DEBT-2471 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ... | S2       | docs/REVIEW_POLICY_INDEX.md                                             | 0    |
+| DEBT-2472 | PLAN_MAP.md - 242 lines documentation hierarchy map never... | S2       | docs/PLAN_MAP.md                                                        | 0    |
+| DEBT-2473 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev... | S2       | docs/MCP_SERVER_AUDIT.md                                                | 0    |
+| DEBT-2478 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy | S2       | docs/agent_docs/SKILL_AGENT_POLICY.md                                   | 0    |
+| DEBT-2479 | Audit inventory stage files (6 files) - generated but unr... | S2       | docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md        | 0    |
+| DEBT-2481 | Plan documents with zero inbound refs - 5 planning files ... | S2       | docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                       | 0    |
+| DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components                                                          | 0    |
+| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src                                                                     | 0    |
+| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs                                                                    | 0    |
+| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                                                            | 0    |
+| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                                                          | 0    |
 | DEBT-2549 | Filesystem MCP server configured but noted as unused         | S3       | .mcp.json                                                               | 0    |
 | DEBT-3132 | ESLint ecosystem version drift between root and functions... | S3       | functions/package.json                                                  | 0    |
 | DEBT-3134 | Firebase client/server version alignment is correct — dif... | S3       | package.json                                                            | 0    |
@@ -161,6 +149,18 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-3205 | Domain 18 (Admin Panel, MEDIUM risk) produced 0 findings ... | S3       | docs/audits/system-test/audit-2026-02-19/domains/d18-admin.jsonl        | 1    |
 | DEBT-3206 | 7 checks across 3 domains not fully executable in static ... | S3       | docs/audits/system-test/audit-2026-02-19/PLAN_INDEX.md                  | 1    |
 | DEBT-3214 | Hook warning logs missing user context field                 | S3       | scripts/append-hook-warning.js                                          | 0    |
+| DEBT-2442 | SESSION_CONTEXT.md recent session summaries                  | S3       | SESSION_CONTEXT.md                                                      | 0    |
+| DEBT-2443 | PLAN_MAP.md version history table                            | S3       | docs/PLAN_MAP.md                                                        | 0    |
+| DEBT-2444 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                         | 0    |
+| DEBT-2445 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines)   | S3       | ROADMAP_LOG.md                                                          | 0    |
+| DEBT-2447 | check-review-triggers.sh - Dead shell script for multi-AI... | S3       | scripts/check-review-triggers.sh                                        | 0    |
+| DEBT-2450 | generate-placement-report.js - Unused roadmap placement s... | S3       | scripts/generate-placement-report.js                                    | 0    |
+| DEBT-2452 | redeploy-admin-dashboard.sh - Firebase deployment helper ... | S3       | scripts/redeploy-admin-dashboard.sh                                     | 0    |
+| DEBT-2454 | seed-commit-log.js - One-time commit log backfill utility    | S3       | scripts/seed-commit-log.js                                              | 0    |
+| DEBT-2474 | MCP_SETUP.md - 178 lines configuration guide without trac... | S3       | docs/MCP_SETUP.md                                                       | 0    |
+| DEBT-2475 | LEARNING_METRICS.md - 84 lines metrics tracking document     | S3       | docs/LEARNING_METRICS.md                                                | 0    |
+| DEBT-2476 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve... | S3       | docs/AUTOMATION_AUDIT_REPORT.md                                         | 0    |
+| DEBT-2480 | ADR template and decisions/README - decision framework un... | S3       | docs/decisions/                                                         | 0    |
 | DEBT-2457 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | S0       | All 57 files with AI Instructions sections                              | 0    |
 | DEBT-2458 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | S0       | .claude/hooks/commit-tracker.js                                         | 0    |
 | DEBT-2459 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | S0       | .claude/hooks/auto-save-context.js                                      | 0    |

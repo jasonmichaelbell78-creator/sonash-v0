@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.39 **Created:** 2026-01-02 **Last Updated:** 2026-02-19
+**Document Version:** 17.40 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
 
 ## Purpose
 
@@ -4208,5 +4208,45 @@ non-standard git directory support.
 - Claude Code PostToolUse hooks communicate via stdout — stderr is invisible
 - When rejecting reviewer suggestions, verify the tool's communication protocol
   before accepting "best practice" advice that would break functionality
+
+---
+
+### Review #357: PR #379 R3 — Prototype Pollution, Path Normalization, Type-Stable Keys
+
+**Date:** 2026-02-20 **Source:** SonarCloud + Qodo PR Compliance + Code
+Suggestions **PR/Branch:** PR #379
+
+**Summary:** 18 raw suggestions → 12 unique after dedup. 6 fixed, 4 rejected, 2
+deferred. Key fixes: prototype pollution prevention in canonicalize, source_file
+now uses full normalizeFilePath(), type-stable evidence dedup keys, circular
+reference protection, path-segment-boundary matching for repo root stripping.
+
+**Patterns Identified:**
+
+1. **Prototype pollution in Object.create({})**: When building objects from
+   untrusted keys, use `Object.create(null)` and skip `__proto__`/constructor.
+2. **normalizeFilePath reuse**: When a normalization function exists, use it
+   everywhere — don't do partial normalization (backslash-only) on some fields.
+3. **Type-stable dedup keys**: Prefix keys with `str:`, `prim:`, `json:` to
+   prevent collisions between `"1"` (string) and `1` (number).
+4. **Path segment boundary**: `indexOf("sonash-v0/")` matches
+   `not-sonash-v0/...` — use regex with `(?:^|/)` anchor.
+
+**Resolution:**
+
+- Fixed: 6 items (prototype pollution, normalizeFilePath for source_file,
+  replaceAll, path segment regex, circular ref protection, type-stable keys)
+- Rejected: 4 items (Date/RegExp/Set/Map handling — impossible from JSON.parse;
+  WeakMap unserializable IDs — over-engineering; operator "root" as PII — it's a
+  role; missing outcome field — items_processed/errors already present)
+- Deferred: 2 items (JSONL schema migration for sentinel files/evidence
+  types/resolution types — pre-existing, complex, needs systematic approach)
+
+**Key Learnings:**
+
+- Object.create(null) is the standard defense against prototype pollution
+- Evidence data from JSON.parse can never contain Date/RegExp/Set/Map — reject
+  suggestions that add handling for impossible types
+- When normalizing paths, always use path-segment boundaries not substring match
 
 ---

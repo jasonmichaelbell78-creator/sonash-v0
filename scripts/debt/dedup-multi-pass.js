@@ -211,16 +211,23 @@ function mergeItems(primary, secondary) {
 
   // Merge evidence arrays — canonicalize keys for order-independent deep equality
   if (Array.isArray(secondary.evidence)) {
-    const canonicalize = (v) => {
+    const canonicalize = (v, seen = new WeakSet()) => {
       if (!v || typeof v !== "object") return v;
-      if (Array.isArray(v)) return v.map(canonicalize);
-      const out = {};
-      for (const k of Object.keys(v).sort()) out[k] = canonicalize(v[k]);
+      if (seen.has(v)) return "[Circular]";
+      seen.add(v);
+      if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen));
+      const out = Object.create(null);
+      for (const k of Object.keys(v).sort()) {
+        if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
+        out[k] = canonicalize(v[k], seen);
+      }
       return out;
     };
     const toKey = (e) => {
+      if (typeof e === "string") return `str:${e}`;
+      if (e == null || typeof e !== "object") return `prim:${typeof e}:${String(e)}`;
       try {
-        return typeof e === "string" ? e : JSON.stringify(canonicalize(e));
+        return `json:${JSON.stringify(canonicalize(e))}`;
       } catch {
         return `[unserializable:${Object.prototype.toString.call(e)}]`;
       }

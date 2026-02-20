@@ -99,9 +99,9 @@
   execSync (scripts/debt/resolve-item.js:21)
 - **DEBT-2345**: pattern-check.js spawns subprocess every Write/Edit/MultiEdit
   (~100ms latency) (.claude/hooks/pattern-check.js:0)
-- **DEBT-3266**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+- **DEBT-3470**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
   unnecessary tokens p... (N/A:0)
-- **DEBT-3267**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+- **DEBT-3471**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
   (.claude/hooks/commit-tracker.js:0)
 - **DEBT-2383**: SESSION_DECISIONS.md Decision Block Regex in
   auto-save-context.js (.claude/hooks/auto-save-context.js:0)
@@ -109,32 +109,16 @@
   document never... (docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md:0)
 - **DEBT-2457**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
   unnecessary tokens p... (All 57 files with AI Instructions sections:0)
+- **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (N/A:0)
+- **DEBT-2382**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (.claude/hooks/commit-tracker.js:0)
 - **DEBT-2458**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
   (.claude/hooks/commit-tracker.js:0)
 - **DEBT-2459**: SESSION_DECISIONS.md Decision Block Regex in
   auto-save-context.js (.claude/hooks/auto-save-context.js:0)
 - **DEBT-2468**: SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ideation
   document never... (docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md:0)
-- **DEBT-3366**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3367**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3368**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3369**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3468**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3469**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3470**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3471**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-2382**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
 - **DEBT-3079**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
   unnecessary tokens p... (N/A:0)
 - **DEBT-3080**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
@@ -146,6 +130,22 @@
 - **DEBT-3264**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
   unnecessary tokens p... (N/A:0)
 - **DEBT-3265**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (.claude/hooks/commit-tracker.js:0)
+- **DEBT-3266**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (N/A:0)
+- **DEBT-3267**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (.claude/hooks/commit-tracker.js:0)
+- **DEBT-3366**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (N/A:0)
+- **DEBT-3367**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (.claude/hooks/commit-tracker.js:0)
+- **DEBT-3368**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (N/A:0)
+- **DEBT-3369**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (.claude/hooks/commit-tracker.js:0)
+- **DEBT-3468**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (N/A:0)
+- **DEBT-3469**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
   (.claude/hooks/commit-tracker.js:0)
 
 ## High Priority Items (S1)
