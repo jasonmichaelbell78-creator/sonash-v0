@@ -214,13 +214,20 @@ function evidenceToKey(e) {
   }
 }
 
+// Coerce a value to an array (null/undefined → [], non-array → [value], array → as-is)
+function toArray(value) {
+  if (value == null) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
 // Merge evidence arrays with deep deduplication
 function mergeEvidence(existing, incoming) {
-  if (!Array.isArray(incoming)) return existing;
-  const base = Array.isArray(existing) ? existing : existing == null ? [] : [existing];
+  if (incoming == null) return existing;
+  const incomingArr = toArray(incoming);
+  const base = toArray(existing);
   const seen = new Set(base.map(evidenceToKey));
   const added = [];
-  for (const e of incoming) {
+  for (const e of incomingArr) {
     const k = evidenceToKey(e);
     if (seen.has(k)) continue;
     seen.add(k);

@@ -4359,3 +4359,38 @@ fallback keys for unserializable objects.
 - Track repeated rejections to identify persistent false positive patterns
 
 ---
+
+### Review #361: PR #379 R7 — Nested Ternary Extraction, Incoming Evidence Wrapping
+
+**Date:** 2026-02-20 **Source:** SonarCloud + Qodo PR Suggestions **PR/Branch:**
+PR #379
+
+**Summary:** 8 suggestions → 2 unique after dedup. 2 fixed, 6 rejected (5
+repeats from R3-R6, 1 would corrupt evidence ordering). Key fixes: extracted
+nested ternary into toArray() helper per SonarCloud, wrapped non-array incoming
+evidence symmetrically with existing evidence handling.
+
+**Patterns Identified:**
+
+1. **Nested ternaries from defensive coding**: Adding
+   `existing == null ? [] : [existing]` to a ternary creates SonarCloud-flagged
+   nesting. Extract to a named helper function immediately.
+2. **Symmetric defensive wrapping**: If you wrap one side (existing) of a merge
+   defensively, wrap the other side (incoming) too for consistency.
+
+**Resolution:**
+
+- Fixed: 2 items (toArray helper, incoming evidence wrapping)
+- Rejected: 6 items (DoS repeat, compliance repeat x5, impossible types x5,
+  array sorting would corrupt semantics, fallback key diminishing returns, key
+  length cap over-engineering)
+
+**Key Learnings:**
+
+- When adding defensive wrapping, apply symmetrically to both sides of a merge
+- Extract complex ternaries to named helpers immediately to avoid SonarCloud
+  flags
+- 5 consecutive rejections of Date/RegExp/Map/Set suggestion — clear false
+  positive pattern
+
+---
