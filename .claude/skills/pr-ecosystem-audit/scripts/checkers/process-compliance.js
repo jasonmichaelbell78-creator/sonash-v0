@@ -149,7 +149,13 @@ function checkSkillInvocationFidelity(reviewsJsonl, learningsContent, findings) 
 
   // Check recent reviews for step documentation
   const recentReviews = reviewsJsonl
-    .filter((r) => r.type === "review" || r.pr_number || r.pr || typeof r.id === "number")
+    .filter(
+      (r) =>
+        r.type === "review" ||
+        typeof r.pr === "number" ||
+        typeof r.pr_number === "number" ||
+        typeof r.id === "number"
+    )
     .slice(-10);
 
   // pr-review has 10 major steps (0, 0.5, 1, 1.5, 2, 3, 4, 5, 6-9)
@@ -271,7 +277,13 @@ function checkReviewProcessCompleteness(reviewsJsonl, learningsContent, rootDir,
   const bench = BENCHMARKS.review_process_completeness;
 
   const reviews = reviewsJsonl
-    .filter((r) => r.type === "review" || r.pr_number || r.pr || typeof r.id === "number")
+    .filter(
+      (r) =>
+        r.type === "review" ||
+        typeof r.pr === "number" ||
+        typeof r.pr_number === "number" ||
+        typeof r.id === "number"
+    )
     .slice(-10);
 
   // Multi-pass parsing check

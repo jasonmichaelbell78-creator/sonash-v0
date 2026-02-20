@@ -204,7 +204,7 @@ Scan `.claude/state/agent-research-results.md` and other state files:
 
 **Output:** Appended to `raw/scattered-intake.jsonl`
 
-### 0g: SonarCloud Fresh Sync (NEW — added per PR #379 ecosystem audit)
+### Step 0g: SonarCloud Fresh Sync (NEW — added per PR #379 ecosystem audit)
 
 Run a full SonarCloud sync to capture any issues not yet in MASTER_DEBT. The
 SonarCloud API may have new issues from recent CI runs that haven't been

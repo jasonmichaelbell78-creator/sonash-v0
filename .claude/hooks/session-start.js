@@ -441,8 +441,9 @@ try {
               timeout: 15000,
             });
           } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
             console.warn(
-              `   ⚠️ reviews:sync failed after rotation, will retry in session-begin: ${err.message}`
+              `   ⚠️ reviews:sync failed after rotation, will retry in session-begin: ${msg}`
             );
           }
         }

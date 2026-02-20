@@ -1769,12 +1769,12 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
-#### Review #361: PR #381 R1 — Empty Catch Logging, Filter Safety, Regex Broadening (2026-02-20)
+#### Review #361: PR #381 R1+R2 — Empty Catch Logging, Filter Safety, Regex Broadening, Propagation Fix (2026-02-20)
 
-**Source:** Qodo Compliance + Qodo Code Suggestions + Gemini Code Assist
-**PR/Branch:** PR #381 / claude/fix-tool-use-ids-LYbwR **Suggestions:** 10 total
-(Qodo Compliance: 4, Qodo Code: 5, Gemini: 2) after dedup (Fixed: 6,
-Rejected: 4)
+**Source:** Qodo Compliance + Qodo Code Suggestions + Gemini Code Assist (R1+R2)
+**PR/Branch:** PR #381 / claude/fix-tool-use-ids-LYbwR **R1:** 10 raw → 6 fixed,
+4 rejected **R2:** 9 raw (3 repeats) → 5 new fixed, 4 rejected (3 repeats + 1
+new)
 
 **Patterns Identified:**
 
@@ -1785,12 +1785,22 @@ Rejected: 4)
    review #0 to be excluded. Use `typeof r.id === "number"` for numeric fields.
 3. **Regex anchoring assumptions** — `[a-z]` as first char excludes uppercase or
    digit-leading IDs. Use `[\w]` with word boundary for broader matching.
+4. **Propagation miss on truthy filters (R2)** — R1 fixed `r.id` at line 538 but
+   missed `r.pr_number || r.pr` at lines 152 and 274. Same class of bug, should
+   have been caught by grep in R1. Reinforces: always grep the pattern.
+5. **Dedup metric accuracy (R2)** — `.match()` counts all occurrences including
+   duplicates. For counting unique IDs, use `matchAll` + `Set`.
+6. **Defensive error access (R2)** — `err.message` crashes if a non-Error is
+   thrown. Use `err instanceof Error ? err.message : String(err)`.
 
 **Key Learnings:**
 
 - When adding try/catch around non-fatal operations, always include at minimum a
   `console.warn` with the error message — this was flagged by all 3 reviewers
 - Filter predicates on numeric fields must use `typeof` checks, not truthiness
+- **R2 lesson**: When fixing a truthy-filter bug, grep for ALL similar filter
+  predicates in the same file, not just the reported line. R1 fixed line 538 but
+  lines 152 and 274 had the identical pattern
 
 ---
 

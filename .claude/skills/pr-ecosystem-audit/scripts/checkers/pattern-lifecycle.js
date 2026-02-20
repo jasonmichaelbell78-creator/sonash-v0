@@ -355,7 +355,8 @@ function checkAutomationCoverageGap(
 
   // Count automated patterns (in check-pattern-compliance.js)
   // Pattern rules are defined as objects with `id: "..."` in ANTI_PATTERNS array
-  const automatedCount = (patternChecker.match(/\bid:\s*['"][\w-]+['"]/g) || []).length;
+  const automatedIds = [...patternChecker.matchAll(/\bid:\s*['"]([\w-]+)['"]/g)].map((m) => m[1]);
+  const automatedCount = new Set(automatedIds).size;
 
   const gapPct =
     totalKnown > 0 ? Math.round(((totalKnown - automatedCount) / totalKnown) * 100) : 100;
