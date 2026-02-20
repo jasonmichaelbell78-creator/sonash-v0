@@ -66,7 +66,7 @@
 | DEBT-3468 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | N/A                                                         | 0    | code-quality | E0     |
 | DEBT-3469 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | .claude/hooks/commit-tracker.js                             | 0    | code-quality | E1     |
 
-## S1 - High (452)
+## S1 - High (453)
 
 | ID        | Title                                                         | File                                                                                                                                               | Line | Category                 | Effort |
 | --------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -509,6 +509,7 @@
 | DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI...  | lib/logger.ts                                                                                                                                      | 7    | security                 | E1     |
 | DEBT-3210 | No service worker — app cannot function offline despite P...  | public/manifest.json                                                                                                                               | 1    | code-quality             | E3     |
 | DEBT-3213 | App Check globally disabled on all 5 user-callable functi...  | functions/src/index.ts                                                                                                                             | 84   | security                 | E2     |
+| DEBT-3528 | Retro action items not consistently tracked as DEBT entri...  | docs/AI_REVIEW_LEARNINGS_LOG.md                                                                                                                    | 0    | engineering-productivity | E1     |
 | DEBT-2432 | ROADMAP.md milestone tracking tables                          | ROADMAP.md                                                                                                                                         | 0    | code-quality             | E2     |
 | DEBT-2433 | AUDIT_TRACKER.md audit log tables                             | docs/AUDIT_TRACKER.md                                                                                                                              | 0    | code-quality             | E2     |
 | DEBT-2434 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas   | docs/EXPANSION_EVALUATION_TRACKER.md                                                                                                               | 0    | code-quality             | E3     |
@@ -523,7 +524,7 @@
 | DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes          | docs/agent_docs/FIX_TEMPLATES.md                                                                                                                   | 0    | code-quality             | E0     |
 | DEBT-2482 | Technical debt view files - generated views without integ...  | docs/technical-debt/views/                                                                                                                         | 0    | code-quality             | E1     |
 
-## S2 - Medium (1588)
+## S2 - Medium (1589)
 
 | ID        | Title                                                          | File                                                                                                                                                                        | Line | Category                 | Effort |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -1695,6 +1696,7 @@
 | DEBT-3211 | .env.production tracked in git with Firebase config and S...   | .env.production                                                                                                                                                             | 1    | security                 | E1     |
 | DEBT-3212 | No Content-Security-Policy header configured                   | firebase.json                                                                                                                                                               | 30   | security                 | E1     |
 | DEBT-2548 | Dead Documentation: Code Review Checklist references           | 140                                                                                                                                                                         | 0    | ai-optimization          | E1     |
+| DEBT-3527 | Extract shared loadJsonl to lib/ module — 4 identical cop...   | .claude/skills/pr-ecosystem-audit/scripts/checkers/effectiveness-metrics.js                                                                                                 | 439  | refactoring              | E1     |
 | DEBT-2124 | Duplicate hook validation for Write+Edit+MultiEdit tools       | multiple                                                                                                                                                                    | 0    | code-quality             | E2     |
 | DEBT-2125 | Firebase deployment lacks rollback on partial failure          | 1                                                                                                                                                                           | 0    | code-quality             | E2     |
 | DEBT-2127 | SonarCloud not enforced in CI gates                            | 1                                                                                                                                                                           | 0    | code-quality             | E1     |

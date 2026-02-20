@@ -15,7 +15,7 @@
  *   5. Checks consolidation status
  */
 
-const { execSync } = require("node:child_process");
+const { execSync, execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
@@ -431,6 +431,21 @@ try {
         const result = rotateJsonl(reviewsPath, 50, 30);
         if (result.rotated) {
           console.log(`   🔄 reviews.jsonl rotated: ${result.before} → ${result.after} entries`);
+          // Re-sync from markdown source immediately after rotation to prevent
+          // data loss. Without this, the audit checkers see only 30 entries until
+          // session-begin runs reviews:sync. (PEA-501, PR #379 ecosystem audit)
+          try {
+            execFileSync("npm", ["run", "reviews:sync", "--", "--apply"], {
+              cwd: projectDir,
+              stdio: "inherit",
+              timeout: 15000,
+            });
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.warn(
+              `   ⚠️ reviews:sync failed after rotation, will retry in session-begin: ${msg}`
+            );
+          }
         }
       } catch {
         // Fallback: warn if rotation fails

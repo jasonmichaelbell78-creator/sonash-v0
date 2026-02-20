@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (155)
+## NEW (157)
 
 | ID        | Title                                                        | Severity | Category                 |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------ |
@@ -26,6 +26,7 @@
 | DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI... | S1       | security                 |
 | DEBT-3210 | No service worker — app cannot function offline despite P... | S1       | code-quality             |
 | DEBT-3213 | App Check globally disabled on all 5 user-callable functi... | S1       | security                 |
+| DEBT-3528 | Retro action items not consistently tracked as DEBT entri... | S1       | engineering-productivity |
 | DEBT-2432 | ROADMAP.md milestone tracking tables                         | S1       | code-quality             |
 | DEBT-2433 | AUDIT_TRACKER.md audit log tables                            | S1       | code-quality             |
 | DEBT-2434 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas  | S1       | code-quality             |
@@ -92,6 +93,7 @@
 | DEBT-3211 | .env.production tracked in git with Firebase config and S... | S2       | security                 |
 | DEBT-3212 | No Content-Security-Policy header configured                 | S2       | security                 |
 | DEBT-2548 | Dead Documentation: Code Review Checklist references         | S2       | ai-optimization          |
+| DEBT-3527 | Extract shared loadJsonl to lib/ module — 4 identical cop... | S2       | refactoring              |
 | DEBT-2436 | DOCUMENT_DEPENDENCIES.md sync status tracking                | S2       | code-quality             |
 | DEBT-2437 | SESSION_CONTEXT.md quick status table                        | S2       | code-quality             |
 | DEBT-2438 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2       | code-quality             |

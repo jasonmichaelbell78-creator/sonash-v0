@@ -2480,13 +2480,14 @@
 | DEBT-2290 | Document atomic write pattern as reusable helper               | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 | DEBT-3193 | CANON system uses JSONL output model — templates referenc...   | S3       | docs/templates/CANON_QUICK_REFERENCE.md                            | 1    |
 
-## engineering-productivity (9)
+## engineering-productivity (10)
 
 | ID        | Title                                                        | Severity | File                            | Line |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------------- | ---- |
 | DEBT-0871 | Firebase IndexedDB Persistence Not Enabled - Critical Off... | S1       | N/A                             | 0    |
 | DEBT-0872 | No Service Worker - App Cannot Load Offline At All           | S1       | N/A                             | 0    |
 | DEBT-0873 | No Offline Write Queue - Journal Entries Lost Forever        | S1       | N/A                             | 0    |
+| DEBT-3528 | Retro action items not consistently tracked as DEBT entri... | S1       | docs/AI_REVIEW_LEARNINGS_LOG.md | 0    |
 | DEBT-2189 | Composite validator: consolidate 9 PostToolUse hooks into... | S2       | .claude/settings.json           | 57   |
 | DEBT-2311 | External link checker has ~100% false positive rate          | S2       | scripts/check-external-links.js | 0    |
 | DEBT-2312 | Commit tracker shows 212h stale despite recent commits       | S2       | .claude/hooks/commit-tracker.js | 0    |
@@ -2959,33 +2960,34 @@
 | DEBT-2120 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                                                   | 24   |
 | DEBT-2121 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 
-## refactoring (23)
+## refactoring (24)
 
-| ID        | Title                                                        | Severity | File                                               | Line |
-| --------- | ------------------------------------------------------------ | -------- | -------------------------------------------------- | ---- |
-| DEBT-0094 | TodayPage god component (1117 lines, 14 useState, 10 useE... | S1       | components/notebook/pages/today-page.tsx           | 1    |
-| DEBT-0095 | UsersTab god component (924 lines, 21 useState, 3 useEffect) | S1       | components/admin/users-tab.tsx                     | 1    |
-| DEBT-0096 | Time-of-day rotation logic duplicated in quotes.ts and sl... | S1       | lib/db/quotes.ts                                   | 44   |
-| DEBT-0097 | Direct Firebase SDK usage in 22+ files bypasses service l... | S1       | hooks/use-journal.ts                               | 31   |
-| DEBT-0136 | Split admin.ts (3,111 lines)                                 | S1       | functions/src/admin.ts                             | 143  |
-| DEBT-0137 | Split users-tab.tsx (2,092 lines)                            | S1       | components/admin/users-tab.tsx                     | 84   |
-| DEBT-0874 | Cloud Functions Index File God Object (811 Lines)            | S1       | N/A                                                | 0    |
-| DEBT-0875 | Admin Functions File Exceeds Complexity (800+ Lines, 21 O... | S1       | N/A                                                | 0    |
-| DEBT-1356 | Direct Firestore SDK reads in UI/components bypass typed ... | S1       | components/admin/admin-crud-table.tsx              | 0    |
-| DEBT-1357 | Cloud Function calling patterns duplicated despite existi... | S1       | components/admin/admin-crud-table.tsx              | 0    |
-| DEBT-1358 | Error logging inconsistent: many call sites log raw error... | S1       | app/admin/page.tsx                                 | 0    |
-| DEBT-1365 | Triple data access layer: 3 overlapping Firestore patterns   | S1       | lib/firestore-service.ts                           | 0    |
-| DEBT-0459 | Step1WorksheetCard large component (845 lines) with neste... | S2       | components/growth/Step1WorksheetCard.tsx           | 1    |
-| DEBT-0460 | ResourcesPage large component (728 lines) mixing meetings... | S2       | components/notebook/pages/resources-page.tsx       | 1    |
-| DEBT-0461 | reCAPTCHA token fetch pattern repeated 5x across codebase    | S2       | hooks/use-journal.ts                               | 281  |
-| DEBT-0526 | Split today-page.tsx (1,199 lines)                           | S2       | components/notebook/pages/today-page.tsx           | 396  |
-| DEBT-0527 | Split dashboard-tab.tsx (1,031 lines)                        | S2       | components/admin/dashboard-tab.tsx                 | 1    |
-| DEBT-0528 | Repository pattern violations                                | S2       | lib/firestore-service.ts                           | 1    |
-| DEBT-0894 | useJournal Hook Has 7 Responsibilities (438 lines)           | S2       | N/A                                                | 0    |
-| DEBT-2291 | HookRunner framework — centralized hook orchestration wit... | S2       | .claude/hooks/post-write-validator.js              | 0    |
-| DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                  | 188  |
-| DEBT-0817 | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx | 12   |
-| DEBT-0818 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                      | 86   |
+| ID        | Title                                                        | Severity | File                                                                        | Line |
+| --------- | ------------------------------------------------------------ | -------- | --------------------------------------------------------------------------- | ---- |
+| DEBT-0094 | TodayPage god component (1117 lines, 14 useState, 10 useE... | S1       | components/notebook/pages/today-page.tsx                                    | 1    |
+| DEBT-0095 | UsersTab god component (924 lines, 21 useState, 3 useEffect) | S1       | components/admin/users-tab.tsx                                              | 1    |
+| DEBT-0096 | Time-of-day rotation logic duplicated in quotes.ts and sl... | S1       | lib/db/quotes.ts                                                            | 44   |
+| DEBT-0097 | Direct Firebase SDK usage in 22+ files bypasses service l... | S1       | hooks/use-journal.ts                                                        | 31   |
+| DEBT-0136 | Split admin.ts (3,111 lines)                                 | S1       | functions/src/admin.ts                                                      | 143  |
+| DEBT-0137 | Split users-tab.tsx (2,092 lines)                            | S1       | components/admin/users-tab.tsx                                              | 84   |
+| DEBT-0874 | Cloud Functions Index File God Object (811 Lines)            | S1       | N/A                                                                         | 0    |
+| DEBT-0875 | Admin Functions File Exceeds Complexity (800+ Lines, 21 O... | S1       | N/A                                                                         | 0    |
+| DEBT-1356 | Direct Firestore SDK reads in UI/components bypass typed ... | S1       | components/admin/admin-crud-table.tsx                                       | 0    |
+| DEBT-1357 | Cloud Function calling patterns duplicated despite existi... | S1       | components/admin/admin-crud-table.tsx                                       | 0    |
+| DEBT-1358 | Error logging inconsistent: many call sites log raw error... | S1       | app/admin/page.tsx                                                          | 0    |
+| DEBT-1365 | Triple data access layer: 3 overlapping Firestore patterns   | S1       | lib/firestore-service.ts                                                    | 0    |
+| DEBT-0459 | Step1WorksheetCard large component (845 lines) with neste... | S2       | components/growth/Step1WorksheetCard.tsx                                    | 1    |
+| DEBT-0460 | ResourcesPage large component (728 lines) mixing meetings... | S2       | components/notebook/pages/resources-page.tsx                                | 1    |
+| DEBT-0461 | reCAPTCHA token fetch pattern repeated 5x across codebase    | S2       | hooks/use-journal.ts                                                        | 281  |
+| DEBT-0526 | Split today-page.tsx (1,199 lines)                           | S2       | components/notebook/pages/today-page.tsx                                    | 396  |
+| DEBT-0527 | Split dashboard-tab.tsx (1,031 lines)                        | S2       | components/admin/dashboard-tab.tsx                                          | 1    |
+| DEBT-0528 | Repository pattern violations                                | S2       | lib/firestore-service.ts                                                    | 1    |
+| DEBT-0894 | useJournal Hook Has 7 Responsibilities (438 lines)           | S2       | N/A                                                                         | 0    |
+| DEBT-2291 | HookRunner framework — centralized hook orchestration wit... | S2       | .claude/hooks/post-write-validator.js                                       | 0    |
+| DEBT-3527 | Extract shared loadJsonl to lib/ module — 4 identical cop... | S2       | .claude/skills/pr-ecosystem-audit/scripts/checkers/effectiveness-metrics.js | 439  |
+| DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                                           | 188  |
+| DEBT-0817 | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx                          | 12   |
+| DEBT-0818 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                                               | 86   |
 
 ## security (113)
 

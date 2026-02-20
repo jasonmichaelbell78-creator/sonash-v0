@@ -197,13 +197,18 @@ DECISION TREE:
 
 When receiving code review feedback (CodeRabbit, Qodo, etc.):
 
-1. **Analyze ALL suggestions** - Read through every comment multiple times
-2. **Create TodoWrite checklist** - Track each suggestion as a task
-3. **Address systematically** - Don't skip items; mark as resolved or note why
+1. **ALWAYS use `/pr-review` skill** - Never process review feedback without
+   invoking the full protocol. Skipping the protocol causes cascading issues in
+   subsequent rounds (CC regressions, propagation misses, missing learning log
+   entries). Evidence: PR #379 R8-R9 skipped protocol, causing 2 avoidable
+   cleanup rounds.
+2. **Analyze ALL suggestions** - Read through every comment multiple times
+3. **Create TodoWrite checklist** - Track each suggestion as a task
+4. **Address systematically** - Don't skip items; mark as resolved or note why
    skipped
-4. **Verify CI impact** - Check if changes affect workflows (ci.yml,
+5. **Verify CI impact** - Check if changes affect workflows (ci.yml,
    docs-lint.yml)
-5. **Test after changes** - Run `npm test` and `npm run lint` before committing
+6. **Test after changes** - Run `npm test` and `npm run lint` before committing
 
 ## 6. Anti-Pattern Awareness
 

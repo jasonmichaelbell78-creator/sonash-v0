@@ -1,8 +1,8 @@
 # Implementation Plan: Technical Debt Resolution & Grand Plan V2
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-19
+**Document Version:** 1.1
+**Last Updated:** 2026-02-20
 **Status:** DRAFT
 <!-- prettier-ignore-end -->
 
@@ -204,14 +204,47 @@ Scan `.claude/state/agent-research-results.md` and other state files:
 
 **Output:** Appended to `raw/scattered-intake.jsonl`
 
+### Step 0g: SonarCloud Fresh Sync (NEW — added per PR #379 ecosystem audit)
+
+Run a full SonarCloud sync to capture any issues not yet in MASTER_DEBT. The
+SonarCloud API may have new issues from recent CI runs that haven't been
+ingested.
+
+```bash
+# Decrypt MCP tokens if needed (SonarCloud API requires SONAR_TOKEN)
+node scripts/secrets/decrypt-secrets.js
+
+# Run full sync: fetch new issues + mark resolved ones
+node scripts/debt/sync-sonarcloud.js --full --force
+```
+
+**What this does:**
+
+1. **Fetches all open issues** from SonarCloud API for the project
+2. **Diffs against MASTER_DEBT.jsonl** — only adds genuinely new issues
+3. **Marks resolved** — items in MASTER_DEBT that are no longer flagged by
+   SonarCloud get marked as RESOLVED with evidence
+4. **Regenerates views** automatically
+
+**Why in Phase 1:** SonarCloud issues are a high-signal debt source that the
+extraction pipeline (0a-0f) doesn't cover. Running this sync ensures the
+pipeline rebuild (Step 1) starts from a complete picture. Previous syncs may
+have missed issues added since the last run, and the resolve pass cleans stale
+entries.
+
+**Output:** New items added directly to `MASTER_DEBT.jsonl` (SonarCloud uses the
+intake-manual path, not scattered-intake.jsonl)
+
+**Estimated new items:** 10-50 (depending on how recently last sync ran)
+
 ### Step 0 Totals
 
 **Expected output:** `raw/scattered-intake.jsonl` with 500-1,000 raw items
-(before cleaning)
+(before cleaning) + SonarCloud sync items directly in MASTER_DEBT
 
 ---
 
-## Step 0g: Intake Cleaning (Dedup, Verify, Filter) — BEFORE Pipeline
+## Step 0h: Intake Cleaning (Dedup, Verify, Filter) — BEFORE Pipeline
 
 **Goal:** Clean the raw extraction output BEFORE it enters the TDMS pipeline. No
 garbage in.
@@ -298,7 +331,7 @@ After verification:  ~250-500 genuinely new, verified items
 
 ## Step 1: Full TDMS Pipeline Rebuild (Clean Slate)
 
-**This runs AFTER Step 0g** — rebuild MASTER_DEBT from ALL sources including the
+**This runs AFTER Step 0h** — rebuild MASTER_DEBT from ALL sources including the
 cleaned intake.
 
 First, register the cleaned intake file in the pipeline:
@@ -614,9 +647,10 @@ Step 0 (EXHAUSTIVE EXTRACTION — scan entire repo, ingest everything)
   ├── 0c: ROADMAP.md debt item extraction
   ├── 0d: SESSION_CONTEXT.md extraction
   ├── 0e: review-needed.jsonl processing
-  └── 0f: .claude/ context extraction
+  ├── 0f: .claude/ context extraction
+  └── 0g: SonarCloud fresh sync (--full)
         │
-Step 0g (INTAKE CLEANING — dedup, false-positive, completed-work, verify)
+Step 0h (INTAKE CLEANING — dedup, false-positive, completed-work, verify)
   ├── Multi-method dedup (exact title, fuzzy phrase, file+line, keyword overlap)
   ├── False positive detection (informational, aspirational, external)
   ├── Completed work detection (archived, git history, existing RESOLVED)
