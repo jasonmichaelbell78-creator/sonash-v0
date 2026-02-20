@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.38 **Created:** 2026-01-02 **Last Updated:** 2026-02-19
+**Document Version:** 17.39 **Created:** 2026-01-02 **Last Updated:** 2026-02-19
 
 ## Purpose
 
@@ -1513,6 +1513,35 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #356: Gemini Code Assist R2 — Evidence Canonicalization, TDMS Data Quality (2026-02-19)
+
+**Source:** Gemini Code Assist R2 **PR/Branch:** PR #379 /
+claude/new-session-DQVDk **Suggestions:** 9 unique (after dedup from 15 raw)
+(Fixed: 6, Already tracked: 1, Rejected: 2)
+
+**Patterns Identified:**
+
+1. **Key-order-sensitive JSON.stringify** (MAJOR): `JSON.stringify` produces
+   different strings for `{a:1,b:2}` vs `{b:2,a:1}`. Evidence objects from
+   different audit sources may have identical content but different key order.
+   Added recursive canonicalize function that sorts keys before stringify.
+2. **TDMS data quality: 246 backslash paths** (MINOR): Windows-originated
+   `source_file` paths had backslashes. Fixed in normalize-all.js to prevent
+   future occurrences + one-shot cleanup of existing data.
+3. **Absolute home-dir paths leaked into TDMS** (MINOR): 50 `file` fields and 1
+   intake-log `input_file` contained `/home/user/sonash-v0/...`. Fixed in
+   normalize-all.js with repo-root anchor stripping.
+4. **Public keys falsely flagged as credentials** (REJECTED): `NEXT_PUBLIC_*`
+   Sentry DSN and reCAPTCHA site keys are public by design — they're in client
+   bundles. Gemini doesn't distinguish public vs secret keys.
+
+**Key Learning:** TDMS pipeline data quality issues compound — 246 backslash
+paths accumulated silently because the normalize script passed them through.
+Always normalize at ingestion, not just at display. The propagation check
+mindset applies to data pipelines too, not just code patterns.
 
 ---
 

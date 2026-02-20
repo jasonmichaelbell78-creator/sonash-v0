@@ -209,11 +209,26 @@ function mergeItems(primary, secondary) {
     }
   }
 
-  // Merge evidence arrays (use JSON.stringify for deep equality — .includes() compares by reference)
+  // Merge evidence arrays — canonicalize keys for order-independent deep equality
   if (Array.isArray(secondary.evidence)) {
-    const existing = new Set((merged.evidence || []).map((e) => JSON.stringify(e)));
-    const newEvidence = secondary.evidence.filter((e) => !existing.has(JSON.stringify(e)));
-    merged.evidence = [...(merged.evidence || []), ...newEvidence];
+    const canonicalize = (v) => {
+      if (!v || typeof v !== "object") return v;
+      if (Array.isArray(v)) return v.map(canonicalize);
+      const out = {};
+      for (const k of Object.keys(v).sort()) out[k] = canonicalize(v[k]);
+      return out;
+    };
+    const toKey = (e) => {
+      try {
+        return typeof e === "string" ? e : JSON.stringify(canonicalize(e));
+      } catch {
+        return `[unserializable:${Object.prototype.toString.call(e)}]`;
+      }
+    };
+    const mergedEvidence = Array.isArray(merged.evidence) ? merged.evidence : [];
+    const existing = new Set(mergedEvidence.map(toKey));
+    const newEvidence = secondary.evidence.filter((e) => !existing.has(toKey(e)));
+    merged.evidence = [...mergedEvidence, ...newEvidence];
   }
 
   return merged;

@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (150)
+## NEW (149)
 
 | ID        | Title                                                        | Severity | Category                 |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------ |
@@ -33,7 +33,6 @@
 | DEBT-3155 | Direct client-side Firestore write in auth-context.tsx — ... | S1       | security                 |
 | DEBT-3162 | migrateAnonymousUserData bypasses security wrapper — reCA... | S1       | security                 |
 | DEBT-3163 | Node.js engine version mismatch — package.json says node ... | S1       | code-quality             |
-| DEBT-3164 | Rate limiter reset() uses wrong Firestore document key — ... | S1       | code-quality             |
 | DEBT-3171 | Permissions-Policy blocks microphone despite voice-text-a... | S1       | security                 |
 | DEBT-3174 | Admin CRUD for sober_living broken — rules block all clie... | S1       | code-quality             |
 | DEBT-3183 | Sign-in and sign-up lack reCAPTCHA protection — primary a... | S1       | security                 |
@@ -164,7 +163,7 @@
 | DEBT-2459 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | S0       | code-quality             |
 | DEBT-2468 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | S0       | code-quality             |
 
-## VERIFIED (2115)
+## VERIFIED (2308)
 
 | ID        | Title                                                          | Severity | Category                 |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------ |
@@ -551,6 +550,7 @@
 | DEBT-2504 | SessionStart critical path runs multiple heavyweight sync...   | S1       | ai-optimization          |
 | DEBT-2506 | SessionStart runs 4 sequential Node process spawns — 4-8s...   | S1       | ai-optimization          |
 | DEBT-2508 | Session-start hook uses execSync for version checks that ...   | S1       | ai-optimization          |
+| DEBT-3164 | Rate limiter reset() uses wrong Firestore document key — ...   | S1       | code-quality             |
 | DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
 | DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
 | DEBT-0142 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | code-quality             |
@@ -1359,53 +1359,53 @@
 | DEBT-2116 | Duplicated: ALLOWED_PATHS pattern matching across hooks        | S2       | process                  |
 | DEBT-2118 | Duplicated: Pattern check implementation between hook and...   | S2       | process                  |
 | DEBT-2119 | Duplicated: Validation between validate-audit.js and vali...   | S2       | process                  |
-| DEBT-3084 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
-| DEBT-3085 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
-| DEBT-3086 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
-| DEBT-3087 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
-| DEBT-3088 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
-| DEBT-3111 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
-| DEBT-3112 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
-| DEBT-3113 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
-| DEBT-3114 | No optimistic updates for form submissions                     | S2       | code-quality             |
-| DEBT-3115 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
-| DEBT-3116 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
-| DEBT-3102 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
-| DEBT-3103 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
-| DEBT-3104 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
-| DEBT-3105 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
-| DEBT-3097 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
-| DEBT-3106 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
-| DEBT-3107 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
-| DEBT-3108 | msw installed but unused for API mocking                       | S2       | code-quality             |
-| DEBT-3098 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
-| DEBT-3099 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
-| DEBT-3100 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
-| DEBT-3093 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
-| DEBT-3094 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
-| DEBT-3095 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
-| DEBT-3089 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
-| DEBT-3090 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
-| DEBT-3096 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
-| DEBT-3117 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
-| DEBT-3118 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
-| DEBT-3119 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
-| DEBT-3120 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
-| DEBT-3121 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
-| DEBT-3122 | Success feedback messages too brief                            | S2       | code-quality             |
-| DEBT-3124 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
-| DEBT-3125 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
-| DEBT-3126 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
-| DEBT-3127 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
-| DEBT-3128 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
-| DEBT-3123 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
-| DEBT-3129 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
-| DEBT-3091 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
-| DEBT-3109 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
-| DEBT-3110 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
-| DEBT-3101 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
+| DEBT-3269 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
+| DEBT-3270 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
+| DEBT-3271 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
+| DEBT-3272 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
+| DEBT-3273 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
+| DEBT-3296 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
+| DEBT-3297 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
+| DEBT-3298 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
+| DEBT-3299 | No optimistic updates for form submissions                     | S2       | code-quality             |
+| DEBT-3300 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
+| DEBT-3301 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
+| DEBT-3287 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
+| DEBT-3288 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
+| DEBT-3289 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
+| DEBT-3290 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
+| DEBT-3282 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
+| DEBT-3291 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
+| DEBT-3292 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
+| DEBT-3293 | msw installed but unused for API mocking                       | S2       | code-quality             |
+| DEBT-3283 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
+| DEBT-3284 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
+| DEBT-3285 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
+| DEBT-3278 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
+| DEBT-3279 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
+| DEBT-3280 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
+| DEBT-3274 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
+| DEBT-3275 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
+| DEBT-3281 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
+| DEBT-3302 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
+| DEBT-3303 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
+| DEBT-3304 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
+| DEBT-3305 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
+| DEBT-3306 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
+| DEBT-3307 | Success feedback messages too brief                            | S2       | code-quality             |
+| DEBT-3309 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
+| DEBT-3310 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
+| DEBT-3311 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
+| DEBT-3312 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
+| DEBT-3313 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
+| DEBT-3308 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
+| DEBT-3314 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
+| DEBT-3276 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
+| DEBT-3294 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
+| DEBT-3295 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
+| DEBT-3286 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
 | DEBT-2185 | Add engines field to root package.json for CI/CD consistency   | S2       | code-quality             |
-| DEBT-3092 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
+| DEBT-3277 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
 | DEBT-2188 | Audit all manual CLI tools and add to COMMAND_REFERENCE.md     | S2       | documentation            |
 | DEBT-2189 | Composite validator: consolidate 9 PostToolUse hooks into...   | S2       | engineering-productivity |
 | DEBT-2190 | OPT-P004: update-readme-status.js table parsing requires ...   | S2       | code-quality             |
@@ -1480,98 +1480,190 @@
 | DEBT-2537 | Session-start hook is 505 lines with inline prompts >10 l...   | S2       | ai-optimization          |
 | DEBT-2542 | doc-optimizer and audit-process SKILL.md exceed 1500 line...   | S2       | ai-optimization          |
 | DEBT-2543 | 10 audit skills share >50% identical structure without sh...   | S2       | ai-optimization          |
-| DEBT-3216 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
-| DEBT-3217 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
-| DEBT-3218 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
-| DEBT-3219 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
-| DEBT-3220 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
-| DEBT-3221 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
-| DEBT-3222 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
-| DEBT-3223 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
-| DEBT-3224 | No optimistic updates for form submissions                     | S2       | code-quality             |
-| DEBT-3225 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
-| DEBT-3226 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
-| DEBT-3227 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
-| DEBT-3228 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
-| DEBT-3229 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
-| DEBT-3230 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
-| DEBT-3231 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
-| DEBT-3232 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
-| DEBT-3233 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
-| DEBT-3234 | msw installed but unused for API mocking                       | S2       | code-quality             |
-| DEBT-3235 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
-| DEBT-3236 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
-| DEBT-3237 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
-| DEBT-3238 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
-| DEBT-3239 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
-| DEBT-3240 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
-| DEBT-3241 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
-| DEBT-3242 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
-| DEBT-3243 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
-| DEBT-3244 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
-| DEBT-3245 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
-| DEBT-3246 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
-| DEBT-3247 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
-| DEBT-3248 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
-| DEBT-3249 | Success feedback messages too brief                            | S2       | code-quality             |
-| DEBT-3250 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
-| DEBT-3251 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
-| DEBT-3252 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
-| DEBT-3253 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
-| DEBT-3254 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
-| DEBT-3255 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
-| DEBT-3256 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
-| DEBT-3257 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
-| DEBT-3260 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
-| DEBT-3261 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
-| DEBT-3262 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
-| DEBT-3263 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
-| DEBT-3269 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
-| DEBT-3270 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
-| DEBT-3271 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
-| DEBT-3272 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
-| DEBT-3273 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
-| DEBT-3274 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
-| DEBT-3275 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
-| DEBT-3276 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
-| DEBT-3277 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
-| DEBT-3278 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
-| DEBT-3279 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
-| DEBT-3280 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
-| DEBT-3281 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
-| DEBT-3282 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
-| DEBT-3283 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
-| DEBT-3284 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
-| DEBT-3285 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
-| DEBT-3286 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
-| DEBT-3287 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
-| DEBT-3288 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
-| DEBT-3289 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
-| DEBT-3290 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
-| DEBT-3291 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
-| DEBT-3292 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
-| DEBT-3293 | msw installed but unused for API mocking                       | S2       | code-quality             |
-| DEBT-3294 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
-| DEBT-3295 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
-| DEBT-3296 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
-| DEBT-3297 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
-| DEBT-3298 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
-| DEBT-3299 | No optimistic updates for form submissions                     | S2       | code-quality             |
-| DEBT-3300 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
-| DEBT-3301 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
-| DEBT-3302 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
-| DEBT-3303 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
-| DEBT-3304 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
-| DEBT-3305 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
-| DEBT-3306 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
-| DEBT-3307 | Success feedback messages too brief                            | S2       | code-quality             |
-| DEBT-3308 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
-| DEBT-3309 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
-| DEBT-3310 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
-| DEBT-3311 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
-| DEBT-3312 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
-| DEBT-3313 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
-| DEBT-3314 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
+| DEBT-3318 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
+| DEBT-3319 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
+| DEBT-3320 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
+| DEBT-3321 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
+| DEBT-3322 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
+| DEBT-3323 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
+| DEBT-3324 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
+| DEBT-3325 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
+| DEBT-3326 | No optimistic updates for form submissions                     | S2       | code-quality             |
+| DEBT-3327 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
+| DEBT-3328 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
+| DEBT-3329 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
+| DEBT-3330 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
+| DEBT-3331 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
+| DEBT-3332 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
+| DEBT-3333 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
+| DEBT-3334 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
+| DEBT-3335 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
+| DEBT-3336 | msw installed but unused for API mocking                       | S2       | code-quality             |
+| DEBT-3337 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
+| DEBT-3338 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
+| DEBT-3339 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
+| DEBT-3340 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
+| DEBT-3341 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
+| DEBT-3342 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
+| DEBT-3343 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
+| DEBT-3344 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
+| DEBT-3345 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
+| DEBT-3346 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
+| DEBT-3347 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
+| DEBT-3348 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
+| DEBT-3349 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
+| DEBT-3350 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
+| DEBT-3351 | Success feedback messages too brief                            | S2       | code-quality             |
+| DEBT-3352 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
+| DEBT-3353 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
+| DEBT-3354 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
+| DEBT-3355 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
+| DEBT-3356 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
+| DEBT-3357 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
+| DEBT-3358 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
+| DEBT-3359 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
+| DEBT-3362 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
+| DEBT-3363 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
+| DEBT-3364 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
+| DEBT-3365 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
+| DEBT-3371 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
+| DEBT-3372 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
+| DEBT-3373 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
+| DEBT-3374 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
+| DEBT-3375 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
+| DEBT-3376 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
+| DEBT-3377 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
+| DEBT-3378 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
+| DEBT-3379 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
+| DEBT-3380 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
+| DEBT-3381 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
+| DEBT-3382 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
+| DEBT-3383 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
+| DEBT-3384 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
+| DEBT-3385 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
+| DEBT-3386 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
+| DEBT-3387 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
+| DEBT-3388 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
+| DEBT-3389 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
+| DEBT-3390 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
+| DEBT-3391 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
+| DEBT-3392 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
+| DEBT-3393 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
+| DEBT-3394 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
+| DEBT-3395 | msw installed but unused for API mocking                       | S2       | code-quality             |
+| DEBT-3396 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
+| DEBT-3397 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
+| DEBT-3398 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
+| DEBT-3399 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
+| DEBT-3400 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
+| DEBT-3401 | No optimistic updates for form submissions                     | S2       | code-quality             |
+| DEBT-3402 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
+| DEBT-3403 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
+| DEBT-3404 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
+| DEBT-3405 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
+| DEBT-3406 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
+| DEBT-3407 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
+| DEBT-3408 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
+| DEBT-3409 | Success feedback messages too brief                            | S2       | code-quality             |
+| DEBT-3410 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
+| DEBT-3411 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
+| DEBT-3412 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
+| DEBT-3413 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
+| DEBT-3414 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
+| DEBT-3415 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
+| DEBT-3416 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
+| DEBT-3420 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
+| DEBT-3421 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
+| DEBT-3422 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
+| DEBT-3423 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
+| DEBT-3424 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
+| DEBT-3425 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
+| DEBT-3426 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
+| DEBT-3427 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
+| DEBT-3428 | No optimistic updates for form submissions                     | S2       | code-quality             |
+| DEBT-3429 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
+| DEBT-3430 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
+| DEBT-3431 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
+| DEBT-3432 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
+| DEBT-3433 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
+| DEBT-3434 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
+| DEBT-3435 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
+| DEBT-3436 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
+| DEBT-3437 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
+| DEBT-3438 | msw installed but unused for API mocking                       | S2       | code-quality             |
+| DEBT-3439 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
+| DEBT-3440 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
+| DEBT-3441 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
+| DEBT-3442 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
+| DEBT-3443 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
+| DEBT-3444 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
+| DEBT-3445 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
+| DEBT-3446 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
+| DEBT-3447 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
+| DEBT-3448 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
+| DEBT-3449 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
+| DEBT-3450 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
+| DEBT-3451 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
+| DEBT-3452 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
+| DEBT-3453 | Success feedback messages too brief                            | S2       | code-quality             |
+| DEBT-3454 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
+| DEBT-3455 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
+| DEBT-3456 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
+| DEBT-3457 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
+| DEBT-3458 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
+| DEBT-3459 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
+| DEBT-3460 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
+| DEBT-3461 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
+| DEBT-3464 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
+| DEBT-3465 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
+| DEBT-3466 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
+| DEBT-3467 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
+| DEBT-3473 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
+| DEBT-3474 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
+| DEBT-3475 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
+| DEBT-3476 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
+| DEBT-3477 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
+| DEBT-3478 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
+| DEBT-3479 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
+| DEBT-3480 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
+| DEBT-3481 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
+| DEBT-3482 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
+| DEBT-3483 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
+| DEBT-3484 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
+| DEBT-3485 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
+| DEBT-3486 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
+| DEBT-3487 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
+| DEBT-3488 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
+| DEBT-3489 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
+| DEBT-3490 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
+| DEBT-3491 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
+| DEBT-3492 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
+| DEBT-3493 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
+| DEBT-3494 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
+| DEBT-3495 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
+| DEBT-3496 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
+| DEBT-3497 | msw installed but unused for API mocking                       | S2       | code-quality             |
+| DEBT-3498 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
+| DEBT-3499 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
+| DEBT-3500 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
+| DEBT-3501 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
+| DEBT-3502 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
+| DEBT-3503 | No optimistic updates for form submissions                     | S2       | code-quality             |
+| DEBT-3504 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
+| DEBT-3505 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
+| DEBT-3506 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
+| DEBT-3507 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
+| DEBT-3508 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
+| DEBT-3509 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
+| DEBT-3510 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
+| DEBT-3511 | Success feedback messages too brief                            | S2       | code-quality             |
+| DEBT-3512 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
+| DEBT-3513 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
+| DEBT-3514 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
+| DEBT-3515 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
+| DEBT-3516 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
+| DEBT-3517 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
+| DEBT-3518 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
 | DEBT-2125 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
 | DEBT-2127 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
 | DEBT-2128 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
@@ -1664,6 +1756,98 @@
 | DEBT-2807 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
 | DEBT-2810 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
 | DEBT-2814 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
+| DEBT-3084 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
+| DEBT-3085 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
+| DEBT-3086 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
+| DEBT-3087 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
+| DEBT-3088 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
+| DEBT-3089 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
+| DEBT-3090 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
+| DEBT-3091 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
+| DEBT-3092 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
+| DEBT-3093 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
+| DEBT-3094 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
+| DEBT-3095 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
+| DEBT-3096 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
+| DEBT-3097 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
+| DEBT-3098 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
+| DEBT-3099 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
+| DEBT-3100 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
+| DEBT-3101 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
+| DEBT-3102 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
+| DEBT-3103 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
+| DEBT-3104 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
+| DEBT-3105 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
+| DEBT-3106 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
+| DEBT-3107 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
+| DEBT-3108 | msw installed but unused for API mocking                       | S2       | code-quality             |
+| DEBT-3109 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
+| DEBT-3110 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
+| DEBT-3111 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
+| DEBT-3112 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
+| DEBT-3113 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
+| DEBT-3114 | No optimistic updates for form submissions                     | S2       | code-quality             |
+| DEBT-3115 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
+| DEBT-3116 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
+| DEBT-3117 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
+| DEBT-3118 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
+| DEBT-3119 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
+| DEBT-3120 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
+| DEBT-3121 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
+| DEBT-3122 | Success feedback messages too brief                            | S2       | code-quality             |
+| DEBT-3123 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
+| DEBT-3124 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
+| DEBT-3125 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
+| DEBT-3126 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
+| DEBT-3127 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
+| DEBT-3128 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
+| DEBT-3129 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
+| DEBT-3216 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
+| DEBT-3217 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
+| DEBT-3218 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
+| DEBT-3219 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
+| DEBT-3220 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
+| DEBT-3221 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
+| DEBT-3222 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
+| DEBT-3223 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
+| DEBT-3224 | No optimistic updates for form submissions                     | S2       | code-quality             |
+| DEBT-3225 | Missing keyboard shortcuts for power users                     | S2       | code-quality             |
+| DEBT-3226 | Form validation shows errors only on submit, not inline        | S2       | code-quality             |
+| DEBT-3227 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | code-quality             |
+| DEBT-3228 | No visual regression testing despite Playwright being ins...   | S2       | code-quality             |
+| DEBT-3229 | Coverage thresholds not enforced despite c8 being available    | S2       | code-quality             |
+| DEBT-3230 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | code-quality             |
+| DEBT-3231 | No performance benchmarks for pagination and data loading      | S2       | code-quality             |
+| DEBT-3232 | Error boundary and Sentry integration not tested               | S2       | code-quality             |
+| DEBT-3233 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
+| DEBT-3234 | msw installed but unused for API mocking                       | S2       | code-quality             |
+| DEBT-3235 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
+| DEBT-3236 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
+| DEBT-3237 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
+| DEBT-3238 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
+| DEBT-3239 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
+| DEBT-3240 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
+| DEBT-3241 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
+| DEBT-3242 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
+| DEBT-3243 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | code-quality             |
+| DEBT-3244 | Generic button labels - Submit used instead of action-spe...   | S2       | code-quality             |
+| DEBT-3245 | Error messages don't guide user to fix the problem             | S2       | code-quality             |
+| DEBT-3246 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
+| DEBT-3247 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
+| DEBT-3248 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
+| DEBT-3249 | Success feedback messages too brief                            | S2       | code-quality             |
+| DEBT-3250 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
+| DEBT-3251 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
+| DEBT-3252 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | code-quality             |
+| DEBT-3253 | Extract common form state logic - ~150 lines of duplicate...   | S2       | code-quality             |
+| DEBT-3254 | Create barrel exports for component directories - only 1 ...   | S2       | code-quality             |
+| DEBT-3255 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
+| DEBT-3256 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
+| DEBT-3257 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
+| DEBT-3260 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
+| DEBT-3261 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
+| DEBT-3262 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
+| DEBT-3263 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | code-quality             |
 | DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
@@ -2273,22 +2457,30 @@
 | DEBT-1271 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-1293 | Security risk: Client-side filtering of sensitive data         | S0       | code-quality             |
 | DEBT-1878 | CI gap: pull_request_target security vulnerability allows...   | S0       | process                  |
-| DEBT-3081 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
-| DEBT-3082 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
-| DEBT-3264 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
-| DEBT-3265 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
 | DEBT-3266 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
 | DEBT-3267 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
+| DEBT-3366 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
+| DEBT-3367 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
+| DEBT-3368 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
+| DEBT-3369 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
+| DEBT-3468 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
+| DEBT-3469 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
+| DEBT-3470 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
+| DEBT-3471 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
 | DEBT-2381 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
 | DEBT-2382 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
 | DEBT-3079 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
 | DEBT-3080 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
+| DEBT-3081 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
+| DEBT-3082 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
+| DEBT-3264 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
+| DEBT-3265 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
 
 ## IN_PROGRESS (0)
 
 _No items_
 
-## RESOLVED (304)
+## RESOLVED (316)
 
 | ID        | Title                                                          | Severity | Category                 |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------ |
@@ -2416,11 +2608,11 @@ _No items_
 | DEBT-1924 | Skill issue: audit-process has complex 7-stage orchestrat...   | S2       | process                  |
 | DEBT-1933 | Performance: 10 Claude hooks run on every Write/Edit oper...   | S2       | process                  |
 | DEBT-2123 | Session-start timeout risks in low-bandwidth environments      | S2       | code-quality             |
-| DEBT-3083 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
+| DEBT-3268 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
 | DEBT-2153 | Upgrade Firebase Functions to Node.js 24 runtime               | S2       | code-quality             |
 | DEBT-2174 | useDailyQuote hook has smart module-level caching prevent...   | S2       | code-quality             |
-| DEBT-3130 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
-| DEBT-3131 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-3315 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
+| DEBT-3316 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
 | DEBT-2192 | Add automatic ROADMAP.md completion detection                  | S2       | process                  |
 | DEBT-2195 | Audit skills share >50% boilerplate content without share...   | S2       | ai-optimization          |
 | DEBT-2198 | SessionStart: check-remote-session-context.js runs git fe...   | S2       | code-quality             |
@@ -2493,18 +2685,30 @@ _No items_
 | DEBT-2525 | Audit skill prompts may not consistently reference FALSE\_...  | S2       | ai-optimization          |
 | DEBT-2538 | State JSONL files growing without bounds - reviews.jsonl ...   | S2       | ai-optimization          |
 | DEBT-2541 | Skills read entire large files when only headers/sections...   | S2       | ai-optimization          |
-| DEBT-3215 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
-| DEBT-3258 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
-| DEBT-3259 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
-| DEBT-3268 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
-| DEBT-3315 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
-| DEBT-3316 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-3317 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
+| DEBT-3360 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
+| DEBT-3361 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-3370 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
+| DEBT-3417 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
+| DEBT-3418 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-3419 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
+| DEBT-3462 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
+| DEBT-3463 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-3472 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
+| DEBT-3519 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
+| DEBT-3520 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
 | DEBT-2124 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
 | DEBT-2176 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
 | DEBT-2177 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
 | DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
 | DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
 | DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-3083 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
+| DEBT-3130 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
+| DEBT-3131 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-3215 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
+| DEBT-3258 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
+| DEBT-3259 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
 | DEBT-0786 | Template docs located outside docs/templates/ directory        | S3       | code-quality             |
 | DEBT-0787 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | code-quality             |
 | DEBT-1375 | No UI indicator for online/offline state                       | S3       | code-quality             |

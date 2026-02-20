@@ -57,6 +57,11 @@ function normalizeFilePath(filePath) {
   // Convert Windows backslashes to forward slashes for consistent hashing
   // Then remove leading ./ and all leading slashes
   let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "");
+  // Strip absolute paths that include the repo root (e.g., home/user/sonash-v0/...)
+  const repoAnchor = normalized.indexOf("sonash-v0/");
+  if (repoAnchor >= 0) {
+    normalized = normalized.substring(repoAnchor + "sonash-v0/".length);
+  }
   // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
   // But preserve Windows drive letters (e.g., "C:\path\to\file")
   const colonIndex = normalized.indexOf(":");
@@ -82,7 +87,7 @@ function normalizeItem(item) {
   const normalized = {
     // Required fields
     source_id: item.source_id || "unknown",
-    source_file: item.source_file || "unknown",
+    source_file: (item.source_file || "unknown").replace(/\\/g, "/"),
 
     // Normalized fields
     category: ensureValid(item.category, VALID_CATEGORIES, "code-quality"),
