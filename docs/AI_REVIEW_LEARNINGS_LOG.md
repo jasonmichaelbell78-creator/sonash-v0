@@ -1769,6 +1769,31 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #361: PR #381 R1 — Empty Catch Logging, Filter Safety, Regex Broadening (2026-02-20)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + Gemini Code Assist
+**PR/Branch:** PR #381 / claude/fix-tool-use-ids-LYbwR **Suggestions:** 10 total
+(Qodo Compliance: 4, Qodo Code: 5, Gemini: 2) after dedup (Fixed: 6,
+Rejected: 4)
+
+**Patterns Identified:**
+
+1. **Empty catch blocks in new code** — Three reviewers independently flagged
+   the same empty catch in session-start.js. Always log warnings in catch
+   blocks, even for non-fatal operations. Pattern: "non-fatal" ≠ "silent".
+2. **Truthy filter vs type check** — `r.id` is falsy when `id === 0`, causing
+   review #0 to be excluded. Use `typeof r.id === "number"` for numeric fields.
+3. **Regex anchoring assumptions** — `[a-z]` as first char excludes uppercase or
+   digit-leading IDs. Use `[\w]` with word boundary for broader matching.
+
+**Key Learnings:**
+
+- When adding try/catch around non-fatal operations, always include at minimum a
+  `console.warn` with the error message — this was flagged by all 3 reviewers
+- Filter predicates on numeric fields must use `typeof` checks, not truthiness
+
+---
+
 #### Review #360: PR #379 R6 — Null Metrics, safeRenameSync, Linter False Positives, Edge Guards (2026-02-20)
 
 **Source:** SonarCloud + Qodo + Gemini (Round 4 on this branch) **PR/Branch:**

@@ -15,7 +15,7 @@
  *   5. Checks consolidation status
  */
 
-const { execSync } = require("node:child_process");
+const { execSync, execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
@@ -435,14 +435,15 @@ try {
           // data loss. Without this, the audit checkers see only 30 entries until
           // session-begin runs reviews:sync. (PEA-501, PR #379 ecosystem audit)
           try {
-            const { execFileSync } = require("node:child_process");
             execFileSync("npm", ["run", "reviews:sync", "--", "--apply"], {
               cwd: projectDir,
-              stdio: "pipe",
+              stdio: "inherit",
               timeout: 15000,
             });
-          } catch {
-            // Non-fatal: session-begin will catch this
+          } catch (err) {
+            console.warn(
+              `   ⚠️ reviews:sync failed after rotation, will retry in session-begin: ${err.message}`
+            );
           }
         }
       } catch {

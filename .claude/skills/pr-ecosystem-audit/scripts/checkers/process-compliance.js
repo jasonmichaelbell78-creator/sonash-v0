@@ -519,8 +519,9 @@ function countNumberingGaps(learningsContent, rootDir) {
           allNumbers.push(parseInt(m[1], 10));
         }
       }
-    } catch {
+    } catch (err) {
       // Archives not accessible — count gaps from active log only
+      console.warn(`[process-compliance] Could not read archive directory: ${err.message}`);
     }
   }
 
@@ -535,7 +536,7 @@ function countNumberingGaps(learningsContent, rootDir) {
 
 function checkLearningCaptureIntegrity(reviewsJsonl, learningsContent, rootDir, findings) {
   const bench = BENCHMARKS.learning_capture_integrity;
-  const reviews = reviewsJsonl.filter((r) => r.type === "review" || r.id);
+  const reviews = reviewsJsonl.filter((r) => r.type === "review" || typeof r.id === "number");
   // JSONL schema uses 'pr' (not 'pr_number') and 'id' (numeric, not 'review_id')
   const requiredFields = ["id", "pr", "date", "source", "patterns"];
 
