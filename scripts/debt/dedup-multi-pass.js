@@ -209,12 +209,11 @@ function mergeItems(primary, secondary) {
     }
   }
 
-  // Merge evidence arrays
+  // Merge evidence arrays (use JSON.stringify for deep equality — .includes() compares by reference)
   if (Array.isArray(secondary.evidence)) {
-    merged.evidence = [
-      ...(merged.evidence || []),
-      ...secondary.evidence.filter((e) => !(merged.evidence || []).includes(e)),
-    ];
+    const existing = new Set((merged.evidence || []).map((e) => JSON.stringify(e)));
+    const newEvidence = secondary.evidence.filter((e) => !existing.has(JSON.stringify(e)));
+    merged.evidence = [...(merged.evidence || []), ...newEvidence];
   }
 
   return merged;

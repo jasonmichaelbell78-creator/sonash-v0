@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.37 **Created:** 2026-01-02 **Last Updated:** 2026-02-19
+**Document Version:** 17.38 **Created:** 2026-01-02 **Last Updated:** 2026-02-19
 
 ## Purpose
 
@@ -1513,6 +1513,29 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #355: Gemini Code Assist — EXIT Trap, Evidence Dedup, mktemp Guards (2026-02-19)
+
+**Source:** Gemini Code Assist **PR/Branch:** PR #379 / claude/new-session-DQVDk
+**Suggestions:** 4 total (Fixed: 3, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Silent hook output after POSIX migration** (MAJOR): Replacing
+   `exec > >(tee ...)` with `exec > file` makes failures invisible to
+   developers. Added EXIT trap that dumps log to stderr on non-zero exit.
+2. **Object dedup by reference vs value** (MINOR): `Array.includes()` uses
+   reference equality for objects. Evidence arrays in MASTER_DEBT.jsonl had 27
+   items with duplicated object entries because dedup-multi-pass.js used
+   `.includes()` instead of `JSON.stringify` comparison. Root cause fixed.
+3. **mktemp + mv error handling** (MINOR): POSIX mktemp + mv rename pattern
+   should guard both commands to prevent orphaned temp files on failure.
+
+**Key Learning:** When replacing bash-isms with POSIX equivalents, audit the DX
+impact — POSIX compatibility shouldn't come at the cost of debuggability. The
+EXIT trap pattern restores the tee-like behavior for the failure case.
 
 ---
 

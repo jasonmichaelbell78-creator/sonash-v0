@@ -9,35 +9,35 @@
 
 ---
 
-**Total Items:** 2738
+**Total Items:** 2841
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
-| S0 (Critical) | 40    |
+| S0 (Critical) | 44    |
 | S1 (High)     | 452   |
-| S2 (Medium)   | 1293  |
-| S3 (Low)      | 953   |
+| S2 (Medium)   | 1391  |
+| S3 (Low)      | 954   |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1589  |
+| code-quality             | 1681  |
 | documentation            | 470   |
-| process                  | 340   |
+| process                  | 343   |
 | ai-optimization          | 118   |
 | security                 | 112   |
 | performance              | 58    |
+| enhancements             | 28    |
 | refactoring              | 22    |
-| enhancements             | 20    |
 | engineering-productivity | 9     |
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 2019  |
-| RESOLVED       | 298   |
+| VERIFIED       | 2115  |
+| RESOLVED       | 304   |
 | FALSE_POSITIVE | 272   |
-| NEW            | 149   |
+| NEW            | 150   |
 
 ## Views
 
@@ -117,6 +117,14 @@
 - **DEBT-2468**: SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ideation
   document never... (home/user/sonash-v0/docs/SoNash_Technical_Ideation_Multi_AI
   1.20.26.md:0)
+- **DEBT-3264**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (N/A:0)
+- **DEBT-3265**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (.claude/hooks/commit-tracker.js:0)
+- **DEBT-3266**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (N/A:0)
+- **DEBT-3267**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (.claude/hooks/commit-tracker.js:0)
 - **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
   unnecessary tokens p... (N/A:0)
 - **DEBT-2382**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks

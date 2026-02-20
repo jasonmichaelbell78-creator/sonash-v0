@@ -10,6 +10,9 @@
 HOOK_OUTPUT_LOG="$(git rev-parse --show-toplevel 2>/dev/null || echo .)/.git/hook-output.log"
 exec > "$HOOK_OUTPUT_LOG" 2>&1
 
+# Display log on failure so developers see what went wrong (Gemini review #379)
+# Uses EXIT_TRAP_CHAIN via add_exit_trap (defined below) to coexist with temp file cleanup
+
 # Shared guard: any SKIP_ override requires SKIP_REASON (Session #162)
 require_skip_reason() {
   if [ -z "${SKIP_REASON:-}" ]; then
@@ -49,6 +52,10 @@ add_exit_trap() {
   EXIT_TRAP_CHAIN="${EXIT_TRAP_CHAIN:+$EXIT_TRAP_CHAIN; }$1"
   trap "$EXIT_TRAP_CHAIN" EXIT
 }
+
+# Display log on failure so developers see what went wrong (Gemini review #379)
+# Capture exit code before chain runs; display log to stderr on failure
+add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ] && [ -f "$HOOK_OUTPUT_LOG" ]; then exec 1>/dev/null; printf "\n--- PRE-COMMIT HOOK FAILED ---\n" >&2; cat "$HOOK_OUTPUT_LOG" >&2; printf "--- END OF LOGS ---\n" >&2; fi'
 
 echo "🔍 Running pre-commit checks..."
 
