@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 154
+**Items Needing Verification:** 155
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -122,6 +122,7 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs                                                                    | 0    |
 | DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                                                            | 0    |
 | DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                                                          | 0    |
+| DEBT-3526 | Repo code execution risk via execFileSync in audit checker   | S2       | .claude/skills/pr-ecosystem-audit/scripts/checkers/pattern-lifecycle.js | 145  |
 | DEBT-3521 | Make action buttons customizable by user (save preference... | S3       | components/notebook/features/quick-actions-fab.tsx                      | 12   |
 | DEBT-3522 | Pass limit to FirestoreService when it supports configura... | S3       | lib/database/firestore-adapter.ts                                       | 51   |
 | DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                                       | 188  |

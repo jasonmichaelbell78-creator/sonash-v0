@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (154)
+## NEW (155)
 
 | ID        | Title                                                        | Severity | Category                 |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------ |
@@ -119,6 +119,7 @@
 | DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | documentation            |
 | DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | enhancements             |
 | DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | enhancements             |
+| DEBT-3526 | Repo code execution risk via execFileSync in audit checker   | S2       | security                 |
 | DEBT-3521 | Make action buttons customizable by user (save preference... | S3       | code-quality             |
 | DEBT-3522 | Pass limit to FirestoreService when it supports configura... | S3       | code-quality             |
 | DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | refactoring              |

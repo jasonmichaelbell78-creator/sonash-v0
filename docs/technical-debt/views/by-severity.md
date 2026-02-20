@@ -523,7 +523,7 @@
 | DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes          | docs/agent_docs/FIX_TEMPLATES.md                                                                                                                   | 0    | code-quality             | E0     |
 | DEBT-2482 | Technical debt view files - generated views without integ...  | docs/technical-debt/views/                                                                                                                         | 0    | code-quality             | E1     |
 
-## S2 - Medium (1587)
+## S2 - Medium (1588)
 
 | ID        | Title                                                          | File                                                                                                                                                                        | Line | Category                 | Effort |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -2114,6 +2114,7 @@
 | DEBT-3465 | Generic button labels - Submit used instead of action-spe...   | components/journal/journal-entry-form.tsx                                                                                                                                   | 1    | enhancements             | E0     |
 | DEBT-3466 | Security guidance consolidation - multiple overlapping se...   | docs/SECURITY.md                                                                                                                                                            | 1    | enhancements             | E2     |
 | DEBT-3467 | Pre-push duplicates pre-commit pattern checks                  | .husky/pre-push                                                                                                                                                             | 1    | enhancements             | E0     |
+| DEBT-3526 | Repo code execution risk via execFileSync in audit checker     | .claude/skills/pr-ecosystem-audit/scripts/checkers/pattern-lifecycle.js                                                                                                     | 145  | security                 | E1     |
 
 ## S3 - Low (959)
 

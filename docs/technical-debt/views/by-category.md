@@ -2987,119 +2987,120 @@
 | DEBT-0817 | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx | 12   |
 | DEBT-0818 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                      | 86   |
 
-## security (112)
+## security (113)
 
-| ID        | Title                                                        | Severity | File                                             | Line |
-| --------- | ------------------------------------------------------------ | -------- | ------------------------------------------------ | ---- |
-| DEBT-0046 | reCAPTCHA token missing does not block requests (logs but... | S1       | functions/src/security-wrapper.ts                | 0    |
-| DEBT-0047 | Rate limiting is incomplete (no IP throttling, admin endp... | S1       | functions/src/security-wrapper.ts                | 0    |
-| DEBT-0069 | Client App Check initialization is disabled/commented out    | S1       | lib/firebase.ts                                  | 0    |
-| DEBT-0072 | reCAPTCHA verification is logged but not enforced when co... | S1       | functions/src/security-wrapper.ts                | 0    |
-| DEBT-0074 | Admin-claim Firestore rule writes lack function-only defe... | S1       | firestore.rules                                  | 0    |
-| DEBT-0078 | reCAPTCHA verification coverage may be incomplete when Ap... | S1       | functions/src/index.ts                           | 0    |
-| DEBT-0079 | Potential rate limit bypass via cycling anonymous account... | S1       | components/providers/auth-context.tsx            | 0    |
-| DEBT-0080 | Potential sensitive data in localStorage (needs audit)       | S1       | N/A                                              | 0    |
-| DEBT-0081 | reCAPTCHA verification logged but not enforced (fail-open)   | S1       | functions/src/security-wrapper.ts                | 0    |
-| DEBT-0082 | Rate limiting incomplete (no IP throttling, admin endpoin... | S1       | functions/src/security-wrapper.ts                | 0    |
-| DEBT-0088 | Missing critical security headers                            | S1       | firebase.json                                    | 6    |
-| DEBT-0089 | App Check disabled on Cloud Functions                        | S1       | functions/src/index.ts                           | 84   |
-| DEBT-0101 | Make reCAPTCHA fail-closed                                   | S1       | N/A                                              | 0    |
-| DEBT-0102 | Complete rate limiting (IP + admin)                          | S1       | N/A                                              | 0    |
-| DEBT-0103 | Replace console.\* with logger                               | S1       | N/A                                              | 0    |
-| DEBT-0108 | Restore client App Check init                                | S1       | N/A                                              | 0    |
-| DEBT-0109 | Admin-claim rules defense-in-depth                           | S1       | N/A                                              | 0    |
-| DEBT-0110 | Verify reCAPTCHA coverage                                    | S1       | N/A                                              | 0    |
-| DEBT-0111 | Rate limit bypass mitigation                                 | S1       | N/A                                              | 0    |
-| DEBT-0112 | Audit localStorage for sensitive data                        | S1       | N/A                                              | 0    |
-| DEBT-0129 | Make reCAPTCHA fail-closed                                   | S1       | functions/src/security-wrapper.ts                | 89   |
-| DEBT-0130 | Complete rate limiting (IP + admin)                          | S1       | functions/src/security-wrapper.ts                | 45   |
-| DEBT-0138 | Rate limiting on public endpoints                            | S1       | functions/src/security-wrapper.ts                | 45   |
-| DEBT-0870 | App Check Disabled + No Offline Support = Security & UX Gap  | S1       | N/A                                              | 0    |
-| DEBT-0881 | Firebase Credentials Written to Disk in Deployment           | S1       | N/A                                              | 0    |
-| DEBT-0885 | Trigger Override Logging Silently Fails with \|\| true       | S1       | N/A                                              | 0    |
-| DEBT-0887 | GitHub Actions Secrets Not Rotated Regularly                 | S1       | N/A                                              | 0    |
-| DEBT-3155 | Direct client-side Firestore write in auth-context.tsx — ... | S1       | components/providers/auth-context.tsx            | 100  |
-| DEBT-3162 | migrateAnonymousUserData bypasses security wrapper — reCA... | S1       | functions/src/index.ts                           | 486  |
-| DEBT-3171 | Permissions-Policy blocks microphone despite voice-text-a... | S1       | firebase.json                                    | 53   |
-| DEBT-3183 | Sign-in and sign-up lack reCAPTCHA protection — primary a... | S1       | components/auth/sign-in-modal.tsx                | 49   |
-| DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI... | S1       | lib/logger.ts                                    | 7    |
-| DEBT-3213 | App Check globally disabled on all 5 user-callable functi... | S1       | functions/src/index.ts                           | 84   |
-| DEBT-0376 | Zod schemas missing .strict() (unknown fields accepted)      | S2       | functions/src/schemas.ts                         | 0    |
-| DEBT-0377 | Hardcoded fallback reCAPTCHA site key in server verificat... | S2       | functions/src/recaptcha-verify.ts                | 0    |
-| DEBT-0378 | Server-side journal entry type enum missing 'step-1-works... | S2       | functions/src/schemas.ts                         | 0    |
-| DEBT-0379 | Permissive z.record(..., z.unknown()) allows arbitrary ne... | S2       | functions/src/schemas.ts                         | 0    |
-| DEBT-0380 | Some admin-managed collections allow direct client writes... | S2       | firestore.rules                                  | 0    |
-| DEBT-0381 | Console statements present; replace with structured logge... | S2       | N/A                                              | 0    |
-| DEBT-0382 | Console statements present; replace with structured logge... | S2       | N/A                                              | 0    |
-| DEBT-0424 | ESLint security plugin warnings in scripts (unsafe regex ... | S2       | scripts/check-review-needed.js                   | 0    |
-| DEBT-0441 | Hardcoded reCAPTCHA site key fallback                        | S2       | functions/src/recaptcha-verify.ts                | 66   |
-| DEBT-0442 | OS command execution in CLI scripts                          | S2       | scripts/ai-review.js                             | 222  |
-| DEBT-0443 | ReDoS vulnerable regex patterns                              | S2       | functions/src/admin.ts                           | 143  |
-| DEBT-0471 | Address ESLint security warnings                             | S2       | N/A                                              | 0    |
-| DEBT-0472 | Remove hardcoded reCAPTCHA fallback                          | S2       | N/A                                              | 0    |
-| DEBT-0473 | Route admin writes through Functions                         | S2       | N/A                                              | 0    |
-| DEBT-0529 | Restrict CORS origins                                        | S2       | functions/src/index.ts                           | 23   |
-| DEBT-0530 | Admin privilege hardening                                    | S2       | functions/src/admin.ts                           | 89   |
-| DEBT-0531 | Token rotation for long-lived sessions                       | S2       | lib/auth-context.tsx                             | 156  |
-| DEBT-0532 | Security rules for new collections                           | S2       | firestore.rules                                  | 45   |
-| DEBT-0889 | Missing Content-Security-Policy Header                       | S2       | N/A                                              | 0    |
-| DEBT-0890 | Script Injection Vulnerability in resolve-debt Workflow      | S2       | N/A                                              | 0    |
-| DEBT-0892 | Security Check Doesn't Scan Cloud Functions                  | S2       | N/A                                              | 0    |
-| DEBT-1301 | Missing Content-Security-Policy header                       | S2       | firebase.json                                    | 29   |
-| DEBT-1302 | User profile document allows direct client writes without... | S2       | firestore.rules                                  | 26   |
-| DEBT-1303 | Hardcoded reCAPTCHA site key in server-side code             | S2       | functions/src/recaptcha-verify.ts                | 66   |
-| DEBT-1313 | Migration function does not verify source anonymous user ... | S2       | functions/src/index.ts                           | 565  |
-| DEBT-1316 | reCAPTCHA token made optional for data migration function    | S2       | functions/src/index.ts                           | 516  |
-| DEBT-1317 | Migration function skips reCAPTCHA when token is missing     | S2       | functions/src/index.ts                           | 516  |
-| DEBT-1318 | Journal and inventory entry data field accepts arbitrary ... | S2       | functions/src/schemas.ts                         | 32   |
-| DEBT-1320 | CI workflow script injection via unsanitized file names      | S2       | .github/workflows/ci.yml                         | 64   |
-| DEBT-1321 | Firestore security_logs collection missing from security ... | S2       | firestore.rules                                  | 1    |
-| DEBT-2292 | Hook project dir escape: cwdInsideProject allows parent d... | S2       | N/A                                              | 0    |
-| DEBT-2295 | Symlink file overwrite in rotate-state.js rotation/prunin... | S2       | .claude/hooks/lib/rotate-state.js                | 25   |
-| DEBT-3142 | Source map file present in production build output           | S2       | out/\_next/static/chunks/a6dad97d9634a72d.js.map | 0    |
-| DEBT-3145 | fast-xml-parser DoS via entity expansion (high severity) ... | S2       | functions/package.json                           | 0    |
-| DEBT-3165 | reCAPTCHA site key hard-coded as fallback literal in reca... | S2       | functions/src/recaptcha-verify.ts                | 66   |
-| DEBT-3167 | Zod data fields are unbounded z.record — saveJournalEntry... | S2       | functions/src/schemas.ts                         | 32   |
-| DEBT-3168 | Admin functions have no enforceAppCheck in onCall config     | S2       | functions/src/admin.ts                           | 707  |
-| DEBT-3169 | Rate limiter console.warn leaks un-hashed user ID in logs    | S2       | functions/src/firestore-rate-limiter.ts          | 108  |
-| DEBT-3170 | migrateAnonymousUserData logs raw UIDs to Sentry (PII in ... | S2       | functions/src/index.ts                           | 556  |
-| DEBT-3172 | HSTS missing preload and includeSubDomains directives        | S2       | firebase.json                                    | 37   |
-| DEBT-3175 | No field-level validation in rules for admin-writable pub... | S2       | firestore.rules                                  | 104  |
-| DEBT-3176 | Soft-deleted documents still readable via Firestore rules    | S2       | firestore.rules                                  | 34   |
-| DEBT-3179 | .gitignore pattern doesn't cover .env.production             | S2       | .gitignore                                       | 34   |
-| DEBT-3181 | Implicit localStorage persistence — no session management... | S2       | lib/firebase.ts                                  | 54   |
-| DEBT-3184 | Password requirements minimal — 6 characters only, no com... | S2       | components/auth/account-link-modal.tsx           | 45   |
-| DEBT-3185 | Account linking error messages reveal user existence for ... | S2       | lib/auth/account-linking.ts                      | 82   |
-| DEBT-3209 | Server logger (security-logger.ts) does not strip control... | S2       | functions/src/security-logger.ts                 | 119  |
-| DEBT-3211 | .env.production tracked in git with Firebase config and S... | S2       | .env.production                                  | 1    |
-| DEBT-3212 | No Content-Security-Policy header configured                 | S2       | firebase.json                                    | 30   |
-| DEBT-0774 | App Check disabled on Functions and client init disabled ... | S3       | functions/src/index.ts                           | 0    |
-| DEBT-0800 | SonarCloud: Potentially hard-coded password pattern          | S3       | lib/utils/errors.ts                              | 69   |
-| DEBT-0801 | Math.random for visual effects                               | S3       | components/celebrations/confetti-burst.tsx       | 39   |
-| DEBT-0802 | Secrets expanded in run block                                | S3       | .github/workflows/deploy-firebase.yml            | 58   |
-| DEBT-0803 | process.env.NODE_ENV checks for debug info                   | S3       | components/providers/error-boundary.tsx          | 84   |
-| DEBT-0804 | Agent config files present                                   | S3       | .claude/settings.json                            | 1    |
-| DEBT-0822 | GitHub Actions using version tags instead of SHA             | S3       | .github/workflows/auto-label-review-tier.yml     | 29   |
-| DEBT-0843 | Console statements in error paths                            | S3       | lib/utils/callable-errors.ts                     | 182  |
-| DEBT-1322 | Unpinned GitHub Actions in multiple workflows                | S3       | .github/workflows/auto-label-review-tier.yml     | 29   |
-| DEBT-1325 | Admin function input validation inconsistency - meetingId... | S3       | functions/src/admin.ts                           | 768  |
-| DEBT-1326 | Daily quotes collection allows direct admin client writes... | S3       | firestore.rules                                  | 104  |
-| DEBT-1328 | Firestore security rules missing for security_logs and ad... | S3       | firestore.rules                                  | 151  |
-| DEBT-1329 | User ID hash truncation reduces collision resistance for ... | S3       | functions/src/security-logger.ts                 | 74   |
-| DEBT-1330 | No middleware.ts for server-side route protection            | S3       | next.config.mjs                                  | 13   |
-| DEBT-1331 | Service account credentials written to disk in CI deploy ... | S3       | .github/workflows/deploy-firebase.yml            | 58   |
-| DEBT-2286 | Add symlink audit trail logging to atomic write helpers      | S3       | .claude/hooks/lib/rotate-state.js                | 0    |
-| DEBT-2294 | Hook validators log code snippets that could expose secrets  | S3       | N/A                                              | 0    |
-| DEBT-3146 | 26 high-severity vulns in dev/build dependencies (eslint,... | S3       | package.json                                     | 0    |
-| DEBT-3173 | Referrer-Policy set to strict-origin could be stricter       | S3       | firebase.json                                    | 49   |
-| DEBT-3178 | No rate limiting at Firestore rules level                    | S3       | firestore.rules                                  | 1    |
-| DEBT-3180 | Sentry DSN committed in .env.production                      | S3       | .env.production                                  | 20   |
-| DEBT-0849 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                                  | 0    |
-| DEBT-0853 | App Check disabled on all production Cloud Functions         | S0       | functions/src/index.ts                           | 0    |
-| DEBT-0854 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                                  | 0    |
-| DEBT-0855 | App Check disabled on all Cloud Functions and client init... | S0       | functions/src/index.ts                           | 0    |
-| DEBT-0856 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                                  | 0    |
-| DEBT-0859 | Re-enable App Check on Cloud Functions                       | S0       | N/A                                              | 0    |
-| DEBT-0860 | Close legacy journalEntries write path                       | S0       | N/A                                              | 0    |
-| DEBT-0864 | Re-enable App Check on Cloud Functions                       | S0       | lib/firebase.ts                                  | 45   |
-| DEBT-0865 | Close legacy journalEntries write path                       | S0       | lib/firestore-service.ts                         | 156  |
+| ID        | Title                                                        | Severity | File                                                                    | Line |
+| --------- | ------------------------------------------------------------ | -------- | ----------------------------------------------------------------------- | ---- |
+| DEBT-0046 | reCAPTCHA token missing does not block requests (logs but... | S1       | functions/src/security-wrapper.ts                                       | 0    |
+| DEBT-0047 | Rate limiting is incomplete (no IP throttling, admin endp... | S1       | functions/src/security-wrapper.ts                                       | 0    |
+| DEBT-0069 | Client App Check initialization is disabled/commented out    | S1       | lib/firebase.ts                                                         | 0    |
+| DEBT-0072 | reCAPTCHA verification is logged but not enforced when co... | S1       | functions/src/security-wrapper.ts                                       | 0    |
+| DEBT-0074 | Admin-claim Firestore rule writes lack function-only defe... | S1       | firestore.rules                                                         | 0    |
+| DEBT-0078 | reCAPTCHA verification coverage may be incomplete when Ap... | S1       | functions/src/index.ts                                                  | 0    |
+| DEBT-0079 | Potential rate limit bypass via cycling anonymous account... | S1       | components/providers/auth-context.tsx                                   | 0    |
+| DEBT-0080 | Potential sensitive data in localStorage (needs audit)       | S1       | N/A                                                                     | 0    |
+| DEBT-0081 | reCAPTCHA verification logged but not enforced (fail-open)   | S1       | functions/src/security-wrapper.ts                                       | 0    |
+| DEBT-0082 | Rate limiting incomplete (no IP throttling, admin endpoin... | S1       | functions/src/security-wrapper.ts                                       | 0    |
+| DEBT-0088 | Missing critical security headers                            | S1       | firebase.json                                                           | 6    |
+| DEBT-0089 | App Check disabled on Cloud Functions                        | S1       | functions/src/index.ts                                                  | 84   |
+| DEBT-0101 | Make reCAPTCHA fail-closed                                   | S1       | N/A                                                                     | 0    |
+| DEBT-0102 | Complete rate limiting (IP + admin)                          | S1       | N/A                                                                     | 0    |
+| DEBT-0103 | Replace console.\* with logger                               | S1       | N/A                                                                     | 0    |
+| DEBT-0108 | Restore client App Check init                                | S1       | N/A                                                                     | 0    |
+| DEBT-0109 | Admin-claim rules defense-in-depth                           | S1       | N/A                                                                     | 0    |
+| DEBT-0110 | Verify reCAPTCHA coverage                                    | S1       | N/A                                                                     | 0    |
+| DEBT-0111 | Rate limit bypass mitigation                                 | S1       | N/A                                                                     | 0    |
+| DEBT-0112 | Audit localStorage for sensitive data                        | S1       | N/A                                                                     | 0    |
+| DEBT-0129 | Make reCAPTCHA fail-closed                                   | S1       | functions/src/security-wrapper.ts                                       | 89   |
+| DEBT-0130 | Complete rate limiting (IP + admin)                          | S1       | functions/src/security-wrapper.ts                                       | 45   |
+| DEBT-0138 | Rate limiting on public endpoints                            | S1       | functions/src/security-wrapper.ts                                       | 45   |
+| DEBT-0870 | App Check Disabled + No Offline Support = Security & UX Gap  | S1       | N/A                                                                     | 0    |
+| DEBT-0881 | Firebase Credentials Written to Disk in Deployment           | S1       | N/A                                                                     | 0    |
+| DEBT-0885 | Trigger Override Logging Silently Fails with \|\| true       | S1       | N/A                                                                     | 0    |
+| DEBT-0887 | GitHub Actions Secrets Not Rotated Regularly                 | S1       | N/A                                                                     | 0    |
+| DEBT-3155 | Direct client-side Firestore write in auth-context.tsx — ... | S1       | components/providers/auth-context.tsx                                   | 100  |
+| DEBT-3162 | migrateAnonymousUserData bypasses security wrapper — reCA... | S1       | functions/src/index.ts                                                  | 486  |
+| DEBT-3171 | Permissions-Policy blocks microphone despite voice-text-a... | S1       | firebase.json                                                           | 53   |
+| DEBT-3183 | Sign-in and sign-up lack reCAPTCHA protection — primary a... | S1       | components/auth/sign-in-modal.tsx                                       | 49   |
+| DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI... | S1       | lib/logger.ts                                                           | 7    |
+| DEBT-3213 | App Check globally disabled on all 5 user-callable functi... | S1       | functions/src/index.ts                                                  | 84   |
+| DEBT-0376 | Zod schemas missing .strict() (unknown fields accepted)      | S2       | functions/src/schemas.ts                                                | 0    |
+| DEBT-0377 | Hardcoded fallback reCAPTCHA site key in server verificat... | S2       | functions/src/recaptcha-verify.ts                                       | 0    |
+| DEBT-0378 | Server-side journal entry type enum missing 'step-1-works... | S2       | functions/src/schemas.ts                                                | 0    |
+| DEBT-0379 | Permissive z.record(..., z.unknown()) allows arbitrary ne... | S2       | functions/src/schemas.ts                                                | 0    |
+| DEBT-0380 | Some admin-managed collections allow direct client writes... | S2       | firestore.rules                                                         | 0    |
+| DEBT-0381 | Console statements present; replace with structured logge... | S2       | N/A                                                                     | 0    |
+| DEBT-0382 | Console statements present; replace with structured logge... | S2       | N/A                                                                     | 0    |
+| DEBT-0424 | ESLint security plugin warnings in scripts (unsafe regex ... | S2       | scripts/check-review-needed.js                                          | 0    |
+| DEBT-0441 | Hardcoded reCAPTCHA site key fallback                        | S2       | functions/src/recaptcha-verify.ts                                       | 66   |
+| DEBT-0442 | OS command execution in CLI scripts                          | S2       | scripts/ai-review.js                                                    | 222  |
+| DEBT-0443 | ReDoS vulnerable regex patterns                              | S2       | functions/src/admin.ts                                                  | 143  |
+| DEBT-0471 | Address ESLint security warnings                             | S2       | N/A                                                                     | 0    |
+| DEBT-0472 | Remove hardcoded reCAPTCHA fallback                          | S2       | N/A                                                                     | 0    |
+| DEBT-0473 | Route admin writes through Functions                         | S2       | N/A                                                                     | 0    |
+| DEBT-0529 | Restrict CORS origins                                        | S2       | functions/src/index.ts                                                  | 23   |
+| DEBT-0530 | Admin privilege hardening                                    | S2       | functions/src/admin.ts                                                  | 89   |
+| DEBT-0531 | Token rotation for long-lived sessions                       | S2       | lib/auth-context.tsx                                                    | 156  |
+| DEBT-0532 | Security rules for new collections                           | S2       | firestore.rules                                                         | 45   |
+| DEBT-0889 | Missing Content-Security-Policy Header                       | S2       | N/A                                                                     | 0    |
+| DEBT-0890 | Script Injection Vulnerability in resolve-debt Workflow      | S2       | N/A                                                                     | 0    |
+| DEBT-0892 | Security Check Doesn't Scan Cloud Functions                  | S2       | N/A                                                                     | 0    |
+| DEBT-1301 | Missing Content-Security-Policy header                       | S2       | firebase.json                                                           | 29   |
+| DEBT-1302 | User profile document allows direct client writes without... | S2       | firestore.rules                                                         | 26   |
+| DEBT-1303 | Hardcoded reCAPTCHA site key in server-side code             | S2       | functions/src/recaptcha-verify.ts                                       | 66   |
+| DEBT-1313 | Migration function does not verify source anonymous user ... | S2       | functions/src/index.ts                                                  | 565  |
+| DEBT-1316 | reCAPTCHA token made optional for data migration function    | S2       | functions/src/index.ts                                                  | 516  |
+| DEBT-1317 | Migration function skips reCAPTCHA when token is missing     | S2       | functions/src/index.ts                                                  | 516  |
+| DEBT-1318 | Journal and inventory entry data field accepts arbitrary ... | S2       | functions/src/schemas.ts                                                | 32   |
+| DEBT-1320 | CI workflow script injection via unsanitized file names      | S2       | .github/workflows/ci.yml                                                | 64   |
+| DEBT-1321 | Firestore security_logs collection missing from security ... | S2       | firestore.rules                                                         | 1    |
+| DEBT-2292 | Hook project dir escape: cwdInsideProject allows parent d... | S2       | N/A                                                                     | 0    |
+| DEBT-2295 | Symlink file overwrite in rotate-state.js rotation/prunin... | S2       | .claude/hooks/lib/rotate-state.js                                       | 25   |
+| DEBT-3142 | Source map file present in production build output           | S2       | out/\_next/static/chunks/a6dad97d9634a72d.js.map                        | 0    |
+| DEBT-3145 | fast-xml-parser DoS via entity expansion (high severity) ... | S2       | functions/package.json                                                  | 0    |
+| DEBT-3165 | reCAPTCHA site key hard-coded as fallback literal in reca... | S2       | functions/src/recaptcha-verify.ts                                       | 66   |
+| DEBT-3167 | Zod data fields are unbounded z.record — saveJournalEntry... | S2       | functions/src/schemas.ts                                                | 32   |
+| DEBT-3168 | Admin functions have no enforceAppCheck in onCall config     | S2       | functions/src/admin.ts                                                  | 707  |
+| DEBT-3169 | Rate limiter console.warn leaks un-hashed user ID in logs    | S2       | functions/src/firestore-rate-limiter.ts                                 | 108  |
+| DEBT-3170 | migrateAnonymousUserData logs raw UIDs to Sentry (PII in ... | S2       | functions/src/index.ts                                                  | 556  |
+| DEBT-3172 | HSTS missing preload and includeSubDomains directives        | S2       | firebase.json                                                           | 37   |
+| DEBT-3175 | No field-level validation in rules for admin-writable pub... | S2       | firestore.rules                                                         | 104  |
+| DEBT-3176 | Soft-deleted documents still readable via Firestore rules    | S2       | firestore.rules                                                         | 34   |
+| DEBT-3179 | .gitignore pattern doesn't cover .env.production             | S2       | .gitignore                                                              | 34   |
+| DEBT-3181 | Implicit localStorage persistence — no session management... | S2       | lib/firebase.ts                                                         | 54   |
+| DEBT-3184 | Password requirements minimal — 6 characters only, no com... | S2       | components/auth/account-link-modal.tsx                                  | 45   |
+| DEBT-3185 | Account linking error messages reveal user existence for ... | S2       | lib/auth/account-linking.ts                                             | 82   |
+| DEBT-3209 | Server logger (security-logger.ts) does not strip control... | S2       | functions/src/security-logger.ts                                        | 119  |
+| DEBT-3211 | .env.production tracked in git with Firebase config and S... | S2       | .env.production                                                         | 1    |
+| DEBT-3212 | No Content-Security-Policy header configured                 | S2       | firebase.json                                                           | 30   |
+| DEBT-3526 | Repo code execution risk via execFileSync in audit checker   | S2       | .claude/skills/pr-ecosystem-audit/scripts/checkers/pattern-lifecycle.js | 145  |
+| DEBT-0774 | App Check disabled on Functions and client init disabled ... | S3       | functions/src/index.ts                                                  | 0    |
+| DEBT-0800 | SonarCloud: Potentially hard-coded password pattern          | S3       | lib/utils/errors.ts                                                     | 69   |
+| DEBT-0801 | Math.random for visual effects                               | S3       | components/celebrations/confetti-burst.tsx                              | 39   |
+| DEBT-0802 | Secrets expanded in run block                                | S3       | .github/workflows/deploy-firebase.yml                                   | 58   |
+| DEBT-0803 | process.env.NODE_ENV checks for debug info                   | S3       | components/providers/error-boundary.tsx                                 | 84   |
+| DEBT-0804 | Agent config files present                                   | S3       | .claude/settings.json                                                   | 1    |
+| DEBT-0822 | GitHub Actions using version tags instead of SHA             | S3       | .github/workflows/auto-label-review-tier.yml                            | 29   |
+| DEBT-0843 | Console statements in error paths                            | S3       | lib/utils/callable-errors.ts                                            | 182  |
+| DEBT-1322 | Unpinned GitHub Actions in multiple workflows                | S3       | .github/workflows/auto-label-review-tier.yml                            | 29   |
+| DEBT-1325 | Admin function input validation inconsistency - meetingId... | S3       | functions/src/admin.ts                                                  | 768  |
+| DEBT-1326 | Daily quotes collection allows direct admin client writes... | S3       | firestore.rules                                                         | 104  |
+| DEBT-1328 | Firestore security rules missing for security_logs and ad... | S3       | firestore.rules                                                         | 151  |
+| DEBT-1329 | User ID hash truncation reduces collision resistance for ... | S3       | functions/src/security-logger.ts                                        | 74   |
+| DEBT-1330 | No middleware.ts for server-side route protection            | S3       | next.config.mjs                                                         | 13   |
+| DEBT-1331 | Service account credentials written to disk in CI deploy ... | S3       | .github/workflows/deploy-firebase.yml                                   | 58   |
+| DEBT-2286 | Add symlink audit trail logging to atomic write helpers      | S3       | .claude/hooks/lib/rotate-state.js                                       | 0    |
+| DEBT-2294 | Hook validators log code snippets that could expose secrets  | S3       | N/A                                                                     | 0    |
+| DEBT-3146 | 26 high-severity vulns in dev/build dependencies (eslint,... | S3       | package.json                                                            | 0    |
+| DEBT-3173 | Referrer-Policy set to strict-origin could be stricter       | S3       | firebase.json                                                           | 49   |
+| DEBT-3178 | No rate limiting at Firestore rules level                    | S3       | firestore.rules                                                         | 1    |
+| DEBT-3180 | Sentry DSN committed in .env.production                      | S3       | .env.production                                                         | 20   |
+| DEBT-0849 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                                                         | 0    |
+| DEBT-0853 | App Check disabled on all production Cloud Functions         | S0       | functions/src/index.ts                                                  | 0    |
+| DEBT-0854 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                                                         | 0    |
+| DEBT-0855 | App Check disabled on all Cloud Functions and client init... | S0       | functions/src/index.ts                                                  | 0    |
+| DEBT-0856 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                                                         | 0    |
+| DEBT-0859 | Re-enable App Check on Cloud Functions                       | S0       | N/A                                                                     | 0    |
+| DEBT-0860 | Close legacy journalEntries write path                       | S0       | N/A                                                                     | 0    |
+| DEBT-0864 | Re-enable App Check on Cloud Functions                       | S0       | lib/firebase.ts                                                         | 45   |
+| DEBT-0865 | Close legacy journalEntries write path                       | S0       | lib/firestore-service.ts                                                | 156  |

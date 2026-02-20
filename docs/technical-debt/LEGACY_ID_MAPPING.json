@@ -1948,6 +1948,7 @@
   "SYST-2026-02-19-D08-002": "DEBT-3212",
   "audit:SYST-2026-02-19-D08-002": "DEBT-3212",
   "audit:CANON-0038": "DEBT-2548",
+  "pr-deferred:c8b35c1e-885e-44b7-bb19-5513ccbde4e2": "DEBT-3526",
   "code-comment:components/notebook/features/quick-actions-fab.tsx:12": "DEBT-3521",
   "code-comment:lib/database/firestore-adapter.ts:51": "DEBT-3522",
   "code-comment:scripts/check-content-accuracy.js:188": "DEBT-3523",
