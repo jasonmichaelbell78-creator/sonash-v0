@@ -215,13 +215,17 @@ function mergeItems(primary, secondary) {
       if (!v || typeof v !== "object") return v;
       if (seen.has(v)) return "[Circular]";
       seen.add(v);
-      if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen));
-      const out = Object.create(null);
-      for (const k of Object.keys(v).sort()) {
-        if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
-        out[k] = canonicalize(v[k], seen);
+      try {
+        if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen));
+        const out = Object.create(null);
+        for (const k of Object.keys(v).sort()) {
+          if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
+          out[k] = canonicalize(v[k], seen);
+        }
+        return out;
+      } finally {
+        seen.delete(v);
       }
-      return out;
     };
     const toKey = (e) => {
       if (typeof e === "string") return `str:${e}`;
@@ -234,7 +238,13 @@ function mergeItems(primary, secondary) {
     };
     const mergedEvidence = Array.isArray(merged.evidence) ? merged.evidence : [];
     const existing = new Set(mergedEvidence.map(toKey));
-    const newEvidence = secondary.evidence.filter((e) => !existing.has(toKey(e)));
+    const newEvidence = [];
+    for (const e of secondary.evidence) {
+      const k = toKey(e);
+      if (existing.has(k)) continue;
+      existing.add(k);
+      newEvidence.push(e);
+    }
     merged.evidence = [...mergedEvidence, ...newEvidence];
   }
 

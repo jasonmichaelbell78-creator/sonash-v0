@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.40 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
+**Document Version:** 17.41 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
 
 ## Purpose
 
@@ -4248,5 +4248,41 @@ reference protection, path-segment-boundary matching for repo root stripping.
 - Evidence data from JSON.parse can never contain Date/RegExp/Set/Map — reject
   suggestions that add handling for impossible types
 - When normalizing paths, always use path-segment boundaries not substring match
+
+---
+
+### Review #358: PR #379 R4 — Circular Ref Fix, Regex Escaping, Internal Dedup
+
+**Date:** 2026-02-20 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #379
+
+**Summary:** 6 suggestions → 4 unique. 3 fixed, 2 rejected (repeats), 1 deferred
+(architectural). Key fixes: try/finally for correct circular reference tracking,
+regex escaping for env var in RegExp, internal dedup within incoming evidence
+arrays.
+
+**Patterns Identified:**
+
+1. **WeakSet circular detection needs try/finally**: Without `seen.delete(v)` in
+   finally, shared object references (same obj in two properties) are
+   misidentified as circular. Always use try/finally to clean up the seen set.
+2. **Always escape user input before RegExp constructor**: Even "trusted" env
+   vars can contain regex metacharacters (e.g., repo names with dots).
+3. **Dedup incoming AND existing**: When merging arrays, dedup within the
+   incoming array too — not just against the existing set.
+
+**Resolution:**
+
+- Fixed: 3 items (try/finally circular ref, regex escaping, internal dedup)
+- Rejected: 2 items (compliance repeats from R3 — intake-manual user ID,
+  operator "root" label)
+- Deferred: 1 item (created timestamp mutation on re-normalization —
+  architectural, requires pipeline-level first-seen tracking)
+
+**Key Learnings:**
+
+- WeakSet-based cycle detection must use try/finally to delete after recursion
+- `new RegExp(untrustedString)` is always a security/robustness concern
+- Array dedup must handle both cross-array and intra-array duplicates
 
 ---
