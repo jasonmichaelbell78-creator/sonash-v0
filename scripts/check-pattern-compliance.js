@@ -1117,8 +1117,8 @@ const ANTI_PATTERNS = [
         const line = lines[i];
         // Detect JSON.parse(line) not wrapped in try/catch
         if (/JSON\.parse\s*\(\s*(?:line|l|entry|row)\b/.test(line)) {
-          // Check if within a try block (look back up to 5 lines)
-          const context = lines.slice(Math.max(0, i - 5), i + 1).join("\n");
+          // Check if within a try block (look back up to 15 lines)
+          const context = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
           if (!/\btry\s*\{/.test(context)) {
             matches.push({
               line: i + 1,
@@ -1148,10 +1148,10 @@ const ANTI_PATTERNS = [
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         if (/\brenameSync\s*\(/.test(line)) {
-          // Check if within a try block (look back up to 5 lines)
-          const contextBefore = lines.slice(Math.max(0, i - 5), i + 1).join("\n");
-          // Check if followed by a catch with writeFileSync fallback (look ahead up to 10 lines)
-          const contextAfter = lines.slice(i, Math.min(lines.length, i + 10)).join("\n");
+          // Check if within a try block (look back up to 15 lines)
+          const contextBefore = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
+          // Check if followed by a catch with writeFileSync fallback (look ahead up to 20 lines)
+          const contextAfter = lines.slice(i, Math.min(lines.length, i + 20)).join("\n");
           if (!/\btry\s*\{/.test(contextBefore) || !/\bwriteFileSync\b/.test(contextAfter)) {
             matches.push({
               line: i + 1,
@@ -1184,14 +1184,14 @@ const ANTI_PATTERNS = [
         // Detect sessionId/session_id used in path construction (join, template literal, concat)
         if (
           /(?:session[_-]?[Ii]d|sessionId)\b/.test(line) &&
-          /(?:join\s*\(|`[^`]*\$\{|\/.*session|\.json|\.jsonl|writeFileSync|readFileSync)/.test(
+          /(?:join\s*\(|`[^`]*\$\{|\/\S*session|\.json|\.jsonl|writeFileSync|readFileSync)/.test(
             line
           )
         ) {
           // Check if validation exists nearby (look back up to 15 lines)
           const context = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
           if (
-            !/(?:(?:\/\^|new RegExp|\.match|\.test|validate|isValid|assert)[\s\S]{0,80}session|session[\s\S]{0,80}(?:\/\^|\.match|\.test|validate|isValid|assert))/.test(
+            !/(?:validate|isValid|assert)\s*\(\s*(?:\w+\.)*session[_-]?[Ii]d\b|session[_-]?[Ii]d\b\s*\.\s*(?:match|test)|(?:\/\^|new RegExp).{0,40}session/.test(
               context
             )
           ) {

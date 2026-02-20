@@ -38,7 +38,7 @@ const SCAN_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".css"]);
 
 // Match TODO:, TODO(, FIXME:, FIXME(, HACK:, HACK(, XXX:, WORKAROUND:
 // Require : or ( after keyword — bare "TODO something" without colon is not actionable
-const KEYWORD_RE = /\b(TODO|FIXME|HACK|XXX|WORKAROUND)(?=[:(])/g;
+const KEYWORD_RE = /\b(TODO|FIXME|HACK|XXX|WORKAROUND)(?=[:(])/gi;
 
 const SEVERITY_MAP = { TODO: "S3", FIXME: "S2", HACK: "S2", XXX: "S2", WORKAROUND: "S2" };
 
@@ -57,7 +57,7 @@ function generateContentHash(item) {
 
 function normalizeFilePath(filePath) {
   if (!filePath) return "";
-  let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "");
+  let normalized = filePath.replaceAll("\\", "/").replace(/^\.\//, "").replace(/^\/+/, "");
   const colonIndex = normalized.indexOf(":");
   if (colonIndex > 0) {
     const beforeColon = normalized.substring(0, colonIndex);
@@ -119,7 +119,10 @@ function checkFalsePositive(line, matchIndex, inBlockComment) {
     Math.max(0, matchIndex - 15),
     Math.min(line.length, matchIndex + 25)
   );
-  if (/\b[A-Z_]*(?:TODO|FIXME|HACK|XXX|WORKAROUND)[A-Z_]+\b/.test(surrounding)) {
+  if (
+    /\b(?:TODO_|FIXME_|HACK_|XXX_|WORKAROUND_)\w+\b/.test(surrounding) ||
+    /\b\w+_(?:TODO|FIXME|HACK|XXX|WORKAROUND)\b/.test(surrounding)
+  ) {
     return { isFP: true, reason: "variable name" };
   }
 
@@ -178,7 +181,7 @@ function extractCommentText(line, matchIndex, keyword) {
   }
   // Handle TODO: message
   rest = rest
-    .replace(/^[:]\s*/, "")
+    .replace(/^:\s*/, "")
     .replace(/\*\/\s*$/, "")
     .trim();
   return rest || `${keyword} comment (no description)`;
@@ -195,6 +198,7 @@ function collectFiles(dirPath) {
     return files;
   }
   for (const entry of entries) {
+    if (entry.isSymbolicLink && entry.isSymbolicLink()) continue;
     const fullPath = path.join(dirPath, entry.name);
     if (entry.isDirectory()) {
       if (entry.name === "node_modules" || entry.name === ".git" || entry.name === "dist") continue;
@@ -213,7 +217,7 @@ function loadExistingHashes() {
   if (!fs.existsSync(MASTER_FILE)) return hashes;
   let content;
   try {
-    content = fs.readFileSync(MASTER_FILE, "utf8").replace(/\uFEFF/g, "");
+    content = fs.readFileSync(MASTER_FILE, "utf8").replaceAll("\uFEFF", "");
   } catch {
     return hashes;
   }
@@ -233,16 +237,31 @@ function loadExistingHashes() {
 
 /**
  * Scan a line to determine block comment state at end of line.
+ * Tracks string literals to avoid treating `/*` inside a string as a comment.
  */
 function updateBlockCommentState(line, entering) {
   let inBlock = entering;
+  let quoteChar = null;
   for (let c = 0; c < line.length - 1; c++) {
-    if (!inBlock && line[c] === "/" && line[c + 1] === "*") {
+    const ch = line[c];
+    if (quoteChar) {
+      if (ch === "\\") {
+        c += 1;
+        continue;
+      }
+      if (ch === quoteChar) quoteChar = null;
+      continue;
+    }
+    if (!inBlock && QUOTE_CHARS.has(ch)) {
+      quoteChar = ch;
+      continue;
+    }
+    if (!inBlock && ch === "/" && line[c + 1] === "*") {
       inBlock = true;
-      c++;
-    } else if (inBlock && line[c] === "*" && line[c + 1] === "/") {
+      c += 1;
+    } else if (inBlock && ch === "*" && line[c + 1] === "/") {
       inBlock = false;
-      c++;
+      c += 1;
     }
   }
   return inBlock;
@@ -250,16 +269,31 @@ function updateBlockCommentState(line, entering) {
 
 /**
  * Determine if a specific position on a line is inside a block comment.
+ * Tracks string literals to avoid treating `/*` inside a string as a comment.
  */
 function isPositionInBlockComment(line, position, entering) {
   let inBlock = entering;
+  let quoteChar = null;
   for (let c = 0; c < position && c < line.length - 1; c++) {
-    if (!inBlock && line[c] === "/" && line[c + 1] === "*") {
+    const ch = line[c];
+    if (quoteChar) {
+      if (ch === "\\") {
+        c += 1;
+        continue;
+      }
+      if (ch === quoteChar) quoteChar = null;
+      continue;
+    }
+    if (!inBlock && QUOTE_CHARS.has(ch)) {
+      quoteChar = ch;
+      continue;
+    }
+    if (!inBlock && ch === "/" && line[c + 1] === "*") {
       inBlock = true;
-      c++;
-    } else if (inBlock && line[c] === "*" && line[c + 1] === "/") {
+      c += 1;
+    } else if (inBlock && ch === "*" && line[c + 1] === "/") {
       inBlock = false;
-      c++;
+      c += 1;
     }
   }
   return inBlock;
@@ -298,7 +332,7 @@ function buildFinding(relPath, lineNum, keyword, commentText, seq, today) {
 function scanFile(filePath, relPath, findings, falsePositives, nextSeq, today) {
   let content;
   try {
-    content = fs.readFileSync(filePath, "utf8").replace(/\uFEFF/g, "");
+    content = fs.readFileSync(filePath, "utf8").replaceAll("\uFEFF", "");
   } catch {
     return nextSeq;
   }
@@ -314,7 +348,7 @@ function scanFile(filePath, relPath, findings, falsePositives, nextSeq, today) {
     KEYWORD_RE.lastIndex = 0;
     let match;
     while ((match = KEYWORD_RE.exec(line)) !== null) {
-      const keyword = match[1];
+      const keyword = match[1].toUpperCase();
       const posInBlock = isPositionInBlockComment(line, match.index, inBlockComment);
       const fpCheck = checkFalsePositive(line, match.index, posInBlock);
 
@@ -340,20 +374,9 @@ function scanFile(filePath, relPath, findings, falsePositives, nextSeq, today) {
   return nextSeq;
 }
 
-// --- Main ---
+// --- Main helpers ---
 
-function main() {
-  const args = process.argv.slice(2);
-  const writeMode = args.includes("--write");
-  const verbose = args.includes("--verbose");
-  const dryRun = !writeMode;
-
-  console.log(`\n📝 Extract Scattered Debt (TODO/FIXME/HACK/XXX/WORKAROUND)`);
-  console.log(`   Mode: ${dryRun ? "DRY RUN (use --write to save)" : "WRITE"}`);
-  if (verbose) console.log(`   Verbose: showing all matches including false positives`);
-
-  // Collect files, excluding self
-  const selfPath = path.resolve(__dirname, "extract-scattered-debt.js");
+function collectAllFiles(selfPath) {
   const allFiles = [];
   for (const dir of SCAN_DIRS) {
     const absDir = path.join(PROJECT_ROOT, dir);
@@ -361,24 +384,10 @@ function main() {
       if (path.resolve(f) !== selfPath) allFiles.push(f);
     }
   }
-  console.log(`\n   Scanning ${allFiles.length} files across ${SCAN_DIRS.length} directories...\n`);
+  return allFiles;
+}
 
-  const findings = [];
-  const falsePositives = [];
-  let nextSeq = 1;
-  const today = new Date().toISOString().split("T")[0];
-
-  for (const filePath of allFiles) {
-    const relPath = normalizeFilePath(path.relative(PROJECT_ROOT, filePath));
-    nextSeq = scanFile(filePath, relPath, findings, falsePositives, nextSeq, today);
-  }
-
-  // Dedup against existing MASTER_DEBT
-  const existingHashes = loadExistingHashes();
-  const newFindings = findings.filter((f) => !existingHashes.has(f.content_hash));
-  const dupCount = findings.length - newFindings.length;
-
-  // Report
+function reportResults(findings, falsePositives, newFindings, dupCount, verbose) {
   console.log(`   Results:`);
   console.log(`     Matches found:      ${findings.length + falsePositives.length}`);
   console.log(`     False positives:    ${falsePositives.length}`);
@@ -402,10 +411,45 @@ function main() {
       );
     }
   }
+}
+
+// --- Main ---
+
+function main() {
+  const args = new Set(process.argv.slice(2));
+  const writeMode = args.has("--write");
+  const verbose = args.has("--verbose");
+  const dryRun = !writeMode;
+
+  console.log(`\nExtract Scattered Debt (TODO/FIXME/HACK/XXX/WORKAROUND)`);
+  console.log(`   Mode: ${dryRun ? "DRY RUN (use --write to save)" : "WRITE"}`);
+  if (verbose) console.log(`   Verbose: showing all matches including false positives`);
+
+  // Collect files, excluding self
+  const selfPath = path.resolve(__dirname, "extract-scattered-debt.js");
+  const allFiles = collectAllFiles(selfPath);
+  console.log(`\n   Scanning ${allFiles.length} files across ${SCAN_DIRS.length} directories...\n`);
+
+  const findings = [];
+  const falsePositives = [];
+  let nextSeq = 1;
+  const today = new Date().toISOString().split("T")[0];
+
+  for (const filePath of allFiles) {
+    const relPath = normalizeFilePath(path.relative(PROJECT_ROOT, filePath));
+    nextSeq = scanFile(filePath, relPath, findings, falsePositives, nextSeq, today);
+  }
+
+  // Dedup against existing MASTER_DEBT
+  const existingHashes = loadExistingHashes();
+  const newFindings = findings.filter((f) => !existingHashes.has(f.content_hash));
+  const dupCount = findings.length - newFindings.length;
+
+  reportResults(findings, falsePositives, newFindings, dupCount, verbose);
 
   if (dryRun) {
     console.log(
-      `\n   🔍 DRY RUN complete. Use --write to save to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
+      `\n   DRY RUN complete. Use --write to save to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
     );
     return;
   }
@@ -415,7 +459,7 @@ function main() {
   const jsonlContent = newFindings.map((f) => JSON.stringify(f)).join("\n") + "\n";
   fs.writeFileSync(OUTPUT_FILE, jsonlContent, "utf-8");
   console.log(
-    `\n   ✅ Wrote ${newFindings.length} items to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
+    `\n   Wrote ${newFindings.length} items to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
   );
 }
 

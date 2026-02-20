@@ -199,7 +199,7 @@ function createPatchGenerator(rootDir) {
       }
       return `DEBT-${maxId + 1}`;
     } catch {
-      return "DEBT-NEW";
+      return `DEBT-${Date.now()}`;
     }
   }
 

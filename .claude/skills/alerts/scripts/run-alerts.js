@@ -2265,9 +2265,10 @@ function checkHookHealth() {
 
     // Detect skipped checks
     const skipPattern = /Skipping (\S+)/g;
+    const skippedChecks = [];
     let skipMatch;
     while ((skipMatch = skipPattern.exec(hookOutput)) !== null) {
-      // Count skipped checks — not failures but worth tracking
+      skippedChecks.push(skipMatch[1]);
     }
 
     const stat = fs.statSync(hookOutputPath);
@@ -2275,6 +2276,7 @@ function checkHookHealth() {
       passed,
       failedChecks,
       passedChecks,
+      skippedChecks,
       timestamp: stat.mtime.toISOString(),
     };
   } catch {
@@ -2291,7 +2293,7 @@ function checkHookHealth() {
     });
     const logLines = (logResult.output || "").trim().split("\n").filter(Boolean);
     totalCommits7d = logLines.length;
-    const noisePattern = /chore:.*(?:update (?:hook|fetch)|rotate|housekeeping.*state)/i;
+    const noisePattern = /\bchore:.*(?:update (?:hook|fetch)|rotate|housekeeping.*state)/i;
     noiseCommits7d = logLines.filter((l) => noisePattern.test(l)).length;
   } catch {
     // git log failure is non-fatal
@@ -2305,7 +2307,11 @@ function checkHookHealth() {
 
   // False-positive indicator: high override-to-warning ratio suggests checks are too aggressive
   const falsePositiveRatio =
-    failureRate7d > 0 ? Math.round((overrideRate7d / failureRate7d) * 100) : 0;
+    failureRate7d === 0
+      ? overrideRate7d > 0
+        ? 100
+        : 0
+      : Math.round((overrideRate7d / failureRate7d) * 100);
 
   // Noise ratio: % of commits that are hook state housekeeping
   const noiseRatio = totalCommits7d > 0 ? Math.round((noiseCommits7d / totalCommits7d) * 100) : 0;

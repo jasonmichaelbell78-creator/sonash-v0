@@ -64,7 +64,7 @@ function findRepeatOffenders(learnings) {
     learnings.match(/### (?:PR #\d+ Retrospective|Process Improvements)[\s\S]*?(?=###|$)/gi) || [];
 
   for (const section of retroSections) {
-    const actionItems = section.match(/[-*]\s+\*\*(.+?)\*\*/g) || [];
+    const actionItems = section.match(/[-*]\s+\*\*([^\n]+?)\*\*/g) || [];
     for (const item of actionItems) {
       const clean = item
         .replace(/[-*\s*]+/g, "")
@@ -86,16 +86,20 @@ function computeAvgDaysToResolve(resolvedItems) {
   if (resolvedItems.length === 0) return 0;
 
   let totalDays = 0;
+  let validCount = 0;
+
   for (const item of resolvedItems) {
     if (item.created && item.resolved_date) {
       const created = new Date(item.created);
       const resolved = new Date(item.resolved_date);
       if (!isNaN(created.getTime()) && !isNaN(resolved.getTime())) {
         totalDays += (resolved - created) / (1000 * 60 * 60 * 24);
+        validCount++;
       }
     }
   }
-  return Math.round(totalDays / resolvedItems.length);
+
+  return validCount > 0 ? Math.round(totalDays / validCount) : 0;
 }
 
 /**
@@ -495,18 +499,20 @@ function loadJsonl(filePath) {
     const stat = fs.statSync(filePath);
     if (stat.size > 10 * 1024 * 1024) return [];
     const content = fs.readFileSync(filePath, "utf8");
-    return content
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((l) => {
-        try {
-          return JSON.parse(l);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    const lines = content.trim().split("\n").filter(Boolean);
+    let skipped = 0;
+    const results = [];
+    for (const line of lines) {
+      try {
+        results.push(JSON.parse(line));
+      } catch {
+        skipped++;
+      }
+    }
+    if (skipped > 0) {
+      console.error(`  [warn] ${skipped} corrupt line(s) skipped in ${path.basename(filePath)}`);
+    }
+    return results;
   } catch {
     return [];
   }

@@ -133,7 +133,7 @@ function isStateFileValid(sf) {
   }
   if (sf.type === "jsonl") {
     const lines = content.trim().split("\n").filter(Boolean);
-    for (const line of lines.slice(-5)) {
+    for (const line of lines) {
       JSON.parse(line);
     }
     return true;
@@ -361,7 +361,7 @@ function measureJsonlDrift(rootDir) {
 
   try {
     if (!fs.existsSync(reviewsJsonlPath)) {
-      return { driftCount: 1, corruptedLines: 0 };
+      return { driftCount: 0, corruptedLines: 0 };
     }
     const content = fs.readFileSync(reviewsJsonlPath, "utf8");
     const lines = content.trim().split("\n").filter(Boolean);
@@ -371,7 +371,7 @@ function measureJsonlDrift(rootDir) {
     const driftCount = Math.abs(jsonlReviewCount - markdownReviewCount);
     return { driftCount, corruptedLines };
   } catch {
-    return { driftCount: 1, corruptedLines: 0 };
+    return { driftCount: 0, corruptedLines: 0 };
   }
 }
 

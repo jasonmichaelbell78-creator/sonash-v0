@@ -93,6 +93,10 @@ function createStateManager(rootDir, isSafeToWrite) {
         if (fs.existsSync(STATE_FILE)) fs.rmSync(STATE_FILE, { force: true });
         fs.renameSync(tmpPath, STATE_FILE);
       } else {
+        if (!isSafeToWrite(STATE_FILE)) {
+          console.error("  [warn] State file failed symlink guard, skipping write");
+          return false;
+        }
         fs.appendFileSync(STATE_FILE, line, "utf8");
       }
 

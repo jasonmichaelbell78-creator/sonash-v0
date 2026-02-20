@@ -74,7 +74,7 @@ function parseBacklogItems(content) {
  */
 function filterActiveItems(items) {
   return items.filter((item) => {
-    const status = (item.status || "").toUpperCase();
+    const status = (item.status || "NEW").toUpperCase();
     return ACTIVE_STATUSES.has(status);
   });
 }
@@ -228,6 +228,32 @@ function determineFinalExitCode(isPrePush, blockers, exitCode) {
 }
 
 /**
+ * Warn about corrupt lines found during parsing (shown unless quiet mode).
+ */
+function warnCorruptLines(corruptLines, isQuiet) {
+  if (corruptLines.length === 0 || isQuiet) return;
+  console.log(`Note: ${corruptLines.length} corrupt line(s) skipped in MASTER_DEBT.jsonl`);
+  const preview = corruptLines.slice(0, 3);
+  preview.forEach((c) => console.log(`   Line ${c.lineNumber}: ${c.error}`));
+  if (corruptLines.length > 3) {
+    console.log(`   ... and ${corruptLines.length - 3} more`);
+  }
+  console.log("");
+}
+
+/**
+ * Merge item-count threshold result into warnings list and return final exit code.
+ */
+function applyItemCountThreshold(warnings, exitCode, activeItemCount, maxItems) {
+  const itemCountWarning = checkItemCountThreshold(activeItemCount, maxItems);
+  if (itemCountWarning) {
+    warnings.push(itemCountWarning);
+    return Math.max(exitCode, 1);
+  }
+  return exitCode;
+}
+
+/**
  * Main function
  */
 function main() {
@@ -252,16 +278,7 @@ function main() {
     }
 
     // Warn on corrupt lines but don't fail
-    if (corruptLines.length > 0 && !isQuiet) {
-      console.log(`Note: ${corruptLines.length} corrupt line(s) skipped in MASTER_DEBT.jsonl`);
-      // Show first few corrupt lines for debugging
-      const preview = corruptLines.slice(0, 3);
-      preview.forEach((c) => console.log(`   Line ${c.lineNumber}: ${c.error}`));
-      if (corruptLines.length > 3) {
-        console.log(`   ... and ${corruptLines.length - 3} more`);
-      }
-      console.log("");
-    }
+    warnCorruptLines(corruptLines, isQuiet);
 
     // Filter to active items only
     const activeItems = filterActiveItems(allItems);
@@ -272,12 +289,13 @@ function main() {
     // Check thresholds
     const { warnings, blockers, exitCode } = checkThresholds(severityGroups, CONFIG, isPrePush);
 
-    // Check item count threshold
-    const itemCountWarning = checkItemCountThreshold(activeItems.length, CONFIG.MAX_ITEMS);
-    if (itemCountWarning) warnings.push(itemCountWarning);
-
-    // Calculate final exit code
-    const finalExitCode = itemCountWarning ? Math.max(exitCode, 1) : exitCode;
+    // Check item count threshold and calculate final exit code
+    const finalExitCode = applyItemCountThreshold(
+      warnings,
+      exitCode,
+      activeItems.length,
+      CONFIG.MAX_ITEMS
+    );
 
     // Output results
     if (!isQuiet) {

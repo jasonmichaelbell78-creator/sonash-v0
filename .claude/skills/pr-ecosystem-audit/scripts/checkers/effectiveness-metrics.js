@@ -422,18 +422,20 @@ function loadJsonl(filePath) {
     const stat = fs.statSync(filePath);
     if (stat.size > 10 * 1024 * 1024) return [];
     const content = fs.readFileSync(filePath, "utf8");
-    return content
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((l) => {
-        try {
-          return JSON.parse(l);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    const lines = content.trim().split("\n").filter(Boolean);
+    let skipped = 0;
+    const results = [];
+    for (const line of lines) {
+      try {
+        results.push(JSON.parse(line));
+      } catch {
+        skipped++;
+      }
+    }
+    if (skipped > 0) {
+      console.error(`  [warn] ${skipped} corrupt line(s) skipped in ${path.basename(filePath)}`);
+    }
+    return results;
   } catch {
     return [];
   }
