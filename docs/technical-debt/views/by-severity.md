@@ -66,7 +66,7 @@
 | DEBT-3468 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | N/A                                                         | 0    | code-quality | E0     |
 | DEBT-3469 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | .claude/hooks/commit-tracker.js                             | 0    | code-quality | E1     |
 
-## S1 - High (452)
+## S1 - High (453)
 
 | ID        | Title                                                         | File                                                                                                                                               | Line | Category                 | Effort |
 | --------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -509,6 +509,7 @@
 | DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI...  | lib/logger.ts                                                                                                                                      | 7    | security                 | E1     |
 | DEBT-3210 | No service worker — app cannot function offline despite P...  | public/manifest.json                                                                                                                               | 1    | code-quality             | E3     |
 | DEBT-3213 | App Check globally disabled on all 5 user-callable functi...  | functions/src/index.ts                                                                                                                             | 84   | security                 | E2     |
+| DEBT-3528 | Retro action items not consistently tracked as DEBT entri...  | docs/AI_REVIEW_LEARNINGS_LOG.md                                                                                                                    | 0    | engineering-productivity | E1     |
 | DEBT-2432 | ROADMAP.md milestone tracking tables                          | ROADMAP.md                                                                                                                                         | 0    | code-quality             | E2     |
 | DEBT-2433 | AUDIT_TRACKER.md audit log tables                             | docs/AUDIT_TRACKER.md                                                                                                                              | 0    | code-quality             | E2     |
 | DEBT-2434 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas   | docs/EXPANSION_EVALUATION_TRACKER.md                                                                                                               | 0    | code-quality             | E3     |

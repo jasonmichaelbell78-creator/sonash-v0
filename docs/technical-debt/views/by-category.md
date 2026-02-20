@@ -2480,13 +2480,14 @@
 | DEBT-2290 | Document atomic write pattern as reusable helper               | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 | DEBT-3193 | CANON system uses JSONL output model — templates referenc...   | S3       | docs/templates/CANON_QUICK_REFERENCE.md                            | 1    |
 
-## engineering-productivity (9)
+## engineering-productivity (10)
 
 | ID        | Title                                                        | Severity | File                            | Line |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------------- | ---- |
 | DEBT-0871 | Firebase IndexedDB Persistence Not Enabled - Critical Off... | S1       | N/A                             | 0    |
 | DEBT-0872 | No Service Worker - App Cannot Load Offline At All           | S1       | N/A                             | 0    |
 | DEBT-0873 | No Offline Write Queue - Journal Entries Lost Forever        | S1       | N/A                             | 0    |
+| DEBT-3528 | Retro action items not consistently tracked as DEBT entri... | S1       | docs/AI_REVIEW_LEARNINGS_LOG.md | 0    |
 | DEBT-2189 | Composite validator: consolidate 9 PostToolUse hooks into... | S2       | .claude/settings.json           | 57   |
 | DEBT-2311 | External link checker has ~100% false positive rate          | S2       | scripts/check-external-links.js | 0    |
 | DEBT-2312 | Commit tracker shows 212h stale despite recent commits       | S2       | .claude/hooks/commit-tracker.js | 0    |

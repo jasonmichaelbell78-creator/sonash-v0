@@ -9,14 +9,14 @@
 
 ---
 
-**Total Items:** 3052
+**Total Items:** 3053
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
 | S0 (Critical) | 52    |
-| S1 (High)     | 452   |
+| S1 (High)     | 453   |
 | S2 (Medium)   | 1589  |
 | S3 (Low)      | 959   |
 
@@ -30,14 +30,14 @@
 | performance              | 59    |
 | enhancements             | 44    |
 | refactoring              | 24    |
-| engineering-productivity | 9     |
+| engineering-productivity | 10    |
 
 | Status         | Count |
 | -------------- | ----- |
 | VERIFIED       | 2308  |
 | RESOLVED       | 316   |
 | FALSE_POSITIVE | 272   |
-| NEW            | 156   |
+| NEW            | 157   |
 
 ## Views
 
@@ -194,7 +194,7 @@
 - **DEBT-0022**: Refactor this function to reduce its Cognitive Complexity from
   19 to the 15 a... (scripts/check-document-sync.js:200)
 
-_...and 432 more. See [by-severity.md](./views/by-severity.md)_
+_...and 433 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

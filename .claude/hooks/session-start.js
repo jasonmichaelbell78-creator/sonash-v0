@@ -431,6 +431,19 @@ try {
         const result = rotateJsonl(reviewsPath, 50, 30);
         if (result.rotated) {
           console.log(`   🔄 reviews.jsonl rotated: ${result.before} → ${result.after} entries`);
+          // Re-sync from markdown source immediately after rotation to prevent
+          // data loss. Without this, the audit checkers see only 30 entries until
+          // session-begin runs reviews:sync. (PEA-501, PR #379 ecosystem audit)
+          try {
+            const { execFileSync } = require("node:child_process");
+            execFileSync("npm", ["run", "reviews:sync", "--", "--apply"], {
+              cwd: projectDir,
+              stdio: "pipe",
+              timeout: 15000,
+            });
+          } catch {
+            // Non-fatal: session-begin will catch this
+          }
         }
       } catch {
         // Fallback: warn if rotation fails

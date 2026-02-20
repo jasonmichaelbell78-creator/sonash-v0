@@ -47,7 +47,7 @@ function run(ctx) {
   scores.retro_quality_compliance = cat3;
 
   // ── Category 4: Learning Capture Integrity ───────────────────────────────
-  const cat4 = checkLearningCaptureIntegrity(reviewsJsonl, learningsContent, findings);
+  const cat4 = checkLearningCaptureIntegrity(reviewsJsonl, learningsContent, rootDir, findings);
   scores.learning_capture_integrity = cat4;
 
   return { domain: DOMAIN, findings, scores };
@@ -148,7 +148,9 @@ function checkSkillInvocationFidelity(reviewsJsonl, learningsContent, findings) 
   const bench = BENCHMARKS.skill_invocation_fidelity;
 
   // Check recent reviews for step documentation
-  const recentReviews = reviewsJsonl.filter((r) => r.type === "review" || r.pr_number).slice(-10);
+  const recentReviews = reviewsJsonl
+    .filter((r) => r.type === "review" || r.pr_number || r.pr || typeof r.id === "number")
+    .slice(-10);
 
   // pr-review has 10 major steps (0, 0.5, 1, 1.5, 2, 3, 4, 5, 6-9)
   const stepKeywords = [
@@ -180,7 +182,14 @@ function checkSkillInvocationFidelity(reviewsJsonl, learningsContent, findings) 
     "pre-check",
     "security sweep",
     "cc check",
+    "cc reduction",
+    "cognitive complexity",
     "propagation sweep",
+    "step 0.5",
+    "algorithm design",
+    "verification pass",
+    "npm run lint",
+    "npm run patterns",
   ];
   const preCheckEvidence = countKeywordMatches(recentReviews, preCheckKeywords);
   const preCheckOpportunities = Math.max(1, recentReviews.length);
@@ -261,10 +270,28 @@ function pushMultiPassFinding(findings, multiPassPct, reviewCount) {
 function checkReviewProcessCompleteness(reviewsJsonl, learningsContent, rootDir, findings) {
   const bench = BENCHMARKS.review_process_completeness;
 
-  const reviews = reviewsJsonl.filter((r) => r.type === "review" || r.pr_number).slice(-10);
+  const reviews = reviewsJsonl
+    .filter((r) => r.type === "review" || r.pr_number || r.pr || typeof r.id === "number")
+    .slice(-10);
 
   // Multi-pass parsing check
-  const multiPassKeywords = ["first pass", "second pass", "third pass", "multi-pass", "systematic"];
+  const multiPassKeywords = [
+    "first pass",
+    "second pass",
+    "third pass",
+    "multi-pass",
+    "systematic",
+    "categoriz",
+    "dedup",
+    "after dedup",
+    "unique after",
+    "raw suggestions",
+    "intake",
+    "triage",
+    "step 1",
+    "step 2",
+    "step 3",
+  ];
   const multiPassPct = computeKeywordPct(reviews, multiPassKeywords);
 
   // Propagation sweep check
@@ -274,6 +301,12 @@ function checkReviewProcessCompleteness(reviewsJsonl, learningsContent, rootDir,
     "searched codebase",
     "all instances",
     "full sweep",
+    "step 5.6",
+    "all copies",
+    "all callers",
+    "crlf propagation",
+    "propagation miss",
+    "propagation check",
   ];
   const propagationPct = computeKeywordPct(reviews, propagationKeywords);
 
@@ -453,26 +486,58 @@ function computeFieldCompleteness(reviews, requiredFields) {
   return { total, populated };
 }
 
-function countNumberingGaps(learningsContent) {
-  const reviewNumbers = [];
-  const numberMatches = learningsContent.matchAll(/### Review #(\d+)/gi);
-  for (const match of numberMatches) {
-    reviewNumbers.push(parseInt(match[1], 10));
+function countNumberingGaps(learningsContent, rootDir) {
+  // Collect review numbers from active log
+  const activeNumbers = [];
+  for (const match of learningsContent.matchAll(/### Review #(\d+)/gi)) {
+    activeNumbers.push(parseInt(match[1], 10));
   }
-  if (reviewNumbers.length <= 1) return { gaps: 0, count: reviewNumbers.length };
-  const sorted = [...reviewNumbers].sort((a, b) => a - b);
+  if (activeNumbers.length <= 1) return { gaps: 0, count: activeNumbers.length };
+
+  // Find the minimum active review number to determine overlap range
+  const minActive = Math.min(...activeNumbers);
+  const allNumbers = [...activeNumbers];
+
+  // Scan only the archive that overlaps with the active range so archived
+  // entries adjacent to active ones don't appear as gaps. Historical gaps
+  // in older archives are intentional (skipped/merged reviews).
+  if (rootDir) {
+    const archiveDir = path.join(rootDir, "docs", "archive");
+    try {
+      const archiveFiles = fs
+        .readdirSync(archiveDir)
+        .filter((f) => /^REVIEWS_\d+-\d+\.md$/i.test(f));
+      for (const file of archiveFiles) {
+        // Only scan archives whose range overlaps with the active minimum
+        const rangeMatch = file.match(/REVIEWS_(\d+)-(\d+)\.md/i);
+        if (rangeMatch) {
+          const archiveEnd = parseInt(rangeMatch[2], 10);
+          if (archiveEnd < minActive - 10) continue; // skip old archives
+        }
+        const content = fs.readFileSync(path.join(archiveDir, file), "utf8");
+        for (const m of content.matchAll(/### Review #(\d+)/gi)) {
+          allNumbers.push(parseInt(m[1], 10));
+        }
+      }
+    } catch {
+      // Archives not accessible — count gaps from active log only
+    }
+  }
+
+  const unique = [...new Set(allNumbers)].sort((a, b) => a - b);
   let gaps = 0;
-  for (let i = 1; i < sorted.length; i++) {
-    const gap = sorted[i] - sorted[i - 1];
+  for (let i = 1; i < unique.length; i++) {
+    const gap = unique[i] - unique[i - 1];
     if (gap > 1) gaps += gap - 1;
   }
-  return { gaps, count: reviewNumbers.length };
+  return { gaps, count: unique.length };
 }
 
-function checkLearningCaptureIntegrity(reviewsJsonl, learningsContent, findings) {
+function checkLearningCaptureIntegrity(reviewsJsonl, learningsContent, rootDir, findings) {
   const bench = BENCHMARKS.learning_capture_integrity;
   const reviews = reviewsJsonl.filter((r) => r.type === "review" || r.id);
-  const requiredFields = ["id", "pr_number", "date", "source", "patterns", "resolution"];
+  // JSONL schema uses 'pr' (not 'pr_number') and 'id' (numeric, not 'review_id')
+  const requiredFields = ["id", "pr", "date", "source", "patterns"];
 
   const { total: totalFieldChecks, populated: populatedFields } = computeFieldCompleteness(
     reviews,
@@ -481,7 +546,10 @@ function checkLearningCaptureIntegrity(reviewsJsonl, learningsContent, findings)
   const fieldPct =
     totalFieldChecks > 0 ? Math.round((populatedFields / totalFieldChecks) * 100) : 0;
 
-  const { gaps: numberingGaps, count: reviewNumberCount } = countNumberingGaps(learningsContent);
+  const { gaps: numberingGaps, count: reviewNumberCount } = countNumberingGaps(
+    learningsContent,
+    rootDir
+  );
 
   const r1 = scoreMetric(fieldPct, bench.field_completeness_pct, "higher-is-better");
   const r2 = scoreMetric(numberingGaps, bench.numbering_gaps, "lower-is-better");

@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 156
+**Items Needing Verification:** 157
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -29,6 +29,7 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-3207 | Dual-logger SENSITIVE_KEYS mismatch — client missing 7 PI... | S1       | lib/logger.ts                                                               | 7    |
 | DEBT-3210 | No service worker — app cannot function offline despite P... | S1       | public/manifest.json                                                        | 1    |
 | DEBT-3213 | App Check globally disabled on all 5 user-callable functi... | S1       | functions/src/index.ts                                                      | 84   |
+| DEBT-3528 | Retro action items not consistently tracked as DEBT entri... | S1       | docs/AI_REVIEW_LEARNINGS_LOG.md                                             | 0    |
 | DEBT-2432 | ROADMAP.md milestone tracking tables                         | S1       | ROADMAP.md                                                                  | 0    |
 | DEBT-2433 | AUDIT_TRACKER.md audit log tables                            | S1       | docs/AUDIT_TRACKER.md                                                       | 0    |
 | DEBT-2434 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas  | S1       | docs/EXPANSION_EVALUATION_TRACKER.md                                        | 0    |
