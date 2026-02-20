@@ -210,7 +210,8 @@ function detectSeverity(text, sectionContext) {
   // Emoji/keyword-based severity
   if (/🔴|critical|severity:\s*critical/.test(combined)) return "S0";
   if (/🟡|⚠️|high|severity:\s*high/.test(combined)) return "S1";
-  if (/🟢|🔵|medium|low/.test(combined)) return "S3";
+  if (/🟢|🔵|\bmedium\b/.test(combined)) return "S2";
+  if (/\blow\b/.test(combined)) return "S3";
   // Language-based fallback
   if (/\b(crash|data.?loss|security.?vuln|exploit|bypass)\b/.test(combined)) return "S0";
   if (/\b(memory.?leak|race.?condition|inconsistent|missing)\b/.test(combined)) return "S1";
@@ -256,7 +257,7 @@ function isCompleted(text) {
 // --- Non-actionable heading detection ---
 
 function isNonActionableHeading(text) {
-  const lower = text.toLowerCase().replace(/[*#`]/g, "").trim();
+  const lower = text.toLowerCase().replaceAll(/[*#`]/g, "").trim();
 
   // Structural/meta headings that aren't concrete work items
   const nonActionablePatterns = [
@@ -317,7 +318,7 @@ function isNonActionableHeading(text) {
   }
 
   // Skip pure library/tool names (e.g., "Next.js 16.0.7", "React 19.2.0", "Firebase 12.6.0")
-  if (/^[A-Z][a-zA-Z.\s]+ \d+\.\d+/.test(text.replace(/[*#`]/g, "").trim())) return true;
+  if (/^[A-Z][a-zA-Z.\s]+ \d+\.\d+/.test(text.replaceAll(/[*#`]/g, "").trim())) return true;
 
   // Skip very short headings (likely organizational)
   if (lower.length < 12 && !/\b(fix|add|remove|update|split|extract|implement)\b/.test(lower))
@@ -331,10 +332,10 @@ function isNonActionableHeading(text) {
 function extractFilePath(text) {
   // Match patterns like: `file.tsx`, **File**: `file.tsx`, file.tsx:123
   const patterns = [
-    /`([a-zA-Z0-9_/-]+\.[a-zA-Z]{1,5}(?::\d+)?)`/,
-    /\*\*File\*\*:?\s*`?([a-z0-9_/-]+\.[a-z]{1,5})`?/i,
-    /\*\*Location\*\*:?\s*`?([a-z0-9_/-]+\.[a-z]{1,5})`?/i,
-    /\b((?:src|app|components|lib|hooks|scripts|functions)\/[a-zA-Z0-9_/-]+\.[a-zA-Z]{1,5})/,
+    /`([a-zA-Z0-9_.@/-]+\.[a-zA-Z]{1,5}(?::\d+)?)`/,
+    /\*\*File\*\*:?\s*`?([a-z0-9_.@/-]+\.[a-z]{1,5})`?/i,
+    /\*\*Location\*\*:?\s*`?([a-z0-9_.@/-]+\.[a-z]{1,5})`?/i,
+    /\b((?:src|app|components|lib|hooks|scripts|functions)\/[a-zA-Z0-9_.@/-]+\.[a-zA-Z]{1,5})/,
   ];
   for (const pattern of patterns) {
     const match = text.match(pattern);
@@ -430,7 +431,7 @@ function buildTableTitle(cols, colIndexes) {
  */
 function cleanFilePath(filePath) {
   if (!filePath) return "";
-  return filePath.replace(/^`/g, "").replace(/`$/g, "").replace(/^\*\*/g, "").replace(/\*\*$/g, "");
+  return filePath.replace(/^`/, "").replace(/`$/, "").replace(/^\*\*/, "").replace(/\*\*$/, "");
 }
 
 /**
@@ -459,14 +460,28 @@ function parseTableRow(rowLine, colIndexes) {
 }
 
 /**
+ * Detect whether a line is a markdown table separator (e.g., |---|---|).
+ * TWO-STRIKES: replaced regex with string parsing (SonarCloud S5852 R1+R2)
+ */
+function isTableSeparatorLine(line) {
+  const trimmed = line.trim();
+  if (!trimmed) return false;
+  let inner = trimmed;
+  if (inner.startsWith("|")) inner = inner.slice(1);
+  if (inner.endsWith("|")) inner = inner.slice(0, -1);
+  inner = inner.trim();
+  if (!inner) return false;
+  for (const ch of inner) {
+    if (ch !== "-" && ch !== ":" && ch !== "|" && ch !== " ") return false;
+  }
+  return inner.includes("-");
+}
+
+/**
  * Detect whether the current line is a table header with a separator on the next line.
  */
 function isTableHeaderLine(lines, i) {
-  return (
-    lines[i].includes("|") &&
-    i + 1 < lines.length &&
-    /^\s*\|?[\s-:|]+\|?\s*$/.test(lines[i + 1])
-  );
+  return lines[i].includes("|") && i + 1 < lines.length && isTableSeparatorLine(lines[i + 1]);
 }
 
 /**
@@ -578,10 +593,11 @@ function shouldSkipHeading(trimmedLine, heading) {
  */
 function matchNumberedHeading(trimmed) {
   // TWO-STRIKES: replaced regex with string parsing (SonarCloud S5852 + complexity 31>20)
-  if (!trimmed.startsWith("#")) return null;
+  // Must be H2-H5 heading (not H1 or non-heading)
+  if (!/^#{2,5}\s/.test(trimmed)) return null;
 
   // Strip leading ##-##### and whitespace
-  let rest = trimmed.replace(/^#{2,5}\s*/, "");
+  let rest = trimmed.replace(/^#{2,5}\s+/, "");
   if (!rest) return null;
 
   // Strip optional number prefix like "1. " or "A1: "
@@ -646,10 +662,33 @@ function extractFromSections(lines, reportConfig) {
  * Patterns: "- Fix ...", "- Add ...", "- Remove ...", etc.
  */
 const ACTION_WORDS = new Set([
-  "fix", "add", "remove", "refactor", "implement", "create", "update", "replace",
-  "migrate", "extract", "split", "optimize", "reduce", "eliminate", "address",
-  "resolve", "handle", "validate", "enforce", "prevent", "secure", "enable",
-  "disable", "deprecate", "cleanup", "simplify", "improve"
+  "fix",
+  "add",
+  "remove",
+  "refactor",
+  "implement",
+  "create",
+  "update",
+  "replace",
+  "migrate",
+  "extract",
+  "split",
+  "optimize",
+  "reduce",
+  "eliminate",
+  "address",
+  "resolve",
+  "handle",
+  "validate",
+  "enforce",
+  "prevent",
+  "secure",
+  "enable",
+  "disable",
+  "deprecate",
+  "cleanup",
+  "simplify",
+  "improve",
 ]);
 
 function isActionableBullet(trimmed) {
@@ -658,55 +697,57 @@ function isActionableBullet(trimmed) {
   return ACTION_WORDS.has(bulletMatch[1].toLowerCase());
 }
 
-function extractFromBullets(lines, reportConfig) {
+/**
+ * Process a single actionable bullet line into a finding object (or null).
+ */
+function processBulletLine(trimmed, lines, i, currentSection) {
+  if (!isActionableBullet(trimmed)) return null;
+
+  const text = trimmed
+    .replace(/^\s*[-*+]\s+(?:\[ \]\s+)?/, "")
+    .replaceAll("`", "")
+    .trim();
+
+  if (text.length <= 15) return null;
+
+  let filePath = extractFilePath(trimmed);
+  const nextLine = lines[i + 1] || "";
+  if (!filePath && nextLine && !/^\s*[-*+#]/.test(nextLine)) {
+    filePath = extractFilePath(nextLine);
+  }
+
+  return {
+    title: text.substring(0, 200),
+    file: filePath,
+    line: extractLineNumber(trimmed),
+    sectionContext: currentSection,
+    rawText: trimmed,
+  };
+}
+
+function extractFromBullets(lines, _reportConfig) {
   const findings = [];
 
   let currentSection = "";
   let inCodeBlock = false;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
+    const trimmed = lines[i].trim();
 
-    // Track code blocks to skip them
     if (trimmed.startsWith("```")) {
       inCodeBlock = !inCodeBlock;
       continue;
     }
     if (inCodeBlock) continue;
 
-    // Track section context
     if (/^#{1,4}\s/.test(trimmed)) {
       currentSection = trimmed.replace(/^#+\s*/, "");
     }
 
-    // Skip completed items
     if (isCompleted(trimmed)) continue;
 
-    // Match actionable bullets
-    if (isActionableBullet(trimmed)) {
-      const text = trimmed
-        .replace(/^\s*[-*+]\s+(?:\[ \]\s+)?/, "")
-        .replaceAll("`", "")
-        .trim();
-
-      if (text.length > 15) {
-        let filePath = extractFilePath(trimmed);
-        const nextLine = lines[i + 1] || "";
-        if (!filePath && nextLine && !/^\s*[-*+#]/.test(nextLine)) {
-          filePath = extractFilePath(nextLine);
-        }
-        const lineNum = extractLineNumber(trimmed);
-
-        findings.push({
-          title: text.substring(0, 200),
-          file: filePath,
-          line: lineNum,
-          sectionContext: currentSection,
-          rawText: trimmed,
-        });
-      }
-    }
+    const finding = processBulletLine(trimmed, lines, i, currentSection);
+    if (finding) findings.push(finding);
   }
   return findings;
 }
@@ -735,9 +776,12 @@ function extractReport(reportPath, reportName, config, seq, today) {
   function addFinding(finding) {
     const normalizedTitle = finding.title
       .toLowerCase()
-      .replace(/[^a-z0-9]/g, "")
+      .replaceAll(/[^a-z0-9]/g, "")
       .substring(0, 60);
-    const normalizedFile = (finding.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
+    const normalizedFile = (finding.file || "")
+      .replace(/^\.\//, "")
+      .replace(/^\//, "")
+      .toLowerCase();
     const key = `${normalizedTitle}|${normalizedFile}|${finding.line || 0}`;
     if (seenTitles.has(key)) return;
     seenTitles.add(key);
@@ -897,9 +941,9 @@ function readReportFiles() {
  */
 function computeNextSeq(existingIntakeIds, prefix) {
   let nextSeq = 1;
-  const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
   for (const id of existingIntakeIds) {
-    const match = id.match(new RegExp(`${escapedPrefix}(\\d+)`));
+    const match = id.match(new RegExp(`^${escapedPrefix}(\\d+)$`));
     if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
   }
   return nextSeq;
@@ -963,7 +1007,12 @@ function main() {
   const reportFiles = readReportFiles();
   console.log(`\n   Processing ${reportFiles.length} reports...\n`);
 
-  const { allFindings, totalSkipped } = processAllReports(reportFiles, existingHashes, existingIntakeIds, verbose);
+  const { allFindings, totalSkipped } = processAllReports(
+    reportFiles,
+    existingHashes,
+    existingIntakeIds,
+    verbose
+  );
 
   printSummary(allFindings, totalSkipped);
 

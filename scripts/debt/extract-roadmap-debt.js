@@ -199,7 +199,7 @@ function classifyItem(text) {
  */
 function detectSeverity(text) {
   // Prefer explicit severity markers (e.g., "- S1" or "(S2,")
-  const sevMatch = text.match(/[-(\s](S[0-3])[\s,)]/);
+  const sevMatch = text.match(/[-(\s](S[0-3])(?:[\s,)]|$)/);
   if (sevMatch) return sevMatch[1];
 
   const lower = text.toLowerCase();
@@ -242,7 +242,8 @@ function extractFromRoadmap(lines) {
     if (/^#{1,4}\s/.test(trimmed)) {
       const heading = trimmed
         .replace(/^#+\s*/, "")
-        .replaceAll("*", "").replaceAll("`", "")
+        .replaceAll("*", "")
+        .replaceAll("`", "")
         .trim();
       if (/milestone|sprint|^m\d|grand\s+plan|operational/i.test(heading)) {
         currentMilestone = heading;
@@ -343,11 +344,13 @@ function buildTdmsEntry(item, seqNum, today) {
  */
 function buildFindings(debtItems, existingHashes, startSeq, today) {
   const findings = [];
+  const seenRunHashes = new Set();
   let nextSeq = startSeq;
 
   for (const item of debtItems) {
     const entry = buildTdmsEntry(item, nextSeq, today);
-    if (!existingHashes.has(entry.content_hash)) {
+    if (!existingHashes.has(entry.content_hash) && !seenRunHashes.has(entry.content_hash)) {
+      seenRunHashes.add(entry.content_hash);
       findings.push(entry);
       nextSeq++;
     }
@@ -414,7 +417,7 @@ function writeFindings(findings) {
 function computeNextSeq(existingIntakeIds) {
   let nextSeq = 1;
   for (const id of existingIntakeIds) {
-    const match = id.match(/INTAKE-ROAD-(\d+)/);
+    const match = id.match(/^INTAKE-ROAD-(\d+)$/);
     if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
   }
   return nextSeq;

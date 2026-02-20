@@ -1769,12 +1769,44 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #363: PR #382 R2 — Regex DoS String Parse, CC Extraction, Severity Split, 16 Items (2026-02-20)
+
+**Source:** SonarCloud (12) + CI/Prettier (1) + Qodo PR Suggestions (6)
+**PR/Branch:** PR #382 / claude/fix-tool-use-ids-EfyvE **Total:** 16 unique → 14
+fixed, 4 rejected (R1 compliance repeats)
+
+**Patterns Identified:**
+
+- TWO-STRIKES regex (R2): `isTableHeaderLine` separator regex flagged again for
+  DoS (S5852) — replaced with `isTableSeparatorLine` character-by-character
+  parser
+- CC extraction: `extractFromBullets` CC 19>15 — extracted `processBulletLine`
+  helper to reduce cognitive complexity
+- Severity split: `medium` and `low` were both mapped to S3 — split to
+  medium→S2, low→S3 with proper `\b` word boundaries
+- H1 heading guard: `matchNumberedHeading` accepted H1 (`# Title`) due to
+  `startsWith("#")` — changed to `/^#{2,5}\s/` test
+- Within-run dedup: `buildFindings` in roadmap script could produce duplicates
+  within a single run — added `seenRunHashes` Set
+- End-of-line severity: regex `[\s,)]` missed markers at end of string — added
+  `|$` alternative
+
+**Key Learnings:**
+
+- String parsing beats regex for table separator detection (simple char loop)
+- CC extraction should check the _extracted_ helper too, not just the parent
+- Severity mapping should separate medium (S2) from low (S3) — grouping them
+  causes silent mis-prioritization
+- Anchor regexes for ID matching (`^...$`) to prevent false matches on
+  substrings
+
+---
+
 #### Review #362: PR #382 R1 — Regex DoS, Severity Mapping Bug, Table Parsing, 49 Items (2026-02-20)
 
 **Source:** SonarCloud (23) + Gemini Code Assist (3) + Qodo PR Suggestions (23)
-**PR/Branch:** PR #382 / claude/fix-tool-use-ids-EfyvE **Total:** 49 raw →
-42 fixed, 4 rejected (compliance not-applicable), 3 flagged to user
-(architectural)
+**PR/Branch:** PR #382 / claude/fix-tool-use-ids-EfyvE **Total:** 49 raw → 42
+fixed, 4 rejected (compliance not-applicable), 3 flagged to user (architectural)
 
 **Patterns Identified:**
 
