@@ -111,7 +111,10 @@ if [ "$diff_exit" -ne 0 ] || [ -z "${security_diff:-}" ]; then
 else
   # Write added lines to temp file for scanning
   # Use .js extension so security-check.js applies JS/TS patterns to the content
-  SEC_TMPFILE=$(mktemp --suffix=.js)
+  # Note: mktemp --suffix is GNU-only; use mktemp + mv for POSIX portability
+  SEC_TMPFILE_BASE=$(mktemp) || { echo "  ❌ Failed to create temp file"; exit 1; }
+  SEC_TMPFILE="${SEC_TMPFILE_BASE}.js"
+  mv "$SEC_TMPFILE_BASE" "$SEC_TMPFILE" || { rm -f "$SEC_TMPFILE_BASE"; echo "  ❌ Failed to rename temp file"; exit 1; }
   trap 'rm -f "$SEC_TMPFILE"' EXIT
   printf '%s\n' "$security_diff" > "$SEC_TMPFILE"
 

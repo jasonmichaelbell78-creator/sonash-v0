@@ -21,3 +21,20 @@
 {"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-18T12:49:32.135Z"}
 {"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-18T14:35:47.506Z"}
 {"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-18T15:15:46.644Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-18T22:48:51.782Z"}
+{"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-18T22:48:53.317Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T01:10:08.843Z"}
+{"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-19T01:10:10.052Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T11:46:36.139Z"}
+{"hook":"pre-commit","type":"debt-location","severity":"warning","message":"Debt files outside canonical location","action":"Move to docs/technical-debt/ or docs/audits/single-session/","timestamp":"2026-02-19T12:12:30.954Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T12:48:59.571Z"}
+{"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-19T13:18:28.289Z"}
+{"hook":"pre-commit","type":"debt-location","severity":"warning","message":"Debt files outside canonical location","action":"Move to docs/technical-debt/ or docs/audits/single-session/","timestamp":"2026-02-19T16:44:31.536Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T16:45:00.943Z"}
+{"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-19T16:45:01.887Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T17:52:56.430Z"}
+{"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-19T17:52:57.043Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-19T23:02:29.095Z"}
+{"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-19T23:02:30.434Z"}
+{"hook":"pre-push","type":"audit","severity":"warning","message":"npm audit found security vulnerabilities","action":"npm audit","timestamp":"2026-02-20T00:02:49.587Z"}
+{"hook":"pre-push","type":"trigger","severity":"info","message":"WARNING TRIGGERS (recommended actions):","action":null,"timestamp":"2026-02-20T00:02:50.903Z"}

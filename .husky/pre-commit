@@ -4,8 +4,14 @@
 
 # Log all output to .git/hook-output.log for debugging
 # (hook stderr is often invisible in CI/agent contexts like Claude Code)
+# Note: Husky v9 runs hooks with `sh -e`, so must be POSIX-compatible.
+# Cannot use bash process substitution >() since sh doesn't support it.
+# Simple redirect to log file; caller can read the log after.
 HOOK_OUTPUT_LOG="$(git rev-parse --show-toplevel 2>/dev/null || echo .)/.git/hook-output.log"
-exec > >(tee "$HOOK_OUTPUT_LOG") 2>&1
+exec > "$HOOK_OUTPUT_LOG" 2>&1
+
+# Display log on failure so developers see what went wrong (Gemini review #379)
+# Uses EXIT_TRAP_CHAIN via add_exit_trap (defined below) to coexist with temp file cleanup
 
 # Shared guard: any SKIP_ override requires SKIP_REASON (Session #162)
 require_skip_reason() {
@@ -47,6 +53,10 @@ add_exit_trap() {
   trap "$EXIT_TRAP_CHAIN" EXIT
 }
 
+# Display log on failure so developers see what went wrong (Gemini review #379)
+# Capture exit code before chain runs; display log to stderr on failure
+add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ] && [ -f "$HOOK_OUTPUT_LOG" ]; then exec 1>/dev/null; printf "\n--- PRE-COMMIT HOOK FAILED ---\n" >&2; cat "$HOOK_OUTPUT_LOG" >&2; printf "--- END OF LOGS ---\n" >&2; fi'
+
 echo "🔍 Running pre-commit checks..."
 
 # 1. Run ESLint - rely on exit code, not output parsing
@@ -63,6 +73,8 @@ echo "  ✅ ESLint passed (0 errors)"
 # 1b. CC check on NEW JS files (error-level, blocks new CC >15 functions)
 # Only checks newly added files (diff-filter=A) to avoid pre-existing violations.
 # Uses --no-config-lookup (ESLint 9 flat config compatible; replaces --no-eslintrc).
+# Note: xargs -r is GNU (not POSIX) but safe here — guarded by [ -n "$new_js" ]
+# and both target platforms (Linux GNU, Windows MSYS2) include GNU findutils.
 # Recommended in 5 consecutive retros (#367-#371).
 new_js=$(git diff --cached --name-only --diff-filter=A | grep '\.js$' || true)
 if [ -n "$new_js" ]; then

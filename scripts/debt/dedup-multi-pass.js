@@ -176,6 +176,66 @@ function isCrossSourceMatch(a, b) {
   return descSim > 0.7;
 }
 
+// Canonicalize a value for order-independent deep equality comparison
+// depth parameter caps recursion to prevent algorithmic DoS from deeply nested input
+function canonicalize(v, seen = new WeakSet(), depth = 0) {
+  if (depth > 20) return "[TooDeep]";
+  if (!v || typeof v !== "object") return v;
+  if (seen.has(v)) return "[Circular]";
+  seen.add(v);
+  try {
+    if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen, depth + 1));
+    const out = Object.create(null);
+    for (const k of Object.keys(v).sort()) {
+      if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
+      out[k] = canonicalize(v[k], seen, depth + 1);
+    }
+    return out;
+  } finally {
+    seen.delete(v);
+  }
+}
+
+// Generate a type-stable dedup key for an evidence entry
+function evidenceToKey(e) {
+  if (typeof e === "string") return `str:${e}`;
+  if (e == null || typeof e !== "object") return `prim:${typeof e}:${String(e)}`;
+  try {
+    return `json:${JSON.stringify(canonicalize(e))}`;
+  } catch {
+    const keys = (() => {
+      try {
+        return Object.keys(e).sort().join(",");
+      } catch {
+        return "";
+      }
+    })();
+    return `[unserializable:${Object.prototype.toString.call(e)}:keys=${keys}]`;
+  }
+}
+
+// Coerce a value to an array (null/undefined → [], non-array → [value], array → as-is)
+function toArray(value) {
+  if (value == null) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+// Merge evidence arrays with deep deduplication
+function mergeEvidence(existing, incoming) {
+  if (incoming == null) return existing;
+  const incomingArr = toArray(incoming);
+  const base = toArray(existing);
+  const seen = new Set(base.map(evidenceToKey));
+  const added = [];
+  for (const e of incomingArr) {
+    const k = evidenceToKey(e);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    added.push(e);
+  }
+  return [...base, ...added];
+}
+
 // Merge two items, preferring more detailed one
 function mergeItems(primary, secondary) {
   const merged = { ...primary };
@@ -209,13 +269,7 @@ function mergeItems(primary, secondary) {
     }
   }
 
-  // Merge evidence arrays
-  if (Array.isArray(secondary.evidence)) {
-    merged.evidence = [
-      ...(merged.evidence || []),
-      ...secondary.evidence.filter((e) => !(merged.evidence || []).includes(e)),
-    ];
-  }
+  merged.evidence = mergeEvidence(merged.evidence, secondary.evidence);
 
   return merged;
 }

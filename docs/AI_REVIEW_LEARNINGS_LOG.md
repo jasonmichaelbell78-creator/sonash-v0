@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.37 **Created:** 2026-01-02 **Last Updated:** 2026-02-19
+**Document Version:** 17.41 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
 
 ## Purpose
 
@@ -1513,6 +1513,58 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #356: Gemini Code Assist R2 — Evidence Canonicalization, TDMS Data Quality (2026-02-19)
+
+**Source:** Gemini Code Assist R2 **PR/Branch:** PR #379 /
+claude/new-session-DQVDk **Suggestions:** 9 unique (after dedup from 15 raw)
+(Fixed: 6, Already tracked: 1, Rejected: 2)
+
+**Patterns Identified:**
+
+1. **Key-order-sensitive JSON.stringify** (MAJOR): `JSON.stringify` produces
+   different strings for `{a:1,b:2}` vs `{b:2,a:1}`. Evidence objects from
+   different audit sources may have identical content but different key order.
+   Added recursive canonicalize function that sorts keys before stringify.
+2. **TDMS data quality: 246 backslash paths** (MINOR): Windows-originated
+   `source_file` paths had backslashes. Fixed in normalize-all.js to prevent
+   future occurrences + one-shot cleanup of existing data.
+3. **Absolute home-dir paths leaked into TDMS** (MINOR): 50 `file` fields and 1
+   intake-log `input_file` contained `/home/user/sonash-v0/...`. Fixed in
+   normalize-all.js with repo-root anchor stripping.
+4. **Public keys falsely flagged as credentials** (REJECTED): `NEXT_PUBLIC_*`
+   Sentry DSN and reCAPTCHA site keys are public by design — they're in client
+   bundles. Gemini doesn't distinguish public vs secret keys.
+
+**Key Learning:** TDMS pipeline data quality issues compound — 246 backslash
+paths accumulated silently because the normalize script passed them through.
+Always normalize at ingestion, not just at display. The propagation check
+mindset applies to data pipelines too, not just code patterns.
+
+---
+
+#### Review #355: Gemini Code Assist — EXIT Trap, Evidence Dedup, mktemp Guards (2026-02-19)
+
+**Source:** Gemini Code Assist **PR/Branch:** PR #379 / claude/new-session-DQVDk
+**Suggestions:** 4 total (Fixed: 3, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Silent hook output after POSIX migration** (MAJOR): Replacing
+   `exec > >(tee ...)` with `exec > file` makes failures invisible to
+   developers. Added EXIT trap that dumps log to stderr on non-zero exit.
+2. **Object dedup by reference vs value** (MINOR): `Array.includes()` uses
+   reference equality for objects. Evidence arrays in MASTER_DEBT.jsonl had 27
+   items with duplicated object entries because dedup-multi-pass.js used
+   `.includes()` instead of `JSON.stringify` comparison. Root cause fixed.
+3. **mktemp + mv error handling** (MINOR): POSIX mktemp + mv rename pattern
+   should guard both commands to prevent orphaned temp files on failure.
+
+**Key Learning:** When replacing bash-isms with POSIX equivalents, audit the DX
+impact — POSIX compatibility shouldn't come at the cost of debuggability. The
+EXIT trap pattern restores the tee-like behavior for the failure case.
 
 ---
 
@@ -4156,5 +4208,189 @@ non-standard git directory support.
 - Claude Code PostToolUse hooks communicate via stdout — stderr is invisible
 - When rejecting reviewer suggestions, verify the tool's communication protocol
   before accepting "best practice" advice that would break functionality
+
+---
+
+### Review #357: PR #379 R3 — Prototype Pollution, Path Normalization, Type-Stable Keys
+
+**Date:** 2026-02-20 **Source:** SonarCloud + Qodo PR Compliance + Code
+Suggestions **PR/Branch:** PR #379
+
+**Summary:** 18 raw suggestions → 12 unique after dedup. 6 fixed, 4 rejected, 2
+deferred. Key fixes: prototype pollution prevention in canonicalize, source_file
+now uses full normalizeFilePath(), type-stable evidence dedup keys, circular
+reference protection, path-segment-boundary matching for repo root stripping.
+
+**Patterns Identified:**
+
+1. **Prototype pollution in Object.create({})**: When building objects from
+   untrusted keys, use `Object.create(null)` and skip `__proto__`/constructor.
+2. **normalizeFilePath reuse**: When a normalization function exists, use it
+   everywhere — don't do partial normalization (backslash-only) on some fields.
+3. **Type-stable dedup keys**: Prefix keys with `str:`, `prim:`, `json:` to
+   prevent collisions between `"1"` (string) and `1` (number).
+4. **Path segment boundary**: `indexOf("sonash-v0/")` matches
+   `not-sonash-v0/...` — use regex with `(?:^|/)` anchor.
+
+**Resolution:**
+
+- Fixed: 6 items (prototype pollution, normalizeFilePath for source_file,
+  replaceAll, path segment regex, circular ref protection, type-stable keys)
+- Rejected: 4 items (Date/RegExp/Set/Map handling — impossible from JSON.parse;
+  WeakMap unserializable IDs — over-engineering; operator "root" as PII — it's a
+  role; missing outcome field — items_processed/errors already present)
+- Deferred: 2 items (JSONL schema migration for sentinel files/evidence
+  types/resolution types — pre-existing, complex, needs systematic approach)
+
+**Key Learnings:**
+
+- Object.create(null) is the standard defense against prototype pollution
+- Evidence data from JSON.parse can never contain Date/RegExp/Set/Map — reject
+  suggestions that add handling for impossible types
+- When normalizing paths, always use path-segment boundaries not substring match
+
+---
+
+### Review #358: PR #379 R4 — Circular Ref Fix, Regex Escaping, Internal Dedup
+
+**Date:** 2026-02-20 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #379
+
+**Summary:** 6 suggestions → 4 unique. 3 fixed, 2 rejected (repeats), 1 deferred
+(architectural). Key fixes: try/finally for correct circular reference tracking,
+regex escaping for env var in RegExp, internal dedup within incoming evidence
+arrays.
+
+**Patterns Identified:**
+
+1. **WeakSet circular detection needs try/finally**: Without `seen.delete(v)` in
+   finally, shared object references (same obj in two properties) are
+   misidentified as circular. Always use try/finally to clean up the seen set.
+2. **Always escape user input before RegExp constructor**: Even "trusted" env
+   vars can contain regex metacharacters (e.g., repo names with dots).
+3. **Dedup incoming AND existing**: When merging arrays, dedup within the
+   incoming array too — not just against the existing set.
+
+**Resolution:**
+
+- Fixed: 3 items (try/finally circular ref, regex escaping, internal dedup)
+- Rejected: 2 items (compliance repeats from R3 — intake-manual user ID,
+  operator "root" label)
+- Deferred: 1 item (created timestamp mutation on re-normalization —
+  architectural, requires pipeline-level first-seen tracking)
+
+**Key Learnings:**
+
+- WeakSet-based cycle detection must use try/finally to delete after recursion
+- `new RegExp(untrustedString)` is always a security/robustness concern
+- Array dedup must handle both cross-array and intra-array duplicates
+
+---
+
+### Review #359: PR #379 R5 — CC Extraction, String Coercion, String.raw
+
+**Date:** 2026-02-20 **Source:** SonarCloud + Qodo PR Suggestions **PR/Branch:**
+PR #379
+
+**Summary:** 7 suggestions → 5 unique after dedup. 3 fixed, 2 rejected
+(impossible types from JSON.parse, compliance repeat). Key fixes: extracted 3
+functions from mergeItems to reduce CC from 18 to under 15, added String
+coercion and empty env var guard in normalizeFilePath, used String.raw and
+replaceAll per SonarCloud es2021 rules.
+
+**Patterns Identified:**
+
+1. **Extract helpers early to avoid CC creep**: Accumulated R1-R4 changes to
+   evidence merge logic inside mergeItems pushed CC to 18. Extracting
+   canonicalize, evidenceToKey, mergeEvidence as standalone functions resolved
+   cleanly.
+2. **String.raw for regex escape replacements**: SonarCloud es2021 flags
+   `"\\$&"` — use `String.raw` template literal instead to avoid escape
+   confusion.
+3. **Always coerce + trim env vars**: Non-string inputs and whitespace-only env
+   vars should be handled defensively at the top of path normalization.
+
+**Resolution:**
+
+- Fixed: 3 items (CC extraction, String coercion + env var guard, String.raw +
+  replaceAll)
+- Rejected: 2 items (safeStringify for impossible types, compliance repeat)
+
+**Key Learnings:**
+
+- When iterative review rounds add logic to the same function, check CC before
+  committing — extract helpers proactively
+- `String.raw` is the idiomatic way to write regex replacement strings with
+  backslashes
+- Always validate env vars with trim check, not just truthiness
+
+---
+
+### Review #360: PR #379 R6 — Depth Cap, Evidence Wrapping, Fallback Keys
+
+**Date:** 2026-02-20 **Source:** Qodo Security + PR Suggestions **PR/Branch:**
+PR #379
+
+**Summary:** 7 suggestions → 3 unique after dedup. 3 fixed, 4 rejected
+(compliance repeat x1, impossible types x1, replaceAll compat x1,
+over-engineered path guard x1). Key fixes: depth cap on canonicalize to prevent
+algorithmic DoS, non-array evidence wrapping to prevent data loss, richer
+fallback keys for unserializable objects.
+
+**Patterns Identified:**
+
+1. **Always cap recursive traversal depth**: Even when input is "trusted" JSONL,
+   adding a depth parameter is cheap insurance against DoS. Cap at 20 levels.
+2. **Wrap non-array scalars defensively**: When merging arrays, if existing
+   value is a non-null scalar, wrap it in `[value]` rather than discarding.
+3. **Qodo repeat rejection pattern**: Same Date/RegExp/Map/Set suggestion
+   rejected 4 consecutive rounds (R3-R6) — impossible from JSON.parse.
+
+**Resolution:**
+
+- Fixed: 3 items (depth cap, evidence wrapping, richer fallback key)
+- Rejected: 4 items (compliance repeat, impossible types, replaceAll compat,
+  over-engineered path guard)
+
+**Key Learnings:**
+
+- Recursive traversal functions should always have a depth parameter
+- Defensive wrapping of non-array values prevents silent data loss
+- Track repeated rejections to identify persistent false positive patterns
+
+---
+
+### Review #361: PR #379 R7 — Nested Ternary Extraction, Incoming Evidence Wrapping
+
+**Date:** 2026-02-20 **Source:** SonarCloud + Qodo PR Suggestions **PR/Branch:**
+PR #379
+
+**Summary:** 8 suggestions → 2 unique after dedup. 2 fixed, 6 rejected (5
+repeats from R3-R6, 1 would corrupt evidence ordering). Key fixes: extracted
+nested ternary into toArray() helper per SonarCloud, wrapped non-array incoming
+evidence symmetrically with existing evidence handling.
+
+**Patterns Identified:**
+
+1. **Nested ternaries from defensive coding**: Adding
+   `existing == null ? [] : [existing]` to a ternary creates SonarCloud-flagged
+   nesting. Extract to a named helper function immediately.
+2. **Symmetric defensive wrapping**: If you wrap one side (existing) of a merge
+   defensively, wrap the other side (incoming) too for consistency.
+
+**Resolution:**
+
+- Fixed: 2 items (toArray helper, incoming evidence wrapping)
+- Rejected: 6 items (DoS repeat, compliance repeat x5, impossible types x5,
+  array sorting would corrupt semantics, fallback key diminishing returns, key
+  length cap over-engineering)
+
+**Key Learnings:**
+
+- When adding defensive wrapping, apply symmetrically to both sides of a merge
+- Extract complex ternaries to named helpers immediately to avoid SonarCloud
+  flags
+- 5 consecutive rejections of Date/RegExp/Map/Set suggestion — clear false
+  positive pattern
 
 ---

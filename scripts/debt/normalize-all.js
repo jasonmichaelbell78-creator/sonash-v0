@@ -54,9 +54,18 @@ function generateContentHash(item) {
 // Normalize file path
 function normalizeFilePath(filePath) {
   if (!filePath) return "";
+  const input = typeof filePath === "string" ? filePath : String(filePath);
   // Convert Windows backslashes to forward slashes for consistent hashing
   // Then remove leading ./ and all leading slashes
-  let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "");
+  let normalized = input.replaceAll("\\", "/").replace(/^\.\//, "").replace(/^\/+/, "");
+  // Strip absolute paths that include the repo root (e.g., home/user/sonash-v0/...)
+  const repoNameRaw = process.env.REPO_DIRNAME;
+  const repoName = repoNameRaw && repoNameRaw.trim() ? repoNameRaw.trim() : "sonash-v0";
+  const escaped = repoName.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+  const repoRootMatch = normalized.match(new RegExp(`(?:^|/)${escaped}/(.*)$`));
+  if (repoRootMatch) {
+    normalized = repoRootMatch[1];
+  }
   // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
   // But preserve Windows drive letters (e.g., "C:\path\to\file")
   const colonIndex = normalized.indexOf(":");
@@ -82,7 +91,7 @@ function normalizeItem(item) {
   const normalized = {
     // Required fields
     source_id: item.source_id || "unknown",
-    source_file: item.source_file || "unknown",
+    source_file: normalizeFilePath(item.source_file || "unknown"),
 
     // Normalized fields
     category: ensureValid(item.category, VALID_CATEGORIES, "code-quality"),

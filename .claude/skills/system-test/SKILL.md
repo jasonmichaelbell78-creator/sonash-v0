@@ -82,7 +82,7 @@ On every invocation:
 2. **If resume**: Read `PLAN_INDEX.md` → show progress → confirm resume point
 3. **Create/verify** output directory:
    ```
-   docs/audits/comprehensive/audit-YYYY-MM-DD/
+   docs/audits/system-test/audit-YYYY-MM-DD/
    ├── PLAN_INDEX.md
    ├── SUMMARY.md           (written at end)
    ├── unified-findings.jsonl (written at end)
@@ -199,7 +199,7 @@ begin. No findings are generated — this is a go/no-go gate.
 ### Key Files
 
 - `.claude/skills/system-test/SKILL.md` (this file)
-- `docs/audits/comprehensive/audit-YYYY-MM-DD/PLAN_INDEX.md`
+- `docs/audits/system-test/audit-YYYY-MM-DD/PLAN_INDEX.md`
 - `docs/technical-debt/MASTER_DEBT.jsonl`
 
 ### Pass/Fail
@@ -1084,8 +1084,8 @@ efficient than 8 separate fixes. Est: E3 as unit vs E2×8.
 
 ### Key Output Files
 
-- `docs/audits/comprehensive/audit-YYYY-MM-DD/SUMMARY.md`
-- `docs/audits/comprehensive/audit-YYYY-MM-DD/unified-findings.jsonl`
+- `docs/audits/system-test/audit-YYYY-MM-DD/SUMMARY.md`
+- `docs/audits/system-test/audit-YYYY-MM-DD/unified-findings.jsonl`
 
 ---
 
@@ -1205,7 +1205,7 @@ After Domain 20 report is generated:
 
 ```jsonl
 {
-  "id": "COMP-2026-02-18-D07-003",
+  "id": "SYST-2026-02-18-D07-003",
   "domain": 7,
   "domain_name": "Cloud Functions",
   "check_id": "7.2",
