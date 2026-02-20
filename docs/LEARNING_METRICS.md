@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-02-17
+**Last Updated:** 2026-02-20
 
 ---
 
@@ -27,40 +27,40 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #285 - #347 (61 reviews) **Analysis Date:** 2026-02-17
+**Review Range:** #285 - #359 (72 reviews) **Analysis Date:** 2026-02-20
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 84.6% |
-| Patterns Learned          | 257   |
-| Patterns Automated        | 23    |
-| Patterns Failing          | 25    |
-| Critical Pattern Success  | 91.9% |
-| Automation Coverage       | 18.1% |
-| Total Documented Patterns | 331   |
-| Total Automated Patterns  | 60    |
+| Learning Effectiveness    | 81.9% |
+| Patterns Learned          | 250   |
+| Patterns Automated        | 26    |
+| Patterns Failing          | 30    |
+| Critical Pattern Success  | 89.9% |
+| Automation Coverage       | 18.7% |
+| Total Documented Patterns | 337   |
+| Total Automated Patterns  | 63    |
 
 ### Top Recommended Actions
 
 1. **[Automation]** Automate "Session identity check"
-   - Recurred 17 times after documentation \(Reviews: 324, 328, 329, 344, 345\)
+   - Recurred 20 times after documentation \(Reviews: 329, 344, 345, 353, 356\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "JSONL line parsing"
-   - Recurred 14 times after documentation \(Reviews: 319, 336, 337, 339, 342\)
+2. **[Automation]** Automate "Signal error code semantics"
+   - Recurred 14 times after documentation \(Reviews: 328, 331, 333, 353, 355\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Automation]** Automate "Rename fallback guard"
-   - Recurred 14 times after documentation \(Reviews: 339, 340, 341, 342, 345\)
+3. **[Automation]** Automate "Log target type validation"
+   - Recurred 13 times after documentation \(Reviews: 322, 328, 334, 337, 338\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "Unicode line separators"
+4. **[Documentation]** Improve documentation for "EXIT trap chaining"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Binary file detection"
+5. **[Documentation]** Improve documentation for "Unicode line separators"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 257   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 23    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 26    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 25    | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 250   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 26    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 31    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 30    | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -81,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-02-17 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-02-20 | Rewritten to focus on Claude's learning effectiveness |
