@@ -246,6 +246,20 @@ intake-manual path, not scattered-intake.jsonl)
 
 ## Step 0h: Intake Cleaning (Dedup, Verify, Filter) — BEFORE Pipeline
 
+### Prerequisites (SonarCloud Sync)
+
+Before running intake cleaning, ensure SonarCloud data is current:
+
+1. **Prompt the user** to run a fresh SonarCloud analysis on their project (via
+   the SonarCloud dashboard or CI pipeline) so the latest issues are available
+2. **Prompt the user** to provide the passphrase for decrypting MCP secrets:
+   `node scripts/secrets/decrypt-secrets.js`
+3. **Wait for user confirmation** that the SonarCloud analysis is complete and
+   secrets are decrypted
+4. **Then run** `node scripts/debt/sync-sonarcloud.js --full --force` to pull
+   new issues and mark resolved ones
+5. Only proceed to intake cleaning after the sync completes successfully
+
 **Goal:** Clean the raw extraction output BEFORE it enters the TDMS pipeline. No
 garbage in.
 
