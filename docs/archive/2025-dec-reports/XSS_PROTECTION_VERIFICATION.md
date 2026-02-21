@@ -1,3 +1,7 @@
+<!-- TDMS: All actionable findings from this report have been ingested into
+     MASTER_DEBT.jsonl. This file is archived for historical reference only.
+     Do not add new findings here — use the TDMS intake process. -->
+
 # XSS Protection Verification Report
 
 **Date**: December 11, 2025 **Project**: SoNash - Sober Nashville Recovery

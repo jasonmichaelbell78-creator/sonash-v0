@@ -1,3 +1,7 @@
+<!-- TDMS: All actionable findings from this report have been ingested into
+     MASTER_DEBT.jsonl. This file is archived for historical reference only.
+     Do not add new findings here — use the TDMS intake process. -->
+
 # ESLint Warnings Remediation Plan
 
 **Date:** 2025-12-12 **Current Status:** 0 errors, 29 warnings **Target:** 0

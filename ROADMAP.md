@@ -84,32 +84,32 @@ recovery practices.
 
 ## 4. 📊 Milestones Overview
 
-| Milestone                           | Status      | Progress           | Phase       | Priority   | Items |
-| ----------------------------------- | ----------- | ------------------ | ----------- | ---------- | ----- |
-| **M0 - Baseline**                   | ✅ Complete | 100%               | Foundation  | Foundation | -     |
-| **M1 - Foundation**                 | ✅ Complete | 100%               | Foundation  | P0         | -     |
-| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps)   | Foundation  | DONE       | -     |
-| **🧹 GRAND PLAN: Debt Elimination** | 🔄 ACTIVE   | ~68% (1,176/1,727) | Parallel    | **P0**     | 1,727 |
-| **🚀 Operational Visibility**       | 🔄 ACTIVE   | ~25%               | Foundation  | **P0**     | ~105  |
-| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%               | Foundation  | P1         | ~19   |
-| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%               | Foundation  | P1         | ~15   |
-| **M2 - Architecture**               | ⏸️ Optional | 0%                 | Parallel    | P2         | ~72   |
-| ↳ M2.1 Code Quality                 |             |                    | Parallel    | P2         | ~25   |
-| ↳ M2.2 Monitoring                   |             |                    | Parallel    | P2         | ~25   |
-| ↳ M2.3 Infrastructure               |             |                    | Parallel    | P2         | ~22   |
-| **M3 - Meetings**                   | 📋 Planned  | 0%                 | Core        | P1         | 6     |
-| **M4 - Expansion**                  | 📋 Planned  | 0%                 | Core        | P1         | ~8    |
-| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%                 | Core        | **P0**     | 13    |
-| **M5 - Offline + Steps**            | 📋 Planned  | 0%                 | Enhancement | P1         | 23    |
-| **M6 - Journaling + Safety**        | 📋 Planned  | 0%                 | Enhancement | P1         | 26    |
-| **M7 - Fellowship Suite**           | 📋 Planned  | 0%                 | Enhancement | P1         | ~55   |
-| ↳ M7.1 Sponsor & Sharing            |             |                    | Enhancement | P1         | ~15   |
-| ↳ M7.2 Exports & Reports            |             |                    | Enhancement | P1         | ~14   |
-| ↳ M7.3 Nashville & Knowledge        |             |                    | Enhancement | P1         | ~21   |
-| ↳ M7.4 Personalization              |             |                    | Enhancement | P2         | ~17   |
-| **M8 - Speakers**                   | 📋 Planned  | 0%                 | Advanced    | P2         | 3     |
-| **M9 - Native App**                 | 📋 Planned  | 0%                 | Advanced    | P2         | 15    |
-| **M10 - Monetization + Future**     | 🔬 Research | 0%                 | Future      | P2         | ~15   |
+| Milestone                           | Status      | Progress         | Phase       | Priority   | Items |
+| ----------------------------------- | ----------- | ---------------- | ----------- | ---------- | ----- |
+| **M0 - Baseline**                   | ✅ Complete | 100%             | Foundation  | Foundation | -     |
+| **M1 - Foundation**                 | ✅ Complete | 100%             | Foundation  | P0         | -     |
+| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -     |
+| **🧹 GRAND PLAN: Debt Elimination** | 🔄 ACTIVE   | ~6% (237/4,082)  | Parallel    | **P0**     | 4,082 |
+| **🚀 Operational Visibility**       | 🔄 ACTIVE   | ~25%             | Foundation  | **P0**     | ~105  |
+| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19   |
+| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15   |
+| **M2 - Architecture**               | ⏸️ Optional | 0%               | Parallel    | P2         | ~72   |
+| ↳ M2.1 Code Quality                 |             |                  | Parallel    | P2         | ~25   |
+| ↳ M2.2 Monitoring                   |             |                  | Parallel    | P2         | ~25   |
+| ↳ M2.3 Infrastructure               |             |                  | Parallel    | P2         | ~22   |
+| **M3 - Meetings**                   | 📋 Planned  | 0%               | Core        | P1         | 6     |
+| **M4 - Expansion**                  | 📋 Planned  | 0%               | Core        | P1         | ~8    |
+| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%               | Core        | **P0**     | 13    |
+| **M5 - Offline + Steps**            | 📋 Planned  | 0%               | Enhancement | P1         | 23    |
+| **M6 - Journaling + Safety**        | 📋 Planned  | 0%               | Enhancement | P1         | 26    |
+| **M7 - Fellowship Suite**           | 📋 Planned  | 0%               | Enhancement | P1         | ~55   |
+| ↳ M7.1 Sponsor & Sharing            |             |                  | Enhancement | P1         | ~15   |
+| ↳ M7.2 Exports & Reports            |             |                  | Enhancement | P1         | ~14   |
+| ↳ M7.3 Nashville & Knowledge        |             |                  | Enhancement | P1         | ~21   |
+| ↳ M7.4 Personalization              |             |                  | Enhancement | P2         | ~17   |
+| **M8 - Speakers**                   | 📋 Planned  | 0%               | Advanced    | P2         | 3     |
+| **M9 - Native App**                 | 📋 Planned  | 0%               | Advanced    | P2         | 15    |
+| **M10 - Monetization + Future**     | 🔬 Research | 0%               | Future      | P2         | ~15   |
 
 ### Timing System (Session #128)
 
@@ -271,8 +271,8 @@ Planned | 🟣 Research
 > **📋 Process Audit Integration (Session #101)**
 >
 > This sprint now includes CI/CD reliability and solo developer automation work
-> from Process Audit CANON-0105-0118 and Comprehensive Audit (Session #98).
-> Total sprint effort: ~65 hours across 5 tracks.
+> from Process Audit DEBT-0851-0118 and Comprehensive Audit (Session #98). Total
+> sprint effort: ~65 hours across 5 tracks.
 
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
@@ -301,71 +301,45 @@ reliability, and solo developer automations.
 ### S0 Critical Debt (Immediate Action)
 
 > **Policy:** S0 items are always in the active sprint regardless of track.
-> **Source:** MASTER_DEBT.jsonl (status=VERIFIED, severity=S0)
+> **Source:** MASTER_DEBT.jsonl (status=VERIFIED, severity=S0) **Last Updated:**
+> Session #179 (S0 audit: 156→35 after demoting cognitive complexity items to
+> S1)
 
-| ID        | Title                                              | File                                                | Category     | Effort |
-| --------- | -------------------------------------------------- | --------------------------------------------------- | ------------ | ------ |
-| DEBT-0012 | Cognitive Complexity 22 to 15                      | functions/src/admin.ts:576                          | code-quality | E0     |
-| DEBT-0037 | Cognitive Complexity 17 to 15                      | components/widgets/compact-meeting-countdown.tsx:69 | code-quality | E0     |
-| DEBT-0854 | App Check disabled on production Cloud Functions   | functions/src/index.ts                              | security     | E2     |
-| DEBT-1056 | Cognitive Complexity 16 to 15                      | components/admin/errors-tab.tsx                     | code-quality | E0     |
-| DEBT-1064 | Nesting >4 levels deep                             | components/admin/logs-tab.tsx                       | code-quality | E0     |
-| DEBT-1538 | Cognitive Complexity 16 to 15                      | functions/src/jobs.ts                               | code-quality | E0     |
-| DEBT-1624 | Cognitive Complexity 17 to 15                      | components/dev/lighthouse-tab.tsx                   | code-quality | E0     |
-| DEBT-1912 | Client-side filtering of sensitive data            | hooks/use-journal.ts                                | code-quality | E1     |
-| DEBT-2499 | pull_request_target security vulnerability         | .github/workflows/deploy-firebase.yml               | process      | E2     |
-| DEBT-3079 | 57 AI Instructions sections = ~4,500+ tokens waste | N/A                                                 | code-quality | E0     |
-| DEBT-3080 | Session Counter Regex in 5 hooks                   | .claude/hooks/commit-tracker.js                     | code-quality | E1     |
+| ID        | Title                                            | File                                  | Category     | Effort |
+| --------- | ------------------------------------------------ | ------------------------------------- | ------------ | ------ |
+| DEBT-0853 | App Check disabled on Cloud Functions            | functions/src/index.ts                | security     | E2     |
+| DEBT-0855 | App Check disabled on client init                | functions/src/index.ts                | security     | E2     |
+| DEBT-0864 | Re-enable App Check on Cloud Functions           | lib/firebase.ts                       | security     | E2     |
+| DEBT-0852 | useJournal redundant auth listener + memory leak | hooks/use-journal.ts                  | code-quality | E1     |
+| DEBT-0857 | useJournal memory leak (performance)             | hooks/use-journal.ts                  | performance  | E1     |
+| DEBT-1293 | Client-side filtering of sensitive data          | hooks/use-journal.ts                  | code-quality | E1     |
+| DEBT-1878 | pull_request_target security vulnerability       | .github/workflows/deploy-firebase.yml | process      | E2     |
+| DEBT-2121 | Potential command injection in resolve-item.js   | scripts/debt/resolve-item.js          | process      | E1     |
+| DEBT-4399 | Potentially hard-coded password                  | lib/utils/errors.ts                   | security     | E0     |
+| DEBT-4403 | OS command safety review needed                  | scripts/check-review-needed.js        | security     | E1     |
 
-**Total: 11 items | ~8 hours estimated (6xE0 + 3xE1 + 2xE2)**
+**Total: 10 highest-priority items | Security (5), Memory/Performance (2),
+Process (2), Code Quality (1)**
 
-**Cross-references:**
+**Note:** Cognitive complexity items (DEBT-0012, 0037, 1056, 1064, 1538, 1624)
+demoted to S1 in Session #179 — they are code quality, not critical.
 
-- DEBT-0854 also tracked in Track S S0 Critical Security (line ~683)
-- DEBT-2499 also relevant to Track D CI Reliability
-- DEBT-0012, DEBT-1538 will be addressed in Grand Plan Sprint 6 (functions/)
-- DEBT-0037, DEBT-1056, DEBT-1064, DEBT-1624 covered by Grand Plan Sprint 2
-  (components/) - already done
-- CANON-0067 (47 cognitive complexity violations) is a broader parent item in
-  M2.3-REF
+### GRAND PLAN: Technical Debt Elimination
 
-### GRAND PLAN: Technical Debt Elimination (1,727 items)
+> **Authoritative document:**
+> [GRAND_PLAN_V2.md](docs/technical-debt/GRAND_PLAN_V2.md)
 
-> **Full spec:** See plan file at `.claude/plans/` (session plan) and
-> `docs/technical-debt/logs/grand-plan-manifest.json` (item-to-sprint mapping)
->
-> **Sprint manifest files:** `docs/technical-debt/logs/sprint-N-ids.json`
-> contain every DEBT-XXXX ID for each sprint, grouped by file.
+| Metric              | Value            |
+| ------------------- | ---------------- |
+| Total items         | 4,082            |
+| Grand Plan sprints  | 19               |
+| Roadmap-bound items | 435              |
+| Resolved            | 237 (5.8%)       |
+| S0 Critical         | 35 (18 verified) |
+| S1 High             | 708              |
+| Coverage            | 100%             |
 
-| Sprint | Directory Group            | Items | Files | Risk     | Status  |
-| ------ | -------------------------- | ----: | ----: | -------- | ------- |
-| 1      | `scripts/`                 |   601 |   106 | Low      | ✅ Done |
-| 2      | `components/`              |   334 |   100 | Moderate | ✅ Done |
-| 3      | `.claude/` + `docs/`       |   241 |    84 | Zero     | ✅ Done |
-| 4      | `lib/` + `hooks/` + `app/` |   214 |    40 | Moderate | Pending |
-| 5      | `.github/` + config        |   156 |    40 | Moderate | Pending |
-| 6      | `functions/` + rules       |    80 |     9 | High     | Pending |
-| 7      | `tests/` + systemic        |   151 |    12 | Mixed    | Pending |
-| skip   | Dedicated sessions         |     6 |     - | -        | Later   |
-
-**Approach:** File-based (not category-based) to avoid revisiting files. Each
-sprint uses parallel agents + wave-based execution + per-wave commits.
-Lightweight verification per sprint; comprehensive audit only after Sprint 7.
-
-**Session #166 Verification & Triage (228 items verified, 96 placed):**
-
-- 54 code-quality/refactoring items → Sprint 4 (2 S0, 13 S1, 24 S2, 15 S3)
-- 2 process items → Sprint 5 (S3)
-- 35 ai-optimization items → Track D (2 S1, 15 S2, 18 S3)
-- 4 security items → M4.5 (2 S2, 2 S3)
-- 1 documentation item → Track B (S3)
-
-**Enhancement Audit Items (Session #151, migrated to TDMS):**
-
-- [ ] **DEBT-2809:** Triage 96 stale TODO/TBD markers across 34 files — resolve,
-      remove, or convert to TDMS items (S2, E1)
-- [ ] **DEBT-2811:** Documentation effectiveness metrics — track which docs are
-      useful, with actionable plan to prune/improve (S2, E2) [M2.1]
+See GRAND_PLAN_V2.md for full sprint details and execution strategy.
 
 ### Track B - Dev Dashboard (Expanded)
 
@@ -379,15 +353,14 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 #### Session #116 Documentation Priority Items (S1/S2)
 
-- [ ] **CANON-0011:** 16 broken anchor links `SESSION_CONTEXT.md:47` [E1] - S1
-- [ ] **CANON-0012:** 20 placeholder issues in templates
+- [ ] **DEBT-0075:** 16 broken anchor links `SESSION_CONTEXT.md:47` [E1] - S1
+- [ ] **DEBT-0076:** 20 placeholder issues in templates
       `PERFORMANCE_AUDIT_PLAN_2026_Q1.md` [E1] - S1
-- [ ] **CANON-0077:** Broken relative links in review docs
+- [ ] **DEBT-0386:** Broken relative links in review docs
       `CODE_REVIEW_2026_Q1.md` [E1] - S1
-- [ ] **CANON-0078:** [X] placeholders in 2026-Q1 plans
+- [ ] **DEBT-0387:** [X] placeholders in 2026-Q1 plans
       `CODE_REVIEW_PLAN_2026_Q1.md` [E1] - S1
-- [ ] **CANON-0013:** 99 files fail docs:check (313 errors) `README.md` [E1] -
-      S2
+- [ ] **DEBT-0077:** 99 files fail docs:check (313 errors) `README.md` [E1] - S2
 - [ ] **CANON-0148:** Fix broken relative links [E1] - S1
 - [ ] **CANON-0149:** Replace [X] placeholders [E1] - S1
 
@@ -418,7 +391,7 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 ### Track D - CI Reliability & Automation (NEW)
 
-> **Source:** Process Audit CANON-0105-0118 + Comprehensive Audit (Session #98)
+> **Source:** Process Audit DEBT-0851-0118 + Comprehensive Audit (Session #98)
 > **Full spec:** See
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > Track D
@@ -428,16 +401,16 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 #### Session #116 Priority Items (S1/S2)
 
-- [ ] **CANON-0090:** Script test coverage 2-7% `scripts/` [E2] - S1
-- [ ] **CANON-0091:** Deploy workflow missing gcloud setup `deploy-firebase.yml`
+- [ ] **DEBT-0778:** Script test coverage 2-7% `scripts/` [E2] - S1
+- [ ] **DEBT-0065:** Deploy workflow missing gcloud setup `deploy-firebase.yml`
       [E1] - S1
 - [ ] **CANON-0162:** Convert CI gates to blocking [E2] - S1
 - [ ] **CANON-0163:** Add npm audit + CodeQL + Dependabot [E2] - S1
-- [ ] **CANON-0007:** GitHub Actions using version tags
+- [ ] **DEBT-0071:** GitHub Actions using version tags
       `auto-label-review-tier.yml:18` [E1] - S2
-- [ ] **CANON-0021:** Artifact upload without retention policy `ci.yml:99`
-      [E1] - S2
-- [ ] **CANON-0092:** Pre-commit hook slow (~35-50s) `pre-commit` [E1] - S2
+- [ ] **DEBT-0426:** Artifact upload without retention policy `ci.yml:99` [E1] -
+      S2
+- [ ] **DEBT-0066:** Pre-commit hook slow (~35-50s) `pre-commit` [E1] - S2
 
 **NEW from Session #128 Audit:**
 
@@ -478,20 +451,20 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 #### Phase 1 - Quick Wins
 
-- [ ] **D1:** Pin Firebase CLI version (30min) [CANON-0112]
-- [ ] **D2:** Optimize pre-commit hook (2hr) [CANON-0110] - Target: ~50s → <15s
+- [ ] **D1:** Pin Firebase CLI version (30min) [DEBT-0399]
+- [ ] **D2:** Optimize pre-commit hook (2hr) [DEBT-0397] - Target: ~50s → <15s
   - [x] **D2.1:** Skip tests for doc-only commits (10min) - ✅ Session #113
   - [ ] **D2.2:** Remove duplicate test run from pre-push (done) - ✅ Session
         #113
   - [ ] **D2.3:** Add file extension filters to hook matchers (1hr)
   - [ ] **D2.4:** Consolidate Write/Edit/MultiEdit hooks (2hr)
-- [ ] **D3:** Update workflow documentation (2hr) [CANON-0109]
+- [ ] **D3:** Update workflow documentation (2hr) [DEBT-0396]
 
 #### Phase 2 - CI Quality Gates
 
-- [ ] **D4:** Fix non-blocking CI gates (4hr) [CANON-0105, 0111] - S0 priority
+- [ ] **D4:** Fix non-blocking CI gates (4hr) [DEBT-0851, 0111] - S0 priority
       [depends: D1]
-- [ ] **D5:** Add security scanning to CI (4hr) [CANON-0107] [depends: D4]
+- [ ] **D5:** Add security scanning to CI (4hr) [DEBT-0058] [depends: D4]
 
 #### Phase 3 - Deployment Safety
 
@@ -504,8 +477,8 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 #### Phase 4 - Ongoing
 
-- [ ] **D10:** Script test coverage (ongoing) [CANON-0106] - 2-7% → 30%
-      [depends: D1]
+- [ ] **D10:** Script test coverage (ongoing) [DEBT-0057] - 2-7% → 30% [depends:
+      D1]
 
 ### Track E - Solo Developer Automations (NEW)
 
@@ -519,7 +492,7 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 #### Session #116 Priority Items (S2)
 
-- [ ] **CANON-0027:** No scripts/doctor.js for environment validation `scripts/`
+- [ ] **DEBT-0432:** No scripts/doctor.js for environment validation `scripts/`
       [E1] - S2
 
 **NEW from Session #128 Audit (Offline Infrastructure - CRITICAL):**
@@ -612,16 +585,16 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 #### Session #116 Priority Items (S1/S2)
 
-- [ ] **CANON-0056:** Landing page blocks SSR `app/page.tsx` [E2] - S1
-- [ ] **CANON-0057:** Notebook module registry eagerly imports all pages
+- [ ] **DEBT-0407:** Landing page blocks SSR `app/page.tsx` [E2] - S1
+- [ ] **DEBT-0408:** Notebook module registry eagerly imports all pages
       `roadmap-modules.tsx` [E2] - S1
-- [ ] **CANON-0058:** Sentry incomplete - no Web Vitals `sentry.client.ts`
-      [E2] - S2
-- [ ] **CANON-0059:** Celebration animations create 150+ DOM elements
+- [ ] **DEBT-0409:** Sentry incomplete - no Web Vitals `sentry.client.ts` [E2] -
+      S2
+- [ ] **DEBT-0410:** Celebration animations create 150+ DOM elements
       `confetti-burst.tsx` [E1] - S2
-- [ ] **CANON-0060:** No React.memo causes unnecessary re-renders
+- [ ] **DEBT-0411:** No React.memo causes unnecessary re-renders
       `entry-card.tsx` [E1] - S2
-- [ ] **CANON-0064:** Step1WorksheetCard excessive complexity (804 lines)
+- [ ] **DEBT-0850:** Step1WorksheetCard excessive complexity (804 lines)
       `Step1WorksheetCard.tsx` [E2] - S2
 
 **NEW from Session #128 Audit:**
@@ -964,10 +937,10 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 **Current backlog:** 2 items (deferred to documentation sprint)
 
-| ID         | Category      | Severity | Effort | Status   | Description                      |
-| ---------- | ------------- | -------- | ------ | -------- | -------------------------------- |
-| CANON-0101 | Documentation | S3       | E2     | DEFERRED | Missing Quick Start sections     |
-| CANON-0102 | Documentation | S3       | E1     | DEFERRED | Missing AI Instructions sections |
+| ID        | Category      | Severity | Effort | Status   | Description                      |
+| --------- | ------------- | -------- | ------ | -------- | -------------------------------- |
+| DEBT-0785 | Documentation | S3       | E2     | DEFERRED | Missing Quick Start sections     |
+| DEBT-0786 | Documentation | S3       | E1     | DEFERRED | Missing AI Instructions sections |
 
 **NEW from Session #128 Audit:**
 
@@ -991,23 +964,23 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 **Completed in Session #99:**
 
-- ✅ CANON-0107: Security headers (S1)
-- ✅ CANON-0108: Storage rules (verified existing)
-- ✅ CANON-0103: docs:check false positives
-- ✅ CANON-0104: Scripts in session start (verified existing)
-- ✅ CANON-0105: CANON validation in CI
-- ✅ CANON-0106: npm commands added
+- ✅ DEBT-0058: Security headers (S1)
+- ✅ DEBT-0059: Storage rules (verified existing)
+- ✅ DEBT-0787: docs:check false positives
+- ✅ DEBT-0788: Scripts in session start (verified existing)
+- ✅ DEBT-0851: CANON validation in CI
+- ✅ DEBT-0057: npm commands added
 - ✅ LEGACY-001: SSR-safe localStorage retrofit
 
 **Process Audit items moved to Operational Visibility Sprint Track D:**
 
-- CANON-0105 (CI gates) → Track D: D4
-- CANON-0106 (Script coverage) → Track D: D10
-- CANON-0107 (Security scanning) → Track D: D5
-- CANON-0109 (Workflow docs) → Track D: D3
-- CANON-0110 (Pre-commit slow) → Track D: D2
-- CANON-0111 (Pattern checker) → Track D: D4
-- CANON-0112 (Firebase CLI) → Track D: D1
+- DEBT-0851 (CI gates) → Track D: D4
+- DEBT-0057 (Script coverage) → Track D: D10
+- DEBT-0058 (Security scanning) → Track D: D5
+- DEBT-0396 (Workflow docs) → Track D: D3
+- DEBT-0397 (Pre-commit slow) → Track D: D2
+- DEBT-0398 (Pattern checker) → Track D: D4
+- DEBT-0399 (Firebase CLI) → Track D: D1
 
 ### 🔥 Refactoring Audit Quick Wins ✅ COMPLETE (Session #115)
 
@@ -1438,10 +1411,10 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 
 | Severity | Count | Description                 | Sprint Location                      |
 | -------- | ----- | --------------------------- | ------------------------------------ |
-| **S0**   | 11    | Critical - Immediate action | **Active Sprint - S0 Critical Debt** |
-| **S1**   | 28    | High - Current/next sprint  | Track D + M1.5                       |
-| **S2**   | 45    | Medium - Backlog priority   | M2                                   |
-| **S3**   | 32    | Low - Nice to have          | Backlog                              |
+| **S0**   | 35    | Critical - Immediate action | **Active Sprint - S0 Critical Debt** |
+| **S1**   | 708   | High - Current/next sprint  | Grand Plan Sprints 4-12              |
+| **S2**   | 1,723 | Medium - Backlog priority   | Grand Plan Sprints 8-12              |
+| **S3**   | 1,616 | Low - Nice to have          | Backlog                              |
 
 ### S0 Critical Items (Immediate Action)
 
@@ -1513,16 +1486,16 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 - [ ] **CANON-0138:** Reduce 47 CRITICAL complexity functions `scripts/` [E3] -
       S0
-- [ ] **CANON-0001:** 5 failing tests in check-docs-light
+- [ ] **DEBT-0853:** 5 failing tests in check-docs-light
       `check-docs-light.test.ts:199` [E1] - S1
-- [ ] **CANON-0030:** Console.\* usage bypasses logger `lib/db/library.ts`
-      [E1] - S1
-- [ ] **CANON-0035:** No Firestore rules emulator tests `firestore.rules` [E2] -
+- [ ] **DEBT-0789:** Console.\* usage bypasses logger `lib/db/library.ts` [E1] -
       S1
-- [ ] **CANON-0036:** Security-critical files low test coverage
+- [ ] **DEBT-0046:** No Firestore rules emulator tests `firestore.rules` [E2] -
+      S1
+- [ ] **DEBT-0047:** Security-critical files low test coverage
       `account-linking.ts` [E2] - S1
-- [ ] **CANON-0106:** Fix journal entry type mismatch [E0] - S1
-- [ ] **CANON-0115:** Remove deprecated saveNotebookJournalEntry [E2] - S1
+- [ ] **DEBT-0057:** Fix journal entry type mismatch [E0] - S1
+- [ ] **DEBT-0780:** Remove deprecated saveNotebookJournalEntry [E2] - S1
 - [ ] **CANON-0136:** Add Firestore rules emulator tests [E2] - S1
 - [ ] **CANON-0137:** Increase security file coverage [E2] - S1
 
@@ -2046,7 +2019,7 @@ Architecture refactoring, schema optimization, and infrastructure work.
 | DEDUP-0004 | Complete rate limiting (IP + admin) | E2     | PR4  |
 | DEDUP-0005 | Replace console.\* with logger      | E1     | PR8  |
 | DEDUP-0012 | Enable SSR for landing page         | E2     | PR13 |
-| CANON-0072 | Split TodayPage god component       | E3     | -    |
+| DEBT-0055  | Split TodayPage god component       | E3     | -    |
 
 ### M2.3-REF: God Object Refactoring (~38 hours) **NEW - Refactoring Audit**
 
@@ -2060,16 +2033,16 @@ Architecture refactoring, schema optimization, and infrastructure work.
 
 #### Session #116 Refactoring Priority Items (S0/S1)
 
-- [ ] **CANON-0067:** 47 CRITICAL cognitive complexity violations `scripts/`
+- [ ] **DEBT-0050:** 47 CRITICAL cognitive complexity violations `scripts/`
       [E3] - S0 -- **Note:** Individual S0 items (DEBT-0012, DEBT-1538, etc.)
       tracked in S0 Critical Debt section
-- [ ] **CANON-0023:** Deprecated saveNotebookJournalEntry still used in 6+
+- [ ] **DEBT-0428:** Deprecated saveNotebookJournalEntry still used in 6+
       components `firestore-service.ts` [E2] - S1
-- [ ] **CANON-0032:** Critical logic divergence in journal saving
+- [ ] **DEBT-0791:** Critical logic divergence in journal saving
       `firestore-service.ts` [E1] - S1
-- [ ] **CANON-0068:** Journal entry type definitions diverge between
+- [ ] **DEBT-0051:** Journal entry type definitions diverge between
       client/server `journal.ts` [E2] - S1
-- [ ] **CANON-0069:** useJournal mixes domain logic with transport
+- [ ] **DEBT-0052:** useJournal mixes domain logic with transport
       `use-journal.ts` [E2] - S1
 
 **NEW from Session #128 Audit:**
@@ -2227,15 +2200,15 @@ comprehensive audit.
 | ---------- | ------------------------------------------- | --------------------- | -------- |
 | CANON-0138 | Reduce 47 CRITICAL complexity functions     | scripts/              | M2.3-REF |
 | CANON-0162 | Convert CI gates to blocking                | CI                    | Track D  |
-| CANON-0031 | Client App Check disabled                   | `firebase.ts`         | M4.5     |
-| CANON-0033 | reCAPTCHA not enforced when configured      | `security-wrapper.ts` | M4.5     |
-| CANON-0035 | No Firestore rules tests                    | `firestore.rules`     | Track T  |
-| CANON-0050 | reCAPTCHA missing token logs but continues  | `security-wrapper.ts` | M4.5     |
-| CANON-0056 | Landing page blocks SSR                     | `app/page.tsx`        | Track P  |
-| CANON-0067 | 47 CRITICAL cognitive complexity violations | scripts/              | M2.3-REF |
-| CANON-0077 | Broken relative links in review docs        | docs/                 | Track B  |
-| CANON-0090 | Script test coverage 2-7%                   | scripts/              | Track D  |
-| CANON-0091 | Deploy workflow missing gcloud setup        | `.github/workflows/`  | Track D  |
+| DEBT-0790  | Client App Check disabled                   | `firebase.ts`         | M4.5     |
+| DEBT-0792  | reCAPTCHA not enforced when configured      | `security-wrapper.ts` | M4.5     |
+| DEBT-0046  | No Firestore rules tests                    | `firestore.rules`     | Track T  |
+| DEBT-0401  | reCAPTCHA missing token logs but continues  | `security-wrapper.ts` | M4.5     |
+| DEBT-0407  | Landing page blocks SSR                     | `app/page.tsx`        | Track P  |
+| DEBT-0050  | 47 CRITICAL cognitive complexity violations | scripts/              | M2.3-REF |
+| DEBT-0386  | Broken relative links in review docs        | docs/                 | Track B  |
+| DEBT-0778  | Script test coverage 2-7%                   | scripts/              | Track D  |
+| DEBT-0065  | Deploy workflow missing gcloud setup        | `.github/workflows/`  | Track D  |
 
 **By Category:**
 
@@ -2378,18 +2351,18 @@ _Building on the basic HALT check feature from M1.5_
 
 ### Session #116 Priority Items (S1/S2)
 
-- [ ] **CANON-0031:** Client App Check disabled `firebase.ts` [E1] - S1
-- [ ] **CANON-0033:** reCAPTCHA not enforced when configured
+- [ ] **DEBT-0790:** Client App Check disabled `firebase.ts` [E1] - S1
+- [ ] **DEBT-0792:** reCAPTCHA not enforced when configured
       `security-wrapper.ts` [E1] - S1
-- [ ] **CANON-0050:** reCAPTCHA missing token logs but continues
+- [ ] **DEBT-0401:** reCAPTCHA missing token logs but continues
       `security-wrapper.ts` [E1] - S1
-- [ ] **CANON-0051:** Rate limiting incomplete (no IP throttling)
+- [ ] **DEBT-0402:** Rate limiting incomplete (no IP throttling)
       `security-wrapper.ts` [E2] - S1
-- [ ] **CANON-0099:** Restore client App Check init [E1] - S1
-- [ ] **CANON-0100:** Admin-claim rules defense-in-depth `firestore.rules`
-      [E2] - S1
-- [ ] **CANON-0052:** Zod schemas missing .strict() `schemas.ts` [E1] - S2
-- [ ] **CANON-0055:** Some admin collections allow direct client writes
+- [ ] **DEBT-0421:** Restore client App Check init [E1] - S1
+- [ ] **DEBT-0784:** Admin-claim rules defense-in-depth `firestore.rules` [E2] -
+      S1
+- [ ] **DEBT-0403:** Zod schemas missing .strict() `schemas.ts` [E1] - S2
+- [ ] **DEBT-0406:** Some admin collections allow direct client writes
       `firestore.rules` [E2] - S2
 
 ### Overview

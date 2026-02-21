@@ -145,7 +145,12 @@ function calculateMetrics(items) {
     byStatus[item.status] = (byStatus[item.status] || 0) + 1;
     bySeverity[item.severity] = (bySeverity[item.severity] || 0) + 1;
     byCategory[item.category] = (byCategory[item.category] || 0) + 1;
-    bySource[item.source || "unknown"] = (bySource[item.source || "unknown"] || 0) + 1;
+    // Derive source from source_id prefix (e.g. "intake:xxx" -> "intake", "sonar:xxx" -> "sonar")
+    const itemSource =
+      item.source ||
+      (item.source_id && item.source_id.includes(":") ? item.source_id.split(":")[0] : null) ||
+      "unknown";
+    bySource[itemSource] = (bySource[itemSource] || 0) + 1;
 
     trackAlertItem(item, alerts);
     trackItemAge(item, now, ageState);

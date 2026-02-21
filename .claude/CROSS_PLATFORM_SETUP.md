@@ -11,7 +11,7 @@ and Claude Code Web (Linux).
 2. Run the import script:
 
 ```bash
-node scripts/sync-claude-settings.js --import
+node scripts/sync-claude-settings.js (REMOVED) --import
 ```
 
 This will:
@@ -25,7 +25,7 @@ This will:
 After making changes to your local Claude Code configuration:
 
 ```bash
-node scripts/sync-claude-settings.js --export
+node scripts/sync-claude-settings.js (REMOVED) --export
 ```
 
 Then commit the updated templates to the repo.
@@ -104,7 +104,7 @@ These scripts in the repo use bash features and won't work on Windows CMD:
 ### Export (Local → Repo)
 
 ```bash
-node scripts/sync-claude-settings.js --export
+node scripts/sync-claude-settings.js (REMOVED) --export
 ```
 
 Exports:
@@ -117,7 +117,7 @@ Exports:
 ### Import (Repo → Local)
 
 ```bash
-node scripts/sync-claude-settings.js --import
+node scripts/sync-claude-settings.js (REMOVED) --import
 ```
 
 Imports:
@@ -130,7 +130,7 @@ Imports:
 ### Diff (Compare)
 
 ```bash
-node scripts/sync-claude-settings.js --diff
+node scripts/sync-claude-settings.js (REMOVED) --diff
 ```
 
 Shows:
@@ -169,14 +169,14 @@ Shows:
 - [ ] Install Node.js 18+
 - [ ] Install Claude Code CLI
 - [ ] Clone repo
-- [ ] Run `node scripts/sync-claude-settings.js --import`
+- [ ] Run `node scripts/sync-claude-settings.js (REMOVED) --import`
 - [ ] Restart Claude Code
 
 ### Claude Code Web
 
 - [ ] Access Claude Code Web
 - [ ] Open repo in workspace
-- [ ] Run `node scripts/sync-claude-settings.js --import`
+- [ ] Run `node scripts/sync-claude-settings.js (REMOVED) --import`
 - [ ] Restart session
 
 ## Troubleshooting
@@ -189,7 +189,8 @@ Shows:
 
 ### Plugins Not Loading
 
-1. Run `node scripts/sync-claude-settings.js --diff` to verify settings
+1. Run `node scripts/sync-claude-settings.js (REMOVED) --diff` to verify
+   settings
 2. Check Claude Code logs for plugin errors
 3. Ensure plugin marketplace is accessible
 

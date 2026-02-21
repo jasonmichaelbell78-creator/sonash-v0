@@ -25,17 +25,39 @@ Review what was done this session:
 git log --oneline -5
 ```
 
-## 3b. Session Context Archival (MANDATORY)
+## 3b. Session Context Update (MANDATORY — DO NOT SKIP)
 
-**Keep SESSION_CONTEXT.md to the last 3 session summaries.** Archive older
-summaries to [SESSION_HISTORY.md](../../docs/SESSION_HISTORY.md):
+> **Why this matters:** If you skip this step, the next session starts with
+> stale context — wrong priorities, wrong metrics, wrong status. This has caused
+> real bugs. Every section below must be updated.
 
-1. Check how many session summaries are in SESSION_CONTEXT.md
-2. If more than 3: move the oldest summaries to `docs/SESSION_HISTORY.md`
+Update **all three forward-looking sections** of SESSION_CONTEXT.md:
+
+### A. Recent Session Summaries
+
+1. Add this session's summary (what was accomplished, TDMS metrics snapshot)
+2. Keep only the **last 3 session summaries** — archive older ones to
+   `docs/SESSION_HISTORY.md`
    - Add new entries at the **top** of the most recent month section
    - Use format: `### Session #N (YYYY-MM-DD)` with `**Focus**:` line
-3. Update SESSION_CONTEXT.md "Recent Session Summaries" with this session's work
-4. Target: SESSION_CONTEXT.md should stay under ~300 lines
+3. Target: SESSION_CONTEXT.md should stay under ~300 lines
+
+### B. Quick Status Table
+
+Update the Quick Status table to reflect **current reality**:
+
+- Check each row — does the status/progress match what was accomplished?
+- Update TDMS numbers, sprint progress percentages, plan step status
+- If a plan advanced (e.g., "Step 0a done" → "Steps 0a-10 done"), update it
+
+### C. Next Session Goals
+
+Rewrite the "Immediate Priority" goals based on **what's actually next**:
+
+- Remove goals that were completed this session
+- Add new goals based on what this session's work unlocked
+- Update S0/S1 counts to match current TDMS metrics
+- Goals should reflect the state AFTER this session, not before
 
 ## 4. Agent Compliance Review
 

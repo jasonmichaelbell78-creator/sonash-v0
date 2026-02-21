@@ -9,7 +9,7 @@ interface QuickActionsFabProps {
   onQuickMood?: () => void;
 }
 
-// TODO: Make action buttons customizable by user (save preferences to profile/localStorage)
+// DEBT-3521: Make action buttons customizable by user (save preferences to profile/localStorage)
 // - Allow users to choose which actions to show
 // - Allow users to reorder actions
 // - Allow users to add custom phone numbers (sponsor, etc.)

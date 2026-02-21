@@ -4,3 +4,4 @@
 {"timestamp":"2026-02-12T15:42:24.504Z","action":"bulk_resolved","item_ids":["DEBT-2748","DEBT-2804","DEBT-2805","DEBT-2806","DEBT-2814"],"count":5,"pr":362}
 {"timestamp":"2026-02-13T13:22:34.450Z","action":"bulk_resolved","item_ids":["DEBT-2806","DEBT-2814"],"count":2,"pr":364}
 {"timestamp":"2026-02-15T05:00:30.793Z","action":"bulk_resolved","item_ids":["DEBT-2923"],"count":1,"pr":366}
+{"timestamp":"2026-02-21T00:49:59.360Z","actor":"jason","actor_type":"cli-script","outcome":"success","action":"resolve-sonarcloud-stale","project":"jasonmichaelbell78-creator_sonash-v0","items_checked":648,"items_resolved":147,"first_id":"DEBT-4399","last_id":"DEBT-4545","operator":"06b9a6eacd7a"}

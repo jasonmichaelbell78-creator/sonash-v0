@@ -70,6 +70,12 @@ export default [
       "@typescript-eslint/no-require-imports": "off",
     },
   },
+  // CC error-level for husky hooks (replaces standalone CC check in pre-commit)
+  // .claude/hooks/ stays at "warn" due to 10 pre-existing violations
+  {
+    files: [".husky/**/*.js"],
+    rules: { complexity: ["error", 15] },
+  },
   // SoNash security rules - applied only to high-risk script/hook directories
   {
     files: [

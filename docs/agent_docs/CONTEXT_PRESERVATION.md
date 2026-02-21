@@ -84,9 +84,6 @@ Automatic multi-layer defense against state loss during context compaction:
 3. Read any `.claude/state/task-*.state.json` for in-progress tasks
 4. Cross-reference with `git log --oneline -5` and `git status`
 
-**One-time setup:** Run `node scripts/seed-commit-log.js` to backfill commit log
-from git history.
-
 ## Other Preservation Tools
 
 - Writing detailed plans to `.claude/plans/` before implementation

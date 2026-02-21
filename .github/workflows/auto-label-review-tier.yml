@@ -47,28 +47,27 @@ jobs:
           # Get list of changed files (newline-separated from action)
           FILES="${{ steps.changed-files.outputs.all_changed_files }}"
 
-          # Run tier assignment (will be implemented in Phase 1)
-          # For now, output a placeholder result
           echo "Changed files:"
           printf '%s\n' "$FILES"
 
-          # TODO: Uncomment when script is ready (preserves spaces/newlines)
-          # RESULT=$(printf '%s\n' "$FILES" | node scripts/assign-review-tier.js --stdin)
-          # echo "tier=$RESULT" >> "$GITHUB_OUTPUT"
+          # Convert newline-separated file list to arguments for the script
+          # Uses mapfile to safely handle filenames with spaces
+          mapfile -t FILE_ARRAY <<< "$FILES"
 
-          # TEMPORARY PLACEHOLDER: Remove when scripts/assign-review-tier.js is integrated
-          # This logic duplicates TIER_RULES in assign-review-tier.js
-          # Use printf to safely pipe newline-separated files to grep ^ anchors
-          if printf '%s\n' "$FILES" | grep -qE '^(\.github/workflows/|firebase\.json$|package\.json$|next\.config\.(js|mjs)$)'; then
-            TIER=4
-          elif printf '%s\n' "$FILES" | grep -qE '(^|/)(firestore\.rules$|functions/src/auth/|middleware/)'; then
-            TIER=3
-          elif printf '%s\n' "$FILES" | grep -qE '^(app/|components/|lib/|hooks/)'; then
-            TIER=2
-          elif printf '%s\n' "$FILES" | grep -qE '(\.test\.(ts|tsx)$|^docs/.*\.md$)'; then
-            TIER=1
-          else
-            TIER=0
+          # Run the tier assignment script with changed files as arguments
+          # Use || true to capture exit code even if script fails (blocked PRs exit 1)
+          RESULT=$(node scripts/assign-review-tier.js "${FILE_ARRAY[@]}") || EXIT_CODE=$?
+          EXIT_CODE=${EXIT_CODE:-0}
+
+          echo "Script output:"
+          echo "$RESULT"
+
+          # Extract tier from JSON output
+          TIER=$(echo "$RESULT" | node -e "process.stdin.setEncoding('utf-8'); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>console.log(JSON.parse(d).tier))")
+
+          # If script exited non-zero (blocked), still assign the tier but warn
+          if [ "$EXIT_CODE" -ne 0 ]; then
+            echo "::warning::Tier assignment script flagged violations (exit code $EXIT_CODE)"
           fi
 
           echo "tier=$TIER" >> "$GITHUB_OUTPUT"

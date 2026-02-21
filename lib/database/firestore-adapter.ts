@@ -48,7 +48,7 @@ export class FirestoreAdapter implements IDatabaseWithRealtime {
    * @param _limit - Maximum entries (currently unused - FirestoreService uses fixed limit of 30)
    */
   async getHistory(userId: string, _limit: number = 30): Promise<OperationResult<DailyLog[]>> {
-    // TODO: Pass limit to FirestoreService when it supports configurable limits
+    // DEBT-3522: Pass limit to FirestoreService when it supports configurable limits
     const result = await FirestoreService.getHistory(userId);
     return {
       data: result.entries,

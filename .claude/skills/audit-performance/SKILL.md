@@ -558,20 +558,6 @@ counts). Check `npm run review:check` for current multi-AI trigger status.
 
 ---
 
-## Adding New False Positives
-
-If you encounter a pattern that should be excluded from future audits:
-
-```bash
-node scripts/add-false-positive.js \
-  --pattern "regex-pattern" \
-  --category "performance" \
-  --reason "Explanation of why this is not a performance issue" \
-  --source "AI_REVIEW_LEARNINGS_LOG.md#review-XXX"
-```
-
----
-
 ## Documentation References
 
 Before running this audit, review:

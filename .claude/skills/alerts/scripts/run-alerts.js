@@ -174,6 +174,7 @@ const BENCHMARKS = {
     overrides_7d: { good: 0, average: 2, poor: 5 },
     false_positive_pct: { good: 0, average: 30, poor: 60 },
     noise_ratio: { good: 0, average: 5, poor: 15 },
+    commit_failures_7d: { good: 0, average: 3, poor: 8 },
   },
 };
 
@@ -2211,6 +2212,38 @@ function checkHookHealth() {
     overridesByCheck[key].push(o);
   }
 
+  // --- 2b. Parse commit-failures.jsonl (persistent pre-commit failure log) ---
+  const failuresLogPath = path.join(ROOT_DIR, ".claude", "state", "commit-failures.jsonl");
+  const failureLines = safeReadLines(failuresLogPath);
+  const allFailures = failureLines.map((l) => safeParse(l)).filter(Boolean);
+
+  const failures7d = allFailures.filter((f) => {
+    const t = new Date(f.timestamp).getTime();
+    return !isNaN(t) && t > cutoff7d;
+  });
+  const failures24h = allFailures.filter((f) => {
+    const t = new Date(f.timestamp).getTime();
+    return !isNaN(t) && t > cutoff24h;
+  });
+
+  // Group failures by check type
+  const failuresByCheck = Object.create(null);
+  for (const f of failures7d) {
+    const key = String(f.failedCheck || "unknown");
+    if (!failuresByCheck[key]) failuresByCheck[key] = [];
+    failuresByCheck[key].push(f);
+  }
+
+  // Find top failed check
+  let topFailedCheck = null;
+  let topFailedCount = 0;
+  for (const [check, entries] of Object.entries(failuresByCheck)) {
+    if (entries.length > topFailedCount) {
+      topFailedCount = entries.length;
+      topFailedCheck = check;
+    }
+  }
+
   // --- 3. Parse .git/hook-output.log (most recent pre-commit result) ---
   const hookOutputPath = path.join(ROOT_DIR, ".git", "hook-output.log");
   let lastHookResult = { passed: null, failedChecks: [], passedChecks: [], timestamp: null };
@@ -2429,10 +2462,42 @@ function checkHookHealth() {
     );
   }
 
+  // Commit failures (from commit-failures.jsonl)
+  const commitFailureCount7d = failures7d.length;
+  if (commitFailureCount7d >= BENCHMARKS.hook_health.commit_failures_7d.poor) {
+    addAlert(
+      "hook-health",
+      "error",
+      `${commitFailureCount7d} commit failures in last 7 days (threshold: ${BENCHMARKS.hook_health.commit_failures_7d.average})`,
+      topFailedCheck ? `Top failing check: ${topFailedCheck} (${topFailedCount}x)` : null,
+      "Review commit-failures.jsonl and consider tuning check rules"
+    );
+  } else if (commitFailureCount7d >= BENCHMARKS.hook_health.commit_failures_7d.average) {
+    addAlert(
+      "hook-health",
+      "warning",
+      `${commitFailureCount7d} commit failures in last 7 days`,
+      topFailedCheck ? `Top: ${topFailedCheck} (${topFailedCount}x)` : null,
+      "Run: npm run hooks:analytics for details"
+    );
+  }
+
+  // Repeated failure on same check (3+ times in 7d suggests rule needs review)
+  if (topFailedCount >= 3) {
+    addAlert(
+      "hook-health",
+      "warning",
+      `Check "${topFailedCheck}" failed ${topFailedCount} times in 7 days — review rules`,
+      null,
+      `Check if ${topFailedCheck} rules are too strict or misconfigured`
+    );
+  }
+
   // All clear
   if (
     failureRate7d === 0 &&
     overrideRate7d === 0 &&
+    commitFailureCount7d === 0 &&
     lastHookResult.passed !== false &&
     noiseRatio < BENCHMARKS.hook_health.noise_ratio.average
   ) {
@@ -2450,17 +2515,24 @@ function checkHookHealth() {
   const overrideRating = rateLowerBetter(overrideRate7d, BENCHMARKS.hook_health.overrides_7d);
   const noiseRating = rateLowerBetter(noiseRatio, BENCHMARKS.hook_health.noise_ratio);
 
+  const commitFailureRating = rateLowerBetter(
+    commitFailureCount7d,
+    BENCHMARKS.hook_health.commit_failures_7d
+  );
+
   addContext("hook-health", {
     benchmarks: {
       warnings_7d: BENCHMARKS.hook_health.warnings_7d,
       overrides_7d: BENCHMARKS.hook_health.overrides_7d,
       false_positive_pct: BENCHMARKS.hook_health.false_positive_pct,
       noise_ratio: BENCHMARKS.hook_health.noise_ratio,
+      commit_failures_7d: BENCHMARKS.hook_health.commit_failures_7d,
     },
     ratings: {
       warnings: warningRating,
       overrides: overrideRating,
       noise: noiseRating,
+      commit_failures: commitFailureRating,
     },
     totals: {
       warnings_24h: warnings24h.length,
@@ -2475,6 +2547,10 @@ function checkHookHealth() {
       top_overridden_check: topOverriddenCheck,
       last_hook_passed: lastHookResult.passed,
       last_hook_failed_checks: lastHookResult.failedChecks,
+      failure_count_7d: commitFailureCount7d,
+      failure_count_24h: failures24h.length,
+      top_failed_check: topFailedCheck,
+      failures_by_check: failuresByCheck,
     },
   });
 }

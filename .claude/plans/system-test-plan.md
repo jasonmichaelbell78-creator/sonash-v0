@@ -311,7 +311,7 @@ each:
 10. **Security/Hook scripts** (4): `security-check.js`, `check-triggers.js`,
     `test-hooks.js`, `check-hook-health.js`
 11. **Other scripts** (8): `update-readme-status.js`, `run-consolidation.js`,
-    `aggregate-audit-findings.js`, `sync-claude-settings.js`, etc.
+    `aggregate-audit-findings.js`, etc.
 12. **Lib modules** (static review only, ~11): `sanitize-error.js`,
     `security-helpers.js`, `validate-paths.js`, etc.
 

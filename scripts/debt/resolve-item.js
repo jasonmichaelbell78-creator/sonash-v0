@@ -64,7 +64,15 @@ function loadMasterDebt() {
     process.exit(1);
   }
   const lines = content.split("\n").filter((line) => line.trim());
-  return lines.map((line) => JSON.parse(line));
+  const items = [];
+  for (const line of lines) {
+    try {
+      items.push(JSON.parse(line));
+    } catch {
+      /* skip malformed */
+    }
+  }
+  return items;
 }
 
 // Save items to MASTER_DEBT.jsonl with atomic write
@@ -209,6 +217,14 @@ function applyFalsePositive(items, item, itemIndex, parsed, now, masterBackup) {
     handleWriteError(item.id, writeError, masterBackup, masterUpdated);
   }
 
+  // Sync deduped.jsonl to prevent generate-views.js overwrite regression (Session #179)
+  try {
+    const { execFileSync } = require("node:child_process");
+    execFileSync("node", [path.join(__dirname, "sync-deduped.js"), "--apply"], { stdio: "pipe" });
+  } catch {
+    // sync-deduped.js may not exist yet or may fail — non-critical
+  }
+
   console.log(`\n✅ Marked ${item.id} as FALSE_POSITIVE`);
   console.log(`  Moved to FALSE_POSITIVES.jsonl`);
 }
@@ -231,6 +247,14 @@ function applyResolved(items, item, parsed, now, masterBackup) {
     });
   } catch (writeError) {
     handleWriteError(item.id, writeError, masterBackup);
+  }
+
+  // Sync deduped.jsonl to prevent generate-views.js overwrite regression (Session #179)
+  try {
+    const { execFileSync } = require("node:child_process");
+    execFileSync("node", [path.join(__dirname, "sync-deduped.js"), "--apply"], { stdio: "pipe" });
+  } catch {
+    // sync-deduped.js may not exist yet or may fail — non-critical
   }
 
   console.log(`\n✅ Marked ${item.id} as RESOLVED`);

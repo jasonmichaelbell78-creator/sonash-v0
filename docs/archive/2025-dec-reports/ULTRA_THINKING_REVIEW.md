@@ -1,3 +1,7 @@
+<!-- TDMS: All actionable findings from this report have been ingested into
+     MASTER_DEBT.jsonl. This file is archived for historical reference only.
+     Do not add new findings here — use the TDMS intake process. -->
+
 # Ultra-Thinking Code Review & Refactor Report
 
 **Role:** Senior Staff Software Architect **Date:** 2024-05-22 **Scope:** Entire

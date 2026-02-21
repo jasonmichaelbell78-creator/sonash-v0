@@ -52,3 +52,15 @@
 {"timestamp":"2026-02-20T00:00:22.468Z","total":2738,"open":2168,"resolved":298,"s0_alerts":19,"s1_alerts":410}
 {"timestamp":"2026-02-20T11:36:49.035Z","total":3050,"open":2462,"resolved":316,"s0_alerts":31,"s1_alerts":410}
 {"timestamp":"2026-02-20T21:48:41.134Z","total":3422,"open":2828,"resolved":322,"s0_alerts":31,"s1_alerts":429}
+{"timestamp":"2026-02-21T03:14:39.378Z","total":6522,"open":5808,"resolved":442,"s0_alerts":199,"s1_alerts":576}
+{"timestamp":"2026-02-21T03:22:57.073Z","total":4075,"open":3505,"resolved":298,"s0_alerts":103,"s1_alerts":577}
+{"timestamp":"2026-02-21T03:50:38.676Z","total":4075,"open":3505,"resolved":298,"s0_alerts":103,"s1_alerts":577}
+{"timestamp":"2026-02-21T03:53:09.267Z","total":4075,"open":3590,"resolved":236,"s0_alerts":109,"s1_alerts":583}
+{"timestamp":"2026-02-21T04:14:02.494Z","total":4075,"open":3590,"resolved":236,"s0_alerts":109,"s1_alerts":583}
+{"timestamp":"2026-02-21T04:24:02.316Z","total":4075,"open":3590,"resolved":236,"s0_alerts":109,"s1_alerts":583}
+{"timestamp":"2026-02-21T07:25:40.165Z","total":4082,"open":3596,"resolved":237,"s0_alerts":141,"s1_alerts":552}
+{"timestamp":"2026-02-21T15:36:06.232Z","total":4082,"open":3566,"resolved":267,"s0_alerts":18,"s1_alerts":669}
+{"timestamp":"2026-02-21T15:36:50.540Z","total":4082,"open":3596,"resolved":237,"s0_alerts":74,"s1_alerts":619}
+{"timestamp":"2026-02-21T15:37:23.229Z","total":4082,"open":3596,"resolved":237,"s0_alerts":21,"s1_alerts":671}
+{"timestamp":"2026-02-21T20:06:41.163Z","total":4082,"open":3596,"resolved":237,"s0_alerts":21,"s1_alerts":671}
+{"timestamp":"2026-02-21T20:14:41.599Z","total":4452,"open":3966,"resolved":237,"s0_alerts":21,"s1_alerts":688}
