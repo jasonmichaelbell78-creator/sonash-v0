@@ -31,10 +31,10 @@ distribution.
 | Metric          | Value |
 | --------------- | ----- |
 | Total Items     | 4075  |
-| Open Items      | 3505  |
-| Resolved        | 298   |
-| False Positives | 272   |
-| Resolution Rate | 7%    |
+| Open Items      | 3590  |
+| Resolved        | 236   |
+| False Positives | 249   |
+| Resolution Rate | 6%    |
 
 ---
 
@@ -43,10 +43,10 @@ distribution.
 | Status         | Count |
 | -------------- | ----- |
 | NEW            | 473   |
-| VERIFIED       | 3032  |
+| VERIFIED       | 3117  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 298   |
-| FALSE_POSITIVE | 272   |
+| RESOLVED       | 236   |
+| FALSE_POSITIVE | 249   |
 
 ---
 
@@ -79,30 +79,29 @@ distribution.
 
 ## Alerts
 
-### S0 Critical Alerts (103)
+### S0 Critical Alerts (109)
 
 - **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity fr
   (functions/src/admin.ts:576)
 - **DEBT-0038**: Refactor this function to reduce its Cognitive Complexity fr
   (components/widgets/compact-meeting-countdown.tsx:69)
+- **DEBT-0852**: useJournal creates redundant auth listener + potential memor
+  (hooks/use-journal.ts:0)
 - **DEBT-0853**: App Check disabled on all production Cloud Functions
   (functions/src/index.ts:0)
+- **DEBT-0855**: App Check disabled on all Cloud Functions and client init di
+  (functions/src/index.ts:0)
+- **DEBT-0857**: useJournal creates redundant auth listener + potential memor
+  (hooks/use-journal.ts:0)
+- **DEBT-0864**: Re-enable App Check on Cloud Functions (lib/firebase.ts:45)
 - **DEBT-0956**: Refactor this function to reduce its Cognitive Complexity fr
   (components/admin/errors-tab.tsx:327)
 - **DEBT-0963**: Refactor this code to not nest functions more than 4 levels
   (components/admin/logs-tab.tsx:342)
 - **DEBT-1227**: Refactor this function to reduce its Cognitive Complexity fr
   (functions/src/jobs.ts:1059)
-- **DEBT-1271**: Refactor this function to reduce its Cognitive Complexity fr
-  (components/dev/lighthouse-tab.tsx:81)
-- **DEBT-1293**: Security risk: Client-side filtering of sensitive data
-  (hooks/use-journal.ts:174)
-- **DEBT-1878**: CI gap: pull_request_target security vulnerability allows un
-  (.github/workflows/deploy-firebase.yml:7)
-- **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
-  (N/A:0)
 
-### S1 High Priority Alerts (577)
+### S1 High Priority Alerts (583)
 
 - **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -125,7 +124,7 @@ distribution.
 - **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 567 more S1 items_
+_...and 573 more S1 items_
 
 ---
 
