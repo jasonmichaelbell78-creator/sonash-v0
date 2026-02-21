@@ -30,11 +30,11 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 4082  |
-| Open Items      | 3596  |
+| Total Items     | 4452  |
+| Open Items      | 3966  |
 | Resolved        | 237   |
 | False Positives | 249   |
-| Resolution Rate | 6%    |
+| Resolution Rate | 5%    |
 
 ---
 
@@ -42,7 +42,7 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 476   |
+| NEW            | 846   |
 | VERIFIED       | 3120  |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 237   |
@@ -54,10 +54,10 @@ distribution.
 
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
-| S0 (Critical) | 156   | 4%         |
-| S1 (High)     | 588   | 14%        |
-| S2 (Medium)   | 1722  | 42%        |
-| S3 (Low)      | 1616  | 40%        |
+| S0 (Critical) | 35    | 1%         |
+| S1 (High)     | 725   | 16%        |
+| S2 (Medium)   | 1772  | 40%        |
+| S3 (Low)      | 1920  | 43%        |
 
 ---
 
@@ -65,13 +65,13 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 2507  |
-| documentation            | 479   |
-| security                 | 356   |
-| process                  | 343   |
-| refactoring              | 170   |
+| code-quality             | 2669  |
+| documentation            | 483   |
+| security                 | 406   |
+| process                  | 347   |
+| refactoring              | 312   |
 | ai-optimization          | 119   |
-| performance              | 85    |
+| performance              | 93    |
 | enhancements             | 12    |
 | engineering-productivity | 11    |
 
@@ -79,30 +79,29 @@ distribution.
 
 ## Alerts
 
-### S0 Critical Alerts (141)
+### S0 Critical Alerts (21)
 
-- **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity fr
-  (functions/src/admin.ts:576)
-- **DEBT-0016**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/validate-canon-schema.js:235)
-- **DEBT-0018**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/check-review-needed.js:254)
-- **DEBT-0019**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/generate-documentation-index.js:141)
-- **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/validate-audit.js:211)
-- **DEBT-0022**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/check-document-sync.js:200)
-- **DEBT-0025**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/assign-review-tier.js:354)
-- **DEBT-0026**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/check-pattern-compliance.js:541)
-- **DEBT-0029**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/suggest-pattern-automation.js:107)
-- **DEBT-0030**: Refactor this function to reduce its Cognitive Complexity fr
-  (scripts/check-docs-light.js:514)
+- **DEBT-0852**: useJournal creates redundant auth listener + potential memor
+  (hooks/use-journal.ts:0)
+- **DEBT-0853**: App Check disabled on all production Cloud Functions
+  (functions/src/index.ts:0)
+- **DEBT-0855**: App Check disabled on all Cloud Functions and client init di
+  (functions/src/index.ts:0)
+- **DEBT-0857**: useJournal creates redundant auth listener + potential memor
+  (hooks/use-journal.ts:0)
+- **DEBT-0864**: Re-enable App Check on Cloud Functions (lib/firebase.ts:45)
+- **DEBT-1293**: Security risk: Client-side filtering of sensitive data
+  (hooks/use-journal.ts:174)
+- **DEBT-1878**: CI gap: pull_request_target security vulnerability allows un
+  (.github/workflows/deploy-firebase.yml:7)
+- **DEBT-2120**: Error handling: continueOnError used appropriately in settin
+  (.claude/settings.json:24)
+- **DEBT-2121**: Security: Potential command injection in resolve-item.js exe
+  (scripts/debt/resolve-item.js:21)
+- **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
+  (N/A:0)
 
-### S1 High Priority Alerts (552)
+### S1 High Priority Alerts (688)
 
 - **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -125,7 +124,7 @@ distribution.
 - **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 542 more S1 items_
+_...and 678 more S1 items_
 
 ---
 
@@ -133,8 +132,8 @@ _...and 542 more S1 items_
 
 | Metric               | Value     |
 | -------------------- | --------- |
-| Verification Queue   | 476 items |
-| Avg Age (Open Items) | 9 days    |
+| Verification Queue   | 846 items |
+| Avg Age (Open Items) | 8 days    |
 | Oldest Item Age      | 22 days   |
 | Oldest Item          | DEBT-0002 |
 
@@ -142,9 +141,23 @@ _...and 542 more S1 items_
 
 ## Data Sources
 
-| Source  | Count |
-| ------- | ----- |
-| unknown | 4082  |
+| Source                       | Count |
+| ---------------------------- | ----- |
+| sonarcloud                   | 1543  |
+| audit                        | 1382  |
+| unknown                      | 379   |
+| dec-2025-report              | 332   |
+| review                       | 306   |
+| sonarcloud-paste             | 287   |
+| context                      | 126   |
+| roadmap                      | 40    |
+| intake                       | 30    |
+| manual                       | 9     |
+| pr-review                    | 7     |
+| code-comment                 | 5     |
+| pr-review-366-r2             | 3     |
+| alerts-self-audit-2026-02-16 | 2     |
+| pr-deferred                  | 1     |
 
 ---
 

@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 5.1 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 5.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-21 (Session #176)
+2026-02-21 (Session #179)
 
 ## Purpose
 
@@ -42,7 +42,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 178 (since Jan 1, 2026)
+**Current Session Count**: 179 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -52,19 +52,24 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
+**Session #179 Summary** (SPRINT SKILL + DATA QUALITY FIXES):
+
+- Built `/sprint` workflow skill with 6 subcommands (dashboard, start, work,
+  resolve, complete, fix-docs, intake) — team-based parallel execution
+- Created 5 new scripts: sprint-status.js, sprint-wave.js, sprint-intake.js,
+  sprint-complete.js, sync-deduped.js
+- Fixed S0 inflation: 156→35 (demoted cognitive complexity items to S1)
+- Fixed deduped.jsonl sync: content_hash-based smart sync, 56 status drifts
+  corrected
+- Fixed audit trigger bug (wrong path in check-review-needed.js)
+- Deleted 4 orphaned scripts, cleaned 11 doc references
+- Fixed auto-label-review-tier.yml placeholder
+- Code-reviewed all new scripts, fixed 4 critical + 5 major issues
+- TDMS: 4,082 items (237 resolved), 35 S0, 708 S1
+
 **Session #177 Summary** (PRE-COMMIT SYSTEM OVERHAUL):
 
 - Implemented all 8 phases of pre-commit overhaul plan (12 steps)
-- P1: Single-pass ESLint (saves ~15s on failure), CC check merged into ESLint
-  config
-- P2: Killed graduation system in --staged mode (warnings only, never blocks)
-- P3: Consolidated 7 SKIP\_\* vars into single SKIP_CHECKS with backward compat
-- P4: Added gitFilter: "AD" to 3 overly-broad cross-doc rules
-- P5: Removed 2 low-value checks (learning reminder, debt location warning)
-- P6: Parallelized ESLint + tests via shell background jobs (~50% time savings)
-- P7: Removed readfilesync-without-try (92 exclusions) and
-  json-parse-without-try (24 exclusions) — regex patterns unfit for purpose
-- P8: Added 200-entry cap to warned-files.json
 - Pre-commit: 389→~240 lines, target <20s (from 35-40s)
 - TDMS: 4,075 items (236 resolved), 141 S0, 552 S1
 
@@ -72,11 +77,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 - Completed Technical Debt Resolution Plan: all 10 steps
 - TDMS: 4,075 items (236 resolved), 109 S0, 583 S1
-
-**Session #174 Summary** (PR #382 REVIEW + RETRO):
-
-- Processed PR #382 reviews R1-R3: 76 raw items → 61 fixed, 13 rejected
-- TDMS: 3,422 items (322 resolved at time), 52 S0, 471 S1
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -93,8 +93,9 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | Track B: Dev Dashboard MVP        | Partial  | ~10%             |
 | Track C: UI/UX & Analytics        | Planned  | 0%               |
 | **Integrated Improvement Plan**   | COMPLETE | 100% (9/9 steps) |
-| **GRAND PLAN: Debt Elimination**  | Active   | ~68% (1176/1727) |
-| **Tech Debt Resolution Plan**     | Active   | Steps 0a-10 done |
+| **GRAND PLAN: Debt Elimination**  | Active   | ~6% (237/4082)   |
+| **Sprint Skill (`/sprint`)**      | NEW      | Implemented      |
+| **Tech Debt Resolution Plan**     | COMPLETE | Steps 0a-10 done |
 | **Pre-Commit Overhaul**           | COMPLETE | All 8 phases     |
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
@@ -109,10 +110,11 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-1. **Begin resolving S0 critical items** — 141 open S0 items in TDMS backlog
-2. **Triage system test S1 findings** — 552 S1 items need resolution planning
-3. **Tech Debt Resolution Plan** — Start executing assigned sprints
-4. **Verify pre-commit overhaul** — Time a real commit to confirm <20s target
+1. **Run `/sprint start 4`** — Begin sprint-4 (lib/ + hooks/ + app/), 132 items
+2. **Run `/sprint intake`** — Place 399 unplaced items into sprints
+3. **Run `/sprint fix-docs`** — Update ROADMAP S0 table (10 shown vs 18 actual)
+4. **Begin resolving S0 critical items** — 35 S0 items (18 verified) in TDMS
+5. **Verify pre-commit overhaul** — Time a real commit to confirm <20s target
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -196,6 +198,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                             | Author |
 | ------- | ---------- | ------------------------------------------------------------------- | ------ |
+| 5.2     | 2026-02-21 | Session #179 end: sprint skill + data quality fixes                 | Claude |
 | 5.1     | 2026-02-20 | Session #174 end: tool_use bug investigation + cherry-pick          | Claude |
 | 5.0     | 2026-02-20 | Session #173 end: retro actions + scattered debt extractor          | Claude |
 | 4.9     | 2026-02-19 | Session #172: MCP/plugin token optimization (~5K tokens/turn saved) | Claude |

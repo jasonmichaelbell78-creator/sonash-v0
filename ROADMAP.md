@@ -84,32 +84,32 @@ recovery practices.
 
 ## 4. 📊 Milestones Overview
 
-| Milestone                           | Status      | Progress           | Phase       | Priority   | Items |
-| ----------------------------------- | ----------- | ------------------ | ----------- | ---------- | ----- |
-| **M0 - Baseline**                   | ✅ Complete | 100%               | Foundation  | Foundation | -     |
-| **M1 - Foundation**                 | ✅ Complete | 100%               | Foundation  | P0         | -     |
-| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps)   | Foundation  | DONE       | -     |
-| **🧹 GRAND PLAN: Debt Elimination** | 🔄 ACTIVE   | ~68% (1,176/1,727) | Parallel    | **P0**     | 1,727 |
-| **🚀 Operational Visibility**       | 🔄 ACTIVE   | ~25%               | Foundation  | **P0**     | ~105  |
-| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%               | Foundation  | P1         | ~19   |
-| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%               | Foundation  | P1         | ~15   |
-| **M2 - Architecture**               | ⏸️ Optional | 0%                 | Parallel    | P2         | ~72   |
-| ↳ M2.1 Code Quality                 |             |                    | Parallel    | P2         | ~25   |
-| ↳ M2.2 Monitoring                   |             |                    | Parallel    | P2         | ~25   |
-| ↳ M2.3 Infrastructure               |             |                    | Parallel    | P2         | ~22   |
-| **M3 - Meetings**                   | 📋 Planned  | 0%                 | Core        | P1         | 6     |
-| **M4 - Expansion**                  | 📋 Planned  | 0%                 | Core        | P1         | ~8    |
-| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%                 | Core        | **P0**     | 13    |
-| **M5 - Offline + Steps**            | 📋 Planned  | 0%                 | Enhancement | P1         | 23    |
-| **M6 - Journaling + Safety**        | 📋 Planned  | 0%                 | Enhancement | P1         | 26    |
-| **M7 - Fellowship Suite**           | 📋 Planned  | 0%                 | Enhancement | P1         | ~55   |
-| ↳ M7.1 Sponsor & Sharing            |             |                    | Enhancement | P1         | ~15   |
-| ↳ M7.2 Exports & Reports            |             |                    | Enhancement | P1         | ~14   |
-| ↳ M7.3 Nashville & Knowledge        |             |                    | Enhancement | P1         | ~21   |
-| ↳ M7.4 Personalization              |             |                    | Enhancement | P2         | ~17   |
-| **M8 - Speakers**                   | 📋 Planned  | 0%                 | Advanced    | P2         | 3     |
-| **M9 - Native App**                 | 📋 Planned  | 0%                 | Advanced    | P2         | 15    |
-| **M10 - Monetization + Future**     | 🔬 Research | 0%                 | Future      | P2         | ~15   |
+| Milestone                           | Status      | Progress         | Phase       | Priority   | Items |
+| ----------------------------------- | ----------- | ---------------- | ----------- | ---------- | ----- |
+| **M0 - Baseline**                   | ✅ Complete | 100%             | Foundation  | Foundation | -     |
+| **M1 - Foundation**                 | ✅ Complete | 100%             | Foundation  | P0         | -     |
+| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -     |
+| **🧹 GRAND PLAN: Debt Elimination** | 🔄 ACTIVE   | ~6% (237/4,082)  | Parallel    | **P0**     | 4,082 |
+| **🚀 Operational Visibility**       | 🔄 ACTIVE   | ~25%             | Foundation  | **P0**     | ~105  |
+| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19   |
+| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15   |
+| **M2 - Architecture**               | ⏸️ Optional | 0%               | Parallel    | P2         | ~72   |
+| ↳ M2.1 Code Quality                 |             |                  | Parallel    | P2         | ~25   |
+| ↳ M2.2 Monitoring                   |             |                  | Parallel    | P2         | ~25   |
+| ↳ M2.3 Infrastructure               |             |                  | Parallel    | P2         | ~22   |
+| **M3 - Meetings**                   | 📋 Planned  | 0%               | Core        | P1         | 6     |
+| **M4 - Expansion**                  | 📋 Planned  | 0%               | Core        | P1         | ~8    |
+| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%               | Core        | **P0**     | 13    |
+| **M5 - Offline + Steps**            | 📋 Planned  | 0%               | Enhancement | P1         | 23    |
+| **M6 - Journaling + Safety**        | 📋 Planned  | 0%               | Enhancement | P1         | 26    |
+| **M7 - Fellowship Suite**           | 📋 Planned  | 0%               | Enhancement | P1         | ~55   |
+| ↳ M7.1 Sponsor & Sharing            |             |                  | Enhancement | P1         | ~15   |
+| ↳ M7.2 Exports & Reports            |             |                  | Enhancement | P1         | ~14   |
+| ↳ M7.3 Nashville & Knowledge        |             |                  | Enhancement | P1         | ~21   |
+| ↳ M7.4 Personalization              |             |                  | Enhancement | P2         | ~17   |
+| **M8 - Speakers**                   | 📋 Planned  | 0%               | Advanced    | P2         | 3     |
+| **M9 - Native App**                 | 📋 Planned  | 0%               | Advanced    | P2         | 15    |
+| **M10 - Monetization + Future**     | 🔬 Research | 0%               | Future      | P2         | ~15   |
 
 ### Timing System (Session #128)
 
@@ -301,46 +301,43 @@ reliability, and solo developer automations.
 ### S0 Critical Debt (Immediate Action)
 
 > **Policy:** S0 items are always in the active sprint regardless of track.
-> **Source:** MASTER_DEBT.jsonl (status=VERIFIED, severity=S0)
+> **Source:** MASTER_DEBT.jsonl (status=VERIFIED, severity=S0) **Last Updated:**
+> Session #179 (S0 audit: 156→35 after demoting cognitive complexity items to
+> S1)
 
-| ID        | Title                                              | File                                                | Category     | Effort |
-| --------- | -------------------------------------------------- | --------------------------------------------------- | ------------ | ------ |
-| DEBT-0012 | Cognitive Complexity 22 to 15                      | functions/src/admin.ts:576                          | code-quality | E0     |
-| DEBT-0037 | Cognitive Complexity 17 to 15                      | components/widgets/compact-meeting-countdown.tsx:69 | code-quality | E0     |
-| DEBT-0854 | App Check disabled on production Cloud Functions   | functions/src/index.ts                              | security     | E2     |
-| DEBT-1056 | Cognitive Complexity 16 to 15                      | components/admin/errors-tab.tsx                     | code-quality | E0     |
-| DEBT-1064 | Nesting >4 levels deep                             | components/admin/logs-tab.tsx                       | code-quality | E0     |
-| DEBT-1538 | Cognitive Complexity 16 to 15                      | functions/src/jobs.ts                               | code-quality | E0     |
-| DEBT-1624 | Cognitive Complexity 17 to 15                      | components/dev/lighthouse-tab.tsx                   | code-quality | E0     |
-| DEBT-1912 | Client-side filtering of sensitive data            | hooks/use-journal.ts                                | code-quality | E1     |
-| DEBT-2499 | pull_request_target security vulnerability         | .github/workflows/deploy-firebase.yml               | process      | E2     |
-| DEBT-3079 | 57 AI Instructions sections = ~4,500+ tokens waste | N/A                                                 | code-quality | E0     |
-| DEBT-3080 | Session Counter Regex in 5 hooks                   | .claude/hooks/commit-tracker.js                     | code-quality | E1     |
+| ID        | Title                                            | File                                  | Category     | Effort |
+| --------- | ------------------------------------------------ | ------------------------------------- | ------------ | ------ |
+| DEBT-0853 | App Check disabled on Cloud Functions            | functions/src/index.ts                | security     | E2     |
+| DEBT-0855 | App Check disabled on client init                | functions/src/index.ts                | security     | E2     |
+| DEBT-0864 | Re-enable App Check on Cloud Functions           | lib/firebase.ts                       | security     | E2     |
+| DEBT-0852 | useJournal redundant auth listener + memory leak | hooks/use-journal.ts                  | code-quality | E1     |
+| DEBT-0857 | useJournal memory leak (performance)             | hooks/use-journal.ts                  | performance  | E1     |
+| DEBT-1293 | Client-side filtering of sensitive data          | hooks/use-journal.ts                  | code-quality | E1     |
+| DEBT-1878 | pull_request_target security vulnerability       | .github/workflows/deploy-firebase.yml | process      | E2     |
+| DEBT-2121 | Potential command injection in resolve-item.js   | scripts/debt/resolve-item.js          | process      | E1     |
+| DEBT-4399 | Potentially hard-coded password                  | lib/utils/errors.ts                   | security     | E0     |
+| DEBT-4403 | OS command safety review needed                  | scripts/check-review-needed.js        | security     | E1     |
 
-**Total: 11 items | ~8 hours estimated (6xE0 + 3xE1 + 2xE2)**
+**Total: 10 highest-priority items | Security (5), Memory/Performance (2),
+Process (2), Code Quality (1)**
 
-**Cross-references:**
-
-- DEBT-0854 also tracked in Track S S0 Critical Security (line ~683)
-- DEBT-2499 also relevant to Track D CI Reliability
-- DEBT-0012, DEBT-1538 will be addressed in Grand Plan Sprint 6 (functions/)
-- DEBT-0037, DEBT-1056, DEBT-1064, DEBT-1624 covered by Grand Plan Sprint 2
-  (components/) - already done
-- DEBT-0050 (47 cognitive complexity violations) is a broader parent item in
-  M2.3-REF
+**Note:** Cognitive complexity items (DEBT-0012, 0037, 1056, 1064, 1538, 1624)
+demoted to S1 in Session #179 — they are code quality, not critical.
 
 ### GRAND PLAN: Technical Debt Elimination
 
 > **Authoritative document:**
 > [GRAND_PLAN_V2.md](docs/technical-debt/GRAND_PLAN_V2.md)
 
-| Metric              | Value |
-| ------------------- | ----- |
-| Total items         | 4075  |
-| Grand Plan sprints  | 19    |
-| Roadmap-bound items | 435   |
-| Resolution rate     | 6%    |
-| Coverage            | 100%  |
+| Metric              | Value            |
+| ------------------- | ---------------- |
+| Total items         | 4,082            |
+| Grand Plan sprints  | 19               |
+| Roadmap-bound items | 435              |
+| Resolved            | 237 (5.8%)       |
+| S0 Critical         | 35 (18 verified) |
+| S1 High             | 708              |
+| Coverage            | 100%             |
 
 See GRAND_PLAN_V2.md for full sprint details and execution strategy.
 
@@ -1414,10 +1411,10 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 
 | Severity | Count | Description                 | Sprint Location                      |
 | -------- | ----- | --------------------------- | ------------------------------------ |
-| **S0**   | 11    | Critical - Immediate action | **Active Sprint - S0 Critical Debt** |
-| **S1**   | 28    | High - Current/next sprint  | Track D + M1.5                       |
-| **S2**   | 45    | Medium - Backlog priority   | M2                                   |
-| **S3**   | 32    | Low - Nice to have          | Backlog                              |
+| **S0**   | 35    | Critical - Immediate action | **Active Sprint - S0 Critical Debt** |
+| **S1**   | 708   | High - Current/next sprint  | Grand Plan Sprints 4-12              |
+| **S2**   | 1,723 | Medium - Backlog priority   | Grand Plan Sprints 8-12              |
+| **S3**   | 1,616 | Low - Nice to have          | Backlog                              |
 
 ### S0 Critical Items (Immediate Action)
 

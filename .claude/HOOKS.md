@@ -216,13 +216,13 @@ Code Web environments.
 
 ```bash
 # Import from repo to local (~/.claude/)
-node scripts/sync-claude-settings.js --import
+node scripts/sync-claude-settings.js (REMOVED) --import
 
 # Export from local to repo
-node scripts/sync-claude-settings.js --export
+node scripts/sync-claude-settings.js (REMOVED) --export
 
 # Compare differences
-node scripts/sync-claude-settings.js --diff
+node scripts/sync-claude-settings.js (REMOVED) --diff
 ```
 
 **See:** [CROSS_PLATFORM_SETUP.md](./CROSS_PLATFORM_SETUP.md) for full setup

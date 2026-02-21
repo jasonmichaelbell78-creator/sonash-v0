@@ -447,7 +447,7 @@ function convertIssue(issue) {
     throw new Error("Issue missing required 'key' field");
   }
 
-  return {
+  const item = {
     source_id: `sonarcloud:${key}`,
     source_file: "sonarcloud-sync",
     category: mapCategory(issue),
@@ -467,6 +467,20 @@ function convertIssue(issue) {
     rule: sanitizeString(issue.rule, 100),
     sonar_key: key,
   };
+
+  // Post-intake severity correction (Session #179)
+  // SonarCloud BLOCKER for cognitive complexity → S1, not S0
+  if (item.severity === "S0") {
+    const title = (item.title || "").toLowerCase();
+    if (
+      title.includes("cognitive complexity") ||
+      title.includes("refactor this function to reduce")
+    ) {
+      item.severity = "S1";
+    }
+  }
+
+  return item;
 }
 
 // Log resolution activity (non-fatal - logging failure should not crash script)

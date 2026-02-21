@@ -1,11 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings",
   "_comment": "Global Claude Code settings template. To use: copy or merge into ~/.claude/settings.json",
-  "_usage": {
-    "export": "node scripts/sync-claude-settings.js --export",
-    "import": "node scripts/sync-claude-settings.js --import",
-    "diff": "node scripts/sync-claude-settings.js --diff"
-  },
+  "_usage": "sync-claude-settings.js has been removed — manually merge this template into ~/.claude/settings.json",
   "model": "opus",
   "alwaysThinkingEnabled": true,
   "hooks": {

@@ -20,9 +20,12 @@ const path = require("node:path");
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(BASE_DIR, "MASTER_DEBT.jsonl");
+const DEDUPED_FILE = INPUT_FILE;
 const INDEX_FILE = path.join(BASE_DIR, "INDEX.md");
 const VIEWS_DIR = path.join(BASE_DIR, "views");
 const LEGACY_MAP_FILE = path.join(BASE_DIR, "LEGACY_ID_MAPPING.json");
+
+// Sync safety guard moved into main() — see syncBeforeRead()
 
 // Format date
 function formatDate(date) {
@@ -78,6 +81,9 @@ const PRESERVED_FIELDS = [
   "roadmap_ref",
   "milestone",
   "roadmap_phase",
+  "source",
+  "source_id",
+  "source_file",
 ];
 
 // Load existing items to preserve their IDs and status/resolution fields
@@ -227,6 +233,10 @@ function normalizeFilePath(filePath) {
 function ensureDefaults(item) {
   if (!item.source_id) {
     item.source_id = item.fingerprint ? `intake:${item.fingerprint}` : `intake:${item.id}`;
+  }
+  // Derive source from source_id prefix if not set (e.g. "intake:xxx" -> "intake")
+  if (!item.source && item.source_id && item.source_id.includes(":")) {
+    item.source = item.source_id.split(":")[0];
   }
   if (!item.status) {
     item.status = "NEW";
@@ -504,6 +514,26 @@ function mergeManualItems(items) {
 }
 
 function main() {
+  // Sync safety guard (Session #179)
+  // If MASTER is newer than deduped, auto-sync to prevent overwrite regression
+  try {
+    const masterStat = fs.statSync(MASTER_FILE);
+    const dedupedStat = fs.statSync(DEDUPED_FILE);
+    if (masterStat.mtimeMs > dedupedStat.mtimeMs + 5000) {
+      console.warn("⚠️  MASTER_DEBT.jsonl is newer than deduped.jsonl — auto-syncing...");
+      const { execFileSync } = require("node:child_process");
+      try {
+        execFileSync("node", [path.join(__dirname, "sync-deduped.js"), "--apply"], {
+          stdio: "pipe",
+        });
+      } catch {
+        console.warn("   sync-deduped.js failed, continuing with existing deduped.jsonl");
+      }
+    }
+  } catch {
+    // Files may not exist yet, continue normally
+  }
+
   console.log("📝 Generating TDMS views and final output...\n");
 
   const { items, newCount, preservedCount } = readAndAssignIds();

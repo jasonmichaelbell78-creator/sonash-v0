@@ -9,20 +9,37 @@
 
 ---
 
-## NEW (476)
+## NEW (846)
 
 | ID        | Title                                                           | Severity | Category        |
 | --------- | --------------------------------------------------------------- | -------- | --------------- |
+| DEBT-7010 | Critical Findings (Must Fix Immediately)                        | S1       | security        |
 | DEBT-3529 | Critical Findings (Must Fix Immediately)                        | S1       | security        |
+| DEBT-7024 | CRITICAL (Production Blockers)                                  | S1       | refactoring     |
 | DEBT-3543 | CRITICAL (Production Blockers)                                  | S1       | refactoring     |
+| DEBT-7027 | Anonymous Auth Data Loss                                        | S1       | refactoring     |
 | DEBT-3546 | Anonymous Auth Data Loss                                        | S1       | refactoring     |
+| DEBT-7059 | Add E2E tests for critical user flows                           | S1       | refactoring     |
 | DEBT-3578 | Add E2E tests for critical user flows                           | S1       | refactoring     |
 | DEBT-3579 | Add E2E tests for critical user flows                           | S1       | refactoring     |
+| DEBT-7126 | CRITICAL: Missing Error Boundaries                              | S1       | code-quality    |
 | DEBT-3648 | CRITICAL: Missing Error Boundaries                              | S1       | code-quality    |
+| DEBT-7131 | CQ-1: useEffect Dependency Array Issues 🔴 CRITICAL             | S1       | code-quality    |
+| DEBT-7133 | CQ-3: Missing Null Checks 🔴 CRITICAL                           | S1       | code-quality    |
 | DEBT-3655 | CQ-3: Missing Null Checks 🔴 CRITICAL                           | S1       | code-quality    |
+| DEBT-7137 | CQ-7: Missing Input Validation 🔴 CRITICAL                      | S1       | code-quality    |
+| DEBT-7142 | B-1: Race Condition in Auto-Save 🔴 CRITICAL                    | S1       | code-quality    |
+| DEBT-7143 | B-2: Listener Cleanup Memory Leak 🔴 CRITICAL                   | S1       | code-quality    |
+| DEBT-7148 | P-1: All Fonts Loaded on Initial Page Load 🔴 CRITICAL          | S1       | code-quality    |
+| DEBT-7153 | S-1: Client-Side Date ID Manipulation 🔴 CRITICAL               | S1       | code-quality    |
+| DEBT-7170 | §2.2 - Critical                                                 | S1       | code-quality    |
 | DEBT-3692 | §2.2 - Critical                                                 | S1       | code-quality    |
+| DEBT-7223 | Firestore Security Rules Bypass (daily_logs direct write)       | S1       | security        |
 | DEBT-3745 | Firestore Security Rules Bypass (daily_logs direct write)       | S1       | security        |
+| DEBT-7224 | Rate Limiter Fail-Open Vulnerability                            | S1       | code-quality    |
 | DEBT-3746 | Rate Limiter Fail-Open Vulnerability                            | S1       | code-quality    |
+| DEBT-7303 | Critical (Logic/Security)                                       | S1       | security        |
+| DEBT-7357 | Add `npm audit --audit-level=high` to `.husky/pre-push`         | S1       | process         |
 | DEBT-3880 | Add `npm audit --audit-level=high` to `.husky/pre-push`         | S1       | process         |
 | DEBT-6938 | Missing Firestore Rule for security_logs Collection             | S1       | security        |
 | DEBT-6954 | Firestore security_logs Collection Has No Explicit Rule         | S1       | security        |
@@ -32,46 +49,93 @@
 | DEBT-2435 | AUDIT_TRACKER.md threshold matrix and version history           | S1       | code-quality    |
 | DEBT-2464 | generate-pending-alerts.js fragile DEFERRED item extraction     | S1       | code-quality    |
 | DEBT-2469 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused          | S1       | code-quality    |
+| DEBT-7011 | High Severity Findings (Security & Stability)                   | S2       | security        |
 | DEBT-3530 | High Severity Findings (Security & Stability)                   | S2       | security        |
+| DEBT-7030 | OPTIMIZATION (Performance & Complexity)                         | S2       | refactoring     |
 | DEBT-3549 | OPTIMIZATION (Performance & Complexity)                         | S2       | refactoring     |
+| DEBT-7039 | Top 3 High-Impact Changes                                       | S2       | refactoring     |
 | DEBT-3558 | Top 3 High-Impact Changes                                       | S2       | refactoring     |
+| DEBT-7064 | Inconsistent patterns (throw vs return)                         | S2       | refactoring     |
 | DEBT-3585 | Inconsistent patterns (throw vs return)                         | S2       | refactoring     |
+| DEBT-7068 | **A3: Error Handling** — 1 week — High — P0                     | S2       | refactoring     |
 | DEBT-3589 | **A3: Error Handling** — 1 week — High — P0                     | S2       | refactoring     |
+| DEBT-7070 | **A4: Image Optimization** — 3 days — High — P1                 | S2       | refactoring     |
 | DEBT-3591 | **A4: Image Optimization** — 3 days — High — P1                 | S2       | refactoring     |
+| DEBT-7071 | **A1: Context Splitting** — 1 week — Very High — P0             | S2       | refactoring     |
 | DEBT-3592 | **A1: Context Splitting** — 1 week — Very High — P0             | S2       | refactoring     |
+| DEBT-7072 | **A2: Component Decomposition** — 2 weeks — High — P1           | S2       | refactoring     |
 | DEBT-3593 | **A2: Component Decomposition** — 2 weeks — High — P1           | S2       | refactoring     |
+| DEBT-7073 | **A5: Bundle Optimization** — 1 week — High — P1                | S2       | refactoring     |
 | DEBT-3594 | **A5: Bundle Optimization** — 1 week — High — P1                | S2       | refactoring     |
+| DEBT-7074 | **Breaking Changes** — Medium — High — Comprehensive test...    | S2       | code-quality    |
 | DEBT-3595 | **Breaking Changes** — Medium — High — Comprehensive test...    | S2       | code-quality    |
+| DEBT-7075 | **Performance Regression** — Low — High — Benchmark befor...    | S2       | refactoring     |
 | DEBT-3596 | **Performance Regression** — Low — High — Benchmark befor...    | S2       | refactoring     |
+| DEBT-7078 | Weaknesses (Areas for Improvement) ⚠️                           | S2       | refactoring     |
 | DEBT-3599 | Weaknesses (Areas for Improvement) ⚠️                           | S2       | refactoring     |
+| DEBT-7094 | Problem: Inconsistent Patterns                                  | S2       | refactoring     |
 | DEBT-3616 | Problem: Inconsistent Patterns                                  | S2       | refactoring     |
+| DEBT-7104 | Image Optimization                                              | S2       | refactoring     |
 | DEBT-3626 | Image Optimization                                              | S2       | refactoring     |
+| DEBT-7108 | Bundle Size Analysis & Optimization                             | S2       | performance     |
 | DEBT-3630 | Bundle Size Analysis & Optimization                             | S2       | performance     |
+| DEBT-7114 | Optimization Strategies                                         | S2       | refactoring     |
 | DEBT-3636 | Optimization Strategies                                         | S2       | refactoring     |
+| DEBT-7117 | Problem: Inconsistent Abstraction                               | S2       | refactoring     |
 | DEBT-3639 | Problem: Inconsistent Abstraction                               | S2       | refactoring     |
+| DEBT-7127 | Context Proliferation Risk                                      | S2       | code-quality    |
 | DEBT-3649 | Context Proliferation Risk                                      | S2       | code-quality    |
+| DEBT-7128 | No Offline Support                                              | S2       | code-quality    |
+| DEBT-7132 | CQ-2: Inconsistent Date Handling 🟡 HIGH                        | S2       | code-quality    |
 | DEBT-3654 | CQ-2: Inconsistent Date Handling 🟡 HIGH                        | S2       | code-quality    |
-| DEBT-3661 | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | code-quality    |
-| DEBT-3671 | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | code-quality    |
+| DEBT-7135 | CQ-5: Console Logging in Production 🟡 HIGH                     | S2       | code-quality    |
+| DEBT-7138 | CQ-8: No Loading States for Mutations 🟡 HIGH                   | S2       | code-quality    |
+| DEBT-7139 | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | code-quality    |
+| DEBT-7144 | B-3: Onboarding Wizard AnimatePresence Issue 🟡 HIGH            | S2       | code-quality    |
+| DEBT-7145 | B-4: Meeting Time Sort Failure 🟡 HIGH                          | S2       | code-quality    |
+| DEBT-7149 | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | code-quality    |
+| DEBT-7150 | P-3: No Code Splitting 🟡 HIGH                                  | S2       | code-quality    |
 | DEBT-3672 | P-3: No Code Splitting 🟡 HIGH                                  | S2       | code-quality    |
+| DEBT-7154 | S-2: Missing Rate Limiting 🟡 HIGH                              | S2       | code-quality    |
 | DEBT-3676 | S-2: Missing Rate Limiting 🟡 HIGH                              | S2       | code-quality    |
+| DEBT-7156 | S-4: No XSS Protection on User Input 🟡 HIGH                    | S2       | security        |
+| DEBT-7172 | §3.1 - High                                                     | S2       | code-quality    |
 | DEBT-3694 | §3.1 - High                                                     | S2       | code-quality    |
+| DEBT-7173 | S-2 (Missing Rate Limiting)                                     | S2       | code-quality    |
 | DEBT-3695 | S-2 (Missing Rate Limiting)                                     | S2       | code-quality    |
+| DEBT-7175 | CQ-2 (Inconsistent Date Handling)                               | S2       | code-quality    |
 | DEBT-3697 | CQ-2 (Inconsistent Date Handling)                               | S2       | code-quality    |
+| DEBT-7178 | B-2 (Listener Cleanup Memory Leak)                              | S2       | code-quality    |
 | DEBT-3700 | B-2 (Listener Cleanup Memory Leak)                              | S2       | code-quality    |
+| DEBT-7185 | Finding #1 - High                                               | S2       | code-quality    |
+| DEBT-7186 | Finding #2 - High                                               | S2       | code-quality    |
 | DEBT-3707 | Finding #1 - High                                               | S2       | code-quality    |
 | DEBT-3708 | Finding #2 - High                                               | S2       | code-quality    |
+| DEBT-7189 | §3.3 (Missing Admin Checks)                                     | S2       | code-quality    |
 | DEBT-3711 | §3.3 (Missing Admin Checks)                                     | S2       | code-quality    |
+| DEBT-7225 | Inconsistent Date Handling / Timezone Issues                    | S2       | code-quality    |
 | DEBT-3747 | Inconsistent Date Handling / Timezone Issues                    | S2       | code-quality    |
+| DEBT-7226 | Listener Memory Leaks / Cleanup Issues                          | S2       | code-quality    |
 | DEBT-3748 | Listener Memory Leaks / Cleanup Issues                          | S2       | code-quality    |
+| DEBT-7227 | useEffect Dependency Issues (isEditing)                         | S2       | code-quality    |
 | DEBT-3749 | useEffect Dependency Issues (isEditing)                         | S2       | code-quality    |
+| DEBT-7228 | Missing Pagination for Large Datasets                           | S2       | code-quality    |
 | DEBT-3750 | Missing Pagination for Large Datasets                           | S2       | code-quality    |
+| DEBT-7229 | Onboarding Overwrites Existing Profiles                         | S2       | code-quality    |
 | DEBT-3751 | Onboarding Overwrites Existing Profiles                         | S2       | code-quality    |
+| DEBT-7230 | Resources Page Auth Race Condition                              | S2       | code-quality    |
 | DEBT-3752 | Resources Page Auth Race Condition                              | S2       | code-quality    |
+| DEBT-7259 | Fix Auto-Save Race Condition (B-1)                              | S2       | refactoring     |
+| DEBT-7260 | Fix Listener Memory Leak (B-2)                                  | S2       | refactoring     |
+| DEBT-7282 | 🏆 TOP 3 HIGH-IMPACT CHANGES                                    | S2       | refactoring     |
 | DEBT-3804 | 🏆 TOP 3 HIGH-IMPACT CHANGES                                    | S2       | refactoring     |
+| DEBT-7284 | AuthProvider Optimization                                       | S2       | refactoring     |
 | DEBT-3806 | AuthProvider Optimization                                       | S2       | refactoring     |
+| DEBT-7304 | Optimization (Complexity/Performance)                           | S2       | code-quality    |
 | DEBT-3826 | Optimization (Complexity/Performance)                           | S2       | code-quality    |
+| DEBT-7324 | RISK: Rich Text Editor                                          | S2       | security        |
 | DEBT-3847 | RISK: Rich Text Editor                                          | S2       | security        |
+| DEBT-7325 | RISK: Sharing Journal Entries                                   | S2       | security        |
 | DEBT-3848 | RISK: Sharing Journal Entries                                   | S2       | security        |
 | DEBT-6917 | Zero Next.js Error/Loading/NotFound Boundary Pages              | S2       | code-quality    |
 | DEBT-6918 | lib/ Directory Structure Much Richer Than Plan Documents        | S2       | documentation   |
@@ -112,7 +176,7 @@
 | DEBT-6990 | TDMS Has Rich Substructure                                      | S2       | code-quality    |
 | DEBT-6992 | Error Knowledge Base Unmapped                                   | S2       | code-quality    |
 | DEBT-6994 | No Firestore Indexes Validation                                 | S2       | code-quality    |
-| DEBT-0001 | Untitled                                                        | S2       | code-quality    |
+| DEBT-7375 | Untitled                                                        | S2       | code-quality    |
 | DEBT-2132 | Untitled finding                                                | S2       | code-quality    |
 | DEBT-2180 | Date formats inconsistent across the app                        | S2       | enhancements    |
 | DEBT-2186 | Missing ARIA labels on critical navigation tabs                 | S2       | enhancements    |
@@ -132,267 +196,561 @@
 | DEBT-2479 | Audit inventory stage files (6 files) - generated but unr...    | S2       | code-quality    |
 | DEBT-2481 | Plan documents with zero inbound refs - 5 planning files ...    | S2       | code-quality    |
 | DEBT-2808 | Date formats inconsistent across the app                        | S2       | enhancements    |
+| DEBT-3661 | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | code-quality    |
+| DEBT-3671 | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | code-quality    |
+| DEBT-0001 | Make action buttons customizable by user (save preference...    | S3       | code-quality    |
+| DEBT-7006 | Pass limit to FirestoreService when it supports configura...    | S3       | code-quality    |
+| DEBT-7007 | Refactor to reduce cognitive complexity (currently 29, ta...    | S3       | refactoring     |
+| DEBT-7008 | Create a userIdHash → uid lookup collection for better pe...    | S3       | performance     |
+| DEBT-7009 | Consider pre-computing cohort retention in a daily job          | S3       | code-quality    |
+| DEBT-7012 | Medium Severity & Code Quality Findings                         | S3       | security        |
 | DEBT-3531 | Medium Severity & Code Quality Findings                         | S3       | security        |
-| DEBT-3534 | Potential Root Cause A: API Key Restrictions (Most Likely)      | S3       | security        |
+| DEBT-7013 | AI Model Comparison                                             | S3       | security        |
+| DEBT-7014 | Add limit(50) to queries in lib/db/meetings.ts and              | S3       | security        |
+| DEBT-7015 | Potential Root Cause A: API Key Restrictions (Most Likely)      | S3       | security        |
+| DEBT-7016 | Potential Root Cause B: Firebase App Check API Not Enabled      | S3       | security        |
 | DEBT-3535 | Potential Root Cause B: Firebase App Check API Not Enabled      | S3       | security        |
+| DEBT-7017 | Potential Root Cause C: "Zombie" Token or Project/App Mis...    | S3       | security        |
 | DEBT-3536 | Potential Root Cause C: "Zombie" Token or Project/App Mis...    | S3       | security        |
+| DEBT-7018 | Potential Root Cause D: System Time Skew (Edge Case)            | S3       | security        |
 | DEBT-3537 | Potential Root Cause D: System Time Skew (Edge Case)            | S3       | security        |
+| DEBT-7019 | Recommended Immediate Action                                    | S3       | security        |
 | DEBT-3538 | Recommended Immediate Action                                    | S3       | security        |
+| DEBT-7020 | Execution Flow Analysis                                         | S3       | refactoring     |
 | DEBT-3539 | Execution Flow Analysis                                         | S3       | refactoring     |
+| DEBT-7021 | Code Smells Identified                                          | S3       | refactoring     |
 | DEBT-3540 | Code Smells Identified                                          | S3       | refactoring     |
+| DEBT-7022 | 🚨 DANGEROUS PATTERNS                                           | S3       | refactoring     |
 | DEBT-3541 | 🚨 DANGEROUS PATTERNS                                           | S3       | refactoring     |
+| DEBT-7023 | 🔍 EDGE CASES                                                   | S3       | refactoring     |
 | DEBT-3542 | 🔍 EDGE CASES                                                   | S3       | refactoring     |
-| DEBT-3547 | Race Conditions in State                                        | S3       | refactoring     |
-| DEBT-3550 | Inefficient Equality Checking                                   | S3       | refactoring     |
-| DEBT-3553 | Dynamic Import Anti-Pattern                                     | S3       | code-quality    |
-| DEBT-3554 | Type Gymnastics                                                 | S3       | refactoring     |
+| DEBT-7025 | Unsafe Non-Null Assertions                                      | S3       | refactoring     |
+| DEBT-7026 | Client-Side Security Theater                                    | S3       | security        |
+| DEBT-7028 | Race Conditions in State                                        | S3       | refactoring     |
+| DEBT-7029 | No Server-Side Rate Limiting                                    | S3       | refactoring     |
+| DEBT-7031 | Inefficient Equality Checking                                   | S3       | refactoring     |
+| DEBT-7032 | Massive Context Provider (God Object)                           | S3       | refactoring     |
+| DEBT-7033 | Large God Component                                             | S3       | refactoring     |
+| DEBT-7034 | Dynamic Import Anti-Pattern                                     | S3       | code-quality    |
+| DEBT-7035 | Type Gymnastics                                                 | S3       | refactoring     |
+| DEBT-7036 | STYLE/READABILITY                                               | S3       | refactoring     |
 | DEBT-3555 | STYLE/READABILITY                                               | S3       | refactoring     |
+| DEBT-7037 | Refactoring Strategy                                            | S3       | refactoring     |
 | DEBT-3556 | Refactoring Strategy                                            | S3       | refactoring     |
+| DEBT-7038 | Refactor #5: Split AuthProvider (Optional - Breaking Change)    | S3       | refactoring     |
+| DEBT-7040 | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)          | S3       | refactoring     |
 | DEBT-3559 | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)          | S3       | refactoring     |
+| DEBT-7041 | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics)    | S3       | refactoring     |
 | DEBT-3560 | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics)    | S3       | refactoring     |
+| DEBT-7042 | 🏆 #3: Server-Side Security Documentation (Guided Migration)    | S3       | security        |
 | DEBT-3561 | 🏆 #3: Server-Side Security Documentation (Guided Migration)    | S3       | security        |
+| DEBT-7043 | METRICS & VALIDATION                                            | S3       | refactoring     |
 | DEBT-3562 | METRICS & VALIDATION                                            | S3       | refactoring     |
+| DEBT-7044 | Security Posture                                                | S3       | security        |
 | DEBT-3563 | Security Posture                                                | S3       | security        |
+| DEBT-7045 | Immediate (This PR)                                             | S3       | refactoring     |
 | DEBT-3564 | Immediate (This PR)                                             | S3       | refactoring     |
+| DEBT-7046 | Short-Term (Next Sprint)                                        | S3       | refactoring     |
 | DEBT-3565 | Short-Term (Next Sprint)                                        | S3       | refactoring     |
+| DEBT-7047 | Long-Term (Production Readiness)                                | S3       | refactoring     |
 | DEBT-3566 | Long-Term (Production Readiness)                                | S3       | refactoring     |
+| DEBT-7048 | Remove dangerous non-null assertions                            | S3       | refactoring     |
 | DEBT-3567 | Remove dangerous non-null assertions                            | S3       | refactoring     |
+| DEBT-7049 | Add runtime checks before export                                | S3       | refactoring     |
 | DEBT-3568 | Add runtime checks before export                                | S3       | refactoring     |
+| DEBT-7050 | Create isFirebaseTimestamp() type guard                         | S3       | refactoring     |
 | DEBT-3569 | Create isFirebaseTimestamp() type guard                         | S3       | refactoring     |
+| DEBT-7051 | Create isFirestoreError() type guard                            | S3       | refactoring     |
 | DEBT-3570 | Create isFirestoreError() type guard                            | S3       | refactoring     |
+| DEBT-7052 | Remove type gymnastics from components                          | S3       | refactoring     |
 | DEBT-3571 | Remove type gymnastics from components                          | S3       | refactoring     |
+| DEBT-7053 | Add JSDoc warnings about client-side limitations                | S3       | documentation   |
 | DEBT-3572 | Add JSDoc warnings about client-side limitations                | S3       | documentation   |
+| DEBT-7054 | Implement Cloud Functions for rate limiting                     | S3       | refactoring     |
 | DEBT-3573 | Implement Cloud Functions for rate limiting                     | S3       | refactoring     |
+| DEBT-7055 | Add Firebase App Check                                          | S3       | refactoring     |
 | DEBT-3574 | Add Firebase App Check                                          | S3       | refactoring     |
+| DEBT-7056 | Implement account linking for anonymous users                   | S3       | refactoring     |
 | DEBT-3575 | Implement account linking for anonymous users                   | S3       | refactoring     |
+| DEBT-7057 | Split AuthProvider into focused contexts                        | S3       | refactoring     |
 | DEBT-3576 | Split AuthProvider into focused contexts                        | S3       | refactoring     |
+| DEBT-7058 | Add integration tests for Firestore operations                  | S3       | refactoring     |
 | DEBT-3577 | Add integration tests for Firestore operations                  | S3       | refactoring     |
+| DEBT-7060 | Implement external logging (Sentry)                             | S3       | refactoring     |
 | DEBT-3580 | Implement external logging (Sentry)                             | S3       | refactoring     |
 | DEBT-3581 | Implement external logging (Sentry)                             | S3       | refactoring     |
+| DEBT-7061 | Add performance monitoring                                      | S3       | refactoring     |
 | DEBT-3582 | Add performance monitoring                                      | S3       | refactoring     |
+| DEBT-7062 | AuthProvider has 7 state variables (SRP violation)              | S3       | refactoring     |
 | DEBT-3583 | AuthProvider has 7 state variables (SRP violation)              | S3       | refactoring     |
+| DEBT-7063 | book-cover.tsx = 337 lines (mixed concerns)                     | S3       | refactoring     |
 | DEBT-3584 | book-cover.tsx = 337 lines (mixed concerns)                     | S3       | refactoring     |
+| DEBT-7065 | Adapter exists but not used consistently                        | S3       | refactoring     |
 | DEBT-3586 | Adapter exists but not used consistently                        | S3       | refactoring     |
+| DEBT-7066 | Only 10-15% coverage                                            | S3       | code-quality    |
 | DEBT-3587 | Only 10-15% coverage                                            | S3       | code-quality    |
+| DEBT-7067 | Unknown size, heavy dependencies                                | S3       | refactoring     |
 | DEBT-3588 | Unknown size, heavy dependencies                                | S3       | refactoring     |
+| DEBT-7069 | **A6: Adapter Pattern** — 3 days — Medium — P1                  | S3       | refactoring     |
 | DEBT-3590 | **A6: Adapter Pattern** — 3 days — Medium — P1                  | S3       | refactoring     |
+| DEBT-7076 | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks...    | S3       | refactoring     |
 | DEBT-3597 | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks...    | S3       | refactoring     |
+| DEBT-7077 | **Team Capacity** — Medium — Medium — Parallel work on M1...    | S3       | refactoring     |
 | DEBT-3598 | **Team Capacity** — Medium — Medium — Parallel work on M1...    | S3       | refactoring     |
+| DEBT-7079 | Improvement Roadmap                                             | S3       | refactoring     |
 | DEBT-3600 | Improvement Roadmap                                             | S3       | refactoring     |
+| DEBT-7080 | Target Architecture Quality: 4.8/5                              | S3       | refactoring     |
 | DEBT-3601 | Target Architecture Quality: 4.8/5                              | S3       | refactoring     |
 | DEBT-3602 | Split AuthProvider into Focused Contexts                        | S3       | refactoring     |
+| DEBT-7081 | Problem Statement                                               | S3       | refactoring     |
 | DEBT-3603 | Problem Statement                                               | S3       | refactoring     |
+| DEBT-7082 | Solution: Split into 3 Focused Contexts                         | S3       | refactoring     |
 | DEBT-3604 | Solution: Split into 3 Focused Contexts                         | S3       | refactoring     |
+| DEBT-7083 | Architecture                                                    | S3       | refactoring     |
 | DEBT-3605 | Architecture                                                    | S3       | refactoring     |
+| DEBT-7084 | Estimated Effort                                                | S3       | refactoring     |
 | DEBT-3606 | Estimated Effort                                                | S3       | refactoring     |
+| DEBT-7085 | Decompose Large Components                                      | S3       | refactoring     |
 | DEBT-3607 | Decompose Large Components                                      | S3       | refactoring     |
+| DEBT-7086 | Problem: `book-cover.tsx` (337 lines)                           | S3       | refactoring     |
 | DEBT-3608 | Problem: `book-cover.tsx` (337 lines)                           | S3       | refactoring     |
+| DEBT-7087 | Solution: Extract 4 Sub-Components                              | S3       | refactoring     |
 | DEBT-3609 | Solution: Extract 4 Sub-Components                              | S3       | refactoring     |
+| DEBT-7088 | `CleanDaysCalculator.tsx` (Pure Logic)                          | S3       | refactoring     |
 | DEBT-3610 | `CleanDaysCalculator.tsx` (Pure Logic)                          | S3       | refactoring     |
+| DEBT-7089 | `BookAnimation.tsx` (Animation Logic)                           | S3       | refactoring     |
 | DEBT-3611 | `BookAnimation.tsx` (Animation Logic)                           | S3       | refactoring     |
+| DEBT-7090 | `BookAuthGuard.tsx` (Auth Logic)                                | S3       | refactoring     |
 | DEBT-3612 | `BookAuthGuard.tsx` (Auth Logic)                                | S3       | refactoring     |
+| DEBT-7091 | `BookCover.tsx` (Simplified Composition)                        | S3       | refactoring     |
+| DEBT-7092 | Component Size Target                                           | S3       | refactoring     |
 | DEBT-3614 | Component Size Target                                           | S3       | refactoring     |
+| DEBT-7093 | Standardize Error Handling                                      | S3       | refactoring     |
 | DEBT-3615 | Standardize Error Handling                                      | S3       | refactoring     |
+| DEBT-7095 | Solution: Result<T> Type Pattern                                | S3       | refactoring     |
 | DEBT-3617 | Solution: Result<T> Type Pattern                                | S3       | refactoring     |
+| DEBT-7096 | Define `Result<T>` Type                                         | S3       | refactoring     |
 | DEBT-3618 | Define `Result<T>` Type                                         | S3       | refactoring     |
+| DEBT-7097 | Standardize Service Methods                                     | S3       | refactoring     |
+| DEBT-7098 | Update Component Usage                                          | S3       | refactoring     |
 | DEBT-3620 | Update Component Usage                                          | S3       | refactoring     |
+| DEBT-7099 | Error Handling Strategy Document                                | S3       | documentation   |
 | DEBT-3621 | Error Handling Strategy Document                                | S3       | documentation   |
+| DEBT-7100 | When to Use Each Pattern                                        | S3       | refactoring     |
 | DEBT-3622 | When to Use Each Pattern                                        | S3       | refactoring     |
+| DEBT-7101 | Result<T> (Preferred for services)                              | S3       | refactoring     |
 | DEBT-3623 | Result<T> (Preferred for services)                              | S3       | refactoring     |
+| DEBT-7102 | Throw (Use sparingly)                                           | S3       | refactoring     |
 | DEBT-3624 | Throw (Use sparingly)                                           | S3       | refactoring     |
+| DEBT-7103 | Error Boundaries (UI layer)                                     | S3       | refactoring     |
 | DEBT-3625 | Error Boundaries (UI layer)                                     | S3       | refactoring     |
+| DEBT-7105 | Problem: Direct Image Usage                                     | S3       | refactoring     |
 | DEBT-3627 | Problem: Direct Image Usage                                     | S3       | refactoring     |
+| DEBT-7106 | Solution: Next.js Image Component                               | S3       | refactoring     |
 | DEBT-3628 | Solution: Next.js Image Component                               | S3       | refactoring     |
+| DEBT-7107 | Audit Checklist                                                 | S3       | refactoring     |
 | DEBT-3629 | Audit Checklist                                                 | S3       | refactoring     |
+| DEBT-7109 | Problem: Unknown Bundle Size                                    | S3       | performance     |
 | DEBT-3631 | Problem: Unknown Bundle Size                                    | S3       | performance     |
+| DEBT-7110 | Solution: Bundle Analysis                                       | S3       | refactoring     |
 | DEBT-3632 | Solution: Bundle Analysis                                       | S3       | refactoring     |
+| DEBT-7111 | Install Analyzer                                                | S3       | refactoring     |
 | DEBT-3633 | Install Analyzer                                                | S3       | refactoring     |
+| DEBT-7112 | Configure Next.js                                               | S3       | refactoring     |
 | DEBT-3634 | Configure Next.js                                               | S3       | refactoring     |
+| DEBT-7113 | Run Analysis                                                    | S3       | refactoring     |
 | DEBT-3635 | Run Analysis                                                    | S3       | refactoring     |
+| DEBT-7115 | Bundle Size Targets                                             | S3       | performance     |
 | DEBT-3637 | Bundle Size Targets                                             | S3       | performance     |
+| DEBT-7116 | Database Adapter Pattern Consistency                            | S3       | refactoring     |
 | DEBT-3638 | Database Adapter Pattern Consistency                            | S3       | refactoring     |
+| DEBT-7118 | Benefits of Adapter Pattern                                     | S3       | refactoring     |
 | DEBT-3640 | Benefits of Adapter Pattern                                     | S3       | refactoring     |
+| DEBT-7119 | Implementation                                                  | S3       | refactoring     |
 | DEBT-3641 | Implementation                                                  | S3       | refactoring     |
+| DEBT-7120 | Add responsive sizes attribute                                  | S3       | refactoring     |
 | DEBT-3642 | Add responsive sizes attribute                                  | S3       | refactoring     |
+| DEBT-7121 | Update AuthProvider to use adapter                              | S3       | refactoring     |
 | DEBT-3643 | Update AuthProvider to use adapter                              | S3       | refactoring     |
+| DEBT-7122 | Update all components to use adapter                            | S3       | refactoring     |
 | DEBT-3644 | Update all components to use adapter                            | S3       | refactoring     |
+| DEBT-7123 | Add adapter interface tests                                     | S3       | refactoring     |
 | DEBT-3645 | Add adapter interface tests                                     | S3       | refactoring     |
+| DEBT-7124 | Remove direct FirestoreService imports                          | S3       | refactoring     |
 | DEBT-3646 | Remove direct FirestoreService imports                          | S3       | refactoring     |
+| DEBT-7125 | Key Findings:                                                   | S3       | code-quality    |
 | DEBT-3647 | Key Findings:                                                   | S3       | code-quality    |
+| DEBT-7129 | Code Quality Issues                                             | S3       | code-quality    |
 | DEBT-3651 | Code Quality Issues                                             | S3       | code-quality    |
+| DEBT-7130 | Severity Legend:                                                | S3       | code-quality    |
 | DEBT-3652 | Severity Legend:                                                | S3       | code-quality    |
+| DEBT-7134 | CQ-4: Hardcoded Magic Strings 🟢 MEDIUM                         | S3       | code-quality    |
 | DEBT-3656 | CQ-4: Hardcoded Magic Strings 🟢 MEDIUM                         | S3       | code-quality    |
+| DEBT-7136 | CQ-6: Unused Dependencies 🟢 MEDIUM                             | S3       | code-quality    |
+| DEBT-7140 | CQ-10: Excessive Font Loading ⚪ LOW                            | S3       | code-quality    |
+| DEBT-7141 | CQ-11: No Component Documentation 🟢 MEDIUM                     | S3       | documentation   |
 | DEBT-3663 | CQ-11: No Component Documentation 🟢 MEDIUM                     | S3       | documentation   |
-| DEBT-3668 | B-5: Anonymous Session Edge Case 🟢 MEDIUM                      | S3       | code-quality    |
+| DEBT-7146 | B-5: Anonymous Session Edge Case 🟢 MEDIUM                      | S3       | code-quality    |
+| DEBT-7147 | Performance Issues                                              | S3       | code-quality    |
 | DEBT-3669 | Performance Issues                                              | S3       | code-quality    |
+| DEBT-7151 | P-4: localStorage Sync on Every Keystroke 🟢 MEDIUM             | S3       | code-quality    |
+| DEBT-7152 | Security Issues                                                 | S3       | security        |
 | DEBT-3674 | Security Issues                                                 | S3       | security        |
+| DEBT-7155 | S-3: Exposed Firebase Config 🟢 MEDIUM                          | S3       | code-quality    |
+| DEBT-7157 | Testing Coverage                                                | S3       | code-quality    |
 | DEBT-3679 | Testing Coverage                                                | S3       | code-quality    |
+| DEBT-7158 | Accessibility Issues                                            | S3       | code-quality    |
 | DEBT-3680 | Accessibility Issues                                            | S3       | code-quality    |
-| DEBT-3681 | A-1: Missing ARIA Labels 🟢 MEDIUM                              | S3       | code-quality    |
+| DEBT-7159 | A-1: Missing ARIA Labels 🟢 MEDIUM                              | S3       | code-quality    |
+| DEBT-7160 | A-2: Focus Management 🟢 MEDIUM                                 | S3       | code-quality    |
 | DEBT-3682 | A-2: Focus Management 🟢 MEDIUM                                 | S3       | code-quality    |
+| DEBT-7161 | Summary of Issues                                               | S3       | code-quality    |
 | DEBT-3683 | Summary of Issues                                               | S3       | code-quality    |
+| DEBT-7162 | Recommended Prioritization                                      | S3       | code-quality    |
 | DEBT-3684 | Recommended Prioritization                                      | S3       | code-quality    |
+| DEBT-7163 | Long-Term Recommendations                                       | S3       | code-quality    |
 | DEBT-3685 | Long-Term Recommendations                                       | S3       | code-quality    |
+| DEBT-7164 | Add Error Boundaries                                            | S3       | code-quality    |
 | DEBT-3686 | Add Error Boundaries                                            | S3       | code-quality    |
+| DEBT-7165 | Implement Offline Support                                       | S3       | code-quality    |
 | DEBT-3687 | Implement Offline Support                                       | S3       | code-quality    |
+| DEBT-7166 | Add Monitoring                                                  | S3       | code-quality    |
 | DEBT-3688 | Add Monitoring                                                  | S3       | code-quality    |
+| DEBT-7167 | Refactor State Management                                       | S3       | refactoring     |
 | DEBT-3689 | Refactor State Management                                       | S3       | refactoring     |
+| DEBT-7168 | Add End-to-End Tests                                            | S3       | code-quality    |
 | DEBT-3690 | Add End-to-End Tests                                            | S3       | code-quality    |
+| DEBT-7169 | Performance Budget                                              | S3       | code-quality    |
 | DEBT-3691 | Performance Budget                                              | S3       | code-quality    |
+| DEBT-7171 | S-2 (related: rate limiting)                                    | S3       | code-quality    |
 | DEBT-3693 | S-2 (related: rate limiting)                                    | S3       | code-quality    |
+| DEBT-7174 | Not explicitly listed                                           | S3       | code-quality    |
 | DEBT-3696 | Not explicitly listed                                           | S3       | code-quality    |
+| DEBT-7176 | Finding #3 (UTC vs local)                                       | S3       | code-quality    |
 | DEBT-3698 | Finding #3 (UTC vs local)                                       | S3       | code-quality    |
+| DEBT-7177 | §4.2 (Listener Memory Leaks)                                    | S3       | code-quality    |
 | DEBT-3699 | §4.2 (Listener Memory Leaks)                                    | S3       | code-quality    |
+| DEBT-7179 | P-2 (Real-time Listeners Not Optimized)                         | S3       | code-quality    |
 | DEBT-3701 | P-2 (Real-time Listeners Not Optimized)                         | S3       | code-quality    |
+| DEBT-7180 | §4.2 (implied in listener issues)                               | S3       | code-quality    |
 | DEBT-3702 | §4.2 (implied in listener issues)                               | S3       | code-quality    |
+| DEBT-7181 | CQ-1 (isEditing in deps)                                        | S3       | code-quality    |
 | DEBT-3703 | CQ-1 (isEditing in deps)                                        | S3       | code-quality    |
+| DEBT-7182 | P-2 (unnecessary re-subscriptions)                              | S3       | code-quality    |
 | DEBT-3704 | P-2 (unnecessary re-subscriptions)                              | S3       | code-quality    |
+| DEBT-7183 | §3.4 (getAllMeetings, Journal queries)                          | S3       | code-quality    |
 | DEBT-3705 | §3.4 (getAllMeetings, Journal queries)                          | S3       | code-quality    |
+| DEBT-7184 | (implied in performance)                                        | S3       | code-quality    |
 | DEBT-3706 | (implied in performance)                                        | S3       | code-quality    |
+| DEBT-7187 | B-3 (AnimatePresence Issue - different bug)                     | S3       | code-quality    |
 | DEBT-3709 | B-3 (AnimatePresence Issue - different bug)                     | S3       | code-quality    |
+| DEBT-7188 | B-5 (Anonymous Session Edge Case)                               | S3       | code-quality    |
 | DEBT-3710 | B-5 (Anonymous Session Edge Case)                               | S3       | code-quality    |
+| DEBT-7190 | Finding #4 (Meeting seed/clear exposed)                         | S3       | code-quality    |
 | DEBT-3712 | Finding #4 (Meeting seed/clear exposed)                         | S3       | code-quality    |
+| DEBT-7191 | Firebase App Check                                              | S3       | code-quality    |
 | DEBT-3713 | Firebase App Check                                              | S3       | code-quality    |
+| DEBT-7192 | Server-side validation (Zod)                                    | S3       | code-quality    |
 | DEBT-3714 | Server-side validation (Zod)                                    | S3       | code-quality    |
+| DEBT-7193 | Rate limiting (10 req/min)                                      | S3       | code-quality    |
 | DEBT-3715 | Rate limiting (10 req/min)                                      | S3       | code-quality    |
+| DEBT-7194 | Audit logging                                                   | S3       | code-quality    |
 | DEBT-3716 | Audit logging                                                   | S3       | code-quality    |
+| DEBT-7195 | GDPR compliance                                                 | S3       | code-quality    |
 | DEBT-3717 | GDPR compliance                                                 | S3       | code-quality    |
+| DEBT-7196 | Dependency versions                                             | S3       | code-quality    |
 | DEBT-3718 | Dependency versions                                             | S3       | code-quality    |
+| DEBT-7197 | Remove allow create, update from daily_logs                     | S3       | code-quality    |
 | DEBT-3719 | Remove allow create, update from daily_logs                     | S3       | code-quality    |
+| DEBT-7198 | Change to fail-closed strategy                                  | S3       | code-quality    |
 | DEBT-3720 | Change to fail-closed strategy                                  | S3       | code-quality    |
+| DEBT-7199 | Add admin claim check or hide buttons                           | S3       | code-quality    |
 | DEBT-3721 | Add admin claim check or hide buttons                           | S3       | code-quality    |
+| DEBT-7200 | Refactor lib/firebase.ts exports                                | S3       | refactoring     |
+| DEBT-7201 | Check existing profile before recreate                          | S3       | code-quality    |
 | DEBT-3723 | Check existing profile before recreate                          | S3       | code-quality    |
+| DEBT-7202 | Create unified getDateId() utility                              | S3       | code-quality    |
 | DEBT-3724 | Create unified getDateId() utility                              | S3       | code-quality    |
+| DEBT-7203 | Track lifecycle with refs, proper cleanup                       | S3       | code-quality    |
 | DEBT-3725 | Track lifecycle with refs, proper cleanup                       | S3       | code-quality    |
+| DEBT-7204 | Use ref instead of state                                        | S3       | code-quality    |
 | DEBT-3726 | Use ref instead of state                                        | S3       | code-quality    |
+| DEBT-7205 | Implement proper debounce                                       | S3       | code-quality    |
 | DEBT-3727 | Implement proper debounce                                       | S3       | code-quality    |
+| DEBT-7206 | Gate fetches on auth readiness                                  | S3       | code-quality    |
 | DEBT-3728 | Gate fetches on auth readiness                                  | S3       | code-quality    |
+| DEBT-7207 | Add limit() to queries                                          | S3       | code-quality    |
 | DEBT-3729 | Add limit() to queries                                          | S3       | code-quality    |
+| DEBT-7208 | Refactor TodayPage, ResourcesPage                               | S3       | refactoring     |
 | DEBT-3730 | Refactor TodayPage, ResourcesPage                               | S3       | refactoring     |
+| DEBT-7209 | Add hard NODE_ENV check                                         | S3       | code-quality    |
 | DEBT-3731 | Add hard NODE_ENV check                                         | S3       | code-quality    |
+| DEBT-7210 | Fix AnimatePresence conditional                                 | S3       | code-quality    |
 | DEBT-3732 | Fix AnimatePresence conditional                                 | S3       | code-quality    |
+| DEBT-7211 | Normalize time format                                           | S3       | code-quality    |
 | DEBT-3733 | Normalize time format                                           | S3       | code-quality    |
+| DEBT-7212 | Extract to constants file                                       | S3       | refactoring     |
 | DEBT-3734 | Extract to constants file                                       | S3       | refactoring     |
+| DEBT-7213 | Add saving indicators                                           | S3       | code-quality    |
 | DEBT-3735 | Add saving indicators                                           | S3       | code-quality    |
+| DEBT-7214 | Excessive fonts                                                 | S3       | code-quality    |
 | DEBT-3736 | Excessive fonts                                                 | S3       | code-quality    |
+| DEBT-7215 | Code splitting                                                  | S3       | code-quality    |
 | DEBT-3737 | Code splitting                                                  | S3       | code-quality    |
+| DEBT-7216 | Unused dependencies                                             | S3       | code-quality    |
 | DEBT-3738 | Unused dependencies                                             | S3       | code-quality    |
+| DEBT-7217 | Component documentation                                         | S3       | code-quality    |
 | DEBT-3739 | Component documentation                                         | S3       | code-quality    |
+| DEBT-7218 | Accessibility (ARIA)                                            | S3       | code-quality    |
 | DEBT-3740 | Accessibility (ARIA)                                            | S3       | code-quality    |
+| DEBT-7219 | Environment logging                                             | S3       | code-quality    |
 | DEBT-3741 | Environment logging                                             | S3       | code-quality    |
+| DEBT-7220 | ✅ Proceed                                                      | S3       | code-quality    |
 | DEBT-3742 | ✅ Proceed                                                      | S3       | code-quality    |
+| DEBT-7221 | ✅ Proceed (deferred to M4)                                     | S3       | code-quality    |
 | DEBT-3743 | ✅ Proceed (deferred to M4)                                     | S3       | code-quality    |
+| DEBT-7222 | Issues Reported by Multiple Sources (Consolidated)              | S3       | code-quality    |
 | DEBT-3744 | Issues Reported by Multiple Sources (Consolidated)              | S3       | code-quality    |
+| DEBT-7231 | 🟢 Admin Reset Button Missing Protection                        | S3       | code-quality    |
 | DEBT-3753 | 🟢 Admin Reset Button Missing Protection                        | S3       | code-quality    |
+| DEBT-7232 | Issues Already Addressed (per AI_HANDOFF/ROADMAP)               | S3       | code-quality    |
 | DEBT-3754 | Issues Already Addressed (per AI_HANDOFF/ROADMAP)               | S3       | code-quality    |
+| DEBT-7233 | Consolidated Action Plan                                        | S3       | code-quality    |
 | DEBT-3755 | Consolidated Action Plan                                        | S3       | code-quality    |
+| DEBT-7234 | Roadmap Feature Decision Resolution                             | S3       | code-quality    |
 | DEBT-3756 | Roadmap Feature Decision Resolution                             | S3       | code-quality    |
+| DEBT-7235 | Risk Factor A: "Bleeding Edge" Stack Instability                | S3       | code-quality    |
 | DEBT-3757 | Risk Factor A: "Bleeding Edge" Stack Instability                | S3       | code-quality    |
+| DEBT-7236 | Risk Factor B: Node.js 24 Runtime in Cloud Functions            | S3       | code-quality    |
+| DEBT-7237 | Dependency Compatibility Check                                  | S3       | code-quality    |
 | DEBT-3759 | Dependency Compatibility Check                                  | S3       | code-quality    |
+| DEBT-7238 | Summary of Actions                                              | S3       | code-quality    |
 | DEBT-3760 | Summary of Actions                                              | S3       | code-quality    |
-| DEBT-3761 | Prefix with \_index                                             | S3       | code-quality    |
-| DEBT-3762 | Remove unused import                                            | S3       | code-quality    |
-| DEBT-3764 | Use or remove                                                   | S3       | code-quality    |
+| DEBT-7239 | Prefix with \_index                                             | S3       | code-quality    |
+| DEBT-7240 | Remove unused import                                            | S3       | code-quality    |
+| DEBT-7241 | Remove or export if used elsewhere                              | S3       | code-quality    |
+| DEBT-7242 | Use or remove                                                   | S3       | code-quality    |
+| DEBT-7243 | Use FormEvent<HTMLFormElement>                                  | S3       | code-quality    |
 | DEBT-3765 | Use FormEvent<HTMLFormElement>                                  | S3       | code-quality    |
+| DEBT-7244 | Use unknown instead                                             | S3       | code-quality    |
 | DEBT-3766 | Use unknown instead                                             | S3       | code-quality    |
+| DEBT-7245 | Use proper mock types                                           | S3       | code-quality    |
 | DEBT-3767 | Use proper mock types                                           | S3       | code-quality    |
-| DEBT-3768 | Add to deps or use useCallback                                  | S3       | code-quality    |
+| DEBT-7246 | Add to deps or use useCallback                                  | S3       | code-quality    |
+| DEBT-7247 | Warning Breakdown by Category                                   | S3       | code-quality    |
 | DEBT-3769 | Warning Breakdown by Category                                   | S3       | code-quality    |
+| DEBT-7248 | Category 1: Unused Variables (10 warnings)                      | S3       | code-quality    |
 | DEBT-3770 | Category 1: Unused Variables (10 warnings)                      | S3       | code-quality    |
+| DEBT-7249 | Category 2: Explicit `any` Types (18 warnings)                  | S3       | code-quality    |
 | DEBT-3771 | Category 2: Explicit `any` Types (18 warnings)                  | S3       | code-quality    |
+| DEBT-7250 | Category 3: React Hooks Dependencies (1 warning)                | S3       | code-quality    |
 | DEBT-3772 | Category 3: React Hooks Dependencies (1 warning)                | S3       | code-quality    |
+| DEBT-7251 | ESLint Configuration Improvements                               | S3       | code-quality    |
 | DEBT-3773 | ESLint Configuration Improvements                               | S3       | code-quality    |
+| DEBT-7252 | Recommendation 1: Stricter Rules for Application Code           | S3       | code-quality    |
 | DEBT-3774 | Recommendation 1: Stricter Rules for Application Code           | S3       | code-quality    |
+| DEBT-7253 | Recommendation 2: Pre-commit Hook                               | S3       | code-quality    |
 | DEBT-3775 | Recommendation 2: Pre-commit Hook                               | S3       | code-quality    |
+| DEBT-7254 | Recommendation 3: CI Enforcement                                | S3       | code-quality    |
 | DEBT-3776 | Recommendation 3: CI Enforcement                                | S3       | code-quality    |
+| DEBT-7255 | Long-Term Maintenance                                           | S3       | code-quality    |
 | DEBT-3777 | Long-Term Maintenance                                           | S3       | code-quality    |
+| DEBT-7256 | Prevent Future Warnings                                         | S3       | code-quality    |
 | DEBT-3778 | Prevent Future Warnings                                         | S3       | code-quality    |
+| DEBT-7257 | Update this plan with new patterns                              | S3       | code-quality    |
 | DEBT-3779 | Update this plan with new patterns                              | S3       | code-quality    |
+| DEBT-7258 | SoNash Refactoring Action Plan                                  | S3       | refactoring     |
 | DEBT-3780 | SoNash Refactoring Action Plan                                  | S3       | refactoring     |
+| DEBT-7261 | Standardize Date Handling (CQ-2)                                | S3       | refactoring     |
+| DEBT-7262 | Remove @ts-ignore and Add Type Guards (CQ-3)                    | S3       | refactoring     |
+| DEBT-7263 | Add Input Validation with Zod (CQ-7)                            | S3       | refactoring     |
+| DEBT-7264 | Add Server-Side Date Validation (S-1)                           | S3       | refactoring     |
+| DEBT-7265 | Remove Unused Fonts (P-1)                                       | S3       | code-quality    |
+| DEBT-7266 | Fix Onboarding Animation (B-3)                                  | S3       | refactoring     |
+| DEBT-7267 | Environment-Aware Logging (CQ-5)                                | S3       | refactoring     |
+| DEBT-7268 | Add Loading States (CQ-8)                                       | S3       | refactoring     |
+| DEBT-7269 | Optimize Real-Time Listeners (P-2)                              | S3       | refactoring     |
+| DEBT-7270 | Implement Code Splitting (P-3)                                  | S3       | refactoring     |
+| DEBT-7271 | Add Rate Limiting (S-2)                                         | S3       | refactoring     |
 | DEBT-3793 | Add Rate Limiting (S-2)                                         | S3       | refactoring     |
+| DEBT-7272 | Fix useEffect Dependencies (CQ-1)                               | S3       | refactoring     |
+| DEBT-7273 | Extract Magic Strings (CQ-4)                                    | S3       | refactoring     |
+| DEBT-7274 | Remove Unused Dependencies (CQ-6)                               | S3       | code-quality    |
+| DEBT-7275 | 17-22. Other Phase 3 Items                                      | S3       | refactoring     |
+| DEBT-7276 | 24-26. Other Phase 4 Items                                      | S3       | refactoring     |
 | DEBT-3797 | 17-22. Other Phase 3 Items                                      | S3       | refactoring     |
 | DEBT-3798 | 24-26. Other Phase 4 Items                                      | S3       | refactoring     |
+| DEBT-7277 | Reduce Firebase Coupling (CQ-9)                                 | S3       | refactoring     |
+| DEBT-7278 | Test Files to Create                                            | S3       | code-quality    |
 | DEBT-3800 | Test Files to Create                                            | S3       | code-quality    |
+| DEBT-7279 | 📊 Impact Summary                                               | S3       | refactoring     |
 | DEBT-3801 | 📊 Impact Summary                                               | S3       | refactoring     |
+| DEBT-7280 | Files Changed: 6                                                | S3       | refactoring     |
+| DEBT-7281 | Issues Addressed: 15                                            | S3       | refactoring     |
 | DEBT-3803 | Issues Addressed: 15                                            | S3       | refactoring     |
+| DEBT-7283 | 📈 PERFORMANCE IMPROVEMENTS                                     | S3       | refactoring     |
 | DEBT-3805 | 📈 PERFORMANCE IMPROVEMENTS                                     | S3       | refactoring     |
+| DEBT-7285 | 🔒 SECURITY ENHANCEMENTS                                        | S3       | security        |
 | DEBT-3807 | 🔒 SECURITY ENHANCEMENTS                                        | S3       | security        |
+| DEBT-7286 | Enhanced Validation                                             | S3       | refactoring     |
 | DEBT-3808 | Enhanced Validation                                             | S3       | refactoring     |
+| DEBT-7287 | 🧪 TESTING RECOMMENDATIONS                                      | S3       | refactoring     |
 | DEBT-3809 | 🧪 TESTING RECOMMENDATIONS                                      | S3       | refactoring     |
+| DEBT-7288 | Immediate Testing Needed                                        | S3       | refactoring     |
 | DEBT-3810 | Immediate Testing Needed                                        | S3       | refactoring     |
+| DEBT-7289 | Future Test Coverage                                            | S3       | code-quality    |
 | DEBT-3811 | Future Test Coverage                                            | S3       | code-quality    |
+| DEBT-7290 | 🚀 DEPLOYMENT CHECKLIST                                         | S3       | refactoring     |
 | DEBT-3812 | 🚀 DEPLOYMENT CHECKLIST                                         | S3       | refactoring     |
+| DEBT-7291 | Production Readiness (Before Launch)                            | S3       | refactoring     |
 | DEBT-3813 | Production Readiness (Before Launch)                            | S3       | refactoring     |
+| DEBT-7292 | 💰 COST-BENEFIT ANALYSIS                                        | S3       | refactoring     |
 | DEBT-3814 | 💰 COST-BENEFIT ANALYSIS                                        | S3       | refactoring     |
+| DEBT-7293 | 🎓 KEY LEARNINGS                                                | S3       | refactoring     |
 | DEBT-3815 | 🎓 KEY LEARNINGS                                                | S3       | refactoring     |
+| DEBT-7294 | What Needs Improvement                                          | S3       | refactoring     |
 | DEBT-3816 | What Needs Improvement                                          | S3       | refactoring     |
+| DEBT-7295 | Recommendations for Future PRs                                  | S3       | refactoring     |
 | DEBT-3817 | Recommendations for Future PRs                                  | S3       | refactoring     |
+| DEBT-7296 | 📚 DOCUMENTATION ADDED                                          | S3       | refactoring     |
 | DEBT-3818 | 📚 DOCUMENTATION ADDED                                          | S3       | refactoring     |
+| DEBT-7297 | 🔄 BACKWARD COMPATIBILITY                                       | S3       | refactoring     |
 | DEBT-3819 | 🔄 BACKWARD COMPATIBILITY                                       | S3       | refactoring     |
+| DEBT-7298 | Add tests for firebase-guards.ts utilities                      | S3       | refactoring     |
 | DEBT-3820 | Add tests for firebase-guards.ts utilities                      | S3       | refactoring     |
+| DEBT-7299 | Add tests for enhanced security validation                      | S3       | security        |
 | DEBT-3821 | Add tests for enhanced security validation                      | S3       | security        |
+| DEBT-7300 | Add integration tests for Firebase operations                   | S3       | refactoring     |
 | DEBT-3822 | Add integration tests for Firebase operations                   | S3       | refactoring     |
+| DEBT-7301 | Implement Firebase App Check                                    | S3       | refactoring     |
 | DEBT-3823 | Implement Firebase App Check                                    | S3       | refactoring     |
+| DEBT-7302 | Add server-side authorization                                   | S3       | refactoring     |
 | DEBT-3824 | Add server-side authorization                                   | S3       | refactoring     |
 | DEBT-3827 | Style/Readability                                               | S3       | code-quality    |
+| DEBT-7305 | Fix `firestore.rules` Date Logic                                | S3       | code-quality    |
 | DEBT-3828 | Fix `firestore.rules` Date Logic                                | S3       | code-quality    |
+| DEBT-7306 | Simplify `FirestoreService` (Remove Manual DI)                  | S3       | code-quality    |
+| DEBT-7307 | Decouple `AuthProvider`                                         | S3       | code-quality    |
+| DEBT-7308 | React's Default XSS Protection                                  | S3       | security        |
 | DEBT-3831 | React's Default XSS Protection                                  | S3       | security        |
+| DEBT-7309 | Verification of User Input Handling                             | S3       | security        |
 | DEBT-3832 | Verification of User Input Handling                             | S3       | security        |
+| DEBT-7310 | Journal Entry Text (today-page.tsx:312-324)                     | S3       | security        |
 | DEBT-3833 | Journal Entry Text (today-page.tsx:312-324)                     | S3       | security        |
+| DEBT-7311 | Nickname Display (book-cover.tsx:221)                           | S3       | security        |
 | DEBT-3834 | Nickname Display (book-cover.tsx:221)                           | S3       | security        |
+| DEBT-7312 | Clean Time Display (today-page.tsx:183)                         | S3       | security        |
 | DEBT-3835 | Clean Time Display (today-page.tsx:183)                         | S3       | security        |
+| DEBT-7313 | Meeting Data (resources-page.tsx:227-236)                       | S3       | security        |
 | DEBT-3836 | Meeting Data (resources-page.tsx:227-236)                       | S3       | security        |
+| DEBT-7314 | Dangerous Patterns Audit                                        | S3       | security        |
 | DEBT-3837 | Dangerous Patterns Audit                                        | S3       | security        |
+| DEBT-7315 | Search for `dangerouslySetInnerHTML`                            | S3       | security        |
 | DEBT-3838 | Search for `dangerouslySetInnerHTML`                            | S3       | security        |
+| DEBT-7316 | Search for `innerHTML`                                          | S3       | security        |
 | DEBT-3839 | Search for `innerHTML`                                          | S3       | security        |
+| DEBT-7317 | Search for `eval()`                                             | S3       | security        |
 | DEBT-3840 | Search for `eval()`                                             | S3       | security        |
+| DEBT-7318 | Search for `document.write`                                     | S3       | documentation   |
 | DEBT-3841 | Search for `document.write`                                     | S3       | documentation   |
+| DEBT-7319 | Third-Party Libraries XSS Risk                                  | S3       | security        |
 | DEBT-3842 | Third-Party Libraries XSS Risk                                  | S3       | security        |
+| DEBT-7320 | Framer Motion                                                   | S3       | security        |
 | DEBT-3843 | Framer Motion                                                   | S3       | security        |
+| DEBT-7321 | React Hook Form                                                 | S3       | security        |
 | DEBT-3844 | React Hook Form                                                 | S3       | security        |
-| DEBT-3845 | Sonner (Toast Library)                                          | S3       | security        |
+| DEBT-7322 | Sonner (Toast Library)                                          | S3       | security        |
+| DEBT-7323 | Future Risks (If Features Are Added)                            | S3       | security        |
 | DEBT-3846 | Future Risks (If Features Are Added)                            | S3       | security        |
+| DEBT-7326 | Defense-in-Depth: Content Security Policy                       | S3       | security        |
 | DEBT-3849 | Defense-in-Depth: Content Security Policy                       | S3       | security        |
+| DEBT-7327 | Recommendation:                                                 | S3       | security        |
 | DEBT-3850 | Recommendation:                                                 | S3       | security        |
+| DEBT-7328 | Firestore Security for XSS Context                              | S3       | security        |
 | DEBT-3851 | Firestore Security for XSS Context                              | S3       | security        |
+| DEBT-7329 | Current Rules (firestore.rules:33-36):                          | S3       | security        |
 | DEBT-3852 | Current Rules (firestore.rules:33-36):                          | S3       | security        |
+| DEBT-7330 | Summary of Protections                                          | S3       | security        |
 | DEBT-3853 | Summary of Protections                                          | S3       | security        |
+| DEBT-7331 | Manual XSS Tests:                                               | S3       | security        |
 | DEBT-3854 | Manual XSS Tests:                                               | S3       | security        |
+| DEBT-7332 | Automated Testing:                                              | S3       | security        |
 | DEBT-3855 | Automated Testing:                                              | S3       | security        |
+| DEBT-7333 | Implement CSP headers in next.config.mjs                        | S3       | security        |
 | DEBT-3856 | Implement CSP headers in next.config.mjs                        | S3       | security        |
+| DEBT-7334 | Add XSS test cases to test suite                                | S3       | security        |
 | DEBT-3857 | Add XSS test cases to test suite                                | S3       | security        |
+| DEBT-7335 | Error Tracing Tab - includes npm audit display                  | S3       | code-quality    |
 | DEBT-3858 | Error Tracing Tab - includes npm audit display                  | S3       | code-quality    |
+| DEBT-7336 | Remove duplicate test run from pre-push (done) - ✅ Session     | S3       | code-quality    |
 | DEBT-3859 | Remove duplicate test run from pre-push (done) - ✅ Session     | S3       | code-quality    |
+| DEBT-7337 | Add file extension filters to hook matchers                     | S3       | process         |
 | DEBT-3860 | Add file extension filters to hook matchers                     | S3       | process         |
+| DEBT-7338 | Automated fix suggestions - Generate patches                    | S3       | code-quality    |
 | DEBT-3861 | Automated fix suggestions - Generate patches                    | S3       | code-quality    |
+| DEBT-7339 | Broken deploy triage runbook (30min)                            | S3       | code-quality    |
 | DEBT-3862 | Broken deploy triage runbook (30min)                            | S3       | code-quality    |
+| DEBT-7340 | Claude Fix Bundle format - docs/CLAUDE_FIX_BUNDLE.md            | S3       | code-quality    |
 | DEBT-3863 | Claude Fix Bundle format - docs/CLAUDE_FIX_BUNDLE.md            | S3       | code-quality    |
+| DEBT-7341 | Reduce SESSION_CONTEXT.md - Archive history to                  | S3       | refactoring     |
 | DEBT-3864 | Reduce SESSION_CONTEXT.md - Archive history to                  | S3       | refactoring     |
+| DEBT-7342 | Remove unused gemini-generated images (-4MB)                    | S3       | code-quality    |
 | DEBT-3865 | Remove unused gemini-generated images (-4MB)                    | S3       | code-quality    |
+| DEBT-7343 | Convert remaining images to WebP format (-90% size)             | S3       | performance     |
 | DEBT-3866 | Convert remaining images to WebP format (-90% size)             | S3       | performance     |
+| DEBT-7344 | Preload LCP image (wood-table.jpg)                              | S3       | performance     |
 | DEBT-3867 | Preload LCP image (wood-table.jpg)                              | S3       | performance     |
+| DEBT-7345 | Code-split admin panel                                          | S3       | refactoring     |
 | DEBT-3868 | Code-split admin panel                                          | S3       | refactoring     |
+| DEBT-7346 | Add Content Security Policy                                     | S3       | security        |
 | DEBT-3869 | Add Content Security Policy                                     | S3       | security        |
+| DEBT-7347 | Make reCAPTCHA fail-closed when configured                      | S3       | code-quality    |
 | DEBT-3870 | Make reCAPTCHA fail-closed when configured                      | S3       | code-quality    |
+| DEBT-7348 | Create `/test-suite` skill with 5-phase pipeline ✅             | S3       | process         |
+| DEBT-7349 | Integrate with CI (fail on diff > threshold)                    | S3       | code-quality    |
 | DEBT-3872 | Integrate with CI (fail on diff > threshold)                    | S3       | code-quality    |
+| DEBT-7350 | Test Results Tab - Show pass/fail summary                       | S3       | code-quality    |
 | DEBT-3873 | Test Results Tab - Show pass/fail summary                       | S3       | code-quality    |
+| DEBT-7351 | Cleanup Utilities - Reset state between tests                   | S3       | code-quality    |
 | DEBT-3874 | Cleanup Utilities - Reset state between tests                   | S3       | code-quality    |
+| DEBT-7352 | Security Rules Tests - Test firestore.rules coverage            | S3       | security        |
 | DEBT-3875 | Security Rules Tests - Test firestore.rules coverage            | S3       | security        |
+| DEBT-7353 | Compare options: Semgrep, CodeQL, ESLint security plugins       | S3       | code-quality    |
 | DEBT-3876 | Compare options: Semgrep, CodeQL, ESLint security plugins       | S3       | code-quality    |
+| DEBT-7354 | ENH-0063: Remove duplicate pattern check from pre-push ho...    | S3       | code-quality    |
 | DEBT-3877 | ENH-0063: Remove duplicate pattern check from pre-push ho...    | S3       | code-quality    |
+| DEBT-7355 | Include helpful fix hints in error messages                     | S3       | code-quality    |
 | DEBT-3878 | Include helpful fix hints in error messages                     | S3       | code-quality    |
+| DEBT-7356 | Add learning entry reminder to pre-commit hook                  | S3       | process         |
+| DEBT-7358 | Wire `Sentry.captureException()` in error paths                 | S3       | code-quality    |
 | DEBT-3881 | Wire `Sentry.captureException()` in error paths                 | S3       | code-quality    |
+| DEBT-7359 | Fix Prettier baseline (run `npm run format`)                    | S3       | code-quality    |
 | DEBT-3882 | Fix Prettier baseline (run `npm run format`)                    | S3       | code-quality    |
+| DEBT-7360 | Fix knip baseline (7 unused deps)                               | S3       | code-quality    |
 | DEBT-3883 | Fix knip baseline (7 unused deps)                               | S3       | code-quality    |
+| DEBT-7361 | Remove all `continue-on-error: true` flags                      | S3       | code-quality    |
 | DEBT-3884 | Remove all `continue-on-error: true` flags                      | S3       | code-quality    |
+| DEBT-7362 | Export `redactSensitiveUrl` from `lib/utils/error-export....    | S3       | code-quality    |
+| DEBT-7363 | Error summary card on Dashboard (count + trend) ✅              | S3       | code-quality    |
+| DEBT-7364 | Deep links to Sentry for each error ✅                          | S3       | code-quality    |
+| DEBT-7365 | Recent security events display (from existing `logSecurit...    | S3       | security        |
+| DEBT-7366 | Logs tab error state on network failure                         | S3       | code-quality    |
 | DEBT-3889 | Logs tab error state on network failure                         | S3       | code-quality    |
+| DEBT-7367 | Privilege save error handling and revert                        | S3       | code-quality    |
 | DEBT-3890 | Privilege save error handling and revert                        | S3       | code-quality    |
+| DEBT-7368 | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_     | S3       | refactoring     |
 | DEBT-3891 | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_     | S3       | refactoring     |
+| DEBT-7369 | M4.5-SEC-005 - Security rules for new collections               | S3       | security        |
 | DEBT-3892 | M4.5-SEC-005 - Security rules for new collections               | S3       | security        |
+| DEBT-7370 | RND-AUDIT - Security Audit Planning (1 day)                     | S3       | security        |
 | DEBT-3893 | RND-AUDIT - Security Audit Planning (1 day)                     | S3       | security        |
+| DEBT-7371 | F12.11 - Slow Rollout (progressive feature disclosure)          | S3       | performance     |
 | DEBT-3894 | F12.11 - Slow Rollout (progressive feature disclosure)          | S3       | performance     |
+| DEBT-7372 | T6.5 - Sync performance tracking                                | S3       | performance     |
 | DEBT-3895 | T6.5 - Sync performance tracking                                | S3       | performance     |
+| DEBT-7373 | T9.2 - Data retention policy (user choice for auto-cleanup)     | S3       | code-quality    |
 | DEBT-3896 | T9.2 - Data retention policy (user choice for auto-cleanup)     | S3       | code-quality    |
+| DEBT-7374 | T8.7 - Extract offline-core package (optimization; not re...    | S3       | refactoring     |
 | DEBT-3897 | T8.7 - Extract offline-core package (optimization; not re...    | S3       | refactoring     |
 | DEBT-6873 | No tests for regex global state reset edge cases with con...    | S3       | code-quality    |
 | DEBT-6874 | No test for Unicode private use area (U+E000-U+F8FF) patt...    | S3       | code-quality    |
@@ -486,6 +844,18 @@
 | DEBT-2450 | generate-placement-report.js - Unused roadmap placement s...    | S3       | code-quality    |
 | DEBT-2452 | redeploy-admin-dashboard.sh - Firebase deployment helper ...    | S3       | code-quality    |
 | DEBT-2476 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve...    | S3       | code-quality    |
+| DEBT-3534 | Potential Root Cause A: API Key Restrictions (Most Likely)      | S3       | security        |
+| DEBT-3547 | Race Conditions in State                                        | S3       | refactoring     |
+| DEBT-3550 | Inefficient Equality Checking                                   | S3       | refactoring     |
+| DEBT-3553 | Dynamic Import Anti-Pattern                                     | S3       | code-quality    |
+| DEBT-3554 | Type Gymnastics                                                 | S3       | refactoring     |
+| DEBT-3668 | B-5: Anonymous Session Edge Case 🟢 MEDIUM                      | S3       | code-quality    |
+| DEBT-3681 | A-1: Missing ARIA Labels 🟢 MEDIUM                              | S3       | code-quality    |
+| DEBT-3761 | Prefix with \_index                                             | S3       | code-quality    |
+| DEBT-3762 | Remove unused import                                            | S3       | code-quality    |
+| DEBT-3764 | Use or remove                                                   | S3       | code-quality    |
+| DEBT-3768 | Add to deps or use useCallback                                  | S3       | code-quality    |
+| DEBT-3845 | Sonner (Toast Library)                                          | S3       | security        |
 | DEBT-2457 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | code-quality    |
 | DEBT-2459 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...    | S0       | code-quality    |
 | DEBT-2468 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...    | S0       | code-quality    |
@@ -514,19 +884,32 @@
 | DEBT-0010 | Exporting mutable 'let' binding, use 'const' instead.          | S1       | code-quality             |
 | DEBT-0011 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0012 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0013 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0014 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0015 | Refactor this code to not nest functions more than 4 leve...   | S1       | code-quality             |
+| DEBT-0016 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0017 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0018 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0019 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0020 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0021 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0022 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0023 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0024 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0025 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0026 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0027 | Add a default case (\*) to handle unexpected values.           | S1       | code-quality             |
 | DEBT-0028 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0029 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0030 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0031 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0032 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0033 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0034 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0035 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0036 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0037 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0038 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0039 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0040 | Refactor this code to not nest functions more than 4 leve...   | S1       | code-quality             |
 | DEBT-0041 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
@@ -672,35 +1055,49 @@
 | DEBT-0886 | Functions Directory Not Linted in CI                           | S1       | process                  |
 | DEBT-0887 | GitHub Actions Secrets Not Rotated Regularly                   | S1       | security                 |
 | DEBT-0888 | MoodSparkline Redundant Fetch Duplicates Journal Data          | S1       | performance              |
+| DEBT-0915 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0916 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0918 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0921 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-0934 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-0935 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0937 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-0941 | Group parts of the regex together to make the intended op...   | S1       | code-quality             |
 | DEBT-0946 | Group parts of the regex together to make the intended op...   | S1       | code-quality             |
+| DEBT-0950 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0952 | Remove this useless assignment to variable "category".         | S1       | code-quality             |
 | DEBT-0953 | Add an initial value to this "reduce()" call.                  | S1       | code-quality             |
 | DEBT-0955 | Remove this useless assignment to variable "mergeLog".         | S1       | code-quality             |
+| DEBT-0956 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0957 | Prefer `childNode.remove()` over `parentNode.removeChild(...   | S1       | code-quality             |
 | DEBT-0958 | Prefer `childNode.remove()` over `parentNode.removeChild(...   | S1       | code-quality             |
 | DEBT-0959 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0963 | Refactor this code to not nest functions more than 4 leve...   | S1       | code-quality             |
 | DEBT-0965 | Remove duplicates in this character class.                     | S1       | code-quality             |
 | DEBT-0966 | Non-interactive elements should not be assigned mouse or ...   | S1       | code-quality             |
 | DEBT-0967 | Use <dialog> instead of the "dialog" role to ensure acces...   | S1       | code-quality             |
 | DEBT-0976 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-0978 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0986 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-0989 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-0992 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-0999 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
+| DEBT-1004 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1007 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1008 | Update this function so that its implementation is not id...   | S1       | code-quality             |
 | DEBT-1010 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1016 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1019 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1020 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1024 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1025 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1026 | This always evaluates to truthy. Consider refactoring thi...   | S1       | code-quality             |
 | DEBT-1032 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-1039 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1043 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-1048 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1050 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1053 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1056 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-1065 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-1066 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
@@ -708,14 +1105,17 @@
 | DEBT-1072 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-1073 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-1076 | Remove this assignment of "i".                                 | S1       | code-quality             |
+| DEBT-1077 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1078 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-1081 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-1086 | Remove this assignment of "i".                                 | S1       | code-quality             |
+| DEBT-1088 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1090 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-1095 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-1098 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-1103 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-1105 | Refactor this code to not use nested template literals.        | S1       | code-quality             |
+| DEBT-1106 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1107 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-1121 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1126 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
@@ -723,13 +1123,17 @@
 | DEBT-1133 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-1137 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1138 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
+| DEBT-1140 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1142 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-1143 | Replace this alternation with a character class.               | S1       | code-quality             |
 | DEBT-1144 | Group parts of the regex together to make the intended op...   | S1       | code-quality             |
 | DEBT-1145 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1149 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1151 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1158 | Refactor this code to not use nested template literals.        | S1       | code-quality             |
 | DEBT-1161 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1168 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1169 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1170 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-1172 | Remove this useless assignment to variable "trends".           | S1       | code-quality             |
 | DEBT-1173 | Remove this assignment of "i".                                 | S1       | code-quality             |
@@ -737,6 +1141,7 @@
 | DEBT-1179 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1182 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-1187 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
+| DEBT-1188 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1191 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1192 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1193 | 'If' statement should not be the only statement in 'else'...   | S1       | code-quality             |
@@ -752,6 +1157,7 @@
 | DEBT-1220 | Use <dialog> instead of the "dialog" role to ensure acces...   | S1       | code-quality             |
 | DEBT-1224 | A form label must be associated with a control.                | S1       | code-quality             |
 | DEBT-1226 | Remove this useless assignment to variable "hasMore".          | S1       | code-quality             |
+| DEBT-1227 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1230 | The 'value' object passed as the value prop to the Contex...   | S1       | performance              |
 | DEBT-1239 | A form label must be associated with a control.                | S1       | code-quality             |
 | DEBT-1240 | Use <input type="checkbox"> instead of the "checkbox" rol...   | S1       | code-quality             |
@@ -765,12 +1171,14 @@
 | DEBT-1265 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1267 | Simplify this regular expression to reduce its complexity...   | S1       | code-quality             |
 | DEBT-1270 | Do not use Array index in keys                                 | S1       | performance              |
+| DEBT-1271 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1272 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-1273 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-1278 | Remove this useless assignment to variable "originalClean...   | S1       | code-quality             |
 | DEBT-1282 | Remove duplicates in this character class.                     | S1       | code-quality             |
 | DEBT-1283 | Refactor this code to not use nested template literals.        | S1       | code-quality             |
 | DEBT-1284 | Remove duplicates in this character class.                     | S1       | code-quality             |
+| DEBT-1285 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1286 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-1290 | Remove this useless assignment to variable "isSession".        | S1       | code-quality             |
 | DEBT-1294 | Performance anti-pattern: Excessive re-renders from conte...   | S1       | code-quality             |
@@ -875,11 +1283,25 @@
 | DEBT-3213 | App Check globally disabled on all 5 user-callable functi...   | S1       | security                 |
 | DEBT-3528 | Retro action items not consistently tracked as DEBT entri...   | S1       | engineering-productivity |
 | DEBT-3902 | Take the required action to fix the issue indicated by th...   | S1       | code-quality             |
+| DEBT-3913 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3915 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3920 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3922 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-3923 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-3933 | Remove this assignment of "i".                                 | S1       | code-quality             |
+| DEBT-3940 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-3941 | Remove this assignment of "i".                                 | S1       | code-quality             |
+| DEBT-3946 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3989 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3991 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3999 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4002 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4006 | Move function 'safeMsg' to the outer scope.                    | S1       | performance              |
+| DEBT-4015 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4018 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4022 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4029 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-4032 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4033 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-4404 | Make sure the regex used here, which is vulnerable to sup...   | S1       | security                 |
 | DEBT-4407 | Make sure the regex used here, which is vulnerable to sup...   | S1       | security                 |
@@ -914,11 +1336,25 @@
 | DEBT-2463 | aggregate-audit-findings.js markdown parsing fragility in...   | S1       | code-quality             |
 | DEBT-2477 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes           | S1       | code-quality             |
 | DEBT-2482 | Technical debt view files - generated views without integ...   | S1       | code-quality             |
+| DEBT-3898 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-3904 | Take the required action to fix the issue indicated by th...   | S1       | code-quality             |
 | DEBT-3908 | Take the required action to fix the issue indicated by th...   | S1       | code-quality             |
+| DEBT-3914 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3916 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3917 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3918 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3919 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3921 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-3934 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-3936 | Simplify this regular expression to reduce its complexity...   | S1       | code-quality             |
+| DEBT-3942 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3944 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3948 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3952 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-3958 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-3959 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3962 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3963 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-3968 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
 | DEBT-3971 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-3974 | Remove this assignment of "i".                                 | S1       | code-quality             |
@@ -928,25 +1364,69 @@
 | DEBT-3978 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-3979 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-3980 | Remove this assignment of "i".                                 | S1       | code-quality             |
+| DEBT-3984 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3985 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3986 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3988 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-3993 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-3998 | Prefer top-level await over using a promise chain.             | S1       | code-quality             |
+| DEBT-4005 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4009 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4012 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-4026 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4028 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4034 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4037 | Simplify this regular expression to reduce its complexity...   | S1       | code-quality             |
 | DEBT-4041 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-4042 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4043 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4044 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4045 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4048 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4053 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4055 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4056 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4070 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4072 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-4074 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-4075 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-4076 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-4077 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-4078 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-4079 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4082 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4083 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4084 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4085 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4086 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4088 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4089 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4095 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4096 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4098 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4100 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4103 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4108 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4109 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4114 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4136 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4145 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4149 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4150 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-4151 | Remove this assignment of "i".                                 | S1       | code-quality             |
 | DEBT-4152 | Remove this assignment of "i".                                 | S1       | code-quality             |
+| DEBT-4168 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4172 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4174 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4185 | Use <img alt=...> instead of the "presentation" role to e...   | S1       | code-quality             |
 | DEBT-4196 | Prefer `childNode.remove()` over `parentNode.removeChild(...   | S1       | code-quality             |
 | DEBT-4198 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-4200 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4202 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4208 | Remove this useless assignment to variable "hasMore".          | S1       | code-quality             |
 | DEBT-4209 | Prefer using an optional chain expression instead, as it'...   | S1       | code-quality             |
 | DEBT-4210 | Remove this useless assignment to variable "hasMore".          | S1       | code-quality             |
+| DEBT-4214 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4218 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-4219 | Remove this useless assignment to variable "originalClean...   | S1       | code-quality             |
 | DEBT-4222 | Simplify this regular expression to reduce its complexity...   | S1       | code-quality             |
@@ -960,7 +1440,16 @@
 | DEBT-4330 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-4331 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
 | DEBT-4332 | Extract this nested ternary operation into an independent...   | S1       | code-quality             |
+| DEBT-4337 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4338 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4341 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4342 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4343 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4350 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4351 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4353 | Replace this character class by the character itself.          | S1       | code-quality             |
+| DEBT-4355 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-4356 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
 | DEBT-4364 | Do not use Array index in keys                                 | S1       | performance              |
 | DEBT-4365 | Do not use Array index in keys                                 | S1       | performance              |
 | DEBT-4367 | Do not use Array index in keys                                 | S1       | performance              |
@@ -1028,11 +1517,6 @@
 | DEBT-4475 | Make sure that using this pseudorandom number generator i...   | S1       | security                 |
 | DEBT-6853 | Exporting mutable let binding, use const instead               | S1       | code-quality             |
 | DEBT-3650 | No Offline Support                                             | S2       | code-quality             |
-| DEBT-3657 | CQ-5: Console Logging in Production 🟡 HIGH                    | S2       | code-quality             |
-| DEBT-3660 | CQ-8: No Loading States for Mutations 🟡 HIGH                  | S2       | code-quality             |
-| DEBT-3666 | B-3: Onboarding Wizard AnimatePresence Issue 🟡 HIGH           | S2       | code-quality             |
-| DEBT-3667 | B-4: Meeting Time Sort Failure 🟡 HIGH                         | S2       | code-quality             |
-| DEBT-3678 | S-4: No XSS Protection on User Input 🟡 HIGH                   | S2       | security                 |
 | DEBT-3781 | Fix Auto-Save Race Condition (B-1)                             | S2       | refactoring              |
 | DEBT-3782 | Fix Listener Memory Leak (B-2)                                 | S2       | refactoring              |
 | DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
@@ -2075,6 +2559,7 @@
 | DEBT-3960 | The catch parameter `rollbackErr` should be named `error_`.    | S2       | code-quality             |
 | DEBT-3964 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | code-quality             |
 | DEBT-3969 | The catch parameter `readErr` should be named `error_`.        | S2       | code-quality             |
+| DEBT-3992 | Exporting mutable 'let' binding, use 'const' instead.          | S2       | code-quality             |
 | DEBT-3994 | The catch parameter `skillErr` should be named `error_`.       | S2       | code-quality             |
 | DEBT-3997 | The catch parameter `configErr` should be named `error_`.      | S2       | code-quality             |
 | DEBT-4000 | The catch parameter `regexErr` should be named `error_`.       | S2       | code-quality             |
@@ -2159,6 +2644,11 @@
 | DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files               | S2       | enhancements             |
 | DEBT-2811 | Documentation effectiveness metrics — track which docs ar...   | S2       | documentation            |
 | DEBT-2812 | Add engines field to root package.json for CI/CD consistency   | S2       | enhancements             |
+| DEBT-3657 | CQ-5: Console Logging in Production 🟡 HIGH                    | S2       | code-quality             |
+| DEBT-3660 | CQ-8: No Loading States for Mutations 🟡 HIGH                  | S2       | code-quality             |
+| DEBT-3666 | B-3: Onboarding Wizard AnimatePresence Issue 🟡 HIGH           | S2       | code-quality             |
+| DEBT-3667 | B-4: Meeting Time Sort Failure 🟡 HIGH                         | S2       | code-quality             |
+| DEBT-3678 | S-4: No XSS Protection on User Input 🟡 HIGH                   | S2       | security                 |
 | DEBT-3899 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | code-quality             |
 | DEBT-3925 | Handle this exception or don't catch it at all.                | S2       | code-quality             |
 | DEBT-3926 | The catch parameter `_err` should be named `error_`.           | S2       | code-quality             |
@@ -2507,28 +2997,17 @@
 | DEBT-6803 | Remove this assignment of i                                    | S2       | code-quality             |
 | DEBT-6859 | Remove this assignment of i                                    | S2       | code-quality             |
 | DEBT-6869 | Unexpected unknown at-rule @custom-variant                     | S2       | code-quality             |
-| DEBT-3521 | Make action buttons customizable by user (save preference...   | S3       | code-quality             |
-| DEBT-3522 | Pass limit to FirestoreService when it supports configura...   | S3       | code-quality             |
-| DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta...   | S3       | refactoring              |
-| DEBT-3524 | Create a userIdHash → uid lookup collection for better pe...   | S3       | performance              |
-| DEBT-3525 | Consider pre-computing cohort retention in a daily job         | S3       | code-quality             |
 | DEBT-3532 | AI Model Comparison                                            | S3       | security                 |
 | DEBT-3533 | Add limit(50) to queries in lib/db/meetings.ts and             | S3       | security                 |
-| DEBT-3544 | Unsafe Non-Null Assertions                                     | S3       | refactoring              |
 | DEBT-3545 | Client-Side Security Theater                                   | S3       | security                 |
-| DEBT-3548 | No Server-Side Rate Limiting                                   | S3       | refactoring              |
 | DEBT-3551 | Massive Context Provider (God Object)                          | S3       | refactoring              |
 | DEBT-3552 | Large God Component                                            | S3       | refactoring              |
 | DEBT-3557 | Refactor #5: Split AuthProvider (Optional - Breaking Change)   | S3       | refactoring              |
 | DEBT-3613 | `BookCover.tsx` (Simplified Composition)                       | S3       | refactoring              |
 | DEBT-3619 | Standardize Service Methods                                    | S3       | refactoring              |
 | DEBT-3658 | CQ-6: Unused Dependencies 🟢 MEDIUM                            | S3       | code-quality             |
-| DEBT-3662 | CQ-10: Excessive Font Loading ⚪ LOW                           | S3       | code-quality             |
-| DEBT-3673 | P-4: localStorage Sync on Every Keystroke 🟢 MEDIUM            | S3       | code-quality             |
-| DEBT-3677 | S-3: Exposed Firebase Config 🟢 MEDIUM                         | S3       | code-quality             |
 | DEBT-3722 | Refactor lib/firebase.ts exports                               | S3       | refactoring              |
 | DEBT-3758 | Risk Factor B: Node.js 24 Runtime in Cloud Functions           | S3       | code-quality             |
-| DEBT-3763 | Remove or export if used elsewhere                             | S3       | code-quality             |
 | DEBT-3783 | Standardize Date Handling (CQ-2)                               | S3       | refactoring              |
 | DEBT-3784 | Remove @ts-ignore and Add Type Guards (CQ-3)                   | S3       | refactoring              |
 | DEBT-3785 | Add Input Validation with Zod (CQ-7)                           | S3       | refactoring              |
@@ -3209,6 +3688,17 @@
 | DEBT-2474 | MCP_SETUP.md - 178 lines configuration guide without trac...   | S3       | code-quality             |
 | DEBT-2475 | LEARNING_METRICS.md - 84 lines metrics tracking document       | S3       | code-quality             |
 | DEBT-2480 | ADR template and decisions/README - decision framework un...   | S3       | code-quality             |
+| DEBT-3521 | Make action buttons customizable by user (save preference...   | S3       | code-quality             |
+| DEBT-3522 | Pass limit to FirestoreService when it supports configura...   | S3       | code-quality             |
+| DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta...   | S3       | refactoring              |
+| DEBT-3524 | Create a userIdHash → uid lookup collection for better pe...   | S3       | performance              |
+| DEBT-3525 | Consider pre-computing cohort retention in a daily job         | S3       | code-quality             |
+| DEBT-3544 | Unsafe Non-Null Assertions                                     | S3       | refactoring              |
+| DEBT-3548 | No Server-Side Rate Limiting                                   | S3       | refactoring              |
+| DEBT-3662 | CQ-10: Excessive Font Loading ⚪ LOW                           | S3       | code-quality             |
+| DEBT-3673 | P-4: localStorage Sync on Every Keystroke 🟢 MEDIUM            | S3       | code-quality             |
+| DEBT-3677 | S-3: Exposed Firebase Config 🟢 MEDIUM                         | S3       | code-quality             |
+| DEBT-3763 | Remove or export if used elsewhere                             | S3       | code-quality             |
 | DEBT-3903 | Complete the task associated to this "TODO" comment.           | S3       | code-quality             |
 | DEBT-3905 | Complete the task associated to this "TODO" comment.           | S3       | code-quality             |
 | DEBT-3906 | Complete the task associated to this "TODO" comment.           | S3       | code-quality             |
@@ -3476,142 +3966,22 @@
 | DEBT-6870 | Prefer Number.isNaN over isNaN                                 | S3       | code-quality             |
 | DEBT-6871 | Prefer Number.NaN over NaN                                     | S3       | code-quality             |
 | DEBT-6872 | Prefer Number.isNaN over isNaN                                 | S3       | code-quality             |
-| DEBT-0013 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0016 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0018 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0019 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0020 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0022 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0025 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0026 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0029 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0030 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0031 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0035 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0038 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-0852 | useJournal creates redundant auth listener + potential me...   | S0       | code-quality             |
 | DEBT-0853 | App Check disabled on all production Cloud Functions           | S0       | security                 |
 | DEBT-0855 | App Check disabled on all Cloud Functions and client init...   | S0       | security                 |
 | DEBT-0857 | useJournal creates redundant auth listener + potential me...   | S0       | performance              |
 | DEBT-0864 | Re-enable App Check on Cloud Functions                         | S0       | security                 |
-| DEBT-0915 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0918 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0935 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0950 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0956 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0963 | Refactor this code to not nest functions more than 4 leve...   | S0       | code-quality             |
-| DEBT-0978 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-0989 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1004 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1007 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1020 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1025 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1050 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1053 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1077 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1088 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1106 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1140 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1151 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1168 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1169 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1188 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1227 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1271 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-1285 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-1293 | Security risk: Client-side filtering of sensitive data         | S0       | code-quality             |
 | DEBT-1878 | CI gap: pull_request_target security vulnerability allows...   | S0       | process                  |
 | DEBT-2120 | Error handling: continueOnError used appropriately in set...   | S0       | process                  |
 | DEBT-2121 | Security: Potential command injection in resolve-item.js ...   | S0       | process                  |
 | DEBT-2381 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
 | DEBT-2382 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
-| DEBT-3913 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3915 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3920 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3922 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3940 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3946 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-3972 | Remove this use of the "void" operator.                        | S0       | code-quality             |
-| DEBT-3989 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3991 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3992 | Exporting mutable 'let' binding, use 'const' instead.          | S0       | code-quality             |
-| DEBT-3999 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4002 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4015 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4018 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4022 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4032 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-4399 | Review this potentially hard-coded password.                   | S0       | security                 |
 | DEBT-4401 | Review this potentially hard-coded password.                   | S0       | security                 |
 | DEBT-4403 | Make sure that executing this OS command is safe here.         | S0       | security                 |
 | DEBT-2458 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
-| DEBT-3898 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3914 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3916 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3917 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3918 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3919 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3921 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3942 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3944 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3948 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3952 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3959 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3962 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3963 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3984 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3985 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3986 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3988 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-3993 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4005 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4009 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4026 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4028 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4034 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4042 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4043 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4044 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4045 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4048 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4053 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4055 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4056 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4070 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4079 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4082 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4083 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4084 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4085 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4086 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4088 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4089 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4095 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4096 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4098 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4100 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4103 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4108 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4109 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4114 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4136 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4145 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4149 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4168 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4172 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4174 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4200 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4202 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4214 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4337 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4338 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4341 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4342 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4343 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4350 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4351 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4355 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
-| DEBT-4356 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-4400 | Review this potentially hard-coded password.                   | S0       | security                 |
 | DEBT-4402 | Review this potentially hard-coded password.                   | S0       | security                 |
 
@@ -3636,6 +4006,7 @@ _No items_
 | DEBT-0913 | Refactor this function to reduce its Cognitive Complexity...  | S1       | code-quality             |
 | DEBT-0914 | Refactor this function to reduce its Cognitive Complexity...  | S1       | code-quality             |
 | DEBT-0930 | Refactor this function to reduce its Cognitive Complexity...  | S1       | code-quality             |
+| DEBT-1111 | Refactor this function to reduce its Cognitive Complexity...  | S1       | code-quality             |
 | DEBT-1211 | Remove this useless assignment to variable "found".           | S1       | code-quality             |
 | DEBT-1344 | 498 external URLs need validation (expected 60-100 failures)  | S1       | documentation            |
 | DEBT-1378 | Invalid placeholder URL in example: full-url.com              | S1       | documentation            |
@@ -3856,7 +4227,6 @@ _No items_
 | DEBT-0863 | Convert CI gates to blocking                                  | S0       | code-quality             |
 | DEBT-0865 | Close legacy journalEntries write path                        | S0       | security                 |
 | DEBT-0866 | Fix useJournal memory leak                                    | S0       | code-quality             |
-| DEBT-1111 | Refactor this function to reduce its Cognitive Complexity...  | S0       | code-quality             |
 | DEBT-2345 | pattern-check.js spawns subprocess every Write/Edit/Multi...  | S0       | code-quality             |
 | DEBT-2383 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...  | S0       | code-quality             |
 | DEBT-2392 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...  | S0       | code-quality             |
