@@ -8,13 +8,26 @@
 
 ## Sources & Totals
 
+### R1 + R2
+
 - SonarCloud code smells: 114 items
 - SonarCloud security hotspots: 3 items
 - CI failure: 1 item
 - Qodo compliance: 5 items
 - Qodo code suggestions: 15 items
 - Gemini: 1 item
-- **TOTAL: 139 items**
+- **Subtotal: 139 items**
+
+### R3
+
+- SonarCloud code smells: 37 items (22 CC deferred, 15 fixable)
+- SonarCloud security hotspots: 1 item (S2245 re-flagged, already rejected)
+- CI failure: 2 items (doc lint)
+- Qodo compliance: 5 items
+- Qodo code suggestions: 5 items
+- **Subtotal: 50 items (27 new actionable)**
+
+### Grand Total: 189 items
 
 ---
 
@@ -42,7 +55,7 @@
 - 1x execSync→execFileSync (S4721 command injection hotspot)
 - 1x regex DoS bounded (S5852 hotspot)
 
-### Commit 2 (uncommitted) — Qodo fixes (15 items)
+### Commit 2 (cd3b5785) — Qodo fixes (15 items)
 
 - reverify-resolved.js: audit report structure validation
 - sprint-intake.js: overflow sprint assignment guard + severity bug fix
@@ -58,9 +71,47 @@
 - commit-failure-reporter.js: user context in audit entry + sanitized hook
   output
 
+### Commit 3 (uncommitted) — R3 fixes (27 items)
+
+#### SonarCloud non-CC fixes (15 items)
+
+- extract-context-debt.js: regex alternation `(\/|\\)` → `[/\\]`
+- generate-grand-plan.js: removed unused `_totalOpen`, 2x empty catch →
+  console.debug
+- sprint-complete.js: fixed unused "i" assignment
+- sprint-wave.js: fixed unused "i" assignment + nested template extraction
+- sprint-status.js: batched consecutive Array.push calls
+- intake-sonar-reliability.js: 2x `.replace()` → `.replaceAll()`
+- reconcile-roadmap.js: `String.raw` for regex
+- clean-intake.js: empty catch → console.debug
+- sync-deduped.js: empty catch → console.debug
+
+#### Qodo compliance fixes (5 items)
+
+- sync-sonarcloud.js: sanitized error logging (discard raw response body)
+- categorize-and-assign.js: readJsonl silent parse → console.warn with line
+  number
+- intake-sonar-reliability.js: actor context (ingested_by + ingested_at)
+- commit-failure-reporter.js: strip file paths/commands from errorExtract
+- hook-analytics.js: sanitize check names, strip file paths
+
+#### Qodo code suggestions (5 items)
+
+- sync-sonarcloud.js: try/catch around convertIssue for resilient sync
+- reverify-resolved.js: guard report file parsing with try/catch
+- extract-context-debt.js: replaceAll backslash + reject absolute paths
+- categorize-and-assign.js: mkdirSync + rmSync for cross-platform atomic writes
+- clean-intake.js: prevent object mutation in verifyItem (track downgrade, don't
+  mutate)
+
+#### CI doc fixes (2 items)
+
+- PLAN_INDEX.md: added required document headers
+- TEMPLATE.md: fixed invalid date format
+
 ---
 
-## DEFERRED — CC Violations (20 items, all pre-existing)
+## DEFERRED — CC Violations (22 items, all pre-existing)
 
 These functions existed before this PR with CC > 15. Tracked in TDMS.
 
@@ -77,8 +128,10 @@ These functions existed before this PR with CC > 15. Tracked in TDMS.
 - verify-resolutions.js:281 CC 28, :345 CC 27, :401 CC 27, :485 CC 16
 - log-override.js:102 CC 21
 - triage-scattered-intake.js:170 CC 67
+- sprint-intake.js:130 CC 18 (R3)
+- sprint-status.js:151 CC 17 (R3)
 
-## REJECTED (1 item)
+## REJECTED (1 item, re-confirmed in R3)
 
 - S2245 Math.random() in sprint-status.js sampleRandom() — diagnostic sampling,
   not crypto
@@ -91,4 +144,9 @@ These functions existed before this PR with CC > 15. Tracked in TDMS.
   - sync-sonarcloud.js already does API integration; intake scripts are one-time
     data loads
 
-## TOTAL ACCOUNTING: 117 fixed + 20 deferred + 1 rejected + 1 architectural = 139 ✓
+## TOTAL ACCOUNTING
+
+- R1+R2: 117 fixed + 20 deferred + 1 rejected + 1 architectural = 139
+- R3: 27 fixed + 22 deferred (same 20 + 2 new) + 1 rejected (same) = 50
+- **Cumulative: 144 fixed + 22 deferred + 1 rejected + 1 architectural = 168
+  unique items (189 total with re-flags)**

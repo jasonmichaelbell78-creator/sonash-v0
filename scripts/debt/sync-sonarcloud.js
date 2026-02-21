@@ -283,10 +283,9 @@ async function fetchSonarCloudIssues(options) {
     });
 
     if (!response.ok) {
-      // Sanitize error text to avoid exposing sensitive API details
-      const rawError = await response.text();
-      const sanitizedError = rawError.substring(0, 200).replace(/token|key|secret/gi, "[REDACTED]");
-      throw new Error(`SonarCloud API error (${response.status}): ${sanitizedError}`);
+      // Discard raw response body entirely — it may contain sensitive API details
+      await response.text();
+      throw new Error(`SonarCloud API error: HTTP ${response.status}`);
     }
 
     const data = await response.json();
@@ -349,11 +348,9 @@ async function fetchSonarCloudHotspots(options) {
     });
 
     if (!response.ok) {
-      const rawError = await response.text();
-      const sanitizedError = rawError
-        .substring(0, 200)
-        .replaceAll(/token|key|secret/gi, "[REDACTED]");
-      throw new Error(`SonarCloud Hotspots API error (${response.status}): ${sanitizedError}`);
+      // Discard raw response body entirely — it may contain sensitive API details
+      await response.text();
+      throw new Error(`SonarCloud Hotspots API error: HTTP ${response.status}`);
     }
 
     const data = await response.json();
@@ -710,8 +707,16 @@ function deduplicateAndAssignIds(issues, existingItems, preConverted = []) {
   let nextId = getNextDebtId(existingItems);
 
   // Merge raw issues (converted) and pre-converted items into a single pass
+  const convertedIssues = [];
+  for (const issue of issues) {
+    try {
+      convertedIssues.push({ converted: convertIssue(issue), key: issue.key });
+    } catch {
+      // Skip malformed issues — a single bad issue should not crash the sync
+    }
+  }
   const allConverted = [
-    ...issues.map((issue) => ({ converted: convertIssue(issue), key: issue.key })),
+    ...convertedIssues,
     ...preConverted.map((item) => ({ converted: item, key: item.sonar_key })),
   ];
 

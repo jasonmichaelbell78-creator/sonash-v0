@@ -495,10 +495,7 @@ function formatDashboard(result) {
       lines.push(`  ... and ${u.count - 10} more`);
     }
   }
-  lines.push("");
-
-  // All sprints
-  lines.push("--- All Sprints ---");
+  lines.push("", "--- All Sprints ---");
   for (const s of result.allSprints) {
     let statusIcon;
     if (s.status === "COMPLETE") {

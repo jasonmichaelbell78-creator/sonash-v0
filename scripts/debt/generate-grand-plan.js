@@ -72,7 +72,7 @@ function loadMasterIndex() {
         index.set(item.id, item);
       }
     } catch (_) {
-      // Intentionally empty: skip malformed JSONL lines without aborting the load
+      console.debug(`Skipping malformed JSONL line in master index`);
     }
   }
   return index;
@@ -90,7 +90,7 @@ function loadSprintIds(sprintKey) {
   try {
     return readJson(filePath);
   } catch (_) {
-    // Intentionally empty: file may not exist or be unreadable — return null as safe fallback
+    console.debug(`Sprint IDs file unreadable: ${filePath}`);
     return null;
   }
 }
@@ -339,7 +339,6 @@ function main() {
   const masterIndex = loadMasterIndex();
 
   const totalMaster = masterIndex.size;
-  const _totalOpen = metrics.summary.open;
   const totalResolved = metrics.summary.resolved + metrics.summary.false_positives;
   const resolutionRate = metrics.summary.resolution_rate_pct;
 

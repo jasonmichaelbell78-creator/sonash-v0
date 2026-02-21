@@ -112,6 +112,7 @@ function fileExists(filePath) {
   try {
     return fs.existsSync(abs);
   } catch (error_) {
+    console.debug(`fileExists check failed for: ${abs}`);
     return false;
   }
 }
@@ -282,9 +283,8 @@ function verifyItem(item) {
     issues.push(`invalid_category:${item.category}`);
   }
   if (item.severity === "S0" && item.category !== "security") {
-    item.severity = "S1";
-    issues.push(`severity_downgraded:S0->S1 (category: ${item.category})`);
-    if (VERBOSE) console.log(`  DOWNGRADE S0->S1: ${item.id} (category: ${item.category})`);
+    issues.push(`severity_downgrade_needed:S0->S1 (category: ${item.category})`);
+    if (VERBOSE) console.log(`  DOWNGRADE NEEDED S0->S1: ${item.id} (category: ${item.category})`);
   }
   const requiredFields = ["id", "title", "category", "severity", "status"];
   for (const field of requiredFields) {
@@ -299,7 +299,11 @@ function runPhase4Verification(surviving) {
 
   for (const item of surviving) {
     const issues = verifyItem(item);
-    if (issues.length > 0) {
+    // Separate severity downgrade tracking from hard failures
+    const downgradeIssues = issues.filter((i) => i.startsWith("severity_downgrade_needed:"));
+    const hardIssues = issues.filter((i) => !i.startsWith("severity_downgrade_needed:"));
+
+    if (hardIssues.length > 0) {
       rejected.push({
         id: item.id,
         title: item.title,
@@ -308,6 +312,10 @@ function runPhase4Verification(surviving) {
       });
       if (VERBOSE) console.log(`  FAILED_VERIFICATION: ${item.id} — ${issues.join(", ")}`);
     } else {
+      // Apply severity downgrade if flagged
+      if (downgradeIssues.length > 0) {
+        item.severity = "S1";
+      }
       item.cleaning_disposition = "CLEAN";
       next.push(item);
     }

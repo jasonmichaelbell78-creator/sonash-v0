@@ -94,6 +94,14 @@ function sortedEntries(obj) {
   return Object.entries(obj).sort((a, b) => b[1].length - a[1].length);
 }
 
+/** Sanitize check names to only keep safe identifiers (strip paths/commands) */
+function sanitizeCheckName(name) {
+  return String(name || "unknown")
+    .replaceAll(/[A-Za-z]:[/\\][^\s"']+/g, "<path>")
+    .replaceAll(/\/[^\s"']*\/[^\s"']*/g, "<path>")
+    .slice(0, 80);
+}
+
 // -------------------------------------------------------------------
 // False positive detection
 // -------------------------------------------------------------------
@@ -179,7 +187,7 @@ function printTextReport(data) {
 
   console.log(`\nCommit Failures: ${failures.length} total`);
   for (const [check, entries] of sortedEntries(failuresByCheck)) {
-    console.log(`  ${check.padEnd(20)} ${String(entries.length).padStart(4)}`);
+    console.log(`  ${sanitizeCheckName(check).padEnd(20)} ${String(entries.length).padStart(4)}`);
   }
 
   console.log(`\nAgent Invocations: ${agents.length} total`);
@@ -242,7 +250,7 @@ function main() {
           commit_failures: {
             total: failures.length,
             by_check: Object.fromEntries(
-              sortedEntries(failuresByCheck).map(([k, v]) => [k, v.length])
+              sortedEntries(failuresByCheck).map(([k, v]) => [sanitizeCheckName(k), v.length])
             ),
           },
           agent_invocations: {

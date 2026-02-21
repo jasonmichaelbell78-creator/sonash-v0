@@ -57,7 +57,18 @@ function readJsonl(filePath) {
   try {
     const text = fs.readFileSync(filePath, "utf8").trim();
     if (!text) return [];
-    return text.split("\n").map((line) => JSON.parse(line));
+    const lines = text.split("\n");
+    const items = [];
+    for (let i = 0; i < lines.length; i++) {
+      try {
+        items.push(JSON.parse(lines[i]));
+      } catch (parseErr) {
+        console.warn(
+          `  Warning: failed to parse line ${i + 1} in ${path.basename(filePath)}: ${sanitizeError(parseErr)}`
+        );
+      }
+    }
+    return items;
   } catch (err) {
     console.error("Failed to read JSONL:", sanitizeError(err));
     process.exit(1);
@@ -76,9 +87,20 @@ function readJsonSafe(filePath) {
 
 function writeJsonSafe(filePath, data) {
   try {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
     const tmpPath = filePath + ".tmp";
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf8");
-    fs.renameSync(tmpPath, filePath);
+    try {
+      fs.renameSync(tmpPath, filePath);
+    } catch {
+      // Windows may fail rename if dest exists; remove dest first then retry
+      try {
+        fs.rmSync(filePath, { force: true });
+      } catch {
+        /* ignore */
+      }
+      fs.renameSync(tmpPath, filePath);
+    }
   } catch (err) {
     console.error(`Failed to write ${path.basename(filePath)}:`, sanitizeError(err));
     process.exit(1);

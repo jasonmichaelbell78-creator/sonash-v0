@@ -219,7 +219,7 @@ function replaceGrandPlanSection(text, metrics, manifest) {
 
   // Find the next heading of same or higher level (fewer or equal # chars)
   let endIdx = lines.length;
-  const nextHeadingPattern = new RegExp(`^#{1,${headingLevel}}\\s`);
+  const nextHeadingPattern = new RegExp(String.raw`^#{1,${headingLevel}}\s`);
   for (let i = startIdx + 1; i < lines.length; i++) {
     if (nextHeadingPattern.test(lines[i])) {
       endIdx = i;

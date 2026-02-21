@@ -59,7 +59,7 @@ function readJsonl(filePath) {
     try {
       items.push(JSON.parse(trimmed));
     } catch {
-      // skip malformed lines
+      console.debug(`Skipping malformed JSONL line in ${path.basename(filePath)}`);
     }
   }
   return items;

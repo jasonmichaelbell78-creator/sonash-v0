@@ -2466,6 +2466,11 @@ function printSummary(dedupedInput, alreadyTracked, newItems) {
 // Append new items to both MASTER and deduped files
 // ---------------------------------------------------------------------------
 function writeNewItems(newItems) {
+  const now = new Date().toISOString();
+  for (const item of newItems) {
+    item.ingested_by = "intake-sonar-reliability";
+    item.ingested_at = now;
+  }
   const newLines = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   try {
@@ -2474,7 +2479,7 @@ function writeNewItems(newItems) {
     console.log(`\nAppended ${newItems.length} items to MASTER_DEBT.jsonl`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error(`ERROR writing MASTER_DEBT.jsonl: ${msg.replace(/[/\\][\w./-]+/g, "<path>")}`);
+    console.error(`ERROR writing MASTER_DEBT.jsonl: ${msg.replaceAll(/[/\\][\w./-]+/g, "<path>")}`);
     process.exit(1);
   }
 
@@ -2484,7 +2489,7 @@ function writeNewItems(newItems) {
     console.log(`Appended ${newItems.length} items to raw/deduped.jsonl`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error(`ERROR writing raw/deduped.jsonl: ${msg.replace(/[/\\][\w./-]+/g, "<path>")}`);
+    console.error(`ERROR writing raw/deduped.jsonl: ${msg.replaceAll(/[/\\][\w./-]+/g, "<path>")}`);
     process.exit(1);
   }
 

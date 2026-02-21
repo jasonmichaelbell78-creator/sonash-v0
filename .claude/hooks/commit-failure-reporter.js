@@ -183,12 +183,19 @@ function logFailure(content, exitCode) {
       (l) => l.trim().length > 5 && !/^[-=]{3,}$/.test(l.trim()) && /fail|error|❌/i.test(l)
     );
 
+    // Sanitize errorExtract: strip raw file paths and commands to avoid leaking sensitive data
+    const rawExtract = sanitizeInput(errorLine || "", 200);
+    const safeExtract = rawExtract
+      .replaceAll(/[A-Za-z]:[/\\][^\s"']+/g, "<path>")
+      .replaceAll(/\/[^\s"']*\/[^\s"']*/g, "<path>")
+      .replaceAll(/`[^`]*`/g, "<cmd>");
+
     const entry = {
       timestamp: new Date().toISOString(),
       branch: getGitBranch(),
       user: process.env.USER || process.env.USERNAME || "unknown",
       failedCheck,
-      errorExtract: sanitizeInput(errorLine || "", 200),
+      errorExtract: safeExtract,
       stagedFileCount: getStagedFileCount(),
       exitCode,
     };

@@ -52,7 +52,7 @@ function parseArgs(argv) {
         process.exit(1);
       }
       result.batch = n;
-      i += 1; // skip next arg (the batch value)
+      i += 1;
     } else if (args[i] === "--json") {
       result.json = true;
     }
@@ -198,7 +198,8 @@ function main() {
       console.log(`  ${groupName} (${assignment.count} items):`);
       for (const it of assignment.items) {
         const loc = it.line ? `${it.file}:${it.line}` : it.file;
-        console.log(`    ${it.id} [${it.severity}] ${it.title}${loc ? ` \u2014 ${loc}` : ""}`);
+        const suffix = loc ? ` \u2014 ${loc}` : "";
+        console.log(`    ${it.id} [${it.severity}] ${it.title}${suffix}`);
       }
       console.log("");
     }

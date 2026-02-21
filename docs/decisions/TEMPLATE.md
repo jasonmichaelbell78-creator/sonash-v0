@@ -1,8 +1,12 @@
 # ADR-NNN: [Short Title]
 
-**Date:** YYYY-MM-DD **Status:** Proposed | Accepted | Deprecated | Superseded
-by [ADR-XXX] **Decision Makers:** [List of people/roles involved] **Last
-Updated:** YYYY-MM-DD
+<!-- prettier-ignore-start -->
+**Date:** YYYY-MM-DD
+**Status:** Proposed | Accepted | Deprecated | Superseded by [ADR-XXX]
+**Decision Makers:** [List of people/roles involved]
+**Last Updated:** 2026-02-21
+**Document Version:** 1.0
+<!-- prettier-ignore-end -->
 
 ---
 
