@@ -30,9 +30,9 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 4075  |
-| Open Items      | 3590  |
-| Resolved        | 236   |
+| Total Items     | 4082  |
+| Open Items      | 3596  |
+| Resolved        | 237   |
 | False Positives | 249   |
 | Resolution Rate | 6%    |
 
@@ -42,10 +42,10 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 473   |
-| VERIFIED       | 3117  |
+| NEW            | 476   |
+| VERIFIED       | 3120  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 236   |
+| RESOLVED       | 237   |
 | FALSE_POSITIVE | 249   |
 
 ---
@@ -54,10 +54,10 @@ distribution.
 
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
-| S0 (Critical) | 124   | 3%         |
-| S1 (High)     | 619   | 15%        |
-| S2 (Medium)   | 1719  | 42%        |
-| S3 (Low)      | 1613  | 40%        |
+| S0 (Critical) | 156   | 4%         |
+| S1 (High)     | 588   | 14%        |
+| S2 (Medium)   | 1722  | 42%        |
+| S3 (Low)      | 1616  | 40%        |
 
 ---
 
@@ -65,12 +65,12 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 2506  |
-| documentation            | 477   |
-| security                 | 355   |
+| code-quality             | 2507  |
+| documentation            | 479   |
+| security                 | 356   |
 | process                  | 343   |
-| refactoring              | 168   |
-| ai-optimization          | 118   |
+| refactoring              | 170   |
+| ai-optimization          | 119   |
 | performance              | 85    |
 | enhancements             | 12    |
 | engineering-productivity | 11    |
@@ -79,29 +79,30 @@ distribution.
 
 ## Alerts
 
-### S0 Critical Alerts (109)
+### S0 Critical Alerts (141)
 
 - **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity fr
   (functions/src/admin.ts:576)
-- **DEBT-0038**: Refactor this function to reduce its Cognitive Complexity fr
-  (components/widgets/compact-meeting-countdown.tsx:69)
-- **DEBT-0852**: useJournal creates redundant auth listener + potential memor
-  (hooks/use-journal.ts:0)
-- **DEBT-0853**: App Check disabled on all production Cloud Functions
-  (functions/src/index.ts:0)
-- **DEBT-0855**: App Check disabled on all Cloud Functions and client init di
-  (functions/src/index.ts:0)
-- **DEBT-0857**: useJournal creates redundant auth listener + potential memor
-  (hooks/use-journal.ts:0)
-- **DEBT-0864**: Re-enable App Check on Cloud Functions (lib/firebase.ts:45)
-- **DEBT-0956**: Refactor this function to reduce its Cognitive Complexity fr
-  (components/admin/errors-tab.tsx:327)
-- **DEBT-0963**: Refactor this code to not nest functions more than 4 levels
-  (components/admin/logs-tab.tsx:342)
-- **DEBT-1227**: Refactor this function to reduce its Cognitive Complexity fr
-  (functions/src/jobs.ts:1059)
+- **DEBT-0016**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/validate-canon-schema.js:235)
+- **DEBT-0018**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/check-review-needed.js:254)
+- **DEBT-0019**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/generate-documentation-index.js:141)
+- **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/validate-audit.js:211)
+- **DEBT-0022**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/check-document-sync.js:200)
+- **DEBT-0025**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/assign-review-tier.js:354)
+- **DEBT-0026**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/check-pattern-compliance.js:541)
+- **DEBT-0029**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/suggest-pattern-automation.js:107)
+- **DEBT-0030**: Refactor this function to reduce its Cognitive Complexity fr
+  (scripts/check-docs-light.js:514)
 
-### S1 High Priority Alerts (583)
+### S1 High Priority Alerts (552)
 
 - **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -124,7 +125,7 @@ distribution.
 - **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 573 more S1 items_
+_...and 542 more S1 items_
 
 ---
 
@@ -132,7 +133,7 @@ _...and 573 more S1 items_
 
 | Metric               | Value     |
 | -------------------- | --------- |
-| Verification Queue   | 473 items |
+| Verification Queue   | 476 items |
 | Avg Age (Open Items) | 9 days    |
 | Oldest Item Age      | 22 days   |
 | Oldest Item          | DEBT-0002 |
@@ -143,7 +144,7 @@ _...and 573 more S1 items_
 
 | Source  | Count |
 | ------- | ----- |
-| unknown | 4075  |
+| unknown | 4082  |
 
 ---
 

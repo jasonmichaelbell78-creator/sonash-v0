@@ -9,36 +9,35 @@
 
 ---
 
-**Total Items:** 7339
+**Total Items:** 4082
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
-| S0 (Critical) | 252   |
-| S1 (High)     | 619   |
-| S2 (Medium)   | 4855  |
-| S3 (Low)      | 1613  |
+| S0 (Critical) | 156   |
+| S1 (High)     | 588   |
+| S2 (Medium)   | 1722  |
+| S3 (Low)      | 1616  |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 5437  |
-| documentation            | 477   |
-| process                  | 407   |
-| security                 | 355   |
-| enhancements             | 268   |
-| refactoring              | 168   |
-| ai-optimization          | 118   |
+| code-quality             | 2507  |
+| documentation            | 479   |
+| security                 | 356   |
+| process                  | 343   |
+| refactoring              | 170   |
+| ai-optimization          | 119   |
 | performance              | 85    |
-| accessibility            | 13    |
+| enhancements             | 12    |
 | engineering-productivity | 11    |
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 5283  |
-| RESOLVED       | 490   |
-| FALSE_POSITIVE | 272   |
-| NEW            | 1294  |
+| NEW            | 476   |
+| VERIFIED       | 3120  |
+| RESOLVED       | 237   |
+| FALSE_POSITIVE | 249   |
 
 ## Views
 
@@ -51,6 +50,28 @@
 
 - **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity from
   22 to the 15 a... (functions/src/admin.ts:576)
+- **DEBT-0016**: Refactor this function to reduce its Cognitive Complexity from
+  29 to the 15 a... (scripts/validate-canon-schema.js:235)
+- **DEBT-0018**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (scripts/check-review-needed.js:254)
+- **DEBT-0019**: Refactor this function to reduce its Cognitive Complexity from
+  29 to the 15 a... (scripts/generate-documentation-index.js:141)
+- **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity from
+  34 to the 15 a... (scripts/validate-audit.js:211)
+- **DEBT-0022**: Refactor this function to reduce its Cognitive Complexity from
+  19 to the 15 a... (scripts/check-document-sync.js:200)
+- **DEBT-0025**: Refactor this function to reduce its Cognitive Complexity from
+  22 to the 15 a... (scripts/assign-review-tier.js:354)
+- **DEBT-0026**: Refactor this function to reduce its Cognitive Complexity from
+  26 to the 15 a... (scripts/check-pattern-compliance.js:541)
+- **DEBT-0029**: Refactor this function to reduce its Cognitive Complexity from
+  27 to the 15 a... (scripts/suggest-pattern-automation.js:107)
+- **DEBT-0030**: Refactor this function to reduce its Cognitive Complexity from
+  51 to the 15 a... (scripts/check-docs-light.js:514)
+- **DEBT-0031**: Refactor this function to reduce its Cognitive Complexity from
+  27 to the 15 a... (scripts/archive-doc.js:473)
+- **DEBT-0035**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (scripts/update-readme-status.js:151)
 - **DEBT-0038**: Refactor this function to reduce its Cognitive Complexity from
   17 to the 15 a... (components/widgets/compact-meeting-countdown.tsx:69)
 - **DEBT-0849**: Legacy journalEntries collection allows direct client writes
@@ -79,17 +100,59 @@
 - **DEBT-0865**: Close legacy journalEntries write path
   (lib/firestore-service.ts:156)
 - **DEBT-0866**: Fix useJournal memory leak (hooks/use-journal.ts:156)
+- **DEBT-0915**: Refactor this function to reduce its Cognitive Complexity from
+  30 to the 15 a... (scripts/multi-ai/normalize-format.js:129)
+- **DEBT-0918**: Refactor this function to reduce its Cognitive Complexity from
+  18 to the 15 a... (scripts/multi-ai/fix-schema.js:460)
+- **DEBT-0935**: Refactor this function to reduce its Cognitive Complexity from
+  56 to the 15 a... (scripts/multi-ai/aggregate-category.js:245)
+- **DEBT-0950**: Refactor this function to reduce its Cognitive Complexity from
+  19 to the 15 a... (scripts/multi-ai/unify-findings.js:181)
 - **DEBT-0956**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (components/admin/errors-tab.tsx:327)
 - **DEBT-0963**: Refactor this code to not nest functions more than 4 levels
   deep. (components/admin/logs-tab.tsx:342)
+- **DEBT-0978**: Refactor this function to reduce its Cognitive Complexity from
+  82 to the 15 a... (scripts/audit/transform-jsonl-schema.js:225)
+- **DEBT-0989**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (scripts/audit/validate-audit-integration.js:652)
+- **DEBT-1004**: Refactor this function to reduce its Cognitive Complexity from
+  36 to the 15 a... (scripts/debt/intake-audit.js:116)
+- **DEBT-1007**: Refactor this function to reduce its Cognitive Complexity from
+  34 to the 15 a... (scripts/lib/ai-pattern-checks.js:102)
+- **DEBT-1020**: Refactor this function to reduce its Cognitive Complexity from
+  44 to the 15 a... (scripts/debt/assign-roadmap-refs.js:125)
+- **DEBT-1025**: Refactor this function to reduce its Cognitive Complexity from
+  30 to the 15 a... (scripts/sync-claude-settings.js:191)
+- **DEBT-1050**: Refactor this function to reduce its Cognitive Complexity from
+  69 to the 15 a... (scripts/debt/dedup-multi-pass.js:209)
+- **DEBT-1053**: Refactor this function to reduce its Cognitive Complexity from
+  80 to the 15 a... (scripts/debt/generate-views.js:113)
+- **DEBT-1077**: Refactor this function to reduce its Cognitive Complexity from
+  22 to the 15 a... (scripts/debt/validate-schema.js:67)
+- **DEBT-1088**: Refactor this function to reduce its Cognitive Complexity from
+  32 to the 15 a... (scripts/debt/intake-manual.js:168)
+- **DEBT-1106**: Refactor this function to reduce its Cognitive Complexity from
+  35 to the 15 a... (scripts/debt/sync-sonarcloud.js:446)
 - **DEBT-1111**: Refactor this function to reduce its Cognitive Complexity from
   21 to the 15 a...
   (docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js:137)
+- **DEBT-1140**: Refactor this function to reduce its Cognitive Complexity from
+  55 to the 15 a... (scripts/aggregate-audit-findings.js:411)
+- **DEBT-1151**: Refactor this function to reduce its Cognitive Complexity from
+  20 to the 15 a... (scripts/check-backlog-health.js:153)
+- **DEBT-1168**: Refactor this function to reduce its Cognitive Complexity from
+  37 to the 15 a... (scripts/check-pattern-sync.js:90)
+- **DEBT-1169**: Refactor this function to reduce its Cognitive Complexity from
+  21 to the 15 a... (scripts/analyze-learning-effectiveness.js:316)
+- **DEBT-1188**: Refactor this function to reduce its Cognitive Complexity from
+  20 to the 15 a... (scripts/run-consolidation.js:662)
 - **DEBT-1227**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (functions/src/jobs.ts:1059)
 - **DEBT-1271**: Refactor this function to reduce its Cognitive Complexity from
   17 to the 15 a... (components/dev/lighthouse-tab.tsx:81)
+- **DEBT-1285**: Refactor this function to reduce its Cognitive Complexity from
+  20 to the 15 a... (scripts/check-triggers.js:259)
 - **DEBT-1293**: Security risk: Client-side filtering of sensitive data
   (hooks/use-journal.ts:174)
 - **DEBT-1878**: CI gap: pull_request_target security vulnerability allows
@@ -100,9 +163,9 @@
   execSync (scripts/debt/resolve-item.js:21)
 - **DEBT-2345**: pattern-check.js spawns subprocess every Write/Edit/MultiEdit
   (~100ms latency) (.claude/hooks/pattern-check.js:0)
-- **DEBT-6535**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+- **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
   unnecessary tokens p... (N/A:0)
-- **DEBT-6536**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+- **DEBT-2382**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
   (.claude/hooks/commit-tracker.js:0)
 - **DEBT-2383**: SESSION_DECISIONS.md Decision Block Regex in
   auto-save-context.js (.claude/hooks/auto-save-context.js:0)
@@ -110,52 +173,54 @@
   document never... (docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md:0)
 - **DEBT-2457**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
   unnecessary tokens p... (All 57 files with AI Instructions sections:0)
+- **DEBT-3913**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (scripts/sync-reviews-to-jsonl.js:564)
+- **DEBT-3915**: Refactor this function to reduce its Cognitive Complexity from
+  63 to the 15 a... (scripts/check-review-archive.js:241)
+- **DEBT-3920**: Refactor this function to reduce its Cognitive Complexity from
+  58 to the 15 a... (scripts/velocity/track-session.js:143)
+- **DEBT-3922**: Refactor this function to reduce its Cognitive Complexity from
+  17 to the 15 a... (scripts/check-roadmap-health.js:54)
+- **DEBT-3940**: Refactor this function to reduce its Cognitive Complexity from
+  29 to the 15 a... (scripts/tasks/resolve-dependencies.js:34)
+- **DEBT-3946**: Refactor this function to reduce its Cognitive Complexity from
+  35 to the 15 a... (scripts/velocity/generate-report.js:89)
+- **DEBT-3972**: Remove this use of the "void" operator.
+  (scripts/assign-review-tier.js:458)
+- **DEBT-3989**: Refactor this function to reduce its Cognitive Complexity from
+  32 to the 15 a... (scripts/debt/backfill-hashes.js:34)
+- **DEBT-3991**: Refactor this function to reduce its Cognitive Complexity from
+  49 to the 15 a... (scripts/generate-skill-registry.js:68)
+- **DEBT-3992**: Exporting mutable 'let' binding, use 'const' instead.
+  (scripts/surface-lessons-learned.js:30)
+- **DEBT-3999**: Refactor this function to reduce its Cognitive Complexity from
+  21 to the 15 a... (scripts/config/load-config.js:67)
+- **DEBT-4002**: Refactor this function to reduce its Cognitive Complexity from
+  17 to the 15 a... (scripts/search-capabilities.js:62)
+- **DEBT-4015**: Refactor this function to reduce its Cognitive Complexity from
+  17 to the 15 a... (scripts/reset-audit-triggers.js:186)
+- **DEBT-4018**: Refactor this function to reduce its Cognitive Complexity from
+  31 to the 15 a... (scripts/check-session-gaps.js:203)
+- **DEBT-4022**: Refactor this function to reduce its Cognitive Complexity from
+  18 to the 15 a... (scripts/multi-ai/extract-agent-findings.js:69)
+- **DEBT-4032**: Refactor this function to reduce its Cognitive Complexity from
+  63 to the 15 a... (scripts/generate-detailed-sonar-report.js:241)
+- **DEBT-4399**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:69)
+- **DEBT-4401**: Review this potentially hard-coded password.
+  (tests/utils/logger.test.ts:96)
+- **DEBT-4403**: Make sure that executing this OS command is safe here.
+  (scripts/check-review-needed.js:214)
 - **DEBT-2458**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
   (.claude/hooks/commit-tracker.js:0)
 - **DEBT-2459**: SESSION_DECISIONS.md Decision Block Regex in
   auto-save-context.js (.claude/hooks/auto-save-context.js:0)
 - **DEBT-2468**: SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ideation
   document never... (docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md:0)
-- **DEBT-7048**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7049**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7050**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7051**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7150**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7151**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7152**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7153**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7252**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7253**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7254**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7255**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7354**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7355**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7356**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7357**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
 - **DEBT-3898**: Refactor this function to reduce its Cognitive Complexity from
   18 to the 15 a... (scripts/check-backlog-health.js:274)
-- **DEBT-3913**: Refactor this function to reduce its Cognitive Complexity from
-  16 to the 15 a... (scripts/sync-reviews-to-jsonl.js:564)
 - **DEBT-3914**: Refactor this function to reduce its Cognitive Complexity from
   71 to the 15 a... (scripts/sync-reviews-to-jsonl.js:163)
-- **DEBT-3915**: Refactor this function to reduce its Cognitive Complexity from
-  63 to the 15 a... (scripts/check-review-archive.js:241)
 - **DEBT-3916**: Refactor this function to reduce its Cognitive Complexity from
   28 to the 15 a... (scripts/check-pattern-compliance.js:1008)
 - **DEBT-3917**: Refactor this function to reduce its Cognitive Complexity from
@@ -164,20 +229,12 @@
   16 to the 15 a... (scripts/suggest-pattern-automation.js:328)
 - **DEBT-3919**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/check-pattern-compliance.js:1069)
-- **DEBT-3920**: Refactor this function to reduce its Cognitive Complexity from
-  58 to the 15 a... (scripts/velocity/track-session.js:143)
 - **DEBT-3921**: Refactor this function to reduce its Cognitive Complexity from
   17 to the 15 a... (scripts/check-pattern-compliance.js:62)
-- **DEBT-3922**: Refactor this function to reduce its Cognitive Complexity from
-  17 to the 15 a... (scripts/check-roadmap-health.js:54)
-- **DEBT-3940**: Refactor this function to reduce its Cognitive Complexity from
-  29 to the 15 a... (scripts/tasks/resolve-dependencies.js:34)
 - **DEBT-3942**: Refactor this function to reduce its Cognitive Complexity from
   19 to the 15 a... (scripts/tasks/resolve-dependencies.js:121)
 - **DEBT-3944**: Refactor this function to reduce its Cognitive Complexity from
   30 to the 15 a... (scripts/tasks/resolve-dependencies.js:182)
-- **DEBT-3946**: Refactor this function to reduce its Cognitive Complexity from
-  35 to the 15 a... (scripts/velocity/generate-report.js:89)
 - **DEBT-3948**: Refactor this function to reduce its Cognitive Complexity from
   37 to the 15 a... (scripts/velocity/track-session.js:58)
 - **DEBT-3952**: Refactor this function to reduce its Cognitive Complexity from
@@ -188,8 +245,6 @@
   16 to the 15 a... (scripts/debt/intake-manual.js:170)
 - **DEBT-3963**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/debt/intake-audit.js:604)
-- **DEBT-3972**: Remove this use of the "void" operator.
-  (scripts/assign-review-tier.js:458)
 - **DEBT-3984**: Refactor this function to reduce its Cognitive Complexity from
   17 to the 15 a... (scripts/check-pattern-sync.js:158)
 - **DEBT-3985**: Refactor this function to reduce its Cognitive Complexity from
@@ -198,34 +253,16 @@
   18 to the 15 a... (scripts/debt/dedup-multi-pass.js:601)
 - **DEBT-3988**: Refactor this function to reduce its Cognitive Complexity from
   46 to the 15 a... (scripts/debt/generate-views.js:84)
-- **DEBT-3989**: Refactor this function to reduce its Cognitive Complexity from
-  32 to the 15 a... (scripts/debt/backfill-hashes.js:34)
-- **DEBT-3991**: Refactor this function to reduce its Cognitive Complexity from
-  49 to the 15 a... (scripts/generate-skill-registry.js:68)
-- **DEBT-3992**: Exporting mutable 'let' binding, use 'const' instead.
-  (scripts/surface-lessons-learned.js:30)
 - **DEBT-3993**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/generate-skill-registry.js:29)
-- **DEBT-3999**: Refactor this function to reduce its Cognitive Complexity from
-  21 to the 15 a... (scripts/config/load-config.js:67)
-- **DEBT-4002**: Refactor this function to reduce its Cognitive Complexity from
-  17 to the 15 a... (scripts/search-capabilities.js:62)
 - **DEBT-4005**: Refactor this function to reduce its Cognitive Complexity from
   27 to the 15 a... (scripts/search-capabilities.js:268)
 - **DEBT-4009**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/check-review-needed.js:697)
-- **DEBT-4015**: Refactor this function to reduce its Cognitive Complexity from
-  17 to the 15 a... (scripts/reset-audit-triggers.js:186)
-- **DEBT-4018**: Refactor this function to reduce its Cognitive Complexity from
-  31 to the 15 a... (scripts/check-session-gaps.js:203)
-- **DEBT-4022**: Refactor this function to reduce its Cognitive Complexity from
-  18 to the 15 a... (scripts/multi-ai/extract-agent-findings.js:69)
 - **DEBT-4026**: Refactor this function to reduce its Cognitive Complexity from
   20 to the 15 a... (scripts/debt/sync-sonarcloud.js:387)
 - **DEBT-4028**: Refactor this function to reduce its Cognitive Complexity from
   18 to the 15 a... (scripts/multi-ai/normalize-format.js:320)
-- **DEBT-4032**: Refactor this function to reduce its Cognitive Complexity from
-  63 to the 15 a... (scripts/generate-detailed-sonar-report.js:241)
 - **DEBT-4034**: Refactor this function to reduce its Cognitive Complexity from
   35 to the 15 a... (scripts/multi-ai/normalize-format.js:232)
 - **DEBT-4042**: Refactor this function to reduce its Cognitive Complexity from
@@ -314,288 +351,45 @@
   20 to the 15 a... (scripts/check-docs-light.js:396)
 - **DEBT-4356**: Refactor this function to reduce its Cognitive Complexity from
   29 to the 15 a... (scripts/update-readme-status.js:373)
-- **DEBT-4399**: Review this potentially hard-coded password.
-  (lib/utils/errors.ts:69)
 - **DEBT-4400**: Review this potentially hard-coded password.
   (lib/utils/errors.ts:71)
-- **DEBT-4401**: Review this potentially hard-coded password.
-  (tests/utils/logger.test.ts:96)
 - **DEBT-4402**: Review this potentially hard-coded password.
   (tests/utils/logger.test.ts:130)
-- **DEBT-4403**: Make sure that executing this OS command is safe here.
-  (scripts/check-review-needed.js:214)
-- **DEBT-7456**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7457**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7458**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7459**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7558**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7559**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7560**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7561**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7660**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7661**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7662**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7663**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7762**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7763**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-7764**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-7765**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-2382**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3079**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3080**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3081**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3082**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3264**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3265**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3266**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3267**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3366**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3367**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3368**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3369**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3468**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3469**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-3470**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-3471**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-4595**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-4596**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-4597**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-4598**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-4697**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-4698**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-4699**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-4700**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-4799**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-4800**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-4801**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-4802**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-4901**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-4902**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-4903**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-4904**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5003**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5004**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5005**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5006**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5105**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5106**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5107**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5108**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5207**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5208**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5209**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5210**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5309**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5310**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5311**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5312**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5411**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5412**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5413**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5414**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5513**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5514**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5515**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5516**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5615**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5616**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5617**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5618**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5717**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5718**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5719**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5720**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5819**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5820**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5821**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5822**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5921**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5922**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-5923**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-5924**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6023**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6024**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6025**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6026**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6125**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6126**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6127**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6128**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6227**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6228**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6229**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6230**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6329**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6330**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6331**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6332**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6431**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6432**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6433**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6434**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
-- **DEBT-6533**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
-  unnecessary tokens p... (N/A:0)
-- **DEBT-6534**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
-  (.claude/hooks/commit-tracker.js:0)
 
 ## High Priority Items (S1)
 
-- **DEBT-0002**: Provide a compare function to avoid sorting elements
-  alphabetically. (app/meetings/all/page.tsx:164)
-- **DEBT-0003**: Provide a compare function to avoid sorting elements
-  alphabetically. (components/notebook/pages/resources-page.tsx:306)
-- **DEBT-0004**: Use '[[' instead of '[' for conditional tests. The '[['
-  construct is safer an... (.claude/hooks/session-start.sh:264)
-- **DEBT-0005**: Use '[[' instead of '[' for conditional tests. The '[['
-  construct is safer an... (.claude/hooks/pattern-check.sh:89)
-- **DEBT-0006**: Use '[[' instead of '[' for conditional tests. The '[['
-  construct is safer an... (scripts/check-review-triggers.sh:44)
-- **DEBT-0007**: Use '[[' instead of '[' for conditional tests. The '[['
-  construct is safer an...
-  (.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:7)
-- **DEBT-0008**: Use '[[' instead of '[' for conditional tests. The '[['
-  construct is safer an...
-  (.claude/skills/artifacts-builder/scripts/init-artifact.sh:11)
-- **DEBT-0009**: Use '[[' instead of '[' for conditional tests. The '[['
-  construct is safer an...
-  (.claude/skills/systematic-debugging/find-polluter.sh:8)
-- **DEBT-0010**: Exporting mutable 'let' binding, use 'const' instead.
-  (lib/firebase.ts:137)
-- **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity from
-  20 to the 15 a... (lib/db/meetings.ts:21)
-- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity from
-  16 to the 15 a... (components/admin/admin-crud-table.tsx:83)
-- **DEBT-0014**: Refactor this function to reduce its Cognitive Complexity from
-  18 to the 15 a... (functions/src/index.ts:486)
-- **DEBT-0015**: Refactor this code to not nest functions more than 4 levels
-  deep. (hooks/use-daily-quote.ts:159)
-- **DEBT-0016**: Refactor this function to reduce its Cognitive Complexity from
-  29 to the 15 a... (scripts/validate-canon-schema.js:235)
-- **DEBT-0017**: Refactor this function to reduce its Cognitive Complexity from
-  21 to the 15 a... (scripts/normalize-canon-ids.js:188)
-- **DEBT-0018**: Refactor this function to reduce its Cognitive Complexity from
-  16 to the 15 a... (scripts/check-review-needed.js:254)
-- **DEBT-0019**: Refactor this function to reduce its Cognitive Complexity from
-  29 to the 15 a... (scripts/generate-documentation-index.js:141)
-- **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity from
-  34 to the 15 a... (scripts/validate-audit.js:211)
-- **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from
-  16 to the 15 a... (scripts/add-false-positive.js:139)
-- **DEBT-0022**: Refactor this function to reduce its Cognitive Complexity from
-  19 to the 15 a... (scripts/check-document-sync.js:200)
+- **DEBT-3529**: Critical Findings (Must Fix Immediately) (N/A:0)
+- **DEBT-3543**: CRITICAL (Production Blockers) (N/A:0)
+- **DEBT-3546**: Anonymous Auth Data Loss
+  (components/providers/auth-provider.tsx:171)
+- **DEBT-3578**: Add E2E tests for critical user flows (N/A:0)
+- **DEBT-3579**: Add E2E tests for critical user flows (N/A:0)
+- **DEBT-3648**: CRITICAL: Missing Error Boundaries (N/A:0)
+- **DEBT-3653**: CQ-1: useEffect Dependency Array Issues 🔴 CRITICAL
+  (components/notebook/pages/today-page.tsx:84)
+- **DEBT-3655**: CQ-3: Missing Null Checks 🔴 CRITICAL
+  (components/providers/auth-provider.tsx:129)
+- **DEBT-3659**: CQ-7: Missing Input Validation 🔴 CRITICAL (lib/db/users.ts:74)
+- **DEBT-3664**: B-1: Race Condition in Auto-Save 🔴 CRITICAL
+  (components/notebook/pages/today-page.tsx:86)
+- **DEBT-3665**: B-2: Listener Cleanup Memory Leak 🔴 CRITICAL
+  (components/notebook/pages/today-page.tsx:77)
+- **DEBT-3670**: P-1: All Fonts Loaded on Initial Page Load 🔴 CRITICAL
+  (app/layout.tsx:30)
+- **DEBT-3675**: S-1: Client-Side Date ID Manipulation 🔴 CRITICAL
+  (lib/firestore-service.ts:78)
+- **DEBT-3692**: §2.2 - Critical (N/A:0)
+- **DEBT-3745**: Firestore Security Rules Bypass (daily_logs direct write)
+  (N/A:0)
+- **DEBT-3746**: Rate Limiter Fail-Open Vulnerability (N/A:0)
+- **DEBT-3825**: Critical (Logic/Security) (firestore.rules:0)
+- **DEBT-3880**: Add `npm audit --audit-level=high` to `.husky/pre-push` (N/A:0)
+- **DEBT-4073**: Extract this nested ternary operation into an independent
+  statement. (components/admin/errors-tab.tsx:458)
+- **DEBT-4197**: Prefer `childNode.remove()` over
+  `parentNode.removeChild(childNode)`. (lib/utils/error-export.ts:322)
 
-_...and 599 more. See [by-severity.md](./views/by-severity.md)_
+_...and 568 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

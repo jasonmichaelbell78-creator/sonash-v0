@@ -45,7 +45,8 @@
       "trigger": "app/admin/",
       "dependents": ["ROADMAP.md"],
       "reason": "Admin Panel changes must update Track A status in ROADMAP.md",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     },
     {
       "trigger": "functions/src/admin",
@@ -57,13 +58,15 @@
       "trigger": "app/(protected)/dashboard/",
       "dependents": ["ROADMAP.md"],
       "reason": "Dashboard changes must update sprint status in ROADMAP.md",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     },
     {
       "trigger": "docs/plans/",
       "dependents": ["docs/PLAN_MAP.md", "docs/README.md"],
       "reason": "New/updated plans must be referenced in navigation docs",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     },
     {
       "trigger": "docs/technical-debt/",

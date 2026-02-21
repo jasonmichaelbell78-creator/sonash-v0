@@ -136,6 +136,44 @@ function updateSessionContext() {
   return false;
 }
 
+/**
+ * Check if SESSION_CONTEXT.md was meaningfully updated during this session.
+ * Warns if only trivial changes (or none) were made to key sections.
+ */
+function validateSessionContextUpdated() {
+  // Check git diff of SESSION_CONTEXT.md against HEAD
+  const diff = runGit(["diff", "HEAD", "--", "SESSION_CONTEXT.md"], { silent: true });
+
+  if (!diff || diff.trim().length === 0) {
+    log("⚠️  SESSION_CONTEXT.md has NO changes.", colors.yellow);
+    log("   Did you update Quick Status, Next Session Goals, and Session Summary?", colors.yellow);
+    log("   Skipping this causes stale context for the next session.", colors.yellow);
+    return false;
+  }
+
+  // Check if key sections were touched
+  const warnings = [];
+  if (!diff.includes("Quick Status") && !diff.includes("Progress")) {
+    warnings.push("Quick Status table may not have been updated");
+  }
+  if (!diff.includes("Next Session Goals") && !diff.includes("Immediate Priority")) {
+    warnings.push("Next Session Goals may not have been updated");
+  }
+  if (!diff.includes("Session #") && !diff.includes("Summary")) {
+    warnings.push("Session summary may not have been added");
+  }
+
+  if (warnings.length > 0) {
+    log("⚠️  SESSION_CONTEXT.md may be incomplete:", colors.yellow);
+    for (const w of warnings) {
+      log(`   - ${w}`, colors.yellow);
+    }
+    log("   Review Step 3b of /session-end before committing.", colors.yellow);
+  }
+
+  return true;
+}
+
 function main() {
   log("\n📋 Session End Auto-Commit\n", colors.cyan);
 
@@ -149,6 +187,9 @@ function main() {
   }
 
   log(`Branch: ${branch}`);
+
+  // Step 0: Validate SESSION_CONTEXT.md was meaningfully updated
+  validateSessionContextUpdated();
 
   // Step 1: Update SESSION_CONTEXT.md
   updateSessionContext();

@@ -400,7 +400,8 @@ function checkDependencies() {
 // Run the check
 try {
   // Allow override via environment variable
-  if (process.env.SKIP_CROSS_DOC_CHECK === "1") {
+  const skipChecks = (process.env.SKIP_CHECKS || "").split(",").map((s) => s.trim());
+  if (process.env.SKIP_CROSS_DOC_CHECK === "1" || skipChecks.includes("cross-doc")) {
     const skipResult = validateSkipReason(process.env.SKIP_REASON, "SKIP_CROSS_DOC_CHECK=1");
     if (!skipResult.valid) {
       log(skipResult.error, colors.red);

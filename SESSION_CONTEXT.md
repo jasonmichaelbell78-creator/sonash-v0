@@ -42,7 +42,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 177 (since Jan 1, 2026)
+**Current Session Count**: 178 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -52,52 +52,31 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
+**Session #177 Summary** (PRE-COMMIT SYSTEM OVERHAUL):
+
+- Implemented all 8 phases of pre-commit overhaul plan (12 steps)
+- P1: Single-pass ESLint (saves ~15s on failure), CC check merged into ESLint
+  config
+- P2: Killed graduation system in --staged mode (warnings only, never blocks)
+- P3: Consolidated 7 SKIP\_\* vars into single SKIP_CHECKS with backward compat
+- P4: Added gitFilter: "AD" to 3 overly-broad cross-doc rules
+- P5: Removed 2 low-value checks (learning reminder, debt location warning)
+- P6: Parallelized ESLint + tests via shell background jobs (~50% time savings)
+- P7: Removed readfilesync-without-try (92 exclusions) and
+  json-parse-without-try (24 exclusions) — regex patterns unfit for purpose
+- P8: Added 200-entry cap to warned-files.json
+- Pre-commit: 389→~240 lines, target <20s (from 35-40s)
+- TDMS: 4,075 items (236 resolved), 141 S0, 552 S1
+
 **Session #176 Summary** (TDMS RESOLUTION PLAN Steps 0g-10):
 
 - Completed Technical Debt Resolution Plan: all 10 steps
-- Step 0g: Ingested 287 SonarCloud reliability issues from dashboard paste
-- Steps 0h-1: Cleaned intake (503→125), ingested DEBT-6873-6997
-- Steps 2-5: TODO annotations, report headers, status verification (821
-  NEW→VERIFIED)
-- Step 6: Reopened 85 possibly-incorrect statuses to VERIFIED
-- Step 7: Categorized 3,590 open items into 19 sprints + 435 roadmap-bound
-- Step 8: Generated GRAND_PLAN_V2.md
-- Step 9: ROADMAP reconciliation — 70 CANON→DEBT replacements, Grand Plan
-  section updated
-- Step 10: Final validation — 0 schema errors, 100% coverage
 - TDMS: 4,075 items (236 resolved), 109 S0, 583 S1
 
 **Session #174 Summary** (PR #382 REVIEW + RETRO):
 
 - Processed PR #382 reviews R1-R3: 76 raw items → 61 fixed, 13 rejected
-  - R1: 42 fixes (regex DoS, severity mapping, table parsing)
-  - R2: 14 fixes (two-strikes regex, CC extraction, severity split)
-  - R3: 5 fixes (cross-report dedup, milestone reset, case severity)
-- PR #382 Retrospective: 3 rounds, ~1 avoidable (~33%)
-  - Ping-pong chains: severity mapping (3 rounds), dedup hardening (3 rounds),
-    regex DoS (2 rounds)
-- Applied all retro action items:
-  - CODE_PATTERNS.md v3.3: 4 new patterns
-  - FIX_TEMPLATES.md v2.1: Template 35 (mapping/enumeration audit)
-  - pr-review SKILL.md v2.8: 2 new Step 0.5 pre-checks + propagation enforcement
-    (6th recommendation)
-  - .qodo/pr-agent.toml: scripts/debt/ compliance exclusions
 - TDMS: 3,422 items (322 resolved at time), 52 S0, 471 S1
-
-**Session #173 Summary** (PR #379 RETRO ACTION ITEMS):
-
-- PR #379 retrospective: 7 rounds, 4 avoidable (~57%), new churn pattern
-  "Incremental Algorithm Hardening" identified
-- Implemented all 5 retro action items across 4 files
-- Built `extract-scattered-debt.js` — Step 0a of tech debt plan
-- TDMS: 3,050 items (316 resolved), 31 S0, 410 S1
-
-**Session #172 Summary** (MCP/PLUGIN TOKEN OPTIMIZATION):
-
-- Analyzed MCP server token overhead — removed duplicate servers, disabled 15
-  unused plugins
-- Estimated savings: ~5,000-6,000 tokens/turn
-- TDMS: 2,738 items (298 resolved), 19 S0, 410 S1
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -116,6 +95,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | **Integrated Improvement Plan**   | COMPLETE | 100% (9/9 steps) |
 | **GRAND PLAN: Debt Elimination**  | Active   | ~68% (1176/1727) |
 | **Tech Debt Resolution Plan**     | Active   | Steps 0a-10 done |
+| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases     |
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
@@ -129,11 +109,10 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-1. **Begin resolving S0 critical items** — 109 open S0 items in TDMS backlog
-2. **Triage system test S1 findings** — 585 S1 items need resolution planning
-3. **Tech Debt Resolution Plan** — Steps 0a-10 complete (intake, dedup,
-   verification, sprint assignment, GRAND_PLAN_V2, ROADMAP reconciliation);
-   start executing assigned sprints
+1. **Begin resolving S0 critical items** — 141 open S0 items in TDMS backlog
+2. **Triage system test S1 findings** — 552 S1 items need resolution planning
+3. **Tech Debt Resolution Plan** — Start executing assigned sprints
+4. **Verify pre-commit overhaul** — Time a real commit to confirm <20s target
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
