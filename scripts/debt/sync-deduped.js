@@ -28,9 +28,9 @@ const ROOT = path.join(__dirname, "../..");
 const MASTER_PATH = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
 const DEDUPED_PATH = path.join(ROOT, "docs/technical-debt/raw/deduped.jsonl");
 
-const args = process.argv.slice(2);
-const applyMode = args.includes("--apply");
-const jsonOutput = args.includes("--json");
+const args = new Set(process.argv.slice(2));
+const applyMode = args.has("--apply");
+const jsonOutput = args.has("--json");
 
 /**
  * Read a JSONL file and return an array of parsed objects.

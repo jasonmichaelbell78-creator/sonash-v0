@@ -231,14 +231,12 @@ for (const item of flaggedItems) {
     categories.GENUINELY_UNRESOLVED.push(item.id);
   } else if (filePath && !fs.existsSync(filePath)) {
     categories.FILE_MISSING.push(item.id);
-  } else {
+  } else if (item.status === "VERIFIED") {
     // Default: items we didn't manually verify — classify based on current status
-    if (item.status === "VERIFIED") {
-      categories.ALREADY_VERIFIED.push(item.id);
-    } else {
-      // RESOLVED items we didn't check — conservatively mark as unresolved
-      categories.GENUINELY_UNRESOLVED.push(item.id);
-    }
+    categories.ALREADY_VERIFIED.push(item.id);
+  } else {
+    // RESOLVED items we didn't check — conservatively mark as unresolved
+    categories.GENUINELY_UNRESOLVED.push(item.id);
   }
 }
 

@@ -26,9 +26,9 @@ const METRICS_PATH = path.join(ROOT, "docs/technical-debt/metrics.json");
 const MANIFEST_PATH = path.join(ROOT, "docs/technical-debt/logs/grand-plan-manifest.json");
 
 // --- CLI args ---
-const args = process.argv.slice(2);
-const writeMode = args.includes("--write");
-const verbose = args.includes("--verbose");
+const args = new Set(process.argv.slice(2));
+const writeMode = args.has("--write");
+const verbose = args.has("--verbose");
 
 // --- Helpers ---
 
@@ -202,7 +202,7 @@ function replaceGrandPlanSection(text, metrics, manifest) {
   // Find the Grand Plan heading
   let startIdx = -1;
   let headingLevel = 0;
-  const grandPlanPattern = /^(#{1,6})\s+.*GRAND PLAN.*Technical Debt/i;
+  const grandPlanPattern = /^(#{1,6})\s+[^\n]{0,100}GRAND PLAN[^\n]{0,100}Technical Debt/i;
 
   for (let i = 0; i < lines.length; i++) {
     const match = lines[i].match(grandPlanPattern);

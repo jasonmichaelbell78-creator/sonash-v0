@@ -46,7 +46,8 @@ function readJsonSafe(filePath) {
   try {
     const raw = fs.readFileSync(filePath, "utf8");
     return JSON.parse(raw);
-  } catch (err) {
+  } catch {
+    // Ignore: safe fallback — missing file or malformed JSON returns null to caller
     return null;
   }
 }
@@ -55,7 +56,8 @@ function readJsonSafe(filePath) {
 function readTextSafe(filePath) {
   try {
     return fs.readFileSync(filePath, "utf8");
-  } catch (err) {
+  } catch {
+    // Ignore: safe fallback — missing or unreadable file returns null to caller
     return null;
   }
 }
@@ -66,17 +68,18 @@ function readJsonlSafe(filePath) {
     const raw = fs.readFileSync(filePath, "utf8");
     const items = [];
     const lines = raw.split("\n");
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
       try {
-        items.push(JSON.parse(line));
-      } catch (_) {
-        // skip malformed line
+        items.push(JSON.parse(trimmed));
+      } catch {
+        // Ignore: malformed JSONL line — skip and continue parsing remaining lines
       }
     }
     return items;
-  } catch (err) {
+  } catch {
+    // Ignore: safe fallback — missing or unreadable file returns empty array to caller
     return [];
   }
 }
@@ -85,7 +88,8 @@ function readJsonlSafe(filePath) {
 function getFileMtime(filePath) {
   try {
     return fs.statSync(filePath).mtime;
-  } catch (err) {
+  } catch {
+    // Ignore: safe fallback — file does not exist or is inaccessible
     return null;
   }
 }
@@ -96,13 +100,13 @@ function discoverSprintIdFiles() {
   try {
     const entries = fs.readdirSync(PATHS.sprintLogsDir);
     const pattern = /^sprint-[^-]+-ids\.json$/;
-    for (let i = 0; i < entries.length; i++) {
-      if (pattern.test(entries[i])) {
-        files.push(path.join(PATHS.sprintLogsDir, entries[i]));
+    for (const entry of entries) {
+      if (pattern.test(entry)) {
+        files.push(path.join(PATHS.sprintLogsDir, entry));
       }
     }
-  } catch (err) {
-    // directory missing — return empty
+  } catch {
+    // Ignore: sprint logs directory missing — return empty array as safe fallback
   }
   return files;
 }
@@ -154,8 +158,7 @@ function gatherData() {
   // 3. MASTER_DEBT.jsonl — index by id
   const masterItems = readJsonlSafe(PATHS.master);
   const masterById = new Map();
-  for (let i = 0; i < masterItems.length; i++) {
-    const item = masterItems[i];
+  for (const item of masterItems) {
     if (item.id) {
       masterById.set(item.id, item);
     }
@@ -165,15 +168,15 @@ function gatherData() {
   const sprintIdFiles = discoverSprintIdFiles();
   const sprintIds = new Map(); // sprintId -> string[]
   const allPlacedIds = new Set();
-  for (let i = 0; i < sprintIdFiles.length; i++) {
-    const data = readJsonSafe(sprintIdFiles[i]);
+  for (const sprintIdFile of sprintIdFiles) {
+    const data = readJsonSafe(sprintIdFile);
     if (data && Array.isArray(data.ids)) {
-      const sid = data.sprint || sprintIdFromFile(sprintIdFiles[i]);
+      const sid = data.sprint || sprintIdFromFile(sprintIdFile);
       if (sid) {
         sprintIds.set(sid, data.ids);
       }
-      for (let j = 0; j < data.ids.length; j++) {
-        allPlacedIds.add(data.ids[j]);
+      for (const id of data.ids) {
+        allPlacedIds.add(id);
       }
     }
   }
@@ -184,8 +187,7 @@ function gatherData() {
   // 6. Deduped JSONL (keyed by content_hash since deduped items lack DEBT IDs)
   const dedupedItems = readJsonlSafe(PATHS.deduped);
   const dedupedByHash = new Map();
-  for (let i = 0; i < dedupedItems.length; i++) {
-    const item = dedupedItems[i];
+  for (const item of dedupedItems) {
     if (item.content_hash) {
       dedupedByHash.set(item.content_hash, item);
     }
@@ -226,9 +228,7 @@ function computeActiveSprintInfo(data) {
 
   // Fall back to first ACTIVE sprint in manifest
   if (!activeId && manifest && manifest.sprints) {
-    const sprintEntries = Object.entries(manifest.sprints);
-    for (let i = 0; i < sprintEntries.length; i++) {
-      const [sid, info] = sprintEntries[i];
+    for (const [sid, info] of Object.entries(manifest.sprints)) {
       if (info.status === "ACTIVE") {
         activeId = sid;
         activeFocus = info.focus || null;
@@ -247,8 +247,8 @@ function computeActiveSprintInfo(data) {
   let resolved = 0;
   const severityCounts = { S0: 0, S1: 0, S2: 0, S3: 0 };
 
-  for (let i = 0; i < ids.length; i++) {
-    const item = masterById.get(ids[i]);
+  for (const id of ids) {
+    const item = masterById.get(id);
     if (!item) continue;
 
     if (item.status === "RESOLVED" || item.status === "FALSE_POSITIVE") {
@@ -256,7 +256,7 @@ function computeActiveSprintInfo(data) {
     } else {
       // Count severity for remaining items
       const sev = item.severity;
-      if (sev && Object.prototype.hasOwnProperty.call(severityCounts, sev)) {
+      if (sev && Object.hasOwn(severityCounts, sev)) {
         severityCounts[sev]++;
       }
     }
@@ -278,7 +278,7 @@ function computeActiveSprintInfo(data) {
 }
 
 function computePipelineHealth(data) {
-  const { masterItems, masterById, dedupedByHash, metrics, roadmapText } = data;
+  const { masterItems, dedupedByHash, metrics, roadmapText } = data;
 
   // --- dedupedSynced ---
   // Sample 20 random items from masterItems, compare severity against deduped by content_hash
@@ -287,8 +287,7 @@ function computePipelineHealth(data) {
     const sample = sampleRandom(masterItems, 20);
     let mismatches = 0;
     let checked = 0;
-    for (let i = 0; i < sample.length; i++) {
-      const mItem = sample[i];
+    for (const mItem of sample) {
       if (!mItem.content_hash) continue;
       const dItem = dedupedByHash.get(mItem.content_hash);
       if (dItem) {
@@ -326,8 +325,7 @@ function computePipelineHealth(data) {
   let roadmapS0Actual = 0;
 
   // Count actual S0 VERIFIED items in MASTER
-  for (let i = 0; i < masterItems.length; i++) {
-    const item = masterItems[i];
+  for (const item of masterItems) {
     if (item.severity === "S0" && item.status === "VERIFIED") {
       roadmapS0Actual++;
     }
@@ -372,8 +370,7 @@ function computeUnplacedItems(data) {
   const { masterItems, allPlacedIds } = data;
 
   const unplaced = [];
-  for (let i = 0; i < masterItems.length; i++) {
-    const item = masterItems[i];
+  for (const item of masterItems) {
     if (!item.id) continue;
     if (item.status !== "VERIFIED" && item.status !== "NEW") continue;
     if (allPlacedIds.has(item.id)) continue;
@@ -388,8 +385,8 @@ function computeUnplacedItems(data) {
 
   // Group by source for the summary
   const bySource = {};
-  for (let i = 0; i < unplaced.length; i++) {
-    const src = unplaced[i].source || "unknown";
+  for (const placedItem of unplaced) {
+    const src = placedItem.source || "unknown";
     bySource[src] = (bySource[src] || 0) + 1;
   }
 
@@ -406,16 +403,14 @@ function computeAllSprints(data) {
   if (!manifest || !manifest.sprints) return [];
 
   const results = [];
-  const sprintEntries = Object.entries(manifest.sprints);
 
-  for (let i = 0; i < sprintEntries.length; i++) {
-    const [sid, info] = sprintEntries[i];
+  for (const [sid, info] of Object.entries(manifest.sprints)) {
     const ids = sprintIds.get(sid) || [];
     const total = ids.length || info.items || 0;
 
     let resolved = 0;
-    for (let j = 0; j < ids.length; j++) {
-      const item = masterById.get(ids[j]);
+    for (const sprintItemId of ids) {
+      const item = masterById.get(sprintItemId);
       if (item && (item.status === "RESOLVED" || item.status === "FALSE_POSITIVE")) {
         resolved++;
       }
@@ -432,8 +427,8 @@ function computeAllSprints(data) {
 
   // Sort by natural sprint ordering
   results.sort((a, b) => {
-    const aNum = parseInt(a.id.replace(/^sprint-/, ""), 10) || 0;
-    const bNum = parseInt(b.id.replace(/^sprint-/, ""), 10) || 0;
+    const aNum = Number.parseInt(a.id.replace(/^sprint-/, ""), 10) || 0;
+    const bNum = Number.parseInt(b.id.replace(/^sprint-/, ""), 10) || 0;
     if (aNum !== bNum) return aNum - bNum;
     // sub-sprint letter comparison
     return a.id.localeCompare(b.id);
@@ -449,17 +444,16 @@ function computeAllSprints(data) {
 function formatDashboard(result) {
   const lines = [];
 
-  lines.push("");
-  lines.push("=== TDMS Sprint Dashboard ===");
-  lines.push(`Generated: ${result.timestamp}`);
-  lines.push("");
+  lines.push("", "=== TDMS Sprint Dashboard ===", `Generated: ${result.timestamp}`, "");
 
   // Active sprint
   const as = result.activeSprint;
   if (as) {
-    lines.push(`--- Active Sprint: ${as.id} ---`);
-    lines.push(`  Focus: ${as.focus}`);
-    lines.push(`  Progress: ${as.resolved}/${as.total} resolved (${as.remaining} remaining)`);
+    lines.push(
+      `--- Active Sprint: ${as.id} ---`,
+      `  Focus: ${as.focus}`,
+      `  Progress: ${as.resolved}/${as.total} resolved (${as.remaining} remaining)`
+    );
     const sevParts = [];
     for (const [sev, count] of Object.entries(as.severity)) {
       if (count > 0) sevParts.push(`${sev}: ${count}`);
@@ -469,24 +463,19 @@ function formatDashboard(result) {
     }
     lines.push("");
   } else {
-    lines.push("--- No Active Sprint ---");
-    lines.push("");
+    lines.push("--- No Active Sprint ---", "");
   }
 
   // Pipeline health
   const p = result.pipeline;
-  lines.push("--- Pipeline Health ---");
-  lines.push(`  ${p.dedupedSynced ? "\u2705" : "\u274C"} Deduped synced: ${p.dedupedSynced}`);
   lines.push(
-    `  ${p.metricsStale ? "\u274C" : "\u2705"} Metrics freshness: ${p.metricsAge}${p.metricsStale ? " (STALE)" : ""}`
+    "--- Pipeline Health ---",
+    `  ${p.dedupedSynced ? "\u2705" : "\u274C"} Deduped synced: ${p.dedupedSynced}`,
+    `  ${p.metricsStale ? "\u274C" : "\u2705"} Metrics freshness: ${p.metricsAge}${p.metricsStale ? " (STALE)" : ""}`,
+    `  ${p.roadmapS0Stale ? "\u274C" : "\u2705"} ROADMAP S0: ${p.roadmapS0Shown} shown / ${p.roadmapS0Actual} actual${p.roadmapS0Stale ? " (STALE)" : ""}`,
+    `  ${p.viewsStale ? "\u274C" : "\u2705"} Views freshness: ${p.viewsStale ? "STALE" : "OK"}`,
+    ""
   );
-  lines.push(
-    `  ${p.roadmapS0Stale ? "\u274C" : "\u2705"} ROADMAP S0: ${p.roadmapS0Shown} shown / ${p.roadmapS0Actual} actual${p.roadmapS0Stale ? " (STALE)" : ""}`
-  );
-  lines.push(
-    `  ${p.viewsStale ? "\u274C" : "\u2705"} Views freshness: ${p.viewsStale ? "STALE" : "OK"}`
-  );
-  lines.push("");
 
   // Unplaced items
   const u = result.unplacedItems;
@@ -496,8 +485,7 @@ function formatDashboard(result) {
     lines.push(`  By source: ${srcParts.join(", ")}`);
     // Show first 10
     const showItems = u.items.slice(0, 10);
-    for (let i = 0; i < showItems.length; i++) {
-      const it = showItems[i];
+    for (const it of showItems) {
       lines.push(`  - ${it.id} [${it.severity}] ${it.title}`);
     }
     if (u.count > 10) {
@@ -508,11 +496,15 @@ function formatDashboard(result) {
 
   // All sprints
   lines.push("--- All Sprints ---");
-  const sprints = result.allSprints;
-  for (let i = 0; i < sprints.length; i++) {
-    const s = sprints[i];
-    const statusIcon =
-      s.status === "COMPLETE" ? "\u2705" : s.status === "ACTIVE" ? "\uD83D\uDD35" : "\u23F3";
+  for (const s of result.allSprints) {
+    let statusIcon;
+    if (s.status === "COMPLETE") {
+      statusIcon = "\u2705";
+    } else if (s.status === "ACTIVE") {
+      statusIcon = "\uD83D\uDD35";
+    } else {
+      statusIcon = "\u23F3";
+    }
     lines.push(
       `  ${statusIcon} ${s.id.padEnd(12)} ${s.status.padEnd(10)} ${s.resolved}/${s.total} resolved (${s.remaining} remaining)`
     );

@@ -205,9 +205,9 @@ function saveJsonl(filePath, items) {
  */
 function fileExists(relPath) {
   if (!relPath || relPath.trim() === "") return null; // no file ref
-  // Path traversal guard
-  if (/^\.\.(?:[\\/]|$)/.test(relPath)) return false;
-  const absPath = path.join(PROJECT_ROOT, relPath);
+  // Path traversal guard — resolve and verify it stays within PROJECT_ROOT
+  const absPath = path.resolve(PROJECT_ROOT, relPath);
+  if (!absPath.startsWith(PROJECT_ROOT + path.sep) && absPath !== PROJECT_ROOT) return false;
   try {
     return fs.existsSync(absPath);
   } catch {
@@ -234,7 +234,7 @@ function getLineCount(relPath) {
 function extractKeywords(title) {
   if (!title) return [];
   const words = title
-    .replace(/[^a-zA-Z0-9_.\-/]/g, " ")
+    .replaceAll(/[^a-zA-Z0-9_.\-/]/g, " ")
     .split(/\s+/)
     .filter((w) => w.length > 2)
     .filter((w) => !STOP_WORDS.has(w.toLowerCase()));
@@ -302,8 +302,8 @@ function verifyNewItems(items, verbose) {
     }
 
     if (exists) {
-      // Check line count if line > 0
-      if (item.line > 0) {
+      // Check line count if line is a valid positive integer
+      if (Number.isInteger(item.line) && item.line > 0) {
         const lineCount = getLineCount(fileRef);
         if (lineCount < item.line) {
           if (verbose) {

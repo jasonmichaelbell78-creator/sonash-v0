@@ -68,7 +68,8 @@ function readJSON(filePath) {
   try {
     const raw = fs.readFileSync(filePath, "utf-8");
     return JSON.parse(raw);
-  } catch (err) {
+  } catch {
+    // Ignore: file may not exist or contain invalid JSON — return null as fallback
     return null;
   }
 }
@@ -92,11 +93,12 @@ function loadMasterDebt() {
       try {
         items.push(JSON.parse(line));
       } catch {
-        /* skip malformed */
+        // Ignore: skip malformed JSONL lines (expected for partial writes)
       }
     }
     return items;
-  } catch (err) {
+  } catch {
+    // Ignore: file may not exist yet — return empty array as fallback
     return [];
   }
 }
@@ -112,7 +114,8 @@ function parseArgs(argv) {
     if (args[i] === "--force") {
       result.force = true;
     } else if (args[i] === "--carry-to" && i + 1 < args.length) {
-      result.carryTo = normalizeId(args[++i]);
+      i += 1;
+      result.carryTo = normalizeId(args[i]);
     } else if (!args[i].startsWith("--")) {
       result.sprintId = normalizeId(args[i]);
     }

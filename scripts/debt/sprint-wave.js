@@ -46,13 +46,13 @@ function parseArgs(argv) {
 
   for (let i = 1; i < args.length; i++) {
     if (args[i] === "--batch" && args[i + 1]) {
-      const n = parseInt(args[i + 1], 10);
+      const n = Number.parseInt(args[i + 1], 10);
       if (Number.isNaN(n) || n < 1) {
         console.error("Error: --batch must be a positive integer");
         process.exit(1);
       }
       result.batch = n;
-      i++; // skip next
+      i += 1; // skip next arg (the batch value)
     } else if (args[i] === "--json") {
       result.json = true;
     }

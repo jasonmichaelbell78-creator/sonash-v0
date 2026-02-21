@@ -18,9 +18,9 @@ const MASTER_PATH = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
 const MANIFEST_PATH = path.join(LOGS_DIR, "grand-plan-manifest.json");
 
 // --- CLI args ---
-const args = process.argv.slice(2);
-const applyMode = args.includes("--apply");
-const jsonMode = args.includes("--json");
+const args = new Set(process.argv.slice(2));
+const applyMode = args.has("--apply");
+const jsonMode = args.has("--json");
 
 // --- Focus directory mapping ---
 // Each entry: [prefixTest, primarySprint, overflowSprint]
@@ -133,7 +133,7 @@ function resolveTarget(filePath, manifest) {
   }
 
   // Normalize backslashes to forward slashes and reject path traversal
-  const normalized = filePath.replace(/\\/g, "/");
+  const normalized = filePath.replaceAll("\\", "/");
   if (/^\.\.(?:[/\\]|$)/.test(normalized)) {
     return { sprint: null, method: "manual" };
   }
@@ -200,10 +200,10 @@ function applyPlacements(placements, manifest) {
     for (const item of items) {
       if (!sprintData.ids.includes(item.id)) {
         sprintData.ids.push(item.id);
+        // Update severity counts only for newly-added items
+        const sev = item.severity || "S3";
+        sprintData.severity[sev] = (sprintData.severity[sev] || 0) + 1;
       }
-      // Update severity counts
-      const sev = item.severity || "S3";
-      sprintData.severity[sev] = (sprintData.severity[sev] || 0) + 1;
     }
 
     writeJSON(idsFile, sprintData);

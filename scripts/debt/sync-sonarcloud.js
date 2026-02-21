@@ -350,7 +350,9 @@ async function fetchSonarCloudHotspots(options) {
 
     if (!response.ok) {
       const rawError = await response.text();
-      const sanitizedError = rawError.substring(0, 200).replace(/token|key|secret/gi, "[REDACTED]");
+      const sanitizedError = rawError
+        .substring(0, 200)
+        .replaceAll(/token|key|secret/gi, "[REDACTED]");
       throw new Error(`SonarCloud Hotspots API error (${response.status}): ${sanitizedError}`);
     }
 

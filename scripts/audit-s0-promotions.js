@@ -16,9 +16,9 @@
  *   naming conventions, refactoring suggestions
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 
 const MASTER_PATH = path.join(__dirname, "..", "docs", "technical-debt", "MASTER_DEBT.jsonl");
 const DEDUPED_PATH = path.join(__dirname, "..", "docs", "technical-debt", "raw", "deduped.jsonl");
@@ -42,7 +42,7 @@ function readJsonl(filePath) {
 function readJsonlFromGit(commit, relPath) {
   try {
     const cwd = path.join(__dirname, "..");
-    const stdout = execSync(`git show ${commit}:${relPath}`, {
+    const stdout = execFileSync("git", ["show", `${commit}:${relPath}`], {
       cwd,
       encoding: "utf8",
       maxBuffer: 50 * 1024 * 1024,
@@ -247,14 +247,12 @@ function main() {
 
   for (const item of masterS0) {
     const base = baselineMap.get(item.id);
-    if (base) {
-      if (base.severity !== "S0") {
-        promotedFromExisting.push(item);
-      } else {
-        baselineS0Items.push(item);
-      }
-    } else {
+    if (!base) {
       newS0Items.push(item);
+    } else if (base.severity === "S0") {
+      baselineS0Items.push(item);
+    } else {
+      promotedFromExisting.push(item);
     }
   }
 
@@ -314,7 +312,7 @@ function main() {
 
   if (demotedToS1.length > 0) {
     console.log("--- Demoted to S1 ---");
-    for (const { item, reason, origSev, source } of demotedToS1) {
+    for (const { item, reason, origSev } of demotedToS1) {
       console.log(`  ${item.id}: [${origSev}->S0->S1] (${reason}) ${item.title.substring(0, 70)}`);
     }
     console.log("");
@@ -322,7 +320,7 @@ function main() {
 
   if (demotedToS2.length > 0) {
     console.log("--- Demoted to S2 ---");
-    for (const { item, reason, origSev, source } of demotedToS2) {
+    for (const { item, reason, origSev } of demotedToS2) {
       console.log(`  ${item.id}: [${origSev}->S0->S2] (${reason}) ${item.title.substring(0, 70)}`);
     }
     console.log("");

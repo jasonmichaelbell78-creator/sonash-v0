@@ -107,7 +107,11 @@ elif printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|package-lock\.jso
   (npm test > "$TEST_TMPFILE" 2>&1; echo $? > "${TEST_TMPFILE}.exit") &
   PID_TEST=$!
 else
-  NON_DOC_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -Ev '^(docs/|\.claude/|DOCUMENTATION_INDEX|SESSION_CONTEXT|ROADMAP|CLAUDE|ARCHITECTURE|DEVELOPMENT|AI_WORKFLOW).+|.*\.(md|mdx|txt|png|jpg|jpeg|gif|svg|jsonl)$' || true)
+  DOC_DIRS="docs/|\.claude/"
+  DOC_FILES="DOCUMENTATION_INDEX|SESSION_CONTEXT|ROADMAP|CLAUDE|ARCHITECTURE|DEVELOPMENT|AI_WORKFLOW"
+  DOC_EXTS="md|mdx|txt|png|jpg|jpeg|gif|svg|jsonl"
+  DOC_PATTERN="^(${DOC_DIRS}).*|(${DOC_FILES})|.*\.(${DOC_EXTS})$"
+  NON_DOC_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -Ev "$DOC_PATTERN" || true)
   if [ -z "$NON_DOC_FILES" ]; then
     SKIP_TEST_REASON="doc-only"
   else

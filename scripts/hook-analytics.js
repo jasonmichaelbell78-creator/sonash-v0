@@ -73,10 +73,10 @@ function parseArgs() {
 function filterBySince(entries, since) {
   if (!since) return entries;
   const cutoff = new Date(since).getTime();
-  if (isNaN(cutoff)) return entries;
+  if (Number.isNaN(cutoff)) return entries;
   return entries.filter((e) => {
     const t = new Date(e.timestamp).getTime();
-    return !isNaN(t) && t >= cutoff;
+    return !Number.isNaN(t) && t >= cutoff;
   });
 }
 

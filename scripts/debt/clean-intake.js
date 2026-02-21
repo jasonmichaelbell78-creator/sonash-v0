@@ -28,9 +28,9 @@ const INPUT_FILE = path.join(DEBT_DIR, "raw/scattered-intake.jsonl");
 const OUTPUT_FILE = path.join(DEBT_DIR, "raw/scattered-intake-cleaned.jsonl");
 
 // ── CLI flags ──────────────────────────────────────────────────────────────
-const args = process.argv.slice(2);
-const WRITE_MODE = args.includes("--write");
-const VERBOSE = args.includes("--verbose");
+const args = new Set(process.argv.slice(2));
+const WRITE_MODE = args.has("--write");
+const VERBOSE = args.has("--verbose");
 const DRY_RUN = !WRITE_MODE;
 
 // ── Valid categories ───────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ function readJsonl(filePath) {
     if (!line) continue;
     try {
       items.push(JSON.parse(line));
-    } catch (_parseErr) {
+    } catch (error_) {
       console.warn(`  Skipping malformed JSON at line ${i + 1}`);
     }
   }
@@ -111,7 +111,7 @@ function fileExists(filePath) {
   const abs = path.isAbsolute(filePath) ? filePath : path.join(PROJECT_ROOT, filePath);
   try {
     return fs.existsSync(abs);
-  } catch (_err) {
+  } catch (error_) {
     return false;
   }
 }

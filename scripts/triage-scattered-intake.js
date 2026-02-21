@@ -9,9 +9,9 @@
  */
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
 
 const ROOT = path.resolve(__dirname, "..");
 const SCATTERED = path.join(ROOT, "docs/technical-debt/raw/scattered-intake.jsonl");
@@ -48,8 +48,8 @@ function readJsonl(filePath) {
 function normalize(str) {
   return (str || "")
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, " ")
-    .replace(/\s+/g, " ")
+    .replaceAll(/[^a-z0-9]/g, " ")
+    .replaceAll(/\s+/g, " ")
     .trim();
 }
 
@@ -96,7 +96,6 @@ function fileExists(relPath) {
 /** Returns true if the item is too vague / is a section header / not actionable */
 function isVague(item) {
   const t = (item.title || "").trim();
-  const d = (item.description || "").trim();
 
   // Section headers from aggregated reports — not actual findings
   const headerPatterns = [
@@ -199,7 +198,7 @@ function main() {
   for (const m of master) {
     const match = (m.id || "").match(/DEBT-(\d+)/);
     if (match) {
-      const n = parseInt(match[1], 10);
+      const n = Number.parseInt(match[1], 10);
       if (n > maxDebtId) maxDebtId = n;
     }
   }
@@ -236,7 +235,6 @@ function main() {
     }
 
     // 3d. Fuzzy title duplicate check
-    const normTitle = normalize(item.title);
     let isDuplicate = false;
     let dupMatch = null;
     for (const mt of masterTitles) {

@@ -48,9 +48,9 @@ function loadMaster() {
   }
 
   const lines = content.split("\n").filter((l) => l.trim());
-  for (let i = 0; i < lines.length; i++) {
+  for (const line of lines) {
     try {
-      const item = JSON.parse(lines[i]);
+      const item = JSON.parse(line);
       itemCount++;
 
       // Track content hashes for dedup

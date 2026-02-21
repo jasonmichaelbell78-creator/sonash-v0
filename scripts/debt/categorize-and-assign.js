@@ -99,7 +99,7 @@ function buildExistingAssignments(manifest) {
 // ── Determine sprint bucket for a file path ────────────────────────────────
 function getSprintBucketForPath(filePath) {
   if (!filePath || filePath === "N/A" || filePath === "") return 12;
-  const norm = filePath.replace(/\\/g, "/");
+  const norm = filePath.replaceAll("\\", "/");
   if (norm.startsWith("scripts/")) return 8;
   if (norm.startsWith(".claude/") || norm.startsWith("docs/")) return 9;
   if (norm.startsWith(".github/") || norm.startsWith(".husky/") || isRootConfigFile(norm)) {
@@ -160,7 +160,7 @@ const SPRINT_FOCUS = {
 function getFocusForSprint(key) {
   const numMatch = key.match(/^(\d+)/);
   if (!numMatch) return "Mixed";
-  const num = parseInt(numMatch[1], 10);
+  const num = Number.parseInt(numMatch[1], 10);
   return SPRINT_FOCUS[num] || `Sprint ${key}`;
 }
 
@@ -365,9 +365,8 @@ function printSummary(manifest, keptInExisting, newSprints, roadmapBound, totalO
     const ref = ROADMAP_DEFAULTS[cat];
     console.log(`  ${cat}: ${ids.length} items → ${ref}`);
     if (opts.verbose && ids.length > 0) {
-      console.log(
-        `    IDs: ${ids.slice(0, 10).join(", ")}${ids.length > 10 ? ` ... (+${ids.length - 10} more)` : ""}`
-      );
+      const overflow = ids.length > 10 ? ` ... (+${ids.length - 10} more)` : "";
+      console.log(`    IDs: ${ids.slice(0, 10).join(", ")}${overflow}`);
     }
   }
 
@@ -404,8 +403,8 @@ function printActiveSprints(keptInExisting, opts) {
 
 function printNewSprints(newSprints, opts) {
   const sortedKeys = [...newSprints.keys()].sort((a, b) => {
-    const na = parseFloat(a);
-    const nb = parseFloat(b);
+    const na = Number.parseFloat(a);
+    const nb = Number.parseFloat(b);
     if (na !== nb) return na - nb;
     return String(a).localeCompare(String(b));
   });

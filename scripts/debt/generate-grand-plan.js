@@ -72,7 +72,7 @@ function loadMasterIndex() {
         index.set(item.id, item);
       }
     } catch (_) {
-      // skip malformed lines
+      // Intentionally empty: skip malformed JSONL lines without aborting the load
     }
   }
   return index;
@@ -90,6 +90,7 @@ function loadSprintIds(sprintKey) {
   try {
     return readJson(filePath);
   } catch (_) {
+    // Intentionally empty: file may not exist or be unreadable — return null as safe fallback
     return null;
   }
 }
@@ -137,8 +138,8 @@ function topCriticalItems(ids, masterIndex, limit) {
 function sprintSortKey(key) {
   const match = key.match(/^sprint-(\d+)([a-z]?)$/);
   if (!match) return [999, 0];
-  const num = parseInt(match[1], 10);
-  const sub = match[2] ? match[2].charCodeAt(0) - 96 : 0; // a=1, b=2, etc.
+  const num = Number.parseInt(match[1], 10);
+  const sub = match[2] ? match[2].codePointAt(0) - 96 : 0; // a=1, b=2, etc.
   return [num, sub];
 }
 
@@ -311,14 +312,20 @@ function buildCoverageReport(manifest) {
   const c = manifest.coverage;
   const gpPct = c.total_open > 0 ? ((c.placed_grand_plan / c.total_open) * 100).toFixed(1) : "0";
   const rmPct = c.total_open > 0 ? ((c.placed_roadmap / c.total_open) * 100).toFixed(1) : "0";
+  const unplacedPct = c.total_open > 0 ? ((c.unplaced / c.total_open) * 100).toFixed(1) : "0";
 
-  return [
+  const lines = [
     `- Total open items: ${c.total_open}`,
     `- Placed in Grand Plan: ${c.placed_grand_plan} (${gpPct}%)`,
     `- Placed in Roadmap: ${c.placed_roadmap} (${rmPct}%)`,
-    `- Unplaced: ${c.unplaced} (0%)`,
-    `- EVERY open item has a home`,
-  ].join("\n");
+    `- Unplaced: ${c.unplaced} (${unplacedPct}%)`,
+  ];
+
+  if (c.unplaced === 0) {
+    lines.push(`- EVERY open item has a home`);
+  }
+
+  return lines.join("\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -332,7 +339,7 @@ function main() {
   const masterIndex = loadMasterIndex();
 
   const totalMaster = masterIndex.size;
-  const totalOpen = metrics.summary.open;
+  const _totalOpen = metrics.summary.open;
   const totalResolved = metrics.summary.resolved + metrics.summary.false_positives;
   const resolutionRate = metrics.summary.resolution_rate_pct;
 
