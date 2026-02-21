@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 5.0 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 5.1 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-20 (Session #173 end)
+2026-02-20 (Session #174 end)
 
 ## Purpose
 
@@ -52,6 +52,16 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
+**Session #174 Summary** (TOOL_USE ID BUG INVESTIGATION):
+
+- Investigated `tool_use ids must be unique` API 400 errors causing session loss
+- Confirmed this is a known Claude Code platform bug (GitHub #6836 meta issue,
+  150+ reports) — not caused by project code
+- Cherry-picked commit `e81752c` from `claude/resume-technical-debt-yL492` (tech
+  debt extraction Steps 0a-0c, 374 items into intake)
+- No code changes possible — root cause is in Claude Code's parallel tool call
+  message construction
+
 **Session #173 Summary** (PR #379 RETRO ACTION ITEMS):
 
 - PR #379 retrospective: 7 rounds, 4 avoidable (~57%), new churn pattern
@@ -77,18 +87,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Estimated savings: ~5,000-6,000 tokens/turn
 - TDMS: 2,738 items (298 resolved), 19 S0, 410 S1
 
-**Session #171 Summary** (SYSTEM TEST COMPLETE — ALL 23 DOMAINS):
-
-- Completed 23-domain system test across 5 audit sessions
-- **82 total findings** (0 S0, 14 S1, 43 S2, 25 S3), all batch-accepted
-- **TDMS sync**: 78 of 82 findings synced (DEBT-3132 to DEBT-3209), 4 dupes
-  skipped
-- Total TDMS items: 2,734
-- Key S1: test suite gap, missing a11y, App Check disabled, sober_living rules
-  broken, no service worker, SENSITIVE_KEYS mismatch
-- Cross-cutting patterns: validation boundary gaps (6 domains), observability
-  gaps
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
@@ -109,7 +107,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/new-session-1vr6t`
+**Current Branch**: `claude/fix-tool-use-ids-EfyvE`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -206,6 +204,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                             | Author |
 | ------- | ---------- | ------------------------------------------------------------------- | ------ |
+| 5.1     | 2026-02-20 | Session #174 end: tool_use bug investigation + cherry-pick          | Claude |
 | 5.0     | 2026-02-20 | Session #173 end: retro actions + scattered debt extractor          | Claude |
 | 4.9     | 2026-02-19 | Session #172: MCP/plugin token optimization (~5K tokens/turn saved) | Claude |
 | 4.8     | 2026-02-19 | Session #171: System test complete (82 findings, TDMS sync)         | Claude |

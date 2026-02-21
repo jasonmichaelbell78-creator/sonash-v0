@@ -1769,6 +1769,96 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #364: PR #382 R3 — Cross-Report Dedup, Milestone Reset, Severity Case, 5 Fixes (2026-02-20)
+
+**Source:** SonarCloud (2) + Qodo Compliance (6) + Qodo PR Suggestions (3)
+**PR/Branch:** PR #382 / claude/fix-tool-use-ids-EfyvE **Total:** 11 raw → 5
+fixed, 5 rejected (compliance repeats for offline CLI scripts), 1 green pass
+
+**Patterns Identified:**
+
+- Cross-report dedup gap: `existingHashes` not updated during report loop —
+  findings appearing in 2+ reports would be duplicated within a single run
+- Stale milestone: `currentMilestone` persisted across non-milestone headings,
+  causing incorrect attribution in TDMS entries
+- Case-insensitive severity: `S[0-3]` regex missed lowercase `s0` markers in
+  source documents — added `[sS]` + `.toUpperCase()`
+- String.raw for RegExp: `\\d+` in template literal → `String.raw` avoids
+  double-escaping
+
+**Key Learnings:**
+
+- When accumulating dedup hashes across a loop, update the hash set inside the
+  loop — not just before it
+- State variables (currentMilestone) that track context must be reset when
+  context changes, not just set when matching
+- Compliance items for offline CLI scripts (audit trails, secure logging, input
+  validation) are consistently not applicable — 3 consecutive rounds confirm
+
+---
+
+#### Review #363: PR #382 R2 — Regex DoS String Parse, CC Extraction, Severity Split, 16 Items (2026-02-20)
+
+**Source:** SonarCloud (12) + CI/Prettier (1) + Qodo PR Suggestions (6)
+**PR/Branch:** PR #382 / claude/fix-tool-use-ids-EfyvE **Total:** 16 unique → 14
+fixed, 4 rejected (R1 compliance repeats)
+
+**Patterns Identified:**
+
+- TWO-STRIKES regex (R2): `isTableHeaderLine` separator regex flagged again for
+  DoS (S5852) — replaced with `isTableSeparatorLine` character-by-character
+  parser
+- CC extraction: `extractFromBullets` CC 19>15 — extracted `processBulletLine`
+  helper to reduce cognitive complexity
+- Severity split: `medium` and `low` were both mapped to S3 — split to
+  medium→S2, low→S3 with proper `\b` word boundaries
+- H1 heading guard: `matchNumberedHeading` accepted H1 (`# Title`) due to
+  `startsWith("#")` — changed to `/^#{2,5}\s/` test
+- Within-run dedup: `buildFindings` in roadmap script could produce duplicates
+  within a single run — added `seenRunHashes` Set
+- End-of-line severity: regex `[\s,)]` missed markers at end of string — added
+  `|$` alternative
+
+**Key Learnings:**
+
+- String parsing beats regex for table separator detection (simple char loop)
+- CC extraction should check the _extracted_ helper too, not just the parent
+- Severity mapping should separate medium (S2) from low (S3) — grouping them
+  causes silent mis-prioritization
+- Anchor regexes for ID matching (`^...$`) to prevent false matches on
+  substrings
+
+---
+
+#### Review #362: PR #382 R1 — Regex DoS, Severity Mapping Bug, Table Parsing, 49 Items (2026-02-20)
+
+**Source:** SonarCloud (23) + Gemini Code Assist (3) + Qodo PR Suggestions (23)
+**PR/Branch:** PR #382 / claude/fix-tool-use-ids-EfyvE **Total:** 49 raw → 42
+fixed, 4 rejected (compliance not-applicable), 3 flagged to user (architectural)
+
+**Patterns Identified:**
+
+- TWO-STRIKES regex: `matchNumberedHeading` L548 flagged for both DoS (S5852)
+  and complexity (31>20) — replaced with string parsing per CLAUDE.md rule
+- Severity mapping bug: `critical→S1` instead of `S0` caused 374 items to be
+  mis-prioritized in initial extraction
+- `filter(Boolean)` on table splits drops empty cells, shifting column indexes
+- Title-only dedup key causes distinct findings (same title, different files) to
+  merge incorrectly
+- Explicit severity markers (S0-S3) must be checked before keyword heuristics
+- `source_id` sequence suffix != source file line number (false positive)
+
+**Key Learnings:**
+
+- Regex complexity >20 from large alternation sets → replace with Set + function
+- Severity mapping in extraction scripts should always prefer explicit markers
+- Table parsing must strip outer pipes before split, not filter(Boolean) after
+- CRLF handling needed even for repo-internal files on Windows
+- Compliance checks (audit trails, input validation) don't apply to one-shot
+  offline scripts processing trusted repo files
+
+---
+
 #### Review #361: PR #381 R1+R2 — Empty Catch Logging, Filter Safety, Regex Broadening, Propagation Fix (2026-02-20)
 
 **Source:** Qodo Compliance + Qodo Code Suggestions + Gemini Code Assist (R1+R2)

@@ -30,11 +30,11 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 3050  |
-| Open Items      | 2462  |
-| Resolved        | 316   |
+| Total Items     | 3422  |
+| Open Items      | 2828  |
+| Resolved        | 322   |
 | False Positives | 272   |
-| Resolution Rate | 10%   |
+| Resolution Rate | 9%    |
 
 ---
 
@@ -42,10 +42,10 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 154   |
+| NEW            | 520   |
 | VERIFIED       | 2308  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 316   |
+| RESOLVED       | 322   |
 | FALSE_POSITIVE | 272   |
 
 ---
@@ -55,9 +55,9 @@ distribution.
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 52    | 2%         |
-| S1 (High)     | 452   | 15%        |
-| S2 (Medium)   | 1587  | 52%        |
-| S3 (Low)      | 959   | 31%        |
+| S1 (High)     | 471   | 14%        |
+| S2 (Medium)   | 1638  | 48%        |
+| S3 (Low)      | 1261  | 37%        |
 
 ---
 
@@ -65,15 +65,15 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1868  |
-| documentation            | 470   |
-| process                  | 347   |
+| code-quality             | 2028  |
+| documentation            | 474   |
+| process                  | 351   |
+| refactoring              | 168   |
+| security                 | 163   |
 | ai-optimization          | 118   |
-| security                 | 112   |
-| performance              | 59    |
+| performance              | 66    |
 | enhancements             | 44    |
-| refactoring              | 23    |
-| engineering-productivity | 9     |
+| engineering-productivity | 10    |
 
 ---
 
@@ -102,7 +102,7 @@ distribution.
 - **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
   (N/A:0)
 
-### S1 High Priority Alerts (410)
+### S1 High Priority Alerts (429)
 
 - **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -125,7 +125,7 @@ distribution.
 - **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 400 more S1 items_
+_...and 419 more S1 items_
 
 ---
 
@@ -133,8 +133,8 @@ _...and 400 more S1 items_
 
 | Metric               | Value     |
 | -------------------- | --------- |
-| Verification Queue   | 154 items |
-| Avg Age (Open Items) | 13 days   |
+| Verification Queue   | 520 items |
+| Avg Age (Open Items) | 12 days   |
 | Oldest Item Age      | 21 days   |
 | Oldest Item          | DEBT-0002 |
 
@@ -144,7 +144,7 @@ _...and 400 more S1 items_
 
 | Source  | Count |
 | ------- | ----- |
-| unknown | 3050  |
+| unknown | 3422  |
 
 ---
 
