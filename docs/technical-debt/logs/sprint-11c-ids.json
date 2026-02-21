@@ -1,0 +1,19 @@
+{
+  "sprint": "sprint-11c",
+  "focus": "components/, app/, lib/, functions/, hooks/, types/",
+  "ids": [
+    "DEBT-6647",
+    "DEBT-6648",
+    "DEBT-6649",
+    "DEBT-6650",
+    "DEBT-6651",
+    "DEBT-6652",
+    "DEBT-6653",
+    "DEBT-6654",
+    "DEBT-6655",
+    "DEBT-6869",
+    "DEBT-6870",
+    "DEBT-6871",
+    "DEBT-6872"
+  ]
+}
