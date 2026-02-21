@@ -42,7 +42,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 174 (since Jan 1, 2026)
+**Current Session Count**: 175 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -52,38 +52,35 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #174 Summary** (TOOL_USE ID BUG INVESTIGATION):
+**Session #174 Summary** (PR #382 REVIEW + RETRO):
 
-- Investigated `tool_use ids must be unique` API 400 errors causing session loss
-- Confirmed this is a known Claude Code platform bug (GitHub #6836 meta issue,
-  150+ reports) — not caused by project code
-- Cherry-picked commit `e81752c` from `claude/resume-technical-debt-yL492` (tech
-  debt extraction Steps 0a-0c, 374 items into intake)
-- No code changes possible — root cause is in Claude Code's parallel tool call
-  message construction
+- Processed PR #382 reviews R1-R3: 76 raw items → 61 fixed, 13 rejected
+  - R1: 42 fixes (regex DoS, severity mapping, table parsing)
+  - R2: 14 fixes (two-strikes regex, CC extraction, severity split)
+  - R3: 5 fixes (cross-report dedup, milestone reset, case severity)
+- PR #382 Retrospective: 3 rounds, ~1 avoidable (~33%)
+  - Ping-pong chains: severity mapping (3 rounds), dedup hardening (3 rounds),
+    regex DoS (2 rounds)
+- Applied all retro action items:
+  - CODE_PATTERNS.md v3.3: 4 new patterns
+  - FIX_TEMPLATES.md v2.1: Template 35 (mapping/enumeration audit)
+  - pr-review SKILL.md v2.8: 2 new Step 0.5 pre-checks + propagation enforcement
+    (6th recommendation)
+  - .qodo/pr-agent.toml: scripts/debt/ compliance exclusions
+- TDMS: 3,422 items (322 resolved), 52 S0, 471 S1
 
 **Session #173 Summary** (PR #379 RETRO ACTION ITEMS):
 
 - PR #379 retrospective: 7 rounds, 4 avoidable (~57%), new churn pattern
   "Incremental Algorithm Hardening" identified
-- Implemented all 5 retro action items across 4 files:
-  - pr-review SKILL.md v2.6: Algorithm Design Pre-Check in Step 0.5
-  - pr-agent.toml: 2 new suppression rules (actor/outcome, impossible JSON
-    types)
-  - FIX_TEMPLATES.md v2.0: Template #34 (evidence/array merge with deep dedup)
-  - pr-retro SKILL.md v2.4: Pattern 8 (incremental algorithm hardening)
-- Built `extract-scattered-debt.js` — Step 0a of tech debt plan (extracts
-  TODO/FIXME/HACK from code into TDMS)
+- Implemented all 5 retro action items across 4 files
+- Built `extract-scattered-debt.js` — Step 0a of tech debt plan
 - TDMS: 3,050 items (316 resolved), 31 S0, 410 S1
 
 **Session #172 Summary** (MCP/PLUGIN TOKEN OPTIMIZATION):
 
-- Analyzed MCP server token overhead — identified duplicate servers and heavy
-  instructions consuming ~6,000+ tokens/turn
-- Removed duplicate playwright from `.mcp.json` (plugin already provides it)
-- Disabled serena plugin (~800 tokens/turn in server instructions)
-- Disabled 15 unused workflow plugins (SEO, content-marketing, multi-platform,
-  deployment-strategies, framework-migration, etc.) — ~42 skills removed
+- Analyzed MCP server token overhead — removed duplicate servers, disabled 15
+  unused plugins
 - Estimated savings: ~5,000-6,000 tokens/turn
 - TDMS: 2,738 items (298 resolved), 19 S0, 410 S1
 
@@ -139,7 +136,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 4. Document using template
 5. Implement and commit with review summary
 
-**Last Processed**: 2026-02-19 (Reviews #355-356: PR #378 R1-R2)
+**Last Processed**: 2026-02-20 (Reviews #362-364: PR #382 R1-R3)
 
 ---
 

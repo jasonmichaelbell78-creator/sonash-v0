@@ -185,7 +185,7 @@ function checkVersionAccuracy(content, filePath) {
 /**
  * Check file path references
  * Looks for paths in backticks or quotes that look like file paths
- * TODO: Refactor to reduce cognitive complexity (currently 29, target 15)
+ * DEBT-3523: Refactor to reduce cognitive complexity (currently 29, target 15)
  */
 function checkPathReferences(content, filePath) {
   const findings = [];

@@ -1,3 +1,7 @@
+<!-- TDMS: All actionable findings from this report have been ingested into
+     MASTER_DEBT.jsonl. This file is archived for historical reference only.
+     Do not add new findings here — use the TDMS intake process. -->
+
 # Architecture Quality Improvement Plan
 
 ## From 4.2/5 → 4.8+/5

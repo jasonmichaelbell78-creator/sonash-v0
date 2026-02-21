@@ -52,3 +52,5 @@
 {"timestamp":"2026-02-20T00:00:22.468Z","total":2738,"open":2168,"resolved":298,"s0_alerts":19,"s1_alerts":410}
 {"timestamp":"2026-02-20T11:36:49.035Z","total":3050,"open":2462,"resolved":316,"s0_alerts":31,"s1_alerts":410}
 {"timestamp":"2026-02-20T21:48:41.134Z","total":3422,"open":2828,"resolved":322,"s0_alerts":31,"s1_alerts":429}
+{"timestamp":"2026-02-21T03:14:39.378Z","total":6522,"open":5808,"resolved":442,"s0_alerts":199,"s1_alerts":576}
+{"timestamp":"2026-02-21T03:22:57.073Z","total":4075,"open":3505,"resolved":298,"s0_alerts":103,"s1_alerts":577}

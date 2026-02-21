@@ -313,6 +313,113 @@ async function fetchSonarCloudIssues(options) {
   return allIssues;
 }
 
+// Hotspot severity mapping (SonarCloud uses "vulnerabilityProbability")
+const HOTSPOT_SEVERITY_MAP = {
+  HIGH: "S0",
+  MEDIUM: "S1",
+  LOW: "S2",
+};
+
+// Fetch security hotspots from SonarCloud (separate API endpoint)
+async function fetchSonarCloudHotspots(options) {
+  const { token, org, project } = options;
+
+  console.log(`  📡 Fetching security hotspots...`);
+  console.log(`     Project: ${org}_${project}`);
+
+  const allHotspots = [];
+  const pageSize = 500;
+  let page = 1;
+  let totalPages = null;
+
+  while (totalPages === null || page <= totalPages) {
+    const params = new URLSearchParams({
+      projectKey: `${org}_${project}`,
+      ps: String(pageSize),
+      p: String(page),
+      status: "TO_REVIEW",
+    });
+
+    const url = `${SONARCLOUD_API}/hotspots/search?${params}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
+      },
+    });
+
+    if (!response.ok) {
+      const rawError = await response.text();
+      const sanitizedError = rawError.substring(0, 200).replace(/token|key|secret/gi, "[REDACTED]");
+      throw new Error(`SonarCloud Hotspots API error (${response.status}): ${sanitizedError}`);
+    }
+
+    const data = await response.json();
+    const paging = data.paging || {};
+    const total = paging.total || 0;
+    totalPages = Math.ceil(total / pageSize);
+
+    allHotspots.push(...(data.hotspots || []));
+
+    if (!data.hotspots || data.hotspots.length === 0) break;
+
+    if (page === 1) {
+      console.log(`     Total hotspots: ${total}`);
+    }
+    page++;
+
+    if (page > 20) {
+      console.warn(`     ⚠️ Pagination limit reached (${allHotspots.length} of ${total} fetched)`);
+      break;
+    }
+  }
+
+  console.log(`     Fetched ${allHotspots.length} hotspots total`);
+
+  return allHotspots;
+}
+
+// Convert a SonarCloud hotspot to the same format as convertIssue output
+function convertHotspot(hotspot) {
+  if (!hotspot || typeof hotspot !== "object") {
+    throw new Error("Invalid hotspot object from SonarCloud");
+  }
+
+  const key = sanitizeString(hotspot.key, 100);
+  if (!key) {
+    throw new Error("Hotspot missing required 'key' field");
+  }
+
+  const severity = HOTSPOT_SEVERITY_MAP[hotspot.vulnerabilityProbability] || "S1";
+  const rule = hotspot.ruleKey || hotspot.securityCategory || "unknown";
+  const component = hotspot.component || "";
+  const filePath = normalizeFilePath(component);
+
+  return {
+    source_id: `sonarcloud:${key}`,
+    source_file: "sonarcloud-sync",
+    category: "security",
+    severity,
+    type: "hotspot",
+    file: sanitizeString(filePath, 500),
+    line: Number.isFinite(hotspot.line) ? hotspot.line : 0,
+    title: sanitizeString(hotspot.message, 500) || "Security Hotspot",
+    description: sanitizeString(
+      `Rule: ${rule}. ${hotspot.message || ""}. Category: ${hotspot.securityCategory || "unknown"}`,
+      1000
+    ),
+    recommendation: "",
+    effort: "E0",
+    status: "NEW",
+    roadmap_ref: null,
+    created: new Date().toISOString().split("T")[0],
+    verified_by: null,
+    resolution: null,
+    rule: sanitizeString(rule, 100),
+    sonar_key: key,
+  };
+}
+
 // Sanitize string for safe storage (prevent injection, limit length)
 function sanitizeString(str, maxLength = 500) {
   if (typeof str !== "string") return "";
@@ -406,7 +513,20 @@ async function resolveStaleItems(options) {
   }
 
   const activeKeys = new Set(activeIssues.map((issue) => issue.key));
-  console.log(`  📡 Active SonarCloud issues: ${activeKeys.size}`);
+
+  // Also fetch active hotspot keys so they don't get falsely resolved
+  try {
+    const hotspots = await fetchSonarCloudHotspots({ token, org, project });
+    for (const h of hotspots) {
+      if (h.key) activeKeys.add(h.key);
+    }
+  } catch (err) {
+    console.warn(
+      `  ⚠️ Hotspot fetch failed during resolve (non-fatal): ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  console.log(`  📡 Active SonarCloud keys (issues + hotspots): ${activeKeys.size}`);
 
   // Load existing items
   const existingItems = loadMasterDebt();
@@ -559,8 +679,10 @@ function regenerateViews(label = "") {
   }
 }
 
-// Deduplicate fetched issues against existing items, assign IDs
-function deduplicateAndAssignIds(issues, existingItems) {
+// Deduplicate fetched issues against existing items, assign IDs.
+// `issues` = raw SonarCloud issues (need convertIssue).
+// `preConverted` = already-converted items (e.g., hotspots) — skip convertIssue.
+function deduplicateAndAssignIds(issues, existingItems, preConverted = []) {
   const existingSonarKeys = new Set(
     existingItems.filter((item) => item.sonar_key).map((item) => item.sonar_key)
   );
@@ -571,6 +693,7 @@ function deduplicateAndAssignIds(issues, existingItems) {
   const contentDuplicates = [];
   let nextId = getNextDebtId(existingItems);
 
+  // Process raw issues (need conversion)
   for (const issue of issues) {
     if (existingSonarKeys.has(issue.key)) {
       alreadyTracked.push(issue.key);
@@ -578,6 +701,26 @@ function deduplicateAndAssignIds(issues, existingItems) {
     }
 
     const converted = convertIssue(issue);
+    converted.content_hash = generateContentHash(converted);
+
+    if (existingHashes.has(converted.content_hash)) {
+      contentDuplicates.push((converted.title || "").substring(0, 40));
+      continue;
+    }
+
+    converted.id = `DEBT-${String(nextId).padStart(4, "0")}`;
+    nextId++;
+    newItems.push(converted);
+    existingHashes.add(converted.content_hash);
+  }
+
+  // Process pre-converted items (hotspots)
+  for (const converted of preConverted) {
+    if (existingSonarKeys.has(converted.sonar_key)) {
+      alreadyTracked.push(converted.sonar_key);
+      continue;
+    }
+
     converted.content_hash = generateContentHash(converted);
 
     if (existingHashes.has(converted.content_hash)) {
@@ -715,7 +858,20 @@ Environment variables:
     process.exit(1);
   }
 
-  if (issues.length === 0) {
+  // Fetch security hotspots (separate API endpoint)
+  let convertedHotspots = [];
+  try {
+    const hotspots = await fetchSonarCloudHotspots({ token, org, project });
+    convertedHotspots = hotspots.map(convertHotspot);
+  } catch (err) {
+    console.warn(
+      `  ⚠️ Hotspot fetch failed (non-fatal): ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  const totalFetched = issues.length + convertedHotspots.length;
+
+  if (totalFetched === 0) {
     console.log("  ✅ No issues found matching criteria. Nothing to sync.");
     process.exit(0);
   }
@@ -723,12 +879,16 @@ Environment variables:
   const existingItems = loadMasterDebt();
   const { newItems, alreadyTracked, contentDuplicates } = deduplicateAndAssignIds(
     issues,
-    existingItems
+    existingItems,
+    convertedHotspots
   );
 
   // Report results
   console.log("\n📊 Sync Results:\n");
   console.log(`  📥 SonarCloud issues fetched: ${issues.length}`);
+  if (convertedHotspots.length > 0) {
+    console.log(`  📥 Security hotspots fetched: ${convertedHotspots.length}`);
+  }
   console.log(`  ⏭️  Already tracked (by key):  ${alreadyTracked.length}`);
   console.log(`  ⏭️  Content duplicates:        ${contentDuplicates.length}`);
   console.log(`  ✅ New items to add:          ${newItems.length}`);

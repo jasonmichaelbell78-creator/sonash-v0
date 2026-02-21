@@ -1,3 +1,7 @@
+<!-- TDMS: All actionable findings from this report have been ingested into
+     MASTER_DEBT.jsonl. This file is archived for historical reference only.
+     Do not add new findings here — use the TDMS intake process. -->
+
 # Roadmap Integration Summary
 
 ## Clean Architecture Refactor → Production Roadmap

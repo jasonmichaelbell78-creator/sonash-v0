@@ -1,0 +1,603 @@
+#!/usr/bin/env node
+/* global __dirname */
+/* eslint-disable complexity */
+/**
+ * verify-resolutions.js — Audit item statuses in MASTER_DEBT.jsonl
+ *
+ * Combines Steps 3, 4, and 5 of the Technical Debt Resolution Plan:
+ *   Step 3: Verify NEW items (promote to VERIFIED if file exists)
+ *   Step 4: Audit RESOLVED items (confirm or flag as possibly unresolved)
+ *   Step 5: Audit FALSE_POSITIVE items (confirm or flag as possibly misclassified)
+ *
+ * Usage:
+ *   node scripts/debt/verify-resolutions.js [options]
+ *
+ * Options:
+ *   --dry-run   (default) Show what would change, don't write
+ *   --write     Apply changes
+ *   --verbose   Show item-level details
+ */
+
+const fs = require("node:fs");
+const path = require("node:path");
+const { sanitizeError } = require("../lib/sanitize-error");
+
+const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const DEBT_DIR = path.join(PROJECT_ROOT, "docs/technical-debt");
+const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
+const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
+const LOG_DIR = path.join(DEBT_DIR, "logs");
+const REPORT_FILE = path.join(LOG_DIR, "resolution-audit-report.json");
+
+// Common words to skip when extracting keywords from titles
+const STOP_WORDS = new Set([
+  "the",
+  "a",
+  "an",
+  "is",
+  "in",
+  "for",
+  "should",
+  "be",
+  "to",
+  "of",
+  "and",
+  "or",
+  "not",
+  "this",
+  "that",
+  "it",
+  "with",
+  "on",
+  "at",
+  "by",
+  "from",
+  "are",
+  "was",
+  "were",
+  "has",
+  "have",
+  "had",
+  "do",
+  "does",
+  "did",
+  "will",
+  "can",
+  "could",
+  "may",
+  "might",
+  "would",
+  "shall",
+  "must",
+  "need",
+  "use",
+  "used",
+  "using",
+  "instead",
+  "also",
+  "here",
+  "there",
+  "when",
+  "if",
+  "else",
+  "than",
+  "then",
+  "no",
+  "yes",
+  "all",
+  "each",
+  "every",
+  "any",
+  "some",
+  "more",
+  "less",
+  "most",
+  "least",
+  "very",
+  "too",
+  "only",
+  "just",
+  "about",
+  "into",
+  "out",
+  "up",
+  "down",
+  "over",
+  "under",
+  "between",
+  "through",
+  "after",
+  "before",
+  "during",
+  "without",
+  "within",
+  "along",
+  "provide",
+  "avoid",
+  "rule",
+  "which",
+  "what",
+  "where",
+  "how",
+  "why",
+  "but",
+  "so",
+  "as",
+  "its",
+  "been",
+  "being",
+  "other",
+  "same",
+  "such",
+]);
+
+// ── Argument Parsing ───────────────────────────────────────────────────
+
+function parseArgs(args) {
+  const parsed = { dryRun: true, verbose: false };
+  for (const arg of args) {
+    if (arg === "--write") parsed.dryRun = false;
+    if (arg === "--dry-run") parsed.dryRun = true;
+    if (arg === "--verbose") parsed.verbose = true;
+    if (arg === "--help") {
+      console.log(`
+Usage: node scripts/debt/verify-resolutions.js [options]
+
+Options:
+  --dry-run   (default) Show what would change, don't write
+  --write     Apply changes to MASTER_DEBT.jsonl and raw/deduped.jsonl
+  --verbose   Show item-level details
+`);
+      process.exit(0);
+    }
+  }
+  return parsed;
+}
+
+// ── File I/O ───────────────────────────────────────────────────────────
+
+function loadJsonl(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return [];
+  }
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    console.error(`Failed to read ${path.basename(filePath)}: ${sanitizeError(err)}`);
+    process.exit(1);
+  }
+  const items = [];
+  const lines = content.split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    try {
+      items.push(JSON.parse(trimmed));
+    } catch {
+      // Skip malformed lines
+    }
+  }
+  return items;
+}
+
+function saveJsonl(filePath, items) {
+  const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
+  const dir = path.dirname(filePath);
+  const tmpFile = path.join(dir, `.${path.basename(filePath)}.tmp.${process.pid}`);
+  try {
+    fs.writeFileSync(tmpFile, content);
+    fs.renameSync(tmpFile, filePath);
+  } catch (err) {
+    try {
+      fs.unlinkSync(tmpFile);
+    } catch {
+      /* ignore cleanup */
+    }
+    throw err;
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────
+
+/**
+ * Check if a file exists on disk relative to project root.
+ */
+function fileExists(relPath) {
+  if (!relPath || relPath.trim() === "") return null; // no file ref
+  // Path traversal guard
+  if (/^\.\.(?:[\\/]|$)/.test(relPath)) return false;
+  const absPath = path.join(PROJECT_ROOT, relPath);
+  try {
+    return fs.existsSync(absPath);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Get number of lines in a file. Returns 0 on error.
+ */
+function getLineCount(relPath) {
+  const absPath = path.join(PROJECT_ROOT, relPath);
+  try {
+    const content = fs.readFileSync(absPath, "utf8");
+    return content.split("\n").length;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Extract 2-3 key technical terms from a title, skipping stop words.
+ */
+function extractKeywords(title) {
+  if (!title) return [];
+  const words = title
+    .replace(/[^a-zA-Z0-9_.\-/]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 2)
+    .filter((w) => !STOP_WORDS.has(w.toLowerCase()));
+  // Take up to 3 unique keywords
+  const seen = new Set();
+  const keywords = [];
+  for (const w of words) {
+    const lower = w.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      keywords.push(lower);
+      if (keywords.length >= 3) break;
+    }
+  }
+  return keywords;
+}
+
+/**
+ * Check if any keyword appears near the referenced line (±10 lines).
+ * Uses case-insensitive string includes.
+ */
+function patternFoundNearLine(relPath, line, keywords) {
+  if (!keywords.length) return false;
+  const absPath = path.join(PROJECT_ROOT, relPath);
+  let content;
+  try {
+    content = fs.readFileSync(absPath, "utf8");
+  } catch {
+    return false;
+  }
+  const allLines = content.split("\n");
+  const startLine = Math.max(0, line - 11); // 0-indexed, line is 1-indexed
+  const endLine = Math.min(allLines.length, line + 10);
+  const region = allLines.slice(startLine, endLine).join("\n").toLowerCase();
+
+  for (const kw of keywords) {
+    if (region.includes(kw)) return true;
+  }
+  return false;
+}
+
+// ── Step 3: Verify NEW items ───────────────────────────────────────────
+
+function verifyNewItems(items, verbose) {
+  const results = {
+    promoted_to_verified: [],
+    needs_triage: [],
+    no_file_ref: [],
+    skipped: 0,
+  };
+
+  for (const item of items) {
+    if (item.status !== "NEW") continue;
+
+    const fileRef = item.file || "";
+    if (fileRef.trim() === "") {
+      results.no_file_ref.push(item.id);
+      continue;
+    }
+
+    const exists = fileExists(fileRef);
+    if (exists === null) {
+      results.no_file_ref.push(item.id);
+      continue;
+    }
+
+    if (exists) {
+      // Check line count if line > 0
+      if (item.line > 0) {
+        const lineCount = getLineCount(fileRef);
+        if (lineCount < item.line) {
+          if (verbose) {
+            console.log(
+              `  [NEEDS_TRIAGE] ${item.id}: ${fileRef}:${item.line} (file has only ${lineCount} lines)`
+            );
+          }
+          results.needs_triage.push({
+            id: item.id,
+            file: fileRef,
+            line: item.line,
+            reason: `File has ${lineCount} lines but item references line ${item.line}`,
+          });
+          continue;
+        }
+      }
+      results.promoted_to_verified.push(item.id);
+      if (verbose) {
+        console.log(`  [VERIFIED] ${item.id}: ${fileRef}`);
+      }
+    } else {
+      results.needs_triage.push({
+        id: item.id,
+        file: fileRef,
+        line: item.line,
+        reason: "File does not exist",
+      });
+      if (verbose) {
+        console.log(`  [NEEDS_TRIAGE] ${item.id}: ${fileRef} (file missing)`);
+      }
+    }
+  }
+
+  return results;
+}
+
+// ── Step 4: Audit RESOLVED items ───────────────────────────────────────
+
+function auditResolvedItems(items, verbose) {
+  const results = {
+    confirmed_resolved: [],
+    possibly_unresolved: [],
+    unable_to_verify: [],
+  };
+
+  for (const item of items) {
+    if (item.status !== "RESOLVED") continue;
+
+    const fileRef = item.file || "";
+    if (fileRef.trim() === "") {
+      results.unable_to_verify.push({ id: item.id, reason: "No file reference" });
+      if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no file reference`);
+      continue;
+    }
+
+    const exists = fileExists(fileRef);
+    if (!exists) {
+      results.confirmed_resolved.push({ id: item.id, reason: "File deleted" });
+      if (verbose) console.log(`  [CONFIRMED_RESOLVED] ${item.id}: ${fileRef} (deleted)`);
+      continue;
+    }
+
+    const keywords = extractKeywords(item.title);
+    if (!keywords.length) {
+      results.unable_to_verify.push({ id: item.id, reason: "No keywords extractable from title" });
+      if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no keywords from title`);
+      continue;
+    }
+
+    const line = item.line || 1;
+    if (patternFoundNearLine(fileRef, line, keywords)) {
+      results.possibly_unresolved.push({
+        id: item.id,
+        file: fileRef,
+        line: item.line,
+        keywords,
+        reason: "Pattern still found near referenced line",
+      });
+      if (verbose) {
+        console.log(
+          `  [POSSIBLY_UNRESOLVED] ${item.id}: ${fileRef}:${item.line} (keywords: ${keywords.join(", ")})`
+        );
+      }
+    } else {
+      results.confirmed_resolved.push({ id: item.id, reason: "Pattern not found" });
+      if (verbose) console.log(`  [CONFIRMED_RESOLVED] ${item.id}: ${fileRef} (pattern cleared)`);
+    }
+  }
+
+  return results;
+}
+
+// ── Step 5: Audit FALSE_POSITIVE items ─────────────────────────────────
+
+function auditFalsePositiveItems(items, verbose) {
+  const results = {
+    confirmed_fp: [],
+    possibly_misclassified: [],
+    unable_to_verify: [],
+  };
+
+  for (const item of items) {
+    if (item.status !== "FALSE_POSITIVE") continue;
+
+    const fileRef = item.file || "";
+    if (fileRef.trim() === "") {
+      results.unable_to_verify.push({ id: item.id, reason: "No file reference" });
+      if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no file reference`);
+      continue;
+    }
+
+    const exists = fileExists(fileRef);
+    if (!exists) {
+      results.confirmed_fp.push({ id: item.id, reason: "File deleted" });
+      if (verbose) console.log(`  [CONFIRMED_FP] ${item.id}: ${fileRef} (deleted)`);
+      continue;
+    }
+
+    const keywords = extractKeywords(item.title);
+    if (!keywords.length) {
+      results.unable_to_verify.push({ id: item.id, reason: "No keywords extractable from title" });
+      if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no keywords from title`);
+      continue;
+    }
+
+    const line = item.line || 1;
+    if (patternFoundNearLine(fileRef, line, keywords)) {
+      results.possibly_misclassified.push({
+        id: item.id,
+        file: fileRef,
+        line: item.line,
+        keywords,
+        reason: "Pattern still found near referenced line",
+      });
+      if (verbose) {
+        console.log(
+          `  [POSSIBLY_MISCLASSIFIED] ${item.id}: ${fileRef}:${item.line} (keywords: ${keywords.join(", ")})`
+        );
+      }
+    } else {
+      results.confirmed_fp.push({ id: item.id, reason: "Pattern not found" });
+      if (verbose) console.log(`  [CONFIRMED_FP] ${item.id}: ${fileRef} (pattern cleared)`);
+    }
+  }
+
+  return results;
+}
+
+// ── Apply Changes ──────────────────────────────────────────────────────
+
+function applyChanges(masterItems, dedupedItems, promotedIds) {
+  const promotedSet = new Set(promotedIds);
+  const changedHashes = new Set();
+
+  // Update master items
+  for (const item of masterItems) {
+    if (promotedSet.has(item.id)) {
+      item.status = "VERIFIED";
+      item.verified_by = "verify-resolutions-script";
+      if (item.content_hash) changedHashes.add(item.content_hash);
+    }
+  }
+
+  // Update deduped items by content_hash match
+  let dedupedUpdated = 0;
+  for (const item of dedupedItems) {
+    if (item.content_hash && changedHashes.has(item.content_hash)) {
+      item.status = "VERIFIED";
+      item.verified_by = "verify-resolutions-script";
+      dedupedUpdated++;
+    }
+  }
+
+  return dedupedUpdated;
+}
+
+// ── Main ───────────────────────────────────────────────────────────────
+
+function main() {
+  const args = process.argv.slice(2);
+  const parsed = parseArgs(args);
+
+  const mode = parsed.dryRun ? "DRY RUN" : "WRITE";
+  console.log(`\n=== Technical Debt Resolution Audit (${mode}) ===\n`);
+
+  // Load data
+  const masterItems = loadJsonl(MASTER_FILE);
+  if (!masterItems.length) {
+    console.error("No items found in MASTER_DEBT.jsonl");
+    process.exit(1);
+  }
+  console.log(`Loaded ${masterItems.length} items from MASTER_DEBT.jsonl\n`);
+
+  // ── Step 3 ─────────────────────────────────────────────────────────
+  console.log("--- Step 3: Verify NEW Items ---");
+  const step3 = verifyNewItems(masterItems, parsed.verbose);
+  console.log(`  Promoted to VERIFIED:  ${step3.promoted_to_verified.length}`);
+  console.log(`  Needs triage:          ${step3.needs_triage.length}`);
+  console.log(`  No file reference:     ${step3.no_file_ref.length}`);
+  console.log();
+
+  // ── Step 4 ─────────────────────────────────────────────────────────
+  console.log("--- Step 4: Audit RESOLVED Items ---");
+  const step4 = auditResolvedItems(masterItems, parsed.verbose);
+  console.log(`  Confirmed resolved:    ${step4.confirmed_resolved.length}`);
+  console.log(`  Possibly unresolved:   ${step4.possibly_unresolved.length}`);
+  console.log(`  Unable to verify:      ${step4.unable_to_verify.length}`);
+  console.log();
+
+  // ── Step 5 ─────────────────────────────────────────────────────────
+  console.log("--- Step 5: Audit FALSE_POSITIVE Items ---");
+  const step5 = auditFalsePositiveItems(masterItems, parsed.verbose);
+  console.log(`  Confirmed FP:          ${step5.confirmed_fp.length}`);
+  console.log(`  Possibly misclassified: ${step5.possibly_misclassified.length}`);
+  console.log(`  Unable to verify:      ${step5.unable_to_verify.length}`);
+  console.log();
+
+  // ── Build report ───────────────────────────────────────────────────
+  const report = {
+    generated: new Date().toISOString(),
+    mode,
+    total_items: masterItems.length,
+    step3_verify_new: {
+      promoted_to_verified: step3.promoted_to_verified.length,
+      needs_triage: step3.needs_triage.length,
+      no_file_ref: step3.no_file_ref.length,
+      promoted_ids: step3.promoted_to_verified,
+      triage_details: step3.needs_triage,
+    },
+    step4_audit_resolved: {
+      confirmed_resolved: step4.confirmed_resolved.length,
+      possibly_unresolved: step4.possibly_unresolved.length,
+      unable_to_verify: step4.unable_to_verify.length,
+      possibly_unresolved_details: step4.possibly_unresolved,
+      unable_to_verify_details: step4.unable_to_verify,
+    },
+    step5_audit_false_positive: {
+      confirmed_fp: step5.confirmed_fp.length,
+      possibly_misclassified: step5.possibly_misclassified.length,
+      unable_to_verify: step5.unable_to_verify.length,
+      possibly_misclassified_details: step5.possibly_misclassified,
+      unable_to_verify_details: step5.unable_to_verify,
+    },
+  };
+
+  // ── Apply or report ────────────────────────────────────────────────
+  if (parsed.dryRun) {
+    console.log("--- Summary (DRY RUN - no changes written) ---");
+    console.log(`  Would promote ${step3.promoted_to_verified.length} NEW items to VERIFIED`);
+    console.log(`  Would write audit report to ${path.relative(PROJECT_ROOT, REPORT_FILE)}`);
+    console.log("\nRun with --write to apply changes.\n");
+  } else {
+    // Load deduped for sync
+    const dedupedItems = loadJsonl(DEDUPED_FILE);
+
+    const dedupedUpdated = applyChanges(masterItems, dedupedItems, step3.promoted_to_verified);
+
+    // Write files
+    try {
+      saveJsonl(MASTER_FILE, masterItems);
+      console.log(
+        `  Updated MASTER_DEBT.jsonl (${step3.promoted_to_verified.length} items promoted to VERIFIED)`
+      );
+    } catch (err) {
+      console.error(`Failed to write MASTER_DEBT.jsonl: ${sanitizeError(err)}`);
+      process.exit(1);
+    }
+
+    if (dedupedUpdated > 0) {
+      try {
+        saveJsonl(DEDUPED_FILE, dedupedItems);
+        console.log(`  Updated raw/deduped.jsonl (${dedupedUpdated} items synced)`);
+      } catch (err) {
+        console.error(`Failed to write deduped.jsonl: ${sanitizeError(err)}`);
+        process.exit(1);
+      }
+    } else {
+      console.log("  raw/deduped.jsonl: no matching items to sync");
+    }
+
+    // Write report
+    try {
+      if (!fs.existsSync(LOG_DIR)) {
+        fs.mkdirSync(LOG_DIR, { recursive: true });
+      }
+      fs.writeFileSync(REPORT_FILE, JSON.stringify(report, null, 2) + "\n");
+      console.log(`  Wrote audit report to ${path.relative(PROJECT_ROOT, REPORT_FILE)}`);
+    } catch (err) {
+      console.error(`Failed to write report: ${sanitizeError(err)}`);
+      // Non-fatal: master file already updated
+    }
+
+    console.log("\nDone.\n");
+  }
+}
+
+main();
