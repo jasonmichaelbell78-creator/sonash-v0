@@ -27,7 +27,11 @@ const writeMode = process.argv.includes("--write");
 
 // ─── Load the 62 flagged IDs ─────────────────────────────────────────────────
 const report = JSON.parse(fs.readFileSync(REPORT_PATH, "utf8"));
-const flaggedDetails = report.step4_audit_resolved.possibly_unresolved_details;
+const flaggedDetails = report?.step4_audit_resolved?.possibly_unresolved_details;
+if (!Array.isArray(flaggedDetails)) {
+  console.error("Error: 'possibly_unresolved_details' not found or not an array in audit report.");
+  process.exit(1);
+}
 const flaggedIds = new Set(flaggedDetails.map((d) => d.id));
 
 console.log(`\nLoaded ${flaggedIds.size} flagged IDs from audit report.\n`);

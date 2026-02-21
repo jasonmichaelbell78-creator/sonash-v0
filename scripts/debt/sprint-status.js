@@ -151,6 +151,9 @@ function sampleRandom(arr, n) {
 function gatherData() {
   // 1. Grand plan manifest
   const manifest = readJsonSafe(PATHS.manifest);
+  if (!manifest) {
+    throw new Error(`Unable to read manifest file: ${PATHS.manifest}`);
+  }
 
   // 2. Active sprint
   const activeSprint = readJsonSafe(PATHS.activeSprint);

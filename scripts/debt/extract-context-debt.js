@@ -95,7 +95,11 @@ function extractFilePath(text) {
   ];
   for (const pattern of patterns) {
     const match = text.match(pattern);
-    if (match) return match[1].split(":")[0];
+    if (match) {
+      let filePath = match[1].split(":")[0];
+      filePath = path.normalize(filePath).replace(/^(\.\.(\/|\\))+/, "");
+      return filePath;
+    }
   }
   return "";
 }

@@ -186,6 +186,7 @@ function logFailure(content, exitCode) {
     const entry = {
       timestamp: new Date().toISOString(),
       branch: getGitBranch(),
+      user: process.env.USER || process.env.USERNAME || "unknown",
       failedCheck,
       errorExtract: sanitizeInput(errorLine || "", 200),
       stagedFileCount: getStagedFileCount(),
@@ -233,9 +234,14 @@ function main() {
   // Persist failure for observability (best-effort, never blocks)
   logFailure(content, args.exitCode);
 
+  // Sanitize hook output: strip potential secrets/tokens before display
+  const sanitized = content
+    .replaceAll(/(?:token|key|secret|password|credential)[=:]\s*\S+/gi, "$&_REDACTED")
+    .replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***")
+    .replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, "sk-***REDACTED***");
   console.log("Pre-commit hook failed. Output from .git/hook-output.log:");
   console.log("---");
-  console.log(content);
+  console.log(sanitized);
   console.log("---");
 }
 

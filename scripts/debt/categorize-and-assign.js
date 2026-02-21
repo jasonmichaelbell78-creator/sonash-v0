@@ -76,7 +76,9 @@ function readJsonSafe(filePath) {
 
 function writeJsonSafe(filePath, data) {
   try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf8");
+    const tmpPath = filePath + ".tmp";
+    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf8");
+    fs.renameSync(tmpPath, filePath);
   } catch (err) {
     console.error(`Failed to write ${path.basename(filePath)}:`, sanitizeError(err));
     process.exit(1);

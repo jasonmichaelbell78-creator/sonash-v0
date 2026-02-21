@@ -709,31 +709,15 @@ function deduplicateAndAssignIds(issues, existingItems, preConverted = []) {
   const contentDuplicates = [];
   let nextId = getNextDebtId(existingItems);
 
-  // Process raw issues (need conversion)
-  for (const issue of issues) {
-    if (existingSonarKeys.has(issue.key)) {
-      alreadyTracked.push(issue.key);
-      continue;
-    }
+  // Merge raw issues (converted) and pre-converted items into a single pass
+  const allConverted = [
+    ...issues.map((issue) => ({ converted: convertIssue(issue), key: issue.key })),
+    ...preConverted.map((item) => ({ converted: item, key: item.sonar_key })),
+  ];
 
-    const converted = convertIssue(issue);
-    converted.content_hash = generateContentHash(converted);
-
-    if (existingHashes.has(converted.content_hash)) {
-      contentDuplicates.push((converted.title || "").substring(0, 40));
-      continue;
-    }
-
-    converted.id = `DEBT-${String(nextId).padStart(4, "0")}`;
-    nextId++;
-    newItems.push(converted);
-    existingHashes.add(converted.content_hash);
-  }
-
-  // Process pre-converted items (hotspots)
-  for (const converted of preConverted) {
-    if (existingSonarKeys.has(converted.sonar_key)) {
-      alreadyTracked.push(converted.sonar_key);
+  for (const { converted, key } of allConverted) {
+    if (existingSonarKeys.has(key)) {
+      alreadyTracked.push(key);
       continue;
     }
 

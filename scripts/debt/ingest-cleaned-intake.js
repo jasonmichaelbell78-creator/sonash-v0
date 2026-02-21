@@ -132,7 +132,11 @@ function deduplicateItems(inputItems, master, today) {
   let nextId = master.maxId + 1;
 
   for (const item of inputItems) {
-    if (item.content_hash && master.hashSet.has(item.content_hash)) {
+    if (!item.content_hash || typeof item.content_hash !== "string") {
+      dupes.push({ ...item, _skip_reason: "missing_content_hash" });
+      continue;
+    }
+    if (master.hashSet.has(item.content_hash)) {
       dupes.push(item);
       continue;
     }
@@ -141,7 +145,7 @@ function deduplicateItems(inputItems, master, today) {
     const finalItem = { ...item, id: debtId, status: "NEW", created: today };
     delete finalItem.cleaning_disposition;
     newItems.push(finalItem);
-    if (finalItem.content_hash) master.hashSet.add(finalItem.content_hash);
+    master.hashSet.add(finalItem.content_hash);
   }
   return { newItems, dupes };
 }

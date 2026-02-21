@@ -142,7 +142,14 @@ function resolveTarget(filePath, manifest) {
     if (entry.test(normalized)) {
       const primary = entry.sprint;
       const sprintInfo = manifest.sprints[primary];
-      if (sprintInfo && sprintInfo.status === "COMPLETE" && entry.overflow) {
+      if (sprintInfo && sprintInfo.status === "COMPLETE") {
+        if (!entry.overflow) {
+          return { sprint: null, method: "manual" };
+        }
+        const overflowInfo = manifest.sprints[entry.overflow];
+        if (overflowInfo && overflowInfo.status === "COMPLETE") {
+          return { sprint: null, method: "manual" };
+        }
         return { sprint: entry.overflow, method: "auto" };
       }
       return { sprint: primary, method: "auto" };

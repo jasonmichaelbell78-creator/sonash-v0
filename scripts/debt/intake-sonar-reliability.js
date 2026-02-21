@@ -21,7 +21,7 @@ const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
 
-const TODAY = "2026-02-20";
+const TODAY = new Date().toISOString().split("T")[0];
 
 // ---------------------------------------------------------------------------
 // All 295 issues parsed from SonarCloud reliability dashboard paste
@@ -2282,8 +2282,9 @@ const RECOMMENDATION_RULES = [
 
 /** Generate recommendation based on common patterns */
 function makeRecommendation(title) {
+  const titleLower = title.toLowerCase();
   for (const [substring, recommendation] of RECOMMENDATION_RULES) {
-    if (title.includes(substring)) return recommendation;
+    if (titleLower.includes(substring.toLowerCase())) return recommendation;
   }
   return "";
 }
@@ -2468,18 +2469,22 @@ function writeNewItems(newItems) {
   const newLines = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   try {
+    fs.mkdirSync(path.dirname(MASTER_FILE), { recursive: true });
     fs.appendFileSync(MASTER_FILE, newLines, "utf8");
     console.log(`\nAppended ${newItems.length} items to MASTER_DEBT.jsonl`);
   } catch (err) {
-    console.error(`ERROR writing MASTER_DEBT.jsonl: ${err.message}`);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`ERROR writing MASTER_DEBT.jsonl: ${msg.replace(/[/\\][\w./-]+/g, "<path>")}`);
     process.exit(1);
   }
 
   try {
+    fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
     fs.appendFileSync(DEDUPED_FILE, newLines, "utf8");
     console.log(`Appended ${newItems.length} items to raw/deduped.jsonl`);
   } catch (err) {
-    console.error(`ERROR writing raw/deduped.jsonl: ${err.message}`);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`ERROR writing raw/deduped.jsonl: ${msg.replace(/[/\\][\w./-]+/g, "<path>")}`);
     process.exit(1);
   }
 
@@ -2504,10 +2509,11 @@ function main() {
   );
 
   const masterItems = loadJsonl(MASTER_FILE);
+  const dedupedItems = loadJsonl(DEDUPED_FILE);
   console.log(`\nExisting MASTER_DEBT.jsonl: ${masterItems.length} items`);
-  console.log(`Existing raw/deduped.jsonl: ${loadJsonl(DEDUPED_FILE).length} items`);
+  console.log(`Existing raw/deduped.jsonl: ${dedupedItems.length} items`);
 
-  const indices = buildDedupIndices(masterItems);
+  const indices = buildDedupIndices([...masterItems, ...dedupedItems]);
   const { newItems, alreadyTracked } = processIssues(
     dedupedInput,
     indices,

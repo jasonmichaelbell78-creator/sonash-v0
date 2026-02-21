@@ -290,6 +290,8 @@ function verifyNewItems(items, verbose) {
     if (item.status !== "NEW") continue;
 
     const fileRef = item.file || "";
+    const lineNum = Number.isFinite(Number(item.line)) ? Math.trunc(Number(item.line)) : 0;
+
     if (fileRef.trim() === "") {
       results.no_file_ref.push(item.id);
       continue;
@@ -303,19 +305,19 @@ function verifyNewItems(items, verbose) {
 
     if (exists) {
       // Check line count if line is a valid positive integer
-      if (Number.isInteger(item.line) && item.line > 0) {
+      if (lineNum > 0) {
         const lineCount = getLineCount(fileRef);
-        if (lineCount < item.line) {
+        if (lineCount < lineNum) {
           if (verbose) {
             console.log(
-              `  [NEEDS_TRIAGE] ${item.id}: ${fileRef}:${item.line} (file has only ${lineCount} lines)`
+              `  [NEEDS_TRIAGE] ${item.id}: ${fileRef}:${lineNum} (file has only ${lineCount} lines)`
             );
           }
           results.needs_triage.push({
             id: item.id,
             file: fileRef,
-            line: item.line,
-            reason: `File has ${lineCount} lines but item references line ${item.line}`,
+            line: lineNum,
+            reason: `File has ${lineCount} lines but item references line ${lineNum}`,
           });
           continue;
         }
@@ -328,7 +330,7 @@ function verifyNewItems(items, verbose) {
       results.needs_triage.push({
         id: item.id,
         file: fileRef,
-        line: item.line,
+        line: lineNum,
         reason: "File does not exist",
       });
       if (verbose) {
@@ -353,6 +355,8 @@ function auditResolvedItems(items, verbose) {
     if (item.status !== "RESOLVED") continue;
 
     const fileRef = item.file || "";
+    const lineNum = Number.isFinite(Number(item.line)) ? Math.trunc(Number(item.line)) : 0;
+
     if (fileRef.trim() === "") {
       results.unable_to_verify.push({ id: item.id, reason: "No file reference" });
       if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no file reference`);
@@ -373,18 +377,18 @@ function auditResolvedItems(items, verbose) {
       continue;
     }
 
-    const line = item.line || 1;
+    const line = lineNum || 1;
     if (patternFoundNearLine(fileRef, line, keywords)) {
       results.possibly_unresolved.push({
         id: item.id,
         file: fileRef,
-        line: item.line,
+        line: lineNum,
         keywords,
         reason: "Pattern still found near referenced line",
       });
       if (verbose) {
         console.log(
-          `  [POSSIBLY_UNRESOLVED] ${item.id}: ${fileRef}:${item.line} (keywords: ${keywords.join(", ")})`
+          `  [POSSIBLY_UNRESOLVED] ${item.id}: ${fileRef}:${lineNum} (keywords: ${keywords.join(", ")})`
         );
       }
     } else {
@@ -409,6 +413,8 @@ function auditFalsePositiveItems(items, verbose) {
     if (item.status !== "FALSE_POSITIVE") continue;
 
     const fileRef = item.file || "";
+    const lineNum = Number.isFinite(Number(item.line)) ? Math.trunc(Number(item.line)) : 0;
+
     if (fileRef.trim() === "") {
       results.unable_to_verify.push({ id: item.id, reason: "No file reference" });
       if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no file reference`);
@@ -429,18 +435,18 @@ function auditFalsePositiveItems(items, verbose) {
       continue;
     }
 
-    const line = item.line || 1;
+    const line = lineNum || 1;
     if (patternFoundNearLine(fileRef, line, keywords)) {
       results.possibly_misclassified.push({
         id: item.id,
         file: fileRef,
-        line: item.line,
+        line: lineNum,
         keywords,
         reason: "Pattern still found near referenced line",
       });
       if (verbose) {
         console.log(
-          `  [POSSIBLY_MISCLASSIFIED] ${item.id}: ${fileRef}:${item.line} (keywords: ${keywords.join(", ")})`
+          `  [POSSIBLY_MISCLASSIFIED] ${item.id}: ${fileRef}:${lineNum} (keywords: ${keywords.join(", ")})`
         );
       }
     } else {

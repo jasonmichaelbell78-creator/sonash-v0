@@ -283,6 +283,7 @@ function verifyItem(item) {
   }
   if (item.severity === "S0" && item.category !== "security") {
     item.severity = "S1";
+    issues.push(`severity_downgraded:S0->S1 (category: ${item.category})`);
     if (VERBOSE) console.log(`  DOWNGRADE S0->S1: ${item.id} (category: ${item.category})`);
   }
   const requiredFields = ["id", "title", "category", "severity", "status"];
