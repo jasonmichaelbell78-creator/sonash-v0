@@ -291,9 +291,9 @@ _Claude Code skills_
 | [Senior Frontend](.claude/skills/senior-frontend/SKILL.md)                                                                          | Complete toolkit for senior frontend with modern tools and b...   | ↓0 ↑0      | 2026-01-17    |
 | [Senior Fullstack](.claude/skills/senior-fullstack/SKILL.md)                                                                        | Complete toolkit for senior fullstack with modern tools and ...   | ↓0 ↑0      | 2026-01-17    |
 | [Senior Qa](.claude/skills/senior-qa/SKILL.md)                                                                                      | Complete toolkit for senior qa with modern tools and best pr...   | ↓0 ↑0      | 2026-01-17    |
-| [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-20    |
+| [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-21    |
 | [Session Checkpoint](.claude/skills/checkpoint/SKILL.md)                                                                            | Save current state so you can recover after compaction or se...   | ↓0 ↑0      | 2026-02-17    |
-| [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-17    |
+| [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-21    |
 | [Single-Session AI Optimization Audit](.claude/skills/audit-ai-optimization/SKILL.md)                                               | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-17    |
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-17    |
 | [Single-Session Documentation Audit](.claude/skills/audit-documentation/SKILL.md)                                                   | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-17    |
@@ -579,7 +579,7 @@ _Uncategorized_
 
 | Document                                                           | Description | References | Last Modified |
 | ------------------------------------------------------------------ | ----------- | ---------- | ------------- |
-| [Generated TypeScript README](src/dataconnect-generated/README.md) | -           | ↓1 ↑1      | 2026-02-20    |
+| [Generated TypeScript README](src/dataconnect-generated/README.md) | -           | ↓1 ↑1      | 2026-02-21    |
 
 ### src > dataconnect-generated > .guides (Tier 4)
 
@@ -587,8 +587,8 @@ _Uncategorized_
 
 | Document                                                  | Description                                                     | References | Last Modified |
 | --------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Basic Usage](src/dataconnect-generated/.guides/usage.md) | Always prioritize using a supported framework over using the... | ↓0 ↑0      | 2026-02-20    |
-| [Setup](src/dataconnect-generated/.guides/setup.md)       | If the user hasn't already installed the SDK, always run the... | ↓0 ↑0      | 2026-02-20    |
+| [Basic Usage](src/dataconnect-generated/.guides/usage.md) | Always prioritize using a supported framework over using the... | ↓0 ↑0      | 2026-02-21    |
+| [Setup](src/dataconnect-generated/.guides/setup.md)       | If the user hasn't already installed the SDK, always run the... | ↓0 ↑0      | 2026-02-21    |
 
 ### src > dataconnect-generated > react (Tier 4)
 
@@ -596,7 +596,7 @@ _Uncategorized_
 
 | Document                                                            | Description | References | Last Modified |
 | ------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Generated React README](src/dataconnect-generated/react/README.md) | -           | ↓1 ↑1      | 2026-02-20    |
+| [Generated React README](src/dataconnect-generated/react/README.md) | -           | ↓1 ↑1      | 2026-02-21    |
 
 ### Technical Debt Views (Tier 4)
 

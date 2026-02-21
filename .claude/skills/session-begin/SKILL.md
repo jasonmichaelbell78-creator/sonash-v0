@@ -270,6 +270,9 @@ npm run reviews:check-archive
 # Check if active reviews exceed threshold (>20) and suggest archival
 # If overdue, suggest: npm run reviews:archive -- --apply
 npm run reviews:archive
+
+# Surface hook health trends (overrides, failures, agent invocations)
+npm run hooks:analytics -- --since=$(date -d '7 days ago' +%Y-%m-%d)
 ```
 
 **Important**: These scripts are **required**. If any script fails:

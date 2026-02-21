@@ -45,6 +45,7 @@
     "session:summary": "node scripts/log-session-activity.js --summary",
     "override:log": "node scripts/log-override.js",
     "override:list": "node scripts/log-override.js --list",
+    "hooks:analytics": "node scripts/hook-analytics.js",
     "triggers:check": "node scripts/check-triggers.js",
     "crossdoc:check": "node scripts/check-cross-doc-deps.js",
     "tdms:metrics": "node scripts/debt/generate-metrics.js",

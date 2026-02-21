@@ -17,7 +17,8 @@
       "trigger": ".husky/",
       "dependents": ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
       "reason": "Hook documentation must be complete",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     },
     {
       "trigger": ".claude/hooks/",
@@ -75,7 +76,8 @@
       "trigger": "docs/audits/canonical/",
       "dependents": ["docs/PLAN_MAP.md"],
       "reason": "Canonical audit changes affect TDMS migration status",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     }
   ]
 }
