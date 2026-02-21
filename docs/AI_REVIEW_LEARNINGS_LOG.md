@@ -1769,6 +1769,34 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #364: PR #382 R3 — Cross-Report Dedup, Milestone Reset, Severity Case, 5 Fixes (2026-02-20)
+
+**Source:** SonarCloud (2) + Qodo Compliance (6) + Qodo PR Suggestions (3)
+**PR/Branch:** PR #382 / claude/fix-tool-use-ids-EfyvE **Total:** 11 raw → 5
+fixed, 5 rejected (compliance repeats for offline CLI scripts), 1 green pass
+
+**Patterns Identified:**
+
+- Cross-report dedup gap: `existingHashes` not updated during report loop —
+  findings appearing in 2+ reports would be duplicated within a single run
+- Stale milestone: `currentMilestone` persisted across non-milestone headings,
+  causing incorrect attribution in TDMS entries
+- Case-insensitive severity: `S[0-3]` regex missed lowercase `s0` markers in
+  source documents — added `[sS]` + `.toUpperCase()`
+- String.raw for RegExp: `\\d+` in template literal → `String.raw` avoids
+  double-escaping
+
+**Key Learnings:**
+
+- When accumulating dedup hashes across a loop, update the hash set inside the
+  loop — not just before it
+- State variables (currentMilestone) that track context must be reset when
+  context changes, not just set when matching
+- Compliance items for offline CLI scripts (audit trails, secure logging, input
+  validation) are consistently not applicable — 3 consecutive rounds confirm
+
+---
+
 #### Review #363: PR #382 R2 — Regex DoS String Parse, CC Extraction, Severity Split, 16 Items (2026-02-20)
 
 **Source:** SonarCloud (12) + CI/Prettier (1) + Qodo PR Suggestions (6)

@@ -198,9 +198,9 @@ function classifyItem(text) {
  * Detect severity from text content
  */
 function detectSeverity(text) {
-  // Prefer explicit severity markers (e.g., "- S1" or "(S2,")
-  const sevMatch = text.match(/[-(\s](S[0-3])(?:[\s,)]|$)/);
-  if (sevMatch) return sevMatch[1];
+  // Prefer explicit severity markers (e.g., "- S1", "(s2,", "S0:")
+  const sevMatch = text.match(/(?:^|[-(\s])([sS][0-3])(?:[\s,:)]|$)/);
+  if (sevMatch) return sevMatch[1].toUpperCase();
 
   const lower = text.toLowerCase();
   if (/\bs0\b|\bcritical\b/.test(lower)) return "S0";
@@ -247,6 +247,8 @@ function extractFromRoadmap(lines) {
         .trim();
       if (/milestone|sprint|^m\d|grand\s+plan|operational/i.test(heading)) {
         currentMilestone = heading;
+      } else {
+        currentMilestone = "";
       }
       currentSection = heading;
     }

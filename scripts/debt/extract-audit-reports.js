@@ -941,9 +941,9 @@ function readReportFiles() {
  */
 function computeNextSeq(existingIntakeIds, prefix) {
   let nextSeq = 1;
-  const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+  const escapedPrefix = prefix.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
   for (const id of existingIntakeIds) {
-    const match = id.match(new RegExp(`^${escapedPrefix}(\\d+)$`));
+    const match = id.match(new RegExp(String.raw`^${escapedPrefix}(\d+)$`));
     if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
   }
   return nextSeq;
@@ -967,6 +967,7 @@ function processAllReports(reportFiles, existingHashes, existingIntakeIds, verbo
     const result = processReport(reportName, config, nextSeq, today, existingHashes, verbose);
     nextSeq = result.newSeq;
     totalSkipped += result.dupCount;
+    for (const f of result.newFindings) existingHashes.add(f.content_hash);
     allFindings.push(...result.newFindings);
   }
 
