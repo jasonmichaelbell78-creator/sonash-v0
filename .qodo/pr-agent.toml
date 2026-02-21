@@ -1,6 +1,6 @@
 # Qodo PR-Agent Configuration
 # Created: 2026-02-17
-# Updated: 2026-02-20 (PR #379 retro — add impossible-type suppression to reviewer section)
+# Updated: 2026-02-20 (PR #382 retro — add scripts/debt/ compliance exclusion)
 # Purpose: Suppress recurring false-positive review items that add noise
 # without actionable value. Each suppression has evidence from PR retros.
 
@@ -81,7 +81,7 @@ When suggesting changes to JSONL data files under docs/technical-debt/:
 # that pr_reviewer instructions did not suppress Compliance checks.
 [pr_compliance_checker]
 extra_instructions = """\
-When checking compliance for files under scripts/, .claude/hooks/, or docs/technical-debt/:
+When checking compliance for files under scripts/, .claude/hooks/, scripts/debt/, or docs/technical-debt/:
 
 1. For "Robust Error Handling and Edge Case Management":
    - JSONL parsing code that uses empty catch blocks to skip malformed lines
@@ -104,4 +104,14 @@ When checking compliance for files under scripts/, .claude/hooks/, or docs/techn
 4. For "Security-First Input Validation":
    - Repo-relative file paths in TDMS data files are COMPLIANT.
    - Do NOT flag "Absolute path leakage" for docs/technical-debt/ files.
+   - Offline CLI scripts under scripts/debt/ that parse repo-internal markdown
+     and JSONL files are COMPLIANT. These process trusted local files, not
+     untrusted user input. Do NOT flag "Weak input validation" for these scripts.
+
+5. For "Secure Error Handling":
+   - CLI scripts that display filesystem error messages on failure and exit
+     are COMPLIANT. These are developer tools, not production services.
+     Internal paths in error output are useful for debugging, not a security
+     concern. Do NOT flag "Raw error details" for scripts/debt/ files.
+     (Rejected in PR #382 R3)
 """
