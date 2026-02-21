@@ -123,9 +123,9 @@ _AI agent reference docs_
 | Document                                                                            | Description                                                     | References | Last Modified |
 | ----------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)             | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-02-10    |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                  | This document contains detailed code patterns and anti-patte... | ↓7 ↑2      | 2026-02-18    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                  | This document contains detailed code patterns and anti-patte... | ↓7 ↑2      | 2026-02-21    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md) | Detailed guidance for preventing loss of important decisions... | ↓1 ↑0      | 2026-02-10    |
-| [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)       | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-20    |
+| [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)       | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-21    |
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)             | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-02-17    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)               | This document defines the policy for creating, using, and ov... | ↓2 ↑3      | 2026-02-17    |
 
@@ -273,7 +273,7 @@ _Claude Code skills_
 | [Node/TypeScript MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/node_mcp_server.md)                          | This document provides Node/TypeScript-specific best practic...   | ↓1 ↑0      | 2026-01-17    |
 | [OpenRouter Integration for MarkItDown](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md)                                        | This MarkItDown skill has been configured to use \*\*OpenRoute... | ↓0 ↑0      | 2026-01-17    |
 | [Parallel Agent Strategy (Steps 4.3-4.5)](.claude/skills/pr-review/reference/PARALLEL_AGENT_STRATEGY.md)                            | Detailed guidance for parallel agent execution when processi...   | ↓1 ↑0      | 2026-02-17    |
-| [PR Code Review Processor](.claude/skills/pr-review/SKILL.md)                                                                       | You are about to process AI code review feedback. This is a ...   | ↓0 ↑4      | 2026-02-20    |
+| [PR Code Review Processor](.claude/skills/pr-review/SKILL.md)                                                                       | You are about to process AI code review feedback. This is a ...   | ↓0 ↑4      | 2026-02-21    |
 | [PR Ecosystem Audit](.claude/skills/pr-ecosystem-audit/SKILL.md)                                                                    | Deep diagnostic of the entire PR review ecosystem — from ski...   | ↓0 ↑0      | 2026-02-20    |
 | [PR Review Retrospective](.claude/skills/pr-retro/SKILL.md)                                                                         | Analyze the review cycle for a completed (or ending) PR and ...   | ↓0 ↑0      | 2026-02-20    |
 | [Pre-Commit Fixer](.claude/skills/pre-commit-fixer/SKILL.md)                                                                        | Eliminate the context-heavy fix-commit-retry loop that happe...   | ↓0 ↑0      | 2026-02-17    |

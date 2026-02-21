@@ -193,6 +193,44 @@ through reviewer feedback:
 rounds (~57%) were avoidable with upfront algorithm design. See FIX_TEMPLATES
 #34 for the complete evidence merge pattern.
 
+### Mapping/Enumeration Completeness Pre-Check (NEW — PR #382 Retro)
+
+**Trigger:** PR introduces or modifies mapping logic (severity, priority,
+status, category) or dedup/enumeration boundaries.
+
+Before pushing, verify completeness in one pass:
+
+1. **Mapping completeness**: List ALL possible input values and verify each maps
+   to the correct output. Don't fix only the reported branch — audit all
+   branches. See FIX_TEMPLATES #35.
+2. **Case sensitivity**: If inputs come from user-generated content or parsed
+   markdown, use case-insensitive matching.
+3. **Word boundaries**: Add `\b` to prevent substring false matches.
+4. **Cross-file propagation**: Grep for ALL files with similar mapping logic and
+   fix in one pass.
+5. **Dedup boundaries**: Enumerate ALL dedup boundaries (cross-source,
+   within-run, cross-batch) before coding. Add a hash set for each.
+
+**Evidence:** PR #382 had 3-round severity chain (R1 fixed 2 of 4 levels) and
+3-round dedup chain (3 boundaries discovered incrementally).
+
+### Same-File Regex DoS Sweep (NEW — PR #382 Retro)
+
+**Trigger:** SonarCloud flags a regex DoS (S5852) in a file.
+
+After fixing the flagged regex, **grep the same file** for all other potentially
+vulnerable regexes before committing:
+
+```bash
+grep -n '[+*].*[+*]\|[+*].*\\s' scripts/debt/target-file.js
+```
+
+SonarCloud sometimes reports only one DoS regex per scan. If the file has
+multiple vulnerable regexes, you'll get a new finding each round.
+
+**Evidence:** PR #382 R1 fixed `matchNumberedHeading` regex DoS, but R2 flagged
+`isTableHeaderLine` regex DoS in the same file — same rule, avoidable round.
+
 ---
 
 ## STEP 0: CONTEXT LOADING (Tiered Access)
@@ -478,13 +516,25 @@ rounds. When fixing env var handling, always:
 1. `grep -rn "ENV_VAR_NAME" scripts/ .claude/hooks/ .husky/ --include="*.js" --include="*.sh"`
 2. Fix ALL consumers in one pass, not just the reported file
 
-**BLOCKING (PR #379 retro — 5th recommendation):** Propagation checks have been
-recommended in PRs #366, #367, #369, #374, and #379 but are still missed when
-the protocol is skipped. The root cause is that propagation is a manual protocol
-step. When fixing any pattern-based issue, ALWAYS grep before committing — even
-if you think it's a one-off. PR #379 R9 fixed CRLF in 3 parsers but missed 3
-identical `loadJsonl` functions in other files, causing R10 cleanup. The fix is
-discipline, not automation: grep is fast, re-review is slow.
+**BLOCKING (PR #382 retro — 6th recommendation):** Propagation checks have been
+recommended in PRs #366, #367, #369, #374, #379, and #382 but are STILL missed.
+This is now the longest-running unresolved retro action item (6 PRs).
+
+**Expanded scope (PR #382):** Propagation applies to MORE than just code
+patterns. It also applies to:
+
+- **Mapping logic**: Fix severity/priority in one file → grep for ALL files with
+  similar mapping logic and fix in one pass
+- **Regex DoS**: Fix one DoS regex → grep same file for ALL other vulnerable
+  regexes
+- **Dedup boundaries**: Add one dedup check → enumerate ALL dedup boundaries
+  (cross-source, within-run, cross-batch)
+
+The root cause is that propagation is a manual protocol step. When fixing ANY
+pattern-based issue, ALWAYS grep before committing — even if you think it's a
+one-off. Evidence: PR #382 R1 fixed severity mapping in one file but missed the
+same mapping in the other file, causing R3. PR #382 R1 fixed one regex DoS but
+missed a second in the same file, causing R2.
 
 ---
 
@@ -661,14 +711,15 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 ## Version History
 
-| Version | Date       | Description                                                                                               |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
-| 2.7     | 2026-02-20 | Add patterns:check to Step 5.4, propagation enforcement escalation in Step 5.6. Source: PR #379 retro.    |
-| 2.6     | 2026-02-19 | Add Algorithm Design Pre-Check (Step 0.5). Source: PR #379 retro.                                         |
-| 2.5     | 2026-02-18 | Add filesystem guard pre-check, shared utility caller audit, propagation patterns. Source: PR #374 retro. |
-| 2.4     | 2026-02-17 | CC now enforced via pre-commit hook (error on staged files). Source: PR #371 retro.                       |
-| 2.3     | 2026-02-17 | Add CC Pre-Push Check (Step 0.5) + Path Test Matrix (Step 5.8). Source: PR #370 retro.                    |
-| 2.2     | 2026-02-15 | Add Security Pattern Sweep + Propagation Check (PR #366 retro)                                            |
-| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning                                                |
-| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration                                                      |
-| 1.0     | 2026-01-15 | Initial version                                                                                           |
+| Version | Date       | Description                                                                                                                |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks (Step 0.5), strengthen propagation (Step 5.6). Source: PR #382 retro. |
+| 2.7     | 2026-02-20 | Add patterns:check to Step 5.4, propagation enforcement escalation in Step 5.6. Source: PR #379 retro.                     |
+| 2.6     | 2026-02-19 | Add Algorithm Design Pre-Check (Step 0.5). Source: PR #379 retro.                                                          |
+| 2.5     | 2026-02-18 | Add filesystem guard pre-check, shared utility caller audit, propagation patterns. Source: PR #374 retro.                  |
+| 2.4     | 2026-02-17 | CC now enforced via pre-commit hook (error on staged files). Source: PR #371 retro.                                        |
+| 2.3     | 2026-02-17 | Add CC Pre-Push Check (Step 0.5) + Path Test Matrix (Step 5.8). Source: PR #370 retro.                                     |
+| 2.2     | 2026-02-15 | Add Security Pattern Sweep + Propagation Check (PR #366 retro)                                                             |
+| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning                                                                 |
+| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration                                                                       |
+| 1.0     | 2026-01-15 | Initial version                                                                                                            |
