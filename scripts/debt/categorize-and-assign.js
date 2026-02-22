@@ -62,9 +62,9 @@ function readJsonl(filePath) {
     for (let i = 0; i < lines.length; i++) {
       try {
         items.push(JSON.parse(lines[i]));
-      } catch (parseErr) {
+      } catch (error_) {
         console.warn(
-          `  Warning: failed to parse line ${i + 1} in ${path.basename(filePath)}: ${sanitizeError(parseErr)}`
+          `  Warning: failed to parse line ${i + 1} in ${path.basename(filePath)}: ${sanitizeError(error_)}`
         );
       }
     }

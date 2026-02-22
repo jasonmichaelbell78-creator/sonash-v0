@@ -219,7 +219,8 @@ function fileExists(relPath) {
  * Get number of lines in a file. Returns 0 on error.
  */
 function getLineCount(relPath) {
-  const absPath = path.join(PROJECT_ROOT, relPath);
+  const absPath = path.resolve(PROJECT_ROOT, relPath);
+  if (!absPath.startsWith(PROJECT_ROOT + path.sep) && absPath !== PROJECT_ROOT) return 0;
   try {
     const content = fs.readFileSync(absPath, "utf8");
     return content.split("\n").length;
@@ -258,7 +259,8 @@ function extractKeywords(title) {
  */
 function patternFoundNearLine(relPath, line, keywords) {
   if (!keywords.length) return false;
-  const absPath = path.join(PROJECT_ROOT, relPath);
+  const absPath = path.resolve(PROJECT_ROOT, relPath);
+  if (!absPath.startsWith(PROJECT_ROOT + path.sep) && absPath !== PROJECT_ROOT) return false;
   let content;
   try {
     content = fs.readFileSync(absPath, "utf8");

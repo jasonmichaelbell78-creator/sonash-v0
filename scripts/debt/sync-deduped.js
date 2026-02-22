@@ -42,7 +42,7 @@ function readJsonl(filePath) {
   let raw;
   try {
     raw = fs.readFileSync(filePath, "utf8");
-  } catch (err) {
+  } catch {
     const msg = `Failed to read ${path.basename(filePath)}`;
     if (jsonOutput) {
       process.stdout.write(JSON.stringify({ error: msg }) + "\n");
@@ -74,7 +74,7 @@ function writeJsonl(filePath, items) {
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
   try {
     fs.writeFileSync(filePath, content, "utf8");
-  } catch (err) {
+  } catch {
     const msg = `Failed to write ${path.basename(filePath)}`;
     if (jsonOutput) {
       process.stdout.write(JSON.stringify({ error: msg }) + "\n");

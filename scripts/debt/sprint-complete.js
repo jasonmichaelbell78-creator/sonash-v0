@@ -114,8 +114,8 @@ function parseArgs(argv) {
     if (args[i] === "--force") {
       result.force = true;
     } else if (args[i] === "--carry-to" && i + 1 < args.length) {
-      result.carryTo = normalizeId(args[i + 1]);
-      i += 1;
+      i++;
+      result.carryTo = normalizeId(args[i]);
     } else if (!args[i].startsWith("--")) {
       result.sprintId = normalizeId(args[i]);
     }

@@ -52,7 +52,7 @@ function parseArgs(argv) {
         process.exit(1);
       }
       result.batch = n;
-      i += 1;
+      i++;
     } else if (args[i] === "--json") {
       result.json = true;
     }

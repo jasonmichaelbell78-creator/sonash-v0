@@ -21,7 +21,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const ROOT = path.join(__dirname, "../..");
-const sanitizeError = require("../lib/sanitize-error.js");
+const { sanitizeError } = require("../lib/sanitize-error.js");
 
 // ---------------------------------------------------------------------------
 // Paths

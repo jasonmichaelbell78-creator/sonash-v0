@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 /* global __dirname */
-/* eslint-disable complexity */
 /**
  * Clean Intake Script — Step 0h of Technical Debt Resolution Plan
  *
@@ -68,7 +67,7 @@ function readJsonl(filePath) {
     if (!line) continue;
     try {
       items.push(JSON.parse(line));
-    } catch (error_) {
+    } catch {
       console.warn(`  Skipping malformed JSON at line ${i + 1}`);
     }
   }
@@ -111,7 +110,7 @@ function fileExists(filePath) {
   const abs = path.isAbsolute(filePath) ? filePath : path.join(PROJECT_ROOT, filePath);
   try {
     return fs.existsSync(abs);
-  } catch (error_) {
+  } catch {
     console.debug(`fileExists check failed for: ${abs}`);
     return false;
   }

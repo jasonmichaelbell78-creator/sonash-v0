@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 /* global __dirname */
-/* eslint-disable complexity */
 /**
  * Ingest Cleaned Intake Items into TDMS
  *

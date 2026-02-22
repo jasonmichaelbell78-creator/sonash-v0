@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-21 **Active Documents:** 288 **Archived Documents:** 101
+**Generated:** 2026-02-22 **Active Documents:** 288 **Archived Documents:** 101
 
 ---
 
@@ -152,7 +152,7 @@ _Single-session and multi-AI audit outputs_
 | [Audit Tracker](docs/audits/AUDIT_TRACKER.md)                                                                          | Track single-session and multi-AI audit completions for thre... | ↓3 ↑2      | 2026-02-18    |
 | [Automation Audit Report — 2026-02-09](docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md) | - **Total findings:** 258                                       | ↓1 ↑0      | 2026-02-10    |
 | [Implementation Plan: Audit Ecosystem Codification](docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md)                       | Captures the original design decisions and implementation pl... | ↓1 ↑2      | 2026-02-18    |
-| [Review Decisions — System Test 2026-02-19](docs/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md)              | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-20    |
+| [Review Decisions — System Test 2026-02-19](docs/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md)              | Decision log for each finding from the 2026-02-19 system tes... | ↓0 ↑0      | 2026-02-22    |
 | [System Test Plan Index — audit-2026-02-19](docs/audits/system-test/audit-2026-02-19/PLAN_INDEX.md)                    | Index of all domains, sessions, and findings for the 2026-02... | ↓0 ↑0      | 2026-02-21    |
 
 ### Audit Templates (Tier 3)
@@ -461,7 +461,7 @@ _Uncategorized_
 | Document                                                                                                        | Description                         | References | Last Modified |
 | --------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------- | ------------- |
 | [agent research results](.claude/state/agent-research-results.md)                                               | -                                   | ↓0 ↑0      | 2026-02-20    |
-| [PR #383 Review Tracking — Final Status](.claude/state/pr383-review-tracking.md)                                | - SonarCloud code smells: 114 items | ↓0 ↑0      | 2026-02-21    |
+| [PR #383 Review Tracking — Final Status](.claude/state/pr383-review-tracking.md)                                | - SonarCloud code smells: 114 items | ↓0 ↑0      | 2026-02-22    |
 | [System Test Plan V2 — Second Gap Analysis Pass (In Progress)](.claude/state/system-test-gap-analysis-pass2.md) | -                                   | ↓0 ↑0      | 2026-02-20    |
 
 ### .claude > test-results (Tier 4)
@@ -527,7 +527,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-17    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-21    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-22    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-02-09    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-18    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-09    |
@@ -1296,7 +1296,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-21 | Auto-generated from codebase scan |
+| Auto    | 2026-02-22 | Auto-generated from codebase scan |
 
 ---
 

@@ -71,7 +71,7 @@ function loadMasterIndex() {
       if (item.id) {
         index.set(item.id, item);
       }
-    } catch (_) {
+    } catch {
       console.debug(`Skipping malformed JSONL line in master index`);
     }
   }
@@ -89,7 +89,7 @@ function loadSprintIds(sprintKey) {
   }
   try {
     return readJson(filePath);
-  } catch (_) {
+  } catch {
     console.debug(`Sprint IDs file unreadable: ${filePath}`);
     return null;
   }
