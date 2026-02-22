@@ -87,8 +87,8 @@ function extractMaxReviewId(reviewLines) {
  * Returns { orphanedEntries, schemaValidCount, schemaTotalCount }.
  */
 function checkConsolidationPointer(rootDir) {
-  const consolidationPath = path.join(rootDir, "docs", "data", "consolidation.json");
-  const reviewsJsonlPath = path.join(rootDir, "docs", "data", "reviews.jsonl");
+  const consolidationPath = path.join(rootDir, ".claude", "state", "consolidation.json");
+  const reviewsJsonlPath = path.join(rootDir, ".claude", "state", "reviews.jsonl");
   let orphanedEntries = 0;
   let schemaValidCount = 0;
   let schemaTotalCount = 0;
@@ -161,8 +161,8 @@ function validateStateFiles(rootDir) {
   let schemaTotalCount = 0;
 
   const stateFiles = [
-    { path: path.join(rootDir, "docs", "data", "reviews.jsonl"), type: "jsonl" },
-    { path: path.join(rootDir, "docs", "data", "review-metrics.jsonl"), type: "jsonl" },
+    { path: path.join(rootDir, ".claude", "state", "reviews.jsonl"), type: "jsonl" },
+    { path: path.join(rootDir, ".claude", "state", "review-metrics.jsonl"), type: "jsonl" },
     { path: path.join(rootDir, ".claude", "state", "alert-suppressions.json"), type: "json" },
   ];
 
@@ -253,7 +253,7 @@ function checkArchiveRetentionHealth(rootDir, findings) {
 
   try {
     const content = fs.readFileSync(learningsPath, "utf8");
-    const reviewHeaders = content.match(/### Review #\d+/gi) || [];
+    const reviewHeaders = content.match(/^#{2,4}\s+Review\s+#\d+/gim) || [];
     activeReviewCount = reviewHeaders.length;
   } catch {
     // File missing
@@ -331,37 +331,19 @@ function countCorruptedJsonlLines(lines) {
 }
 
 /**
- * Count total markdown review headers across the active learnings log and all
- * archive files.
+ * Count markdown review headers in the active learnings log only.
+ * Archives are excluded because reviews.jsonl only tracks active reviews,
+ * so comparing against all archives would produce a false drift signal.
  */
 function countMarkdownReviews(rootDir) {
-  let count = 0;
   const learningsPath = path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
-  const archiveDir = path.join(rootDir, "docs", "archive");
 
   try {
     const learnings = fs.readFileSync(learningsPath, "utf8");
-    count += (learnings.match(/### Review #\d+/gi) || []).length;
+    return (learnings.match(/^#{2,4}\s+Review\s+#\d+/gim) || []).length;
   } catch {
-    /* no learnings file */
+    return 0;
   }
-
-  try {
-    if (!fs.existsSync(archiveDir)) return count;
-    const archiveFiles = fs.readdirSync(archiveDir).filter((f) => f.startsWith("REVIEWS_"));
-    for (const af of archiveFiles) {
-      try {
-        const archiveContent = fs.readFileSync(path.join(archiveDir, af), "utf8");
-        count += (archiveContent.match(/### Review #\d+/gi) || []).length;
-      } catch {
-        /* skip unreadable */
-      }
-    }
-  } catch {
-    /* no archive dir */
-  }
-
-  return count;
 }
 
 /**
@@ -369,7 +351,7 @@ function countMarkdownReviews(rootDir) {
  * Returns { driftCount, corruptedLines }.
  */
 function measureJsonlDrift(rootDir) {
-  const reviewsJsonlPath = path.join(rootDir, "docs", "data", "reviews.jsonl");
+  const reviewsJsonlPath = path.join(rootDir, ".claude", "state", "reviews.jsonl");
 
   try {
     if (!fs.existsSync(reviewsJsonlPath)) {
@@ -378,7 +360,16 @@ function measureJsonlDrift(rootDir) {
     const content = fs.readFileSync(reviewsJsonlPath, "utf8");
     const lines = content.trim().split("\n").filter(Boolean);
     const corruptedLines = countCorruptedJsonlLines(lines);
-    const jsonlReviewCount = lines.length - corruptedLines;
+    // Count only review entries (numeric id), not retros (string id like "retro-379")
+    let jsonlReviewCount = 0;
+    for (const line of lines) {
+      try {
+        const entry = JSON.parse(line);
+        if (typeof entry.id === "number") jsonlReviewCount++;
+      } catch {
+        // counted in corruptedLines
+      }
+    }
     const markdownReviewCount = countMarkdownReviews(rootDir);
     const driftCount = Math.abs(jsonlReviewCount - markdownReviewCount);
     return { driftCount, corruptedLines };

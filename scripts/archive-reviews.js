@@ -119,7 +119,7 @@ function atomicWrite(filePath, content) {
  */
 function matchEntryHeader(line) {
   // Match #### Review #N
-  const reviewMatch = line.match(/^####\s+Review\s+#(\d+)/);
+  const reviewMatch = line.match(/^#{2,4}\s+Review\s+#(\d+)/);
   if (reviewMatch) {
     return { type: "review", id: Number.parseInt(reviewMatch[1], 10) };
   }
@@ -415,6 +415,33 @@ function numberToWord(n) {
 }
 
 /**
+ * Update the "Current Metrics" section after archival.
+ * Recalculates main log lines and active review range from kept entries.
+ */
+function updateCurrentMetrics(content, keptEntries) {
+  const lineCount = content.split("\n").length;
+  const reviewEntries = keptEntries.filter((e) => e.type === "review");
+  const reviewIds = reviewEntries.map((e) => e.id).sort((a, b) => a - b);
+  const activeCount = reviewIds.length;
+  const rangeStr =
+    activeCount > 0 ? `${activeCount} (#${reviewIds[0]}-#${reviewIds[reviewIds.length - 1]})` : "0";
+
+  // Replace "Main log lines" row
+  let updated = content.replace(
+    /\| Main log lines \|[^|]+\|/,
+    `| Main log lines | ~${lineCount}        |`
+  );
+
+  // Replace "Active reviews" row
+  updated = updated.replace(
+    /\| Active reviews \|[^|]+\|/,
+    `| Active reviews | ${rangeStr.padEnd(13)} |`
+  );
+
+  return updated;
+}
+
+/**
  * Remove archived entries from the active log content.
  * Preserves everything before and after the entry region.
  */
@@ -603,6 +630,9 @@ function executeArchival(opts) {
     archiveNumber,
     today
   );
+
+  // Step 5b: Update "Current Metrics" section
+  updatedContent = updateCurrentMetrics(updatedContent, toKeep);
 
   // Step 6: Write updated active log
   try {

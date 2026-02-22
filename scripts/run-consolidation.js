@@ -336,6 +336,65 @@ function generateRuleSuggestions(recurringPatterns, range) {
 }
 
 // =============================================================================
+// MARKDOWN: Append consolidation record to learnings log
+// =============================================================================
+
+const LEARNINGS_LOG = join(ROOT_DIR, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+
+/**
+ * Append a consolidation record to the Consolidation section in the learnings log.
+ * Inserts a <details> block before the first existing <details> consolidation block.
+ * Non-fatal: logs a warning if the markdown update fails (JSON is source of truth).
+ */
+function appendConsolidationToMarkdown(newNumber, minId, maxId, today, recurringPatterns) {
+  try {
+    if (!existsSync(LEARNINGS_LOG)) return;
+    let content = readFileSync(LEARNINGS_LOG, "utf8");
+
+    const patternSummary =
+      recurringPatterns.length > 0
+        ? recurringPatterns.map((p) => `  - ${p.pattern} (${p.count}x)`).join("\n")
+        : "  - No recurring patterns above threshold";
+
+    const block = [
+      `<details>`,
+      `<summary>Previous Consolidation (#${newNumber})</summary>`,
+      ``,
+      `- **Date:** ${today}`,
+      `- **Reviews consolidated:** #${minId}-#${maxId}`,
+      `- **Recurring patterns:**`,
+      patternSummary,
+      ``,
+      `</details>`,
+      ``,
+    ].join("\n");
+
+    // Insert before the first existing <details> block in the Consolidation section
+    const consolidationHeader = "## 🔔 Consolidation";
+    const headerIdx = content.indexOf(consolidationHeader);
+    if (headerIdx === -1) return;
+
+    const afterHeader = content.indexOf("<details>", headerIdx);
+    if (afterHeader === -1) {
+      // No existing <details> blocks — append after the note paragraph
+      const noteEnd = content.indexOf("\n\n", headerIdx + consolidationHeader.length + 100);
+      if (noteEnd !== -1) {
+        content = content.slice(0, noteEnd + 2) + block + content.slice(noteEnd + 2);
+      }
+    } else {
+      content = content.slice(0, afterHeader) + block + content.slice(afterHeader);
+    }
+
+    // Atomic write
+    const tmpPath = LEARNINGS_LOG + ".consolidation.tmp";
+    writeFileSync(tmpPath, content, "utf8");
+    renameSync(tmpPath, LEARNINGS_LOG);
+  } catch (err) {
+    log(`  ⚠️ Failed to update markdown consolidation section: ${sanitizeError(err)}`, c.yellow);
+  }
+}
+
+// =============================================================================
 // APPLY: Update state atomically (JSON write, no markdown regex)
 // =============================================================================
 
@@ -359,6 +418,9 @@ function applyConsolidation(state, reviews, recurringPatterns) {
     threshold: THRESHOLD,
   };
   writeState(newState);
+
+  // Append consolidation record to markdown
+  appendConsolidationToMarkdown(newNumber, minId, maxId, today, recurringPatterns);
 
   log(`\n${c.bold}Applying consolidation...${c.reset}`, c.green);
   log(

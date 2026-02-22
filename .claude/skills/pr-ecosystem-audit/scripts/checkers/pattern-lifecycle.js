@@ -34,8 +34,10 @@ function run(ctx) {
   const fixTemplates = safeReadFile(path.join(rootDir, "docs", "agent_docs", "FIX_TEMPLATES.md"));
   const patternChecker = safeReadFile(path.join(rootDir, "scripts", "check-pattern-compliance.js"));
   const learnings = safeReadFile(path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md"));
-  const consolidationJson = safeReadJson(path.join(rootDir, "docs", "data", "consolidation.json"));
-  const reviewsJsonl = loadJsonl(path.join(rootDir, "docs", "data", "reviews.jsonl"));
+  const consolidationJson = safeReadJson(
+    path.join(rootDir, ".claude", "state", "consolidation.json")
+  );
+  const reviewsJsonl = loadJsonl(path.join(rootDir, ".claude", "state", "reviews.jsonl"));
 
   scores.pattern_discovery_automation = checkPatternDiscoveryAutomation(
     codePatterns,
@@ -167,6 +169,7 @@ function computeGraduationRate(rootDir) {
     if (!fs.existsSync(warnedFilesPath)) return 50;
     const warned = JSON.parse(fs.readFileSync(warnedFilesPath, "utf8"));
     const total = Object.keys(warned).length;
+    if (total <= 1) return 50; // Too few entries to compute meaningful rate
     const graduated = Object.values(warned).filter(
       (v) => typeof v === "object" && v.blocked === true
     ).length;
@@ -181,8 +184,15 @@ function computeFalsePositiveRate(recentReviews) {
   let totalItems = 0;
   let rejectedItems = 0;
   for (const review of recentReviews) {
-    if (review.items_total) totalItems += review.items_total;
-    if (review.items_rejected) rejectedItems += review.items_rejected;
+    // Skip retros — they track different semantics (rounds, not review items)
+    if (review.type === "retrospective") continue;
+    // JSONL uses 'total' and 'rejected' (not 'items_total'/'items_rejected')
+    const t = review.total || review.items_total || 0;
+    const r = review.rejected || review.items_rejected || 0;
+    if (t > 0) {
+      totalItems += t;
+      rejectedItems += r;
+    }
   }
   return {
     totalItems,
@@ -273,8 +283,9 @@ function extractLastConsolidatedId(consolidationJson) {
 function countPendingReviews(reviewsJsonl, lastConsolidatedId) {
   let pending = 0;
   for (const review of reviewsJsonl) {
-    const idMatch = (review.id || "").match(/(\d+)/);
-    if (idMatch && parseInt(idMatch[1], 10) > lastConsolidatedId) {
+    // Only count actual reviews (numeric IDs), not retros (string IDs like "retro-379")
+    if (typeof review.id !== "number") continue;
+    if (review.id > lastConsolidatedId) {
       pending++;
     }
   }
@@ -283,7 +294,7 @@ function countPendingReviews(reviewsJsonl, lastConsolidatedId) {
 
 /** Count unreviewed rule headers in suggested-rules.md. */
 function countUnreviewedRules(rootDir) {
-  const suggestedRulesPath = path.join(rootDir, "docs", "data", "suggested-rules.md");
+  const suggestedRulesPath = path.join(rootDir, "consolidation-output", "suggested-rules.md");
   try {
     if (!fs.existsSync(suggestedRulesPath)) return 0;
     const content = fs.readFileSync(suggestedRulesPath, "utf8");

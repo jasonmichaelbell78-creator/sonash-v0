@@ -175,7 +175,7 @@ function parseMarkdownReviews(content) {
     if (inFence) continue;
 
     // Match #### Review #N: Title (YYYY-MM-DD)
-    const headerMatch = line.match(/^####\s+Review\s+#(\d+):?\s*(.*)/);
+    const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/);
     if (headerMatch) {
       if (current) reviews.push(current);
 

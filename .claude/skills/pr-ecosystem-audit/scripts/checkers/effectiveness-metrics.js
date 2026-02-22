@@ -27,8 +27,8 @@ function run(ctx) {
   const findings = [];
   const scores = {};
 
-  const reviewsJsonl = loadJsonl(path.join(rootDir, "docs", "data", "reviews.jsonl"));
-  const metricsJsonl = loadJsonl(path.join(rootDir, "docs", "data", "review-metrics.jsonl"));
+  const reviewsJsonl = loadJsonl(path.join(rootDir, ".claude", "state", "reviews.jsonl"));
+  const metricsJsonl = loadJsonl(path.join(rootDir, ".claude", "state", "review-metrics.jsonl"));
   const learnings = safeReadFile(path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md"));
   const fixTemplates = safeReadFile(path.join(rootDir, "docs", "agent_docs", "FIX_TEMPLATES.md"));
   const codePatterns = safeReadFile(path.join(rootDir, "docs", "agent_docs", "CODE_PATTERNS.md"));
@@ -55,17 +55,35 @@ function run(ctx) {
 
 /**
  * Gather per-PR round counts from review records.
+ * Prefers actual round counts from retrospective entries; falls back to
+ * counting review entries per PR when no retro exists.
  * @returns {{ roundCounts: number[], avgRounds: number }}
  */
 function gatherPrRoundCounts(reviewsJsonl) {
-  const prRounds = {};
-  for (const review of reviewsJsonl) {
-    const pr = review.pr_number || review.pr;
-    if (!pr) continue;
-    prRounds[pr] = (prRounds[pr] || 0) + 1;
+  // Collect actual round counts from retros (authoritative source)
+  const retroRounds = {};
+  for (const entry of reviewsJsonl) {
+    if (entry.type === "retrospective" && entry.pr && typeof entry.rounds === "number") {
+      retroRounds[entry.pr] = entry.rounds;
+    }
   }
 
-  const roundCounts = Object.values(prRounds);
+  // For PRs without retros, count review entries as proxy
+  const prReviewCounts = {};
+  for (const entry of reviewsJsonl) {
+    if (entry.type === "retrospective") continue;
+    const pr = entry.pr_number || entry.pr;
+    if (!pr) continue;
+    prReviewCounts[pr] = (prReviewCounts[pr] || 0) + 1;
+  }
+
+  // Merge: prefer retro rounds, fall back to entry count
+  const allPrs = new Set([...Object.keys(retroRounds), ...Object.keys(prReviewCounts)]);
+  const roundCounts = [];
+  for (const pr of allPrs) {
+    roundCounts.push(retroRounds[pr] || prReviewCounts[pr] || 1);
+  }
+
   const avgRounds =
     roundCounts.length > 0
       ? Math.round((roundCounts.reduce((a, b) => a + b, 0) / roundCounts.length) * 10) / 10
@@ -92,6 +110,8 @@ function computeAvgFixRatio(metricsJsonl) {
 
 /**
  * Compute churn percentage from learnings text.
+ * Deduplicates identical values from the same text section to avoid
+ * double-counting when a retro mentions the same % in both a table and narrative.
  */
 function computeChurnPct(learnings) {
   const churnMatches = learnings.match(/avoidable.*?(\d+)%/gi) || [];
@@ -104,9 +124,10 @@ function computeChurnPct(learnings) {
     })
     .filter((v) => typeof v === "number" && Number.isFinite(v));
 
-  return churnValues.length > 0
-    ? Math.round(churnValues.reduce((a, b) => a + b, 0) / churnValues.length)
-    : null;
+  // Deduplicate: same % appearing multiple times is likely the same retro data
+  const unique = [...new Set(churnValues)];
+
+  return unique.length > 0 ? Math.round(unique.reduce((a, b) => a + b, 0) / unique.length) : null;
 }
 
 /**
@@ -192,19 +213,65 @@ function checkReviewCycleEfficiency(reviewsJsonl, metricsJsonl, learnings, findi
   };
 }
 
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+/**
+ * Extract markdown sections for given review IDs from the learnings log.
+ * Uses line-by-line parsing (same approach as process-compliance).
+ * @returns {{ [id: number]: string }}
+ */
+function extractMarkdownSections(learningsContent, reviewIds) {
+  const sections = {};
+  if (!learningsContent) return sections;
+  const lines = learningsContent.split("\n");
+  const headingRe = /^#{2,4}\s+Review\s+#(\d+)\b/i;
+  const headings = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(headingRe);
+    if (m) headings.push({ line: i, id: parseInt(m[1], 10) });
+  }
+  const idSet = new Set(reviewIds);
+  for (let h = 0; h < headings.length; h++) {
+    if (!idSet.has(headings[h].id)) continue;
+    const startLine = headings[h].line;
+    const endLine = h + 1 < headings.length ? headings[h + 1].line : lines.length;
+    sections[headings[h].id] = lines.slice(startLine, endLine).join("\n");
+  }
+  return sections;
+}
+
 // ── Category 17: Agent Utilization Effectiveness ───────────────────────────
 
 function checkAgentUtilization(reviewsJsonl, learnings, findings) {
   const bench = BENCHMARKS.agent_utilization_effectiveness;
 
   // Check for parallel agent usage in reviews with 20+ items
-  const largeReviews = reviewsJsonl.filter((r) => (r.items_total || 0) >= 20);
+  // JSONL uses 'total' (not 'items_total')
+  const largeReviews = reviewsJsonl.filter(
+    (r) => r.type !== "retrospective" && (r.total || r.items_total || 0) >= 20
+  );
   let parallelUsed = 0;
 
-  const agentKeywords = ["parallel agent", "code-reviewer agent", "specialist agent", "subagent"];
+  // Extract markdown sections for large reviews — JSONL entries are structured data
+  // and rarely contain prose about agent usage, but markdown sections do
+  const largeIds = largeReviews.map((r) => r.id).filter((id) => typeof id === "number");
+  const mdSections = extractMarkdownSections(learnings, largeIds);
+
+  const agentKeywords = [
+    "parallel agent",
+    "code-reviewer agent",
+    "specialist agent",
+    "subagent",
+    "code-reviewer",
+    "security-auditor",
+    "agent",
+    "multi-agent",
+  ];
   for (const review of largeReviews) {
-    const text = JSON.stringify(review).toLowerCase();
-    if (agentKeywords.some((kw) => text.includes(kw))) {
+    const jsonText = JSON.stringify(review).toLowerCase();
+    const mdText = (mdSections[review.id] || "").toLowerCase();
+    const combined = jsonText + " " + mdText;
+    if (agentKeywords.some((kw) => combined.includes(kw))) {
       parallelUsed++;
     }
   }
@@ -217,17 +284,37 @@ function checkAgentUtilization(reviewsJsonl, learnings, findings) {
   const parallelPct =
     largeReviews.length > 0 ? Math.round((parallelUsed / largeReviews.length) * 100) : null;
 
-  // Specialist match: check if agents were used for appropriate tasks
-  const specialistKeywords = ["security", "performance", "accessibility", "testing"];
+  // Specialist match: check if reviews covering specialist domains show evidence
+  // of specialist-level analysis (domain-specific findings, tools, or agent usage).
+  // All reviews in this system are agent-performed (/pr-review skill), so we check
+  // for domain-specific DEPTH rather than just the word "agent".
+  const specialistDomains = {
+    security: ["vulnerability", "injection", "xss", "dos", "sanitiz", "owasp", "cve", "sonarcloud"],
+    performance: ["complexity", "bottleneck", "optimize", "latency", "cache", "o(n"],
+    accessibility: ["aria", "screen reader", "wcag", "a11y", "contrast"],
+    testing: ["coverage", "test case", "assertion", "mock", "fixture", "jest"],
+  };
   let specialistMatch = 0;
   let specialistOpportunities = 0;
 
-  for (const review of reviewsJsonl.slice(-20)) {
-    const text = JSON.stringify(review).toLowerCase();
-    for (const kw of specialistKeywords) {
-      if (text.includes(kw)) {
+  // Only check actual reviews (not retros — retros don't represent agent usage opportunities)
+  const recentActualReviews = reviewsJsonl
+    .filter((r) => r.type !== "retrospective" && typeof r.id === "number")
+    .slice(-20);
+
+  // Extract markdown sections for specialist matching too
+  const recentIds = recentActualReviews.map((r) => r.id).filter((id) => typeof id === "number");
+  const recentMdSections = extractMarkdownSections(learnings, recentIds);
+
+  for (const review of recentActualReviews) {
+    const jsonText = JSON.stringify(review).toLowerCase();
+    const mdText = (recentMdSections[review.id] || "").toLowerCase();
+    const text = jsonText + " " + mdText;
+    for (const [domain, depthKeywords] of Object.entries(specialistDomains)) {
+      if (text.includes(domain)) {
         specialistOpportunities++;
-        if (text.includes("agent") || text.includes("specialist")) {
+        // Count as matched if review shows domain-specific depth (not just mentions the word)
+        if (depthKeywords.some((dk) => text.includes(dk))) {
           specialistMatch++;
         }
       }

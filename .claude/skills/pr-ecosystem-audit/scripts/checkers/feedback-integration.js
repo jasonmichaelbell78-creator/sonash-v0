@@ -29,7 +29,7 @@ function run(ctx) {
   const scores = {};
 
   const debtItems = loadJsonl(path.join(rootDir, "docs", "technical-debt", "MASTER_DEBT.jsonl"));
-  const reviewsJsonl = loadJsonl(path.join(rootDir, "docs", "data", "reviews.jsonl"));
+  const reviewsJsonl = loadJsonl(path.join(rootDir, ".claude", "state", "reviews.jsonl"));
   const learnings = safeReadFile(path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md"));
 
   scores.feedback_loop_closure = checkFeedbackLoopClosure(
@@ -152,10 +152,14 @@ function checkFeedbackLoopClosure(debtItems, reviewsJsonl, learnings, findings) 
 
   // Find retro action items in TDMS
   const retroDebtItems = debtItems.filter((d) => d.source_id && d.source_id.includes("pr-retro"));
-  const resolvedRetro = retroDebtItems.filter(
-    (d) => d.status === "resolved" || d.status === "done"
-  );
-  const openRetro = retroDebtItems.filter((d) => d.status !== "resolved" && d.status !== "done");
+  const resolvedRetro = retroDebtItems.filter((d) => {
+    const s = (d.status || "").toLowerCase();
+    return s === "resolved" || s === "done" || s === "verified";
+  });
+  const openRetro = retroDebtItems.filter((d) => {
+    const s = (d.status || "").toLowerCase();
+    return s !== "resolved" && s !== "done" && s !== "verified";
+  });
 
   const repeatOffenders = findRepeatOffenders(learnings);
 

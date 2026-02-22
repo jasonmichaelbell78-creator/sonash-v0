@@ -96,7 +96,7 @@ const MAX_RANGE_EXPANSION = 5000;
  * @returns {{ ids: number[], found: boolean }}
  */
 function parseHeadingIds(content) {
-  const headingRegex = /^####\s+Review\s+#(\d+)/gm;
+  const headingRegex = /^#{2,4}\s+Review\s+#(\d+)/gm;
   const ids = [];
   let match;
   let found = false;
@@ -193,12 +193,12 @@ function checkWrongHeadings(filePath, fileName) {
   try {
     if (lstatSync(filePath).isSymbolicLink()) return 0;
     const content = readFileSync(filePath, "utf8");
-    const wrongHeadings = (content.match(/^###\s+Review\s+#\d+/gm) || []).length;
+    const wrongHeadings = (content.match(/^#{2,3}\s+Review\s+#\d+/gm) || []).length;
     if (wrongHeadings > 0) {
-      warn(`${fileName}: ${wrongHeadings} reviews use ### instead of #### heading`);
+      warn(`${fileName}: ${wrongHeadings} reviews use ## or ### instead of #### heading`);
       if (fixMode) {
         if (!isSafeToWrite(filePath)) return 0;
-        const fixed = content.replaceAll(/^###(\s+Review\s+#)/gm, "####$1");
+        const fixed = content.replaceAll(/^#{2,3}(\s+Review\s+#)/gm, "####$1");
         writeFileSync(filePath, fixed);
         console.log(`    → Fixed ${wrongHeadings} headings`);
       }
@@ -389,6 +389,68 @@ function main() {
     console.log(`    Run: npm run reviews:sync -- --apply`);
   } else {
     ok(`JSONL synced (max: #${jsonlMax}, markdown max: #${mdMax})`);
+  }
+  console.log();
+
+  // 6. Metadata Accuracy
+  console.log("6. Metadata Accuracy:");
+  if (existsSync(LEARNINGS_LOG)) {
+    try {
+      const logContent = readFileSync(LEARNINGS_LOG, "utf8");
+      const logLines = logContent.split("\n").length;
+
+      // Check 1: "Main log lines" claimed vs actual
+      const linesMatch = logContent.match(/\| Main log lines \|\s*~?(\d+)/);
+      if (linesMatch) {
+        const claimed = Number.parseInt(linesMatch[1], 10);
+        const drift = Math.abs(claimed - logLines);
+        if (drift > 100) {
+          warn(`"Main log lines" claims ~${claimed} but actual is ${logLines} (drift: ${drift})`);
+        } else {
+          ok(`Main log lines: ~${claimed} (actual: ${logLines}, drift: ${drift})`);
+        }
+      }
+
+      // Check 2: "Active reviews" claimed count vs actual heading count
+      const activeMatch = logContent.match(/\| Active reviews \|\s*(\d+)/);
+      const headingRegex2 = /^#{2,4}\s+Review\s+#(\d+)/gm;
+      let headingCount = 0;
+      let hMatch;
+      while ((hMatch = headingRegex2.exec(logContent)) !== null) {
+        headingCount++;
+      }
+      if (activeMatch) {
+        const claimedActive = Number.parseInt(activeMatch[1], 10);
+        if (claimedActive !== headingCount) {
+          warn(
+            `"Active reviews" claims ${claimedActive} but actual heading count is ${headingCount}`
+          );
+        } else {
+          ok(`Active reviews: ${claimedActive} (matches heading count)`);
+        }
+      }
+
+      // Check 3: Consolidation section latest # vs state file
+      const consolidationStatePath = join(ROOT, ".claude", "state", "consolidation.json");
+      const consolidationMatch = logContent.match(/Previous Consolidation \(#(\d+)\)/);
+      if (consolidationMatch && existsSync(consolidationStatePath)) {
+        try {
+          const cState = JSON.parse(readFileSync(consolidationStatePath, "utf8"));
+          const mdNumber = Number.parseInt(consolidationMatch[1], 10);
+          const stateNumber = cState.consolidationNumber || 0;
+          if (mdNumber !== stateNumber) {
+            warn(`Consolidation section shows #${mdNumber} but state file says #${stateNumber}`);
+          } else {
+            ok(`Consolidation number: #${stateNumber} (matches state file)`);
+          }
+        } catch {
+          /* skip if state file unreadable */
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Error checking metadata:", msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]"));
+    }
   }
   console.log();
 

@@ -12,8 +12,9 @@
 const BENCHMARKS = {
   // ── Domain 1: Process Compliance ──────────────────────────────────────────
   skill_invocation_fidelity: {
-    steps_completed_pct: { good: 95, average: 75, poor: 50, direction: "higher-is-better" },
-    pre_checks_run_pct: { good: 90, average: 60, poor: 25, direction: "higher-is-better" },
+    // Calibrated: keyword×review matrix means ~60% is strong (not every keyword per review)
+    steps_completed_pct: { good: 70, average: 50, poor: 30, direction: "higher-is-better" },
+    pre_checks_run_pct: { good: 80, average: 50, poor: 20, direction: "higher-is-better" },
   },
   review_process_completeness: {
     multi_pass_pct: { good: 90, average: 70, poor: 40, direction: "higher-is-better" },
@@ -95,7 +96,8 @@ const BENCHMARKS = {
 
   // ── Domain 5: Effectiveness Metrics ───────────────────────────────────────
   review_cycle_efficiency: {
-    avg_rounds_per_pr: { good: 3, average: 5, poor: 8 },
+    // Calibrated for multi-tool reviews (SonarCloud+Qodo+Gemini): 4-5 rounds is typical
+    avg_rounds_per_pr: { good: 4, average: 7, poor: 10 },
     fix_ratio: { good: 0.15, average: 0.25, poor: 0.4 },
     churn_pct: { good: 10, average: 25, poor: 45 },
   },
