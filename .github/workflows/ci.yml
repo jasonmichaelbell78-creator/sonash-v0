@@ -74,6 +74,9 @@ jobs:
         continue-on-error: true
         run: npm run patterns:check-all
 
+      - name: Pattern test suite
+        run: npx vitest run tests/pattern-compliance.test.js
+
       - name: Documentation check
         # Non-blocking: templates/stubs have expected issues, active docs are clean
         continue-on-error: true

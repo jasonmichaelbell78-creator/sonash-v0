@@ -19,6 +19,8 @@
  *   - Git state: branch, uncommitted/staged/untracked files
  *   - Agent invocations this session
  *   - Files read this session
+ *   - Active plan file (.claude/plans/*.md) with preview
+ *   - Session scratchpad notes (AI-written intent/context)
  *   - Compaction trigger type (manual/auto)
  *
  * Output: .claude/state/handoff.json
@@ -40,6 +42,8 @@ const SESSION_AGENTS = path.join(HOOKS_DIR, ".session-agents.json");
 const SESSION_STATE = path.join(HOOKS_DIR, ".session-state.json");
 const CONTEXT_TRACKING = path.join(HOOKS_DIR, ".context-tracking-state.json");
 const SESSION_CONTEXT_MD = path.join(projectDir, "SESSION_CONTEXT.md");
+const SESSION_NOTES = path.join(STATE_DIR, "session-notes.json");
+const PLANS_DIR = path.join(projectDir, ".claude", "plans");
 
 // loadJson, saveJson from lib/state-utils.js
 // gitExec from lib/git-utils.js
@@ -238,6 +242,51 @@ function gatherTeamStatus() {
 }
 
 /**
+ * Find the most recently modified plan file and capture its header
+ */
+function gatherActivePlan() {
+  try {
+    if (!fs.existsSync(PLANS_DIR)) return null;
+    const files = fs
+      .readdirSync(PLANS_DIR)
+      .filter((f) => f.endsWith(".md"))
+      .map((f) => {
+        const full = path.join(PLANS_DIR, f);
+        try {
+          return { name: f, mtime: fs.statSync(full).mtimeMs, path: full };
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.mtime - a.mtime);
+
+    if (files.length === 0) return null;
+
+    const newest = files[0];
+    // Only include if modified in the last 24 hours (likely active)
+    if (Date.now() - newest.mtime > 24 * 60 * 60 * 1000) return null;
+
+    const content = fs.readFileSync(newest.path, "utf8");
+    const lines = content.split("\n").slice(0, 30);
+    return {
+      file: newest.name,
+      modifiedAgo: Math.round((Date.now() - newest.mtime) / 60000) + " min",
+      preview: lines.join("\n"),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Read session scratchpad notes (written by AI during work)
+ */
+function gatherSessionNotes() {
+  return loadJson(SESSION_NOTES) || null;
+}
+
+/**
  * Detect compaction trigger from hook arguments
  */
 function getCompactionTrigger() {
@@ -264,6 +313,8 @@ function main() {
   const sessionState = loadJson(SESSION_STATE) || {};
 
   const teamStatus = gatherTeamStatus();
+  const activePlan = gatherActivePlan();
+  const sessionNotes = gatherSessionNotes();
 
   const handoff = {
     timestamp: new Date().toISOString(),
@@ -279,12 +330,16 @@ function main() {
     },
     agentsUsed: agentSummary,
     teamStatus: teamStatus,
+    activePlan: activePlan,
+    sessionNotes: sessionNotes,
     recovery: {
       instruction:
         "CONTEXT WAS COMPACTED. Read this handoff to restore session state. " +
         "Key info: sessionCounter, git.branch, taskStates (full task progress), " +
         "commitLog (recent work), agentsUsed (what was done). " +
         (teamStatus ? "teamStatus (active agent team info - check teammate progress). " : "") +
+        (activePlan ? `activePlan (executing plan: ${activePlan.file}). ` : "") +
+        (sessionNotes ? "sessionNotes (AI-written context about current task/intent). " : "") +
         "Continue from where the session left off.",
     },
   };
@@ -304,6 +359,12 @@ function main() {
     console.error(`   Files read: ${contextTracking.filesRead?.length || 0}`);
     if (teamStatus) {
       console.error(`   Agent teams: enabled (${teamStatus.teamInvocations} team invocations)`);
+    }
+    if (activePlan) {
+      console.error(`   Active plan: ${activePlan.file} (${activePlan.modifiedAgo} ago)`);
+    }
+    if (sessionNotes) {
+      console.error(`   Session notes: ${sessionNotes.notes?.length || 0} entries`);
     }
     console.error(`   Trigger: ${trigger}`);
     console.error("");
