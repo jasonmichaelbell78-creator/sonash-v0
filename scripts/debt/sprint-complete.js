@@ -114,8 +114,8 @@ function parseArgs(argv) {
     if (args[i] === "--force") {
       result.force = true;
     } else if (args[i] === "--carry-to" && i + 1 < args.length) {
-      i++;
-      result.carryTo = normalizeId(args[i]);
+      result.carryTo = normalizeId(args[i + 1]);
+      i += 1;
     } else if (!args[i].startsWith("--")) {
       result.sprintId = normalizeId(args[i]);
     }
@@ -217,9 +217,8 @@ function main() {
 
   // 4. Load MASTER_DEBT.jsonl and compute stats
   const allDebt = loadMasterDebt();
-  if (!allDebt) {
-    console.error(`Error: Could not load MASTER_DEBT.jsonl at ${MASTER_DEBT_PATH}`);
-    process.exit(2);
+  if (allDebt.length === 0) {
+    console.warn(`Warning: MASTER_DEBT.jsonl is empty or could not be read at ${MASTER_DEBT_PATH}`);
   }
 
   const debtMap = new Map();

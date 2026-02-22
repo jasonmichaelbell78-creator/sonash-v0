@@ -32,7 +32,17 @@ function readJsonl(filePath) {
       .readFileSync(filePath, "utf8")
       .trim()
       .split("\n")
-      .map((l) => JSON.parse(l));
+      .filter(Boolean)
+      .flatMap((l, idx) => {
+        try {
+          return [JSON.parse(l)];
+        } catch {
+          console.warn(
+            `  WARN: malformed JSON at ${path.basename(filePath)}:${idx + 1} — skipping`
+          );
+          return [];
+        }
+      });
   } catch (err) {
     console.error(`Failed to read ${filePath}: ${err.message}`);
     process.exit(1);

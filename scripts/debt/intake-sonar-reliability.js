@@ -2308,7 +2308,8 @@ function loadJsonl(filePath) {
       try {
         items.push(JSON.parse(trimmed));
       } catch {
-        // skip malformed lines
+        // Log but skip malformed lines to avoid silent data loss
+        console.warn(`  WARN: skipping malformed JSONL line in ${path.basename(filePath)}`);
       }
     }
   } catch (err) {
@@ -2465,6 +2466,22 @@ function printSummary(dedupedInput, alreadyTracked, newItems) {
 // ---------------------------------------------------------------------------
 // Append new items to both MASTER and deduped files
 // ---------------------------------------------------------------------------
+/**
+ * Check if a path is safe to write (not a symlink).
+ */
+function isWriteSafe(filePath) {
+  try {
+    const stat = fs.lstatSync(filePath);
+    if (stat.isSymbolicLink()) {
+      console.error(`ERROR: Refusing to write to symlink: ${path.basename(filePath)}`);
+      return false;
+    }
+  } catch {
+    // File doesn't exist yet — safe to create
+  }
+  return true;
+}
+
 function writeNewItems(newItems) {
   const now = new Date().toISOString();
   for (const item of newItems) {
@@ -2473,23 +2490,38 @@ function writeNewItems(newItems) {
   }
   const newLines = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
-  try {
-    fs.mkdirSync(path.dirname(MASTER_FILE), { recursive: true });
-    fs.appendFileSync(MASTER_FILE, newLines, "utf8");
-    console.log(`\nAppended ${newItems.length} items to MASTER_DEBT.jsonl`);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error(`ERROR writing MASTER_DEBT.jsonl: ${msg.replaceAll(/[/\\][\w./-]+/g, "<path>")}`);
+  // Symlink guard — refuse to write to symlinked targets
+  if (!isWriteSafe(MASTER_FILE) || !isWriteSafe(DEDUPED_FILE)) {
     process.exit(1);
   }
 
+  const masterTmp = MASTER_FILE + `.tmp.${process.pid}`;
+  const dedupedTmp = DEDUPED_FILE + `.tmp.${process.pid}`;
   try {
+    fs.mkdirSync(path.dirname(MASTER_FILE), { recursive: true });
     fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-    fs.appendFileSync(DEDUPED_FILE, newLines, "utf8");
+    // Stage both writes before committing either
+    const existingMaster = fs.existsSync(MASTER_FILE) ? fs.readFileSync(MASTER_FILE, "utf8") : "";
+    const existingDeduped = fs.existsSync(DEDUPED_FILE)
+      ? fs.readFileSync(DEDUPED_FILE, "utf8")
+      : "";
+    fs.writeFileSync(masterTmp, existingMaster + newLines, "utf8");
+    fs.writeFileSync(dedupedTmp, existingDeduped + newLines, "utf8");
+    // Commit atomically
+    fs.renameSync(masterTmp, MASTER_FILE);
+    fs.renameSync(dedupedTmp, DEDUPED_FILE);
+    console.log(`\nAppended ${newItems.length} items to MASTER_DEBT.jsonl`);
     console.log(`Appended ${newItems.length} items to raw/deduped.jsonl`);
   } catch (err) {
+    for (const tmp of [masterTmp, dedupedTmp]) {
+      try {
+        fs.unlinkSync(tmp);
+      } catch {
+        /* ignore cleanup failure */
+      }
+    }
     const msg = err instanceof Error ? err.message : String(err);
-    console.error(`ERROR writing raw/deduped.jsonl: ${msg.replaceAll(/[/\\][\w./-]+/g, "<path>")}`);
+    console.error(`ERROR writing files: ${msg.replaceAll(/[/\\][\w./-]+/g, "<path>")}`);
     process.exit(1);
   }
 
@@ -2519,11 +2551,8 @@ function main() {
   console.log(`Existing raw/deduped.jsonl: ${dedupedItems.length} items`);
 
   const indices = buildDedupIndices([...masterItems, ...dedupedItems]);
-  const { newItems, alreadyTracked } = processIssues(
-    dedupedInput,
-    indices,
-    getMaxId(masterItems) + 1
-  );
+  const maxExistingId = Math.max(getMaxId(masterItems), getMaxId(dedupedItems));
+  const { newItems, alreadyTracked } = processIssues(dedupedInput, indices, maxExistingId + 1);
 
   printSummary(dedupedInput, alreadyTracked, newItems);
 

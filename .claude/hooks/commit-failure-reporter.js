@@ -243,7 +243,7 @@ function main() {
 
   // Sanitize hook output: strip potential secrets/tokens before display
   const sanitized = content
-    .replaceAll(/(?:token|key|secret|password|credential)[=:]\s*\S+/gi, "$&_REDACTED")
+    .replaceAll(/((?:token|key|secret|password|credential)[=:]\s*)\S+/gi, "$1[REDACTED]")
     .replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***")
     .replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, "sk-***REDACTED***");
   console.log("Pre-commit hook failed. Output from .git/hook-output.log:");

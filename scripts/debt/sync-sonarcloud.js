@@ -284,7 +284,11 @@ async function fetchSonarCloudIssues(options) {
 
     if (!response.ok) {
       // Discard raw response body entirely — it may contain sensitive API details
-      await response.text();
+      try {
+        await response.text();
+      } catch {
+        /* ignore body read failure */
+      }
       throw new Error(`SonarCloud API error: HTTP ${response.status}`);
     }
 

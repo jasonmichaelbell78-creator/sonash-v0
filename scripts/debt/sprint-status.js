@@ -19,6 +19,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { randomInt } = require("node:crypto");
 
 const ROOT = path.join(__dirname, "../..");
 const { sanitizeError } = require("../lib/sanitize-error.js");
@@ -74,7 +75,7 @@ function readJsonlSafe(filePath) {
       try {
         items.push(JSON.parse(trimmed));
       } catch {
-        // Ignore: malformed JSONL line — skip and continue parsing remaining lines
+        console.warn(`  WARN: skipping malformed JSONL line in ${path.basename(filePath)}`);
       }
     }
     return items;
@@ -134,7 +135,7 @@ function sampleRandom(arr, n) {
   const copy = arr.slice();
   const result = [];
   for (let i = 0; i < n; i++) {
-    const idx = Math.floor(Math.random() * (copy.length - i)) + i;
+    const idx = randomInt(i, copy.length);
     // swap
     const tmp = copy[i];
     copy[i] = copy[idx];

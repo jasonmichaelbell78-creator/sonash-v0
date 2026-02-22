@@ -2567,3 +2567,56 @@ repeat — pre-existing pattern, DEBT-0455)
 **Resolution Stats:** 6/9 fixed (67%), 3/9 rejected
 
 ---
+
+## Review #366 — PR #383 R5 (SonarCloud + Qodo + CI) — 2026-02-21
+
+**Source:** SonarCloud (24), Qodo Compliance (5), Qodo Code Suggestions (12), CI
+(pattern compliance)
+
+**Key Fixes:**
+
+1. **Secret leakage in redaction** — `commit-failure-reporter.js:246` used
+   `$&_REDACTED` which appends to the secret instead of replacing. Fixed regex
+   to use capture group `$1[REDACTED]`.
+2. **Path traversal (2 files)** — `extract-context-debt.js:100` used
+   `replace(/^(\.\.)+/)` which is bypassable. `verify-resolutions.js` used
+   `startsWith(ROOT + sep)`. Both replaced with proper `path.relative()` +
+   traversal rejection.
+3. **Math.random() PRNG** — `sprint-status.js:137` replaced with
+   `crypto.randomInt()` for SonarCloud S2245.
+4. **Atomic dual-file writes** — `intake-sonar-reliability.js` now writes both
+   MASTER and deduped atomically via tmp files + rename, with symlink guard.
+5. **Over-broad S0 downgrade** — `clean-intake.js:284` now only downgrades
+   non-critical categories (documentation, process, ai-optimization,
+   engineering-productivity), not all non-security.
+6. **Sync by ID+hash** — `verify-resolutions.js:applyChanges` now syncs deduped
+   items by both id and content_hash, preventing missed updates.
+7. **Duplicate debt IDs** — `intake-sonar-reliability.js` now takes max ID from
+   both master and deduped files.
+8. **Unreachable null guard** — `sprint-complete.js:220` changed from `!allDebt`
+   (always false for array) to `allDebt.length === 0`.
+9. **Swallowed parse errors** — Added `console.warn` to 3 silent JSONL catch
+   blocks (intake-sonar-reliability, sprint-status, verify-resolutions).
+10. **Per-line JSONL safety** — `audit-s0-promotions.js:readJsonl` now uses
+    flatMap with per-line try/catch instead of map-throw.
+11. **JSON.parse guard** — `generate-grand-plan.js:readJson` now wraps
+    JSON.parse in try/catch.
+12. **Body discard guard** — `sync-sonarcloud.js:287` wraps response.text() in
+    try/catch to prevent secondary network error from hiding the original.
+
+**Patterns Identified:**
+
+1. **`$&` backreference leaks secrets** — In sanitization regexes, `$&` includes
+   the full match (including the secret). Use capture groups around the
+   non-sensitive prefix only.
+2. **`startsWith(root + sep)` is fragile** — `path.relative()` +
+   `startsWith("..")` check is more robust for path containment.
+3. **Dual-file writes need atomicity** — When two files must stay in sync, stage
+   both writes (via tmp) before committing either via rename.
+4. **readJsonl silent catch is a smell** — Even for expected malformed lines,
+   always log at least a count or warning to prevent silent data loss.
+
+**Deferred:** 22 CC violations (pre-existing, CC 16-67 across 13 files) — bulk
+refactoring items, partially tracked in existing TDMS entries.
+
+**Resolution Stats:** 19/41 fixed (46%), 22/41 deferred (CC — pre-existing)

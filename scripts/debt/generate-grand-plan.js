@@ -46,7 +46,13 @@ function readJson(filePath) {
     console.error(`Failed to read ${filePath}: ${msg}`);
     process.exit(1);
   }
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to parse JSON in ${filePath}: ${msg}`);
+    process.exit(1);
+  }
 }
 
 /** Load all items from MASTER_DEBT.jsonl into a Map keyed by id */
@@ -65,6 +71,7 @@ function loadMasterIndex() {
   }
   const index = new Map();
   const lines = content.split("\n").filter((l) => l.trim());
+  let malformedCount = 0;
   for (const line of lines) {
     try {
       const item = JSON.parse(line);
@@ -72,8 +79,11 @@ function loadMasterIndex() {
         index.set(item.id, item);
       }
     } catch {
-      console.debug(`Skipping malformed JSONL line in master index`);
+      malformedCount++;
     }
+  }
+  if (malformedCount > 0) {
+    console.warn(`  WARN: skipped ${malformedCount} malformed JSONL line(s) in master index`);
   }
   return index;
 }

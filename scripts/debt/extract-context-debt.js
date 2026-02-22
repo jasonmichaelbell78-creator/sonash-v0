@@ -97,12 +97,11 @@ function extractFilePath(text) {
     const match = text.match(pattern);
     if (match) {
       let filePath = match[1].split(":")[0];
-      filePath = path
-        .normalize(filePath)
-        .replace(/^(\.\.[/\\])+/, "")
-        .replaceAll("\\", "/");
+      filePath = path.normalize(filePath).replaceAll("\\", "/");
       // Reject absolute paths (Unix or Windows drive letters)
       if (/^(?:\/|[a-zA-Z]:\/)/.test(filePath)) return "";
+      // Reject any path containing traversal segments after normalization
+      if (/(^|\/)\.\.($|\/)/.test(filePath)) return "";
       return filePath;
     }
   }

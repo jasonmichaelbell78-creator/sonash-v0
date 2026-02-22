@@ -281,7 +281,15 @@ function verifyItem(item) {
   if (item.category && !VALID_CATEGORIES.has(item.category)) {
     issues.push(`invalid_category:${item.category}`);
   }
-  if (item.severity === "S0" && item.category !== "security") {
+  // S0 is reserved for security + critical runtime failures; non-critical S0 items
+  // should be reviewed by audit-s0-promotions.js rather than auto-downgraded here.
+  const NON_CRITICAL_CATEGORIES = new Set([
+    "documentation",
+    "process",
+    "ai-optimization",
+    "engineering-productivity",
+  ]);
+  if (item.severity === "S0" && NON_CRITICAL_CATEGORIES.has(item.category)) {
     issues.push(`severity_downgrade_needed:S0->S1 (category: ${item.category})`);
     if (VERBOSE) console.log(`  DOWNGRADE NEEDED S0->S1: ${item.id} (category: ${item.category})`);
   }

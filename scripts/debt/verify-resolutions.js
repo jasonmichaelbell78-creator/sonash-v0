@@ -175,7 +175,7 @@ function loadJsonl(filePath) {
     try {
       items.push(JSON.parse(trimmed));
     } catch {
-      // Skip malformed lines
+      console.warn(`  WARN: skipping malformed JSONL line in ${path.basename(filePath)}`);
     }
   }
   return items;
@@ -207,7 +207,8 @@ function fileExists(relPath) {
   if (!relPath || relPath.trim() === "") return null; // no file ref
   // Path traversal guard — resolve and verify it stays within PROJECT_ROOT
   const absPath = path.resolve(PROJECT_ROOT, relPath);
-  if (!absPath.startsWith(PROJECT_ROOT + path.sep) && absPath !== PROJECT_ROOT) return false;
+  const relCheck = path.relative(PROJECT_ROOT, absPath);
+  if (relCheck === "" || relCheck.startsWith("..") || path.isAbsolute(relCheck)) return false;
   try {
     return fs.existsSync(absPath);
   } catch {
@@ -220,7 +221,8 @@ function fileExists(relPath) {
  */
 function getLineCount(relPath) {
   const absPath = path.resolve(PROJECT_ROOT, relPath);
-  if (!absPath.startsWith(PROJECT_ROOT + path.sep) && absPath !== PROJECT_ROOT) return 0;
+  const rel = path.relative(PROJECT_ROOT, absPath);
+  if (rel === "" || rel.startsWith("..") || path.isAbsolute(rel)) return 0;
   try {
     const content = fs.readFileSync(absPath, "utf8");
     return content.split("\n").length;
@@ -260,7 +262,8 @@ function extractKeywords(title) {
 function patternFoundNearLine(relPath, line, keywords) {
   if (!keywords.length) return false;
   const absPath = path.resolve(PROJECT_ROOT, relPath);
-  if (!absPath.startsWith(PROJECT_ROOT + path.sep) && absPath !== PROJECT_ROOT) return false;
+  const relCheck2 = path.relative(PROJECT_ROOT, absPath);
+  if (relCheck2 === "" || relCheck2.startsWith("..") || path.isAbsolute(relCheck2)) return false;
   let content;
   try {
     content = fs.readFileSync(absPath, "utf8");
@@ -475,10 +478,13 @@ function applyChanges(masterItems, dedupedItems, promotedIds) {
     }
   }
 
-  // Update deduped items by content_hash match
+  // Update deduped items by id OR content_hash match
   let dedupedUpdated = 0;
   for (const item of dedupedItems) {
-    if (item.content_hash && changedHashes.has(item.content_hash)) {
+    const shouldSync =
+      (item.id && promotedSet.has(item.id)) ||
+      (item.content_hash && changedHashes.has(item.content_hash));
+    if (shouldSync) {
       item.status = "VERIFIED";
       item.verified_by = "verify-resolutions-script";
       dedupedUpdated++;

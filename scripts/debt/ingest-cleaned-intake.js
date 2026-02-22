@@ -154,11 +154,26 @@ function deduplicateItems(inputItems, master, today) {
 function writeItems(newItems) {
   const newLines = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
-  fs.appendFileSync(MASTER_FILE, newLines);
+  try {
+    fs.appendFileSync(MASTER_FILE, newLines);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`    ERROR: Failed to append to MASTER_DEBT.jsonl: ${msg}`);
+    process.exit(1);
+  }
   console.log(`    Appended ${newItems.length} items to MASTER_DEBT.jsonl`);
 
-  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-  fs.appendFileSync(DEDUPED_FILE, newLines);
+  try {
+    fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+    fs.appendFileSync(DEDUPED_FILE, newLines);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`    ERROR: Failed to append to raw/deduped.jsonl: ${msg}`);
+    console.error(
+      `    WARNING: MASTER_DEBT.jsonl was already updated — manual sync of deduped.jsonl required.`
+    );
+    process.exit(1);
+  }
   console.log(`    Appended ${newItems.length} items to raw/deduped.jsonl`);
 
   const masterLines = fs
