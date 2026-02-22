@@ -1022,8 +1022,10 @@ const ANTI_PATTERNS = [
         for (let j = backStart; j < i; j++) {
           if (
             lines[j].includes("isSafeToWrite") ||
+            lines[j].includes("isWriteSafe") ||
             lines[j].includes("isSymbolicLink") ||
-            lines[j].includes("guardSymlink")
+            lines[j].includes("guardSymlink") ||
+            lines[j].includes("refuseSymlinkWithParents")
           ) {
             hasGuard = true;
             break;

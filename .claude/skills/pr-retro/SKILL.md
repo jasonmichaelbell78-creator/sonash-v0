@@ -362,7 +362,7 @@ retroactively.
 
 ## KNOWN CHURN PATTERNS (Reference)
 
-These patterns have been identified across PRs #366-#369 as the primary drivers
+These patterns have been identified across PRs #366-#383 as the primary drivers
 of review cycle churn. Use this reference during Step 2 analysis to quickly
 identify known chains.
 
@@ -475,6 +475,24 @@ identify known chains.
   pr-agent.toml updated with 2 new suppression rules.
 - **Templates:** FIX_TEMPLATES #34 (evidence merge)
 
+### Pattern 9: Dual-File JSONL Sync Fragility
+
+- **Frequency:** PR #383 (2 rounds), Sessions #134, #138
+- **Root cause:** MASTER_DEBT.jsonl and raw/deduped.jsonl must stay in sync, but
+  scripts write to them independently. If one write succeeds and the other
+  fails, or if a script only writes to MASTER, `generate-views.js` overwrites
+  MASTER with stale deduped data.
+- **Signature:** "Data loss in MASTER_DEBT.jsonl", "deduped.jsonl out of sync",
+  sequential `writeFileSync`/`renameSync` pairs without rollback
+- **Known fix:** Use atomic dual-JSONL write pattern with rollback. After ANY
+  append to MASTER_DEBT.jsonl, also append to raw/deduped.jsonl. Before pushing,
+  grep for scripts that write to MASTER without deduped.
+- **Status as of PR #383:** FIX_TEMPLATES #36 (atomic dual-JSONL write with
+  rollback) added. pr-review Step 0.5 updated with dual-file write check. 4
+  scripts fixed with rollback pattern: audit-s0-promotions.js,
+  reverify-resolved.js, verify-resolutions.js, intake-sonar-reliability.js.
+- **Templates:** FIX_TEMPLATES #36 (dual-JSONL write)
+
 ---
 
 ## COMPLIANCE MECHANISMS
@@ -543,6 +561,7 @@ The retro connects to other session workflows:
 
 | Version | Date       | Description                                                                              |
 | ------- | ---------- | ---------------------------------------------------------------------------------------- |
+| 2.5     | 2026-02-22 | Add Pattern 9 (dual-file JSONL sync fragility). Source: PR #383 retro.                   |
 | 2.4     | 2026-02-19 | Add Pattern 8 (incremental algorithm hardening). Source: PR #379 retro.                  |
 | 2.3     | 2026-02-18 | Add Patterns 6-7 (realpathSync lifecycle, containment flip-flop). Source: PR #374 retro. |
 | 2.2     | 2026-02-17 | Update patterns 1+3 status: CC enforced, Qodo suppression fixed                          |
