@@ -296,13 +296,7 @@ Full cleanup workflow: sync + report + create cleanup branch + track fixes.
 
 4. Fix issues using the report as guide. Track progress with TodoWrite.
 
-5. Verify fixes:
-
-   ```bash
-   node scripts/debt/verify-sonar-phase.js --phase=1
-   ```
-
-6. Create PR:
+5. Create PR:
    ```bash
    gh pr create --title "fix: SonarCloud cleanup sprint $(date +%Y-%m-%d)" \
      --body "Fixes SonarCloud issues identified in sonarcloud-issues-detailed.md"
@@ -345,12 +339,12 @@ Full cleanup workflow: sync + report + create cleanup branch + track fixes.
 
 ## Scripts Reference
 
-| Script                                      | Purpose                          | Status |
-| ------------------------------------------- | -------------------------------- | ------ |
-| `scripts/debt/sync-sonarcloud.js`           | Fetch + sync + resolve           | ACTIVE |
-| `scripts/generate-detailed-sonar-report.js` | Detailed report with snippets    | ACTIVE |
-| `scripts/debt/verify-sonar-phase.js`        | Verify cleanup phase results     | ACTIVE |
-| `scripts/mcp/sonarcloud-server.js`          | MCP server for direct LLM access | ACTIVE |
+| Script                                      | Purpose                          | Status  |
+| ------------------------------------------- | -------------------------------- | ------- |
+| `scripts/debt/sync-sonarcloud.js`           | Fetch + sync + resolve           | ACTIVE  |
+| `scripts/generate-detailed-sonar-report.js` | Detailed report with snippets    | ACTIVE  |
+| ~~`scripts/debt/verify-sonar-phase.js`~~    | ~~Verify cleanup phase results~~ | REMOVED |
+| `scripts/mcp/sonarcloud-server.js`          | MCP server for direct LLM access | ACTIVE  |
 
 ---
 

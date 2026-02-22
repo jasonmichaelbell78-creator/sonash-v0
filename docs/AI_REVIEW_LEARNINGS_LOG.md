@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.46 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
+**Document Version:** 17.47 **Created:** 2026-01-02 **Last Updated:** 2026-02-21
 
 ## Purpose
 
@@ -800,6 +800,193 @@ resolved after 5 retros, security hardening improved after 4 retros) but cannot
 prevent novel failure modes. The Algorithm Design Pre-Check is a proactive
 defense against the class of "incremental refinement" problems, not just the
 specific evidence dedup instance.
+
+---
+
+### PR #382 Retrospective (2026-02-20)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                             |
+| -------------- | ------------------------------------------------- |
+| Rounds         | 3 (R1-R3, all 2026-02-20)                         |
+| Total items    | 76 raw (61 unique actionable)                     |
+| Fixed          | 61                                                |
+| Deferred       | 0                                                 |
+| Rejected       | 13 (compliance not-applicable for offline CLI)    |
+| Flagged        | 3 (architectural — to user)                       |
+| Review sources | SonarCloud, Gemini Code Assist, Qodo, CI/Prettier |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                 | Items  | Fixed  | Rejected | Key Patterns                                                    |
+| --------- | ---------- | ---------------------- | ------ | ------ | -------- | --------------------------------------------------------------- |
+| R1        | 2026-02-20 | SonarCloud+Gemini+Qodo | 49     | 42     | 4        | regex DoS, severity mapping bug, table parsing, dedup key       |
+| R2        | 2026-02-20 | SonarCloud+CI+Qodo     | 16     | 14     | 4        | 2nd regex DoS (two-strikes), CC 19>15, severity split, H1 guard |
+| R3        | 2026-02-20 | SonarCloud+Qodo        | 11     | 5      | 5        | cross-report dedup, milestone reset, severity case-insensitive  |
+| **Total** |            |                        | **76** | **61** | **13**   |                                                                 |
+
+#### Ping-Pong Chains
+
+##### Chain 1: Severity Mapping Incremental Hardening (R1→R2→R3 = 3 rounds)
+
+| Round | What Happened                                                         | Files Affected           | Root Cause                  |
+| ----- | --------------------------------------------------------------------- | ------------------------ | --------------------------- |
+| R1    | Fixed critical→S0 (was S1), high→S1 (was S2). Left medium+low as S3   | extract-audit-reports.js | Partial fix — only top 2    |
+| R2    | medium→S3 should be S2, low→S3 is correct. Added `\b` word boundaries | extract-audit-reports.js | R1 didn't review all levels |
+| R3    | Case-insensitive: `S[0-3]` missed lowercase `s0` in source docs       | extract-roadmap-debt.js  | R1/R2 only fixed one file   |
+
+**Avoidable rounds:** 1 (R3). If R1 had done a complete severity audit across
+both files — all levels (S0-S3), word boundaries, case sensitivity — R2 and R3
+severity items would have been caught in R1. R2's medium/S2 split was a genuine
+oversight, but R3's case-insensitive fix in the _other_ file was a propagation
+miss.
+
+**Prevention:** When fixing severity/priority mapping, audit ALL levels and ALL
+files that contain similar mapping logic in one pass.
+
+##### Chain 2: Dedup Logic Incremental Hardening (R1→R2→R3 = 3 rounds)
+
+| Round | What Happened                                                             | Files Affected           | Root Cause                      |
+| ----- | ------------------------------------------------------------------------- | ------------------------ | ------------------------------- |
+| R1    | Added file+line to dedup key (was title-only). Cross-MASTER dedup existed | extract-audit-reports.js | Initial — improved key quality  |
+| R2    | Within-run dedup: same entry could appear twice in single run             | extract-roadmap-debt.js  | No seenRunHashes set            |
+| R3    | Cross-report dedup: existingHashes not updated during report loop         | extract-audit-reports.js | Hash set not maintained in loop |
+
+**Avoidable rounds:** 1 (R3). If R1 had designed the full dedup algorithm
+upfront — enumerate all dedup boundaries (cross-MASTER, within-run,
+cross-report) — R2 and R3 dedup items would have been caught. This is a minor
+instance of Pattern 8 (incremental algorithm hardening).
+
+**Prevention:** Algorithm Design Pre-Check (pr-review Step 0.5) — when
+implementing dedup logic, enumerate ALL dedup boundaries before coding.
+
+##### Chain 3: Regex DoS Two-Strikes (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                            | Files Affected           | Root Cause               |
+| ----- | ------------------------------------------------------------------------ | ------------------------ | ------------------------ |
+| R1    | `matchNumberedHeading` regex flagged S5852. Replaced with string parsing | extract-audit-reports.js | SonarCloud DoS detection |
+| R2    | `isTableHeaderLine` regex flagged S5852. Same rule, different function   | extract-audit-reports.js | 2nd DoS regex in file    |
+
+**Avoidable rounds:** 0.5 (partial). R1 could have grepped for all potentially
+DoS-vulnerable regexes in the file after fixing the first one. However, this was
+partially a SonarCloud scanning limitation (only one finding per rule per scan
+sometimes).
+
+**Prevention:** After fixing a SonarCloud rule violation, grep the file for all
+similar patterns: `grep -n 'regex.*[+*].*[+*]' file.js` for nested quantifiers.
+
+**Total avoidable rounds across all chains: ~2.5 (roughly 1 full round)**
+
+#### Rejection Analysis
+
+| Category                     | Count | Rounds   | Examples                                                          |
+| ---------------------------- | ----- | -------- | ----------------------------------------------------------------- |
+| Compliance: audit trails     | 3     | R1,R2,R3 | "No durable audit record" — offline CLI script, not a service     |
+| Compliance: secure logging   | 3     | R1,R2,R3 | "Unstructured console logs" — CLI tool output                     |
+| Compliance: input validation | 3     | R1,R2,R3 | "Weak input validation on extractFilePath" — repo-internal files  |
+| Compliance: error handling   | 3     | R1,R2,R3 | "Swallowed exceptions" — intentional for JSONL partial-file parse |
+| Compliance: secure errors    | 1     | R3       | "Raw error details in readRoadmapLines" — CLI exits on error      |
+
+**Rejection accuracy:** 13/13 rejections were correct (100% accuracy). All were
+compliance rules not applicable to offline CLI scripts processing trusted repo
+files.
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                        | Rounds   | Already Automated?      | Recommended Action                                        | Est. Effort |
+| ------------------------------ | -------- | ----------------------- | --------------------------------------------------------- | ----------- |
+| Compliance noise (offline CLI) | R1,R2,R3 | Partial (pr-agent.toml) | Add `scripts/debt/` to Qodo compliance exclusions         | ~5 min      |
+| replaceAll conversion          | R1,R2,R3 | No                      | Already enforced by SonarCloud — just be thorough in R1   | ~0 min      |
+| Severity mapping completeness  | R1,R2,R3 | No                      | Add to CODE_PATTERNS: "audit all severity levels at once" | ~5 min      |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                             | Implemented?            | Impact on #382                                  |
+| ------- | ---------------------------------------------- | ----------------------- | ----------------------------------------------- |
+| PR #379 | Algorithm Design Pre-Check (Step 0.5)          | **YES**                 | Triggered for dedup logic but not fully applied |
+| PR #379 | FIX_TEMPLATES #34 (evidence merge)             | **YES**                 | Not directly relevant (different algorithm)     |
+| PR #379 | Propagation enforcement                        | **NOT DONE** (6th time) | Severity case-insensitive missed (R2→R3)        |
+| PR #379 | Patterns:check in Step 5.4                     | **YES**                 | Caught 0 issues — validation only               |
+| PR #374 | FIX_TEMPLATES: realpathSync lifecycle (#31)    | **YES**                 | Not relevant                                    |
+| PR #374 | pr-review Step 0.5: filesystem guard pre-check | **YES**                 | Not triggered (no guard functions)              |
+
+**Total avoidable rounds from unimplemented retro actions: ~0.5** (Propagation
+enforcement would have caught severity case-insensitive fix across both files)
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Avoidable Rounds | Rejections | Key Issue                      |
+| -------- | ------ | ----------- | ---------------- | ---------- | ------------------------------ |
+| #366     | 8      | ~90         | ~5               | ~20        | Symlink ping-pong              |
+| #367     | 7      | ~193        | ~4               | ~24        | SKIP_REASON validation         |
+| #368     | 6      | ~65         | ~3               | ~15        | TOCTOU fd-based write          |
+| #369     | 9      | 119         | ~5               | 41         | CC + symlink combined          |
+| #370     | 5      | 53          | ~2               | 6          | Path normalization             |
+| #371     | 2      | 45          | ~0               | 7          | CC extraction + S5852          |
+| #374     | 5      | 40          | ~2               | 5          | Path containment               |
+| #379     | 11     | ~119        | ~8               | ~61        | Evidence algorithm + protocol  |
+| **#382** | **3**  | **76**      | **~1**           | **13**     | **Severity/dedup incremental** |
+
+**Persistent cross-PR patterns:**
+
+| Pattern                         | PRs Affected | Times Recommended | Status                                     | Required Action                                               |
+| ------------------------------- | ------------ | ----------------- | ------------------------------------------ | ------------------------------------------------------------- |
+| CC lint rule                    | #366-#371    | 5x                | **RESOLVED** (pre-commit error since #371) | None — 0 CC rounds in #374, #379, #382                        |
+| Qodo suppression                | #369-#371    | 3x                | **RESOLVED** (pr-agent.toml)               | Minor gap: `scripts/debt/` not excluded from compliance       |
+| Propagation check               | #366-#382    | **6x**            | Documented but STILL missed                | **BLOCKING — 6x recommended, still causing avoidable rounds** |
+| Incremental algorithm hardening | #379, #382   | 2x                | Improved (Step 0.5)                        | Working — severity/dedup chains were minor vs #379            |
+| Compliance noise (offline CLI)  | #382         | New               | Not suppressed for `scripts/debt/`         | Add path exclusion to pr-agent.toml                           |
+
+#### Skills/Templates to Update
+
+1. **`.qodo/pr-agent.toml`:** Add `scripts/debt/` to compliance exclusion paths
+   — 13 rejected compliance items across 3 rounds were all for offline CLI
+   scripts. (~5 min — do now)
+2. **CODE_PATTERNS.md:** Add pattern: "When fixing severity/priority mapping,
+   audit ALL levels and ALL files with similar logic in one pass." (~5 min — do
+   now)
+
+#### Process Improvements
+
+1. **Complete severity/mapping audits** — R1 fixed 2 of 4 severity levels,
+   leaving medium and case-sensitivity for R2/R3. When fixing any mapping logic,
+   enumerate all possible inputs and verify all branches in one pass. Evidence:
+   R1→R2→R3 severity chain.
+
+2. **Dedup algorithm boundaries** — R1-R3 each added a different dedup boundary
+   (cross-MASTER, within-run, cross-report). The Algorithm Design Pre-Check from
+   #379 retro should have been applied more rigorously here. Evidence: R1→R2→R3
+   dedup chain.
+
+3. **Same-file regex DoS sweep** — After fixing one regex DoS in a file, grep
+   the same file for all other potentially vulnerable regexes before committing.
+   Evidence: R1→R2 regex DoS chain.
+
+#### Verdict
+
+PR #382 had a **clean, efficient review cycle** — 3 rounds with 76 raw items (61
+fixed, 13 rejected), completed in a single session. **~1 of 3 rounds was
+partially avoidable** (~33%), making this one of the lowest-churn PRs since #371
+(2 rounds, 0 avoidable).
+
+The primary churn driver was **incremental hardening** of severity mapping and
+dedup logic, a minor variant of Pattern 8 (incremental algorithm hardening) from
+PR #379. However, the chains were much shorter (3 rounds vs 7) and the items
+were MINOR/LOW severity, not CRITICAL — showing that the Algorithm Design
+Pre-Check from #379's retro is working for the major cases.
+
+The **single highest-impact change** is adding `scripts/debt/` to Qodo
+compliance exclusion paths — this would eliminate 13 rejected items (17% of raw
+total) across 3 rounds. The compliance rules (audit trails, secure logging,
+input validation) are consistently not applicable to offline CLI scripts.
+
+**Comparison to previous retros:** The trend is clearly improving: #369(9) →
+#370(5) → #371(2) → #374(5) → #379(11) → **#382(3)**. The spike to 11 in #379
+was due to a new failure mode (algorithm hardening); #382's 3 rounds show that
+the countermeasure (Algorithm Design Pre-Check) is effective. Rejection rate
+remains a concern (17% of raw items) but is driven by a specific gap (compliance
+rules for offline scripts) that has a clear fix.
 
 ---
 
@@ -1769,6 +1956,53 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #365: PR #383 R1-R4 — SonarCloud Bulk Fixes, Qodo Compliance, CI Doc Lint (2026-02-21)
+
+**Source:** SonarCloud (R1-R4) + Qodo Compliance (R2-R4) + Qodo PR Suggestions
+(R2-R4) + CI Failure (R3-R4) **PR/Branch:** PR #383 /
+claude/fix-tool-use-ids-EfyvE **Total:** 235 raw items across 4 rounds → 162
+fixed, 22 CC deferred, 1 rejected, 1 architectural
+
+**Patterns Identified:**
+
+- **Catch parameter naming whack-a-mole**: R3 added `console.debug()` to empty
+  catch blocks but kept unused `error_`/`_` parameters. R4 flagged both the
+  unused parameter AND the original empty-catch rule. Fix: use bare `catch {}`
+  when the error object isn't needed. Root cause: R3 focused on satisfying one
+  rule without checking if the fix introduced violations of other rules.
+- **Assignment expression vs increment**: `i += 1` flagged by SonarCloud S1854
+  as "useless assignment" even when used for arg-parsing skip. `i++` as
+  standalone statement is exempt from S1854. R3 "fixed" this by reordering but
+  kept `i += 1`. Fix: use `i++` for standalone increments, reserve `i += 1` for
+  when the expression value is needed.
+- **Destructured import bug**: `const sanitizeError = require(...)` assigns the
+  module object, not the function. Would cause runtime TypeError. Need
+  `const { sanitizeError } = require(...)`. This was a latent bug introduced in
+  the original PR, not caught until R4.
+- **Missing learning log entries**: Steps 3-7 of the pr-review protocol were
+  skipped across R1-R3 due to context compaction dropping the protocol midway
+  through each round. The learning capture (Step 7) is the LAST step and most
+  vulnerable to compaction.
+
+**Key Learnings:**
+
+1. When fixing catch blocks, always check TWO rules: (a) is the catch handler
+   meaningful? (b) is the catch parameter used? If not used, use bare
+   `catch {}`.
+2. For CLI arg-parsing `i` skips, use `i++` not `i += 1` — SonarCloud treats
+   them differently for S1854.
+3. The pr-review protocol's learning capture should happen IMMEDIATELY after
+   fixes, not at the end of the session. Move Step 7 earlier in the protocol to
+   survive compaction.
+4. When a file is edited, SonarCloud may flag pre-existing issues in the same
+   file that weren't in scope before — treat these as "pre-existing, fixable."
+
+**Resolution:** 4 rounds total. R1: 60+ SonarCloud fixes. R2: 15 Qodo fixes. R3:
+27 fixes (re-flags from R1/R2 fix artifacts). R4: 18 fixes (re-flags from R3
+catch/assignment pattern + CI doc lint + path traversal + import bug).
+
+---
+
 #### Review #364: PR #382 R3 — Cross-Report Dedup, Milestone Reset, Severity Case, 5 Fixes (2026-02-20)
 
 **Source:** SonarCloud (2) + Qodo Compliance (6) + Qodo PR Suggestions (3)
@@ -2333,3 +2567,103 @@ repeat — pre-existing pattern, DEBT-0455)
 **Resolution Stats:** 6/9 fixed (67%), 3/9 rejected
 
 ---
+
+## Review #366 — PR #383 R5 (SonarCloud + Qodo + CI) — 2026-02-21
+
+**Source:** SonarCloud (24), Qodo Compliance (5), Qodo Code Suggestions (12), CI
+(pattern compliance)
+
+**Key Fixes:**
+
+1. **Secret leakage in redaction** — `commit-failure-reporter.js:246` used
+   `$&_REDACTED` which appends to the secret instead of replacing. Fixed regex
+   to use capture group `$1[REDACTED]`.
+2. **Path traversal (2 files)** — `extract-context-debt.js:100` used
+   `replace(/^(\.\.)+/)` which is bypassable. `verify-resolutions.js` used
+   `startsWith(ROOT + sep)`. Both replaced with proper `path.relative()` +
+   traversal rejection.
+3. **Math.random() PRNG** — `sprint-status.js:137` replaced with
+   `crypto.randomInt()` for SonarCloud S2245.
+4. **Atomic dual-file writes** — `intake-sonar-reliability.js` now writes both
+   MASTER and deduped atomically via tmp files + rename, with symlink guard.
+5. **Over-broad S0 downgrade** — `clean-intake.js:284` now only downgrades
+   non-critical categories (documentation, process, ai-optimization,
+   engineering-productivity), not all non-security.
+6. **Sync by ID+hash** — `verify-resolutions.js:applyChanges` now syncs deduped
+   items by both id and content_hash, preventing missed updates.
+7. **Duplicate debt IDs** — `intake-sonar-reliability.js` now takes max ID from
+   both master and deduped files.
+8. **Unreachable null guard** — `sprint-complete.js:220` changed from `!allDebt`
+   (always false for array) to `allDebt.length === 0`.
+9. **Swallowed parse errors** — Added `console.warn` to 3 silent JSONL catch
+   blocks (intake-sonar-reliability, sprint-status, verify-resolutions).
+10. **Per-line JSONL safety** — `audit-s0-promotions.js:readJsonl` now uses
+    flatMap with per-line try/catch instead of map-throw.
+11. **JSON.parse guard** — `generate-grand-plan.js:readJson` now wraps
+    JSON.parse in try/catch.
+12. **Body discard guard** — `sync-sonarcloud.js:287` wraps response.text() in
+    try/catch to prevent secondary network error from hiding the original.
+
+**Patterns Identified:**
+
+1. **`$&` backreference leaks secrets** — In sanitization regexes, `$&` includes
+   the full match (including the secret). Use capture groups around the
+   non-sensitive prefix only.
+2. **`startsWith(root + sep)` is fragile** — `path.relative()` +
+   `startsWith("..")` check is more robust for path containment.
+3. **Dual-file writes need atomicity** — When two files must stay in sync, stage
+   both writes (via tmp) before committing either via rename.
+4. **readJsonl silent catch is a smell** — Even for expected malformed lines,
+   always log at least a count or warning to prevent silent data loss.
+
+**Deferred:** 22 CC violations (pre-existing, CC 16-67 across 13 files) — bulk
+refactoring items, partially tracked in existing TDMS entries.
+
+## Review #367 — PR #383 R6 (SonarCloud + Qodo + CI) — 2026-02-21
+
+**Source:** SonarCloud (25), Qodo Compliance (5), Qodo Code Suggestions (9), CI
+(pattern compliance)
+
+**Key Fixes:**
+
+1. **Symlink directory bypass** — `isWriteSafe()` in both
+   `intake-sonar-reliability.js` and `verify-resolutions.js` now checks parent
+   directories for symlinks, not just the target file.
+2. **verify-resolutions.js saveJsonl** — Added `isWriteSafe()` guard
+   (propagation miss from R5).
+3. **Double-counting bug** — `sprint-intake.js:229` was adding `manualCount` to
+   unplaced, inflating coverage metrics. Removed the addition.
+4. **readJsonlFromGit crash** — `audit-s0-promotions.js:52` used
+   `.map(JSON.parse)` which crashes on any malformed line. Replaced with
+   `.flatMap()` + per-line try/catch (propagation miss from R5).
+5. **reverify-resolved.js crash** — Line 47 had unguarded `readFileSync` +
+   `.map(JSON.parse)`. Added try/catch for file read and per-line parse safety.
+6. **Partial atomic write** — `intake-sonar-reliability.js:2512` second
+   `renameSync` now has try/catch with CRITICAL error message for operator
+   recovery if MASTER updated but deduped fails.
+7. **Dedup key normalization** — `dedupInput()` in `intake-sonar-reliability.js`
+   now normalizes title with trim+lowercase to match `buildDedupIndices()`.
+8. **Hotspot body discard** — `sync-sonarcloud.js` second fetch function
+   (`fetchSonarCloudHotspots`) now wraps body discard in try/catch (propagation
+   miss from R5).
+9. **Remove assignment of "i"** — `sprint-complete.js` and `sprint-wave.js` arg
+   parsers restructured from for-loop with `i += 1` to `indexOf`-based lookups,
+   eliminating SonarCloud S1854.
+10. **response.body.cancel()** — `sync-sonarcloud.js` now uses
+    `response.body.cancel()` to discard error bodies without buffering.
+
+**Patterns Identified:**
+
+1. **Propagation misses are the #1 R6 driver** — 3 of 10 fixes were propagation
+   misses from R5 (symlink guard, body discard guard, readJsonlFromGit). The
+   propagation protocol must be applied more systematically.
+2. **indexOf-based arg parsing avoids SonarCloud S1854** — When a for-loop
+   modifies its counter (i += 1 to skip values), SonarCloud flags it regardless
+   of style. Using `args.indexOf("--flag")` eliminates the issue entirely.
+3. **isWriteSafe must check parent dirs** — Symlink on a parent directory
+   redirects all writes under it. Always check `path.dirname(filePath)` too.
+
+**Deferred:** 23 CC violations (pre-existing, same as R5) + 743 CI pattern
+compliance warnings (pre-existing across entire codebase).
+
+**Resolution Stats:** 19/41 fixed (46%), 22/41 deferred (CC — pre-existing)

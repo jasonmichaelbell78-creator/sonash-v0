@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 5.1 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 5.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-20 (Session #174 end)
+2026-02-21 (Session #179)
 
 ## Purpose
 
@@ -42,7 +42,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 174 (since Jan 1, 2026)
+**Current Session Count**: 179 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -52,40 +52,34 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #174 Summary** (TOOL_USE ID BUG INVESTIGATION):
+**Session #179 Summary** (SPRINT SKILL + DATA QUALITY + PR REVIEW):
 
-- Investigated `tool_use ids must be unique` API 400 errors causing session loss
-- Confirmed this is a known Claude Code platform bug (GitHub #6836 meta issue,
-  150+ reports) — not caused by project code
-- Cherry-picked commit `e81752c` from `claude/resume-technical-debt-yL492` (tech
-  debt extraction Steps 0a-0c, 374 items into intake)
-- No code changes possible — root cause is in Claude Code's parallel tool call
-  message construction
+- Built `/sprint` workflow skill with 6 subcommands (dashboard, start, work,
+  resolve, complete, fix-docs, intake) — team-based parallel execution
+- Created 5 new scripts: sprint-status.js, sprint-wave.js, sprint-intake.js,
+  sprint-complete.js, sync-deduped.js
+- Fixed S0 inflation: 156→35 (demoted cognitive complexity items to S1)
+- Fixed deduped.jsonl sync: content_hash-based smart sync, 56 status drifts
+  corrected
+- Fixed audit trigger bug (wrong path in check-review-needed.js)
+- Deleted 4 orphaned scripts, cleaned 11 doc references
+- PR #383 review: processed 114 SonarCloud + 3 hotspots + Qodo + Gemini
+- Applied 60+ fixes across 18 files (security, modernization, bug fixes)
+- Key fixes: execSync→execFileSync (cmd injection), regex DoS, severity count
+  inflation bug in sprint-intake.js
+- ESLint warnings: 1700→1668 (32 fixed)
+- TDMS: 4,452 items (237 resolved), 21 S0, 688 S1
 
-**Session #173 Summary** (PR #379 RETRO ACTION ITEMS):
+**Session #177 Summary** (PRE-COMMIT SYSTEM OVERHAUL):
 
-- PR #379 retrospective: 7 rounds, 4 avoidable (~57%), new churn pattern
-  "Incremental Algorithm Hardening" identified
-- Implemented all 5 retro action items across 4 files:
-  - pr-review SKILL.md v2.6: Algorithm Design Pre-Check in Step 0.5
-  - pr-agent.toml: 2 new suppression rules (actor/outcome, impossible JSON
-    types)
-  - FIX_TEMPLATES.md v2.0: Template #34 (evidence/array merge with deep dedup)
-  - pr-retro SKILL.md v2.4: Pattern 8 (incremental algorithm hardening)
-- Built `extract-scattered-debt.js` — Step 0a of tech debt plan (extracts
-  TODO/FIXME/HACK from code into TDMS)
-- TDMS: 3,050 items (316 resolved), 31 S0, 410 S1
+- Implemented all 8 phases of pre-commit overhaul plan (12 steps)
+- Pre-commit: 389→~240 lines, target <20s (from 35-40s)
+- TDMS: 4,075 items (236 resolved), 141 S0, 552 S1
 
-**Session #172 Summary** (MCP/PLUGIN TOKEN OPTIMIZATION):
+**Session #176 Summary** (TDMS RESOLUTION PLAN Steps 0g-10):
 
-- Analyzed MCP server token overhead — identified duplicate servers and heavy
-  instructions consuming ~6,000+ tokens/turn
-- Removed duplicate playwright from `.mcp.json` (plugin already provides it)
-- Disabled serena plugin (~800 tokens/turn in server instructions)
-- Disabled 15 unused workflow plugins (SEO, content-marketing, multi-platform,
-  deployment-strategies, framework-migration, etc.) — ~42 skills removed
-- Estimated savings: ~5,000-6,000 tokens/turn
-- TDMS: 2,738 items (298 resolved), 19 S0, 410 S1
+- Completed Technical Debt Resolution Plan: all 10 steps
+- TDMS: 4,075 items (236 resolved), 109 S0, 583 S1
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -102,8 +96,10 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | Track B: Dev Dashboard MVP        | Partial  | ~10%             |
 | Track C: UI/UX & Analytics        | Planned  | 0%               |
 | **Integrated Improvement Plan**   | COMPLETE | 100% (9/9 steps) |
-| **GRAND PLAN: Debt Elimination**  | Active   | ~68% (1176/1727) |
-| **Tech Debt Resolution Plan**     | Started  | Step 0a done     |
+| **GRAND PLAN: Debt Elimination**  | Active   | ~6% (237/4082)   |
+| **Sprint Skill (`/sprint`)**      | NEW      | Implemented      |
+| **Tech Debt Resolution Plan**     | COMPLETE | Steps 0a-10 done |
+| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases     |
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
@@ -117,10 +113,11 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-1. **Continue Technical Debt Resolution Plan** — Step 0a done, proceed with
-   triage and resolution steps
-2. **Triage system test S1 findings** — 14 S1 findings need resolution planning
-3. **Address 31 open S0 critical items** from TDMS backlog
+1. **Run `/sprint start 4`** — Begin sprint-4 (lib/ + hooks/ + app/), 132 items
+2. **Run `/sprint intake`** — Place 399 unplaced items into sprints
+3. **Run `/sprint fix-docs`** — Update ROADMAP S0 table (10 shown vs 18 actual)
+4. **Begin resolving S0 critical items** — 35 S0 items (18 verified) in TDMS
+5. **Verify pre-commit overhaul** — Time a real commit to confirm <20s target
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -139,7 +136,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 4. Document using template
 5. Implement and commit with review summary
 
-**Last Processed**: 2026-02-19 (Reviews #355-356: PR #378 R1-R2)
+**Last Processed**: 2026-02-21 (PR #383 review: 60+ SonarCloud fixes)
 
 ---
 
@@ -204,6 +201,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                             | Author |
 | ------- | ---------- | ------------------------------------------------------------------- | ------ |
+| 5.2     | 2026-02-21 | Session #179 end: sprint skill + data quality fixes                 | Claude |
 | 5.1     | 2026-02-20 | Session #174 end: tool_use bug investigation + cherry-pick          | Claude |
 | 5.0     | 2026-02-20 | Session #173 end: retro actions + scattered debt extractor          | Claude |
 | 4.9     | 2026-02-19 | Session #172: MCP/plugin token optimization (~5K tokens/turn saved) | Claude |

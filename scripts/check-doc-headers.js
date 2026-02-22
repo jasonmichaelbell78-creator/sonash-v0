@@ -167,7 +167,8 @@ function getStagedFiles(filter = "A") {
 
 function main() {
   // Review #217: Implement documented SKIP_DOC_HEADER_CHECK override
-  if (process.env.SKIP_DOC_HEADER_CHECK === "1") {
+  const skipChecks = (process.env.SKIP_CHECKS || "").split(",").map((s) => s.trim());
+  if (process.env.SKIP_DOC_HEADER_CHECK === "1" || skipChecks.includes("doc-header")) {
     const skipResult = validateSkipReason(process.env.SKIP_REASON, "SKIP_DOC_HEADER_CHECK=1");
     if (!skipResult.valid) {
       log(skipResult.error, colors.red);

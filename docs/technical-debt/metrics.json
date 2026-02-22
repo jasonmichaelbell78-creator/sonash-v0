@@ -1,55 +1,63 @@
 {
-  "generated": "2026-02-20T21:48:41.134Z",
-  "generated_date": "2026-02-20",
+  "generated": "2026-02-21T20:14:41.599Z",
+  "generated_date": "2026-02-21",
   "summary": {
-    "total": 3422,
-    "open": 2828,
-    "resolved": 322,
-    "false_positives": 272,
-    "resolution_rate_pct": 9
+    "total": 4452,
+    "open": 3966,
+    "resolved": 237,
+    "false_positives": 249,
+    "resolution_rate_pct": 5
   },
   "by_status": {
-    "NEW": 520,
-    "VERIFIED": 2308,
+    "NEW": 846,
+    "VERIFIED": 3120,
     "IN_PROGRESS": 0,
-    "RESOLVED": 322,
-    "FALSE_POSITIVE": 272
+    "RESOLVED": 237,
+    "FALSE_POSITIVE": 249
   },
   "by_severity": {
-    "S0": 52,
-    "S1": 471,
-    "S2": 1638,
-    "S3": 1261
+    "S0": 35,
+    "S1": 725,
+    "S2": 1772,
+    "S3": 1920
   },
   "by_category": {
-    "code-quality": 2028,
-    "security": 163,
-    "performance": 66,
-    "documentation": 474,
-    "refactoring": 168,
-    "process": 351,
-    "engineering-productivity": 10,
-    "enhancements": 44,
-    "ai-optimization": 118
+    "code-quality": 2669,
+    "security": 406,
+    "performance": 93,
+    "documentation": 483,
+    "refactoring": 312,
+    "process": 347,
+    "engineering-productivity": 11,
+    "enhancements": 12,
+    "ai-optimization": 119
   },
   "by_source": {
-    "unknown": 3422
+    "unknown": 379,
+    "sonarcloud": 1543,
+    "review": 306,
+    "audit": 1382,
+    "manual": 9,
+    "intake": 30,
+    "pr-review": 7,
+    "pr-review-366-r2": 3,
+    "alerts-self-audit-2026-02-16": 2,
+    "code-comment": 5,
+    "pr-deferred": 1,
+    "dec-2025-report": 332,
+    "roadmap": 40,
+    "sonarcloud-paste": 287,
+    "context": 126
   },
   "alerts": {
-    "s0_count": 31,
-    "s1_count": 429,
+    "s0_count": 21,
+    "s1_count": 688,
     "s0_items": [
       {
-        "id": "DEBT-0013",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "functions/src/admin.ts",
-        "line": 576
-      },
-      {
-        "id": "DEBT-0038",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "components/widgets/compact-meeting-countdown.tsx",
-        "line": 69
+        "id": "DEBT-0852",
+        "title": "useJournal creates redundant auth listener + potential memor",
+        "file": "hooks/use-journal.ts",
+        "line": 0
       },
       {
         "id": "DEBT-0853",
@@ -58,28 +66,22 @@
         "line": 0
       },
       {
-        "id": "DEBT-0956",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "components/admin/errors-tab.tsx",
-        "line": 327
+        "id": "DEBT-0855",
+        "title": "App Check disabled on all Cloud Functions and client init di",
+        "file": "functions/src/index.ts",
+        "line": 0
       },
       {
-        "id": "DEBT-0963",
-        "title": "Refactor this code to not nest functions more than 4 levels ",
-        "file": "components/admin/logs-tab.tsx",
-        "line": 342
+        "id": "DEBT-0857",
+        "title": "useJournal creates redundant auth listener + potential memor",
+        "file": "hooks/use-journal.ts",
+        "line": 0
       },
       {
-        "id": "DEBT-1227",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "functions/src/jobs.ts",
-        "line": 1059
-      },
-      {
-        "id": "DEBT-1271",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "components/dev/lighthouse-tab.tsx",
-        "line": 81
+        "id": "DEBT-0864",
+        "title": "Re-enable App Check on Cloud Functions",
+        "file": "lib/firebase.ts",
+        "line": 45
       },
       {
         "id": "DEBT-1293",
@@ -92,6 +94,18 @@
         "title": "CI gap: pull_request_target security vulnerability allows un",
         "file": ".github/workflows/deploy-firebase.yml",
         "line": 7
+      },
+      {
+        "id": "DEBT-2120",
+        "title": "Error handling: continueOnError used appropriately in settin",
+        "file": ".claude/settings.json",
+        "line": 24
+      },
+      {
+        "id": "DEBT-2121",
+        "title": "Security: Potential command injection in resolve-item.js exe",
+        "file": "scripts/debt/resolve-item.js",
+        "line": 21
       },
       {
         "id": "DEBT-2381",
@@ -164,9 +178,9 @@
     ]
   },
   "health": {
-    "avg_age_days": 12,
-    "oldest_age_days": 21,
+    "avg_age_days": 8,
+    "oldest_age_days": 22,
     "oldest_item_id": "DEBT-0002",
-    "verification_queue_size": 520
+    "verification_queue_size": 846
   }
 }

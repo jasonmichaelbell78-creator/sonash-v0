@@ -127,6 +127,8 @@ function isSymlink(filePath) {
   }
 }
 
+const MAX_WARNED_ENTRIES = 200;
+
 function saveWarnedFiles(warned) {
   const dir = dirname(WARNED_FILES_PATH);
   const tmpPath = WARNED_FILES_PATH + `.tmp.${process.pid}`;
@@ -145,6 +147,18 @@ function saveWarnedFiles(warned) {
     if (isSymlink(WARNED_FILES_PATH) || isSymlink(tmpPath)) {
       console.warn("Warning: state file or tmp is a symlink — refusing to write");
       return;
+    }
+
+    // Cap entries at MAX_WARNED_ENTRIES, dropping oldest by timestamp
+    const keys = Object.keys(warned);
+    if (keys.length > MAX_WARNED_ENTRIES) {
+      const sorted = keys.sort((a, b) => {
+        const ta = new Date(warned[a]).getTime() || 0;
+        const tb = new Date(warned[b]).getTime() || 0;
+        return ta - tb;
+      });
+      const toDrop = sorted.slice(0, keys.length - MAX_WARNED_ENTRIES);
+      for (const k of toDrop) delete warned[k];
     }
 
     writeFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
@@ -529,19 +543,8 @@ const ANTI_PATTERNS = [
     // - phase-complete-check.js: L290 has .replace(/\\/g, '/').split('/').includes('..')
     pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
-  {
-    id: "readfilesync-without-try",
-    // Avoid variable-length lookbehind (engine compatibility); match both fs.readFileSync and readFileSync
-    // Note: This pattern has HIGH false positive rate - regex can't detect try/catch context
-    // Files with verified proper error handling are excluded below
-    pattern: /\b(?:fs\.)?readFileSync\s*\(/g,
-    message: "readFileSync without try/catch - existsSync does not guarantee read success",
-    fix: "Wrap in try/catch: race conditions, permissions, encoding errors",
-    review: "#36, #37",
-    fileTypes: [".js", ".ts"],
-    // Verified exclusions sourced from scripts/config/verified-patterns.json
-    pathExcludeList: verifiedPatterns["readfilesync-without-try"] || [],
-  },
+  // readfilesync-without-try: REMOVED (92 exclusions = pattern unfit for purpose)
+  // ESLint sonash/no-unguarded-file-read handles this with AST-level try/catch awareness
   {
     id: "auto-mode-slice-truncation",
     pattern: /(?:isAutoMode|isAuto|autoMode)\s*\?[\s\S]{0,50}\.slice\s*\(\s*0\s*,/g,
@@ -749,19 +752,8 @@ const ANTI_PATTERNS = [
     pathExcludeList: verifiedPatterns["git-without-separator"] || [],
   },
 
-  // JSON.parse without try/catch (5x in reviews)
-  {
-    id: "json-parse-without-try",
-    pattern: /JSON\.parse\s*\(/g,
-    message: "JSON.parse without try/catch - crashes on malformed input",
-    fix: "Wrap in try/catch: try { JSON.parse(str); } catch { /* handle */ }",
-    review: "Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    // Only check scripts processing external/file data (too many false positives elsewhere)
-    pathFilter: /(?:^|\/)(?:scripts|\.claude\/hooks)\//,
-    // Exclude files with verified error handling
-    pathExcludeList: verifiedPatterns["json-parse-without-try"] || [],
-  },
+  // json-parse-without-try: REMOVED (24 exclusions = regex can't detect try/catch context)
+  // ESLint sonash/no-unguarded-file-read and SonarCloud handle this with AST awareness
 
   // process.exit without cleanup (5x in reviews)
   {
@@ -1660,8 +1652,11 @@ function main() {
     allViolations.push(...violations);
   }
 
-  // Apply graduation: warn once, block on repeat
-  const { warnings, blocks } = applyGraduation(allViolations);
+  // In --staged mode (pre-commit), all violations are warnings only (never block).
+  // Graduation only applies in --all mode (manual runs).
+  const { warnings, blocks } = STAGED
+    ? { warnings: allViolations, blocks: [] }
+    : applyGraduation(allViolations);
 
   if (JSON_OUTPUT) {
     console.log(

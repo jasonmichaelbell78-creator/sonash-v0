@@ -8,7 +8,7 @@ Plugins are managed through `~/.claude/settings.json` under `enabledPlugins`.
 Run the sync script to import the recommended configuration:
 
 ```bash
-node scripts/sync-claude-settings.js --import
+node scripts/sync-claude-settings.js (REMOVED) --import
 ```
 
 Or manually merge `.claude/settings.global-template.json` into

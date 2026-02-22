@@ -13,6 +13,19 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
+// Lazy-load shared helpers (best-effort — never block on import failure)
+let isSafeToWrite, rotateJsonl;
+try {
+  isSafeToWrite = require("./lib/symlink-guard").isSafeToWrite;
+} catch {
+  isSafeToWrite = () => true;
+}
+try {
+  rotateJsonl = require("./lib/rotate-state").rotateJsonl;
+} catch {
+  rotateJsonl = null;
+}
+
 // Configuration
 const STATE_FILE = ".claude/hooks/.session-agents.json";
 
@@ -157,6 +170,38 @@ state.agentsInvoked.push(invocation);
 // Cap array size to prevent unbounded growth
 state.agentsInvoked = state.agentsInvoked.slice(-200);
 writeState(state);
+
+// Persistent JSONL append for long-term observability (best-effort, never blocks)
+try {
+  const invocationsPath = path.resolve(projectDir, ".claude", "state", "agent-invocations.jsonl");
+  const invDir = path.dirname(invocationsPath);
+  fs.mkdirSync(invDir, { recursive: true });
+
+  const persistEntry = {
+    agent: subagentType,
+    description: sanitizeDescription(description),
+    sessionId: state.sessionId,
+    timestamp: invocation.timestamp,
+  };
+
+  if (isSafeToWrite(invocationsPath)) {
+    fs.appendFileSync(invocationsPath, JSON.stringify(persistEntry) + "\n");
+
+    // Rotate when file gets large (keep 60 of last 100 entries, only when > 64KB)
+    if (rotateJsonl) {
+      try {
+        const { size } = fs.lstatSync(invocationsPath);
+        if (size > 64 * 1024) {
+          rotateJsonl(invocationsPath, 100, 60);
+        }
+      } catch {
+        // Non-fatal
+      }
+    }
+  }
+} catch {
+  // Best-effort: persistent log failure should not block hook execution
+}
 
 // Log for visibility
 console.error(`✅ Agent invoked: ${subagentType}`);

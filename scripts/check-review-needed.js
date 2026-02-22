@@ -52,7 +52,7 @@ const require = createRequire(import.meta.url);
 const { loadConfigWithRegex } = require("./config/load-config");
 
 // File paths
-const TRACKER_PATH = join(ROOT, "docs", "AUDIT_TRACKER.md");
+const TRACKER_PATH = join(ROOT, "docs", "audits", "AUDIT_TRACKER.md");
 const _COORDINATOR_PATH = join(ROOT, "docs", "multi-ai-audit", "COORDINATOR.md"); // Reserved for future use
 
 // Category thresholds, multi-AI thresholds, and section headers

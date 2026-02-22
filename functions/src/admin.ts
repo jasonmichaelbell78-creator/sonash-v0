@@ -2766,7 +2766,7 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
 
     // Get all users and compute their hashes
     // ISSUE [12]: This is O(n) but necessary since we store hashes not UIDs in logs
-    // TODO: Create a userIdHash → uid lookup collection for better performance
+    // DEBT-3524: Create a userIdHash → uid lookup collection for better performance
     // SAFEGUARD: Limited to 1000 users to prevent excessive memory usage and timeouts
     const usersSnapshot = await db.collection("users").limit(1000).get();
 
@@ -3933,7 +3933,7 @@ export const adminGetUserAnalytics = onCall(async (request) => {
     // 3. Calculate cohort retention (simplified)
     // ========================================
     // ISSUE [14]: This section makes multiple queries per cohort (up to 4 * 8 = 32 queries)
-    // OPTIMIZATION TODO: Consider pre-computing cohort retention in a daily job
+    // DEBT-3525: Consider pre-computing cohort retention in a daily job
     // and storing results in analytics_cohorts collection to avoid real-time computation
     const cohortRetention: CohortRetention[] = [];
 

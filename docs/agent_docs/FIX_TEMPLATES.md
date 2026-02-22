@@ -1775,10 +1775,78 @@ function mergeEvidence(existing, incoming) {
 
 ---
 
+---
+
+### Template 35: Complete Mapping/Enumeration Audit
+
+**Trigger:** Fixing any mapping logic (severity, priority, status, category) or
+implementing dedup/enumeration across multiple boundaries.
+
+**Problem:** Partial fixes to mapping or dedup logic cause multi-round
+ping-pong. PR #382 had 3-round chains for both severity mapping (fixed 2 of 4
+levels in R1) and dedup boundaries (discovered 3 boundaries across 3 rounds).
+
+**Pre-Fix Checklist:**
+
+1. **Mapping completeness** — List ALL possible input values and their expected
+   outputs. Fix all branches in one pass, not just the reported one:
+
+```
+// BAD: Fix only the reported level
+if (/critical/.test(text)) return "S0"; // fixed
+if (/high/.test(text)) return "S1";     // fixed
+if (/medium|low/.test(text)) return "S3"; // ← still wrong!
+
+// GOOD: Audit all levels at once
+if (/critical/.test(text)) return "S0";
+if (/high/.test(text)) return "S1";
+if (/\bmedium\b/.test(text)) return "S2"; // separate from low
+if (/\blow\b/.test(text)) return "S3";
+```
+
+2. **Case sensitivity** — Does input come from user-generated content? If so,
+   use case-insensitive matching (`[sS][0-3]` + `.toUpperCase()`).
+
+3. **Word boundaries** — Add `\b` to prevent false matches (e.g., "medium" in
+   "medium-sized" or "high" in "highlight").
+
+4. **Cross-file propagation** — Grep for ALL files with similar mapping logic:
+
+   ```bash
+   grep -rn "detectSeverity\|mapSeverity\|severity.*match" scripts/ --include="*.js"
+   ```
+
+   Fix ALL instances in one pass.
+
+5. **Dedup boundary enumeration** — When implementing dedup, list ALL boundaries
+   before coding:
+   - Cross-source (existing data in target file)
+   - Within-run (same item appears twice in input)
+   - Cross-batch (same item in different input batches/files) Add a hash set for
+     EACH boundary.
+
+6. **State tracking variables** — Any variable tracking context (section,
+   milestone, category) must be reset when context changes:
+
+   ```javascript
+   // BAD: Only set, never reset
+   if (isMatch) currentContext = heading;
+
+   // GOOD: Reset on context change
+   if (isMatch) {
+     currentContext = heading;
+   } else {
+     currentContext = "";
+   }
+   ```
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                                    |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.1     | 2026-02-20 | Add Template 35 (mapping/enumeration audit). Source: PR #382 retro.                                       |
 | 2.0     | 2026-02-19 | Add Template 34 (evidence/array merge with deep dedup). Source: PR #379 retro.                            |
 | 1.9     | 2026-02-18 | Add Templates 31-33 (realpathSync lifecycle, safety flag hoist, path containment). Source: PR #374 retro. |
 | 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                        |

@@ -58,45 +58,8 @@ function ensureLogDir() {
   }
 }
 
-// Patterns that look like secrets - redact these from logs
-// Refined to reduce false positives (e.g., SHA hashes, file paths)
-const SECRET_PATTERNS = [
-  // Likely secret tokens: 24+ chars, must contain both letters and digits (reduces SHA/word false positives)
-  /\b(?=[A-Za-z0-9_-]{24,}\b)(?=[A-Za-z0-9_-]*[A-Za-z])(?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]+\b/g,
-  // Bearer tokens
-  /bearer\s+[A-Z0-9._-]+/gi,
-  // Basic auth
-  /basic\s+[A-Z0-9+/=]+/gi,
-  // Key=value patterns with sensitive names
-  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S+/gi,
-];
-
-// Sanitize and truncate input to prevent log injection and secret leakage
-function sanitizeInput(value, maxLength = 500) {
-  if (!value) return value;
-
-  // Remove control characters except newlines (\n=10), tabs (\t=9), and carriage return (\r=13)
-  // Using character code filtering instead of regex to avoid no-control-regex lint error
-  let sanitized = "";
-  for (let i = 0; i < value.length && i < maxLength * 2; i++) {
-    const code = value.charCodeAt(i);
-    // Allow printable ASCII (32-126), tab (9), newline (10), carriage return (13)
-    if ((code >= 32 && code <= 126) || code === 9 || code === 10 || code === 13) {
-      sanitized += value[i];
-    }
-  }
-
-  // Redact patterns that look like secrets
-  for (const pattern of SECRET_PATTERNS) {
-    sanitized = sanitized.replace(pattern, "[REDACTED]");
-  }
-
-  // Truncate to prevent log bloat
-  if (sanitized.length > maxLength) {
-    return sanitized.slice(0, maxLength) + "...[truncated]";
-  }
-  return sanitized;
-}
+// Shared sanitization (extracted to reusable module)
+const { sanitizeInput } = require("../.claude/hooks/lib/sanitize-input");
 
 // Parse command line arguments
 function parseArgs() {
@@ -135,6 +98,37 @@ function parseArgs() {
   return args;
 }
 
+// Rotate log file if it exceeds MAX_LOG_SIZE (size-based rotation)
+function rotateSizeBasedIfNeeded() {
+  if (!fs.existsSync(OVERRIDE_LOG)) return;
+  const stats = fs.statSync(OVERRIDE_LOG);
+  if (stats.size <= MAX_LOG_SIZE) return;
+
+  const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
+  if (!isSafeToWrite(backupFile)) return;
+
+  try {
+    fs.renameSync(OVERRIDE_LOG, backupFile);
+  } catch {
+    fs.copyFileSync(OVERRIDE_LOG, backupFile);
+    fs.unlinkSync(OVERRIDE_LOG);
+  }
+  console.log(`Override log rotated to ${path.basename(backupFile)}`);
+}
+
+// Rotate log file by entry count (keep 60 of last 100, only when > 64KB)
+function rotateEntryBasedIfNeeded() {
+  if (!rotateJsonl) return;
+  try {
+    const { size } = fs.lstatSync(OVERRIDE_LOG);
+    if (size > 64 * 1024) {
+      rotateJsonl(OVERRIDE_LOG, 100, 60);
+    }
+  } catch {
+    // Non-fatal: rotation failure should not block override logging
+  }
+}
+
 // Log an override
 function logOverride(check, reason) {
   try {
@@ -155,30 +149,12 @@ function logOverride(check, reason) {
   };
 
   try {
-    // Check log size and rotate if needed
-    if (fs.existsSync(OVERRIDE_LOG)) {
-      const stats = fs.statSync(OVERRIDE_LOG);
-      if (stats.size > MAX_LOG_SIZE) {
-        const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
-        fs.renameSync(OVERRIDE_LOG, backupFile);
-        console.log(`Override log rotated to ${path.basename(backupFile)}`);
-      }
-    }
+    rotateSizeBasedIfNeeded();
 
     if (!isSafeToWrite(OVERRIDE_LOG)) return null;
     fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
 
-    // Entry-count-based rotation (keep 60 of last 100, only when file exceeds 64KB)
-    try {
-      if (rotateJsonl) {
-        const { size } = fs.lstatSync(OVERRIDE_LOG);
-        if (size > 64 * 1024) {
-          rotateJsonl(OVERRIDE_LOG, 100, 60);
-        }
-      }
-    } catch {
-      // Non-fatal: rotation failure should not block override logging
-    }
+    rotateEntryBasedIfNeeded();
 
     return entry;
   } catch (err) {
@@ -274,8 +250,15 @@ function clearLog() {
   ensureLogDir();
   if (fs.existsSync(OVERRIDE_LOG)) {
     const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-archived-${Date.now()}.jsonl`);
-    fs.renameSync(OVERRIDE_LOG, backupFile);
-    console.log(`Override log archived to ${path.basename(backupFile)}`);
+    if (isSafeToWrite(backupFile)) {
+      try {
+        fs.renameSync(OVERRIDE_LOG, backupFile);
+      } catch {
+        fs.copyFileSync(OVERRIDE_LOG, backupFile);
+        fs.unlinkSync(OVERRIDE_LOG);
+      }
+      console.log(`Override log archived to ${path.basename(backupFile)}`);
+    }
   }
   console.log("Override log cleared.");
 }
