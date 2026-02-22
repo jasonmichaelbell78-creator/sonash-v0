@@ -250,6 +250,35 @@ async function confirm(message) {
   });
 }
 
+// Build authorization headers for SonarCloud API.
+// Token is sourced from SONAR_TOKEN env var at runtime, never hardcoded.
+function buildAuthHeaders(token) {
+  return { Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}` }; // NOSONAR — token from env var, not hardcoded
+}
+
+// Fetch a single page of issues from SonarCloud API
+async function fetchIssuePage(token, url) {
+  const response = await fetch(url, {
+    headers: buildAuthHeaders(token),
+  });
+
+  if (!response.ok) {
+    // Discard raw response body entirely — it may contain sensitive API details
+    try {
+      if (response.body && typeof response.body.cancel === "function") {
+        await response.body.cancel();
+      } else {
+        await response.text();
+      }
+    } catch {
+      /* ignore body discard failure */
+    }
+    throw new Error(`SonarCloud API error: HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
 // Fetch issues from SonarCloud API (with pagination)
 async function fetchSonarCloudIssues(options) {
   const { token, org, project, severities, types, statuses } = options;
@@ -275,28 +304,7 @@ async function fetchSonarCloudIssues(options) {
     if (statuses) params.append("statuses", statuses);
 
     const url = `${SONARCLOUD_API}/issues/search?${params}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
-      },
-    });
-
-    if (!response.ok) {
-      // Discard raw response body entirely — it may contain sensitive API details
-      try {
-        if (response.body && typeof response.body.cancel === "function") {
-          await response.body.cancel();
-        } else {
-          await response.text();
-        }
-      } catch {
-        /* ignore body discard failure */
-      }
-      throw new Error(`SonarCloud API error: HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchIssuePage(token, url);
     total = data.total;
 
     allIssues.push(...(data.issues || []));
@@ -327,6 +335,29 @@ const HOTSPOT_SEVERITY_MAP = {
   LOW: "S2",
 };
 
+// Fetch a single page of hotspots from SonarCloud API
+async function fetchHotspotPage(token, url) {
+  const response = await fetch(url, {
+    headers: buildAuthHeaders(token),
+  });
+
+  if (!response.ok) {
+    // Discard raw response body entirely — it may contain sensitive API details
+    try {
+      if (response.body && typeof response.body.cancel === "function") {
+        await response.body.cancel();
+      } else {
+        await response.text();
+      }
+    } catch {
+      /* ignore body discard failure */
+    }
+    throw new Error(`SonarCloud Hotspots API error: HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
 // Fetch security hotspots from SonarCloud (separate API endpoint)
 async function fetchSonarCloudHotspots(options) {
   const { token, org, project } = options;
@@ -348,28 +379,7 @@ async function fetchSonarCloudHotspots(options) {
     });
 
     const url = `${SONARCLOUD_API}/hotspots/search?${params}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
-      },
-    });
-
-    if (!response.ok) {
-      // Discard raw response body entirely — it may contain sensitive API details
-      try {
-        if (response.body && typeof response.body.cancel === "function") {
-          await response.body.cancel();
-        } else {
-          await response.text();
-        }
-      } catch {
-        /* ignore body discard failure */
-      }
-      throw new Error(`SonarCloud Hotspots API error: HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchHotspotPage(token, url);
     const paging = data.paging || {};
     const total = paging.total || 0;
     totalPages = Math.ceil(total / pageSize);

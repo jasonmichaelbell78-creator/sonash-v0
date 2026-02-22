@@ -183,12 +183,31 @@ function logFailure(content, exitCode) {
       (l) => l.trim().length > 5 && !/^[-=]{3,}$/.test(l.trim()) && /fail|error|❌/i.test(l)
     );
 
-    // Sanitize errorExtract: strip raw file paths and commands to avoid leaking sensitive data
+    // Sanitize errorExtract before persisting to commit-failures.jsonl:
+    // 1. Strip tokens/keys matching known secret prefixes (ghp_, ghs_, sk-, AKIA, Bearer, base64 auth)
+    // 2. Strip absolute file paths (keep only basename-like tokens)
+    // 3. Strip backtick-quoted commands
+    // Uses string-based parsing instead of complex regex to avoid ReDoS (SonarCloud S5852)
     const rawExtract = sanitizeInput(errorLine || "", 200);
     const safeExtract = rawExtract
-      .replaceAll(/[A-Za-z]:[/\\][^\s"']+/g, "<path>")
-      .replaceAll(/\/[^\s"']*\/[^\s"']*/g, "<path>")
-      .replaceAll(/`[^`]*`/g, "<cmd>");
+      .split(/\s+/)
+      .map((word) => {
+        // Strip secret tokens/keys
+        if (/^ghp_/.test(word) || /^ghs_/.test(word) || /^sk-/.test(word)) return "[REDACTED]";
+        if (/^AKIA/.test(word)) return "[REDACTED]";
+        if (/^Bearer$/i.test(word)) return "[REDACTED]";
+        // Strip base64-encoded auth strings (40+ chars of base64 alphabet)
+        if (/^[A-Za-z0-9+/=]{40,}$/.test(word)) return "[REDACTED]";
+        // Strip Windows absolute paths (keep only last segment)
+        if (/^[A-Za-z]:[/\\]/.test(word)) return path.basename(word.replace(/["'`]/g, ""));
+        // Strip Unix absolute paths (keep only last segment)
+        if (word.startsWith("/") && word.includes("/", 1))
+          return path.basename(word.replace(/["'`]/g, ""));
+        // Strip backtick-quoted commands
+        if (word.startsWith("`") && word.endsWith("`")) return "<cmd>";
+        return word;
+      })
+      .join(" ");
 
     const entry = {
       timestamp: new Date().toISOString(),
@@ -242,10 +261,36 @@ function main() {
   logFailure(content, args.exitCode);
 
   // Sanitize hook output: strip potential secrets/tokens before display
+  // Line-by-line string parsing avoids ReDoS risk from complex regex (SonarCloud S5852)
   const sanitized = content
-    .replaceAll(/((?:token|key|secret|password|credential)[=:]\s*)\S+/gi, "$1[REDACTED]")
-    .replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***")
-    .replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, "sk-***REDACTED***");
+    .split("\n")
+    .map((line) => {
+      let result = line;
+      // Redact values after known sensitive keys (token=..., secret:..., etc.)
+      for (const keyword of ["token", "key", "secret", "password", "credential"]) {
+        for (const sep of ["=", ":"]) {
+          const idx = result.toLowerCase().indexOf(keyword + sep);
+          if (idx === -1) continue;
+          const afterSep = idx + keyword.length + sep.length;
+          // Skip optional whitespace after separator
+          let valueStart = afterSep;
+          while (valueStart < result.length && result[valueStart] === " ") valueStart++;
+          // Find end of value (next whitespace)
+          let valueEnd = valueStart;
+          while (valueEnd < result.length && result[valueEnd] !== " ") valueEnd++;
+          if (valueEnd > valueStart) {
+            result = result.slice(0, valueStart) + "[REDACTED]" + result.slice(valueEnd);
+          }
+        }
+      }
+      // Redact GitHub PATs, app tokens, and OpenAI-style keys
+      result = result.replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***");
+      result = result.replaceAll(/ghs_[A-Za-z0-9_]{36,}/g, "ghs_***REDACTED***");
+      result = result.replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, "sk-***REDACTED***");
+      result = result.replaceAll(/AKIA[A-Z0-9]{12,}/g, "AKIA***REDACTED***");
+      return result;
+    })
+    .join("\n");
   console.log("Pre-commit hook failed. Output from .git/hook-output.log:");
   console.log("---");
   console.log(sanitized);

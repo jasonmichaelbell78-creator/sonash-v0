@@ -301,6 +301,56 @@ function patternFoundNearLine(relPath, line, keywords) {
 
 // ── Step 3: Verify NEW items ───────────────────────────────────────────
 
+/**
+ * Classify a single NEW item: returns { category, detail } where
+ * category is "no_file_ref" | "needs_triage" | "promoted".
+ */
+function classifyNewItem(item, verbose) {
+  const fileRef = item.file || "";
+  const lineNum = Number.isFinite(Number(item.line)) ? Math.trunc(Number(item.line)) : 0;
+
+  if (fileRef.trim() === "") {
+    return { category: "no_file_ref", detail: item.id };
+  }
+
+  const exists = fileExists(fileRef);
+  if (exists === null) {
+    return { category: "no_file_ref", detail: item.id };
+  }
+
+  if (!exists) {
+    if (verbose) console.log(`  [NEEDS_TRIAGE] ${item.id}: ${fileRef} (file missing)`);
+    return {
+      category: "needs_triage",
+      detail: { id: item.id, file: fileRef, line: lineNum, reason: "File does not exist" },
+    };
+  }
+
+  // File exists — check line count if line is a valid positive integer
+  if (lineNum > 0) {
+    const lineCount = getLineCount(fileRef);
+    if (lineCount < lineNum) {
+      if (verbose) {
+        console.log(
+          `  [NEEDS_TRIAGE] ${item.id}: ${fileRef}:${lineNum} (file has only ${lineCount} lines)`
+        );
+      }
+      return {
+        category: "needs_triage",
+        detail: {
+          id: item.id,
+          file: fileRef,
+          line: lineNum,
+          reason: `File has ${lineCount} lines but item references line ${lineNum}`,
+        },
+      };
+    }
+  }
+
+  if (verbose) console.log(`  [VERIFIED] ${item.id}: ${fileRef}`);
+  return { category: "promoted", detail: item.id };
+}
+
 function verifyNewItems(items, verbose) {
   const results = {
     promoted_to_verified: [],
@@ -312,54 +362,93 @@ function verifyNewItems(items, verbose) {
   for (const item of items) {
     if (item.status !== "NEW") continue;
 
-    const fileRef = item.file || "";
-    const lineNum = Number.isFinite(Number(item.line)) ? Math.trunc(Number(item.line)) : 0;
+    const { category, detail } = classifyNewItem(item, verbose);
+    if (category === "no_file_ref") results.no_file_ref.push(detail);
+    else if (category === "needs_triage") results.needs_triage.push(detail);
+    else results.promoted_to_verified.push(detail);
+  }
 
-    if (fileRef.trim() === "") {
-      results.no_file_ref.push(item.id);
-      continue;
+  return results;
+}
+
+// ── Shared audit helper for RESOLVED / FALSE_POSITIVE items ────────────
+
+/**
+ * Classify a single item by checking file existence, keyword proximity.
+ * @param {object} item - The debt item to audit
+ * @param {boolean} verbose - Whether to log details
+ * @param {object} labels - Result bucket names:
+ *   { confirmed, suspect, unknown, confirmedTag, suspectTag }
+ * @returns {{ category: string, detail: object }}
+ */
+function classifyAuditItem(item, verbose, labels) {
+  const fileRef = item.file || "";
+  const lineNum = Number.isFinite(Number(item.line)) ? Math.trunc(Number(item.line)) : 0;
+
+  if (fileRef.trim() === "") {
+    if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no file reference`);
+    return { category: "unknown", detail: { id: item.id, reason: "No file reference" } };
+  }
+
+  const exists = fileExists(fileRef);
+  if (!exists) {
+    if (verbose) console.log(`  [${labels.confirmedTag}] ${item.id}: ${fileRef} (deleted)`);
+    return { category: "confirmed", detail: { id: item.id, reason: "File deleted" } };
+  }
+
+  const keywords = extractKeywords(item.title);
+  if (!keywords.length) {
+    if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no keywords from title`);
+    return {
+      category: "unknown",
+      detail: { id: item.id, reason: "No keywords extractable from title" },
+    };
+  }
+
+  const line = lineNum || 1;
+  if (patternFoundNearLine(fileRef, line, keywords)) {
+    if (verbose) {
+      console.log(
+        `  [${labels.suspectTag}] ${item.id}: ${fileRef}:${lineNum} (keywords: ${keywords.join(", ")})`
+      );
     }
-
-    const exists = fileExists(fileRef);
-    if (exists === null) {
-      results.no_file_ref.push(item.id);
-      continue;
-    }
-
-    if (exists) {
-      // Check line count if line is a valid positive integer
-      if (lineNum > 0) {
-        const lineCount = getLineCount(fileRef);
-        if (lineCount < lineNum) {
-          if (verbose) {
-            console.log(
-              `  [NEEDS_TRIAGE] ${item.id}: ${fileRef}:${lineNum} (file has only ${lineCount} lines)`
-            );
-          }
-          results.needs_triage.push({
-            id: item.id,
-            file: fileRef,
-            line: lineNum,
-            reason: `File has ${lineCount} lines but item references line ${lineNum}`,
-          });
-          continue;
-        }
-      }
-      results.promoted_to_verified.push(item.id);
-      if (verbose) {
-        console.log(`  [VERIFIED] ${item.id}: ${fileRef}`);
-      }
-    } else {
-      results.needs_triage.push({
+    return {
+      category: "suspect",
+      detail: {
         id: item.id,
         file: fileRef,
         line: lineNum,
-        reason: "File does not exist",
-      });
-      if (verbose) {
-        console.log(`  [NEEDS_TRIAGE] ${item.id}: ${fileRef} (file missing)`);
-      }
-    }
+        keywords,
+        reason: "Pattern still found near referenced line",
+      },
+    };
+  }
+
+  if (verbose) console.log(`  [${labels.confirmedTag}] ${item.id}: ${fileRef} (pattern cleared)`);
+  return { category: "confirmed", detail: { id: item.id, reason: "Pattern not found" } };
+}
+
+/**
+ * Audit items of a given status using a shared classification helper.
+ * @param {Array} items - All debt items
+ * @param {boolean} verbose - Whether to log details
+ * @param {string} status - Status to filter on ("RESOLVED" or "FALSE_POSITIVE")
+ * @param {object} labels - Bucket names and log tags
+ * @returns {object} results with confirmed/suspect/unknown arrays
+ */
+function auditItemsByPattern(items, verbose, status, labels) {
+  const results = {
+    [labels.confirmed]: [],
+    [labels.suspect]: [],
+    [labels.unknown]: [],
+  };
+
+  for (const item of items) {
+    if (item.status !== status) continue;
+    const { category, detail } = classifyAuditItem(item, verbose, labels);
+    if (category === "confirmed") results[labels.confirmed].push(detail);
+    else if (category === "suspect") results[labels.suspect].push(detail);
+    else results[labels.unknown].push(detail);
   }
 
   return results;
@@ -368,117 +457,25 @@ function verifyNewItems(items, verbose) {
 // ── Step 4: Audit RESOLVED items ───────────────────────────────────────
 
 function auditResolvedItems(items, verbose) {
-  const results = {
-    confirmed_resolved: [],
-    possibly_unresolved: [],
-    unable_to_verify: [],
-  };
-
-  for (const item of items) {
-    if (item.status !== "RESOLVED") continue;
-
-    const fileRef = item.file || "";
-    const lineNum = Number.isFinite(Number(item.line)) ? Math.trunc(Number(item.line)) : 0;
-
-    if (fileRef.trim() === "") {
-      results.unable_to_verify.push({ id: item.id, reason: "No file reference" });
-      if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no file reference`);
-      continue;
-    }
-
-    const exists = fileExists(fileRef);
-    if (!exists) {
-      results.confirmed_resolved.push({ id: item.id, reason: "File deleted" });
-      if (verbose) console.log(`  [CONFIRMED_RESOLVED] ${item.id}: ${fileRef} (deleted)`);
-      continue;
-    }
-
-    const keywords = extractKeywords(item.title);
-    if (!keywords.length) {
-      results.unable_to_verify.push({ id: item.id, reason: "No keywords extractable from title" });
-      if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no keywords from title`);
-      continue;
-    }
-
-    const line = lineNum || 1;
-    if (patternFoundNearLine(fileRef, line, keywords)) {
-      results.possibly_unresolved.push({
-        id: item.id,
-        file: fileRef,
-        line: lineNum,
-        keywords,
-        reason: "Pattern still found near referenced line",
-      });
-      if (verbose) {
-        console.log(
-          `  [POSSIBLY_UNRESOLVED] ${item.id}: ${fileRef}:${lineNum} (keywords: ${keywords.join(", ")})`
-        );
-      }
-    } else {
-      results.confirmed_resolved.push({ id: item.id, reason: "Pattern not found" });
-      if (verbose) console.log(`  [CONFIRMED_RESOLVED] ${item.id}: ${fileRef} (pattern cleared)`);
-    }
-  }
-
-  return results;
+  return auditItemsByPattern(items, verbose, "RESOLVED", {
+    confirmed: "confirmed_resolved",
+    suspect: "possibly_unresolved",
+    unknown: "unable_to_verify",
+    confirmedTag: "CONFIRMED_RESOLVED",
+    suspectTag: "POSSIBLY_UNRESOLVED",
+  });
 }
 
 // ── Step 5: Audit FALSE_POSITIVE items ─────────────────────────────────
 
 function auditFalsePositiveItems(items, verbose) {
-  const results = {
-    confirmed_fp: [],
-    possibly_misclassified: [],
-    unable_to_verify: [],
-  };
-
-  for (const item of items) {
-    if (item.status !== "FALSE_POSITIVE") continue;
-
-    const fileRef = item.file || "";
-    const lineNum = Number.isFinite(Number(item.line)) ? Math.trunc(Number(item.line)) : 0;
-
-    if (fileRef.trim() === "") {
-      results.unable_to_verify.push({ id: item.id, reason: "No file reference" });
-      if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no file reference`);
-      continue;
-    }
-
-    const exists = fileExists(fileRef);
-    if (!exists) {
-      results.confirmed_fp.push({ id: item.id, reason: "File deleted" });
-      if (verbose) console.log(`  [CONFIRMED_FP] ${item.id}: ${fileRef} (deleted)`);
-      continue;
-    }
-
-    const keywords = extractKeywords(item.title);
-    if (!keywords.length) {
-      results.unable_to_verify.push({ id: item.id, reason: "No keywords extractable from title" });
-      if (verbose) console.log(`  [UNABLE_TO_VERIFY] ${item.id}: no keywords from title`);
-      continue;
-    }
-
-    const line = lineNum || 1;
-    if (patternFoundNearLine(fileRef, line, keywords)) {
-      results.possibly_misclassified.push({
-        id: item.id,
-        file: fileRef,
-        line: lineNum,
-        keywords,
-        reason: "Pattern still found near referenced line",
-      });
-      if (verbose) {
-        console.log(
-          `  [POSSIBLY_MISCLASSIFIED] ${item.id}: ${fileRef}:${lineNum} (keywords: ${keywords.join(", ")})`
-        );
-      }
-    } else {
-      results.confirmed_fp.push({ id: item.id, reason: "Pattern not found" });
-      if (verbose) console.log(`  [CONFIRMED_FP] ${item.id}: ${fileRef} (pattern cleared)`);
-    }
-  }
-
-  return results;
+  return auditItemsByPattern(items, verbose, "FALSE_POSITIVE", {
+    confirmed: "confirmed_fp",
+    suspect: "possibly_misclassified",
+    unknown: "unable_to_verify",
+    confirmedTag: "CONFIRMED_FP",
+    suspectTag: "POSSIBLY_MISCLASSIFIED",
+  });
 }
 
 // ── Apply Changes ──────────────────────────────────────────────────────
@@ -510,6 +507,80 @@ function applyChanges(masterItems, dedupedItems, promotedIds) {
   }
 
   return dedupedUpdated;
+}
+
+// ── Report Building ────────────────────────────────────────────────────
+
+function buildReport(mode, totalItems, step3, step4, step5) {
+  return {
+    generated: new Date().toISOString(),
+    mode,
+    total_items: totalItems,
+    step3_verify_new: {
+      promoted_to_verified: step3.promoted_to_verified.length,
+      needs_triage: step3.needs_triage.length,
+      no_file_ref: step3.no_file_ref.length,
+      promoted_ids: step3.promoted_to_verified,
+      triage_details: step3.needs_triage,
+    },
+    step4_audit_resolved: {
+      confirmed_resolved: step4.confirmed_resolved.length,
+      possibly_unresolved: step4.possibly_unresolved.length,
+      unable_to_verify: step4.unable_to_verify.length,
+      possibly_unresolved_details: step4.possibly_unresolved,
+      unable_to_verify_details: step4.unable_to_verify,
+    },
+    step5_audit_false_positive: {
+      confirmed_fp: step5.confirmed_fp.length,
+      possibly_misclassified: step5.possibly_misclassified.length,
+      unable_to_verify: step5.unable_to_verify.length,
+      possibly_misclassified_details: step5.possibly_misclassified,
+      unable_to_verify_details: step5.unable_to_verify,
+    },
+  };
+}
+
+function writeAuditResults(masterItems, step3, report) {
+  // Load deduped for sync
+  const dedupedItems = loadJsonl(DEDUPED_FILE);
+  const dedupedUpdated = applyChanges(masterItems, dedupedItems, step3.promoted_to_verified);
+
+  // Write files
+  try {
+    saveJsonl(MASTER_FILE, masterItems);
+    console.log(
+      `  Updated MASTER_DEBT.jsonl (${step3.promoted_to_verified.length} items promoted to VERIFIED)`
+    );
+  } catch (err) {
+    console.error(`Failed to write MASTER_DEBT.jsonl: ${sanitizeError(err)}`);
+    process.exit(1);
+  }
+
+  if (dedupedUpdated > 0) {
+    try {
+      saveJsonl(DEDUPED_FILE, dedupedItems);
+      console.log(`  Updated raw/deduped.jsonl (${dedupedUpdated} items synced)`);
+    } catch (err) {
+      console.error(`Failed to write deduped.jsonl: ${sanitizeError(err)}`);
+      process.exit(1);
+    }
+  } else {
+    console.log("  raw/deduped.jsonl: no matching items to sync");
+  }
+
+  // Write report
+  try {
+    if (!fs.existsSync(LOG_DIR)) {
+      fs.mkdirSync(LOG_DIR, { recursive: true });
+    }
+    fs.writeFileSync(REPORT_FILE, JSON.stringify(report, null, 2) + "\n");
+    console.log(`  Wrote audit report to ${path.relative(PROJECT_ROOT, REPORT_FILE)}`);
+  } catch (err) {
+    console.error(`Failed to write report: ${sanitizeError(err)}`);
+    // Non-fatal: master file already updated
+  }
+
+  console.log("\nDone.\n");
 }
 
 // ── Main ───────────────────────────────────────────────────────────────
@@ -553,82 +624,15 @@ function main() {
   console.log(`  Unable to verify:      ${step5.unable_to_verify.length}`);
   console.log();
 
-  // ── Build report ───────────────────────────────────────────────────
-  const report = {
-    generated: new Date().toISOString(),
-    mode,
-    total_items: masterItems.length,
-    step3_verify_new: {
-      promoted_to_verified: step3.promoted_to_verified.length,
-      needs_triage: step3.needs_triage.length,
-      no_file_ref: step3.no_file_ref.length,
-      promoted_ids: step3.promoted_to_verified,
-      triage_details: step3.needs_triage,
-    },
-    step4_audit_resolved: {
-      confirmed_resolved: step4.confirmed_resolved.length,
-      possibly_unresolved: step4.possibly_unresolved.length,
-      unable_to_verify: step4.unable_to_verify.length,
-      possibly_unresolved_details: step4.possibly_unresolved,
-      unable_to_verify_details: step4.unable_to_verify,
-    },
-    step5_audit_false_positive: {
-      confirmed_fp: step5.confirmed_fp.length,
-      possibly_misclassified: step5.possibly_misclassified.length,
-      unable_to_verify: step5.unable_to_verify.length,
-      possibly_misclassified_details: step5.possibly_misclassified,
-      unable_to_verify_details: step5.unable_to_verify,
-    },
-  };
+  const report = buildReport(mode, masterItems.length, step3, step4, step5);
 
-  // ── Apply or report ────────────────────────────────────────────────
   if (parsed.dryRun) {
     console.log("--- Summary (DRY RUN - no changes written) ---");
     console.log(`  Would promote ${step3.promoted_to_verified.length} NEW items to VERIFIED`);
     console.log(`  Would write audit report to ${path.relative(PROJECT_ROOT, REPORT_FILE)}`);
     console.log("\nRun with --write to apply changes.\n");
   } else {
-    // Load deduped for sync
-    const dedupedItems = loadJsonl(DEDUPED_FILE);
-
-    const dedupedUpdated = applyChanges(masterItems, dedupedItems, step3.promoted_to_verified);
-
-    // Write files
-    try {
-      saveJsonl(MASTER_FILE, masterItems);
-      console.log(
-        `  Updated MASTER_DEBT.jsonl (${step3.promoted_to_verified.length} items promoted to VERIFIED)`
-      );
-    } catch (err) {
-      console.error(`Failed to write MASTER_DEBT.jsonl: ${sanitizeError(err)}`);
-      process.exit(1);
-    }
-
-    if (dedupedUpdated > 0) {
-      try {
-        saveJsonl(DEDUPED_FILE, dedupedItems);
-        console.log(`  Updated raw/deduped.jsonl (${dedupedUpdated} items synced)`);
-      } catch (err) {
-        console.error(`Failed to write deduped.jsonl: ${sanitizeError(err)}`);
-        process.exit(1);
-      }
-    } else {
-      console.log("  raw/deduped.jsonl: no matching items to sync");
-    }
-
-    // Write report
-    try {
-      if (!fs.existsSync(LOG_DIR)) {
-        fs.mkdirSync(LOG_DIR, { recursive: true });
-      }
-      fs.writeFileSync(REPORT_FILE, JSON.stringify(report, null, 2) + "\n");
-      console.log(`  Wrote audit report to ${path.relative(PROJECT_ROOT, REPORT_FILE)}`);
-    } catch (err) {
-      console.error(`Failed to write report: ${sanitizeError(err)}`);
-      // Non-fatal: master file already updated
-    }
-
-    console.log("\nDone.\n");
+    writeAuditResults(masterItems, step3, report);
   }
 }
 

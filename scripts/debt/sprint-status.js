@@ -149,55 +149,48 @@ function sampleRandom(arr, n) {
 // Data gathering
 // ---------------------------------------------------------------------------
 
+/** Load all sprint ID files into a Map and a Set of all placed IDs */
+function loadSprintIdData(sprintIdFiles) {
+  const sprintIds = new Map();
+  const allPlacedIds = new Set();
+  for (const sprintIdFile of sprintIdFiles) {
+    const data = readJsonSafe(sprintIdFile);
+    if (!data || !Array.isArray(data.ids)) continue;
+    const sid = data.sprint || sprintIdFromFile(sprintIdFile);
+    if (sid) {
+      sprintIds.set(sid, data.ids);
+    }
+    for (const id of data.ids) {
+      allPlacedIds.add(id);
+    }
+  }
+  return { sprintIds, allPlacedIds };
+}
+
 function gatherData() {
-  // 1. Grand plan manifest
   const manifest = readJsonSafe(PATHS.manifest);
   if (!manifest) {
     throw new Error(`Unable to read manifest file: ${PATHS.manifest}`);
   }
 
-  // 2. Active sprint
   const activeSprint = readJsonSafe(PATHS.activeSprint);
 
-  // 3. MASTER_DEBT.jsonl — index by id
   const masterItems = readJsonlSafe(PATHS.master);
   const masterById = new Map();
   for (const item of masterItems) {
-    if (item.id) {
-      masterById.set(item.id, item);
-    }
+    if (item.id) masterById.set(item.id, item);
   }
 
-  // 4. All sprint ID files
-  const sprintIdFiles = discoverSprintIdFiles();
-  const sprintIds = new Map(); // sprintId -> string[]
-  const allPlacedIds = new Set();
-  for (const sprintIdFile of sprintIdFiles) {
-    const data = readJsonSafe(sprintIdFile);
-    if (data && Array.isArray(data.ids)) {
-      const sid = data.sprint || sprintIdFromFile(sprintIdFile);
-      if (sid) {
-        sprintIds.set(sid, data.ids);
-      }
-      for (const id of data.ids) {
-        allPlacedIds.add(id);
-      }
-    }
-  }
+  const { sprintIds, allPlacedIds } = loadSprintIdData(discoverSprintIdFiles());
 
-  // 5. Metrics
   const metrics = readJsonSafe(PATHS.metrics);
 
-  // 6. Deduped JSONL (keyed by content_hash since deduped items lack DEBT IDs)
   const dedupedItems = readJsonlSafe(PATHS.deduped);
   const dedupedByHash = new Map();
   for (const item of dedupedItems) {
-    if (item.content_hash) {
-      dedupedByHash.set(item.content_hash, item);
-    }
+    if (item.content_hash) dedupedByHash.set(item.content_hash, item);
   }
 
-  // 7. ROADMAP.md
   const roadmapText = readTextSafe(PATHS.roadmap);
 
   return {
@@ -218,55 +211,49 @@ function gatherData() {
 // Computation
 // ---------------------------------------------------------------------------
 
-function computeActiveSprintInfo(data) {
-  const { manifest, activeSprint, masterById, sprintIds } = data;
-
-  // Determine active sprint id — prefer active-sprint.json, fall back to manifest ACTIVE
-  let activeId = null;
-  let activeFocus = null;
-
+/** Resolve active sprint ID and focus from state file or manifest */
+function resolveActiveSprintId(activeSprint, manifest) {
   if (activeSprint && activeSprint.id) {
-    activeId = activeSprint.id;
-    activeFocus = activeSprint.focus || null;
+    return { activeId: activeSprint.id, activeFocus: activeSprint.focus || null };
   }
-
-  // Fall back to first ACTIVE sprint in manifest
-  if (!activeId && manifest && manifest.sprints) {
+  if (manifest && manifest.sprints) {
     for (const [sid, info] of Object.entries(manifest.sprints)) {
       if (info.status === "ACTIVE") {
-        activeId = sid;
-        activeFocus = info.focus || null;
-        break;
+        return { activeId: sid, activeFocus: info.focus || null };
       }
     }
   }
+  return { activeId: null, activeFocus: null };
+}
 
-  if (!activeId) {
-    return null;
-  }
-
-  // Get IDs for this sprint
-  const ids = sprintIds.get(activeId) || [];
-  const total = ids.length;
+/** Count resolved and remaining-by-severity for a set of sprint IDs */
+function countSprintIdStats(ids, masterById) {
   let resolved = 0;
   const severityCounts = { S0: 0, S1: 0, S2: 0, S3: 0 };
-
   for (const id of ids) {
     const item = masterById.get(id);
     if (!item) continue;
-
     if (item.status === "RESOLVED" || item.status === "FALSE_POSITIVE") {
       resolved++;
     } else {
-      // Count severity for remaining items
       const sev = item.severity;
       if (sev && Object.hasOwn(severityCounts, sev)) {
         severityCounts[sev]++;
       }
     }
   }
+  return { resolved, severityCounts };
+}
 
-  // Use manifest focus if we didn't get one
+function computeActiveSprintInfo(data) {
+  const { manifest, activeSprint, masterById, sprintIds } = data;
+
+  let { activeId, activeFocus } = resolveActiveSprintId(activeSprint, manifest);
+  if (!activeId) return null;
+
+  const ids = sprintIds.get(activeId) || [];
+  const { resolved, severityCounts } = countSprintIdStats(ids, masterById);
+
   if (!activeFocus && manifest && manifest.sprints && manifest.sprints[activeId]) {
     activeFocus = manifest.sprints[activeId].focus || "";
   }
@@ -274,90 +261,89 @@ function computeActiveSprintInfo(data) {
   return {
     id: activeId,
     focus: activeFocus || "",
-    total,
+    total: ids.length,
     resolved,
-    remaining: total - resolved,
+    remaining: ids.length - resolved,
     severity: severityCounts,
   };
 }
 
-function computePipelineHealth(data) {
-  const { masterItems, dedupedByHash, metrics, roadmapText } = data;
+/** Check if deduped.jsonl is in sync with MASTER_DEBT.jsonl via sampling */
+function checkDedupedSynced(masterItems, dedupedByHash) {
+  if (masterItems.length > 0 && dedupedByHash.size === 0) return false;
+  if (masterItems.length === 0 || dedupedByHash.size === 0) return true;
 
-  // --- dedupedSynced ---
-  // Sample 20 random items from masterItems, compare severity against deduped by content_hash
-  let dedupedSynced = true;
-  if (masterItems.length > 0 && dedupedByHash.size > 0) {
-    const sample = sampleRandom(masterItems, 20);
-    let mismatches = 0;
-    let checked = 0;
-    for (const mItem of sample) {
-      if (!mItem.content_hash) continue;
-      const dItem = dedupedByHash.get(mItem.content_hash);
-      if (dItem) {
-        checked++;
-        if (dItem.severity !== mItem.severity || dItem.status !== mItem.status) {
-          mismatches++;
-        }
-      }
+  const sample = sampleRandom(masterItems, 20);
+  let mismatches = 0;
+  let checked = 0;
+  for (const mItem of sample) {
+    if (!mItem.content_hash) continue;
+    const dItem = dedupedByHash.get(mItem.content_hash);
+    if (!dItem) continue;
+    checked++;
+    if (dItem.severity !== mItem.severity || dItem.status !== mItem.status) {
+      mismatches++;
     }
-    dedupedSynced = checked === 0 || mismatches <= 2;
-  } else if (masterItems.length > 0 && dedupedByHash.size === 0) {
-    dedupedSynced = false;
   }
+  return checked === 0 || mismatches <= 2;
+}
 
-  // --- metricsStale ---
-  let metricsStale = false;
-  let metricsAge = "unknown";
-  const masterMtime = getFileMtime(PATHS.master);
-  if (metrics && metrics.generated && masterMtime) {
-    const metricsTime = new Date(metrics.generated).getTime();
-    const masterTime = masterMtime.getTime();
-    const gapMs = masterTime - metricsTime;
-    metricsAge = formatAge(Math.abs(gapMs));
-    if (gapMs > 3600000) {
-      metricsStale = true;
-    }
-  } else if (!metrics) {
-    metricsStale = true;
-    metricsAge = "missing";
-  }
+/** Check if metrics.json is stale relative to MASTER_DEBT.jsonl */
+function checkMetricsStale(metrics, masterMtime) {
+  if (!metrics) return { metricsStale: true, metricsAge: "missing" };
+  if (!metrics.generated || !masterMtime) return { metricsStale: false, metricsAge: "unknown" };
 
-  // --- roadmapS0Stale ---
-  let roadmapS0Stale = false;
-  let roadmapS0Shown = 0;
+  const gapMs = masterMtime.getTime() - new Date(metrics.generated).getTime();
+  return {
+    metricsStale: gapMs > 3600000,
+    metricsAge: formatAge(Math.abs(gapMs)),
+  };
+}
+
+/** Check if ROADMAP.md S0 table is stale vs actual S0 VERIFIED count */
+function checkRoadmapS0Stale(masterItems, roadmapText) {
   let roadmapS0Actual = 0;
-
-  // Count actual S0 VERIFIED items in MASTER
   for (const item of masterItems) {
-    if (item.severity === "S0" && item.status === "VERIFIED") {
-      roadmapS0Actual++;
-    }
+    if (item.severity === "S0" && item.status === "VERIFIED") roadmapS0Actual++;
   }
 
-  // Parse ROADMAP S0 Critical Debt table
+  let roadmapS0Shown = 0;
   if (roadmapText) {
-    // Find the "### S0 Critical Debt (Immediate Action)" section
     const sectionMatch = roadmapText.match(
       /### S0 Critical Debt \(Immediate Action\)([\s\S]*?)(?=\n###\s|\n## )/
     );
     if (sectionMatch) {
-      const section = sectionMatch[1];
-      // Count table data rows (lines starting with | DEBT- or | ~~DEBT-)
-      const tableRows = section.match(/^\|\s*(?:~~)?DEBT-/gm);
+      const tableRows = sectionMatch[1].match(/^\|\s*(?:~~)?DEBT-/gm);
       roadmapS0Shown = tableRows ? tableRows.length : 0;
     }
-    roadmapS0Stale = roadmapS0Shown !== roadmapS0Actual;
   }
 
-  // --- viewsStale ---
-  let viewsStale = false;
+  return {
+    roadmapS0Stale: Boolean(roadmapText) && roadmapS0Shown !== roadmapS0Actual,
+    roadmapS0Shown,
+    roadmapS0Actual,
+  };
+}
+
+/** Check if views/by-severity.md is stale relative to MASTER_DEBT.jsonl */
+function checkViewsStale(masterMtime) {
   const viewsMtime = getFileMtime(PATHS.viewsBySeverity);
-  if (viewsMtime && masterMtime) {
-    viewsStale = masterMtime.getTime() > viewsMtime.getTime();
-  } else if (!viewsMtime) {
-    viewsStale = true;
-  }
+  if (!viewsMtime) return true;
+  if (!masterMtime) return false;
+  return masterMtime.getTime() > viewsMtime.getTime();
+}
+
+function computePipelineHealth(data) {
+  const { masterItems, dedupedByHash, metrics, roadmapText } = data;
+  const masterMtime = getFileMtime(PATHS.master);
+
+  const dedupedSynced = checkDedupedSynced(masterItems, dedupedByHash);
+  const { metricsStale, metricsAge } = checkMetricsStale(metrics, masterMtime);
+  const { roadmapS0Stale, roadmapS0Shown, roadmapS0Actual } = checkRoadmapS0Stale(
+    masterItems,
+    roadmapText
+  );
+  const viewsStale = checkViewsStale(masterMtime);
 
   return {
     dedupedSynced,
@@ -445,49 +431,44 @@ function computeAllSprints(data) {
 // Output formatting
 // ---------------------------------------------------------------------------
 
-function formatDashboard(result) {
+function formatActiveSprintSection(as) {
   const lines = [];
-
-  lines.push("", "=== TDMS Sprint Dashboard ===", `Generated: ${result.timestamp}`, "");
-
-  // Active sprint
-  const as = result.activeSprint;
-  if (as) {
-    lines.push(
-      `--- Active Sprint: ${as.id} ---`,
-      `  Focus: ${as.focus}`,
-      `  Progress: ${as.resolved}/${as.total} resolved (${as.remaining} remaining)`
-    );
-    const sevParts = [];
-    for (const [sev, count] of Object.entries(as.severity)) {
-      if (count > 0) sevParts.push(`${sev}: ${count}`);
-    }
-    if (sevParts.length > 0) {
-      lines.push(`  Remaining by severity: ${sevParts.join(", ")}`);
-    }
-    lines.push("");
-  } else {
+  if (!as) {
     lines.push("--- No Active Sprint ---", "");
+    return lines;
   }
-
-  // Pipeline health
-  const p = result.pipeline;
   lines.push(
+    `--- Active Sprint: ${as.id} ---`,
+    `  Focus: ${as.focus}`,
+    `  Progress: ${as.resolved}/${as.total} resolved (${as.remaining} remaining)`
+  );
+  const sevParts = [];
+  for (const [sev, count] of Object.entries(as.severity)) {
+    if (count > 0) sevParts.push(`${sev}: ${count}`);
+  }
+  if (sevParts.length > 0) {
+    lines.push(`  Remaining by severity: ${sevParts.join(", ")}`);
+  }
+  lines.push("");
+  return lines;
+}
+
+function formatPipelineSection(p) {
+  return [
     "--- Pipeline Health ---",
     `  ${p.dedupedSynced ? "\u2705" : "\u274C"} Deduped synced: ${p.dedupedSynced}`,
     `  ${p.metricsStale ? "\u274C" : "\u2705"} Metrics freshness: ${p.metricsAge}${p.metricsStale ? " (STALE)" : ""}`,
     `  ${p.roadmapS0Stale ? "\u274C" : "\u2705"} ROADMAP S0: ${p.roadmapS0Shown} shown / ${p.roadmapS0Actual} actual${p.roadmapS0Stale ? " (STALE)" : ""}`,
     `  ${p.viewsStale ? "\u274C" : "\u2705"} Views freshness: ${p.viewsStale ? "STALE" : "OK"}`,
-    ""
-  );
+    "",
+  ];
+}
 
-  // Unplaced items
-  const u = result.unplacedItems;
-  lines.push(`--- Unplaced Items: ${u.count} ---`);
+function formatUnplacedSection(u) {
+  const lines = [`--- Unplaced Items: ${u.count} ---`];
   if (u.count > 0 && u.bySource) {
     const srcParts = Object.entries(u.bySource).map(([src, cnt]) => `${src}: ${cnt}`);
     lines.push(`  By source: ${srcParts.join(", ")}`);
-    // Show first 10
     const showItems = u.items.slice(0, 10);
     for (const it of showItems) {
       lines.push(`  - ${it.id} [${it.severity}] ${it.title}`);
@@ -496,21 +477,30 @@ function formatDashboard(result) {
       lines.push(`  ... and ${u.count - 10} more`);
     }
   }
-  lines.push("", "--- All Sprints ---");
-  for (const s of result.allSprints) {
-    let statusIcon;
-    if (s.status === "COMPLETE") {
-      statusIcon = "\u2705";
-    } else if (s.status === "ACTIVE") {
-      statusIcon = "\uD83D\uDD35";
-    } else {
-      statusIcon = "\u23F3";
-    }
+  return lines;
+}
+
+const STATUS_ICONS = { COMPLETE: "\u2705", ACTIVE: "\uD83D\uDD35" };
+
+function formatAllSprintsSection(allSprints) {
+  const lines = ["", "--- All Sprints ---"];
+  for (const s of allSprints) {
+    const statusIcon = STATUS_ICONS[s.status] || "\u23F3";
     lines.push(
       `  ${statusIcon} ${s.id.padEnd(12)} ${s.status.padEnd(10)} ${s.resolved}/${s.total} resolved (${s.remaining} remaining)`
     );
   }
   lines.push("");
+  return lines;
+}
+
+function formatDashboard(result) {
+  const lines = ["", "=== TDMS Sprint Dashboard ===", `Generated: ${result.timestamp}`, ""];
+
+  lines.push(...formatActiveSprintSection(result.activeSprint));
+  lines.push(...formatPipelineSection(result.pipeline));
+  lines.push(...formatUnplacedSection(result.unplacedItems));
+  lines.push(...formatAllSprintsSection(result.allSprints));
 
   return lines.join("\n");
 }

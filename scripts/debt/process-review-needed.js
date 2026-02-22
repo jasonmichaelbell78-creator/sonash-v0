@@ -27,28 +27,33 @@ const INTAKE_FILE = path.join(DEBT_DIR, "raw/scattered-intake.jsonl");
 
 // --- Load existing data ---
 
+function parseMasterLine(line, hashes, sourceIds) {
+  const item = JSON.parse(line);
+  if (item.content_hash) hashes.add(item.content_hash);
+  if (item.source_id) sourceIds.add(item.source_id);
+  if (item.sonar_key) sourceIds.add(item.sonar_key);
+  if (Array.isArray(item.merged_from)) {
+    for (const m of item.merged_from) sourceIds.add(m);
+  }
+}
+
 function loadMasterHashes() {
   const hashes = new Set();
   const sourceIds = new Set();
   if (!fs.existsSync(MASTER_FILE)) return { hashes, sourceIds };
+  let content;
   try {
-    const content = fs.readFileSync(MASTER_FILE, "utf8").replaceAll("\uFEFF", "");
-    for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        const item = JSON.parse(line);
-        if (item.content_hash) hashes.add(item.content_hash);
-        if (item.source_id) sourceIds.add(item.source_id);
-        if (item.sonar_key) sourceIds.add(item.sonar_key);
-        if (Array.isArray(item.merged_from)) {
-          for (const m of item.merged_from) sourceIds.add(m);
-        }
-      } catch {
-        // skip malformed lines
-      }
-    }
+    content = fs.readFileSync(MASTER_FILE, "utf8").replaceAll("\uFEFF", "");
   } catch {
-    // file read error
+    return { hashes, sourceIds };
+  }
+  for (const line of content.split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      parseMasterLine(line, hashes, sourceIds);
+    } catch {
+      // skip malformed lines
+    }
   }
   return { hashes, sourceIds };
 }

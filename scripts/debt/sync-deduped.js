@@ -85,20 +85,13 @@ function writeJsonl(filePath, items) {
   }
 }
 
-function main() {
-  // 1. Read both files
-  const masterItems = readJsonl(MASTER_PATH);
-  const dedupedItems = readJsonl(DEDUPED_PATH);
-
-  // 2. Build map: content_hash → MASTER item
-  const masterMap = new Map();
-  for (const item of masterItems) {
-    if (item.content_hash) {
-      masterMap.set(item.content_hash, item);
-    }
-  }
-
-  // 3. Walk deduped items, detect and apply changes
+/**
+ * Computes severity and status changes from master into deduped items (mutates dedupedItems).
+ * @param {Map} masterMap - content_hash → MASTER item
+ * @param {object[]} dedupedItems - deduped items (will be mutated)
+ * @returns {{ severityChanges: number, statusChanges: number, sharedCount: number }}
+ */
+function computeChanges(masterMap, dedupedItems) {
   let severityChanges = 0;
   let statusChanges = 0;
   let sharedCount = 0;
@@ -119,13 +112,20 @@ function main() {
     }
   }
 
-  const totalChanges = severityChanges + statusChanges;
+  return { severityChanges, statusChanges, sharedCount };
+}
 
-  // 4. Output results
-  if (jsonOutput) {
+/**
+ * Outputs sync results in either JSON or human-readable format.
+ */
+function outputResults(stats, jsonOutputFlag) {
+  const { masterCount, dedupedCount, sharedCount, severityChanges, statusChanges, totalChanges } =
+    stats;
+
+  if (jsonOutputFlag) {
     const result = {
-      masterCount: masterItems.length,
-      dedupedCount: dedupedItems.length,
+      masterCount,
+      dedupedCount,
       sharedCount,
       severityChanges,
       statusChanges,
@@ -135,33 +135,69 @@ function main() {
     process.stdout.write(JSON.stringify(result) + "\n");
   } else {
     process.stdout.write("TDMS Deduped Sync\n");
-    process.stdout.write(
-      `  MASTER: ${masterItems.length} items | deduped: ${dedupedItems.length} items\n`
-    );
+    process.stdout.write(`  MASTER: ${masterCount} items | deduped: ${dedupedCount} items\n`);
     process.stdout.write(`  Shared (by content_hash): ${sharedCount} items\n\n`);
     process.stdout.write("  Changes needed:\n");
     process.stdout.write(`    Severity: ${severityChanges} items differ\n`);
     process.stdout.write(`    Status: ${statusChanges} items differ\n\n`);
   }
+}
 
-  // 5. Write or report
-  if (totalChanges > 0 && applyMode) {
+/**
+ * Writes changes or reports dry-run status, then exits.
+ */
+function writeAndExit(totalChanges, applyModeFlag, jsonOutputFlag, dedupedItems) {
+  if (totalChanges > 0 && applyModeFlag) {
     writeJsonl(DEDUPED_PATH, dedupedItems);
-    if (!jsonOutput) {
+    if (!jsonOutputFlag) {
       process.stdout.write(`  [--apply] Wrote ${totalChanges} changes to deduped.jsonl\n`);
     }
     process.exit(0);
   } else if (totalChanges > 0) {
-    if (!jsonOutput) {
+    if (!jsonOutputFlag) {
       process.stdout.write("  [--dry-run] Run with --apply to write changes.\n");
     }
     process.exit(1);
   } else {
-    if (!jsonOutput) {
+    if (!jsonOutputFlag) {
       process.stdout.write("  No changes needed.\n");
     }
     process.exit(0);
   }
+}
+
+function main() {
+  // 1. Read both files
+  const masterItems = readJsonl(MASTER_PATH);
+  const dedupedItems = readJsonl(DEDUPED_PATH);
+
+  // 2. Build map: content_hash → MASTER item
+  const masterMap = new Map();
+  for (const item of masterItems) {
+    if (item.content_hash) {
+      masterMap.set(item.content_hash, item);
+    }
+  }
+
+  // 3. Walk deduped items, detect and apply changes
+  const { severityChanges, statusChanges, sharedCount } = computeChanges(masterMap, dedupedItems);
+  const totalChanges = severityChanges + statusChanges;
+
+  // 4. Output results
+  outputResults(
+    {
+      masterCount: masterItems.length,
+      dedupedCount: dedupedItems.length,
+      sharedCount,
+      severityChanges,
+      statusChanges,
+      totalChanges,
+    },
+    jsonOutput
+  );
+
+  // 5. Write or report
+  writeAndExit(totalChanges, applyMode, jsonOutput, dedupedItems);
 }
 
 main();

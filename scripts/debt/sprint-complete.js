@@ -113,7 +113,11 @@ function parseArgs(argv) {
   result.force = args.includes("--force");
 
   const carryIdx = args.indexOf("--carry-to");
-  if (carryIdx !== -1 && carryIdx + 1 < args.length) {
+  if (carryIdx !== -1) {
+    if (carryIdx + 1 >= args.length || args[carryIdx + 1].startsWith("--")) {
+      console.error("Error: --carry-to requires a <sprint-id> value");
+      process.exit(2);
+    }
     result.carryTo = normalizeId(args[carryIdx + 1]);
   }
 
@@ -170,27 +174,23 @@ function computeSprintSeverity(ids, debtMap) {
 }
 
 // ---------------------------------------------------------------------------
-// Main
+// Validation helpers
 // ---------------------------------------------------------------------------
 
-function main() {
-  const { sprintId, force, carryTo } = parseArgs(process.argv);
-
+function validateSprintArgs(sprintId) {
   if (!sprintId) {
     console.error(
       "Usage: node scripts/debt/sprint-complete.js <sprint-id> [--force] [--carry-to <sprint-id>]"
     );
     process.exit(2);
   }
-
   if (!SPRINT_ORDER.includes(sprintId)) {
     console.error(`Error: Unknown sprint "${sprintId}". Valid: ${SPRINT_ORDER.join(", ")}`);
     process.exit(2);
   }
+}
 
-  const key = sprintKey(sprintId);
-
-  // 1. Load sprint manifest (ids file)
+function loadAndValidateManifests(key) {
   const idsPath = path.join(LOGS_DIR, `${key}-ids.json`);
   const sprintManifest = readJSON(idsPath);
   if (!sprintManifest) {
@@ -198,7 +198,6 @@ function main() {
     process.exit(2);
   }
 
-  // 2. Load grand-plan-manifest.json
   const manifestPath = path.join(LOGS_DIR, "grand-plan-manifest.json");
   const manifest = readJSON(manifestPath);
   if (!manifest) {
@@ -206,7 +205,6 @@ function main() {
     process.exit(2);
   }
 
-  // 3. Validate sprint status is ACTIVE
   const sprintEntry = manifest.sprints && manifest.sprints[key];
   if (!sprintEntry) {
     console.error(`Error: Sprint "${key}" not found in grand-plan-manifest.json`);
@@ -221,17 +219,10 @@ function main() {
     process.exit(2);
   }
 
-  // 4. Load MASTER_DEBT.jsonl and compute stats
-  const allDebt = loadMasterDebt();
-  if (allDebt.length === 0) {
-    console.warn(`Warning: MASTER_DEBT.jsonl is empty or could not be read at ${MASTER_DEBT_PATH}`);
-  }
+  return { sprintManifest, manifest, sprintEntry, manifestPath };
+}
 
-  const debtMap = new Map();
-  for (const item of allDebt) {
-    if (item.id) debtMap.set(item.id, item);
-  }
-
+function computeSprintStats(allDebt, sprintManifest) {
   const sprintIds = new Set(sprintManifest.ids || []);
   const sprintItems = allDebt.filter((item) => sprintIds.has(item.id));
 
@@ -241,103 +232,64 @@ function main() {
     (item) => item.status === "VERIFIED" || item.status === "NEW"
   );
 
-  const resolvedCount = resolved.length;
-  const falsePositiveCount = falsePositive.length;
-  const remainingCount = remaining.length;
-  const totalItems = sprintItems.length;
-
-  console.log(`Sprint ${key}: ${totalItems} items total`);
-  console.log(`  Resolved: ${resolvedCount}`);
-  console.log(`  False Positive: ${falsePositiveCount}`);
-  console.log(`  Remaining: ${remainingCount}`);
-
-  // 5. If remaining > 0 and no --force: warn and exit
-  if (remainingCount > 0 && !force) {
-    console.error(`\nError: ${remainingCount} items still remaining (VERIFIED/NEW).`);
-    console.error("Use --force to complete anyway and carry items forward.");
-    process.exit(1);
-  }
-
-  // 6. If remaining > 0 and --force: carry forward
-  let carriedTo = null;
-  if (remainingCount > 0 && force) {
-    const targetId = carryTo || nextSprint(sprintId);
-    if (!targetId) {
-      console.error("Error: No next sprint to carry items to (last sprint in order).");
-      console.error("Use --carry-to <sprint-id> to specify a target.");
-      process.exit(2);
-    }
-
-    const targetKey = sprintKey(targetId);
-    const targetIdsPath = path.join(LOGS_DIR, `${targetKey}-ids.json`);
-    const targetManifest = readJSON(targetIdsPath);
-    if (!targetManifest) {
-      console.error(`Error: Could not load carry-to sprint manifest at ${targetIdsPath}`);
-      process.exit(2);
-    }
-
-    // Append remaining IDs (deduplicate)
-    const existingIds = new Set(targetManifest.ids || []);
-    const remainingIds = remaining.map((item) => item.id);
-    let addedCount = 0;
-    for (const id of remainingIds) {
-      if (!existingIds.has(id)) {
-        targetManifest.ids.push(id);
-        existingIds.add(id);
-        addedCount++;
-      }
-    }
-
-    // Recompute severity for carry-to sprint
-    targetManifest.severity = computeSprintSeverity(targetManifest.ids, debtMap);
-
-    // Write updated carry-to sprint ids file
-    try {
-      writeJSON(targetIdsPath, targetManifest);
-    } catch (err) {
-      console.error(`Error: Failed to write carry-to manifest: ${err.message}`);
-      process.exit(2);
-    }
-
-    // Update carry-to sprint item count in grand-plan-manifest
-    if (manifest.sprints[targetKey]) {
-      manifest.sprints[targetKey].items = targetManifest.ids.length;
-    }
-
-    carriedTo = targetKey;
-    console.log(`\nCarried ${addedCount} items forward to ${targetKey}`);
-  }
-
-  // 7. Set sprint status to COMPLETE in grand-plan-manifest.json
-  manifest.sprints[key].status = "COMPLETE";
-  try {
-    writeJSON(manifestPath, manifest);
-  } catch (err) {
-    console.error(`Error: Failed to write grand-plan-manifest.json: ${err.message}`);
-    process.exit(2);
-  }
-
-  // 8. Write completion log
-  const completionLog = {
-    sprint: key,
-    completedAt: new Date().toISOString(),
-    resolved: resolvedCount,
-    falsePositive: falsePositiveCount,
-    carriedForward: remainingCount,
-    carriedTo: carriedTo,
-    totalItems: totalItems,
-    duration: null,
+  return {
+    sprintItems,
+    resolved,
+    falsePositive,
+    remaining,
+    resolvedCount: resolved.length,
+    falsePositiveCount: falsePositive.length,
+    remainingCount: remaining.length,
+    totalItems: sprintItems.length,
   };
+}
 
-  const completeLogPath = path.join(LOGS_DIR, `${key}-complete.json`);
-  try {
-    writeJSON(completeLogPath, completionLog);
-  } catch (err) {
-    console.error(`Error: Failed to write completion log: ${err.message}`);
+function carryForward(sprintId, carryTo, remaining, debtMap, manifest) {
+  const targetId = carryTo || nextSprint(sprintId);
+  if (!targetId) {
+    console.error("Error: No next sprint to carry items to (last sprint in order).");
+    console.error("Use --carry-to <sprint-id> to specify a target.");
     process.exit(2);
   }
 
-  // 9. Write sprint report markdown
+  const targetKey = sprintKey(targetId);
+  const targetIdsPath = path.join(LOGS_DIR, `${targetKey}-ids.json`);
+  const targetManifest = readJSON(targetIdsPath);
+  if (!targetManifest) {
+    console.error(`Error: Could not load carry-to sprint manifest at ${targetIdsPath}`);
+    process.exit(2);
+  }
+
+  const existingIds = new Set(targetManifest.ids || []);
+  const remainingIds = remaining.map((item) => item.id);
+  let addedCount = 0;
+  for (const id of remainingIds) {
+    if (!existingIds.has(id)) {
+      targetManifest.ids.push(id);
+      existingIds.add(id);
+      addedCount++;
+    }
+  }
+
+  targetManifest.severity = computeSprintSeverity(targetManifest.ids, debtMap);
+
+  try {
+    writeJSON(targetIdsPath, targetManifest);
+  } catch (err) {
+    console.error(`Error: Failed to write carry-to manifest: ${err.message}`);
+    process.exit(2);
+  }
+
+  if (manifest.sprints[targetKey]) {
+    manifest.sprints[targetKey].items = targetManifest.ids.length;
+  }
+
+  console.log(`\nCarried ${addedCount} items forward to ${targetKey}`);
+  return targetKey;
+}
+
+function buildSprintReport(sprintId, stats, sprintManifest, sprintEntry, carriedTo) {
+  const { resolvedCount, falsePositiveCount, remainingCount, totalItems, resolved } = stats;
   const completionRate =
     totalItems > 0 ? Math.round(((resolvedCount + falsePositiveCount) / totalItems) * 100) : 0;
 
@@ -370,7 +322,6 @@ ${carriedLine}
 |----------|-------|
 `;
 
-  // Sort severities: S0, S1, S2, S3, then any others
   const sevOrder = ["S0", "S1", "S2", "S3"];
   const sevKeys = Object.keys(resolvedSeverity).sort((a, b) => {
     const ai = sevOrder.indexOf(a);
@@ -395,6 +346,76 @@ ${carriedLine}
     report += `| ${cat} | ${resolvedCategory[cat]} |\n`;
   }
 
+  return report;
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+function main() {
+  const { sprintId, force, carryTo } = parseArgs(process.argv);
+  validateSprintArgs(sprintId);
+
+  const key = sprintKey(sprintId);
+  const { sprintManifest, manifest, sprintEntry, manifestPath } = loadAndValidateManifests(key);
+
+  const allDebt = loadMasterDebt();
+  if (allDebt.length === 0) {
+    console.warn(`Warning: MASTER_DEBT.jsonl is empty or could not be read at ${MASTER_DEBT_PATH}`);
+  }
+
+  const debtMap = new Map();
+  for (const item of allDebt) {
+    if (item.id) debtMap.set(item.id, item);
+  }
+
+  const stats = computeSprintStats(allDebt, sprintManifest);
+
+  console.log(`Sprint ${key}: ${stats.totalItems} items total`);
+  console.log(`  Resolved: ${stats.resolvedCount}`);
+  console.log(`  False Positive: ${stats.falsePositiveCount}`);
+  console.log(`  Remaining: ${stats.remainingCount}`);
+
+  if (stats.remainingCount > 0 && !force) {
+    console.error(`\nError: ${stats.remainingCount} items still remaining (VERIFIED/NEW).`);
+    console.error("Use --force to complete anyway and carry items forward.");
+    process.exit(1);
+  }
+
+  let carriedTo = null;
+  if (stats.remainingCount > 0 && force) {
+    carriedTo = carryForward(sprintId, carryTo, stats.remaining, debtMap, manifest);
+  }
+
+  manifest.sprints[key].status = "COMPLETE";
+  try {
+    writeJSON(manifestPath, manifest);
+  } catch (err) {
+    console.error(`Error: Failed to write grand-plan-manifest.json: ${err.message}`);
+    process.exit(2);
+  }
+
+  const completionLog = {
+    sprint: key,
+    completedAt: new Date().toISOString(),
+    resolved: stats.resolvedCount,
+    falsePositive: stats.falsePositiveCount,
+    carriedForward: stats.remainingCount,
+    carriedTo: carriedTo,
+    totalItems: stats.totalItems,
+    duration: null,
+  };
+
+  const completeLogPath = path.join(LOGS_DIR, `${key}-complete.json`);
+  try {
+    writeJSON(completeLogPath, completionLog);
+  } catch (err) {
+    console.error(`Error: Failed to write completion log: ${err.message}`);
+    process.exit(2);
+  }
+
+  const report = buildSprintReport(sprintId, stats, sprintManifest, sprintEntry, carriedTo);
   const reportPath = path.join(LOGS_DIR, `${key}-report.md`);
   try {
     fs.writeFileSync(reportPath, report, "utf-8");

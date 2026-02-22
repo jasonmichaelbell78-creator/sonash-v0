@@ -123,40 +123,39 @@ function readManifest() {
   return data;
 }
 
+const MANUAL = { sprint: null, method: "manual" };
+
+/**
+ * Resolve primary/overflow sprint for a matched FOCUS_MAP entry.
+ */
+function resolveOverflow(entry, manifest) {
+  const sprintInfo = manifest.sprints[entry.sprint];
+  if (!sprintInfo || sprintInfo.status !== "COMPLETE") {
+    return { sprint: entry.sprint, method: "auto" };
+  }
+  if (!entry.overflow) return MANUAL;
+  const overflowInfo = manifest.sprints[entry.overflow];
+  if (overflowInfo && overflowInfo.status === "COMPLETE") return MANUAL;
+  return { sprint: entry.overflow, method: "auto" };
+}
+
 /**
  * Step 4: Determine target sprint for a file path.
  * Returns { sprint, method } or { sprint: null, method: "manual" }.
  */
 function resolveTarget(filePath, manifest) {
-  if (!filePath) {
-    return { sprint: null, method: "manual" };
-  }
+  if (!filePath) return MANUAL;
 
-  // Normalize backslashes to forward slashes and reject path traversal
   const normalized = filePath.replaceAll("\\", "/");
-  if (/^\.\.(?:[/\\]|$)/.test(normalized)) {
-    return { sprint: null, method: "manual" };
-  }
+  if (/^\.\.(?:[/\\]|$)/.test(normalized)) return MANUAL;
 
   for (const entry of FOCUS_MAP) {
     if (entry.test(normalized)) {
-      const primary = entry.sprint;
-      const sprintInfo = manifest.sprints[primary];
-      if (sprintInfo && sprintInfo.status === "COMPLETE") {
-        if (!entry.overflow) {
-          return { sprint: null, method: "manual" };
-        }
-        const overflowInfo = manifest.sprints[entry.overflow];
-        if (overflowInfo && overflowInfo.status === "COMPLETE") {
-          return { sprint: null, method: "manual" };
-        }
-        return { sprint: entry.overflow, method: "auto" };
-      }
-      return { sprint: primary, method: "auto" };
+      return resolveOverflow(entry, manifest);
     }
   }
 
-  return { sprint: null, method: "manual" };
+  return MANUAL;
 }
 
 /**
@@ -171,10 +170,56 @@ function sprintLabel(sprintName, manifest) {
 }
 
 /**
+ * Ensure a sprint data object has the required structure.
+ */
+function ensureSprintData(sprintData, sprintName, manifest) {
+  if (!sprintData) {
+    const focus =
+      (manifest.sprints[sprintName] && manifest.sprints[sprintName].focus) || sprintName;
+    return { sprint: sprintName, focus, ids: [], severity: {}, name: focus };
+  }
+  if (!Array.isArray(sprintData.ids)) sprintData.ids = [];
+  if (!sprintData.severity) sprintData.severity = {};
+  return sprintData;
+}
+
+/**
+ * Update a single sprint's ids file with new items.
+ */
+function updateSprintIds(sprintName, items, manifest) {
+  const idsFile = path.join(LOGS_DIR, `${sprintName}-ids.json`);
+  const sprintData = ensureSprintData(readJSON(idsFile), sprintName, manifest);
+
+  for (const item of items) {
+    if (!sprintData.ids.includes(item.id)) {
+      sprintData.ids.push(item.id);
+      const sev = item.severity || "S3";
+      sprintData.severity[sev] = (sprintData.severity[sev] || 0) + 1;
+    }
+  }
+
+  writeJSON(idsFile, sprintData);
+
+  if (manifest.sprints[sprintName]) {
+    manifest.sprints[sprintName].items = sprintData.ids.length;
+  }
+}
+
+/**
+ * Update manifest coverage counts after placements.
+ */
+function updateManifestCoverage(placements, manifest) {
+  if (!manifest.coverage) return;
+  const autoCount = placements.filter((p) => p.target).length;
+  manifest.coverage.placed_grand_plan = (manifest.coverage.placed_grand_plan || 0) + autoCount;
+  manifest.coverage.unplaced = (manifest.coverage.unplaced || 0) - autoCount;
+  if (manifest.coverage.unplaced < 0) manifest.coverage.unplaced = 0;
+}
+
+/**
  * Apply placements: update sprint-*-ids.json and grand-plan-manifest.json.
  */
 function applyPlacements(placements, manifest) {
-  // Group placements by target sprint
   const grouped = {};
   for (const p of placements) {
     if (!p.target) continue;
@@ -183,54 +228,86 @@ function applyPlacements(placements, manifest) {
   }
 
   for (const [sprintName, items] of Object.entries(grouped)) {
-    const idsFile = path.join(LOGS_DIR, `${sprintName}-ids.json`);
-    let sprintData = readJSON(idsFile);
-
-    if (!sprintData) {
-      // Create minimal structure if file doesn't exist
-      sprintData = {
-        sprint: sprintName,
-        focus: (manifest.sprints[sprintName] && manifest.sprints[sprintName].focus) || sprintName,
-        ids: [],
-        severity: {},
-        name: (manifest.sprints[sprintName] && manifest.sprints[sprintName].focus) || sprintName,
-      };
-    }
-
-    if (!Array.isArray(sprintData.ids)) {
-      sprintData.ids = [];
-    }
-    if (!sprintData.severity) {
-      sprintData.severity = {};
-    }
-
-    for (const item of items) {
-      if (!sprintData.ids.includes(item.id)) {
-        sprintData.ids.push(item.id);
-        // Update severity counts only for newly-added items
-        const sev = item.severity || "S3";
-        sprintData.severity[sev] = (sprintData.severity[sev] || 0) + 1;
-      }
-    }
-
-    writeJSON(idsFile, sprintData);
-
-    // Update item count in manifest
-    if (manifest.sprints[sprintName]) {
-      manifest.sprints[sprintName].items = sprintData.ids.length;
-    }
+    updateSprintIds(sprintName, items, manifest);
   }
 
-  // Update manifest coverage
-  if (manifest.coverage) {
-    const autoCount = placements.filter((p) => p.target).length;
-    manifest.coverage.placed_grand_plan = (manifest.coverage.placed_grand_plan || 0) + autoCount;
-    manifest.coverage.unplaced = (manifest.coverage.unplaced || 0) - autoCount;
-    if (manifest.coverage.unplaced < 0) manifest.coverage.unplaced = 0;
-  }
-
+  updateManifestCoverage(placements, manifest);
   manifest.generated = new Date().toISOString();
   writeJSON(MANIFEST_PATH, manifest);
+}
+
+// --- Output helpers ---
+
+function truncateTitle(title) {
+  const str = title ? ` ${title}` : "";
+  return str.length > 60 ? str.slice(0, 57) + "..." : str;
+}
+
+function buildSummary(placements) {
+  const summary = {};
+  for (const p of placements) {
+    const key = p.target || "manual";
+    summary[key] = (summary[key] || 0) + 1;
+  }
+  return summary;
+}
+
+function buildJsonOutput(unplaced, placements, summary) {
+  return {
+    unplaced: unplaced.length,
+    placements: placements.map((p) => ({
+      id: p.id,
+      file: p.file,
+      severity: p.severity,
+      target: p.target,
+      method: p.method,
+    })),
+    summary,
+    applied: applyMode,
+  };
+}
+
+function groupPlacementsForDisplay(placements) {
+  const grouped = {};
+  const manual = [];
+  for (const p of placements) {
+    if (p.target) {
+      if (!grouped[p.target]) grouped[p.target] = [];
+      grouped[p.target].push(p);
+    } else {
+      manual.push(p);
+    }
+  }
+  return { grouped, manual };
+}
+
+function printAutoPlacement(grouped, manifest) {
+  if (Object.keys(grouped).length === 0) return;
+  console.log("  Auto-placement:");
+  const sortedSprints = Object.keys(grouped).sort();
+  for (const sprintName of sortedSprints) {
+    const items = grouped[sprintName];
+    const label = sprintLabel(sprintName, manifest);
+    console.log(`    ${label}: ${items.length} item${items.length === 1 ? "" : "s"}`);
+    for (const item of items) {
+      const fileStr = item.file || "(no file)";
+      console.log(
+        `      ${item.id} [${item.severity}]${truncateTitle(item.title)} \u2014 ${fileStr}`
+      );
+    }
+  }
+  console.log();
+}
+
+function printManualPlacement(manual) {
+  if (manual.length === 0) return;
+  console.log(`  Manual placement needed: ${manual.length} item${manual.length === 1 ? "" : "s"}`);
+  for (const item of manual) {
+    console.log(
+      `    ${item.id} [${item.severity}]${truncateTitle(item.title)} \u2014 (needs manual assignment)`
+    );
+  }
+  console.log();
 }
 
 // --- Main ---
@@ -239,10 +316,8 @@ function main() {
   const masterItems = readMasterDebt();
   const manifest = readManifest();
 
-  // Find unplaced items
   const unplaced = masterItems.filter((item) => item.id && !assignedSet.has(item.id));
 
-  // Determine placements
   const placements = unplaced.map((item) => {
     const { sprint, method } = resolveTarget(item.file, manifest);
     return {
@@ -255,90 +330,35 @@ function main() {
     };
   });
 
-  // Build summary counts
-  const summary = {};
-  for (const p of placements) {
-    const key = p.target || "manual";
-    summary[key] = (summary[key] || 0) + 1;
-  }
+  const summary = buildSummary(placements);
 
-  // Apply if requested
   if (applyMode && placements.length > 0) {
     applyPlacements(placements, manifest);
   }
 
-  // --- Output ---
   if (jsonMode) {
-    const output = {
-      unplaced: unplaced.length,
-      placements: placements.map((p) => ({
-        id: p.id,
-        file: p.file,
-        severity: p.severity,
-        target: p.target,
-        method: p.method,
-      })),
-      summary,
-      applied: applyMode,
-    };
-    process.stdout.write(JSON.stringify(output, null, 2) + "\n");
+    process.stdout.write(
+      JSON.stringify(buildJsonOutput(unplaced, placements, summary), null, 2) + "\n"
+    );
+    return;
+  }
+
+  console.log("TDMS Sprint Intake");
+  console.log(`  ${unplaced.length} unplaced items found\n`);
+
+  if (unplaced.length === 0) {
+    console.log("  All items are already placed. Nothing to do.");
+    return;
+  }
+
+  const { grouped, manual } = groupPlacementsForDisplay(placements);
+  printAutoPlacement(grouped, manifest);
+  printManualPlacement(manual);
+
+  if (applyMode) {
+    console.log("  Changes applied.");
   } else {
-    console.log("TDMS Sprint Intake");
-    console.log(`  ${unplaced.length} unplaced items found\n`);
-
-    if (unplaced.length === 0) {
-      console.log("  All items are already placed. Nothing to do.");
-      return;
-    }
-
-    // Group by target for display
-    const grouped = {};
-    const manual = [];
-    for (const p of placements) {
-      if (p.target) {
-        if (!grouped[p.target]) grouped[p.target] = [];
-        grouped[p.target].push(p);
-      } else {
-        manual.push(p);
-      }
-    }
-
-    if (Object.keys(grouped).length > 0) {
-      console.log("  Auto-placement:");
-      const sortedSprints = Object.keys(grouped).sort();
-      for (const sprintName of sortedSprints) {
-        const items = grouped[sprintName];
-        const label = sprintLabel(sprintName, manifest);
-        console.log(`    ${label}: ${items.length} item${items.length === 1 ? "" : "s"}`);
-        for (const item of items) {
-          const fileStr = item.file || "(no file)";
-          const titleStr = item.title ? ` ${item.title}` : "";
-          const truncTitle = titleStr.length > 60 ? titleStr.slice(0, 57) + "..." : titleStr;
-          console.log(`      ${item.id} [${item.severity}]${truncTitle} \u2014 ${fileStr}`);
-        }
-      }
-      console.log();
-    }
-
-    if (manual.length > 0) {
-      console.log(
-        `  Manual placement needed: ${manual.length} item${manual.length === 1 ? "" : "s"}`
-      );
-      for (const item of manual) {
-        const titleStr = item.title ? ` ${item.title}` : "";
-        const truncTitle = titleStr.length > 60 ? titleStr.slice(0, 57) + "..." : titleStr;
-        console.log(
-          `    ${item.id} [${item.severity}]${truncTitle} \u2014 (needs manual assignment)`
-        );
-      }
-      console.log();
-    }
-
-    if (applyMode) {
-      console.log("  Changes applied.");
-    } else {
-      console.log("  Run with --apply to write changes.");
-    }
+    console.log("  Run with --apply to write changes.");
   }
 }
 

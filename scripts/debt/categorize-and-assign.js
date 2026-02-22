@@ -188,6 +188,43 @@ function getFocusForSprint(key) {
   return SPRINT_FOCUS[num] || `Sprint ${key}`;
 }
 
+// ── Classify open items into roadmap/sprint buckets ────────────────────────
+function classifyOpenItems(openItems, existingAssignments) {
+  const roadmapBound = { security: [], enhancements: [], performance: [] };
+  const newSprintBuckets = new Map(); // sprintNum → [ids]
+  const keptInExisting = new Map(); // "sprint-N" → [ids] for sprints 4-7
+  for (let s = 4; s <= 7; s++) keptInExisting.set(`sprint-${s}`, []);
+
+  let keptInComplete = 0;
+
+  for (const item of openItems) {
+    const cat = categorizeItem(item);
+
+    if (cat.type === "roadmap") {
+      roadmapBound[cat.category].push(item.id);
+      continue;
+    }
+
+    const existingSprint = existingAssignments.get(item.id);
+
+    if (existingSprint && COMPLETE_SPRINTS.has(existingSprint)) {
+      keptInComplete++;
+      continue;
+    }
+
+    if (existingSprint && /^sprint-[4-7]$/.test(existingSprint)) {
+      keptInExisting.get(existingSprint).push(item.id);
+      continue;
+    }
+
+    const bucket = getSprintBucketForPath(item.file);
+    if (!newSprintBuckets.has(bucket)) newSprintBuckets.set(bucket, []);
+    newSprintBuckets.get(bucket).push(item.id);
+  }
+
+  return { roadmapBound, newSprintBuckets, keptInExisting, keptInComplete };
+}
+
 // ── Main logic ─────────────────────────────────────────────────────────────
 function run() {
   const opts = parseArgs(process.argv);
@@ -206,43 +243,11 @@ function run() {
     if (data) existingSprintFiles[`sprint-${s}`] = data;
   }
 
-  // Buckets
-  const roadmapBound = { security: [], enhancements: [], performance: [] };
-  const newSprintBuckets = new Map(); // sprintNum → [ids]
-  const keptInExisting = new Map(); // "sprint-N" → [ids] for sprints 4-7
-  for (let s = 4; s <= 7; s++) keptInExisting.set(`sprint-${s}`, []);
-
-  let keptInComplete = 0;
-
-  for (const item of openItems) {
-    const cat = categorizeItem(item);
-
-    if (cat.type === "roadmap") {
-      roadmapBound[cat.category].push(item.id);
-      // Remove from existing sprints 4-7 if present
-      continue;
-    }
-
-    // Grand Plan item
-    const existingSprint = existingAssignments.get(item.id);
-
-    // If already in a complete sprint, count but don't reassign
-    if (existingSprint && COMPLETE_SPRINTS.has(existingSprint)) {
-      keptInComplete++;
-      continue;
-    }
-
-    // If already in sprints 4-7 and NOT roadmap-bound, keep it there
-    if (existingSprint && /^sprint-[4-7]$/.test(existingSprint)) {
-      keptInExisting.get(existingSprint).push(item.id);
-      continue;
-    }
-
-    // Otherwise, auto-assign by file path
-    const bucket = getSprintBucketForPath(item.file);
-    if (!newSprintBuckets.has(bucket)) newSprintBuckets.set(bucket, []);
-    newSprintBuckets.get(bucket).push(item.id);
-  }
+  // Classify items into buckets
+  const { roadmapBound, newSprintBuckets, keptInExisting, keptInComplete } = classifyOpenItems(
+    openItems,
+    existingAssignments
+  );
 
   // Split oversized new sprints
   const finalNewSprints = splitOversizedSprints(newSprintBuckets);

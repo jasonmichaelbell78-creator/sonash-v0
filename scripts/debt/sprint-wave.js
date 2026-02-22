@@ -121,12 +121,8 @@ function bySeverity(a, b) {
 // Main
 // ---------------------------------------------------------------------------
 
-function main() {
-  const opts = parseArgs(process.argv);
-  const sprintIds = loadSprintManifest(opts.sprintId);
-  const master = loadMasterDebt();
-
-  // Resolve IDs to items, filter to unresolved only
+/** Resolve sprint IDs to unresolved items, sorted by severity */
+function resolveUnresolvedItems(sprintIds, master) {
   const unresolvedStatuses = new Set(["VERIFIED", "NEW"]);
   const items = [];
   for (const id of sprintIds) {
@@ -135,29 +131,32 @@ function main() {
     if (!unresolvedStatuses.has((item.status || "").toUpperCase())) continue;
     items.push(item);
   }
-
-  // Sort all by severity
   items.sort(bySeverity);
+  return items;
+}
 
-  // Group by fixer team
-  const groups = new Map(); // fixerGroup -> item[]
+/** Group items by fixer team */
+function buildFixerGroups(items) {
+  const groups = new Map();
   for (const item of items) {
     const group = toFixerGroup(item.category);
     if (!groups.has(group)) groups.set(group, []);
     groups.get(group).push(item);
   }
+  return groups;
+}
 
-  // Build wave 1 assignments (first batch from each group)
+/** Build wave 1 assignments from fixer groups */
+function buildWaveAssignments(groups, batch) {
   const assignments = {};
   let totalWaveItems = 0;
-
-  // Stable output order
   const groupOrder = ["security", "performance", "codequality"];
+
   for (const groupName of groupOrder) {
     const groupItems = groups.get(groupName);
     if (!groupItems || groupItems.length === 0) continue;
 
-    const wave1 = groupItems.slice(0, opts.batch);
+    const wave1 = groupItems.slice(0, batch);
     assignments[groupName] = {
       items: wave1.map((it) => ({
         id: it.id,
@@ -173,37 +172,66 @@ function main() {
     totalWaveItems += wave1.length;
   }
 
+  return { assignments, totalWaveItems, groupOrder };
+}
+
+/** Format wave assignments as text output */
+function formatWaveText(
+  opts,
+  totalRemaining,
+  assignments,
+  groupOrder,
+  totalWaveItems,
+  estimatedWaves
+) {
+  console.log(`Wave 1 for ${opts.sprintId} (${totalRemaining} remaining)\n`);
+
+  for (const groupName of groupOrder) {
+    const assignment = assignments[groupName];
+    if (!assignment) continue;
+
+    console.log(`  ${groupName} (${assignment.count} items):`);
+    for (const it of assignment.items) {
+      const loc = it.line ? `${it.file}:${it.line}` : it.file;
+      const suffix = loc ? ` \u2014 ${loc}` : "";
+      console.log(`    ${it.id} [${it.severity}] ${it.title}${suffix}`);
+    }
+    console.log("");
+  }
+
+  console.log(`Total: ${totalWaveItems} items | Estimated waves: ${estimatedWaves}`);
+}
+
+function main() {
+  const opts = parseArgs(process.argv);
+  const sprintIds = loadSprintManifest(opts.sprintId);
+  const master = loadMasterDebt();
+
+  const items = resolveUnresolvedItems(sprintIds, master);
+  const groups = buildFixerGroups(items);
+  const { assignments, totalWaveItems, groupOrder } = buildWaveAssignments(groups, opts.batch);
+
   const totalRemaining = items.length;
   const estimatedWaves = totalRemaining > 0 ? Math.ceil(totalRemaining / (totalWaveItems || 1)) : 0;
 
   if (opts.json) {
-    const output = {
-      sprintId: opts.sprintId,
-      totalRemaining,
-      wave: 1,
-      assignments,
-      totalWaveItems,
-      remainingAfterWave: totalRemaining - totalWaveItems,
-      estimatedWaves,
-    };
-    console.log(JSON.stringify(output, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          sprintId: opts.sprintId,
+          totalRemaining,
+          wave: 1,
+          assignments,
+          totalWaveItems,
+          remainingAfterWave: totalRemaining - totalWaveItems,
+          estimatedWaves,
+        },
+        null,
+        2
+      )
+    );
   } else {
-    console.log(`Wave 1 for ${opts.sprintId} (${totalRemaining} remaining)\n`);
-
-    for (const groupName of groupOrder) {
-      const assignment = assignments[groupName];
-      if (!assignment) continue;
-
-      console.log(`  ${groupName} (${assignment.count} items):`);
-      for (const it of assignment.items) {
-        const loc = it.line ? `${it.file}:${it.line}` : it.file;
-        const suffix = loc ? ` \u2014 ${loc}` : "";
-        console.log(`    ${it.id} [${it.severity}] ${it.title}${suffix}`);
-      }
-      console.log("");
-    }
-
-    console.log(`Total: ${totalWaveItems} items | Estimated waves: ${estimatedWaves}`);
+    formatWaveText(opts, totalRemaining, assignments, groupOrder, totalWaveItems, estimatedWaves);
   }
 }
 

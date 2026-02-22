@@ -98,6 +98,37 @@ function parseArgs() {
   return args;
 }
 
+// Rotate log file if it exceeds MAX_LOG_SIZE (size-based rotation)
+function rotateSizeBasedIfNeeded() {
+  if (!fs.existsSync(OVERRIDE_LOG)) return;
+  const stats = fs.statSync(OVERRIDE_LOG);
+  if (stats.size <= MAX_LOG_SIZE) return;
+
+  const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
+  if (!isSafeToWrite(backupFile)) return;
+
+  try {
+    fs.renameSync(OVERRIDE_LOG, backupFile);
+  } catch {
+    fs.copyFileSync(OVERRIDE_LOG, backupFile);
+    fs.unlinkSync(OVERRIDE_LOG);
+  }
+  console.log(`Override log rotated to ${path.basename(backupFile)}`);
+}
+
+// Rotate log file by entry count (keep 60 of last 100, only when > 64KB)
+function rotateEntryBasedIfNeeded() {
+  if (!rotateJsonl) return;
+  try {
+    const { size } = fs.lstatSync(OVERRIDE_LOG);
+    if (size > 64 * 1024) {
+      rotateJsonl(OVERRIDE_LOG, 100, 60);
+    }
+  } catch {
+    // Non-fatal: rotation failure should not block override logging
+  }
+}
+
 // Log an override
 function logOverride(check, reason) {
   try {
@@ -118,37 +149,12 @@ function logOverride(check, reason) {
   };
 
   try {
-    // Check log size and rotate if needed
-    if (fs.existsSync(OVERRIDE_LOG)) {
-      const stats = fs.statSync(OVERRIDE_LOG);
-      if (stats.size > MAX_LOG_SIZE) {
-        const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
-        if (isSafeToWrite(backupFile)) {
-          try {
-            fs.renameSync(OVERRIDE_LOG, backupFile);
-          } catch {
-            fs.copyFileSync(OVERRIDE_LOG, backupFile);
-            fs.unlinkSync(OVERRIDE_LOG);
-          }
-          console.log(`Override log rotated to ${path.basename(backupFile)}`);
-        }
-      }
-    }
+    rotateSizeBasedIfNeeded();
 
     if (!isSafeToWrite(OVERRIDE_LOG)) return null;
     fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
 
-    // Entry-count-based rotation (keep 60 of last 100, only when file exceeds 64KB)
-    try {
-      if (rotateJsonl) {
-        const { size } = fs.lstatSync(OVERRIDE_LOG);
-        if (size > 64 * 1024) {
-          rotateJsonl(OVERRIDE_LOG, 100, 60);
-        }
-      }
-    } catch {
-      // Non-fatal: rotation failure should not block override logging
-    }
+    rotateEntryBasedIfNeeded();
 
     return entry;
   } catch (err) {

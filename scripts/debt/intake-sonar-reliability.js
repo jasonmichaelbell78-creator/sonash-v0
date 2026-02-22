@@ -2487,8 +2487,10 @@ function isWriteSafe(filePath) {
 
 function writeNewItems(newItems) {
   const now = new Date().toISOString();
+  const ingestedUser = process.env.USER || process.env.USERNAME || "unknown";
   for (const item of newItems) {
     item.ingested_by = "intake-sonar-reliability";
+    item.ingested_user = ingestedUser;
     item.ingested_at = now;
   }
   const newLines = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
@@ -2514,12 +2516,12 @@ function writeNewItems(newItems) {
     fs.renameSync(masterTmp, MASTER_FILE);
     try {
       fs.renameSync(dedupedTmp, DEDUPED_FILE);
-    } catch (renameErr) {
+    } catch (error_) {
       console.error(
         `CRITICAL: MASTER_FILE updated but DEDUPED_FILE rename failed. ` +
           `Manually rename ${dedupedTmp} to ${DEDUPED_FILE} to restore consistency.`
       );
-      throw renameErr;
+      throw error_;
     }
     console.log(`\nAppended ${newItems.length} items to MASTER_DEBT.jsonl`);
     console.log(`Appended ${newItems.length} items to raw/deduped.jsonl`);
@@ -2532,7 +2534,16 @@ function writeNewItems(newItems) {
       }
     }
     const msg = err instanceof Error ? err.message : String(err);
-    console.error(`ERROR writing files: ${msg.replaceAll(/[/\\][\w./-]+/g, "<path>")}`);
+    // Sanitize file paths from error messages — use string parsing instead of regex
+    // to avoid ReDoS concerns (SonarCloud S5852)
+    const sanitizedMsg = msg
+      .split(/\s+/)
+      .map((word) => {
+        if (word.includes("/") || word.includes("\\")) return "<path>";
+        return word;
+      })
+      .join(" ");
+    console.error(`ERROR writing files: ${sanitizedMsg}`);
     process.exit(1);
   }
 

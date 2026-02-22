@@ -42,24 +42,29 @@ function generateContentHash(item) {
   return crypto.createHash("sha256").update(hashInput).digest("hex");
 }
 
-function loadExistingHashes() {
-  const hashes = new Set();
-  for (const filePath of [MASTER_FILE, OUTPUT_FILE]) {
-    if (!fs.existsSync(filePath)) continue;
+function collectHashesFromFile(filePath, hashes) {
+  if (!fs.existsSync(filePath)) return;
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf8").replaceAll("\uFEFF", "");
+  } catch {
+    return;
+  }
+  for (const line of content.split("\n")) {
+    if (!line.trim()) continue;
     try {
-      const content = fs.readFileSync(filePath, "utf8").replaceAll("\uFEFF", "");
-      for (const line of content.split("\n")) {
-        if (!line.trim()) continue;
-        try {
-          const item = JSON.parse(line);
-          if (item.content_hash) hashes.add(item.content_hash);
-        } catch {
-          // skip
-        }
-      }
+      const item = JSON.parse(line);
+      if (item.content_hash) hashes.add(item.content_hash);
     } catch {
       // skip
     }
+  }
+}
+
+function loadExistingHashes() {
+  const hashes = new Set();
+  for (const filePath of [MASTER_FILE, OUTPUT_FILE]) {
+    collectHashesFromFile(filePath, hashes);
   }
   return hashes;
 }
@@ -119,6 +124,67 @@ function detectCategory(text, context) {
   return "code-quality";
 }
 
+/**
+ * Try to extract a Gap item from a trimmed line.
+ * Returns an item object or null.
+ */
+function tryExtractGap(trimmed, i, currentDomain, currentComponent, sourceFile) {
+  const gapMatch = trimmed.match(/^[-*]?\s*(?:\*\*)?Gap(?:\*\*)?:\s*(.+)/i);
+  if (!gapMatch) return null;
+
+  const gapText = gapMatch[1].trim();
+  // Skip very short or non-actionable items
+  if (gapText.length < 15) return null;
+  if (/unknown|unclear|not examined/i.test(gapText)) return null;
+
+  const filePath = extractFilePath(gapText) || extractFilePath(currentComponent);
+  return {
+    title: gapText.substring(0, 200),
+    description: `${currentDomain} > ${currentComponent}: ${gapText}`.substring(0, 500),
+    file: filePath,
+    line: i + 1,
+    category: detectCategory(gapText, currentDomain),
+    severity: "S3",
+    sourceFile,
+    sourceLine: i + 1,
+  };
+}
+
+/**
+ * Try to extract a FINDING item from a trimmed line.
+ * Returns an item object or null.
+ */
+function tryExtractFinding(trimmed, i, lines, currentDomain, sourceFile) {
+  const findingMatch = trimmed.match(/^###?\s*(?:\*\*)?FINDING-([A-Z0-9]+)(?:\*\*)?:\s*(.+)/);
+  if (!findingMatch) return null;
+
+  const findingId = findingMatch[1];
+  const findingTitle = findingMatch[2].replaceAll("*", "").trim();
+
+  // Collect description from next few lines
+  let desc = findingTitle;
+  for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
+    const nextLine = lines[j].trim();
+    if (nextLine.startsWith("#") || nextLine === "") break;
+    if (nextLine.startsWith("- **")) {
+      desc += " " + nextLine.replace(/^-\s*\*\*.*?\*\*:?\s*/, "");
+    }
+  }
+
+  const filePath = extractFilePath(desc);
+  return {
+    title: findingTitle.substring(0, 200),
+    description: desc.substring(0, 500),
+    file: filePath,
+    line: i + 1,
+    category: detectCategory(findingTitle + " " + desc, currentDomain),
+    severity: /critical|security|data.?loss/i.test(findingTitle) ? "S1" : "S2",
+    sourceFile,
+    sourceLine: i + 1,
+    findingId: `FINDING-${findingId}`,
+  };
+}
+
 function extractFromMarkdown(content, sourceFile) {
   const items = [];
   const lines = content.split(/\r?\n/);
@@ -126,8 +192,7 @@ function extractFromMarkdown(content, sourceFile) {
   let currentComponent = "";
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
+    const trimmed = lines[i].trim();
 
     // Track headings for context
     if (/^#{1,4}\s/.test(trimmed)) {
@@ -142,56 +207,15 @@ function extractFromMarkdown(content, sourceFile) {
       }
     }
 
-    // Pattern 1: "Gap:" or "- Gap:" lines
-    const gapMatch = trimmed.match(/^[-*]?\s*(?:\*\*)?Gap(?:\*\*)?:\s*(.+)/i);
-    if (gapMatch) {
-      const gapText = gapMatch[1].trim();
-      // Skip very short or non-actionable items
-      if (gapText.length < 15) continue;
-      if (/unknown|unclear|not examined/i.test(gapText)) continue;
-
-      const filePath = extractFilePath(gapText) || extractFilePath(currentComponent);
-      items.push({
-        title: gapText.substring(0, 200),
-        description: `${currentDomain} > ${currentComponent}: ${gapText}`.substring(0, 500),
-        file: filePath,
-        line: i + 1,
-        category: detectCategory(gapText, currentDomain),
-        severity: "S3",
-        sourceFile,
-        sourceLine: i + 1,
-      });
+    const gap = tryExtractGap(trimmed, i, currentDomain, currentComponent, sourceFile);
+    if (gap) {
+      items.push(gap);
       continue;
     }
 
-    // Pattern 2: "FINDING-XXX:" entries
-    const findingMatch = trimmed.match(/^###?\s*(?:\*\*)?FINDING-([A-Z0-9]+)(?:\*\*)?:\s*(.+)/);
-    if (findingMatch) {
-      const findingId = findingMatch[1];
-      const findingTitle = findingMatch[2].replaceAll("*", "").trim();
-
-      // Collect description from next few lines
-      let desc = findingTitle;
-      for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
-        const nextLine = lines[j].trim();
-        if (nextLine.startsWith("#") || nextLine === "") break;
-        if (nextLine.startsWith("- **")) {
-          desc += " " + nextLine.replace(/^-\s*\*\*.*?\*\*:?\s*/, "");
-        }
-      }
-
-      const filePath = extractFilePath(desc);
-      items.push({
-        title: findingTitle.substring(0, 200),
-        description: desc.substring(0, 500),
-        file: filePath,
-        line: i + 1,
-        category: detectCategory(findingTitle + " " + desc, currentDomain),
-        severity: /critical|security|data.?loss/i.test(findingTitle) ? "S1" : "S2",
-        sourceFile,
-        sourceLine: i + 1,
-        findingId: `FINDING-${findingId}`,
-      });
+    const finding = tryExtractFinding(trimmed, i, lines, currentDomain, sourceFile);
+    if (finding) {
+      items.push(finding);
     }
   }
 

@@ -27,14 +27,30 @@ const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 /**
  * Load MASTER_DEBT.jsonl — returns { items, hashSet, maxId }
  */
+/**
+ * Parse a single JSONL line and accumulate hash/id info.
+ * Returns true if parsed successfully, false otherwise.
+ */
+function parseMasterLine(line, hashSet, idState) {
+  const item = JSON.parse(line);
+  if (item.content_hash) hashSet.add(item.content_hash);
+  if (item.id) {
+    const match = item.id.match(/DEBT-(\d+)/);
+    if (match) {
+      const num = Number.parseInt(match[1], 10);
+      if (num > idState.maxId) idState.maxId = num;
+    }
+  }
+}
+
 function loadMaster() {
   const hashSet = new Set();
-  let maxId = 0;
+  const idState = { maxId: 0 };
   let itemCount = 0;
   let badLines = 0;
 
   if (!fs.existsSync(MASTER_FILE)) {
-    return { hashSet, maxId, itemCount, badLines };
+    return { hashSet, maxId: idState.maxId, itemCount, badLines };
   }
 
   let content;
@@ -49,28 +65,14 @@ function loadMaster() {
   const lines = content.split("\n").filter((l) => l.trim());
   for (const line of lines) {
     try {
-      const item = JSON.parse(line);
+      parseMasterLine(line, hashSet, idState);
       itemCount++;
-
-      // Track content hashes for dedup
-      if (item.content_hash) {
-        hashSet.add(item.content_hash);
-      }
-
-      // Track max DEBT-XXXX ID
-      if (item.id) {
-        const match = item.id.match(/DEBT-(\d+)/);
-        if (match) {
-          const num = Number.parseInt(match[1], 10);
-          if (num > maxId) maxId = num;
-        }
-      }
     } catch {
       badLines++;
     }
   }
 
-  return { hashSet, maxId, itemCount, badLines };
+  return { hashSet, maxId: idState.maxId, itemCount, badLines };
 }
 
 /**

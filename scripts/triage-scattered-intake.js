@@ -163,27 +163,11 @@ function isStale(item) {
 }
 
 // ---------------------------------------------------------------------------
-// Main
+// Triage helpers (extracted from main to reduce cognitive complexity)
 // ---------------------------------------------------------------------------
 
-function main() {
-  console.log("=== Scattered Intake Triage ===\n");
-
-  // 1. Read inputs
-  const scattered = readJsonl(SCATTERED);
-  const master = readJsonl(MASTER);
-
-  // Filter to only the 374 target prefixes
-  const TARGET_PREFIXES = ["INTAKE-CODE", "INTAKE-REPORT", "INTAKE-ROAD"];
-  const candidates = scattered.filter((item) =>
-    TARGET_PREFIXES.some((p) => (item.id || "").startsWith(p))
-  );
-
-  console.log(`Scattered total: ${scattered.length}`);
-  console.log(`Target items (CODE+REPORT+ROAD): ${candidates.length}`);
-  console.log(`MASTER_DEBT items: ${master.length}`);
-
-  // 2. Build MASTER index for dedup
+/** Builds masterTitles array, masterHashes set, and finds max DEBT ID */
+function buildMasterIndex(master) {
   const masterTitles = master.map((m) => ({
     id: m.id,
     normTitle: normalize(m.title),
@@ -193,7 +177,6 @@ function main() {
 
   const masterHashes = new Set(master.map((m) => m.content_hash));
 
-  // Find max DEBT ID
   let maxDebtId = 0;
   for (const m of master) {
     const match = (m.id || "").match(/DEBT-(\d+)/);
@@ -202,127 +185,98 @@ function main() {
       if (n > maxDebtId) maxDebtId = n;
     }
   }
-  console.log(`Max DEBT ID: DEBT-${String(maxDebtId).padStart(4, "0")}`);
 
-  // 3. Triage each candidate
-  const results = {
-    INGEST: [],
-    DUPLICATE: [],
-    STALE: [],
-    VAGUE: [],
-  };
+  return { masterTitles, masterHashes, maxDebtId };
+}
 
-  for (const item of candidates) {
-    // 3a. Check exact content_hash duplicate
-    if (item.content_hash && masterHashes.has(item.content_hash)) {
-      results.DUPLICATE.push({ ...item, triage_reason: "exact hash match in MASTER" });
-      continue;
-    }
+/** Checks fuzzy title duplicate against master index */
+function findFuzzyDuplicate(item, masterTitles) {
+  for (const mt of masterTitles) {
+    const sim = titleSimilarity(item.title, mt.normTitle);
+    if (sim >= 0.7) return mt.id;
+    if (item.file && item.file === mt.file && sim >= 0.5) return mt.id;
+  }
+  return null;
+}
 
-    // 3b. Check vagueness (section headers, non-actionable)
-    if (isVague(item)) {
-      results.VAGUE.push({ ...item, triage_reason: "non-actionable or section header" });
-      continue;
-    }
+/** Checks if an INTAKE-REPORT item is a generic finding without file specificity */
+function isGenericReportFinding(item) {
+  if (!item.id.startsWith("INTAKE-REPORT")) return false;
+  const d = item.description || "";
+  if (item.file || !d.startsWith("Finding from") || item.title.length >= 60) return false;
 
-    // 3c. Check staleness (completed items, missing files)
-    if (isStale(item)) {
-      const reason = /✅|done\)|completed\)/i.test(`${item.title} ${item.description}`)
-        ? "marked as done/completed"
-        : `referenced file missing: ${item.file}`;
-      results.STALE.push({ ...item, triage_reason: reason });
-      continue;
-    }
+  const genericPatterns = [
+    /^add /i,
+    /^implement /i,
+    /^create /i,
+    /^consider /i,
+    /^improve /i,
+    /^enhance /i,
+    /^update /i,
+    /^fix /i,
+    /^resolve /i,
+    /^address /i,
+    /^remove /i,
+    /^clean/i,
+    /^refactor/i,
+    /^optimize/i,
+  ];
+  return genericPatterns.some((p) => p.test(item.title)) && !item.file && item.title.length < 45;
+}
 
-    // 3d. Fuzzy title duplicate check
-    let isDuplicate = false;
-    let dupMatch = null;
-    for (const mt of masterTitles) {
-      const sim = titleSimilarity(item.title, mt.normTitle);
-      if (sim >= 0.7) {
-        isDuplicate = true;
-        dupMatch = mt.id;
-        break;
-      }
-      // Also check if same file + very similar title
-      if (item.file && item.file === mt.file && sim >= 0.5) {
-        isDuplicate = true;
-        dupMatch = mt.id;
-        break;
-      }
-    }
-    if (isDuplicate) {
-      results.DUPLICATE.push({
-        ...item,
-        triage_reason: `fuzzy title match with ${dupMatch}`,
-      });
-      continue;
-    }
-
-    // 3e. Additional vagueness checks for INTAKE-REPORT
-    if (item.id.startsWith("INTAKE-REPORT")) {
-      // Reports with no file reference and generic descriptions are usually
-      // high-level findings already captured at a more granular level
-      const d = item.description || "";
-      if (!item.file && d.startsWith("Finding from") && item.title.length < 60) {
-        // Check if title is overly generic
-        const genericPatterns = [
-          /^add /i,
-          /^implement /i,
-          /^create /i,
-          /^consider /i,
-          /^improve /i,
-          /^enhance /i,
-          /^update /i,
-          /^fix /i,
-          /^resolve /i,
-          /^address /i,
-          /^remove /i,
-          /^clean/i,
-          /^refactor/i,
-          /^optimize/i,
-        ];
-        const startsGeneric = genericPatterns.some((p) => p.test(item.title));
-        // If generic AND no specific file, it's likely a high-level wish
-        if (startsGeneric && !item.file && item.title.length < 45) {
-          results.VAGUE.push({
-            ...item,
-            triage_reason: "generic report finding without file specificity",
-          });
-          continue;
-        }
-      }
-    }
-
-    // Passes all filters → INGEST
-    results.INGEST.push(item);
+/** Triages a single candidate item, returns { category, item } */
+function triageCandidate(item, masterTitles, masterHashes) {
+  // Exact content_hash duplicate
+  if (item.content_hash && masterHashes.has(item.content_hash)) {
+    return {
+      category: "DUPLICATE",
+      item: { ...item, triage_reason: "exact hash match in MASTER" },
+    };
   }
 
-  // 4. Print summary
-  console.log("\n--- Triage Results ---");
-  console.log(`INGEST:    ${results.INGEST.length}`);
-  console.log(`DUPLICATE: ${results.DUPLICATE.length}`);
-  console.log(`STALE:     ${results.STALE.length}`);
-  console.log(`VAGUE:     ${results.VAGUE.length}`);
-  console.log(`TOTAL:     ${candidates.length}`);
-
-  // Breakdown by prefix
-  for (const cat of ["INGEST", "DUPLICATE", "STALE", "VAGUE"]) {
-    const byPrefix = {};
-    for (const item of results[cat]) {
-      const prefix = (item.id || "").replace(/-\d+$/, "");
-      byPrefix[prefix] = (byPrefix[prefix] || 0) + 1;
-    }
-    if (Object.keys(byPrefix).length > 0) {
-      console.log(`  ${cat} by prefix: ${JSON.stringify(byPrefix)}`);
-    }
+  // Vagueness (section headers, non-actionable)
+  if (isVague(item)) {
+    return {
+      category: "VAGUE",
+      item: { ...item, triage_reason: "non-actionable or section header" },
+    };
   }
 
-  // 5. Assign DEBT IDs and append to MASTER
+  // Staleness (completed items, missing files)
+  if (isStale(item)) {
+    const reason = /✅|done\)|completed\)/i.test(`${item.title} ${item.description}`)
+      ? "marked as done/completed"
+      : `referenced file missing: ${item.file}`;
+    return { category: "STALE", item: { ...item, triage_reason: reason } };
+  }
+
+  // Fuzzy title duplicate check
+  const dupMatch = findFuzzyDuplicate(item, masterTitles);
+  if (dupMatch) {
+    return {
+      category: "DUPLICATE",
+      item: { ...item, triage_reason: `fuzzy title match with ${dupMatch}` },
+    };
+  }
+
+  // Additional vagueness checks for INTAKE-REPORT
+  if (isGenericReportFinding(item)) {
+    return {
+      category: "VAGUE",
+      item: { ...item, triage_reason: "generic report finding without file specificity" },
+    };
+  }
+
+  // Passes all filters
+  return { category: "INGEST", item };
+}
+
+/** Assigns DEBT IDs to ingested items and builds the append array */
+function buildIngestItems(ingestItems, maxDebtId) {
   let nextId = maxDebtId + 1;
   const toAppend = [];
 
-  for (const item of results.INGEST) {
+  for (const item of ingestItems) {
     const debtId = `DEBT-${String(nextId).padStart(4, "0")}`;
     const newItem = {
       ...item,
@@ -339,6 +293,11 @@ function main() {
     nextId++;
   }
 
+  return toAppend;
+}
+
+/** Appends new items to MASTER and syncs to deduped */
+function writeResults(toAppend) {
   if (toAppend.length > 0) {
     const appendStr = toAppend.map((i) => JSON.stringify(i)).join("\n") + "\n";
     fs.appendFileSync(MASTER, appendStr);
@@ -351,8 +310,10 @@ function main() {
   } else {
     console.log("\nNo items to ingest.");
   }
+}
 
-  // 6. Write detailed triage report
+/** Writes the detailed triage report JSONL */
+function writeTriageReport(results, toAppend) {
   const reportLines = [];
   for (const cat of ["INGEST", "DUPLICATE", "STALE", "VAGUE"]) {
     for (const item of results[cat]) {
@@ -374,8 +335,31 @@ function main() {
   fs.writeFileSync(REPORT, reportLines.join("\n") + "\n");
   console.log(`\nTriage report written to: ${path.relative(ROOT, REPORT)}`);
   console.log(`  (${reportLines.length} entries)`);
+}
 
-  // 7. Print INGEST sample
+/** Prints triage summary and sample items */
+function printReport(results, candidates, toAppend) {
+  // Summary
+  console.log("\n--- Triage Results ---");
+  console.log(`INGEST:    ${results.INGEST.length}`);
+  console.log(`DUPLICATE: ${results.DUPLICATE.length}`);
+  console.log(`STALE:     ${results.STALE.length}`);
+  console.log(`VAGUE:     ${results.VAGUE.length}`);
+  console.log(`TOTAL:     ${candidates.length}`);
+
+  // Breakdown by prefix
+  for (const cat of ["INGEST", "DUPLICATE", "STALE", "VAGUE"]) {
+    const byPrefix = {};
+    for (const item of results[cat]) {
+      const prefix = (item.id || "").replace(/-\d+$/, "");
+      byPrefix[prefix] = (byPrefix[prefix] || 0) + 1;
+    }
+    if (Object.keys(byPrefix).length > 0) {
+      console.log(`  ${cat} by prefix: ${JSON.stringify(byPrefix)}`);
+    }
+  }
+
+  // INGEST sample
   if (toAppend.length > 0) {
     console.log("\n--- Sample Ingested Items ---");
     const sample = toAppend.slice(0, 10);
@@ -387,7 +371,7 @@ function main() {
     }
   }
 
-  // 8. Print discard samples
+  // Discard samples
   for (const cat of ["DUPLICATE", "STALE", "VAGUE"]) {
     if (results[cat].length > 0) {
       console.log(`\n--- Sample ${cat} Items ---`);
@@ -397,6 +381,49 @@ function main() {
       }
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+function main() {
+  console.log("=== Scattered Intake Triage ===\n");
+
+  // 1. Read inputs
+  const scattered = readJsonl(SCATTERED);
+  const master = readJsonl(MASTER);
+
+  // Filter to only the 374 target prefixes
+  const TARGET_PREFIXES = ["INTAKE-CODE", "INTAKE-REPORT", "INTAKE-ROAD"];
+  const candidates = scattered.filter((item) =>
+    TARGET_PREFIXES.some((p) => (item.id || "").startsWith(p))
+  );
+
+  console.log(`Scattered total: ${scattered.length}`);
+  console.log(`Target items (CODE+REPORT+ROAD): ${candidates.length}`);
+  console.log(`MASTER_DEBT items: ${master.length}`);
+
+  // 2. Build MASTER index for dedup
+  const { masterTitles, masterHashes, maxDebtId } = buildMasterIndex(master);
+  console.log(`Max DEBT ID: DEBT-${String(maxDebtId).padStart(4, "0")}`);
+
+  // 3. Triage each candidate
+  const results = { INGEST: [], DUPLICATE: [], STALE: [], VAGUE: [] };
+  for (const item of candidates) {
+    const { category, item: triaged } = triageCandidate(item, masterTitles, masterHashes);
+    results[category].push(triaged);
+  }
+
+  // 4. Print summary
+  const toAppend = buildIngestItems(results.INGEST, maxDebtId);
+  printReport(results, candidates, toAppend);
+
+  // 5. Write results
+  writeResults(toAppend);
+
+  // 6. Write detailed triage report
+  writeTriageReport(results, toAppend);
 }
 
 main();
