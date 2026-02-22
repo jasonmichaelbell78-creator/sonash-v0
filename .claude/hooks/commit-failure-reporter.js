@@ -23,7 +23,7 @@ let isSafeToWrite, rotateJsonl, sanitizeInput;
 try {
   isSafeToWrite = require("./lib/symlink-guard").isSafeToWrite;
 } catch {
-  isSafeToWrite = () => true;
+  isSafeToWrite = () => false;
 }
 try {
   rotateJsonl = require("./lib/rotate-state").rotateJsonl;

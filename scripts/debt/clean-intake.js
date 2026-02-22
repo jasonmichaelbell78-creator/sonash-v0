@@ -107,7 +107,10 @@ function similarity(a, b) {
  */
 function fileExists(filePath) {
   if (!filePath) return false;
-  const abs = path.isAbsolute(filePath) ? filePath : path.join(PROJECT_ROOT, filePath);
+  const abs = path.isAbsolute(filePath)
+    ? path.resolve(filePath)
+    : path.resolve(PROJECT_ROOT, filePath);
+  if (!abs.startsWith(PROJECT_ROOT + path.sep)) return false;
   try {
     return fs.existsSync(abs);
   } catch {

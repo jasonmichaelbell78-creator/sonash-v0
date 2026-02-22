@@ -337,12 +337,11 @@ if (writeMode) {
     }
   }
 
-  // Atomic write to MASTER_DEBT.jsonl
-  const tmpPath = MASTER_PATH + ".tmp";
-  fs.writeFileSync(tmpPath, updatedLines.join("\n") + "\n", "utf8");
-  fs.renameSync(tmpPath, MASTER_PATH);
+  // Stage both tmp files
+  const masterTmpPath = MASTER_PATH + ".tmp";
+  fs.writeFileSync(masterTmpPath, updatedLines.join("\n") + "\n", "utf8");
 
-  // Also update deduped.jsonl to keep in sync (per MEMORY.md)
+  let dedupedTmpPath = null;
   if (fs.existsSync(DEDUPED_PATH)) {
     const dedupedLines = fs.readFileSync(DEDUPED_PATH, "utf8").split("\n").filter(Boolean);
     const dedupedUpdated = [];
@@ -368,9 +367,21 @@ if (writeMode) {
         dedupedUpdated.push(line);
       }
     }
-    const dedupedTmp = DEDUPED_PATH + ".tmp";
-    fs.writeFileSync(dedupedTmp, dedupedUpdated.join("\n") + "\n", "utf8");
-    fs.renameSync(dedupedTmp, DEDUPED_PATH);
+    dedupedTmpPath = DEDUPED_PATH + ".tmp";
+    fs.writeFileSync(dedupedTmpPath, dedupedUpdated.join("\n") + "\n", "utf8");
+  }
+
+  // Commit atomically
+  fs.renameSync(masterTmpPath, MASTER_PATH);
+  try {
+    if (dedupedTmpPath) fs.renameSync(dedupedTmpPath, DEDUPED_PATH);
+  } catch (renameErr) {
+    try {
+      fs.renameSync(MASTER_PATH, masterTmpPath);
+    } catch {
+      /* ignore */
+    }
+    throw renameErr;
   }
 
   console.log("═══════════════════════════════════════════════════════════");

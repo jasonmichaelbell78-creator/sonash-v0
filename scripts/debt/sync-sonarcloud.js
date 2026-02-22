@@ -253,6 +253,9 @@ async function confirm(message) {
 // Build authorization headers for SonarCloud API.
 // Token is sourced from SONAR_TOKEN env var at runtime, never hardcoded.
 function buildAuthHeaders(token) {
+  if (typeof token !== "string" || token.trim() === "") {
+    throw new Error("Missing SonarCloud token");
+  }
   return { Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}` }; // NOSONAR — token from env var, not hardcoded
 }
 
@@ -736,14 +739,19 @@ function deduplicateAndAssignIds(issues, existingItems, preConverted = []) {
   const convertedIssues = [];
   for (const issue of issues) {
     try {
-      convertedIssues.push({ converted: convertIssue(issue), key: issue.key });
+      const converted = convertIssue(issue);
+      const key = issue && typeof issue.key === "string" ? issue.key : "";
+      if (!key || !converted.sonar_key) continue;
+      convertedIssues.push({ converted, key });
     } catch {
       // Skip malformed issues — a single bad issue should not crash the sync
     }
   }
   const allConverted = [
     ...convertedIssues,
-    ...preConverted.map((item) => ({ converted: item, key: item.sonar_key })),
+    ...preConverted
+      .filter((item) => item && typeof item.sonar_key === "string" && item.sonar_key.trim() !== "")
+      .map((item) => ({ converted: item, key: item.sonar_key })),
   ];
 
   for (const { converted, key } of allConverted) {

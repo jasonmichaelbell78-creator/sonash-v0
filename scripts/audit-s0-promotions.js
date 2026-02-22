@@ -335,10 +335,6 @@ function applyDemotions(master, deduped, demotedToS1, demotedToS2) {
     return item;
   });
 
-  const masterOutput = updatedMaster.map((i) => JSON.stringify(i)).join("\n") + "\n";
-  fs.writeFileSync(MASTER_PATH, masterOutput, "utf8");
-  console.log(`Wrote ${MASTER_PATH} (${changedCount} items modified)`);
-
   const updatedDeduped = deduped.map((item) => {
     const newSev = demotionMap.get(item.id);
     if (newSev) {
@@ -346,8 +342,26 @@ function applyDemotions(master, deduped, demotedToS1, demotedToS2) {
     }
     return item;
   });
+  const masterOutput = updatedMaster.map((i) => JSON.stringify(i)).join("\n") + "\n";
   const dedupedOutput = updatedDeduped.map((i) => JSON.stringify(i)).join("\n") + "\n";
-  fs.writeFileSync(DEDUPED_PATH, dedupedOutput, "utf8");
+
+  const masterTmp = MASTER_PATH + ".tmp";
+  const dedupedTmp = DEDUPED_PATH + ".tmp";
+  fs.writeFileSync(masterTmp, masterOutput, "utf8");
+  fs.writeFileSync(dedupedTmp, dedupedOutput, "utf8");
+
+  fs.renameSync(masterTmp, MASTER_PATH);
+  try {
+    fs.renameSync(dedupedTmp, DEDUPED_PATH);
+  } catch (renameErr) {
+    try {
+      fs.renameSync(MASTER_PATH, masterTmp);
+    } catch {
+      /* ignore */
+    }
+    throw renameErr;
+  }
+  console.log(`Wrote ${MASTER_PATH} (${changedCount} items modified)`);
   console.log(`Wrote ${DEDUPED_PATH} (synced)`);
 
   return updatedMaster;

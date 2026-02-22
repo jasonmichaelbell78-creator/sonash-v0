@@ -23,6 +23,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { refuseSymlinkWithParents } = require("../lib/security-helpers");
 
 const ROOT = path.join(__dirname, "../..");
 const MASTER_PATH = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
@@ -71,6 +72,7 @@ function readJsonl(filePath) {
  * @param {object[]} items
  */
 function writeJsonl(filePath, items) {
+  refuseSymlinkWithParents(filePath);
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
   try {
     fs.writeFileSync(filePath, content, "utf8");

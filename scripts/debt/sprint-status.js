@@ -278,9 +278,12 @@ function checkDedupedSynced(masterItems, dedupedByHash) {
   let checked = 0;
   for (const mItem of sample) {
     if (!mItem.content_hash) continue;
-    const dItem = dedupedByHash.get(mItem.content_hash);
-    if (!dItem) continue;
     checked++;
+    const dItem = dedupedByHash.get(mItem.content_hash);
+    if (!dItem) {
+      mismatches++;
+      continue;
+    }
     if (dItem.severity !== mItem.severity || dItem.status !== mItem.status) {
       mismatches++;
     }
@@ -293,7 +296,12 @@ function checkMetricsStale(metrics, masterMtime) {
   if (!metrics) return { metricsStale: true, metricsAge: "missing" };
   if (!metrics.generated || !masterMtime) return { metricsStale: false, metricsAge: "unknown" };
 
-  const gapMs = masterMtime.getTime() - new Date(metrics.generated).getTime();
+  const generatedMs = new Date(metrics.generated).getTime();
+  if (!Number.isFinite(generatedMs)) {
+    return { metricsStale: true, metricsAge: "invalid_generated" };
+  }
+
+  const gapMs = masterMtime.getTime() - generatedMs;
   return {
     metricsStale: gapMs > 3600000,
     metricsAge: formatAge(Math.abs(gapMs)),
@@ -497,10 +505,12 @@ function formatAllSprintsSection(allSprints) {
 function formatDashboard(result) {
   const lines = ["", "=== TDMS Sprint Dashboard ===", `Generated: ${result.timestamp}`, ""];
 
-  lines.push(...formatActiveSprintSection(result.activeSprint));
-  lines.push(...formatPipelineSection(result.pipeline));
-  lines.push(...formatUnplacedSection(result.unplacedItems));
-  lines.push(...formatAllSprintsSection(result.allSprints));
+  lines.push(
+    ...formatActiveSprintSection(result.activeSprint),
+    ...formatPipelineSection(result.pipeline),
+    ...formatUnplacedSection(result.unplacedItems),
+    ...formatAllSprintsSection(result.allSprints)
+  );
 
   return lines.join("\n");
 }

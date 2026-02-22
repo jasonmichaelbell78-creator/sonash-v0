@@ -2471,7 +2471,15 @@ function printSummary(dedupedInput, alreadyTracked, newItems) {
  * Check if a path is safe to write (not a symlink).
  */
 function isWriteSafe(filePath) {
-  for (const p of [path.dirname(filePath), filePath]) {
+  const toCheck = [filePath];
+  let cur = path.resolve(path.dirname(filePath));
+  while (true) {
+    toCheck.push(cur);
+    const parent = path.dirname(cur);
+    if (parent === cur) break;
+    cur = parent;
+  }
+  for (const p of toCheck) {
     try {
       const stat = fs.lstatSync(p);
       if (stat.isSymbolicLink()) {
@@ -2517,9 +2525,15 @@ function writeNewItems(newItems) {
     try {
       fs.renameSync(dedupedTmp, DEDUPED_FILE);
     } catch (error_) {
+      // Rollback: restore master from backup
+      try {
+        fs.renameSync(MASTER_FILE, masterTmp);
+      } catch {
+        /* ignore rollback failure */
+      }
       console.error(
-        `CRITICAL: MASTER_FILE updated but DEDUPED_FILE rename failed. ` +
-          `Manually rename ${dedupedTmp} to ${DEDUPED_FILE} to restore consistency.`
+        `CRITICAL: DEDUPED_FILE rename failed, rolled back MASTER_FILE. ` +
+          `Manually rename ${dedupedTmp} to ${DEDUPED_FILE} if needed.`
       );
       throw error_;
     }
@@ -2537,7 +2551,7 @@ function writeNewItems(newItems) {
     // Sanitize file paths from error messages — use string parsing instead of regex
     // to avoid ReDoS concerns (SonarCloud S5852)
     const sanitizedMsg = msg
-      .split(/\s+/)
+      .split(" ")
       .map((word) => {
         if (word.includes("/") || word.includes("\\")) return "<path>";
         return word;

@@ -283,7 +283,7 @@ function buildIngestItems(ingestItems, maxDebtId) {
       id: debtId,
       content_hash: contentHash(item),
       status: "NEW",
-      created: "2026-02-21",
+      created: new Date().toISOString().split("T")[0],
       intake_source_id: item.id, // preserve original intake ID
     };
     // Remove triage artifacts
@@ -337,6 +337,18 @@ function writeTriageReport(results, toAppend) {
   console.log(`  (${reportLines.length} entries)`);
 }
 
+/** Log breakdown by ID prefix for a category */
+function printPrefixBreakdown(cat, items) {
+  const byPrefix = {};
+  for (const item of items) {
+    const prefix = (item.id || "").replace(/-\d+$/, "");
+    byPrefix[prefix] = (byPrefix[prefix] || 0) + 1;
+  }
+  if (Object.keys(byPrefix).length > 0) {
+    console.log(`  ${cat} by prefix: ${JSON.stringify(byPrefix)}`);
+  }
+}
+
 /** Prints triage summary and sample items */
 function printReport(results, candidates, toAppend) {
   // Summary
@@ -349,14 +361,7 @@ function printReport(results, candidates, toAppend) {
 
   // Breakdown by prefix
   for (const cat of ["INGEST", "DUPLICATE", "STALE", "VAGUE"]) {
-    const byPrefix = {};
-    for (const item of results[cat]) {
-      const prefix = (item.id || "").replace(/-\d+$/, "");
-      byPrefix[prefix] = (byPrefix[prefix] || 0) + 1;
-    }
-    if (Object.keys(byPrefix).length > 0) {
-      console.log(`  ${cat} by prefix: ${JSON.stringify(byPrefix)}`);
-    }
+    printPrefixBreakdown(cat, results[cat]);
   }
 
   // INGEST sample

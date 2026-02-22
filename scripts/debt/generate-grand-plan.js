@@ -98,7 +98,8 @@ function loadSprintIds(sprintKey) {
     return null;
   }
   try {
-    return readJson(filePath);
+    const raw = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(raw);
   } catch {
     console.debug(`Sprint IDs file unreadable: ${filePath}`);
     return null;

@@ -228,7 +228,8 @@ function fileExists(relPath) {
   const relCheck = path.relative(PROJECT_ROOT, absPath);
   if (relCheck === "" || relCheck.startsWith("..") || path.isAbsolute(relCheck)) return false;
   try {
-    return fs.existsSync(absPath);
+    const stat = fs.statSync(absPath);
+    return stat.isFile();
   } catch {
     return false;
   }
@@ -545,31 +546,55 @@ function writeAuditResults(masterItems, step3, report) {
   const dedupedItems = loadJsonl(DEDUPED_FILE);
   const dedupedUpdated = applyChanges(masterItems, dedupedItems, step3.promoted_to_verified);
 
-  // Write files
+  // Stage writes
+  const masterTmp = MASTER_FILE + ".tmp";
+  const dedupedTmp = DEDUPED_FILE + ".tmp";
   try {
-    saveJsonl(MASTER_FILE, masterItems);
+    const masterContent = masterItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
+    fs.writeFileSync(masterTmp, masterContent, "utf8");
+    if (dedupedUpdated > 0) {
+      const dedupedContent = dedupedItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
+      fs.writeFileSync(dedupedTmp, dedupedContent, "utf8");
+    }
+    // Commit atomically
+    fs.renameSync(masterTmp, MASTER_FILE);
+    if (dedupedUpdated > 0) {
+      try {
+        fs.renameSync(dedupedTmp, DEDUPED_FILE);
+      } catch (renameErr) {
+        try {
+          fs.renameSync(MASTER_FILE, masterTmp);
+        } catch {
+          /* ignore */
+        }
+        throw renameErr;
+      }
+    }
     console.log(
       `  Updated MASTER_DEBT.jsonl (${step3.promoted_to_verified.length} items promoted to VERIFIED)`
     );
-  } catch (err) {
-    console.error(`Failed to write MASTER_DEBT.jsonl: ${sanitizeError(err)}`);
-    process.exit(1);
-  }
-
-  if (dedupedUpdated > 0) {
-    try {
-      saveJsonl(DEDUPED_FILE, dedupedItems);
+    if (dedupedUpdated > 0) {
       console.log(`  Updated raw/deduped.jsonl (${dedupedUpdated} items synced)`);
-    } catch (err) {
-      console.error(`Failed to write deduped.jsonl: ${sanitizeError(err)}`);
-      process.exit(1);
+    } else {
+      console.log("  raw/deduped.jsonl: no matching items to sync");
     }
-  } else {
-    console.log("  raw/deduped.jsonl: no matching items to sync");
+  } catch (err) {
+    for (const tmp of [masterTmp, dedupedTmp]) {
+      try {
+        fs.unlinkSync(tmp);
+      } catch {
+        /* ignore */
+      }
+    }
+    console.error(`Failed to write audit results: ${sanitizeError(err)}`);
+    process.exit(1);
   }
 
   // Write report
   try {
+    if (!isWriteSafe(REPORT_FILE)) {
+      throw new Error(`Refusing to write report to symlink: ${REPORT_FILE}`);
+    }
     if (!fs.existsSync(LOG_DIR)) {
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }

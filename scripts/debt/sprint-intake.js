@@ -146,8 +146,8 @@ function resolveOverflow(entry, manifest) {
 function resolveTarget(filePath, manifest) {
   if (!filePath) return MANUAL;
 
-  const normalized = filePath.replaceAll("\\", "/");
-  if (/^\.\.(?:[/\\]|$)/.test(normalized)) return MANUAL;
+  const normalized = path.posix.normalize(filePath.replaceAll("\\", "/"));
+  if (/(^|\/)\.\.(\/|$)/.test(normalized)) return MANUAL;
 
   for (const entry of FOCUS_MAP) {
     if (entry.test(normalized)) {

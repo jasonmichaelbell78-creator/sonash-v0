@@ -260,7 +260,8 @@ function carryForward(sprintId, carryTo, remaining, debtMap, manifest) {
     process.exit(2);
   }
 
-  const existingIds = new Set(targetManifest.ids || []);
+  targetManifest.ids = Array.isArray(targetManifest.ids) ? targetManifest.ids : [];
+  const existingIds = new Set(targetManifest.ids);
   const remainingIds = remaining.map((item) => item.id);
   let addedCount = 0;
   for (const id of remainingIds) {

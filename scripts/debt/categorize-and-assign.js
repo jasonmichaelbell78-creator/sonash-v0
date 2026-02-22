@@ -123,7 +123,8 @@ function buildExistingAssignments(manifest) {
 // ── Determine sprint bucket for a file path ────────────────────────────────
 function getSprintBucketForPath(filePath) {
   if (!filePath || filePath === "N/A" || filePath === "") return 12;
-  const norm = filePath.replaceAll("\\", "/");
+  const norm = path.posix.normalize(filePath.replaceAll("\\", "/"));
+  if (/(^|\/)\.\.(\/|$)/.test(norm)) return 12;
   if (norm.startsWith("scripts/")) return 8;
   if (norm.startsWith(".claude/") || norm.startsWith("docs/")) return 9;
   if (norm.startsWith(".github/") || norm.startsWith(".husky/") || isRootConfigFile(norm)) {
