@@ -28,6 +28,8 @@
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",
     "patterns:sync": "node scripts/check-pattern-sync.js",
+    "patterns:fp-report": "node scripts/check-pattern-compliance.js --fp-report",
+    "test:patterns": "vitest run tests/pattern-compliance.test.js",
     "lessons:surface": "node scripts/surface-lessons-learned.js",
     "session:gaps": "node scripts/check-session-gaps.js",
     "session:gaps:fix": "node scripts/check-session-gaps.js --fix",

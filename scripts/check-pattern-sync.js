@@ -111,10 +111,13 @@ function readAllFiles() {
 function collectDocumentedPatterns(contents) {
   const documented = new Set();
 
-  const codePatternsMatch = contents.codePatterns.match(/## Pattern #(\d+)/g) || [];
-  for (const m of codePatternsMatch) {
-    const num = Number.parseInt(m.match(/\d+/)[0], 10);
-    documented.add(num);
+  const codePatternsRegex = /^### (\d+)\. /gm;
+  let cpMatch;
+  while ((cpMatch = codePatternsRegex.exec(contents.codePatterns)) !== null) {
+    const num = Number.parseInt(cpMatch[1], 10);
+    if (num > 0 && num < 1000) {
+      documented.add(num);
+    }
   }
 
   const learningsPatterns = extractPatterns(contents.learningsLog, "learnings");

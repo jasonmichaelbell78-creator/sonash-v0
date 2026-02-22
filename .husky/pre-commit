@@ -169,15 +169,35 @@ else
   echo "  ⏭️ Skipping lint-staged (devDependency missing from node_modules)"
 fi
 
-# 3. Run pattern compliance check on staged files (warnings only, never blocks)
+# 3. Run pattern compliance check on staged files (blocks on critical violations)
 # Override with: SKIP_CHECKS="patterns" SKIP_REASON="reason" git commit ...
 if is_skipped patterns; then
   node scripts/log-override.js --quick --check=pattern-compliance --reason="$SKIP_REASON" 2>/dev/null || true
   echo "  ⏭️ Skipping pattern compliance (skipped via SKIP_CHECKS)"
 else
   echo "  ▶ Running pattern compliance..."
-  patterns_output="$(node scripts/check-pattern-compliance.js --staged 2>&1)" || true
-  echo "  ✅ Pattern compliance checked"
+  PATTERN_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
+  add_exit_trap 'rm -f "$PATTERN_TMPFILE" 2>/dev/null'
+  node scripts/check-pattern-compliance.js --staged > "$PATTERN_TMPFILE" 2>&1
+  PATTERN_EXIT=$?
+  if [ "$PATTERN_EXIT" -eq 1 ]; then
+    echo "  ❌ Pattern compliance: critical violations found"
+    cat "$PATTERN_TMPFILE"
+    echo ""
+    echo "  Fix critical violations before committing."
+    exit 1
+  elif [ "$PATTERN_EXIT" -eq 2 ]; then
+    echo "  ⚠️ Pattern compliance check errored (non-blocking)"
+    tail -5 "$PATTERN_TMPFILE"
+  else
+    # Exit 0: no critical violations (may have warnings)
+    if grep -q "⚠️" "$PATTERN_TMPFILE" 2>/dev/null; then
+      echo "  ✅ Pattern compliance passed (with warnings)"
+      cat "$PATTERN_TMPFILE"
+    else
+      echo "  ✅ Pattern compliance passed"
+    fi
+  fi
 fi
 
 # 4. Audit file S0/S1 validation (BLOCKING - Session #98)

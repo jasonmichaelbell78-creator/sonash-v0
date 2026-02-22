@@ -28,7 +28,7 @@ const require_ = createRequire(import.meta.url);
 const { isSafeToWrite } = require_("../.claude/hooks/lib/symlink-guard");
 const ROOT = join(__dirname, "..");
 
-const LEARNINGS_FILE = join(ROOT, "AI_REVIEW_LEARNINGS_LOG.md");
+const LEARNINGS_FILE = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const CHECKER_FILE = join(ROOT, "scripts/check-pattern-compliance.js");
 
 // File names for error messages (avoid exposing full paths)

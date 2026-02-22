@@ -15,8 +15,14 @@
  *   --all        Check all relevant files in the repo
  *   --verbose    Show detailed output
  *   --json       Output as JSON
+ *   --fp-report  Show per-pattern false-positive exclusion counts
  *
- * Exit codes: 0 = no violations, 1 = violations found, 2 = error
+ * Severity tiers:
+ *   critical - Always blocks (pre-commit + CI): security patterns
+ *   high     - Blocks in CI, warns in pre-commit: correctness patterns
+ *   medium   - Always warns: style/quality patterns
+ *
+ * Exit codes: 0 = no critical violations, 1 = critical violations found, 2 = error
  */
 
 import {
@@ -191,6 +197,7 @@ const STAGED = args.includes("--staged");
 const ALL = args.includes("--all");
 const VERBOSE = args.includes("--verbose");
 const JSON_OUTPUT = args.includes("--json");
+const FP_REPORT = args.includes("--fp-report");
 const FILES = args.filter((a) => !a.startsWith("--"));
 
 /**
@@ -203,6 +210,8 @@ const GLOBAL_EXCLUDE = [
   /^docs\/AI_REVIEW_LEARNINGS_LOG\.md$/,
   // This file contains pattern definitions as strings (meta-detection false positives)
   /^scripts\/check-pattern-compliance\.js$/,
+  // Pattern test suite contains anti-pattern examples as test fixtures (not violations)
+  /^tests\/pattern-compliance\.test\.js$/,
   // Archived/obsolete scripts - not actively maintained (Review #250)
   /^docs\/archive\//,
   // Development/build utility scripts (pre-existing debt - Review #136)
@@ -249,6 +258,7 @@ const ANTI_PATTERNS = [
   // Bash/Shell patterns
   {
     id: "exit-code-capture",
+    severity: "high",
     pattern: /\$\(\s*[^)]{1,500}\s*\)\s*;\s*if\s+\[\s*\$\?\s/g,
     message:
       "Exit code capture bug: $? after assignment captures assignment exit (always 0), not command exit",
@@ -258,6 +268,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "for-file-iteration",
+    severity: "medium",
     pattern: /for\s+\w{1,200}\s+in\s+\$\{?\w{1,200}\}?\s{0,50};?\s{0,50}do/g,
     message: "File iteration with for loop breaks on spaces in filenames",
     fix: "Use: while IFS= read -r file; do ... done < file_list",
@@ -266,6 +277,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "missing-trap",
+    severity: "medium",
     pattern: /mktemp\)(?![\s\S]{0,100}trap)/g,
     message: "Temp file created without trap for cleanup",
     fix: "Add: trap 'rm -f \"$TMPFILE\"' EXIT after mktemp",
@@ -274,6 +286,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "retry-loop-no-success-tracking",
+    severity: "high",
     // Use lazy quantifiers and word boundaries for accurate matching
     // Note: Global flag required - checkFile uses exec() in a loop which needs /g to advance lastIndex
     pattern:
@@ -285,6 +298,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "npm-install-automation",
+    severity: "high",
     // Capture npm install plus rest of line for exclusion pattern matching
     pattern: /npm\s+install\b[^\n]*/g,
     message: "npm install in automation can modify lockfile",
@@ -305,6 +319,7 @@ const ANTI_PATTERNS = [
   // JavaScript/TypeScript patterns
   {
     id: "unsafe-error-message",
+    severity: "critical",
     // Match catch blocks with .message access that DON'T have instanceof check anywhere in block
     // Uses [^}] to constrain search to current catch block (Review #53: prevents false negatives)
     // Note: May miss deeply nested blocks, but safer than unbounded [\s\S]
@@ -316,6 +331,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "catch-console-error",
+    severity: "high",
     pattern: /\.catch\s*\(\s*console\.error\s*\)/g,
     message: "Unsanitized error logging - may expose sensitive paths/credentials",
     fix: "Use: .catch((e) => console.error(sanitizeError(e))) or handle specific errors",
@@ -324,6 +340,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "path-startswith",
+    severity: "critical",
     pattern: /\.startsWith\s*\(\s*['"`][./\\]+['"`]\s*\)/g,
     message: "Path validation with startsWith() fails on Windows or edge cases",
     fix: 'Use: path.relative() and check for ".." prefix with regex',
@@ -343,6 +360,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "regex-global-test-loop",
+    severity: "high",
     pattern:
       /new\s+RegExp\s*\([^)]{1,500},\s*['"`][^'"]{0,200}g[^'"]{0,200}['"`]\s*\)[\s\S]{0,200}\.test\s*\(/g,
     message:
@@ -355,6 +373,7 @@ const ANTI_PATTERNS = [
   // GitHub Actions patterns
   {
     id: "unsafe-interpolation",
+    severity: "critical",
     pattern: /`[^`]*\$\{\{\s*(?:steps|github|env|inputs)\.[^}]+\}\}[^`]*`/g,
     message: "Unsafe ${{ }} interpolation in JavaScript template literal",
     fix: "Use env: block to pass value, then process.env.VAR",
@@ -363,6 +382,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "hardcoded-temp-path",
+    severity: "medium",
     pattern: /[>|]\s*\/tmp\/\w+(?!\.)/g,
     message: "Hardcoded /tmp path - use mktemp for unique files",
     fix: "Use: TMPFILE=$(mktemp) and trap for cleanup",
@@ -371,6 +391,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "implicit-if-expression",
+    severity: "medium",
     pattern: /^\s*if:\s+(?!.{0,500}\$\{\{).{0,500}(?:steps|github|env|inputs|needs)\./gm,
     message: "Implicit expression in if: condition can cause YAML parser issues",
     fix: "Always use explicit ${{ }} in if: conditions",
@@ -382,6 +403,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "fragile-bot-detection",
+    severity: "medium",
     pattern: /\.user\.type\s*===?\s*['"`]Bot['"`]/g,
     message: "Fragile bot detection - user.type is unreliable",
     fix: 'Use: user.login === "github-actions[bot]"',
@@ -392,6 +414,7 @@ const ANTI_PATTERNS = [
   // Security patterns
   {
     id: "simple-path-traversal-check",
+    severity: "critical",
     pattern: /startsWith\s*\(\s*['"`]\.\.['"`]\s*\)/g,
     message: 'Simple ".." check has false positives (e.g., "..hidden.md")',
     fix: "Use: /^\\.\\.(?:[\\\\/]|$)/.test(rel)",
@@ -408,6 +431,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "hardcoded-api-key",
+    severity: "critical",
     pattern:
       /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Z0-9_/+=-]{20,}['"`]/gi,
     message: "Potential hardcoded API key or secret detected",
@@ -418,6 +442,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "unsafe-innerhtml",
+    severity: "critical",
     pattern: /\.innerHTML\s*=/g,
     message: "innerHTML assignment can lead to XSS vulnerabilities",
     fix: "Use textContent for text, or sanitize with DOMPurify for HTML",
@@ -426,6 +451,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "eval-usage",
+    severity: "critical",
     pattern: /\beval\s*\(/g,
     message: "eval() is a security risk - allows arbitrary code execution",
     fix: "Avoid eval. Use JSON.parse for JSON, or restructure code",
@@ -439,6 +465,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "sql-injection-risk",
+    severity: "critical",
     pattern:
       /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g,
     message: "Potential SQL injection: string interpolation or concatenation in query",
@@ -450,6 +477,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "unsanitized-error-response",
+    severity: "critical",
     pattern:
       /res\.(?:json|send|status\s*\([^)]*\)\s*\.json)\s*\(\s*\{[\s\S]{0,300}?(?:error|err|e|exception)\.(?:message|stack|toString\s*\()/g,
     message: "Exposing raw error messages/stack traces to clients",
@@ -459,6 +487,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "missing-rate-limit-comment",
+    severity: "medium",
     pattern:
       /(?:exports\.|module\.exports|export\s+(?:default\s+)?(?:async\s+)?function)\s+\w+(?:Handler|API|Endpoint)/gi,
     message: "API endpoint may need rate limiting (verify rate limit is implemented)",
@@ -471,6 +500,7 @@ const ANTI_PATTERNS = [
   // New patterns from Consolidation #3 (Reviews #31-40)
   {
     id: "path-join-without-containment",
+    severity: "critical",
     pattern:
       /path\.join\s*\([^)]{0,500},\s*(?:deliverable|user|input|arg|param|file)\w*(?:\.path)?[^)]{0,500}\)(?![\s\S]{0,100}(?:relative|isWithin|contains|startsWith))/g,
     message: "Path joined with user input without containment check",
@@ -491,6 +521,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "error-without-first-line",
+    severity: "high",
     pattern:
       /String\s*\(\s*(?:err|error|e)(?:\?\.message|\s*\?\?\s*err|\s*\?\?\s*error)[\s\S]{0,30}\)(?![\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\))/g,
     message: "Error converted to string without extracting first line (stack trace leakage)",
@@ -502,6 +533,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "console-log-file-content",
+    severity: "medium",
     pattern:
       /console\.(?:log|error|warn)\s*\([^)]*(?:content|fileContent|data|text|body)(?:\s*[,)])/g,
     message: "File-derived content logged without control char sanitization",
@@ -511,6 +543,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "split-newline-without-cr-strip",
+    severity: "medium",
     pattern:
       /\.split\s*\(\s*['"`]\\n['"`]\s*\)\s*\[\s*0\s*\](?![\s\S]{0,30}\.replace\s*\(\s*\/\\r\$\/)/g,
     message: "Line split without stripping trailing \\r (Windows CRLF issue)",
@@ -524,6 +557,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "regex-newline-lookahead",
+    severity: "medium",
     // Match lookaheads in regex literals `(?=\n` and in string patterns `"(?=\\n"`
     pattern: /\(\?=(?:\\n|\\\\n)(?!\?)/g,
     message: "Regex lookahead uses \\n without optional \\r (fails on CRLF)",
@@ -533,6 +567,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "path-split-without-normalize",
+    severity: "critical",
     pattern:
       /\.split\s*\(\s*['"`]\/['"`]\s*\)[\s\S]{0,50}includes\s*\(\s*['"`]\.\.['"`]\s*\)(?![\s\S]{0,100}replace\s*\(\s*\/\\\\\/g)/g,
     message: "Path traversal check splits on / without normalizing Windows backslashes",
@@ -547,6 +582,7 @@ const ANTI_PATTERNS = [
   // ESLint sonash/no-unguarded-file-read handles this with AST-level try/catch awareness
   {
     id: "auto-mode-slice-truncation",
+    severity: "high",
     pattern: /(?:isAutoMode|isAuto|autoMode)\s*\?[\s\S]{0,50}\.slice\s*\(\s*0\s*,/g,
     message: "Auto/CI mode should check ALL items, not truncate - limits are for interactive only",
     fix: "Use: isAutoMode ? allItems : allItems.slice(0, MAX)",
@@ -555,6 +591,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "readline-no-close",
+    severity: "medium",
     pattern:
       /readline\.createInterface\s*\([\s\S]{0,500}process\.exit\s*\(\s*\d+\s*\)(?![\s\S]{0,50}close\s*\()/g,
     message: "Script exits without closing readline interface (may hang)",
@@ -564,6 +601,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "empty-path-not-rejected",
+    severity: "critical",
     pattern:
       /(?:startsWith\s*\(\s*['"`]\.\.['"`]\s*\)|\.isAbsolute\s*\(\s*rel\s*\))(?![\s\S]{0,50}===\s*['"`]['"`])/g,
     message: 'Path validation may miss empty string edge case (rel === "")',
@@ -623,6 +661,7 @@ const ANTI_PATTERNS = [
   // Test patterns from Consolidation #14 (Reviews #180-201)
   {
     id: "test-mock-firestore-directly",
+    severity: "high",
     // Catch vi.mock or jest.mock of firebase/firestore in test files
     // App uses Cloud Functions for writes - mock httpsCallable instead
     pattern: /(?:vi|jest)\.mock\s*\(\s*['"`]firebase\/firestore['"`]/g,
@@ -639,6 +678,7 @@ const ANTI_PATTERNS = [
   // Unguarded loadConfig (15x in reviews)
   {
     id: "unguarded-loadconfig",
+    severity: "high",
     pattern: /\b(?:loadConfig|require)\s*\(\s*['"`][^'"`)]+['"`]\s*\)(?![\s\S]{0,30}catch)/g,
     message: "loadConfig/require without try/catch - crashes on missing or malformed config",
     fix: "Wrap in try/catch with graceful fallback or clear error message",
@@ -647,13 +687,15 @@ const ANTI_PATTERNS = [
     // Only check scripts and hooks (not app code where require is standard)
     pathFilter: /(?:^|\/)(?:scripts|\.claude\/hooks|\.husky)\//,
     // Exclude files with verified error handling
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|load-config)\.js$/,
+    // check-pattern-sync.js: CJS require() calls at top-level are standard node module loading
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|load-config|check-pattern-sync)\.js$/,
     pathExcludeList: verifiedPatterns["unguarded-loadconfig"] || [],
   },
 
   // Silent catch blocks (11x in reviews)
   {
     id: "silent-catch-block",
+    severity: "high",
     pattern: /catch\s*\(\s*\w*\s*\)\s*\{\s*\}/g,
     message: "Empty catch block silently swallows errors - hides bugs",
     fix: "At minimum log the error: catch (err) { console.warn('Context:', sanitizeError(err)); }",
@@ -666,6 +708,7 @@ const ANTI_PATTERNS = [
   // writeFileSync without atomic write pattern (10x in reviews)
   {
     id: "non-atomic-write",
+    severity: "high",
     pattern: /writeFileSync\s*\([^)]+\)(?![\s\S]{0,80}(?:unlinkSync|renameSync|tmpdir|\.tmp))/g,
     message: "writeFileSync without atomic write pattern - partial writes on crash corrupt data",
     fix: "Write to tmp file first, then rename: writeFileSync(path + '.tmp', data); renameSync(path + '.tmp', path);",
@@ -680,6 +723,7 @@ const ANTI_PATTERNS = [
   // Prototype pollution via Object.assign on parsed JSON (9x in reviews)
   {
     id: "object-assign-parsed-json",
+    severity: "critical",
     pattern:
       /Object\.assign\s*\(\s*\{\s*\}\s*,\s*(?:JSON\.parse|parsed|item|entry|record|finding|doc)\b/g,
     message: "Object.assign from parsed JSON can carry __proto__ (prototype pollution)",
@@ -692,18 +736,21 @@ const ANTI_PATTERNS = [
   // Unbounded regex quantifiers (8x in reviews)
   {
     id: "unbounded-regex-quantifier",
+    severity: "high",
     pattern: /new\s+RegExp\s*\([^)]*['"`][^'"]*(?:\.\*(?!\?)|\.\+(?!\?))[^'"]*['"`]/g,
     message: "Unbounded .* or .+ in dynamic RegExp - potential ReDoS or performance issue",
     fix: "Use bounded quantifiers: [\\s\\S]{0,N}? or .{0,N}? with explicit limits",
     review: "#53, Session #151 analysis",
     fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    // check-pattern-sync.js: uses .* in extractPatterns() for flexible pattern matching (intentional)
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|check-pattern-sync)\.js$/,
     pathExcludeList: verifiedPatterns["unbounded-regex-quantifier"] || [],
   },
 
   // Missing Array.isArray checks (7x in reviews)
   {
     id: "missing-array-isarray",
+    severity: "high",
     pattern:
       /(?:\.length\b|\.forEach\s*\(|\.map\s*\(|\.filter\s*\()[\s\S]{0,5}(?![\s\S]{0,100}Array\.isArray)/g,
     message: "Array method used without Array.isArray guard - crashes on non-array values",
@@ -718,30 +765,33 @@ const ANTI_PATTERNS = [
   // Unescaped user input in RegExp constructor (7x in reviews)
   {
     id: "unescaped-regexp-input",
+    severity: "high",
     pattern: /new\s+RegExp\s*\(\s*(?!['"`/])(?:\w+(?:\.\w+)*)\s*[,)]/g,
     message: "Variable in RegExp constructor without escaping - special chars break regex",
     fix: "Escape input: new RegExp(str.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'))",
     review: "Session #151 analysis",
     fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|inline-patterns)\.js$/,
     pathExcludeList: verifiedPatterns["unescaped-regexp-input"] || [],
   },
 
   // exec() loop without /g flag (6x in reviews)
   {
     id: "exec-without-global",
+    severity: "high",
     pattern: /while\s*\(\s*\(\s*\w+\s*=\s*(?:\w+)\.exec\s*\([^)]+\)\s*\)/g,
     message: "exec() in while loop requires /g flag - without it, infinite loop",
     fix: "Ensure regex has /g flag, or use String.prototype.matchAll() instead",
     review: "#13, #14, Session #151 analysis",
     fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|inline-patterns|check-pattern-sync)\.js$/,
     pathExcludeList: verifiedPatterns["exec-without-global"] || [],
   },
 
   // Git commands without -- separator (6x in reviews)
   {
     id: "git-without-separator",
+    severity: "high",
     pattern:
       /exec(?:Sync|FileSync)?\s*\(\s*['"`]git\s+(?:add|rm|checkout|diff|log|show|blame)\b(?![\s\S]{0,100}['"`]\s*--\s*['"`]|['"`],\s*\[[\s\S]{0,200}['"`]--['"`])/g,
     message: "Git command without -- separator - filenames starting with - are treated as options",
@@ -758,6 +808,7 @@ const ANTI_PATTERNS = [
   // process.exit without cleanup (5x in reviews)
   {
     id: "process-exit-without-cleanup",
+    severity: "medium",
     pattern: /process\.exit\s*\(\s*[12]\s*\)(?![\s\S]{0,50}finally)/g,
     message: "process.exit() without cleanup - open handles, temp files may leak",
     fix: "Use cleanup function before exit, or set process.exitCode and return",
@@ -771,6 +822,7 @@ const ANTI_PATTERNS = [
   // console.error with raw error object (not just .message)
   {
     id: "console-error-raw-object",
+    severity: "medium",
     pattern: /console\.(?:error|warn)\s*\(\s*(?:['"`][^'"]*['"`]\s*,\s*)?(?:err|error|e)\s*\)/g,
     message: "Logging raw error object may expose stack traces and sensitive paths",
     fix: "Use: console.error('Context:', sanitizeError(err))",
@@ -783,6 +835,7 @@ const ANTI_PATTERNS = [
   // Missing BOM handling for file reads
   {
     id: "missing-bom-handling",
+    severity: "medium",
     pattern:
       /readFileSync\s*\([^)]+,\s*['"`]utf-?8['"`]\s*\)(?![\s\S]{0,50}\.replace\s*\(\s*\/\\uFEFF)/g,
     message: "UTF-8 file read without BOM stripping - BOM can break JSON.parse and regex",
@@ -797,6 +850,7 @@ const ANTI_PATTERNS = [
   // Unbounded file reads (reading entire file into memory)
   {
     id: "unbounded-file-read",
+    severity: "medium",
     pattern:
       /readFileSync\s*\([^)]+\)[\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\)(?![\s\S]{0,50}(?:slice|MAX_LINES))/g,
     message: "Reading entire file then splitting - may OOM on large files",
@@ -810,6 +864,7 @@ const ANTI_PATTERNS = [
   // Shell command injection via string concatenation
   {
     id: "shell-command-injection",
+    severity: "critical",
     pattern: /exec(?:Sync)?\s*\(\s*(?:`[^`]*\$\{|['"`][^'"]*['"`]\s*\+\s*(?!['"`]))/g,
     message: "Shell command built with string interpolation - command injection risk",
     fix: "Use execFileSync with array args: execFileSync('cmd', ['arg1', userInput])",
@@ -821,6 +876,7 @@ const ANTI_PATTERNS = [
   // Missing encoding in writeFileSync
   {
     id: "writefile-missing-encoding",
+    severity: "medium",
     pattern: /writeFileSync\s*\(\s*[^,]+,\s*[^,]+\s*\)(?!\s*;?\s*\/\/\s*binary)/g,
     message: "writeFileSync without explicit encoding - defaults to UTF-8 but intent unclear",
     fix: "Add encoding: writeFileSync(path, data, 'utf-8') or { encoding: 'utf-8' }",
@@ -842,6 +898,7 @@ const ANTI_PATTERNS = [
   // Unstable list keys: key={index} causes unnecessary re-renders
   {
     id: "unstable-list-key",
+    severity: "high",
     pattern: /key=\{[^}]*\bindex\b[^}]*\}/g,
     message: "Using array index as React key - causes unnecessary re-renders and bugs on reorder",
     fix: "Use a stable unique identifier: key={item.id} or key={item.canonId}",
@@ -852,6 +909,7 @@ const ANTI_PATTERNS = [
   // Clickable div without ARIA role
   {
     id: "div-onclick-no-role",
+    severity: "medium",
     pattern: /<div(?![^>]*\brole\s*=)[^>]*\bonClick\b[^>]*>/g,
     message: "Clickable <div> without role attribute - inaccessible to screen readers",
     fix: 'Add role="button" or use <button> element instead: <button onClick={...}>',
@@ -864,6 +922,7 @@ const ANTI_PATTERNS = [
   // parseInt without radix
   {
     id: "parseint-no-radix",
+    severity: "medium",
     pattern: /parseInt\s*\([^\n,)]+\)(?!\s*,)/g,
     message: "parseInt() without radix parameter - may parse as octal in legacy engines",
     fix: "Always specify radix: parseInt(str, 10) or use Number.parseInt(str, 10)",
@@ -877,6 +936,7 @@ const ANTI_PATTERNS = [
   // Math.max with spread on potentially empty array
   {
     id: "math-max-spread-no-guard",
+    severity: "medium",
     pattern: /Math\.max\(\s*\.\.\.[^)]+\)/g,
     message: "Math.max(...arr) returns -Infinity on empty array - add length guard",
     fix: "Guard empty: arr.length > 0 ? Math.max(...arr) : defaultValue",
@@ -888,6 +948,7 @@ const ANTI_PATTERNS = [
   // startsWith('/') instead of path.isAbsolute
   {
     id: "startswith-slash-check",
+    severity: "high",
     pattern: /\.startsWith\s*\(\s*['"]\/['"]\s*\)/g,
     message: String.raw`startsWith('/') misses Windows absolute paths (C:\) - use path.isAbsolute()`,
     fix: "Use path.isAbsolute(p) for cross-platform absolute path detection",
@@ -901,6 +962,7 @@ const ANTI_PATTERNS = [
   // git diff --name without --diff-filter
   {
     id: "git-diff-no-filter",
+    severity: "high",
     pattern: /git\s+diff[^\n]*--name-only(?![^\n]*--diff-filter)/g,
     message: "git diff --name-only without --diff-filter includes deleted files",
     fix: "Add --diff-filter=ACM to exclude deleted files: git diff --name-only --diff-filter=ACM",
@@ -915,6 +977,7 @@ const ANTI_PATTERNS = [
   // xargs without -r or --no-run-if-empty (hangs on empty input)
   {
     id: "xargs-without-guard",
+    severity: "medium",
     pattern: /\|\s*xargs\b(?![^\n]*(?:-r\b|--no-run-if-empty))/g,
     message: "xargs without -r flag may hang or run with empty input on some platforms",
     fix: "Use xargs -r (--no-run-if-empty) or pipe through 'grep .' first",
@@ -928,6 +991,7 @@ const ANTI_PATTERNS = [
   // Unanchored regex for enum/severity validation (10x recurrence)
   {
     id: "unanchored-enum-regex",
+    severity: "high",
     pattern: /(?:test|match)\s*\(\s*\/(?!\^)[EeSs]\[\d+[^/]{0,20}\]\//g,
     message: "Unanchored regex for enum validation - matches partial strings (e.g. E12 matches E1)",
     fix: "Anchor with ^ and $: /^E[0-3]$/ or /^S[0-4]$/ instead of /E[0-3]/",
@@ -941,6 +1005,7 @@ const ANTI_PATTERNS = [
   // Matches `/ total` etc. only when NOT preceded by `> 0 ?` guard on same line
   {
     id: "unsafe-division",
+    severity: "high",
     pattern: /^(?!.*>\s*0\s*\?).*[^/*]\s\/\s*(?:total|count|length|size|denominator)\b/gm,
     message: "Division by variable that could be 0 - returns Infinity/NaN",
     fix: "Use safePercent(n, total) helper or guard: total > 0 ? (n / total) * 100 : 0",
@@ -954,6 +1019,7 @@ const ANTI_PATTERNS = [
   // renameSync without prior rmSync on Windows (8x recurrence)
   {
     id: "rename-without-remove",
+    severity: "high",
     pattern: /\brenameSync\s*\(/g,
     message: "renameSync without prior rmSync - fails on Windows if destination exists",
     fix: "Remove destination first: if (fs.existsSync(dest)) fs.rmSync(dest, { force: true }); fs.renameSync(tmp, dest);",
@@ -969,6 +1035,7 @@ const ANTI_PATTERNS = [
   // SonarCloud S5852: replaced regex with string-based check (two-strikes rule, Review #289)
   {
     id: "throw-after-sanitize",
+    severity: "high",
     testFn: (content) => {
       const lines = content.split("\n");
       const matches = [];
@@ -997,6 +1064,7 @@ const ANTI_PATTERNS = [
   // SonarCloud S5852 safe: uses testFn string parsing instead of regex
   {
     id: "write-without-symlink-guard",
+    severity: "critical",
     testFn: (content) => {
       const lines = content.split("\n");
       const matches = [];
@@ -1060,6 +1128,7 @@ const ANTI_PATTERNS = [
   // Atomic write missing tmpPath symlink guard (PR #366 R7-R8, most common miss)
   {
     id: "atomic-write-missing-tmp-guard",
+    severity: "critical",
     testFn: (content) => {
       const lines = content.split("\n");
       const matches = [];
@@ -1104,6 +1173,7 @@ const ANTI_PATTERNS = [
   // JSONL files must be parsed line-by-line with per-line try/catch
   {
     id: "jsonl-parse-no-try-catch",
+    severity: "high",
     testFn: (content, filePath) => {
       const matches = [];
       const lines = content.split("\n");
@@ -1136,6 +1206,7 @@ const ANTI_PATTERNS = [
   // renameSync can fail on cross-drive moves; needs writeFileSync+unlinkSync fallback
   {
     id: "rename-no-fallback",
+    severity: "high",
     testFn: (content, filePath) => {
       const matches = [];
       const lines = content.split("\n");
@@ -1175,6 +1246,7 @@ const ANTI_PATTERNS = [
   // Session IDs used in file paths must be validated to prevent path traversal
   {
     id: "session-id-no-validation",
+    severity: "critical",
     testFn: (content, filePath) => {
       const matches = [];
       const lines = content.split("\n");
@@ -1216,6 +1288,91 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
     pathExcludeList: verifiedPatterns["session-id-no-validation"] || [],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // AI Behavior Patterns (migrated from scripts/config/ai-patterns.json)
+  // Detect common AI-generated code issues
+  // ═══════════════════════════════════════════════════════════════════
+
+  {
+    id: "happy-path-only",
+    severity: "high",
+    pattern: /async\s+function\s+\w+[^}]*?(?!try)/g,
+    message: "Function handles only success path, no error handling",
+    fix: "Add try/catch with proper error handling for async operations",
+    review: "ai-behavior",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:lib|app|components|pages)\//,
+  },
+  {
+    id: "trivial-assertions",
+    severity: "medium",
+    pattern:
+      /expect\(true\)\.toBe\(true\)|expect\(1\)\.toBe\(1\)|expect\(false\)\.toBe\(false\)|assert\.ok\(true\)|assert\.equal\(1,\s*1\)/g,
+    message: "Test that always passes without testing real behavior",
+    fix: "Write assertions that test actual behavior: expect(result).toBe(expected)",
+    review: "ai-behavior",
+    fileTypes: [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx", ".test.js", ".test.jsx"],
+  },
+  {
+    id: "ai-todo-markers",
+    severity: "medium",
+    pattern: /(?:TODO|FIXME)[^A-Z]*(?:AI|[Cc]laude|LLM|GPT)|AI should fix|Claude will/gi,
+    message: "TODO comment referencing AI that was never resolved",
+    fix: "Resolve the TODO or convert to a concrete task with ticket reference",
+    review: "ai-behavior",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "session-boundary",
+    severity: "medium",
+    pattern: /\/\/\s*(?:Session\s*\d+|Added in session|From session)/gi,
+    message: "Comment marking AI session boundary (potential inconsistency)",
+    fix: "Remove session boundary comment - code should stand on its own",
+    review: "ai-behavior",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "overconfident-security",
+    severity: "medium",
+    pattern:
+      /(?:this is secure|security guaranteed|fully protected|completely safe|no vulnerabilities|unhackable)/gi,
+    message: "Comment claiming security without evidence",
+    fix: "Replace with specific security measures taken, or remove the claim",
+    review: "ai-behavior",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "hallucinated-apis",
+    severity: "high",
+    pattern:
+      /crypto\.secureHash\(|firebase\.verifyAppCheck\(|React\.useServerState\(|next\.getServerAuth\(|firestore\.atomicUpdate\(/g,
+    message: "Call to API method that doesn't exist (hallucinated by AI)",
+    fix: "Check the actual API documentation for the correct method name",
+    review: "ai-behavior",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "naive-data-fetch",
+    severity: "high",
+    pattern:
+      /(?:\.get\(\)\.then\([^)]{0,100}\.filter\(|getDocs\([^)]{0,100}\)[^;]{0,100}\.filter\()/g,
+    message: "Fetching all data then filtering client-side",
+    fix: "Use server-side filtering with where() clauses or query constraints",
+    review: "ai-behavior",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "unbounded-query",
+    severity: "medium",
+    pattern:
+      /(?:collection\([^)]+\)\.get\(\)|getDocs\([^)]+\)|\.onSnapshot\([^)]+\))(?![^;]{0,50}\blimit\s*\()/g,
+    message: "Query without limit() on potentially large collection",
+    fix: "Add limit() to prevent fetching unbounded data: query(collection, limit(50))",
+    review: "ai-behavior",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:lib|app|components|pages)\//,
   },
 ];
 
@@ -1407,6 +1564,7 @@ function findPatternMatches(antiPattern, content, filePath) {
         file: filePath,
         line: m.line,
         id: antiPattern.id,
+        severity: antiPattern.severity || "medium",
         message: antiPattern.message,
         fix: antiPattern.fix,
         review: antiPattern.review,
@@ -1463,6 +1621,7 @@ function buildViolation(antiPattern, match, content, filePath) {
     file: filePath,
     line: lineNumber,
     id: antiPattern.id,
+    severity: antiPattern.severity || "medium",
     message: antiPattern.message,
     fix: antiPattern.fix,
     review: antiPattern.review,
@@ -1503,8 +1662,9 @@ function checkFile(filePath) {
  * Print a single violation entry.
  */
 function printViolation(v) {
+  const severityTag = v.severity ? `[${v.severity.toUpperCase()}]` : "";
   const prefix = v.graduated ? "🚫 BLOCK" : "⚠️  WARN";
-  console.log(`   ${prefix} Line ${v.line}: ${v.message}`);
+  console.log(`   ${prefix} ${severityTag} Line ${v.line}: ${v.message}`);
   console.log(`   ✓ Fix: ${v.fix}`);
   console.log(`   📚 See: Review ${v.review} in AI_REVIEW_LEARNINGS_LOG.md`);
   if (VERBOSE) {
@@ -1523,11 +1683,10 @@ function printSummaryFooter(blockCount, warnCount) {
   console.log("---");
   if (blockCount > 0) {
     console.log("🚫 Blocking violations MUST be fixed before committing.");
-    console.log("   These patterns were warned on a previous check and are now enforced.");
+    console.log("   Critical-severity patterns always block. High-severity blocks in CI.");
   }
   if (warnCount > 0) {
-    console.log("⚠️  Warnings are informational on first occurrence.");
-    console.log("   Fix them now - they will BLOCK on the next check of the same file.");
+    console.log("⚠️  Warnings are informational - fix when practical.");
   }
   console.log("Some may be false positives - use judgment based on context.");
 }
@@ -1544,12 +1703,22 @@ function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 
     return;
   }
 
+  // Count by severity
+  const bySeverity = { critical: 0, high: 0, medium: 0 };
+  for (const v of violations) {
+    const sev = v.severity || "medium";
+    bySeverity[sev] = (bySeverity[sev] || 0) + 1;
+  }
+
   if (blockCount > 0) {
-    console.log(`🚫 ${blockCount} BLOCKING violation(s) (previously warned, now enforced)`);
+    console.log(`🚫 ${blockCount} BLOCKING violation(s) (critical severity)`);
   }
   if (warnCount > 0) {
-    console.log(`⚠️  ${warnCount} new warning(s) (first occurrence - fix before next check)`);
+    console.log(`⚠️  ${warnCount} warning(s)`);
   }
+  if (bySeverity.critical > 0) console.log(`   🔴 Critical: ${bySeverity.critical}`);
+  if (bySeverity.high > 0) console.log(`   🟡 High: ${bySeverity.high}`);
+  if (bySeverity.medium > 0) console.log(`   🔵 Medium: ${bySeverity.medium}`);
   console.log("");
 
   // Group by file
@@ -1574,53 +1743,97 @@ function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 
  * Key is file+patternId (not per-line - any occurrence in a warned file blocks)
  * Returns { warnings: [], blocks: [] } with violations split by severity
  */
+/**
+ * Apply severity-based blocking logic.
+ * Replaces time-based graduation with severity tiers:
+ *   - critical → always block (no grace period)
+ *   - high → block in CI/--all mode, warn in --staged (pre-commit)
+ *   - medium → always warn
+ * Returns { warnings: [], blocks: [] } with violations split by action
+ */
 function applyGraduation(violations) {
-  const warnedState = loadWarnedFiles();
-  const warned = warnedState ?? {};
   const warnings = [];
   const blocks = [];
-  const now = Date.now();
-  // Only graduate to block if warning is older than 4 hours
-  // Prevents self-escalation across hooks (pre-commit → pre-push) in same session
-  const GRACE_PERIOD_MS = 4 * 60 * 60 * 1000;
 
   for (const v of violations) {
-    const fileKey = String(v.file).replaceAll("\\", "/");
-    const key = `${fileKey}::${v.id}`;
+    const severity = v.severity || "medium";
 
-    // If state couldn't be loaded (corrupt), don't graduate — warn only
-    if (warnedState === null) {
-      warnings.push(v);
-      continue;
-    }
-
-    if (warned[key]) {
-      const warnedAt = new Date(warned[key]).getTime();
-      const ageMs = Number.isFinite(warnedAt) ? now - warnedAt : GRACE_PERIOD_MS + 1;
-      if (ageMs > GRACE_PERIOD_MS) {
-        // Warning is old enough - graduate to block
-        v.graduated = true;
-        blocks.push(v);
-      } else {
-        // Still within grace period - keep as warning
-        warnings.push(v);
-      }
+    if (severity === "critical") {
+      v.graduated = true;
+      blocks.push(v);
+    } else if (severity === "high" && !STAGED) {
+      // High severity blocks in CI/--all mode but not in pre-commit
+      v.graduated = true;
+      blocks.push(v);
     } else {
-      // First time seeing this file+pattern combo - warn only
-      warned[key] = new Date().toISOString();
+      // medium always warns, high warns in --staged mode
       warnings.push(v);
     }
   }
 
-  // Don't overwrite state file if we couldn't read it (prevents wiping history)
-  if (warnedState !== null) saveWarnedFiles(warned);
   return { warnings, blocks };
+}
+
+/**
+ * Generate false-positive report showing per-pattern exclusion counts
+ */
+function generateFpReport() {
+  const patternExclusions = {};
+
+  // Count verified-patterns.json exclusions per pattern
+  for (const [patternId, files] of Object.entries(verifiedPatterns)) {
+    const count = Array.isArray(files) ? files.length : 0;
+    if (count > 0) {
+      patternExclusions[patternId] = count;
+    }
+  }
+
+  // Count pathExcludeList entries per pattern in ANTI_PATTERNS
+  for (const ap of ANTI_PATTERNS) {
+    if (ap.pathExcludeList && ap.pathExcludeList.length > 0) {
+      const existing = patternExclusions[ap.id] || 0;
+      patternExclusions[ap.id] = existing + ap.pathExcludeList.length;
+    }
+  }
+
+  // Sort by count descending
+  const sorted = Object.entries(patternExclusions).sort((a, b) => b[1] - a[1]);
+
+  console.log("📊 False Positive Report — Per-Pattern Exclusion Counts\n");
+  console.log(`Total patterns: ${ANTI_PATTERNS.length}`);
+  console.log(`Patterns with exclusions: ${sorted.length}\n`);
+
+  if (sorted.length === 0) {
+    console.log("No exclusions found.");
+    return;
+  }
+
+  console.log("Pattern ID                              | Exclusions | Status");
+  console.log("----------------------------------------|------------|------------------");
+  for (const [id, count] of sorted) {
+    let status = "";
+    if (count > 20) status = "🔴 CONSIDER REMOVAL";
+    else if (count > 10) status = "🟡 HIGH FP RISK";
+    const paddedId = id.padEnd(39);
+    const paddedCount = String(count).padStart(10);
+    console.log(`${paddedId} | ${paddedCount} | ${status}`);
+  }
+
+  const highFp = sorted.filter(([, c]) => c > 10).length;
+  const considerRemoval = sorted.filter(([, c]) => c > 20).length;
+  console.log(`\nSummary: ${highFp} high-FP patterns, ${considerRemoval} candidates for removal`);
 }
 
 /**
  * Main function
  */
 function main() {
+  // Handle --fp-report mode
+  if (FP_REPORT) {
+    generateFpReport();
+    process.exit(0);
+  }
+
   // Expire stale warned-files entries older than 30 days (OPT #75)
   try {
     const { expireByAge } = require("../.claude/hooks/lib/rotate-state.js");
@@ -1654,18 +1867,25 @@ function main() {
     allViolations.push(...violations);
   }
 
-  // In --staged mode (pre-commit), all violations are warnings only (never block).
-  // Graduation only applies in --all mode (manual runs).
-  const { warnings, blocks } = STAGED
-    ? { warnings: allViolations, blocks: [] }
-    : applyGraduation(allViolations);
+  // Apply severity-based blocking:
+  // - critical: blocks in ALL modes (including --staged/pre-commit)
+  // - high: blocks in --all/CI, warns in --staged
+  // - medium: always warns
+  const { warnings, blocks } = applyGraduation(allViolations);
 
   if (JSON_OUTPUT) {
+    // Count by severity for summary
+    const severityCounts = { critical: 0, high: 0, medium: 0 };
+    for (const v of allViolations) {
+      const sev = v.severity || "medium";
+      severityCounts[sev] = (severityCounts[sev] || 0) + 1;
+    }
     console.log(
       JSON.stringify(
         {
           filesChecked: files.length,
           patternsChecked: ANTI_PATTERNS.length,
+          severityCounts,
           warnings,
           blocks,
           violations: allViolations,
