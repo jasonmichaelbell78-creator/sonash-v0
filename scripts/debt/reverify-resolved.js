@@ -44,8 +44,22 @@ const flaggedIds = new Set(flaggedDetails.map((d) => d.id));
 console.log(`\nLoaded ${flaggedIds.size} flagged IDs from audit report.\n`);
 
 // ─── Load MASTER_DEBT ─────────────────────────────────────────────────────────
-const lines = fs.readFileSync(MASTER_PATH, "utf8").split("\n").filter(Boolean);
-const allItems = lines.map((l) => JSON.parse(l));
+let lines;
+try {
+  lines = fs.readFileSync(MASTER_PATH, "utf8").split("\n").filter(Boolean);
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: Failed to read ${MASTER_PATH}: ${msg}`);
+  process.exit(1);
+}
+const allItems = lines.flatMap((l, idx) => {
+  try {
+    return [JSON.parse(l)];
+  } catch {
+    console.warn(`  WARN: skipping malformed JSON at MASTER_DEBT.jsonl:${idx + 1}`);
+    return [];
+  }
+});
 const flaggedItems = allItems.filter((item) => flaggedIds.has(item.id));
 
 console.log(`Found ${flaggedItems.length} matching items in MASTER_DEBT.jsonl.\n`);

@@ -110,14 +110,20 @@ function parseArgs(argv) {
   const args = argv.slice(2);
   const result = { sprintId: null, force: false, carryTo: null };
 
+  result.force = args.includes("--force");
+
+  const carryIdx = args.indexOf("--carry-to");
+  if (carryIdx !== -1 && carryIdx + 1 < args.length) {
+    result.carryTo = normalizeId(args[carryIdx + 1]);
+  }
+
+  // Find positional arg (sprint ID) — skip flags and their values
+  const flagValues = new Set();
+  if (carryIdx !== -1 && carryIdx + 1 < args.length) flagValues.add(carryIdx + 1);
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--force") {
-      result.force = true;
-    } else if (args[i] === "--carry-to" && i + 1 < args.length) {
-      result.carryTo = normalizeId(args[i + 1]);
-      i += 1;
-    } else if (!args[i].startsWith("--")) {
+    if (!args[i].startsWith("--") && !flagValues.has(i)) {
       result.sprintId = normalizeId(args[i]);
+      break;
     }
   }
 

@@ -181,12 +181,30 @@ function loadJsonl(filePath) {
   return items;
 }
 
+function isWriteSafe(filePath) {
+  for (const p of [path.dirname(filePath), filePath]) {
+    try {
+      const stat = fs.lstatSync(p);
+      if (stat.isSymbolicLink()) {
+        console.error(`ERROR: Refusing to write to symlink: ${path.basename(p)}`);
+        return false;
+      }
+    } catch {
+      // Path doesn't exist yet — continue
+    }
+  }
+  return true;
+}
+
 function saveJsonl(filePath, items) {
+  if (!isWriteSafe(filePath)) {
+    throw new Error(`Refusing to write to symlink: ${filePath}`);
+  }
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
   const dir = path.dirname(filePath);
   const tmpFile = path.join(dir, `.${path.basename(filePath)}.tmp.${process.pid}`);
   try {
-    fs.writeFileSync(tmpFile, content);
+    fs.writeFileSync(tmpFile, content, "utf8");
     fs.renameSync(tmpFile, filePath);
   } catch (err) {
     try {

@@ -2345,7 +2345,8 @@ function dedupInput(issues) {
   const seen = new Set();
   const result = [];
   for (const issue of issues) {
-    const key = `${issue.file}:${issue.line}:${issue.title}`;
+    const titleNorm = (issue.title || "").trim().toLowerCase();
+    const key = `${issue.file}:${issue.line}:${titleNorm}`;
     if (seen.has(key)) continue;
     seen.add(key);
     result.push(issue);
@@ -2470,14 +2471,16 @@ function printSummary(dedupedInput, alreadyTracked, newItems) {
  * Check if a path is safe to write (not a symlink).
  */
 function isWriteSafe(filePath) {
-  try {
-    const stat = fs.lstatSync(filePath);
-    if (stat.isSymbolicLink()) {
-      console.error(`ERROR: Refusing to write to symlink: ${path.basename(filePath)}`);
-      return false;
+  for (const p of [path.dirname(filePath), filePath]) {
+    try {
+      const stat = fs.lstatSync(p);
+      if (stat.isSymbolicLink()) {
+        console.error(`ERROR: Refusing to write to symlink: ${path.basename(p)}`);
+        return false;
+      }
+    } catch {
+      // Path doesn't exist yet — continue
     }
-  } catch {
-    // File doesn't exist yet — safe to create
   }
   return true;
 }
@@ -2507,9 +2510,17 @@ function writeNewItems(newItems) {
       : "";
     fs.writeFileSync(masterTmp, existingMaster + newLines, "utf8");
     fs.writeFileSync(dedupedTmp, existingDeduped + newLines, "utf8");
-    // Commit atomically
+    // Commit atomically — rename master first, then deduped
     fs.renameSync(masterTmp, MASTER_FILE);
-    fs.renameSync(dedupedTmp, DEDUPED_FILE);
+    try {
+      fs.renameSync(dedupedTmp, DEDUPED_FILE);
+    } catch (renameErr) {
+      console.error(
+        `CRITICAL: MASTER_FILE updated but DEDUPED_FILE rename failed. ` +
+          `Manually rename ${dedupedTmp} to ${DEDUPED_FILE} to restore consistency.`
+      );
+      throw renameErr;
+    }
     console.log(`\nAppended ${newItems.length} items to MASTER_DEBT.jsonl`);
     console.log(`Appended ${newItems.length} items to raw/deduped.jsonl`);
   } catch (err) {

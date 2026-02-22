@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.46 **Created:** 2026-01-02 **Last Updated:** 2026-02-20
+**Document Version:** 17.47 **Created:** 2026-01-02 **Last Updated:** 2026-02-21
 
 ## Purpose
 
@@ -2618,5 +2618,52 @@ repeat — pre-existing pattern, DEBT-0455)
 
 **Deferred:** 22 CC violations (pre-existing, CC 16-67 across 13 files) — bulk
 refactoring items, partially tracked in existing TDMS entries.
+
+## Review #367 — PR #383 R6 (SonarCloud + Qodo + CI) — 2026-02-21
+
+**Source:** SonarCloud (25), Qodo Compliance (5), Qodo Code Suggestions (9), CI
+(pattern compliance)
+
+**Key Fixes:**
+
+1. **Symlink directory bypass** — `isWriteSafe()` in both
+   `intake-sonar-reliability.js` and `verify-resolutions.js` now checks parent
+   directories for symlinks, not just the target file.
+2. **verify-resolutions.js saveJsonl** — Added `isWriteSafe()` guard
+   (propagation miss from R5).
+3. **Double-counting bug** — `sprint-intake.js:229` was adding `manualCount` to
+   unplaced, inflating coverage metrics. Removed the addition.
+4. **readJsonlFromGit crash** — `audit-s0-promotions.js:52` used
+   `.map(JSON.parse)` which crashes on any malformed line. Replaced with
+   `.flatMap()` + per-line try/catch (propagation miss from R5).
+5. **reverify-resolved.js crash** — Line 47 had unguarded `readFileSync` +
+   `.map(JSON.parse)`. Added try/catch for file read and per-line parse safety.
+6. **Partial atomic write** — `intake-sonar-reliability.js:2512` second
+   `renameSync` now has try/catch with CRITICAL error message for operator
+   recovery if MASTER updated but deduped fails.
+7. **Dedup key normalization** — `dedupInput()` in `intake-sonar-reliability.js`
+   now normalizes title with trim+lowercase to match `buildDedupIndices()`.
+8. **Hotspot body discard** — `sync-sonarcloud.js` second fetch function
+   (`fetchSonarCloudHotspots`) now wraps body discard in try/catch (propagation
+   miss from R5).
+9. **Remove assignment of "i"** — `sprint-complete.js` and `sprint-wave.js` arg
+   parsers restructured from for-loop with `i += 1` to `indexOf`-based lookups,
+   eliminating SonarCloud S1854.
+10. **response.body.cancel()** — `sync-sonarcloud.js` now uses
+    `response.body.cancel()` to discard error bodies without buffering.
+
+**Patterns Identified:**
+
+1. **Propagation misses are the #1 R6 driver** — 3 of 10 fixes were propagation
+   misses from R5 (symlink guard, body discard guard, readJsonlFromGit). The
+   propagation protocol must be applied more systematically.
+2. **indexOf-based arg parsing avoids SonarCloud S1854** — When a for-loop
+   modifies its counter (i += 1 to skip values), SonarCloud flags it regardless
+   of style. Using `args.indexOf("--flag")` eliminates the issue entirely.
+3. **isWriteSafe must check parent dirs** — Symlink on a parent directory
+   redirects all writes under it. Always check `path.dirname(filePath)` too.
+
+**Deferred:** 23 CC violations (pre-existing, same as R5) + 743 CI pattern
+compliance warnings (pre-existing across entire codebase).
 
 **Resolution Stats:** 19/41 fixed (46%), 22/41 deferred (CC — pre-existing)

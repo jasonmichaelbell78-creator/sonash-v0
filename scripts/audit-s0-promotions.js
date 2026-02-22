@@ -60,7 +60,15 @@ function readJsonlFromGit(commit, relPath) {
     return stdout
       .trim()
       .split("\n")
-      .map((l) => JSON.parse(l));
+      .filter(Boolean)
+      .flatMap((l, idx) => {
+        try {
+          return [JSON.parse(l)];
+        } catch {
+          console.warn(`  WARN: malformed JSON at git:${commit}:${relPath}:${idx + 1} — skipping`);
+          return [];
+        }
+      });
   } catch (err) {
     console.error(`Failed to read ${relPath} from git commit ${commit}: ${err.message}`);
     process.exit(1);

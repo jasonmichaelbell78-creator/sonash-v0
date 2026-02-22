@@ -285,9 +285,13 @@ async function fetchSonarCloudIssues(options) {
     if (!response.ok) {
       // Discard raw response body entirely — it may contain sensitive API details
       try {
-        await response.text();
+        if (response.body && typeof response.body.cancel === "function") {
+          await response.body.cancel();
+        } else {
+          await response.text();
+        }
       } catch {
-        /* ignore body read failure */
+        /* ignore body discard failure */
       }
       throw new Error(`SonarCloud API error: HTTP ${response.status}`);
     }
@@ -353,7 +357,15 @@ async function fetchSonarCloudHotspots(options) {
 
     if (!response.ok) {
       // Discard raw response body entirely — it may contain sensitive API details
-      await response.text();
+      try {
+        if (response.body && typeof response.body.cancel === "function") {
+          await response.body.cancel();
+        } else {
+          await response.text();
+        }
+      } catch {
+        /* ignore body discard failure */
+      }
       throw new Error(`SonarCloud Hotspots API error: HTTP ${response.status}`);
     }
 

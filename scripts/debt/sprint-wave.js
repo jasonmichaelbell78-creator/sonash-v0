@@ -44,19 +44,18 @@ function parseArgs(argv) {
 
   const result = { sprintId: normalizeSprintId(args[0]), batch: 5, json: false };
 
-  for (let i = 1; i < args.length; i++) {
-    if (args[i] === "--batch" && args[i + 1]) {
-      const n = Number.parseInt(args[i + 1], 10);
-      if (Number.isNaN(n) || n < 1) {
-        console.error("Error: --batch must be a positive integer");
-        process.exit(1);
-      }
-      result.batch = n;
-      i += 1;
-    } else if (args[i] === "--json") {
-      result.json = true;
+  result.json = args.includes("--json");
+
+  const batchIdx = args.indexOf("--batch");
+  if (batchIdx !== -1 && batchIdx + 1 < args.length) {
+    const n = Number.parseInt(args[batchIdx + 1], 10);
+    if (Number.isNaN(n) || n < 1) {
+      console.error("Error: --batch must be a positive integer");
+      process.exit(1);
     }
+    result.batch = n;
   }
+
   return result;
 }
 

@@ -223,10 +223,9 @@ function applyPlacements(placements, manifest) {
 
   // Update manifest coverage
   if (manifest.coverage) {
-    const manualCount = placements.filter((p) => !p.target).length;
     const autoCount = placements.filter((p) => p.target).length;
     manifest.coverage.placed_grand_plan = (manifest.coverage.placed_grand_plan || 0) + autoCount;
-    manifest.coverage.unplaced = (manifest.coverage.unplaced || 0) - autoCount + manualCount;
+    manifest.coverage.unplaced = (manifest.coverage.unplaced || 0) - autoCount;
     if (manifest.coverage.unplaced < 0) manifest.coverage.unplaced = 0;
   }
 
