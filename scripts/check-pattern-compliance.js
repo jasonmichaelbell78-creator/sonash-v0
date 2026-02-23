@@ -690,7 +690,8 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)(?:scripts|\.claude\/hooks|\.husky)\//,
     // Exclude files with verified error handling
     // check-pattern-sync.js: CJS require() calls at top-level are standard node module loading
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|load-config|check-pattern-sync)\.js$/,
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|load-config|check-pattern-sync|security-helpers)\.js$/,
     pathExcludeList: verifiedPatterns["unguarded-loadconfig"] || [],
   },
 
@@ -1125,7 +1126,7 @@ const ANTI_PATTERNS = [
     review: "#316-#323 (PR #366 R1-R8, 5 rounds of symlink ping-pong)",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-helpers)\.js$/,
     pathExcludeList: verifiedPatterns["write-without-symlink-guard"] || [],
   },
 
@@ -1302,7 +1303,18 @@ const ANTI_PATTERNS = [
   {
     id: "happy-path-only",
     severity: "high",
-    pattern: /async\s+function\s+\w+[^}]*?(?!try)/g,
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        if (!/\basync\s+function\b/.test(lines[i])) continue;
+        const window = lines.slice(i, Math.min(lines.length, i + 80)).join("\n");
+        if (!/\bawait\b/.test(window)) continue;
+        if (/\btry\s*\{/.test(window)) continue;
+        matches.push({ line: i + 1, match: lines[i].trim() });
+      }
+      return matches;
+    },
     message: "Function handles only success path, no error handling",
     fix: "Add try/catch with proper error handling for async operations",
     review: "ai-behavior",
@@ -1776,9 +1788,10 @@ function applyGraduation(violations) {
 }
 
 /**
- * Generate false-positive report showing per-pattern exclusion counts
+ * Collect per-pattern exclusion counts from verified-patterns and pathExcludeLists.
+ * @returns {Object} Map of patternId -> { verified: number, pathExclude: number }
  */
-function generateFpReport() {
+function collectPatternExclusions() {
   const patternExclusions = {};
 
   // Count verified-patterns.json exclusions per pattern
@@ -1799,12 +1812,30 @@ function generateFpReport() {
     }
   }
 
+  return patternExclusions;
+}
+
+/**
+ * Determine FP status label for a given total exclusion count.
+ */
+function getFpStatus(total) {
+  if (total > 20) return "\uD83D\uDD34 CONSIDER REMOVAL";
+  if (total > 10) return "\uD83D\uDFE1 HIGH FP RISK";
+  return "";
+}
+
+/**
+ * Generate false-positive report showing per-pattern exclusion counts
+ */
+function generateFpReport() {
+  const patternExclusions = collectPatternExclusions();
+
   // Sort by total count descending
   const sorted = Object.entries(patternExclusions)
     .map(([id, counts]) => [id, counts.verified + counts.pathExclude, counts])
     .sort((a, b) => b[1] - a[1]);
 
-  console.log("📊 False Positive Report — Per-Pattern Exclusion Counts\n");
+  console.log("\uD83D\uDCCA False Positive Report \u2014 Per-Pattern Exclusion Counts\n");
   console.log(`Total patterns: ${ANTI_PATTERNS.length}`);
   console.log(`Patterns with exclusions: ${sorted.length}\n`);
 
@@ -1818,12 +1849,9 @@ function generateFpReport() {
     "----------------------------------------|----------|----------|-------|------------------"
   );
   for (const [id, total, counts] of sorted) {
-    let status = "";
-    if (total > 20) status = "🔴 CONSIDER REMOVAL";
-    else if (total > 10) status = "🟡 HIGH FP RISK";
     const paddedId = id.padEnd(39);
     console.log(
-      `${paddedId} | ${String(counts.verified).padStart(8)} | ${String(counts.pathExclude).padStart(8)} | ${String(total).padStart(5)} | ${status}`
+      `${paddedId} | ${String(counts.verified).padStart(8)} | ${String(counts.pathExclude).padStart(8)} | ${String(total).padStart(5)} | ${getFpStatus(total)}`
     );
   }
 

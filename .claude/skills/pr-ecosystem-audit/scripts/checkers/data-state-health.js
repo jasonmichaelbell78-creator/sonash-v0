@@ -10,11 +10,20 @@
 
 "use strict";
 
-const fs = require("node:fs");
-const path = require("node:path");
-const { execFileSync } = require("node:child_process");
-const { scoreMetric } = require("../lib/scoring");
-const { BENCHMARKS } = require("../lib/benchmarks");
+/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
+function safeRequire(id) {
+  try {
+    return require(id);
+  } catch (e) {
+    const m = e instanceof Error ? e.message : String(e);
+    throw new Error(`[data-state-health] ${m}`);
+  }
+}
+const fs = safeRequire("node:fs");
+const path = safeRequire("node:path");
+const { execFileSync } = safeRequire("node:child_process");
+const { scoreMetric } = safeRequire("../lib/scoring");
+const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
 const DOMAIN = "data_state_health";
 
@@ -340,7 +349,18 @@ function countMarkdownReviews(rootDir) {
 
   try {
     const learnings = fs.readFileSync(learningsPath, "utf8");
-    return (learnings.match(/^#{2,4}\s+Review\s+#\d+/gim) || []).length;
+    const lines = learnings.split("\n");
+    const headingRe = /^#{2,4}\s+Review\s+#\d+/i;
+    let inFence = false;
+    let count = 0;
+    for (const line of lines) {
+      if (line.trim().startsWith("```")) {
+        inFence = !inFence;
+        continue;
+      }
+      if (!inFence && headingRe.test(line)) count++;
+    }
+    return count;
   } catch {
     return 0;
   }

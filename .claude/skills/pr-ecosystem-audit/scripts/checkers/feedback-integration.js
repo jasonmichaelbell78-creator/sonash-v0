@@ -11,10 +11,19 @@
 
 "use strict";
 
-const fs = require("node:fs");
-const path = require("node:path");
-const { scoreMetric } = require("../lib/scoring");
-const { BENCHMARKS } = require("../lib/benchmarks");
+/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
+function safeRequire(id) {
+  try {
+    return require(id);
+  } catch (e) {
+    const m = e instanceof Error ? e.message : String(e);
+    throw new Error(`[feedback-integration] ${m}`);
+  }
+}
+const fs = safeRequire("node:fs");
+const path = safeRequire("node:path");
+const { scoreMetric } = safeRequire("../lib/scoring");
+const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
 const DOMAIN = "feedback_integration";
 

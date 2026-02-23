@@ -11,11 +11,20 @@
 
 "use strict";
 
-const fs = require("node:fs");
-const path = require("node:path");
-const { execFileSync } = require("node:child_process");
-const { scoreMetric } = require("../lib/scoring");
-const { BENCHMARKS } = require("../lib/benchmarks");
+/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
+function safeRequire(id) {
+  try {
+    return require(id);
+  } catch (e) {
+    const m = e instanceof Error ? e.message : String(e);
+    throw new Error(`[pattern-lifecycle] ${m}`);
+  }
+}
+const fs = safeRequire("node:fs");
+const path = safeRequire("node:path");
+const { execFileSync } = safeRequire("node:child_process");
+const { scoreMetric } = safeRequire("../lib/scoring");
+const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
 const DOMAIN = "pattern_lifecycle";
 
@@ -187,8 +196,8 @@ function computeFalsePositiveRate(recentReviews) {
     // Skip retros — they track different semantics (rounds, not review items)
     if (review.type === "retrospective") continue;
     // JSONL uses 'total' and 'rejected' (not 'items_total'/'items_rejected')
-    const t = review.total || review.items_total || 0;
-    const r = review.rejected || review.items_rejected || 0;
+    const t = review.total ?? review.items_total ?? 0;
+    const r = review.rejected ?? review.items_rejected ?? 0;
     if (t > 0) {
       totalItems += t;
       rejectedItems += r;

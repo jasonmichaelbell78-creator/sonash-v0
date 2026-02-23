@@ -1,3 +1,4 @@
+/* global __dirname */
 /**
  * Security Helpers Library
  *
@@ -13,6 +14,25 @@ const { existsSync, lstatSync, writeFileSync, unlinkSync } = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { tmpdir } = require("node:os");
+
+// Re-export isSafeToWrite from symlink-guard for convenience
+// (scripts that import from security-helpers don't need to know the hook path)
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require(
+    path.join(__dirname, "..", "..", ".claude", "hooks", "lib", "symlink-guard")
+  ));
+} catch {
+  // Fallback: create isSafeToWrite from refuseSymlinkWithParents
+  isSafeToWrite = (filePath) => {
+    try {
+      refuseSymlinkWithParents(filePath);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+}
 
 /**
  * Sanitize error messages to prevent path/credential leakage
@@ -466,6 +486,7 @@ module.exports = {
   escapeMd,
 
   // File operations
+  isSafeToWrite,
   refuseSymlinkWithParents,
   validatePathInDir,
   safeWriteFile,

@@ -75,8 +75,10 @@ describe("Pattern: hardcoded-api-key [critical]", () => {
 });
 
 describe("Pattern: sql-injection-risk [critical]", () => {
+  // Simplified regex aligned with check-pattern-compliance.js (complexity <=20)
+  // Uses [\s\S] shorthand and reduced method-name alternation
   const pattern =
-    /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*\$\{|'[^']*\+\s*|"[^"]*\+\s*)/g;
+    /(?:query|exec(?:ute)?|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g;
 
   test("detects interpolation in queries", () => {
     testPattern(pattern, ["db.query(`SELECT * FROM users WHERE id = ${userId}`)"], []);

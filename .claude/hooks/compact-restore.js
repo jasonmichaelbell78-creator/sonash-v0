@@ -14,8 +14,21 @@
  * Session #138: Part of compaction-resilient state persistence
  */
 
-const fs = require("node:fs");
-const path = require("node:path");
+let fs, path;
+try {
+  fs = require("node:fs");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load node:fs:", msg);
+  process.exit(2);
+}
+try {
+  path = require("node:path");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load node:path:", msg);
+  process.exit(2);
+}
 
 // Paths
 const safeBaseDir = path.resolve(process.cwd());

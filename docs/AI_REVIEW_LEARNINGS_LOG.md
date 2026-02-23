@@ -1960,6 +1960,40 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #367: PR #384 R2 — CI Pattern Compliance + Qodo Suggestions (2026-02-22)
+
+**Source**: CI failure (112 blocking pattern violations) + Qodo compliance (4
+items) + Qodo code suggestions (20 items) + SonarCloud (3 items) **PR**: #384
+(comprehensive 9-domain audit + TDMS intake + debt placement) **Items**: 139
+total — 125 fixed, 7 rejected, 7 deferred
+
+**Patterns Identified**:
+
+- **Array.isArray checker false positives**: The `missing-array-isarray` pattern
+  regex uses forward lookahead for `Array.isArray` but guards appear BEFORE
+  array methods. Files with correct guards still get flagged. Fix: add to
+  verified-patterns.json when guards are confirmed present.
+- **Parallel agent fix strategy effective**: 4 parallel agents fixing 4 file
+  groups resolved 95+ violations in a single round. File grouping by concern
+  area (debt scripts, consolidation scripts, ecosystem checkers, remaining) kept
+  agent context focused.
+- **`// catch-verified: core module` comment pattern**: The loadConfig/require
+  pattern checker accepts this inline comment to suppress false positives on
+  core module require() calls. Consistent with how other fixed files handle it.
+- **happy-path-only regex was fundamentally flawed**:
+  `async\s+function\s+\w+[^}]*?(?!try)` produced false positives. Replaced with
+  testFn that scans an 80-line window for `await` and `try` keywords — more
+  accurate and no regex DoS risk.
+- **`||` vs `??` for zero-value metrics**:
+  `review.total || review.items_total || 0` treats 0 as falsy, causing incorrect
+  metric calculations. Use `??` for numeric fields that may legitimately be 0.
+- **Sprint file format resilience**: `data.sprint` may be undefined if sprint
+  file format varies. Always derive sprint name from filename as fallback.
+
+**Resolution**: 112 CI blocking violations → 0. All 30 pattern tests pass.
+
+---
+
 #### Review #366: PR #384 R1 — SonarCloud + Qodo + CI (2026-02-22)
 
 **Source**: SonarCloud (17 issues) + Qodo (10 suggestions) + CI failure (1)

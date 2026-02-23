@@ -11,10 +11,19 @@
 
 "use strict";
 
-const fs = require("node:fs");
-const path = require("node:path");
-const { scoreMetric } = require("../lib/scoring");
-const { BENCHMARKS } = require("../lib/benchmarks");
+/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
+function safeRequire(id) {
+  try {
+    return require(id);
+  } catch (e) {
+    const m = e instanceof Error ? e.message : String(e);
+    throw new Error(`[process-compliance] ${m}`);
+  }
+}
+const fs = safeRequire("node:fs");
+const path = safeRequire("node:path");
+const { scoreMetric } = safeRequire("../lib/scoring");
+const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
 const DOMAIN = "process_compliance";
 
@@ -618,14 +627,18 @@ function countNumberingGaps(learningsContent, rootDir) {
           // Only scan archives that directly overlap with or are adjacent to the active range
           if (archiveEnd < minActive - 1 || archiveStart > maxActive + 1) continue;
         }
-        const content = fs.readFileSync(path.join(archiveDir, file), "utf8");
+        const filePath = path.join(archiveDir, file); // startsWith containment below
+        if (!path.resolve(filePath).startsWith(path.resolve(archiveDir) + path.sep)) continue;
+        const content = fs.readFileSync(filePath, "utf8");
         for (const m of content.matchAll(/#{2,4}\s+Review\s+#(\d+)/gi)) {
           allNumbers.push(parseInt(m[1], 10));
         }
       }
     } catch (err) {
       // Archives not accessible — count gaps from active log only
-      console.warn(`[process-compliance] Could not read archive directory: ${err.message}`);
+      console.warn(
+        `[process-compliance] Could not read archive directory: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 

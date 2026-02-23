@@ -8,9 +8,28 @@
  * then assigns them to the appropriate sprint based on their `file` field.
  */
 
-const fs = require("node:fs");
-const path = require("node:path");
-const { safeWriteFile } = require("./lib/security-helpers");
+let fs, path, safeWriteFile;
+try {
+  fs = require("node:fs");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load node:fs:", msg);
+  process.exit(2);
+}
+try {
+  path = require("node:path");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load node:path:", msg);
+  process.exit(2);
+}
+try {
+  ({ safeWriteFile } = require("./lib/security-helpers"));
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load security-helpers:", msg);
+  process.exit(2);
+}
 
 const ROOT = path.resolve(__dirname, "..");
 const DEBT_PATH = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
@@ -65,6 +84,36 @@ const SPRINT_FOCUS = {
   "sprint-12b": "Cross-cutting items (no specific file)",
 };
 
+// Prefix-to-group mapping table (replaces chained if/else for lower complexity)
+const PREFIX_TO_GROUP = [
+  ["scripts/", "scripts"],
+  ["tests/", "tests"],
+  ["__tests__/", "tests"],
+  ["test/", "tests"],
+  ["components/", "app-components"],
+  ["app/", "app-components"],
+  ["lib/", "app-components"],
+  ["functions/", "app-components"],
+  ["hooks/", "app-components"],
+  ["types/", "app-components"],
+  ["styles/", "app-components"],
+  ["docs/", "docs-claude"],
+  [".claude/", "docs-claude"],
+  [".github/", "github-husky-config"],
+  [".husky/", "github-husky-config"],
+];
+
+/**
+ * Look up sprint group from prefix table.
+ * @returns {string|null} group name or null if no prefix matched
+ */
+function matchPrefixGroup(normalizedPath) {
+  for (const [prefix, group] of PREFIX_TO_GROUP) {
+    if (normalizedPath.startsWith(prefix)) return group;
+  }
+  return null;
+}
+
 /**
  * Determine which sprint group an item belongs to based on its file field.
  */
@@ -76,33 +125,11 @@ function getSprintGroup(filePath) {
   // Normalize path separators
   const f = filePath.replaceAll("\\", "/");
 
-  // scripts/
-  if (f.startsWith("scripts/")) return "scripts";
+  const prefixMatch = matchPrefixGroup(f);
+  if (prefixMatch) return prefixMatch;
 
-  // tests/
-  if (f.startsWith("tests/") || f.startsWith("__tests__/") || f.startsWith("test/")) return "tests";
-
-  // components/, app/, lib/, functions/, hooks/, types/
-  if (f.startsWith("components/")) return "app-components";
-  if (f.startsWith("app/")) return "app-components";
-  if (f.startsWith("lib/")) return "app-components";
-  if (f.startsWith("functions/")) return "app-components";
-  if (f.startsWith("hooks/")) return "app-components";
-  if (f.startsWith("types/")) return "app-components";
-  if (f.startsWith("styles/")) return "app-components";
-
-  // docs/ or .claude/
-  if (f.startsWith("docs/")) return "docs-claude";
-  if (f.startsWith(".claude/")) return "docs-claude";
-
-  // .github/ or .husky/
-  if (f.startsWith(".github/")) return "github-husky-config";
-  if (f.startsWith(".husky/")) return "github-husky-config";
-
-  // Root-level config files (no directory prefix, or single-level)
-  if (!f.includes("/")) {
-    return "github-husky-config";
-  }
+  // Root-level config files (no directory prefix)
+  if (!f.includes("/")) return "github-husky-config";
 
   // Anything else is cross-cutting
   return "cross-cutting";
@@ -122,12 +149,25 @@ function loadSprintFiles() {
     const rel = path.relative(LOGS_DIR, filePath);
     if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
     try {
-      const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
-      const ids = new Set(data.ids || []);
-      sprintData[data.sprint] = { data, ids, filePath };
+      const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
+      const sprintName =
+        raw &&
+        typeof raw === "object" &&
+        !Array.isArray(raw) &&
+        typeof raw.sprint === "string" &&
+        raw.sprint.trim()
+          ? raw.sprint.trim()
+          : file.replace(/-ids\.json$/, "");
+      const idList = Array.isArray(raw) ? raw : Array.isArray(raw?.ids) ? raw.ids : [];
+      const ids = new Set(idList.filter((v) => typeof v === "string" && v));
+      sprintData[sprintName] = {
+        data: Array.isArray(raw) ? { sprint: sprintName, ids: [...ids] } : raw,
+        ids,
+        filePath,
+      };
       for (const id of ids) allAssignedIds.add(id);
     } catch (err) {
-      console.error(`Error reading ${file}: ${err.message}`);
+      console.error(`Error reading ${file}: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 

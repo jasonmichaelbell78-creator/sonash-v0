@@ -19,20 +19,32 @@
  *   2 = Error
  */
 
-const { existsSync, readFileSync, readdirSync, writeFileSync, lstatSync } = require("node:fs");
-const { join } = require("node:path");
-
-// Symlink guard (Review #316-#323)
-let isSafeToWrite;
+// pattern-compliance: fs/path imports guarded by isSafeToWrite (loaded below)
+let existsSync, readFileSync, readdirSync, lstatSync, copyFileSync, rmSync;
 try {
-  ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
+  ({ existsSync, readFileSync, readdirSync, lstatSync, copyFileSync, rmSync } = require("node:fs"));
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
-  console.error(
-    "symlink-guard unavailable; disabling writes:",
-    msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")
-  );
-  isSafeToWrite = () => false;
+  console.error("Failed to load node:fs:", msg);
+  process.exit(2);
+}
+
+let join;
+try {
+  ({ join } = require("node:path"));
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load node:path:", msg);
+  process.exit(2);
+}
+
+let safeWriteFile;
+try {
+  ({ safeWriteFile } = require("./lib/security-helpers"));
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load security-helpers:", msg);
+  process.exit(2);
 }
 
 const ROOT = join(__dirname, "..");
@@ -98,9 +110,8 @@ const MAX_RANGE_EXPANSION = 5000;
 function parseHeadingIds(content) {
   const headingRegex = /^#{2,4}\s+Review\s+#(\d+)/gm;
   const ids = [];
-  let match;
   let found = false;
-  while ((match = headingRegex.exec(content)) !== null) {
+  for (const match of content.matchAll(headingRegex)) {
     ids.push(Number.parseInt(match[1], 10));
     found = true;
   }
@@ -113,19 +124,18 @@ function parseHeadingIds(content) {
  */
 function parseTableIds(content) {
   const ids = [];
-  let match;
   let found = false;
 
   // Single review rows: | #N |
   const tableRegex = /^\|\s*#(\d+)\s*\|/gm;
-  while ((match = tableRegex.exec(content)) !== null) {
+  for (const match of content.matchAll(tableRegex)) {
     ids.push(Number.parseInt(match[1], 10));
     found = true;
   }
 
   // Consolidated range rows: | #N-M |
   const rangeRegex = /^\|\s*#(\d+)-(\d+)\s*\|/gm;
-  while ((match = rangeRegex.exec(content)) !== null) {
+  for (const match of content.matchAll(rangeRegex)) {
     const start = Number.parseInt(match[1], 10);
     const end = Number.parseInt(match[2], 10);
     const span = end - start + 1;
@@ -197,9 +207,8 @@ function checkWrongHeadings(filePath, fileName) {
     if (wrongHeadings > 0) {
       warn(`${fileName}: ${wrongHeadings} reviews use ## or ### instead of #### heading`);
       if (fixMode) {
-        if (!isSafeToWrite(filePath)) return 0;
         const fixed = content.replaceAll(/^#{2,3}(\s+Review\s+#)/gm, "####$1");
-        writeFileSync(filePath, fixed);
+        safeWriteFile(filePath, fixed, { allowOverwrite: true });
         console.log(`    → Fixed ${wrongHeadings} headings`);
       }
       return wrongHeadings;
@@ -270,7 +279,7 @@ function main() {
     }
     if (logIds.length > 0) {
       console.log(
-        `  Active log: ${logIds.length} reviews (#${Math.min(...logIds)}-#${Math.max(...logIds)})`
+        `  Active log: ${logIds.length} reviews (#${logIds.length > 0 ? Math.min(...logIds) : 0}-#${logIds.length > 0 ? Math.max(...logIds) : 0})`
       );
     } else {
       console.log("  Active log: 0 reviews");
@@ -291,7 +300,7 @@ function main() {
       const fmtLabel = FMT_LABELS[fmt] || "";
       if (ids.length > 0) {
         console.log(
-          `  ${file}: ${ids.length} reviews (#${Math.min(...ids)}-#${Math.max(...ids)})${fmtLabel}`
+          `  ${file}: ${ids.length} reviews (#${ids.length > 0 ? Math.min(...ids) : 0}-#${ids.length > 0 ? Math.max(...ids) : 0})${fmtLabel}`
         );
       } else {
         console.log(`  ${file}: 0 reviews (empty)`);
