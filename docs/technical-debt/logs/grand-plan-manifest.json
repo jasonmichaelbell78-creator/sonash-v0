@@ -1,10 +1,10 @@
 {
   "version": "2.0",
-  "generated": "2026-02-21T04:07:54.602Z",
+  "generated": "2026-02-23T00:46:31.529Z",
   "sprints": {
     "sprint-1": {
       "status": "COMPLETE",
-      "items": 603,
+      "items": 512,
       "focus": "scripts/ (core)"
     },
     "sprint-2": {
@@ -14,7 +14,7 @@
     },
     "sprint-3": {
       "status": "COMPLETE",
-      "items": 241,
+      "items": 211,
       "focus": "docs/ + .claude/ + root .md"
     },
     "sprint-4": {
@@ -44,12 +44,12 @@
     },
     "sprint-11b": {
       "status": "PLANNED",
-      "items": 200,
+      "items": 194,
       "focus": "components/, app/, lib/, functions/, hooks/, types/"
     },
     "sprint-11c": {
       "status": "PLANNED",
-      "items": 13,
+      "items": 77,
       "focus": "components/, app/, lib/, functions/, hooks/, types/"
     },
     "sprint-12a": {
@@ -59,7 +59,17 @@
     },
     "sprint-12b": {
       "status": "PLANNED",
-      "items": 180,
+      "items": 200,
+      "focus": "Cross-cutting items (no specific file)"
+    },
+    "sprint-12c": {
+      "status": "PLANNED",
+      "items": 200,
+      "focus": "Cross-cutting items (no specific file)"
+    },
+    "sprint-12d": {
+      "status": "PLANNED",
+      "items": 23,
       "focus": "Cross-cutting items (no specific file)"
     },
     "sprint-9a": {
@@ -69,7 +79,7 @@
     },
     "sprint-9b": {
       "status": "PLANNED",
-      "items": 42,
+      "items": 56,
       "focus": ".claude/ and docs/"
     },
     "sprint-8a": {
@@ -89,33 +99,33 @@
     },
     "sprint-8d": {
       "status": "PLANNED",
-      "items": 156,
+      "items": 160,
       "focus": "scripts/ overflow"
     },
     "sprint-10": {
       "status": "PLANNED",
-      "items": 76,
+      "items": 117,
       "focus": ".github/, .husky/, root config files"
     }
   },
   "roadmap_bound": {
     "security": {
-      "count": 346,
+      "count": 404,
       "roadmap_ref": "Track-S"
     },
     "enhancements": {
-      "count": 12,
+      "count": 82,
       "roadmap_ref": "M3-M10"
     },
     "performance": {
-      "count": 77,
+      "count": 90,
       "roadmap_ref": "M2"
     }
   },
   "coverage": {
-    "total_open": 3590,
-    "placed_grand_plan": 3155,
-    "placed_roadmap": 435,
+    "total_open": 4090,
+    "placed_grand_plan": 3665,
+    "placed_roadmap": 576,
     "unplaced": 0
   }
 }

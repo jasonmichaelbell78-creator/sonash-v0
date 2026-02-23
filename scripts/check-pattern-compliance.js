@@ -655,6 +655,8 @@ const ANTI_PATTERNS = [
       "normalize-format.js",
       "extract-agent-findings.js",
       "generate-detailed-sonar-report.js",
+      "place-unassigned-debt.js",
+      "analyze-placement.js",
     ],
   },
 

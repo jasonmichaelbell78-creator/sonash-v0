@@ -1,0 +1,8 @@
+Comprehensive Audit Baseline - 2026-02-22
+==========================================
+
+Tests: 294 total, 293 pass, 0 fail, 1 skipped
+ESLint: 0 errors, 1690 warnings (security/detect-non-literal-fs-filename)
+Patterns: 1 medium warning (pre-commit trap cleanup)
+Branch: claude/fix-tool-use-ids-EfyvE
+Last commit: 1340a0d2 feat: pattern tests in CI + compaction guard improvements
