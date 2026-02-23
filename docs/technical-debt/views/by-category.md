@@ -3312,7 +3312,7 @@
 | DEBT-2290 | Document atomic write pattern as reusable helper               | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 | DEBT-3193 | CANON system uses JSONL output model — templates referenc...   | S3       | docs/templates/CANON_QUICK_REFERENCE.md                            | 1    |
 
-## engineering-productivity (21)
+## engineering-productivity (22)
 
 | ID        | Title                                                        | Severity | File                                        | Line |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------------------------- | ---- |
@@ -3329,6 +3329,7 @@
 | DEBT-7476 | Test pipeline requires 3 compilation steps — 10-20s overh... | S2       | package.json                                | 0    |
 | DEBT-7490 | 181 ESLint warning baseline — warning noise masks real is... | S2       | N/A                                         | 0    |
 | DEBT-7492 | Dev server uses webpack by default — no Turbopack flag       | S2       | package.json                                | 0    |
+| DEBT-7543 | S5852 regex complexity pre-push automation — check ALL re... | S2       | scripts/check-pattern-compliance.js         | 0    |
 | DEBT-2430 | Archive reviews #285-334 to reduce learnings log from 340... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md             | 0    |
 | DEBT-2431 | Refresh Quick Pattern Index with recent patterns from rev... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md             | 0    |
 | DEBT-7534 | 96-101 npm scripts with no grouping, no help, no discover... | S3       | package.json                                | 0    |

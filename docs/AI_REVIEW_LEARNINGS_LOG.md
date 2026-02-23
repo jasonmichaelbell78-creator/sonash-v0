@@ -31,6 +31,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.51    | 2026-02-23               | PR #386 Retrospective: 2 rounds, 25 items, ~1 avoidable round. S5852 regex two-stage (R1→R2), CC in testFn IIFE. Cleanest cycle in series.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.50    | 2026-02-23               | Review #371: PR #386 R2 — S5852 string parsing, CC reduction (main→3 funcs, testFn IIFE), concurrency-safe tmp, match snippets. 6 fixed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 17.49    | 2026-02-23               | Review #370: PR #386 R1 — SonarCloud regex complexity (2 testFn conversions), seed-commit-log.js hardening (8 fixes), optional chaining (3), CI Prettier fix. 17 fixed, 1 rejected (FP), 1 architectural.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 17.48    | 2026-02-23               | PR #384 Retrospective: 4 rounds, 197 items, ~2.5 avoidable rounds. CI pattern compliance cascade (R1→R2), CC progressive reduction (R1→R3→R4).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -574,6 +575,144 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### PR #386 Retrospective (2026-02-23)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                        |
+| -------------- | ------------------------------------------------------------ |
+| Rounds         | 2 (R1–R2, both 2026-02-23)                                   |
+| Total items    | 25                                                           |
+| Fixed          | 23                                                           |
+| Deferred       | 0                                                            |
+| Rejected       | 1 (false positive)                                           |
+| Architectural  | 1 (ESLint migration — flagged to user)                       |
+| Review sources | SonarCloud, Qodo Compliance, Qodo PR Suggestions, Gemini, CI |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                    | Items  | Fixed  | Rejected | Key Patterns                                                                       |
+| --------- | ---------- | ------------------------- | ------ | ------ | -------- | ---------------------------------------------------------------------------------- |
+| R1        | 2026-02-23 | SonarCloud+Qodo+Gemini+CI | 19     | 17     | 1        | S5852 regex→testFn (2), seed-commit-log hardening (8), optional chain, CI Prettier |
+| R2        | 2026-02-23 | SonarCloud+Qodo           | 6      | 6      | 0        | S5852 regex→string parsing, CC reduction (main→3, testFn IIFE→3), concurrency tmp  |
+| **Total** |            |                           | **25** | **23** | **1**    |                                                                                    |
+
+#### Ping-Pong Chains
+
+##### Chain 1: S5852 Regex Complexity Two-Stage (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                                                      | Files Affected                                  | Root Cause                                     |
+| ----- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------- |
+| R1    | S5852 flagged 2 regexes (complexity 31, 26). Replaced with testFn functions. Also seed-commit-log. | check-pattern-compliance.js, seed-commit-log.js | Original regexes exceeded SonarCloud threshold |
+| R2    | S5852 re-flagged getSessionCounter — R1's testFn still used `/(\d+)\s*$/` regex inside.            | check-pattern-compliance.js                     | R1 replaced pattern regex but not helper regex |
+
+**Avoidable rounds:** 0.5. R1's testFn strategy was correct but helper regex
+within testFn wasn't checked against S5852. A "re-check all regex" step would
+have caught it.
+
+**Prevention:** After any S5852 fix, re-check ALL regex complexity in modified
+functions, not just the flagged one.
+
+##### Chain 2: CC Progressive Reduction (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                                                   | Files Affected                                  | Root Cause                         |
+| ----- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------- |
+| R1    | 8 hardening fixes added to seed-commit-log.js main(). testFn IIFE created in compliance.js.     | seed-commit-log.js, check-pattern-compliance.js | Necessary hardening from review    |
+| R2    | CC >15 in main() and CC 24 in testFn IIFE. Extracted parseCommitLines, writeEntries, isWordChar | seed-commit-log.js, check-pattern-compliance.js | R1 added features without CC check |
+
+**Avoidable rounds:** 0.5. Pre-commit CC hook should catch these on staged
+files. Verify IIFE expressions get CC-checked.
+
+**Total avoidable rounds across all chains: ~1 out of 2 (~50% partially
+avoidable)**
+
+#### Rejection Analysis
+
+| Category       | Count | Round | Examples                                                                             |
+| -------------- | ----- | ----- | ------------------------------------------------------------------------------------ |
+| False positive | 1     | R1    | "Sensitive content in seeded JSONL" — git commit data already public in repo history |
+
+**Rejection accuracy:** 1/1 rejections correct (100%).
+
+**Architectural (not rejected):** ESLint migration for
+check-pattern-compliance.js — significant effort, flagged to user as future tech
+debt.
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                | Rounds | Already Automated?    | Recommended Action                                        | Est. Effort |
+| ---------------------- | ------ | --------------------- | --------------------------------------------------------- | ----------- |
+| S5852 regex complexity | R1, R2 | No                    | Add regex complexity check to pr-review Step 0.5 pre-push | ~30 min     |
+| CC >15 in new code     | R2     | YES (pre-commit hook) | Verify hook catches CC in IIFE testFn expressions         | ~10 min     |
+| Sticky boolean FP      | R1     | YES (proximity check) | Already fixed this PR                                     | Done        |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                             | Implemented? | Impact on #386                                           |
+| ------- | ---------------------------------------------- | ------------ | -------------------------------------------------------- |
+| PR #384 | `\|\|` vs `??` pattern compliance rule         | **YES**      | `logical-or-numeric-fallback` rule (line 1479). Working. |
+| PR #384 | CC re-check reminder in FIX_TEMPLATES          | **YES**      | Line 1426. Partially effective — R2 still had CC.        |
+| PR #384 | `scripts/debt/` Qodo compliance exclusion      | **YES**      | 4 entries in pr-agent.toml.                              |
+| PR #384 | Run patterns:check before pushing review fixes | **NOT DONE** | No impact (only 5 files, no CI pattern cascade).         |
+| PR #383 | Propagation protocol (mandatory codebase grep) | **NOT DONE** | No impact (no security patterns in #386).                |
+| PR #383 | writeFileSync guard rule in compliance checker | **NOT DONE** | No impact (no write paths in #386 scope).                |
+| PR #379 | Algorithm Design Pre-Check (Step 0.5)          | **YES**      | Not triggered.                                           |
+
+**Total avoidable rounds from unimplemented retro actions: 0**
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Avoidable Rounds | Rejections | Key Issue                     |
+| -------- | ------ | ----------- | ---------------- | ---------- | ----------------------------- |
+| #379     | 11     | ~119        | ~8               | ~61        | Evidence algorithm + protocol |
+| #382     | 3      | 76          | ~1               | 13         | Severity/dedup incremental    |
+| #383     | 8      | ~282        | ~4               | ~90        | Symlink/atomic/catch          |
+| #384     | 4      | 197         | ~2.5             | ~18        | CI pattern cascade + CC       |
+| **#386** | **2**  | **25**      | **~1**           | **1**      | **S5852 regex + CC**          |
+
+**Persistent cross-PR patterns:**
+
+| Pattern                       | PRs Affected   | Times Recommended | Status                       | Required Action                                    |
+| ----------------------------- | -------------- | ----------------- | ---------------------------- | -------------------------------------------------- |
+| CC lint rule                  | #366-#371      | 5x                | **RESOLVED** (pre-commit)    | None                                               |
+| Qodo suppression              | #369-#384      | 4x                | **RESOLVED** (pr-agent.toml) | None                                               |
+| Propagation check             | #366-#384      | 7x                | Process only                 | Declining impact — not triggered in #386           |
+| S5852 regex complexity        | **#386 (new)** | 1x                | Not automated                | Consider local SonarCloud or regex complexity lint |
+| CC in testFn/IIFE expressions | **#386 (new)** | 1x                | Partial (pre-commit hook)    | Verify IIFE testFns get CC-checked                 |
+
+#### Skills/Templates to Update
+
+1. **pr-review SKILL.md Step 0.5:** Add "After S5852 fix, re-check ALL regex
+   complexity in modified functions" (~5 min — do now)
+2. **FIX_TEMPLATES.md:** No update needed — existing CC template already has
+   "re-check ENTIRE file" reminder (line 1426).
+3. **pr-retro SKILL.md:** No new known churn patterns — S5852 is a variant of
+   Pattern 1 (CC progressive reduction).
+
+#### Process Improvements
+
+1. **S5852 requires recursive regex audit** — When SonarCloud flags regex
+   complexity, check ALL regexes in the modified file, not just the flagged one.
+   Evidence: R1→R2 (helper regex inside testFn).
+2. **Pre-commit CC hook may not cover IIFE expressions** — R2 had CC 24 in a
+   testFn IIFE. Verify hook scans IIFE contexts. Evidence: R2.
+3. **Small PRs = fewer rounds** — 5 files, 2 rounds, 25 items. Compare to #383
+   (30+ files, 8 rounds, 282 items). Evidence: this PR.
+
+#### Verdict
+
+PR #386 had an **efficient review cycle** — 2 rounds with 25 items, 23 fixed, 1
+rejection (100% accuracy). ~1 of 2 rounds was partially avoidable (~50%), driven
+by S5852 two-stage regex fix. The **single highest-impact change**: after any
+SonarCloud regex fix, audit ALL regex patterns in modified functions.
+
+**Trend: Clearly improving.** Round count: #379(11) → #383(8) → #384(4) →
+**#386(2)**. Items per round: #383(35) → #384(49) → **#386(12.5)**. Rejection
+rate: #383(32%) → #384(9%) → **#386(4%)**. Cleanest cycle in the series. Small
+PR scope and systemic improvements (CC hook, Qodo suppression) are paying off.
+
+---
 
 ### PR #384 Retrospective (2026-02-23)
 

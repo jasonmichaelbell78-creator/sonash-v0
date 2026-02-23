@@ -792,7 +792,7 @@
 | DEBT-4475 | Make sure that using this pseudorandom number generator i...  | components/celebrations/firework-burst.tsx                                                                                                         | 47   | security                 | E0     |
 | DEBT-6853 | Exporting mutable let binding, use const instead              | scripts/surface-lessons-learned.js                                                                                                                 | 30   | code-quality             | E0     |
 
-## S2 - Medium (1864)
+## S2 - Medium (1865)
 
 | ID        | Title                                                          | File                                                                                                                                                                        | Line | Category                 | Effort    |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | --------- |
@@ -2265,6 +2265,7 @@
 | DEBT-7515 | Onboarding progress dots are div elements with no accessi...   | components/onboarding/onboarding-wizard.tsx                                                                                                                                 | 187  | enhancements             | E1        |
 | DEBT-7516 | No CHANGELOG, no versioning strategy, no release tagging       | package.json                                                                                                                                                                | 0    | process                  | E2        |
 | DEBT-7517 | 356-line FORM_SECTIONS config embedded in Step1WorksheetC...   | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 124  | refactoring              | E2        |
+| DEBT-7543 | S5852 regex complexity pre-push automation — check ALL re...   | scripts/check-pattern-compliance.js                                                                                                                                         | 0    | engineering-productivity | E1        |
 | DEBT-0170 | Ambiguous spacing after previous element span                  | components/journal/entry-card.tsx                                                                                                                                           | 152  | code-quality             | E0        |
 | DEBT-0566 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                                                                                                                     | 72   | code-quality             | E0        |
 | DEBT-0962 | 'input' will use Object's default stringification format ...   | components/admin/logs-tab.tsx                                                                                                                                               | 338  | code-quality             | E0        |
