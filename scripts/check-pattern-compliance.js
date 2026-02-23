@@ -1390,6 +1390,89 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:lib|app|components|pages)\//,
   },
+
+  // Section-scoped regex parsing (4x recurrence)
+  // Anti-pattern: matching markdown table rows on full file content instead of extracting the section first
+  // Detects: readFileSync() for .md files followed by table-row regex on full content variable
+  {
+    id: "unsection-scoped-table-regex",
+    severity: "medium",
+    testFn: (content) => {
+      // Look for reading .md files and then applying table row regex to full content
+      const lines = content.split("\n");
+      const matches = [];
+      let readsMdFile = false;
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Track if file reads .md content
+        if (/readFileSync\s*\([^)]*\.md/i.test(line)) {
+          readsMdFile = true;
+        }
+        // Detect table-row regex applied broadly (not section-scoped)
+        // Pattern: /^\|/gm or .match(/\|[^|]+\|/g) without prior section extraction
+        if (
+          readsMdFile &&
+          /\.match\s*\(\s*\/[^/]*\\\|[^/]*\/[gm]+\s*\)|\.matchAll\s*\(\s*\/[^/]*\\\|[^/]*\/[gm]+\s*\)/.test(
+            line
+          )
+        ) {
+          // Check if there's a section extraction nearby (within 20 lines before)
+          const start = Math.max(0, i - 20);
+          const context = lines.slice(start, i).join("\n");
+          if (
+            !/extractSection|section\s*=|\.split\s*\(\s*['"`]#{1,3}\s|between.*heading/i.test(
+              context
+            )
+          ) {
+            matches.push({ line: i + 1, col: 0 });
+          }
+        }
+      }
+      return matches;
+    },
+    message: "Table-row regex on full markdown content - may match rows from wrong section",
+    fix: "Extract the target section first with extractSection() or split by headings before matching table rows",
+    review: "CODE_PATTERNS.md JS/TS - Section-scoped regex parsing, Review #263 (4x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // User context in audit logs (4x recurrence)
+  // Anti-pattern: writing security/audit log entries without user/session context
+  {
+    id: "audit-log-missing-context",
+    severity: "medium",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Detect security/audit log writes
+        if (
+          /(?:SECURITY|AUDIT|security.event|audit.log|securityLog|auditLog)\b/.test(line) &&
+          /(?:appendFileSync|writeFileSync|console\.(?:log|warn|error)|\.push\s*\(|\.write\s*\()/.test(
+            line
+          )
+        ) {
+          // Check if user context is included nearby (within 5 lines)
+          const start = Math.max(0, i - 5);
+          const end = Math.min(lines.length, i + 5);
+          const context = lines.slice(start, end).join("\n");
+          if (!/USER_CONTEXT|SESSION_ID|userId|sessionId|user_id|session_id/.test(context)) {
+            matches.push({ line: i + 1, col: 0 });
+          }
+        }
+      }
+      return matches;
+    },
+    message: "Security/audit log entry missing user context (USER_CONTEXT, SESSION_ID)",
+    fix: "Include USER_CONTEXT and SESSION_ID in all security log entries for accountability",
+    review: "CODE_PATTERNS.md JS/TS - User context in audit logs, Review #198 (4x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
 ];
 
 /**
