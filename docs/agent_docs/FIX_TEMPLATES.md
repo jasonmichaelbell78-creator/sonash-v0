@@ -1842,10 +1842,73 @@ if (/\blow\b/.test(text)) return "S3";
 
 ---
 
+### Template 36: Atomic Dual-JSONL Write with Rollback
+
+**When to use:** Any script that writes to TWO JSONL files that must stay in
+sync (e.g., MASTER_DEBT.jsonl + raw/deduped.jsonl).
+
+**Why:** If the first rename succeeds but the second fails, the files become
+inconsistent. This was the #1 propagation miss in PR #383 — 4 scripts had
+sequential writes without rollback.
+
+```javascript
+// Stage both files to .tmp
+const masterTmp = MASTER_FILE + `.tmp.${process.pid}`;
+const dedupedTmp = DEDUPED_FILE + `.tmp.${process.pid}`;
+
+try {
+  fs.writeFileSync(masterTmp, masterContent, "utf8");
+  fs.writeFileSync(dedupedTmp, dedupedContent, "utf8");
+
+  // Commit atomically — rename master first, then deduped
+  fs.renameSync(masterTmp, MASTER_FILE);
+  try {
+    fs.renameSync(dedupedTmp, DEDUPED_FILE);
+  } catch (renameErr) {
+    console.error(
+      `CRITICAL: MASTER_FILE updated but DEDUPED_FILE rename failed. ` +
+        `Manually rename ${dedupedTmp} to ${DEDUPED_FILE} to restore consistency.`
+    );
+    throw renameErr;
+  }
+} catch (err) {
+  // Clean up any remaining tmp files
+  try {
+    fs.unlinkSync(masterTmp);
+  } catch {
+    /* ignore */
+  }
+  try {
+    fs.unlinkSync(dedupedTmp);
+  } catch {
+    /* ignore */
+  }
+  throw err;
+}
+```
+
+**Checklist before using:**
+
+1. Both files must have symlink guards (`isWriteSafe()` or
+   `refuseSymlinkWithParents()`)
+2. Both tmp paths must use `process.pid` suffix to avoid collisions
+3. The CRITICAL log message must name both files so operators can manually fix
+4. After any script that appends to MASTER_DEBT.jsonl, ALSO append to
+   raw/deduped.jsonl (per MEMORY.md)
+
+**Search pattern for missing dual writes:**
+
+```bash
+grep -rn 'MASTER.*write\|MASTER.*rename\|masterTmp\|MASTER_FILE' scripts/debt/ --include="*.js" | grep -v deduped
+```
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                                    |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.2     | 2026-02-22 | Add Template 36 (atomic dual-JSONL write with rollback). Source: PR #383 retro.                           |
 | 2.1     | 2026-02-20 | Add Template 35 (mapping/enumeration audit). Source: PR #382 retro.                                       |
 | 2.0     | 2026-02-19 | Add Template 34 (evidence/array merge with deep dedup). Source: PR #379 retro.                            |
 | 1.9     | 2026-02-18 | Add Templates 31-33 (realpathSync lifecycle, safety flag hoist, path containment). Source: PR #374 retro. |

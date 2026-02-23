@@ -792,7 +792,29 @@ node scripts/archive-doc.js "path/to/doc.md"
 
 ---
 
-## Interactive Review (MANDATORY — before TDMS intake)
+## MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)
+
+**Do NOT present findings for review until they have been cross-referenced
+against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
+inflated debt counts.
+
+### Process
+
+1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
+2. For each finding, search MASTER_DEBT by:
+   - Same file path (exact or substring match)
+   - Similar title/description (semantic overlap)
+   - Same root cause (e.g., same pattern in different wording)
+3. Classify each finding as:
+   - **Already Tracked**: Confident match in MASTER_DEBT → skip intake
+   - **New Finding**: No matching DEBT entry → proceed to interactive review
+   - **Possibly Related**: Partial overlap → flag for manual review
+4. Present only **New** and **Possibly Related** findings in the Interactive
+   Review below. Already Tracked items are skipped entirely.
+
+---
+
+## Interactive Review (MANDATORY — after MASTER_DEBT cross-reference, before TDMS intake)
 
 **Do NOT ingest findings into TDMS until the user has reviewed them.**
 
@@ -972,10 +994,11 @@ When modifying this skill, also update:
 
 ## Version History
 
-| Version | Date       | Description                                             |
-| ------- | ---------- | ------------------------------------------------------- |
-| 2.0     | 2026-02-02 | Complete rewrite: 6-stage parallel audit with 18 agents |
-| 1.0     | 2025-xx-xx | Original single-session sequential audit                |
+| Version | Date       | Description                                                              |
+| ------- | ---------- | ------------------------------------------------------------------------ |
+| 2.1     | 2026-02-23 | Add mandatory MASTER_DEBT cross-reference step before interactive review |
+| 2.0     | 2026-02-02 | Complete rewrite: 6-stage parallel audit with 18 agents                  |
+| 1.0     | 2025-xx-xx | Original single-session sequential audit                                 |
 
 ---
 

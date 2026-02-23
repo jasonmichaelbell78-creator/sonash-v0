@@ -1,428 +1,776 @@
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:components/notebook/features/quick-actions-fab.tsx:12","reason":"parametric title match (numbers stripped), lines: 0 vs 12"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:components/notebook/features/quick-actions-fab.tsx:12","reason":"parametric title match (numbers stripped), lines: 0 vs 12"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:lib/database/firestore-adapter.ts:51","reason":"parametric title match (numbers stripped), lines: 0 vs 51"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:lib/database/firestore-adapter.ts:51","reason":"parametric title match (numbers stripped), lines: 0 vs 51"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:scripts/check-content-accuracy.js:188","reason":"parametric title match (numbers stripped), lines: 0 vs 188"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:scripts/check-content-accuracy.js:188","reason":"parametric title match (numbers stripped), lines: 0 vs 188"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:functions/src/admin.ts:2769","reason":"parametric title match (numbers stripped), lines: 0 vs 2769"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:functions/src/admin.ts:2769","reason":"parametric title match (numbers stripped), lines: 0 vs 2769"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:functions/src/admin.ts:3936","reason":"parametric title match (numbers stripped), lines: 0 vs 3936"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:functions/src/admin.ts:3936","reason":"parametric title match (numbers stripped), lines: 0 vs 3936"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:6","reason":"parametric title match (numbers stripped), lines: 0 vs 6"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:6","reason":"parametric title match (numbers stripped), lines: 0 vs 3000"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:16","reason":"parametric title match (numbers stripped), lines: 0 vs 47"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:16","reason":"parametric title match (numbers stripped), lines: 0 vs 47"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:18","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","flagged":"unknown","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:18","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:19","reason":"parametric title match (numbers stripped), lines: 0 vs 136"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:19","reason":"parametric title match (numbers stripped), lines: 0 vs 136"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:20","reason":"parametric title match (numbers stripped), lines: 0 vs 4"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:20","reason":"parametric title match (numbers stripped), lines: 0 vs 4"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:22","reason":"parametric title match (numbers stripped), lines: 0 vs 82"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:22","reason":"parametric title match (numbers stripped), lines: 0 vs 82"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:25","reason":"parametric title match (numbers stripped), lines: 0 vs 111"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:25","reason":"parametric title match (numbers stripped), lines: 0 vs 111"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:26","reason":"parametric title match (numbers stripped), lines: 0 vs 54"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:26","reason":"parametric title match (numbers stripped), lines: 0 vs 54"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:123","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","flagged":"unknown","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:123","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:125","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","flagged":"unknown","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:125","reason":"parametric match skipped for S0/S1 — flagged for review"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:127","reason":"parametric title match (numbers stripped), lines: 0 vs 54"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:127","reason":"parametric title match (numbers stripped), lines: 0 vs 54"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:129","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","flagged":"unknown","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:129","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:130","reason":"parametric title match (numbers stripped), lines: 0 vs 86"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:130","reason":"parametric title match (numbers stripped), lines: 0 vs 86"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:131","reason":"parametric title match (numbers stripped), lines: 0 vs 49"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:131","reason":"parametric title match (numbers stripped), lines: 0 vs 49"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:132","reason":"parametric title match (numbers stripped), lines: 0 vs 30"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:132","reason":"parametric title match (numbers stripped), lines: 0 vs 30"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:134","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","flagged":"unknown","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:134","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:135","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","flagged":"unknown","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:135","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:136","reason":"parametric title match (numbers stripped), lines: 0 vs 105"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:136","reason":"parametric title match (numbers stripped), lines: 0 vs 105"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:137","reason":"parametric title match (numbers stripped), lines: 0 vs 34"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:137","reason":"parametric title match (numbers stripped), lines: 0 vs 34"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:138","reason":"parametric title match (numbers stripped), lines: 0 vs 145"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:138","reason":"parametric title match (numbers stripped), lines: 0 vs 145"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:140","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","flagged":"unknown","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:140","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:141","reason":"parametric title match (numbers stripped), lines: 0 vs 49"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:141","reason":"parametric title match (numbers stripped), lines: 0 vs 49"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:143","reason":"parametric title match (numbers stripped), lines: 0 vs 91"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:143","reason":"parametric title match (numbers stripped), lines: 0 vs 91"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:145","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","flagged":"unknown","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"unknown","flagged":"dec-2025-report:CODE_ANALYSIS_REPORT.md:145","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:147","reason":"parametric title match (numbers stripped), lines: 0 vs 12"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:147","reason":"parametric title match (numbers stripped), lines: 0 vs 12"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:148","reason":"parametric title match (numbers stripped), lines: 0 vs 312"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:148","reason":"parametric title match (numbers stripped), lines: 0 vs 312"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:151","reason":"parametric title match (numbers stripped), lines: 0 vs 248"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:151","reason":"parametric title match (numbers stripped), lines: 0 vs 248"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:231","reason":"parametric title match (numbers stripped), lines: 0 vs 21"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:231","reason":"parametric title match (numbers stripped), lines: 0 vs 21"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:232","reason":"parametric title match (numbers stripped), lines: 0 vs 11"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:232","reason":"parametric title match (numbers stripped), lines: 0 vs 11"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:233","reason":"parametric title match (numbers stripped), lines: 0 vs 55"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:233","reason":"parametric title match (numbers stripped), lines: 0 vs 55"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:234","reason":"parametric title match (numbers stripped), lines: 0 vs 68"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:234","reason":"parametric title match (numbers stripped), lines: 0 vs 68"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:238","reason":"parametric title match (numbers stripped), lines: 0 vs 115"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:238","reason":"parametric title match (numbers stripped), lines: 0 vs 115"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:317","reason":"parametric title match (numbers stripped), lines: 0 vs 105"}
+{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:317","reason":"parametric title match (numbers stripped), lines: 0 vs 105"}
 {"pass":0,"type":"parametric_match","kept":"sonarcloud:AZwrA-pN94jZShN2JzMo","flagged":"sonarcloud:AZwrA-pN94jZShN2JzMs","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"sonarcloud:AZwrA-pN94jZShN2JzMo","flagged":"sonarcloud:AZwrA-pN94jZShN2JzMo","reason":"parametric match skipped for S0/S1 — flagged for review"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:1","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:1","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:2","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:2","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:3","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:3","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:4","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:4","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:5","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:5","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:7","removed":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:7","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:8","removed":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:8","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:9","removed":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:9","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:10","removed":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:10","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:11","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:11","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:12","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:12","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:13","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:13","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:14","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:14","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:15","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:15","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:17","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:17","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:18","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:18","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:21","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:21","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:23","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:23","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:24","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:24","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:27","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:27","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:28","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:28","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:29","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:29","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:30","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:30","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:31","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:31","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:32","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:32","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:33","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:33","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:34","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:34","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:35","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:35","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:36","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:36","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:37","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:37","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:38","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:38","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:39","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:39","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:40","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:40","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:41","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:41","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:42","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:42","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:43","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:43","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:44","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:44","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:45","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:45","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:46","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:46","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:47","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:47","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:48","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:48","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:49","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:49","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:50","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:50","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:293","removed":"dec-2025-report:REFACTOR_SUMMARY.md:293","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:51","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:51","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:296","removed":"dec-2025-report:REFACTOR_SUMMARY.md:296","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:52","removed":"dec-2025-report:ARCHITECTURAL_REFACTOR.md:52","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:53","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:53","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:54","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:54","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:55","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:55","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:56","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:56","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:57","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:57","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:58","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:58","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:59","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:59","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:60","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:60","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:61","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:61","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:62","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:62","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:63","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:63","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:64","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:64","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:65","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:65","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:66","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:66","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:67","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:67","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:68","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:68","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:69","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:69","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:70","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:70","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:71","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:71","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:72","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:72","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:73","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:73","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:74","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:74","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:75","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:75","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:76","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:76","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:77","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:77","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:78","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:78","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:79","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:79","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:80","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:80","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:81","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:81","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:82","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:82","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:83","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:83","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:84","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:84","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:85","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:85","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:86","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:86","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:87","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:87","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:88","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:88","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:89","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:89","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:90","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:90","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:91","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:91","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:92","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:92","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:93","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:93","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:94","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:94","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:95","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:95","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:96","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:96","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:97","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:97","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:98","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:98","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:99","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:99","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:100","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:100","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:101","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:101","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:102","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:102","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:103","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:103","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:104","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:104","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:105","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:105","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:106","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:106","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:107","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:107","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:108","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:108","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:109","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:109","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:110","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:110","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:111","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:111","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:112","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:112","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:113","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:113","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:114","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:114","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:115","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:115","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:116","removed":"dec-2025-report:ARCHITECTURE_IMPROVEMENT_PLAN.md:116","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:117","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:117","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:118","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:118","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:119","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:119","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:120","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:120","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:121","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:121","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:122","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:122","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:123","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:123","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:124","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:124","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:125","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:125","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:126","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:126","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:128","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:128","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:129","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:129","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:133","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:133","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:134","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:134","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:135","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:135","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:139","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:139","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:140","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:140","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:142","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:142","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:144","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:144","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:145","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:145","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:146","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:146","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:149","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:149","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:150","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:150","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:152","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:152","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:153","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:153","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:154","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:154","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:155","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:155","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:156","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:156","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:157","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:157","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:158","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:158","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:159","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:159","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:160","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:160","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CODE_ANALYSIS_REPORT.md:161","removed":"dec-2025-report:CODE_ANALYSIS_REPORT.md:161","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:162","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:162","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:163","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:163","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:164","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:164","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:165","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:165","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:166","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:166","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:167","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:167","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:168","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:168","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:169","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:169","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:170","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:170","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:171","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:171","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:172","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:172","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:173","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:173","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:174","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:174","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:175","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:175","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:176","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:176","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:177","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:177","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:179","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:179","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:178","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:178","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:180","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:180","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:181","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:181","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:182","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:182","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:183","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:183","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:184","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:184","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:185","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:185","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:186","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:186","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:187","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:187","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:188","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:188","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:189","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:189","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:190","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:190","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:191","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:191","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:192","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:192","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:193","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:193","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:194","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:194","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:195","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:195","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:196","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:196","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:197","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:197","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:198","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:198","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:199","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:199","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:200","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:200","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:201","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:201","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:202","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:202","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:203","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:203","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:204","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:204","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:205","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:205","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:206","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:206","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:207","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:207","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:208","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:208","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:209","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:209","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:210","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:210","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:211","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:211","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:212","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:212","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:213","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:213","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:214","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:214","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:215","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:215","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:216","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:216","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:217","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:217","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:218","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:218","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:219","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:219","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:220","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:220","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:221","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:221","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:222","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:222","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:223","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:223","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:224","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:224","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:225","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:225","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:226","removed":"dec-2025-report:CONSOLIDATED_CODE_ANALYSIS.md:226","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:DEPENDENCY_ANALYSIS.md:227","removed":"dec-2025-report:DEPENDENCY_ANALYSIS.md:227","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:DEPENDENCY_ANALYSIS.md:228","removed":"dec-2025-report:DEPENDENCY_ANALYSIS.md:228","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:DEPENDENCY_ANALYSIS.md:229","removed":"dec-2025-report:DEPENDENCY_ANALYSIS.md:229","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:DEPENDENCY_ANALYSIS.md:230","removed":"dec-2025-report:DEPENDENCY_ANALYSIS.md:230","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:235","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:235","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:236","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:236","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:237","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:237","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:239","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:239","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:240","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:240","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:241","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:241","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:242","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:242","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:243","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:243","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:244","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:244","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:245","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:245","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:246","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:246","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:247","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:247","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:248","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:248","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:249","removed":"dec-2025-report:ESLINT_WARNINGS_PLAN.md:249","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:250","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:250","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:251","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:251","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:252","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:252","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:253","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:253","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:254","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:254","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:255","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:255","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:256","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:256","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:257","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:257","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:258","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:258","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:259","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:259","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:260","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:260","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:261","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:261","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:262","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:262","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:263","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:263","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:264","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:264","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:265","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:265","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:266","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:266","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:267","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:267","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:269","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:269","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:268","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:268","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTORING_ACTION_PLAN.md:270","removed":"dec-2025-report:REFACTORING_ACTION_PLAN.md:270","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:271","removed":"dec-2025-report:REFACTOR_SUMMARY.md:271","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:272","removed":"dec-2025-report:REFACTOR_SUMMARY.md:272","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:273","removed":"dec-2025-report:REFACTOR_SUMMARY.md:273","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:274","removed":"dec-2025-report:REFACTOR_SUMMARY.md:274","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:275","removed":"dec-2025-report:REFACTOR_SUMMARY.md:275","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:276","removed":"dec-2025-report:REFACTOR_SUMMARY.md:276","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:277","removed":"dec-2025-report:REFACTOR_SUMMARY.md:277","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:278","removed":"dec-2025-report:REFACTOR_SUMMARY.md:278","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:279","removed":"dec-2025-report:REFACTOR_SUMMARY.md:279","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:280","removed":"dec-2025-report:REFACTOR_SUMMARY.md:280","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:281","removed":"dec-2025-report:REFACTOR_SUMMARY.md:281","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:282","removed":"dec-2025-report:REFACTOR_SUMMARY.md:282","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:283","removed":"dec-2025-report:REFACTOR_SUMMARY.md:283","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:284","removed":"dec-2025-report:REFACTOR_SUMMARY.md:284","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:285","removed":"dec-2025-report:REFACTOR_SUMMARY.md:285","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:286","removed":"dec-2025-report:REFACTOR_SUMMARY.md:286","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:287","removed":"dec-2025-report:REFACTOR_SUMMARY.md:287","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:288","removed":"dec-2025-report:REFACTOR_SUMMARY.md:288","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:289","removed":"dec-2025-report:REFACTOR_SUMMARY.md:289","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:290","removed":"dec-2025-report:REFACTOR_SUMMARY.md:290","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:291","removed":"dec-2025-report:REFACTOR_SUMMARY.md:291","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:292","removed":"dec-2025-report:REFACTOR_SUMMARY.md:292","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:294","removed":"dec-2025-report:REFACTOR_SUMMARY.md:294","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:REFACTOR_SUMMARY.md:295","removed":"dec-2025-report:REFACTOR_SUMMARY.md:295","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ULTRA_THINKING_REVIEW.md:297","removed":"dec-2025-report:ULTRA_THINKING_REVIEW.md:297","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ULTRA_THINKING_REVIEW.md:298","removed":"dec-2025-report:ULTRA_THINKING_REVIEW.md:298","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ULTRA_THINKING_REVIEW.md:299","removed":"dec-2025-report:ULTRA_THINKING_REVIEW.md:299","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ULTRA_THINKING_REVIEW.md:300","removed":"dec-2025-report:ULTRA_THINKING_REVIEW.md:300","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ULTRA_THINKING_REVIEW.md:301","removed":"dec-2025-report:ULTRA_THINKING_REVIEW.md:301","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:ULTRA_THINKING_REVIEW.md:302","removed":"dec-2025-report:ULTRA_THINKING_REVIEW.md:302","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:303","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:303","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:304","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:304","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:305","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:305","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:306","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:306","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:307","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:307","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:308","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:308","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:309","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:309","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:310","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:310","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:311","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:311","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:312","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:312","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:313","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:313","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:314","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:314","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:315","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:315","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:316","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:316","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:318","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:318","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:319","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:319","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:320","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:320","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:321","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:321","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:322","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:322","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:323","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:323","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:324","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:324","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:325","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:325","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:326","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:326","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:327","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:327","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:328","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:328","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:329","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:329","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:404","removed":"roadmap:404","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:484","removed":"roadmap:484","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:486","removed":"roadmap:486","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:539","removed":"roadmap:539","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:544","removed":"roadmap:544","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:548","removed":"roadmap:548","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:549","removed":"roadmap:549","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:646","removed":"roadmap:646","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:647","removed":"roadmap:647","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:649","removed":"roadmap:649","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:657","removed":"roadmap:657","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:692","removed":"roadmap:692","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:743","removed":"roadmap:743","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:808","removed":"roadmap:808","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:836","removed":"roadmap:836","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:842","removed":"roadmap:842","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:850","removed":"roadmap:850","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:851","removed":"roadmap:851","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1049","removed":"roadmap:1049","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1063","removed":"roadmap:1063","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1154","removed":"roadmap:1154","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1171","removed":"roadmap:1171","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1175","removed":"roadmap:1175","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1182","removed":"roadmap:1182","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1194","removed":"roadmap:1194","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1195","removed":"roadmap:1195","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1196","removed":"roadmap:1196","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1212","removed":"roadmap:1212","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1256","removed":"roadmap:1256","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1258","removed":"roadmap:1258","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1274","removed":"roadmap:1274","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1978","removed":"roadmap:1978","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:1979","removed":"roadmap:1979","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:2425","removed":"roadmap:2425","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:2439","removed":"roadmap:2439","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:2459","removed":"roadmap:2459","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:2581","removed":"roadmap:2581","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:2742","removed":"roadmap:2742","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:2744","removed":"roadmap:2744","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"roadmap:2966","removed":"roadmap:2966","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"sonarcloud:AZwrA-pN94jZShN2JzMo","removed":"sonarcloud:AZwrA-pN94jZShN2JzMo","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"sonarcloud:AZvTSX1RXTi6P6wWbkw3","removed":"sonarcloud:AZvTSX1RXTi6P6wWbkw3","reason":"identical content hash"}
@@ -677,6 +1025,28 @@
 {"pass":1,"type":"exact_match","kept":"context:system-test-gap-analysis-pass2.md:399","removed":"context:system-test-gap-analysis-pass2.md:399","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"context:system-test-gap-analysis-pass2.md:402","removed":"context:system-test-gap-analysis-pass2.md:402","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"context:system-test-gap-analysis-pass2.md:402","removed":"context:system-test-gap-analysis-pass2.md:402","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
@@ -1292,8 +1662,6 @@
 {"pass":1,"type":"exact_match","kept":"audit:process::validation::audit-schema-duplication","removed":"audit:process::validation::audit-schema-duplication","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:process-.claude/settings.json-continue-on-error-usage","removed":"audit:process::.claude/settings.json::continue-on-error-usage","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:process-scripts/debt/resolve-item.js-execsync-string-interpolation","removed":"audit:process::scripts/debt/resolve-item.js::execsync-string-interpolation","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:hash-U2Vzc2lvbi1z","removed":"audit:hash-U2Vzc2lvbi1z","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:hash-RHVwbGljYXRl","removed":"audit:hash-RHVwbGljYXRl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-RmlyZWJhc2Ug","removed":"audit:hash-RmlyZWJhc2Ug","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Q0kgcnVucyBm","removed":"audit:hash-Q0kgcnVucyBm","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-U29uYXJDbG91","removed":"audit:hash-U29uYXJDbG91","reason":"identical content hash"}
@@ -1308,7 +1676,6 @@
 {"pass":1,"type":"exact_match","kept":"audit:hash-Tm8gb3B0aW1p","removed":"audit:hash-Tm8gb3B0aW1p","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-TWlzc2luZyBr","removed":"audit:hash-TWlzc2luZyBr","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Rm9ybSB2YWxp","removed":"audit:hash-Rm9ybSB2YWxp","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:hash-TWlzc2luZyBD","removed":"audit:hash-TWlzc2luZyBD","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Tm8gdmlzdWFs","removed":"audit:hash-Tm8gdmlzdWFs","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Q292ZXJhZ2Ug","removed":"audit:hash-Q292ZXJhZ2Ug","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-TGltaXRlZCBz","removed":"audit:hash-TGltaXRlZCBz","reason":"identical content hash"}
@@ -1323,7 +1690,6 @@
 {"pass":1,"type":"exact_match","kept":"audit:hash-TGF6eSBsb2Fk","removed":"audit:hash-TGF6eSBsb2Fk","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-VXBncmFkZSBG","removed":"audit:hash-VXBncmFkZSBG","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-QWRkIGNvbXBv","removed":"audit:hash-QWRkIGNvbXBv","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:hash-QUlfV09SS0ZM","removed":"audit:hash-QUlfV09SS0ZM","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-U2VjdXJpdHkg","removed":"audit:hash-U2VjdXJpdHkg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Q3Jvc3MtcmVm","removed":"audit:hash-Q3Jvc3MtcmVm","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-UHJlLWNvbW1p","removed":"audit:hash-UHJlLWNvbW1p","reason":"identical content hash"}
@@ -1346,7 +1712,6 @@
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/doc-optimizer/SKILL.md-duplicated-return-protocol","removed":"audit:hash-ZG9jLW9wdGlt","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-QXVkaXQgc2tp","removed":"audit:hash-QXVkaXQgc2tp","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-session-start.js-sequential-execsync","removed":"audit:hash-U2Vzc2lvblN0","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:hash-UG9zdFRvb2xV","removed":"audit:hash-UG9zdFRvb2xV","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Y29tcGFjdGlv","removed":"audit:hash-Y29tcGFjdGlv","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-agent-trigger-enforcer.js-require-config-overhead","removed":"audit:hash-YWdlbnQtdHJp","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-large-context-warning.js-full-file-read-for-line-count","removed":"audit:hash-bGFyZ2UtY29u","reason":"identical content hash"}
@@ -1499,8 +1864,8 @@
 {"pass":1,"type":"exact_match","kept":"audit:OPT-A009","removed":"audit:OPT-A009","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-execsync-shell-true","removed":"audit:CANON-0006","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/settings.json-sessionstart-multi-sync-hooks","removed":"audit:CANON-0004","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts/dedupe-quotes.ts-dead-script","removed":"audit:hash-RGVhZCBTY3Jp","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts/dedupe-quotes.ts-dead-script","removed":"audit:CANON-0025","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts/dedupe-quotes.ts-dead-script","removed":"audit:hash-RGVhZCBTY3Jp","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts/enrich-addresses.ts-dead-script","removed":"audit:CANON-0026","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts/import-nashville-links.ts-dead-script","removed":"audit:CANON-0027","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts/migrate-library-content.ts-dead-script","removed":"audit:CANON-0028","reason":"identical content hash"}
@@ -1516,85 +1881,84 @@
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-execsync-version-display-subprocess","removed":"audit:CANON-0009","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.sh-dead-replaced-hook-script","removed":"audit:CANON-0010","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/stop-serena-dashboard.js-unnecessary-session-start-hook","removed":"audit:CANON-0013","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/shell-hooks-dead-shell-hooks","removed":"audit:hash-U2hlbGwgaG9v","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/shell-hooks-dead-shell-hooks","removed":"audit:CANON-0019","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-agent-prompt-missing-evidence-field","removed":"audit:hash-QWdlbnQgc3Vi","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/shell-hooks-dead-shell-hooks","removed":"audit:hash-U2hlbGwgaG9v","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-agent-prompt-missing-evidence-field","removed":"audit:CANON-0014","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-agent-prompt-missing-evidence-field","removed":"audit:hash-QWdlbnQgc3Vi","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-verbose-hook-output-token-waste","removed":"audit:CANON-0001","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-serial-heavy-sessionstart","removed":"audit:CANON-0003","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-latency-test-build","removed":"audit:hash-SG9vayBMYXRl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-latency-test-build","removed":"audit:CANON-0007","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-latency-test-build","removed":"audit:hash-SG9vayBMYXRl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/settings.json-sequential-session-start-hooks","removed":"audit:CANON-0002","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/COMMAND_REFERENCE.md-oversized-reference-doc","removed":"audit:hash-Q09NTUFORF9S","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/COMMAND_REFERENCE.md-oversized-reference-doc","removed":"audit:CANON-0005","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/COMMAND_REFERENCE.md-oversized-reference-doc","removed":"audit:hash-Q09NTUFORF9S","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-execsync-overhead","removed":"audit:CANON-0008","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/post-read-handler.js-fragile-git-parsing","removed":"audit:hash-RnJhZ2lsZSBQ","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/post-read-handler.js-fragile-git-parsing","removed":"audit:CANON-0039","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-bloat","removed":"audit:hash-QUkgSW5zdHJ1","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/post-read-handler.js-fragile-git-parsing","removed":"audit:hash-RnJhZ2lsZSBQ","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-bloat","removed":"audit:CANON-0042","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-bloat","removed":"audit:hash-QUkgSW5zdHJ1","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/check-edit-write-requirements-duplicate-shell-hooks","removed":"audit:CANON-0021","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/post-write-validator-pattern-check-duplicated-inline-patterns","removed":"audit:hash-cG9zdC13cml0","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/post-write-validator-pattern-check-duplicated-inline-patterns","removed":"audit:CANON-0022","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/multiple-duplicated-gitexec-helper","removed":"audit:hash-TXVsdGlwbGUg","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/post-write-validator-pattern-check-duplicated-inline-patterns","removed":"audit:hash-cG9zdC13cml0","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/multiple-duplicated-gitexec-helper","removed":"audit:CANON-0023","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-heavy-context","removed":"audit:hash-Q29udGV4dCBP","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/multiple-duplicated-gitexec-helper","removed":"audit:hash-TXVsdGlwbGUg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-heavy-context","removed":"audit:CANON-0043","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-heavy-context","removed":"audit:hash-Q29udGV4dCBP","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/pre-commit-fixer/SKILL.md-task-prompt-missing-structured-contract","removed":"audit:CANON-0018","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills-duplicated-persistence-rules-boilerplate","removed":"audit:hash-Q1JJVElDQUwg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills-duplicated-persistence-rules-boilerplate","removed":"audit:CANON-0012","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state/hook-warnings-log.jsonl-unbounded-log-growth","removed":"audit:hash-aG9vay13YXJu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills-duplicated-persistence-rules-boilerplate","removed":"audit:hash-Q1JJVElDQUwg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state/hook-warnings-log.jsonl-unbounded-log-growth","removed":"audit:CANON-0024","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/.sh-legacy-shell-hooks-possibly-unused","removed":"audit:hash-TGVnYWN5IHNo","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state/hook-warnings-log.jsonl-unbounded-log-growth","removed":"audit:hash-aG9vay13YXJu","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/.sh-legacy-shell-hooks-possibly-unused","removed":"audit:CANON-0016","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks-orphaned-pre-consolidation-hook-files","removed":"audit:hash-MTMgY29uc29s","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/.sh-legacy-shell-hooks-possibly-unused","removed":"audit:hash-TGVnYWN5IHNo","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks-orphaned-pre-consolidation-hook-files","removed":"audit:CANON-0011","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-agent-prompts-missing-false-positive-exclusion","removed":"audit:hash-VGFzaygpIHN1","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks-orphaned-pre-consolidation-hook-files","removed":"audit:hash-MTMgY29uc29s","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-agent-prompts-missing-false-positive-exclusion","removed":"audit:CANON-0015","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/stop-serena-dashboard.js-unnecessary-session-start-overhead","removed":"audit:hash-c3RvcC1zZXJl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-agent-prompts-missing-false-positive-exclusion","removed":"audit:hash-VGFzaygpIHN1","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/stop-serena-dashboard.js-unnecessary-session-start-overhead","removed":"audit:CANON-0020","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts-unreferenced-scripts","removed":"audit:hash-U2NyaXB0cyBu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/stop-serena-dashboard.js-unnecessary-session-start-overhead","removed":"audit:hash-c3RvcC1zZXJl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts-unreferenced-scripts","removed":"audit:CANON-0049","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/*.js-fragile-parsing","removed":"audit:hash-SG9va3MgdXNl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-scripts-unreferenced-scripts","removed":"audit:hash-U2NyaXB0cyBu","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/*.js-fragile-parsing","removed":"audit:CANON-0051","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/*.js-fragile-parsing","removed":"audit:hash-SG9va3MgdXNl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-missing-fp-exclusion","removed":"audit:CANON-0052","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.mcp.json-dead-filesystem-mcp-server-config","removed":"audit:hash-ZmlsZXN5c3Rl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.mcp.json-dead-filesystem-mcp-server-config","removed":"audit:CANON-0053","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-overlap","removed":"audit:hash-U2tpbGwgT3Zl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.mcp.json-dead-filesystem-mcp-server-config","removed":"audit:hash-ZmlsZXN5c3Rl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-overlap","removed":"audit:CANON-0041","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-docs/technical-debt/INDEX.md-dead-doc","removed":"audit:hash-RGVhZCBEb2N1","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-overlap","removed":"audit:hash-U2tpbGwgT3Zl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-docs/technical-debt/INDEX.md-dead-doc","removed":"audit:CANON-0061","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.mcp.json-unused-server","removed":"audit:hash-TUNQIENvbmZp","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-docs/technical-debt/INDEX.md-dead-doc","removed":"audit:hash-RGVhZCBEb2N1","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.mcp.json-unused-server","removed":"audit:CANON-0063","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-verbose-output","removed":"audit:hash-Rm9ybWF0IFdh","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.mcp.json-unused-server","removed":"audit:hash-TUNQIENvbmZp","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-verbose-output","removed":"audit:CANON-0054","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-subprocess-overhead","removed":"audit:hash-U3VicHJvY2Vz","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-verbose-output","removed":"audit:hash-Rm9ybWF0IFdh","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-subprocess-overhead","removed":"audit:CANON-0040","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-subprocess-overhead","removed":"audit:hash-U3VicHJvY2Vz","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-docs/technical-debt/logs-dead-doc","removed":"audit:CANON-0062","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-skill-bloat","removed":"audit:hash-U0tJTEwubWQg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-skill-bloat","removed":"audit:CANON-0044","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/settings.json-stale-disabled-mcp-server-entries","removed":"audit:hash-c2V0dGluZ3Mu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-ai-optimization/SKILL.md-skill-bloat","removed":"audit:hash-U0tJTEwubWQg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/settings.json-stale-disabled-mcp-server-entries","removed":"audit:CANON-0055","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/session-begin/SKILL.md-duplicate-context-load-steps","removed":"audit:hash-U2Vzc2lvbi1i","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/session-begin/SKILL.md-duplicate-context-load-steps","removed":"audit:CANON-0058","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/session-begin/SKILL.md-duplicate-context-load-steps","removed":"audit:hash-U2Vzc2lvbi1i","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-/SKILL.md-audit-skill-overlap","removed":"audit:CANON-0017","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-hook-bloat","removed":"audit:CANON-0045","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state/reviews.jsonl-unbounded-growth","removed":"audit:hash-U3RhdGUgSlNP","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state/reviews.jsonl-unbounded-growth","removed":"audit:CANON-0047","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state/reviews.jsonl-unbounded-growth","removed":"audit:hash-U3RhdGUgSlNP","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/session-start.js-reviews-jsonl-full-read-rotation-check","removed":"audit:CANON-0056","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/settings.json-disabled-mcp-servers","removed":"audit:hash-TUNQIHNlcnZl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/settings.json-disabled-mcp-servers","removed":"audit:CANON-0059","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/*/SKILL.md-full-file-read","removed":"audit:hash-U2tpbGxzIHJl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/settings.json-disabled-mcp-servers","removed":"audit:hash-TUNQIHNlcnZl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/*/SKILL.md-full-file-read","removed":"audit:CANON-0050","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/*/SKILL.md-full-file-read","removed":"audit:hash-U2tpbGxzIHJl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills-oversized-skill-md-files","removed":"audit:CANON-0048","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-*/SKILL.md-skill-overlap","removed":"audit:hash-MTAgYXVkaXQg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-*/SKILL.md-skill-overlap","removed":"audit:CANON-0046","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-*/SKILL.md-skill-overlap","removed":"audit:hash-MTAgYXVkaXQg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/multiple-duplicated-json-io","removed":"audit:CANON-0060","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state-unbounded-jsonl-logs-no-rotation","removed":"audit:hash-aGVhbHRoLXNj","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state-unbounded-jsonl-logs-no-rotation","removed":"audit:CANON-0057","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/check-remote-session-context.js-fragile-branch-line-split","removed":"audit:hash-UmVtb3RlLWJy","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/state-unbounded-jsonl-logs-no-rotation","removed":"audit:hash-aGVhbHRoLXNj","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/check-remote-session-context.js-fragile-branch-line-split","removed":"audit:CANON-0064","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/*.sh-redundant-shell-scripts","removed":"audit:hash-U2hlbGwgc2Ny","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/check-remote-session-context.js-fragile-branch-line-split","removed":"audit:hash-UmVtb3RlLWJy","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/*.sh-redundant-shell-scripts","removed":"audit:CANON-0065","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/*.sh-redundant-shell-scripts","removed":"audit:hash-U2hlbGwgc2Ny","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:CANON-0038","removed":"audit:CANON-0038","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-RmlsZXN5c3Rl","removed":"audit:hash-RmlsZXN5c3Rl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:SYST-2026-02-19-D04-001","removed":"audit:SYST-2026-02-19-D04-001","reason":"identical content hash"}
@@ -1679,6 +2043,85 @@
 {"pass":1,"type":"exact_match","kept":"audit:SYST-2026-02-19-D08-002","removed":"audit:SYST-2026-02-19-D08-002","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:SYST-2026-02-19-D07-001","removed":"audit:SYST-2026-02-19-D07-001","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:SYST-2026-02-19-D05-003","removed":"audit:SYST-2026-02-19-D05-003","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-002","removed":"audit:hash-QVJDSElURUNU","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-003","removed":"audit:hash-VG9kYXlQYWdl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-007","removed":"audit:hash-U3VwcG9ydCBj","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-008","removed":"audit:hash-T25ib2FyZGlu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-012","removed":"audit:hash-VGFiIG5hdmln","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-013","removed":"audit:hash-Tm8gY3Jpc2lz","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-016","removed":"audit:hash-Y2hlY2stcGF0","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-017","removed":"audit:hash-UGxheXdyaWdo","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-018","removed":"audit:hash-RGVwbG95IHdv","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-020","removed":"audit:hash-U2Vzc2lvbi1z","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-021","removed":"audit:hash-OCBza2lsbHMg","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-022","removed":"audit:hash-YWdncmVnYXRl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-024","removed":"audit:hash-Q2xvdWQgRnVu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-026","removed":"audit:hash-VGVzdCBwaXBl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-028","removed":"audit:hash-TGFyZ2UgVGV4","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-030","removed":"audit:hash-UkVBRE1FIHRl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-031","removed":"audit:hash-UkVBRE1FIGFn","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-032","removed":"audit:hash-UkVBRE1FIEdy","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-033","removed":"audit:hash-REVWRUxPUE1F","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-034","removed":"audit:hash-RHVwbGljYXRl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-035","removed":"audit:hash-RE9DVU1FTlRB","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-036","removed":"audit:hash-Uk9BRE1BUC5t","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-038","removed":"audit:hash-ZnJhbWVyLW1v","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-039","removed":"audit:hash-d29vZC10YWJs","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-040","removed":"audit:hash-MyBQTkcgaW1h","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-043","removed":"audit:hash-TW9vZFNwYXJr","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-049","removed":"audit:hash-UHJldmlldyBk","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-050","removed":"audit:hash-MTgxIEVTTGlu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-051","removed":"audit:hash-UG9zdFRvb2xV","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-052","removed":"audit:hash-RGV2IHNlcnZl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-053","removed":"audit:hash-QUlfV09SS0ZM","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-054","removed":"audit:hash-LmNsYXVkZS9z","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-055","removed":"audit:hash-c2V0dGluZ3Mu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-056","removed":"audit:hash-Z2V0RnVuY3Rp","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-057","removed":"audit:hash-bGlua3MtdGFi","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-058","removed":"audit:hash-d2luZG93LmNv","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-059","removed":"audit:hash-U2lnbi1pbiBt","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-060","removed":"audit:hash-Tm8gZGF0YSBl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-061","removed":"audit:hash-Tm8gbm9zY3Jp","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-062","removed":"audit:hash-T25seSA3LWRh","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-063","removed":"audit:hash-Rml4ZWQgbm90","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-064","removed":"audit:hash-VGFwIHRvIHNl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-065","removed":"audit:hash-U2hhcmUgbWVl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-066","removed":"audit:hash-Tm8gRm9yZ290","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-067","removed":"audit:hash-V0NBRyAyLjEg","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-068","removed":"audit:hash-Tm8gc2tpcC10","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-069","removed":"audit:hash-U3RlcCA0IElu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-070","removed":"audit:hash-SGlzdG9yeSB0","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-071","removed":"audit:hash-Z3NkLXBsYW5u","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-072","removed":"audit:hash-c2VjdXJpdHkt","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-074","removed":"audit:hash-VkFMSURBVElP","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-075","removed":"audit:hash-Tm90ZWJvb2tT","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-077","removed":"audit:hash-Tm8gQ0hBTkdF","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-078","removed":"audit:hash-MzU2LWxpbmUg","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-081","removed":"audit:hash-U3RhbGUgLy8g","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-082","removed":"audit:hash-X2NoZWNrSW5T","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-083","removed":"audit:hash-TWlzc2luZyB1","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-084","removed":"audit:hash-bWVldGluZy1j","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-089","removed":"audit:hash-VGhyZWUgdW5k","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-090","removed":"audit:hash-TG9jYWwgaXNT","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-092","removed":"audit:hash-RGVidWcgY29u","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-093","removed":"audit:hash-X2FwcENoZWNr","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-094","removed":"audit:hash-VHdvIHBhcmFs","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-095","removed":"audit:hash-QWRtaW4gcGFz","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-096","removed":"audit:hash-TWlzc2luZyBD","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-098","removed":"audit:hash-UmF0ZSBsaW1p","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-099","removed":"audit:hash-TW9iaWxlIGJs","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-100","removed":"audit:hash-c2VhcmNoVXNl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-102","removed":"audit:hash-SG9vayBsb2cg","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-103","removed":"audit:hash-cmVxdWlyZV9z","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-105","removed":"audit:hash-OTYtMTAxIG5w","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-106","removed":"audit:hash-bmV4dCBkZXYg","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-107","removed":"audit:hash-My1zdGVwIHRl","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-108","removed":"audit:hash-Tm8gdHlwZS1j","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-109","removed":"audit:hash-bnVsIFdpbmRv","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-110","removed":"audit:hash-dHNjb25maWcu","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-111","removed":"audit:hash-Tm8gaTE4biBp","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-112","removed":"audit:hash-Sm91cm5hbCBs","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-113","removed":"audit:hash-U3dpcGUgbmF2","reason":"identical content hash"}
 {"pass":2,"type":"near_match","kept":"audit:process-package.json-never-executes-learning-category","removed":"audit:process::package.json::never-executes-learning-since","reason":"same file, line diff ≤5, title similarity >80%"}
 {"pass":3,"type":"semantic_match","kept":"sonarcloud:AZwrA-pN94jZShN2JzMo","removed":"sonarcloud:AZwrA-pN94jZShN2JzMs","reason":"same file, title similarity >90%","flagged_for_review":true}
 {"pass":5,"type":"systemic_pattern","source_id":"sonarcloud:AZwrA-pN94jZShN2JzMo","cluster_id":"CLUSTER-a7aabc982fef","cluster_count":41,"is_primary":true,"reason":"title appears in 41 different files"}
@@ -2527,6 +2970,13 @@
 {"pass":5,"type":"systemic_pattern","source_id":"audit:documentation-.claude/skills/audit-documentation/SKILL.md-broken-link-124","cluster_id":"CLUSTER-393bd6a1f7e6","cluster_count":3,"is_primary":true,"reason":"title appears in 3 different files"}
 {"pass":5,"type":"systemic_pattern","source_id":"audit:documentation-.claude/skills/doc-optimizer/SKILL.md-broken-link-210","cluster_id":"CLUSTER-393bd6a1f7e6","cluster_count":3,"is_primary":false,"reason":"title appears in 3 different files"}
 {"pass":5,"type":"systemic_pattern","source_id":"audit:documentation-docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md-broken-link-330","cluster_id":"CLUSTER-393bd6a1f7e6","cluster_count":3,"is_primary":false,"reason":"title appears in 3 different files"}
+{"pass":5,"type":"systemic_pattern","source_id":"audit:hash-UHJlLXB1c2gg","cluster_id":"CLUSTER-2cf9a2c20a2a","cluster_count":4,"is_primary":true,"reason":"title appears in 4 different files"}
+{"pass":5,"type":"systemic_pattern","source_id":"audit:workflow-prepush-duplicate-patterns","cluster_id":"CLUSTER-2cf9a2c20a2a","cluster_count":4,"is_primary":false,"reason":"title appears in 4 different files"}
+{"pass":5,"type":"systemic_pattern","source_id":"roadmap:DEBT-2754","cluster_id":"CLUSTER-2cf9a2c20a2a","cluster_count":4,"is_primary":false,"reason":"title appears in 4 different files"}
+{"pass":5,"type":"systemic_pattern","source_id":"roadmap:DEBT-2814","cluster_id":"CLUSTER-2cf9a2c20a2a","cluster_count":4,"is_primary":false,"reason":"title appears in 4 different files"}
+{"pass":5,"type":"systemic_pattern","source_id":"manual:1c0bfa2c-19b8-4a70-b616-e0505bd349ca","cluster_id":"CLUSTER-0c831c051c1d","cluster_count":3,"is_primary":true,"reason":"title appears in 3 different files"}
+{"pass":5,"type":"systemic_pattern","source_id":"roadmap:DEBT-2804","cluster_id":"CLUSTER-0c831c051c1d","cluster_count":3,"is_primary":false,"reason":"title appears in 3 different files"}
+{"pass":5,"type":"systemic_pattern","source_id":"roadmap:DEBT-2805","cluster_id":"CLUSTER-0c831c051c1d","cluster_count":3,"is_primary":false,"reason":"title appears in 3 different files"}
 {"pass":5,"type":"systemic_pattern","source_id":"audit:enhancements-2026-02-07","cluster_id":"CLUSTER-c371b057285b","cluster_count":3,"is_primary":true,"reason":"title appears in 3 different files"}
 {"pass":5,"type":"systemic_pattern","source_id":"audit:hash-RGF0ZSBmb3Jt","cluster_id":"CLUSTER-c371b057285b","cluster_count":3,"is_primary":false,"reason":"title appears in 3 different files"}
 {"pass":5,"type":"systemic_pattern","source_id":"audit:hash-RGF0ZSBmb3Jt","cluster_id":"CLUSTER-c371b057285b","cluster_count":3,"is_primary":false,"reason":"title appears in 3 different files"}

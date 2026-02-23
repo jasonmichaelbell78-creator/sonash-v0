@@ -1,57 +1,58 @@
 {
-  "generated": "2026-02-21T20:14:41.599Z",
-  "generated_date": "2026-02-21",
+  "generated": "2026-02-23T03:30:50.904Z",
+  "generated_date": "2026-02-23",
   "summary": {
-    "total": 4452,
-    "open": 3966,
+    "total": 4576,
+    "open": 4090,
     "resolved": 237,
     "false_positives": 249,
     "resolution_rate_pct": 5
   },
   "by_status": {
-    "NEW": 846,
-    "VERIFIED": 3120,
+    "NEW": 976,
+    "VERIFIED": 3114,
     "IN_PROGRESS": 0,
     "RESOLVED": 237,
     "FALSE_POSITIVE": 249
   },
   "by_severity": {
     "S0": 35,
-    "S1": 725,
-    "S2": 1772,
-    "S3": 1920
+    "S1": 738,
+    "S2": 1864,
+    "S3": 1939
   },
   "by_category": {
     "code-quality": 2669,
-    "security": 406,
-    "performance": 93,
-    "documentation": 483,
-    "refactoring": 312,
-    "process": 347,
-    "engineering-productivity": 11,
-    "enhancements": 12,
-    "ai-optimization": 119
+    "security": 413,
+    "performance": 98,
+    "documentation": 492,
+    "refactoring": 321,
+    "process": 353,
+    "engineering-productivity": 21,
+    "enhancements": 82,
+    "ai-optimization": 127
   },
   "by_source": {
     "unknown": 379,
-    "sonarcloud": 1543,
+    "sonarcloud": 1542,
     "review": 306,
-    "audit": 1382,
+    "audit": 1462,
     "manual": 9,
     "intake": 30,
     "pr-review": 7,
     "pr-review-366-r2": 3,
     "alerts-self-audit-2026-02-16": 2,
+    "roadmap": 89,
     "code-comment": 5,
     "pr-deferred": 1,
-    "dec-2025-report": 332,
-    "roadmap": 40,
-    "sonarcloud-paste": 287,
-    "context": 126
+    "dec-2025-report": 331,
+    "sonarcloud-paste": 282,
+    "context": 126,
+    "session-180": 2
   },
   "alerts": {
     "s0_count": 21,
-    "s1_count": 688,
+    "s1_count": 701,
     "s0_items": [
       {
         "id": "DEBT-0852",
@@ -178,9 +179,9 @@
     ]
   },
   "health": {
-    "avg_age_days": 8,
-    "oldest_age_days": 22,
+    "avg_age_days": 10,
+    "oldest_age_days": 24,
     "oldest_item_id": "DEBT-0002",
-    "verification_queue_size": 846
+    "verification_queue_size": 976
   }
 }

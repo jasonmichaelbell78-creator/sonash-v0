@@ -8,8 +8,8 @@ description: |
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-20
+**Document Version:** 1.1
+**Last Updated:** 2026-02-22
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -284,10 +284,100 @@ Software Development, Microsoft SARIF, and IEEE SWEBOK.
 Each category scores 0-100 with ratings: good (90+), average (70-89), poor
 (<70). The composite grade uses weighted average across all categories.
 
+**Calibration notes** (v1.1): Benchmarks are calibrated for multi-tool review
+workflows (SonarCloud + Qodo + Gemini). Multi-tool reviews naturally have more
+rounds (4-5 typical) than single-reviewer workflows. If review tooling changes,
+recalibrate `avg_rounds_per_pr` and `churn_pct` thresholds.
+
+---
+
+## Checker Development Guide
+
+### Data Sources
+
+Checkers have two data sources for review content:
+
+1. **JSONL entries** (`.claude/state/reviews.jsonl`) — structured data with
+   fields like `id`, `pr`, `total`, `rejected`, `patterns[]`, `source`, `date`.
+   Good for counts and metadata. Poor for keyword/prose analysis.
+
+2. **Markdown sections** (`docs/AI_REVIEW_LEARNINGS_LOG.md`) — rich prose
+   describing findings, process, agent usage. Must be extracted per-review using
+   heading-based parsing (`extractMarkdownSections`).
+
+**Rule: Always combine both sources for keyword matching.** JSONL entries alone
+miss 60-80% of keyword evidence.
+
+### JSONL Schema Pitfalls
+
+| Actual Field | Common Mistake   | Notes                                  |
+| ------------ | ---------------- | -------------------------------------- |
+| `id`         | `review_id`      | Numeric for reviews, string for retros |
+| `pr`         | `pr_number`      | Both work, prefer `pr`                 |
+| `total`      | `items_total`    | Total suggestions in the review        |
+| `rejected`   | `items_rejected` | Suggestions rejected/skipped           |
+| `type`       | —                | `"review"` or `"retrospective"`        |
+
+### Retro vs Review Entries
+
+The JSONL contains both reviews and retrospectives. **Retrospective entries MUST
+be excluded** from review-specific metrics:
+
+```javascript
+// CORRECT — filter to actual reviews only
+const reviews = jsonl.filter(
+  (r) => r.type !== "retrospective" && typeof r.id === "number"
+);
+
+// WRONG — retros have numeric 'pr' field, so this includes them
+const reviews = jsonl.filter((r) => typeof r.pr === "number");
+```
+
+Retros are valid for: round counts (`r.rounds`), churn data, action item
+tracking. They are NOT valid for: step keyword matching, specialist analysis,
+large review detection.
+
+### Markdown Section Extraction
+
+Use line-by-line heading parsing (not regex with multiline flag — `$` matches
+end-of-line not end-of-section):
+
+```javascript
+function extractMarkdownSections(content, reviewIds) {
+  const lines = content.split("\n");
+  const headingRe = /^#{2,4}\s+Review\s+#(\d+)\b/i;
+  // Build heading index, then slice between headings
+}
+```
+
+### State File Paths
+
+Canonical location: `.claude/state/` (NOT `docs/data/`).
+
+| File                | Path                                 |
+| ------------------- | ------------------------------------ |
+| Reviews JSONL       | `.claude/state/reviews.jsonl`        |
+| Review metrics      | `.claude/state/review-metrics.jsonl` |
+| Consolidation state | `.claude/state/consolidation.json`   |
+
+### Gap Counting
+
+When counting numbering gaps, only count gaps within the **active range**
+(minActive..maxActive). Historical gaps in older archives are intentional
+(skipped/merged reviews) and not actionable.
+
+### Specialist Matching
+
+When checking if reviews show specialist depth, look for domain-specific
+analysis keywords (e.g., "vulnerability", "injection" for security) rather than
+just the word "agent". All reviews in this system are agent-performed, so agent
+evidence is implicit.
+
 ---
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-02-20 | Initial implementation |
+| Version | Date       | Description                                                                                                                               |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1     | 2026-02-22 | Add Checker Development Guide with data source, JSONL schema, retro/review separation, markdown extraction, path, and calibration lessons |
+| 1.0     | 2026-02-20 | Initial implementation                                                                                                                    |

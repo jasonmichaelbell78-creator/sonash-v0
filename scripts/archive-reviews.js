@@ -18,23 +18,18 @@
  *   2 = Error
  */
 
-const {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  renameSync,
-  mkdirSync,
-  lstatSync,
-  copyFileSync,
-} = require("node:fs");
-const { join, dirname } = require("node:path");
+const fs = require("node:fs"); // catch-verified: core module
+const pathMod = require("node:path"); // catch-verified: core module
+const { existsSync, readFileSync, mkdirSync, lstatSync, rmSync } = fs; // require() destructure
+const { writeFileSync, copyFileSync } = fs; // require() destructure
+const { join, dirname } = pathMod; // require() destructure
 
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
 try {
-  ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
+  ({ isSafeToWrite } = require("./lib/security-helpers"));
 } catch {
-  console.error("symlink-guard unavailable; refusing to write");
+  console.error("security-helpers unavailable; refusing to write");
   isSafeToWrite = () => false;
 }
 
@@ -110,7 +105,24 @@ function atomicWrite(filePath, content) {
     throw new Error("Atomic write validation failed: size mismatch");
   }
 
-  renameSync(tmpPath, filePath);
+  // Guard destination before replacing
+  if (!isSafeToWrite(filePath)) {
+    throw new Error("Refusing to write: symlink detected at target path");
+  }
+
+  // Try atomic rename first; fall back to copy+delete for cross-device moves
+  try {
+    if (existsSync(filePath)) rmSync(filePath, { force: true });
+    fs.renameSync(tmpPath, filePath);
+  } catch {
+    if (existsSync(filePath)) rmSync(filePath, { force: true });
+    copyFileSync(tmpPath, filePath);
+    try {
+      rmSync(tmpPath, { force: true });
+    } catch {
+      /* best-effort cleanup */
+    }
+  }
 }
 
 /**
@@ -119,7 +131,7 @@ function atomicWrite(filePath, content) {
  */
 function matchEntryHeader(line) {
   // Match #### Review #N
-  const reviewMatch = line.match(/^####\s+Review\s+#(\d+)/);
+  const reviewMatch = line.match(/^#{2,4}\s+Review\s+#(\d+)/);
   if (reviewMatch) {
     return { type: "review", id: Number.parseInt(reviewMatch[1], 10) };
   }
@@ -327,7 +339,7 @@ function getNextArchiveNumber() {
   if (!existsSync(ARCHIVE_DIR)) return 1;
 
   try {
-    const entries = require("node:fs").readdirSync(ARCHIVE_DIR);
+    const entries = fs.readdirSync(ARCHIVE_DIR);
     for (const entry of entries) {
       if (archivePattern.test(entry)) {
         count++;
@@ -412,6 +424,43 @@ function numberToWord(n) {
     "twenty",
   ];
   return n <= 20 ? words[n] : String(n);
+}
+
+/**
+ * Update the "Current Metrics" section after archival.
+ * Recalculates main log lines and active review range from kept entries.
+ */
+function updateCurrentMetrics(content, keptEntries) {
+  const lineCount = content.split("\n").length;
+  const reviewEntries = keptEntries.filter((e) => e.type === "review");
+  const reviewIds = reviewEntries.map((e) => e.id).sort((a, b) => a - b);
+  const activeCount = reviewIds.length;
+  const rangeStr =
+    activeCount > 0 ? `${activeCount} (#${reviewIds[0]}-#${reviewIds[reviewIds.length - 1]})` : "0";
+
+  // Scope replacements to "Current Metrics" section only
+  const header = "## Current Metrics";
+  const start = content.indexOf(header);
+  if (start === -1) return content;
+
+  const sectionBodyStart = start + header.length;
+  const nextHeader = content.indexOf("\n## ", sectionBodyStart);
+  const end = nextHeader === -1 ? content.length : nextHeader;
+
+  const before = content.slice(0, start);
+  let section = content.slice(start, end);
+  const after = content.slice(end);
+
+  section = section.replace(
+    /^\|\s*Main log lines\s*\|[^|]*\|/m,
+    `| Main log lines | ~${lineCount} |`
+  );
+  section = section.replace(
+    /^\|\s*Active reviews\s*\|[^|]*\|/m,
+    `| Active reviews | ${rangeStr} |`
+  );
+
+  return before + section + after;
 }
 
 /**
@@ -603,6 +652,9 @@ function executeArchival(opts) {
     archiveNumber,
     today
   );
+
+  // Step 5b: Update "Current Metrics" section
+  updatedContent = updateCurrentMetrics(updatedContent, toKeep);
 
   // Step 6: Write updated active log
   try {

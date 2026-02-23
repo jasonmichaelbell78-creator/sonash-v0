@@ -19,20 +19,32 @@
  *   2 = Error
  */
 
-const { existsSync, readFileSync, readdirSync, writeFileSync, lstatSync } = require("node:fs");
-const { join } = require("node:path");
-
-// Symlink guard (Review #316-#323)
-let isSafeToWrite;
+// pattern-compliance: fs/path imports guarded by isSafeToWrite (loaded below)
+let existsSync, readFileSync, readdirSync, lstatSync, copyFileSync, rmSync;
 try {
-  ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
+  ({ existsSync, readFileSync, readdirSync, lstatSync, copyFileSync, rmSync } = require("node:fs"));
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
-  console.error(
-    "symlink-guard unavailable; disabling writes:",
-    msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")
-  );
-  isSafeToWrite = () => false;
+  console.error("Failed to load node:fs:", msg);
+  process.exit(2);
+}
+
+let join;
+try {
+  ({ join } = require("node:path"));
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load node:path:", msg);
+  process.exit(2);
+}
+
+let safeWriteFile;
+try {
+  ({ safeWriteFile } = require("./lib/security-helpers"));
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load security-helpers:", msg);
+  process.exit(2);
 }
 
 const ROOT = join(__dirname, "..");
@@ -96,11 +108,10 @@ const MAX_RANGE_EXPANSION = 5000;
  * @returns {{ ids: number[], found: boolean }}
  */
 function parseHeadingIds(content) {
-  const headingRegex = /^####\s+Review\s+#(\d+)/gm;
+  const headingRegex = /^#{2,4}\s+Review\s+#(\d+)/gm;
   const ids = [];
-  let match;
   let found = false;
-  while ((match = headingRegex.exec(content)) !== null) {
+  for (const match of content.matchAll(headingRegex)) {
     ids.push(Number.parseInt(match[1], 10));
     found = true;
   }
@@ -113,19 +124,18 @@ function parseHeadingIds(content) {
  */
 function parseTableIds(content) {
   const ids = [];
-  let match;
   let found = false;
 
   // Single review rows: | #N |
   const tableRegex = /^\|\s*#(\d+)\s*\|/gm;
-  while ((match = tableRegex.exec(content)) !== null) {
+  for (const match of content.matchAll(tableRegex)) {
     ids.push(Number.parseInt(match[1], 10));
     found = true;
   }
 
   // Consolidated range rows: | #N-M |
   const rangeRegex = /^\|\s*#(\d+)-(\d+)\s*\|/gm;
-  while ((match = rangeRegex.exec(content)) !== null) {
+  for (const match of content.matchAll(rangeRegex)) {
     const start = Number.parseInt(match[1], 10);
     const end = Number.parseInt(match[2], 10);
     const span = end - start + 1;
@@ -193,13 +203,12 @@ function checkWrongHeadings(filePath, fileName) {
   try {
     if (lstatSync(filePath).isSymbolicLink()) return 0;
     const content = readFileSync(filePath, "utf8");
-    const wrongHeadings = (content.match(/^###\s+Review\s+#\d+/gm) || []).length;
+    const wrongHeadings = (content.match(/^#{2,3}\s+Review\s+#\d+/gm) || []).length;
     if (wrongHeadings > 0) {
-      warn(`${fileName}: ${wrongHeadings} reviews use ### instead of #### heading`);
+      warn(`${fileName}: ${wrongHeadings} reviews use ## or ### instead of #### heading`);
       if (fixMode) {
-        if (!isSafeToWrite(filePath)) return 0;
-        const fixed = content.replaceAll(/^###(\s+Review\s+#)/gm, "####$1");
-        writeFileSync(filePath, fixed);
+        const fixed = content.replaceAll(/^#{2,3}(\s+Review\s+#)/gm, "####$1");
+        safeWriteFile(filePath, fixed, { allowOverwrite: true });
         console.log(`    → Fixed ${wrongHeadings} headings`);
       }
       return wrongHeadings;
@@ -270,7 +279,7 @@ function main() {
     }
     if (logIds.length > 0) {
       console.log(
-        `  Active log: ${logIds.length} reviews (#${Math.min(...logIds)}-#${Math.max(...logIds)})`
+        `  Active log: ${logIds.length} reviews (#${logIds.length > 0 ? Math.min(...logIds) : 0}-#${logIds.length > 0 ? Math.max(...logIds) : 0})`
       );
     } else {
       console.log("  Active log: 0 reviews");
@@ -291,7 +300,7 @@ function main() {
       const fmtLabel = FMT_LABELS[fmt] || "";
       if (ids.length > 0) {
         console.log(
-          `  ${file}: ${ids.length} reviews (#${Math.min(...ids)}-#${Math.max(...ids)})${fmtLabel}`
+          `  ${file}: ${ids.length} reviews (#${ids.length > 0 ? Math.min(...ids) : 0}-#${ids.length > 0 ? Math.max(...ids) : 0})${fmtLabel}`
         );
       } else {
         console.log(`  ${file}: 0 reviews (empty)`);
@@ -389,6 +398,67 @@ function main() {
     console.log(`    Run: npm run reviews:sync -- --apply`);
   } else {
     ok(`JSONL synced (max: #${jsonlMax}, markdown max: #${mdMax})`);
+  }
+  console.log();
+
+  // 6. Metadata Accuracy
+  console.log("6. Metadata Accuracy:");
+  if (existsSync(LEARNINGS_LOG)) {
+    try {
+      const logContent = readFileSync(LEARNINGS_LOG, "utf8");
+      const logLines = logContent.split("\n").length;
+
+      // Check 1: "Main log lines" claimed vs actual
+      const linesMatch = logContent.match(/\| Main log lines \|\s*~?(\d+)/);
+      if (linesMatch) {
+        const claimed = Number.parseInt(linesMatch[1], 10);
+        const drift = Math.abs(claimed - logLines);
+        if (drift > 100) {
+          warn(`"Main log lines" claims ~${claimed} but actual is ${logLines} (drift: ${drift})`);
+        } else {
+          ok(`Main log lines: ~${claimed} (actual: ${logLines}, drift: ${drift})`);
+        }
+      }
+
+      // Check 2: "Active reviews" claimed count vs actual heading count
+      const activeMatch = logContent.match(/\| Active reviews \|\s*(\d+)/);
+      const headingRegex2 = /^#{2,4}\s+Review\s+#(\d+)/gm;
+      let headingCount = 0;
+      while (headingRegex2.exec(logContent) !== null) {
+        headingCount++;
+      }
+      if (activeMatch) {
+        const claimedActive = Number.parseInt(activeMatch[1], 10);
+        if (claimedActive === headingCount) {
+          ok(`Active reviews: ${claimedActive} (matches heading count)`);
+        } else {
+          warn(
+            `"Active reviews" claims ${claimedActive} but actual heading count is ${headingCount}`
+          );
+        }
+      }
+
+      // Check 3: Consolidation section latest # vs state file
+      const consolidationStatePath = join(ROOT, ".claude", "state", "consolidation.json");
+      const consolidationMatch = logContent.match(/Previous Consolidation \(#(\d+)\)/);
+      if (consolidationMatch && existsSync(consolidationStatePath)) {
+        try {
+          const cState = JSON.parse(readFileSync(consolidationStatePath, "utf8"));
+          const mdNumber = Number.parseInt(consolidationMatch[1], 10);
+          const stateNumber = cState.consolidationNumber || 0;
+          if (mdNumber === stateNumber) {
+            ok(`Consolidation number: #${stateNumber} (matches state file)`);
+          } else {
+            warn(`Consolidation section shows #${mdNumber} but state file says #${stateNumber}`);
+          }
+        } catch {
+          /* skip if state file unreadable */
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Error checking metadata:", msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]"));
+    }
   }
   console.log();
 

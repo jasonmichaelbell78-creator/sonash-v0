@@ -7,8 +7,8 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
-**Last Updated:** 2026-02-12
+**Document Version:** 1.2
+**Last Updated:** 2026-02-23
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -399,7 +399,29 @@ Sequential process (1-2 agents):
 
 ---
 
-## Phase 4: Interactive Review
+## MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)
+
+**Do NOT present findings for review until they have been cross-referenced
+against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
+inflated debt counts.
+
+### Process
+
+1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
+2. For each finding, search MASTER_DEBT by:
+   - Same file path (exact or substring match)
+   - Similar title/description (semantic overlap)
+   - Same root cause (e.g., same pattern in different wording)
+3. Classify each finding as:
+   - **Already Tracked**: Confident match in MASTER_DEBT → skip intake
+   - **New Finding**: No matching DEBT entry → proceed to interactive review
+   - **Possibly Related**: Partial overlap → flag for manual review
+4. Present only **New** and **Possibly Related** findings in the Interactive
+   Review below. Already Tracked items are skipped entirely.
+
+---
+
+## Phase 4: Interactive Review (after MASTER_DEBT cross-reference)
 
 ### Presentation Format
 

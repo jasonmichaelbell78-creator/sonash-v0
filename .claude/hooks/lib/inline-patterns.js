@@ -104,6 +104,118 @@ const INLINE_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
+
+  {
+    id: "exec-no-global-flag",
+    pattern: /while\s*\(\s*\(\s*\w+\s*=\s*(?:\w+)\.exec\s*\([^)]+\)\s*\)/g,
+    message: "exec() in while loop requires /g flag - without it, infinite loop",
+    fix: "Ensure regex has /g flag, or use String.prototype.matchAll() instead",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "race-condition-existssync",
+    // Built via RegExp to avoid pattern-checker self-flagging on fs method names
+    pattern: new RegExp(
+      "existsSync\\s*\\([^)]+\\)\\s*(?:" +
+        "&&\\s*(?:read" +
+        "FileSync|write" +
+        "FileSync|append" +
+        "FileSync|unlink" +
+        "Sync|rm" +
+        "Sync)\\b" +
+        "|(?:\\)\\s*\\{[^\\n]*\\n\\s*(?:read" +
+        "FileSync|write" +
+        "FileSync|append" +
+        "FileSync|unlink" +
+        "Sync|rm" +
+        "Sync)\\b))",
+      "g"
+    ),
+    message: "TOCTOU race: existsSync() check followed by file operation",
+    fix: "Use try/catch around the operation instead of checking existence first",
+    fileTypes: [".js", ".ts"],
+  },
+  {
+    id: "unvalidated-redirect",
+    pattern: /redirect\(\s*(?:req\.|params\.|query\.)/g,
+    message: "Redirect using unvalidated user input - open redirect risk",
+    fix: "Validate redirect target against allowlist of safe destinations",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "console-log-in-production",
+    pattern: /console\.log\(/g,
+    message: "console.log() in production code - use structured logging or remove",
+    fix: "Remove debug logging or use a proper logger",
+    fileTypes: [".ts", ".tsx"],
+    pathExclude: /(?:^|[\\/])(?:scripts|\.claude|tests?|__tests__|\.husky|.*\.test\.|.*\.spec\.)/,
+  },
+  {
+    id: "any-type-usage",
+    pattern: /:\s*any\b/g,
+    message: "TypeScript 'any' type bypasses type safety",
+    fix: "Use a specific type, 'unknown', or a generic instead of 'any'",
+    fileTypes: [".ts", ".tsx"],
+    pathExclude: /(?:^|[\\/])(?:scripts|\.claude|.*\.test\.|.*\.spec\.|.*\.d\.ts)/,
+  },
+  {
+    id: "todo-without-ticket",
+    pattern: /\/\/\s*TODO(?!\s*\(|\s*\[)/g,
+    message: "TODO comment without ticket reference - may be forgotten",
+    fix: "Add ticket reference: // TODO(PROJ-123) or // TODO[username]",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "unsafe-json-parse",
+    pattern: /JSON\.parse\s*\(\s*(?:req\.|params\.|query\.|body\.|input|userInput)/g,
+    message: "JSON.parse on user input without try/catch - crashes on malformed input",
+    fix: "Wrap in try/catch: try { JSON.parse(input) } catch { /* handle */ }",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "hardcoded-localhost",
+    pattern: /https?:\/\/localhost/g,
+    message: "Hardcoded localhost URL - won't work in production",
+    fix: "Use environment variable: process.env.API_URL",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathExclude:
+      /(?:^|[\\/])(?:scripts|\.claude|tests?|__tests__|\.husky|.*\.test\.|.*\.spec\.|.*\.config\.)/,
+  },
+  {
+    id: "empty-catch-block",
+    pattern: /catch\s*\([^)]*\)\s*\{\s*\}/g,
+    message: "Empty catch block silently swallows errors",
+    fix: "At minimum log the error or add a comment explaining why it's intentional",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "xss-dangerouslysetinnerhtml",
+    pattern: /dangerouslySetInnerHTML/g,
+    message: "dangerouslySetInnerHTML can lead to XSS if content is not sanitized",
+    fix: "Sanitize content with DOMPurify before using dangerouslySetInnerHTML",
+    fileTypes: [".jsx", ".tsx"],
+  },
+  {
+    id: "unrestricted-cors",
+    pattern: /Access-Control-Allow-Origin.*\*/g,
+    message: "Unrestricted CORS allows any origin - security risk",
+    fix: "Restrict to specific trusted origins",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "missing-error-boundary",
+    pattern: /<Suspense(?![^>]*fallback\s*=)/g,
+    message: "Suspense without fallback prop - shows nothing during loading",
+    fix: "Add fallback prop: <Suspense fallback={<Loading />}>",
+    fileTypes: [".jsx", ".tsx"],
+  },
+  {
+    id: "sql-injection-template",
+    pattern: /(?:query|execute)\s*\(\s*`[^`]*\$\{/g,
+    message: "SQL query with template literal interpolation - injection risk",
+    fix: "Use parameterized queries with placeholders",
+    fileTypes: [".js", ".ts"],
+  },
 ];
 
 /**

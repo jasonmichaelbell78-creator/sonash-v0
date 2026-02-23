@@ -546,7 +546,30 @@ node scripts/validate-audit.js docs/audits/single-session/refactoring/audit-[YYY
 
 ---
 
-**Step 2: Interactive Review (MANDATORY — before TDMS intake)**
+**Step 2: MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)**
+
+**Do NOT present findings for review until they have been cross-referenced
+against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
+inflated debt counts.
+
+### Process
+
+1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
+2. For each finding, search MASTER_DEBT by:
+   - Same file path (exact or substring match)
+   - Similar title/description (semantic overlap)
+   - Same root cause (e.g., same pattern in different wording)
+3. Classify each finding as:
+   - **Already Tracked**: Confident match in MASTER_DEBT → skip intake
+   - **New Finding**: No matching DEBT entry → proceed to interactive review
+   - **Possibly Related**: Partial overlap → flag for manual review
+4. Present only **New** and **Possibly Related** findings in the Interactive
+   Review below. Already Tracked items are skipped entirely.
+
+---
+
+**Step 3: Interactive Review (MANDATORY — after MASTER_DEBT cross-reference,
+before TDMS intake)**
 
 **Do NOT ingest findings into TDMS until the user has reviewed them.**
 
@@ -594,7 +617,7 @@ After ALL findings reviewed, summarize:
 
 ---
 
-**Step 3: TDMS Intake**
+**Step 4: TDMS Intake**
 
 **TDMS Integration (MANDATORY)** - Ingest findings to canonical debt store:
 
@@ -613,7 +636,7 @@ See `docs/technical-debt/PROCEDURE.md` for the full TDMS workflow.
 
 ---
 
-**Step 4: Update AUDIT_TRACKER.md**
+**Step 5: Update AUDIT_TRACKER.md**
 
 Add entry to "Refactoring Audits" table in `docs/audits/AUDIT_TRACKER.md`:
 
@@ -635,7 +658,7 @@ node scripts/reset-audit-triggers.js --type=single --category=refactoring --appl
 
 ---
 
-**Step 5: Validate CANON Schema (if applicable)**
+**Step 6: Validate CANON Schema (if applicable)**
 
 If audit updates CANON files:
 
@@ -647,7 +670,7 @@ Ensure all CANON files pass validation before committing.
 
 ---
 
-**Step 6: Commit Results**
+**Step 7: Commit Results**
 
 Commit the audit results:
 
@@ -670,7 +693,7 @@ EOF
 
 ---
 
-**Step 7: Follow-up Prompt**
+**Step 8: Follow-up Prompt**
 
 Ask: "Would you like me to tackle any of these refactoring tasks now? (Recommend
 starting with batch fixes)"

@@ -585,9 +585,29 @@ Automatically invoked after all 9 domain audits complete.
 
 ---
 
+## MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)
+
+**Do NOT present findings for review until cross-referenced against
+MASTER_DEBT.jsonl.** This prevents duplicate TDMS intake.
+
+### Process
+
+1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
+2. For each deduplicated finding from Step 2, search MASTER_DEBT by:
+   - Same file path (exact or substring match)
+   - Similar title/description (semantic overlap)
+   - Same root cause
+3. Classify as: **Already Tracked** (skip) | **New** (review) | **Possibly
+   Related** (flag for manual review)
+4. Write `${AUDIT_DIR}/DEDUP_VS_MASTER_DEBT.md` with results table
+5. Only pass **New** and **Possibly Related** findings to the Interactive Review
+
+---
+
 ## Interactive Review (MANDATORY)
 
-After generating the aggregated report and JSONL file, present findings for
+After generating the aggregated report, JSONL file, and MASTER_DEBT
+cross-reference, present **only new and possibly-related** findings for
 interactive triage. **Do NOT skip this phase or auto-proceed to TDMS intake.**
 
 ### Review Format
@@ -806,6 +826,7 @@ Before running this aggregator, review:
 
 | Version | Date       | Description                                                                                                            |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 1.5     | 2026-02-22 | Add mandatory MASTER_DEBT cross-reference step before interactive review                                               |
 | 1.4     | 2026-02-17 | Add mandatory Interactive Review phase before TDMS intake                                                              |
 | 1.3     | 2026-02-16 | AUDIT_STANDARDS compliance: Pre-Audit Validation, JSONL output, Post-Audit TDMS checklist, standard fingerprint format |
 | 1.2     | 2026-02-14 | 9-domain coverage: add engineering-productivity, enhancements, ai-optimization                                         |

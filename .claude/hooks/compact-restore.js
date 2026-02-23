@@ -14,8 +14,21 @@
  * Session #138: Part of compaction-resilient state persistence
  */
 
-const fs = require("node:fs");
-const path = require("node:path");
+let fs, path;
+try {
+  fs = require("node:fs");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load node:fs:", msg);
+  process.exit(2);
+}
+try {
+  path = require("node:path");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load node:path:", msg);
+  process.exit(2);
+}
 
 // Paths
 const safeBaseDir = path.resolve(process.cwd());
@@ -154,13 +167,42 @@ function main() {
           .join("\n")
       : "  (none)",
     "",
+  ];
+
+  // Active plan context
+  if (handoff.activePlan) {
+    recovery.push(
+      "ACTIVE PLAN:",
+      `  File: .claude/plans/${handoff.activePlan.file} (modified ${handoff.activePlan.modifiedAgo} ago)`,
+      "  Preview:",
+      ...handoff.activePlan.preview
+        .split("\n")
+        .slice(0, 15)
+        .map((l) => `    ${l}`),
+      ""
+    );
+  }
+
+  // Session notes (AI-written intent/context)
+  if (handoff.sessionNotes?.notes?.length > 0) {
+    recovery.push("SESSION NOTES (AI-written context):");
+    for (const note of handoff.sessionNotes.notes.slice(-5)) {
+      const ts = note.timestamp ? ` (${note.timestamp})` : "";
+      recovery.push(`  ${note.text}${ts}`);
+    }
+    recovery.push("");
+  }
+
+  recovery.push(
     "RECOVERY INSTRUCTION:",
     "Read .claude/state/handoff.json for full details.",
     "Read .claude/state/task-*.state.json for in-progress task data.",
     "Check git status for uncommitted work.",
     "Continue from where the session left off.",
-    "=".repeat(40),
-  ].join("\n");
+    "=".repeat(40)
+  );
+
+  const recoveryText = recovery.join("\n");
 
   // To stderr for user visibility
   console.error("");
@@ -170,10 +212,16 @@ function main() {
   console.error(`   Branch: ${handoff.git?.branch || "?"}`);
   console.error(`   Tasks: ${Object.keys(handoff.taskStates || {}).length} tracked`);
   console.error(`   Commits: ${(handoff.commitLog || []).length} in log`);
+  if (handoff.activePlan) {
+    console.error(`   Active plan: ${handoff.activePlan.file}`);
+  }
+  if (handoff.sessionNotes?.notes?.length > 0) {
+    console.error(`   Session notes: ${handoff.sessionNotes.notes.length} entries`);
+  }
   console.error("\u2501".repeat(42));
 
   // To stdout for Claude context injection
-  console.log(recovery);
+  console.log(recoveryText);
   process.exit(0);
 }
 

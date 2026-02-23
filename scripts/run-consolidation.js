@@ -23,16 +23,22 @@
  *   2 = Error
  */
 
-const {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  mkdirSync,
-  rmSync,
-  renameSync,
-} = require("node:fs");
-const { join } = require("node:path");
-const { execFileSync } = require("node:child_process");
+const fs = require("node:fs"); // catch-verified: core module
+const path = require("node:path"); // catch-verified: core module
+const cp = require("node:child_process"); // catch-verified: core module
+const { existsSync, readFileSync, mkdirSync, rmSync } = fs; // require() destructure
+const { writeFileSync, copyFileSync } = fs; // require() destructure
+const { join } = path; // require() destructure
+const { execFileSync } = cp; // require() destructure
+
+// Symlink guard (Review #316-#323)
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require("./lib/security-helpers"));
+} catch {
+  console.error("security-helpers unavailable; refusing to write");
+  isSafeToWrite = () => false;
+}
 
 // --- Paths ---
 const ROOT_DIR = join(__dirname, "..");
@@ -103,14 +109,55 @@ function loadState() {
   }
 }
 
+function safeRename(src, dest) {
+  if (!isSafeToWrite(dest)) return; // symlink guard
+  // Try atomic rename first; fall back to copy+delete for cross-device moves
+  try {
+    fs.renameSync(src, dest);
+    return;
+  } catch (err) {
+    if (
+      !(
+        err &&
+        typeof err === "object" &&
+        /** @type {NodeJS.ErrnoException} */ (err).code === "EXDEV"
+      )
+    ) {
+      throw err;
+    }
+    // Fallback for cross-device moves
+  }
+  if (existsSync(dest)) rmSync(dest, { force: true });
+  copyFileSync(src, dest);
+  try {
+    rmSync(src, { force: true });
+  } catch {
+    /* best-effort cleanup */
+  }
+}
+
 function writeState(state) {
   ensureDir(STATE_DIR);
   const tmpPath = `${CONSOLIDATION_FILE}.tmp`;
   const bakPath = `${CONSOLIDATION_FILE}.bak`;
-  writeFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8");
+  if (!isSafeToWrite(tmpPath)) {
+    log("Refusing to write: symlink detected at tmp path", c.red);
+    return;
+  }
+  if (!isSafeToWrite(CONSOLIDATION_FILE)) {
+    log("Refusing to write: symlink detected at consolidation.json", c.red);
+    return;
+  }
+  writeFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8"); // atomic .tmp → safeRename below
   if (existsSync(bakPath)) rmSync(bakPath, { force: true });
-  if (existsSync(CONSOLIDATION_FILE)) renameSync(CONSOLIDATION_FILE, bakPath);
-  renameSync(tmpPath, CONSOLIDATION_FILE);
+  if (existsSync(CONSOLIDATION_FILE)) {
+    if (!isSafeToWrite(bakPath)) {
+      log("Refusing to write: symlink detected at bak path", c.red);
+      return;
+    }
+    safeRename(CONSOLIDATION_FILE, bakPath);
+  }
+  safeRename(tmpPath, CONSOLIDATION_FILE);
   if (existsSync(bakPath)) rmSync(bakPath, { force: true });
 }
 
@@ -325,13 +372,90 @@ function generateRuleSuggestions(recurringPatterns, range) {
   }
 
   try {
-    writeFileSync(OUTPUT_FILE, content, "utf8");
+    if (!isSafeToWrite(OUTPUT_FILE)) {
+      log("  ⚠️ Refusing to write suggestions: symlink detected", c.yellow);
+      return;
+    }
+    const tmpOutputPath = OUTPUT_FILE + ".tmp";
+    if (!isSafeToWrite(tmpOutputPath)) {
+      log("  ⚠️ Refusing to write suggestions: symlink detected at tmp path", c.yellow);
+      return;
+    }
+    writeFileSync(tmpOutputPath, content, "utf8"); // atomic .tmp → safeRename below
+    safeRename(tmpOutputPath, OUTPUT_FILE);
     log(
       `  ✅ Rule suggestions → consolidation-output/suggested-rules.md (${recurringPatterns.length} patterns)`,
       c.green
     );
   } catch (err) {
     if (verbose) log(`  ⚠️ Failed to write suggestions: ${sanitizeError(err)}`, c.yellow);
+  }
+}
+
+// =============================================================================
+// MARKDOWN: Append consolidation record to learnings log
+// =============================================================================
+
+const LEARNINGS_LOG = join(ROOT_DIR, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+
+/**
+ * Append a consolidation record to the Consolidation section in the learnings log.
+ * Inserts a <details> block before the first existing <details> consolidation block.
+ * Non-fatal: logs a warning if the markdown update fails (JSON is source of truth).
+ */
+function appendConsolidationToMarkdown(newNumber, minId, maxId, today, recurringPatterns) {
+  try {
+    if (!existsSync(LEARNINGS_LOG)) return;
+    let content = readFileSync(LEARNINGS_LOG, "utf8");
+
+    const patternSummary =
+      recurringPatterns.length > 0
+        ? recurringPatterns.map((p) => `  - ${p.pattern} (${p.count}x)`).join("\n")
+        : "  - No recurring patterns above threshold";
+
+    const block = [
+      `<details>`,
+      `<summary>Previous Consolidation (#${newNumber})</summary>`,
+      ``,
+      `- **Date:** ${today}`,
+      `- **Reviews consolidated:** #${minId}-#${maxId}`,
+      `- **Recurring patterns:**`,
+      patternSummary,
+      ``,
+      `</details>`,
+      ``,
+    ].join("\n");
+
+    // Insert before the first existing <details> block in the Consolidation section
+    const consolidationHeader = "## 🔔 Consolidation";
+    const headerIdx = content.indexOf(consolidationHeader);
+    if (headerIdx === -1) return;
+
+    const afterHeader = content.indexOf("<details>", headerIdx);
+    if (afterHeader === -1) {
+      // No existing <details> blocks — append after the note paragraph
+      const noteEnd = content.indexOf("\n\n", headerIdx + consolidationHeader.length + 100);
+      if (noteEnd !== -1) {
+        content = content.slice(0, noteEnd + 2) + block + content.slice(noteEnd + 2);
+      }
+    } else {
+      content = content.slice(0, afterHeader) + block + content.slice(afterHeader);
+    }
+
+    // Atomic write
+    const tmpPath = LEARNINGS_LOG + ".consolidation.tmp";
+    if (!isSafeToWrite(tmpPath)) {
+      log("  ⚠️ Refusing to write: symlink detected at tmp path", c.yellow);
+      return;
+    }
+    if (!isSafeToWrite(LEARNINGS_LOG)) {
+      log("  ⚠️ Refusing to write: symlink detected at target path", c.yellow);
+      return;
+    }
+    writeFileSync(tmpPath, content, "utf8"); // atomic .tmp → safeRename below
+    safeRename(tmpPath, LEARNINGS_LOG);
+  } catch (err) {
+    log(`  ⚠️ Failed to update markdown consolidation section: ${sanitizeError(err)}`, c.yellow);
   }
 }
 
@@ -359,6 +483,9 @@ function applyConsolidation(state, reviews, recurringPatterns) {
     threshold: THRESHOLD,
   };
   writeState(newState);
+
+  // Append consolidation record to markdown
+  appendConsolidationToMarkdown(newNumber, minId, maxId, today, recurringPatterns);
 
   log(`\n${c.bold}Applying consolidation...${c.reset}`, c.green);
   log(

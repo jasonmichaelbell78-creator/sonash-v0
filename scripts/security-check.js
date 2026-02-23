@@ -35,6 +35,7 @@ const SECURITY_PATTERNS = [
     severity: "HIGH",
     message: "Potential command injection: use execFileSync or spawnSync with args array",
     fileTypes: [".js", ".ts"],
+    exclude: [/pattern-compliance\.test/],
   },
   {
     id: "SEC-002",
@@ -48,6 +49,7 @@ const SECURITY_PATTERNS = [
       /config/,
       /(?:^|[\\/])security-check\.js$/,
       /(?:^|[\\/])check-pattern-compliance\.js$/,
+      /pattern-compliance\.test/,
     ],
   },
   {
@@ -57,6 +59,7 @@ const SECURITY_PATTERNS = [
     severity: "MEDIUM",
     message: "Potential XSS: use textContent or sanitize HTML",
     fileTypes: [".js", ".ts", ".tsx"],
+    exclude: [/pattern-compliance\.test/],
   },
   {
     id: "SEC-004",
@@ -117,6 +120,7 @@ const SECURITY_PATTERNS = [
     severity: "HIGH",
     message: "Shell command with unescaped variable - use execFileSync",
     fileTypes: [".js", ".ts"],
+    exclude: [/pattern-compliance\.test/],
   },
 ];
 

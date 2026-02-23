@@ -112,6 +112,12 @@ Stage 3: Aggregation (sequential)
   - audit-aggregator -> COMPREHENSIVE_AUDIT_REPORT.md
         |
         v
+Stage 3.5: MASTER_DEBT Deduplication (MANDATORY)
+  - Cross-reference findings against MASTER_DEBT.jsonl
+  - Skip already-tracked items, flag possibly-related
+  - Output: DEDUP_VS_MASTER_DEBT.md
+        |
+        v
 Post-Audit
   - Update AUDIT_TRACKER.md
   - Display final summary
@@ -228,7 +234,52 @@ Complete table grouped by severity, with links to original audit reports.
 
 ---
 
-## Interactive Review (MANDATORY -- before TDMS intake)
+## MASTER_DEBT Deduplication (MANDATORY — before Interactive Review)
+
+**Do NOT present findings for review until they have been cross-referenced
+against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
+inflated debt counts.
+
+### Process
+
+1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
+2. For each aggregated finding, search MASTER_DEBT by:
+   - Same file path (exact or substring match)
+   - Similar title/description (semantic overlap)
+   - Same root cause (e.g., "App Check disabled" in different wording)
+3. Classify each finding as:
+   - **Already Tracked**: Confident match exists in MASTER_DEBT → skip intake
+   - **New Finding**: No matching DEBT entry → proceed to interactive review
+   - **Possibly Related**: Partial overlap → flag for manual review
+4. Write report to `${AUDIT_DIR}/DEDUP_VS_MASTER_DEBT.md`
+
+### Output Format
+
+```markdown
+# Audit vs MASTER_DEBT Deduplication Report
+
+## Already Tracked (skip intake)
+
+| COMP ID | Matching DEBT ID(s) | DEBT Title | DEBT Status | Notes |
+
+## New Findings (proceed to intake)
+
+| COMP ID | Severity | Description |
+
+## Possibly Related (manual review needed)
+
+| COMP ID | Possible DEBT Match | Similarity | Notes |
+```
+
+### Interactive Review Scope
+
+Only present **New Findings** and **Possibly Related** items in the Interactive
+Review below. Already Tracked items are skipped entirely — they already exist in
+TDMS.
+
+---
+
+## Interactive Review (MANDATORY — before TDMS intake)
 
 **Do NOT ingest findings into TDMS until the user has reviewed them.**
 
@@ -414,6 +465,7 @@ Before running this audit, review:
 
 | Version | Date       | Description                                                               |
 | ------- | ---------- | ------------------------------------------------------------------------- |
+| 3.2     | 2026-02-22 | Add mandatory MASTER_DEBT dedup step before interactive review            |
 | 3.1     | 2026-02-14 | Extract reference docs: wave details, recovery, triage guide              |
 | 3.0     | 2026-02-14 | 9-domain coverage: add enhancements + ai-optimization as Stage 2.5        |
 | 2.1     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula  |

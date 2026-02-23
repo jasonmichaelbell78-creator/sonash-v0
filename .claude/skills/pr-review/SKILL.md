@@ -214,6 +214,27 @@ Before pushing, verify completeness in one pass:
 **Evidence:** PR #382 had 3-round severity chain (R1 fixed 2 of 4 levels) and
 3-round dedup chain (3 boundaries discovered incrementally).
 
+### Dual-File JSONL Write Check (NEW — PR #383 Retro)
+
+**Trigger:** PR modifies any script in `scripts/debt/` that writes to
+MASTER_DEBT.jsonl.
+
+Before pushing, verify that ALL write paths also update `raw/deduped.jsonl`:
+
+```bash
+# Find scripts that write to MASTER but may miss deduped
+grep -rn 'MASTER.*write\|MASTER.*rename\|masterTmp\|MASTER_FILE' scripts/debt/ --include="*.js" | grep -v deduped
+```
+
+If any script writes to MASTER_DEBT.jsonl without also writing to
+raw/deduped.jsonl, `generate-views.js` will overwrite MASTER with stale data on
+next run. Use FIX_TEMPLATES #36 (atomic dual-JSONL write with rollback) for the
+correct pattern.
+
+**Evidence:** PR #383 R7 found 4 scripts with sequential writes missing rollback
+on second rename failure, and earlier sessions found data loss from MASTER being
+overwritten by stale deduped.jsonl.
+
 ### Same-File Regex DoS Sweep (NEW — PR #382 Retro)
 
 **Trigger:** SonarCloud flags a regex DoS (S5852) in a file.
@@ -507,6 +528,7 @@ the entire codebase for all instances BEFORE committing.
 | realpathSync guard | `realpathSync` without try/catch or parent-dir fallback    |
 | Path containment   | `startsWith(dir)` without `+ path.sep` boundary            |
 | Shared util change | Modified function name → grep ALL callers across all files |
+| Dual-file JSONL    | `MASTER.*write\|MASTER.*rename` without matching deduped   |
 
 **CRITICAL (PR #367 retro):** Propagation checks must search ALL file types that
 consume the same pattern. PR #367 R4 fixed SKIP_REASON validation in shell hooks
@@ -713,6 +735,7 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 | Version | Date       | Description                                                                                                                |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 2.9     | 2026-02-22 | Add dual-file JSONL write check (Step 0.5), dual-file propagation pattern (Step 5.6). Source: PR #383 retro.               |
 | 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks (Step 0.5), strengthen propagation (Step 5.6). Source: PR #382 retro. |
 | 2.7     | 2026-02-20 | Add patterns:check to Step 5.4, propagation enforcement escalation in Step 5.6. Source: PR #379 retro.                     |
 | 2.6     | 2026-02-19 | Add Algorithm Design Pre-Check (Step 0.5). Source: PR #379 retro.                                                          |
