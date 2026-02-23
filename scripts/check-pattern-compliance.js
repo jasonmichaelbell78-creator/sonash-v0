@@ -1529,6 +1529,86 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)scripts\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
+
+  // S5852 regex complexity — detect regexes likely to trigger SonarCloud S5852
+  // Heuristic: count quantifiers, alternations, groups. Flag if combined complexity > threshold.
+  // PR #386 retro: helper regexes inside testFn also trigger S5852.
+  {
+    id: "regex-complexity-s5852",
+    severity: "warning",
+    testFn: (() => {
+      const THRESHOLD = 35;
+      function estimateComplexity(body) {
+        let score = 0;
+        score += (body.match(/[+*?]/g) ?? []).length * 2;
+        score += (body.match(/\{[\d,]+\}/g) ?? []).length * 2;
+        score += (body.match(/\|/g) ?? []).length * 3;
+        score += (body.match(/\(/g) ?? []).length;
+        score += (body.match(/\[/g) ?? []).length;
+        score += (body.match(/\\[dDwWsS]/g) ?? []).length;
+        return score;
+      }
+      // Extract regex body by scanning forward from `/`, handling escapes and char classes
+      function extractRegexBody(line, startIdx) {
+        let i = startIdx + 1;
+        let inCharClass = false;
+        while (i < line.length) {
+          const ch = line[i];
+          if (ch === "\\") {
+            i += 2;
+            continue;
+          }
+          if (ch === "[") {
+            inCharClass = true;
+            i++;
+            continue;
+          }
+          if (ch === "]") {
+            inCharClass = false;
+            i++;
+            continue;
+          }
+          if (ch === "/" && !inCharClass) return line.slice(startIdx + 1, i);
+          i++;
+        }
+        return null;
+      }
+      // Find regex literal start positions (after = , ( : ! | ? + -)
+      const REGEX_START = /(?:^|[=(,;!&|?:+\-~\s])(\/)(?![/*])/g;
+      return (content) => {
+        const lines = content.split("\n");
+        const matches = [];
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const trimmed = line.trimStart();
+          if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+          REGEX_START.lastIndex = 0;
+          let m;
+          while ((m = REGEX_START.exec(line)) !== null) {
+            const slashIdx = m.index + m[0].length - 1;
+            const body = extractRegexBody(line, slashIdx);
+            if (!body || body.length < 5) continue;
+            const score = estimateComplexity(body);
+            if (score >= THRESHOLD) {
+              matches.push({
+                line: i + 1,
+                col: slashIdx,
+                match: `complexity ~${score} (threshold ${THRESHOLD}): ${line.trim().slice(0, 100)}`,
+              });
+            }
+          }
+        }
+        return matches;
+      };
+    })(),
+    message:
+      "Regex likely exceeds SonarCloud S5852 complexity threshold — consider string parsing or simpler patterns",
+    fix: "Replace complex regex with testFn string parsing, or split into multiple simpler patterns",
+    review: "PR #386 retro — S5852 caused 0.5 avoidable rounds when helper regex was missed",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
 ];
 
 /**

@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 976
+**Items Needing Verification:** 977
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -287,6 +287,7 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-7515 | Onboarding progress dots are div elements with no accessi...    | S2       | components/onboarding/onboarding-wizard.tsx                      | 187  |
 | DEBT-7516 | No CHANGELOG, no versioning strategy, no release tagging        | S2       | package.json                                                     | 0    |
 | DEBT-7517 | 356-line FORM_SECTIONS config embedded in Step1WorksheetC...    | S2       | components/growth/Step1WorksheetCard.tsx                         | 124  |
+| DEBT-7543 | S5852 regex complexity pre-push automation — check ALL re...    | S2       | scripts/check-pattern-compliance.js                              | 0    |
 | DEBT-2441 | EXPANSION_EVALUATION_TRACKER.md command reference table         | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                             | 0    |
 | DEBT-2446 | ai-review.js - Unused AI review prompt applicator               | S2       | scripts/ai-review.js                                             | 0    |
 | DEBT-2448 | create-canonical-findings.js - Unused canonical findings ...    | S2       | scripts/create-canonical-findings.js                             | 0    |

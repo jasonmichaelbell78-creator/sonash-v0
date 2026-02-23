@@ -270,8 +270,14 @@ grep -n '[+*].*[+*]\|[+*].*\\s' scripts/debt/target-file.js
 SonarCloud sometimes reports only one DoS regex per scan. If the file has
 multiple vulnerable regexes, you'll get a new finding each round.
 
+**Important:** When replacing a regex with a `testFn` function, also check any
+helper regexes INSIDE the testFn. S5852 applies to all regex patterns, not just
+the top-level pattern config.
+
 **Evidence:** PR #382 R1 fixed `matchNumberedHeading` regex DoS, but R2 flagged
-`isTableHeaderLine` regex DoS in the same file — same rule, avoidable round.
+`isTableHeaderLine` regex DoS in the same file — same rule, avoidable round. PR
+#386 R1 replaced pattern regex with testFn but left helper regex `/(\d+)\s*$/`
+inside testFn that also triggered S5852 in R2.
 
 ---
 

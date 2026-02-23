@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (976)
+## NEW (977)
 
 | ID        | Title                                                           | Severity | Category                 |
 | --------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -284,6 +284,7 @@
 | DEBT-7515 | Onboarding progress dots are div elements with no accessi...    | S2       | enhancements             |
 | DEBT-7516 | No CHANGELOG, no versioning strategy, no release tagging        | S2       | process                  |
 | DEBT-7517 | 356-line FORM_SECTIONS config embedded in Step1WorksheetC...    | S2       | refactoring              |
+| DEBT-7543 | S5852 regex complexity pre-push automation — check ALL re...    | S2       | engineering-productivity |
 | DEBT-2441 | EXPANSION_EVALUATION_TRACKER.md command reference table         | S2       | code-quality             |
 | DEBT-2446 | ai-review.js - Unused AI review prompt applicator               | S2       | code-quality             |
 | DEBT-2448 | create-canonical-findings.js - Unused canonical findings ...    | S2       | code-quality             |
