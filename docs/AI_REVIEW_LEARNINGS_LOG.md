@@ -572,6 +572,171 @@ accumulate.
 
 ## Active Reviews
 
+### PR #384 Retrospective (2026-02-23)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Rounds         | 4 (R1–R4, all 2026-02-22)                            |
+| Total items    | 197                                                  |
+| Fixed          | 171                                                  |
+| Deferred       | 8 (compact-restore.js path containment, CC items)    |
+| Rejected       | 9 + 9 acknowledged                                   |
+| Review sources | SonarCloud, Qodo Compliance, Qodo PR Suggestions, CI |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source             | Items   | Fixed   | Rejected | Key Patterns                                                                |
+| --------- | ---------- | ------------------ | ------- | ------- | -------- | --------------------------------------------------------------------------- |
+| R1        | 2026-02-22 | SonarCloud+Qodo+CI | 28      | 19      | 0        | CC extraction creates CC, FP double-counting, division by zero, [Cc]+i      |
+| R2        | 2026-02-22 | CI+SonarCloud+Qodo | 139     | 125     | 7        | 112 CI violations, Array.isArray FPs, happy-path regex flaw, `\|\|` vs `??` |
+| R3        | 2026-02-22 | SonarCloud+CI+Qodo | 18      | 16      | 1        | CC reduction (3 funcs), nested ternary, atomic writes, TOCTOU regex         |
+| R4        | 2026-02-22 | CI+SonarCloud+Qodo | 12      | 11      | 1        | Security excludes for tests, CC extract, EXDEV fallback, CRLF/BOM           |
+| **Total** |            |                    | **197** | **171** | **9**    |                                                                             |
+
+#### Ping-Pong Chains
+
+##### Chain 1: CI Pattern Compliance Cascade (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                            | Files Affected                                           | Root Cause                                 |
+| ----- | ------------------------------------------------------------------------ | -------------------------------------------------------- | ------------------------------------------ |
+| R1    | Fixed 19 SonarCloud/Qodo items across 6 files, introduced new code       | analyze-placement.js, place-unassigned-debt.js +4        | New code for 9-domain audit feature        |
+| R2    | CI pre-push found 112 blocking pattern violations in R1's modified files | Same files + 11 more (ecosystem checkers, consolidation) | R1 code not tested against pattern checker |
+
+**Avoidable rounds:** 1 (R2's 112 CI violations). Running
+`npm run patterns:check` before pushing R1 would have caught all 112 violations
+locally.
+
+**Prevention:** Add `npm run patterns:check --staged` to the R1 fix workflow.
+
+##### Chain 2: CC Progressive Reduction (R1→R3→R4 = 3 rounds)
+
+| Round | What Happened                                                                         | Files Affected                                 | Root Cause                            |
+| ----- | ------------------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------- |
+| R1    | CC extraction in check-pattern-compliance.js; noted "CC extraction creates new CC"    | check-pattern-compliance.js                    | Pattern identified but not swept      |
+| R3    | CC >15 in 3 functions: simplifyPlacements (19), loadSprintFiles (20), placeItems (24) | analyze-placement.js, place-unassigned-debt.js | SonarCloud flagged on R2 push         |
+| R4    | CC in placeGroupItems extracted from placeItemsIntoSprints (21→~10)                   | place-unassigned-debt.js                       | R3 extraction created new CC function |
+
+**Avoidable rounds:** 1 (R4). R3 should have re-checked all extracted helpers
+per the "CC extraction creates new CC" pattern identified in R1.
+
+**Prevention:** After extracting helpers for CC reduction, always re-check the
+ENTIRE file with `npx eslint --rule 'complexity: ["error", 15]'`.
+
+##### Chain 3: Persistent Script Files (R1→R2→R3→R4 = 4 rounds)
+
+| Round | What Happened                            | Files Affected                                  | Root Cause                     |
+| ----- | ---------------------------------------- | ----------------------------------------------- | ------------------------------ |
+| R1    | Initial SonarCloud/Qodo fixes            | analyze-placement.js, place-unassigned-debt.js  | Original feature code          |
+| R2    | CI pattern violations + Qodo suggestions | Same + archive-reviews.js, run-consolidation.js | Pattern checker on R1 code     |
+| R3    | SonarCloud CC + atomic write fixes       | Same + inline-patterns.js                       | R2 modifications flagged by SC |
+| R4    | EXDEV guard, scoped regex, BOM/CRLF      | Same + process-compliance.js, security-check.js | Incremental hardening          |
+
+**Avoidable rounds:** 0.5 (each round after R2 had diminishing but genuine new
+findings).
+
+**Total avoidable rounds across all chains: ~2.5 out of 4 (~62.5% partially
+avoidable)**
+
+#### Rejection Analysis
+
+| Category                          | Count | Rounds | Examples                                                         |
+| --------------------------------- | ----- | ------ | ---------------------------------------------------------------- |
+| Qodo acknowledged (not rejected)  | 9     | R1     | Qodo suggestions acknowledged as valid but not blocking          |
+| CI pattern false positives        | ~5    | R2     | Array.isArray checker flagging files with existing guards        |
+| Qodo compliance (offline scripts) | ~2    | R2-R3  | "Missing audit trails" for CLI tools                             |
+| Intentional test data             | 1     | R3-R4  | SEC-001/002/003/010 on pattern-compliance.test.js (intentional)  |
+| Regex false negative              | 1     | R4     | Qodo suggested removing `\\)` from TOCTOU regex — would break it |
+
+**Rejection accuracy:** 9/9 explicit rejections were correct (100%).
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                             | Rounds   | Already Automated?      | Recommended Action                                                  | Est. Effort |
+| ----------------------------------- | -------- | ----------------------- | ------------------------------------------------------------------- | ----------- |
+| CI pattern violations from new code | R2       | YES (pre-commit hook)   | Enforce `--staged` check before pushing review fixes                | ~5 min      |
+| CC extraction creates new CC        | R1,R3,R4 | YES (pre-commit hook)   | Add "re-check file" reminder to CC fix template                     | ~5 min      |
+| happy-path-only regex flawed        | R2       | YES (replaced w/testFn) | Already fixed in this PR                                            | Done        |
+| `\|\|` vs `??` for zero-values      | R2       | No                      | Add pattern to check-pattern-compliance.js for numeric `\|\|` usage | ~20 min     |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                                 | Implemented? | Impact on #384                                   |
+| ------- | -------------------------------------------------- | ------------ | ------------------------------------------------ |
+| PR #383 | FIX_TEMPLATES #36 (dual-JSONL write with rollback) | **YES**      | Not directly relevant (no dual-JSONL writes)     |
+| PR #383 | pr-review Step 0.5 dual-file write grep            | **YES**      | Not triggered                                    |
+| PR #383 | check-pattern-compliance symlink guard rule        | **NOT DONE** | No impact (no new write paths in #384)           |
+| PR #383 | Propagation protocol enforcement                   | **NOT DONE** | ~0.5 avoidable round (R3→R4 CRLF)                |
+| PR #382 | scripts/debt/ Qodo compliance exclusion            | **NOT DONE** | ~2 rejected compliance items in R2               |
+| PR #382 | CODE_PATTERNS severity mapping audit pattern       | **NOT DONE** | No impact (no severity mapping in #384)          |
+| PR #379 | Algorithm Design Pre-Check (Step 0.5)              | **YES**      | Not triggered (no new algorithms)                |
+| PR #379 | Propagation enforcement                            | **NOT DONE** | **7th time recommended** — ~0.5 avoidable rounds |
+
+**Total avoidable rounds from unimplemented retro actions: ~1**
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Avoidable Rounds | Rejections | Key Issue                     |
+| -------- | ------ | ----------- | ---------------- | ---------- | ----------------------------- |
+| #371     | 2      | 45          | ~0               | 7          | CC extraction + S5852         |
+| #374     | 5      | 40          | ~2               | 5          | Path containment              |
+| #379     | 11     | ~119        | ~8               | ~61        | Evidence algorithm + protocol |
+| #382     | 3      | 76          | ~1               | 13         | Severity/dedup incremental    |
+| #383     | 8      | ~282        | ~4               | ~90        | Symlink/atomic/catch          |
+| **#384** | **4**  | **197**     | **~2.5**         | **~18**    | **CI pattern cascade + CC**   |
+
+**Persistent cross-PR patterns:**
+
+| Pattern                         | PRs Affected | Times Recommended | Status                                     | Required Action                                                      |
+| ------------------------------- | ------------ | ----------------- | ------------------------------------------ | -------------------------------------------------------------------- |
+| CC lint rule                    | #366-#371    | 5x                | **RESOLVED** (pre-commit error since #371) | None                                                                 |
+| Qodo suppression                | #369-#371    | 3x                | **RESOLVED** (pr-agent.toml)               | Minor gap: `scripts/debt/` still not excluded                        |
+| Propagation check               | #366-#384    | **7x**            | Documented but STILL missed                | **BLOCKING — 7x recommended, still causing avoidable rounds**        |
+| `scripts/debt/` compliance excl | #382-#384    | 2x                | **NOT DONE**                               | Add path exclusion to pr-agent.toml (~5 min)                         |
+| Local pattern check before push | #384 (new)   | 1x                | Not enforced                               | Pre-push or pre-commit should run `patterns:check` on modified files |
+
+#### Skills/Templates to Update
+
+1. **`.qodo/pr-agent.toml`:** Add `scripts/debt/` to compliance exclusion paths
+   — 2x recommended, ~4+ rejected items per PR. (~5 min — do now)
+2. **FIX_TEMPLATES.md:** Add reminder to CC extraction template: "After
+   extracting helpers, re-check ENTIRE file for CC" (~5 min — do now)
+3. **pr-retro SKILL.md:** No new known churn patterns needed. PR #384's issues
+   are variants of existing patterns (CC cascade = Pattern 1, CI violations =
+   Pattern 5 propagation).
+
+#### Process Improvements
+
+1. **Run pattern checker before pushing review fixes** — 112 of 197 items (57%)
+   were CI pattern violations caught by `npm run patterns:check`. Running
+   locally before push would have eliminated the entire R2 CI block. Evidence:
+   R2.
+2. **CC re-check after extraction is not optional** — R1 documented "CC
+   extraction creates new CC" then R3/R4 had exactly this. The learning was
+   captured but not applied within the same PR. Evidence: R1→R3→R4.
+3. **Propagation enforcement remains the top systemic issue** — This is the
+   **7th PR retro** recommending it. Impact declining (~0.5 vs 2+ rounds in
+   earlier PRs) but still persistent. Evidence: R3→R4 CRLF/BOM.
+
+#### Verdict
+
+PR #384 had a **moderately efficient review cycle** — 4 rounds with 197 items,
+171 fixed. ~2.5 of 4 rounds were partially avoidable (~62.5%), driven primarily
+by the R2 CI pattern cascade (112 items). Without the CI cascade, this would
+have been a clean 2-3 round PR.
+
+The **single highest-impact change** for future PRs: enforce
+`npm run patterns:check` before pushing review fix commits — eliminates ~80% of
+R2 items.
+
+**Trend: Improving.** Round count: #379(11) → #382(3) → #383(8) → **#384(4)**.
+Per-round throughput improving: #383 = 35 items/round, #384 = 49 items/round.
+Rejection rate dropped from 32% (#383) to 9% (#384). Propagation impact
+declining: ~4 rounds (#383) → ~0.5 (#384).
+
+---
+
 ### PR #379 Retrospective (2026-02-20)
 
 #### Review Cycle Summary
