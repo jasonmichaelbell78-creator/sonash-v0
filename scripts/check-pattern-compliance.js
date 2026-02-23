@@ -158,7 +158,7 @@ function saveWarnedFiles(warned) {
     // Cap entries at MAX_WARNED_ENTRIES, dropping oldest by timestamp
     const keys = Object.keys(warned);
     if (keys.length > MAX_WARNED_ENTRIES) {
-      const sorted = keys.sort((a, b) => {
+      const sorted = [...keys].sort((a, b) => {
         const ta = new Date(warned[a]).getTime() || 0;
         const tb = new Date(warned[b]).getTime() || 0;
         return ta - tb;
@@ -1390,6 +1390,145 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:lib|app|components|pages)\//,
   },
+
+  // Section-scoped regex parsing (4x recurrence)
+  // Anti-pattern: matching markdown table rows on full file content instead of extracting the section first
+  // Detects: readFileSync() for .md files followed by table-row regex on full content variable
+  {
+    id: "unsection-scoped-table-regex",
+    severity: "medium",
+    testFn: (content) => {
+      // Look for reading .md files and then applying table row regex to full content
+      const lines = content.split("\n");
+      const matches = [];
+      let lastMdReadLine = -1;
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Track where a .md read happens; keep a bounded "active window"
+        if (line.includes("readFileSync") && /\.md/i.test(line)) {
+          lastMdReadLine = i;
+        }
+        // Only consider table-regex usage within 40 lines of the .md read
+        const withinReadWindow = lastMdReadLine >= 0 && i - lastMdReadLine <= 40;
+        // Detect table-row regex applied broadly (not section-scoped)
+        // Checks for .match(/...|.../gm) or .matchAll(/...|.../gm) patterns with pipe chars
+        const hasMatchCall = line.includes(".match") || line.includes(".matchAll");
+        const hasPipeRegex = hasMatchCall && line.includes(String.raw`\|`);
+        if (withinReadWindow && hasPipeRegex) {
+          // Check if there's a section extraction nearby (within 20 lines before)
+          const start = Math.max(0, i - 20);
+          const context = lines.slice(start, i).join("\n");
+          if (
+            !/extractSection|section\s*=|\.split\s*\(\s*['"`]#{1,3}\s|between.*heading/i.test(
+              context
+            )
+          ) {
+            matches.push({ line: i + 1, col: 0, match: line.trim().slice(0, 120) });
+          }
+        }
+      }
+      return matches;
+    },
+    message: "Table-row regex on full markdown content - may match rows from wrong section",
+    fix: "Extract the target section first with extractSection() or split by headings before matching table rows",
+    review: "CODE_PATTERNS.md JS/TS - Section-scoped regex parsing, Review #263 (4x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // User context in audit logs (4x recurrence)
+  // Anti-pattern: writing security/audit log entries without user/session context
+  {
+    id: "audit-log-missing-context",
+    severity: "medium",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Detect security/audit log writes
+        if (
+          /(?:SECURITY|AUDIT|security.event|audit.log|securityLog|auditLog)\b/.test(line) &&
+          /(?:appendFileSync|writeFileSync|console\.(?:log|warn|error)|\.push\s*\(|\.write\s*\()/.test(
+            line
+          )
+        ) {
+          // Check if user context is included nearby (within 5 lines)
+          const start = Math.max(0, i - 5);
+          const end = Math.min(lines.length, i + 5);
+          const context = lines.slice(start, end).join("\n");
+          if (!/USER_CONTEXT|SESSION_ID|userId|sessionId|user_id|session_id/.test(context)) {
+            matches.push({ line: i + 1, col: 0 });
+          }
+        }
+      }
+      return matches;
+    },
+    message: "Security/audit log entry missing user context (USER_CONTEXT, SESSION_ID)",
+    fix: "Include USER_CONTEXT and SESSION_ID in all security log entries for accountability",
+    review: "CODE_PATTERNS.md JS/TS - User context in audit logs, Review #198 (4x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // Logical OR on numeric fields that could be 0 (PR #384 R2 recurrence)
+  // Anti-pattern: count || total || 0 treats legitimate 0 as falsy
+  {
+    id: "logical-or-numeric-fallback",
+    severity: "medium",
+    testFn: (() => {
+      // CC-extracted constants and helper (Review #370 R2 — CC 24→~8)
+      const numericNames = ["count", "total", "length", "size", "items", "score", "round", "index"];
+      const fallbackValues = ["0", "null", "undefined", '"', "'", "`"];
+      function isWordChar(ch) {
+        return (
+          (ch >= "a" && ch <= "z") ||
+          (ch >= "A" && ch <= "Z") ||
+          (ch >= "0" && ch <= "9") ||
+          ch === "_"
+        );
+      }
+      function findNumericOrFallback(line) {
+        for (const name of numericNames) {
+          const idx = line.indexOf(name);
+          if (idx === -1) continue;
+          if (idx > 0 && isWordChar(line[idx - 1])) continue;
+          const afterIdx = idx + name.length;
+          if (afterIdx < line.length && isWordChar(line[afterIdx])) continue;
+          const orIdx = line.indexOf("||", afterIdx);
+          if (orIdx === -1) continue;
+          const afterOr = line.slice(orIdx + 2).trimStart();
+          if (fallbackValues.some((v) => afterOr.startsWith(v))) {
+            return idx;
+          }
+        }
+        return -1;
+      }
+      return (content) => {
+        const lines = content.split("\n");
+        const matches = [];
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const trimmed = line.trimStart();
+          if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*"))
+            continue;
+          if (!line.includes("||")) continue;
+          const col = findNumericOrFallback(line);
+          if (col >= 0) matches.push({ line: i + 1, col, match: line.trim().slice(0, 120) });
+        }
+        return matches;
+      };
+    })(),
+    message:
+      "Logical OR (||) on numeric field treats 0 as falsy — use nullish coalescing (??) instead",
+    fix: "Replace `value || 0` with `value ?? 0` for numeric fields that may legitimately be 0",
+    review: "CODE_PATTERNS.md JS/TS - || vs ?? for zero-values, PR #384 R2",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
 ];
 
 /**
@@ -1551,7 +1690,7 @@ function detectFileType(filePath, content, ext) {
 function shouldSkipPattern(antiPattern, ext, normalizedPath) {
   if (!antiPattern.fileTypes.includes(ext)) return true;
   if (antiPattern.pathFilter && !antiPattern.pathFilter.test(normalizedPath)) return true;
-  if (antiPattern.pathExclude && antiPattern.pathExclude.test(normalizedPath)) return true;
+  if (antiPattern.pathExclude?.test(normalizedPath)) return true;
   // Support array-based exclusions for S5843 regex complexity compliance
   if (antiPattern.pathExcludeList) {
     const fileName = normalizedPath.split("/").pop() || "";
@@ -1603,7 +1742,7 @@ function findPatternMatches(antiPattern, content, filePath) {
     if (match) {
       // Review #189: Reset exclude.lastIndex before test to ensure consistent behavior
       if (exclude) exclude.lastIndex = 0;
-      if (!(exclude && exclude.test(match[0]))) {
+      if (!exclude?.test(match[0])) {
         violations.push(buildViolation(antiPattern, match, content, filePath));
       }
     }
@@ -1615,7 +1754,7 @@ function findPatternMatches(antiPattern, content, filePath) {
   while ((match = pattern.exec(content)) !== null) {
     // Review #189: Reset exclude.lastIndex before each test
     if (exclude) exclude.lastIndex = 0;
-    if (exclude && exclude.test(match[0])) continue;
+    if (exclude?.test(match[0])) continue;
     violations.push(buildViolation(antiPattern, match, content, filePath));
 
     // Prevent infinite loops on zero-length matches

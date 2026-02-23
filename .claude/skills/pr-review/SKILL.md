@@ -92,6 +92,27 @@ If new large files exist:
 2. Fix issues found
 3. THEN push to CI
 
+### Local Pattern Compliance Check (NEW — PR #384 Retro)
+
+**Before every review fix push**, run pattern compliance locally:
+
+```bash
+npm run patterns:check -- --staged
+```
+
+PR #384 R2 had 112 CI blocking pattern violations because R1's code wasn't
+tested against the pattern checker before push. This single check would have
+eliminated 57% of the PR's total items. The pre-commit hook runs this
+automatically, but if commits are made with `SKIP_CHECKS` or the pattern rules
+were updated since the original commit, violations slip through.
+
+**Rule:** After making review fix changes, ALWAYS verify locally before pushing:
+
+1. `npm run patterns:check` on all modified files
+2. If any violations, fix them in the same commit
+3. This is especially critical when the PR modified
+   `check-pattern-compliance.js` itself (new rules may flag pre-existing code)
+
 ### Security Pattern Sweep (NEW — PR #366 Retro)
 
 **Before the first push**, if the PR introduces security-adjacent code (write
@@ -735,6 +756,7 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 | Version | Date       | Description                                                                                                                |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check (Step 0.5) — mandatory pre-push patterns:check. Source: PR #384 retro.                  |
 | 2.9     | 2026-02-22 | Add dual-file JSONL write check (Step 0.5), dual-file propagation pattern (Step 5.6). Source: PR #383 retro.               |
 | 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks (Step 0.5), strengthen propagation (Step 5.6). Source: PR #382 retro. |
 | 2.7     | 2026-02-20 | Add patterns:check to Step 5.4, propagation enforcement escalation in Step 5.6. Source: PR #379 retro.                     |

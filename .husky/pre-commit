@@ -84,8 +84,9 @@ echo "🔍 Running pre-commit checks..."
 # Pattern compliance runs sequentially after (it's fast, ~0.1s).
 
 ESLINT_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
+add_exit_trap 'rm -f "$ESLINT_TMPFILE" 2>/dev/null'
 TEST_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
-add_exit_trap 'rm -f "$ESLINT_TMPFILE" "$TEST_TMPFILE" 2>/dev/null'
+add_exit_trap 'rm -f "$TEST_TMPFILE" 2>/dev/null'
 
 # --- Start ESLint in background ---
 echo "  ▶ Running ESLint..."

@@ -37,7 +37,8 @@
     "post-read-handler.js",
     "check-triggers.js",
     "commit-failure-reporter.js",
-    "track-agent-invocation.js"
+    "track-agent-invocation.js",
+    "seed-commit-log.js"
   ],
   "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
@@ -59,7 +60,8 @@
     "rotate-state.js",
     "user-prompt-handler.js",
     "post-read-handler.js",
-    "security-helpers.js"
+    "security-helpers.js",
+    "seed-commit-log.js"
   ],
   "writefile-missing-encoding": [
     "alerts-reminder.js",
@@ -91,6 +93,7 @@
     "encrypt-secrets.js",
     "archive-doc.js",
     "run-alerts.js",
-    "post-read-handler.js"
+    "post-read-handler.js",
+    "seed-commit-log.js"
   ]
 }

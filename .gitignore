@@ -60,6 +60,9 @@ scripts/suggested-patterns.json
 .claude/state/warned-files.json
 .claude/state/session-notes.json
 .claude/state/handoff.json
+.claude/state/consolidation.json
+.claude/state/alerts-baseline.json
+.claude/state/agent-invocations.jsonl
 
 # SonarQube/SonarCloud analysis data (large generated files - use CI artifacts instead)
 docs/analysis/sonarqube-issues-*.json

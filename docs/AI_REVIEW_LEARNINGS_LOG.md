@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.48 **Created:** 2026-01-02 **Last Updated:** 2026-02-22
+**Document Version:** 17.50 **Created:** 2026-01-02 **Last Updated:** 2026-02-23
 
 ## Purpose
 
@@ -31,6 +31,9 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.50    | 2026-02-23               | Review #371: PR #386 R2 — S5852 string parsing, CC reduction (main→3 funcs, testFn IIFE), concurrency-safe tmp, match snippets. 6 fixed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 17.49    | 2026-02-23               | Review #370: PR #386 R1 — SonarCloud regex complexity (2 testFn conversions), seed-commit-log.js hardening (8 fixes), optional chaining (3), CI Prettier fix. 17 fixed, 1 rejected (FP), 1 architectural.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 17.48    | 2026-02-23               | PR #384 Retrospective: 4 rounds, 197 items, ~2.5 avoidable rounds. CI pattern compliance cascade (R1→R2), CC progressive reduction (R1→R3→R4).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 17.46    | 2026-02-20               | PR #379 Retrospective: 11 rounds across 2 branches, ~190 raw suggestions (106 fixed, ~61 rejected, 4 deferred). 4 ping-pong chains: evidence algorithm hardening (R2-R7, 4 avoidable), protocol non-compliance cascade (R8-R10, 2 avoidable), CRLF propagation miss (R9-R10, 1 avoidable), linter self-flagging (R10-R11, 1 avoidable). ~73% avoidable rounds. New Pattern 8: Incremental Algorithm Hardening.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 17.45    | 2026-02-20               | Reviews #357-#361: PR #379 R3-R7 on cherry-pick branch. Protocol compliance restored from R10 onward.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 17.44    | 2026-02-20               | Reviews #357-#360 (retroactive): PR #379 R3-R6 on cherry-pick branch. Process failures documented.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -333,10 +336,19 @@ Consolidation state is managed automatically via JSONL files (Session #156):
 No manual counter updates needed. The system auto-consolidates when 10+ reviews
 accumulate.
 
-> **Note:** Consolidations #12-#22 ran automatically and are recorded in
+> **Note:** Consolidations #12-#23 ran automatically and are recorded in
 > `.claude/state/consolidation.json`. Detailed patterns were not captured in
 > markdown during this period.
 
+<details>
+<summary>Previous Consolidation (#24)</summary>
+
+- **Date:** 2026-02-23
+- **Reviews consolidated:** #360-#369
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
 <details>
 <summary>Previous Consolidation (#11)</summary>
 
@@ -439,8 +451,8 @@ accumulate.
 
 | Metric         | Value          | Threshold | Action if Exceeded                       |
 | -------------- | -------------- | --------- | ---------------------------------------- |
-| Main log lines | ~2549          | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 13 (#354-#366) | 20        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~2530          | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 14 (#358-#371) | 20        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -562,6 +574,171 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### PR #384 Retrospective (2026-02-23)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Rounds         | 4 (R1–R4, all 2026-02-22)                            |
+| Total items    | 197                                                  |
+| Fixed          | 171                                                  |
+| Deferred       | 8 (compact-restore.js path containment, CC items)    |
+| Rejected       | 9 + 9 acknowledged                                   |
+| Review sources | SonarCloud, Qodo Compliance, Qodo PR Suggestions, CI |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source             | Items   | Fixed   | Rejected | Key Patterns                                                                |
+| --------- | ---------- | ------------------ | ------- | ------- | -------- | --------------------------------------------------------------------------- |
+| R1        | 2026-02-22 | SonarCloud+Qodo+CI | 28      | 19      | 0        | CC extraction creates CC, FP double-counting, division by zero, [Cc]+i      |
+| R2        | 2026-02-22 | CI+SonarCloud+Qodo | 139     | 125     | 7        | 112 CI violations, Array.isArray FPs, happy-path regex flaw, `\|\|` vs `??` |
+| R3        | 2026-02-22 | SonarCloud+CI+Qodo | 18      | 16      | 1        | CC reduction (3 funcs), nested ternary, atomic writes, TOCTOU regex         |
+| R4        | 2026-02-22 | CI+SonarCloud+Qodo | 12      | 11      | 1        | Security excludes for tests, CC extract, EXDEV fallback, CRLF/BOM           |
+| **Total** |            |                    | **197** | **171** | **9**    |                                                                             |
+
+#### Ping-Pong Chains
+
+##### Chain 1: CI Pattern Compliance Cascade (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                            | Files Affected                                           | Root Cause                                 |
+| ----- | ------------------------------------------------------------------------ | -------------------------------------------------------- | ------------------------------------------ |
+| R1    | Fixed 19 SonarCloud/Qodo items across 6 files, introduced new code       | analyze-placement.js, place-unassigned-debt.js +4        | New code for 9-domain audit feature        |
+| R2    | CI pre-push found 112 blocking pattern violations in R1's modified files | Same files + 11 more (ecosystem checkers, consolidation) | R1 code not tested against pattern checker |
+
+**Avoidable rounds:** 1 (R2's 112 CI violations). Running
+`npm run patterns:check` before pushing R1 would have caught all 112 violations
+locally.
+
+**Prevention:** Add `npm run patterns:check --staged` to the R1 fix workflow.
+
+##### Chain 2: CC Progressive Reduction (R1→R3→R4 = 3 rounds)
+
+| Round | What Happened                                                                         | Files Affected                                 | Root Cause                            |
+| ----- | ------------------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------- |
+| R1    | CC extraction in check-pattern-compliance.js; noted "CC extraction creates new CC"    | check-pattern-compliance.js                    | Pattern identified but not swept      |
+| R3    | CC >15 in 3 functions: simplifyPlacements (19), loadSprintFiles (20), placeItems (24) | analyze-placement.js, place-unassigned-debt.js | SonarCloud flagged on R2 push         |
+| R4    | CC in placeGroupItems extracted from placeItemsIntoSprints (21→~10)                   | place-unassigned-debt.js                       | R3 extraction created new CC function |
+
+**Avoidable rounds:** 1 (R4). R3 should have re-checked all extracted helpers
+per the "CC extraction creates new CC" pattern identified in R1.
+
+**Prevention:** After extracting helpers for CC reduction, always re-check the
+ENTIRE file with `npx eslint --rule 'complexity: ["error", 15]'`.
+
+##### Chain 3: Persistent Script Files (R1→R2→R3→R4 = 4 rounds)
+
+| Round | What Happened                            | Files Affected                                  | Root Cause                     |
+| ----- | ---------------------------------------- | ----------------------------------------------- | ------------------------------ |
+| R1    | Initial SonarCloud/Qodo fixes            | analyze-placement.js, place-unassigned-debt.js  | Original feature code          |
+| R2    | CI pattern violations + Qodo suggestions | Same + archive-reviews.js, run-consolidation.js | Pattern checker on R1 code     |
+| R3    | SonarCloud CC + atomic write fixes       | Same + inline-patterns.js                       | R2 modifications flagged by SC |
+| R4    | EXDEV guard, scoped regex, BOM/CRLF      | Same + process-compliance.js, security-check.js | Incremental hardening          |
+
+**Avoidable rounds:** 0.5 (each round after R2 had diminishing but genuine new
+findings).
+
+**Total avoidable rounds across all chains: ~2.5 out of 4 (~62.5% partially
+avoidable)**
+
+#### Rejection Analysis
+
+| Category                          | Count | Rounds | Examples                                                         |
+| --------------------------------- | ----- | ------ | ---------------------------------------------------------------- |
+| Qodo acknowledged (not rejected)  | 9     | R1     | Qodo suggestions acknowledged as valid but not blocking          |
+| CI pattern false positives        | ~5    | R2     | Array.isArray checker flagging files with existing guards        |
+| Qodo compliance (offline scripts) | ~2    | R2-R3  | "Missing audit trails" for CLI tools                             |
+| Intentional test data             | 1     | R3-R4  | SEC-001/002/003/010 on pattern-compliance.test.js (intentional)  |
+| Regex false negative              | 1     | R4     | Qodo suggested removing `\\)` from TOCTOU regex — would break it |
+
+**Rejection accuracy:** 9/9 explicit rejections were correct (100%).
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                             | Rounds   | Already Automated?      | Recommended Action                                                  | Est. Effort |
+| ----------------------------------- | -------- | ----------------------- | ------------------------------------------------------------------- | ----------- |
+| CI pattern violations from new code | R2       | YES (pre-commit hook)   | Enforce `--staged` check before pushing review fixes                | ~5 min      |
+| CC extraction creates new CC        | R1,R3,R4 | YES (pre-commit hook)   | Add "re-check file" reminder to CC fix template                     | ~5 min      |
+| happy-path-only regex flawed        | R2       | YES (replaced w/testFn) | Already fixed in this PR                                            | Done        |
+| `\|\|` vs `??` for zero-values      | R2       | No                      | Add pattern to check-pattern-compliance.js for numeric `\|\|` usage | ~20 min     |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                                 | Implemented? | Impact on #384                                   |
+| ------- | -------------------------------------------------- | ------------ | ------------------------------------------------ |
+| PR #383 | FIX_TEMPLATES #36 (dual-JSONL write with rollback) | **YES**      | Not directly relevant (no dual-JSONL writes)     |
+| PR #383 | pr-review Step 0.5 dual-file write grep            | **YES**      | Not triggered                                    |
+| PR #383 | check-pattern-compliance symlink guard rule        | **NOT DONE** | No impact (no new write paths in #384)           |
+| PR #383 | Propagation protocol enforcement                   | **NOT DONE** | ~0.5 avoidable round (R3→R4 CRLF)                |
+| PR #382 | scripts/debt/ Qodo compliance exclusion            | **NOT DONE** | ~2 rejected compliance items in R2               |
+| PR #382 | CODE_PATTERNS severity mapping audit pattern       | **NOT DONE** | No impact (no severity mapping in #384)          |
+| PR #379 | Algorithm Design Pre-Check (Step 0.5)              | **YES**      | Not triggered (no new algorithms)                |
+| PR #379 | Propagation enforcement                            | **NOT DONE** | **7th time recommended** — ~0.5 avoidable rounds |
+
+**Total avoidable rounds from unimplemented retro actions: ~1**
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Avoidable Rounds | Rejections | Key Issue                     |
+| -------- | ------ | ----------- | ---------------- | ---------- | ----------------------------- |
+| #371     | 2      | 45          | ~0               | 7          | CC extraction + S5852         |
+| #374     | 5      | 40          | ~2               | 5          | Path containment              |
+| #379     | 11     | ~119        | ~8               | ~61        | Evidence algorithm + protocol |
+| #382     | 3      | 76          | ~1               | 13         | Severity/dedup incremental    |
+| #383     | 8      | ~282        | ~4               | ~90        | Symlink/atomic/catch          |
+| **#384** | **4**  | **197**     | **~2.5**         | **~18**    | **CI pattern cascade + CC**   |
+
+**Persistent cross-PR patterns:**
+
+| Pattern                         | PRs Affected | Times Recommended | Status                                     | Required Action                                                      |
+| ------------------------------- | ------------ | ----------------- | ------------------------------------------ | -------------------------------------------------------------------- |
+| CC lint rule                    | #366-#371    | 5x                | **RESOLVED** (pre-commit error since #371) | None                                                                 |
+| Qodo suppression                | #369-#371    | 3x                | **RESOLVED** (pr-agent.toml)               | Minor gap: `scripts/debt/` still not excluded                        |
+| Propagation check               | #366-#384    | **7x**            | Documented but STILL missed                | **BLOCKING — 7x recommended, still causing avoidable rounds**        |
+| `scripts/debt/` compliance excl | #382-#384    | 2x                | **NOT DONE**                               | Add path exclusion to pr-agent.toml (~5 min)                         |
+| Local pattern check before push | #384 (new)   | 1x                | Not enforced                               | Pre-push or pre-commit should run `patterns:check` on modified files |
+
+#### Skills/Templates to Update
+
+1. **`.qodo/pr-agent.toml`:** Add `scripts/debt/` to compliance exclusion paths
+   — 2x recommended, ~4+ rejected items per PR. (~5 min — do now)
+2. **FIX_TEMPLATES.md:** Add reminder to CC extraction template: "After
+   extracting helpers, re-check ENTIRE file for CC" (~5 min — do now)
+3. **pr-retro SKILL.md:** No new known churn patterns needed. PR #384's issues
+   are variants of existing patterns (CC cascade = Pattern 1, CI violations =
+   Pattern 5 propagation).
+
+#### Process Improvements
+
+1. **Run pattern checker before pushing review fixes** — 112 of 197 items (57%)
+   were CI pattern violations caught by `npm run patterns:check`. Running
+   locally before push would have eliminated the entire R2 CI block. Evidence:
+   R2.
+2. **CC re-check after extraction is not optional** — R1 documented "CC
+   extraction creates new CC" then R3/R4 had exactly this. The learning was
+   captured but not applied within the same PR. Evidence: R1→R3→R4.
+3. **Propagation enforcement remains the top systemic issue** — This is the
+   **7th PR retro** recommending it. Impact declining (~0.5 vs 2+ rounds in
+   earlier PRs) but still persistent. Evidence: R3→R4 CRLF/BOM.
+
+#### Verdict
+
+PR #384 had a **moderately efficient review cycle** — 4 rounds with 197 items,
+171 fixed. ~2.5 of 4 rounds were partially avoidable (~62.5%), driven primarily
+by the R2 CI pattern cascade (112 items). Without the CI cascade, this would
+have been a clean 2-3 round PR.
+
+The **single highest-impact change** for future PRs: enforce
+`npm run patterns:check` before pushing review fix commits — eliminates ~80% of
+R2 items.
+
+**Trend: Improving.** Round count: #379(11) → #382(3) → #383(8) → **#384(4)**.
+Per-round throughput improving: #383 = 35 items/round, #384 = 49 items/round.
+Rejection rate dropped from 32% (#383) to 9% (#384). Propagation impact
+declining: ~4 rounds (#383) → ~0.5 (#384).
+
+---
 
 ### PR #379 Retrospective (2026-02-20)
 
@@ -1960,6 +2137,61 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #371: PR #386 R2 — SonarCloud S5852 + CC Reduction + Qodo Hardening (2026-02-23)
+
+**Source**: SonarCloud (1 security hotspot + 2 CC critical) + Qodo code
+suggestions (2 items) + SonarCloud minor (1 String.raw) **PR**: #386 R2
+**Items**: 6 total — 6 fixed, 0 deferred, 0 rejected
+
+**Key Patterns:**
+
+- S5852 two-strikes: replaced `/(\d+)\s*$/` regex with backward digit walk (pure
+  string parsing, no regex at all in getSessionCounter)
+- CC reduction: extracted `parseCommitLines` and `writeEntries` from `main()`
+  (CC 16→~6)
+- CC reduction: wrapped `logical-or-numeric-fallback` testFn in IIFE with
+  extracted `isWordChar` and `findNumericOrFallback` helpers (CC 24→~8)
+- Concurrency-safe tmp: `COMMIT_LOG.tmp` → `COMMIT_LOG.tmp.${pid}.${Date.now()}`
+- Fallback unlinkSync guard: added try/catch around cross-drive cleanup
+- String.raw for backslash: `"\\|"` → `String.raw\`\\|\``
+- Match snippets: added `match: line.trim().slice(0, 120)` to both testFn
+  results for better violation output
+
+---
+
+#### Review #370: PR #386 R1 — SonarCloud + Qodo + Gemini + CI (2026-02-23)
+
+**Source**: SonarCloud (6 code smells + 1 security hotspot) + Qodo compliance (3
+items) + Qodo code suggestions (8 items) + Gemini (1 item) + CI Prettier failure
+(1 item) **PR**: #386 R1 **Items**: 19 total — 17 fixed, 0 deferred, 1 rejected
+(false positive), 1 architectural (flagged to user)
+
+**Key Patterns:**
+
+- SonarCloud S5852 two-strikes: replaced 2 complex regexes (complexity 31
+  and 26) with string-parsing testFn functions in check-pattern-compliance.js
+- Regex DoS in seed-commit-log.js: replaced complex session counter regex with
+  line-by-line string parsing
+- Optional chaining: 3 instances of `x && x.test()` → `x?.test()` in
+  check-pattern-compliance.js
+- Array mutation: `keys.sort()` → `[...keys].sort()` for non-mutating sort
+- Git log parsing: `parts.length < 4` → `< 6` to match 6-field format
+- Atomic write hardening: added try/catch cleanup, rmSync before renameSync,
+  copy/unlink fallback for cross-drive
+- Repo root resolution: `process.cwd()` → `git rev-parse --show-toplevel`
+- Sticky boolean false positive: replaced boolean flag with window-based
+  proximity check in testFn
+- Prettier CI fix: quote style in semgrep.yml
+- Verified patterns: added seed-commit-log.js to 3 pathExcludeList entries
+
+**Rejected:** Sensitive content in seeded JSONL — git commit data (author,
+message) is already public in the repo history. No new exposure.
+
+**Architectural (flagged to user):** ESLint migration for
+check-pattern-compliance.js — significant effort, tracked as future tech debt.
+
+---
+
 #### Review #369: CI + SonarCloud + Qodo R4 — Security Excludes, CC Extract, EXDEV Guard (2026-02-22)
 
 **Source**: CI failure (SEC-001/SEC-010 blocking) + SonarCloud (2 items) + Qodo
@@ -2382,135 +2614,6 @@ failure occurred in Review #357.
 creates more work in follow-up rounds because categorization and learning
 capture are deferred but still required. The 9-step protocol exists because
 every shortcut eventually costs more than the ceremony.
-
----
-
-#### Review #357: PR #379 R3 — SonarCloud + Qodo + Gemini Mixed Review (2026-02-20)
-
-**Source:** SonarCloud + Qodo + Gemini **PR/Branch:** PR #379 /
-claude/cherry-pick-commits-thZGO **Suggestions:** ~40 total (Critical: 2, Major:
-8, Minor: 15, Trivial: 2, Architectural: ~13) (Fixed: 27, Rejected: ~13)
-
-**Process Failure:** This review was handled WITHOUT invoking the `/pr-review`
-skill. Jumped directly to fixing without proper intake, categorization, or
-learning capture. This entry is retroactive.
-
-**Patterns Identified:**
-
-1. **ReDoS in extract-scattered-debt.js** (CRITICAL): `KEYWORD_RE` used
-   `\b(TODO|FIXME|...)(?=[:(\s])` with a lookahead that could backtrack.
-   Replaced with anchored `(?=[:(])` without `\s` alternative.
-2. **Cognitive complexity via monolithic main()** (MAJOR): Both
-   check-backlog-health.js and extract-scattered-debt.js had main() functions
-   with CC >15 due to inline result reporting and file scanning. Extracted
-   `reportResults`, `collectAllFiles`, `scanFile` helpers.
-3. **Block comment detection missing string tracking** (MAJOR): Original
-   `updateBlockCommentState` didn't track string literals, so `/*` inside a
-   string would toggle comment state. Added `quoteChar` tracking with escape
-   handling.
-4. **Widen look-back windows for heuristic checks** (MINOR): Gemini flagged
-   5-line and 10-line windows as too narrow for detecting try-blocks and
-   fallback patterns. Widened to 15 and 20 lines per Gemini suggestion.
-5. **appendFileSync without symlink guard** (MAJOR): state-manager.js guarded
-   writeFileSync but not appendFileSync, leaving a symlink-attack surface. Added
-   `isSafeToWrite` check before append.
-
-**Key Learning:** When a file introduces new functions (like
-`updateBlockCommentState`), the function needs the SAME safety invariants as
-existing functions in the file. String-literal tracking was present in
-`findCommentStart` but absent from the new block-comment functions — a
-propagation failure caught only by external review.
-
----
-
-#### Review #356: Gemini Code Assist R2 — Evidence Canonicalization, TDMS Data Quality (2026-02-19)
-
-**Source:** Gemini Code Assist R2 **PR/Branch:** PR #379 /
-claude/new-session-DQVDk **Suggestions:** 9 unique (after dedup from 15 raw)
-(Fixed: 6, Already tracked: 1, Rejected: 2)
-
-**Patterns Identified:**
-
-1. **Key-order-sensitive JSON.stringify** (MAJOR): `JSON.stringify` produces
-   different strings for `{a:1,b:2}` vs `{b:2,a:1}`. Evidence objects from
-   different audit sources may have identical content but different key order.
-   Added recursive canonicalize function that sorts keys before stringify.
-2. **TDMS data quality: 246 backslash paths** (MINOR): Windows-originated
-   `source_file` paths had backslashes. Fixed in normalize-all.js to prevent
-   future occurrences + one-shot cleanup of existing data.
-3. **Absolute home-dir paths leaked into TDMS** (MINOR): 50 `file` fields and 1
-   intake-log `input_file` contained `/home/user/sonash-v0/...`. Fixed in
-   normalize-all.js with repo-root anchor stripping.
-4. **Public keys falsely flagged as credentials** (REJECTED): `NEXT_PUBLIC_*`
-   Sentry DSN and reCAPTCHA site keys are public by design — they're in client
-   bundles. Gemini doesn't distinguish public vs secret keys.
-
-**Key Learning:** TDMS pipeline data quality issues compound — 246 backslash
-paths accumulated silently because the normalize script passed them through.
-Always normalize at ingestion, not just at display. The propagation check
-mindset applies to data pipelines too, not just code patterns.
-
----
-
-#### Review #355: Gemini Code Assist — EXIT Trap, Evidence Dedup, mktemp Guards (2026-02-19)
-
-**Source:** Gemini Code Assist **PR/Branch:** PR #379 / claude/new-session-DQVDk
-**Suggestions:** 4 total (Fixed: 3, Deferred: 1)
-
-**Patterns Identified:**
-
-1. **Silent hook output after POSIX migration** (MAJOR): Replacing
-   `exec > >(tee ...)` with `exec > file` makes failures invisible to
-   developers. Added EXIT trap that dumps log to stderr on non-zero exit.
-2. **Object dedup by reference vs value** (MINOR): `Array.includes()` uses
-   reference equality for objects. Evidence arrays in MASTER_DEBT.jsonl had 27
-   items with duplicated object entries because dedup-multi-pass.js used
-   `.includes()` instead of `JSON.stringify` comparison. Root cause fixed.
-3. **mktemp + mv error handling** (MINOR): POSIX mktemp + mv rename pattern
-   should guard both commands to prevent orphaned temp files on failure.
-
-**Key Learning:** When replacing bash-isms with POSIX equivalents, audit the DX
-impact — POSIX compatibility shouldn't come at the cost of debuggability. The
-EXIT trap pattern restores the tee-like behavior for the failure case.
-
----
-
-#### Review #354: SonarCloud + Qodo R2 — CC Reduction, DoS Caps, Error Sanitization (2026-02-18)
-
-**Source:** SonarCloud (2 issues) + Qodo Incremental (4 suggestions) + Qodo
-Compliance (2 flags) **PR/Branch:** claude/new-session-KE2kF **Suggestions:** 8
-total, 6 unique after dedup (Fixed: 5, Rejected: 1)
-
-**Patterns:**
-
-1. **Cognitive Complexity reduction** — `extractReviewIds` CC 22→~8. Extracted
-   `parseHeadingIds()` and `parseTableIds()` helpers. Also adopted Set-based
-   dedup (`[...new Set([...headings.ids, ...table.ids])]`) replacing O(n) array
-   `includes()` checks.
-2. **DoS caps** — Range expansion in `parseTableIds` capped at 5000
-   (`MAX_RANGE_EXPANSION`). Gap scan loop capped at 10,000 (`MAX_GAP_SCAN_SPAN`)
-   with early exit + `process.exitCode = 2`.
-3. **Error log sanitization** — All 4 catch blocks now use
-   `err instanceof Error ? err.message : String(err)` with
-   `.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")` to prevent leaking absolute
-   paths in CI logs. Addresses Qodo Secure Error Handling + Secure Logging
-   compliance flags.
-4. **Nested ternary extraction** — SonarCloud S3358 at L248: replaced
-   `fmt === "table" ? "..." : fmt === "mixed" ? "..." : ""` with lookup object
-   `FMT_LABELS[fmt] || ""`.
-
-**Rejected:**
-
-- JSONL ordering note — `reviews.jsonl` is managed by the sync tool
-  (`npm run reviews:sync`), not this script. Ordering is a sync concern.
-
-**Key Learnings:**
-
-- Extracting regex-parsing loops into pure functions is the most effective CC
-  reduction technique for file-scanning scripts
-- Set-based dedup at extraction time produces cleaner inventory counts but
-  removes within-file duplicate detection (acceptable trade-off)
-- DoS caps should be applied to any loop driven by parsed numeric ranges
 
 ---
 
