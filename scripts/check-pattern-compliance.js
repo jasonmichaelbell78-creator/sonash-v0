@@ -1473,6 +1473,23 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)scripts\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
+
+  // Logical OR on numeric fields that could be 0 (PR #384 R2 recurrence)
+  // Anti-pattern: count || total || 0 treats legitimate 0 as falsy
+  {
+    id: "logical-or-numeric-fallback",
+    severity: "medium",
+    pattern:
+      /\b(?:count|total|length|size|items|score|round|index)\b\s*\|\|\s*(?:\b(?:count|total|length|size|items|score|round|index)\b\s*\|\|\s*)*(?:0|null|undefined|['"`])/g,
+    message:
+      "Logical OR (||) on numeric field treats 0 as falsy — use nullish coalescing (??) instead",
+    fix: "Replace `value || 0` with `value ?? 0` for numeric fields that may legitimately be 0",
+    review: "CODE_PATTERNS.md JS/TS - || vs ?? for zero-values, PR #384 R2",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    exclude: /\/\/|\/\*|\* /,
+  },
 ];
 
 /**

@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-23 **Active Documents:** 296 **Archived Documents:** 103
+**Generated:** 2026-02-23 **Active Documents:** 295 **Archived Documents:** 103
 
 ---
 
@@ -33,7 +33,7 @@ orphaned documents.
 
 | Tier   | Count | Description       |
 | ------ | ----- | ----------------- |
-| Tier 1 | 5     | Canonical Living  |
+| Tier 1 | 4     | Canonical Living  |
 | Tier 2 | 12    | Foundation        |
 | Tier 3 | 180   | Planning & Active |
 | Tier 4 | 99    | Reference         |
@@ -50,8 +50,8 @@ orphaned documents.
 | analysis                       | 15    |
 | .claude > agents > global      | 11    |
 | Audit Templates                | 11    |
-| Root Documents                 | 10    |
 | .claude > plans                | 9     |
+| Root Documents                 | 9     |
 | Templates                      | 7     |
 | Agent Documentation            | 6     |
 | .claude                        | 5     |
@@ -78,13 +78,12 @@ orphaned documents.
 
 _Essential project-level documentation_
 
-| Document                                                                | Description                                                       | References | Last Modified |
-| ----------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [PR #384 Review Round Ping-Pong Analysis](PR_384_PING_PONG_ANALYSIS.md) | PR #384 underwent 4 consecutive review rounds with a \*\*criti... | ↓0 ↑0      | 2026-02-23    |
-| [SoNash - Sober Nashville Recovery Notebook](README.md)                 | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-23    |
-| [SoNash Future Roadmap](ROADMAP_FUTURE.md)                              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-23    |
-| [SoNash Product Roadmap](ROADMAP.md)                                    | <!-- prettier-ignore-start -->                                    | ↓18 ↑19    | 2026-02-23    |
-| [SoNash Roadmap Log](ROADMAP_LOG.md)                                    | -                                                                 | ↓4 ↑6      | 2026-02-23    |
+| Document                                                | Description                                                      | References | Last Modified |
+| ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
+| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15     | 2026-02-23    |
+| [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-23    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑19    | 2026-02-23    |
+| [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-02-23    |
 
 ### Core Documentation (Tier 2)
 
@@ -644,7 +643,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**203 orphaned documents:**
+**202 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [Find Skills](.agents/skills/find-skills/SKILL.md)
@@ -800,7 +799,6 @@ Documents with no inbound links (not referenced by any other document):
 - [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)
 - [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md)
 - [pull request template](.github/pull_request_template.md)
-- [PR #384 Review Round Ping-Pong Analysis](PR_384_PING_PONG_ANALYSIS.md)
 - [SoNash - Sober Nashville Recovery Notebook](README.md)
 - [ROADMAP Full Analysis Summary](analysis/FULL_ANALYSIS_SUMMARY.md)
 - [ROADMAP Deep Analysis - Integration Summary](analysis/INTEGRATION_SUMMARY.md)
@@ -1148,13 +1146,12 @@ Documents with no inbound links (not referenced by any other document):
 | 287 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md)                                                                                                       | \[Workflow/Reference Name\]                                        | 3    | -                                                                               |
 | 288 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md)                                                                                                                                               | Testing Plan                                                       | 3    | Active **Last Updated:** 2026-01-20                                             |
 | 289 | [docs/TRIGGERS.md](docs/TRIGGERS.md)                                                                                                                                                       | TRIGGERS.md - Automation &amp; Enforcement Reference               | 4    | DRAFT \| ACTIVE \| DEPRECATED                                                   |
-| 290 | [PR_384_PING_PONG_ANALYSIS.md](PR_384_PING_PONG_ANALYSIS.md)                                                                                                                               | PR #384 Review Round Ping-Pong Analysis                            | 1    | -                                                                               |
-| 291 | [README.md](README.md)                                                                                                                                                                     | SoNash - Sober Nashville Recovery Notebook                         | 1    | ACTIVE **Last Updated:** 2026-01-03                                             |
-| 292 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                                                     | SoNash Future Roadmap                                              | 1    | ACTIVE                                                                          |
-| 293 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                                                           | SoNash Roadmap Log                                                 | 1    | ACTIVE \(append-only archive\) \*\*Last                                         |
-| 294 | [ROADMAP.md](ROADMAP.md)                                                                                                                                                                   | SoNash Product Roadmap                                             | 1    | ACTIVE                                                                          |
-| 295 | [scripts/README.md](scripts/README.md)                                                                                                                                                     | Scripts Reference                                                  | 4    | -                                                                               |
-| 296 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                                                   | Session Context                                                    | 4    | -                                                                               |
+| 290 | [README.md](README.md)                                                                                                                                                                     | SoNash - Sober Nashville Recovery Notebook                         | 1    | ACTIVE **Last Updated:** 2026-01-03                                             |
+| 291 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                                                     | SoNash Future Roadmap                                              | 1    | ACTIVE                                                                          |
+| 292 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                                                           | SoNash Roadmap Log                                                 | 1    | ACTIVE \(append-only archive\) \*\*Last                                         |
+| 293 | [ROADMAP.md](ROADMAP.md)                                                                                                                                                                   | SoNash Product Roadmap                                             | 1    | ACTIVE                                                                          |
+| 294 | [scripts/README.md](scripts/README.md)                                                                                                                                                     | Scripts Reference                                                  | 4    | -                                                                               |
+| 295 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                                                   | Session Context                                                    | 4    | -                                                                               |
 
 </details>
 
