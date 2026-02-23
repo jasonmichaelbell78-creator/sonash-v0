@@ -440,7 +440,7 @@ accumulate.
 | Metric         | Value          | Threshold | Action if Exceeded                       |
 | -------------- | -------------- | --------- | ---------------------------------------- |
 | Main log lines | ~2549          | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 12 (#354-#365) | 20        | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 13 (#354-#366) | 20        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -1957,6 +1957,33 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #366: PR #384 R1 — SonarCloud + Qodo + CI (2026-02-22)
+
+**Source**: SonarCloud (17 issues) + Qodo (10 suggestions) + CI failure (1)
+**PR**: #384 (comprehensive 9-domain audit + TDMS intake + debt placement)
+**Items**: 28 total — 19 fixed, 0 deferred, 9 Qodo suggestions (acknowledged)
+
+**Patterns Identified**:
+
+- **CC extraction creates new CC**: Extracting helpers from a CC>15 function can
+  produce helpers that themselves exceed CC>15. Always re-check extracted
+  helpers.
+- **FP report double-counting**: When two exclusion mechanisms exist
+  (verified-patterns.json
+  - pathExcludeList), merging counts without tracking source inflates the total.
+    Fix: separate columns per source.
+- **Duplicate code in if/else-if**: `applyGraduation()` had identical blocks for
+  `critical` and `high && !STAGED`. Combine with boolean:
+  `severity === "critical" || (severity === "high" && !STAGED)`.
+- **Regex `[Cc]` with `i` flag**: Case-insensitive flag makes explicit case
+  character classes redundant. SonarCloud flags as "duplicate in character
+  class."
+- **Division by zero in analytics**: Coverage percentage divides by
+  `openItems.length` without checking for zero. Always guard division in
+  reporting code.
 
 ---
 

@@ -76,7 +76,7 @@ describe("Pattern: hardcoded-api-key [critical]", () => {
 
 describe("Pattern: sql-injection-risk [critical]", () => {
   const pattern =
-    /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g;
+    /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*\$\{|'[^']*\+\s*|"[^"]*\+\s*)/g;
 
   test("detects interpolation in queries", () => {
     testPattern(pattern, ["db.query(`SELECT * FROM users WHERE id = ${userId}`)"], []);
@@ -214,7 +214,7 @@ describe("Pattern: trivial-assertions [medium]", () => {
 });
 
 describe("Pattern: ai-todo-markers [medium]", () => {
-  const pattern = /(?:TODO|FIXME)[^A-Z]*(?:AI|[Cc]laude|LLM|GPT)|AI should fix|Claude will/gi;
+  const pattern = /(?:TODO|FIXME)[^A-Z]*(?:AI|claude|LLM|GPT)|AI should fix|Claude will/gi;
 
   test("detects AI-related TODOs", () => {
     testPattern(
@@ -293,7 +293,7 @@ describe("Known FP: JSON.parse inside try/catch", () => {
   test("should NOT trigger when properly wrapped in try/catch", () => {
     // This was the #2 FP pattern (24 exclusions) - now removed from patterns
     // Verify the silent-catch-block pattern doesn't FP on intentional empty catches
-    const silentCatch = /catch\s*\(\s*\w*\s*\)\s*\{\s*\}/g;
+    const silentCatch = /catch\s*\(\w*\)\s*\{\}/g;
     const code = `
 try {
   JSON.parse(data);
@@ -305,7 +305,7 @@ try {
   });
 
   test("SHOULD trigger on truly empty catch", () => {
-    const silentCatch = /catch\s*\(\s*\w*\s*\)\s*\{\s*\}/g;
+    const silentCatch = /catch\s*\(\w*\)\s*\{\}/g;
     const code = "try { JSON.parse(x); } catch (e) {}";
     const re = new RegExp(silentCatch.source, silentCatch.flags);
     expect(re.test(code)).toBe(true);

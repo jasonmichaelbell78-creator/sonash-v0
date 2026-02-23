@@ -415,18 +415,17 @@ function main() {
       const activeMatch = logContent.match(/\| Active reviews \|\s*(\d+)/);
       const headingRegex2 = /^#{2,4}\s+Review\s+#(\d+)/gm;
       let headingCount = 0;
-      let hMatch;
-      while ((hMatch = headingRegex2.exec(logContent)) !== null) {
+      while (headingRegex2.exec(logContent) !== null) {
         headingCount++;
       }
       if (activeMatch) {
         const claimedActive = Number.parseInt(activeMatch[1], 10);
-        if (claimedActive !== headingCount) {
+        if (claimedActive === headingCount) {
+          ok(`Active reviews: ${claimedActive} (matches heading count)`);
+        } else {
           warn(
             `"Active reviews" claims ${claimedActive} but actual heading count is ${headingCount}`
           );
-        } else {
-          ok(`Active reviews: ${claimedActive} (matches heading count)`);
         }
       }
 
@@ -438,10 +437,10 @@ function main() {
           const cState = JSON.parse(readFileSync(consolidationStatePath, "utf8"));
           const mdNumber = Number.parseInt(consolidationMatch[1], 10);
           const stateNumber = cState.consolidationNumber || 0;
-          if (mdNumber !== stateNumber) {
-            warn(`Consolidation section shows #${mdNumber} but state file says #${stateNumber}`);
-          } else {
+          if (mdNumber === stateNumber) {
             ok(`Consolidation number: #${stateNumber} (matches state file)`);
+          } else {
+            warn(`Consolidation section shows #${mdNumber} but state file says #${stateNumber}`);
           }
         } catch {
           /* skip if state file unreadable */

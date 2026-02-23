@@ -1084,6 +1084,8 @@ const ANTI_PATTERNS = [
         const trimmed = line.trim();
         if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
         if (trimmed.startsWith("import ") || trimmed.startsWith("import{")) continue;
+        // Skip require() lines (CJS imports)
+        if (trimmed.includes("require(")) continue;
         // Skip destructured import members (e.g. "  renameSync," inside "import { ... }")
         if (/^\w+,?$/.test(trimmed)) continue;
         // Look for symlink guard in preceding 10 lines (isSafeToWrite, isSymbolicLink)
@@ -1320,7 +1322,7 @@ const ANTI_PATTERNS = [
   {
     id: "ai-todo-markers",
     severity: "medium",
-    pattern: /(?:TODO|FIXME)[^A-Z]*(?:AI|[Cc]laude|LLM|GPT)|AI should fix|Claude will/gi,
+    pattern: /(?:TODO|FIXME)[^A-Z]*(?:AI|claude|LLM|GPT)|AI should fix|Claude will/gi,
     message: "TODO comment referencing AI that was never resolved",
     fix: "Resolve the TODO or convert to a concrete task with ticket reference",
     review: "ai-behavior",
@@ -1667,7 +1669,7 @@ function printViolation(v) {
   const severityTag = v.severity ? `[${v.severity.toUpperCase()}]` : "";
   const prefix = v.graduated ? "🚫 BLOCK" : "⚠️  WARN";
   console.log(`   ${prefix} ${severityTag} Line ${v.line}: ${v.message}`);
-  console.log(`   ✓ Fix: ${v.fix}`);
+  if (v.fix) console.log(`   ✓ Fix: ${v.fix}`);
   console.log(`   📚 See: Review ${v.review} in AI_REVIEW_LEARNINGS_LOG.md`);
   if (VERBOSE) {
     // Truncate match to avoid leaking full source snippets (may contain secrets/PII)
@@ -1759,12 +1761,9 @@ function applyGraduation(violations) {
 
   for (const v of violations) {
     const severity = v.severity || "medium";
+    const shouldBlock = severity === "critical" || (severity === "high" && !STAGED);
 
-    if (severity === "critical") {
-      v.graduated = true;
-      blocks.push(v);
-    } else if (severity === "high" && !STAGED) {
-      // High severity blocks in CI/--all mode but not in pre-commit
+    if (shouldBlock) {
       v.graduated = true;
       blocks.push(v);
     } else {
@@ -1786,20 +1785,24 @@ function generateFpReport() {
   for (const [patternId, files] of Object.entries(verifiedPatterns)) {
     const count = Array.isArray(files) ? files.length : 0;
     if (count > 0) {
-      patternExclusions[patternId] = count;
+      patternExclusions[patternId] = { verified: count, pathExclude: 0 };
     }
   }
 
-  // Count pathExcludeList entries per pattern in ANTI_PATTERNS
+  // Count pathExcludeList entries per pattern (separate from verified)
   for (const ap of ANTI_PATTERNS) {
     if (ap.pathExcludeList && ap.pathExcludeList.length > 0) {
-      const existing = patternExclusions[ap.id] || 0;
-      patternExclusions[ap.id] = existing + ap.pathExcludeList.length;
+      if (!patternExclusions[ap.id]) {
+        patternExclusions[ap.id] = { verified: 0, pathExclude: 0 };
+      }
+      patternExclusions[ap.id].pathExclude = ap.pathExcludeList.length;
     }
   }
 
-  // Sort by count descending
-  const sorted = Object.entries(patternExclusions).sort((a, b) => b[1] - a[1]);
+  // Sort by total count descending
+  const sorted = Object.entries(patternExclusions)
+    .map(([id, counts]) => [id, counts.verified + counts.pathExclude, counts])
+    .sort((a, b) => b[1] - a[1]);
 
   console.log("📊 False Positive Report — Per-Pattern Exclusion Counts\n");
   console.log(`Total patterns: ${ANTI_PATTERNS.length}`);
@@ -1810,15 +1813,18 @@ function generateFpReport() {
     return;
   }
 
-  console.log("Pattern ID                              | Exclusions | Status");
-  console.log("----------------------------------------|------------|------------------");
-  for (const [id, count] of sorted) {
+  console.log("Pattern ID                              | Verified | PathExcl | Total | Status");
+  console.log(
+    "----------------------------------------|----------|----------|-------|------------------"
+  );
+  for (const [id, total, counts] of sorted) {
     let status = "";
-    if (count > 20) status = "🔴 CONSIDER REMOVAL";
-    else if (count > 10) status = "🟡 HIGH FP RISK";
+    if (total > 20) status = "🔴 CONSIDER REMOVAL";
+    else if (total > 10) status = "🟡 HIGH FP RISK";
     const paddedId = id.padEnd(39);
-    const paddedCount = String(count).padStart(10);
-    console.log(`${paddedId} | ${paddedCount} | ${status}`);
+    console.log(
+      `${paddedId} | ${String(counts.verified).padStart(8)} | ${String(counts.pathExclude).padStart(8)} | ${String(total).padStart(5)} | ${status}`
+    );
   }
 
   const highFp = sorted.filter(([, c]) => c > 10).length;

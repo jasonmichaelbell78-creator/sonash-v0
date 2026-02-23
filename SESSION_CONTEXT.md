@@ -112,11 +112,11 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-1. **Run `/sprint start 4`** — Begin sprint-4 (lib/ + hooks/ + app/), 132 items
-2. **Run `/sprint intake`** — Place 399 unplaced items into sprints
-3. **Run `/sprint fix-docs`** — Update ROADMAP S0 table (10 shown vs 18 actual)
-4. **Begin resolving S0 critical items** — 35 S0 items (18 verified) in TDMS
-5. **Verify pre-commit overhaul** — Time a real commit to confirm <20s target
+1. **Process PR #384 review** — Comprehensive audit + debt placement PR
+2. **Run `/sprint start 4`** — Begin sprint-4 (lib/ + hooks/ + app/), 132 items
+3. **Begin resolving S0 critical items** — 35 S0 items in TDMS
+4. **Run `/sprint fix-docs`** — Update ROADMAP S0 table
+5. **Implement pattern compliance plan** — 9 fixes from Session #180 plan
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -124,7 +124,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Pending PR Reviews
 
-**Status**: No pending PR reviews
+**Status**: PR #384 pending review (comprehensive audit + debt placement)
 
 **When reviews arrive** (Qodo, SonarCloud, etc.):
 

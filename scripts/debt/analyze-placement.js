@@ -65,7 +65,7 @@ const ROADMAP_CATS = new Set(["security", "enhancements", "performance"]);
 
 // 5. Classify each item
 const placementStats = {};
-const unplacedItems = [];
+let unplacedCount = 0;
 const statusCounts = {};
 const categoryPlacement = {};
 
@@ -96,7 +96,7 @@ for (const item of items) {
   let simplified;
   if (placements.length === 0) {
     simplified = "UNPLACED";
-    unplacedItems.push(item);
+    unplacedCount++;
   } else if (placements[0] === "resolved/fp") {
     simplified = "Resolved/FP";
   } else if (placements.some((p) => p.startsWith("sprint:"))) {
@@ -243,11 +243,11 @@ console.log("  In sprints:                  " + inSprint.length);
 console.log("    (also roadmap-category):   " + bothSprintAndRoadmap.length);
 console.log("  Roadmap-only (not sprint):   " + inRoadmap.length);
 console.log("  Unplaced:                    " + unplaced.length);
-console.log(
-  "  Coverage:                    " +
-    (((inSprint.length + inRoadmap.length) / openItems.length) * 100).toFixed(1) +
-    "%"
-);
+const coveragePct =
+  openItems.length > 0
+    ? (((inSprint.length + inRoadmap.length) / openItems.length) * 100).toFixed(1)
+    : "100.0";
+console.log("  Coverage:                    " + coveragePct + "%");
 
 if (unplaced.length > 0) {
   console.log("");

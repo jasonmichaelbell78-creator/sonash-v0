@@ -8,8 +8,8 @@
  * then assigns them to the appropriate sprint based on their `file` field.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { safeWriteFile } = require("./lib/security-helpers");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -65,13 +65,6 @@ const SPRINT_FOCUS = {
   "sprint-12b": "Cross-cutting items (no specific file)",
 };
 
-// Root-level config file extensions/names that go to sprint-10
-const ROOT_CONFIG_PATTERNS = [
-  /^[^/]+\.(json|js|cjs|mjs|ts|yaml|yml|toml|config\..*)$/,
-  /^\.(?!claude|github|husky)[^/]*$/, // dotfiles at root (not .claude/.github/.husky dirs)
-  /^(package\.json|tsconfig.*|next\.config.*|tailwind\.config.*|postcss\.config.*|firebase\.json|\.eslintrc.*|\.prettierrc.*|jest\.config.*|vitest\.config.*)$/,
-];
-
 /**
  * Determine which sprint group an item belongs to based on its file field.
  */
@@ -81,7 +74,7 @@ function getSprintGroup(filePath) {
   }
 
   // Normalize path separators
-  const f = filePath.replace(/\\/g, "/");
+  const f = filePath.replaceAll("\\", "/");
 
   // scripts/
   if (f.startsWith("scripts/")) return "scripts";
@@ -115,11 +108,14 @@ function getSprintGroup(filePath) {
   return "cross-cutting";
 }
 
-function main() {
-  // 1. Read all sprint files and collect all assigned IDs
+/**
+ * Load all sprint files from LOGS_DIR and build assigned ID sets.
+ * Returns { sprintData, allAssignedIds, fileCount }.
+ */
+function loadSprintFiles() {
   const sprintFiles = fs.readdirSync(LOGS_DIR).filter((f) => /^sprint-.*-ids\.json$/.test(f));
   const allAssignedIds = new Set();
-  const sprintData = {}; // sprint name -> { data, ids (Set), filePath }
+  const sprintData = {};
 
   for (const file of sprintFiles) {
     const filePath = path.join(LOGS_DIR, file);
@@ -127,116 +123,84 @@ function main() {
     if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
     try {
       const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
-      const sprintName = data.sprint;
       const ids = new Set(data.ids || []);
-
-      sprintData[sprintName] = { data, ids, filePath };
-      for (const id of ids) {
-        allAssignedIds.add(id);
-      }
+      sprintData[data.sprint] = { data, ids, filePath };
+      for (const id of ids) allAssignedIds.add(id);
     } catch (err) {
       console.error(`Error reading ${file}: ${err.message}`);
     }
   }
 
-  console.log(
-    `Loaded ${sprintFiles.length} sprint files with ${allAssignedIds.size} total assigned IDs`
-  );
+  return { sprintData, allAssignedIds, fileCount: sprintFiles.length };
+}
 
-  // 2. Read MASTER_DEBT.jsonl and find unplaced items
+/**
+ * Read MASTER_DEBT.jsonl and return items not assigned or excluded.
+ */
+function findUnplacedItems(allAssignedIds) {
   const lines = fs.readFileSync(DEBT_PATH, "utf8").trim().split("\n");
-  const unplacedItems = [];
+  const SKIP_STATUSES = new Set(["RESOLVED", "CLOSED", "FALSE_POSITIVE"]);
+  const result = [];
 
   for (const line of lines) {
     if (!line.trim()) continue;
     try {
       const item = JSON.parse(line);
-      const id = item.id;
-
-      // Skip if already assigned
-      if (allAssignedIds.has(id)) continue;
-
-      // Skip roadmap-bound categories
+      if (allAssignedIds.has(item.id)) continue;
       if (EXCLUDED_CATEGORIES.has(item.category)) continue;
-
-      // Skip resolved/closed/false-positive items
-      if (
-        item.status === "RESOLVED" ||
-        item.status === "CLOSED" ||
-        item.status === "FALSE_POSITIVE"
-      )
-        continue;
-
-      unplacedItems.push(item);
-    } catch (err) {
-      // Skip malformed lines
+      if (SKIP_STATUSES.has(item.status)) continue;
+      result.push(item);
+    } catch {
+      // Skip malformed JSONL lines silently
     }
   }
 
-  console.log(
-    `Found ${unplacedItems.length} unplaced items (excluding security/enhancements/performance)`
+  return result;
+}
+
+/**
+ * Find the next available overflow suffix for a sprint group.
+ */
+function findNextSuffix(sprints, base) {
+  const existing = new Set(
+    sprints
+      .filter((s) => s.startsWith(`sprint-${base}`))
+      .map((s) => s.replace(`sprint-${base}`, ""))
   );
-
-  // 3. Group unplaced items by sprint group
-  const groupedItems = {};
-  for (const group of Object.keys(SPRINT_GROUPS)) {
-    groupedItems[group] = [];
+  for (const suf of SUFFIXES) {
+    if (!existing.has(suf)) return suf;
   }
+  return "";
+}
 
-  for (const item of unplacedItems) {
-    const group = getSprintGroup(item.file);
-    groupedItems[group].push(item.id);
-  }
-
-  // Print group summary
-  console.log("\nItems by group:");
-  for (const [group, items] of Object.entries(groupedItems)) {
-    if (items.length > 0) {
-      console.log(`  ${group}: ${items.length}`);
-    }
-  }
-
-  // 4. Place items into sprint files
-  const placements = {}; // sprint -> count of newly added
+/**
+ * Place grouped item IDs into sprint slots, creating overflow sprints as needed.
+ */
+function placeItemsIntoSprints(groupedItems, sprintData) {
+  const placements = {};
 
   for (const [group, itemIds] of Object.entries(groupedItems)) {
     if (itemIds.length === 0) continue;
 
-    // Build the full list of sprints for this group, including any needed overflow
     const sprints = [...SPRINT_GROUPS[group]];
     let remaining = [...itemIds];
-
     let sprintIdx = 0;
+
     while (remaining.length > 0) {
-      // If we've exhausted known sprints, create a new overflow sub-sprint
       if (sprintIdx >= sprints.length) {
-        const base = GROUP_BASE[group];
-        // Find next available suffix
-        const existingSuffixes = sprints
-          .filter((s) => s.startsWith(`sprint-${base}`))
-          .map((s) => s.replace(`sprint-${base}`, ""));
-        let nextSuffix = "";
-        for (const suf of SUFFIXES) {
-          if (!existingSuffixes.includes(suf)) {
-            nextSuffix = suf;
-            break;
-          }
-        }
+        const nextSuffix = findNextSuffix(sprints, GROUP_BASE[group]);
         if (!nextSuffix) {
           console.warn(`WARNING: Exhausted all suffix slots for group '${group}'`);
           break;
         }
-        const newSprint = `sprint-${base}${nextSuffix}`;
+        const newSprint = `sprint-${GROUP_BASE[group]}${nextSuffix}`;
         sprints.push(newSprint);
         console.log(`  Created overflow sprint: ${newSprint}`);
       }
 
-      const sprintName = sprints[sprintIdx];
-      sprintIdx++;
-
+      const sprintName = sprints[sprintIdx++];
       if (COMPLETE_SPRINTS.has(sprintName)) continue;
 
-      // Get or initialize sprint data
       if (!sprintData[sprintName]) {
         const focus = SPRINT_FOCUS[sprintName] || SPRINT_FOCUS[sprints[0]] || group;
         sprintData[sprintName] = {
@@ -247,32 +211,51 @@ function main() {
       }
 
       const sd = sprintData[sprintName];
-      const currentCount = sd.ids.size;
-      const capacity = MAX_PER_SPRINT - currentCount;
-
+      const capacity = MAX_PER_SPRINT - sd.ids.size;
       if (capacity <= 0) continue;
 
       const toAdd = remaining.splice(0, capacity);
-      for (const id of toAdd) {
-        sd.ids.add(id);
-      }
+      for (const id of toAdd) sd.ids.add(id);
       placements[sprintName] = (placements[sprintName] || 0) + toAdd.length;
     }
   }
 
+  return placements;
+}
+
+function main() {
+  // 1. Load sprint files
+  const { sprintData, allAssignedIds, fileCount } = loadSprintFiles();
+  console.log(`Loaded ${fileCount} sprint files with ${allAssignedIds.size} total assigned IDs`);
+
+  // 2. Find unplaced items
+  const unplacedItems = findUnplacedItems(allAssignedIds);
+  console.log(
+    `Found ${unplacedItems.length} unplaced items (excluding security/enhancements/performance)`
+  );
+
+  // 3. Group by sprint group
+  const groupedItems = {};
+  for (const group of Object.keys(SPRINT_GROUPS)) groupedItems[group] = [];
+  for (const item of unplacedItems) groupedItems[getSprintGroup(item.file)].push(item.id);
+
+  console.log("\nItems by group:");
+  for (const [group, items] of Object.entries(groupedItems)) {
+    if (items.length > 0) console.log(`  ${group}: ${items.length}`);
+  }
+
+  // 4. Place items into sprints
+  const placements = placeItemsIntoSprints(groupedItems, sprintData);
+
   // 5. Write updated sprint files
   for (const [sprintName, sd] of Object.entries(sprintData)) {
-    if (COMPLETE_SPRINTS.has(sprintName)) continue;
-    if (!placements[sprintName]) continue;
+    if (COMPLETE_SPRINTS.has(sprintName) || !placements[sprintName]) continue;
 
-    // Rebuild the data object with sorted IDs
     const sortedIds = [...sd.ids].sort((a, b) => {
-      const numA = parseInt(a.replace("DEBT-", ""), 10);
-      const numB = parseInt(b.replace("DEBT-", ""), 10);
-      return numA - numB;
+      return (
+        Number.parseInt(a.replace("DEBT-", ""), 10) - Number.parseInt(b.replace("DEBT-", ""), 10)
+      );
     });
-
-    // Preserve existing extra fields (like severity, name)
     const output = { ...sd.data, ids: sortedIds };
     safeWriteFile(sd.filePath, JSON.stringify(output, null, 2) + "\n", { allowOverwrite: true });
   }
@@ -281,8 +264,7 @@ function main() {
   console.log("\n=== Placement Summary ===");
   let totalPlaced = 0;
   for (const [sprint, count] of Object.entries(placements).sort()) {
-    const sd = sprintData[sprint];
-    console.log(`  ${sprint}: +${count} (now ${sd.ids.size}/${MAX_PER_SPRINT})`);
+    console.log(`  ${sprint}: +${count} (now ${sprintData[sprint].ids.size}/${MAX_PER_SPRINT})`);
     totalPlaced += count;
   }
   console.log(`\nTotal items placed: ${totalPlaced}`);

@@ -32,7 +32,7 @@
     "@firebase/rules-unit-testing",
     "msw"
   ],
-  "ignoreBinaries": ["printf", "report"],
+  "ignoreBinaries": ["printf", "report", "vitest"],
   "next": {
     "entry": [
       "app/**/{page,layout,loading,error,not-found,template,default,route}.tsx",
