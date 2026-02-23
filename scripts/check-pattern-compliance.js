@@ -1413,7 +1413,7 @@ const ANTI_PATTERNS = [
         // Detect table-row regex applied broadly (not section-scoped)
         // Checks for .match(/...|.../gm) or .matchAll(/...|.../gm) patterns with pipe chars
         const hasMatchCall = line.includes(".match") || line.includes(".matchAll");
-        const hasPipeRegex = hasMatchCall && line.includes("\\|");
+        const hasPipeRegex = hasMatchCall && line.includes(String.raw`\|`);
         if (withinReadWindow && hasPipeRegex) {
           // Check if there's a section extraction nearby (within 20 lines before)
           const start = Math.max(0, i - 20);
@@ -1423,7 +1423,7 @@ const ANTI_PATTERNS = [
               context
             )
           ) {
-            matches.push({ line: i + 1, col: 0 });
+            matches.push({ line: i + 1, col: 0, match: line.trim().slice(0, 120) });
           }
         }
       }
@@ -1478,41 +1478,49 @@ const ANTI_PATTERNS = [
   {
     id: "logical-or-numeric-fallback",
     severity: "medium",
-    testFn: (content) => {
-      // String-parsing replacement for S5852 regex DoS (two-strikes rule)
+    testFn: (() => {
+      // CC-extracted constants and helper (Review #370 R2 — CC 24→~8)
       const numericNames = ["count", "total", "length", "size", "items", "score", "round", "index"];
       const fallbackValues = ["0", "null", "undefined", '"', "'", "`"];
-      const lines = content.split("\n");
-      const matches = [];
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        // Skip comments
-        const trimmed = line.trimStart();
-        if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) {
-          continue;
-        }
-        if (!line.includes("||")) continue;
-        // Check if line has a numeric field name followed by || and a fallback value
+      function isWordChar(ch) {
+        return (
+          (ch >= "a" && ch <= "z") ||
+          (ch >= "A" && ch <= "Z") ||
+          (ch >= "0" && ch <= "9") ||
+          ch === "_"
+        );
+      }
+      function findNumericOrFallback(line) {
         for (const name of numericNames) {
           const idx = line.indexOf(name);
           if (idx === -1) continue;
-          // Check word boundary before
-          if (idx > 0 && /\w/.test(line[idx - 1])) continue;
-          // Check word boundary after
+          if (idx > 0 && isWordChar(line[idx - 1])) continue;
           const afterIdx = idx + name.length;
-          if (afterIdx < line.length && /\w/.test(line[afterIdx])) continue;
-          // Check for || after this name
+          if (afterIdx < line.length && isWordChar(line[afterIdx])) continue;
           const orIdx = line.indexOf("||", afterIdx);
           if (orIdx === -1) continue;
           const afterOr = line.slice(orIdx + 2).trimStart();
           if (fallbackValues.some((v) => afterOr.startsWith(v))) {
-            matches.push({ line: i + 1, col: idx });
-            break;
+            return idx;
           }
         }
+        return -1;
       }
-      return matches;
-    },
+      return (content) => {
+        const lines = content.split("\n");
+        const matches = [];
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const trimmed = line.trimStart();
+          if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*"))
+            continue;
+          if (!line.includes("||")) continue;
+          const col = findNumericOrFallback(line);
+          if (col >= 0) matches.push({ line: i + 1, col, match: line.trim().slice(0, 120) });
+        }
+        return matches;
+      };
+    })(),
     message:
       "Logical OR (||) on numeric field treats 0 as falsy — use nullish coalescing (??) instead",
     fix: "Replace `value || 0` with `value ?? 0` for numeric fields that may legitimately be 0",
