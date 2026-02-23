@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-02-20
+**Last Updated:** 2026-02-23
 
 ---
 
@@ -27,40 +27,40 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #285 - #359 (72 reviews) **Analysis Date:** 2026-02-20
+**Review Range:** #358 - #369 (12 reviews) **Analysis Date:** 2026-02-23
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 81.9% |
-| Patterns Learned          | 250   |
-| Patterns Automated        | 26    |
-| Patterns Failing          | 30    |
-| Critical Pattern Success  | 89.9% |
-| Automation Coverage       | 18.7% |
-| Total Documented Patterns | 337   |
-| Total Automated Patterns  | 63    |
+| Learning Effectiveness    | 91.8% |
+| Patterns Learned          | 290   |
+| Patterns Automated        | 23    |
+| Patterns Failing          | 8     |
+| Critical Pattern Success  | 95.1% |
+| Automation Coverage       | 20.2% |
+| Total Documented Patterns | 341   |
+| Total Automated Patterns  | 69    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Session identity check"
-   - Recurred 20 times after documentation \(Reviews: 329, 344, 345, 353, 356\)
+1. **[Automation]** Automate "Safe percentage"
+   - Recurred 4 times after documentation \(Reviews: 358, 360, 366, 369\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Signal error code semantics"
-   - Recurred 14 times after documentation \(Reviews: 328, 331, 333, 353, 355\)
+2. **[Automation]** Automate "Section\-scoped regex parsing"
+   - Recurred 4 times after documentation \(Reviews: 362, 363, 368, 369\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Automation]** Automate "Log target type validation"
-   - Recurred 13 times after documentation \(Reviews: 322, 328, 334, 337, 338\)
+3. **[Automation]** Automate "User context in audit logs"
+   - Recurred 4 times after documentation \(Reviews: 358, 362, 364, 367\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "EXIT trap chaining"
+4. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Unicode line separators"
+5. **[Documentation]** Improve documentation for "Parallel agent review"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 250   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 26    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 31    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 30    | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 290   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 23    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 20    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 8     | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -81,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-02-20 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-02-23 | Rewritten to focus on Claude's learning effectiveness |
