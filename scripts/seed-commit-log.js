@@ -12,7 +12,7 @@
  * Output format matches commit-tracker.js entries in .claude/state/commit-log.jsonl
  */
 
-// pattern-compliance: fs/path imports guarded by isSafeToWrite (loaded below)
+// Core Node.js modules (try/catch satisfies pattern-compliance require guard)
 let fs, path, execFileSync;
 try {
   fs = require("node:fs");
@@ -23,7 +23,20 @@ try {
   process.exit(1);
 }
 
-const projectDir = path.resolve(process.cwd());
+// Resolve repo root via git rev-parse (falls back to cwd)
+function getRepoRoot() {
+  try {
+    return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      timeout: 5000,
+    }).trim();
+  } catch {
+    return path.resolve(process.cwd());
+  }
+}
+
+const projectDir = getRepoRoot();
 const COMMIT_LOG = path.join(projectDir, ".claude", "state", "commit-log.jsonl");
 const SESSION_CONTEXT = path.join(projectDir, "SESSION_CONTEXT.md");
 
@@ -44,9 +57,20 @@ const count = Math.max(1, Math.min(Number.parseInt(process.argv[2], 10) || 50, 5
 function getSessionCounter() {
   try {
     const content = fs.readFileSync(SESSION_CONTEXT, "utf8");
-    const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
-    return match ? Number.parseInt(match[1], 10) : null;
-  } catch {
+    // String parsing instead of complex regex (SonarCloud S5852 DoS)
+    for (const line of content.split("\n")) {
+      const lower = line.toLowerCase();
+      if (!lower.includes("current session count")) continue;
+      // Extract digits after the label
+      const digitMatch = line.match(/(\d+)\s*$/);
+      if (digitMatch) return Number.parseInt(digitMatch[1], 10);
+    }
+    return null;
+  } catch (err) {
+    console.warn(
+      "Could not read session counter:",
+      err instanceof Error ? err.message : String(err)
+    );
     return null;
   }
 }
@@ -58,13 +82,19 @@ function getRecentCommits() {
   try {
     const output = execFileSync(
       "git",
-      ["log", `--format=%H%x00%h%x00%s%x00%an%x00%ad%x00%D`, "--date=iso-strict", `-${count}`],
+      [
+        "log",
+        `--max-count=${count}`,
+        "--format=%H%x00%h%x00%s%x00%an%x00%ad%x00%D",
+        "--date=iso-strict",
+      ],
       { cwd: projectDir, encoding: "utf8", timeout: 15000 }
     ).trim();
 
     if (!output) return [];
     return output.split("\n").filter(Boolean);
-  } catch {
+  } catch (err) {
+    console.warn("Could not read git history:", err instanceof Error ? err.message : String(err));
     return [];
   }
 }
@@ -94,7 +124,8 @@ function main() {
 
   for (const line of lines) {
     const parts = line.split("\0");
-    if (parts.length < 4) continue;
+    // Format has 6 fields: hash, shortHash, subject, author, date, refs
+    if (parts.length < 6) continue;
 
     entries.push({
       timestamp: parts[4] || new Date().toISOString(),
@@ -131,8 +162,29 @@ function main() {
     console.error("Symlink guard blocked write to commit-log.jsonl");
     process.exit(1);
   }
-  fs.writeFileSync(tmpPath, content, "utf-8");
-  fs.renameSync(tmpPath, COMMIT_LOG);
+  try {
+    fs.writeFileSync(tmpPath, content, "utf-8");
+    // Remove destination first for Windows compat (Review #224)
+    if (fs.existsSync(COMMIT_LOG)) fs.rmSync(COMMIT_LOG, { force: true });
+    try {
+      fs.renameSync(tmpPath, COMMIT_LOG);
+    } catch {
+      // Cross-drive fallback: copy + unlink (Review #265)
+      fs.copyFileSync(tmpPath, COMMIT_LOG);
+      fs.unlinkSync(tmpPath);
+    }
+  } catch (err) {
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {
+      // best-effort cleanup
+    }
+    console.error(
+      "Failed to seed commit-log.jsonl:",
+      err instanceof Error ? err.message : String(err)
+    );
+    process.exit(1);
+  }
 
   console.log(`Seeded ${entries.length} commits to commit-log.jsonl`);
 }

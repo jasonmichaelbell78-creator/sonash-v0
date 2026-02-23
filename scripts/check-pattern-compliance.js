@@ -158,7 +158,7 @@ function saveWarnedFiles(warned) {
     // Cap entries at MAX_WARNED_ENTRIES, dropping oldest by timestamp
     const keys = Object.keys(warned);
     if (keys.length > MAX_WARNED_ENTRIES) {
-      const sorted = keys.sort((a, b) => {
+      const sorted = [...keys].sort((a, b) => {
         const ta = new Date(warned[a]).getTime() || 0;
         const tb = new Date(warned[b]).getTime() || 0;
         return ta - tb;
@@ -1401,21 +1401,20 @@ const ANTI_PATTERNS = [
       // Look for reading .md files and then applying table row regex to full content
       const lines = content.split("\n");
       const matches = [];
-      let readsMdFile = false;
+      let lastMdReadLine = -1;
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        // Track if file reads .md content
-        if (/readFileSync\s*\([^)]*\.md/i.test(line)) {
-          readsMdFile = true;
+        // Track where a .md read happens; keep a bounded "active window"
+        if (line.includes("readFileSync") && /\.md/i.test(line)) {
+          lastMdReadLine = i;
         }
+        // Only consider table-regex usage within 40 lines of the .md read
+        const withinReadWindow = lastMdReadLine >= 0 && i - lastMdReadLine <= 40;
         // Detect table-row regex applied broadly (not section-scoped)
-        // Pattern: /^\|/gm or .match(/\|[^|]+\|/g) without prior section extraction
-        if (
-          readsMdFile &&
-          /\.match\s*\(\s*\/[^/]*\\\|[^/]*\/[gm]+\s*\)|\.matchAll\s*\(\s*\/[^/]*\\\|[^/]*\/[gm]+\s*\)/.test(
-            line
-          )
-        ) {
+        // Checks for .match(/...|.../gm) or .matchAll(/...|.../gm) patterns with pipe chars
+        const hasMatchCall = line.includes(".match") || line.includes(".matchAll");
+        const hasPipeRegex = hasMatchCall && line.includes("\\|");
+        if (withinReadWindow && hasPipeRegex) {
           // Check if there's a section extraction nearby (within 20 lines before)
           const start = Math.max(0, i - 20);
           const context = lines.slice(start, i).join("\n");
@@ -1479,8 +1478,41 @@ const ANTI_PATTERNS = [
   {
     id: "logical-or-numeric-fallback",
     severity: "medium",
-    pattern:
-      /\b(?:count|total|length|size|items|score|round|index)\b\s*\|\|\s*(?:\b(?:count|total|length|size|items|score|round|index)\b\s*\|\|\s*)*(?:0|null|undefined|['"`])/g,
+    testFn: (content) => {
+      // String-parsing replacement for S5852 regex DoS (two-strikes rule)
+      const numericNames = ["count", "total", "length", "size", "items", "score", "round", "index"];
+      const fallbackValues = ["0", "null", "undefined", '"', "'", "`"];
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Skip comments
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) {
+          continue;
+        }
+        if (!line.includes("||")) continue;
+        // Check if line has a numeric field name followed by || and a fallback value
+        for (const name of numericNames) {
+          const idx = line.indexOf(name);
+          if (idx === -1) continue;
+          // Check word boundary before
+          if (idx > 0 && /\w/.test(line[idx - 1])) continue;
+          // Check word boundary after
+          const afterIdx = idx + name.length;
+          if (afterIdx < line.length && /\w/.test(line[afterIdx])) continue;
+          // Check for || after this name
+          const orIdx = line.indexOf("||", afterIdx);
+          if (orIdx === -1) continue;
+          const afterOr = line.slice(orIdx + 2).trimStart();
+          if (fallbackValues.some((v) => afterOr.startsWith(v))) {
+            matches.push({ line: i + 1, col: idx });
+            break;
+          }
+        }
+      }
+      return matches;
+    },
     message:
       "Logical OR (||) on numeric field treats 0 as falsy — use nullish coalescing (??) instead",
     fix: "Replace `value || 0` with `value ?? 0` for numeric fields that may legitimately be 0",
@@ -1488,7 +1520,6 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|\/)scripts\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
-    exclude: /\/\/|\/\*|\* /,
   },
 ];
 
@@ -1651,7 +1682,7 @@ function detectFileType(filePath, content, ext) {
 function shouldSkipPattern(antiPattern, ext, normalizedPath) {
   if (!antiPattern.fileTypes.includes(ext)) return true;
   if (antiPattern.pathFilter && !antiPattern.pathFilter.test(normalizedPath)) return true;
-  if (antiPattern.pathExclude && antiPattern.pathExclude.test(normalizedPath)) return true;
+  if (antiPattern.pathExclude?.test(normalizedPath)) return true;
   // Support array-based exclusions for S5843 regex complexity compliance
   if (antiPattern.pathExcludeList) {
     const fileName = normalizedPath.split("/").pop() || "";
@@ -1703,7 +1734,7 @@ function findPatternMatches(antiPattern, content, filePath) {
     if (match) {
       // Review #189: Reset exclude.lastIndex before test to ensure consistent behavior
       if (exclude) exclude.lastIndex = 0;
-      if (!(exclude && exclude.test(match[0]))) {
+      if (!exclude?.test(match[0])) {
         violations.push(buildViolation(antiPattern, match, content, filePath));
       }
     }
@@ -1715,7 +1746,7 @@ function findPatternMatches(antiPattern, content, filePath) {
   while ((match = pattern.exec(content)) !== null) {
     // Review #189: Reset exclude.lastIndex before each test
     if (exclude) exclude.lastIndex = 0;
-    if (exclude && exclude.test(match[0])) continue;
+    if (exclude?.test(match[0])) continue;
     violations.push(buildViolation(antiPattern, match, content, filePath));
 
     // Prevent infinite loops on zero-length matches
