@@ -17,11 +17,7 @@ const INDEX = path.join(ROOT, "docs/technical-debt/INDEX.md");
 const SESSION = path.join(ROOT, "SESSION_CONTEXT.md");
 
 // 1. Load MASTER_DEBT
-const rawLines = fs
-  .readFileSync(MASTER, "utf8")
-  .replace(/\uFEFF/g, "")
-  .trim()
-  .split("\n");
+const rawLines = fs.readFileSync(MASTER, "utf8").replaceAll("\uFEFF", "").trim().split("\n");
 const items = (Array.isArray(rawLines) ? rawLines : [])
   .map((l) => {
     try {
@@ -32,6 +28,15 @@ const items = (Array.isArray(rawLines) ? rawLines : [])
   })
   .filter(Boolean);
 
+/**
+ * Extract ID array from sprint data (handles both array and {ids:[]} formats).
+ */
+function extractIdArray(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.ids)) return data.ids;
+  return [];
+}
+
 // 2. Load sprint assignments
 const rawSprintFiles = fs.readdirSync(SPRINT_DIR);
 const sprintFiles = (Array.isArray(rawSprintFiles) ? rawSprintFiles : []).filter(
@@ -41,16 +46,22 @@ const sprintMap = {};
 const sprintCounts = {};
 for (const f of sprintFiles) {
   const name = f.replace("-ids.json", "");
-  const data = JSON.parse(fs.readFileSync(path.join(SPRINT_DIR, f), "utf8"));
-  const ids = Array.isArray(data) ? data : Array.isArray(data.ids) ? data.ids : [];
-  sprintCounts[name] = Array.isArray(ids) ? ids.length : 0;
-  for (const id of ids) sprintMap[id] = name;
+  const filePath = path.join(SPRINT_DIR, f);
+  try {
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8").replaceAll("\uFEFF", ""));
+    const ids = extractIdArray(data);
+    sprintCounts[name] = ids.length;
+    for (const id of ids) sprintMap[id] = name;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[analyze-placement] Skipping invalid sprint file ${f}: ${msg}`);
+  }
 }
 
 // 3. Extract DEBT-XXXX references from planning docs
 function extractDebtIds(filePath) {
   if (!fs.existsSync(filePath)) return new Set();
-  const content = fs.readFileSync(filePath, "utf8").replace(/\uFEFF/g, "");
+  const content = fs.readFileSync(filePath, "utf8").replaceAll("\uFEFF", "");
   const ids = new Set();
   // matchAll avoids exec-in-while-loop pattern concern
   const matches = content.matchAll(/DEBT-\d+/g);
@@ -91,40 +102,39 @@ function classifyItem(item) {
   return placements;
 }
 
+/**
+ * Format a label with optional extras suffix.
+ */
+function formatWithExtras(label, extras) {
+  if (extras.length === 0) return label;
+  return label + " + " + extras.join(", ");
+}
+
+/**
+ * Build sprint placement label from placements array.
+ */
+function formatSprintPlacement(placements) {
+  const sprintEntry = placements.find((p) => p.startsWith("sprint:"));
+  const sprint = sprintEntry.split(":")[1];
+  const extras = placements.filter((p) => p !== "sprint:" + sprint && p !== "roadmap-category");
+  return formatWithExtras("Sprint (" + sprint + ")", extras);
+}
+
+/**
+ * Build roadmap placement label from placements array.
+ */
+function formatRoadmapPlacement(placements, item) {
+  const extras = placements.filter((p) => p !== "roadmap-category");
+  return formatWithExtras("Roadmap-bound (" + item.category + ")", extras);
+}
+
 // --- Helper: simplify placement key ---
 function simplifyPlacements(placements, item) {
-  if (!Array.isArray(placements) || placements.length === 0) {
-    return "UNPLACED";
-  }
-  if (placements[0] === "resolved/fp") {
-    return "Resolved/FP";
-  }
-  if ((Array.isArray(placements) ? placements : []).some((p) => p.startsWith("sprint:"))) {
-    const sprint = (Array.isArray(placements) ? placements : [])
-      .find((p) => p.startsWith("sprint:"))
-      .split(":")[1];
-    const extras = (Array.isArray(placements) ? placements : []).filter(
-      (p) => p !== "sprint:" + sprint && p !== "roadmap-category"
-    );
-    return (
-      "Sprint (" +
-      sprint +
-      ")" +
-      (Array.isArray(extras) && extras.length ? " + " + extras.join(", ") : "")
-    );
-  }
-  if ((Array.isArray(placements) ? placements : []).includes("roadmap-category")) {
-    const extras = (Array.isArray(placements) ? placements : []).filter(
-      (p) => p !== "roadmap-category"
-    );
-    return (
-      "Roadmap-bound (" +
-      item.category +
-      ")" +
-      (Array.isArray(extras) && extras.length ? " + " + extras.join(", ") : "")
-    );
-  }
-  return (Array.isArray(placements) ? placements : []).join(" + ");
+  if (!Array.isArray(placements) || placements.length === 0) return "UNPLACED";
+  if (placements[0] === "resolved/fp") return "Resolved/FP";
+  if (placements.some((p) => p.startsWith("sprint:"))) return formatSprintPlacement(placements);
+  if (placements.includes("roadmap-category")) return formatRoadmapPlacement(placements, item);
+  return placements.join(" + ");
 }
 
 // --- Helper: update category placement tracking ---
@@ -298,15 +308,12 @@ console.log(
 );
 console.log("  Roadmap-only (not sprint):   " + (Array.isArray(inRoadmap) ? inRoadmap.length : 0));
 console.log("  Unplaced:                    " + (Array.isArray(unplaced) ? unplaced.length : 0));
-const coveragePct =
-  Array.isArray(openItems) && openItems.length > 0
-    ? (
-        (((Array.isArray(inSprint) ? inSprint.length : 0) +
-          (Array.isArray(inRoadmap) ? inRoadmap.length : 0)) /
-          openItems.length) *
-        100
-      ).toFixed(1)
-    : "100.0";
+const sprintLen = Array.isArray(inSprint) ? inSprint.length : 0;
+const roadmapLen = Array.isArray(inRoadmap) ? inRoadmap.length : 0;
+const hasOpen = Array.isArray(openItems) && openItems.length > 0;
+const coveragePct = hasOpen
+  ? (((sprintLen + roadmapLen) / openItems.length) * 100).toFixed(1)
+  : "100.0";
 console.log("  Coverage:                    " + coveragePct + "%");
 
 if (Array.isArray(unplaced) && unplaced.length > 0) {

@@ -111,6 +111,13 @@ function loadState() {
 
 function safeRename(src, dest) {
   if (!isSafeToWrite(dest)) return; // symlink guard
+  // Try atomic rename first; fall back to copy+delete for cross-device moves
+  try {
+    fs.renameSync(src, dest);
+    return;
+  } catch {
+    // Fallback for cross-device moves or other rename failures
+  }
   if (existsSync(dest)) rmSync(dest, { force: true });
   copyFileSync(src, dest);
   try {

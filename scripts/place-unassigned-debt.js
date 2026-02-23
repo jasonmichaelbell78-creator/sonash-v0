@@ -136,6 +136,28 @@ function getSprintGroup(filePath) {
 }
 
 /**
+ * Derive sprint name from filename, using JSON sprint field only if it matches.
+ * Trusts filename over JSON content to prevent path traversal.
+ */
+function deriveSprintName(raw, filename) {
+  const fromFile = filename.replace(/-ids\.json$/, "");
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return fromFile;
+  if (typeof raw.sprint !== "string") return fromFile;
+  const fromJson = raw.sprint.trim();
+  // Only accept JSON sprint name if it matches the filename-derived name
+  return fromJson === fromFile ? fromJson : fromFile;
+}
+
+/**
+ * Extract ID list from parsed sprint data (handles array and {ids:[]} formats).
+ */
+function extractSprintIds(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (Array.isArray(raw?.ids)) return raw.ids;
+  return [];
+}
+
+/**
  * Load all sprint files from LOGS_DIR and build assigned ID sets.
  * Returns { sprintData, allAssignedIds, fileCount }.
  */
@@ -150,15 +172,8 @@ function loadSprintFiles() {
     if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
     try {
       const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
-      const sprintName =
-        raw &&
-        typeof raw === "object" &&
-        !Array.isArray(raw) &&
-        typeof raw.sprint === "string" &&
-        raw.sprint.trim()
-          ? raw.sprint.trim()
-          : file.replace(/-ids\.json$/, "");
-      const idList = Array.isArray(raw) ? raw : Array.isArray(raw?.ids) ? raw.ids : [];
+      const sprintName = deriveSprintName(raw, file);
+      const idList = extractSprintIds(raw);
       const ids = new Set(idList.filter((v) => typeof v === "string" && v));
       sprintData[sprintName] = {
         data: Array.isArray(raw) ? { sprint: sprintName, ids: [...ids] } : raw,
@@ -214,6 +229,32 @@ function findNextSuffix(sprints, base) {
 }
 
 /**
+ * Create a new overflow sprint for a group.
+ * Returns the new sprint name, or null if all suffixes are exhausted.
+ */
+function createOverflowSprint(sprints, group) {
+  const nextSuffix = findNextSuffix(sprints, GROUP_BASE[group]);
+  if (!nextSuffix) return null;
+  const newSprint = `sprint-${GROUP_BASE[group]}${nextSuffix}`;
+  sprints.push(newSprint);
+  console.log(`  Created overflow sprint: ${newSprint}`);
+  return newSprint;
+}
+
+/**
+ * Ensure a sprint entry exists in sprintData. Creates it if missing.
+ */
+function ensureSprintEntry(sprintName, sprints, group, sprintData) {
+  if (sprintData[sprintName]) return;
+  const focus = SPRINT_FOCUS[sprintName] || SPRINT_FOCUS[sprints[0]] || group;
+  sprintData[sprintName] = {
+    data: { sprint: sprintName, focus, ids: [] },
+    ids: new Set(),
+    filePath: path.join(LOGS_DIR, `${sprintName}-ids.json`),
+  };
+}
+
+/**
  * Place grouped item IDs into sprint slots, creating overflow sprints as needed.
  */
 function placeItemsIntoSprints(groupedItems, sprintData) {
@@ -228,27 +269,16 @@ function placeItemsIntoSprints(groupedItems, sprintData) {
 
     while (remaining.length > 0) {
       if (sprintIdx >= sprints.length) {
-        const nextSuffix = findNextSuffix(sprints, GROUP_BASE[group]);
-        if (!nextSuffix) {
+        if (!createOverflowSprint(sprints, group)) {
           console.warn(`WARNING: Exhausted all suffix slots for group '${group}'`);
           break;
         }
-        const newSprint = `sprint-${GROUP_BASE[group]}${nextSuffix}`;
-        sprints.push(newSprint);
-        console.log(`  Created overflow sprint: ${newSprint}`);
       }
 
       const sprintName = sprints[sprintIdx++];
       if (COMPLETE_SPRINTS.has(sprintName)) continue;
 
-      if (!sprintData[sprintName]) {
-        const focus = SPRINT_FOCUS[sprintName] || SPRINT_FOCUS[sprints[0]] || group;
-        sprintData[sprintName] = {
-          data: { sprint: sprintName, focus, ids: [] },
-          ids: new Set(),
-          filePath: path.join(LOGS_DIR, `${sprintName}-ids.json`),
-        };
-      }
+      ensureSprintEntry(sprintName, sprints, group, sprintData);
 
       const sd = sprintData[sprintName];
       const capacity = MAX_PER_SPRINT - sd.ids.size;
@@ -290,6 +320,13 @@ function main() {
   // 5. Write updated sprint files
   for (const [sprintName, sd] of Object.entries(sprintData)) {
     if (COMPLETE_SPRINTS.has(sprintName) || !placements[sprintName]) continue;
+
+    // Path containment check: ensure write stays within LOGS_DIR
+    const rel = path.relative(LOGS_DIR, sd.filePath);
+    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+      console.error(`Refusing to write outside logs dir: ${sd.filePath}`);
+      continue;
+    }
 
     const sortedIds = [...sd.ids].sort((a, b) => {
       return (

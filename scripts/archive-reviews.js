@@ -97,7 +97,7 @@ function atomicWrite(filePath, content) {
     throw new Error("Refusing to write: symlink detected at tmp path");
   }
 
-  writeFileSync(tmpPath, content, "utf8"); // atomic .tmp → copy below
+  writeFileSync(tmpPath, content, "utf8");
 
   // Validate tmp was written successfully
   const written = readFileSync(tmpPath, "utf8");
@@ -105,12 +105,23 @@ function atomicWrite(filePath, content) {
     throw new Error("Atomic write validation failed: size mismatch");
   }
 
-  if (existsSync(filePath)) rmSync(filePath, { force: true });
-  copyFileSync(tmpPath, filePath);
+  // Guard destination before replacing
+  if (!isSafeToWrite(filePath)) {
+    throw new Error("Refusing to write: symlink detected at target path");
+  }
+
+  // Try atomic rename first; fall back to copy+delete for cross-device moves
   try {
-    rmSync(tmpPath, { force: true });
+    if (existsSync(filePath)) rmSync(filePath, { force: true });
+    fs.renameSync(tmpPath, filePath);
   } catch {
-    /* best-effort cleanup */
+    if (existsSync(filePath)) rmSync(filePath, { force: true });
+    copyFileSync(tmpPath, filePath);
+    try {
+      rmSync(tmpPath, { force: true });
+    } catch {
+      /* best-effort cleanup */
+    }
   }
 }
 

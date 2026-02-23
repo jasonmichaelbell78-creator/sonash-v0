@@ -1960,6 +1960,30 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #368: SonarCloud + Qodo + CI R3 — CC Reduction, Nested Ternaries, Atomic Writes (2026-02-22)
+
+**Source**: SonarCloud (10 items) + CI Security Pattern Check (1 failure) + Qodo
+compliance (1 item) + Qodo code suggestions (6 items) **PR**: #384 R3 **Items**:
+18 total — 16 fixed, 1 deferred, 1 rejected
+
+**Key Patterns:**
+
+- CC reduction via helper extraction (3 functions across 2 files:
+  `simplifyPlacements` 19→~8, `loadSprintFiles` 20→~10, `placeItemsIntoSprints`
+  24→~12)
+- Nested ternary extraction → independent statements (4 instances)
+- Atomic write improvements: `renameSync` first, copy+delete fallback
+- Sprint metadata path traversal: trust filename over JSON content
+- Regex complexity 35→string parsing (two-strikes rule: replaced with
+  function-based test)
+- TOCTOU regex: expanded to detect same-line `&&` patterns
+
+**Deferred:** `compact-restore.js:34,36` path containment (pre-existing,
+complex) **Rejected:** CI SEC-002/001/010/003 on `pattern-compliance.test.js`
+(intentional test data)
+
+---
+
 #### Review #367: PR #384 R2 — CI Pattern Compliance + Qodo Suggestions (2026-02-22)
 
 **Source**: CI failure (112 blocking pattern violations) + Qodo compliance (4
