@@ -1,8 +1,8 @@
 # Claude Code Command Reference (Index)
 
 <!-- prettier-ignore-start -->
-**Version:** 5.1
-**Last Updated:** 2026-02-20
+**Version:** 5.2
+**Last Updated:** 2026-02-23
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -59,6 +59,22 @@ Source: `.claude/skills/*/SKILL.md`
 | `/skill-creator`                  | Guide for creating effective skills                  |
 | `/mcp-builder`                    | Guide for creating MCP servers                       |
 | `/validate-claude-folder`         | Validate .claude folder consistency                  |
+| `/artifacts-builder`              | Build multi-component claude.ai artifacts            |
+| `/decrypt-secrets`                | Decrypt MCP tokens for remote sessions               |
+| `/gh-fix-ci`                      | Fix failing GitHub CI actions                        |
+| `/market-research-reports`        | Generate market research reports                     |
+| `/markitdown`                     | Convert file formats to markdown                     |
+| `/senior-architect`               | Architecture guidance and decisions                  |
+| `/senior-backend`                 | Backend development expertise                        |
+| `/senior-devops`                  | DevOps and infrastructure guidance                   |
+| `/senior-frontend`                | Frontend development expertise                       |
+| `/senior-fullstack`               | Full-stack development guidance                      |
+| `/senior-qa`                      | QA and testing expertise                             |
+| `/sprint`                         | TDMS sprint workflow automation                      |
+| `/ui-design-system`               | Design system components toolkit                     |
+| `/using-superpowers`              | Claude skills usage guide                            |
+| `/ux-researcher-designer`         | UX research and design toolkit                       |
+| `/webapp-testing`                 | Web application testing with Playwright              |
 
 ## System Commands
 
@@ -73,14 +89,15 @@ Built-in Claude Code commands (not skills):
 
 Source: Task tool `subagent_type` parameter
 
-| Category       | Agents                                                                 |
-| -------------- | ---------------------------------------------------------------------- |
-| General        | `general-purpose`, `Explore`, `Plan`, `Bash`                           |
-| Development    | `frontend-developer`, `fullstack-developer`, `backend-architect`       |
-| Quality        | `code-reviewer`, `test-engineer`, `security-auditor`                   |
-| Infrastructure | `deployment-engineer`, `devops-troubleshooter`, `performance-engineer` |
-| Documentation  | `documentation-expert`, `technical-writer`                             |
-| Other          | `debugger`, `error-detective`, `prompt-engineer`, `ui-ux-designer`     |
+| Category       | Agents                                                                                                                           |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| General        | `general-purpose`, `Explore`, `Plan`, `Bash`                                                                                     |
+| Development    | `frontend-developer`, `fullstack-developer`, `backend-architect`, `nextjs-architecture-expert`, `react-performance-optimization` |
+| Quality        | `code-reviewer`, `test-engineer`, `security-auditor`, `security-engineer`, `penetration-tester`                                  |
+| Infrastructure | `deployment-engineer`, `devops-troubleshooter`, `performance-engineer`, `dependency-manager`, `git-flow-manager`                 |
+| Documentation  | `documentation-expert`, `technical-writer`, `markdown-syntax-formatter`                                                          |
+| Data           | `database-architect`, `mcp-expert`                                                                                               |
+| Other          | `debugger`, `error-detective`, `prompt-engineer`, `ui-ux-designer`                                                               |
 
 ## MCP Servers
 
@@ -94,7 +111,7 @@ Source: `.mcp.json` + auto-discovered plugins
 | `github` (plugin)          | GitHub API integration            |
 | `context7` (plugin)        | Library documentation lookup      |
 | `firebase` (plugin)        | Firebase project management       |
-| `serena` (plugin)          | Semantic code analysis            |
+| `serena` (plugin)          | Semantic code analysis (disabled) |
 | `episodic-memory` (plugin) | Cross-session conversation memory |
 
 ## Claude Code Hooks
@@ -135,6 +152,7 @@ Source: `.husky/`
 
 | Version | Date         | Change                                     |
 | ------- | ------------ | ------------------------------------------ |
+| 5.2     | 2026-02-23   | Added 17 missing skills (58 total)         |
 | 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill            |
 | 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)    |
 | 4.0     | Session #140 | Added all plugins, GSD, SuperClaude skills |
