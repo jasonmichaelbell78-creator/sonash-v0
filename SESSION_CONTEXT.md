@@ -118,7 +118,8 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 2. **Run `/sprint start 4`** — Begin sprint-4 (lib/ + hooks/ + app/), 132 items
 3. **Begin resolving S0 critical items** — 35 S0 items in TDMS
 4. **Run `/sprint fix-docs`** — Update ROADMAP S0 table
-5. **Implement pattern compliance plan** — 9 fixes from Session #180 plan
+5. ~~**Implement pattern compliance plan**~~ — DONE (Session #180, commit
+   ac42c57)
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
