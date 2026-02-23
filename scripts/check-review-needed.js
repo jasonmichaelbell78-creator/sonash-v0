@@ -177,7 +177,9 @@ function getNextDay(dateString) {
   }
   // Use UTC methods to ensure consistent behavior across environments
   date.setUTCDate(date.getUTCDate() + 1);
-  return date.toISOString().split("T")[0];
+  // Append T00:00:00 so git --since anchors at midnight, not current time-of-day.
+  // Bare YYYY-MM-DD causes git to use "today at now" semantics, undercounting same-day commits.
+  return date.toISOString().split("T")[0] + "T00:00:00";
 }
 
 /**
