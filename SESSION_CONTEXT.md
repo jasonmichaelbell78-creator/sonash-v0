@@ -52,7 +52,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #183 Summary** (PR #384 RETRO + PR #386 R1/R2 + DATE FIX):
+**Session #183 Summary** (PR #384 RETRO + PR #386 R1/R2 + RETRO ENFORCEMENT):
 
 - Wrote PR #384 retrospective — 4 rounds, 197 items, ~2.5 avoidable
 - Implemented PR #384 retro action items: pattern check `|| vs ??` enforcement
@@ -61,7 +61,13 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - PR #386 R2 fixes: S5852 string parsing, cyclomatic complexity reduction,
   concurrency-safe tmp directory handling
 - Fixed git `--since` bare date undercounting same-day commits
-- TDMS: 4,576 items (486 resolved), 35 S0, 738 S1
+- PR #386 retrospective — 2 rounds, 25 items, cleanest cycle in series
+- **NEW:** CC regression checker (check-cc-regression.js) — diff-based, blocks
+  new CC >15 in staged scripts without false positives from 82 pre-existing
+- **NEW:** S5852 regex complexity pattern in check-pattern-compliance.js
+- **NEW:** pr-review Step 0.5 updated for S5852 helper regex sweep
+- DEBT-7543 created for S5852 pre-push automation
+- TDMS: 4,577 items (237 resolved), 35 S0, 738 S1
 
 **Session #182 Summary** (PR #384 REVIEW R4 — CI + SONARCLOUD + QODO FIXES):
 
