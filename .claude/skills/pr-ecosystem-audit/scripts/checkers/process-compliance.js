@@ -195,6 +195,7 @@ function pushPreCheckFinding(
  */
 function extractMarkdownSections(learningsContent, reviewIds) {
   const sections = {};
+  if (!learningsContent) return sections;
   const lines = learningsContent.split("\n");
   const headingRe = /^#{2,4}\s+Review\s+#(\d+)\b/i;
   // Build index of heading positions

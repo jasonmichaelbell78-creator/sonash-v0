@@ -1727,7 +1727,7 @@ function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 
   }
 
   if (blockCount > 0) {
-    console.log(`🚫 ${blockCount} BLOCKING violation(s) (critical severity)`);
+    console.log(`🚫 ${blockCount} BLOCKING violation(s) (critical + high in CI)`);
   }
   if (warnCount > 0) {
     console.log(`⚠️  ${warnCount} warning(s)`);

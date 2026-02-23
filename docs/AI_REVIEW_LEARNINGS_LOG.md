@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.47 **Created:** 2026-01-02 **Last Updated:** 2026-02-21
+**Document Version:** 17.48 **Created:** 2026-01-02 **Last Updated:** 2026-02-22
 
 ## Purpose
 
@@ -1957,6 +1957,32 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #369: CI + SonarCloud + Qodo R4 — Security Excludes, CC Extract, EXDEV Guard (2026-02-22)
+
+**Source**: CI failure (SEC-001/SEC-010 blocking) + SonarCloud (2 items) + Qodo
+code suggestions (7 items) **PR**: #384 R4 **Items**: 12 total — 11 fixed, 0
+deferred, 1 rejected
+
+**Key Patterns:**
+
+- Security scanner exclude patterns: test files containing intentional security
+  anti-patterns (eval, execSync, innerHTML) need explicit excludes in
+  `security-check.js` per-rule `exclude` array
+- CC reduction: extracted `placeGroupItems` from `placeItemsIntoSprints`
+  (21→~10)
+- EXDEV-only fallback: `safeRename` should only fall back to copy+delete for
+  cross-device rename errors, not swallow all errors
+- Scoped regex replace: `updateCurrentMetrics` now scopes to "Current Metrics"
+  section to prevent accidental replacements elsewhere
+- CRLF-safe JSONL: `split(/\r?\n/)` for cross-platform robustness
+- BOM stripping on JSON reads for Windows compatibility
+
+**Rejected:** [6] inline-patterns.js regex fix — Qodo suggested removing `\\)`
+from TOCTOU regex but the closing paren matches `if()`'s closing paren; removing
+it would cause false negatives.
 
 ---
 

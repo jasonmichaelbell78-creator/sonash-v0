@@ -17,8 +17,9 @@ const INDEX = path.join(ROOT, "docs/technical-debt/INDEX.md");
 const SESSION = path.join(ROOT, "SESSION_CONTEXT.md");
 
 // 1. Load MASTER_DEBT
-const rawLines = fs.readFileSync(MASTER, "utf8").replaceAll("\uFEFF", "").trim().split("\n");
+const rawLines = fs.readFileSync(MASTER, "utf8").replaceAll("\uFEFF", "").split(/\r?\n/);
 const items = (Array.isArray(rawLines) ? rawLines : [])
+  .filter((l) => l.trim() !== "")
   .map((l) => {
     try {
       return JSON.parse(l);

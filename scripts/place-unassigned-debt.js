@@ -171,7 +171,7 @@ function loadSprintFiles() {
     const rel = path.relative(LOGS_DIR, filePath);
     if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
     try {
-      const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
+      const raw = JSON.parse(fs.readFileSync(filePath, "utf8").replaceAll("\uFEFF", ""));
       const sprintName = deriveSprintName(raw, file);
       const idList = extractSprintIds(raw);
       const ids = new Set(idList.filter((v) => typeof v === "string" && v));
@@ -193,7 +193,7 @@ function loadSprintFiles() {
  * Read MASTER_DEBT.jsonl and return items not assigned or excluded.
  */
 function findUnplacedItems(allAssignedIds) {
-  const lines = fs.readFileSync(DEBT_PATH, "utf8").trim().split("\n");
+  const lines = fs.readFileSync(DEBT_PATH, "utf8").replaceAll("\uFEFF", "").trim().split("\n");
   const SKIP_STATUSES = new Set(["RESOLVED", "CLOSED", "FALSE_POSITIVE"]);
   const result = [];
 
@@ -255,6 +255,37 @@ function ensureSprintEntry(sprintName, sprints, group, sprintData) {
 }
 
 /**
+ * Place items from a single group into available sprint slots.
+ * Returns remaining items that couldn't be placed.
+ */
+function placeGroupItems(group, itemIds, sprints, sprintData, placements) {
+  let remaining = [...itemIds];
+  let sprintIdx = 0;
+
+  while (remaining.length > 0) {
+    if (sprintIdx >= sprints.length) {
+      if (!createOverflowSprint(sprints, group)) {
+        console.warn(`WARNING: Exhausted all suffix slots for group '${group}'`);
+        break;
+      }
+    }
+
+    const sprintName = sprints[sprintIdx++];
+    if (COMPLETE_SPRINTS.has(sprintName)) continue;
+
+    ensureSprintEntry(sprintName, sprints, group, sprintData);
+
+    const sd = sprintData[sprintName];
+    const capacity = MAX_PER_SPRINT - sd.ids.size;
+    if (capacity <= 0) continue;
+
+    const toAdd = remaining.splice(0, capacity);
+    for (const id of toAdd) sd.ids.add(id);
+    placements[sprintName] = (placements[sprintName] || 0) + toAdd.length;
+  }
+}
+
+/**
  * Place grouped item IDs into sprint slots, creating overflow sprints as needed.
  */
 function placeItemsIntoSprints(groupedItems, sprintData) {
@@ -262,32 +293,8 @@ function placeItemsIntoSprints(groupedItems, sprintData) {
 
   for (const [group, itemIds] of Object.entries(groupedItems)) {
     if (itemIds.length === 0) continue;
-
     const sprints = [...SPRINT_GROUPS[group]];
-    let remaining = [...itemIds];
-    let sprintIdx = 0;
-
-    while (remaining.length > 0) {
-      if (sprintIdx >= sprints.length) {
-        if (!createOverflowSprint(sprints, group)) {
-          console.warn(`WARNING: Exhausted all suffix slots for group '${group}'`);
-          break;
-        }
-      }
-
-      const sprintName = sprints[sprintIdx++];
-      if (COMPLETE_SPRINTS.has(sprintName)) continue;
-
-      ensureSprintEntry(sprintName, sprints, group, sprintData);
-
-      const sd = sprintData[sprintName];
-      const capacity = MAX_PER_SPRINT - sd.ids.size;
-      if (capacity <= 0) continue;
-
-      const toAdd = remaining.splice(0, capacity);
-      for (const id of toAdd) sd.ids.add(id);
-      placements[sprintName] = (placements[sprintName] || 0) + toAdd.length;
-    }
+    placeGroupItems(group, itemIds, sprints, sprintData, placements);
   }
 
   return placements;

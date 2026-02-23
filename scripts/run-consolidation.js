@@ -115,8 +115,17 @@ function safeRename(src, dest) {
   try {
     fs.renameSync(src, dest);
     return;
-  } catch {
-    // Fallback for cross-device moves or other rename failures
+  } catch (err) {
+    if (
+      !(
+        err &&
+        typeof err === "object" &&
+        /** @type {NodeJS.ErrnoException} */ (err).code === "EXDEV"
+      )
+    ) {
+      throw err;
+    }
+    // Fallback for cross-device moves
   }
   if (existsSync(dest)) rmSync(dest, { force: true });
   copyFileSync(src, dest);

@@ -74,17 +74,18 @@ describe("Pattern: hardcoded-api-key [critical]", () => {
   });
 });
 
-describe("Pattern: sql-injection-risk [critical]", () => {
-  // String-based detection: check if a DB method call uses interpolation/concatenation
-  // Replaces complex regex (SonarCloud S5843: complexity 35) with function-based test
-  function hasSqlInjectionRisk(code) {
-    const dbMethods = ["query", "execute", "exec", "prepare", "run", "all", "get"];
-    const hasDbMethod = dbMethods.some((m) => code.includes(m + "(") || code.includes(m + " ("));
-    if (!hasDbMethod) return false;
-    // Check for template literal interpolation or string concatenation in the call
-    return code.includes("${") || /['"`]\s*\+\s*(?!['"`])/.test(code);
-  }
+/**
+ * String-based detection: check if a DB method call uses interpolation/concatenation.
+ * Replaces complex regex (SonarCloud S5843: complexity 35) with function-based test.
+ */
+function hasSqlInjectionRisk(code) {
+  const dbMethods = ["query", "execute", "exec", "prepare", "run", "all", "get"];
+  const hasDbMethod = dbMethods.some((m) => code.includes(m + "(") || code.includes(m + " ("));
+  if (!hasDbMethod) return false;
+  return code.includes("${") || /['"`]\s*\+\s*(?!['"`])/.test(code);
+}
 
+describe("Pattern: sql-injection-risk [critical]", () => {
   test("detects interpolation in queries", () => {
     expect(hasSqlInjectionRisk("db.query(`SELECT * FROM users WHERE id = ${userId}`)")).toBe(true);
   });

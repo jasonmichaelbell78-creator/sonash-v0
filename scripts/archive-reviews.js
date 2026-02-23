@@ -438,19 +438,29 @@ function updateCurrentMetrics(content, keptEntries) {
   const rangeStr =
     activeCount > 0 ? `${activeCount} (#${reviewIds[0]}-#${reviewIds[reviewIds.length - 1]})` : "0";
 
-  // Replace "Main log lines" row
-  let updated = content.replace(
-    /\| Main log lines \|[^|]+\|/,
-    `| Main log lines | ~${lineCount}        |`
+  // Scope replacements to "Current Metrics" section only
+  const header = "## Current Metrics";
+  const start = content.indexOf(header);
+  if (start === -1) return content;
+
+  const sectionBodyStart = start + header.length;
+  const nextHeader = content.indexOf("\n## ", sectionBodyStart);
+  const end = nextHeader === -1 ? content.length : nextHeader;
+
+  const before = content.slice(0, start);
+  let section = content.slice(start, end);
+  const after = content.slice(end);
+
+  section = section.replace(
+    /^\|\s*Main log lines\s*\|[^|]*\|/m,
+    `| Main log lines | ~${lineCount} |`
+  );
+  section = section.replace(
+    /^\|\s*Active reviews\s*\|[^|]*\|/m,
+    `| Active reviews | ${rangeStr} |`
   );
 
-  // Replace "Active reviews" row
-  updated = updated.replace(
-    /\| Active reviews \|[^|]+\|/,
-    `| Active reviews | ${rangeStr.padEnd(13)} |`
-  );
-
-  return updated;
+  return before + section + after;
 }
 
 /**
