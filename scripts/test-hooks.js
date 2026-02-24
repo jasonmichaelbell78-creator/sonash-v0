@@ -244,6 +244,182 @@ const HOOK_TESTS = {
       },
     ],
   },
+
+  // === Hooks added by hook-ecosystem-audit (Session #185) ===
+
+  // SessionStart hooks
+  "check-mcp-servers.js": {
+    description: "MCP server availability reporter",
+    // Outputs server list to stdout (not "ok"), so skip basic exec check
+    skipBasicExecution: true,
+    tests: [],
+  },
+
+  "check-remote-session-context.js": {
+    description: "Remote session context recovery",
+    // Needs git remote access; skip basic execution in test
+    skipBasicExecution: true,
+    tests: [],
+  },
+
+  "compact-restore.js": {
+    description: "Post-compaction context recovery",
+    tests: [
+      {
+        name: "Pass - no handoff file (fresh session)",
+        input: "",
+        expectOk: true,
+      },
+    ],
+  },
+
+  "session-start.js": {
+    description: "Session initialization (npm install, build)",
+    // Heavy side effects (npm install, build) - syntax check only
+    skipBasicExecution: true,
+    skipTests: true,
+    tests: [],
+  },
+
+  "stop-serena-dashboard.js": {
+    description: "Serena dashboard process terminator",
+    // Kills processes - syntax check only
+    skipBasicExecution: true,
+    skipTests: true,
+    tests: [],
+  },
+
+  // PostToolUse hooks
+  "commit-failure-reporter.js": {
+    description: "Git commit failure reporter",
+    tests: [
+      {
+        name: "Pass - non-commit command",
+        input: JSON.stringify({ command: "ls -la", exitCode: 0 }),
+        expectOk: true,
+      },
+      {
+        name: "Pass - successful commit",
+        input: JSON.stringify({ command: "git commit -m 'test'", exitCode: 0 }),
+        expectOk: true,
+      },
+    ],
+  },
+
+  "commit-tracker.js": {
+    description: "Automatic commit logger",
+    tests: [
+      {
+        name: "Pass - non-commit command",
+        input: JSON.stringify({ command: "npm test", exitCode: 0 }),
+        expectOk: true,
+      },
+      {
+        name: "Pass - push command (not a commit)",
+        input: JSON.stringify({ command: "git push origin main", exitCode: 0 }),
+        expectOk: true,
+      },
+    ],
+  },
+
+  "post-read-handler.js": {
+    description: "Read operation context tracker",
+    tests: [
+      {
+        name: "Pass - normal file read",
+        input: JSON.stringify({ file_path: "src/utils.ts" }),
+        expectOk: true,
+      },
+      {
+        name: "Pass - README read",
+        input: JSON.stringify({ file_path: "README.md" }),
+        expectOk: true,
+      },
+    ],
+  },
+
+  "post-write-validator.js": {
+    description: "Write/Edit validator (consolidated)",
+    tests: [
+      {
+        name: "Pass - safe TypeScript file",
+        input: JSON.stringify({
+          file_path: "src/utils.ts",
+          content: "export const add = (a: number, b: number) => a + b;",
+        }),
+        expectOk: true,
+      },
+      {
+        name: "Pass - markdown file (no validation)",
+        input: JSON.stringify({
+          file_path: "docs/README.md",
+          content: "# Documentation\n\nSome content.",
+        }),
+        expectOk: true,
+      },
+    ],
+  },
+
+  "pre-compaction-save.js": {
+    description: "Pre-compaction state snapshot",
+    tests: [
+      {
+        name: "Pass - save state snapshot",
+        input: "",
+        expectOk: true,
+      },
+    ],
+  },
+
+  "track-agent-invocation.js": {
+    description: "Task tool agent invocation tracker",
+    tests: [
+      {
+        name: "Pass - track code-reviewer agent",
+        input: JSON.stringify({
+          subagent_type: "code-reviewer",
+          description: "Review script changes",
+        }),
+        expectOk: true,
+      },
+      {
+        name: "Pass - track Explore agent",
+        input: JSON.stringify({
+          subagent_type: "Explore",
+          description: "Search codebase",
+        }),
+        expectOk: true,
+      },
+    ],
+  },
+
+  // UserPromptSubmit hooks
+  "alerts-reminder.js": {
+    description: "Alerts reminder (cooldown-gated)",
+    // Reads many state files, outputs alerts not "ok"
+    skipBasicExecution: true,
+    tests: [],
+  },
+
+  "user-prompt-handler.js": {
+    description: "User prompt handler (consolidated)",
+    tests: [
+      {
+        name: "Pass - simple prompt",
+        input: JSON.stringify({ prompt: "help me debug this" }),
+        expectOk: true,
+      },
+    ],
+  },
+
+  // Utility library (not a hook, but in hooks directory)
+  "state-utils.js": {
+    description: "State management utilities (library)",
+    // Library module, not an executable hook
+    skipBasicExecution: true,
+    skipTests: true,
+    tests: [],
+  },
 };
 
 // ANSI color codes
@@ -388,6 +564,13 @@ function runTests() {
     if (!syntaxPassed) {
       log(""); // Blank line between hooks
       continue; // Skip other tests if syntax fails
+    }
+
+    // Skip execution tests for hooks with heavy side effects (npm install, kill)
+    if (testDef && testDef.skipTests) {
+      log("  ⏭ Skipping execution tests (heavy side effects)", "gray");
+      log(""); // Blank line between hooks
+      continue;
     }
 
     // 2. Basic execution

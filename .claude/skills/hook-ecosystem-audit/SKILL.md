@@ -43,15 +43,21 @@ audit owns hook internals).
 
 ## Phase 1: Run & Parse
 
-1. Run the audit script:
+1. Run the hook test suite first to get live pass/fail data:
+
+```bash
+npm run hooks:test
+```
+
+2. Run the audit script:
 
 ```bash
 node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js
 ```
 
-2. Parse the v2 JSON output from stdout (progress goes to stderr).
+3. Parse the v2 JSON output from stdout (progress goes to stderr).
 
-3. Create a session decision log file:
+4. Create a session decision log file:
    - Path: `.claude/tmp/hook-audit-session-{YYYY-MM-DD-HHMM}.jsonl`
    - Create `.claude/tmp/` directory if it doesn't exist
 

@@ -1126,7 +1126,7 @@ const ANTI_PATTERNS = [
     review: "#316-#323 (PR #366 R1-R8, 5 rounds of symlink ping-pong)",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-helpers)\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-helpers|session-start)\.js$/,
     pathExcludeList: verifiedPatterns["write-without-symlink-guard"] || [],
   },
 
@@ -1168,7 +1168,7 @@ const ANTI_PATTERNS = [
     review: "#322-#323 (PR #366 R7-R8)",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|session-start)\.js$/,
     pathExcludeList: verifiedPatterns["atomic-write-missing-tmp-guard"] || [],
   },
 

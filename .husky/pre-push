@@ -143,6 +143,31 @@ elif echo "$prop_output" | grep -q "✅"; then
   printf '%s\n' "$prop_output"
 fi
 
+# 3d. Hook test suite (Session #185 — gated on .claude/hooks/ changes)
+# Only runs when hook files are modified in the push diff.
+set +e
+hook_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^\.claude/hooks/.*\.js$' | head -10)
+set -e
+
+if [ -n "${hook_changes:-}" ]; then
+  echo "  ▶ Running hook test suite (hook files changed)..."
+  set +e
+  hook_test_output=$(npm run hooks:test 2>&1)
+  hook_test_exit=$?
+  set -e
+  if [ "$hook_test_exit" -ne 0 ]; then
+    echo "  ❌ Hook tests failed"
+    printf '%s\n' "$hook_test_output" | grep -E "✗|FAIL|Failed" | head -10
+    echo ""
+    echo "  Fix hook tests before pushing. Run: npm run hooks:test"
+    node scripts/append-hook-warning.js --hook=pre-push --type=hook-tests --severity=warning --message="Hook tests failed" --action="npm run hooks:test" 2>/dev/null || true
+    exit 1
+  fi
+  echo "  ✅ Hook tests passed"
+else
+  echo "  ✅ No hook changes (hook test gate skipped)"
+fi
+
 # 4. Security pattern check (diff-only mode: only flag violations in ADDED lines)
 # Hook-quality fix: Previously scanned entire files, catching pre-existing violations
 # that weren't introduced by the current commits. Now uses --diff-only to only check
