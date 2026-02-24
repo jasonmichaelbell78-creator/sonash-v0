@@ -19,6 +19,7 @@ const { execSync, execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 // Detect environment (remote/local)
 const isRemote = process.env.CLAUDE_CODE_REMOTE === "true";
@@ -88,6 +89,10 @@ function writeSessionState(state) {
   const tmpPath = `${SESSION_STATE_FILE}.tmp`;
   try {
     fs.mkdirSync(path.dirname(SESSION_STATE_FILE), { recursive: true });
+    if (!isSafeToWrite(tmpPath)) {
+      console.error("session-start: refusing to write — symlink detected on session state");
+      return;
+    }
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
     try {
       fs.rmSync(SESSION_STATE_FILE, { force: true });
@@ -270,6 +275,11 @@ function saveRootHash() {
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  const absPath = path.resolve(LOCKFILE_HASH_FILE);
+  if (!isSafeToWrite(absPath)) {
+    console.error("session-start: refusing to write — symlink detected on lockfile hash");
+    return;
+  }
   fs.writeFileSync(LOCKFILE_HASH_FILE, hash, "utf-8");
 }
 
@@ -278,6 +288,11 @@ function saveFunctionsHash() {
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(FUNCTIONS_LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  const absPath = path.resolve(FUNCTIONS_LOCKFILE_HASH_FILE);
+  if (!isSafeToWrite(absPath)) {
+    console.error("session-start: refusing to write — symlink detected on functions lockfile hash");
+    return;
+  }
   fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash, "utf-8");
 }
 

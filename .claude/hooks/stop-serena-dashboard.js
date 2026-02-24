@@ -26,6 +26,7 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 const PORT = 24282;
 const PROCESS_ALLOWLIST = ["node", "node.exe", "serena", "claude", "python", "python.exe"];
@@ -52,6 +53,12 @@ function log(message, level = "INFO") {
     }) + "\n";
 
   try {
+    // Defense-in-depth: shared symlink guard before platform-specific checks
+    if (!isSafeToWrite(LOG_FILE)) {
+      console.error(`[SECURITY] Refusing to write to log — symlink detected: ${LOG_FILE}`);
+      return;
+    }
+
     // Symlink protection with TOCTOU mitigation (Review #198 Round 3)
     // Use O_NOFOLLOW on Unix to atomically refuse symlinks, fallback to lstatSync on Windows
     const canNoFollow = process.platform !== "win32" && typeof fs.constants.O_NOFOLLOW === "number";

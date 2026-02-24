@@ -1126,7 +1126,8 @@ const ANTI_PATTERNS = [
     review: "#316-#323 (PR #366 R1-R8, 5 rounds of symlink ping-pong)",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-helpers|session-start)\.js$/,
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|security-helpers|session-start|commit-tracker)\.js$/,
     pathExcludeList: verifiedPatterns["write-without-symlink-guard"] || [],
   },
 

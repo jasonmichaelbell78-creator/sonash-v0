@@ -18,6 +18,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 const STATE_DIR = ".claude/state";
 
@@ -75,6 +76,10 @@ function writeState(projectDir, filename, data) {
   const filePath = path.join(dir, filename);
   const tmpPath = `${filePath}.tmp`;
   try {
+    if (!isSafeToWrite(tmpPath)) {
+      console.error(`Warning: Refusing to write state ${filename} — symlink detected`);
+      return false;
+    }
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
     try {
       fs.rmSync(filePath, { force: true });
