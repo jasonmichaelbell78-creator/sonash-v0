@@ -22,6 +22,18 @@
             "command": "node .claude/hooks/check-remote-session-context.js",
             "statusMessage": "Checking remote branches for session context...",
             "continueOnError": true
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/stop-serena-dashboard.js",
+            "statusMessage": "Checking for Serena dashboard on port 24282...",
+            "continueOnError": true
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/global/gsd-check-update.js",
+            "statusMessage": "Checking for GSD updates...",
+            "continueOnError": true
           }
         ]
       },
@@ -133,6 +145,35 @@
             "type": "command",
             "command": "node .claude/hooks/user-prompt-handler.js $ARGUMENTS",
             "statusMessage": "Processing user prompt..."
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/analyze-user-request.js $ARGUMENTS",
+            "statusMessage": "Analyzing request for task routing...",
+            "continueOnError": true
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/plan-mode-suggestion.js $ARGUMENTS",
+            "statusMessage": "Checking task complexity...",
+            "continueOnError": true
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/session-end-reminder.js $ARGUMENTS",
+            "statusMessage": "Checking session status...",
+            "continueOnError": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/global/statusline.js",
+            "continueOnError": true
           }
         ]
       }

@@ -229,6 +229,46 @@ Stable:
 
 ---
 
+## Phase 6: Self-Audit (Verification)
+
+After all findings are reviewed and fixes committed, re-run the audit to verify
+improvements:
+
+1. Run the hook test suite again:
+
+```bash
+npm run hooks:test
+```
+
+2. Re-run the audit script:
+
+```bash
+node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js
+```
+
+3. Compare the new score against the Phase 2 score:
+
+```
+━━━ Self-Audit Verification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Before: {previous_grade} ({previous_score}/100)
+After:  {new_grade} ({new_score}/100)
+Delta:  {+/-delta} points
+
+Improved Categories:
+  {category}: {before} → {after} (+{delta})
+
+Remaining Issues:
+  {count} findings still open (deferred/skipped)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+4. If the score improved, commit the audit state for trend tracking.
+5. If the score did not improve, investigate why — fixes may have introduced new
+   findings.
+
+---
+
 ## Category Reference
 
 ### Domain 1: Hook Configuration Health (20% weight)
@@ -314,6 +354,8 @@ settings.json (hook registry)
   │   ├── session-start.js
   │   ├── check-mcp-servers.js
   │   ├── check-remote-session-context.js
+  │   ├── stop-serena-dashboard.js
+  │   ├── global/gsd-check-update.js
   │   └── compact-restore.js (matcher: "compact")
   ├── PreCompact
   │   └── pre-compaction-save.js
@@ -324,8 +366,13 @@ settings.json (hook registry)
   │   ├── commit-tracker.js (matcher: bash)
   │   ├── commit-failure-reporter.js (matcher: bash)
   │   └── track-agent-invocation.js (matcher: task)
-  └── UserPromptSubmit
-      └── user-prompt-handler.js
+  ├── UserPromptSubmit
+  │   ├── user-prompt-handler.js
+  │   ├── analyze-user-request.js
+  │   ├── plan-mode-suggestion.js
+  │   └── session-end-reminder.js
+  └── Notification
+      └── global/statusline.js
 ```
 
 ---
