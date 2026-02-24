@@ -285,7 +285,7 @@ function saveRootHash() {
     fs.writeFileSync(LOCKFILE_HASH_FILE, hash, "utf-8");
   } catch (err) {
     console.warn(
-      `session-start: failed to save root lockfile hash: ${err instanceof Error ? err.message : String(err)}`
+      `session-start: failed to save root lockfile hash: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
     );
   }
 }
@@ -304,7 +304,7 @@ function saveFunctionsHash() {
     fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash, "utf-8");
   } catch (err) {
     console.warn(
-      `session-start: failed to save functions lockfile hash: ${err instanceof Error ? err.message : String(err)}`
+      `session-start: failed to save functions lockfile hash: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
     );
   }
 }

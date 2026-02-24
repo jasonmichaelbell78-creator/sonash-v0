@@ -19,8 +19,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { readFileSync, statSync } from "node:fs";
-import path from "node:path";
+import { statSync } from "node:fs";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB — skip huge files
 const SEARCH_DIRS = ["scripts/", ".claude/skills/", ".claude/hooks/"];
@@ -112,8 +111,14 @@ function getChangedFiles() {
       });
     }
     return parseDiff(diffOutput);
-  } catch {
-    // No upstream or no changes
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    // Exit code 1 with empty stderr = no changes; anything else is a real error
+    if (msg.includes("no upstream") || msg.includes("unknown revision")) {
+      if (VERBOSE) console.log("  No upstream configured — skipping propagation check.");
+      return new Map();
+    }
+    console.warn(`  ⚠️ git diff failed: ${msg.slice(0, 200)}`);
     return new Map();
   }
 }
@@ -187,57 +192,63 @@ function extractModifiedFunctions(diffContent) {
 }
 
 /**
+ * Escape a string for safe use in a RegExp / grep -E pattern.
+ */
+function escapeForRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
+/**
+ * Check if a grep match line should be skipped (ignore dirs, test files, large files).
+ */
+function shouldSkipMatch(file) {
+  if (IGNORE_DIRS.some((d) => file.includes(d))) return true;
+  if (file.includes(".test.") || file.includes(".spec.")) return true;
+  try {
+    return statSync(file).size > MAX_FILE_SIZE;
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Parse a grep output line into { file, line, content } or null if invalid.
+ */
+function parseGrepLine(line) {
+  const colonIdx = line.indexOf(":");
+  if (colonIdx === -1) return null;
+  const file = line.substring(0, colonIdx);
+  if (shouldSkipMatch(file)) return null;
+  const secondColon = line.indexOf(":", colonIdx + 1);
+  const lineNum = secondColon > colonIdx ? line.substring(colonIdx + 1, secondColon) : "?";
+  const content = secondColon > colonIdx ? line.substring(secondColon + 1).trim() : "";
+  return { file, line: lineNum, content };
+}
+
+/**
  * Search for a function name in the codebase, excluding certain directories.
  * Returns array of { file, line, content } matches.
  */
 function searchForFunction(funcName) {
   const results = [];
-
-  // Build grep pattern: function definition (not just usage)
-  const definitionPattern = `(function\\s+${funcName}\\s*\\(|(?:const|let|var)\\s+${funcName}\\s*=|\\b${funcName}\\s*\\([^)]*\\)\\s*\\{)`;
+  const safeName = escapeForRegex(funcName);
+  const definitionPattern = String.raw`(function\s+${safeName}\s*\(|(?:const|let|var)\s+${safeName}\s*=|\b${safeName}\s*\([^)]*\)\s*\{)`;
 
   for (const searchDir of SEARCH_DIRS) {
     try {
       const output = execFileSync(
         "grep",
         ["-rnE", definitionPattern, searchDir, "--include=*.js", "--include=*.mjs"],
-        {
-          encoding: "utf8",
-          maxBuffer: 5 * 1024 * 1024,
-          cwd: process.cwd(),
-        }
+        { encoding: "utf8", maxBuffer: 5 * 1024 * 1024, cwd: process.cwd() }
       );
-
       for (const line of output.trim().split("\n").filter(Boolean)) {
-        const colonIdx = line.indexOf(":");
-        if (colonIdx === -1) continue;
-        const file = line.substring(0, colonIdx);
-
-        // Skip files in ignore dirs
-        if (IGNORE_DIRS.some((d) => file.includes(d))) continue;
-
-        // Skip test files
-        if (file.includes(".test.") || file.includes(".spec.")) continue;
-
-        // Check file size
-        try {
-          const stat = statSync(file);
-          if (stat.size > MAX_FILE_SIZE) continue;
-        } catch {
-          continue;
-        }
-
-        const secondColon = line.indexOf(":", colonIdx + 1);
-        const lineNum = secondColon > colonIdx ? line.substring(colonIdx + 1, secondColon) : "?";
-        const content = secondColon > colonIdx ? line.substring(secondColon + 1).trim() : "";
-
-        results.push({ file, line: lineNum, content });
+        const parsed = parseGrepLine(line);
+        if (parsed) results.push(parsed);
       }
     } catch {
       // grep returns exit code 1 when no matches — ignore
     }
   }
-
   return results;
 }
 

@@ -152,8 +152,7 @@ test("code_hygiene checker does NOT flag console.log in hook files", () => {
   // None of the findings should flag console.log as a debug/hygiene issue
   const consoleLogFindings = hygieneFindings.filter(
     (f) =>
-      (f.message || "").includes("console.log") &&
-      !(f.message || "").includes("console.log(") === false &&
+      (f.message || "").includes("console.log(") &&
       (f.details || "").toLowerCase().includes("debug")
   );
 
@@ -421,33 +420,33 @@ add_exit_trap 'rm -f "$OTHER_FILE"'
 
 console.log("\n--- Test Group 6: Cross-checker Deduplication ---");
 
-test("deduplication removes lower-impact duplicate for same file + severity", () => {
-  // Simulate the deduplication logic from the orchestrator
-  function deduplicateFindings(findings) {
-    const seen = new Map();
-    const deduped = [];
+// Shared deduplication helper (simulates orchestrator logic)
+function deduplicateFindings(findings) {
+  const seen = new Map();
+  const deduped = [];
 
-    for (const f of findings) {
-      const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.js)/);
-      const file = fileMatch ? fileMatch[1] : "";
-      const key = file ? `${file}:${f.severity}` : null;
+  for (const f of findings) {
+    const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.js)/);
+    const file = fileMatch ? fileMatch[1] : "";
+    const key = file ? `${file}:${f.severity}` : null;
 
-      if (key && seen.has(key)) {
-        const existing = seen.get(key);
-        if ((f.impactScore || 0) > (existing.impactScore || 0)) {
-          existing._supersededBy = f.id;
-          deduped[deduped.indexOf(existing)] = f;
-          seen.set(key, f);
-        }
-      } else {
-        if (key) seen.set(key, f);
-        deduped.push(f);
+    if (key && seen.has(key)) {
+      const existing = seen.get(key);
+      if ((f.impactScore || 0) > (existing.impactScore || 0)) {
+        existing._supersededBy = f.id;
+        deduped[deduped.indexOf(existing)] = f;
+        seen.set(key, f);
       }
+    } else {
+      if (key) seen.set(key, f);
+      deduped.push(f);
     }
-
-    return deduped;
   }
 
+  return deduped;
+}
+
+test("deduplication removes lower-impact duplicate for same file + severity", () => {
   const findings = [
     {
       id: "HEA-200",
@@ -473,31 +472,6 @@ test("deduplication removes lower-impact duplicate for same file + severity", ()
 });
 
 test("deduplication keeps findings for different files", () => {
-  function deduplicateFindings(findings) {
-    const seen = new Map();
-    const deduped = [];
-
-    for (const f of findings) {
-      const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.js)/);
-      const file = fileMatch ? fileMatch[1] : "";
-      const key = file ? `${file}:${f.severity}` : null;
-
-      if (key && seen.has(key)) {
-        const existing = seen.get(key);
-        if ((f.impactScore || 0) > (existing.impactScore || 0)) {
-          existing._supersededBy = f.id;
-          deduped[deduped.indexOf(existing)] = f;
-          seen.set(key, f);
-        }
-      } else {
-        if (key) seen.set(key, f);
-        deduped.push(f);
-      }
-    }
-
-    return deduped;
-  }
-
   const findings = [
     {
       id: "HEA-200",
@@ -520,31 +494,6 @@ test("deduplication keeps findings for different files", () => {
 });
 
 test("deduplication keeps findings with same file but different severity", () => {
-  function deduplicateFindings(findings) {
-    const seen = new Map();
-    const deduped = [];
-
-    for (const f of findings) {
-      const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.js)/);
-      const file = fileMatch ? fileMatch[1] : "";
-      const key = file ? `${file}:${f.severity}` : null;
-
-      if (key && seen.has(key)) {
-        const existing = seen.get(key);
-        if ((f.impactScore || 0) > (existing.impactScore || 0)) {
-          existing._supersededBy = f.id;
-          deduped[deduped.indexOf(existing)] = f;
-          seen.set(key, f);
-        }
-      } else {
-        if (key) seen.set(key, f);
-        deduped.push(f);
-      }
-    }
-
-    return deduped;
-  }
-
   const findings = [
     {
       id: "HEA-200",

@@ -77,8 +77,10 @@ function writeState(projectDir, filename, data) {
   const filePath = path.join(dir, filename);
   const tmpPath = `${filePath}.tmp`;
   try {
-    if (!isSafeToWrite(tmpPath)) {
-      console.error(`Warning: Refusing to write state ${filename} — symlink detected`);
+    if (!isSafeToWrite(tmpPath) || !isSafeToWrite(filePath)) {
+      console.error(
+        `Warning: Refusing to write state ${sanitizeInput(filename)} — symlink detected`
+      );
       return false;
     }
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));

@@ -567,7 +567,7 @@ function runTests() {
     }
 
     // Skip execution tests for hooks with heavy side effects (npm install, kill)
-    if (testDef && testDef.skipTests) {
+    if (testDef?.skipTests) {
       log("  ⏭ Skipping execution tests (heavy side effects)", "gray");
       log(""); // Blank line between hooks
       continue;
