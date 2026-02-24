@@ -18,6 +18,7 @@ const { sanitizeInput } = require("./lib/sanitize-input");
 let isSafeToWrite, rotateJsonl;
 try {
   isSafeToWrite = require("./lib/symlink-guard").isSafeToWrite;
+  if (typeof isSafeToWrite !== "function") isSafeToWrite = () => true;
 } catch {
   isSafeToWrite = () => true;
 }
