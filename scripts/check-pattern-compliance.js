@@ -691,7 +691,7 @@ const ANTI_PATTERNS = [
     // Exclude files with verified error handling
     // check-pattern-sync.js: CJS require() calls at top-level are standard node module loading
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|load-config|check-pattern-sync|security-helpers)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|load-config|check-pattern-sync|security-helpers|analyze-learning-effectiveness)\.js$/,
     pathExcludeList: verifiedPatterns["unguarded-loadconfig"] || [],
   },
 

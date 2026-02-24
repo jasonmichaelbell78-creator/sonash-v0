@@ -25,12 +25,13 @@
  * Exit codes: 0 = success, 1 = errors found, 2 = fatal error
  */
 
-const { readFileSync, writeFileSync, existsSync, readdirSync, lstatSync } = require("node:fs");
+const { readFileSync, existsSync, readdirSync, lstatSync } = require("node:fs");
 const path = require("node:path");
 const { join } = path;
 const { createInterface } = require("node:readline");
 
 const ROOT = join(__dirname, "..");
+const { safeWriteFile } = require(join(ROOT, "scripts", "lib", "security-helpers"));
 
 const LEARNINGS_LOG = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const CODE_PATTERNS = join(ROOT, "docs", "agent_docs", "CODE_PATTERNS.md");
@@ -73,28 +74,6 @@ function sanitizeDisplayString(str, maxLength = 100) {
 function escapeMd(str, maxLength = 100) {
   const sanitized = sanitizeDisplayString(str, maxLength);
   return sanitized.replace(/[\\[\]()_*`#>!-]/g, "\\$&");
-}
-
-/**
- * Check if path is a symlink and refuse to write through it
- */
-function refuseSymlink(filePath) {
-  const { lstatSync } = require("node:fs");
-  const path = require("node:path");
-
-  let current = path.resolve(filePath);
-  while (true) {
-    if (existsSync(current)) {
-      const st = lstatSync(current);
-      if (st.isSymbolicLink()) {
-        throw new Error(`Refusing to write through symlink: ${current}`);
-      }
-    }
-
-    const parent = path.dirname(current);
-    if (parent === current) break;
-    current = parent;
-  }
 }
 
 /**
@@ -206,7 +185,6 @@ class LearningEffectivenessAnalyzer {
         throw new Error("Archive directory not found: docs/archive/");
       }
 
-      const { readdirSync } = require("node:fs");
       const archiveFiles = readdirSync(archiveDir)
         .filter((f) => f.startsWith("REVIEWS_") && f.endsWith(".md"))
         .sort();
@@ -1170,8 +1148,7 @@ class LearningEffectivenessAnalyzer {
       content += `  - **Details:** ${escapeMd(item.description, 150)}\n\n`;
     }
 
-    refuseSymlink(TODO_FILE);
-    writeFileSync(TODO_FILE, content, { encoding: "utf-8", mode: 0o600 });
+    safeWriteFile(TODO_FILE, content, { allowOverwrite: true });
   }
 
   /**
@@ -1261,8 +1238,7 @@ ${this.results.suggestions
 | 2.0     | ${now}     | Rewritten to focus on Claude's learning effectiveness |
 `;
 
-    refuseSymlink(METRICS_FILE);
-    writeFileSync(METRICS_FILE, content, { encoding: "utf-8", mode: 0o600 });
+    safeWriteFile(METRICS_FILE, content, { allowOverwrite: true });
     console.log(`\n✅ Metrics updated: ${METRICS_FILE}`);
   }
 
