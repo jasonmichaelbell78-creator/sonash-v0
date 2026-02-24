@@ -1098,7 +1098,7 @@ const ANTI_PATTERNS = [
             lines[j].includes("isWriteSafe") ||
             lines[j].includes("isSymbolicLink") ||
             lines[j].includes("guardSymlink") ||
-            lines[j].includes("refuseSymlinkWithParents")
+            lines[j].includes("refuseSymlink")
           ) {
             hasGuard = true;
             break;

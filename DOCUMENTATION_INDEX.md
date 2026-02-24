@@ -82,7 +82,7 @@ _Essential project-level documentation_
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15     | 2026-02-24    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-23    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑18    | 2026-02-24    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑19    | 2026-02-24    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-02-23    |
 
 ### Core Documentation (Tier 2)
@@ -558,7 +558,7 @@ _Reference_
 
 | Document                                   | Description                                                       | References | Last Modified |
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓3 ↑7      | 2026-02-24    |
+| [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑7      | 2026-02-24    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-24    |
 | [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-02-24    |
 
@@ -619,7 +619,7 @@ Documents that link to other documents most frequently:
 
 | Document                                                                                                  | Outbound Links |
 | --------------------------------------------------------------------------------------------------------- | -------------- |
-| [SoNash Product Roadmap](ROADMAP.md)                                                                      | 18             |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                      | 19             |
 | [Audit Ecosystem](docs/audits/README.md)                                                                  | 18             |
 | [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                        | 18             |
 | [AI Workflow Guide](AI_WORKFLOW.md)                                                                       | 16             |

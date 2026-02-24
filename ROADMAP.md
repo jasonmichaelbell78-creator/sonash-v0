@@ -22,7 +22,7 @@
 
 > For detailed AI update instructions, cross-document update triggers, and
 > validation commands, see
-> [CLAUDE.md Section 6](./CLAUDE.md#6-agentskill-triggers).
+> [claude.md Section 6](./claude.md#6-agentskill-triggers).
 
 **Quick Reference:**
 
@@ -3116,7 +3116,7 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 Update this document when milestone status changes, new features are added,
 priorities change, or progress percentages change significantly (>10%). For full
 trigger matrix and cross-document update rules, see
-[CLAUDE.md Section 7](./CLAUDE.md#7-reference-docs).
+[claude.md Section 7](./claude.md#7-reference-docs).
 
 ---
 

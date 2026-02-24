@@ -46,6 +46,7 @@ project:
 
 - **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - AI assistant navigation guide
 - **[AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)** - Code review process
+- **[claude.md](./claude.md)** - AI context and critical patterns
 - **[docs/agent_docs/CODE_PATTERNS.md](./docs/agent_docs/CODE_PATTERNS.md)** -
   Full pattern reference (90+ patterns)
 

@@ -597,9 +597,27 @@ class LearningEffectivenessAnalyzer {
   }
 
   /**
-   * Check if a pattern is automated in Pattern Checker
+   * Check if a pattern is automated in Pattern Checker.
+   * Uses both fuzzy keyword matching AND an explicit alias map for patterns
+   * whose CODE_PATTERNS.md names don't match their checker IDs (Session #185).
    */
   isPatternAutomated(patternName) {
+    // Explicit alias map: CODE_PATTERNS.md name → checker ID
+    // Fixes false "FAILED" status for patterns already automated under different names
+    const PATTERN_ALIASES = {
+      "safe percentage": "unsafe-division",
+      "session identity check": "session-id-no-validation",
+      "table-column date parsing": "unsection-scoped-table-regex",
+      "empty filename fallback": "rename-no-fallback",
+      "section-scoped regex parsing": "unsection-scoped-table-regex",
+    };
+
+    const lowerName = patternName.toLowerCase();
+    const aliasId = PATTERN_ALIASES[lowerName];
+    if (aliasId && this.automatedPatterns.some((a) => a.id === aliasId)) {
+      return true;
+    }
+
     const patternKeywords = this.extractKeywords(patternName);
 
     for (const automated of this.automatedPatterns) {
