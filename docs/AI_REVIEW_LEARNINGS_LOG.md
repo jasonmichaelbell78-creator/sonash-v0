@@ -348,6 +348,15 @@ accumulate.
 > markdown during this period.
 
 <details>
+<summary>Previous Consolidation (#2)</summary>
+
+- **Date:** 2026-02-24
+- **Reviews consolidated:** #370-#379
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#1)</summary>
 
 - **Date:** 2026-02-24
@@ -600,7 +609,24 @@ accumulate.
 
 ## Active Reviews
 
-### Review #379: PR #390 R1 (2026-02-24)
+### Review #380: PR #390 R2 (2026-02-24)
+
+- **Source**: Qodo PR Suggestions (7)
+- **PR**: PR #390 — cherry-pick of PR #388 retro action items + docs:index fix
+- **Items**: 7 total — 7 fixed, 0 deferred, 0 rejected
+- **Patterns**: Use committer date (%cI) not author date (%aI) to prevent date
+  regression from cherry-picks/rebases; cache git log results per file for
+  performance; normalize backslashes in git paths for Windows; use fd 0 not
+  process.stdin.fd for cross-platform stdin; POSIX ERE word boundary guidance
+  updated to `git grep -w` or explicit groups; retro metrics consistency (PR
+  label, fixed count)
+- **Key Learning**: getLastModifiedDate needed 3 improvements in one pass (date
+  format, caching, path normalization) — combining related suggestions prevents
+  incremental fix rounds.
+
+---
+
+### Review #379: PR #388 R1 (2026-02-24)
 
 - **Source**: Gemini Code Assist (1), Qodo PR Suggestions (7)
 - **PR**: PR #388 retrospective + retro action items
@@ -992,7 +1018,7 @@ appeared in R5, R6+, and R7.
 #### Verdict
 
 PR #388 had a **moderately inefficient review cycle** — 7 rounds with 144 items,
-106 fixed. ~4.5 of 7 rounds were partially avoidable (~64%), driven by
+108 fixed. ~4.5 of 7 rounds were partially avoidable (~64%), driven by
 isInsideTryCatch heuristic ping-pong (1 round), data-quality-dedup progressive
 hardening (1.5 rounds), regex safety escalation (0.5 rounds), POSIX ERE
 incompatibility (0.5 rounds), and lstatSync propagation miss (0.5 rounds).

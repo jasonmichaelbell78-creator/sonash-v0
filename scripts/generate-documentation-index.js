@@ -500,29 +500,44 @@ function getCategory(filePath) {
   return category;
 }
 
+const lastModifiedCache = new Map();
+
 /**
  * Get the last git commit date for a file.
+ * Uses committer date (%cI) to avoid date regressions from cherry-picks/rebases.
  * Falls back to filesystem mtime if git fails (e.g., untracked file).
  */
 function getLastModifiedDate(filePath, fullPath) {
+  const cached = lastModifiedCache.get(filePath);
+  if (cached) return cached;
+
+  const gitPath = filePath.replace(/\\/g, "/");
+  let lastModified;
+
   try {
-    const result = execFileSync("git", ["log", "-1", "--format=%aI", "--", filePath], {
+    const result = execFileSync("git", ["log", "-1", "--format=%cI", "--", gitPath], {
       cwd: ROOT,
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
     }).trim();
     if (result) {
-      return result.split("T")[0];
+      lastModified = result.split("T")[0];
     }
   } catch {
     // Git failed — fall back to filesystem mtime
   }
-  try {
-    const stat = statSync(fullPath);
-    return stat.mtime.toISOString().split("T")[0];
-  } catch {
-    return new Date().toISOString().split("T")[0];
+
+  if (!lastModified) {
+    try {
+      const stat = statSync(fullPath);
+      lastModified = stat.mtime.toISOString().split("T")[0];
+    } catch {
+      lastModified = new Date().toISOString().split("T")[0];
+    }
   }
+
+  lastModifiedCache.set(filePath, lastModified);
+  return lastModified;
 }
 
 /**

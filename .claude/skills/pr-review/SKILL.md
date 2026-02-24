@@ -402,9 +402,9 @@ instantly.
 
 **Search pattern for stale reviews:**
 
-```
-If reviewer feedback says "commit ABCDEF" and HEAD is "commit XYZW":
-  git log --oneline ABCDEF..XYZW  # If this shows commits, review is stale
+```bash
+# If reviewer feedback references "commit ABCDEF", verify what changed since then:
+git log --oneline ABCDEF..HEAD  # If this shows commits, review is stale
 ```
 
 ---
@@ -827,7 +827,7 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 | Version | Date       | Description                                                                                                                |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check (Step 1.5), expand heuristic test matrix (Step 0.5). Source: PR #388 retro.                  |
+| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check (Step 1.4.1), expand heuristic test matrix (Step 0.5). Source: PR #388 retro.                |
 | 3.0     | 2026-02-23 | Add Local Pattern Compliance Check (Step 0.5) — mandatory pre-push patterns:check. Source: PR #384 retro.                  |
 | 2.9     | 2026-02-22 | Add dual-file JSONL write check (Step 0.5), dual-file propagation pattern (Step 5.6). Source: PR #383 retro.               |
 | 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks (Step 0.5), strengthen propagation (Step 5.6). Source: PR #382 retro. |
