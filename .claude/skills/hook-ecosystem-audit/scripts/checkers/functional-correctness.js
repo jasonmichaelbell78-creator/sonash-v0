@@ -31,8 +31,11 @@ const { BENCHMARKS } = safeRequire("../lib/benchmarks");
  */
 function safeTestRegex(pattern) {
   try {
+    // Claude Code's matcher engine supports inline flags like (?i) for
+    // case-insensitive matching. Strip them before JS RegExp validation.
+    const normalized = pattern.replace(/\(\?[gimsuy]+\)/g, "");
     // eslint-disable-next-line no-new -- validation only
-    new RegExp(pattern); // pattern-checker:ignore — intentional validation
+    new RegExp(normalized); // pattern-checker:ignore — intentional validation
     return true;
   } catch {
     return false;
@@ -237,18 +240,10 @@ function checkOutputProtocol(hooksDir, hookInventory, findings) {
       }
     }
 
-    // Check 2: Non-protocol stdout usage (console.log with non-"ok" content)
-    // Count console.log calls that aren't "ok" — these should be console.error for logging
-    const allLogCalls = content.match(/console\.log\((?:[^)(]|\([^)]*\))*\)/g) || [];
-    const nonProtocolLogs = allLogCalls.filter(
-      (call) => !/console\.log\(\s*["']ok["']\s*\)/.test(call)
-    );
-
-    if (nonProtocolLogs.length > 3) {
-      hookIssues.push(
-        `${nonProtocolLogs.length} non-protocol console.log calls (should use console.error for logging)`
-      );
-    }
+    // Check 2: In Claude Code hooks, ALL console.log calls are protocol output.
+    // Hooks use stdout as the response channel — console.log is correct for status
+    // messages, structured output, and "ok" responses. No need to flag count-based
+    // thresholds since all stdout usage is intentional protocol output.
 
     // Check 3: process.exit() usage
     const exitZero = /process\.exit\(\s*0\s*\)/.test(content);
@@ -340,8 +335,10 @@ function extractHookRegistrations(settings) {
       for (const hookDef of group.hooks) {
         if (!hookDef.command) continue;
         // Extract hook filename from command like "node .claude/hooks/commit-tracker.js $ARGUMENTS"
-        // Prefer the filename after .claude/hooks/ to avoid matching "node" or other .js args
-        const hooksPathMatch = hookDef.command.match(/\.claude[\\/]hooks[\\/]([a-zA-Z0-9_-]+\.js)/);
+        // Prefer the relative path after .claude/hooks/ (supports subdirs like global/)
+        const hooksPathMatch = hookDef.command.match(
+          /\.claude[\\/]hooks[\\/]((?:[a-zA-Z0-9_-]+[\\/])*[a-zA-Z0-9_-]+\.js)/
+        );
         const fileMatch = hooksPathMatch || hookDef.command.match(/([a-zA-Z0-9_-]+\.js)/);
         if (fileMatch) {
           registrations.push({

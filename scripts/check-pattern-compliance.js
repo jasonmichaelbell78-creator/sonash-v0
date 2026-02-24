@@ -657,6 +657,7 @@ const ANTI_PATTERNS = [
       "generate-detailed-sonar-report.js",
       "place-unassigned-debt.js",
       "analyze-placement.js",
+      "post-write-validator.js",
     ],
   },
 

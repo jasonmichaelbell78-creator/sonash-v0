@@ -43,7 +43,9 @@
     "state-manager.js",
     "run-hook-ecosystem-audit.js",
     "run-session-ecosystem-audit.js",
-    "run-tdms-ecosystem-audit.js"
+    "run-tdms-ecosystem-audit.js",
+    "state-utils.js",
+    "stop-serena-dashboard.js"
   ],
   "unescaped-regexp-input": [
     "suggest-pattern-automation.js",

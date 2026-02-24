@@ -15,18 +15,24 @@
  */
 
 let fs, path;
+let sanitizeInput;
+try {
+  ({ sanitizeInput } = require("./lib/sanitize-input"));
+} catch {
+  sanitizeInput = (v) => String(v).slice(0, 500);
+}
 try {
   fs = require("node:fs");
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
-  console.error("Failed to load node:fs:", msg);
+  console.error("Failed to load node:fs:", sanitizeInput(msg));
   process.exit(1);
 }
 try {
   path = require("node:path");
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
-  console.error("Failed to load node:path:", msg);
+  console.error("Failed to load node:path:", sanitizeInput(msg));
   process.exit(1);
 }
 

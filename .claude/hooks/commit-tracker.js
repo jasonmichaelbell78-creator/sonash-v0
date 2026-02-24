@@ -23,6 +23,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { isSafeToWrite } = require("./lib/symlink-guard");
 const { gitExec, projectDir } = require("./lib/git-utils.js");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 // Security check - bidirectional containment
 const safeBaseDir = path.resolve(process.cwd());
@@ -218,7 +219,9 @@ function main() {
 
   if (appendCommitLog(entry)) {
     saveLastHead(currentHead);
-    console.error(`  Commit tracked: ${entry.shortHash} ${entry.message.slice(0, 60)}`);
+    console.error(
+      `  Commit tracked: ${sanitizeInput(entry.shortHash)} ${sanitizeInput(entry.message.slice(0, 60))}`
+    );
 
     // Rotate commit log to prevent unbounded growth (OPT #72)
     try {

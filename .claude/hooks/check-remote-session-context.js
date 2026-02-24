@@ -14,6 +14,7 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const { isSafeToWrite } = require("./lib/symlink-guard");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 // Fetch TTL cache (path resolved after projectDir is defined below)
 let FETCH_CACHE_FILE;
@@ -212,16 +213,16 @@ function main() {
     console.error("");
     console.error("⚠️  SESSION CONTEXT UPDATE DETECTED");
     console.error("━".repeat(40));
-    console.error(`Branch: ${newerBranch}`);
+    console.error(`Branch: ${sanitizeInput(newerBranch)}`);
     console.error(`Session Counter: ${newerCounter} (local: ${localCounter})`);
-    console.error(`Last Updated: ${newerDate}`);
+    console.error(`Last Updated: ${sanitizeInput(newerDate)}`);
     console.error("");
     console.error("The remote branch has newer session context.");
     console.error("Consider checking out or merging that branch,");
     console.error("or manually update SESSION_CONTEXT.md.");
     console.error("");
-    console.error(`To view: git show ${newerBranch}:SESSION_CONTEXT.md`);
-    console.error(`To merge: git merge ${newerBranch}`);
+    console.error(`To view: git show ${sanitizeInput(newerBranch)}:SESSION_CONTEXT.md`);
+    console.error(`To merge: git merge ${sanitizeInput(newerBranch)}`);
     console.error("━".repeat(40));
   }
 

@@ -20,6 +20,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { isSafeToWrite } = require("./lib/symlink-guard");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 // Detect environment (remote/local)
 const isRemote = process.env.CLAUDE_CODE_REMOTE === "true";
@@ -76,7 +77,7 @@ function readSessionState() {
     }
   } catch (err) {
     console.error(
-      `session-start: failed to read session state: ${err instanceof Error ? err.message : String(err)}`
+      `session-start: failed to read session state: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
     );
   }
   return null;

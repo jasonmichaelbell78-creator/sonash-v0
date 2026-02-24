@@ -12,6 +12,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 // Lazy-load shared helpers (best-effort — never block on import failure)
 let isSafeToWrite, rotateJsonl;
@@ -104,6 +105,7 @@ function writeState(state) {
   const statePath = path.join(projectDir, STATE_FILE);
   const tmpPath = `${statePath}.tmp`;
   try {
+    if (!isSafeToWrite(statePath) || !isSafeToWrite(tmpPath)) return;
     // Ensure directory exists
     const dir = path.dirname(statePath);
     fs.mkdirSync(dir, { recursive: true });
@@ -118,7 +120,7 @@ function writeState(state) {
       // ignore cleanup failures
     }
     // Log error but don't block execution
-    console.error(`Warning: Could not write to ${STATE_FILE}:`, err.message);
+    console.error(`Warning: Could not write to ${STATE_FILE}:`, sanitizeInput(err.message));
   }
 }
 
@@ -204,7 +206,7 @@ try {
 }
 
 // Log for visibility
-console.error(`✅ Agent invoked: ${subagentType}`);
+console.error(`✅ Agent invoked: ${sanitizeInput(subagentType)}`);
 
 console.log("ok");
 process.exit(0);

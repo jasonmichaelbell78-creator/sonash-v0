@@ -387,7 +387,6 @@ function checkCodeHygiene(hookFiles, rootDir) {
   let issuesCount = 0;
 
   const todoPattern = /\b(?:TODO|FIXME|HACK)\b/;
-  const consoleLogPattern = /\bconsole\.log\b/;
 
   for (const hook of hookFiles) {
     const lines = hook.content.split("\n");
@@ -477,26 +476,10 @@ function checkCodeHygiene(hookFiles, rootDir) {
       }
     }
 
-    // Check 3: console.log (hooks should use console.error since stdout is protocol)
-    for (let i = 0; i < lines.length; i++) {
-      if (consoleLogPattern.test(lines[i])) {
-        // Skip if it's in a comment
-        const trimmed = lines[i].trim();
-        if ((trimmed[0] === "/" && trimmed[1] === "/") || trimmed[0] === "*") continue;
-        issuesCount++;
-        findings.push({
-          id: "HEA-222",
-          category: "code_hygiene",
-          domain: DOMAIN,
-          severity: "warning",
-          message: `console.log used in ${hook.name} (stdout is protocol channel)`,
-          details: `Line ${i + 1}: Hooks should use console.error for logging; stdout is reserved for hook protocol output`,
-          impactScore: 40,
-          frequency: 1,
-          blastRadius: 2,
-        });
-      }
-    }
+    // Check 3: console.log — in Claude Code hooks, stdout IS the protocol channel.
+    // console.log is the correct way to send responses. Only flag console.log
+    // usage in non-hook scripts (like lib/ utilities) where stderr should be used.
+    // Hook files intentionally use console.log for protocol output, so skip this check.
   }
 
   // Check 4: References to removed/renamed hook files in docs or other hooks
