@@ -1,8 +1,8 @@
 # Sprint Workflow Skill Design
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-21
+**Document Version:** 1.1
+**Last Updated:** 2026-02-23
 **Status:** APPROVED
 **Session:** #179
 <!-- prettier-ignore-end -->
@@ -26,7 +26,8 @@ The TDMS sprint workflow is ~60% built. Missing pieces:
 
 ## Architecture: Single Skill with Subcommands
 
-**Skill location:** `.claude/skills/sprint/SKILL.md`
+**Skill location:** `.claude/skills/sprint/SKILL.md` (skills are in
+`.claude/skills/`, the current standard location)
 
 ### Subcommands
 
@@ -215,6 +216,7 @@ parallel agents: archive sprint, update all docs, generate sprint report.
 
 ## Version History
 
-| Version | Date       | Change         |
-| ------- | ---------- | -------------- |
-| 1.0     | 2026-02-21 | Initial design |
+| Version | Date       | Change                                                   |
+| ------- | ---------- | -------------------------------------------------------- |
+| 1.1     | 2026-02-23 | Clarify skills directory (.claude/skills/), Last Updated |
+| 1.0     | 2026-02-21 | Initial design                                           |

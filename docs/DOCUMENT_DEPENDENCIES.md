@@ -309,9 +309,9 @@ changes in one document affect the accuracy of another.
 | When This Changes                  | Check These Documents                                                                | Reason                                                  | Enforced |
 | ---------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------- | -------- |
 | `ROADMAP.md` milestones/priorities | `SESSION_CONTEXT.md` priorities section                                              | Session context reflects current roadmap focus          | ✅ BLOCK |
-| `ROADMAP.md` milestone promoted    | `ROADMAP_FUTURE.md` (remove detailed section)                                        | Future details move with promotion                      | Manual   |
+| `ROADMAP.md` milestone promoted    | `ROADMAP_FUTURE.md` (root, remove detailed section)                                  | Future details move with promotion                      | Manual   |
 | `ROADMAP_FUTURE.md` task added     | `analysis/PARALLEL_EXECUTION_GUIDE.md` (if PG marker)                                | Parallel groups must stay synchronized                  | Manual   |
-| Milestone promoted to active       | `ROADMAP.md`, `ROADMAP_FUTURE.md`                                                    | Move section from FUTURE to active roadmap              | Manual   |
+| Milestone promoted to active       | `ROADMAP.md`, `ROADMAP_FUTURE.md` (root)                                             | Move section from FUTURE to active roadmap              | Manual   |
 | Audit findings resolved            | `docs/technical-debt/MASTER_DEBT.jsonl`                                              | Technical debt tracker must reflect resolved items      | Manual   |
 | Comprehensive audit runs           | `docs/technical-debt/MASTER_DEBT.jsonl`, `ROADMAP.md`                                | New findings must be consolidated and prioritized       | Manual   |
 | `TECHNICAL_DEBT_MASTER.md` changed | `ROADMAP.md` (Technical Debt Backlog section)                                        | Backlog section references tech debt master             | Manual   |
@@ -332,12 +332,12 @@ changes in one document affect the accuracy of another.
 | `SESSION_CONTEXT.md` 5+ sessions   | `docs/SESSION_HISTORY.md`, `SESSION_CONTEXT.md`                                      | Keep SESSION_CONTEXT.md < 200 lines                     | Manual   |
 | `tests/e2e/` files changed         | `ROADMAP.md` (Track T status), `TESTING_PLAN.md`                                     | E2E test changes must update Track T status             | Manual   |
 | Testing infrastructure changes     | `docs/plans/TESTING_INFRASTRUCTURE_PLAN.md`                                          | Track T spec must reflect implementation                | Manual   |
-| Planning documents added/archived  | `docs/PLAN_MAP.md`                                                                   | Plan map shows documentation hierarchy                  | Manual   |
-| `.claude/plans/` files changed     | `docs/PLAN_MAP.md`                                                                   | Keep plan map current with active plans                 | Manual   |
+| Planning documents added/archived  | `docs/archive/PLAN_MAP.md`                                                           | Plan map shows documentation hierarchy                  | Manual   |
+| `.claude/plans/` files changed     | `docs/archive/PLAN_MAP.md`                                                           | Keep plan map current with active plans                 | Manual   |
 | **Docs added/removed/moved**       | `DOCUMENTATION_INDEX.md` (run `npm run docs:index`)                                  | Auto-generated index must reflect current state         | Manual   |
-| `docs/plans/` files added/changed  | `docs/PLAN_MAP.md`, `docs/README.md`                                                 | Navigation docs must reference new plans                | ✅ BLOCK |
+| `docs/plans/` files added/changed  | `docs/archive/PLAN_MAP.md`, `docs/README.md`                                         | Navigation docs must reference new plans                | ✅ BLOCK |
 | `docs/technical-debt/` changed     | `SESSION_CONTEXT.md`                                                                 | Session context tracks tech debt status                 | ✅ BLOCK |
-| `docs/technical-debt/` changed     | `docs/PLAN_MAP.md`                                                                   | TDMS status tracking                                    | ✅ BLOCK |
+| `docs/technical-debt/` changed     | `docs/archive/PLAN_MAP.md`                                                           | TDMS status tracking                                    | ✅ BLOCK |
 | DEBT-XXXX items resolved           | `docs/technical-debt/MASTER_DEBT.jsonl`, `ROADMAP.md`                                | Both canonical and roadmap must reflect resolution      | Manual   |
 | New audit findings generated       | `docs/technical-debt/MASTER_DEBT.jsonl` (via intake scripts)                         | All findings flow to canonical location                 | Manual   |
 

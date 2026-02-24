@@ -16,7 +16,7 @@ comprehensive report organized by domain with severity ratings, then fix all
 issues found in severity-based PRs (S0/S1 first, then S2/S3).
 
 The repo contains ~500+ non-trivial files across: Next.js app code, Firebase
-Cloud Functions, 100+ automation scripts, 55 AI skills, 19 hooks, 24 agent
+Cloud Functions, 100+ automation scripts, 55 AI skills, 18 hooks, 24 agent
 definitions, 40+ docs, 10 CI/CD workflows, security rules, and configuration
 files.
 

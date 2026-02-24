@@ -118,17 +118,18 @@ Source: `.mcp.json` + auto-discovered plugins
 
 Source: `.claude/settings.json` → `hooks`
 
-| Event                       | Hook                        | Purpose                               |
-| --------------------------- | --------------------------- | ------------------------------------- |
-| SessionStart                | `session-start.js`          | Deps, builds, patterns, TDMS check    |
-| SessionStart:compact        | `compact-restore.js`        | Restore context after compaction      |
-| PreCompact                  | `pre-compaction-save.js`    | Save state snapshot before compaction |
-| PostToolUse:Write/Edit      | `post-write-validator.js`   | Schema, lint, pattern validation      |
-| PostToolUse:Read            | `post-read-handler.js`      | Context tracking, auto-save, handoff  |
-| PostToolUse:Bash            | `commit-tracker.js`         | Auto-log commits to state             |
-| PostToolUse:Task            | `track-agent-invocation.js` | Track agent usage                     |
-| PostToolUse:AskUserQuestion | `decision-save-prompt.js`   | Decision documentation                |
-| UserPromptSubmit            | `user-prompt-handler.js`    | Process user prompts                  |
+| Event                       | Hook                         | Purpose                               |
+| --------------------------- | ---------------------------- | ------------------------------------- |
+| SessionStart                | `session-start.js`           | Deps, builds, patterns, TDMS check    |
+| SessionStart:compact        | `compact-restore.js`         | Restore context after compaction      |
+| PreCompact                  | `pre-compaction-save.js`     | Save state snapshot before compaction |
+| PostToolUse:Write/Edit      | `post-write-validator.js`    | Schema, lint, pattern validation      |
+| PostToolUse:Read            | `post-read-handler.js`       | Context tracking, auto-save, handoff  |
+| PostToolUse:Bash            | `commit-tracker.js`          | Auto-log commits to state             |
+| PostToolUse:Bash            | `commit-failure-reporter.js` | Report commit failures to audit log   |
+| PostToolUse:Task            | `track-agent-invocation.js`  | Track agent usage                     |
+| PostToolUse:AskUserQuestion | `decision-save-prompt.js`    | Decision documentation                |
+| UserPromptSubmit            | `user-prompt-handler.js`     | Process user prompts                  |
 
 ## Git Hooks
 

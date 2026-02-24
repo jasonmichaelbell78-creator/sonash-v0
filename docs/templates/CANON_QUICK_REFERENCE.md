@@ -166,6 +166,6 @@ Before starting a new category audit:
 
 ---
 
-**Full Template:** `docs/templates/docs/audits/multi-ai/templates/AGGREGATOR.md`
-(400+ lines) **Schema Definition:** `docs/standards/JSONL_SCHEMA_STANDARD.md`
-**Validation Script:** `scripts/validate-canon-schema.js`
+**Full Template:** `docs/audits/multi-ai/templates/AGGREGATOR.md` (400+ lines)
+**Schema Definition:** `docs/templates/JSONL_SCHEMA_STANDARD.md` **Validation
+Script:** `scripts/validate-canon-schema.js`

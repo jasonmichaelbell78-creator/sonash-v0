@@ -96,9 +96,9 @@ All templates now in `docs/audits/multi-ai/templates/`:
 
 | Template                              | Category                 | Description                                              |
 | ------------------------------------- | ------------------------ | -------------------------------------------------------- |
-| **CODE_REVIEW_PLAN.md**               | Code Review              | General code quality, duplication, complexity            |
-| **SECURITY_AUDIT_PLAN.md**            | Security                 | Auth, input validation, dependencies, supply chain       |
-| **PERFORMANCE_AUDIT_PLAN.md**         | Performance              | Runtime perf, memory, bundle size, load times            |
+| **CODE_REVIEW_AUDIT.md**              | Code Review              | General code quality, duplication, complexity            |
+| **SECURITY_AUDIT.md**                 | Security                 | Auth, input validation, dependencies, supply chain       |
+| **PERFORMANCE_AUDIT.md**              | Performance              | Runtime perf, memory, bundle size, load times            |
 | **REFACTORING_AUDIT.md**              | Refactoring              | Technical debt, SonarCloud issues, large-scale refactors |
 | **DOCUMENTATION_AUDIT.md**            | Documentation            | Cross-refs, staleness, coverage, tier compliance         |
 | **PROCESS_AUDIT.md**                  | Process/Automation       | CI/CD, hooks, scripts, triggers, guardrails              |
@@ -115,17 +115,17 @@ All templates now in `docs/audits/multi-ai/templates/`:
 | **README.md**      | Project overview, quick start        | `/README.md`      |
 | **ROADMAP.md**     | Product roadmap and timeline         | `/ROADMAP.md`     |
 | **ROADMAP_LOG.md** | Historical record of roadmap changes | `/ROADMAP_LOG.md` |
-| **CHANGELOG.md**   | Version history and release notes    | `/CHANGELOG.md`   |
+| ~~CHANGELOG.md~~   | _(does not exist yet)_               | —                 |
 
 ### Tier 2: Core Guides
 
-| Document                     | Purpose                                       | Location                        |
-| ---------------------------- | --------------------------------------------- | ------------------------------- |
-| **ARCHITECTURE.md**          | System architecture and design                | `/ARCHITECTURE.md`              |
-| **DEVELOPMENT.md**           | Development setup and procedures              | `/DEVELOPMENT.md`               |
-| **CONTRIBUTING.md**          | Contribution guidelines                       | `/CONTRIBUTING.md`              |
-| **SECURITY.md**              | Security & privacy guide, key rotation policy | `docs/SECURITY.md`              |
-| **FIREBASE_ARCHITECTURE.md** | Firebase data model and structure             | `docs/FIREBASE_ARCHITECTURE.md` |
+| Document                     | Purpose                                       | Location           |
+| ---------------------------- | --------------------------------------------- | ------------------ |
+| **ARCHITECTURE.md**          | System architecture and design                | `/ARCHITECTURE.md` |
+| **DEVELOPMENT.md**           | Development setup and procedures              | `/DEVELOPMENT.md`  |
+| ~~CONTRIBUTING.md~~          | _(does not exist yet)_                        | —                  |
+| **SECURITY.md**              | Security & privacy guide, key rotation policy | `docs/SECURITY.md` |
+| ~~FIREBASE_ARCHITECTURE.md~~ | _(does not exist — see ARCHITECTURE.md)_      | —                  |
 
 ### Tier 3: Specialized Guides
 
@@ -137,7 +137,7 @@ All templates now in `docs/audits/multi-ai/templates/`:
 | **INCIDENT_RESPONSE.md**                     | Security incident response procedures             | `docs/INCIDENT_RESPONSE.md`                                             |
 | **TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** | Unified technical debt consolidation & management | `docs/archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md` |
 | **TESTING_USER_MANUAL.md**                   | Complete UI testing reference with /test-suite    | `docs/plans/TESTING_USER_MANUAL.md`                                     |
-| **AUDIT_ECOSYSTEM_CODIFICATION.md**          | Audit ecosystem codification plan (10 steps)      | `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md`                            |
+| ~~AUDIT_ECOSYSTEM_CODIFICATION.md~~          | _(does not exist — may be archived)_              | —                                                                       |
 | **INTEGRATED_IMPROVEMENT_PLAN.md**           | Phased improvement plan (COMPLETE - archived)     | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md`           |
 | **AI_REVIEW_LEARNINGS_LOG.md**               | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`                                       |
 
@@ -150,7 +150,7 @@ All templates now in `docs/audits/multi-ai/templates/`:
 | Document                       | Purpose                                     | Location                          |
 | ------------------------------ | ------------------------------------------- | --------------------------------- |
 | **AI_WORKFLOW.md**             | AI-assisted development workflow            | `/AI_WORKFLOW.md`                 |
-| **SESSION_CONTEXT.md**         | Session-to-session AI handoff context       | `docs/SESSION_CONTEXT.md`         |
+| **SESSION_CONTEXT.md**         | Session-to-session AI handoff context       | `SESSION_CONTEXT.md (root)`       |
 | **PR_WORKFLOW_CHECKLIST.md**   | Complete PR workflow with checkboxes        | `docs/PR_WORKFLOW_CHECKLIST.md`   |
 | **AI_REVIEW_PROCESS.md**       | CodeRabbit review processing workflow       | `docs/AI_REVIEW_PROCESS.md`       |
 | **DOCUMENTATION_STANDARDS.md** | Documentation structure and standards       | `docs/DOCUMENTATION_STANDARDS.md` |
@@ -158,19 +158,19 @@ All templates now in `docs/audits/multi-ai/templates/`:
 
 ### Code Quality & Analysis
 
-| Document                  | Purpose                            | Location                                |
-| ------------------------- | ---------------------------------- | --------------------------------------- |
-| **CODE_PATTERNS.md**      | Anti-patterns and best practices   | `docs/agent_docs/CODE_PATTERNS.md`      |
-| **SECURITY_CHECKLIST.md** | Pre-write security checklist       | `docs/agent_docs/SECURITY_CHECKLIST.md` |
-| **sonarqube-manifest.md** | SonarQube static analysis baseline | `docs/analysis/sonarqube-manifest.md`   |
+| Document                  | Purpose                          | Location                                |
+| ------------------------- | -------------------------------- | --------------------------------------- |
+| **CODE_PATTERNS.md**      | Anti-patterns and best practices | `docs/agent_docs/CODE_PATTERNS.md`      |
+| **SECURITY_CHECKLIST.md** | Pre-write security checklist     | `docs/agent_docs/SECURITY_CHECKLIST.md` |
+| ~~sonarqube-manifest.md~~ | _(does not exist)_               | —                                       |
 
 ### Architecture Decision Records
 
-| Document                       | Purpose                          | Location                                    |
-| ------------------------------ | -------------------------------- | ------------------------------------------- |
-| **0001-monorepo-structure.md** | Monorepo vs. multi-repo decision | `docs/decisions/0001-monorepo-structure.md` |
-| **0002-state-management.md**   | State management approach        | `docs/decisions/0002-state-management.md`   |
-| **README.md**                  | ADR index and format guide       | `docs/decisions/README.md`                  |
+| Document                       | Purpose                    | Location                   |
+| ------------------------------ | -------------------------- | -------------------------- |
+| ~~0001-monorepo-structure.md~~ | _(ADR not yet created)_    | —                          |
+| ~~0002-state-management.md~~   | _(ADR not yet created)_    | —                          |
+| **README.md**                  | ADR index and format guide | `docs/decisions/README.md` |
 
 ---
 
@@ -182,9 +182,9 @@ All templates now located in `docs/audits/multi-ai/templates/`:
 
 | Template                              | Purpose                                               |
 | ------------------------------------- | ----------------------------------------------------- |
-| **CODE_REVIEW_PLAN.md**               | Code review audit execution plan                      |
-| **SECURITY_AUDIT_PLAN.md**            | Security audit (13 categories including dependencies) |
-| **PERFORMANCE_AUDIT_PLAN.md**         | Performance audit execution plan                      |
+| **CODE_REVIEW_AUDIT.md**              | Code review audit execution plan                      |
+| **SECURITY_AUDIT.md**                 | Security audit (13 categories including dependencies) |
+| **PERFORMANCE_AUDIT.md**              | Performance audit execution plan                      |
 | **REFACTORING_AUDIT.md**              | Large-scale refactoring execution plan                |
 | **DOCUMENTATION_AUDIT.md**            | Documentation quality audit (6 categories)            |
 | **PROCESS_AUDIT.md**                  | Process/automation audit (12 categories)              |
@@ -223,13 +223,13 @@ navigation.
 | --------------------------- | ------------- | ------------------------------------------------------- |
 | **2025-dec-reports/**       | December 2025 | `docs/archive/2025-dec-reports/`                        |
 | **BILLING_ALERTS_SETUP.md** | 2025-12       | `docs/archive/2025-dec-reports/BILLING_ALERTS_SETUP.md` |
-| **POST_PHASE_8_BACKLOG.md** | 2025-12       | `docs/POST_PHASE_8_BACKLOG.md`                          |
+| ~~POST_PHASE_8_BACKLOG.md~~ | 2025-12       | _(does not exist)_                                      |
 
 ---
 
 ## Documentation Statistics
 
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-02-23
 
 | Category                 | Count | Notes                                   |
 | ------------------------ | ----- | --------------------------------------- |

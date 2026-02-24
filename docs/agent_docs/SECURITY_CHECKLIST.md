@@ -1,9 +1,9 @@
 # Security Checklist for Scripts
 
-**Document Version:** 1.0 **Last Updated:** 2026-01-27 **Status:** Active
+**Document Version:** 1.1 **Last Updated:** 2026-02-23 **Status:** Active
 
-**Pattern Range:** 180+ patterns (from CODE_PATTERNS.md) | **Recent Additions:**
-Patterns #31-41 (PR #310 Session #90)
+**Pattern Range:** 180+ patterns (from CODE_PATTERNS.md), templates up to #36
+(as of 2026-02-22) | **Recent Additions:** Patterns #31-41 (PR #310 Session #90)
 
 ---
 
@@ -427,7 +427,8 @@ When a PR review discovers a new security pattern:
 
 ## Version History
 
-| Version | Date       | Patterns Added | Description                                           |
-| ------- | ---------- | -------------- | ----------------------------------------------------- |
-| 1.1     | 2026-01-24 | 180+ patterns  | Enhanced with critical patterns from CODE_PATTERNS.md |
-| 1.0     | 2026-01-24 | #31-41         | Initial checklist from PR #310 review                 |
+| Version | Date       | Patterns Added | Description                                                      |
+| ------- | ---------- | -------------- | ---------------------------------------------------------------- |
+| 1.1     | 2026-02-23 | —              | Note templates up to #36 (as of 2026-02-22), update Last Updated |
+| 1.1     | 2026-01-24 | 180+ patterns  | Enhanced with critical patterns from CODE_PATTERNS.md            |
+| 1.0     | 2026-01-24 | #31-41         | Initial checklist from PR #310 review                            |

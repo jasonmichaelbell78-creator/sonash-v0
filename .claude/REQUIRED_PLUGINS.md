@@ -5,14 +5,8 @@ This document lists all plugins required for full functionality in this project.
 ## Installation
 
 Plugins are managed through `~/.claude/settings.json` under `enabledPlugins`.
-Run the sync script to import the recommended configuration:
-
-```bash
-node scripts/sync-claude-settings.js (REMOVED) --import
-```
-
-Or manually merge `.claude/settings.global-template.json` into
-`~/.claude/settings.json`.
+Manually merge `.claude/settings.global-template.json` into
+`~/.claude/settings.json` to get the recommended configuration.
 
 ## Plugin Categories
 

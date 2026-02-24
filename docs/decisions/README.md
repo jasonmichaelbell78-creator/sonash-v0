@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-**Created:** 2026-01-03 **Last Updated:** 2026-01-27
+**Created:** 2026-01-03 **Last Updated:** 2026-02-23
 
 ---
 
@@ -67,6 +67,10 @@ See [TEMPLATE.md](./TEMPLATE.md) for the full template.
 | ----------------------------------------------------------------------------------------- | ------------------------------------ | ------------------- | ---------- |
 | [ADR-001](../archive/completed-decisions/ADR-001-integrated-improvement-plan-approach.md) | Integrated Improvement Plan Approach | Accepted (archived) | 2026-01-03 |
 
+> **Note:** Most architectural decisions post ADR-001 are captured in
+> `docs/SESSION_DECISIONS.md` and individual session summaries rather than
+> formal ADRs.
+
 ## Naming Convention
 
 ADR files follow the pattern: `ADR-NNN-short-descriptive-title.md`
@@ -84,6 +88,7 @@ ADR files follow the pattern: `ADR-NNN-short-descriptive-title.md`
 
 ## Version History
 
-| Version | Date       | Changes                            |
-| ------- | ---------- | ---------------------------------- |
-| 1.0     | 2026-01-03 | Initial ADR directory with ADR-001 |
+| Version | Date       | Changes                                                           |
+| ------- | ---------- | ----------------------------------------------------------------- |
+| 1.1     | 2026-02-23 | Add note about session decisions capturing post ADR-001 decisions |
+| 1.0     | 2026-01-03 | Initial ADR directory with ADR-001                                |

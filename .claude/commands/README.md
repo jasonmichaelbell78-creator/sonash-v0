@@ -4,8 +4,8 @@ description: Commands Folder - DEPRECATED (Files Removed)
 
 # Commands Folder - DEPRECATED
 
-**Status:** DEPRECATED and CLEANED UP (2026-01-31, Session #120)
-**Replacement:** `.claude/skills/` folder
+**Status:** DEPRECATED and CLEANED UP (2026-01-31, Session #120) **Last
+Updated:** 2026-02-23 **Replacement:** `.claude/skills/` folder
 
 ---
 
@@ -25,7 +25,6 @@ All command files have been **deleted** from this folder. The skills in
 | `/audit-refactoring`   | `audit-refactoring` skill   |
 | `/audit-security`      | `audit-security` skill      |
 | `/checkpoint`          | `checkpoint` skill          |
-| `/docs-sync`           | `docs-sync` skill           |
 | `/pr-review`           | `pr-review` skill           |
 | `/session-begin`       | `session-begin` skill       |
 | `/session-end`         | `session-end` skill         |

@@ -60,13 +60,15 @@ session data.
 
 Automatic multi-layer defense against state loss during context compaction:
 
-| Layer         | Hook                     | Trigger                       | Output                           |
-| ------------- | ------------------------ | ----------------------------- | -------------------------------- |
-| A: Commit Log | `commit-tracker.js`      | PostToolUse: Bash             | `.claude/state/commit-log.jsonl` |
-| B: Threshold  | `compaction-handoff.js`  | PostToolUse: Read (25+ files) | `.claude/state/handoff.json`     |
-| C: PreCompact | `pre-compaction-save.js` | PreCompact (auto/manual)      | `.claude/state/handoff.json`     |
-| Restore       | `compact-restore.js`     | SessionStart:compact          | stdout (context injection)       |
-| D: Gap Detect | `check-session-gaps.js`  | Session begin (npm script)    | Console warnings                 |
+| Layer         | Hook                     | Trigger                    | Output                           |
+| ------------- | ------------------------ | -------------------------- | -------------------------------- |
+| A: Commit Log | `commit-tracker.js`      | PostToolUse: Bash          | `.claude/state/commit-log.jsonl` |
+| C: PreCompact | `pre-compaction-save.js` | PreCompact (auto/manual)   | `.claude/state/handoff.json`     |
+| Restore       | `compact-restore.js`     | SessionStart:compact       | stdout (context injection)       |
+| D: Gap Detect | `check-session-gaps.js`  | Session begin (npm script) | Console warnings                 |
+
+> **Note:** Layer B (`compaction-handoff.js`) was removed. Layer C
+> (`pre-compaction-save.js`) now handles all pre-compaction state capture.
 
 - **Layer A** logs every git commit to append-only JSONL — survives all failure
   modes including crashes

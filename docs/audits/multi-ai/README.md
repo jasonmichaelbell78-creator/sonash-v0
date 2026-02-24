@@ -3,7 +3,7 @@
 <!-- prettier-ignore-start -->
 **Document Version:** 1.0
 **Created:** 2026-02-04
-**Last Updated:** 2026-02-04
+**Last Updated:** 2026-02-23
 **Document Tier:** 2 (Foundation)
 <!-- prettier-ignore-end -->
 
@@ -57,7 +57,7 @@ Use the [COORDINATOR.md](./COORDINATOR.md) to:
 
 ### Step 3: AGGREGATE
 
-1. Place outputs in `docs/audits/single-session/<category>/`
+1. Place outputs in `docs/audits/multi-ai/<session-id>/`
 2. Run: `npm run aggregate:audit-findings`
 3. Or invoke: `/audit-aggregator` skill
 

@@ -1,8 +1,8 @@
 # Hook & Session State Files Schema
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-13
+**Document Version:** 1.1
+**Last Updated:** 2026-02-23
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -27,9 +27,8 @@ These files track in-session state and are reset each session.
 
 ### `.session-state.json`
 
-**Writers:** `session-start.js` **Readers:** `auto-save-context.js`,
-`compaction-handoff.js`, `pre-compaction-save.js`, `track-agent-invocation.js`,
-`alerts/run-alerts.js`
+**Writers:** `session-start.js` **Readers:** `pre-compaction-save.js`,
+`track-agent-invocation.js`, `alerts/run-alerts.js`
 
 ```json
 {
@@ -38,32 +37,10 @@ These files track in-session state and are reset each session.
 }
 ```
 
-### `.context-tracking-state.json`
+### `.context-tracking-state.json` (DEPRECATED)
 
-**Writers:** `large-context-warning.js` **Readers:** `auto-save-context.js`,
-`compaction-handoff.js`, `pre-compaction-save.js`, `alerts-reminder.js`
-
-```json
-{
-  "filesRead": ["string (file paths read this session)"],
-  "totalReads": "number",
-  "lastRead": "string (ISO timestamp)",
-  "startedAt": "string (ISO timestamp for staleness check)"
-}
-```
-
-**Retention:** Reset if >30 min stale (by `large-context-warning.js`).
-
-### `.auto-save-state.json`
-
-**Writers:** `auto-save-context.js` **Readers:** `auto-save-context.js` (self)
-
-```json
-{
-  "lastSave": "string (ISO timestamp)",
-  "saveCount": "number"
-}
-```
+> **Note:** The hooks `large-context-warning.js` and `auto-save-context.js` that
+> wrote/read this file no longer exist. This state file may be a leftover.
 
 ### `.commit-tracker-state.json`
 
@@ -76,33 +53,16 @@ These files track in-session state and are reset each session.
 }
 ```
 
-### `.handoff-state.json`
+### `.handoff-state.json` (DEPRECATED)
 
-**Writers:** `compaction-handoff.js` **Readers:** `compaction-handoff.js` (self)
+> **Note:** The hook `compaction-handoff.js` that wrote/read this file no longer
+> exists. Compaction state is now handled by `pre-compaction-save.js` and
+> `compact-restore.js`.
 
-```json
-{
-  "lastHandoff": "string (ISO timestamp)",
-  "handoffCount": "number"
-}
-```
+### `.agent-trigger-state.json` (DEPRECATED)
 
-### `.agent-trigger-state.json`
-
-**Writers:** `agent-trigger-enforcer.js` **Readers:**
-`agent-trigger-enforcer.js` (self)
-
-```json
-{
-  "recommendations": {
-    "<file_path>": {
-      "agent": "string (agent name)",
-      "timestamp": "string (ISO timestamp)",
-      "tool": "string (write|edit)"
-    }
-  }
-}
-```
+> **Note:** The hook `agent-trigger-enforcer.js` that wrote/read this file no
+> longer exists. Agent tracking is now handled by `track-agent-invocation.js`.
 
 ---
 
@@ -112,8 +72,8 @@ These files survive compaction and span sessions.
 
 ### `handoff.json` (gitignored)
 
-**Writers:** `pre-compaction-save.js`, `compaction-handoff.js` **Readers:**
-`compact-restore.js`, `state-utils.js`
+**Writers:** `pre-compaction-save.js` **Readers:** `compact-restore.js`,
+`state-utils.js`
 
 ```json
 {
@@ -139,23 +99,10 @@ These files survive compaction and span sessions.
 
 **Retention:** Append-only. No automatic cleanup.
 
-### `pending-reviews.json` (gitignored)
+### `pending-reviews.json` (gitignored, DEPRECATED)
 
-**Writers:** `agent-trigger-enforcer.js` **Readers:** `pre-compaction-save.js`,
-`session-end` skill
-
-```json
-{
-  "reviews": [
-    {
-      "file": "string",
-      "agent": "string",
-      "recommended": "string (ISO timestamp)",
-      "status": "pending|completed"
-    }
-  ]
-}
-```
+> **Note:** The hook `agent-trigger-enforcer.js` that wrote this file no longer
+> exists. This file may be a leftover from earlier versions.
 
 ### `agent-invocations.jsonl`
 

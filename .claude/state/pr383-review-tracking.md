@@ -1,3 +1,5 @@
+> Stale: PR #383 is closed. This tracking file can be removed.
+
 <!-- prettier-ignore-start -->
 **Document Version:** 1.0
 **Last Updated:** 2026-02-21

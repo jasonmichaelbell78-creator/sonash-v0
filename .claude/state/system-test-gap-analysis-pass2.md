@@ -1,3 +1,5 @@
+> Partial draft — superseded by system-test-plan.md
+
 # System Test Plan V2 — Second Gap Analysis Pass (In Progress)
 
 **Status:** DRAFT — agents still researching, findings accumulating **Date:**

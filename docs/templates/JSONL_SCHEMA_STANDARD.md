@@ -396,13 +396,13 @@ node scripts/debt/intake-audit.js <audit-output.jsonl> \
 
 ## Related Documents
 
-- [CODE_REVIEW_PLAN.md](../multi-ai-audit/templates/CODE_REVIEW_PLAN.md)
-- [SECURITY_AUDIT_PLAN.md](../multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md)
-- [PERFORMANCE_AUDIT_PLAN.md](../multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md)
-- [REFACTORING_AUDIT.md](../multi-ai-audit/templates/REFACTORING_AUDIT.md)
-- [SHARED_TEMPLATE_BASE.md](../multi-ai-audit/templates/SHARED_TEMPLATE_BASE.md) -
+- [CODE_REVIEW_PLAN.md](../audits/multi-ai/templates/CODE_REVIEW_PLAN.md)
+- [SECURITY_AUDIT_PLAN.md](../audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md)
+- [PERFORMANCE_AUDIT_PLAN.md](../audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md)
+- [REFACTORING_AUDIT.md](../audits/multi-ai/templates/REFACTORING_AUDIT.md)
+- [SHARED_TEMPLATE_BASE.md](../audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md) -
   Shared boilerplate for all audit templates
-- [COORDINATOR.md](../multi-ai-audit/COORDINATOR.md)
+- [COORDINATOR.md](../audits/multi-ai/COORDINATOR.md)
 - [TDMS PROCEDURE.md](../technical-debt/PROCEDURE.md) - Canonical debt
   management
 - [DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md) - 5-tier doc

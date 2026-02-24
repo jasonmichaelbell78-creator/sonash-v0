@@ -2,7 +2,7 @@
 
 _A privacy-first digital recovery journal for the recovery community_
 
-**Document Version:** 2.1 **Status:** ACTIVE **Last Updated:** 2026-01-03
+**Document Version:** 2.2 **Status:** ACTIVE **Last Updated:** 2026-02-23
 
 ---
 
@@ -46,7 +46,7 @@ project:
 
 - **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - AI assistant navigation guide
 - **[AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)** - Code review process
-- **[claude.md](./claude.md)** - AI context and critical patterns
+- **[CLAUDE.md](./CLAUDE.md)** - AI context and critical patterns
 - **[docs/agent_docs/CODE_PATTERNS.md](./docs/agent_docs/CODE_PATTERNS.md)** -
   Full pattern reference (90+ patterns)
 
@@ -108,13 +108,13 @@ privacy-first design.
 - **Styling**: Tailwind CSS v4, Framer Motion 12, shadcn/ui
 - **Backend**: Firebase (Auth, Firestore, Cloud Functions v2, App Check)
 - **Security**: reCAPTCHA Enterprise, App Check, Firestore Rules, Rate Limiting
-- **Testing**: Node test runner, c8 coverage (97.8% passing)
+- **Testing**: Node test runner, c8 coverage (99.7% passing)
 - **Monitoring**: Sentry (optional)
 
 ## Project Structure
 
-\`\`\` ├── .claude/ # Claude Code development infrastructure │ ├── agents/ # 24
-specialized AI agents (architecture, security, testing, etc.) │ ├── skills/ # 23
+\`\`\` ├── .claude/ # Claude Code development infrastructure │ ├── agents/ # 25
+specialized AI agents (architecture, security, testing, etc.) │ ├── skills/ # 59
 task-specific skills (senior roles, debugging, research, design) │ ├── hooks/ │
 │ └── session-start.sh # Auto-install dependencies on session start │ └──
 settings.json # Hook configuration ├── app/ │ ├── page.tsx # Main app entry │
@@ -149,9 +149,9 @@ chip (WIP) │ └── ui/ # shadcn components └── public/ └── ima
 
 - **Claude Code Development Infrastructure** (December 31):
   - SessionStart hook for automatic dependency installation
-  - 24 specialized AI agents (architecture, security, testing, DevOps,
+  - 25 specialized AI agents (architecture, security, testing, DevOps,
     documentation)
-  - 23 task-specific skills (senior roles, debugging, research, design tools)
+  - 59 task-specific skills (senior roles, debugging, research, design tools)
   - Auto-build for tests and Firebase Functions on session start
 - **Admin Panel Enhancement** (Phases 1-3):
   - Dashboard with system health checks and user metrics
@@ -193,8 +193,8 @@ Focus:** 🧹 GRAND PLAN: Debt Elimination + 🚀 Operational Visibility
 | ------------------------------- | ----------- | -------- |
 | M1 - Foundation                 | ✅ Complete | 100%     |
 | Integrated Improvement Plan     | ✅ Complete | 100%     |
-| 🧹 GRAND PLAN: Debt Elimination | ⏸️ ACTIVE   | 6%       |
-| 🚀 Operational Visibility       | ⏸️ ACTIVE   | 25%      |
+| 🧹 GRAND PLAN: Debt Elimination | ⏸️ ACTIVE   | ~12%     |
+| 🚀 Operational Visibility       | ⏸️ ACTIVE   | ~75%     |
 | M1.5 - Quick Wins               | ⏸️ Paused   | 20%      |
 | M1.6 - Admin Panel + UX         | ⏸️ Paused   | 75%      |
 | M2 - Architecture               | ⏸️ Optional | 0%       |

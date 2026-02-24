@@ -1,7 +1,7 @@
 # Slash Commands & Skills Reference
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.0
+**Document Version:** 3.1
 **Last Updated:** 2026-02-23
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -193,7 +193,7 @@ All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 
 ## 3. npm Scripts Reference
 
-Key npm scripts organized by domain. Run with `npm run <script>`.
+All 96 npm scripts organized by domain. Run with `npm run <script>`.
 
 ### Documentation (12 scripts)
 
@@ -224,21 +224,20 @@ Key npm scripts organized by domain. Run with `npm run <script>`.
 | `patterns:promote`   | Promote patterns to automation            |
 | `test:patterns`      | Run pattern compliance tests              |
 
-### Technical Debt (TDMS) (11 scripts)
+### Technical Debt (TDMS) (10 scripts)
 
-| Script                  | Description                                |
-| ----------------------- | ------------------------------------------ |
-| `tdms:metrics`          | Generate TDMS metrics dashboard            |
-| `tdms:views`            | Generate TDMS views from MASTER_DEBT.jsonl |
-| `sprint:status`         | Show current sprint status                 |
-| `sprint:complete`       | Complete current sprint                    |
-| `sprint:intake`         | Intake new items into sprint               |
-| `sprint:sync`           | Sync sprint items                          |
-| `sprint:wave`           | Process sprint wave                        |
-| `backlog:check`         | Check backlog health                       |
-| `validate:canon`        | Validate canonical IDs                     |
-| `canon:normalize`       | Normalize canonical IDs                    |
-| `verify-technical-debt` | Verify debt items                          |
+| Script            | Description                                |
+| ----------------- | ------------------------------------------ |
+| `tdms:metrics`    | Generate TDMS metrics dashboard            |
+| `tdms:views`      | Generate TDMS views from MASTER_DEBT.jsonl |
+| `sprint:status`   | Show current sprint status                 |
+| `sprint:complete` | Complete current sprint                    |
+| `sprint:intake`   | Intake new items into sprint               |
+| `sprint:sync`     | Sync sprint items                          |
+| `sprint:wave`     | Process sprint wave                        |
+| `backlog:check`   | Check backlog health                       |
+| `validate:canon`  | Validate canonical IDs                     |
+| `canon:normalize` | Normalize canonical IDs                    |
 
 ### Audits (11 scripts)
 
@@ -256,7 +255,7 @@ Key npm scripts organized by domain. Run with `npm run <script>`.
 | `audit:reset`              | Reset audit state                       |
 | `aggregate:audit-findings` | Aggregate findings from multiple audits |
 
-### Reviews & Learning (10 scripts)
+### Reviews & Learning (12 scripts)
 
 | Script                  | Description                                 |
 | ----------------------- | ------------------------------------------- |
@@ -267,22 +266,25 @@ Key npm scripts organized by domain. Run with `npm run <script>`.
 | `reviews:check-archive` | Check archive heading format                |
 | `reviews:repair`        | Repair review data                          |
 | `learning:analyze`      | Analyze learning effectiveness              |
+| `learning:category`     | Analyze learning by category                |
 | `learning:dashboard`    | Learning effectiveness dashboard            |
 | `learning:detailed`     | Detailed learning analysis                  |
+| `learning:since`        | Learning analysis since last review         |
 | `lessons:surface`       | Surface past lessons for current work       |
 
-### Session & Workflow (8 scripts)
+### Session & Workflow (9 scripts)
 
-| Script              | Description                  |
-| ------------------- | ---------------------------- |
-| `session:gaps`      | Detect undocumented sessions |
-| `session:gaps:fix`  | Fix session gaps             |
-| `session:log`       | View session log             |
-| `session:summary`   | Session summary              |
-| `session:end`       | End session processing       |
-| `consolidation:run` | Run pattern consolidation    |
-| `override:log`      | Log override events          |
-| `override:list`     | List overrides               |
+| Script              | Description                   |
+| ------------------- | ----------------------------- |
+| `session:gaps`      | Detect undocumented sessions  |
+| `session:gaps:fix`  | Fix session gaps              |
+| `session:log`       | View session log              |
+| `session:summary`   | Session summary               |
+| `session:end`       | End session processing        |
+| `alerts:cleanup`    | Clean up stale alert sessions |
+| `consolidation:run` | Run pattern consolidation     |
+| `override:log`      | Log override events           |
+| `override:list`     | List overrides                |
 
 ### Skills & Agents (5 scripts)
 
@@ -330,15 +332,20 @@ Key npm scripts organized by domain. Run with `npm run <script>`.
 | `hooks:health`            | Hook health check                   |
 | `triggers:check`          | Check automation trigger thresholds |
 
-### Other (5 scripts)
+### Other (10 scripts)
 
-| Script             | Description                   |
-| ------------------ | ----------------------------- |
-| `roadmap:validate` | Validate ROADMAP.md structure |
-| `roadmap:hygiene`  | Roadmap hygiene check         |
-| `phase:complete`   | Complete a roadmap phase      |
-| `phase:validate`   | Validate phase completion     |
-| `lighthouse`       | Run Lighthouse audit          |
+| Script                | Description                       |
+| --------------------- | --------------------------------- |
+| `roadmap:validate`    | Validate ROADMAP.md structure     |
+| `roadmap:hygiene`     | Roadmap hygiene check             |
+| `phase:complete`      | Complete a roadmap phase          |
+| `phase:complete:auto` | Auto-complete phase (CI-friendly) |
+| `phase:validate`      | Validate phase completion         |
+| `lighthouse`          | Run Lighthouse audit (mobile)     |
+| `lighthouse:desktop`  | Run Lighthouse audit (desktop)    |
+| `capabilities:search` | Search project capabilities       |
+| `prepare`             | Husky git hooks setup (lifecycle) |
+| `start`               | Next.js production server         |
 
 ---
 
@@ -373,9 +380,10 @@ Use `/skill-creator` to scaffold a new skill with proper structure.
 
 ## Version History
 
-| Version | Date       | Changes                                                         |
-| ------- | ---------- | --------------------------------------------------------------- |
-| 3.0     | 2026-02-23 | Complete rewrite: 58 skills, 96 npm scripts, removed deprecated |
-| 2.3     | 2026-02-02 | Updated audit skills with parallel architecture                 |
-| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md   |
-| 1.0     | 2026-01-05 | Initial creation                                                |
+| Version | Date       | Changes                                                            |
+| ------- | ---------- | ------------------------------------------------------------------ |
+| 3.1     | 2026-02-23 | Added 8 missing npm scripts, removed phantom verify-technical-debt |
+| 3.0     | 2026-02-23 | Complete rewrite: 58 skills, 96 npm scripts, removed deprecated    |
+| 2.3     | 2026-02-02 | Updated audit skills with parallel architecture                    |
+| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md      |
+| 1.0     | 2026-01-05 | Initial creation                                                   |

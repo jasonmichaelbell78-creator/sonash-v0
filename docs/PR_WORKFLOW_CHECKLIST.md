@@ -1,7 +1,10 @@
 # PR Workflow Checklist - MANDATORY FOR ALL PHASES
 
-**Document Version**: 2.0 **Created**: 2025-12-30 **Last Updated**: 2026-01-02
+**Document Version**: 2.0 **Created**: 2025-12-30 **Last Updated**: 2026-02-23
 **Status**: ACTIVE
+
+> **Note**: References to PR1-PR8 phases are from the completed eight-phase
+> refactor (archived 2025-12-30). Current PR workflow is simpler.
 
 ---
 

@@ -29,10 +29,9 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-02-11 **Branch**: `claude/new-session-NgVGX` **Working
-On**: Session infrastructure improvements (archival, hooks, automation audit)
-**Files Modified**: SESSION_CONTEXT.md, docs/SESSION_HISTORY.md,
-.claude/state/commit-log.jsonl
+**Last Checkpoint**: 2026-02-23 **Branch**: `claude/new-session-EnpzV` **Working
+On**: Documentation housekeeping and ecosystem audits **Files Modified**:
+SESSION_CONTEXT.md, docs/SESSION_HISTORY.md, .claude/state/commit-log.jsonl
 
 **Next Step**: Complete automation audit and commit-tracker fix.
 
@@ -170,7 +169,7 @@ unblocked.
 
 ### Stack
 
-- Next.js 16.1.1, React 19.2.3, TypeScript 5.x
+- Next.js 16.1.6, React 19.2.3, TypeScript 5.x
 - Tailwind CSS v4, Framer Motion 12
 - Firebase (Auth, Firestore, Functions, App Check)
 

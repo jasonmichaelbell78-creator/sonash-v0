@@ -2,7 +2,7 @@
 
 <!-- prettier-ignore-start -->
 **Document Version:** 1.0
-**Last Updated:** 2026-02-16
+**Last Updated:** 2026-02-23
 **Status:** COMPLETED/REFERENCE
 <!-- prettier-ignore-end -->
 
@@ -11,6 +11,12 @@
 Captures the original design decisions and implementation plan for codifying the
 audit ecosystem into a standardized, maintainable system with consistent
 conventions across all audit types.
+
+> **DEPRECATED (2026-02-23):** `MASTER_IMPROVEMENTS.jsonl` and the Improvement
+> Management System (IMS) are deprecated. All findings — including enhancements
+> — now go through TDMS (Technical Debt Management System) using
+> `type: "enhancement"` in `MASTER_DEBT.jsonl`. See
+> [AUDIT_TRACKER.md](./AUDIT_TRACKER.md) for current tracking.
 
 > **Note:** This document captures the original design decisions and
 > implementation plan for the audit ecosystem codification. For current

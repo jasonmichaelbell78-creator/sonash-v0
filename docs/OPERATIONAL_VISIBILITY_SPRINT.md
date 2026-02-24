@@ -1,7 +1,9 @@
 # Operational Visibility Sprint
 
 **Document Version:** 2.1 **Created:** 2026-01-14 **Status:** ACTIVE
-**Priority:** P0 - Immediate Focus **Last Updated:** 2026-01-27
+**Priority:** P0 - Immediate Focus **Last Updated:** 2026-02-23
+
+> **Status:** ~75% complete (see ROADMAP.md)
 
 ---
 
