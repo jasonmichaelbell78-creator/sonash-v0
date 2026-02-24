@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.56 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
+**Document Version:** 17.57 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
 
 ## Purpose
 
@@ -31,6 +31,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.57    | 2026-02-24               | PR #388 Final Retrospective: 7 rounds, 144 items, ~4.5 avoidable. Supersedes R1-R4 retro. Large PR scope #1 driver (4x recommended). Propagation partially automated (9x). Stale reviewer pattern new.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.56    | 2026-02-24               | Review #378: PR #388 R7 — Lightest round (1 fix + 2 propagation, 8 rejected). typeof guard on lazy-loaded imports, stale reviewer detection.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 17.55    | 2026-02-24               | Review #377: PR #388 R6 — CI blockers, lstatSync propagation (4 state-managers), JSONL dedup (1685 entries). 11 fixed, 3 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 17.54    | 2026-02-24               | Review #376: PR #388 R5 — SonarCloud+CI+Gemini+Qodo multi-source review. CC reduction (searchForFunction 26→~10), funcName regex escaping, 3 sanitizeInput fixes, test predicate logic fix, dedup helper extraction. 14 fixed, 4 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -748,31 +749,39 @@ verified-patterns.json for confirmed false positives, (3) extract
 
 ---
 
-### PR #388 Retrospective (2026-02-24)
+### PR #388 Retrospective — Final (2026-02-24)
+
+_Supersedes R1-R4 retro. Covers complete R1-R7 review cycle._
 
 #### Review Cycle Summary
 
-| Metric         | Value                                                                  |
-| -------------- | ---------------------------------------------------------------------- |
-| Rounds         | 4 (R1–R4, all 2026-02-23)                                              |
-| Total items    | 96                                                                     |
-| Fixed          | 80                                                                     |
-| Deferred       | 9 (DEBT-7559–7566 from R1, DEBT-7567 from R3)                          |
-| Rejected       | 7                                                                      |
-| Review sources | CI (Pattern Compliance, Doc Lint), Qodo Compliance+Suggestions, Gemini |
+| Metric         | Value                                                                              |
+| -------------- | ---------------------------------------------------------------------------------- |
+| Rounds         | 7 (R1–R4 2026-02-23, R5–R7 2026-02-24)                                             |
+| Total items    | 144                                                                                |
+| Fixed          | 106                                                                                |
+| Deferred       | 9 (DEBT-7559–7566 from R1, DEBT-7567 from R3)                                      |
+| Rejected       | 29                                                                                 |
+| Review sources | CI (Pattern Compliance, Doc Lint), Qodo Compliance+Suggestions, SonarCloud, Gemini |
 
 **Note:** Review #372 was mislabeled as "PR #387 R1" — corrected to "PR #388
 R1".
 
 #### Per-Round Breakdown
 
-| Round     | Date       | Source                         | Items  | Fixed  | Deferred | Rejected | Key Patterns                                                                                   |
-| --------- | ---------- | ------------------------------ | ------ | ------ | -------- | -------- | ---------------------------------------------------------------------------------------------- |
-| R1        | 2026-02-23 | CI+Qodo+Gemini                 | 42     | 34     | 8        | 0        | exec→matchAll (20), try/catch wrapping (9), rmSync (3), RegExp→helper (3), div-by-zero (4)     |
-| R2        | 2026-02-23 | CI+Qodo Compliance+Suggestions | 22     | 17     | 0        | 5        | Self-referential set bug, parseInt comma, regex overlap, backtracking, nested parens           |
-| R3        | 2026-02-23 | CI+Qodo Suggestions            | 16     | 14     | 1        | 1        | Brace direction flip, regex backtracking [^)\n], writesMaster FP, table header skip, glob path |
-| R4        | 2026-02-23 | CI+Qodo Suggestions            | 16     | 15     | 0        | 1        | CI blocker (RegExp→indexOf), brace re-correction, iterative DFS, BigInt, null vs falsy         |
-| **Total** |            |                                | **96** | **80** | **9**    | **7**    |                                                                                                |
+| Round     | Date       | Source                         | Items   | Fixed   | Def.  | Rej.   | Key Patterns                                                                               |
+| --------- | ---------- | ------------------------------ | ------- | ------- | ----- | ------ | ------------------------------------------------------------------------------------------ |
+| R1        | 2026-02-23 | CI+Qodo+Gemini                 | 42      | 34      | 8     | 0      | exec→matchAll (20), try/catch wrapping (9), rmSync (3), RegExp→helper (3), div-by-zero (4) |
+| R2        | 2026-02-23 | CI+Qodo Compliance+Suggestions | 22      | 17      | 0     | 5      | Self-referential set bug, parseInt comma, regex overlap, backtracking, nested parens       |
+| R3        | 2026-02-23 | CI+Qodo Suggestions            | 16      | 14      | 1     | 1      | Brace direction flip, regex backtracking, writesMaster FP, table header skip               |
+| R4        | 2026-02-23 | CI+Qodo Suggestions            | 16      | 15      | 0     | 1      | CI blocker (RegExp→indexOf), brace re-correction, iterative DFS, BigInt, null vs falsy     |
+| R5        | 2026-02-24 | SonarCloud+CI+Gemini+Qodo      | 25      | 14      | 0     | 4      | CC reduction (26→~10), escapeForRegex, sanitizeInput ×3, test predicate, dedup extraction  |
+| R6        | 2026-02-24 | Qodo Comp+Suggestions+CI+Sonar | 14      | 11      | 0     | 3      | CI blockers (xargs -r, mktemp trap, grep), lstatSync ×4, JSONL dedup 1685 entries          |
+| R7        | 2026-02-24 | Qodo+Gemini+SonarCloud QG+CI   | 9       | 3       | 0     | 8      | typeof guard on lazy-load, stale Gemini review, SonarCloud QG self-resolved                |
+| **Total** |            |                                | **144** | **108** | **9** | **29** |                                                                                            |
+
+**Trajectory:** 42 → 22 → 16 → 16 → 25 → 14 → 9. R5 spike from adding
+SonarCloud+Gemini sources. Converged to single digits by R7.
 
 #### Ping-Pong Chains
 
@@ -837,112 +846,155 @@ before R3 push would have caught it.
 
 **Avoidable rounds:** 0 (Reviewer error).
 
-**Total avoidable rounds across all chains: ~4 out of 4 (~75% partially
-avoidable)**
+##### Chain 6: check-propagation.js grep→git grep→POSIX (R5→R6+, 3 commits)
 
-6 files appeared in ALL 4 rounds: code-quality-security.js,
+| Round | What Happened                                                         | Files Affected       | Root Cause                       |
+| ----- | --------------------------------------------------------------------- | -------------------- | -------------------------------- |
+| R5    | CC >15 (26). Extracted 3 helpers. Qodo: grep→git grep for portability | check-propagation.js | CC reduction + valid suggestion  |
+| R6+   | git grep with \s and \b fails (POSIX ERE). Fixed to [[:space:]]       | check-propagation.js | \s/\b not supported in POSIX ERE |
+
+**Avoidable rounds:** 0.5. Should have used POSIX-safe patterns from the start.
+
+##### Chain 7: lstatSync Propagation Across 4 State-Managers (R5→R6, 2 rounds)
+
+| Round | What Happened                                                   | Files Affected           | Root Cause                       |
+| ----- | --------------------------------------------------------------- | ------------------------ | -------------------------------- |
+| R5    | Qodo: use lstatSync for symlink safety in hook state-manager    | hook/state-manager.js    | Valid security suggestion        |
+| R6    | Same issue in 3 other forked state-managers (pr, session, tdms) | 4 state-manager.js files | Propagation miss — fix 1, miss 3 |
+
+**Avoidable rounds:** 0.5. Propagation check (9th time recommended).
+
+##### Chain 8: Gemini Stale Review (R5→R7, 2 rounds)
+
+| Round | What Happened                                | Files Affected                   | Root Cause                   |
+| ----- | -------------------------------------------- | -------------------------------- | ---------------------------- |
+| R5    | Gemini: 3 sanitizeInput fixes on error paths | session-start.js                 | Valid at time of review      |
+| R7    | Same 3 items — already fixed in R5           | session-start.js, state-utils.js | Gemini reviewed stale commit |
+
+**Avoidable rounds:** 0 (reviewer lag, not our code).
+
+**Total avoidable rounds across all chains: ~4.5 out of 7 (~64%)**
+
+6 files appeared in ALL R1-R4 rounds: code-quality-security.js,
 precommit-pipeline.js, state-integration.js (hook); data-quality-dedup.js,
-metrics-reporting.js, pipeline-correctness.js (TDMS).
+metrics-reporting.js, pipeline-correctness.js (TDMS). check-propagation.js
+appeared in R5, R6+, and R7.
 
 #### Rejection Analysis
 
-| Category                        | Count | Rounds | Examples                                                                |
-| ------------------------------- | ----- | ------ | ----------------------------------------------------------------------- |
-| Path traversal (false positive) | 3     | R2     | "Validate rootDir" — rootDir is hardcoded constant, not user-controlled |
-| Command injection (FP)          | 1     | R2     | "Sanitize patchContent" — patches are display-only, never executed      |
-| JSON.stringify replacer (FP)    | 1     | R2     | "Add replacer function" — works correctly as-is                         |
-| Stale CI result                 | 1     | R3     | docs:check failure passes locally, stale CI cache                       |
-| Qodo self-contradiction         | 1     | R4     | R3 "remove \b" → R4 "add \b back" — resolved by indexOf                 |
+| Category                        | Count | Rounds | Examples                                                           |
+| ------------------------------- | ----- | ------ | ------------------------------------------------------------------ |
+| Path traversal (false positive) | 3     | R2     | "Validate rootDir" — hardcoded constant, not user-controlled       |
+| Command injection (FP)          | 1     | R2     | "Sanitize patchContent" — patches are display-only                 |
+| JSON.stringify replacer (FP)    | 1     | R2     | "Add replacer function" — works as-is                              |
+| Stale CI result                 | 2     | R3, R7 | docs:check / lint passes locally, stale CI cache                   |
+| Qodo self-contradiction         | 1     | R4     | R3 "remove \b" → R4 "add \b back"                                  |
+| Human-verify (amber compliance) | 3     | R5     | MCP server names, missing user context, limited validation         |
+| Architectural (out of scope)    | 1     | R5     | Replace custom tooling with SonarQube/CodeQL                       |
+| Already-fixed (stale review)    | 6     | R6, R7 | commit-tracker fields; regex char present; Gemini sanitizeInput ×3 |
+| Git pathspec works correctly    | 1     | R7     | git grep `**/*.js` tested, 23 matches found                        |
+| SonarCloud QG self-resolved     | 2     | R7     | 0 hotspots, 0.0% duplication at re-check                           |
+| Infrastructure (GitHub API)     | 1     | R7     | HttpError: Unexpected end of JSON input — API infra                |
+| Already-passing CI              | 1     | R7     | CI lint/test passes locally — stale run                            |
 
-**Rejection accuracy:** 7/7 correct (100%).
+**Rejection accuracy:** 29/29 correct (100%).
+
+**False-positive rate by source:** Qodo Compliance ~15%, Qodo PR ~8%, Gemini
+~30% (stale reviews), SonarCloud 0%, CI ~25% (stale results).
 
 #### Recurring Patterns (Automation Candidates)
 
-| Pattern                         | Rounds   | Already Automated?     | Recommended Action                                                    | Est. Effort |
-| ------------------------------- | -------- | ---------------------- | --------------------------------------------------------------------- | ----------- |
-| isInsideTryCatch fragility      | R2,R3,R4 | No (4 AST DEBT items)  | Replace regex heuristics with AST parser (DEBT-7559–7562)             | E1 (~2hr)   |
-| Self-referential set validation | R2       | No                     | Add to CODE_PATTERNS.md as anti-pattern                               | ~10 min     |
-| null vs falsy confusion         | R4       | No                     | Add to CODE_PATTERNS.md: use `== null` not truthy checks for metrics  | ~5 min      |
-| RegExp constructor CI blocker   | R4       | YES (CI pattern check) | Run `patterns:check` before push — process enforcement                | Process     |
-| Regex backtracking in checkers  | R2,R3    | Partial (size cap)     | Consistent MAX_FILE_SIZE guard + prefer indexOf for simple substrings | ~20 min     |
+| Pattern                         | Rounds   | Already Automated?    | Recommended Action                                        | Est. Effort |
+| ------------------------------- | -------- | --------------------- | --------------------------------------------------------- | ----------- |
+| isInsideTryCatch fragility      | R2,R3,R4 | No (4 AST DEBT items) | Replace regex heuristics with AST parser (DEBT-7559–7562) | E1 (~2hr)   |
+| Self-referential set validation | R2       | No                    | Already in CODE_PATTERNS.md (prior retro action)          | Done        |
+| POSIX ERE in git grep           | R5→R6+   | Fixed ad-hoc          | Add [[:space:]] convention to CODE_PATTERNS.md            | ~5 min      |
+| lstatSync propagation miss      | R5→R6    | check-propagation.js  | Propagation script now automated; was process-only before | Done        |
+| Stale reviewer comments         | R5, R7   | No                    | Add note to pr-review Step 1.4                            | ~5 min      |
+| Lazy-load typeof guard          | R5→R7    | No                    | Add to FIX_TEMPLATES.md as standard lazy-load pattern     | ~5 min      |
 
 #### Previous Retro Action Item Audit
 
-| Retro   | Recommended Action                     | Implemented?     | Impact on #388                                                     |
-| ------- | -------------------------------------- | ---------------- | ------------------------------------------------------------------ |
-| PR #386 | S5852 recursive regex audit (Step 0.5) | **YES**          | Not triggered — no S5852 in #388                                   |
-| PR #386 | Verify IIFE testFn CC-checked          | **NOT VERIFIED** | No impact (no IIFE testFn in #388)                                 |
-| PR #386 | Small PRs = fewer rounds               | **NOT FOLLOWED** | **Direct impact: 36 files → 4 rounds**                             |
-| PR #384 | Run patterns:check before pushing      | **NOT DONE**     | **~0.5 avoidable round** (R4 CI blocker)                           |
-| PR #384 | `\|\|` vs `??` pattern rule            | **YES**          | No impact                                                          |
-| PR #384 | scripts/debt/ Qodo exclusion           | **YES**          | Reduced Qodo noise                                                 |
-| PR #384 | Propagation protocol enforcement       | **NOT DONE**     | **~0.5 avoidable round** (R2 regex overlap)                        |
-| PR #379 | Algorithm Design Pre-Check (Step 0.5)  | **YES**          | **NOT APPLIED** to isInsideTryCatch — would have prevented Chain 1 |
+| Retro          | Recommended Action               | Implemented?     | Impact on #388 R5-R7                                   |
+| -------------- | -------------------------------- | ---------------- | ------------------------------------------------------ |
+| PR #388 (R1-4) | Heuristic test matrices          | **NOT DONE**     | No impact (no new heuristics in R5-R7)                 |
+| PR #388 (R1-4) | Run patterns:check before push   | **YES**          | R5+ ran patterns:check; eliminated CI pattern cascades |
+| PR #388 (R1-4) | Split multi-skill PRs            | **NOT FOLLOWED** | Still 36+ files → continued churn through R7           |
+| PR #386        | S5852 recursive regex audit      | **YES**          | R5 SonarCloud replaceAll() caught by pre-check         |
+| PR #386        | Small PRs = fewer rounds         | **NOT FOLLOWED** | Direct impact: 7 rounds total                          |
+| PR #384        | Propagation protocol enforcement | **PARTIAL**      | R6 propagated lstatSync ×4; R7 propagated typeof ×2    |
 
-**Total avoidable rounds from unimplemented retro actions: ~1.5**
+**Total avoidable rounds from unimplemented retro actions: ~1**
 
 #### Cross-PR Systemic Analysis
 
-| PR       | Rounds | Total Items | Avoidable Rounds | Rejections | Key Issue                              |
-| -------- | ------ | ----------- | ---------------- | ---------- | -------------------------------------- |
-| #379     | 11     | ~119        | ~8               | ~61        | Evidence algorithm + protocol          |
-| #382     | 3      | 76          | ~1               | 13         | Severity/dedup incremental             |
-| #383     | 8      | ~282        | ~4               | ~90        | Symlink/atomic/catch                   |
-| #384     | 4      | 197         | ~2.5             | ~18        | CI pattern cascade + CC                |
-| #386     | 2      | 25          | ~1               | 1          | S5852 regex + CC                       |
-| **#388** | **4**  | **96**      | **~4**           | **7**      | **Heuristic hardening + regex safety** |
+| PR       | Rounds | Total Items | Avoidable Rounds | Rejections | Key Issue                           |
+| -------- | ------ | ----------- | ---------------- | ---------- | ----------------------------------- |
+| #379     | 11     | ~119        | ~8               | ~61        | Evidence algorithm + protocol       |
+| #382     | 3      | 76          | ~1               | 13         | Severity/dedup incremental          |
+| #383     | 8      | ~282        | ~4               | ~90        | Symlink/atomic/catch                |
+| #384     | 4      | 197         | ~2.5             | ~18        | CI pattern cascade + CC             |
+| #386     | 2      | 25          | ~1               | 1          | S5852 regex + CC                    |
+| **#388** | **7**  | **144**     | **~4.5**         | **29**     | **Heuristic + regex + propagation** |
 
 **Persistent cross-PR patterns:**
 
-| Pattern                          | PRs Affected | Times Recommended | Status                        | Required Action                                |
-| -------------------------------- | ------------ | ----------------- | ----------------------------- | ---------------------------------------------- |
-| CC lint rule                     | #366-#371    | 5x                | **RESOLVED** (pre-commit)     | None                                           |
-| Qodo suppression                 | #369-#384    | 4x                | **RESOLVED** (pr-agent.toml)  | None                                           |
-| Propagation check                | #366-#388    | **8x**            | **STILL PROCESS-ONLY**        | **BLOCKING — 8x, still ~0.5 rounds/PR**        |
-| Local patterns:check before push | #384-#388    | **2x**            | Not enforced                  | Add to pre-push or pr-review checklist         |
-| Algorithm/heuristic design check | #379, #388   | 2x                | Step 0.5 exists, inconsistent | Expand to explicitly cover heuristic functions |
-| Large PR scope → more rounds     | #383-#388    | 3x                | Acknowledged                  | Split multi-skill PRs                          |
+| Pattern                          | PRs Affected   | Times Recommended | Status                        | Required Action                                       |
+| -------------------------------- | -------------- | ----------------- | ----------------------------- | ----------------------------------------------------- |
+| CC lint rule                     | #366-#371      | 5x                | **RESOLVED** (pre-commit)     | None                                                  |
+| Qodo suppression                 | #369-#384      | 4x                | **RESOLVED** (pr-agent.toml)  | None                                                  |
+| Propagation check                | #366-#388      | **9x**            | **PARTIAL** (script + manual) | check-propagation.js exists but only in pre-push hook |
+| Local patterns:check before push | #384-#388      | 3x                | **RESOLVED** (pre-push hook)  | Now enforced in pre-push                              |
+| Large PR scope → more rounds     | #383-#388      | **4x**            | Acknowledged                  | Split multi-skill PRs — strongest signal in dataset   |
+| Stale reviewer comments          | **#388 (new)** | 1x                | Not checked                   | Verify reviewer HEAD in Step 1.4                      |
 
 #### Skills/Templates to Update
 
-1. **CODE_PATTERNS.md:** Add "Self-referential set validation" anti-pattern (~10
+1. **pr-review SKILL.md Step 1.4:** Add "Verify reviewer comments are on current
+   HEAD" (~5 min — do now)
+2. **FIX_TEMPLATES.md:** Add Template #37: standard lazy-load with typeof guard
+   (~5 min — do now)
+3. **CODE_PATTERNS.md:** Add "POSIX ERE: use [[:space:]] not \s in git grep" (~5
    min — do now)
-2. **CODE_PATTERNS.md:** Add "null vs falsy in metrics" pattern (~5 min — do
-   now)
-3. **pr-review SKILL.md Step 0.5:** Expand Algorithm Design Pre-Check to cover
-   heuristic functions (~5 min — do now)
-4. **Learnings log:** Fix Review #372 label from "PR #387 R1" to "PR #388 R1"
-   (~2 min — done)
+4. **pr-retro SKILL.md:** Add Pattern 10: stale reviewer comments (~5 min)
 
 #### Process Improvements
 
-1. **Heuristic functions need test matrices** — isInsideTryCatch modified in 3
-   rounds. Algorithm Design Pre-Check should cover all analysis/heuristic
-   functions. Evidence: Chain 1, R2→R3→R4.
-2. **Run patterns:check before pushing review fixes** — 2nd PR retro
-   recommending this. R4 CI blocker was catchable locally. Evidence: R4 RegExp
-   constructor.
-3. **Self-referential data validation** — New anti-pattern: filter set built
-   from same data being filtered makes check always pass. Evidence: R2
-   mergedFromIds.
-4. **Large multi-skill PRs amplify churn** — 36 files, 6 files in all 4 rounds.
-   Compare #386 (5 files, 2 rounds). Consider one-skill-per-PR. Evidence: all
-   chains.
+1. **Large PR scope is the #1 systemic driver** — 36+ files, 7 rounds, 144
+   items. Compare #386 (5 files, 2 rounds, 25 items). 7x more files = 3.5x more
+   rounds. Evidence: all chains, all rounds. **4th retro recommending split.**
+2. **Propagation is now partially automated** — check-propagation.js runs in
+   pre-push hook. R6's lstatSync fix across 4 files was manual; R7's typeof fix
+   propagated to commit-failure-reporter.js. 9th recommendation partially
+   resolved.
+3. **Multi-source review has diminishing returns** — R5 added SonarCloud+Gemini
+   (25 items). R7 showed Gemini reviewing stale code (3 FPs) and SonarCloud QG
+   self-resolving. Net R5-R7: ~16 real items, ~10 noise. Evidence: R7 (9 items,
+   8 rejected).
+4. **Review convergence achieved** — Items: 42→22→16→16→25→14→9. R7 had 1 real
+   fix, suggesting codebase is stabilized for this PR.
 
 #### Verdict
 
-PR #388 had a **moderately inefficient review cycle** — 4 rounds with 96 items,
-80 fixed. ~4 of 4 rounds were partially avoidable (~75%), driven by
-isInsideTryCatch heuristic ping-pong (Chain 1, 1 round), data-quality-dedup
-progressive hardening (Chain 2, 1.5 rounds), and regex safety escalation (Chain
-3, 0.5 rounds). The single highest-impact change: expand Algorithm Design
-Pre-Check to cover all heuristic/analysis functions and enforce test matrices.
+PR #388 had a **moderately inefficient review cycle** — 7 rounds with 144 items,
+106 fixed. ~4.5 of 7 rounds were partially avoidable (~64%), driven by
+isInsideTryCatch heuristic ping-pong (1 round), data-quality-dedup progressive
+hardening (1.5 rounds), regex safety escalation (0.5 rounds), POSIX ERE
+incompatibility (0.5 rounds), and lstatSync propagation miss (0.5 rounds).
 
-**Trend: Regression from #386 correlated with PR scope.** Round count: #384(4) →
-#386(2) → **#388(4)**. #386's 2-round cycle came from 5 files; #388's 4-round
-cycle came from 36+ files. Items/round: #386(12.5) → **#388(24)**. Rejection
-rate: #386(4%) → **#388(7.3%)**. Propagation check is now at **8x recommended**
-without automation — the project's longest-standing unresolved systemic issue.
+**Trend: Regression from #386, correlated with PR scope.** Round count: #384(4)
+→ #386(2) → **#388(7)**. Items/round: #386(12.5) → **#388(20.6)**. Rejection
+rate: #386(4%) → **#388(20.1%)**. The high R5-R7 rejection rate is driven by
+stale reviewer comments and SonarCloud QG self-resolution.
+
+**The single highest-impact change:** Split multi-skill PRs into
+one-skill-per-PR. This is now a **4x recommended action** (#383, #384, #386,
+#388) with overwhelming evidence: 5-file PRs get 2 rounds; 36-file PRs get 7.
+Every additional skill/module adds ~1.5 review rounds on average.
+
+**Positive signal:** Review converged cleanly — R7 had only 1 real fix.
+check-propagation.js partially automates the 9x-recommended propagation check.
+Pre-push pattern compliance eliminated CI cascades (#384 R2's 112 violations).
 
 ---
 
