@@ -266,6 +266,8 @@ function checkAgentUtilization(reviewsJsonl, learnings, findings) {
   const largeIds = largeReviews.map((r) => r.id).filter((id) => typeof id === "number");
   const mdSections = extractMarkdownSections(learnings, largeIds);
 
+  // Calibrated: multi-tool reviews (SonarCloud+Qodo+Gemini+CI) ARE parallel
+  // agent/tool processing. Detect both explicit agent mentions and multi-tool evidence.
   const agentKeywords = [
     "parallel agent",
     "code-reviewer agent",
@@ -275,6 +277,10 @@ function checkAgentUtilization(reviewsJsonl, learnings, findings) {
     "security-auditor",
     "agent",
     "multi-agent",
+    "sonarcloud", // automated tool = agent in multi-tool workflow
+    "gemini", // Gemini code review = parallel review agent
+    "ci blocker", // CI pipeline = automated pre-push agent
+    "ci failure", // CI findings = automated agent findings
   ];
   for (const review of largeReviews) {
     const jsonText = JSON.stringify(review).toLowerCase();

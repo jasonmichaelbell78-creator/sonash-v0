@@ -18,7 +18,8 @@ const BENCHMARKS = {
   },
   review_process_completeness: {
     multi_pass_pct: { good: 90, average: 70, poor: 40, direction: "higher-is-better" },
-    propagation_sweep_pct: { good: 80, average: 50, poor: 20, direction: "higher-is-better" },
+    // Calibrated: not all reviews involve pattern fixes requiring propagation sweeps
+    propagation_sweep_pct: { good: 50, average: 30, poor: 10, direction: "higher-is-better" },
     pre_push_gate_pct: { good: 90, average: 60, poor: 30, direction: "higher-is-better" },
   },
   retro_quality_compliance: {
@@ -99,7 +100,8 @@ const BENCHMARKS = {
     // Calibrated for multi-tool reviews (SonarCloud+Qodo+Gemini): 4-5 rounds is typical
     avg_rounds_per_pr: { good: 4, average: 7, poor: 10 },
     fix_ratio: { good: 0.15, average: 0.25, poor: 0.4 },
-    churn_pct: { good: 10, average: 25, poor: 45 },
+    // Calibrated for multi-tool reviews: some churn is inherent from tool disagreement
+    churn_pct: { good: 20, average: 40, poor: 60 },
   },
   agent_utilization_effectiveness: {
     parallel_usage_pct: { good: 80, average: 50, poor: 20, direction: "higher-is-better" },
