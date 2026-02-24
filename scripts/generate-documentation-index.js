@@ -14,6 +14,7 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, lstatSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join, relative, dirname, basename, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -500,6 +501,31 @@ function getCategory(filePath) {
 }
 
 /**
+ * Get the last git commit date for a file.
+ * Falls back to filesystem mtime if git fails (e.g., untracked file).
+ */
+function getLastModifiedDate(filePath, fullPath) {
+  try {
+    const result = execFileSync("git", ["log", "-1", "--format=%aI", "--", filePath], {
+      cwd: ROOT,
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    }).trim();
+    if (result) {
+      return result.split("T")[0];
+    }
+  } catch {
+    // Git failed — fall back to filesystem mtime
+  }
+  try {
+    const stat = statSync(fullPath);
+    return stat.mtime.toISOString().split("T")[0];
+  } catch {
+    return new Date().toISOString().split("T")[0];
+  }
+}
+
+/**
  * Process a single markdown file
  */
 function processFile(filePath) {
@@ -521,7 +547,7 @@ function processFile(filePath) {
       category,
       frontmatter,
       links,
-      lastModified: stat.mtime.toISOString().split("T")[0],
+      lastModified: getLastModifiedDate(filePath, fullPath),
       size: stat.size,
     };
   } catch (error) {
