@@ -14,6 +14,7 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, lstatSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join, relative, dirname, basename, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -194,7 +195,7 @@ function findMarkdownFiles(dir, result = { active: [], archived: [] }) {
 
   for (const entry of entries) {
     const fullPath = join(dir, entry);
-    const relativePath = relative(ROOT, fullPath).replace(/\\/g, "/"); // Cross-platform normalization
+    const relativePath = relative(ROOT, fullPath).replaceAll("\\", "/"); // Cross-platform normalization
 
     // Skip excluded directories (with proper boundary check)
     if (shouldSkipEntry(entry, relativePath)) continue;
@@ -420,7 +421,7 @@ function extractLinks(content, currentFile) {
     }
 
     // Normalize path (cross-platform)
-    resolvedPath = resolvedPath.replace(/\\/g, "/");
+    resolvedPath = resolvedPath.replaceAll("\\", "/");
 
     // Canonicalize path to resolve . and .. segments properly
     // This handles cases like "docs/../scripts/file.md" → "scripts/file.md"
@@ -499,6 +500,45 @@ function getCategory(filePath) {
   return category;
 }
 
+const lastModifiedCache = new Map();
+
+/**
+ * Get the last git commit date for a file.
+ * Uses committer date (%cI) to avoid date regressions from cherry-picks/rebases.
+ * Falls back to filesystem mtime if git fails (e.g., untracked file).
+ */
+function getLastModifiedDate(filePath, fullPath) {
+  const cacheKey = filePath.replaceAll("\\", "/");
+  if (lastModifiedCache.has(cacheKey)) return lastModifiedCache.get(cacheKey);
+
+  let lastModified;
+
+  try {
+    const result = execFileSync("git", ["log", "--follow", "-1", "--format=%cI", "--", cacheKey], {
+      cwd: ROOT,
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    }).trim();
+    if (result) {
+      lastModified = result.split("T")[0];
+    }
+  } catch {
+    // Git failed — fall back to filesystem mtime
+  }
+
+  if (!lastModified) {
+    try {
+      const stat = statSync(fullPath);
+      lastModified = stat.mtime.toISOString().split("T")[0];
+    } catch {
+      lastModified = "UNKNOWN";
+    }
+  }
+
+  lastModifiedCache.set(cacheKey, lastModified);
+  return lastModified;
+}
+
 /**
  * Process a single markdown file
  */
@@ -521,7 +561,7 @@ function processFile(filePath) {
       category,
       frontmatter,
       links,
-      lastModified: stat.mtime.toISOString().split("T")[0],
+      lastModified: getLastModifiedDate(filePath, fullPath),
       size: stat.size,
     };
   } catch (error) {

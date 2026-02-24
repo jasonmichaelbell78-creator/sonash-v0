@@ -493,6 +493,29 @@ identify known chains.
   reverify-resolved.js, verify-resolutions.js, intake-sonar-reliability.js.
 - **Templates:** FIX_TEMPLATES #36 (dual-JSONL write)
 
+### Pattern 10: Stale Reviewer Comments (Ghost Feedback)
+
+- **Frequency:** PR #388 R7 (3 items), likely under-counted in prior PRs
+- **Root cause:** External reviewers (Gemini, Qodo) analyze a stale commit
+  rather than HEAD. When fixes from round N are pushed, round N+1's reviewer may
+  still be reviewing the pre-round-N state, producing false positives for issues
+  already fixed.
+- **Signature:** Reviewer suggests adding code that already exists in current
+  HEAD. Multiple items from same reviewer all reference pre-fix state.
+- **Known fix:** Before investigating ANY reviewer item, compare the reviewer's
+  analyzed commit against HEAD. If stale (2+ commits behind), reject ALL items
+  from that reviewer as a batch — do not investigate individually.
+- **Detection:**
+  ```bash
+  # Check if reviewer is analyzing stale code
+  git log --oneline <reviewer-commit>..HEAD
+  # If output shows commits, reviewer is stale
+  ```
+- **Status as of PR #388:** pr-review SKILL.md Step 1.5 added (Stale Reviewer
+  HEAD Check). This pattern cost ~15 min of unnecessary investigation in R7.
+- **Prevention:** Always check HEAD before accepting reviewer feedback. A single
+  check saves N individual investigations.
+
 ---
 
 ## COMPLIANCE MECHANISMS
@@ -561,6 +584,7 @@ The retro connects to other session workflows:
 
 | Version | Date       | Description                                                                              |
 | ------- | ---------- | ---------------------------------------------------------------------------------------- |
+| 2.6     | 2026-02-24 | Add Pattern 10 (stale reviewer comments). Source: PR #388 retro.                         |
 | 2.5     | 2026-02-22 | Add Pattern 9 (dual-file JSONL sync fragility). Source: PR #383 retro.                   |
 | 2.4     | 2026-02-19 | Add Pattern 8 (incremental algorithm hardening). Source: PR #379 retro.                  |
 | 2.3     | 2026-02-18 | Add Patterns 6-7 (realpathSync lifecycle, containment flip-flop). Source: PR #374 retro. |

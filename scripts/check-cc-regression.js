@@ -70,8 +70,8 @@ function getViolationDetails(filePath) {
   }
 }
 
-// Read file list from stdin
-const input = readFileSync("/dev/stdin", "utf8").trim();
+// Read file list from stdin (cross-platform: fd 0 is more robust than process.stdin.fd)
+const input = readFileSync(0, "utf8").trim();
 if (!input) process.exit(0);
 
 const files = input.split("\n").filter(Boolean);
