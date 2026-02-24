@@ -84,17 +84,18 @@ function isInsideTryCatch(lines, callLineIdx) {
   for (let i = callLineIdx; i >= 0; i--) {
     const line = lines[i];
 
-    // Track braces while walking backwards
+    // Track braces while walking backwards (reverse direction for backward scan)
     for (let c = line.length - 1; c >= 0; c--) {
-      if (line[c] === "{") depth++;
-      if (line[c] === "}") depth--;
+      if (line[c] === "}") depth++;
+      if (line[c] === "{") depth--;
     }
 
     // Bail out if we appear to have crossed into a different function scope
     if (/\bfunction\b|=>\s*\{/.test(line) && depth < 0) return false;
 
-    // `try {` opening at the current depth implies we're inside its block
-    if (depth === 0 && /\btry\s*\{/.test(line)) {
+    // Walking backwards, depth < 0 means we've crossed out of a block.
+    // If this line has `try`, we're inside the try block.
+    if (depth < 0 && /\btry\b/.test(line)) {
       return true;
     }
   }

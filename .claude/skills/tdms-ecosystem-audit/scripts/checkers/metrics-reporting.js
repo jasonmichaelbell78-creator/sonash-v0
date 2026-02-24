@@ -192,7 +192,7 @@ function checkViewGenerationAccuracy(rootDir, findings) {
   }
 
   const debtContent = safeReadFile(debtPath);
-  if (!debtContent) {
+  if (debtContent === null) {
     findings.push({
       id: "TMR-102",
       category: "view_generation_accuracy",
@@ -219,6 +219,7 @@ function checkViewGenerationAccuracy(rootDir, findings) {
       frequency: invalidCount,
       blastRadius: 4,
     });
+    return { score: 0, rating: "poor", metrics: { reason: "invalid_jsonl", invalidCount } };
   }
 
   if (debtItems.length === 0) {
@@ -262,7 +263,7 @@ function checkViewGenerationAccuracy(rootDir, findings) {
   // ── by-severity.md ──
   const sevViewPath = path.join(viewsDir, "by-severity.md");
   const sevContent = safeReadFile(sevViewPath);
-  if (sevContent) {
+  if (sevContent !== null) {
     const viewCounts = extractViewCounts(sevContent);
 
     // Map severity display names to our keys
@@ -452,7 +453,7 @@ function checkMetricsDashboardCorrectness(rootDir, findings) {
 
   // Read MASTER_DEBT
   const debtContent = safeReadFile(debtPath);
-  if (!debtContent) {
+  if (debtContent === null) {
     findings.push({
       id: "TMR-200",
       category: "metrics_dashboard_correctness",
@@ -466,7 +467,22 @@ function checkMetricsDashboardCorrectness(rootDir, findings) {
     return { score: 0, rating: "poor", metrics: { reason: "master_debt_unavailable" } };
   }
 
-  const { items: debtItems } = parseJsonl(debtContent);
+  const { items: debtItems, invalidCount } = parseJsonl(debtContent);
+
+  if (invalidCount > 0) {
+    findings.push({
+      id: "TMR-200A",
+      category: "metrics_dashboard_correctness",
+      domain: DOMAIN,
+      severity: "error",
+      message: `MASTER_DEBT.jsonl has ${invalidCount} invalid JSON line${invalidCount === 1 ? "" : "s"}`,
+      details:
+        "Metrics dashboard accuracy cannot be trusted when the source file contains malformed JSONL.",
+      frequency: invalidCount,
+      blastRadius: 4,
+    });
+    return { score: 0, rating: "poor", metrics: { reason: "invalid_jsonl", invalidCount } };
+  }
 
   // Recompute metrics from MASTER_DEBT
   const computed = {
@@ -495,7 +511,7 @@ function checkMetricsDashboardCorrectness(rootDir, findings) {
 
   // Read METRICS.md
   const metricsContent = safeReadFile(metricsPath);
-  if (!metricsContent) {
+  if (metricsContent === null) {
     findings.push({
       id: "TMR-201",
       category: "metrics_dashboard_correctness",

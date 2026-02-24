@@ -455,9 +455,9 @@ function checkReasonValidation(content, findings) {
     max_length: false,
   };
 
-  // Check for require_skip_reason function
-  const hasRequireSkipReason = /require_skip_reason\s*\(\)\s*\{/.test(content);
-  if (!hasRequireSkipReason) {
+  // Check for require_skip_reason function and extract its body
+  const fnMatch = content.match(/require_skip_reason\s*\(\)\s*\{/);
+  if (!fnMatch) {
     findings.push({
       id: "HEA-312",
       category: "bypass_override_controls",
@@ -474,29 +474,40 @@ function checkReasonValidation(content, findings) {
     return validations;
   }
 
-  // Check each validation within the function body
+  // Extract function body by matching braces from the opening {
+  const fnStart = fnMatch.index + fnMatch[0].length;
+  let braceDepth = 1;
+  let fnEnd = fnStart;
+  for (let i = fnStart; i < content.length && braceDepth > 0; i++) {
+    if (content[i] === "{") braceDepth++;
+    if (content[i] === "}") braceDepth--;
+    fnEnd = i;
+  }
+  const fnBody = content.slice(fnStart, fnEnd);
+
+  // Check each validation within the function body (not whole file)
   // Non-empty check
-  if (/SKIP_REASON.*-z/.test(content) || /-z.*SKIP_REASON/.test(content)) {
+  if (/SKIP_REASON.*-z/.test(fnBody) || /-z.*SKIP_REASON/.test(fnBody)) {
     validations.non_empty = true;
   }
 
   // Single-line check (wc -l or CR check)
-  if (/wc -l/.test(content) || /\\r|cr/.test(content)) {
+  if (/wc -l/.test(fnBody) || /\\r|cr/.test(fnBody)) {
     validations.single_line = true;
   }
 
   // Control char check
-  if (/\[:cntrl:\]/.test(content)) {
+  if (/\[:cntrl:\]/.test(fnBody)) {
     validations.no_control_chars = true;
   }
 
   // Min length
-  if (/-lt\s+10/.test(content)) {
+  if (/-lt\s+10/.test(fnBody)) {
     validations.min_length = true;
   }
 
   // Max length
-  if (/-gt\s+500/.test(content)) {
+  if (/-gt\s+500/.test(fnBody)) {
     validations.max_length = true;
   }
 
@@ -539,11 +550,17 @@ function checkGateEffectiveness(content, lines, findings, scores) {
     // Get surrounding context (200 chars before)
     const contextBefore = content.slice(Math.max(0, pos - 300), pos);
 
-    // Determine which stage this exit belongs to
+    // Determine which stage this exit belongs to (nearest match wins)
     let stageName = "unknown";
+    let nearestPos = -1;
     for (const stage of EXPECTED_STAGES) {
-      if (stage.pattern.test(contextBefore)) {
-        stageName = stage.name;
+      const stageMatch = stage.pattern.exec(contextBefore);
+      if (stageMatch) {
+        const matchPos = contextBefore.lastIndexOf(stageMatch[0]);
+        if (matchPos > nearestPos) {
+          nearestPos = matchPos;
+          stageName = stage.name;
+        }
       }
     }
 
@@ -680,7 +697,10 @@ function checkGateEffectiveness(content, lines, findings, scores) {
 
     // Look for: add_exit_trap 'rm -f "$VARNAME"' or add_exit_trap 'rm -f ${VARNAME}'
     const varRef = `(?:\\$\\{${escapeRegex(tf.varName)}\\}|\\$${escapeRegex(tf.varName)})`;
-    const cleanupPattern = new RegExp(`add_exit_trap\\s+['"]rm\\s+-f\\s+[^'"]*"?${varRef}"?`, "m");
+    const cleanupPattern = new RegExp(
+      `add_exit_trap\\s+(["'])rm\\s+-f\\s+[^"']*${varRef}[^"']*\\1`,
+      "m"
+    );
     if (cleanupPattern.test(content)) {
       tempFilesWithCleanup++;
     } else {

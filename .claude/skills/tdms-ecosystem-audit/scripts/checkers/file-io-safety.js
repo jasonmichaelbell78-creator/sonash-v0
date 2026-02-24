@@ -137,15 +137,20 @@ function isInsideTryCatch(lines, lineIdx) {
 function countPatternCoverage(lines, pattern) {
   let total = 0;
   let wrapped = 0;
-  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(escaped, "g");
 
   for (let i = 0; i < lines.length; i++) {
-    const matches = lines[i].match(regex);
-    if (matches) {
-      total += matches.length;
+    let count = 0;
+    let searchFrom = 0;
+    let idx = lines[i].indexOf(pattern, searchFrom);
+    while (idx !== -1) {
+      count++;
+      searchFrom = idx + pattern.length;
+      idx = lines[i].indexOf(pattern, searchFrom);
+    }
+    if (count > 0) {
+      total += count;
       if (isInsideTryCatch(lines, i)) {
-        wrapped += matches.length;
+        wrapped += count;
       }
     }
   }

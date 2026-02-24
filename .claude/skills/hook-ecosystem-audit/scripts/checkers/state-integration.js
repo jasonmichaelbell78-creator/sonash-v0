@@ -386,27 +386,27 @@ function checkCrossHookDependencies(rootDir, hooksDir, findings) {
     for (const hookFile of hookFiles) {
       const filePath = path.join(hooksDir, hookFile);
       let source;
-      let stat;
       try {
-        stat = fs.statSync(filePath);
+        const stat = fs.statSync(filePath);
         if (!stat.isFile()) continue;
+
+        if (stat.size > MAX_HOOK_SOURCE_BYTES) {
+          findings.push({
+            id: "HEA-510A",
+            category: "cross_hook_dependencies",
+            domain: DOMAIN,
+            severity: "warning",
+            message: `Hook source too large to scan: ${hookFile}`,
+            details: `Skipped dependency regex scan because file exceeds ${(MAX_HOOK_SOURCE_BYTES / (1024 * 1024)).toFixed(0)}MB.`,
+            impactScore: 40,
+            frequency: 1,
+            blastRadius: 2,
+          });
+          continue;
+        }
+
         source = fs.readFileSync(filePath, "utf8");
       } catch {
-        continue;
-      }
-
-      if (stat.size > MAX_HOOK_SOURCE_BYTES) {
-        findings.push({
-          id: "HEA-510A",
-          category: "cross_hook_dependencies",
-          domain: DOMAIN,
-          severity: "warning",
-          message: `Hook source too large to scan: ${hookFile}`,
-          details: `Skipped dependency regex scan because file exceeds ${(MAX_HOOK_SOURCE_BYTES / (1024 * 1024)).toFixed(0)}MB.`,
-          impactScore: 40,
-          frequency: 1,
-          blastRadius: 2,
-        });
         continue;
       }
 

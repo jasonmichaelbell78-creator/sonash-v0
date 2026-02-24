@@ -79,7 +79,19 @@ function checkHookRegistration(hooksSection, eventType, filename, matcher) {
       const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const fileRegex = new RegExp(`\\b${escapedFilename}\\b`);
       if (fileRegex.test(cmd)) {
-        const hasMatcher = matcher ? group.matcher === matcher : true;
+        let hasMatcher = true;
+        if (matcher) {
+          const groupMatcher = typeof group.matcher === "string" ? group.matcher : "";
+          // Try treating the group matcher as a regex that should match the expected value
+          try {
+            const normalized = groupMatcher.replace(/\(\?i\)/g, "");
+            const hasInlineI = groupMatcher.indexOf("(?i)") >= 0;
+            const re = new RegExp(normalized, hasInlineI ? "i" : "");
+            hasMatcher = re.test(matcher);
+          } catch {
+            hasMatcher = groupMatcher === matcher;
+          }
+        }
         return { found: true, hasMatcher };
       }
     }

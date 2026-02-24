@@ -256,25 +256,42 @@ function checkDedupAlgorithmHealth(rootDir) {
     }
   }
 
-  // Check for circular merge chains using DFS
-  const visited = new Set();
-  const inStack = new Set();
+  // Check for circular merge chains using iterative DFS (avoid stack overflow)
+  const color = new Map(); // node -> 0 (unvisited) | 1 (visiting) | 2 (done)
 
-  function detectCycle(node) {
-    if (inStack.has(node)) return true;
-    if (visited.has(node)) return false;
-    visited.add(node);
-    inStack.add(node);
-    const neighbors = mergeGraph.get(node) || [];
-    for (const neighbor of neighbors) {
-      if (detectCycle(neighbor)) return true;
+  function detectCycleIterative(startNode) {
+    const stack = [{ node: startNode, idx: 0 }];
+
+    while (stack.length > 0) {
+      const frame = stack[stack.length - 1];
+      const node = frame.node;
+
+      const state = color.get(node) || 0;
+      if (state === 0) color.set(node, 1);
+      if (state === 2) {
+        stack.pop();
+        continue;
+      }
+
+      const neighbors = mergeGraph.get(node) || [];
+      if (frame.idx >= neighbors.length) {
+        color.set(node, 2);
+        stack.pop();
+        continue;
+      }
+
+      const next = neighbors[frame.idx++];
+      const nextState = color.get(next) || 0;
+      if (nextState === 1) return true; // back-edge => cycle
+      if (nextState === 0) stack.push({ node: next, idx: 0 });
     }
-    inStack.delete(node);
+
     return false;
   }
 
   for (const node of mergeGraph.keys()) {
-    if (detectCycle(node)) {
+    if ((color.get(node) || 0) !== 0) continue;
+    if (detectCycleIterative(node)) {
       hasCircular = true;
       findings.push({
         id: "TDMS-D2-103",
@@ -654,10 +671,14 @@ function checkContentHashIntegrity(rootDir) {
         sortedKeys
           .map((k) => {
             const raw = item[k];
-            const v =
-              raw === undefined || typeof raw === "function" || typeof raw === "symbol"
-                ? "null"
-                : JSON.stringify(raw);
+            let v = "null";
+            if (raw !== undefined && typeof raw !== "function" && typeof raw !== "symbol") {
+              try {
+                v = typeof raw === "bigint" ? JSON.stringify(raw.toString()) : JSON.stringify(raw);
+              } catch {
+                v = JSON.stringify(String(raw));
+              }
+            }
             return `${JSON.stringify(k)}:${v}`;
           })
           .join(",") +

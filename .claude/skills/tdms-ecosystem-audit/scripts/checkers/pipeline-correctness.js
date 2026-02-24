@@ -307,8 +307,8 @@ function checkDataFlowIntegrity(rootDir, findings) {
     let toHasInput;
     if (conn.toFile.indexOf("*") !== -1) {
       // Glob pattern — check that target reads from the directory path
-      const rawPathRe = /\braw[\\/]/;
-      const tdRawPathRe = /\btechnical-debt[\\/]raw[\\/]/;
+      const rawPathRe = /(?:^|[\\/\s"'])raw[\\/]/m;
+      const tdRawPathRe = /(?:^|[\\/\s"'])technical-debt[\\/]raw[\\/]/m;
       toHasInput = rawPathRe.test(toContent) || tdRawPathRe.test(toContent);
     } else {
       const toFileBase = conn.toFile.replace(/^raw\//, "");
@@ -453,10 +453,7 @@ function checkIntakePipeline(rootDir, findings) {
     // Check 2: Writes to raw/deduped.jsonl (Session #134 critical bug fix)
     const dedupWriteRe = new RegExp(`(?:${wfSync}|${afSync})\\([^)]*deduped\\.jsonl`);
     const dedupWriteAsyncRe = new RegExp(`(?:${wfAsync}|${afAsync})\\([^)]*deduped\\.jsonl`);
-    const writesDeduped =
-      dedupWriteRe.test(content) ||
-      dedupWriteAsyncRe.test(content) ||
-      content.indexOf(dedupedLiteral) !== -1;
+    const writesDeduped = dedupWriteRe.test(content) || dedupWriteAsyncRe.test(content);
     if (!writesDeduped) {
       missingBehaviors++;
       scriptIssues.push("does not write to raw/deduped.jsonl (Session #134 critical bug)");

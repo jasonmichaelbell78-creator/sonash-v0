@@ -337,7 +337,9 @@ function extractHookRegistrations(settings) {
       for (const hookDef of group.hooks) {
         if (!hookDef.command) continue;
         // Extract hook filename from command like "node .claude/hooks/commit-tracker.js $ARGUMENTS"
-        const fileMatch = hookDef.command.match(/([a-zA-Z0-9_-]+\.js)/);
+        // Prefer the filename after .claude/hooks/ to avoid matching "node" or other .js args
+        const hooksPathMatch = hookDef.command.match(/\.claude[\\/]hooks[\\/]([a-zA-Z0-9_-]+\.js)/);
+        const fileMatch = hooksPathMatch || hookDef.command.match(/([a-zA-Z0-9_-]+\.js)/);
         if (fileMatch) {
           registrations.push({
             hookFile: fileMatch[1],
