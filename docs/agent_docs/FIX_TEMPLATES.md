@@ -1904,10 +1904,62 @@ grep -rn 'MASTER.*write\|MASTER.*rename\|masterTmp\|MASTER_FILE' scripts/debt/ -
 
 ---
 
+### Template 37: Lazy-Load Module with typeof Guard
+
+**When:** Lazy-loading a shared helper via `require()` in a try/catch block
+where the module might export `undefined` (e.g., module exists but named export
+is missing/misspelled).
+
+**Why:** `require()` succeeds if the file exists, even if the named export is
+`undefined`. Without a typeof guard, the variable silently becomes `undefined`
+and crashes at call site. The try/catch only handles missing files, not missing
+exports.
+
+**Pattern:**
+
+```javascript
+// WRONG — require succeeds, .namedExport may be undefined
+let helper;
+try {
+  helper = require("./lib/module").namedExport;
+} catch {
+  helper = fallbackFn;
+}
+// helper is undefined if module exists but export doesn't → crash at call site
+
+// CORRECT — typeof guard after successful require
+let helper;
+try {
+  helper = require("./lib/module").namedExport;
+  if (typeof helper !== "function") helper = fallbackFn;
+} catch {
+  helper = fallbackFn;
+}
+```
+
+**Fallback strategy by use case:**
+
+| Context         | Fallback                              | Why                                            |
+| --------------- | ------------------------------------- | ---------------------------------------------- |
+| Security guard  | `() => false` (deny by default)       | Fail-closed: reject writes when guard missing  |
+| Sanitizer       | `(v) => (v \|\| "").slice(0, limit)`  | Basic truncation preserves safety              |
+| Telemetry/write | `() => true` (allow by default)       | Fail-open: don't block hooks on missing helper |
+| Rotation/util   | `null` + truthiness check before call | Skip optional functionality gracefully         |
+
+**Evidence:** PR #388 R7 [1] — `isSafeToWrite` was `undefined` after successful
+`require()` because the module existed but the named export wasn't available in
+a specific state. Same pattern found in `commit-failure-reporter.js` during
+propagation check (both `isSafeToWrite` and `sanitizeInput`).
+
+**Source:** PR #388 retro, Review #378
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                                    |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.3     | 2026-02-24 | Add Template 37 (lazy-load module with typeof guard). Source: PR #388 retro.                              |
 | 2.2     | 2026-02-22 | Add Template 36 (atomic dual-JSONL write with rollback). Source: PR #383 retro.                           |
 | 2.1     | 2026-02-20 | Add Template 35 (mapping/enumeration audit). Source: PR #382 retro.                                       |
 | 2.0     | 2026-02-19 | Add Template 34 (evidence/array merge with deep dedup). Source: PR #379 retro.                            |

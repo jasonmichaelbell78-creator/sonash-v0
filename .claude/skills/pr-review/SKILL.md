@@ -213,14 +213,28 @@ through reviewer feedback:
    algorithm expecting reviewer iteration to complete it.
 
 **For heuristic functions specifically:** Define a test matrix of expected
-inputs→outputs (e.g., "code inside try/catch" → true, "code outside" → false)
-and validate the implementation against it before committing.
+inputs→outputs BEFORE committing. The matrix must cover:
+
+1. **True positives**: Inputs that should match (e.g., "code inside try/catch")
+2. **True negatives**: Inputs that should NOT match (e.g., "code outside try")
+3. **Edge cases**: Nested structures, empty input, boundary conditions
+4. **Direction sensitivity**: If scanning lines/braces, test both forward and
+   backward scan directions
+
+| Heuristic Type         | Required Test Cases                                       |
+| ---------------------- | --------------------------------------------------------- |
+| Brace/scope detection  | Nested braces, adjacent blocks, empty blocks, single-line |
+| Regex-based analysis   | Match, non-match, partial match, multiline, special chars |
+| Line-counting logic    | 0 lines, 1 line, boundary lines, lines with mixed content |
+| AST-like parsing       | Nested constructs, sibling constructs, malformed input    |
+| Dedup/canonicalization | Identical, near-identical, different types, circular refs |
 
 **Evidence:** PR #379 had 7 rounds of incremental evidence dedup refinement. 4
 rounds (~57%) were avoidable with upfront algorithm design. PR #388 had 3 rounds
 of isInsideTryCatch brace direction flip-flop — a test matrix would have
-prevented 1 round. See FIX_TEMPLATES #34 for the complete evidence merge
-pattern.
+prevented 1 round. PR #388 R4 had a self-referential dedup set that was a no-op
+— a test matrix with known duplicates would have caught it instantly. See
+FIX_TEMPLATES #34 for the complete evidence merge pattern.
 
 ### Mapping/Enumeration Completeness Pre-Check (NEW — PR #382 Retro)
 
@@ -368,6 +382,30 @@ categorization."
 `git log --all --grep` and `git log --follow`. Common false positives: range gap
 misinterpretation, intentional numbering skips, file moves. If FALSE POSITIVE:
 mark REJECTED and document verification.
+
+### 1.5 Stale Reviewer HEAD Check (NEW — PR #388 Retro)
+
+**BEFORE accepting any reviewer item**, verify the reviewer analyzed the current
+HEAD, not a stale commit:
+
+1. Check if the reviewer's feedback references a commit SHA or file state that
+   predates a prior review-fix push
+2. `git log --oneline -5` — compare the reviewer's "latest commit" against HEAD
+3. If the reviewer is reviewing a commit 2+ behind HEAD, mark ALL items from
+   that reviewer as **REJECTED (stale review)** — do not investigate
+   individually
+
+**Evidence:** PR #388 R7 had 3 Gemini items that referenced pre-R6 code (missing
+`sanitizeInput` calls that were already added in R6). Investigating each one
+individually wasted time — a single HEAD check would have rejected all 3
+instantly.
+
+**Search pattern for stale reviews:**
+
+```
+If reviewer feedback says "commit ABCDEF" and HEAD is "commit XYZW":
+  git log --oneline ABCDEF..XYZW  # If this shows commits, review is stale
+```
 
 ---
 
@@ -789,6 +827,7 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 | Version | Date       | Description                                                                                                                |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check (Step 1.5), expand heuristic test matrix (Step 0.5). Source: PR #388 retro.                  |
 | 3.0     | 2026-02-23 | Add Local Pattern Compliance Check (Step 0.5) — mandatory pre-push patterns:check. Source: PR #384 retro.                  |
 | 2.9     | 2026-02-22 | Add dual-file JSONL write check (Step 0.5), dual-file propagation pattern (Step 5.6). Source: PR #383 retro.               |
 | 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks (Step 0.5), strengthen propagation (Step 5.6). Source: PR #382 retro. |
