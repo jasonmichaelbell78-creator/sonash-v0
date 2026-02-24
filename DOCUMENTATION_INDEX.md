@@ -176,13 +176,13 @@ _Multi-AI audit execution templates_
 | Document                                                                                                                        | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [[Project Name] Multi-AI AI Optimization Audit Plan](docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md)                   | This document serves as the **execution plan** for running a... | ↓3 ↑1      | 2026-02-17    |
-| [[Project Name] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)                                 | -                                                               | ↓6 ↑5      | 2026-02-17    |
+| [[Project Name] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)                                 | -                                                               | ↓7 ↑5      | 2026-02-17    |
 | [[Project Name] Multi-AI Documentation Audit Plan](docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md)                       | This document serves as the **execution plan** for running a... | ↓4 ↑2      | 2026-02-17    |
 | [[Project Name] Multi-AI Engineering Productivity Audit Plan](docs/audits/multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | This document serves as the **execution plan** for running a... | ↓4 ↑3      | 2026-02-17    |
-| [[Project Name] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md)                           | This document serves as the **execution plan** for running a... | ↓6 ↑4      | 2026-02-17    |
+| [[Project Name] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md)                           | This document serves as the **execution plan** for running a... | ↓7 ↑4      | 2026-02-17    |
 | [[Project Name] Multi-AI Process & Automation Audit Plan](docs/audits/multi-ai/templates/PROCESS_AUDIT.md)                      | -                                                               | ↓5 ↑2      | 2026-02-17    |
 | [[Project Name] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)                                | This document serves as the **execution plan** for running a... | ↓7 ↑5      | 2026-02-17    |
-| [[Project Name] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)                                 | -                                                               | ↓6 ↑3      | 2026-02-17    |
+| [[Project Name] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)                                 | -                                                               | ↓7 ↑3      | 2026-02-17    |
 | [Enhancement Audit Template (Multi-AI Injectable)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md)                         | -                                                               | ↓3 ↑8      | 2026-02-17    |
 | [Multi-AI Audit Aggregator Template](docs/audits/multi-ai/templates/AGGREGATOR.md)                                              | Deduplicate and verify findings within ONE audit category be... | ↓5 ↑0      | 2026-02-17    |
 | [Multi-AI Audit Shared Template Base](docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md)                                   | Shared boilerplate for                                          | ↓13 ↑2     | 2026-02-17    |
@@ -375,7 +375,7 @@ _Document and audit templates_
 | [[Workflow/Reference Name]](docs/templates/REFERENCE_DOC_TEMPLATE.md)            | -                                                               | ↓0 ↑0      | 2026-01-17    |
 | [CANON Quick Reference Card](docs/templates/CANON_QUICK_REFERENCE.md)            | One-page quick reference for Multi-AI audits. Distilled from... | ↓0 ↑0      | 2026-02-24    |
 | [How to [Accomplish Task]](docs/templates/GUIDE_DOC_TEMPLATE.md)                 | -                                                               | ↓0 ↑2      | 2026-01-17    |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓8 ↑5      | 2026-02-24    |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓8 ↑8      | 2026-02-24    |
 
 ### .agent > workflows (Tier 4)
 
@@ -545,7 +545,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-24    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑2      | 2026-02-23    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑2      | 2026-02-24    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-02-24    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-24    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-09    |
@@ -654,11 +654,11 @@ Documents that are linked to most frequently:
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                        | 8             | SKILL, SKILL, SKILL +5 more                         |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                  | 7             | ARCHITECTURE, DEVELOPMENT, README +4 more           |
 | [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                      | 7             | SKILL, CLAUDE, README +4 more                       |
+| [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)       | 7             | README, COORDINATOR, README +4 more                 |
+| [\[Project Name\] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md) | 7             | README, COORDINATOR, README +4 more                 |
 | [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)      | 7             | README, COORDINATOR, README +4 more                 |
+| [\[Project Name\] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)       | 7             | FIREBASE_CHANGE_POLICY, README, COORDINATOR +4 more |
 | [Session Context](SESSION_CONTEXT.md)                                                                   | 6             | AI_WORKFLOW, CLAUDE, ROADMAP +3 more                |
-| [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)       | 6             | README, COORDINATOR, README +3 more                 |
-| [\[Project Name\] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md) | 6             | README, COORDINATOR, README +3 more                 |
-| [\[Project Name\] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)       | 6             | FIREBASE_CHANGE_POLICY, README, COORDINATOR +3 more |
 | [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                               | 5             | README, ROADMAP, ROADMAP_LOG +2 more                |
 
 ### Most Linking Documents (Outbound Links)
@@ -678,6 +678,7 @@ Documents that link to other documents most frequently:
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                        | 9              |
 | [Session Context](SESSION_CONTEXT.md)                                                                     | 8              |
 | [Enhancement Audit Template \(Multi-AI Injectable\)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md) | 8              |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                          | 8              |
 | [AI Context &amp; Rules for SoNash](CLAUDE.md)                                                            | 7              |
 | [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)              | 6              |
 | [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)                             | 6              |
@@ -686,7 +687,6 @@ Documents that link to other documents most frequently:
 | [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                  | 6              |
 | [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)         | 5              |
 | [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)        | 5              |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                          | 5              |
 
 ---
 

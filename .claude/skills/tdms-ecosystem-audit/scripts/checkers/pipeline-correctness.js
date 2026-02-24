@@ -135,8 +135,7 @@ function checkScriptExecutionOrder(rootDir, findings) {
   // Extract the STEPS array entries — look for script: "filename.js" patterns
   const scriptOrder = [];
   const scriptRegex = /script:\s*["']([a-zA-Z0-9_-]+\.js)["']/g;
-  let match;
-  while ((match = scriptRegex.exec(content)) !== null) {
+  for (const match of content.matchAll(scriptRegex)) {
     scriptOrder.push(match[1]);
   }
 
@@ -471,7 +470,7 @@ function checkIntakePipeline(rootDir, findings) {
   // Emit findings for each problematic intake script
   for (const item of issues) {
     findings.push({
-      id: "TDMS-301",
+      id: "TDMS-330",
       category: "intake_pipeline",
       domain: DOMAIN,
       severity: item.severity,

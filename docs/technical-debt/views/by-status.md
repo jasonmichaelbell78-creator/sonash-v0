@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (991)
+## NEW (999)
 
 | ID        | Title                                                           | Severity | Category                 |
 | --------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -62,6 +62,7 @@
 | DEBT-2435 | AUDIT_TRACKER.md threshold matrix and version history           | S1       | code-quality             |
 | DEBT-2464 | generate-pending-alerts.js fragile DEFERRED item extraction     | S1       | code-quality             |
 | DEBT-2469 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused          | S1       | code-quality             |
+| DEBT-7563 | Command injection risk in generateCommandPatch — sanitize...    | S1       | security                 |
 | DEBT-7011 | High Severity Findings (Security & Stability)                   | S2       | security                 |
 | DEBT-3530 | High Severity Findings (Security & Stability)                   | S2       | security                 |
 | DEBT-7030 | OPTIMIZATION (Performance & Complexity)                         | S2       | refactoring              |
@@ -313,6 +314,10 @@
 | DEBT-2810 | Unknown                                                         | S2       | enhancements             |
 | DEBT-3661 | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | code-quality             |
 | DEBT-3671 | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | code-quality             |
+| DEBT-7559 | Replace regex-based isInsideTryCatch with AST parser (acorn)    | S2       | refactoring              |
+| DEBT-7560 | Replace regex-based extractStateFileRefs with AST parser ...    | S2       | refactoring              |
+| DEBT-7561 | Replace regex-based isInsideTryCatch with AST parser (babel)    | S2       | refactoring              |
+| DEBT-7562 | Replace regex-based isInsideTryCatch with AST parser            | S2       | refactoring              |
 | DEBT-0001 | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-7375 | Pass limit to FirestoreService when it supports configura...    | S3       | code-quality             |
 | DEBT-7378 | Refactor to reduce cognitive complexity (currently 29, ta...    | S3       | refactoring              |
@@ -1000,6 +1005,9 @@
 | DEBT-3764 | Use or remove                                                   | S3       | code-quality             |
 | DEBT-3768 | Add to deps or use useCallback                                  | S3       | code-quality             |
 | DEBT-3845 | Sonner (Toast Library)                                          | S3       | security                 |
+| DEBT-7564 | DRY: consolidate checkErrorHandlingCoverage with hook aud...    | S3       | refactoring              |
+| DEBT-7565 | KNOWN_HOOKS hardcoded array should be dynamically derived...    | S3       | code-quality             |
+| DEBT-7566 | DRY: consolidate dual-write check with file-io-safety.js ...    | S3       | refactoring              |
 | DEBT-2457 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | code-quality             |
 | DEBT-7544 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 | DEBT-2459 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...    | S0       | code-quality             |

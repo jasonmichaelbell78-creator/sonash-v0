@@ -585,6 +585,35 @@ accumulate.
 
 ## Active Reviews
 
+### Review #372: PR #387 R1 (2026-02-23)
+
+- **Source**: CI (Doc Lint + Pattern Compliance), Qodo Compliance, Qodo PR
+  Suggestions, Gemini Code Review
+- **PR**: Ecosystem audit skills (hook, session, TDMS)
+- **Total items**: 42
+- **Fixed**: 34
+- **Deferred**: 8 (AST replacements x4, command injection, DRY consolidation,
+  KNOWN_HOOKS hardcoded, dual-write duplication)
+- **Rejected**: 0
+
+**Key patterns**: Broken doc links (3), exec()-in-while→matchAll conversion (~20
+instances across 10 files), loadConfig/require wrapped in try/catch (9 files),
+renameSync+rmSync (3 files), Variable in RegExp→helper function extraction (3
+files), division-by-zero guards (4 instances), non-deterministic JSON→sorted
+keys, duplicate finding IDs, missing vs empty file differentiation
+
+**Deferred DEBT IDs**: DEBT-7559 to DEBT-7566 (AST parsers x4, command
+injection, DRY x2, hardcoded hooks)
+
+**Lesson**: Pattern checker does line-by-line regex analysis — it cannot track
+that a regex defined on line N has /g when exec() is on line N+2, or that
+require() on a line is inside a try/catch block. Solutions: (1) convert
+exec()/while to matchAll() which doesn't need /g tracking, (2) add files to
+verified-patterns.json for confirmed false positives, (3) extract
+`new RegExp(variable)` into named helper functions.
+
+---
+
 ### PR #386 Retrospective (2026-02-23)
 
 #### Review Cycle Summary

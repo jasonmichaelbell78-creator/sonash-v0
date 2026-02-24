@@ -50,7 +50,7 @@
 | DEBT-4400 | Review this potentially hard-coded password.                 | lib/utils/errors.ts                                | 71   | security     | E0     |
 | DEBT-4402 | Review this potentially hard-coded password.                 | tests/utils/logger.test.ts                         | 130  | security     | E0     |
 
-## S1 - High (739)
+## S1 - High (740)
 
 | ID        | Title                                                         | File                                                                                                                                               | Line | Category                 | Effort |
 | --------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -793,8 +793,9 @@
 | DEBT-4474 | Make sure that using this pseudorandom number generator i...  | components/celebrations/firework-burst.tsx                                                                                                         | 46   | security                 | E0     |
 | DEBT-4475 | Make sure that using this pseudorandom number generator i...  | components/celebrations/firework-burst.tsx                                                                                                         | 47   | security                 | E0     |
 | DEBT-6853 | Exporting mutable let binding, use const instead              | scripts/surface-lessons-learned.js                                                                                                                 | 30   | code-quality             | E0     |
+| DEBT-7563 | Command injection risk in generateCommandPatch — sanitize...  | .claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js                                                                                 | 50   | security                 | E1     |
 
-## S2 - Medium (1873)
+## S2 - Medium (1877)
 
 | ID        | Title                                                          | File                                                                                                                                                                        | Line | Category                 | Effort    |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | --------- |
@@ -2671,8 +2672,12 @@
 | DEBT-6803 | Remove this assignment of i                                    | scripts/metrics/review-churn-tracker.js                                                                                                                                     | 59   | code-quality             | E0        |
 | DEBT-6859 | Remove this assignment of i                                    | scripts/tasks/resolve-dependencies.js                                                                                                                                       | 88   | code-quality             | E0        |
 | DEBT-6869 | Unexpected unknown at-rule @custom-variant                     | styles/globals.css                                                                                                                                                          | 4    | code-quality             | E0        |
+| DEBT-7559 | Replace regex-based isInsideTryCatch with AST parser (acorn)   | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js                                                                                               | 77   | refactoring              | E1        |
+| DEBT-7560 | Replace regex-based extractStateFileRefs with AST parser ...   | .claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js                                                                                                   | 240  | refactoring              | E1        |
+| DEBT-7561 | Replace regex-based isInsideTryCatch with AST parser (babel)   | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js                                                                                                      | 119  | refactoring              | E1        |
+| DEBT-7562 | Replace regex-based isInsideTryCatch with AST parser           | .claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js                                                                                            | 119  | refactoring              | E1        |
 
-## S3 - Low (1944)
+## S3 - Low (1947)
 
 | ID        | Title                                                           | File                                                                                             | Line | Category                 | Effort |
 | --------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---- | ------------------------ | ------ |
@@ -4620,3 +4625,6 @@
 | DEBT-6870 | Prefer Number.isNaN over isNaN                                  | tests/utils/date-utils.test.ts                                                                   | 74   | code-quality             | E0     |
 | DEBT-6871 | Prefer Number.NaN over NaN                                      | tests/utils/firebase-types.test.ts                                                               | 121  | code-quality             | E0     |
 | DEBT-6872 | Prefer Number.isNaN over isNaN                                  | tests/utils/firebase-types.test.ts                                                               | 140  | code-quality             | E0     |
+| DEBT-7564 | DRY: consolidate checkErrorHandlingCoverage with hook aud...    | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js                           | 183  | refactoring              | E1     |
+| DEBT-7565 | KNOWN_HOOKS hardcoded array should be dynamically derived...    | .claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js                   | 30   | code-quality             | E1     |
+| DEBT-7566 | DRY: consolidate dual-write check with file-io-safety.js ...    | .claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js                     | 404  | refactoring              | E1     |

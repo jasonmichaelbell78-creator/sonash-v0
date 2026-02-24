@@ -77,16 +77,13 @@ function extractRoadmapSections(roadmapContent) {
 
   // Match M{number}.{number} patterns (e.g., M1.5, M2.1, M7.3)
   const milestoneRegex = /M\d+\.\d+/g;
-  let match;
-  milestoneRegex.lastIndex = 0;
-  while ((match = milestoneRegex.exec(roadmapContent)) !== null) {
+  for (const match of roadmapContent.matchAll(milestoneRegex)) {
     sections.add(match[0]);
   }
 
   // Match Track-{identifier} patterns (e.g., Track-E, Track-A)
   const trackRegex = /Track-[A-Za-z0-9]+/g;
-  trackRegex.lastIndex = 0;
-  while ((match = trackRegex.exec(roadmapContent)) !== null) {
+  for (const match of roadmapContent.matchAll(trackRegex)) {
     sections.add(match[0]);
   }
 
@@ -313,12 +310,10 @@ function checkRoadmapDebtCrossRef(masterItems, masterIdSet, roadmapContent, road
     return { score: 0, rating: "poor", metrics: { orphanedInRoadmap: 0, orphanedInMaster: 0 } };
   }
 
-  // Extract DEBT-XXXX from ROADMAP.md using /g flag (required for exec loops)
-  const debtIdRegex = /DEBT-\d+/g;
+  // Extract DEBT-XXXX from ROADMAP.md
+  const debtIdRegex = /\bDEBT-\d+\b/g;
   const roadmapDebtIds = new Set();
-  debtIdRegex.lastIndex = 0;
-  let match;
-  while ((match = debtIdRegex.exec(roadmapContent)) !== null) {
+  for (const match of roadmapContent.matchAll(debtIdRegex)) {
     roadmapDebtIds.add(match[0]);
   }
 

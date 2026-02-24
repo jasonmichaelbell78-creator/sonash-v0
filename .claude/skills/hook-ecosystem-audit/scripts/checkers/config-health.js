@@ -24,6 +24,21 @@ const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
+/**
+ * Test if a string is a valid regex pattern.
+ * @param {string} pattern
+ * @returns {boolean}
+ */
+function isValidRegex(pattern) {
+  try {
+    // eslint-disable-next-line no-new
+    new RegExp(pattern); // pattern-checker:verified — intentional validation
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const DOMAIN = "config_health";
 
 /** All 4 hook event types that should have at least one handler. */
@@ -245,12 +260,9 @@ function checkEventCoverageMatchers(hooksSection, findings) {
       if (matcher !== undefined && matcher !== null) {
         allMatchers.push({ eventType, matcher });
         matchersByEvent[eventType].push(matcher);
-        try {
-          // Claude Code supports (?i) inline flag for case-insensitive matching.
-          // Strip it before validating since JS RegExp doesn't support inline flags.
-          const normalized = matcher.replace(/\(\?i\)/g, "");
-          new RegExp(normalized);
-        } catch {
+        // Validate matcher is a valid regex (intentional user-pattern validation)
+        const normalized = matcher.replace(/\(\?i\)/g, "");
+        if (!isValidRegex(normalized)) {
           invalidMatchers.push({ eventType, matcher });
         }
       }

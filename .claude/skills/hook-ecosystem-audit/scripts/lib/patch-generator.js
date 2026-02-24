@@ -9,8 +9,15 @@
 
 "use strict";
 
-const fs = require("node:fs");
-const path = require("node:path");
+let fs, path;
+try {
+  fs = require("node:fs");
+  path = require("node:path");
+} catch (err) {
+  const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
+  console.error(`Fatal: failed to load core Node.js modules (${code})`);
+  process.exit(1);
+}
 
 const PATCH_TYPES = {
   config_fix: {

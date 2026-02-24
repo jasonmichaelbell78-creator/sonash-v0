@@ -202,6 +202,7 @@ function checkDedupAlgorithmHealth(rootDir) {
   // Build merge graph: target -> sources
   const mergeGraph = new Map();
   const clusterMap = new Map(); // id -> cluster_id
+  const entryIds = new Set(entries.map((e) => e.target_id || e.merged_into || e.id));
 
   for (const entry of entries) {
     // Extract merged_from references
@@ -218,10 +219,7 @@ function checkDedupAlgorithmHealth(rootDir) {
         totalRefs++;
         if (typeof srcId === "string") {
           // Check if the source ID exists in master or was itself merged
-          if (
-            masterIds.has(srcId) ||
-            entries.some((e) => (e.target_id || e.merged_into || e.id) === srcId)
-          ) {
+          if (masterIds.has(srcId) || entryIds.has(srcId)) {
             validRefs++;
           } else {
             findings.push({
@@ -638,15 +636,15 @@ function checkContentHashIntegrity(rootDir) {
     if (computed === item.content_hash) {
       matchingHashes++;
     } else {
-      // Also try with all fields sorted (alternative canonical form)
-      const allKeysCanonical = {};
+      // Also try with sorted key manual string building (deterministic)
       const sortedKeys = Object.keys(item)
         .filter((k) => k !== "content_hash")
         .sort();
-      for (const k of sortedKeys) {
-        allKeysCanonical[k] = item[k];
-      }
-      const altStr = JSON.stringify(allKeysCanonical);
+
+      const altStr =
+        "{" +
+        sortedKeys.map((k) => `${JSON.stringify(k)}:${JSON.stringify(item[k])}`).join(",") +
+        "}";
       const altComputed = crypto.createHash("sha256").update(altStr).digest("hex");
 
       if (altComputed === item.content_hash) {
@@ -781,6 +779,19 @@ function checkIdUniquenessReferential(rootDir) {
   let brokenRefs = 0;
   const dedupParsed = parseJsonlFile(dedupLogPath, MAX_FILE_SIZE_BYTES);
   if (!dedupParsed.skipped) {
+    // Pre-compute set of IDs that were merged away (sources in merge operations)
+    const mergedFromIds = new Set();
+    for (const entry of dedupParsed.items) {
+      const sources = entry.merged_from || entry.sources || [];
+      if (Array.isArray(sources)) {
+        for (const id of sources) {
+          if (typeof id === "string") {
+            mergedFromIds.add(id);
+          }
+        }
+      }
+    }
+
     for (const entry of dedupParsed.items) {
       const mergedFrom = entry.merged_from || entry.sources || [];
       if (!Array.isArray(mergedFrom)) continue;
@@ -788,10 +799,7 @@ function checkIdUniquenessReferential(rootDir) {
         if (typeof srcId !== "string") continue;
         if (!allIds.has(srcId)) {
           // Check if this ID was itself merged away (which is acceptable)
-          const wasMergedAway = dedupParsed.items.some((e) => {
-            const target = e.target_id || e.merged_into || e.id;
-            return target === srcId;
-          });
+          const wasMergedAway = mergedFromIds.has(srcId);
           if (!wasMergedAway) {
             brokenRefs++;
             if (brokenRefs <= 20) {

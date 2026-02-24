@@ -299,10 +299,9 @@ function checkStageOrdering(content, lines, findings, scores) {
 function checkBypassControls(content, lines, findings, scores) {
   // Extract all is_skipped calls to find skippable checks
   const skippableChecks = [];
-  const isSkippedPattern = /is_skipped\s+(\S+)/g;
-  let match;
-  while ((match = isSkippedPattern.exec(content)) !== null) {
-    const checkName = match[1].replace(/[";]/g, "");
+  const isSkippedPattern = /is_skipped\s*\(\s*['"]?([\w-]+)['"]?\s*\)|is_skipped\s+([\w-]+)/g;
+  for (const match of content.matchAll(isSkippedPattern)) {
+    const checkName = (match[1] || match[2]).trim();
     if (!skippableChecks.includes(checkName)) {
       skippableChecks.push(checkName);
     }
@@ -451,7 +450,7 @@ function checkReasonValidation(content, findings) {
   };
 
   // Check for require_skip_reason function
-  const hasRequireSkipReason = /require_skip_reason\s*\(\)/.test(content);
+  const hasRequireSkipReason = /require_skip_reason\s*\(\)\s*\{/.test(content);
   if (!hasRequireSkipReason) {
     findings.push({
       id: "HEA-312",
@@ -476,7 +475,7 @@ function checkReasonValidation(content, findings) {
   }
 
   // Single-line check (wc -l or CR check)
-  if (/wc -l/.test(content) && /\\r|cr/.test(content)) {
+  if (/wc -l/.test(content) || /\\r|cr/.test(content)) {
     validations.single_line = true;
   }
 
@@ -529,8 +528,7 @@ function checkGateEffectiveness(content, lines, findings, scores) {
 
   // Find all "exit 1" lines and their context
   const exitPattern = /exit\s+1/g;
-  let exitMatch;
-  while ((exitMatch = exitPattern.exec(content)) !== null) {
+  for (const exitMatch of content.matchAll(exitPattern)) {
     const pos = exitMatch.index;
     // Get surrounding context (200 chars before)
     const contextBefore = content.slice(Math.max(0, pos - 300), pos);
@@ -562,9 +560,8 @@ function checkGateEffectiveness(content, lines, findings, scores) {
 
   // Check for non-blocking warnings (echo with warning emoji but no exit 1)
   const warningPattern = /echo\s+"?\s*\u26a0\ufe0f/g;
-  let warnMatch;
   const warningPositions = [];
-  while ((warnMatch = warningPattern.exec(content)) !== null) {
+  for (const warnMatch of content.matchAll(warningPattern)) {
     const pos = warnMatch.index;
     const lineIdx = content.slice(0, pos).split("\n").length - 1;
 
@@ -602,9 +599,8 @@ function checkGateEffectiveness(content, lines, findings, scores) {
   // Check for stages that silently fail (no warning, no exit)
   // Look for stages that swallow errors with "|| true" but don't warn
   const silentFailPattern = /\|\|\s*true/g;
-  let silentMatch;
   const silentFails = [];
-  while ((silentMatch = silentFailPattern.exec(content)) !== null) {
+  for (const silentMatch of content.matchAll(silentFailPattern)) {
     const pos = silentMatch.index;
     const lineIdx = content.slice(0, pos).split("\n").length - 1;
     const line = (lines[lineIdx] || "").trim();
@@ -649,9 +645,8 @@ function checkGateEffectiveness(content, lines, findings, scores) {
 
   // Check temp file cleanup: every mktemp should have a matching add_exit_trap rm
   const mktempPattern = /\$\(mktemp\)/g;
-  let mktempMatch;
   const tempFiles = [];
-  while ((mktempMatch = mktempPattern.exec(content)) !== null) {
+  for (const mktempMatch of content.matchAll(mktempPattern)) {
     const pos = mktempMatch.index;
     const lineIdx = content.slice(0, pos).split("\n").length - 1;
     const line = (lines[lineIdx] || "").trim();

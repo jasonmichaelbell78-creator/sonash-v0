@@ -26,6 +26,20 @@ const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
+/**
+ * Compile a regex pattern safely, returning null if invalid.
+ * @param {string} pattern - The regex pattern string
+ * @param {string} [flags] - Optional regex flags
+ * @returns {RegExp|null}
+ */
+function safeCompileRegex(pattern, flags) {
+  try {
+    return new RegExp(pattern, flags || ""); // pattern-checker:ignore — intentional
+  } catch {
+    return null;
+  }
+}
+
 const DOMAIN = "compaction_resilience";
 
 /**
@@ -61,9 +75,9 @@ function checkHookRegistration(hooksSection, eventType, filename, matcher) {
     const hooks = group.hooks || [];
     for (const hook of hooks) {
       const cmd = hook.command || "";
-      // Check if command references the target filename
-      const idx = cmd.indexOf(filename);
-      if (idx >= 0) {
+      // Check if command references the target filename (exact match)
+      const fileRegex = new RegExp(`\\b${filename.replace(/\./g, "\\.")}\\b`);
+      if (fileRegex.test(cmd)) {
         const hasMatcher = matcher ? group.matcher === matcher : true;
         return { found: true, hasMatcher };
       }
@@ -154,6 +168,7 @@ function checkLayerACommitTracker(rootDir, hooksSection, findings) {
   // Check 2: Bash matcher present on the PostToolUse group containing commit-tracker
   const bashReg = checkHookRegistration(hooksSection, "PostToolUse", "commit-tracker.js", null);
   let hasBashMatcher = false;
+  let invalidMatcherRegex = null;
   if (bashReg.found) {
     // Verify the group has a bash-matching matcher
     const groups = hooksSection.PostToolUse || [];
@@ -161,18 +176,19 @@ function checkLayerACommitTracker(rootDir, hooksSection, findings) {
       const hooks = group.hooks || [];
       for (const hook of hooks) {
         const cmd = hook.command || "";
-        const idx = cmd.indexOf("commit-tracker.js");
-        if (idx >= 0 && group.matcher) {
+        const ctFileRegex = /\bcommit-tracker\.js\b/;
+        if (ctFileRegex.test(cmd) && group.matcher) {
           // Test if matcher would match "bash" or "Bash"
-          try {
-            const normalized = group.matcher.replace(/\(\?i\)/g, "");
-            const hasInlineI = group.matcher.indexOf("(?i)") >= 0;
-            const re = new RegExp(normalized, hasInlineI ? "i" : "");
+          const normalized = group.matcher.replace(/\(\?i\)/g, "");
+          const hasInlineI = group.matcher.indexOf("(?i)") >= 0;
+          const re = safeCompileRegex(normalized, hasInlineI ? "i" : "");
+          if (re) {
             if (re.test("bash") || re.test("Bash")) {
               hasBashMatcher = true;
             }
-          } catch {
+          } else {
             // Invalid regex — matcher won't work
+            invalidMatcherRegex = group.matcher;
           }
         }
       }
@@ -180,6 +196,23 @@ function checkLayerACommitTracker(rootDir, hooksSection, findings) {
   }
   if (hasBashMatcher) {
     passed++;
+  } else if (!hasBashMatcher && invalidMatcherRegex) {
+    findings.push({
+      id: "CR-111A",
+      category: "layer_a_commit_tracker",
+      domain: DOMAIN,
+      severity: "error",
+      message: `commit-tracker.js group has invalid matcher regex: ${invalidMatcherRegex}`,
+      details:
+        "The PostToolUse group containing commit-tracker.js has a matcher that cannot be compiled as a valid RegExp.",
+      impactScore: 75,
+      frequency: 1,
+      blastRadius: 4,
+      patchType: "config_fix",
+      patchTarget: ".claude/settings.json",
+      patchContent: "Fix the matcher regex in the PostToolUse group for commit-tracker.js",
+      patchImpact: "Restore matcher functionality so commit tracker fires correctly",
+    });
   } else if (bashReg.found) {
     findings.push({
       id: "CR-111",
@@ -256,7 +289,7 @@ function checkLayerACommitTracker(rootDir, hooksSection, findings) {
     }
   }
 
-  const healthPct = Math.round((passed / total) * 100);
+  const healthPct = total > 0 ? Math.round((passed / total) * 100) : 0;
   const result = scoreMetric(healthPct, bench.health_pct, "higher-is-better");
 
   return {
@@ -385,7 +418,7 @@ function checkLayerCPrecompactSave(rootDir, hooksSection, findings) {
     }
   }
 
-  const completenessPct = Math.round((passed / total) * 100);
+  const completenessPct = total > 0 ? Math.round((passed / total) * 100) : 0;
   const result = scoreMetric(completenessPct, bench.completeness_pct, "higher-is-better");
 
   return {
@@ -504,7 +537,7 @@ function checkLayerDGapDetection(rootDir, findings) {
     }
   }
 
-  const detectionPct = Math.round((passed / total) * 100);
+  const detectionPct = total > 0 ? Math.round((passed / total) * 100) : 0;
   const result = scoreMetric(detectionPct, bench.detection_pct, "higher-is-better");
 
   return {
@@ -631,7 +664,7 @@ function checkRestoreOutputQuality(rootDir, hooksSection, findings) {
     }
   }
 
-  const qualityPct = Math.round((passed / total) * 100);
+  const qualityPct = total > 0 ? Math.round((passed / total) * 100) : 0;
   const result = scoreMetric(qualityPct, bench.quality_pct, "higher-is-better");
 
   return {

@@ -24,6 +24,21 @@ const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
+/**
+ * Test if a string is a valid regex pattern.
+ * @param {string} pattern - The pattern to test
+ * @returns {boolean} - True if valid regex
+ */
+function safeTestRegex(pattern) {
+  try {
+    // eslint-disable-next-line no-new -- validation only
+    new RegExp(pattern); // pattern-checker:ignore — intentional validation
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const DOMAIN = "functional_correctness";
 
 // Known hook filenames (main hooks, excludes lib/, global/, backup/)
@@ -104,8 +119,7 @@ function extractTestedHooks(testFileContent) {
 
   // Match object keys like "commit-tracker.js": { or 'hook-name.js': {
   const keyRegex = /["']([a-zA-Z0-9_-]+\.js)["']\s*:\s*\{/g;
-  let match;
-  while ((match = keyRegex.exec(testFileContent)) !== null) {
+  for (const match of testFileContent.matchAll(keyRegex)) {
     tested.add(match[1]);
   }
 
@@ -113,10 +127,8 @@ function extractTestedHooks(testFileContent) {
   for (const hookName of KNOWN_HOOKS) {
     const baseName = hookName.replace(".js", "");
     // Check for references like describe("commit-tracker" or test("commit-tracker
-    const refRegex = new RegExp(
-      `(?:describe|test|it)\\s*\\(\\s*["'].*${baseName.replace(/-/g, "[-_]?")}`,
-      "i"
-    );
+    const escapedBase = baseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/-/g, "[-_]?");
+    const refRegex = new RegExp(`(?:describe|test|it)\\s*\\(\\s*["'].*${escapedBase}`, "i");
     if (refRegex.test(testFileContent)) {
       tested.add(hookName);
     }
@@ -224,13 +236,14 @@ function checkOutputProtocol(hooksDir, hookInventory, findings) {
 
     // Check 2: Non-protocol stdout usage (console.log with non-"ok" content)
     // Count console.log calls that aren't "ok" — these should be console.error for logging
-    const logCalls = content.match(/console\.log\(/g) || [];
-    const okLogCalls = content.match(/console\.log\(\s*["']ok["']\s*\)/g) || [];
-    const nonProtocolLogs = logCalls.length - okLogCalls.length;
+    const allLogCalls = content.match(/console\.log\([^)]*\)/g) || [];
+    const nonProtocolLogs = allLogCalls.filter(
+      (call) => !/console\.log\(\s*["']ok["']\s*\)/.test(call)
+    );
 
-    if (nonProtocolLogs > 3) {
+    if (nonProtocolLogs.length > 3) {
       hookIssues.push(
-        `${nonProtocolLogs} non-protocol console.log calls (should use console.error for logging)`
+        `${nonProtocolLogs.length} non-protocol console.log calls (should use console.error for logging)`
       );
     }
 
@@ -433,10 +446,11 @@ function checkBehavioralAccuracy(rootDir, hooksDir, hookInventory, findings) {
     }
 
     // Verify the matcher is a valid regex
-    try {
-      new RegExp(reg.matcher);
+    // Note: intentionally passing user-defined pattern to RegExp for validation
+    const isValid = safeTestRegex(reg.matcher);
+    if (isValid) {
       passedChecks++;
-    } catch {
+    } else {
       issues.push({
         hook: reg.hookFile,
         issue: `invalid matcher regex: "${reg.matcher}"`,

@@ -141,7 +141,7 @@
 | DEBT-2547 | Shell script hooks may be redundant with Node.js versions     | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-2549 | Filesystem MCP server configured but noted as unused          | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (2678)
+## code-quality (2679)
 
 | ID        | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | --------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -2807,6 +2807,7 @@
 | DEBT-6870 | Prefer Number.isNaN over isNaN                                  | S3       | tests/utils/date-utils.test.ts                                                                                                                                              | 74   |
 | DEBT-6871 | Prefer Number.NaN over NaN                                      | S3       | tests/utils/firebase-types.test.ts                                                                                                                                          | 121  |
 | DEBT-6872 | Prefer Number.isNaN over isNaN                                  | S3       | tests/utils/firebase-types.test.ts                                                                                                                                          | 140  |
+| DEBT-7565 | KNOWN_HOOKS hardcoded array should be dynamically derived...    | S3       | .claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js                                                                                              | 30   |
 | DEBT-0851 | Multiple CI quality gates configured as non-blocking (con...    | S0       | .github/workflows/ci.yml                                                                                                                                                    | 0    |
 | DEBT-0852 | useJournal creates redundant auth listener + potential me...    | S0       | hooks/use-journal.ts                                                                                                                                                        | 0    |
 | DEBT-0861 | Fix useJournal memory leak                                      | S0       | N/A                                                                                                                                                                         | 0    |
@@ -3900,333 +3901,339 @@
 | DEBT-2120 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                                                   | 24   |
 | DEBT-2121 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 
-## refactoring (321)
+## refactoring (327)
 
-| ID        | Title                                                        | Severity | File                                                                        | Line |
-| --------- | ------------------------------------------------------------ | -------- | --------------------------------------------------------------------------- | ---- |
-| DEBT-7024 | CRITICAL (Production Blockers)                               | S1       | N/A                                                                         | 0    |
-| DEBT-3543 | CRITICAL (Production Blockers)                               | S1       | N/A                                                                         | 0    |
-| DEBT-7385 | Anonymous Auth Data Loss                                     | S1       | components/providers/auth-provider.tsx                                      | 0    |
-| DEBT-3546 | Anonymous Auth Data Loss                                     | S1       | components/providers/auth-provider.tsx                                      | 171  |
-| DEBT-7059 | Add E2E tests for critical user flows                        | S1       | N/A                                                                         | 0    |
-| DEBT-3578 | Add E2E tests for critical user flows                        | S1       | N/A                                                                         | 0    |
-| DEBT-3579 | Add E2E tests for critical user flows                        | S1       | N/A                                                                         | 0    |
-| DEBT-0094 | TodayPage god component (1117 lines, 14 useState, 10 useE... | S1       | components/notebook/pages/today-page.tsx                                    | 1    |
-| DEBT-0095 | UsersTab god component (924 lines, 21 useState, 3 useEffect) | S1       | components/admin/users-tab.tsx                                              | 1    |
-| DEBT-0096 | Time-of-day rotation logic duplicated in quotes.ts and sl... | S1       | lib/db/quotes.ts                                                            | 44   |
-| DEBT-0097 | Direct Firebase SDK usage in 22+ files bypasses service l... | S1       | hooks/use-journal.ts                                                        | 31   |
-| DEBT-0136 | Split admin.ts (3,111 lines)                                 | S1       | functions/src/admin.ts                                                      | 143  |
-| DEBT-0137 | Split users-tab.tsx (2,092 lines)                            | S1       | components/admin/users-tab.tsx                                              | 84   |
-| DEBT-0874 | Cloud Functions Index File God Object (811 Lines)            | S1       | N/A                                                                         | 0    |
-| DEBT-0875 | Admin Functions File Exceeds Complexity (800+ Lines, 21 O... | S1       | N/A                                                                         | 0    |
-| DEBT-1356 | Direct Firestore SDK reads in UI/components bypass typed ... | S1       | components/admin/admin-crud-table.tsx                                       | 0    |
-| DEBT-1357 | Cloud Function calling patterns duplicated despite existi... | S1       | components/admin/admin-crud-table.tsx                                       | 0    |
-| DEBT-1358 | Error logging inconsistent: many call sites log raw error... | S1       | app/admin/page.tsx                                                          | 0    |
-| DEBT-1365 | Triple data access layer: 3 overlapping Firestore patterns   | S1       | lib/firestore-service.ts                                                    | 0    |
-| DEBT-7469 | check-pattern-compliance.js god script — 1917 lines, esli... | S1       | scripts/check-pattern-compliance.js                                         | 0    |
-| DEBT-7030 | OPTIMIZATION (Performance & Complexity)                      | S2       | N/A                                                                         | 0    |
-| DEBT-3549 | OPTIMIZATION (Performance & Complexity)                      | S2       | N/A                                                                         | 0    |
-| DEBT-7039 | Top 3 High-Impact Changes                                    | S2       | N/A                                                                         | 0    |
-| DEBT-3558 | Top 3 High-Impact Changes                                    | S2       | N/A                                                                         | 0    |
-| DEBT-7064 | Inconsistent patterns (throw vs return)                      | S2       | N/A                                                                         | 0    |
-| DEBT-3585 | Inconsistent patterns (throw vs return)                      | S2       | N/A                                                                         | 0    |
-| DEBT-7068 | **A3: Error Handling** — 1 week — High — P0                  | S2       | N/A                                                                         | 0    |
-| DEBT-3589 | **A3: Error Handling** — 1 week — High — P0                  | S2       | N/A                                                                         | 0    |
-| DEBT-7070 | **A4: Image Optimization** — 3 days — High — P1              | S2       | N/A                                                                         | 0    |
-| DEBT-3591 | **A4: Image Optimization** — 3 days — High — P1              | S2       | N/A                                                                         | 0    |
-| DEBT-7071 | **A1: Context Splitting** — 1 week — Very High — P0          | S2       | N/A                                                                         | 0    |
-| DEBT-3592 | **A1: Context Splitting** — 1 week — Very High — P0          | S2       | N/A                                                                         | 0    |
-| DEBT-7072 | **A2: Component Decomposition** — 2 weeks — High — P1        | S2       | N/A                                                                         | 0    |
-| DEBT-3593 | **A2: Component Decomposition** — 2 weeks — High — P1        | S2       | N/A                                                                         | 0    |
-| DEBT-7073 | **A5: Bundle Optimization** — 1 week — High — P1             | S2       | N/A                                                                         | 0    |
-| DEBT-3594 | **A5: Bundle Optimization** — 1 week — High — P1             | S2       | N/A                                                                         | 0    |
-| DEBT-7075 | **Performance Regression** — Low — High — Benchmark befor... | S2       | N/A                                                                         | 0    |
-| DEBT-3596 | **Performance Regression** — Low — High — Benchmark befor... | S2       | N/A                                                                         | 0    |
-| DEBT-7078 | Weaknesses (Areas for Improvement) ⚠️                        | S2       | N/A                                                                         | 0    |
-| DEBT-3599 | Weaknesses (Areas for Improvement) ⚠️                        | S2       | N/A                                                                         | 0    |
-| DEBT-7094 | Problem: Inconsistent Patterns                               | S2       | N/A                                                                         | 0    |
-| DEBT-3616 | Problem: Inconsistent Patterns                               | S2       | N/A                                                                         | 0    |
-| DEBT-7104 | Image Optimization                                           | S2       | N/A                                                                         | 0    |
-| DEBT-3626 | Image Optimization                                           | S2       | N/A                                                                         | 0    |
-| DEBT-7114 | Optimization Strategies                                      | S2       | N/A                                                                         | 0    |
-| DEBT-3636 | Optimization Strategies                                      | S2       | N/A                                                                         | 0    |
-| DEBT-7117 | Problem: Inconsistent Abstraction                            | S2       | N/A                                                                         | 0    |
-| DEBT-3639 | Problem: Inconsistent Abstraction                            | S2       | N/A                                                                         | 0    |
-| DEBT-7432 | Fix Auto-Save Race Condition (B-1)                           | S2       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-3781 | Fix Auto-Save Race Condition (B-1)                           | S2       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-7433 | Fix Listener Memory Leak (B-2)                               | S2       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-3782 | Fix Listener Memory Leak (B-2)                               | S2       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-7282 | 🏆 TOP 3 HIGH-IMPACT CHANGES                                 | S2       | N/A                                                                         | 0    |
-| DEBT-3804 | 🏆 TOP 3 HIGH-IMPACT CHANGES                                 | S2       | N/A                                                                         | 0    |
-| DEBT-7284 | AuthProvider Optimization                                    | S2       | N/A                                                                         | 0    |
-| DEBT-3806 | AuthProvider Optimization                                    | S2       | N/A                                                                         | 0    |
-| DEBT-0459 | Step1WorksheetCard large component (845 lines) with neste... | S2       | components/growth/Step1WorksheetCard.tsx                                    | 1    |
-| DEBT-0460 | ResourcesPage large component (728 lines) mixing meetings... | S2       | components/notebook/pages/resources-page.tsx                                | 1    |
-| DEBT-0461 | reCAPTCHA token fetch pattern repeated 5x across codebase    | S2       | hooks/use-journal.ts                                                        | 281  |
-| DEBT-0526 | Split today-page.tsx (1,199 lines)                           | S2       | components/notebook/pages/today-page.tsx                                    | 396  |
-| DEBT-0527 | Split dashboard-tab.tsx (1,031 lines)                        | S2       | components/admin/dashboard-tab.tsx                                          | 1    |
-| DEBT-0528 | Repository pattern violations                                | S2       | lib/firestore-service.ts                                                    | 1    |
-| DEBT-0894 | useJournal Hook Has 7 Responsibilities (438 lines)           | S2       | N/A                                                                         | 0    |
-| DEBT-2291 | HookRunner framework — centralized hook orchestration wit... | S2       | .claude/hooks/post-write-validator.js                                       | 0    |
-| DEBT-3527 | Extract shared loadJsonl to lib/ module — 4 identical cop... | S2       | .claude/skills/pr-ecosystem-audit/scripts/checkers/effectiveness-metrics.js | 439  |
-| DEBT-7474 | aggregate-audit-findings.js god script — 25+ functions, n... | S2       | scripts/aggregate-audit-findings.js                                         | 0    |
-| DEBT-7496 | getFunctions() + httpsCallable pattern repeated 28 times ... | S2       | components/admin/admin-crud-table.tsx                                       | 0    |
-| DEBT-7497 | links-tab.tsx and prayers-tab.tsx ~90% code duplication      | S2       | components/admin/links-tab.tsx                                              | 0    |
-| DEBT-7498 | window.confirm() used for 10 destructive actions — non-st... | S2       | N/A                                                                         | 0    |
-| DEBT-7517 | 356-line FORM_SECTIONS config embedded in Step1WorksheetC... | S2       | components/growth/Step1WorksheetCard.tsx                                    | 124  |
-| DEBT-7378 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                                           | 0    |
-| DEBT-7020 | Execution Flow Analysis                                      | S3       | N/A                                                                         | 0    |
-| DEBT-3539 | Execution Flow Analysis                                      | S3       | N/A                                                                         | 0    |
-| DEBT-7021 | Code Smells Identified                                       | S3       | N/A                                                                         | 0    |
-| DEBT-3540 | Code Smells Identified                                       | S3       | N/A                                                                         | 0    |
-| DEBT-7022 | 🚨 DANGEROUS PATTERNS                                        | S3       | N/A                                                                         | 0    |
-| DEBT-3541 | 🚨 DANGEROUS PATTERNS                                        | S3       | N/A                                                                         | 0    |
-| DEBT-7023 | 🔍 EDGE CASES                                                | S3       | N/A                                                                         | 0    |
-| DEBT-3542 | 🔍 EDGE CASES                                                | S3       | N/A                                                                         | 0    |
-| DEBT-7383 | Unsafe Non-Null Assertions                                   | S3       | lib/firebase.ts                                                             | 0    |
-| DEBT-7028 | Race Conditions in State                                     | S3       | N/A                                                                         | 0    |
-| DEBT-7386 | No Server-Side Rate Limiting                                 | S3       | lib/utils/rate-limiter.ts                                                   | 0    |
-| DEBT-7387 | Inefficient Equality Checking                                | S3       | auth-provider.tsx                                                           | 0    |
-| DEBT-7388 | Massive Context Provider (God Object)                        | S3       | auth-provider.tsx                                                           | 0    |
-| DEBT-3551 | Massive Context Provider (God Object)                        | S3       | auth-provider.tsx                                                           | 0    |
-| DEBT-7389 | Large God Component                                          | S3       | components/notebook/book-cover.tsx                                          | 0    |
-| DEBT-3552 | Large God Component                                          | S3       | components/notebook/book-cover.tsx                                          | 0    |
-| DEBT-7035 | Type Gymnastics                                              | S3       | N/A                                                                         | 0    |
-| DEBT-7036 | STYLE/READABILITY                                            | S3       | N/A                                                                         | 0    |
-| DEBT-3555 | STYLE/READABILITY                                            | S3       | N/A                                                                         | 0    |
-| DEBT-7037 | Refactoring Strategy                                         | S3       | N/A                                                                         | 0    |
-| DEBT-3556 | Refactoring Strategy                                         | S3       | N/A                                                                         | 0    |
-| DEBT-7390 | Refactor #5: Split AuthProvider (Optional - Breaking Change) | S3       | components/providers/auth-provider.tsx                                      | 0    |
-| DEBT-3557 | Refactor #5: Split AuthProvider (Optional - Breaking Change) | S3       | components/providers/auth-provider.tsx                                      | 0    |
-| DEBT-7040 | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)       | S3       | N/A                                                                         | 0    |
-| DEBT-3559 | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)       | S3       | N/A                                                                         | 0    |
-| DEBT-7041 | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics) | S3       | N/A                                                                         | 0    |
-| DEBT-3560 | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics) | S3       | N/A                                                                         | 0    |
-| DEBT-7043 | METRICS & VALIDATION                                         | S3       | N/A                                                                         | 0    |
-| DEBT-3562 | METRICS & VALIDATION                                         | S3       | N/A                                                                         | 0    |
-| DEBT-7045 | Immediate (This PR)                                          | S3       | N/A                                                                         | 0    |
-| DEBT-3564 | Immediate (This PR)                                          | S3       | N/A                                                                         | 0    |
-| DEBT-7046 | Short-Term (Next Sprint)                                     | S3       | N/A                                                                         | 0    |
-| DEBT-3565 | Short-Term (Next Sprint)                                     | S3       | N/A                                                                         | 0    |
-| DEBT-7047 | Long-Term (Production Readiness)                             | S3       | N/A                                                                         | 0    |
-| DEBT-3566 | Long-Term (Production Readiness)                             | S3       | N/A                                                                         | 0    |
-| DEBT-7048 | Remove dangerous non-null assertions                         | S3       | N/A                                                                         | 0    |
-| DEBT-3567 | Remove dangerous non-null assertions                         | S3       | N/A                                                                         | 0    |
-| DEBT-7049 | Add runtime checks before export                             | S3       | N/A                                                                         | 0    |
-| DEBT-3568 | Add runtime checks before export                             | S3       | N/A                                                                         | 0    |
-| DEBT-7050 | Create isFirebaseTimestamp() type guard                      | S3       | N/A                                                                         | 0    |
-| DEBT-3569 | Create isFirebaseTimestamp() type guard                      | S3       | N/A                                                                         | 0    |
-| DEBT-7051 | Create isFirestoreError() type guard                         | S3       | N/A                                                                         | 0    |
-| DEBT-3570 | Create isFirestoreError() type guard                         | S3       | N/A                                                                         | 0    |
-| DEBT-7052 | Remove type gymnastics from components                       | S3       | N/A                                                                         | 0    |
-| DEBT-3571 | Remove type gymnastics from components                       | S3       | N/A                                                                         | 0    |
-| DEBT-7054 | Implement Cloud Functions for rate limiting                  | S3       | N/A                                                                         | 0    |
-| DEBT-3573 | Implement Cloud Functions for rate limiting                  | S3       | N/A                                                                         | 0    |
-| DEBT-7055 | Add Firebase App Check                                       | S3       | N/A                                                                         | 0    |
-| DEBT-3574 | Add Firebase App Check                                       | S3       | N/A                                                                         | 0    |
-| DEBT-7056 | Implement account linking for anonymous users                | S3       | N/A                                                                         | 0    |
-| DEBT-3575 | Implement account linking for anonymous users                | S3       | N/A                                                                         | 0    |
-| DEBT-7057 | Split AuthProvider into focused contexts                     | S3       | N/A                                                                         | 0    |
-| DEBT-3576 | Split AuthProvider into focused contexts                     | S3       | N/A                                                                         | 0    |
-| DEBT-7058 | Add integration tests for Firestore operations               | S3       | N/A                                                                         | 0    |
-| DEBT-3577 | Add integration tests for Firestore operations               | S3       | N/A                                                                         | 0    |
-| DEBT-7060 | Implement external logging (Sentry)                          | S3       | N/A                                                                         | 0    |
-| DEBT-3580 | Implement external logging (Sentry)                          | S3       | N/A                                                                         | 0    |
-| DEBT-3581 | Implement external logging (Sentry)                          | S3       | N/A                                                                         | 0    |
-| DEBT-7061 | Add performance monitoring                                   | S3       | N/A                                                                         | 0    |
-| DEBT-3582 | Add performance monitoring                                   | S3       | N/A                                                                         | 0    |
-| DEBT-7062 | AuthProvider has 7 state variables (SRP violation)           | S3       | N/A                                                                         | 0    |
-| DEBT-3583 | AuthProvider has 7 state variables (SRP violation)           | S3       | N/A                                                                         | 0    |
-| DEBT-7063 | book-cover.tsx = 337 lines (mixed concerns)                  | S3       | N/A                                                                         | 0    |
-| DEBT-3584 | book-cover.tsx = 337 lines (mixed concerns)                  | S3       | N/A                                                                         | 0    |
-| DEBT-7065 | Adapter exists but not used consistently                     | S3       | N/A                                                                         | 0    |
-| DEBT-3586 | Adapter exists but not used consistently                     | S3       | N/A                                                                         | 0    |
-| DEBT-7067 | Unknown size, heavy dependencies                             | S3       | N/A                                                                         | 0    |
-| DEBT-3588 | Unknown size, heavy dependencies                             | S3       | N/A                                                                         | 0    |
-| DEBT-7069 | **A6: Adapter Pattern** — 3 days — Medium — P1               | S3       | N/A                                                                         | 0    |
-| DEBT-3590 | **A6: Adapter Pattern** — 3 days — Medium — P1               | S3       | N/A                                                                         | 0    |
-| DEBT-7076 | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks... | S3       | N/A                                                                         | 0    |
-| DEBT-3597 | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks... | S3       | N/A                                                                         | 0    |
-| DEBT-7077 | **Team Capacity** — Medium — Medium — Parallel work on M1... | S3       | N/A                                                                         | 0    |
-| DEBT-3598 | **Team Capacity** — Medium — Medium — Parallel work on M1... | S3       | N/A                                                                         | 0    |
-| DEBT-7079 | Improvement Roadmap                                          | S3       | N/A                                                                         | 0    |
-| DEBT-3600 | Improvement Roadmap                                          | S3       | N/A                                                                         | 0    |
-| DEBT-7080 | Target Architecture Quality: 4.8/5                           | S3       | N/A                                                                         | 0    |
-| DEBT-3601 | Target Architecture Quality: 4.8/5                           | S3       | N/A                                                                         | 0    |
-| DEBT-3602 | Split AuthProvider into Focused Contexts                     | S3       | N/A                                                                         | 0    |
-| DEBT-7081 | Problem Statement                                            | S3       | N/A                                                                         | 0    |
-| DEBT-3603 | Problem Statement                                            | S3       | N/A                                                                         | 0    |
-| DEBT-7082 | Solution: Split into 3 Focused Contexts                      | S3       | N/A                                                                         | 0    |
-| DEBT-3604 | Solution: Split into 3 Focused Contexts                      | S3       | N/A                                                                         | 0    |
-| DEBT-7083 | Architecture                                                 | S3       | N/A                                                                         | 0    |
-| DEBT-3605 | Architecture                                                 | S3       | N/A                                                                         | 0    |
-| DEBT-7084 | Estimated Effort                                             | S3       | N/A                                                                         | 0    |
-| DEBT-3606 | Estimated Effort                                             | S3       | N/A                                                                         | 0    |
-| DEBT-7085 | Decompose Large Components                                   | S3       | N/A                                                                         | 0    |
-| DEBT-3607 | Decompose Large Components                                   | S3       | N/A                                                                         | 0    |
-| DEBT-7086 | Problem: `book-cover.tsx` (337 lines)                        | S3       | N/A                                                                         | 0    |
-| DEBT-3608 | Problem: `book-cover.tsx` (337 lines)                        | S3       | N/A                                                                         | 0    |
-| DEBT-7087 | Solution: Extract 4 Sub-Components                           | S3       | N/A                                                                         | 0    |
-| DEBT-3609 | Solution: Extract 4 Sub-Components                           | S3       | N/A                                                                         | 0    |
-| DEBT-7391 | `CleanDaysCalculator.tsx` (Pure Logic)                       | S3       | components/recovery/clean-days-calculator.tsx                               | 0    |
-| DEBT-3610 | `CleanDaysCalculator.tsx` (Pure Logic)                       | S3       | components/recovery/clean-days-calculator.tsx                               | 0    |
-| DEBT-7392 | `BookAnimation.tsx` (Animation Logic)                        | S3       | components/notebook/book-animation.tsx                                      | 0    |
-| DEBT-3611 | `BookAnimation.tsx` (Animation Logic)                        | S3       | components/notebook/book-animation.tsx                                      | 0    |
-| DEBT-7393 | `BookAuthGuard.tsx` (Auth Logic)                             | S3       | components/notebook/book-auth-guard.tsx                                     | 0    |
-| DEBT-3612 | `BookAuthGuard.tsx` (Auth Logic)                             | S3       | components/notebook/book-auth-guard.tsx                                     | 0    |
-| DEBT-7394 | `BookCover.tsx` (Simplified Composition)                     | S3       | components/notebook/book-cover.tsx                                          | 0    |
-| DEBT-3613 | `BookCover.tsx` (Simplified Composition)                     | S3       | components/notebook/book-cover.tsx                                          | 0    |
-| DEBT-7092 | Component Size Target                                        | S3       | N/A                                                                         | 0    |
-| DEBT-3614 | Component Size Target                                        | S3       | N/A                                                                         | 0    |
-| DEBT-7093 | Standardize Error Handling                                   | S3       | N/A                                                                         | 0    |
-| DEBT-3615 | Standardize Error Handling                                   | S3       | N/A                                                                         | 0    |
-| DEBT-7095 | Solution: Result<T> Type Pattern                             | S3       | N/A                                                                         | 0    |
-| DEBT-3617 | Solution: Result<T> Type Pattern                             | S3       | N/A                                                                         | 0    |
-| DEBT-7395 | Define `Result<T>` Type                                      | S3       | lib/types/result.ts                                                         | 0    |
-| DEBT-3618 | Define `Result<T>` Type                                      | S3       | lib/types/result.ts                                                         | 0    |
-| DEBT-7396 | Standardize Service Methods                                  | S3       | lib/firestore-service.ts                                                    | 0    |
-| DEBT-3619 | Standardize Service Methods                                  | S3       | lib/firestore-service.ts                                                    | 0    |
-| DEBT-7397 | Update Component Usage                                       | S3       | components/pages/today-page.tsx                                             | 0    |
-| DEBT-3620 | Update Component Usage                                       | S3       | components/pages/today-page.tsx                                             | 0    |
-| DEBT-7100 | When to Use Each Pattern                                     | S3       | N/A                                                                         | 0    |
-| DEBT-3622 | When to Use Each Pattern                                     | S3       | N/A                                                                         | 0    |
-| DEBT-7101 | Result<T> (Preferred for services)                           | S3       | N/A                                                                         | 0    |
-| DEBT-3623 | Result<T> (Preferred for services)                           | S3       | N/A                                                                         | 0    |
-| DEBT-7102 | Throw (Use sparingly)                                        | S3       | N/A                                                                         | 0    |
-| DEBT-3624 | Throw (Use sparingly)                                        | S3       | N/A                                                                         | 0    |
-| DEBT-7103 | Error Boundaries (UI layer)                                  | S3       | N/A                                                                         | 0    |
-| DEBT-3625 | Error Boundaries (UI layer)                                  | S3       | N/A                                                                         | 0    |
-| DEBT-7105 | Problem: Direct Image Usage                                  | S3       | N/A                                                                         | 0    |
-| DEBT-3627 | Problem: Direct Image Usage                                  | S3       | N/A                                                                         | 0    |
-| DEBT-7106 | Solution: Next.js Image Component                            | S3       | N/A                                                                         | 0    |
-| DEBT-3628 | Solution: Next.js Image Component                            | S3       | N/A                                                                         | 0    |
-| DEBT-7107 | Audit Checklist                                              | S3       | N/A                                                                         | 0    |
-| DEBT-3629 | Audit Checklist                                              | S3       | N/A                                                                         | 0    |
-| DEBT-7110 | Solution: Bundle Analysis                                    | S3       | N/A                                                                         | 0    |
-| DEBT-3632 | Solution: Bundle Analysis                                    | S3       | N/A                                                                         | 0    |
-| DEBT-7111 | Install Analyzer                                             | S3       | N/A                                                                         | 0    |
-| DEBT-3633 | Install Analyzer                                             | S3       | N/A                                                                         | 0    |
-| DEBT-7112 | Configure Next.js                                            | S3       | N/A                                                                         | 0    |
-| DEBT-3634 | Configure Next.js                                            | S3       | N/A                                                                         | 0    |
-| DEBT-7113 | Run Analysis                                                 | S3       | N/A                                                                         | 0    |
-| DEBT-3635 | Run Analysis                                                 | S3       | N/A                                                                         | 0    |
-| DEBT-7116 | Database Adapter Pattern Consistency                         | S3       | N/A                                                                         | 0    |
-| DEBT-3638 | Database Adapter Pattern Consistency                         | S3       | N/A                                                                         | 0    |
-| DEBT-7118 | Benefits of Adapter Pattern                                  | S3       | N/A                                                                         | 0    |
-| DEBT-3640 | Benefits of Adapter Pattern                                  | S3       | N/A                                                                         | 0    |
-| DEBT-7119 | Implementation                                               | S3       | N/A                                                                         | 0    |
-| DEBT-3641 | Implementation                                               | S3       | N/A                                                                         | 0    |
-| DEBT-7120 | Add responsive sizes attribute                               | S3       | N/A                                                                         | 0    |
-| DEBT-3642 | Add responsive sizes attribute                               | S3       | N/A                                                                         | 0    |
-| DEBT-7121 | Update AuthProvider to use adapter                           | S3       | N/A                                                                         | 0    |
-| DEBT-3643 | Update AuthProvider to use adapter                           | S3       | N/A                                                                         | 0    |
-| DEBT-7399 | Update all components to use adapter                         | S3       | docs/ARCHITECTURE.md                                                        | 0    |
-| DEBT-3644 | Update all components to use adapter                         | S3       | docs/ARCHITECTURE.md                                                        | 0    |
-| DEBT-7123 | Add adapter interface tests                                  | S3       | N/A                                                                         | 0    |
-| DEBT-3645 | Add adapter interface tests                                  | S3       | N/A                                                                         | 0    |
-| DEBT-7124 | Remove direct FirestoreService imports                       | S3       | N/A                                                                         | 0    |
-| DEBT-3646 | Remove direct FirestoreService imports                       | S3       | N/A                                                                         | 0    |
-| DEBT-7167 | Refactor State Management                                    | S3       | N/A                                                                         | 0    |
-| DEBT-3689 | Refactor State Management                                    | S3       | N/A                                                                         | 0    |
-| DEBT-7420 | Refactor lib/firebase.ts exports                             | S3       | lib/firebase.ts                                                             | 0    |
-| DEBT-3722 | Refactor lib/firebase.ts exports                             | S3       | lib/firebase.ts                                                             | 0    |
-| DEBT-7208 | Refactor TodayPage, ResourcesPage                            | S3       | N/A                                                                         | 0    |
-| DEBT-3730 | Refactor TodayPage, ResourcesPage                            | S3       | N/A                                                                         | 0    |
-| DEBT-7212 | Extract to constants file                                    | S3       | N/A                                                                         | 0    |
-| DEBT-3734 | Extract to constants file                                    | S3       | N/A                                                                         | 0    |
-| DEBT-7258 | SoNash Refactoring Action Plan                               | S3       | N/A                                                                         | 0    |
-| DEBT-3780 | SoNash Refactoring Action Plan                               | S3       | N/A                                                                         | 0    |
-| DEBT-7434 | Standardize Date Handling (CQ-2)                             | S3       | lib/utils/date-utils.ts                                                     | 0    |
-| DEBT-3783 | Standardize Date Handling (CQ-2)                             | S3       | lib/utils/date-utils.ts                                                     | 0    |
-| DEBT-7435 | Remove @ts-ignore and Add Type Guards (CQ-3)                 | S3       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-3784 | Remove @ts-ignore and Add Type Guards (CQ-3)                 | S3       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-7436 | Add Input Validation with Zod (CQ-7)                         | S3       | lib/db/users.ts                                                             | 0    |
-| DEBT-3785 | Add Input Validation with Zod (CQ-7)                         | S3       | lib/db/users.ts                                                             | 0    |
-| DEBT-7437 | Add Server-Side Date Validation (S-1)                        | S3       | firestore.rules                                                             | 0    |
-| DEBT-3786 | Add Server-Side Date Validation (S-1)                        | S3       | firestore.rules                                                             | 0    |
-| DEBT-7439 | Fix Onboarding Animation (B-3)                               | S3       | components/onboarding/onboarding-wizard.tsx                                 | 0    |
-| DEBT-3788 | Fix Onboarding Animation (B-3)                               | S3       | components/onboarding/onboarding-wizard.tsx                                 | 0    |
-| DEBT-7440 | Environment-Aware Logging (CQ-5)                             | S3       | lib/logger.ts                                                               | 0    |
-| DEBT-3789 | Environment-Aware Logging (CQ-5)                             | S3       | lib/logger.ts                                                               | 0    |
-| DEBT-7441 | Add Loading States (CQ-8)                                    | S3       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-3790 | Add Loading States (CQ-8)                                    | S3       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-7442 | Optimize Real-Time Listeners (P-2)                           | S3       | components/providers/auth-provider.tsx                                      | 0    |
-| DEBT-3791 | Optimize Real-Time Listeners (P-2)                           | S3       | components/providers/auth-provider.tsx                                      | 0    |
-| DEBT-7443 | Implement Code Splitting (P-3)                               | S3       | components/notebook/book-cover.tsx                                          | 0    |
-| DEBT-3792 | Implement Code Splitting (P-3)                               | S3       | components/notebook/book-cover.tsx                                          | 0    |
-| DEBT-7271 | Add Rate Limiting (S-2)                                      | S3       | N/A                                                                         | 0    |
-| DEBT-3793 | Add Rate Limiting (S-2)                                      | S3       | N/A                                                                         | 0    |
-| DEBT-7444 | Fix useEffect Dependencies (CQ-1)                            | S3       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-3794 | Fix useEffect Dependencies (CQ-1)                            | S3       | components/notebook/pages/today-page.tsx                                    | 0    |
-| DEBT-7445 | Extract Magic Strings (CQ-4)                                 | S3       | lib/constants.ts                                                            | 0    |
-| DEBT-3795 | Extract Magic Strings (CQ-4)                                 | S3       | lib/constants.ts                                                            | 0    |
-| DEBT-7275 | 17-22. Other Phase 3 Items                                   | S3       | N/A                                                                         | 0    |
-| DEBT-7276 | 24-26. Other Phase 4 Items                                   | S3       | N/A                                                                         | 0    |
-| DEBT-3797 | 17-22. Other Phase 3 Items                                   | S3       | N/A                                                                         | 0    |
-| DEBT-3798 | 24-26. Other Phase 4 Items                                   | S3       | N/A                                                                         | 0    |
-| DEBT-7447 | Reduce Firebase Coupling (CQ-9)                              | S3       | lib/database/database-interface.ts                                          | 0    |
-| DEBT-3799 | Reduce Firebase Coupling (CQ-9)                              | S3       | lib/database/database-interface.ts                                          | 0    |
-| DEBT-7279 | 📊 Impact Summary                                            | S3       | N/A                                                                         | 0    |
-| DEBT-3801 | 📊 Impact Summary                                            | S3       | N/A                                                                         | 0    |
-| DEBT-7448 | Files Changed: 6                                             | S3       | lib/firebase.ts                                                             | 0    |
-| DEBT-3802 | Files Changed: 6                                             | S3       | lib/firebase.ts                                                             | 0    |
-| DEBT-7281 | Issues Addressed: 15                                         | S3       | N/A                                                                         | 0    |
-| DEBT-3803 | Issues Addressed: 15                                         | S3       | N/A                                                                         | 0    |
-| DEBT-7283 | 📈 PERFORMANCE IMPROVEMENTS                                  | S3       | N/A                                                                         | 0    |
-| DEBT-3805 | 📈 PERFORMANCE IMPROVEMENTS                                  | S3       | N/A                                                                         | 0    |
-| DEBT-7449 | Enhanced Validation                                          | S3       | firestore-validation.ts                                                     | 0    |
-| DEBT-3808 | Enhanced Validation                                          | S3       | firestore-validation.ts                                                     | 0    |
-| DEBT-7287 | 🧪 TESTING RECOMMENDATIONS                                   | S3       | N/A                                                                         | 0    |
-| DEBT-3809 | 🧪 TESTING RECOMMENDATIONS                                   | S3       | N/A                                                                         | 0    |
-| DEBT-7288 | Immediate Testing Needed                                     | S3       | N/A                                                                         | 0    |
-| DEBT-3810 | Immediate Testing Needed                                     | S3       | N/A                                                                         | 0    |
-| DEBT-7290 | 🚀 DEPLOYMENT CHECKLIST                                      | S3       | N/A                                                                         | 0    |
-| DEBT-3812 | 🚀 DEPLOYMENT CHECKLIST                                      | S3       | N/A                                                                         | 0    |
-| DEBT-7291 | Production Readiness (Before Launch)                         | S3       | N/A                                                                         | 0    |
-| DEBT-3813 | Production Readiness (Before Launch)                         | S3       | N/A                                                                         | 0    |
-| DEBT-7292 | 💰 COST-BENEFIT ANALYSIS                                     | S3       | N/A                                                                         | 0    |
-| DEBT-3814 | 💰 COST-BENEFIT ANALYSIS                                     | S3       | N/A                                                                         | 0    |
-| DEBT-7293 | 🎓 KEY LEARNINGS                                             | S3       | N/A                                                                         | 0    |
-| DEBT-3815 | 🎓 KEY LEARNINGS                                             | S3       | N/A                                                                         | 0    |
-| DEBT-7294 | What Needs Improvement                                       | S3       | N/A                                                                         | 0    |
-| DEBT-3816 | What Needs Improvement                                       | S3       | N/A                                                                         | 0    |
-| DEBT-7295 | Recommendations for Future PRs                               | S3       | N/A                                                                         | 0    |
-| DEBT-3817 | Recommendations for Future PRs                               | S3       | N/A                                                                         | 0    |
-| DEBT-7296 | 📚 DOCUMENTATION ADDED                                       | S3       | N/A                                                                         | 0    |
-| DEBT-3818 | 📚 DOCUMENTATION ADDED                                       | S3       | N/A                                                                         | 0    |
-| DEBT-7297 | 🔄 BACKWARD COMPATIBILITY                                    | S3       | N/A                                                                         | 0    |
-| DEBT-3819 | 🔄 BACKWARD COMPATIBILITY                                    | S3       | N/A                                                                         | 0    |
-| DEBT-7451 | Add tests for firebase-guards.ts utilities                   | S3       | firebase-guards.ts                                                          | 0    |
-| DEBT-3820 | Add tests for firebase-guards.ts utilities                   | S3       | firebase-guards.ts                                                          | 0    |
-| DEBT-7300 | Add integration tests for Firebase operations                | S3       | N/A                                                                         | 0    |
-| DEBT-3822 | Add integration tests for Firebase operations                | S3       | N/A                                                                         | 0    |
-| DEBT-7301 | Implement Firebase App Check                                 | S3       | N/A                                                                         | 0    |
-| DEBT-3823 | Implement Firebase App Check                                 | S3       | N/A                                                                         | 0    |
-| DEBT-7302 | Add server-side authorization                                | S3       | N/A                                                                         | 0    |
-| DEBT-3824 | Add server-side authorization                                | S3       | N/A                                                                         | 0    |
-| DEBT-7341 | Reduce SESSION_CONTEXT.md - Archive history to               | S3       | N/A                                                                         | 0    |
-| DEBT-3864 | Reduce SESSION_CONTEXT.md - Archive history to               | S3       | N/A                                                                         | 0    |
-| DEBT-7345 | Code-split admin panel                                       | S3       | N/A                                                                         | 0    |
-| DEBT-3868 | Code-split admin panel                                       | S3       | N/A                                                                         | 0    |
-| DEBT-7368 | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_  | S3       | N/A                                                                         | 0    |
-| DEBT-3891 | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_  | S3       | N/A                                                                         | 0    |
-| DEBT-7374 | T8.7 - Extract offline-core package (optimization; not re... | S3       | N/A                                                                         | 0    |
-| DEBT-3897 | T8.7 - Extract offline-core package (optimization; not re... | S3       | N/A                                                                         | 0    |
-| DEBT-0817 | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx                          | 12   |
-| DEBT-0818 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                                               | 86   |
-| DEBT-3550 | Inefficient Equality Checking                                | S3       | components/providers/auth-provider.tsx                                      | 82   |
-| DEBT-7462 | Massive Context Provider (God Object)                        | S3       | components/providers/auth-provider.tsx                                      | 0    |
-| DEBT-7522 | Three underscore-prefixed dead functions in resources-pag... | S3       | components/notebook/pages/resources-page.tsx                                | 596  |
-| DEBT-7523 | Local isSameDay reimplemented — date-fns already imported    | S3       | components/notebook/pages/resources-page.tsx                                | 78   |
-| DEBT-7525 | \_appCheck exported but always undefined in lib/firebase.ts  | S3       | lib/firebase.ts                                                             | 40   |
-| DEBT-7526 | Two parallel error utilities — merge errors.ts and callab... | S3       | lib/utils/errors.ts                                                         | 0    |
-| DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                                           | 188  |
-| DEBT-3544 | Unsafe Non-Null Assertions                                   | S3       | lib/firebase.ts                                                             | 47   |
-| DEBT-3547 | Race Conditions in State                                     | S3       | N/A                                                                         | 136  |
-| DEBT-3548 | No Server-Side Rate Limiting                                 | S3       | lib/utils/rate-limiter.ts                                                   | 4    |
-| DEBT-3554 | Type Gymnastics                                              | S3       | N/A                                                                         | 54   |
+| ID        | Title                                                        | Severity | File                                                                             | Line |
+| --------- | ------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------- | ---- |
+| DEBT-7024 | CRITICAL (Production Blockers)                               | S1       | N/A                                                                              | 0    |
+| DEBT-3543 | CRITICAL (Production Blockers)                               | S1       | N/A                                                                              | 0    |
+| DEBT-7385 | Anonymous Auth Data Loss                                     | S1       | components/providers/auth-provider.tsx                                           | 0    |
+| DEBT-3546 | Anonymous Auth Data Loss                                     | S1       | components/providers/auth-provider.tsx                                           | 171  |
+| DEBT-7059 | Add E2E tests for critical user flows                        | S1       | N/A                                                                              | 0    |
+| DEBT-3578 | Add E2E tests for critical user flows                        | S1       | N/A                                                                              | 0    |
+| DEBT-3579 | Add E2E tests for critical user flows                        | S1       | N/A                                                                              | 0    |
+| DEBT-0094 | TodayPage god component (1117 lines, 14 useState, 10 useE... | S1       | components/notebook/pages/today-page.tsx                                         | 1    |
+| DEBT-0095 | UsersTab god component (924 lines, 21 useState, 3 useEffect) | S1       | components/admin/users-tab.tsx                                                   | 1    |
+| DEBT-0096 | Time-of-day rotation logic duplicated in quotes.ts and sl... | S1       | lib/db/quotes.ts                                                                 | 44   |
+| DEBT-0097 | Direct Firebase SDK usage in 22+ files bypasses service l... | S1       | hooks/use-journal.ts                                                             | 31   |
+| DEBT-0136 | Split admin.ts (3,111 lines)                                 | S1       | functions/src/admin.ts                                                           | 143  |
+| DEBT-0137 | Split users-tab.tsx (2,092 lines)                            | S1       | components/admin/users-tab.tsx                                                   | 84   |
+| DEBT-0874 | Cloud Functions Index File God Object (811 Lines)            | S1       | N/A                                                                              | 0    |
+| DEBT-0875 | Admin Functions File Exceeds Complexity (800+ Lines, 21 O... | S1       | N/A                                                                              | 0    |
+| DEBT-1356 | Direct Firestore SDK reads in UI/components bypass typed ... | S1       | components/admin/admin-crud-table.tsx                                            | 0    |
+| DEBT-1357 | Cloud Function calling patterns duplicated despite existi... | S1       | components/admin/admin-crud-table.tsx                                            | 0    |
+| DEBT-1358 | Error logging inconsistent: many call sites log raw error... | S1       | app/admin/page.tsx                                                               | 0    |
+| DEBT-1365 | Triple data access layer: 3 overlapping Firestore patterns   | S1       | lib/firestore-service.ts                                                         | 0    |
+| DEBT-7469 | check-pattern-compliance.js god script — 1917 lines, esli... | S1       | scripts/check-pattern-compliance.js                                              | 0    |
+| DEBT-7030 | OPTIMIZATION (Performance & Complexity)                      | S2       | N/A                                                                              | 0    |
+| DEBT-3549 | OPTIMIZATION (Performance & Complexity)                      | S2       | N/A                                                                              | 0    |
+| DEBT-7039 | Top 3 High-Impact Changes                                    | S2       | N/A                                                                              | 0    |
+| DEBT-3558 | Top 3 High-Impact Changes                                    | S2       | N/A                                                                              | 0    |
+| DEBT-7064 | Inconsistent patterns (throw vs return)                      | S2       | N/A                                                                              | 0    |
+| DEBT-3585 | Inconsistent patterns (throw vs return)                      | S2       | N/A                                                                              | 0    |
+| DEBT-7068 | **A3: Error Handling** — 1 week — High — P0                  | S2       | N/A                                                                              | 0    |
+| DEBT-3589 | **A3: Error Handling** — 1 week — High — P0                  | S2       | N/A                                                                              | 0    |
+| DEBT-7070 | **A4: Image Optimization** — 3 days — High — P1              | S2       | N/A                                                                              | 0    |
+| DEBT-3591 | **A4: Image Optimization** — 3 days — High — P1              | S2       | N/A                                                                              | 0    |
+| DEBT-7071 | **A1: Context Splitting** — 1 week — Very High — P0          | S2       | N/A                                                                              | 0    |
+| DEBT-3592 | **A1: Context Splitting** — 1 week — Very High — P0          | S2       | N/A                                                                              | 0    |
+| DEBT-7072 | **A2: Component Decomposition** — 2 weeks — High — P1        | S2       | N/A                                                                              | 0    |
+| DEBT-3593 | **A2: Component Decomposition** — 2 weeks — High — P1        | S2       | N/A                                                                              | 0    |
+| DEBT-7073 | **A5: Bundle Optimization** — 1 week — High — P1             | S2       | N/A                                                                              | 0    |
+| DEBT-3594 | **A5: Bundle Optimization** — 1 week — High — P1             | S2       | N/A                                                                              | 0    |
+| DEBT-7075 | **Performance Regression** — Low — High — Benchmark befor... | S2       | N/A                                                                              | 0    |
+| DEBT-3596 | **Performance Regression** — Low — High — Benchmark befor... | S2       | N/A                                                                              | 0    |
+| DEBT-7078 | Weaknesses (Areas for Improvement) ⚠️                        | S2       | N/A                                                                              | 0    |
+| DEBT-3599 | Weaknesses (Areas for Improvement) ⚠️                        | S2       | N/A                                                                              | 0    |
+| DEBT-7094 | Problem: Inconsistent Patterns                               | S2       | N/A                                                                              | 0    |
+| DEBT-3616 | Problem: Inconsistent Patterns                               | S2       | N/A                                                                              | 0    |
+| DEBT-7104 | Image Optimization                                           | S2       | N/A                                                                              | 0    |
+| DEBT-3626 | Image Optimization                                           | S2       | N/A                                                                              | 0    |
+| DEBT-7114 | Optimization Strategies                                      | S2       | N/A                                                                              | 0    |
+| DEBT-3636 | Optimization Strategies                                      | S2       | N/A                                                                              | 0    |
+| DEBT-7117 | Problem: Inconsistent Abstraction                            | S2       | N/A                                                                              | 0    |
+| DEBT-3639 | Problem: Inconsistent Abstraction                            | S2       | N/A                                                                              | 0    |
+| DEBT-7432 | Fix Auto-Save Race Condition (B-1)                           | S2       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-3781 | Fix Auto-Save Race Condition (B-1)                           | S2       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-7433 | Fix Listener Memory Leak (B-2)                               | S2       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-3782 | Fix Listener Memory Leak (B-2)                               | S2       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-7282 | 🏆 TOP 3 HIGH-IMPACT CHANGES                                 | S2       | N/A                                                                              | 0    |
+| DEBT-3804 | 🏆 TOP 3 HIGH-IMPACT CHANGES                                 | S2       | N/A                                                                              | 0    |
+| DEBT-7284 | AuthProvider Optimization                                    | S2       | N/A                                                                              | 0    |
+| DEBT-3806 | AuthProvider Optimization                                    | S2       | N/A                                                                              | 0    |
+| DEBT-0459 | Step1WorksheetCard large component (845 lines) with neste... | S2       | components/growth/Step1WorksheetCard.tsx                                         | 1    |
+| DEBT-0460 | ResourcesPage large component (728 lines) mixing meetings... | S2       | components/notebook/pages/resources-page.tsx                                     | 1    |
+| DEBT-0461 | reCAPTCHA token fetch pattern repeated 5x across codebase    | S2       | hooks/use-journal.ts                                                             | 281  |
+| DEBT-0526 | Split today-page.tsx (1,199 lines)                           | S2       | components/notebook/pages/today-page.tsx                                         | 396  |
+| DEBT-0527 | Split dashboard-tab.tsx (1,031 lines)                        | S2       | components/admin/dashboard-tab.tsx                                               | 1    |
+| DEBT-0528 | Repository pattern violations                                | S2       | lib/firestore-service.ts                                                         | 1    |
+| DEBT-0894 | useJournal Hook Has 7 Responsibilities (438 lines)           | S2       | N/A                                                                              | 0    |
+| DEBT-2291 | HookRunner framework — centralized hook orchestration wit... | S2       | .claude/hooks/post-write-validator.js                                            | 0    |
+| DEBT-3527 | Extract shared loadJsonl to lib/ module — 4 identical cop... | S2       | .claude/skills/pr-ecosystem-audit/scripts/checkers/effectiveness-metrics.js      | 439  |
+| DEBT-7474 | aggregate-audit-findings.js god script — 25+ functions, n... | S2       | scripts/aggregate-audit-findings.js                                              | 0    |
+| DEBT-7496 | getFunctions() + httpsCallable pattern repeated 28 times ... | S2       | components/admin/admin-crud-table.tsx                                            | 0    |
+| DEBT-7497 | links-tab.tsx and prayers-tab.tsx ~90% code duplication      | S2       | components/admin/links-tab.tsx                                                   | 0    |
+| DEBT-7498 | window.confirm() used for 10 destructive actions — non-st... | S2       | N/A                                                                              | 0    |
+| DEBT-7517 | 356-line FORM_SECTIONS config embedded in Step1WorksheetC... | S2       | components/growth/Step1WorksheetCard.tsx                                         | 124  |
+| DEBT-7559 | Replace regex-based isInsideTryCatch with AST parser (acorn) | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js    | 77   |
+| DEBT-7560 | Replace regex-based extractStateFileRefs with AST parser ... | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js        | 240  |
+| DEBT-7561 | Replace regex-based isInsideTryCatch with AST parser (babel) | S2       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 119  |
+| DEBT-7562 | Replace regex-based isInsideTryCatch with AST parser         | S2       | .claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js | 119  |
+| DEBT-7378 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                                                | 0    |
+| DEBT-7020 | Execution Flow Analysis                                      | S3       | N/A                                                                              | 0    |
+| DEBT-3539 | Execution Flow Analysis                                      | S3       | N/A                                                                              | 0    |
+| DEBT-7021 | Code Smells Identified                                       | S3       | N/A                                                                              | 0    |
+| DEBT-3540 | Code Smells Identified                                       | S3       | N/A                                                                              | 0    |
+| DEBT-7022 | 🚨 DANGEROUS PATTERNS                                        | S3       | N/A                                                                              | 0    |
+| DEBT-3541 | 🚨 DANGEROUS PATTERNS                                        | S3       | N/A                                                                              | 0    |
+| DEBT-7023 | 🔍 EDGE CASES                                                | S3       | N/A                                                                              | 0    |
+| DEBT-3542 | 🔍 EDGE CASES                                                | S3       | N/A                                                                              | 0    |
+| DEBT-7383 | Unsafe Non-Null Assertions                                   | S3       | lib/firebase.ts                                                                  | 0    |
+| DEBT-7028 | Race Conditions in State                                     | S3       | N/A                                                                              | 0    |
+| DEBT-7386 | No Server-Side Rate Limiting                                 | S3       | lib/utils/rate-limiter.ts                                                        | 0    |
+| DEBT-7387 | Inefficient Equality Checking                                | S3       | auth-provider.tsx                                                                | 0    |
+| DEBT-7388 | Massive Context Provider (God Object)                        | S3       | auth-provider.tsx                                                                | 0    |
+| DEBT-3551 | Massive Context Provider (God Object)                        | S3       | auth-provider.tsx                                                                | 0    |
+| DEBT-7389 | Large God Component                                          | S3       | components/notebook/book-cover.tsx                                               | 0    |
+| DEBT-3552 | Large God Component                                          | S3       | components/notebook/book-cover.tsx                                               | 0    |
+| DEBT-7035 | Type Gymnastics                                              | S3       | N/A                                                                              | 0    |
+| DEBT-7036 | STYLE/READABILITY                                            | S3       | N/A                                                                              | 0    |
+| DEBT-3555 | STYLE/READABILITY                                            | S3       | N/A                                                                              | 0    |
+| DEBT-7037 | Refactoring Strategy                                         | S3       | N/A                                                                              | 0    |
+| DEBT-3556 | Refactoring Strategy                                         | S3       | N/A                                                                              | 0    |
+| DEBT-7390 | Refactor #5: Split AuthProvider (Optional - Breaking Change) | S3       | components/providers/auth-provider.tsx                                           | 0    |
+| DEBT-3557 | Refactor #5: Split AuthProvider (Optional - Breaking Change) | S3       | components/providers/auth-provider.tsx                                           | 0    |
+| DEBT-7040 | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)       | S3       | N/A                                                                              | 0    |
+| DEBT-3559 | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)       | S3       | N/A                                                                              | 0    |
+| DEBT-7041 | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics) | S3       | N/A                                                                              | 0    |
+| DEBT-3560 | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics) | S3       | N/A                                                                              | 0    |
+| DEBT-7043 | METRICS & VALIDATION                                         | S3       | N/A                                                                              | 0    |
+| DEBT-3562 | METRICS & VALIDATION                                         | S3       | N/A                                                                              | 0    |
+| DEBT-7045 | Immediate (This PR)                                          | S3       | N/A                                                                              | 0    |
+| DEBT-3564 | Immediate (This PR)                                          | S3       | N/A                                                                              | 0    |
+| DEBT-7046 | Short-Term (Next Sprint)                                     | S3       | N/A                                                                              | 0    |
+| DEBT-3565 | Short-Term (Next Sprint)                                     | S3       | N/A                                                                              | 0    |
+| DEBT-7047 | Long-Term (Production Readiness)                             | S3       | N/A                                                                              | 0    |
+| DEBT-3566 | Long-Term (Production Readiness)                             | S3       | N/A                                                                              | 0    |
+| DEBT-7048 | Remove dangerous non-null assertions                         | S3       | N/A                                                                              | 0    |
+| DEBT-3567 | Remove dangerous non-null assertions                         | S3       | N/A                                                                              | 0    |
+| DEBT-7049 | Add runtime checks before export                             | S3       | N/A                                                                              | 0    |
+| DEBT-3568 | Add runtime checks before export                             | S3       | N/A                                                                              | 0    |
+| DEBT-7050 | Create isFirebaseTimestamp() type guard                      | S3       | N/A                                                                              | 0    |
+| DEBT-3569 | Create isFirebaseTimestamp() type guard                      | S3       | N/A                                                                              | 0    |
+| DEBT-7051 | Create isFirestoreError() type guard                         | S3       | N/A                                                                              | 0    |
+| DEBT-3570 | Create isFirestoreError() type guard                         | S3       | N/A                                                                              | 0    |
+| DEBT-7052 | Remove type gymnastics from components                       | S3       | N/A                                                                              | 0    |
+| DEBT-3571 | Remove type gymnastics from components                       | S3       | N/A                                                                              | 0    |
+| DEBT-7054 | Implement Cloud Functions for rate limiting                  | S3       | N/A                                                                              | 0    |
+| DEBT-3573 | Implement Cloud Functions for rate limiting                  | S3       | N/A                                                                              | 0    |
+| DEBT-7055 | Add Firebase App Check                                       | S3       | N/A                                                                              | 0    |
+| DEBT-3574 | Add Firebase App Check                                       | S3       | N/A                                                                              | 0    |
+| DEBT-7056 | Implement account linking for anonymous users                | S3       | N/A                                                                              | 0    |
+| DEBT-3575 | Implement account linking for anonymous users                | S3       | N/A                                                                              | 0    |
+| DEBT-7057 | Split AuthProvider into focused contexts                     | S3       | N/A                                                                              | 0    |
+| DEBT-3576 | Split AuthProvider into focused contexts                     | S3       | N/A                                                                              | 0    |
+| DEBT-7058 | Add integration tests for Firestore operations               | S3       | N/A                                                                              | 0    |
+| DEBT-3577 | Add integration tests for Firestore operations               | S3       | N/A                                                                              | 0    |
+| DEBT-7060 | Implement external logging (Sentry)                          | S3       | N/A                                                                              | 0    |
+| DEBT-3580 | Implement external logging (Sentry)                          | S3       | N/A                                                                              | 0    |
+| DEBT-3581 | Implement external logging (Sentry)                          | S3       | N/A                                                                              | 0    |
+| DEBT-7061 | Add performance monitoring                                   | S3       | N/A                                                                              | 0    |
+| DEBT-3582 | Add performance monitoring                                   | S3       | N/A                                                                              | 0    |
+| DEBT-7062 | AuthProvider has 7 state variables (SRP violation)           | S3       | N/A                                                                              | 0    |
+| DEBT-3583 | AuthProvider has 7 state variables (SRP violation)           | S3       | N/A                                                                              | 0    |
+| DEBT-7063 | book-cover.tsx = 337 lines (mixed concerns)                  | S3       | N/A                                                                              | 0    |
+| DEBT-3584 | book-cover.tsx = 337 lines (mixed concerns)                  | S3       | N/A                                                                              | 0    |
+| DEBT-7065 | Adapter exists but not used consistently                     | S3       | N/A                                                                              | 0    |
+| DEBT-3586 | Adapter exists but not used consistently                     | S3       | N/A                                                                              | 0    |
+| DEBT-7067 | Unknown size, heavy dependencies                             | S3       | N/A                                                                              | 0    |
+| DEBT-3588 | Unknown size, heavy dependencies                             | S3       | N/A                                                                              | 0    |
+| DEBT-7069 | **A6: Adapter Pattern** — 3 days — Medium — P1               | S3       | N/A                                                                              | 0    |
+| DEBT-3590 | **A6: Adapter Pattern** — 3 days — Medium — P1               | S3       | N/A                                                                              | 0    |
+| DEBT-7076 | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks... | S3       | N/A                                                                              | 0    |
+| DEBT-3597 | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks... | S3       | N/A                                                                              | 0    |
+| DEBT-7077 | **Team Capacity** — Medium — Medium — Parallel work on M1... | S3       | N/A                                                                              | 0    |
+| DEBT-3598 | **Team Capacity** — Medium — Medium — Parallel work on M1... | S3       | N/A                                                                              | 0    |
+| DEBT-7079 | Improvement Roadmap                                          | S3       | N/A                                                                              | 0    |
+| DEBT-3600 | Improvement Roadmap                                          | S3       | N/A                                                                              | 0    |
+| DEBT-7080 | Target Architecture Quality: 4.8/5                           | S3       | N/A                                                                              | 0    |
+| DEBT-3601 | Target Architecture Quality: 4.8/5                           | S3       | N/A                                                                              | 0    |
+| DEBT-3602 | Split AuthProvider into Focused Contexts                     | S3       | N/A                                                                              | 0    |
+| DEBT-7081 | Problem Statement                                            | S3       | N/A                                                                              | 0    |
+| DEBT-3603 | Problem Statement                                            | S3       | N/A                                                                              | 0    |
+| DEBT-7082 | Solution: Split into 3 Focused Contexts                      | S3       | N/A                                                                              | 0    |
+| DEBT-3604 | Solution: Split into 3 Focused Contexts                      | S3       | N/A                                                                              | 0    |
+| DEBT-7083 | Architecture                                                 | S3       | N/A                                                                              | 0    |
+| DEBT-3605 | Architecture                                                 | S3       | N/A                                                                              | 0    |
+| DEBT-7084 | Estimated Effort                                             | S3       | N/A                                                                              | 0    |
+| DEBT-3606 | Estimated Effort                                             | S3       | N/A                                                                              | 0    |
+| DEBT-7085 | Decompose Large Components                                   | S3       | N/A                                                                              | 0    |
+| DEBT-3607 | Decompose Large Components                                   | S3       | N/A                                                                              | 0    |
+| DEBT-7086 | Problem: `book-cover.tsx` (337 lines)                        | S3       | N/A                                                                              | 0    |
+| DEBT-3608 | Problem: `book-cover.tsx` (337 lines)                        | S3       | N/A                                                                              | 0    |
+| DEBT-7087 | Solution: Extract 4 Sub-Components                           | S3       | N/A                                                                              | 0    |
+| DEBT-3609 | Solution: Extract 4 Sub-Components                           | S3       | N/A                                                                              | 0    |
+| DEBT-7391 | `CleanDaysCalculator.tsx` (Pure Logic)                       | S3       | components/recovery/clean-days-calculator.tsx                                    | 0    |
+| DEBT-3610 | `CleanDaysCalculator.tsx` (Pure Logic)                       | S3       | components/recovery/clean-days-calculator.tsx                                    | 0    |
+| DEBT-7392 | `BookAnimation.tsx` (Animation Logic)                        | S3       | components/notebook/book-animation.tsx                                           | 0    |
+| DEBT-3611 | `BookAnimation.tsx` (Animation Logic)                        | S3       | components/notebook/book-animation.tsx                                           | 0    |
+| DEBT-7393 | `BookAuthGuard.tsx` (Auth Logic)                             | S3       | components/notebook/book-auth-guard.tsx                                          | 0    |
+| DEBT-3612 | `BookAuthGuard.tsx` (Auth Logic)                             | S3       | components/notebook/book-auth-guard.tsx                                          | 0    |
+| DEBT-7394 | `BookCover.tsx` (Simplified Composition)                     | S3       | components/notebook/book-cover.tsx                                               | 0    |
+| DEBT-3613 | `BookCover.tsx` (Simplified Composition)                     | S3       | components/notebook/book-cover.tsx                                               | 0    |
+| DEBT-7092 | Component Size Target                                        | S3       | N/A                                                                              | 0    |
+| DEBT-3614 | Component Size Target                                        | S3       | N/A                                                                              | 0    |
+| DEBT-7093 | Standardize Error Handling                                   | S3       | N/A                                                                              | 0    |
+| DEBT-3615 | Standardize Error Handling                                   | S3       | N/A                                                                              | 0    |
+| DEBT-7095 | Solution: Result<T> Type Pattern                             | S3       | N/A                                                                              | 0    |
+| DEBT-3617 | Solution: Result<T> Type Pattern                             | S3       | N/A                                                                              | 0    |
+| DEBT-7395 | Define `Result<T>` Type                                      | S3       | lib/types/result.ts                                                              | 0    |
+| DEBT-3618 | Define `Result<T>` Type                                      | S3       | lib/types/result.ts                                                              | 0    |
+| DEBT-7396 | Standardize Service Methods                                  | S3       | lib/firestore-service.ts                                                         | 0    |
+| DEBT-3619 | Standardize Service Methods                                  | S3       | lib/firestore-service.ts                                                         | 0    |
+| DEBT-7397 | Update Component Usage                                       | S3       | components/pages/today-page.tsx                                                  | 0    |
+| DEBT-3620 | Update Component Usage                                       | S3       | components/pages/today-page.tsx                                                  | 0    |
+| DEBT-7100 | When to Use Each Pattern                                     | S3       | N/A                                                                              | 0    |
+| DEBT-3622 | When to Use Each Pattern                                     | S3       | N/A                                                                              | 0    |
+| DEBT-7101 | Result<T> (Preferred for services)                           | S3       | N/A                                                                              | 0    |
+| DEBT-3623 | Result<T> (Preferred for services)                           | S3       | N/A                                                                              | 0    |
+| DEBT-7102 | Throw (Use sparingly)                                        | S3       | N/A                                                                              | 0    |
+| DEBT-3624 | Throw (Use sparingly)                                        | S3       | N/A                                                                              | 0    |
+| DEBT-7103 | Error Boundaries (UI layer)                                  | S3       | N/A                                                                              | 0    |
+| DEBT-3625 | Error Boundaries (UI layer)                                  | S3       | N/A                                                                              | 0    |
+| DEBT-7105 | Problem: Direct Image Usage                                  | S3       | N/A                                                                              | 0    |
+| DEBT-3627 | Problem: Direct Image Usage                                  | S3       | N/A                                                                              | 0    |
+| DEBT-7106 | Solution: Next.js Image Component                            | S3       | N/A                                                                              | 0    |
+| DEBT-3628 | Solution: Next.js Image Component                            | S3       | N/A                                                                              | 0    |
+| DEBT-7107 | Audit Checklist                                              | S3       | N/A                                                                              | 0    |
+| DEBT-3629 | Audit Checklist                                              | S3       | N/A                                                                              | 0    |
+| DEBT-7110 | Solution: Bundle Analysis                                    | S3       | N/A                                                                              | 0    |
+| DEBT-3632 | Solution: Bundle Analysis                                    | S3       | N/A                                                                              | 0    |
+| DEBT-7111 | Install Analyzer                                             | S3       | N/A                                                                              | 0    |
+| DEBT-3633 | Install Analyzer                                             | S3       | N/A                                                                              | 0    |
+| DEBT-7112 | Configure Next.js                                            | S3       | N/A                                                                              | 0    |
+| DEBT-3634 | Configure Next.js                                            | S3       | N/A                                                                              | 0    |
+| DEBT-7113 | Run Analysis                                                 | S3       | N/A                                                                              | 0    |
+| DEBT-3635 | Run Analysis                                                 | S3       | N/A                                                                              | 0    |
+| DEBT-7116 | Database Adapter Pattern Consistency                         | S3       | N/A                                                                              | 0    |
+| DEBT-3638 | Database Adapter Pattern Consistency                         | S3       | N/A                                                                              | 0    |
+| DEBT-7118 | Benefits of Adapter Pattern                                  | S3       | N/A                                                                              | 0    |
+| DEBT-3640 | Benefits of Adapter Pattern                                  | S3       | N/A                                                                              | 0    |
+| DEBT-7119 | Implementation                                               | S3       | N/A                                                                              | 0    |
+| DEBT-3641 | Implementation                                               | S3       | N/A                                                                              | 0    |
+| DEBT-7120 | Add responsive sizes attribute                               | S3       | N/A                                                                              | 0    |
+| DEBT-3642 | Add responsive sizes attribute                               | S3       | N/A                                                                              | 0    |
+| DEBT-7121 | Update AuthProvider to use adapter                           | S3       | N/A                                                                              | 0    |
+| DEBT-3643 | Update AuthProvider to use adapter                           | S3       | N/A                                                                              | 0    |
+| DEBT-7399 | Update all components to use adapter                         | S3       | docs/ARCHITECTURE.md                                                             | 0    |
+| DEBT-3644 | Update all components to use adapter                         | S3       | docs/ARCHITECTURE.md                                                             | 0    |
+| DEBT-7123 | Add adapter interface tests                                  | S3       | N/A                                                                              | 0    |
+| DEBT-3645 | Add adapter interface tests                                  | S3       | N/A                                                                              | 0    |
+| DEBT-7124 | Remove direct FirestoreService imports                       | S3       | N/A                                                                              | 0    |
+| DEBT-3646 | Remove direct FirestoreService imports                       | S3       | N/A                                                                              | 0    |
+| DEBT-7167 | Refactor State Management                                    | S3       | N/A                                                                              | 0    |
+| DEBT-3689 | Refactor State Management                                    | S3       | N/A                                                                              | 0    |
+| DEBT-7420 | Refactor lib/firebase.ts exports                             | S3       | lib/firebase.ts                                                                  | 0    |
+| DEBT-3722 | Refactor lib/firebase.ts exports                             | S3       | lib/firebase.ts                                                                  | 0    |
+| DEBT-7208 | Refactor TodayPage, ResourcesPage                            | S3       | N/A                                                                              | 0    |
+| DEBT-3730 | Refactor TodayPage, ResourcesPage                            | S3       | N/A                                                                              | 0    |
+| DEBT-7212 | Extract to constants file                                    | S3       | N/A                                                                              | 0    |
+| DEBT-3734 | Extract to constants file                                    | S3       | N/A                                                                              | 0    |
+| DEBT-7258 | SoNash Refactoring Action Plan                               | S3       | N/A                                                                              | 0    |
+| DEBT-3780 | SoNash Refactoring Action Plan                               | S3       | N/A                                                                              | 0    |
+| DEBT-7434 | Standardize Date Handling (CQ-2)                             | S3       | lib/utils/date-utils.ts                                                          | 0    |
+| DEBT-3783 | Standardize Date Handling (CQ-2)                             | S3       | lib/utils/date-utils.ts                                                          | 0    |
+| DEBT-7435 | Remove @ts-ignore and Add Type Guards (CQ-3)                 | S3       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-3784 | Remove @ts-ignore and Add Type Guards (CQ-3)                 | S3       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-7436 | Add Input Validation with Zod (CQ-7)                         | S3       | lib/db/users.ts                                                                  | 0    |
+| DEBT-3785 | Add Input Validation with Zod (CQ-7)                         | S3       | lib/db/users.ts                                                                  | 0    |
+| DEBT-7437 | Add Server-Side Date Validation (S-1)                        | S3       | firestore.rules                                                                  | 0    |
+| DEBT-3786 | Add Server-Side Date Validation (S-1)                        | S3       | firestore.rules                                                                  | 0    |
+| DEBT-7439 | Fix Onboarding Animation (B-3)                               | S3       | components/onboarding/onboarding-wizard.tsx                                      | 0    |
+| DEBT-3788 | Fix Onboarding Animation (B-3)                               | S3       | components/onboarding/onboarding-wizard.tsx                                      | 0    |
+| DEBT-7440 | Environment-Aware Logging (CQ-5)                             | S3       | lib/logger.ts                                                                    | 0    |
+| DEBT-3789 | Environment-Aware Logging (CQ-5)                             | S3       | lib/logger.ts                                                                    | 0    |
+| DEBT-7441 | Add Loading States (CQ-8)                                    | S3       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-3790 | Add Loading States (CQ-8)                                    | S3       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-7442 | Optimize Real-Time Listeners (P-2)                           | S3       | components/providers/auth-provider.tsx                                           | 0    |
+| DEBT-3791 | Optimize Real-Time Listeners (P-2)                           | S3       | components/providers/auth-provider.tsx                                           | 0    |
+| DEBT-7443 | Implement Code Splitting (P-3)                               | S3       | components/notebook/book-cover.tsx                                               | 0    |
+| DEBT-3792 | Implement Code Splitting (P-3)                               | S3       | components/notebook/book-cover.tsx                                               | 0    |
+| DEBT-7271 | Add Rate Limiting (S-2)                                      | S3       | N/A                                                                              | 0    |
+| DEBT-3793 | Add Rate Limiting (S-2)                                      | S3       | N/A                                                                              | 0    |
+| DEBT-7444 | Fix useEffect Dependencies (CQ-1)                            | S3       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-3794 | Fix useEffect Dependencies (CQ-1)                            | S3       | components/notebook/pages/today-page.tsx                                         | 0    |
+| DEBT-7445 | Extract Magic Strings (CQ-4)                                 | S3       | lib/constants.ts                                                                 | 0    |
+| DEBT-3795 | Extract Magic Strings (CQ-4)                                 | S3       | lib/constants.ts                                                                 | 0    |
+| DEBT-7275 | 17-22. Other Phase 3 Items                                   | S3       | N/A                                                                              | 0    |
+| DEBT-7276 | 24-26. Other Phase 4 Items                                   | S3       | N/A                                                                              | 0    |
+| DEBT-3797 | 17-22. Other Phase 3 Items                                   | S3       | N/A                                                                              | 0    |
+| DEBT-3798 | 24-26. Other Phase 4 Items                                   | S3       | N/A                                                                              | 0    |
+| DEBT-7447 | Reduce Firebase Coupling (CQ-9)                              | S3       | lib/database/database-interface.ts                                               | 0    |
+| DEBT-3799 | Reduce Firebase Coupling (CQ-9)                              | S3       | lib/database/database-interface.ts                                               | 0    |
+| DEBT-7279 | 📊 Impact Summary                                            | S3       | N/A                                                                              | 0    |
+| DEBT-3801 | 📊 Impact Summary                                            | S3       | N/A                                                                              | 0    |
+| DEBT-7448 | Files Changed: 6                                             | S3       | lib/firebase.ts                                                                  | 0    |
+| DEBT-3802 | Files Changed: 6                                             | S3       | lib/firebase.ts                                                                  | 0    |
+| DEBT-7281 | Issues Addressed: 15                                         | S3       | N/A                                                                              | 0    |
+| DEBT-3803 | Issues Addressed: 15                                         | S3       | N/A                                                                              | 0    |
+| DEBT-7283 | 📈 PERFORMANCE IMPROVEMENTS                                  | S3       | N/A                                                                              | 0    |
+| DEBT-3805 | 📈 PERFORMANCE IMPROVEMENTS                                  | S3       | N/A                                                                              | 0    |
+| DEBT-7449 | Enhanced Validation                                          | S3       | firestore-validation.ts                                                          | 0    |
+| DEBT-3808 | Enhanced Validation                                          | S3       | firestore-validation.ts                                                          | 0    |
+| DEBT-7287 | 🧪 TESTING RECOMMENDATIONS                                   | S3       | N/A                                                                              | 0    |
+| DEBT-3809 | 🧪 TESTING RECOMMENDATIONS                                   | S3       | N/A                                                                              | 0    |
+| DEBT-7288 | Immediate Testing Needed                                     | S3       | N/A                                                                              | 0    |
+| DEBT-3810 | Immediate Testing Needed                                     | S3       | N/A                                                                              | 0    |
+| DEBT-7290 | 🚀 DEPLOYMENT CHECKLIST                                      | S3       | N/A                                                                              | 0    |
+| DEBT-3812 | 🚀 DEPLOYMENT CHECKLIST                                      | S3       | N/A                                                                              | 0    |
+| DEBT-7291 | Production Readiness (Before Launch)                         | S3       | N/A                                                                              | 0    |
+| DEBT-3813 | Production Readiness (Before Launch)                         | S3       | N/A                                                                              | 0    |
+| DEBT-7292 | 💰 COST-BENEFIT ANALYSIS                                     | S3       | N/A                                                                              | 0    |
+| DEBT-3814 | 💰 COST-BENEFIT ANALYSIS                                     | S3       | N/A                                                                              | 0    |
+| DEBT-7293 | 🎓 KEY LEARNINGS                                             | S3       | N/A                                                                              | 0    |
+| DEBT-3815 | 🎓 KEY LEARNINGS                                             | S3       | N/A                                                                              | 0    |
+| DEBT-7294 | What Needs Improvement                                       | S3       | N/A                                                                              | 0    |
+| DEBT-3816 | What Needs Improvement                                       | S3       | N/A                                                                              | 0    |
+| DEBT-7295 | Recommendations for Future PRs                               | S3       | N/A                                                                              | 0    |
+| DEBT-3817 | Recommendations for Future PRs                               | S3       | N/A                                                                              | 0    |
+| DEBT-7296 | 📚 DOCUMENTATION ADDED                                       | S3       | N/A                                                                              | 0    |
+| DEBT-3818 | 📚 DOCUMENTATION ADDED                                       | S3       | N/A                                                                              | 0    |
+| DEBT-7297 | 🔄 BACKWARD COMPATIBILITY                                    | S3       | N/A                                                                              | 0    |
+| DEBT-3819 | 🔄 BACKWARD COMPATIBILITY                                    | S3       | N/A                                                                              | 0    |
+| DEBT-7451 | Add tests for firebase-guards.ts utilities                   | S3       | firebase-guards.ts                                                               | 0    |
+| DEBT-3820 | Add tests for firebase-guards.ts utilities                   | S3       | firebase-guards.ts                                                               | 0    |
+| DEBT-7300 | Add integration tests for Firebase operations                | S3       | N/A                                                                              | 0    |
+| DEBT-3822 | Add integration tests for Firebase operations                | S3       | N/A                                                                              | 0    |
+| DEBT-7301 | Implement Firebase App Check                                 | S3       | N/A                                                                              | 0    |
+| DEBT-3823 | Implement Firebase App Check                                 | S3       | N/A                                                                              | 0    |
+| DEBT-7302 | Add server-side authorization                                | S3       | N/A                                                                              | 0    |
+| DEBT-3824 | Add server-side authorization                                | S3       | N/A                                                                              | 0    |
+| DEBT-7341 | Reduce SESSION_CONTEXT.md - Archive history to               | S3       | N/A                                                                              | 0    |
+| DEBT-3864 | Reduce SESSION_CONTEXT.md - Archive history to               | S3       | N/A                                                                              | 0    |
+| DEBT-7345 | Code-split admin panel                                       | S3       | N/A                                                                              | 0    |
+| DEBT-3868 | Code-split admin panel                                       | S3       | N/A                                                                              | 0    |
+| DEBT-7368 | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_  | S3       | N/A                                                                              | 0    |
+| DEBT-3891 | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_  | S3       | N/A                                                                              | 0    |
+| DEBT-7374 | T8.7 - Extract offline-core package (optimization; not re... | S3       | N/A                                                                              | 0    |
+| DEBT-3897 | T8.7 - Extract offline-core package (optimization; not re... | S3       | N/A                                                                              | 0    |
+| DEBT-0817 | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx                               | 12   |
+| DEBT-0818 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                                                    | 86   |
+| DEBT-3550 | Inefficient Equality Checking                                | S3       | components/providers/auth-provider.tsx                                           | 82   |
+| DEBT-7462 | Massive Context Provider (God Object)                        | S3       | components/providers/auth-provider.tsx                                           | 0    |
+| DEBT-7522 | Three underscore-prefixed dead functions in resources-pag... | S3       | components/notebook/pages/resources-page.tsx                                     | 596  |
+| DEBT-7523 | Local isSameDay reimplemented — date-fns already imported    | S3       | components/notebook/pages/resources-page.tsx                                     | 78   |
+| DEBT-7525 | \_appCheck exported but always undefined in lib/firebase.ts  | S3       | lib/firebase.ts                                                                  | 40   |
+| DEBT-7526 | Two parallel error utilities — merge errors.ts and callab... | S3       | lib/utils/errors.ts                                                              | 0    |
+| DEBT-3523 | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                                                | 188  |
+| DEBT-3544 | Unsafe Non-Null Assertions                                   | S3       | lib/firebase.ts                                                                  | 47   |
+| DEBT-3547 | Race Conditions in State                                     | S3       | N/A                                                                              | 136  |
+| DEBT-3548 | No Server-Side Rate Limiting                                 | S3       | lib/utils/rate-limiter.ts                                                        | 4    |
+| DEBT-3554 | Type Gymnastics                                              | S3       | N/A                                                                              | 54   |
+| DEBT-7564 | DRY: consolidate checkErrorHandlingCoverage with hook aud... | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 183  |
+| DEBT-7566 | DRY: consolidate dual-write check with file-io-safety.js ... | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js     | 404  |
 
-## security (415)
+## security (416)
 
 | ID        | Title                                                          | Severity | File                                                                    | Line |
 | --------- | -------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -4345,6 +4352,7 @@
 | DEBT-4473 | Make sure that using this pseudorandom number generator i...   | S1       | components/celebrations/firework-burst.tsx                              | 45   |
 | DEBT-4474 | Make sure that using this pseudorandom number generator i...   | S1       | components/celebrations/firework-burst.tsx                              | 46   |
 | DEBT-4475 | Make sure that using this pseudorandom number generator i...   | S1       | components/celebrations/firework-burst.tsx                              | 47   |
+| DEBT-7563 | Command injection risk in generateCommandPatch — sanitize...   | S1       | .claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js      | 50   |
 | DEBT-7011 | High Severity Findings (Security & Stability)                  | S2       | N/A                                                                     | 0    |
 | DEBT-3530 | High Severity Findings (Security & Stability)                  | S2       | N/A                                                                     | 0    |
 | DEBT-7418 | S-4: No XSS Protection on User Input 🟡 HIGH                   | S2       | components/notebook/pages/today-page.tsx                                | 0    |

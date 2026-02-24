@@ -73,7 +73,7 @@ function parseSkillSections(content) {
     // Match headings like: ## 0. Secrets Decryption Check
     // or ## 1b. Session Gap Detection
     // or ## 10. Incident Documentation Reminder
-    const headingMatch = line.match(/^## (\d+[a-z]?)\.\s+(.+)/);
+    const headingMatch = line.match(/^\s*##\s+(\d+[a-z]?)\.\s+(.+)/);
     if (headingMatch) {
       // Save previous section
       if (currentSection) {
@@ -83,7 +83,7 @@ function parseSkillSections(content) {
       }
       currentSection = {
         number: headingMatch[1],
-        title: headingMatch[2],
+        title: headingMatch[2].trim(),
         content: "",
       };
     } else if (currentSection) {
@@ -111,20 +111,19 @@ function extractReferences(content) {
 
   // npm run <script>
   const npmRunRe = /npm run ([a-z][a-z0-9:_-]*)/g;
-  let match;
-  while ((match = npmRunRe.exec(content)) !== null) {
+  for (const match of content.matchAll(npmRunRe)) {
     refs.push({ type: "npm_script", ref: match[1] });
   }
 
   // node <script-path>
   const nodeRe = /node ([^\s"']+\.js)/g;
-  while ((match = nodeRe.exec(content)) !== null) {
+  for (const match of content.matchAll(nodeRe)) {
     refs.push({ type: "node_script", ref: match[1] });
   }
 
   // References to specific files (e.g., .claude/hooks/.session-agents.json)
   const fileRefRe = /(?:cat|rm -f|grep[^\n]*)\s+([^\s"'|>]+\.[a-z]+)/g;
-  while ((match = fileRefRe.exec(content)) !== null) {
+  for (const match of content.matchAll(fileRefRe)) {
     refs.push({ type: "file_ref", ref: match[1] });
   }
 
@@ -336,7 +335,7 @@ function checkSessionCounterAccuracy(rootDir, findings) {
   const contextPath = path.join(rootDir, "SESSION_CONTEXT.md");
   const contextContent = safeReadFile(contextPath);
 
-  if (!contextContent) {
+  if (contextContent === null) {
     findings.push({
       id: "LCM-300",
       category: "session_counter_accuracy",
@@ -614,8 +613,7 @@ function checkSessionDocFreshness(rootDir, findings) {
   // Check 4: At most 3 session summaries in Recent Session Summaries
   const summaryPattern = /\*\*Session #\d+ Summary\*\*/g;
   const summaryMatches = [];
-  let sMatch;
-  while ((sMatch = summaryPattern.exec(contextContent)) !== null) {
+  for (const sMatch of contextContent.matchAll(summaryPattern)) {
     summaryMatches.push(sMatch[0]);
   }
   const summaryCount = summaryMatches.length;

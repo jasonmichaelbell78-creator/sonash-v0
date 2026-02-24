@@ -9,24 +9,24 @@
 
 ---
 
-**Total Items:** 4592
+**Total Items:** 4600
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
 | S0 (Critical) | 36    |
-| S1 (High)     | 739   |
-| S2 (Medium)   | 1873  |
-| S3 (Low)      | 1944  |
+| S1 (High)     | 740   |
+| S2 (Medium)   | 1877  |
+| S3 (Low)      | 1947  |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 2678  |
+| code-quality             | 2679  |
 | documentation            | 492   |
-| security                 | 415   |
+| security                 | 416   |
 | process                  | 353   |
-| refactoring              | 321   |
+| refactoring              | 327   |
 | ai-optimization          | 127   |
 | performance              | 98    |
 | enhancements             | 82    |
@@ -34,7 +34,7 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 991   |
+| NEW            | 999   |
 | VERIFIED       | 3114  |
 | RESOLVED       | 238   |
 | FALSE_POSITIVE | 249   |
@@ -147,7 +147,7 @@
 - **DEBT-7410**: B-2: Listener Cleanup Memory Leak 🔴 CRITICAL
   (components/notebook/pages/today-page.tsx:0)
 
-_...and 719 more. See [by-severity.md](./views/by-severity.md)_
+_...and 720 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

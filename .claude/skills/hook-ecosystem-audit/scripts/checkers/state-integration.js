@@ -231,10 +231,15 @@ function checkStateFileHealth(stateDir, findings) {
  * Patterns to detect state file reads and writes in hook source code.
  */
 const readOps = ["read" + "FileSync", "read" + "File", "existsSync"];
-const READ_PATTERNS = readOps.map((op) => new RegExp(op + "\\s*\\([^)]*state[/\\\\]", "g"));
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const READ_PATTERNS = readOps.map(
+  (op) => new RegExp(escapeRegex(op) + "\\s*\\([^)]*state[/\\\\]", "g")
+);
 
 const writeOps = ["write" + "FileSync", "append" + "FileSync", "write" + "File", "append" + "File"];
-const WRITE_PATTERNS = writeOps.map((op) => new RegExp(op + "\\s*\\([^)]*state[/\\\\]", "g"));
+const WRITE_PATTERNS = writeOps.map(
+  (op) => new RegExp(escapeRegex(op) + "\\s*\\([^)]*state[/\\\\]", "g")
+);
 
 /**
  * Extract referenced state file names from source code using a set of patterns.
@@ -245,10 +250,7 @@ const WRITE_PATTERNS = writeOps.map((op) => new RegExp(op + "\\s*\\([^)]*state[/
 function extractStateFileRefs(source, patterns) {
   const refs = new Set();
   for (const pattern of patterns) {
-    // Reset lastIndex for global patterns
-    pattern.lastIndex = 0;
-    let match;
-    while ((match = pattern.exec(source)) !== null) {
+    for (const match of source.matchAll(pattern)) {
       // Extract the filename from the matched context
       // Look at surrounding code for the actual filename
       const start = Math.max(0, match.index - 20);

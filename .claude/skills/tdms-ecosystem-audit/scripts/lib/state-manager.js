@@ -11,8 +11,15 @@
 
 "use strict";
 
-const fs = require("node:fs");
-const path = require("node:path");
+let fs, path;
+try {
+  fs = require("node:fs");
+  path = require("node:path");
+} catch (err) {
+  const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
+  console.error(`Fatal: failed to load core Node.js modules (${code})`);
+  process.exit(1);
+}
 
 /** Max file size for read operations (5MB) */
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -83,6 +90,11 @@ function createStateManager(rootDir, isSafeToWrite) {
         const content = trimmed.map((e) => JSON.stringify(e)).join("\n") + "\n" + line;
         fs.writeFileSync(tmpPath, content, "utf8");
         const safeRename = (src, dest) => {
+          try {
+            fs.rmSync(dest, { force: true });
+          } catch {
+            /* ignore */
+          }
           try {
             fs.renameSync(src, dest);
           } catch {

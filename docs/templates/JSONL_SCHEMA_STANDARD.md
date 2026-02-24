@@ -396,9 +396,9 @@ node scripts/debt/intake-audit.js <audit-output.jsonl> \
 
 ## Related Documents
 
-- [CODE_REVIEW_PLAN.md](../audits/multi-ai/templates/CODE_REVIEW_PLAN.md)
-- [SECURITY_AUDIT_PLAN.md](../audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md)
-- [PERFORMANCE_AUDIT_PLAN.md](../audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md)
+- [CODE_REVIEW_AUDIT.md](../audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)
+- [SECURITY_AUDIT.md](../audits/multi-ai/templates/SECURITY_AUDIT.md)
+- [PERFORMANCE_AUDIT.md](../audits/multi-ai/templates/PERFORMANCE_AUDIT.md)
 - [REFACTORING_AUDIT.md](../audits/multi-ai/templates/REFACTORING_AUDIT.md)
 - [SHARED_TEMPLATE_BASE.md](../audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md) -
   Shared boilerplate for all audit templates

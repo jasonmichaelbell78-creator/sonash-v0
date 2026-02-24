@@ -59,7 +59,7 @@ function getHookFiles(rootDir) {
   const hookFiles = [];
 
   for (const entry of entries) {
-    if (!entry.endsWith(".js")) continue;
+    if (!entry.match(/\.(js|ts)$/)) continue;
     const filePath = path.join(hooksDir, entry);
     try {
       const stat = fs.statSync(filePath);
@@ -322,27 +322,7 @@ function checkSecurityPatterns(hookFiles) {
       }
     }
 
-    // Check 4: JSON.parse should have try/catch
-    for (let i = 0; i < lines.length; i++) {
-      if (/\bJSON\.parse\b/.test(lines[i])) {
-        totalChecks++;
-        if (isInsideTryCatch(lines, i)) {
-          passedChecks++;
-        } else {
-          findings.push({
-            id: "HEA-213",
-            category: "security_patterns",
-            domain: DOMAIN,
-            severity: "warning",
-            message: `Unguarded JSON.parse in ${hook.name}`,
-            details: `Line ${i + 1}: JSON.parse without try/catch can crash on malformed input`,
-            impactScore: 55,
-            frequency: 1,
-            blastRadius: 2,
-          });
-        }
-      }
-    }
+    // Check 4: (JSON.parse try/catch — covered by checkErrorHandlingSanitization, removed to avoid duplicate)
 
     // Check 5: $ARGUMENTS usage — hooks receiving external input should validate
     if (argumentsPattern.test(hook.content)) {
@@ -429,8 +409,7 @@ function checkCodeHygiene(hookFiles, rootDir) {
 
     // Check 2: Unused require/import
     const requirePattern = /(?:const|let|var)\s+(?:\{([^}]+)\}|(\w+))\s*=\s*require\(/g;
-    let reqMatch;
-    while ((reqMatch = requirePattern.exec(hook.content)) !== null) {
+    for (const reqMatch of hook.content.matchAll(requirePattern)) {
       const destructured = reqMatch[1];
       const singleName = reqMatch[2];
 
@@ -533,8 +512,7 @@ function checkCodeHygiene(hookFiles, rootDir) {
   // that don't match any current hook file
   const hookRefPattern = /\.claude\/hooks\/(\w[\w-]*\.js)/g;
   for (const doc of docFiles) {
-    let refMatch;
-    while ((refMatch = hookRefPattern.exec(doc.content)) !== null) {
+    for (const refMatch of doc.content.matchAll(hookRefPattern)) {
       const referencedHook = refMatch[1];
       if (!hookNames.includes(referencedHook)) {
         // Check it's not a lib file reference
@@ -594,8 +572,7 @@ function checkRegexSafety(hookFiles) {
     const regexInstances = [];
 
     // Regex literals
-    let litMatch;
-    while ((litMatch = regexLiteralPattern.exec(hook.content)) !== null) {
+    for (const litMatch of hook.content.matchAll(regexLiteralPattern)) {
       const fullMatch = litMatch[0];
       const pattern = litMatch[1];
       const flags = litMatch[2] || "";
@@ -610,8 +587,7 @@ function checkRegexSafety(hookFiles) {
     }
 
     // new RegExp() calls
-    let ctorMatch;
-    while ((ctorMatch = regexCtorPattern.exec(hook.content)) !== null) {
+    for (const ctorMatch of hook.content.matchAll(regexCtorPattern)) {
       const pattern = ctorMatch[2];
       const flags = ctorMatch[4] || "";
       const beforeMatch = hook.content.slice(0, ctorMatch.index);

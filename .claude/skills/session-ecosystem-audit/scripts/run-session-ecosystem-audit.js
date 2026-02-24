@@ -62,22 +62,41 @@ const isSummaryMode = args.includes("--summary");
 // LOAD MODULES
 // ============================================================================
 
-const { compositeScore, impactScore, computeTrend } = require("./lib/scoring");
-const { CATEGORY_WEIGHTS } = require("./lib/benchmarks");
-const { createStateManager } = require("./lib/state-manager");
-const { createPatchGenerator } = require("./lib/patch-generator");
+let compositeScore,
+  impactScore,
+  computeTrend,
+  CATEGORY_WEIGHTS,
+  createStateManager,
+  createPatchGenerator;
+try {
+  ({ compositeScore, impactScore, computeTrend } = require("./lib/scoring"));
+  ({ CATEGORY_WEIGHTS } = require("./lib/benchmarks"));
+  ({ createStateManager } = require("./lib/state-manager"));
+  ({ createPatchGenerator } = require("./lib/patch-generator"));
+} catch (err) {
+  const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
+  console.error(`Fatal: failed to load audit modules (${code})`);
+  process.exit(1);
+}
 
 const stateManager = createStateManager(ROOT_DIR, isSafeToWrite);
 const patchGenerator = createPatchGenerator(ROOT_DIR);
 
 // Load checkers
-const checkers = [
-  require("./checkers/lifecycle-management"),
-  require("./checkers/state-persistence"),
-  require("./checkers/compaction-resilience"),
-  require("./checkers/cross-session-safety"),
-  require("./checkers/integration-config"),
-];
+let checkers;
+try {
+  checkers = [
+    require("./checkers/lifecycle-management"),
+    require("./checkers/state-persistence"),
+    require("./checkers/compaction-resilience"),
+    require("./checkers/cross-session-safety"),
+    require("./checkers/integration-config"),
+  ];
+} catch (err) {
+  const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
+  console.error(`Fatal: failed to load checker modules (${code})`);
+  process.exit(1);
+}
 
 // ============================================================================
 // DOMAIN LABELS

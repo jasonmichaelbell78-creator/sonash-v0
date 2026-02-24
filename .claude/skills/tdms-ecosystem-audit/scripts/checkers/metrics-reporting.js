@@ -709,7 +709,7 @@ function checkAuditTrailCompleteness(rootDir, findings) {
     const logPath = path.join(logsDir, logFile.name);
     const content = safeReadFile(logPath);
 
-    if (!content) {
+    if (content === null) {
       findings.push({
         id: "TMR-300",
         category: "audit_trail_completeness",
