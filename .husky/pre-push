@@ -51,12 +51,33 @@ if ! npm run deps:circular > /dev/null 2>&1; then
 fi
 echo "  ✅ No circular dependencies"
 
-# 3. Pattern compliance: REMOVED from pre-push (hook-quality fix)
-# Pattern compliance already runs in pre-commit on staged files.
-# Running it again here on 14 hardcoded files caused graduation double-jeopardy:
-# a warning in pre-commit would escalate to a BLOCK in pre-push hours later,
-# even if the file wasn't part of the push. Keeping pre-commit only.
-echo "  ⏭️ Pattern compliance (covered by pre-commit)"
+# 3. Pattern compliance on PUSH DIFF ONLY (PR #388 retro — 2x recommended)
+# Previously REMOVED due to double-jeopardy (scanning all 14 hardcoded files).
+# Re-enabled in diff-only mode: only checks files actually in the push diff.
+# This catches patterns in review fix commits that may bypass pre-commit.
+echo "  ▶ Checking pattern compliance (push diff only)..."
+set +e
+push_diff_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|mjs)$' | head -30)
+set -e
+
+if [ -n "${push_diff_files:-}" ]; then
+  # Pass files as positional args to check-pattern-compliance.js
+  set +e
+  pattern_output=$(printf '%s\n' "$push_diff_files" | xargs -r node scripts/check-pattern-compliance.js 2>&1)
+  pattern_exit=$?
+  set -e
+  if [ "$pattern_exit" -ne 0 ]; then
+    echo "  ⚠️ Pattern compliance issues in pushed files:"
+    printf '%s\n' "$pattern_output" | grep -E "❌|⚠️|BLOCK|WARN" | head -10
+    echo ""
+    echo "  Fix issues or run: npm run patterns:check"
+    node scripts/append-hook-warning.js --hook=pre-push --type=patterns --severity=warning --message="Pattern compliance issues in pushed files" --action="npm run patterns:check" 2>/dev/null || true
+  else
+    echo "  ✅ Pattern compliance passed (push diff)"
+  fi
+else
+  echo "  ⏭️ No JS files in push diff"
+fi
 
 # 3b. Code-reviewer gate for script changes (Session #151)
 # If scripts/.claude/hooks/.husky/ changed, check if code-reviewer ran this session
@@ -96,6 +117,57 @@ else
   echo "  ✅ No script changes (code-reviewer gate skipped)"
 fi
 
+# 3c. Propagation check (Session #185 — 8x recommended across PRs #366-#388)
+# Detects functions modified in some files but not propagated to duplicate copies.
+echo "  ▶ Running propagation check..."
+set +e
+prop_output=$(node scripts/check-propagation.js 2>&1)
+prop_exit=$?
+set -e
+if [ "$prop_exit" -ne 0 ]; then
+  printf '%s\n' "$prop_output"
+  echo ""
+  echo "  ⚠️ Propagation misses detected — review and fix before pushing"
+  echo "  Use: SKIP_REASON=\"reason\" SKIP_PROPAGATION=1 git push to bypass"
+  if [ "${SKIP_PROPAGATION:-}" != "1" ]; then
+    exit 1
+  fi
+  require_skip_reason "SKIP_PROPAGATION=1"
+  echo "  ⚠️ Bypassed with SKIP_PROPAGATION=1"
+  node scripts/log-override.js --quick --check=propagation --reason="$SKIP_REASON" 2>/dev/null || true
+  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=warning --message="Propagation check bypassed" --action="Review duplicate functions" 2>/dev/null || true
+elif echo "$prop_output" | grep -q "⚠️"; then
+  printf '%s\n' "$prop_output"
+  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=info --message="Propagation warnings found in pushed code" --action="Review duplicate functions" 2>/dev/null || true
+elif echo "$prop_output" | grep -q "✅"; then
+  printf '%s\n' "$prop_output"
+fi
+
+# 3d. Hook test suite (Session #185 — gated on .claude/hooks/ changes)
+# Only runs when hook files are modified in the push diff.
+set +e
+hook_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^\.claude/hooks/.*\.js$' | head -10)
+set -e
+
+if [ -n "${hook_changes:-}" ]; then
+  echo "  ▶ Running hook test suite (hook files changed)..."
+  set +e
+  hook_test_output=$(npm run hooks:test 2>&1)
+  hook_test_exit=$?
+  set -e
+  if [ "$hook_test_exit" -ne 0 ]; then
+    echo "  ❌ Hook tests failed"
+    printf '%s\n' "$hook_test_output" | grep -E "✗|FAIL|Failed" | head -10
+    echo ""
+    echo "  Fix hook tests before pushing. Run: npm run hooks:test"
+    node scripts/append-hook-warning.js --hook=pre-push --type=hook-tests --severity=warning --message="Hook tests failed" --action="npm run hooks:test" 2>/dev/null || true
+    exit 1
+  fi
+  echo "  ✅ Hook tests passed"
+else
+  echo "  ✅ No hook changes (hook test gate skipped)"
+fi
+
 # 4. Security pattern check (diff-only mode: only flag violations in ADDED lines)
 # Hook-quality fix: Previously scanned entire files, catching pre-existing violations
 # that weren't introduced by the current commits. Now uses --diff-only to only check
@@ -113,9 +185,9 @@ else
   # Use .js extension so security-check.js applies JS/TS patterns to the content
   # Note: mktemp --suffix is GNU-only; use mktemp + mv for POSIX portability
   SEC_TMPFILE_BASE=$(mktemp) || { echo "  ❌ Failed to create temp file"; exit 1; }
+  trap 'rm -f "$SEC_TMPFILE_BASE" "$SEC_TMPFILE"' EXIT
   SEC_TMPFILE="${SEC_TMPFILE_BASE}.js"
-  mv "$SEC_TMPFILE_BASE" "$SEC_TMPFILE" || { rm -f "$SEC_TMPFILE_BASE"; echo "  ❌ Failed to rename temp file"; exit 1; }
-  trap 'rm -f "$SEC_TMPFILE"' EXIT
+  mv "$SEC_TMPFILE_BASE" "$SEC_TMPFILE" || { echo "  ❌ Failed to rename temp file"; exit 1; }
   printf '%s\n' "$security_diff" > "$SEC_TMPFILE"
 
   set +e
@@ -125,7 +197,7 @@ else
 
   if [ "$code" -ne 0 ]; then
     echo "  ❌ Security violations found in NEW code"
-    printf '%s\n' "$out" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
+    printf '%s\n' "$out" | grep -e "CRITICAL" -e "HIGH" -e "file:" | head -15
     echo ""
     echo "  Fix security issues in your new code before pushing."
     exit 1

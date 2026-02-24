@@ -39,7 +39,8 @@ function createStateManager(rootDir, isSafeToWrite) {
 
   function readEntries() {
     try {
-      const stat = fs.statSync(STATE_FILE);
+      const stat = fs.lstatSync(STATE_FILE);
+      if (stat.isSymbolicLink() || !stat.isFile()) return [];
       if (stat.size > MAX_FILE_SIZE) {
         console.error("  [warn] State file too large, skipping read");
         return [];
@@ -143,7 +144,7 @@ function createStateManager(rootDir, isSafeToWrite) {
       return true;
     } catch (err) {
       console.error(
-        `  [warn] Failed to write state: ${err instanceof Error ? err.message : String(err)}`
+        `  [warn] Failed to write state: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
       );
       return false;
     }
@@ -196,6 +197,56 @@ function createStateManager(rootDir, isSafeToWrite) {
     return entries.map((e) => e.healthScore?.score).filter((v) => typeof v === "number");
   }
 
+  /**
+   * Save the current audit entry as a baseline for future regression detection.
+   * @param {object} entry - The state entry to save as baseline
+   * @returns {boolean} True if saved successfully
+   */
+  function saveBaseline(entry) {
+    const baselinePath = path.join(STATE_DIR, "hook-audit-baseline.json");
+    try {
+      if (!fs.existsSync(STATE_DIR)) {
+        fs.mkdirSync(STATE_DIR, { recursive: true });
+      }
+
+      if (!isSafeToWrite(baselinePath)) {
+        console.error("  [warn] Baseline file failed symlink guard, skipping write");
+        return false;
+      }
+
+      fs.writeFileSync(baselinePath, JSON.stringify(entry, null, 2) + "\n", "utf8");
+      return true;
+    } catch (err) {
+      console.error(
+        `  [warn] Failed to write baseline: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Load the previously saved baseline, or return null if none exists.
+   * @returns {object|null} The baseline entry, or null
+   */
+  function loadBaseline() {
+    const baselinePath = path.join(STATE_DIR, "hook-audit-baseline.json");
+    try {
+      const stat = fs.lstatSync(baselinePath);
+      if (stat.isSymbolicLink() || !stat.isFile()) {
+        console.error("  [warn] Baseline path is not a regular file, skipping read");
+        return null;
+      }
+      if (stat.size > MAX_FILE_SIZE) {
+        console.error("  [warn] Baseline file too large, skipping read");
+        return null;
+      }
+      const content = fs.readFileSync(baselinePath, "utf8");
+      return JSON.parse(content);
+    } catch {
+      return null;
+    }
+  }
+
   return {
     readEntries,
     appendEntry,
@@ -203,6 +254,8 @@ function createStateManager(rootDir, isSafeToWrite) {
     computeDelta,
     getCategoryHistory,
     getCompositeHistory,
+    saveBaseline,
+    loadBaseline,
   };
 }
 

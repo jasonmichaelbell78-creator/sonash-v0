@@ -24,6 +24,7 @@ const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
 const DOMAIN = "cross_session_safety";
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB — skip oversized files
 
 /**
  * Safely read a file and return its contents, or null on failure.
@@ -34,6 +35,10 @@ function safeReadFile(filePath) {
   try {
     if (!fs.existsSync(filePath)) {
       return { error: "file_not_found" };
+    }
+    const stat = fs.statSync(filePath);
+    if (stat.size > MAX_FILE_SIZE) {
+      return { error: "file_too_large" };
     }
     const content = fs.readFileSync(filePath, "utf8");
     return { content };

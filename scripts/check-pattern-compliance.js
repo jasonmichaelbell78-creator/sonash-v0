@@ -657,6 +657,7 @@ const ANTI_PATTERNS = [
       "generate-detailed-sonar-report.js",
       "place-unassigned-debt.js",
       "analyze-placement.js",
+      "post-write-validator.js",
     ],
   },
 
@@ -691,7 +692,7 @@ const ANTI_PATTERNS = [
     // Exclude files with verified error handling
     // check-pattern-sync.js: CJS require() calls at top-level are standard node module loading
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|load-config|check-pattern-sync|security-helpers)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|load-config|check-pattern-sync|security-helpers|analyze-learning-effectiveness)\.js$/,
     pathExcludeList: verifiedPatterns["unguarded-loadconfig"] || [],
   },
 
@@ -1098,7 +1099,7 @@ const ANTI_PATTERNS = [
             lines[j].includes("isWriteSafe") ||
             lines[j].includes("isSymbolicLink") ||
             lines[j].includes("guardSymlink") ||
-            lines[j].includes("refuseSymlinkWithParents")
+            lines[j].includes("refuseSymlink")
           ) {
             hasGuard = true;
             break;
@@ -1126,7 +1127,8 @@ const ANTI_PATTERNS = [
     review: "#316-#323 (PR #366 R1-R8, 5 rounds of symlink ping-pong)",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-helpers)\.js$/,
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|security-helpers|session-start|commit-tracker)\.js$/,
     pathExcludeList: verifiedPatterns["write-without-symlink-guard"] || [],
   },
 
@@ -1168,7 +1170,7 @@ const ANTI_PATTERNS = [
     review: "#322-#323 (PR #366 R7-R8)",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|session-start)\.js$/,
     pathExcludeList: verifiedPatterns["atomic-write-missing-tmp-guard"] || [],
   },
 

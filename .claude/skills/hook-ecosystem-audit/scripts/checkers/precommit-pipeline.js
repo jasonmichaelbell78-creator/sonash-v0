@@ -629,13 +629,15 @@ function checkGateEffectiveness(content, lines, findings, scores) {
     const line = (lines[lineIdx] || "").trim();
 
     // Exclude: log-override.js calls (expected), temp file cleanup (expected),
-    // process kill (expected), and 2>/dev/null (expected stderr suppression)
+    // process kill (expected), 2>/dev/null (expected stderr suppression),
+    // and variable assignments with grep (|| true prevents set -e exit on no match)
     if (
       /log-override\.js/.test(line) ||
       /rm\s+-f/.test(line) ||
       /kill\s+/.test(line) ||
       /append-hook-warning/.test(line) ||
-      /2>\/dev\/null/.test(line)
+      /2>\/dev\/null/.test(line) ||
+      /=\$\(.*\bgrep\b.*\|\|\s*true\)/.test(line)
     ) {
       continue;
     }
@@ -695,10 +697,11 @@ function checkGateEffectiveness(content, lines, findings, scores) {
       continue;
     }
 
-    // Look for: add_exit_trap 'rm -f "$VARNAME"' or add_exit_trap 'rm -f ${VARNAME}'
+    // Look for: add_exit_trap 'rm -f "$VARNAME" ...' or add_exit_trap "rm -f $VARNAME ..."
+    // Note: allow double quotes inside single-quoted strings (and vice versa)
     const varRef = `(?:\\$\\{${escapeRegex(tf.varName)}\\}|\\$${escapeRegex(tf.varName)})`;
     const cleanupPattern = new RegExp(
-      `add_exit_trap\\s+(["'])rm\\s+-f\\s+[^"']*${varRef}[^"']*\\1`,
+      `add_exit_trap\\s+'[^']*${varRef}[^']*'|add_exit_trap\\s+"[^"]*${varRef}[^"]*"`,
       "m"
     );
     if (cleanupPattern.test(content)) {

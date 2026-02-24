@@ -32,28 +32,104 @@ audit owns hook internals).
 
 ## CRITICAL RULES (Read First)
 
-1. **ALWAYS run the script first** — never generate findings without data
-2. **ALWAYS display the dashboard to the user** before starting the walkthrough
-3. **Present findings one at a time** using AskUserQuestion for decisions
-4. **Show patch suggestions inline** with each patchable finding
-5. **Create TDMS entries** for deferred findings via `/add-debt`
-6. **Save decisions** to session log for audit trail
+1. **CHECK for saved progress first** — resume from
+   `.claude/tmp/hook-audit-progress.json` if it exists and is < 2 hours old.
+   Never re-present findings that were already decided.
+2. **ALWAYS run the script first** (if no saved progress) — never generate
+   findings without data
+3. **ALWAYS display the dashboard to the user** before starting the walkthrough
+4. **Present findings one at a time** using AskUserQuestion for decisions
+5. **SAVE progress after every decision** — write updated state to progress file
+   immediately
+6. **Show patch suggestions inline** with each patchable finding
+7. **Create TDMS entries** for deferred findings via `/add-debt`
+8. **Save decisions** to session log for audit trail
+
+---
+
+## Compaction Guard
+
+Audits are long-running interactive workflows vulnerable to context compaction.
+To survive compaction, save progress after every decision and check for existing
+progress on startup.
+
+### State File
+
+Path: `.claude/tmp/hook-audit-progress.json`
+
+Schema:
+
+```json
+{
+  "auditTimestamp": "ISO timestamp of audit run",
+  "score": 85,
+  "grade": "B",
+  "totalFindings": 142,
+  "currentFindingIndex": 8,
+  "decisions": [
+    {
+      "findingIndex": 1,
+      "category": "behavioral_accuracy",
+      "message": "gsd-check-update.js: continueOnError hook file not found",
+      "decision": "skip",
+      "note": "Global hooks are external"
+    }
+  ],
+  "fixesApplied": ["added continueOnError to check-mcp-servers.js"],
+  "findingsData": []
+}
+```
+
+### On Skill Start (Before Phase 1)
+
+1. Check if `.claude/tmp/hook-audit-progress.json` exists and is < 2 hours old
+2. If yes: **resume from saved position**
+   - Display the dashboard from saved data (skip re-running the audit script)
+   - Show: "Resuming audit from finding {n}/{total} ({n-1} already reviewed)"
+   - List prior decisions briefly: "{n} fixed, {n} skipped, {n} deferred"
+   - Continue the walkthrough from `currentFindingIndex`
+3. If no (or stale): proceed to Phase 1 normally
+
+### After Each Decision (During Phase 3)
+
+After each AskUserQuestion response, immediately save progress:
+
+1. Update `currentFindingIndex` to the next finding
+2. Append the decision to the `decisions` array
+3. If "Fix Now" was chosen, append to `fixesApplied`
+4. Write the updated JSON to `.claude/tmp/hook-audit-progress.json`
+
+This ensures that if compaction occurs mid-walkthrough, the next invocation
+resumes exactly where it left off — no repeated questions, no lost decisions.
+
+### On Audit Completion (Phase 4)
+
+After the summary is presented, delete the progress file (audit is complete).
 
 ---
 
 ## Phase 1: Run & Parse
 
-1. Run the audit script:
+1. Run the hook test suite first to get live pass/fail data:
+
+```bash
+npm run hooks:test
+```
+
+2. Run the audit script:
 
 ```bash
 node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js
 ```
 
-2. Parse the v2 JSON output from stdout (progress goes to stderr).
+3. Parse the v2 JSON output from stdout (progress goes to stderr).
 
-3. Create a session decision log file:
+4. Create a session decision log file:
    - Path: `.claude/tmp/hook-audit-session-{YYYY-MM-DD-HHMM}.jsonl`
    - Create `.claude/tmp/` directory if it doesn't exist
+
+5. Save initial progress state to `.claude/tmp/hook-audit-progress.json` with
+   `currentFindingIndex: 0`, the full findings data, score, and grade.
 
 ---
 
@@ -223,6 +299,46 @@ Stable:
 
 ---
 
+## Phase 6: Self-Audit (Verification)
+
+After all findings are reviewed and fixes committed, re-run the audit to verify
+improvements:
+
+1. Run the hook test suite again:
+
+```bash
+npm run hooks:test
+```
+
+2. Re-run the audit script:
+
+```bash
+node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js
+```
+
+3. Compare the new score against the Phase 2 score:
+
+```
+━━━ Self-Audit Verification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Before: {previous_grade} ({previous_score}/100)
+After:  {new_grade} ({new_score}/100)
+Delta:  {+/-delta} points
+
+Improved Categories:
+  {category}: {before} → {after} (+{delta})
+
+Remaining Issues:
+  {count} findings still open (deferred/skipped)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+4. If the score improved, commit the audit state for trend tracking.
+5. If the score did not improve, investigate why — fixes may have introduced new
+   findings.
+
+---
+
 ## Category Reference
 
 ### Domain 1: Hook Configuration Health (20% weight)
@@ -308,6 +424,8 @@ settings.json (hook registry)
   │   ├── session-start.js
   │   ├── check-mcp-servers.js
   │   ├── check-remote-session-context.js
+  │   ├── stop-serena-dashboard.js
+  │   ├── global/gsd-check-update.js
   │   └── compact-restore.js (matcher: "compact")
   ├── PreCompact
   │   └── pre-compaction-save.js
@@ -318,14 +436,20 @@ settings.json (hook registry)
   │   ├── commit-tracker.js (matcher: bash)
   │   ├── commit-failure-reporter.js (matcher: bash)
   │   └── track-agent-invocation.js (matcher: task)
-  └── UserPromptSubmit
-      └── user-prompt-handler.js
+  ├── UserPromptSubmit
+  │   ├── user-prompt-handler.js
+  │   ├── analyze-user-request.js
+  │   ├── plan-mode-suggestion.js
+  │   └── session-end-reminder.js
+  └── Notification
+      └── global/statusline.js
 ```
 
 ---
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-02-23 | Initial implementation |
+| Version | Date       | Description                                   |
+| ------- | ---------- | --------------------------------------------- |
+| 1.0     | 2026-02-23 | Initial implementation                        |
+| 1.1     | 2026-02-24 | Add compaction guard for progress persistence |

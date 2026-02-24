@@ -25,7 +25,8 @@
       "dependents": ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
       "reason": "Hook documentation must be complete",
       "checkDiff": false,
-      "gitFilter": "AD"
+      "gitFilter": "AD",
+      "filePattern": "\\.js$"
     },
     {
       "trigger": ".claude/commands/",

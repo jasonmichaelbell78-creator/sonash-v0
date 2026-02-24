@@ -11,6 +11,8 @@
  *   node run-hook-ecosystem-audit.js           # Full audit with JSON output
  *   node run-hook-ecosystem-audit.js --check   # Quick check (exit code 0/1)
  *   node run-hook-ecosystem-audit.js --summary # Compact summary only
+ *   node run-hook-ecosystem-audit.js --batch   # Suppress state writes (for iterative fixing)
+ *   node run-hook-ecosystem-audit.js --save-baseline  # Save current scores as baseline
  *
  * Output: v2 JSON to stdout, progress to stderr.
  */
@@ -57,6 +59,7 @@ const ROOT_DIR = findProjectRoot();
 const args = process.argv.slice(2);
 const isCheckMode = args.includes("--check");
 const isSummaryMode = args.includes("--summary");
+const isBatchMode = args.includes("--batch");
 
 // ============================================================================
 // LOAD MODULES
@@ -205,12 +208,74 @@ for (const checker of checkers) {
 
 allFindings.sort((a, b) => (b.impactScore || 0) - (a.impactScore || 0));
 
+// Deduplicate findings that reference the same file/issue from different domains
+function deduplicateFindings(findings) {
+  const seen = new Map(); // key -> finding
+  const deduped = [];
+
+  for (const f of findings) {
+    // Generate a dedup key from the core issue (file + core message)
+    const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.js)/);
+    const file = fileMatch ? fileMatch[1] : "";
+    const key = file ? `${file}:${f.severity}` : null;
+
+    if (key && seen.has(key)) {
+      // Merge: keep the higher-impact finding, note the duplicate
+      const existing = seen.get(key);
+      if ((f.impactScore || 0) > (existing.impactScore || 0)) {
+        existing._supersededBy = f.id;
+        deduped[deduped.indexOf(existing)] = f;
+        seen.set(key, f);
+      }
+      // Skip the lower-impact duplicate
+    } else {
+      if (key) seen.set(key, f);
+      deduped.push(f);
+    }
+  }
+
+  return deduped;
+}
+
+const dedupedFindings = deduplicateFindings(allFindings);
+const removedCount = allFindings.length - dedupedFindings.length;
+if (removedCount > 0) {
+  console.error(`  [dedup] Removed ${removedCount} duplicate finding(s)`);
+}
+allFindings.length = 0;
+allFindings.push(...dedupedFindings);
+
 // ============================================================================
 // COMPUTE COMPOSITE SCORE
 // ============================================================================
 
 const composite = compositeScore(allScores, CATEGORY_WEIGHTS);
 console.error(`\n  Composite: ${composite.grade} (${composite.score}/100)`);
+
+// ============================================================================
+// BASELINE COMPARISON
+// ============================================================================
+
+const baseline = stateManager.loadBaseline();
+if (baseline) {
+  const regressions = [];
+  for (const [cat, score] of Object.entries(allScores)) {
+    const baselineScore = baseline.categories?.[cat]?.score;
+    if (typeof baselineScore === "number" && score.score < baselineScore - 5) {
+      regressions.push({ cat, from: baselineScore, to: score.score });
+    }
+  }
+  if (regressions.length > 0) {
+    console.error(`  [baseline] \u26a0\ufe0f ${regressions.length} regression(s) from baseline:`);
+    for (const r of regressions) {
+      console.error(
+        `    ${CATEGORY_LABELS[r.cat] || r.cat}: ${r.from} \u2192 ${r.to} (-${r.from - r.to})`
+      );
+    }
+  } else {
+    console.error("  [baseline] No regressions from baseline");
+  }
+}
 
 // ============================================================================
 // COMPUTE TRENDS
@@ -324,11 +389,26 @@ for (const [cat, data] of Object.entries(categoriesOutput)) {
   stateEntry.categories[cat] = { score: data.score, rating: data.rating };
 }
 
-const saved = stateManager.appendEntry(stateEntry);
-if (saved) {
-  console.error("  [state] Saved to hook-ecosystem-audit-history.jsonl");
+if (isBatchMode) {
+  console.error(
+    "  [batch] State write skipped (batch mode \u2014 run without --batch for final save)"
+  );
 } else {
-  console.error("  [state] Failed to save state (symlink guard or write error)");
+  const saved = stateManager.appendEntry(stateEntry);
+  if (saved) {
+    console.error("  [state] Saved to hook-ecosystem-audit-history.jsonl");
+  } else {
+    console.error("  [state] Failed to save state (symlink guard or write error)");
+  }
+}
+
+if (args.includes("--save-baseline")) {
+  const baselineSaved = stateManager.saveBaseline(stateEntry);
+  if (baselineSaved) {
+    console.error("  [baseline] Saved current scores as baseline");
+  } else {
+    console.error("  [baseline] Failed to save baseline");
+  }
 }
 
 // ============================================================================

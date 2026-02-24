@@ -22,6 +22,7 @@ const { spawnSync } = require("node:child_process");
 let isSafeToWrite, rotateJsonl, sanitizeInput;
 try {
   isSafeToWrite = require("./lib/symlink-guard").isSafeToWrite;
+  if (typeof isSafeToWrite !== "function") isSafeToWrite = () => false;
 } catch {
   isSafeToWrite = () => false;
 }
@@ -32,6 +33,7 @@ try {
 }
 try {
   sanitizeInput = require("./lib/sanitize-input").sanitizeInput;
+  if (typeof sanitizeInput !== "function") sanitizeInput = (v) => (v || "").slice(0, 500);
 } catch {
   sanitizeInput = (v) => (v || "").slice(0, 500);
 }
@@ -201,7 +203,7 @@ function logFailure(content, exitCode) {
         // Strip Windows absolute paths (keep only last segment)
         if (/^[A-Za-z]:[/\\]/.test(word)) return path.basename(word.replace(/["'`]/g, ""));
         // Strip Unix absolute paths (keep only last segment)
-        if (word.startsWith("/") && word.includes("/", 1))
+        if (/^\//.test(word) && word.includes("/", 1))
           return path.basename(word.replace(/["'`]/g, ""));
         // Strip backtick-quoted commands
         if (word.startsWith("`") && word.endsWith("`")) return "<cmd>";

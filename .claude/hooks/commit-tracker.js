@@ -21,7 +21,9 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 const { gitExec, projectDir } = require("./lib/git-utils.js");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 // Security check - bidirectional containment
 const safeBaseDir = path.resolve(process.cwd());
@@ -82,10 +84,23 @@ function saveLastHead(head) {
     const dir = path.dirname(TRACKER_STATE);
     fs.mkdirSync(dir, { recursive: true });
     const tmpPath = `${TRACKER_STATE}.tmp`;
+    if (!isSafeToWrite(tmpPath)) {
+      console.warn("commit-tracker: refusing to write — symlink detected on tracker state");
+      return;
+    }
     fs.writeFileSync(
       tmpPath,
       JSON.stringify({ lastHead: head, updatedAt: new Date().toISOString() })
     );
+    if (!isSafeToWrite(TRACKER_STATE)) {
+      console.warn("commit-tracker: refusing to rename — symlink detected on tracker state");
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* cleanup */
+      }
+      return;
+    }
     try {
       fs.rmSync(TRACKER_STATE, { force: true });
     } catch {
@@ -127,6 +142,10 @@ function appendCommitLog(entry) {
   try {
     const dir = path.dirname(COMMIT_LOG);
     fs.mkdirSync(dir, { recursive: true });
+    if (!isSafeToWrite(COMMIT_LOG)) {
+      console.warn("commit-tracker: refusing to write — symlink detected on commit log");
+      return false;
+    }
     fs.appendFileSync(COMMIT_LOG, JSON.stringify(entry) + "\n");
     return true;
   } catch {
@@ -200,7 +219,9 @@ function main() {
 
   if (appendCommitLog(entry)) {
     saveLastHead(currentHead);
-    console.error(`  Commit tracked: ${entry.shortHash} ${entry.message.slice(0, 60)}`);
+    console.error(
+      `  Commit tracked: ${sanitizeInput(entry.shortHash)} ${sanitizeInput(entry.message.slice(0, 60))}`
+    );
 
     // Rotate commit log to prevent unbounded growth (OPT #72)
     try {

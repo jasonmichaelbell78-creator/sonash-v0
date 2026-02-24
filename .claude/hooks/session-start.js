@@ -19,6 +19,8 @@ const { execSync, execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { isSafeToWrite } = require("./lib/symlink-guard");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 // Detect environment (remote/local)
 const isRemote = process.env.CLAUDE_CODE_REMOTE === "true";
@@ -46,7 +48,7 @@ console.log(`🚀 SessionStart Hook for sonash-v0 (${envType})`);
 console.log("📋 Environment:");
 console.log(`   Node: ${process.version}`);
 const npmUA = process.env.npm_config_user_agent || "";
-const npmVersion = npmUA.match(/(?:^|\s)npm\/([0-9]+(?:\.[0-9]+)*)/i)?.[1] || "unknown";
+const npmVersion = npmUA.match(/npm\/([0-9][0-9.]*[0-9])/i)?.[1] || "unknown";
 console.log(`   npm:  ${npmVersion}`);
 console.log("");
 
@@ -75,7 +77,7 @@ function readSessionState() {
     }
   } catch (err) {
     console.error(
-      `session-start: failed to read session state: ${err instanceof Error ? err.message : String(err)}`
+      `session-start: failed to read session state: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
     );
   }
   return null;
@@ -88,6 +90,10 @@ function writeSessionState(state) {
   const tmpPath = `${SESSION_STATE_FILE}.tmp`;
   try {
     fs.mkdirSync(path.dirname(SESSION_STATE_FILE), { recursive: true });
+    if (!isSafeToWrite(tmpPath)) {
+      console.error("session-start: refusing to write — symlink detected on session state");
+      return;
+    }
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
     try {
       fs.rmSync(SESSION_STATE_FILE, { force: true });
@@ -270,7 +276,18 @@ function saveRootHash() {
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(LOCKFILE_HASH_FILE, hash, "utf-8");
+  const absPath = path.resolve(LOCKFILE_HASH_FILE);
+  if (!isSafeToWrite(absPath)) {
+    console.error("session-start: refusing to write — symlink detected on lockfile hash");
+    return;
+  }
+  try {
+    fs.writeFileSync(LOCKFILE_HASH_FILE, hash, "utf-8");
+  } catch (err) {
+    console.warn(
+      `session-start: failed to save root lockfile hash: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
+    );
+  }
 }
 
 function saveFunctionsHash() {
@@ -278,7 +295,18 @@ function saveFunctionsHash() {
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(FUNCTIONS_LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash, "utf-8");
+  const absPath = path.resolve(FUNCTIONS_LOCKFILE_HASH_FILE);
+  if (!isSafeToWrite(absPath)) {
+    console.error("session-start: refusing to write — symlink detected on functions lockfile hash");
+    return;
+  }
+  try {
+    fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash, "utf-8");
+  } catch (err) {
+    console.warn(
+      `session-start: failed to save functions lockfile hash: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
+    );
+  }
 }
 
 function runCommand(description, command, timeoutMs = 120000) {
@@ -518,3 +546,4 @@ if (warnings === 0) {
   console.log(`⚠️ SessionStart completed with ${warnings} warning(s)`);
 }
 console.log("📋 Next: /session-begin or start working");
+console.log("ok");

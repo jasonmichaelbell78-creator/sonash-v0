@@ -24,6 +24,7 @@
     "phase:complete": "node scripts/phase-complete-check.js",
     "phase:complete:auto": "node scripts/phase-complete-check.js --auto",
     "phase:validate": "node scripts/validate-phase-completion.js",
+    "propagation:check": "node scripts/check-propagation.js",
     "patterns:check": "node scripts/check-pattern-compliance.js",
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",

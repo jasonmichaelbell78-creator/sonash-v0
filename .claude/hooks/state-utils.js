@@ -18,6 +18,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 const STATE_DIR = ".claude/state";
 
@@ -75,6 +77,12 @@ function writeState(projectDir, filename, data) {
   const filePath = path.join(dir, filename);
   const tmpPath = `${filePath}.tmp`;
   try {
+    if (!isSafeToWrite(tmpPath) || !isSafeToWrite(filePath)) {
+      console.error(
+        `Warning: Refusing to write state ${sanitizeInput(filename)} — symlink detected`
+      );
+      return false;
+    }
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
     try {
       fs.rmSync(filePath, { force: true });
@@ -90,7 +98,7 @@ function writeState(projectDir, filename, data) {
       // cleanup failure is non-critical
     }
     console.error(
-      `Warning: Could not write state ${filename}: ${err instanceof Error ? err.message : String(err)}`
+      `Warning: Could not write state ${sanitizeInput(filename)}: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
     );
     return false;
   }

@@ -26,6 +26,8 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 const PORT = 24282;
 const PROCESS_ALLOWLIST = ["node", "node.exe", "serena", "claude", "python", "python.exe"];
@@ -52,6 +54,14 @@ function log(message, level = "INFO") {
     }) + "\n";
 
   try {
+    // Defense-in-depth: shared symlink guard before platform-specific checks
+    if (!isSafeToWrite(LOG_FILE)) {
+      console.error(
+        `[SECURITY] Refusing to write to log — symlink detected: ${sanitizeInput(LOG_FILE)}`
+      );
+      return;
+    }
+
     // Symlink protection with TOCTOU mitigation (Review #198 Round 3)
     // Use O_NOFOLLOW on Unix to atomically refuse symlinks, fallback to lstatSync on Windows
     const canNoFollow = process.platform !== "win32" && typeof fs.constants.O_NOFOLLOW === "number";
@@ -68,7 +78,7 @@ function log(message, level = "INFO") {
         // Verify target is a regular file, not a directory or FIFO (Qodo Review #199)
         const st = fs.fstatSync(fd);
         if (!st.isFile()) {
-          console.error(`[SECURITY] Refusing to write to non-file: ${LOG_FILE}`);
+          console.error(`[SECURITY] Refusing to write to non-file: ${sanitizeInput(LOG_FILE)}`);
           return;
         }
 
@@ -89,7 +99,7 @@ function log(message, level = "INFO") {
         const stats = fs.lstatSync(LOG_FILE);
         // Verify it's a regular file, not a symlink, directory, or other special file (Qodo Review #199)
         if (stats.isSymbolicLink() || !stats.isFile()) {
-          console.error(`[SECURITY] Refusing to write to non-file: ${LOG_FILE}`);
+          console.error(`[SECURITY] Refusing to write to non-file: ${sanitizeInput(LOG_FILE)}`);
           return;
         }
       }
@@ -105,7 +115,7 @@ function log(message, level = "INFO") {
   } catch (err) {
     // Log failures to console for debugging (Review #198 follow-up)
     const errMsg = err instanceof Error ? err.message : String(err);
-    console.error(`[ERROR] Failed to write to log: ${errMsg}`);
+    console.error(`[ERROR] Failed to write to log: ${sanitizeInput(errMsg)}`);
   }
 }
 
@@ -139,7 +149,9 @@ function getProcessInfo(pid) {
         return { name: obj.Name || "", commandLine: obj.CommandLine || "" };
       } catch (parseErr) {
         const errMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
-        console.error(`[ERROR] Failed to parse PowerShell JSON for PID ${pid}: ${errMsg}`);
+        console.error(
+          `[ERROR] Failed to parse PowerShell JSON for PID ${pid}: ${sanitizeInput(errMsg)}`
+        );
         return null;
       }
     }
@@ -156,7 +168,7 @@ function getProcessInfo(pid) {
   } catch (err) {
     // Log process info retrieval failures for debugging (Review #198 follow-up)
     const errMsg = err instanceof Error ? err.message : String(err);
-    console.error(`[ERROR] Failed to get process info for PID ${pid}: ${errMsg}`);
+    console.error(`[ERROR] Failed to get process info for PID ${pid}: ${sanitizeInput(errMsg)}`);
     return null;
   }
 }
@@ -200,7 +212,9 @@ function findListeningProcess(port) {
   } catch (err) {
     // Log process discovery failures for debugging (Review #198 follow-up)
     const errMsg = err instanceof Error ? err.message : String(err);
-    console.error(`[ERROR] Failed to find listening process on port ${port}: ${errMsg}`);
+    console.error(
+      `[ERROR] Failed to find listening process on port ${port}: ${sanitizeInput(errMsg)}`
+    );
     return null;
   }
 }
@@ -242,7 +256,7 @@ function terminateProcess(pid) {
         // Graceful termination failed, try force kill (Review #198 Round 3 - add logging)
         const errMsg = gracefulErr instanceof Error ? gracefulErr.message : String(gracefulErr);
         console.error(
-          `[WARN] Graceful taskkill failed for PID ${pid}: ${errMsg}, trying force kill`
+          `[WARN] Graceful taskkill failed for PID ${pid}: ${sanitizeInput(errMsg)}, trying force kill`
         );
         try {
           // /T terminates process tree, /F forces termination (Qodo Review #199 Round 5)
@@ -250,7 +264,9 @@ function terminateProcess(pid) {
           return true;
         } catch (forceErr) {
           const forceErrMsg = forceErr instanceof Error ? forceErr.message : String(forceErr);
-          console.error(`[ERROR] Force taskkill failed for PID ${pid}: ${forceErrMsg}`);
+          console.error(
+            `[ERROR] Force taskkill failed for PID ${pid}: ${sanitizeInput(forceErrMsg)}`
+          );
           return false;
         }
       }
@@ -261,7 +277,7 @@ function terminateProcess(pid) {
         process.kill(pid, "SIGTERM");
       } catch (killErr) {
         const errMsg = killErr instanceof Error ? killErr.message : String(killErr);
-        console.error(`[ERROR] Failed to send SIGTERM to PID ${pid}: ${errMsg}`);
+        console.error(`[ERROR] Failed to send SIGTERM to PID ${pid}: ${sanitizeInput(errMsg)}`);
         return false;
       }
 
@@ -282,7 +298,7 @@ function terminateProcess(pid) {
           }
           // EPERM (or anything else) means it may still be alive but not signalable
           const errMsg = checkErr instanceof Error ? checkErr.message : String(checkErr);
-          console.error(`[ERROR] Failed to verify PID ${pid} state: ${errMsg}`);
+          console.error(`[ERROR] Failed to verify PID ${pid} state: ${sanitizeInput(errMsg)}`);
           return false;
         }
       }
@@ -297,7 +313,7 @@ function terminateProcess(pid) {
           return true;
         }
         const errMsg = forceErr instanceof Error ? forceErr.message : String(forceErr);
-        console.error(`[ERROR] Failed to send SIGKILL to PID ${pid}: ${errMsg}`);
+        console.error(`[ERROR] Failed to send SIGKILL to PID ${pid}: ${sanitizeInput(errMsg)}`);
         return false;
       }
 
@@ -315,7 +331,9 @@ function terminateProcess(pid) {
   } catch (err) {
     // Log unexpected errors for debugging (Qodo Review #199 Round 5 - Generic compliance)
     const errMsg = err instanceof Error ? err.message : String(err);
-    console.error(`[ERROR] Unexpected error in terminateProcess for PID ${pid}: ${errMsg}`);
+    console.error(
+      `[ERROR] Unexpected error in terminateProcess for PID ${pid}: ${sanitizeInput(errMsg)}`
+    );
     return false;
   }
 }
@@ -326,6 +344,7 @@ function main() {
 
   if (!pid) {
     log(`No process listening on port ${PORT}`);
+    console.log("ok");
     process.exit(0);
   }
 
@@ -381,6 +400,7 @@ function main() {
 
   if (success) {
     log(`SUCCESS: Terminated process ${pid}`, "INFO");
+    console.log("ok");
     process.exit(0);
   } else {
     log(`FAILED: Could not terminate process ${pid}`, "ERROR");

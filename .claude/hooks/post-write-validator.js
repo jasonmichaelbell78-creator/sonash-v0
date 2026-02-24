@@ -22,6 +22,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { isSafeToWrite } = require("./lib/symlink-guard");
+const { sanitizeInput } = require("./lib/sanitize-input");
 
 // ─── Optional dependency: sanitizeFilesystemError ────────────────────────────
 let sanitizeFilesystemError;
@@ -155,7 +156,9 @@ function runValidator(name, fn) {
   try {
     fn();
   } catch (err) {
-    console.error(`[post-write-validator] ${name} error: ${sanitizeFilesystemError(err)}`);
+    console.error(
+      `[post-write-validator] ${name} error: ${sanitizeInput(sanitizeFilesystemError(err))}`
+    );
   }
 }
 

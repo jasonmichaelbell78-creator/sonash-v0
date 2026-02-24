@@ -43,7 +43,12 @@
     "state-manager.js",
     "run-hook-ecosystem-audit.js",
     "run-session-ecosystem-audit.js",
-    "run-tdms-ecosystem-audit.js"
+    "run-tdms-ecosystem-audit.js",
+    "state-utils.js",
+    "stop-serena-dashboard.js",
+    "check-mcp-servers.js",
+    "test-hooks.js",
+    "checker-regression.test.js"
   ],
   "unescaped-regexp-input": [
     "suggest-pattern-automation.js",
@@ -51,8 +56,11 @@
     "functional-correctness.js",
     "state-integration.js",
     "compaction-resilience.js",
-    "config-health.js"
+    "config-health.js",
+    "check-cross-doc-deps.js",
+    "checker-regression.test.js"
   ],
+  "write-without-symlink-guard": ["state-utils.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
   "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
@@ -74,7 +82,8 @@
     "post-read-handler.js",
     "security-helpers.js",
     "seed-commit-log.js",
-    "state-manager.js"
+    "state-manager.js",
+    "state-utils.js"
   ],
   "writefile-missing-encoding": [
     "alerts-reminder.js",

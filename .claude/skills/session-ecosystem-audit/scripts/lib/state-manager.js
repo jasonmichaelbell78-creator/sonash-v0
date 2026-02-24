@@ -39,7 +39,8 @@ function createStateManager(rootDir, isSafeToWrite) {
 
   function readEntries() {
     try {
-      const stat = fs.statSync(STATE_FILE);
+      const stat = fs.lstatSync(STATE_FILE);
+      if (stat.isSymbolicLink() || !stat.isFile()) return [];
       if (stat.size > MAX_FILE_SIZE) {
         console.error("  [warn] State file too large, skipping read");
         return [];
@@ -143,7 +144,7 @@ function createStateManager(rootDir, isSafeToWrite) {
       return true;
     } catch (err) {
       console.error(
-        `  [warn] Failed to write state: ${err instanceof Error ? err.message : String(err)}`
+        `  [warn] Failed to write state: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
       );
       return false;
     }
