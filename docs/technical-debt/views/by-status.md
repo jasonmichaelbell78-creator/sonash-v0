@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (992)
+## NEW (991)
 
 | ID        | Title                                                           | Severity | Category                 |
 | --------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -291,7 +291,6 @@
 | DEBT-7551 | Upgrade react-resizable-panels from 2.x to 4.x (2 major v...    | S2       | code-quality             |
 | DEBT-7552 | Upgrade recharts from 2.x to 3.x (1 major version behind)       | S2       | code-quality             |
 | DEBT-7554 | Evaluate ESLint 10 upgrade (9.39.3 -> 10.0.2)                   | S2       | code-quality             |
-| DEBT-7555 | Create hook-ecosystem-audit skill (HIGH priority gap)           | S2       | engineering-productivity |
 | DEBT-7556 | Create tdms-ecosystem-audit skill (HIGH priority gap)           | S2       | engineering-productivity |
 | DEBT-7557 | Create precommit-ecosystem-audit skill (HIGH priority gap)      | S2       | engineering-productivity |
 | DEBT-2441 | EXPANSION_EVALUATION_TRACKER.md command reference table         | S2       | code-quality             |
@@ -4129,7 +4128,7 @@
 
 _No items_
 
-## RESOLVED (237)
+## RESOLVED (238)
 
 | ID        | Title                                                         | Severity | Category                 |
 | --------- | ------------------------------------------------------------- | -------- | ------------------------ |
@@ -4293,6 +4292,7 @@ _No items_
 | DEBT-2522 | stop-serena-dashboard.js uses 6+ execFileSync calls at se...  | S2       | ai-optimization          |
 | DEBT-2541 | Skills read entire large files when only headers/sections...  | S2       | ai-optimization          |
 | DEBT-7458 | Automate archival of completed ROADMAP.md items to ROADMA...  | S2       | process                  |
+| DEBT-7555 | Create hook-ecosystem-audit skill (HIGH priority gap)         | S2       | engineering-productivity |
 | DEBT-3871 | Create `/test-suite` skill with 5-phase pipeline ✅           | S3       | process                  |
 | DEBT-3879 | Add learning entry reminder to pre-commit hook                | S3       | process                  |
 | DEBT-3885 | Export `redactSensitiveUrl` from `lib/utils/error-export....  | S3       | code-quality             |

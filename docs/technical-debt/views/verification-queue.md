@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 992
+**Items Needing Verification:** 991
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -294,7 +294,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-7551 | Upgrade react-resizable-panels from 2.x to 4.x (2 major v...    | S2       | package.json                                                     | 0    |
 | DEBT-7552 | Upgrade recharts from 2.x to 3.x (1 major version behind)       | S2       | package.json                                                     | 0    |
 | DEBT-7554 | Evaluate ESLint 10 upgrade (9.39.3 -> 10.0.2)                   | S2       | package.json                                                     | 0    |
-| DEBT-7555 | Create hook-ecosystem-audit skill (HIGH priority gap)           | S2       | .claude/skills/                                                  | 0    |
 | DEBT-7556 | Create tdms-ecosystem-audit skill (HIGH priority gap)           | S2       | .claude/skills/                                                  | 0    |
 | DEBT-7557 | Create precommit-ecosystem-audit skill (HIGH priority gap)      | S2       | .claude/skills/                                                  | 0    |
 | DEBT-2441 | EXPANSION_EVALUATION_TRACKER.md command reference table         | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                             | 0    |
