@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 2.0 **Last Updated**: 2026-02-23 **Total Skills**: 59
+**Version**: 2.2 **Last Updated**: 2026-02-23 **Total Skills**: 61
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -37,6 +37,8 @@ Quick reference for all available Claude Code skills organized by category.
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator with any-format input                     |
 | `/pr-ecosystem-audit`             | Comprehensive PR review ecosystem diagnostic                                    |
 | `/hook-ecosystem-audit`           | Hook system health diagnostic (16 categories, 5 domains, A-F scoring)           |
+| `/tdms-ecosystem-audit`           | TDMS pipeline health diagnostic (16 categories, 5 domains, A-F scoring)         |
+| `/session-ecosystem-audit`        | Session system health diagnostic (16 categories, 5 domains, A-F scoring)        |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues (replaces sonarcloud-sprint) |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                                            |
 
@@ -150,6 +152,8 @@ Quick reference for all available Claude Code skills organized by category.
 | System testing         | `/system-test`                                |
 | PR ecosystem health    | `/pr-ecosystem-audit`                         |
 | Hook ecosystem health  | `/hook-ecosystem-audit`                       |
+| TDMS pipeline health   | `/tdms-ecosystem-audit`                       |
+| Session system health  | `/session-ecosystem-audit`                    |
 | Audit system health    | `/audit-health`                               |
 
 ---

@@ -102,6 +102,8 @@ All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                           |
 | `/pr-ecosystem-audit`             | Comprehensive PR review ecosystem diagnostic                    |
 | `/hook-ecosystem-audit`           | Hook system health diagnostic (16 categories, 5 domains)        |
+| `/tdms-ecosystem-audit`           | TDMS pipeline health diagnostic (16 categories, 5 domains)      |
+| `/session-ecosystem-audit`        | Session system health diagnostic (16 categories, 5 domains)     |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues              |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                            |
 
