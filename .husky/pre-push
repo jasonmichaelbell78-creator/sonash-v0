@@ -51,12 +51,33 @@ if ! npm run deps:circular > /dev/null 2>&1; then
 fi
 echo "  ✅ No circular dependencies"
 
-# 3. Pattern compliance: REMOVED from pre-push (hook-quality fix)
-# Pattern compliance already runs in pre-commit on staged files.
-# Running it again here on 14 hardcoded files caused graduation double-jeopardy:
-# a warning in pre-commit would escalate to a BLOCK in pre-push hours later,
-# even if the file wasn't part of the push. Keeping pre-commit only.
-echo "  ⏭️ Pattern compliance (covered by pre-commit)"
+# 3. Pattern compliance on PUSH DIFF ONLY (PR #388 retro — 2x recommended)
+# Previously REMOVED due to double-jeopardy (scanning all 14 hardcoded files).
+# Re-enabled in diff-only mode: only checks files actually in the push diff.
+# This catches patterns in review fix commits that may bypass pre-commit.
+echo "  ▶ Checking pattern compliance (push diff only)..."
+set +e
+push_diff_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|mjs)$' | head -30)
+set -e
+
+if [ -n "${push_diff_files:-}" ]; then
+  # Pass files as positional args to check-pattern-compliance.js
+  set +e
+  pattern_output=$(echo "$push_diff_files" | xargs node scripts/check-pattern-compliance.js 2>&1)
+  pattern_exit=$?
+  set -e
+  if [ "$pattern_exit" -ne 0 ]; then
+    echo "  ⚠️ Pattern compliance issues in pushed files:"
+    printf '%s\n' "$pattern_output" | grep -E "❌|⚠️|BLOCK|WARN" | head -10
+    echo ""
+    echo "  Fix issues or run: npm run patterns:check"
+    node scripts/append-hook-warning.js --hook=pre-push --type=patterns --severity=warning --message="Pattern compliance issues in pushed files" --action="npm run patterns:check" 2>/dev/null || true
+  else
+    echo "  ✅ Pattern compliance passed (push diff)"
+  fi
+else
+  echo "  ⏭️ No JS files in push diff"
+fi
 
 # 3b. Code-reviewer gate for script changes (Session #151)
 # If scripts/.claude/hooks/.husky/ changed, check if code-reviewer ran this session
@@ -94,6 +115,32 @@ if [ -n "${script_changes:-}" ]; then
   fi
 else
   echo "  ✅ No script changes (code-reviewer gate skipped)"
+fi
+
+# 3c. Propagation check (Session #185 — 8x recommended across PRs #366-#388)
+# Detects functions modified in some files but not propagated to duplicate copies.
+echo "  ▶ Running propagation check..."
+set +e
+prop_output=$(node scripts/check-propagation.js 2>&1)
+prop_exit=$?
+set -e
+if [ "$prop_exit" -ne 0 ]; then
+  printf '%s\n' "$prop_output"
+  echo ""
+  echo "  ⚠️ Propagation misses detected — review and fix before pushing"
+  echo "  Use: SKIP_REASON=\"reason\" SKIP_PROPAGATION=1 git push to bypass"
+  if [ "${SKIP_PROPAGATION:-}" != "1" ]; then
+    exit 1
+  fi
+  require_skip_reason "SKIP_PROPAGATION=1"
+  echo "  ⚠️ Bypassed with SKIP_PROPAGATION=1"
+  node scripts/log-override.js --quick --check=propagation --reason="$SKIP_REASON" 2>/dev/null || true
+  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=warning --message="Propagation check bypassed" --action="Review duplicate functions" 2>/dev/null || true
+elif echo "$prop_output" | grep -q "⚠️"; then
+  printf '%s\n' "$prop_output"
+  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=info --message="Propagation warnings found in pushed code" --action="Review duplicate functions" 2>/dev/null || true
+elif echo "$prop_output" | grep -q "✅"; then
+  printf '%s\n' "$prop_output"
 fi
 
 # 4. Security pattern check (diff-only mode: only flag violations in ADDED lines)

@@ -40,6 +40,7 @@ function safeTestRegex(pattern) {
 }
 
 const DOMAIN = "functional_correctness";
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB — skip oversized files
 
 // Known hook filenames (main hooks, excludes lib/, global/, backup/)
 const KNOWN_HOOKS = [
@@ -74,6 +75,8 @@ const KNOWN_HOOKS = [
  */
 function safeReadFile(filePath) {
   try {
+    const stat = fs.statSync(filePath);
+    if (stat.size > MAX_FILE_SIZE) return "";
     return fs.readFileSync(filePath, "utf8");
   } catch {
     return "";

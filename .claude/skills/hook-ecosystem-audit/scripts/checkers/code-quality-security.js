@@ -26,6 +26,7 @@ const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
 const DOMAIN = "code_quality_security";
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB — skip oversized files
 
 // ============================================================================
 // HELPERS
@@ -34,6 +35,8 @@ const DOMAIN = "code_quality_security";
 /** Read file contents safely; returns empty string on failure. */
 function safeReadFile(filePath) {
   try {
+    const stat = fs.statSync(filePath);
+    if (stat.size > MAX_FILE_SIZE) return "";
     return fs.readFileSync(filePath, "utf8");
   } catch {
     return "";

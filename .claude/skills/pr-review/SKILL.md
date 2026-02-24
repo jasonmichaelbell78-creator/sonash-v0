@@ -192,7 +192,9 @@ files.
 ### Algorithm Design Pre-Check (NEW — PR #379 Retro)
 
 **Trigger:** PR introduces non-trivial algorithm logic (dedup, merge,
-canonicalization, hashing, reconciliation, diffing).
+canonicalization, hashing, reconciliation, diffing) OR **heuristic/analysis
+functions** (brace counting, scope detection, try/catch analysis, AST-like regex
+parsing).
 
 Before pushing, verify the algorithm was **designed upfront**, not evolved
 through reviewer feedback:
@@ -210,9 +212,15 @@ through reviewer feedback:
    describing the complete approach, then implement. Don't commit a partial
    algorithm expecting reviewer iteration to complete it.
 
+**For heuristic functions specifically:** Define a test matrix of expected
+inputs→outputs (e.g., "code inside try/catch" → true, "code outside" → false)
+and validate the implementation against it before committing.
+
 **Evidence:** PR #379 had 7 rounds of incremental evidence dedup refinement. 4
-rounds (~57%) were avoidable with upfront algorithm design. See FIX_TEMPLATES
-#34 for the complete evidence merge pattern.
+rounds (~57%) were avoidable with upfront algorithm design. PR #388 had 3 rounds
+of isInsideTryCatch brace direction flip-flop — a test matrix would have
+prevented 1 round. See FIX_TEMPLATES #34 for the complete evidence merge
+pattern.
 
 ### Mapping/Enumeration Completeness Pre-Check (NEW — PR #382 Retro)
 
@@ -278,6 +286,25 @@ the top-level pattern config.
 `isTableHeaderLine` regex DoS in the same file — same rule, avoidable round. PR
 #386 R1 replaced pattern regex with testFn but left helper regex `/(\d+)\s*$/`
 inside testFn that also triggered S5852 in R2.
+
+### Large PR Scope Pre-Check (NEW — PR #388 Retro)
+
+**Trigger:** PR modifies 20+ files or spans multiple skills/modules.
+
+Large PRs consistently produce more review rounds: #383 (30+ files, 8 rounds),
+#384 (20+ files, 4 rounds), #388 (36+ files, 4 rounds). Compare to small PRs:
+#386 (5 files, 2 rounds), #371 (6 files, 2 rounds).
+
+Before creating a large PR, evaluate:
+
+1. **Can the PR be split?** One skill/module per PR reduces cross-file churn.
+2. **Shared patterns across files?** If fixing pattern X in file A, grep for the
+   same pattern in files B-Z and fix all in the SAME commit.
+3. **Run propagation check:** `node scripts/check-propagation.js` (automated)
+
+**Evidence:** PR #388 had 6 files appearing in ALL 4 rounds. 36 new files across
+3 ecosystem audit skills with shared patterns meant each fix needed propagation
+to 3+ copies.
 
 ---
 

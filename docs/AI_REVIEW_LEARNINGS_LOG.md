@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.52 **Created:** 2026-01-02 **Last Updated:** 2026-02-23
+**Document Version:** 17.53 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
 
 ## Purpose
 
@@ -31,6 +31,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.53    | 2026-02-24               | PR #388 Retrospective: 4 rounds, 96 items, ~4 avoidable. Heuristic ping-pong (isInsideTryCatch 3 rounds), data-quality-dedup self-referential set, regex safety escalation. Fix Review #372 label (PR #387→#388). Propagation check 8x recommended.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 17.52    | 2026-02-23               | Review #375: PR #388 R4 — CI blocker (RegExp→indexOf), brace depth correction, iterative DFS, BigInt, invalidCount, null vs falsy, scoped function body, nearest stage, writesDeduped fallback, hook path priority. 15 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 17.51    | 2026-02-23               | PR #386 Retrospective: 2 rounds, 25 items, ~1 avoidable round. S5852 regex two-stage (R1→R2), CC in testFn IIFE. Cleanest cycle in series.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.50    | 2026-02-23               | Review #371: PR #386 R2 — S5852 string parsing, CC reduction (main→3 funcs, testFn IIFE), concurrency-safe tmp, match snippets. 6 fixed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -345,6 +346,15 @@ accumulate.
 <details>
 <summary>Previous Consolidation (#1)</summary>
 
+- **Date:** 2026-02-24
+- **Reviews consolidated:** #358-#375
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#1)</summary>
+
 - **Date:** 2026-02-23
 - **Reviews consolidated:** #354-#369
 - **Recurring patterns:**
@@ -640,7 +650,7 @@ bug that makes the check always pass.
 
 ---
 
-### Review #372: PR #387 R1 (2026-02-23)
+### Review #372: PR #388 R1 (2026-02-23)
 
 - **Source**: CI (Doc Lint + Pattern Compliance), Qodo Compliance, Qodo PR
   Suggestions, Gemini Code Review
@@ -666,6 +676,204 @@ require() on a line is inside a try/catch block. Solutions: (1) convert
 exec()/while to matchAll() which doesn't need /g tracking, (2) add files to
 verified-patterns.json for confirmed false positives, (3) extract
 `new RegExp(variable)` into named helper functions.
+
+---
+
+### PR #388 Retrospective (2026-02-24)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                                  |
+| -------------- | ---------------------------------------------------------------------- |
+| Rounds         | 4 (R1–R4, all 2026-02-23)                                              |
+| Total items    | 96                                                                     |
+| Fixed          | 80                                                                     |
+| Deferred       | 9 (DEBT-7559–7566 from R1, DEBT-7567 from R3)                          |
+| Rejected       | 7                                                                      |
+| Review sources | CI (Pattern Compliance, Doc Lint), Qodo Compliance+Suggestions, Gemini |
+
+**Note:** Review #372 was mislabeled as "PR #387 R1" — corrected to "PR #388
+R1".
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                         | Items  | Fixed  | Deferred | Rejected | Key Patterns                                                                                   |
+| --------- | ---------- | ------------------------------ | ------ | ------ | -------- | -------- | ---------------------------------------------------------------------------------------------- |
+| R1        | 2026-02-23 | CI+Qodo+Gemini                 | 42     | 34     | 8        | 0        | exec→matchAll (20), try/catch wrapping (9), rmSync (3), RegExp→helper (3), div-by-zero (4)     |
+| R2        | 2026-02-23 | CI+Qodo Compliance+Suggestions | 22     | 17     | 0        | 5        | Self-referential set bug, parseInt comma, regex overlap, backtracking, nested parens           |
+| R3        | 2026-02-23 | CI+Qodo Suggestions            | 16     | 14     | 1        | 1        | Brace direction flip, regex backtracking [^)\n], writesMaster FP, table header skip, glob path |
+| R4        | 2026-02-23 | CI+Qodo Suggestions            | 16     | 15     | 0        | 1        | CI blocker (RegExp→indexOf), brace re-correction, iterative DFS, BigInt, null vs falsy         |
+| **Total** |            |                                | **96** | **80** | **9**    | **7**    |                                                                                                |
+
+#### Ping-Pong Chains
+
+##### Chain 1: isInsideTryCatch Brace Direction (R2→R3→R4, 3 rounds)
+
+| Round | What Happened                                                                      | Files Affected                                      | Root Cause                              |
+| ----- | ---------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------- |
+| R2    | Added brace counting for isInsideTryCatch heuristic                                | hook/state-integration.js                           | Initial implementation                  |
+| R3    | Brace counting direction was wrong (backwards → false positives). Fixed direction. | hook/code-quality-security.js, state-integration.js | Heuristic designed without test matrix  |
+| R4    | R3's fix was STILL wrong. Corrected with proper forward scan.                      | hook/code-quality-security.js, state-integration.js | R3 didn't validate against known inputs |
+
+**Avoidable rounds:** 1 (R4). Pattern 8 (Incremental Algorithm Hardening)
+applied to heuristic functions.
+
+**Prevention:** Before committing heuristic functions, define test matrix of
+expected inputs→outputs and validate.
+
+##### Chain 2: data-quality-dedup.js Progressive Hardening (R1→R2→R3→R4, 4 rounds)
+
+| Round | What Happened                                                               | Files Affected             | Root Cause                                  |
+| ----- | --------------------------------------------------------------------------- | -------------------------- | ------------------------------------------- |
+| R1    | Initial matchAll conversion, try/catch wrapping                             | tdms/data-quality-dedup.js | Bulk pattern compliance fix                 |
+| R2    | Self-referential set bug (mergedFromIds → always true). parseInt comma fix. | tdms/data-quality-dedup.js | R1 introduced logic error                   |
+| R3    | Non-serializable values in hash. Strengthened glob path regex.              | tdms/data-quality-dedup.js | R2 fixes didn't cover all data types        |
+| R4    | Recursive DFS → iterative DFS + color map. BigInt handling.                 | tdms/data-quality-dedup.js | Stack overflow risk from recursive approach |
+
+**Avoidable rounds:** 1.5. Self-referential set (R2) was testable. Iterative DFS
+(R4) was designable upfront.
+
+**Prevention:** (1) Verify filter sets come from independent data source. (2)
+For recursive traversal, evaluate stack depth risk upfront.
+
+##### Chain 3: Regex Safety Escalation (R1→R2→R3→R4, 4 rounds)
+
+| Round | What Happened                                                               | Files Affected    | Root Cause                         |
+| ----- | --------------------------------------------------------------------------- | ----------------- | ---------------------------------- |
+| R1    | Converted exec-while to matchAll (~20 instances), RegExp validation helpers | 10 checker files  | Bulk compliance fix                |
+| R2    | Word boundaries (readFile vs readFileSync overlap), backtracking guards     | 6 checker files   | R1 patterns too broad              |
+| R3    | [^)\n] for backtracking, anchored session counter regex                     | 5 checker files   | R2 guards insufficient             |
+| R4    | CI blocker: RegExp constructor with variable → indexOf                      | file-io-safety.js | patterns:check not run before push |
+
+**Avoidable rounds:** 0.5 (R4 CI blocker). Running `npm run patterns:check`
+before R3 push would have caught it.
+
+##### Chain 4: metrics-reporting.js Enhancement (R1→R2→R3→R4, 4 rounds)
+
+| Round | What Happened                                           | Files Affected            | Root Cause                      |
+| ----- | ------------------------------------------------------- | ------------------------- | ------------------------------- |
+| R1    | Basic pattern compliance                                | tdms/metrics-reporting.js | Initial compliance              |
+| R2    | Warning emoji regex, table header                       | tdms/metrics-reporting.js | New edge cases from review      |
+| R3    | Invalid JSONL surfacing (TMR-103A), header skip         | tdms/metrics-reporting.js | Missing diagnostic              |
+| R4    | invalidCount early returns, null vs falsy (5 locations) | tdms/metrics-reporting.js | Truthy checks rejecting valid 0 |
+
+**Avoidable rounds:** 0.5. Null vs falsy (R4) is a known anti-pattern.
+
+##### Chain 5: Qodo Self-Contradiction (R3→R4, 2 rounds)
+
+| Round | What Happened                                              | Files Affected        | Root Cause                  |
+| ----- | ---------------------------------------------------------- | --------------------- | --------------------------- |
+| R3    | Qodo: "remove \b word boundaries from callsite detection"  | precommit-pipeline.js | Reviewer suggestion         |
+| R4    | Qodo: "add \b word boundaries back" — resolved via indexOf | precommit-pipeline.js | Reviewer self-contradiction |
+
+**Avoidable rounds:** 0 (Reviewer error).
+
+**Total avoidable rounds across all chains: ~4 out of 4 (~75% partially
+avoidable)**
+
+6 files appeared in ALL 4 rounds: code-quality-security.js,
+precommit-pipeline.js, state-integration.js (hook); data-quality-dedup.js,
+metrics-reporting.js, pipeline-correctness.js (TDMS).
+
+#### Rejection Analysis
+
+| Category                        | Count | Rounds | Examples                                                                |
+| ------------------------------- | ----- | ------ | ----------------------------------------------------------------------- |
+| Path traversal (false positive) | 3     | R2     | "Validate rootDir" — rootDir is hardcoded constant, not user-controlled |
+| Command injection (FP)          | 1     | R2     | "Sanitize patchContent" — patches are display-only, never executed      |
+| JSON.stringify replacer (FP)    | 1     | R2     | "Add replacer function" — works correctly as-is                         |
+| Stale CI result                 | 1     | R3     | docs:check failure passes locally, stale CI cache                       |
+| Qodo self-contradiction         | 1     | R4     | R3 "remove \b" → R4 "add \b back" — resolved by indexOf                 |
+
+**Rejection accuracy:** 7/7 correct (100%).
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                         | Rounds   | Already Automated?     | Recommended Action                                                    | Est. Effort |
+| ------------------------------- | -------- | ---------------------- | --------------------------------------------------------------------- | ----------- |
+| isInsideTryCatch fragility      | R2,R3,R4 | No (4 AST DEBT items)  | Replace regex heuristics with AST parser (DEBT-7559–7562)             | E1 (~2hr)   |
+| Self-referential set validation | R2       | No                     | Add to CODE_PATTERNS.md as anti-pattern                               | ~10 min     |
+| null vs falsy confusion         | R4       | No                     | Add to CODE_PATTERNS.md: use `== null` not truthy checks for metrics  | ~5 min      |
+| RegExp constructor CI blocker   | R4       | YES (CI pattern check) | Run `patterns:check` before push — process enforcement                | Process     |
+| Regex backtracking in checkers  | R2,R3    | Partial (size cap)     | Consistent MAX_FILE_SIZE guard + prefer indexOf for simple substrings | ~20 min     |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                     | Implemented?     | Impact on #388                                                     |
+| ------- | -------------------------------------- | ---------------- | ------------------------------------------------------------------ |
+| PR #386 | S5852 recursive regex audit (Step 0.5) | **YES**          | Not triggered — no S5852 in #388                                   |
+| PR #386 | Verify IIFE testFn CC-checked          | **NOT VERIFIED** | No impact (no IIFE testFn in #388)                                 |
+| PR #386 | Small PRs = fewer rounds               | **NOT FOLLOWED** | **Direct impact: 36 files → 4 rounds**                             |
+| PR #384 | Run patterns:check before pushing      | **NOT DONE**     | **~0.5 avoidable round** (R4 CI blocker)                           |
+| PR #384 | `\|\|` vs `??` pattern rule            | **YES**          | No impact                                                          |
+| PR #384 | scripts/debt/ Qodo exclusion           | **YES**          | Reduced Qodo noise                                                 |
+| PR #384 | Propagation protocol enforcement       | **NOT DONE**     | **~0.5 avoidable round** (R2 regex overlap)                        |
+| PR #379 | Algorithm Design Pre-Check (Step 0.5)  | **YES**          | **NOT APPLIED** to isInsideTryCatch — would have prevented Chain 1 |
+
+**Total avoidable rounds from unimplemented retro actions: ~1.5**
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Avoidable Rounds | Rejections | Key Issue                              |
+| -------- | ------ | ----------- | ---------------- | ---------- | -------------------------------------- |
+| #379     | 11     | ~119        | ~8               | ~61        | Evidence algorithm + protocol          |
+| #382     | 3      | 76          | ~1               | 13         | Severity/dedup incremental             |
+| #383     | 8      | ~282        | ~4               | ~90        | Symlink/atomic/catch                   |
+| #384     | 4      | 197         | ~2.5             | ~18        | CI pattern cascade + CC                |
+| #386     | 2      | 25          | ~1               | 1          | S5852 regex + CC                       |
+| **#388** | **4**  | **96**      | **~4**           | **7**      | **Heuristic hardening + regex safety** |
+
+**Persistent cross-PR patterns:**
+
+| Pattern                          | PRs Affected | Times Recommended | Status                        | Required Action                                |
+| -------------------------------- | ------------ | ----------------- | ----------------------------- | ---------------------------------------------- |
+| CC lint rule                     | #366-#371    | 5x                | **RESOLVED** (pre-commit)     | None                                           |
+| Qodo suppression                 | #369-#384    | 4x                | **RESOLVED** (pr-agent.toml)  | None                                           |
+| Propagation check                | #366-#388    | **8x**            | **STILL PROCESS-ONLY**        | **BLOCKING — 8x, still ~0.5 rounds/PR**        |
+| Local patterns:check before push | #384-#388    | **2x**            | Not enforced                  | Add to pre-push or pr-review checklist         |
+| Algorithm/heuristic design check | #379, #388   | 2x                | Step 0.5 exists, inconsistent | Expand to explicitly cover heuristic functions |
+| Large PR scope → more rounds     | #383-#388    | 3x                | Acknowledged                  | Split multi-skill PRs                          |
+
+#### Skills/Templates to Update
+
+1. **CODE_PATTERNS.md:** Add "Self-referential set validation" anti-pattern (~10
+   min — do now)
+2. **CODE_PATTERNS.md:** Add "null vs falsy in metrics" pattern (~5 min — do
+   now)
+3. **pr-review SKILL.md Step 0.5:** Expand Algorithm Design Pre-Check to cover
+   heuristic functions (~5 min — do now)
+4. **Learnings log:** Fix Review #372 label from "PR #387 R1" to "PR #388 R1"
+   (~2 min — done)
+
+#### Process Improvements
+
+1. **Heuristic functions need test matrices** — isInsideTryCatch modified in 3
+   rounds. Algorithm Design Pre-Check should cover all analysis/heuristic
+   functions. Evidence: Chain 1, R2→R3→R4.
+2. **Run patterns:check before pushing review fixes** — 2nd PR retro
+   recommending this. R4 CI blocker was catchable locally. Evidence: R4 RegExp
+   constructor.
+3. **Self-referential data validation** — New anti-pattern: filter set built
+   from same data being filtered makes check always pass. Evidence: R2
+   mergedFromIds.
+4. **Large multi-skill PRs amplify churn** — 36 files, 6 files in all 4 rounds.
+   Compare #386 (5 files, 2 rounds). Consider one-skill-per-PR. Evidence: all
+   chains.
+
+#### Verdict
+
+PR #388 had a **moderately inefficient review cycle** — 4 rounds with 96 items,
+80 fixed. ~4 of 4 rounds were partially avoidable (~75%), driven by
+isInsideTryCatch heuristic ping-pong (Chain 1, 1 round), data-quality-dedup
+progressive hardening (Chain 2, 1.5 rounds), and regex safety escalation (Chain
+3, 0.5 rounds). The single highest-impact change: expand Algorithm Design
+Pre-Check to cover all heuristic/analysis functions and enforce test matrices.
+
+**Trend: Regression from #386 correlated with PR scope.** Round count: #384(4) →
+#386(2) → **#388(4)**. #386's 2-round cycle came from 5 files; #388's 4-round
+cycle came from 36+ files. Items/round: #386(12.5) → **#388(24)**. Rejection
+rate: #386(4%) → **#388(7.3%)**. Propagation check is now at **8x recommended**
+without automation — the project's longest-standing unresolved systemic issue.
 
 ---
 

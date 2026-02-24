@@ -25,6 +25,7 @@ const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
 const DOMAIN = "file_io_safety";
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB — skip oversized files
 
 // ============================================================================
 // Dynamic pattern construction — avoids pre-commit false positives
@@ -74,6 +75,8 @@ const atomicMoveLiteral = ["ren", "ame"].join("");
 /** Read file contents safely; returns null on failure. */
 function safeReadFile(filePath) {
   try {
+    const stat = fs.statSync(filePath);
+    if (stat.size > MAX_FILE_SIZE) return null;
     return fs.readFileSync(filePath, "utf8");
   } catch {
     return null;
