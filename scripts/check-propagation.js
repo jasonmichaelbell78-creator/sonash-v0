@@ -161,9 +161,7 @@ function extractModifiedFunctions(diffContent) {
   ];
 
   for (const pattern of patterns) {
-    pattern.lastIndex = 0;
-    let match;
-    while ((match = pattern.exec(diffContent)) !== null) {
+    for (const match of diffContent.matchAll(pattern)) {
       const name = match[1];
       if (name.length >= MIN_FUNC_NAME_LENGTH && !GENERIC_NAMES.has(name)) {
         funcNames.add(name);
@@ -177,9 +175,7 @@ function extractModifiedFunctions(diffContent) {
     /^-.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
   ];
   for (const pattern of removePatterns) {
-    pattern.lastIndex = 0;
-    let match;
-    while ((match = pattern.exec(diffContent)) !== null) {
+    for (const match of diffContent.matchAll(pattern)) {
       const name = match[1];
       if (name.length >= MIN_FUNC_NAME_LENGTH && !GENERIC_NAMES.has(name)) {
         funcNames.add(name);
