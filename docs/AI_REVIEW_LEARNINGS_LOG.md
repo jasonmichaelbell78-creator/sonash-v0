@@ -600,6 +600,21 @@ accumulate.
 
 ## Active Reviews
 
+### Review #379: PR #390 R1 (2026-02-24)
+
+- **Source**: Gemini Code Assist (1), Qodo PR Suggestions (7)
+- **PR**: PR #388 retrospective + retro action items
+- **Items**: 8 total — 7 fixed, 0 deferred, 1 tracked to TDMS (pre-existing)
+- **Patterns**: Data inconsistency in retro metrics (Fixed count mismatch, R7
+  breakdown exceeds total), incorrect syntax in documented patterns
+  (`=== null || === undefined` → `== null`, POSIX ERE word boundaries),
+  duplicate section numbering, undefined variable in example code, broken
+  markdown table row
+- **Key Learning**: docs:index script has a date regression bug — "Last
+  Modified" dates revert to older values. Pre-existing, tracked as TDMS item.
+
+---
+
 ### Review #378: PR #388 R7 (2026-02-24)
 
 - **Source**: Qodo PR Suggestions (2), Gemini Code Assist (3), SonarCloud QG
@@ -759,7 +774,7 @@ _Supersedes R1-R4 retro. Covers complete R1-R7 review cycle._
 | -------------- | ---------------------------------------------------------------------------------- |
 | Rounds         | 7 (R1–R4 2026-02-23, R5–R7 2026-02-24)                                             |
 | Total items    | 144                                                                                |
-| Fixed          | 106                                                                                |
+| Fixed          | 108                                                                                |
 | Deferred       | 9 (DEBT-7559–7566 from R1, DEBT-7567 from R3)                                      |
 | Rejected       | 29                                                                                 |
 | Review sources | CI (Pattern Compliance, Doc Lint), Qodo Compliance+Suggestions, SonarCloud, Gemini |
@@ -777,7 +792,7 @@ R1".
 | R4        | 2026-02-23 | CI+Qodo Suggestions            | 16      | 15      | 0     | 1      | CI blocker (RegExp→indexOf), brace re-correction, iterative DFS, BigInt, null vs falsy     |
 | R5        | 2026-02-24 | SonarCloud+CI+Gemini+Qodo      | 25      | 14      | 0     | 4      | CC reduction (26→~10), escapeForRegex, sanitizeInput ×3, test predicate, dedup extraction  |
 | R6        | 2026-02-24 | Qodo Comp+Suggestions+CI+Sonar | 14      | 11      | 0     | 3      | CI blockers (xargs -r, mktemp trap, grep), lstatSync ×4, JSONL dedup 1685 entries          |
-| R7        | 2026-02-24 | Qodo+Gemini+SonarCloud QG+CI   | 9       | 3       | 0     | 8      | typeof guard on lazy-load, stale Gemini review, SonarCloud QG self-resolved                |
+| R7        | 2026-02-24 | Qodo+Gemini+SonarCloud QG+CI   | 9       | 1       | 0     | 8      | typeof guard on lazy-load, stale Gemini review, SonarCloud QG self-resolved                |
 | **Total** |            |                                | **144** | **108** | **9** | **29** |                                                                                            |
 
 **Trajectory:** 42 → 22 → 16 → 16 → 25 → 14 → 9. R5 spike from adding

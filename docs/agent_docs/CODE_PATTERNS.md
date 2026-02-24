@@ -555,7 +555,7 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | React key stability            | Use stable identifiers (`id`, unique field) not array index for keys                      | Index keys cause state bugs on list reorder/filter (Reviews #281, #282) |
 | 🟡       | Lazy-load typeof guard         | After `require().namedExport`, add `if (typeof x !== "function") x = fallback`            | `require()` succeeds but export may be undefined (PR #388 R7)           |
 | 🔴       | Self-referential set filter    | Never build a filter/dedup set from the same data being filtered — use independent source | Filtering set built from input data = no-op filter (PR #388 R4)         |
-| 🟡       | Null vs falsy in metrics       | Use `=== null \|\| === undefined` for numeric fields, not `!field`                        | `!field` rejects valid `0` values in metrics/counts (PR #388 R5)        |
+| 🟡       | Null vs falsy in metrics       | Use `field == null` for numeric fields, not `!field`                                      | `!field` rejects valid `0` values in metrics/counts (PR #388 R5)        |
 
 ---
 
@@ -576,7 +576,7 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🔴       | Same-file regex DoS sweep     | After fixing one regex DoS (S5852), grep the same file for all other potentially vulnerable regexes                          | Second regex in same file causes avoidable round (PR #382 R1→R2)      |
 | 🟡       | Dedup boundary enumeration    | When implementing dedup logic, enumerate ALL boundaries (cross-source, within-run, cross-batch) before coding                | Incremental discovery causes multi-round hardening (PR #382 R1→R2→R3) |
 | 🟡       | State variable reset          | Context-tracking variables (currentSection, currentMilestone) must be reset when context changes, not just set when matching | Stale attribution in output data (PR #382 R3)                         |
-| 🟡       | POSIX ERE in git grep         | Use `[[:space:]]` not `\s`, `[^a-zA-Z0-9_$]` not `\b` in `git grep -E` patterns                                              | `git grep -E` uses POSIX ERE, not Perl regex (PR #388 R6)             |
+| 🟡       | POSIX ERE in git grep         | Use `[[:space:]]` not `\s`, `\<` / `\>` not `\b` in `git grep -E` patterns                                                   | `git grep -E` uses POSIX ERE, not Perl regex (PR #388 R6)             |
 
 ---
 

@@ -1939,12 +1939,12 @@ try {
 
 **Fallback strategy by use case:**
 
-| Context         | Fallback                              | Why                                            |
-| --------------- | ------------------------------------- | ---------------------------------------------- |
-| Security guard  | `() => false` (deny by default)       | Fail-closed: reject writes when guard missing  |
-| Sanitizer       | `(v) => (v \|\| "").slice(0, limit)`  | Basic truncation preserves safety              |
-| Telemetry/write | `() => true` (allow by default)       | Fail-open: don't block hooks on missing helper |
-| Rotation/util   | `null` + truthiness check before call | Skip optional functionality gracefully         |
+| Context         | Fallback                                | Why                                            |
+| --------------- | --------------------------------------- | ---------------------------------------------- |
+| Security guard  | `() => false` (deny by default)         | Fail-closed: reject writes when guard missing  |
+| Sanitizer       | `(v) => String(v ?? "").slice(0, 1000)` | Basic truncation preserves safety              |
+| Telemetry/write | `() => true` (allow by default)         | Fail-open: don't block hooks on missing helper |
+| Rotation/util   | `null` + truthiness check before call   | Skip optional functionality gracefully         |
 
 **Evidence:** PR #388 R7 [1] — `isSafeToWrite` was `undefined` after successful
 `require()` because the module existed but the named export wasn't available in

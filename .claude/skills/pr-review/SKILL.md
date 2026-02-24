@@ -383,7 +383,7 @@ categorization."
 misinterpretation, intentional numbering skips, file moves. If FALSE POSITIVE:
 mark REJECTED and document verification.
 
-### 1.5 Stale Reviewer HEAD Check (NEW — PR #388 Retro)
+### 1.4.1 Stale Reviewer HEAD Check (NEW — PR #388 Retro)
 
 **BEFORE accepting any reviewer item**, verify the reviewer analyzed the current
 HEAD, not a stale commit:
