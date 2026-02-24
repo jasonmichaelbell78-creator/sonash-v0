@@ -469,7 +469,19 @@ function checkSprintFileAlignment(masterItems, masterIdSet, logsDir, findings) {
   for (const sprintFile of sprintFiles) {
     const filePath = path.join(logsDir, sprintFile);
     const content = safeReadFile(filePath);
-    if (!content) continue;
+    if (content === null) {
+      findings.push({
+        id: "RDM-303A",
+        category: "sprint_file_alignment",
+        domain: DOMAIN,
+        severity: "error",
+        message: `Sprint file unreadable: ${sprintFile}`,
+        details: "File missing, too large, or unreadable — cannot validate sprint alignment.",
+        frequency: 1,
+        blastRadius: 3,
+      });
+      continue;
+    }
 
     let sprintData;
     try {

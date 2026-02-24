@@ -585,6 +585,30 @@ accumulate.
 
 ## Active Reviews
 
+### Review #373: PR #388 R2 (2026-02-23)
+
+- **Source**: CI (docs:check), Qodo Compliance, Qodo PR Suggestions
+- **PR**: Ecosystem audit skills (hook, session, TDMS) — continued
+- **Total items**: 22
+- **Fixed**: 17
+- **Deferred**: 0
+- **Rejected**: 5 (path traversal x3 — rootDir not user-controlled, command
+  injection — patches are display-only, JSON.stringify replacer — works as-is)
+
+**Key patterns**: Broken reference detection logic (mergedFromIds set was built
+from same data it checked — always returned true), parseInt fails on
+comma-formatted numbers (1,234), overlapping regex patterns (readFile matches
+readFileSync), unbounded regex backtracking on large files, nested parentheses
+in console.log regex, incomplete regex escaping (only dots vs full
+metacharacters)
+
+**Lesson**: When building a "known good" set to filter against, verify the set
+is populated from a DIFFERENT data source than the items being checked.
+Self-referential filtering (checking if X is in a set built from X) is a logic
+bug that makes the check always pass.
+
+---
+
 ### Review #372: PR #387 R1 (2026-02-23)
 
 - **Source**: CI (Doc Lint + Pattern Compliance), Qodo Compliance, Qodo PR

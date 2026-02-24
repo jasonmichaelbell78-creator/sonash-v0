@@ -137,7 +137,8 @@ function isInsideTryCatch(lines, lineIdx) {
 function countPatternCoverage(lines, pattern) {
   let total = 0;
   let wrapped = 0;
-  const regex = new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`\\b${escaped}\\b`, "g");
 
   for (let i = 0; i < lines.length; i++) {
     const matches = lines[i].match(regex);

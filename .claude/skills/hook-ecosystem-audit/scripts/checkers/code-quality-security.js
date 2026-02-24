@@ -566,6 +566,11 @@ function checkRegexSafety(hookFiles) {
     /new\s+RegExp\s*\(\s*(['"`])([^'"`]*)\1(?:\s*,\s*(['"`])([^'"`]*)\3)?\s*\)/g;
 
   for (const hook of hookFiles) {
+    // Skip very large files to avoid expensive regex scanning
+    if (hook.content.length > 1_000_000) {
+      continue;
+    }
+
     const lines = hook.content.split("\n");
 
     // Collect all regex instances with their flags and patterns

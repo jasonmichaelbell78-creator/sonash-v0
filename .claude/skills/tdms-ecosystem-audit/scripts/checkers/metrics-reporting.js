@@ -105,10 +105,10 @@ function extractMetricsTable(content) {
 
   for (const line of lines) {
     // Match table rows: | Key | Value |
-    const m = line.match(/^\|\s*(.+?)\s*\|\s*(.+?)\s*\|?\s*$/);
+    const m = line.match(/^\|\s*(.+?)\s*\|\s*(.+?)\s*\|/);
     if (m) {
       const key = m[1].trim().toLowerCase();
-      const value = m[2].trim();
+      const value = m[2].trim().replace(/,/g, "");
       // Skip header separator rows
       if (key.indexOf("---") === -1 && key.indexOf("===") === -1) {
         metrics[key] = value;

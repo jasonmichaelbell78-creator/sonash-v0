@@ -76,7 +76,8 @@ function checkHookRegistration(hooksSection, eventType, filename, matcher) {
     for (const hook of hooks) {
       const cmd = hook.command || "";
       // Check if command references the target filename (exact match)
-      const fileRegex = new RegExp(`\\b${filename.replace(/\./g, "\\.")}\\b`);
+      const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const fileRegex = new RegExp(`\\b${escapedFilename}\\b`);
       if (fileRegex.test(cmd)) {
         const hasMatcher = matcher ? group.matcher === matcher : true;
         return { found: true, hasMatcher };

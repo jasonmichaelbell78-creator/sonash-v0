@@ -202,7 +202,11 @@ function checkDedupAlgorithmHealth(rootDir) {
   // Build merge graph: target -> sources
   const mergeGraph = new Map();
   const clusterMap = new Map(); // id -> cluster_id
-  const entryIds = new Set(entries.map((e) => e.target_id || e.merged_into || e.id));
+  const entryIds = new Set(
+    entries
+      .map((e) => e.target_id || e.merged_into || e.id)
+      .filter((v) => typeof v === "string" && v.trim().length > 0)
+  );
 
   for (const entry of entries) {
     // Extract merged_from references
@@ -630,7 +634,11 @@ function checkContentHashIntegrity(rootDir) {
     }
 
     // Compute SHA256
-    const canonicalStr = JSON.stringify(canonical, Object.keys(canonical).sort());
+    const sortedCanonical = {};
+    for (const k of Object.keys(canonical).sort()) {
+      sortedCanonical[k] = canonical[k];
+    }
+    const canonicalStr = JSON.stringify(sortedCanonical);
     const computed = crypto.createHash("sha256").update(canonicalStr).digest("hex");
 
     if (computed === item.content_hash) {
@@ -643,7 +651,12 @@ function checkContentHashIntegrity(rootDir) {
 
       const altStr =
         "{" +
-        sortedKeys.map((k) => `${JSON.stringify(k)}:${JSON.stringify(item[k])}`).join(",") +
+        sortedKeys
+          .map((k) => {
+            const v = JSON.stringify(item[k]);
+            return `${JSON.stringify(k)}:${v === undefined ? "null" : v}`;
+          })
+          .join(",") +
         "}";
       const altComputed = crypto.createHash("sha256").update(altStr).digest("hex");
 
@@ -779,42 +792,38 @@ function checkIdUniquenessReferential(rootDir) {
   let brokenRefs = 0;
   const dedupParsed = parseJsonlFile(dedupLogPath, MAX_FILE_SIZE_BYTES);
   if (!dedupParsed.skipped) {
-    // Pre-compute set of IDs that were merged away (sources in merge operations)
-    const mergedFromIds = new Set();
+    // Pre-compute set of merge target IDs (IDs that should exist after merges)
+    const mergeTargetIds = new Set();
     for (const entry of dedupParsed.items) {
-      const sources = entry.merged_from || entry.sources || [];
-      if (Array.isArray(sources)) {
-        for (const id of sources) {
-          if (typeof id === "string") {
-            mergedFromIds.add(id);
-          }
-        }
+      const targetId = entry.target_id || entry.merged_into || entry.id;
+      if (typeof targetId === "string" && targetId.trim().length > 0) {
+        mergeTargetIds.add(targetId);
       }
     }
 
     for (const entry of dedupParsed.items) {
       const mergedFrom = entry.merged_from || entry.sources || [];
       if (!Array.isArray(mergedFrom)) continue;
+      const targetId = entry.target_id || entry.merged_into || entry.id;
+      const targetExistsInMaster = typeof targetId === "string" && allIds.has(targetId);
+
       for (const srcId of mergedFrom) {
         if (typeof srcId !== "string") continue;
-        if (!allIds.has(srcId)) {
-          // Check if this ID was itself merged away (which is acceptable)
-          const wasMergedAway = mergedFromIds.has(srcId);
-          if (!wasMergedAway) {
-            brokenRefs++;
-            if (brokenRefs <= 20) {
-              // Cap findings
-              findings.push({
-                id: "TDMS-D2-133",
-                category: "id_uniqueness_referential",
-                domain: DOMAIN,
-                severity: "warning",
-                message: `Broken merged_from reference: ${srcId}`,
-                details: `Referenced in dedup log but not found in MASTER_DEBT.jsonl or as a merge target`,
-                frequency: 1,
-                blastRadius: 2,
-              });
-            }
+        // A source ID missing from MASTER is expected (it was merged away).
+        // But if the merge target also doesn't exist in MASTER, the reference chain is broken.
+        if (!allIds.has(srcId) && !targetExistsInMaster) {
+          brokenRefs++;
+          if (brokenRefs <= 20) {
+            findings.push({
+              id: "TDMS-D2-133",
+              category: "id_uniqueness_referential",
+              domain: DOMAIN,
+              severity: "warning",
+              message: `Broken merged_from reference: ${srcId}`,
+              details: `Source ID not in MASTER_DEBT.jsonl and merge target '${String(targetId)}' is also missing`,
+              frequency: 1,
+              blastRadius: 2,
+            });
           }
         }
       }

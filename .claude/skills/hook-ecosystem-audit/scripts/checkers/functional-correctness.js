@@ -236,7 +236,7 @@ function checkOutputProtocol(hooksDir, hookInventory, findings) {
 
     // Check 2: Non-protocol stdout usage (console.log with non-"ok" content)
     // Count console.log calls that aren't "ok" — these should be console.error for logging
-    const allLogCalls = content.match(/console\.log\([^)]*\)/g) || [];
+    const allLogCalls = content.match(/console\.log\((?:[^)(]|\([^)]*\))*\)/g) || [];
     const nonProtocolLogs = allLogCalls.filter(
       (call) => !/console\.log\(\s*["']ok["']\s*\)/.test(call)
     );

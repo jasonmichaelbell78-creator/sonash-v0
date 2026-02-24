@@ -559,7 +559,7 @@ function checkGateEffectiveness(content, lines, findings, scores) {
   }
 
   // Check for non-blocking warnings (echo with warning emoji but no exit 1)
-  const warningPattern = /echo\s+"?\s*\u26a0\ufe0f/g;
+  const warningPattern = /echo\s+.*\u26a0/g;
   const warningPositions = [];
   for (const warnMatch of content.matchAll(warningPattern)) {
     const pos = warnMatch.index;

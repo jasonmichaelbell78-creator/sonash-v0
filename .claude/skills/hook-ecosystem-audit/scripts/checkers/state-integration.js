@@ -98,6 +98,30 @@ function checkStateFileHealth(stateDir, findings) {
 
       const sizeBytes = stat.size;
       const sizeMB = sizeBytes / (1024 * 1024);
+
+      // Skip content validation for very large files to prevent memory issues
+      const MAX_READ_BYTES = 2 * 1024 * 1024;
+      if (sizeBytes > MAX_READ_BYTES) {
+        findings.push({
+          id: "HEA-501A",
+          category: "state_file_health",
+          domain: DOMAIN,
+          severity: "warning",
+          message: `State file too large to validate: ${entry} (${sizeMB.toFixed(1)}MB)`,
+          details: `Skipped content validation because file exceeds ${Math.round(MAX_READ_BYTES / (1024 * 1024))}MB cap. Rotate or truncate to restore full validation.`,
+          impactScore: 55,
+          frequency: 1,
+          blastRadius: 3,
+        });
+        fileDetails.push({
+          name: entry,
+          sizeMB: Math.round(sizeMB * 100) / 100,
+          lineCount: 0,
+          corruptLines: 0,
+        });
+        continue;
+      }
+
       let content;
       try {
         content = fs.readFileSync(filePath, "utf8");
@@ -232,13 +256,14 @@ function checkStateFileHealth(stateDir, findings) {
  */
 const readOps = ["read" + "FileSync", "read" + "File", "existsSync"];
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const MAX_ARG_CHARS = 400;
 const READ_PATTERNS = readOps.map(
-  (op) => new RegExp(escapeRegex(op) + "\\s*\\([^)]*state[/\\\\]", "g")
+  (op) => new RegExp(escapeRegex(op) + `\\s*\\([^)]{0,${MAX_ARG_CHARS}}?state[/\\\\]`, "g")
 );
 
 const writeOps = ["write" + "FileSync", "append" + "FileSync", "write" + "File", "append" + "File"];
 const WRITE_PATTERNS = writeOps.map(
-  (op) => new RegExp(escapeRegex(op) + "\\s*\\([^)]*state[/\\\\]", "g")
+  (op) => new RegExp(escapeRegex(op) + `\\s*\\([^)]{0,${MAX_ARG_CHARS}}?state[/\\\\]`, "g")
 );
 
 /**
@@ -354,8 +379,8 @@ function checkCrossHookDependencies(rootDir, hooksDir, findings) {
       };
     }
 
-    // Collect all .js files in hooks dir (top-level only, not lib/)
-    const hookFiles = fs.readdirSync(hooksDir).filter((f) => f.endsWith(".js") && f[0] !== ".");
+    // Collect all hook source files (top-level only, not lib/)
+    const hookFiles = fs.readdirSync(hooksDir).filter((f) => /\.(js|ts)$/.test(f) && f[0] !== ".");
 
     for (const hookFile of hookFiles) {
       const filePath = path.join(hooksDir, hookFile);
