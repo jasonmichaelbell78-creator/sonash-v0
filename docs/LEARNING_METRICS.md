@@ -33,36 +33,36 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 92.4% |
-| Patterns Learned          | 289   |
-| Patterns Automated        | 26    |
-| Patterns Failing          | 5     |
+| Learning Effectiveness    | 93.6% |
+| Patterns Learned          | 291   |
+| Patterns Automated        | 30    |
+| Patterns Failing          | 1     |
 | Critical Pattern Success  | 95.1% |
-| Automation Coverage       | 21.4% |
-| Total Documented Patterns | 341   |
+| Automation Coverage       | 21.3% |
+| Total Documented Patterns | 343   |
 | Total Automated Patterns  | 73    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Safe percentage"
-   - Recurred 5 times after documentation \(Reviews: 358, 360, 366, 369, 371\)
+1. **[Automation]** Automate "Signal error code semantics"
+   - Recurred 3 times after documentation \(Reviews: 358, 360, 361\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Session identity check"
-   - Recurred 4 times after documentation \(Reviews: 358, 361, 365, 370\)
-   - Action: Add pattern to check\-pattern\-compliance.js
-
-3. **[Automation]** Automate "Table\-column date parsing"
-   - Recurred 4 times after documentation \(Reviews: 358, 362, 363, 371\)
-   - Action: Add pattern to check\-pattern\-compliance.js
-
-4. **[Documentation]** Improve documentation for "Input length DoS"
+2. **[Documentation]** Improve documentation for "Input length DoS"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
+3. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
+
+4. **[Training]** Create guide for "Atomic write tmp guard"
+   - Critical pattern with 4 recurrences needs dedicated guide
+   - Action: Create docs/agent_docs/ATOMIC_WRITE_TMP_GUARD_GUIDE.md
+
+5. **[Training]** Create guide for "Segment\-based path check"
+   - Critical pattern with 4 recurrences needs dedicated guide
+   - Action: Create docs/agent_docs/SEGMENT_BASED_PATH_CHECK_GUIDE.md
 
 ---
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 289   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 26    | Pattern recurred but now enforced by tooling |
+| ✅ LEARNED   | 291   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 30    | Pattern recurred but now enforced by tooling |
 | 🟡 WEAK      | 21    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 5     | Pattern recurred 3+ times - needs automation |
+| 🔴 FAILED    | 1     | Pattern recurred 3+ times - needs automation |
 
 ---
 
