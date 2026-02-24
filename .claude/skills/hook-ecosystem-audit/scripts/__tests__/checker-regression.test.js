@@ -426,9 +426,10 @@ function deduplicateFindings(findings) {
   const deduped = [];
 
   for (const f of findings) {
-    const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.js)/);
+    const haystack = f.details || f.message || "";
+    const fileMatch = haystack.match(/([a-zA-Z0-9_./-]+\.(?:m?js))/);
     const file = fileMatch ? fileMatch[1] : "";
-    const key = file ? `${file}:${f.severity}` : null;
+    const key = file ? `${file}:${f.severity}:${f.category || ""}` : null;
 
     if (key && seen.has(key)) {
       const existing = seen.get(key);

@@ -39,7 +39,8 @@ function createStateManager(rootDir, isSafeToWrite) {
 
   function readEntries() {
     try {
-      const stat = fs.statSync(STATE_FILE);
+      const stat = fs.lstatSync(STATE_FILE);
+      if (stat.isSymbolicLink() || !stat.isFile()) return [];
       if (stat.size > MAX_FILE_SIZE) {
         console.error("  [warn] State file too large, skipping read");
         return [];
@@ -143,7 +144,7 @@ function createStateManager(rootDir, isSafeToWrite) {
       return true;
     } catch (err) {
       console.error(
-        `  [warn] Failed to write state: ${err instanceof Error ? err.message : String(err)}`
+        `  [warn] Failed to write state: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
       );
       return false;
     }
@@ -217,7 +218,7 @@ function createStateManager(rootDir, isSafeToWrite) {
       return true;
     } catch (err) {
       console.error(
-        `  [warn] Failed to write baseline: ${err instanceof Error ? err.message : String(err)}`
+        `  [warn] Failed to write baseline: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
       );
       return false;
     }
@@ -230,7 +231,11 @@ function createStateManager(rootDir, isSafeToWrite) {
   function loadBaseline() {
     const baselinePath = path.join(STATE_DIR, "hook-audit-baseline.json");
     try {
-      const stat = fs.statSync(baselinePath);
+      const stat = fs.lstatSync(baselinePath);
+      if (stat.isSymbolicLink() || !stat.isFile()) {
+        console.error("  [warn] Baseline path is not a regular file, skipping read");
+        return null;
+      }
       if (stat.size > MAX_FILE_SIZE) {
         console.error("  [warn] Baseline file too large, skipping read");
         return null;

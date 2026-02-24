@@ -195,7 +195,7 @@ function extractModifiedFunctions(diffContent) {
  * Escape a string for safe use in a RegExp / grep -E pattern.
  */
 function escapeForRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+  return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
 
 /**
@@ -237,8 +237,8 @@ function searchForFunction(funcName) {
   for (const searchDir of SEARCH_DIRS) {
     try {
       const output = execFileSync(
-        "grep",
-        ["-rnE", definitionPattern, searchDir, "--include=*.js", "--include=*.mjs"],
+        "git",
+        ["grep", "-nE", definitionPattern, "--", `${searchDir}**/*.js`, `${searchDir}**/*.mjs`],
         { encoding: "utf8", maxBuffer: 5 * 1024 * 1024, cwd: process.cwd() }
       );
       for (const line of output.trim().split("\n").filter(Boolean)) {

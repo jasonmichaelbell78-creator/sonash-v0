@@ -63,7 +63,7 @@ set -e
 if [ -n "${push_diff_files:-}" ]; then
   # Pass files as positional args to check-pattern-compliance.js
   set +e
-  pattern_output=$(echo "$push_diff_files" | xargs node scripts/check-pattern-compliance.js 2>&1)
+  pattern_output=$(printf '%s\n' "$push_diff_files" | xargs -r node scripts/check-pattern-compliance.js 2>&1)
   pattern_exit=$?
   set -e
   if [ "$pattern_exit" -ne 0 ]; then
@@ -185,9 +185,9 @@ else
   # Use .js extension so security-check.js applies JS/TS patterns to the content
   # Note: mktemp --suffix is GNU-only; use mktemp + mv for POSIX portability
   SEC_TMPFILE_BASE=$(mktemp) || { echo "  ❌ Failed to create temp file"; exit 1; }
+  trap 'rm -f "$SEC_TMPFILE_BASE" "$SEC_TMPFILE"' EXIT
   SEC_TMPFILE="${SEC_TMPFILE_BASE}.js"
-  mv "$SEC_TMPFILE_BASE" "$SEC_TMPFILE" || { rm -f "$SEC_TMPFILE_BASE"; echo "  ❌ Failed to rename temp file"; exit 1; }
-  trap 'rm -f "$SEC_TMPFILE"' EXIT
+  mv "$SEC_TMPFILE_BASE" "$SEC_TMPFILE" || { echo "  ❌ Failed to rename temp file"; exit 1; }
   printf '%s\n' "$security_diff" > "$SEC_TMPFILE"
 
   set +e
@@ -197,7 +197,7 @@ else
 
   if [ "$code" -ne 0 ]; then
     echo "  ❌ Security violations found in NEW code"
-    printf '%s\n' "$out" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
+    printf '%s\n' "$out" | grep -e "CRITICAL" -e "HIGH" -e "file:" | head -15
     echo ""
     echo "  Fix security issues in your new code before pushing."
     exit 1

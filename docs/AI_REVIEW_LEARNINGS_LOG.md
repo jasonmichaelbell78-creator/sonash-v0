@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.54 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
+**Document Version:** 17.55 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
 
 ## Purpose
 
@@ -596,6 +596,27 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #377: PR #388 R6 (2026-02-24)
+
+- **Source**: Qodo Compliance (5), Qodo PR Suggestions (6), CI Pattern
+  Compliance (3 blocking), SonarCloud (1)
+- **PR**: Ecosystem audit skills (hook, session, TDMS) — review fixes
+- **Total items**: 14 (3 MAJOR, 7 MINOR, 2 TRIVIAL, 3 REJECTED)
+- **Fixed**: 11 (CI blockers: pre-push xargs -r, mktemp trap ordering, grep
+  simplification; silent write skip warning added to track-agent-invocation;
+  statSync→lstatSync + symlink check across 4 state-managers; error output
+  truncation across 4 state-managers; git grep portability in
+  check-propagation.js; replaceAll() over replace(); dedup logic improved in
+  test helper; normalized-all.jsonl deduped 1685 duplicate entries)
+- **Deferred**: 0
+- **Rejected**: 3 ([2] commit-tracker already has author+session fields; [4]
+  commit messages are public git data, already sanitized; [5] regex [gimsuy]
+  already contains 'i' — Qodo false positive)
+- **Key patterns**: Propagation of lstatSync fix across 4 forked
+  state-manager.js files prevented 4+ potential future review rounds. JSONL
+  dedup removed 1685 entries (31% of file was duplicated). Pre-push shell script
+  pattern compliance is now enforced in CI.
 
 ### Review #376: PR #388 R5 (2026-02-24)
 

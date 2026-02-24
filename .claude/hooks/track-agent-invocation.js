@@ -105,7 +105,10 @@ function writeState(state) {
   const statePath = path.join(projectDir, STATE_FILE);
   const tmpPath = `${statePath}.tmp`;
   try {
-    if (!isSafeToWrite(statePath) || !isSafeToWrite(tmpPath)) return;
+    if (!isSafeToWrite(statePath) || !isSafeToWrite(tmpPath)) {
+      console.warn("track-agent-invocation: refusing to write — symlink detected");
+      return;
+    }
     // Ensure directory exists
     const dir = path.dirname(statePath);
     fs.mkdirSync(dir, { recursive: true });
