@@ -795,7 +795,7 @@
 | DEBT-6853 | Exporting mutable let binding, use const instead              | scripts/surface-lessons-learned.js                                                                                                                 | 30   | code-quality             | E0     |
 | DEBT-7563 | Command injection risk in generateCommandPatch — sanitize...  | .claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js                                                                                 | 50   | security                 | E1     |
 
-## S2 - Medium (1877)
+## S2 - Medium (1878)
 
 | ID        | Title                                                          | File                                                                                                                                                                        | Line | Category                 | Effort    |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | --------- |
@@ -2676,6 +2676,7 @@
 | DEBT-7560 | Replace regex-based extractStateFileRefs with AST parser ...   | .claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js                                                                                                   | 240  | refactoring              | E1        |
 | DEBT-7561 | Replace regex-based isInsideTryCatch with AST parser (babel)   | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js                                                                                                      | 119  | refactoring              | E1        |
 | DEBT-7562 | Replace regex-based isInsideTryCatch with AST parser           | .claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js                                                                                            | 119  | refactoring              | E1        |
+| DEBT-7567 | safeReadFile silently swallows errors without context          | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js                                                                                               | 35   | code-quality             | E1        |
 
 ## S3 - Low (1947)
 

@@ -355,11 +355,17 @@ function checkBypassControls(content, lines, findings, scores) {
     //   Pattern B: if ! is_skipped X; then <main logic> else log-override ... fi
     // We search within ~1500 chars of the is_skipped call for log-override.js
     // associated with the same check's surrounding if/else/fi block.
-    const isSkippedIdx = content.indexOf("is_skipped " + checkName);
+    const isSkippedCallRe = new RegExp(
+      `is_skipped\\s*(?:\\(\\s*['"]?${escapeRegex(checkName)}['"]?\\s*\\)|\\s+${escapeRegex(checkName)})`
+    );
+    const isSkippedMatch = content.match(isSkippedCallRe);
+    const isSkippedIdx =
+      isSkippedMatch && typeof isSkippedMatch.index === "number" ? isSkippedMatch.index : -1;
+
     if (isSkippedIdx !== -1) {
       // Find the line containing is_skipped to detect inverted pattern
       const lineStart = content.lastIndexOf("\n", isSkippedIdx) + 1;
-      const isSkippedLine = content.slice(lineStart, isSkippedIdx + checkName.length + 15);
+      const isSkippedLine = content.slice(lineStart, isSkippedIdx + checkName.length + 30);
       const isInverted = /!\s*is_skipped/.test(isSkippedLine);
 
       if (isInverted) {
@@ -558,8 +564,8 @@ function checkGateEffectiveness(content, lines, findings, scores) {
     });
   }
 
-  // Check for non-blocking warnings (echo with warning emoji but no exit 1)
-  const warningPattern = /echo\s+.*\u26a0/g;
+  // Check for non-blocking warnings (echo with warning emoji or WARNING text but no exit 1)
+  const warningPattern = /echo\b[^\n]*(?:\u26a0(?:\ufe0f)?|\bWARNING\b)/gi;
   const warningPositions = [];
   for (const warnMatch of content.matchAll(warningPattern)) {
     const pos = warnMatch.index;
@@ -672,13 +678,9 @@ function checkGateEffectiveness(content, lines, findings, scores) {
       continue;
     }
 
-    // Look for: add_exit_trap 'rm -f "$VARNAME"'
-    const cleanupPattern = new RegExp(
-      "add_exit_trap\\s+['\"]rm\\s+-f\\s+[\"']?\\$" +
-        escapeRegex('"' + tf.varName + '"') +
-        "|add_exit_trap\\s+['\"]rm\\s+-f\\s+.*\\$" +
-        escapeRegex(tf.varName)
-    );
+    // Look for: add_exit_trap 'rm -f "$VARNAME"' or add_exit_trap 'rm -f ${VARNAME}'
+    const varRef = `(?:\\$\\{${escapeRegex(tf.varName)}\\}|\\$${escapeRegex(tf.varName)})`;
+    const cleanupPattern = new RegExp(`add_exit_trap\\s+['"]rm\\s+-f\\s+[^'"]*"?${varRef}"?`, "m");
     if (cleanupPattern.test(content)) {
       tempFilesWithCleanup++;
     } else {

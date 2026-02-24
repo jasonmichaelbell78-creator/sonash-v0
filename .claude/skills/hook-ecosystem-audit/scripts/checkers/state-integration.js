@@ -256,14 +256,14 @@ function checkStateFileHealth(stateDir, findings) {
  */
 const readOps = ["read" + "FileSync", "read" + "File", "existsSync"];
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const MAX_ARG_CHARS = 400;
+const MAX_ARG_CHARS = 200;
 const READ_PATTERNS = readOps.map(
-  (op) => new RegExp(escapeRegex(op) + `\\s*\\([^)]{0,${MAX_ARG_CHARS}}?state[/\\\\]`, "g")
+  (op) => new RegExp(escapeRegex(op) + `\\s*\\([^)\\n]{0,${MAX_ARG_CHARS}}state[/\\\\]`, "g")
 );
 
 const writeOps = ["write" + "FileSync", "append" + "FileSync", "write" + "File", "append" + "File"];
 const WRITE_PATTERNS = writeOps.map(
-  (op) => new RegExp(escapeRegex(op) + `\\s*\\([^)]{0,${MAX_ARG_CHARS}}?state[/\\\\]`, "g")
+  (op) => new RegExp(escapeRegex(op) + `\\s*\\([^)\\n]{0,${MAX_ARG_CHARS}}state[/\\\\]`, "g")
 );
 
 /**
@@ -382,14 +382,31 @@ function checkCrossHookDependencies(rootDir, hooksDir, findings) {
     // Collect all hook source files (top-level only, not lib/)
     const hookFiles = fs.readdirSync(hooksDir).filter((f) => /\.(js|ts)$/.test(f) && f[0] !== ".");
 
+    const MAX_HOOK_SOURCE_BYTES = 1 * 1024 * 1024;
     for (const hookFile of hookFiles) {
       const filePath = path.join(hooksDir, hookFile);
       let source;
+      let stat;
       try {
-        const stat = fs.statSync(filePath);
+        stat = fs.statSync(filePath);
         if (!stat.isFile()) continue;
         source = fs.readFileSync(filePath, "utf8");
       } catch {
+        continue;
+      }
+
+      if (stat.size > MAX_HOOK_SOURCE_BYTES) {
+        findings.push({
+          id: "HEA-510A",
+          category: "cross_hook_dependencies",
+          domain: DOMAIN,
+          severity: "warning",
+          message: `Hook source too large to scan: ${hookFile}`,
+          details: `Skipped dependency regex scan because file exceeds ${(MAX_HOOK_SOURCE_BYTES / (1024 * 1024)).toFixed(0)}MB.`,
+          impactScore: 40,
+          frequency: 1,
+          blastRadius: 2,
+        });
         continue;
       }
 

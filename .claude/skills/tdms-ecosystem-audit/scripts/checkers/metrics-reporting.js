@@ -104,13 +104,20 @@ function extractMetricsTable(content) {
   const lines = content.split("\n");
 
   for (const line of lines) {
-    // Match table rows: | Key | Value |
+    // Match table rows: | Key | Value | ...
     const m = line.match(/^\|\s*(.+?)\s*\|\s*(.+?)\s*\|/);
     if (m) {
       const key = m[1].trim().toLowerCase();
       const value = m[2].trim().replace(/,/g, "");
-      // Skip header separator rows
-      if (key.indexOf("---") === -1 && key.indexOf("===") === -1) {
+
+      // Skip header separator rows and common header rows
+      const isSeparator = key.indexOf("---") !== -1 || key.indexOf("===") !== -1;
+      const isHeaderRow =
+        (key === "key" && value.toLowerCase() === "value") ||
+        (key === "severity" && value.toLowerCase() === "count") ||
+        (key === "status" && value.toLowerCase() === "count");
+
+      if (!isSeparator && !isHeaderRow) {
         metrics[key] = value;
       }
     }
@@ -199,7 +206,21 @@ function checkViewGenerationAccuracy(rootDir, findings) {
     return { score: 0, rating: "poor", metrics: { reason: "unreadable" } };
   }
 
-  const { items: debtItems } = parseJsonl(debtContent);
+  const { items: debtItems, invalidCount } = parseJsonl(debtContent);
+
+  if (invalidCount > 0) {
+    findings.push({
+      id: "TMR-103A",
+      category: "view_generation_accuracy",
+      domain: DOMAIN,
+      severity: "error",
+      message: `MASTER_DEBT.jsonl has ${invalidCount} invalid JSON line${invalidCount === 1 ? "" : "s"}`,
+      details: "View accuracy cannot be trusted when the source file contains malformed JSONL.",
+      frequency: invalidCount,
+      blastRadius: 4,
+    });
+  }
+
   if (debtItems.length === 0) {
     findings.push({
       id: "TMR-103",
@@ -211,7 +232,11 @@ function checkViewGenerationAccuracy(rootDir, findings) {
       frequency: 1,
       blastRadius: 3,
     });
-    return { score: 100, rating: "good", metrics: { reason: "empty_source" } };
+    return {
+      score: 100,
+      rating: "good",
+      metrics: { reason: "empty_source", invalidCount },
+    };
   }
 
   // Compute actual counts from MASTER_DEBT

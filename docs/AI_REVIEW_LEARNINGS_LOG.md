@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.50 **Created:** 2026-01-02 **Last Updated:** 2026-02-23
+**Document Version:** 17.51 **Created:** 2026-01-02 **Last Updated:** 2026-02-23
 
 ## Purpose
 
@@ -584,6 +584,18 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #374: PR #388 R3 (2026-02-23)
+
+- **Source**: CI (docs:check — false alarm, passes locally), Qodo PR Suggestions
+- **PR**: Ecosystem audit skills (hook, session, TDMS) — continued
+- **Total items**: 16 (1 CI false alarm, 14 Qodo code suggestions, 1 generic)
+- **Fixed**: 14
+- **Deferred**: 1 (DEBT-7567: safeReadFile error swallowing, 25+ instances, S2)
+- **Rejected**: 1 (CI docs:check — passes locally, was stale CI result)
+- **Key patterns**: Heuristic accuracy (isInsideTryCatch brace direction), regex
+  backtracking prevention ([^)\n] instead of [^)]), false positive reduction
+  (writesMaster fallback, table header skip, callsite word boundaries)
 
 ### Review #373: PR #388 R2 (2026-02-23)
 

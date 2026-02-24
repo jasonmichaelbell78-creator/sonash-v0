@@ -306,9 +306,10 @@ function checkDataFlowIntegrity(rootDir, findings) {
     // For normalize-all reading raw/*.jsonl, check for the directory pattern
     let toHasInput;
     if (conn.toFile.indexOf("*") !== -1) {
-      // Glob pattern — check that target reads from the directory
-      const dirPart = conn.toFile.split("/")[0];
-      toHasInput = toContent.indexOf(dirPart) !== -1;
+      // Glob pattern — check that target reads from the directory path
+      const rawPathRe = /\braw[\\/]/;
+      const tdRawPathRe = /\btechnical-debt[\\/]raw[\\/]/;
+      toHasInput = rawPathRe.test(toContent) || tdRawPathRe.test(toContent);
     } else {
       const toFileBase = conn.toFile.replace(/^raw\//, "");
       toHasInput = toContent.indexOf(toFileBase) !== -1;
@@ -443,11 +444,7 @@ function checkIntakePipeline(rootDir, findings) {
     const afAsync = ["append", "File"].join("");
     const masterWriteRe = new RegExp(`(?:${wfSync}|${afSync})\\([^)]*MASTER_DEBT\\.jsonl`);
     const masterWriteAsyncRe = new RegExp(`(?:${wfAsync}|${afAsync})\\([^)]*MASTER_DEBT\\.jsonl`);
-    const writesMaster =
-      masterWriteRe.test(content) ||
-      masterWriteAsyncRe.test(content) ||
-      (content.indexOf(masterDebtLiteral) !== -1 &&
-        (writePattern.test(content) || appendPattern.test(content)));
+    const writesMaster = masterWriteRe.test(content) || masterWriteAsyncRe.test(content);
     if (!writesMaster) {
       missingBehaviors++;
       scriptIssues.push("does not write to MASTER_DEBT.jsonl");

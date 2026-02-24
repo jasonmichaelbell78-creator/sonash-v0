@@ -138,7 +138,7 @@ function countPatternCoverage(lines, pattern) {
   let total = 0;
   let wrapped = 0;
   const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(`\\b${escaped}\\b`, "g");
+  const regex = new RegExp(escaped, "g");
 
   for (let i = 0; i < lines.length; i++) {
     const matches = lines[i].match(regex);

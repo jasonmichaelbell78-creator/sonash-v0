@@ -79,19 +79,26 @@ function getHookFiles(rootDir) {
  * We walk backwards from the call line looking for an unmatched "try {".
  */
 function isInsideTryCatch(lines, callLineIdx) {
-  let braceDepth = 0;
+  let depth = 0;
+
   for (let i = callLineIdx; i >= 0; i--) {
     const line = lines[i];
-    // Count braces on this line (simplified)
+
+    // Track braces while walking backwards
     for (let c = line.length - 1; c >= 0; c--) {
-      if (line[c] === "}") braceDepth++;
-      if (line[c] === "{") braceDepth--;
+      if (line[c] === "{") depth++;
+      if (line[c] === "}") depth--;
     }
-    // If we see "try" at the start of a block at this depth
-    if (braceDepth < 0 && /\btry\b/.test(line)) {
+
+    // Bail out if we appear to have crossed into a different function scope
+    if (/\bfunction\b|=>\s*\{/.test(line) && depth < 0) return false;
+
+    // `try {` opening at the current depth implies we're inside its block
+    if (depth === 0 && /\btry\s*\{/.test(line)) {
       return true;
     }
   }
+
   return false;
 }
 

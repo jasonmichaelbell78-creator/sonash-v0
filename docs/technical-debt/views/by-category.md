@@ -141,7 +141,7 @@
 | DEBT-2547 | Shell script hooks may be redundant with Node.js versions     | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-2549 | Filesystem MCP server configured but noted as unused          | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (2679)
+## code-quality (2680)
 
 | ID        | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | --------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -1920,6 +1920,7 @@
 | DEBT-6803 | Remove this assignment of i                                     | S2       | scripts/metrics/review-churn-tracker.js                                                                                                                                     | 59   |
 | DEBT-6859 | Remove this assignment of i                                     | S2       | scripts/tasks/resolve-dependencies.js                                                                                                                                       | 88   |
 | DEBT-6869 | Unexpected unknown at-rule @custom-variant                      | S2       | styles/globals.css                                                                                                                                                          | 4    |
+| DEBT-7567 | safeReadFile silently swallows errors without context           | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js                                                                                               | 35   |
 | DEBT-0001 | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 0    |
 | DEBT-7375 | Pass limit to FirestoreService when it supports configura...    | S3       | lib/database/firestore-adapter.ts                                                                                                                                           | 0    |
 | DEBT-7380 | Consider pre-computing cohort retention in a daily job          | S3       | functions/src/admin.ts                                                                                                                                                      | 0    |

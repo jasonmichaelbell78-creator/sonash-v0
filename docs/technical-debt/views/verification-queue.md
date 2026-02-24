@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 999
+**Items Needing Verification:** 1000
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -321,6 +321,7 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-7560 | Replace regex-based extractStateFileRefs with AST parser ...    | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js        | 240  |
 | DEBT-7561 | Replace regex-based isInsideTryCatch with AST parser (babel)    | S2       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 119  |
 | DEBT-7562 | Replace regex-based isInsideTryCatch with AST parser            | S2       | .claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js | 119  |
+| DEBT-7567 | safeReadFile silently swallows errors without context           | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js    | 35   |
 | DEBT-0001 | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0    |
 | DEBT-7375 | Pass limit to FirestoreService when it supports configura...    | S3       | lib/database/firestore-adapter.ts                                                | 0    |
 | DEBT-7378 | Refactor to reduce cognitive complexity (currently 29, ta...    | S3       | scripts/check-content-accuracy.js                                                | 0    |

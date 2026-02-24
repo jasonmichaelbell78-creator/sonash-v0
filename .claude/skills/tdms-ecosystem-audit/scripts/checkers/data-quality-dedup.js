@@ -653,8 +653,12 @@ function checkContentHashIntegrity(rootDir) {
         "{" +
         sortedKeys
           .map((k) => {
-            const v = JSON.stringify(item[k]);
-            return `${JSON.stringify(k)}:${v === undefined ? "null" : v}`;
+            const raw = item[k];
+            const v =
+              raw === undefined || typeof raw === "function" || typeof raw === "symbol"
+                ? "null"
+                : JSON.stringify(raw);
+            return `${JSON.stringify(k)}:${v}`;
           })
           .join(",") +
         "}";

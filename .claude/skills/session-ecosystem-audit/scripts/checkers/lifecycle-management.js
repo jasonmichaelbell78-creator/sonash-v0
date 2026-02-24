@@ -354,9 +354,9 @@ function checkSessionCounterAccuracy(rootDir, findings) {
     };
   }
 
-  // Extract "Current Session Count: NNN"
-  const counterMatch = contextContent.match(/Current Session Count\D+(\d+)/);
-  const contextCounter = counterMatch ? parseInt(counterMatch[1], 10) : null;
+  // Extract "Current Session Count: NNN" (anchor to line start to avoid matching other numbers)
+  const counterMatch = contextContent.match(/^Current Session Count\s*:\s*(\d+)\s*$/m);
+  const contextCounter = counterMatch ? Number.parseInt(counterMatch[1], 10) : null;
 
   if (contextCounter === null) {
     findings.push({
@@ -511,7 +511,7 @@ function checkSessionDocFreshness(rootDir, findings) {
   }
 
   // Check 2: "Last Updated" within 7 days
-  const lastUpdatedMatch = contextContent.match(/Last Updated\D*(\d{4}-\d{2}-\d{2})/);
+  const lastUpdatedMatch = contextContent.match(/^Last Updated\s*:\s*(\d{4}-\d{2}-\d{2})\s*$/m);
   if (lastUpdatedMatch) {
     const lastUpdatedDate = new Date(lastUpdatedMatch[1] + "T00:00:00Z");
     const now = new Date();
@@ -519,7 +519,25 @@ function checkSessionDocFreshness(rootDir, findings) {
       (now.getTime() - lastUpdatedDate.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    if (daysDiff <= 7) {
+    if (daysDiff < 0) {
+      checkDetails.push({ check: "updated_within_7_days", passed: false, value: daysDiff });
+      findings.push({
+        id: "LCM-402A",
+        category: "session_doc_freshness",
+        domain: DOMAIN,
+        severity: "warning",
+        message: `SESSION_CONTEXT.md has a future 'Last Updated' date (${lastUpdatedMatch[1]})`,
+        details:
+          "Future dates make freshness checks unreliable. Fix the date to the most recent real update.",
+        impactScore: 60,
+        frequency: 1,
+        blastRadius: 3,
+        patchType: "doc_update",
+        patchTarget: "SESSION_CONTEXT.md",
+        patchContent: "Correct Last Updated date to a real (non-future) date",
+        patchImpact: "Restores reliable freshness validation",
+      });
+    } else if (daysDiff <= 7) {
       checksPassed++;
       checkDetails.push({ check: "updated_within_7_days", passed: true, value: daysDiff });
     } else {

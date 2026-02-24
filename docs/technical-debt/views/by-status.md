@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (999)
+## NEW (1000)
 
 | ID        | Title                                                           | Severity | Category                 |
 | --------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -318,6 +318,7 @@
 | DEBT-7560 | Replace regex-based extractStateFileRefs with AST parser ...    | S2       | refactoring              |
 | DEBT-7561 | Replace regex-based isInsideTryCatch with AST parser (babel)    | S2       | refactoring              |
 | DEBT-7562 | Replace regex-based isInsideTryCatch with AST parser            | S2       | refactoring              |
+| DEBT-7567 | safeReadFile silently swallows errors without context           | S2       | code-quality             |
 | DEBT-0001 | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-7375 | Pass limit to FirestoreService when it supports configura...    | S3       | code-quality             |
 | DEBT-7378 | Refactor to reduce cognitive complexity (currently 29, ta...    | S3       | refactoring              |
