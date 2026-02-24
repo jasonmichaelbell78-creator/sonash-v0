@@ -609,6 +609,20 @@ accumulate.
 
 ## Active Reviews
 
+### Review #382: PR #390 R4 (2026-02-24)
+
+- **Source**: Qodo Compliance (2), Qodo PR Suggestions (2)
+- **PR**: PR #390 — cherry-pick review fixes (R4)
+- **Items**: 4 total — 2 fixed, 0 deferred, 2 rejected
+- **Fixed**: Deterministic fallback date ("UNKNOWN" sentinel replaces
+  non-deterministic `new Date()`), fix rejected item numbering in learning log
+- **Rejected**: PATH binary hijacking (repeat of R3 S4036 — same justification);
+  swallowed exceptions (repeat of R3 — same justification)
+- **Key Learning**: Qodo Compliance re-raises the same items across rounds even
+  when already rejected. Mark as repeat-rejected without re-investigating.
+
+---
+
 ### Review #381: PR #390 R3 (2026-02-24)
 
 - **Source**: SonarCloud (1 hotspot, 1 code smell), Qodo Compliance (1), Qodo PR
@@ -618,11 +632,11 @@ accumulate.
 - **Fixed**: `--follow` flag for git log rename tracking, `.has()` for Map cache
   check, canonicalized cache key with forward slashes, `replaceAll()` over
   `replace()` (propagated to 2 additional instances in same file)
-- **Rejected**: [1] SonarCloud S4036 PATH hotspot — `execFileSync("git", [...])`
-  is hardcoded command with array args, no shell injection risk, local-only
-  script, same pattern in 10+ scripts; [3] Qodo swallowed exceptions — catch
-  blocks are intentional graceful degradation with fallback chain, not silent
-  error swallowing
+- **Rejected**: SonarCloud S4036 PATH hotspot — `execFileSync("git", [...])` is
+  hardcoded command with array args, no shell injection risk, local-only script,
+  same pattern in 10+ scripts; Qodo swallowed exceptions — catch blocks are
+  intentional graceful degradation with fallback chain, not silent error
+  swallowing
 - **Patterns**: Combine cache key normalization with cache check improvement in
   single pass; propagate `replaceAll` to all same-file instances
 - **Key Learning**: SonarCloud S4036 on `execFileSync` with hardcoded binary +

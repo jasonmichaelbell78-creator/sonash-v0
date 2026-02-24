@@ -531,7 +531,7 @@ function getLastModifiedDate(filePath, fullPath) {
       const stat = statSync(fullPath);
       lastModified = stat.mtime.toISOString().split("T")[0];
     } catch {
-      lastModified = new Date().toISOString().split("T")[0];
+      lastModified = "UNKNOWN";
     }
   }
 
