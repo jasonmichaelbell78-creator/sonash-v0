@@ -15,7 +15,8 @@
           {
             "type": "command",
             "command": "node .claude/hooks/check-mcp-servers.js",
-            "statusMessage": "Checking MCP availability..."
+            "statusMessage": "Checking MCP availability...",
+            "continueOnError": true
           },
           {
             "type": "command",

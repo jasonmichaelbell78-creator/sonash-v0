@@ -36,12 +36,77 @@ audits ALL hooks; this skill audits the SESSION SYSTEM specifically).
 
 ## CRITICAL RULES (Read First)
 
-1. **ALWAYS run the script first** — never generate findings without data
-2. **ALWAYS display the dashboard to the user** before starting the walkthrough
-3. **Present findings one at a time** using AskUserQuestion for decisions
-4. **Show patch suggestions inline** with each patchable finding
-5. **Create TDMS entries** for deferred findings via `/add-debt`
-6. **Save decisions** to session log for audit trail
+1. **CHECK for saved progress first** — resume from
+   `.claude/tmp/session-audit-progress.json` if it exists and is < 2 hours old.
+   Never re-present findings that were already decided.
+2. **ALWAYS run the script first** (if no saved progress) — never generate
+   findings without data
+3. **ALWAYS display the dashboard to the user** before starting the walkthrough
+4. **Present findings one at a time** using AskUserQuestion for decisions
+5. **SAVE progress after every decision** — write updated state to progress file
+   immediately
+6. **Show patch suggestions inline** with each patchable finding
+7. **Create TDMS entries** for deferred findings via `/add-debt`
+8. **Save decisions** to session log for audit trail
+
+---
+
+## Compaction Guard
+
+Audits are long-running interactive workflows vulnerable to context compaction.
+To survive compaction, save progress after every decision and check for existing
+progress on startup.
+
+### State File
+
+Path: `.claude/tmp/session-audit-progress.json`
+
+Schema:
+
+```json
+{
+  "auditTimestamp": "ISO timestamp of audit run",
+  "score": 85,
+  "grade": "B",
+  "totalFindings": 42,
+  "currentFindingIndex": 8,
+  "decisions": [
+    {
+      "findingIndex": 1,
+      "category": "session_begin_completeness",
+      "message": "finding description",
+      "decision": "skip",
+      "note": "reason"
+    }
+  ],
+  "fixesApplied": ["description of fix"],
+  "findingsData": []
+}
+```
+
+### On Skill Start (Before Phase 1)
+
+1. Check if `.claude/tmp/session-audit-progress.json` exists and is < 2 hours
+   old
+2. If yes: **resume from saved position**
+   - Display the dashboard from saved data (skip re-running the audit script)
+   - Show: "Resuming audit from finding {n}/{total} ({n-1} already reviewed)"
+   - List prior decisions briefly: "{n} fixed, {n} skipped, {n} deferred"
+   - Continue the walkthrough from `currentFindingIndex`
+3. If no (or stale): proceed to Phase 1 normally
+
+### After Each Decision (During Phase 3)
+
+After each AskUserQuestion response, immediately save progress:
+
+1. Update `currentFindingIndex` to the next finding
+2. Append the decision to the `decisions` array
+3. If "Fix Now" was chosen, append to `fixesApplied`
+4. Write the updated JSON to `.claude/tmp/session-audit-progress.json`
+
+### On Audit Completion (Phase 4)
+
+After the summary is presented, delete the progress file (audit is complete).
 
 ---
 
@@ -58,6 +123,9 @@ node .claude/skills/session-ecosystem-audit/scripts/run-session-ecosystem-audit.
 3. Create a session decision log file:
    - Path: `.claude/tmp/session-audit-session-{YYYY-MM-DD-HHMM}.jsonl`
    - Create `.claude/tmp/` directory if it doesn't exist
+
+4. Save initial progress state to `.claude/tmp/session-audit-progress.json` with
+   `currentFindingIndex: 0`, the full findings data, score, and grade.
 
 ---
 
@@ -335,6 +403,7 @@ Restore: compact-restore.js (SessionStart: compact)
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-02-23 | Initial implementation |
+| Version | Date       | Description                                   |
+| ------- | ---------- | --------------------------------------------- |
+| 1.0     | 2026-02-23 | Initial implementation                        |
+| 1.1     | 2026-02-24 | Add compaction guard for progress persistence |
