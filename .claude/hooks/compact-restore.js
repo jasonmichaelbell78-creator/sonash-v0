@@ -20,14 +20,14 @@ try {
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
   console.error("Failed to load node:fs:", msg);
-  process.exit(2);
+  process.exit(1);
 }
 try {
   path = require("node:path");
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
   console.error("Failed to load node:path:", msg);
-  process.exit(2);
+  process.exit(1);
 }
 
 // Paths

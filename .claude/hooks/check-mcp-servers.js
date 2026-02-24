@@ -96,6 +96,7 @@ try {
 
   // Output only server names - no URLs, tokens, headers, or other config
   console.log(`Available MCP servers: ${output}. Use mcp__<server>__<tool> to invoke.`);
+  console.log("ok");
 } catch (error) {
   if (error instanceof SyntaxError) {
     console.log("Invalid .mcp.json (unable to parse)");

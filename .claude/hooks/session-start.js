@@ -545,3 +545,4 @@ if (warnings === 0) {
   console.log(`⚠️ SessionStart completed with ${warnings} warning(s)`);
 }
 console.log("📋 Next: /session-begin or start working");
+console.log("ok");

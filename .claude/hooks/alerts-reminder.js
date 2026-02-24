@@ -167,6 +167,8 @@ function main() {
   // Output all messages
   if (messages.length > 0) {
     messages.forEach((m) => console.log(m));
+  } else {
+    console.log("ok");
   }
 
   // Update cooldown after successful check (atomic write — Review #289)

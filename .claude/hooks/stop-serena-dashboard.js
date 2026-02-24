@@ -333,6 +333,7 @@ function main() {
 
   if (!pid) {
     log(`No process listening on port ${PORT}`);
+    console.log("ok");
     process.exit(0);
   }
 
@@ -388,6 +389,7 @@ function main() {
 
   if (success) {
     log(`SUCCESS: Terminated process ${pid}`, "INFO");
+    console.log("ok");
     process.exit(0);
   } else {
     log(`FAILED: Could not terminate process ${pid}`, "ERROR");
