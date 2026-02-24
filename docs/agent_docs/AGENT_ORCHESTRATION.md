@@ -17,12 +17,15 @@ multi-agent coordination. Loaded on-demand when spawning agents.
 
 ## Delegated Code Review
 
-After modifying 5+ code files, the `agent-trigger-enforcer.js` hook queues a
-delegated review to `.claude/state/pending-reviews.json`. When this triggers:
+After modifying 5+ code files, a delegated review should be triggered per
+CLAUDE.md Section 6 POST-TASK triggers. When this applies:
 
 1. Spawn a `code-reviewer` subagent with the diff of changes
 2. The subagent writes findings to a file (not inline in conversation)
 3. Main conversation reads the summary — saves 1000+ tokens of review output
+
+> **Note:** The `agent-trigger-enforcer.js` hook was removed. Code review
+> triggering is now managed through CLAUDE.md Section 6 guidance.
 
 This keeps the orchestrating conversation lean and compaction-safe.
 

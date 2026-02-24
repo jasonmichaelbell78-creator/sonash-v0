@@ -1,6 +1,10 @@
 # MCP Server Setup Guide
 
-**Document Version:** 1.0 **Last Updated:** 2026-01-15 **Status:** Active
+<!-- prettier-ignore-start -->
+**Document Version:** 1.0
+**Last Updated:** 2026-01-15
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Document Version**: 2.0 **Purpose**: Master navigation and workflow guide for
 AI assistants **When to Use**: Start of EVERY session **Last Updated**:
-2026-02-02
+2026-02-23
 
 ---
 
@@ -93,6 +93,8 @@ Recovery Notebook project. It provides:
 ```
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
 ☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
+     Note: GLOBAL_SECURITY_STANDARDS.md content is incorporated into CLAUDE.md
+     Section 2 — not a standalone requirement separate from CLAUDE.md.
 ☐ 3. Check docs/audits/multi-ai/COORDINATOR.md:
      - Increment session counter
      - Note any health issues

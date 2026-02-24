@@ -1,6 +1,6 @@
 # SonarCloud Cleanup Sprint Runbook
 
-**Created**: 2026-01-18 **Last Updated**: 2026-01-19
+**Created**: 2026-01-18 **Last Updated**: 2026-02-23
 
 ---
 
@@ -9,7 +9,8 @@
 1. Fetch issues:
    `curl -s "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78-creator_sonash-v0&ps=500&p=1" > /tmp/sonar.json`
 2. Generate report: `node scripts/generate-detailed-sonar-report.js`
-3. Verify phase: `node scripts/verify-sonar-phase.js --phase=1`
+3. Verify phase: `node scripts/verify-sonar-phase.js --phase=1` (**NOTE**: this
+   script no longer exists — verify manually)
 
 ## AI Instructions
 
@@ -377,11 +378,11 @@ If a file has 100+ issues, consider:
 
 ## Scripts Reference
 
-| Script                                           | Purpose                            |
-| ------------------------------------------------ | ---------------------------------- |
-| `scripts/generate-detailed-sonar-report.js`      | Generate report with code snippets |
-| `scripts/verify-sonar-phase.js`                  | Pre-commit verification            |
-| `scripts/generate-sonar-report-with-snippets.js` | Alternative report generator       |
+| Script                                           | Purpose                                                                                                |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `scripts/generate-detailed-sonar-report.js`      | Generate report with code snippets                                                                     |
+| `scripts/verify-sonar-phase.js`                  | Pre-commit verification (**DEPRECATED** - script no longer exists; verification must be done manually) |
+| `scripts/generate-sonar-report-with-snippets.js` | Alternative report generator                                                                           |
 
 ---
 

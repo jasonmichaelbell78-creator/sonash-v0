@@ -27,40 +27,40 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #358 - #369 (12 reviews) **Analysis Date:** 2026-02-23
+**Review Range:** #358 - #371 (14 reviews) **Analysis Date:** 2026-02-23
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 91.8% |
-| Patterns Learned          | 290   |
-| Patterns Automated        | 23    |
-| Patterns Failing          | 8     |
+| Learning Effectiveness    | 92.4% |
+| Patterns Learned          | 289   |
+| Patterns Automated        | 26    |
+| Patterns Failing          | 5     |
 | Critical Pattern Success  | 95.1% |
-| Automation Coverage       | 20.2% |
+| Automation Coverage       | 21.4% |
 | Total Documented Patterns | 341   |
-| Total Automated Patterns  | 69    |
+| Total Automated Patterns  | 73    |
 
 ### Top Recommended Actions
 
 1. **[Automation]** Automate "Safe percentage"
-   - Recurred 4 times after documentation \(Reviews: 358, 360, 366, 369\)
+   - Recurred 5 times after documentation \(Reviews: 358, 360, 366, 369, 371\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Section\-scoped regex parsing"
-   - Recurred 4 times after documentation \(Reviews: 362, 363, 368, 369\)
+2. **[Automation]** Automate "Session identity check"
+   - Recurred 4 times after documentation \(Reviews: 358, 361, 365, 370\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Automation]** Automate "User context in audit logs"
-   - Recurred 4 times after documentation \(Reviews: 358, 362, 364, 367\)
+3. **[Automation]** Automate "Table\-column date parsing"
+   - Recurred 4 times after documentation \(Reviews: 358, 362, 363, 371\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
+4. **[Documentation]** Improve documentation for "Input length DoS"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Parallel agent review"
+5. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 290   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 23    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 20    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 8     | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 289   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 26    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 21    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 5     | Pattern recurred 3+ times - needs automation |
 
 ---
 

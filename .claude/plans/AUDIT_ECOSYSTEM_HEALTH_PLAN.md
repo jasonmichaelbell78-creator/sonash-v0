@@ -149,6 +149,15 @@ Create 7 new directories with `.gitkeep` files.
 
 ### Step 2: Move All Files (4 Source Locations -> Consolidated)
 
+> **NOTE — Copy-paste error in 2a, 2b, 2d:** The original source and destination
+> paths in steps 2a, 2b, and 2d are identical (e.g.,
+> `git mv docs/audits/multi-ai/* docs/audits/multi-ai/`). These no-op commands
+> were a copy-paste mistake from the Decision Record table in Section 2 above
+> (where decisions #1 and #2 show the same path for source and destination).
+> Steps 2a, 2b, and 2d require no file moves — the files are already at their
+> target locations. Only 2c (the ai-optimization merge) and 2d's status update
+> require action.
+
 **2a: Move `docs/audits/multi-ai/*` -> `docs/audits/multi-ai/`**
 
 All contents including: README.md, COORDINATOR.md, templates/ (11 files:
@@ -158,14 +167,16 @@ DOCUMENTATION_AUDIT.md, PROCESS_AUDIT.md, ENGINEERING_PRODUCTIVITY_AUDIT.md,
 ENHANCEMENT_AUDIT.md, AI_OPTIMIZATION_AUDIT.md).
 
 ```bash
-git mv docs/audits/multi-ai/* docs/audits/multi-ai/
-rmdir docs/audits/multi-ai
+# NO-OP: Source and destination paths are identical — files already at target location.
+# git mv docs/audits/multi-ai/* docs/audits/multi-ai/
+# rmdir docs/audits/multi-ai
 ```
 
 **2b: Move `docs/audits/AUDIT_TRACKER.md` -> `docs/audits/AUDIT_TRACKER.md`**
 
 ```bash
-git mv docs/audits/AUDIT_TRACKER.md docs/audits/AUDIT_TRACKER.md
+# NO-OP: Source and destination paths are identical — file already at target location.
+# git mv docs/audits/AUDIT_TRACKER.md docs/audits/AUDIT_TRACKER.md
 ```
 
 **2c: Merge `docs/audits/single-session/ai-optimization/` into standard
@@ -183,7 +194,8 @@ location.
 **2d: Move `docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md` -> `docs/audits/`**
 
 ```bash
-git mv docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md
+# NO-OP: Source and destination paths are identical — file already at target location.
+# git mv docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md
 ```
 
 Update status from `PLANNED` to `COMPLETED/REFERENCE`.

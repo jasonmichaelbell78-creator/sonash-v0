@@ -1,14 +1,15 @@
 # Claude Hooks Documentation
 
-**Last Updated:** 2026-02-02 **Configuration:** `.claude/settings.json`
+<!-- prettier-ignore-start -->
+**Document Version:** 2.0
+**Last Updated:** 2026-02-23
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
 
----
+## Purpose
 
-## Overview
-
-Claude hooks are Node.js scripts that run automatically in response to Claude
-Code events. They enforce project standards, run quality checks, and provide
-contextual guidance.
+Documents all Claude Code hooks configured in `.claude/settings.json`. Hooks are
+Node.js scripts that run automatically in response to Claude Code events.
 
 ---
 
@@ -16,145 +17,109 @@ contextual guidance.
 
 **File:** `.claude/settings.json`
 
-```json
-{
-  "hooks": {
-    "SessionStart": [...],
-    "PostToolUse": [...],
-    "UserPromptSubmit": [...]
-  }
-}
-```
+Four event types are configured:
+
+| Event              | When It Fires                            |
+| ------------------ | ---------------------------------------- |
+| `SessionStart`     | New session begins (or after compaction) |
+| `PreCompact`       | Before conversation compaction           |
+| `PostToolUse`      | After specific tools are used            |
+| `UserPromptSubmit` | When user submits a prompt               |
 
 ---
 
 ## SessionStart Hooks
 
-**When:** Claude Code starts a new session (web/remote environments only)
+### Default (all sessions)
 
-### session-start.js
+| Hook                              | Purpose                                   |
+| --------------------------------- | ----------------------------------------- |
+| `session-start.js`                | Environment setup (deps, build, checks)   |
+| `check-mcp-servers.js`            | Report available MCP servers              |
+| `check-remote-session-context.js` | Check remote branches for session context |
 
-**Purpose:** Prepare development environment for new session
+### Compact (after compaction)
 
-**What it does:**
+| Hook                 | Purpose                          |
+| -------------------- | -------------------------------- |
+| `compact-restore.js` | Restore context after compaction |
 
-1. Check MCP secrets status (encrypted tokens)
-2. Install npm dependencies (root and functions) - uses lockfile hash caching
-3. Build Firebase Functions
-4. Compile test files
-5. Run pattern compliance check
-6. Check consolidation status (reviews/archiving thresholds)
-7. Check backlog health
-8. Display session checklist
+---
 
-**Timing:** ~10-20 seconds (5-10s if dependencies cached)
+## PreCompact Hooks
 
-**Conditions:**
-
-- Only runs if `CLAUDE_CODE_REMOTE=true` (web sessions)
-- Skips on local CLI (dependencies already exist)
-- Uses lockfile hash caching to skip npm install if unchanged
-
-### check-mcp-servers.js
-
-**Purpose:** Check MCP server availability
-
-**What it does:**
-
-1. Read `.mcp.json` configuration
-2. Report available MCP servers by name
-3. Does NOT expose tokens or sensitive config
+| Hook                     | Purpose                                    |
+| ------------------------ | ------------------------------------------ |
+| `pre-compaction-save.js` | Save full state snapshot before compaction |
 
 ---
 
 ## PostToolUse Hooks
 
-**When:** After Write, Edit, or MultiEdit tools are used
-
-### check-write-requirements.js
-
-**Trigger:** Write tool **Purpose:** Verify agent requirements for file creation
-
-**What it checks:**
-
-- Whether appropriate agent/skill should have been used
-- File type-specific requirements
-
-### check-edit-requirements.js
-
-**Trigger:** Edit, MultiEdit tools **Purpose:** Verify agent requirements for
-file modifications
-
-**What it checks:**
-
-- Whether appropriate agent/skill should have been used
-- File type-specific requirements
-
-### pattern-check.js
-
-**Trigger:** Write, Edit, MultiEdit tools **Purpose:** Check pattern compliance
-on modified files
-
-**What it checks:**
-
-- Anti-patterns from CODE_PATTERNS.md
-- Security patterns
-- Project-specific patterns
-
-**Output:** Warns if patterns violated (does not block)
+| Matcher         | Hook                         | Purpose                          |
+| --------------- | ---------------------------- | -------------------------------- |
+| Write           | `post-write-validator.js`    | Validate write operations        |
+| Edit            | `post-write-validator.js`    | Validate edit operations         |
+| MultiEdit       | `post-write-validator.js`    | Validate multiedit operations    |
+| Read            | `post-read-handler.js`       | Process read operations          |
+| AskUserQuestion | `decision-save-prompt.js`    | Check decision documentation     |
+| Bash            | `commit-tracker.js`          | Track git commits to JSONL log   |
+| Bash            | `commit-failure-reporter.js` | Report failed commits            |
+| Task            | `track-agent-invocation.js`  | Track agent/subagent invocations |
 
 ---
 
 ## UserPromptSubmit Hooks
 
-**When:** User submits a prompt
-
-### analyze-user-request.js
-
-**Purpose:** Check PRE-TASK triggers
-
-**What it checks:**
-
-- Whether task matches a skill trigger
-- Whether appropriate agent should be used
-- Pre-task requirements
+| Hook                     | Purpose                                       |
+| ------------------------ | --------------------------------------------- |
+| `user-prompt-handler.js` | Process user prompt (skill triggers, context) |
 
 ---
 
-## Hook Files
+## All Hook Files
 
 **Location:** `.claude/hooks/`
 
-| File                          | Event                              | Purpose            |
-| ----------------------------- | ---------------------------------- | ------------------ |
-| `session-start.js`            | SessionStart                       | Environment setup  |
-| `check-mcp-servers.js`        | SessionStart                       | MCP availability   |
-| `check-write-requirements.js` | PostToolUse (Write)                | Agent requirements |
-| `check-edit-requirements.js`  | PostToolUse (Edit/MultiEdit)       | Agent requirements |
-| `pattern-check.js`            | PostToolUse (Write/Edit/MultiEdit) | Pattern compliance |
-| `analyze-user-request.js`     | UserPromptSubmit                   | PRE-TASK triggers  |
+| File                              | Event(s)             | Purpose                                         |
+| --------------------------------- | -------------------- | ----------------------------------------------- |
+| `session-start.js`                | SessionStart         | Environment setup (deps, build, patterns)       |
+| `check-mcp-servers.js`            | SessionStart         | MCP server availability check                   |
+| `check-remote-session-context.js` | SessionStart         | Remote branch context check                     |
+| `compact-restore.js`              | SessionStart:compact | Restore context after compaction                |
+| `pre-compaction-save.js`          | PreCompact           | Save state snapshot before compaction           |
+| `post-write-validator.js`         | PostToolUse          | Validate Write/Edit/MultiEdit operations        |
+| `post-read-handler.js`            | PostToolUse          | Process Read operations                         |
+| `decision-save-prompt.js`         | PostToolUse          | Decision documentation on AskUserQuestion       |
+| `commit-tracker.js`               | PostToolUse          | Track commits to .claude/state/commit-log.jsonl |
+| `commit-failure-reporter.js`      | PostToolUse          | Report failed git commits                       |
+| `track-agent-invocation.js`       | PostToolUse          | Track Task/agent invocations                    |
+| `user-prompt-handler.js`          | UserPromptSubmit     | Process user prompts (triggers, context)        |
+| `alerts-reminder.js`              | (utility)            | Alert session reminders                         |
+| `plan-mode-suggestion.js`         | (utility)            | Plan mode suggestions                           |
+| `session-end-reminder.js`         | (utility)            | Session end reminders                           |
+| `state-utils.js`                  | (shared lib)         | Shared utilities for hook state management      |
+| `stop-serena-dashboard.js`        | (utility)            | Stop Serena dashboard process                   |
 
-**Note:** Shell script wrappers (`.sh` files) also exist for compatibility but
-the main logic is in the Node.js (`.js`) files.
+### Global Hooks
+
+**Location:** `.claude/hooks/global/`
+
+| File                  | Event        | Purpose                                    |
+| --------------------- | ------------ | ------------------------------------------ |
+| `gsd-check-update.js` | SessionStart | Check for GSD package updates              |
+| `statusline.js`       | StatusLine   | Custom status showing model, task, context |
 
 ---
 
 ## Hook Behavior
 
-### Non-Blocking
-
-All Claude hooks are **advisory** - they warn but don't block operations:
-
-- Hooks output to status message
-- Claude sees the feedback
-- User sees the feedback
-- Operations proceed regardless
-
-### Comparison with Git Hooks
+All Claude hooks are **advisory** — they output guidance but do not block
+operations (exit codes are ignored).
 
 | Aspect     | Claude Hooks      | Git Hooks         |
 | ---------- | ----------------- | ----------------- |
-| Blocking   | NO                | YES               |
+| Blocking   | No                | Yes               |
 | Purpose    | Guidance          | Enforcement       |
 | Runs on    | Claude operations | Git operations    |
 | Exit codes | Ignored           | Block if non-zero |
@@ -164,76 +129,22 @@ All Claude hooks are **advisory** - they warn but don't block operations:
 ## Adding New Hooks
 
 1. Create Node.js script in `.claude/hooks/`
-2. Add to `.claude/settings.json`
-3. Document in this file
-
-**Template:**
-
-```javascript
-#!/usr/bin/env node
-const fs = require("node:fs");
-const path = require("node:path");
-
-// Use process.cwd() for project root
-const PROJECT_ROOT = process.cwd();
-
-// Your hook logic here
-
-console.log("Hook result message");
-```
-
----
-
-## Debugging Hooks
-
-**Check if hook ran:**
-
-- Look for status message in Claude output
-- Run hook script directly: `node .claude/hooks/script.js`
-
-**Common issues:**
-
-- Syntax errors in script
-- Wrong path in settings.json
-- Missing dependencies in script
-- Environment variable not available
-
----
-
-## Global Hooks (Cross-Platform)
-
-**Location:** `.claude/hooks/global/`
-
-Cross-platform Node.js hooks that can be synced between Windows CLI and Claude
-Code Web environments.
-
-| File                  | Event        | Purpose                                    |
-| --------------------- | ------------ | ------------------------------------------ |
-| `gsd-check-update.js` | SessionStart | Check for GSD package updates              |
-| `statusline.js`       | StatusLine   | Custom status showing model, task, context |
-
-**Sync with local environment:**
-
-```bash
-# Import from repo to local (~/.claude/)
-node scripts/sync-claude-settings.js (REMOVED) --import
-
-# Export from local to repo
-node scripts/sync-claude-settings.js (REMOVED) --export
-
-# Compare differences
-node scripts/sync-claude-settings.js (REMOVED) --diff
-```
-
-**See:** [CROSS_PLATFORM_SETUP.md](./CROSS_PLATFORM_SETUP.md) for full setup
-guide.
+2. Add configuration to `.claude/settings.json`
+3. Update this document
 
 ---
 
 ## Related Documentation
 
-- [AI_WORKFLOW.md](../AI_WORKFLOW.md) - Session workflows
-- [DEVELOPMENT.md](../DEVELOPMENT.md) - Git hooks
-- [COMMAND_REFERENCE.md](./COMMAND_REFERENCE.md) - Full command reference
-- [CROSS_PLATFORM_SETUP.md](./CROSS_PLATFORM_SETUP.md) - Cross-platform setup
-- [REQUIRED_PLUGINS.md](./REQUIRED_PLUGINS.md) - Plugin configuration
+- [AI_WORKFLOW.md](../AI_WORKFLOW.md) — Session workflows
+- [COMMAND_REFERENCE.md](./COMMAND_REFERENCE.md) — Full command reference
+- [CROSS_PLATFORM_SETUP.md](./CROSS_PLATFORM_SETUP.md) — Cross-platform setup
+- [CONTEXT_PRESERVATION.md](../docs/agent_docs/CONTEXT_PRESERVATION.md) —
+  Compaction safety layers
+
+## Version History
+
+| Version | Date       | Changes                                            |
+| ------- | ---------- | -------------------------------------------------- |
+| 2.0     | 2026-02-23 | Complete rewrite: 18 actual hooks, accurate config |
+| 1.0     | 2026-02-02 | Initial version (now outdated)                     |

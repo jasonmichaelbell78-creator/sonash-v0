@@ -1,7 +1,7 @@
 # [Document Title]
 
 **Document Version**: X.Y **Status**: Active | Under Review | Deprecated
-**Applies To**: [Version/Release/All] **Last Updated**: YYYY-MM-DD
+**Applies To**: [Version/Release/All] **Last Updated**: 2026-02-23
 
 ---
 
@@ -282,6 +282,9 @@ Example:
 ## 🔗 References & Related Documentation
 
 ### Internal Documentation
+
+<!-- NOTE: The paths below are EXAMPLE paths and must be adjusted per-document
+     to match your actual project structure. Verify all links before committing. -->
 
 **Foundation Documents**:
 

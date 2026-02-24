@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 1.8 **Last Updated**: 2026-02-14 **Total Skills**: 54
+**Version**: 2.2 **Last Updated**: 2026-02-23 **Total Skills**: 61
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -16,7 +16,7 @@ Quick reference for all available Claude Code skills organized by category.
 
 ## Categories
 
-### Audit & Code Quality (16 skills)
+### Audit & Code Quality (18 skills)
 
 | Skill                             | Description                                                                     |
 | --------------------------------- | ------------------------------------------------------------------------------- |
@@ -26,6 +26,7 @@ Quick reference for all available Claude Code skills organized by category.
 | `/audit-enhancements`             | Enhancement audit across all domains                                            |
 | `/audit-engineering-productivity` | Engineering productivity and DX audit                                           |
 | `/audit-ai-optimization`          | AI infrastructure optimization audit                                            |
+| `/audit-health`                   | Meta-check for audit system health and configuration                            |
 | `/audit-performance`              | Performance bottlenecks and optimization                                        |
 | `/audit-process`                  | Multi-stage automation audit (16 types, 7 stages)                               |
 | `/audit-refactoring`              | Refactoring opportunities                                                       |
@@ -34,6 +35,10 @@ Quick reference for all available Claude Code skills organized by category.
 | `/create-audit`                   | Interactive wizard to scaffold new audit types                                  |
 | `/code-reviewer`                  | Run code review on recent changes                                               |
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator with any-format input                     |
+| `/pr-ecosystem-audit`             | Comprehensive PR review ecosystem diagnostic                                    |
+| `/hook-ecosystem-audit`           | Hook system health diagnostic (16 categories, 5 domains, A-F scoring)           |
+| `/tdms-ecosystem-audit`           | TDMS pipeline health diagnostic (16 categories, 5 domains, A-F scoring)         |
+| `/session-ecosystem-audit`        | Session system health diagnostic (16 categories, 5 domains, A-F scoring)        |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues (replaces sonarcloud-sprint) |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                                            |
 
@@ -82,10 +87,11 @@ Quick reference for all available Claude Code skills organized by category.
 | `/content-research-writer` | Content research and writing                                             |
 | `/markitdown`              | Convert various formats to markdown                                      |
 
-### Testing (2 skills)
+### Testing (3 skills)
 
 | Skill             | Description                                       |
 | ----------------- | ------------------------------------------------- |
+| `/system-test`    | 23-domain interactive system test plan            |
 | `/test-suite`     | Multi-phase UI testing orchestration (Playwright) |
 | `/webapp-testing` | Web application testing                           |
 
@@ -101,7 +107,7 @@ Quick reference for all available Claude Code skills organized by category.
 | `/skill-creator`          | Create new skills                           |
 | `/validate-claude-folder` | Validate .claude folder structure           |
 
-### Project Specific (6 skills)
+### Project Specific (7 skills)
 
 | Skill                        | Description                                      |
 | ---------------------------- | ------------------------------------------------ |
@@ -109,6 +115,7 @@ Quick reference for all available Claude Code skills organized by category.
 | `/developer-growth-analysis` | Analyze developer growth                         |
 | `/pr-retro`                  | PR review retrospective with actionable analysis |
 | `/pr-review`                 | Process PR review feedback                       |
+| `/sprint`                    | TDMS sprint workflow automation                  |
 | `/using-superpowers`         | Claude superpowers guide                         |
 | `/verify-technical-debt`     | Verify and triage technical debt items           |
 
@@ -141,6 +148,13 @@ Quick reference for all available Claude Code skills organized by category.
 | Ending work            | `/session-end`                                |
 | CI failures            | `/gh-fix-ci`                                  |
 | System health          | `/alerts`                                     |
+| Sprint management      | `/sprint`                                     |
+| System testing         | `/system-test`                                |
+| PR ecosystem health    | `/pr-ecosystem-audit`                         |
+| Hook ecosystem health  | `/hook-ecosystem-audit`                       |
+| TDMS pipeline health   | `/tdms-ecosystem-audit`                       |
+| Session system health  | `/session-ecosystem-audit`                    |
+| Audit system health    | `/audit-health`                               |
 
 ---
 

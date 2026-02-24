@@ -38,9 +38,21 @@
     "check-triggers.js",
     "commit-failure-reporter.js",
     "track-agent-invocation.js",
-    "seed-commit-log.js"
+    "seed-commit-log.js",
+    "patch-generator.js",
+    "state-manager.js",
+    "run-hook-ecosystem-audit.js",
+    "run-session-ecosystem-audit.js",
+    "run-tdms-ecosystem-audit.js"
   ],
-  "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
+  "unescaped-regexp-input": [
+    "suggest-pattern-automation.js",
+    "pattern-check.js",
+    "functional-correctness.js",
+    "state-integration.js",
+    "compaction-resilience.js",
+    "config-health.js"
+  ],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
   "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
@@ -61,7 +73,8 @@
     "user-prompt-handler.js",
     "post-read-handler.js",
     "security-helpers.js",
-    "seed-commit-log.js"
+    "seed-commit-log.js",
+    "state-manager.js"
   ],
   "writefile-missing-encoding": [
     "alerts-reminder.js",
@@ -94,6 +107,7 @@
     "archive-doc.js",
     "run-alerts.js",
     "post-read-handler.js",
-    "seed-commit-log.js"
+    "seed-commit-log.js",
+    "state-manager.js"
   ]
 }

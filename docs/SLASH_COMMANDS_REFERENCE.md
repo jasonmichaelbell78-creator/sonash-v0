@@ -1,886 +1,392 @@
-# Slash Commands Reference
+# Slash Commands & Skills Reference
 
-**Document Version:** 2.3 **Created:** 2026-01-05 **Last Updated:** 2026-02-02
+<!-- prettier-ignore-start -->
+**Document Version:** 3.1
+**Last Updated:** 2026-02-23
 **Status:** ACTIVE
+<!-- prettier-ignore-end -->
 
----
+## Purpose
 
-## Document Purpose
-
-This document serves as the comprehensive reference for all slash commands
-available in this project, including:
-
-- **System commands** - Built-in Claude Code CLI commands
-- **Custom commands** - Project-specific workflows in `.claude/commands/`
-- **Proposed commands** - Planned implementations to close automation gaps
-
-Each command includes description, use cases, implementation details, and
-compliance relevance.
+Comprehensive reference for all slash commands and skills available in the
+SoNash project. Skills are located in `.claude/skills/*/SKILL.md` and invoked
+via `/skill-name`.
 
 ## Quick Start
 
-1. Use `/help` to see all available commands
-2. Check [Current Custom Commands](#2-current-custom-commands) for project
-   workflows
-3. Run `/session-begin` at the start of each session
-
-## AI Instructions
-
-When implementing or using slash commands:
-
-- Always check if a command exists before implementing new functionality
-- Follow the naming convention: `verb-noun` (e.g., `session-begin`,
-  `code-review`)
-- Document new commands in this reference file
+1. Use `/help` to see built-in CLI commands
+2. Run `/session-begin` at the start of each session
+3. Use `/find-skills` to discover skills by keyword
+4. Run `/session-end` before ending work
 
 ---
 
 ## Table of Contents
 
 1. [System Commands](#1-system-commands)
-2. [Current Custom Commands](#2-current-custom-commands)
-3. [Proposed Commands - Critical Priority](#3-proposed-commands---critical-priority)
-4. [Proposed Commands - High Priority](#4-proposed-commands---high-priority)
-5. [Proposed Commands - Medium Priority](#5-proposed-commands---medium-priority)
-6. [Proposed Commands - By Category](#6-proposed-commands---by-category)
-7. [Implementation Guidelines](#7-implementation-guidelines)
-8. [Gap Analysis](#8-gap-analysis)
+2. [Skills by Category](#2-skills-by-category)
+3. [npm Scripts Reference](#3-npm-scripts-reference)
+4. [Skill Development](#4-skill-development)
 
 ---
 
 ## 1. System Commands
 
-Built-in Claude Code CLI commands. These are available globally and do not
-require custom implementation.
+Built-in Claude Code CLI commands (not project-specific).
 
 ### Navigation & Session
 
-| Command    | Description                          | Use Cases                         |
-| ---------- | ------------------------------------ | --------------------------------- |
-| `/help`    | Display available commands and usage | When unsure about capabilities    |
-| `/clear`   | Clear conversation history           | Start fresh context, reduce noise |
-| `/compact` | Compress conversation for efficiency | Long sessions, context limits     |
-| `/resume`  | Resume a previous session            | Continue interrupted work         |
-| `/status`  | Show current session status          | Check state, active files         |
+| Command    | Description                          |
+| ---------- | ------------------------------------ |
+| `/help`    | Display available commands and usage |
+| `/clear`   | Clear conversation history           |
+| `/compact` | Compress conversation for efficiency |
+| `/resume`  | Resume a previous session            |
+| `/status`  | Show current session status          |
 
 ### Configuration
 
-| Command           | Description                         | Use Cases                      |
-| ----------------- | ----------------------------------- | ------------------------------ |
-| `/config`         | View/modify Claude Code settings    | Change behavior, adjust limits |
-| `/model`          | Switch between Claude models        | Use different model for task   |
-| `/permissions`    | Manage tool permissions             | Restrict/enable capabilities   |
-| `/init`           | Initialize Claude Code in a project | New project setup              |
-| `/terminal-setup` | Configure terminal integration      | Shell customization            |
-| `/vim`            | Toggle vim keybindings              | Editor preference              |
+| Command           | Description                      |
+| ----------------- | -------------------------------- |
+| `/config`         | View/modify Claude Code settings |
+| `/model`          | Switch between Claude models     |
+| `/permissions`    | Manage tool permissions          |
+| `/init`           | Initialize Claude Code project   |
+| `/terminal-setup` | Configure terminal integration   |
+| `/vim`            | Toggle vim keybindings           |
 
 ### Authentication & Tools
 
-| Command   | Description                   | Use Cases                    |
-| --------- | ----------------------------- | ---------------------------- |
-| `/login`  | Authenticate with Anthropic   | Initial setup, token refresh |
-| `/logout` | End authentication session    | Security, switch accounts    |
-| `/mcp`    | Manage MCP server connections | Add/remove tool servers      |
-| `/doctor` | Diagnose configuration issues | Troubleshoot problems        |
+| Command   | Description                   |
+| --------- | ----------------------------- |
+| `/login`  | Authenticate with Anthropic   |
+| `/logout` | End authentication session    |
+| `/mcp`    | Manage MCP server connections |
+| `/doctor` | Diagnose configuration issues |
 
 ### Code & Repository
 
-| Command        | Description                  | Use Cases                         |
-| -------------- | ---------------------------- | --------------------------------- |
-| `/review`      | Request code review          | After writing significant code    |
-| `/pr-comments` | View PR comments from GitHub | Check feedback on PRs             |
-| `/add-dir`     | Add directory to context     | Include additional codebase areas |
-| `/ide`         | IDE integration commands     | VS Code, cursor integration       |
-| `/cost`        | Display token/cost usage     | Monitor API consumption           |
-| `/memory`      | Manage conversation memory   | Context persistence               |
+| Command        | Description                  |
+| -------------- | ---------------------------- |
+| `/review`      | Request code review          |
+| `/pr-comments` | View PR comments from GitHub |
+| `/add-dir`     | Add directory to context     |
+| `/ide`         | IDE integration commands     |
+| `/cost`        | Display token/cost usage     |
+| `/memory`      | Manage conversation memory   |
 
 ---
 
-## 2. Current Custom Commands
+## 2. Skills by Category
 
-Project-specific commands located in `.claude/commands/`. These implement
-standardized workflows critical to project compliance.
+All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 
-**Currently Implemented (12 commands):**
+### Audit & Code Quality (18 skills)
 
-| Command                | File                   | Purpose                  |
-| ---------------------- | ---------------------- | ------------------------ |
-| `/session-begin`       | session-begin.md       | Pre-session verification |
-| `/session-end`         | session-end.md         | Post-session audit       |
-| `/pr-review`           | pr-review.md           | Code review processing   |
-| `/docs-sync`           | docs-sync.md           | Document synchronization |
-| `/checkpoint`          | checkpoint.md          | Session state save       |
-| `/audit-code`          | audit-code.md          | Code review audit        |
-| `/audit-security`      | audit-security.md      | Security audit           |
-| `/audit-performance`   | audit-performance.md   | Performance audit        |
-| `/audit-refactoring`   | audit-refactoring.md   | Refactoring audit        |
-| `/audit-documentation` | audit-documentation.md | Documentation audit      |
-| `/audit-process`       | audit-process.md       | Process/automation audit |
+| Skill                             | Description                                                     |
+| --------------------------------- | --------------------------------------------------------------- |
+| `/audit-comprehensive`            | Run all 9 audit domains in staged waves                         |
+| `/audit-code`                     | Code quality audit (3-agent parallel: hygiene, types, security) |
+| `/audit-documentation`            | Documentation coverage audit (18 agents, 6 stages)              |
+| `/audit-enhancements`             | Enhancement audit across all domains                            |
+| `/audit-engineering-productivity` | Engineering productivity and DX audit                           |
+| `/audit-ai-optimization`          | AI infrastructure optimization audit                            |
+| `/audit-health`                   | Meta-check for audit system health and configuration            |
+| `/audit-performance`              | Performance audit (2-agent parallel: bundle, data)              |
+| `/audit-process`                  | Multi-stage automation audit (16 types, 7 stages)               |
+| `/audit-refactoring`              | Refactoring opportunities audit                                 |
+| `/audit-security`                 | Security audit (4-agent parallel: vuln, supply, framework, AI)  |
+| `/audit-aggregator`               | Aggregate and deduplicate findings from multiple audits         |
+| `/create-audit`                   | Interactive wizard to scaffold new audit types                  |
+| `/code-reviewer`                  | Run code review on recent changes                               |
+| `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                           |
+| `/pr-ecosystem-audit`             | Comprehensive PR review ecosystem diagnostic                    |
+| `/hook-ecosystem-audit`           | Hook system health diagnostic (16 categories, 5 domains)        |
+| `/tdms-ecosystem-audit`           | TDMS pipeline health diagnostic (16 categories, 5 domains)      |
+| `/session-ecosystem-audit`        | Session system health diagnostic (16 categories, 5 domains)     |
+| `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues              |
+| `/quick-fix`                      | Auto-suggest fixes for common issues                            |
 
----
+### Planning (1 skill)
 
-### `/session-begin`
+| Skill        | Description                                        |
+| ------------ | -------------------------------------------------- |
+| `/deep-plan` | Discovery-first planning with exhaustive questions |
 
-**File:** `.claude/commands/session-begin.md` **Created:** Session #20
+### Session Management (5 skills)
 
-#### Description
+| Skill            | Description                                                  |
+| ---------------- | ------------------------------------------------------------ |
+| `/session-begin` | Pre-session verification and context loading                 |
+| `/session-end`   | Post-session audit, documentation, and learning capture      |
+| `/checkpoint`    | Save session state (local + optional MCP memory via `--mcp`) |
+| `/task-next`     | Show dependency-resolved next tasks from active sprint       |
+| `/alerts`        | Intelligent health dashboard with scoring and benchmarks     |
 
-Pre-session verification checklist that ensures context is loaded, consolidation
-status is checked, and the AI is prepared to work effectively.
+### Development Roles (7 skills)
 
-#### Use Cases
+| Skill                   | Description                                      |
+| ----------------------- | ------------------------------------------------ |
+| `/senior-architect`     | Architecture guidance and design decisions       |
+| `/senior-backend`       | Backend development expertise                    |
+| `/senior-devops`        | DevOps and infrastructure guidance               |
+| `/senior-frontend`      | Frontend development expertise                   |
+| `/senior-fullstack`     | Full-stack development guidance                  |
+| `/senior-qa`            | QA and testing expertise                         |
+| `/systematic-debugging` | Systematic bug investigation (scientific method) |
 
-- Starting any new work session
-- Resuming after context switch
-- Beginning work after extended break
+### Design & UX (3 skills)
 
-#### Workflow Steps
+| Skill                     | Description                      |
+| ------------------------- | -------------------------------- |
+| `/frontend-design`        | Production-grade frontend design |
+| `/ui-design-system`       | Design system components toolkit |
+| `/ux-researcher-designer` | UX research and design           |
 
-1. **Context Loading** - Read SESSION_CONTEXT.md, increment session counter,
-   check ROADMAP.md
-2. **Consolidation Status** - Check if pattern consolidation was missed (>=10
-   reviews)
-3. **Documentation Awareness** - Check ROADMAP.md Active Sprint for current work
-4. **Skill Selection** - Decision tree for appropriate agent/skill usage
-5. **Code Review Handling** - Procedures for processing review feedback
-6. **Anti-Pattern Awareness** - Scan claude.md Section 4 + CODE_PATTERNS.md
-   before writing code
-7. **Script Execution** - Run `npm run patterns:check`, `npm run review:check`,
-   `npm run lessons:surface`, `npm run reviews:archive`
-8. **Incident Documentation** - Reminder to document significant errors
+### Documentation & Content (4 skills)
 
-#### Scripts Auto-Run
+| Skill                      | Description                                      |
+| -------------------------- | ------------------------------------------------ |
+| `/doc-optimizer`           | Auto-fix + enhance all docs (13 agents, 5 waves) |
+| `/docs-maintain`           | Check doc sync + auto-update artifacts           |
+| `/content-research-writer` | Content research and writing assistant           |
+| `/markitdown`              | Convert various file formats to markdown         |
 
-```bash
-npm run patterns:check    # Surface known anti-patterns
-npm run patterns:sync     # Verify docs/automation consistency
-npm run review:check      # Check if multi-AI review thresholds reached
-npm run lessons:surface   # Surface past lessons relevant to current work
-npm run reviews:archive   # Check if active reviews exceed threshold (>20)
-npm run reviews:sync -- --apply  # Sync reviews/retros to JSONL
-npm run reviews:check-archive    # Check archive heading format/gaps
-```
+### Testing (3 skills)
 
-#### Compliance Relevance
+| Skill             | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| `/system-test`    | 23-domain interactive system test plan            |
+| `/test-suite`     | Multi-phase UI testing orchestration (Playwright) |
+| `/webapp-testing` | Web application testing with Playwright           |
 
-- **Pattern Enforcement:** Loads claude.md Section 4 + CODE_PATTERNS.md
-  anti-patterns into context
-- **Trigger Detection:** Identifies when multi-AI review is due
-- **Knowledge Continuity:** Ensures patterns from previous sessions are applied
+### Infrastructure & Setup (7 skills)
 
----
+| Skill                     | Description                                 |
+| ------------------------- | ------------------------------------------- |
+| `/decrypt-secrets`        | Decrypt MCP tokens for remote sessions      |
+| `/find-skills`            | Discover and install agent skills           |
+| `/gh-fix-ci`              | Fix failing GitHub CI actions               |
+| `/mcp-builder`            | Build MCP server configurations             |
+| `/pre-commit-fixer`       | Auto-fix pre-commit hook failures and retry |
+| `/skill-creator`          | Create new skills via wizard                |
+| `/validate-claude-folder` | Validate .claude folder structure           |
 
-### `/session-end`
+### Project Specific (7 skills)
 
-**File:** `.claude/commands/session-end.md` **Created:** Session #20
+| Skill                        | Description                                      |
+| ---------------------------- | ------------------------------------------------ |
+| `/add-debt`                  | Add technical debt items to MASTER_DEBT.jsonl    |
+| `/developer-growth-analysis` | Analyze developer growth patterns                |
+| `/pr-retro`                  | PR review retrospective with actionable analysis |
+| `/pr-review`                 | Process PR review feedback (CodeRabbit, Qodo)    |
+| `/sprint`                    | TDMS sprint workflow automation                  |
+| `/using-superpowers`         | Claude skills usage guide                        |
+| `/verify-technical-debt`     | Verify and triage technical debt items           |
 
-#### Description
+### Data & Analysis (3 skills)
 
-Post-session verification and audit checklist that ensures all work is properly
-documented, validated, and ready for handoff.
-
-#### Use Cases
-
-- Completing any work session
-- Before extended breaks
-- Before context handoff to another session
-
-#### Workflow Steps
-
-1. **Work Verification** - All todos complete, commits pushed, tests pass
-2. **CI Verification** - Check modified CI files still work
-3. **Documentation Updates** - Update SESSION_CONTEXT.md, ROADMAP.md Active
-   Sprint
-4. **Learning Consolidation** - Check/perform pattern consolidation if due
-5. **Code Review Audit** - Verify all review items addressed
-6. **Agent/Skill/Hook Audit** - Comprehensive 6-section audit table
-7. **Key Learnings** - Document DO/DON'T patterns from session
-8. **Commit Summary** - List commits made this session
-
-#### Audit Sections
-
-| Section                   | Purpose                                                        |
-| ------------------------- | -------------------------------------------------------------- |
-| 6.1 Session Start Scripts | Verify patterns:check, review:check, lessons:surface ran       |
-| 6.2 Agent Usage           | Track code-reviewer, security-auditor, debugger, Explore, Plan |
-| 6.3 Skill Usage           | Track systematic-debugging, frontend-design, code-reviewer     |
-| 6.4 MCP Servers           | Document which MCP servers were used                           |
-| 6.5 Hooks Executed        | Verify SessionStart, UserPromptSubmit, pre-commit, pre-push    |
-| 6.6 Audit Result          | PASS/FAIL with remediation notes                               |
-
----
-
-### `/pr-review`
-
-**File:** `.claude/commands/pr-review.md` **Created:** Session #22
-
-#### Description
-
-Comprehensive protocol for processing AI code review feedback from CodeRabbit,
-Qodo, or other tools. Ensures every suggestion is addressed, categorized, and
-documented.
-
-#### Use Cases
-
-- Receiving CodeRabbit PR comments
-- Processing Qodo compliance feedback
-- Handling any AI-generated code review
-
-#### Workflow Steps
-
-1. **Context Loading (Tiered)** - Read claude.md Section 4 + CODE_PATTERNS.md,
-   learnings log quick index
-2. **Initial Intake** - Identify source, extract ALL suggestions, announce count
-3. **Categorization** - CRITICAL/MAJOR/MINOR/TRIVIAL with action requirements
-4. **Create Todo List** - Track every item including learning log entry
-5. **Invoke Agents** - security-auditor, test-engineer, etc. based on issue
-   types
-6. **Address Issues** - Fix in priority order, verify each fix
-7. **Document Decisions** - Deferred/Rejected items with justification
-8. **Learning Capture** - Add Review #N entry, update consolidation counter
-9. **Final Summary** - Statistics, files modified, verification status
-10. **Commit** - With proper prefix and CANON-ID references
-
-#### Categorization Matrix
-
-| Category | Criteria                              | Action                |
-| -------- | ------------------------------------- | --------------------- |
-| CRITICAL | Security, data loss, breaking changes | Fix IMMEDIATELY       |
-| MAJOR    | Bugs, performance, missing validation | Fix before proceeding |
-| MINOR    | Style, naming, tests, docs            | Fix (don't defer)     |
-| TRIVIAL  | Typos, whitespace, formatting         | **FIX THESE TOO**     |
+| Skill                      | Description                                 |
+| -------------------------- | ------------------------------------------- |
+| `/excel-analysis`          | Analyze Excel spreadsheets and tabular data |
+| `/artifacts-builder`       | Build multi-component claude.ai artifacts   |
+| `/market-research-reports` | Generate comprehensive market research      |
 
 ---
 
-### `/docs-sync`
+## 3. npm Scripts Reference
 
-**File:** `.claude/commands/docs-sync.md` **Created:** Session #35
+All 96 npm scripts organized by domain. Run with `npm run <script>`.
 
-#### Description
+### Documentation (12 scripts)
 
-Synchronize documentation and check for consistency issues.
+| Script                | Description                               |
+| --------------------- | ----------------------------------------- |
+| `docs:check`          | Light documentation health check          |
+| `docs:index`          | Regenerate DOCUMENTATION_INDEX.md         |
+| `docs:sync-check`     | Check template-instance synchronization   |
+| `docs:headers`        | Validate document headers                 |
+| `docs:lint`           | Run markdownlint on all docs              |
+| `docs:external-links` | Check external URLs (HTTP HEAD)           |
+| `docs:accuracy`       | Verify version/path/npm script references |
+| `docs:placement`      | Check doc location and staleness          |
+| `docs:archive`        | Archive documents                         |
+| `docs:update-readme`  | Update README.md                          |
+| `crossdoc:check`      | Cross-document dependency check           |
+| `format`              | Run Prettier formatting                   |
 
-#### Use Cases
+### Patterns & Compliance (7 scripts)
 
-- After moving/renaming documents
-- Ensuring cross-references are valid
-- Syncing related documents
+| Script               | Description                               |
+| -------------------- | ----------------------------------------- |
+| `patterns:check`     | Check code against documented patterns    |
+| `patterns:check-all` | Check all files (not just staged)         |
+| `patterns:suggest`   | Suggest new patterns from recent reviews  |
+| `patterns:sync`      | Verify pattern doc/automation consistency |
+| `patterns:fp-report` | False positives report                    |
+| `patterns:promote`   | Promote patterns to automation            |
+| `test:patterns`      | Run pattern compliance tests              |
 
----
+### Technical Debt (TDMS) (10 scripts)
 
-### `/checkpoint`
+| Script            | Description                                |
+| ----------------- | ------------------------------------------ |
+| `tdms:metrics`    | Generate TDMS metrics dashboard            |
+| `tdms:views`      | Generate TDMS views from MASTER_DEBT.jsonl |
+| `sprint:status`   | Show current sprint status                 |
+| `sprint:complete` | Complete current sprint                    |
+| `sprint:intake`   | Intake new items into sprint               |
+| `sprint:sync`     | Sync sprint items                          |
+| `sprint:wave`     | Process sprint wave                        |
+| `backlog:check`   | Check backlog health                       |
+| `validate:canon`  | Validate canonical IDs                     |
+| `canon:normalize` | Normalize canonical IDs                    |
 
-**File:** `.claude/commands/checkpoint.md`
+### Audits (11 scripts)
 
-#### Description
+| Script                     | Description                             |
+| -------------------------- | --------------------------------------- |
+| `audit:health`             | Audit system health check               |
+| `audit:validate`           | Validate audit configuration            |
+| `audit:pre-check`          | Pre-audit validation                    |
+| `audit:post`               | Post-audit processing                   |
+| `audit:compare`            | Compare audit results                   |
+| `audit:thresholds`         | Check audit thresholds                  |
+| `audit:resolutions`        | Check audit resolutions                 |
+| `audit:results-index`      | Index audit results                     |
+| `audit:validate-templates` | Validate audit templates                |
+| `audit:reset`              | Reset audit state                       |
+| `aggregate:audit-findings` | Aggregate findings from multiple audits |
 
-Quick save of current session state for recovery after failures.
+### Reviews & Learning (12 scripts)
 
-#### Use Cases
+| Script                  | Description                                 |
+| ----------------------- | ------------------------------------------- |
+| `review:check`          | Check if multi-AI review thresholds reached |
+| `review:churn`          | Analyze review churn                        |
+| `reviews:sync`          | Sync reviews/retros to JSONL                |
+| `reviews:archive`       | Archive old reviews                         |
+| `reviews:check-archive` | Check archive heading format                |
+| `reviews:repair`        | Repair review data                          |
+| `learning:analyze`      | Analyze learning effectiveness              |
+| `learning:category`     | Analyze learning by category                |
+| `learning:dashboard`    | Learning effectiveness dashboard            |
+| `learning:detailed`     | Detailed learning analysis                  |
+| `learning:since`        | Learning analysis since last review         |
+| `lessons:surface`       | Surface past lessons for current work       |
 
-- Before risky operations
-- Periodic state saves during long sessions
-- Before context-heavy operations
+### Session & Workflow (9 scripts)
 
----
+| Script              | Description                   |
+| ------------------- | ----------------------------- |
+| `session:gaps`      | Detect undocumented sessions  |
+| `session:gaps:fix`  | Fix session gaps              |
+| `session:log`       | View session log              |
+| `session:summary`   | Session summary               |
+| `session:end`       | End session processing        |
+| `alerts:cleanup`    | Clean up stale alert sessions |
+| `consolidation:run` | Run pattern consolidation     |
+| `override:log`      | Log override events           |
+| `override:list`     | List overrides                |
 
-### `/audit-code`
+### Skills & Agents (5 scripts)
 
-**File:** `.claude/skills/audit-code/SKILL.md` **Created:** Session #37
-(2026-01-08) **Updated:** Session #125 (parallel architecture + AI Code
-Patterns)
+| Script                | Description                    |
+| --------------------- | ------------------------------ |
+| `skills:validate`     | Validate skill configurations  |
+| `skills:verify-usage` | Verify skill usage in sessions |
+| `skills:registry`     | Show skills registry           |
+| `agents:check`        | Check agent configurations     |
+| `agents:check-strict` | Strict agent check             |
 
-#### Description
+### Testing & Build (6 scripts)
 
-Code review audit with 3-agent parallel architecture. Checks code hygiene,
-types, framework patterns, testing, security surface, and AI-specific code
-patterns.
+| Script                 | Description                      |
+| ---------------------- | -------------------------------- |
+| `test`                 | Run full test suite              |
+| `test:build`           | TypeScript compilation for tests |
+| `test:coverage`        | Coverage report with c8          |
+| `test:coverage:report` | HTML coverage output             |
+| `build`                | Next.js production build         |
+| `dev`                  | Next.js development server       |
 
-#### Parallel Architecture
+### Code Quality (8 scripts)
 
-| Agent                  | Focus Areas                                        |
-| ---------------------- | -------------------------------------------------- |
-| hygiene-and-types      | Code Hygiene, TypeScript Strictness                |
-| framework-and-testing  | Framework Patterns, Test Coverage                  |
-| security-and-debugging | Security Smells, AI Code Patterns, Debug Artifacts |
+| Script               | Description                          |
+| -------------------- | ------------------------------------ |
+| `lint`               | Run ESLint                           |
+| `format`             | Run Prettier                         |
+| `format:check`       | Check formatting without fixing      |
+| `security:check`     | Security pattern check               |
+| `security:check-all` | Full security check                  |
+| `deps:circular`      | Detect circular dependencies (madge) |
+| `deps:unused`        | Detect unused dependencies (knip)    |
+| `config:validate`    | Validate project configuration       |
 
-#### Features
+### Ecosystem & Hooks (7 scripts)
 
-1. Parallel execution with 3 specialized agents (2.5x faster)
-2. Sequential fallback mode with checkpointing for recovery
-3. AI Health Score calculation (hallucinations, test validity, consistency)
-4. JSONL findings with TDMS-compatible schema
-5. Saves to `docs/audits/single-session/code/`
+| Script                    | Description                         |
+| ------------------------- | ----------------------------------- |
+| `ecosystem-audit`         | Run ecosystem audit                 |
+| `ecosystem-audit:check`   | Check ecosystem audit status        |
+| `ecosystem-audit:summary` | Ecosystem audit summary             |
+| `hooks:analytics`         | Hook usage analytics                |
+| `hooks:test`              | Test hook configurations            |
+| `hooks:health`            | Hook health check                   |
+| `triggers:check`          | Check automation trigger thresholds |
 
-#### Focus Areas
+### Other (10 scripts)
 
-- Code Hygiene (unused imports, dead code, console.logs)
-- Types & Correctness (any types, type safety, null checks)
-- Framework Best Practices (React patterns, Next.js conventions)
-- Testing Coverage (untested functions, missing edge cases)
-- Security Surface (input validation, auth checks)
-- **AI Code Patterns** (hallucinated imports/APIs, trivial tests, session
-  inconsistencies, AI TODO markers)
-
----
-
-### `/audit-security`
-
-**File:** `.claude/skills/audit-security/SKILL.md` **Created:** Session #37
-**Updated:** Session #125 (parallel architecture + AI Security Patterns)
-
-#### Description
-
-Security audit with 4-agent parallel architecture. Checks authentication, input
-validation, data protection, Firebase security, dependencies, OWASP coverage,
-and AI-specific security patterns.
-
-#### Parallel Architecture
-
-| Agent                      | Focus Areas                                    |
-| -------------------------- | ---------------------------------------------- |
-| vulnerability-scanner      | Auth, Input Validation, OWASP Top 10           |
-| supply-chain-auditor       | Dependencies, CVE scanning, License compliance |
-| framework-security-auditor | Next.js, Firebase, React security patterns     |
-| ai-code-security-auditor   | AI-generated code patterns, prompt injection   |
-
-#### Features
-
-1. Parallel execution with 4 specialized agents (3x faster)
-2. Sequential fallback mode with checkpointing for recovery
-3. Category 13: AI Security Patterns (prompt injection S0, hallucinated APIs S1)
-4. JSONL findings with TDMS-compatible schema
-
-#### Focus Areas
-
-- Authentication & Authorization
-- Input Validation
-- Data Protection
-- Firebase/Firestore Security
-- Dependency Security
-- OWASP Top 10 Coverage
-- **AI Security Patterns** (prompt injection, hallucinated security APIs,
-  AI-suggested insecure defaults, inconsistent auth patterns)
-
----
-
-### `/audit-performance`
-
-**File:** `.claude/skills/audit-performance/SKILL.md` **Created:** Session #37
-**Updated:** Session #125 (parallel architecture + AI Performance Patterns)
-
-#### Description
-
-Performance audit with 2-agent parallel architecture. Checks bundle size,
-rendering performance, data fetching, memory management, Core Web Vitals, and
-AI-specific performance patterns.
-
-#### Parallel Architecture
-
-| Agent                | Focus Areas                                    |
-| -------------------- | ---------------------------------------------- |
-| bundle-and-rendering | Bundle Size, Rendering Performance, Web Vitals |
-| data-and-memory      | Data Fetching, Memory Management, Caching      |
-
-#### Features
-
-1. Parallel execution with 2 specialized agents (2x faster)
-2. Sequential fallback mode with checkpointing for recovery
-3. Category 7: AI Performance Patterns (naive data fetching, missing pagination)
-4. JSONL findings with TDMS-compatible schema
-
-#### Focus Areas
-
-- Bundle Size & Loading
-- Rendering Performance
-- Data Fetching & Caching
-- Memory Management
-- Core Web Vitals
-- **AI Performance Patterns** (naive data fetching S1, missing pagination S2,
-  unbounded queries S1, redundant re-renders S2)
-
----
-
-### `/audit-refactoring`
-
-**File:** `.claude/commands/audit-refactoring.md` **Created:** Session #37
-
-#### Description
-
-Single-session refactoring audit. Identifies god objects, code duplication,
-cognitive complexity, architecture violations, and technical debt markers.
-
-#### Focus Areas
-
-- God Objects
-- Code Duplication
-- Cognitive Complexity
-- Architecture Violations
-- Technical Debt Markers
+| Script                | Description                       |
+| --------------------- | --------------------------------- |
+| `roadmap:validate`    | Validate ROADMAP.md structure     |
+| `roadmap:hygiene`     | Roadmap hygiene check             |
+| `phase:complete`      | Complete a roadmap phase          |
+| `phase:complete:auto` | Auto-complete phase (CI-friendly) |
+| `phase:validate`      | Validate phase completion         |
+| `lighthouse`          | Run Lighthouse audit (mobile)     |
+| `lighthouse:desktop`  | Run Lighthouse audit (desktop)    |
+| `capabilities:search` | Search project capabilities       |
+| `prepare`             | Husky git hooks setup (lifecycle) |
+| `start`               | Next.js production server         |
 
 ---
 
-### `/audit-documentation`
+## 4. Skill Development
 
-**File:** `.claude/commands/audit-documentation.md` **Created:** Session #37
-**Updated:** Session #116 (v2.0 - 6-stage parallel architecture)
+### Skill File Structure
 
-#### Description
-
-Multi-stage parallel documentation audit using 18 specialized agents across 6
-stages. Produces JSONL findings with TDMS integration, prioritized remediation
-plans, and actionable fix commands.
-
-#### Audit Stages
-
-| Stage | Name                  | Agents | Focus                                 |
-| ----- | --------------------- | ------ | ------------------------------------- |
-| 1     | Inventory & Baseline  | 3      | Document catalog, metrics, link graph |
-| 2     | Link Validation       | 4      | Internal, external, cross-ref, orphan |
-| 3     | Content Quality       | 4      | Accuracy, completeness, coherence     |
-| 4     | Format & Structure    | 3      | Lint, prettier, structure standards   |
-| 5     | Placement & Lifecycle | 4      | Location, archive, cleanup candidates |
-| 6     | Synthesis             | 1      | Merge, dedupe, prioritize, report     |
-
-#### New npm Scripts
-
-```bash
-npm run docs:external-links  # Check external URLs (HTTP HEAD, 10s timeout)
-npm run docs:accuracy        # Version/path/npm script validation
-npm run docs:lint            # Markdownlint checks
-npm run docs:placement       # Location and staleness checks
-```
-
-#### Staleness Thresholds (Tier-Specific)
-
-- **Tier 1 (Canonical):** >60 days = stale
-- **Tier 2 (Foundation):** >90 days = stale
-- **Tier 3+ (Planning/Reference/Guides):** >120 days = stale
-
-#### Output
-
-- JSONL findings with TDMS-compatible schema
-- FINAL_REPORT.md with prioritized action plan
-- Archive/cleanup recommendations with justification
-
----
-
-### `/audit-process`
-
-**File:** `.claude/commands/audit-process.md` **Created:** Session #37
-
-#### Description
-
-Single-session process/automation audit. Checks CI/CD pipelines, git hooks,
-Claude hooks, scripts, triggers, and process documentation.
-
-#### Focus Areas
-
-- CI/CD Pipeline
-- Git Hooks
-- Claude Hooks
-- Script Health
-- Trigger Thresholds
-- Process Documentation
-
----
-
-## 3. Proposed Commands - Critical Priority
-
-Commands that close major automation gaps and save significant time.
-
----
-
-### `/consolidate-patterns`
-
-**Priority:** CRITICAL **Gap Closed:** Pattern consolidation is manual 7-step
-process, often skipped
-
-#### Description
-
-Automates the pattern consolidation workflow that surfaces repeated patterns
-from AI_REVIEW_LEARNINGS_LOG.md into claude.md Section 4 + CODE_PATTERNS.md.
-
-#### Use Cases
-
-- When "Reviews since last consolidation" >= 10
-- Before major audits (Step 4)
-- End of sprint/milestone
-- Force consolidation with `--force` flag
-
-#### Problem Solved
-
-Patterns identified in reviews don't reach claude.md context until manually
-consolidated. This means the AI doesn't "learn" from previous sessions until
-someone remembers to consolidate.
-
----
-
-### `/security-check`
-
-**Priority:** CRITICAL **Gap Closed:** No automated verification of 50+ security
-patterns in claude.md
-
-#### Description
-
-Comprehensive security compliance check that verifies pattern adherence, ESLint
-baseline, critical files, and claude.md patterns.
-
-#### Use Cases
-
-- Before any security-related changes
-- After modifying firebase.ts, firestore.rules, etc.
-- During Step 4.2.2 Security Audit
-- Regular security hygiene check
-
----
-
-### `/review-status`
-
-**Priority:** CRITICAL **Gap Closed:** Ambiguous "when should we run multi-AI
-review?" decisions
-
-#### Description
-
-Check all multi-AI review triggers and recommend action based on thresholds.
-
-#### Use Cases
-
-- Before starting new feature work
-- At session start (via /session-begin)
-- When considering multi-AI audit
-- After significant refactoring
-
----
-
-### `/remediate`
-
-**Priority:** CRITICAL **Gap Closed:** No workflow for executing CANON findings
-from Step 4
-
-#### Description
-
-Execute fixes from CANON findings or PR plan generated by Step 4.
-
-#### Syntax
+All skills reside in `.claude/skills/<skill-name>/SKILL.md`:
 
 ```
-/remediate CANON-0012        # Fix specific finding
-/remediate PR1               # Fix all items in PR group 1
-/remediate --all --severity S0,S1  # All critical/major items
+.claude/skills/
+  SKILL_INDEX.md           # Index of all 58 skills
+  session-begin/SKILL.md   # Session start workflow
+  session-end/SKILL.md     # Session end workflow
+  audit-code/SKILL.md      # Code audit skill
+  ...
 ```
 
----
+### Creating New Skills
 
-## 4. Proposed Commands - High Priority
-
-Commands that prevent errors and improve workflow efficiency.
-
----
-
-### `/verify-archival`
-
-**Priority:** HIGH **Gap Closed:** Review #53 - CI broke when script referenced
-archived file
-
-#### Description
-
-Safe document archival with cross-reference checking.
-
-#### Use Cases
-
-- Before archiving any document
-- Moving docs to archive folder
-- Deprecating planning documents
-
----
-
-### `/surface-learnings`
-
-**Priority:** HIGH **Gap Closed:** Session learnings not captured consistently
-
-#### Description
-
-Auto-document session patterns and add to AI_REVIEW_LEARNINGS_LOG.md.
-
-#### Use Cases
-
-- At session end
-- After encountering significant issues
-- When patterns emerge from debugging
-
----
-
-### `/lint-baseline`
-
-**Priority:** HIGH **Gap Closed:** ESLint warning baseline can drift undetected
-
-#### Description
-
-Quarterly ESLint baseline audit and update.
-
-#### Use Cases
-
-- Quarterly maintenance
-- After major refactoring
-- When security warnings change
-
----
-
-### `/cross-ref-check`
-
-**Priority:** HIGH **Gap Closed:** Broken links discovered late after doc moves
-
-#### Description
-
-Quick cross-reference validation for documentation.
-
----
-
-### `/trigger-check`
-
-**Priority:** HIGH **Gap Closed:** Multiple trigger thresholds need unified view
-
-#### Description
-
-Unified view of all automation triggers and their status.
-
----
-
-## 5. Proposed Commands - Medium Priority
-
-Commands that improve efficiency but aren't blocking.
-
----
-
-### `/roadmap-update`
-
-**Priority:** MEDIUM
-
-#### Description
-
-Assist with ROADMAP.md updates and ensure consistency.
-
----
-
-### `/canon-status`
-
-**Priority:** MEDIUM
-
-#### Description
-
-Track CANON finding status across sessions.
-
----
-
-### `/ci-validate`
-
-**Priority:** MEDIUM
-
-#### Description
-
-Validate CI workflow changes before committing.
-
----
-
-### `/deps-audit`
-
-**Priority:** MEDIUM
-
-#### Description
-
-Unified dependency audit (npm audit, outdated, licenses).
-
----
-
-### `/agent-recommend`
-
-**Priority:** MEDIUM
-
-#### Description
-
-Recommend appropriate agent/skill based on current task.
-
----
-
-## 6. Proposed Commands - By Category
-
-Additional proposed commands organized by functional area.
-
-### Firebase & Cloud Functions
-
-| Command                  | Description                                 | Priority |
-| ------------------------ | ------------------------------------------- | -------- |
-| `/firebase-deploy-check` | Pre-deployment validation for Firebase      | HIGH     |
-| `/function-scaffold`     | Generate Cloud Function with best practices | MEDIUM   |
-| `/test-cloud-function`   | Test specific Cloud Function with mock data | MEDIUM   |
-| `/firestore-rules-test`  | Run comprehensive Firestore rules tests     | MEDIUM   |
-| `/firebase-emulator`     | Start Firebase emulators with config        | LOW      |
-
-### Testing & Quality
-
-| Command                      | Description                              | Priority |
-| ---------------------------- | ---------------------------------------- | -------- |
-| `/test-suite-run`            | Run test suite with comprehensive report | HIGH     |
-| `/coverage-improve`          | Identify untested code paths             | MEDIUM   |
-| `/pattern-violation-fix`     | Auto-fix code pattern violations         | MEDIUM   |
-| `/integration-test-generate` | Generate integration tests for a feature | MEDIUM   |
-
-### Documentation
-
-| Command             | Description                                | Priority |
-| ------------------- | ------------------------------------------ | -------- |
-| `/doc-update`       | Intelligent documentation update assistant | MEDIUM   |
-| `/doc-template`     | Create document from template              | LOW      |
-| `/learning-extract` | Extract learnings from recent AI reviews   | MEDIUM   |
-| `/adr-create`       | Create Architecture Decision Record        | LOW      |
-
-### Security & Compliance
-
-| Command              | Description                      | Priority |
-| -------------------- | -------------------------------- | -------- |
-| `/security-scan`     | Comprehensive security audit     | HIGH     |
-| `/appcheck-validate` | Validate App Check configuration | MEDIUM   |
-| `/secrets-audit`     | Audit for hardcoded secrets      | HIGH     |
-| `/compliance-check`  | Verify compliance with standards | MEDIUM   |
-
-### Development Assistance
-
-| Command               | Description                                  | Priority |
-| --------------------- | -------------------------------------------- | -------- |
-| `/component-scaffold` | Generate React component with best practices | MEDIUM   |
-| `/hook-create`        | Generate custom React hook with testing      | LOW      |
-| `/schema-generate`    | Generate Zod schema from TypeScript type     | LOW      |
-| `/refactor-suggest`   | AI-powered refactoring suggestions           | MEDIUM   |
-
-### Monitoring & Observability
-
-| Command               | Description                            | Priority |
-| --------------------- | -------------------------------------- | -------- |
-| `/error-dashboard`    | Generate error report from Sentry/logs | HIGH     |
-| `/performance-report` | Comprehensive performance analysis     | MEDIUM   |
-| `/lighthouse-compare` | Compare Lighthouse scores over time    | MEDIUM   |
-| `/sentry-triage`      | Triage and categorize Sentry errors    | MEDIUM   |
-
-### CI/CD & Deployment
-
-| Command            | Description                     | Priority |
-| ------------------ | ------------------------------- | -------- |
-| `/deploy-preview`  | Preview deployment changes      | HIGH     |
-| `/deploy-rollback` | Rollback to previous deployment | HIGH     |
-| `/build-analyze`   | Analyze Next.js build output    | MEDIUM   |
-| `/ci-debug`        | Debug CI/CD pipeline failures   | MEDIUM   |
-| `/release-prepare` | Prepare for production release  | MEDIUM   |
-
-### Data Management
-
-| Command            | Description                               | Priority |
-| ------------------ | ----------------------------------------- | -------- |
-| `/schema-validate` | Validate Firestore data against schemas   | MEDIUM   |
-| `/data-migration`  | Plan and execute Firestore data migration | MEDIUM   |
-| `/backup-create`   | Create Firestore backup with validation   | LOW      |
-| `/data-audit`      | Audit Firestore data for inconsistencies  | LOW      |
-
----
-
-## 7. Implementation Guidelines
-
-### Command File Structure
-
-All custom commands go in `.claude/commands/`:
-
-```
-.claude/commands/
-├── session-begin.md       # Session start
-├── session-end.md         # Session end
-├── pr-review.md           # Code review processing
-├── docs-sync.md           # Document sync
-├── checkpoint.md          # State checkpoint
-├── audit-code.md          # Code audit
-├── audit-security.md      # Security audit
-├── audit-performance.md   # Performance audit
-├── audit-refactoring.md   # Refactoring audit
-├── audit-documentation.md # Documentation audit
-├── audit-process.md       # Process audit
-└── [proposed commands]    # Future implementations
-```
-
-### Command Template
-
-```markdown
----
-description: Brief description for /help output
-args: arg1 - Description of argument
----
-
-# Command Title
-
-## Step 1: [First Step]
-
-...
-
-## Step 2: [Second Step]
-
-...
-
-## Summary
-
-...
-```
+Use `/skill-creator` to scaffold a new skill with proper structure.
 
 ### Best Practices
 
-1. **Auto-run scripts** - Commands should execute relevant npm scripts
-2. **Clear decision points** - Don't hide complexity; guide through it
-3. **Preview changes** - Always show diff before modifying files
-4. **Structured output** - Use tables and code blocks consistently
-5. **Error handling** - Fail clearly with actionable messages
-6. **Compliance logging** - Add entries to relevant logs
-
----
-
-## 8. Gap Analysis
-
-### Current Automation Coverage
-
-| Area               | Hooks                | Scripts                           | Commands                   | Gap              |
-| ------------------ | -------------------- | --------------------------------- | -------------------------- | ---------------- |
-| Session management | SessionStart         | -                                 | session-begin, session-end | Covered          |
-| Code review        | UserPromptSubmit     | -                                 | pr-review                  | Covered          |
-| Pattern checking   | pre-commit, pre-push | patterns:check, patterns:sync     | -                          | Covered          |
-| Consolidation      | -                    | lessons:surface, patterns:promote | -                          | Covered          |
-| Security audit     | -                    | -                                 | audit-security             | Covered          |
-| Review triggers    | -                    | review:check                      | -                          | Advisory only    |
-| Phase completion   | -                    | phase-complete-check              | -                          | Manual audit     |
-| Archival           | -                    | reviews:archive, archive-doc      | -                          | Covered          |
-| CANON remediation  | -                    | -                                 | -                          | **CRITICAL GAP** |
-
-### Priority Implementation Order
-
-1. **Phase 1:** `/consolidate-patterns`, `/security-check`, `/remediate`
-2. **Phase 2:** `/review-status`, `/verify-archival`, `/lint-baseline`
-3. **Phase 3:** Firebase commands, testing commands
-4. **Phase 4:** Remaining medium-priority commands
+1. Skills should be self-contained with clear step-by-step instructions
+2. Include version history and last updated date
+3. Reference related skills and npm scripts
+4. Follow naming convention: `verb-noun` (e.g., `audit-code`, `session-begin`)
+5. Update SKILL_INDEX.md when adding/removing skills
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes                                                                                           |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------- |
-| 2.3     | 2026-02-02 | Updated /audit-security, /audit-code, /audit-performance with parallel architecture + AI patterns |
-| 2.2     | 2026-02-02 | Updated /audit-documentation to 6-stage parallel architecture with 18 agents                      |
-| 2.1     | 2026-01-19 | Removed /fetch-pr-feedback (copy/paste more thorough), updated /pr-review                         |
-| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md                                     |
-| 1.2     | 2026-01-09 | Added /fetch-pr-feedback command documentation                                                    |
-| 1.1     | 2026-01-08 | Added 6 single-session audit commands with AUDIT_TRACKER.md integration                           |
-| 1.0     | 2026-01-05 | Initial creation - comprehensive slash command reference                                          |
-
----
-
-## References
-
-- [Claude Code Documentation](https://docs.anthropic.com/claude-code)
-- [.claude/commands/](../.claude/commands/) - Custom command files
-- [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md) - Review patterns
-- [claude.md](../claude.md) - Project configuration and patterns
+| Version | Date       | Changes                                                            |
+| ------- | ---------- | ------------------------------------------------------------------ |
+| 3.1     | 2026-02-23 | Added 8 missing npm scripts, removed phantom verify-technical-debt |
+| 3.0     | 2026-02-23 | Complete rewrite: 58 skills, 96 npm scripts, removed deprecated    |
+| 2.3     | 2026-02-02 | Updated audit skills with parallel architecture                    |
+| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md      |
+| 1.0     | 2026-01-05 | Initial creation                                                   |

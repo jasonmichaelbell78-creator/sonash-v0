@@ -6,6 +6,10 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
+> **STALE (2026-02-23):** This audit was performed when TDMS had 868 items.
+> Current count is 4576+. Metrics below are historical only. For current stats,
+> run `npm run tdms:metrics`.
+
 **Audit Date:** 2026-02-01 **Phase:** Final System Audit (Phase 17) **Verdict:**
 **PASS** - TDMS Implementation Complete
 
@@ -49,7 +53,8 @@ across all 17 phases. The system is now fully operational with:
 
 > **Note:** Phase reports archived 2026-02-05 to
 > `docs/archive/tdms-intermediates-2026-02/phase-reports/`. See
-> [MANIFEST.md](../archive/tdms-intermediates-2026-02/MANIFEST.md) for details.
+> [MANIFEST.md](../archive/tdms-intermediates-2026-02/MANIFEST.md) for details
+> (directory no longer exists).
 
 ---
 
@@ -93,12 +98,11 @@ across all 17 phases. The system is now fully operational with:
 
 ### Skills
 
-| Skill                   | Status | Purpose               |
-| ----------------------- | ------ | --------------------- |
-| `verify-technical-debt` | ✅     | Verification workflow |
-| `sync-sonarcloud-debt`  | ✅     | SonarCloud sync       |
-| `add-manual-debt`       | ✅     | Manual entry          |
-| `add-deferred-debt`     | ✅     | PR deferred items     |
+| Skill                   | Status | Purpose                            |
+| ----------------------- | ------ | ---------------------------------- |
+| `verify-technical-debt` | ✅     | Verification workflow              |
+| `sonarcloud`            | ✅     | SonarCloud sync                    |
+| `add-debt`              | ✅     | Manual entry and PR deferred items |
 
 ### Enforcement Mechanisms
 
@@ -136,7 +140,7 @@ Verification Queue: 868 items (all NEW status)
 
 | Document                        | Version | Status |
 | ------------------------------- | ------- | ------ |
-| `docs/PLAN_MAP.md`              | 1.7     | ✅     |
+| `docs/archive/PLAN_MAP.md`      | 1.7     | ✅     |
 | `docs/README.md`                | 1.8     | ✅     |
 | `docs/DOCUMENT_DEPENDENCIES.md` | 1.8     | ✅     |
 | `.claude/COMMAND_REFERENCE.md`  | 2.5     | ✅     |
@@ -147,14 +151,14 @@ Verification Queue: 868 items (all NEW status)
 
 ## Archive Status
 
-| Location                                       | Status | Notes                          |
-| ---------------------------------------------- | ------ | ------------------------------ |
-| `docs/archive/technical-debt-sources-2026-01/` | ✅     | 93 files archived              |
-| `docs/aggregation/`                            | ✅     | Archived                       |
-| `docs/audits/canonical/`                       | ✅     | Archived                       |
-| `docs/analysis/`                               | ✅     | Archived (SonarCloud data)     |
-| `docs/reviews/2026-Q1/`                        | ✅     | Archived                       |
-| `docs/audits/single-session/`                  | ✅     | **KEPT ACTIVE** for new audits |
+| Location                                                                    | Status | Notes                          |
+| --------------------------------------------------------------------------- | ------ | ------------------------------ |
+| `docs/archive/technical-debt-sources-2026-01/` (directory no longer exists) | ✅     | 93 files archived              |
+| `docs/aggregation/`                                                         | ✅     | Archived                       |
+| `docs/audits/canonical/`                                                    | ✅     | Archived                       |
+| `docs/analysis/`                                                            | ✅     | Archived (SonarCloud data)     |
+| `docs/reviews/2026-Q1/`                                                     | ✅     | Archived                       |
+| `docs/audits/single-session/`                                               | ✅     | **KEPT ACTIVE** for new audits |
 
 ---
 
@@ -244,7 +248,7 @@ tracking system for the SoNash project.
 
 ## Related Documents
 
-- [TDMS Implementation Plan](../plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
+- [TDMS Implementation Plan](../archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
 - [TDMS PROCEDURE.md](./PROCEDURE.md)
 - [Archive MANIFEST.md](../archive/technical-debt-sources-2026-01/MANIFEST.md)
 - [METRICS.md](./METRICS.md)

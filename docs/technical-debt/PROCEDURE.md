@@ -2,7 +2,7 @@
 
 <!-- prettier-ignore-start -->
 **Document Version:** 1.1
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-23
 **Status:** ACTIVE
 **Parent Plan:** [TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](../archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
 <!-- prettier-ignore-end -->
@@ -418,11 +418,11 @@ All scripts are located in `scripts/debt/`.
 
 ### Logs
 
-| File                        | Purpose                                                                                   |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| `logs/dedup-log.jsonl`      | Merge/deduplication history (archived to `docs/archive/tdms-intermediates-2026-02/logs/`) |
-| `logs/intake-log.jsonl`     | Intake activity log                                                                       |
-| `logs/resolution-log.jsonl` | Resolution activity log                                                                   |
+| File                        | Purpose                                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `logs/dedup-log.jsonl`      | Merge/deduplication history (archived to `docs/archive/tdms-intermediates-2026-02/logs/` — directory may not exist yet) |
+| `logs/intake-log.jsonl`     | Intake activity log                                                                                                     |
+| `logs/resolution-log.jsonl` | Resolution activity log                                                                                                 |
 
 ---
 

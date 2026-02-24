@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
 **Document Version:** 3.2 **Source:** Distilled from 347 AI code reviews **Last
-Updated:** 2026-02-17
+Updated:** 2026-02-23
 
 ---
 

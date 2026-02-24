@@ -1,6 +1,6 @@
 # Firebase Change Policy
 
-**Document Version:** 1.2 **Created:** 2026-01-05 **Last Updated:** 2026-01-05
+**Document Version:** 1.2 **Created:** 2026-01-05 **Last Updated:** 2026-02-23
 **Status:** ACTIVE
 
 ---

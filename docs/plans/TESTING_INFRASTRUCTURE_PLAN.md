@@ -1,8 +1,8 @@
 # Testing Infrastructure Plan
 
-**Document Version:** 1.1 **Created:** 2026-01-27 (Session #103) **Status:**
-ACTIVE **Priority:** P1 **Related:** [TESTING_PLAN.md](../TESTING_PLAN.md),
-[ROADMAP.md](../../ROADMAP.md) (Track T)
+**Document Version:** 1.2 **Created:** 2026-01-27 (Session #103) **Last
+Updated:** 2026-02-23 **Status:** ACTIVE **Priority:** P1 **Related:**
+[TESTING_PLAN.md](../TESTING_PLAN.md), [ROADMAP.md](../../ROADMAP.md) (Track T)
 
 > **Integrated:** This plan is now **Track T** in the Active Sprint. See
 > [ROADMAP.md#track-t](../../ROADMAP.md#track-t---testing-infrastructure-new---session-103)
@@ -30,7 +30,7 @@ This document outlines a comprehensive testing infrastructure for SoNash that:
 
 | Category           | Status      | Details                                      |
 | ------------------ | ----------- | -------------------------------------------- |
-| Unit Tests         | ✅ Strong   | 293+ tests, Vitest, 98.9% pass rate          |
+| Unit Tests         | ✅ Strong   | 294+ tests, Vitest, 98.9% pass rate          |
 | Manual Checklists  | ✅ Good     | TESTING_PLAN.md with phase-specific guidance |
 | Track A Tests      | ✅ Complete | 131 tests across 8 categories                |
 | CI Integration     | ✅ Basic    | Pre-push test run, pattern compliance        |
@@ -61,7 +61,7 @@ This document outlines a comprehensive testing infrastructure for SoNash that:
 - Cross-browser testing (Chromium, Firefox, WebKit)
 - Built-in screenshot/video capture
 - Native TypeScript support
-- MCP server already available (`mcp__playwright__*`)
+- MCP server already available (`mcp__plugin_playwright_playwright__*`)
 
 **Environment Support:**
 
@@ -449,10 +449,11 @@ When working with testing:
 
 ## Version History
 
-| Version | Date       | Changes                                              |
-| ------- | ---------- | ---------------------------------------------------- |
-| 1.1     | 2026-01-27 | Integrated into ROADMAP.md as Track T - Session #103 |
-| 1.0     | 2026-01-27 | Initial draft - Session #103                         |
+| Version | Date       | Changes                                                                    |
+| ------- | ---------- | -------------------------------------------------------------------------- |
+| 1.2     | 2026-02-23 | Update unit test count to 294+, fix playwright MCP namespace, Last Updated |
+| 1.1     | 2026-01-27 | Integrated into ROADMAP.md as Track T - Session #103                       |
+| 1.0     | 2026-01-27 | Initial draft - Session #103                                               |
 
 ---
 

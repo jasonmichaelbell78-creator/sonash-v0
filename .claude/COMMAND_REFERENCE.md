@@ -1,8 +1,8 @@
 # Claude Code Command Reference (Index)
 
 <!-- prettier-ignore-start -->
-**Version:** 5.1
-**Last Updated:** 2026-02-20
+**Version:** 5.4
+**Last Updated:** 2026-02-23
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -41,6 +41,9 @@ Source: `.claude/skills/*/SKILL.md`
 | `/session-end`                    | Session end verification checklist                   |
 | `/alerts`                         | Intelligent health dashboard with scoring            |
 | `/pr-ecosystem-audit`             | PR ecosystem diagnostic (18 categories, 5 domains)   |
+| `/hook-ecosystem-audit`           | Hook ecosystem diagnostic (16 categories, 5 domains) |
+| `/tdms-ecosystem-audit`           | TDMS pipeline diagnostic (16 categories, 5 domains)  |
+| `/session-ecosystem-audit`        | Session system diagnostic (16 categories, 5 domains) |
 | `/checkpoint`                     | Save session state for recovery                      |
 | `/quick-fix`                      | Auto-suggest fixes for pre-commit failures           |
 | `/pre-commit-fixer`               | Fix pre-commit hook failures and retry               |
@@ -59,6 +62,22 @@ Source: `.claude/skills/*/SKILL.md`
 | `/skill-creator`                  | Guide for creating effective skills                  |
 | `/mcp-builder`                    | Guide for creating MCP servers                       |
 | `/validate-claude-folder`         | Validate .claude folder consistency                  |
+| `/artifacts-builder`              | Build multi-component claude.ai artifacts            |
+| `/decrypt-secrets`                | Decrypt MCP tokens for remote sessions               |
+| `/gh-fix-ci`                      | Fix failing GitHub CI actions                        |
+| `/market-research-reports`        | Generate market research reports                     |
+| `/markitdown`                     | Convert file formats to markdown                     |
+| `/senior-architect`               | Architecture guidance and decisions                  |
+| `/senior-backend`                 | Backend development expertise                        |
+| `/senior-devops`                  | DevOps and infrastructure guidance                   |
+| `/senior-frontend`                | Frontend development expertise                       |
+| `/senior-fullstack`               | Full-stack development guidance                      |
+| `/senior-qa`                      | QA and testing expertise                             |
+| `/sprint`                         | TDMS sprint workflow automation                      |
+| `/ui-design-system`               | Design system components toolkit                     |
+| `/using-superpowers`              | Claude skills usage guide                            |
+| `/ux-researcher-designer`         | UX research and design toolkit                       |
+| `/webapp-testing`                 | Web application testing with Playwright              |
 
 ## System Commands
 
@@ -73,14 +92,15 @@ Built-in Claude Code commands (not skills):
 
 Source: Task tool `subagent_type` parameter
 
-| Category       | Agents                                                                 |
-| -------------- | ---------------------------------------------------------------------- |
-| General        | `general-purpose`, `Explore`, `Plan`, `Bash`                           |
-| Development    | `frontend-developer`, `fullstack-developer`, `backend-architect`       |
-| Quality        | `code-reviewer`, `test-engineer`, `security-auditor`                   |
-| Infrastructure | `deployment-engineer`, `devops-troubleshooter`, `performance-engineer` |
-| Documentation  | `documentation-expert`, `technical-writer`                             |
-| Other          | `debugger`, `error-detective`, `prompt-engineer`, `ui-ux-designer`     |
+| Category       | Agents                                                                                                                           |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| General        | `general-purpose`, `Explore`, `Plan`, `Bash`                                                                                     |
+| Development    | `frontend-developer`, `fullstack-developer`, `backend-architect`, `nextjs-architecture-expert`, `react-performance-optimization` |
+| Quality        | `code-reviewer`, `test-engineer`, `security-auditor`, `security-engineer`, `penetration-tester`                                  |
+| Infrastructure | `deployment-engineer`, `devops-troubleshooter`, `performance-engineer`, `dependency-manager`, `git-flow-manager`                 |
+| Documentation  | `documentation-expert`, `technical-writer`, `markdown-syntax-formatter`                                                          |
+| Data           | `database-architect`, `mcp-expert`                                                                                               |
+| Other          | `debugger`, `error-detective`, `prompt-engineer`, `ui-ux-designer`                                                               |
 
 ## MCP Servers
 
@@ -94,24 +114,25 @@ Source: `.mcp.json` + auto-discovered plugins
 | `github` (plugin)          | GitHub API integration            |
 | `context7` (plugin)        | Library documentation lookup      |
 | `firebase` (plugin)        | Firebase project management       |
-| `serena` (plugin)          | Semantic code analysis            |
+| `serena` (plugin)          | Semantic code analysis (disabled) |
 | `episodic-memory` (plugin) | Cross-session conversation memory |
 
 ## Claude Code Hooks
 
 Source: `.claude/settings.json` → `hooks`
 
-| Event                       | Hook                        | Purpose                               |
-| --------------------------- | --------------------------- | ------------------------------------- |
-| SessionStart                | `session-start.js`          | Deps, builds, patterns, TDMS check    |
-| SessionStart:compact        | `compact-restore.js`        | Restore context after compaction      |
-| PreCompact                  | `pre-compaction-save.js`    | Save state snapshot before compaction |
-| PostToolUse:Write/Edit      | `post-write-validator.js`   | Schema, lint, pattern validation      |
-| PostToolUse:Read            | `post-read-handler.js`      | Context tracking, auto-save, handoff  |
-| PostToolUse:Bash            | `commit-tracker.js`         | Auto-log commits to state             |
-| PostToolUse:Task            | `track-agent-invocation.js` | Track agent usage                     |
-| PostToolUse:AskUserQuestion | `decision-save-prompt.js`   | Decision documentation                |
-| UserPromptSubmit            | `user-prompt-handler.js`    | Process user prompts                  |
+| Event                       | Hook                         | Purpose                               |
+| --------------------------- | ---------------------------- | ------------------------------------- |
+| SessionStart                | `session-start.js`           | Deps, builds, patterns, TDMS check    |
+| SessionStart:compact        | `compact-restore.js`         | Restore context after compaction      |
+| PreCompact                  | `pre-compaction-save.js`     | Save state snapshot before compaction |
+| PostToolUse:Write/Edit      | `post-write-validator.js`    | Schema, lint, pattern validation      |
+| PostToolUse:Read            | `post-read-handler.js`       | Context tracking, auto-save, handoff  |
+| PostToolUse:Bash            | `commit-tracker.js`          | Auto-log commits to state             |
+| PostToolUse:Bash            | `commit-failure-reporter.js` | Report commit failures to audit log   |
+| PostToolUse:Task            | `track-agent-invocation.js`  | Track agent usage                     |
+| PostToolUse:AskUserQuestion | `decision-save-prompt.js`    | Decision documentation                |
+| UserPromptSubmit            | `user-prompt-handler.js`     | Process user prompts                  |
 
 ## Git Hooks
 
@@ -133,11 +154,14 @@ Source: `.husky/`
 
 ## Version History
 
-| Version | Date         | Change                                     |
-| ------- | ------------ | ------------------------------------------ |
-| 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill            |
-| 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)    |
-| 4.0     | Session #140 | Added all plugins, GSD, SuperClaude skills |
-| 3.0     | Session #135 | Added multi-AI audit, comprehensive audit  |
-| 2.0     | Session #110 | Fix expansion-evaluation template          |
-| 1.0     | Session #100 | Initial comprehensive reference            |
+| Version | Date         | Change                                                      |
+| ------- | ------------ | ----------------------------------------------------------- |
+| 5.4     | 2026-02-23   | Added /tdms-ecosystem-audit + /session-ecosystem-audit (61) |
+| 5.3     | 2026-02-23   | Added /hook-ecosystem-audit skill (59)                      |
+| 5.2     | 2026-02-23   | Added 17 missing skills (58 total)                          |
+| 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill                             |
+| 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)                     |
+| 4.0     | Session #140 | Added all plugins, GSD, SuperClaude skills                  |
+| 3.0     | Session #135 | Added multi-AI audit, comprehensive audit                   |
+| 2.0     | Session #110 | Fix expansion-evaluation template                           |
+| 1.0     | Session #100 | Initial comprehensive reference                             |

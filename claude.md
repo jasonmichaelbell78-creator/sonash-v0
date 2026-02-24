@@ -20,11 +20,11 @@ Section 7).
 
 | Package      | Version | Notes       |
 | ------------ | ------- | ----------- |
-| Next.js      | 16.1.1  | App Router  |
+| Next.js      | 16.1.6  | App Router  |
 | React        | 19.2.3  | Stable      |
-| Firebase     | 12.6.0  | Modular SDK |
-| Tailwind CSS | 4.1.9   |             |
-| Zod          | 4.2.1   |             |
+| Firebase     | 12.8.0  | Modular SDK |
+| Tailwind CSS | 4.1.18  |             |
+| Zod          | 4.3.5   |             |
 
 ## 2. Security Rules
 
@@ -60,7 +60,7 @@ Section 7).
 
 **Full Reference**:
 [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (230+
-patterns with priority tiers from 259 reviews)
+patterns with priority tiers from 347 reviews)
 
 **Pre-Write Checklist**:
 [docs/agent_docs/SECURITY_CHECKLIST.md](docs/agent_docs/SECURITY_CHECKLIST.md) -

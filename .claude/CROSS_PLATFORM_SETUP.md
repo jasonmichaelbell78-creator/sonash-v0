@@ -1,5 +1,11 @@
 # Cross-Platform Claude Code Setup
 
+> **DEPRECATION NOTICE (2026-02-23):** The `scripts/sync-claude-settings.js`
+> script referenced throughout this document has been **removed**. Settings
+> synchronization must now be done manually by merging
+> `settings.global-template.json` into your local `~/.claude/settings.json`. All
+> `(REMOVED)` annotations below mark commands that no longer work.
+
 This guide explains how to set up Claude Code consistently across Windows CLI
 and Claude Code Web (Linux).
 

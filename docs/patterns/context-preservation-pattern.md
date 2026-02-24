@@ -1,6 +1,6 @@
 # Context Preservation Pattern
 
-**Document Version:** 1.1 **Last Updated:** 2026-01-22
+**Document Version:** 1.2 **Last Updated:** 2026-02-23
 
 ---
 
@@ -109,7 +109,7 @@ docs/EXPANSION_EVALUATION_TRACKER.md
 Beyond `SESSION_DECISIONS.md`, use these mechanisms:
 
 - **Full transcript:** `~/.claude/projects/.../[session-id].jsonl` (complete
-  session history)
+  session history; path format may vary by Claude Code version)
 - **Plans:** `.claude/plans/` (detailed implementation plans)
 - **Checkpoints:** `/checkpoint` command updates `SESSION_CONTEXT.md` (current
   state snapshot)
@@ -123,5 +123,6 @@ Beyond `SESSION_DECISIONS.md`, use these mechanisms:
 
 | Version | Date       | Changes                                                               |
 | ------- | ---------- | --------------------------------------------------------------------- |
+| 1.2     | 2026-02-23 | Note transcript path may vary by CC version, Last Updated             |
 | 1.1     | 2026-01-22 | Added Purpose, AI Instructions, Quick Start, Version History sections |
 | 1.0     | 2026-01-17 | Initial pattern created after Firebase Console options loss           |

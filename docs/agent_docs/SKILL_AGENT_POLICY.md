@@ -1,6 +1,6 @@
 # Skill and Agent Usage Policy
 
-**Status:** Active **Last Updated:** 2026-01-15
+**Document Version:** 1.2 **Status:** Active **Last Updated:** 2026-02-23
 
 ## Purpose
 
@@ -83,7 +83,7 @@ npm run skills:verify-usage -- --strict
 
 ### Session Activity Logging
 
-Activities are logged to `.claude/session-activity.jsonl`:
+Activities are logged to `.claude/state/commit-log.jsonl`:
 
 ```bash
 # Log a session event
@@ -303,14 +303,15 @@ High override counts for specific checks may indicate:
 - [CODE_PATTERNS.md](./CODE_PATTERNS.md) - Anti-patterns to avoid
 - [AI_WORKFLOW.md](../../AI_WORKFLOW.md) - Session workflow guidelines
 - [DEVELOPMENT.md](../../DEVELOPMENT.md) - Development setup and hooks
-- [FALSE_POSITIVES.jsonl](../technical-debt/MASTER_DEBT.jsonl) - Known false
+- [FALSE_POSITIVES.jsonl](../technical-debt/FALSE_POSITIVES.jsonl) - Known false
   positives
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes                       |
-| ------- | ---------- | ----------------------------- |
-| 1.0     | 2026-01-13 | Initial policy documentation  |
-| 1.1     | 2026-01-15 | Added Version History section |
+| Version | Date       | Changes                                                             |
+| ------- | ---------- | ------------------------------------------------------------------- |
+| 1.0     | 2026-01-13 | Initial policy documentation                                        |
+| 1.1     | 2026-01-15 | Added Version History section                                       |
+| 1.2     | 2026-02-23 | Fix FALSE_POSITIVES link, fix session log path, update Last Updated |
