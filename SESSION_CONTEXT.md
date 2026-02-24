@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 5.6 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 5.7 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-24 (Session #184 end)
+2026-02-24 (Session #185 end)
 
 ## Purpose
 
@@ -29,11 +29,12 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-02-24 **Branch**: `claude/new-session-EnpzV` **Working
-On**: Session end — all ecosystem audits committed and pushed **Files
-Modified**: 27 files across 3 ecosystem audit skills
+**Last Checkpoint**: 2026-02-24 **Branch**: `claude/new-session-cRRW5` **Working
+On**: Session end — hook/PR audit fixes and quality improvements committed
+**Files Modified**: 10+ files across hook-ecosystem-audit and pr-ecosystem-audit
+skills
 
-**Next Step**: Create PR for ecosystem audit skills, begin S0 resolution sprint.
+**Next Step**: Create PR for audit fixes, begin S0 resolution sprint.
 
 **Uncommitted Work**: None — all pushed to remote
 
@@ -51,6 +52,20 @@ Modified**: 27 files across 3 ecosystem audit skills
 
 ## Recent Session Summaries
 
+**Session #185 Summary** (ECOSYSTEM AUDIT QUALITY — HOOK + PR AUDIT FIXES):
+
+- Ran hook-ecosystem-audit: 63/D → 99/A (fixed 6 checker false positives, added
+  sanitize-input to 8 hooks, added output protocol to 6 hooks)
+- Ran pr-ecosystem-audit: 87/B → 94/A (fixed 7 keyword gaps, recalibrated 2
+  benchmarks: churn and propagation)
+- Performance analysis of hook audit: 31% false positive rate, 90% of warnings
+  false by volume, root cause = console.log protocol misunderstanding
+- Implemented 5 quality improvements: protocol awareness constant, cross-checker
+  deduplication, batch mode, baseline snapshots, 27 regression tests across 9
+  test groups
+- Added compaction guard to all ecosystem audit skills
+- TDMS: 4,592 items (238 resolved), 36 S0, 739 S1
+
 **Session #184 Summary** (ECOSYSTEM AUDIT SKILLS — 3 NEW DEEP DIVES):
 
 - Built 3 new ecosystem audit skills: hook-ecosystem-audit,
@@ -60,10 +75,6 @@ Modified**: 27 files across 3 ecosystem audit skills
 - 36 files created (12 per skill: 5 checkers, 4 lib files, orchestrator,
   SKILL.md, integration updates)
 - Documentation housekeeping: full sweep across 302 docs
-- Pre-commit pattern checker workarounds: dynamic string construction for FS
-  operation names to avoid false positives in audit checker code
-- Updated SKILL_INDEX.md (61 skills), SLASH_COMMANDS_REFERENCE.md,
-  COMMAND_REFERENCE.md, package.json (3 new npm scripts)
 - TDMS: 4,576 items (237 resolved), 35 S0, 738 S1
 
 **Session #183 Summary** (PR #384 RETRO + PR #386 R1/R2 + RETRO ENFORCEMENT):
@@ -74,12 +85,6 @@ Modified**: 27 files across 3 ecosystem audit skills
   parsing, concurrency-safe tmp handling
 - **NEW:** CC regression checker, S5852 regex complexity pattern
 - TDMS: 4,577 items (237 resolved), 35 S0, 738 S1
-
-**Session #182 Summary** (PR #384 REVIEW R4 — CI + SONARCLOUD + QODO FIXES):
-
-- Processed PR #384 R4 review feedback: 12 items (11 fixed, 1 rejected)
-- Fixed CI-blocking SEC-001/SEC-010, reduced CC in placeItemsIntoSprints
-- Learning entry: Review #369 added and synced to JSONL
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -96,14 +101,14 @@ Modified**: 27 files across 3 ecosystem audit skills
 | Track B: Dev Dashboard MVP        | Partial  | ~10%             |
 | Track C: UI/UX & Analytics        | Planned  | 0%               |
 | **Integrated Improvement Plan**   | COMPLETE | 100% (9/9 steps) |
-| **GRAND PLAN: Debt Elimination**  | Active   | ~12% (486/4090)  |
+| **GRAND PLAN: Debt Elimination**  | Active   | ~12% (486/4092)  |
 | **Sprint Skill (`/sprint`)**      | Stable   | Implemented      |
 | **Tech Debt Resolution Plan**     | COMPLETE | Steps 0a-10 done |
 | **Pre-Commit Overhaul**           | COMPLETE | All 8 phases     |
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/new-session-EnpzV`
+**Current Branch**: `claude/new-session-cRRW5`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -113,11 +118,12 @@ Modified**: 27 files across 3 ecosystem audit skills
 
 ### Immediate Priority (Next Session)
 
-1. **Create PR for ecosystem audit skills** — Branch `claude/new-session-EnpzV`
-   has 3 new skills (hook/tdms/session ecosystem audits)
-2. **Begin resolving S0 critical items** — 35 S0 items in TDMS
+1. **Create PR for audit quality fixes** — Branch `claude/new-session-cRRW5` has
+   hook audit 63→99, PR audit 87→94, and 5 quality improvements
+2. **Begin resolving S0 critical items** — 36 S0 items in TDMS
 3. **Run `/sprint start 4`** — Begin sprint-4 (lib/ + hooks/ + app/), 132 items
-4. **Run `/sprint fix-docs`** — Update ROADMAP S0 table
+4. **Run remaining ecosystem audits** — tdms-ecosystem-audit and
+   session-ecosystem-audit are available but not yet run
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -125,9 +131,9 @@ Modified**: 27 files across 3 ecosystem audit skills
 
 ## Pending PR Reviews
 
-**Status**: Branch `claude/new-session-EnpzV` pushed — needs PR creation
+**Status**: Branch `claude/new-session-cRRW5` pushed — needs PR creation
 
-**Last Processed**: 2026-02-24 (Session #184: 3 ecosystem audit skills pushed)
+**Last Processed**: 2026-02-24 (Session #185: audit quality fixes pushed)
 
 ---
 
@@ -190,24 +196,25 @@ npm run docs:check   # Documentation linting
 
 ## Version History
 
-| Version | Date       | Changes                                                             | Author |
-| ------- | ---------- | ------------------------------------------------------------------- | ------ |
-| 5.6     | 2026-02-24 | Session #184 end: 3 ecosystem audit skills (hook/tdms/session)      | Claude |
-| 5.5     | 2026-02-23 | Session #183 end: PR #384 retro + PR #386 R1/R2 + date fix          | Claude |
-| 5.3     | 2026-02-22 | Session #182 end: PR #384 R4 review fixes                           | Claude |
-| 5.2     | 2026-02-21 | Session #179 end: sprint skill + data quality fixes                 | Claude |
-| 5.1     | 2026-02-20 | Session #174 end: tool_use bug investigation + cherry-pick          | Claude |
-| 5.0     | 2026-02-20 | Session #173 end: retro actions + scattered debt extractor          | Claude |
-| 4.9     | 2026-02-19 | Session #172: MCP/plugin token optimization (~5K tokens/turn saved) | Claude |
-| 4.8     | 2026-02-19 | Session #171: System test complete (82 findings, TDMS sync)         | Claude |
-| 4.7     | 2026-02-19 | Session #171: PR reviews + system test Session 1                    | Claude |
-| 4.6     | 2026-02-18 | Session #170: Comprehensive system test planning                    | Claude |
-| 4.4     | 2026-02-17 | Session #167: Alerts full scan + S0 sprint integration              | Claude |
-| 4.3     | 2026-02-16 | Session #164: Audit ecosystem remediation waves 1-8                 | Claude |
-| 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit             | Claude |
-| 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements                | Claude |
-| 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed            | Claude |
-| 3.61    | 2026-02-11 | Session #149: Counter increment                                     | Claude |
+| Version | Date       | Changes                                                                    | Author |
+| ------- | ---------- | -------------------------------------------------------------------------- | ------ |
+| 5.7     | 2026-02-24 | Session #185 end: hook audit 63→99, PR audit 87→94, 5 quality improvements | Claude |
+| 5.6     | 2026-02-24 | Session #184 end: 3 ecosystem audit skills (hook/tdms/session)             | Claude |
+| 5.5     | 2026-02-23 | Session #183 end: PR #384 retro + PR #386 R1/R2 + date fix                 | Claude |
+| 5.3     | 2026-02-22 | Session #182 end: PR #384 R4 review fixes                                  | Claude |
+| 5.2     | 2026-02-21 | Session #179 end: sprint skill + data quality fixes                        | Claude |
+| 5.1     | 2026-02-20 | Session #174 end: tool_use bug investigation + cherry-pick                 | Claude |
+| 5.0     | 2026-02-20 | Session #173 end: retro actions + scattered debt extractor                 | Claude |
+| 4.9     | 2026-02-19 | Session #172: MCP/plugin token optimization (~5K tokens/turn saved)        | Claude |
+| 4.8     | 2026-02-19 | Session #171: System test complete (82 findings, TDMS sync)                | Claude |
+| 4.7     | 2026-02-19 | Session #171: PR reviews + system test Session 1                           | Claude |
+| 4.6     | 2026-02-18 | Session #170: Comprehensive system test planning                           | Claude |
+| 4.4     | 2026-02-17 | Session #167: Alerts full scan + S0 sprint integration                     | Claude |
+| 4.3     | 2026-02-16 | Session #164: Audit ecosystem remediation waves 1-8                        | Claude |
+| 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit                    | Claude |
+| 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements                       | Claude |
+| 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed                   | Claude |
+| 3.61    | 2026-02-11 | Session #149: Counter increment                                            | Claude |
 
 > For older version history, see
 > [SESSION_HISTORY.md](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)
