@@ -195,7 +195,7 @@ function findMarkdownFiles(dir, result = { active: [], archived: [] }) {
 
   for (const entry of entries) {
     const fullPath = join(dir, entry);
-    const relativePath = relative(ROOT, fullPath).replace(/\\/g, "/"); // Cross-platform normalization
+    const relativePath = relative(ROOT, fullPath).replaceAll("\\", "/"); // Cross-platform normalization
 
     // Skip excluded directories (with proper boundary check)
     if (shouldSkipEntry(entry, relativePath)) continue;
@@ -421,7 +421,7 @@ function extractLinks(content, currentFile) {
     }
 
     // Normalize path (cross-platform)
-    resolvedPath = resolvedPath.replace(/\\/g, "/");
+    resolvedPath = resolvedPath.replaceAll("\\", "/");
 
     // Canonicalize path to resolve . and .. segments properly
     // This handles cases like "docs/../scripts/file.md" → "scripts/file.md"
@@ -508,14 +508,13 @@ const lastModifiedCache = new Map();
  * Falls back to filesystem mtime if git fails (e.g., untracked file).
  */
 function getLastModifiedDate(filePath, fullPath) {
-  const cached = lastModifiedCache.get(filePath);
-  if (cached) return cached;
+  const cacheKey = filePath.replaceAll("\\", "/");
+  if (lastModifiedCache.has(cacheKey)) return lastModifiedCache.get(cacheKey);
 
-  const gitPath = filePath.replace(/\\/g, "/");
   let lastModified;
 
   try {
-    const result = execFileSync("git", ["log", "-1", "--format=%cI", "--", gitPath], {
+    const result = execFileSync("git", ["log", "--follow", "-1", "--format=%cI", "--", cacheKey], {
       cwd: ROOT,
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
@@ -536,7 +535,7 @@ function getLastModifiedDate(filePath, fullPath) {
     }
   }
 
-  lastModifiedCache.set(filePath, lastModified);
+  lastModifiedCache.set(cacheKey, lastModified);
   return lastModified;
 }
 

@@ -609,6 +609,27 @@ accumulate.
 
 ## Active Reviews
 
+### Review #381: PR #390 R3 (2026-02-24)
+
+- **Source**: SonarCloud (1 hotspot, 1 code smell), Qodo Compliance (1), Qodo PR
+  Suggestions (3)
+- **PR**: PR #390 — cherry-pick review fixes (R3)
+- **Items**: 6 total — 4 fixed, 0 deferred, 2 rejected
+- **Fixed**: `--follow` flag for git log rename tracking, `.has()` for Map cache
+  check, canonicalized cache key with forward slashes, `replaceAll()` over
+  `replace()` (propagated to 2 additional instances in same file)
+- **Rejected**: [1] SonarCloud S4036 PATH hotspot — `execFileSync("git", [...])`
+  is hardcoded command with array args, no shell injection risk, local-only
+  script, same pattern in 10+ scripts; [3] Qodo swallowed exceptions — catch
+  blocks are intentional graceful degradation with fallback chain, not silent
+  error swallowing
+- **Patterns**: Combine cache key normalization with cache check improvement in
+  single pass; propagate `replaceAll` to all same-file instances
+- **Key Learning**: SonarCloud S4036 on `execFileSync` with hardcoded binary +
+  array args is a standard false positive for local tooling scripts.
+
+---
+
 ### Review #380: PR #390 R2 (2026-02-24)
 
 - **Source**: Qodo PR Suggestions (7)
