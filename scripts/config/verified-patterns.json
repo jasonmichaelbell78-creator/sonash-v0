@@ -51,7 +51,8 @@
     "functional-correctness.js",
     "state-integration.js",
     "compaction-resilience.js",
-    "config-health.js"
+    "config-health.js",
+    "check-cross-doc-deps.js"
   ],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],

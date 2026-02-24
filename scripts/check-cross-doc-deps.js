@@ -288,7 +288,13 @@ function checkDependencies() {
     // If rule has gitFilter, only fire when matching files have the specified change type
     // e.g., gitFilter: "AD" means only fire when files are Added or Deleted, not Modified
     if (rule.gitFilter) {
-      const filteredFiles = getStagedFilesFiltered(rule.gitFilter);
+      let filteredFiles = getStagedFilesFiltered(rule.gitFilter);
+      // If rule has filePattern, further filter to only matching file names
+      // filePattern comes from trusted config (doc-dependencies.json), not user input
+      if (rule.filePattern) {
+        const re = new RegExp(rule.filePattern); // trusted-source: scripts/config/doc-dependencies.json
+        filteredFiles = filteredFiles.filter((f) => re.test(f));
+      }
       if (!matchesTrigger(filteredFiles, rule.trigger)) {
         logVerbose(
           `Rule skipped (gitFilter "${rule.gitFilter}" — no matching changes): ${rule.trigger}`
