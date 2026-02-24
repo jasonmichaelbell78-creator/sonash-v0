@@ -101,6 +101,7 @@ All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 | `/code-reviewer`                  | Run code review on recent changes                               |
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                           |
 | `/pr-ecosystem-audit`             | Comprehensive PR review ecosystem diagnostic                    |
+| `/hook-ecosystem-audit`           | Hook system health diagnostic (16 categories, 5 domains)        |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues              |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                            |
 

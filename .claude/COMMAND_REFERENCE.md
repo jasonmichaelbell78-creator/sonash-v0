@@ -41,6 +41,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/session-end`                    | Session end verification checklist                   |
 | `/alerts`                         | Intelligent health dashboard with scoring            |
 | `/pr-ecosystem-audit`             | PR ecosystem diagnostic (18 categories, 5 domains)   |
+| `/hook-ecosystem-audit`           | Hook ecosystem diagnostic (16 categories, 5 domains) |
 | `/checkpoint`                     | Save session state for recovery                      |
 | `/quick-fix`                      | Auto-suggest fixes for pre-commit failures           |
 | `/pre-commit-fixer`               | Fix pre-commit hook failures and retry               |
@@ -153,6 +154,7 @@ Source: `.husky/`
 
 | Version | Date         | Change                                     |
 | ------- | ------------ | ------------------------------------------ |
+| 5.3     | 2026-02-23   | Added /hook-ecosystem-audit skill (59)     |
 | 5.2     | 2026-02-23   | Added 17 missing skills (58 total)         |
 | 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill            |
 | 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)    |
