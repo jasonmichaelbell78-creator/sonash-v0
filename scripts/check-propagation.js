@@ -232,7 +232,7 @@ function parseGrepLine(line) {
 function searchForFunction(funcName) {
   const results = [];
   const safeName = escapeForRegex(funcName);
-  const definitionPattern = String.raw`(function\s+${safeName}\s*\(|(?:const|let|var)\s+${safeName}\s*=|\b${safeName}\s*\([^)]*\)\s*\{)`;
+  const definitionPattern = String.raw`(function[[:space:]]+${safeName}[[:space:]]*\(|(const|let|var)[[:space:]]+${safeName}[[:space:]]*=|[^a-zA-Z0-9_$]${safeName}[[:space:]]*\([^)]*\)[[:space:]]*\{)`;
 
   for (const searchDir of SEARCH_DIRS) {
     try {
