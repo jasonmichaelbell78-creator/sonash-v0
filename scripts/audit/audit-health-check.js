@@ -269,6 +269,134 @@ function checkStaleBaselines() {
   }
 }
 
+function checkEcosystemAuditDirectories() {
+  console.log("\n=== Check 7: Ecosystem Audit Skill Directories ===");
+
+  const ECOSYSTEM_AUDITS = [
+    { name: "hook-ecosystem-audit", script: "run-hook-ecosystem-audit.js" },
+    { name: "session-ecosystem-audit", script: "run-session-ecosystem-audit.js" },
+    { name: "tdms-ecosystem-audit", script: "run-tdms-ecosystem-audit.js" },
+    { name: "pr-ecosystem-audit", script: "run-pr-ecosystem-audit.js" },
+    { name: "skill-ecosystem-audit", script: "run-skill-ecosystem-audit.js" },
+    { name: "doc-ecosystem-audit", script: "run-doc-ecosystem-audit.js" },
+    { name: "script-ecosystem-audit", script: "run-script-ecosystem-audit.js" },
+  ];
+
+  let ecosystemDirsPassing = 0;
+  const ecosystemDirsTotal = ECOSYSTEM_AUDITS.length;
+  const missingEcosystemAudits = [];
+
+  for (const audit of ECOSYSTEM_AUDITS) {
+    const skillDir = path.join(REPO_ROOT, ".claude", "skills", audit.name);
+    const scriptPath = path.join(skillDir, "scripts", audit.script);
+
+    if (fs.existsSync(skillDir) && fs.existsSync(scriptPath)) {
+      ecosystemDirsPassing++;
+    } else {
+      missingEcosystemAudits.push(audit.name);
+    }
+  }
+
+  const passed = ecosystemDirsPassing === ecosystemDirsTotal;
+  addResult(
+    "Ecosystem Audit Directories",
+    passed,
+    passed
+      ? `All ${ecosystemDirsTotal} ecosystem audit skills present with run scripts`
+      : `Missing: ${missingEcosystemAudits.join(", ")}`
+  );
+
+  // Export for use in other checks
+  return ECOSYSTEM_AUDITS;
+}
+
+function checkEcosystemAuditStateFiles() {
+  console.log("\n=== Check 8: Ecosystem Audit State Files ===");
+
+  const ECOSYSTEM_STATE_FILES = [
+    "hook-ecosystem-audit-history.jsonl",
+    "session-ecosystem-audit-history.jsonl",
+    "tdms-ecosystem-audit-history.jsonl",
+    "pr-ecosystem-audit.jsonl",
+    "skill-ecosystem-audit-history.jsonl",
+    "doc-ecosystem-audit-history.jsonl",
+    "script-ecosystem-audit-history.jsonl",
+  ];
+
+  let stateFilesPassing = 0;
+  const stateFilesTotal = ECOSYSTEM_STATE_FILES.length;
+  const missingStateFiles = [];
+  const corruptStateFiles = [];
+
+  for (const stateFile of ECOSYSTEM_STATE_FILES) {
+    const filePath = path.join(REPO_ROOT, ".claude", "state", stateFile);
+    if (!fs.existsSync(filePath)) {
+      missingStateFiles.push(stateFile);
+      continue;
+    }
+
+    // Quick corruption check: try to parse first and last lines as JSON
+    try {
+      const content = fs.readFileSync(filePath, "utf8").trim();
+      if (content) {
+        const lines = content.split("\n").filter(Boolean);
+        JSON.parse(lines[0]); // First line
+        if (lines.length > 1) JSON.parse(lines[lines.length - 1]); // Last line
+      }
+      stateFilesPassing++;
+    } catch {
+      corruptStateFiles.push(stateFile);
+    }
+  }
+
+  const stateStatus = missingStateFiles.length === 0 && corruptStateFiles.length === 0;
+  // INFO if none exist yet (never run), WARN if some are corrupt/missing
+  const passed = stateStatus || missingStateFiles.length === stateFilesTotal;
+  addResult(
+    "Ecosystem Audit State Files",
+    passed,
+    stateStatus
+      ? `All ${stateFilesTotal} state files present and valid`
+      : [
+          missingStateFiles.length > 0
+            ? `Missing (run audit first): ${missingStateFiles.join(", ")}`
+            : "",
+          corruptStateFiles.length > 0 ? `Corrupt: ${corruptStateFiles.join(", ")}` : "",
+        ]
+          .filter(Boolean)
+          .join("; ")
+  );
+}
+
+function checkEcosystemAuditLibConsistency(ecosystemAudits) {
+  console.log("\n=== Check 9: Ecosystem Audit Lib Consistency ===");
+
+  const LIB_FILES = ["scoring.js", "state-manager.js", "benchmarks.js", "patch-generator.js"];
+  let libConsistencyIssues = 0;
+  const libIssueDetails = [];
+
+  for (const audit of ecosystemAudits) {
+    const libDir = path.join(REPO_ROOT, ".claude", "skills", audit.name, "scripts", "lib");
+    if (!fs.existsSync(libDir)) continue;
+
+    for (const libFile of LIB_FILES) {
+      const filePath = path.join(libDir, libFile);
+      if (!fs.existsSync(filePath)) {
+        libConsistencyIssues++;
+        libIssueDetails.push(`${audit.name}: missing ${libFile}`);
+      }
+    }
+  }
+
+  addResult(
+    "Ecosystem Audit Lib Consistency",
+    libConsistencyIssues === 0,
+    libConsistencyIssues === 0
+      ? `All ecosystem audits have complete lib/ directories (${LIB_FILES.length} files each)`
+      : `Issues: ${libIssueDetails.join("; ")}`
+  );
+}
+
 function printReport() {
   console.log("\n" + "=".repeat(70));
   console.log("AUDIT SYSTEM HEALTH CHECK REPORT");
@@ -300,6 +428,9 @@ function main() {
   checkTrackerExists();
   checkOrphanedAudits();
   checkStaleBaselines();
+  const ecosystemAudits = checkEcosystemAuditDirectories();
+  checkEcosystemAuditStateFiles();
+  checkEcosystemAuditLibConsistency(ecosystemAudits);
 
   // Print report
   printReport();

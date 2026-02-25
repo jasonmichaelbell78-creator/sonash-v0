@@ -81,7 +81,7 @@ Built-in Claude Code CLI commands (not project-specific).
 
 All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 
-### Audit & Code Quality (18 skills)
+### Audit & Code Quality (22 skills)
 
 | Skill                             | Description                                                     |
 | --------------------------------- | --------------------------------------------------------------- |
@@ -101,9 +101,13 @@ All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 | `/code-reviewer`                  | Run code review on recent changes                               |
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                           |
 | `/pr-ecosystem-audit`             | Comprehensive PR review ecosystem diagnostic                    |
-| `/hook-ecosystem-audit`           | Hook system health diagnostic (16 categories, 5 domains)        |
+| `/hook-ecosystem-audit`           | Hook system health diagnostic (19 categories, 6 domains)        |
 | `/tdms-ecosystem-audit`           | TDMS pipeline health diagnostic (16 categories, 5 domains)      |
 | `/session-ecosystem-audit`        | Session system health diagnostic (16 categories, 5 domains)     |
+| `/skill-ecosystem-audit`          | Skill ecosystem health diagnostic (21 categories, 5 domains)    |
+| `/doc-ecosystem-audit`            | Documentation ecosystem diagnostic (16 categories, 5 domains)   |
+| `/script-ecosystem-audit`         | Script infrastructure diagnostic (18 categories, 5 domains)     |
+| `/comprehensive-ecosystem-audit`  | Run all 7 ecosystem audits in staged waves with unified report  |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues              |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                            |
 
