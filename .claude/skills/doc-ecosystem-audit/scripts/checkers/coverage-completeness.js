@@ -435,17 +435,19 @@ function collectAllDocContent(rootDir) {
   // docs/ recursive
   function walkDir(dir) {
     try {
-      // Path containment: ensure dir is inside rootDir
-      const rel = path.relative(rootDir, dir);
-      if (/^\.\.(?:[\\/]|$)/.test(rel)) return;
+      // Path containment: ensure dir is inside rootDir (absolute comparison)
+      const rootAbs = path.resolve(rootDir);
+      const dirAbs = path.resolve(dir);
+      const rel = path.relative(rootAbs, dirAbs);
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || rel === "") return;
 
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const entries = fs.readdirSync(dirAbs, { withFileTypes: true });
       for (const entry of entries) {
         if (entry.name[0] === "." || entry.name === "node_modules") continue;
         if (entry.isDirectory()) {
-          walkDir(path.join(dir, entry.name));
+          walkDir(path.join(dirAbs, entry.name));
         } else if (entry.isFile() && entry.name.endsWith(".md")) {
-          const content = safeReadFile(path.join(dir, entry.name));
+          const content = safeReadFile(path.join(dirAbs, entry.name));
           if (content) chunks.push(content.toLowerCase());
         }
       }

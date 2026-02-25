@@ -392,16 +392,18 @@ function collectDocFiles(rootDir) {
   // docs/ recursive
   function walkDir(dir, prefix) {
     try {
-      // Path containment: ensure dir is inside rootDir
-      const rel = path.relative(rootDir, dir);
-      if (/^\.\.(?:[\\/]|$)/.test(rel)) return;
+      // Path containment: ensure dir is inside rootDir (absolute comparison)
+      const rootAbs = path.resolve(rootDir);
+      const dirAbs = path.resolve(dir);
+      const rel = path.relative(rootAbs, dirAbs);
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || rel === "") return;
 
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const entries = fs.readdirSync(dirAbs, { withFileTypes: true });
       for (const entry of entries) {
         if (entry.name[0] === "." || entry.name === "node_modules") continue;
         const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
         if (entry.isDirectory()) {
-          walkDir(path.join(dir, entry.name), relPath);
+          walkDir(path.join(dirAbs, entry.name), relPath);
         } else if (entry.isFile() && entry.name.endsWith(".md")) {
           files.push(`docs/${relPath}`);
         }
