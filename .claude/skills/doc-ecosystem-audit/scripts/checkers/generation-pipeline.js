@@ -56,21 +56,24 @@ function run(ctx) {
  * Returns { ok, error } — ok true if file exists, error string if not.
  */
 function validateContainedFile(rootDir, relFile) {
+  if (typeof relFile !== "string" || relFile.trim() === "") {
+    return { ok: false, error: "invalid_path" };
+  }
   if (path.isAbsolute(relFile)) {
-    return { ok: false, error: `absolute_path` };
+    return { ok: false, error: "absolute_path" };
   }
   const rootAbs = path.resolve(rootDir);
   const fullPath = path.resolve(rootAbs, relFile);
   const relToRoot = path.relative(rootAbs, fullPath);
   if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
-    return { ok: false, error: `path_escape` };
+    return { ok: false, error: "path_escape" };
   }
   try {
     const stat = fs.statSync(fullPath);
     if (stat.isFile()) return { ok: true };
-    return { ok: false, error: `not_file` };
+    return { ok: false, error: "not_file" };
   } catch {
-    return { ok: false, error: `not_found` };
+    return { ok: false, error: "not_found" };
   }
 }
 
@@ -136,29 +139,30 @@ function checkDocsIndexCorrectness(rootDir, findings) {
         healthPassing++;
       } else {
         const errorMsgs = {
+          invalid_path: `Script file path is invalid: ${scriptFile}`,
           absolute_path: `Script file path is absolute: ${scriptFile}`,
           path_escape: `Script file escapes repo root: ${scriptFile}`,
           not_file: `Script file ${scriptFile} is not a regular file`,
           not_found: `Script file ${scriptFile} not found on disk`,
         };
-        issues.push(errorMsgs[check.error] || `Script file ${scriptFile} invalid`);
-        if (check.error === "not_found") {
-          findings.push({
-            id: "DEA-401",
-            category: "docs_index_correctness",
-            domain: DOMAIN,
-            severity: "error",
-            message: `docs:index script file not found: ${scriptFile}`,
-            details: `The npm script references ${scriptFile} but the file doesn't exist.`,
-            impactScore: 75,
-            frequency: 1,
-            blastRadius: 4,
-            patchType: "fix_pipeline",
-            patchTarget: scriptFile,
-            patchContent: "Create or fix the documentation index generator script",
-            patchImpact: "Restore docs:index pipeline functionality",
-          });
-        }
+        const details = errorMsgs[check.error] || `Script file ${scriptFile} invalid`;
+        issues.push(details);
+
+        findings.push({
+          id: "DEA-401",
+          category: "docs_index_correctness",
+          domain: DOMAIN,
+          severity: "error",
+          message: `docs:index script file is invalid: ${scriptFile}`,
+          details,
+          impactScore: 75,
+          frequency: 1,
+          blastRadius: 4,
+          patchType: "fix_pipeline",
+          patchTarget: "package.json",
+          patchContent: "Update docs:index to reference a repo-contained .js file",
+          patchImpact: "Restore docs:index pipeline functionality",
+        });
       }
     } else {
       healthPassing++; // Non-standard command format, assume ok

@@ -59,7 +59,8 @@ function collectScriptFiles(baseDir) {
         continue;
       const full = path.join(dir, entry);
       try {
-        const stat = fs.statSync(full);
+        const stat = fs.lstatSync(full);
+        if (stat.isSymbolicLink()) continue;
         if (stat.isDirectory()) {
           walk(full);
         } else if (stat.isFile() && entry.endsWith(".js")) {
@@ -179,6 +180,7 @@ function checkConsistentPatterns(scriptFiles) {
   let totalDirs = 0;
   let consistentDirs = 0;
 
+  let consistentFindingCount = 0;
   for (const [dir, files] of dirMap) {
     if (files.length < 2) {
       totalDirs++;
@@ -216,7 +218,7 @@ function checkConsistentPatterns(scriptFiles) {
       consistentDirs++;
     } else {
       findings.push({
-        id: "SIA-410",
+        id: `SIA-410-${++consistentFindingCount}`,
         category: "consistent_patterns",
         domain: DOMAIN,
         severity: "info",
@@ -299,6 +301,7 @@ function checkDeadCode(scriptFiles) {
   let totalExports = exportedFunctions.size;
   let usedExports = 0;
 
+  let deadCodeFindingCount = 0;
   for (const [key, exp] of exportedFunctions) {
     const escaped = exp.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const usagePattern = new RegExp(`\\b${escaped}\\b`);
@@ -316,7 +319,7 @@ function checkDeadCode(scriptFiles) {
       usedExports++;
     } else {
       findings.push({
-        id: "SIA-420",
+        id: `SIA-420-${++deadCodeFindingCount}`,
         category: "dead_code",
         domain: DOMAIN,
         severity: "info",
@@ -361,6 +364,7 @@ function checkComplexity(scriptFiles) {
   const functionDefPattern =
     /\bfunction\s+\w+\s*\(|(?:const|let|var)\s+\w+\s*=\s*(?:async\s+)?function|(?:const|let|var)\s+\w+\s*=\s*(?:async\s+)?\([^)]*\)\s*=>/g;
 
+  let complexityFindingCount = 0;
   for (const sf of scriptFiles) {
     if (sf.relPath.includes("__tests__") || sf.name.endsWith(".test.js")) continue;
 
@@ -381,7 +385,7 @@ function checkComplexity(scriptFiles) {
       acceptableScripts++;
     } else {
       findings.push({
-        id: "SIA-430",
+        id: `SIA-430-${++complexityFindingCount}`,
         category: "complexity",
         domain: DOMAIN,
         severity: "warning",

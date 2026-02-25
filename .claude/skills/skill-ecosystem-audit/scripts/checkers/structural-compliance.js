@@ -252,9 +252,10 @@ function checkStepContinuity(skills, findings) {
     skills.length > 0 ? Math.round((continuousCount / skills.length) * 100) : 100;
   const result = scoreMetric(continuousPct, bench.continuous_pct, "higher-is-better");
 
+  let stepContinuityFindingCount = 0;
   for (const issue of issues) {
     findings.push({
-      id: `SEA-11${findings.filter((f) => f.category === "step_continuity").length}`,
+      id: `SEA-110-${++stepContinuityFindingCount}`,
       category: "step_continuity",
       domain: DOMAIN,
       severity: "warning",
@@ -315,9 +316,10 @@ function checkSectionStructure(skills, findings) {
   const completePct = skills.length > 0 ? Math.round((completeCount / skills.length) * 100) : 100;
   const result = scoreMetric(completePct, bench.complete_pct, "higher-is-better");
 
+  let sectionStructureFindingCount = 0;
   for (const inc of incomplete) {
     findings.push({
-      id: `SEA-12${findings.filter((f) => f.category === "section_structure").length}`,
+      id: `SEA-120-${++sectionStructureFindingCount}`,
       category: "section_structure",
       domain: DOMAIN,
       severity: inc.missing.length >= 2 ? "warning" : "info",
@@ -394,9 +396,10 @@ function checkBloatScore(skills, findings) {
     skills.length > 0 ? Math.round((belowThresholdCount / skills.length) * 100) : 100;
   const result = scoreMetric(belowPct, bench.below_threshold_pct, "higher-is-better");
 
+  let bloatFindingCount = 0;
   for (const bloated of bloatedSkills) {
     findings.push({
-      id: `SEA-13${findings.filter((f) => f.category === "bloat_score").length}`,
+      id: `SEA-130-${++bloatFindingCount}`,
       category: "bloat_score",
       domain: DOMAIN,
       severity: bloated.severity,

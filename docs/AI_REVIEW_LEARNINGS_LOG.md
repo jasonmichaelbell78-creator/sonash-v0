@@ -2948,6 +2948,38 @@ total — 125 fixed, 7 rejected, 7 deferred
 
 ---
 
+#### Review #368: PR #389 R2 — Qodo + Gemini + Compliance (2026-02-25)
+
+**Source**: Qodo (32 suggestions + 3 compliance) + Gemini (0 new) **PR**: #389
+(ecosystem audit expansion + skill bloat reduction) **Items**: 40 parsed — 31
+fixed, 0 deferred, 3 rejected, 6 stale (R1-fixed)
+
+**Patterns Identified**:
+
+- **collectScriptFiles symlink propagation**: `fs.statSync` in recursive walkers
+  appears in module-consistency.js AND code-quality.js (same pattern, different
+  files). Both need `lstatSync` + symlink skip. Always grep for duplicate walker
+  implementations.
+- **findings.filter ID generation**: O(n^2) anti-pattern appeared in 6 checker
+  files across 3 ecosystem audits. All produce non-unique IDs. Replace with
+  pre-loop counter everywhere.
+- **YAML multiline run: parsing**: Hardcoded `^\s{6,}` indentation fails for
+  non-standard nesting depths. Track `runIndent` dynamically.
+- **isInsideTryCatch brace logic**: When scanning backwards, `{` increments
+  depth (entering a block) and `}` decrements (leaving). The original code had
+  these swapped.
+- **resolveRelativePath absolute path stripping**: Stripping leading slashes
+  from absolute paths (`/etc/passwd` → `etc/passwd`) creates a valid-looking
+  relative path. Always reject absolute paths outright.
+- **DoS caps for recursive walkers**: New recursive walkers need MAX_DEPTH and
+  MAX_FILES constants to prevent CI abuse via deep/wide directory trees.
+
+**Resolution**: 31 items fixed across 17 files. Tests: 293 pass, 0 fail. 3
+rejected (safeRequire error surfacing, silent catches — all intentional). 6
+stale items already addressed in Review #367.
+
+---
+
 #### Review #367: PR #389 R1 — Qodo + Gemini (2026-02-25)
 
 **Source**: Qodo (23 suggestions + 4 compliance) + Gemini (1 bug) **PR**: #389

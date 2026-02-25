@@ -213,7 +213,7 @@ function deduplicateFindings(findings) {
 
   for (const f of findings) {
     const rawText = f.patchTarget || f.details || f.message || "";
-    const fileMatch = String(rawText).match(/([\w./-]+\.md)\b/);
+    const fileMatch = String(rawText).match(/([\w./-]+\.(?:md|js|json|ya?ml))\b/);
     const file = fileMatch ? fileMatch[1] : "";
     const key = file ? `${file}:${f.severity}:${f.category}` : null;
 
@@ -383,9 +383,11 @@ for (const [cat, data] of Object.entries(categoriesOutput)) {
   stateEntry.categories[cat] = { score: data.score, rating: data.rating };
 }
 
-if (isBatchMode) {
+const shouldWriteState = !isBatchMode && !isCheckMode && !isSummaryMode;
+
+if (!shouldWriteState) {
   console.error(
-    "  [batch] State write skipped (batch mode \u2014 run without --batch for final save)"
+    `  [state] Write skipped (${isBatchMode ? "batch mode" : isCheckMode ? "check mode" : "summary mode"})`
   );
 } else {
   const saved = stateManager.appendEntry(stateEntry);

@@ -233,8 +233,14 @@ function checkCrossScriptDependencies(rootDir, scriptFiles) {
         path.join(resolvedBase, "index.js"),
       ];
 
+      const rootAbs = path.resolve(rootDir);
       let found = false;
       for (const candidate of candidates) {
+        const relToRoot = path.relative(rootAbs, candidate);
+        if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
+          continue;
+        }
+
         try {
           const stat = fs.statSync(candidate);
           if (stat.isFile()) {

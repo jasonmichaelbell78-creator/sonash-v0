@@ -393,9 +393,12 @@ for (const [cat, data] of Object.entries(categoriesOutput)) {
   stateEntry.categories[cat] = { score: data.score, rating: data.rating };
 }
 
-if (isBatchMode) {
+const shouldWriteState = !isBatchMode && !isCheckMode && !isSummaryMode;
+
+if (!shouldWriteState) {
+  const skipReason = isBatchMode ? "batch mode" : isCheckMode ? "check mode" : "summary mode";
   console.error(
-    "  [batch] State write skipped (batch mode \u2014 run without --batch for final save)"
+    `  [state] State write skipped (${skipReason} \u2014 run without mode flags for final save)`
   );
 } else {
   const saved = stateManager.appendEntry(stateEntry);

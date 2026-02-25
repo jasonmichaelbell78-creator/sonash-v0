@@ -89,6 +89,7 @@ function extractRunStepRefs(content) {
   let inRun = false;
   let runBuffer = "";
   let runStartLine = 0;
+  let runIndent = 0;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -97,13 +98,13 @@ function extractRunStepRefs(content) {
     // Detect "run:" or "run: |" lines
     if (/^run:\s*\|?\s*$/.test(trimmed) || /^run:\s+[^|]/.test(trimmed)) {
       if (inRun && runBuffer) {
-        // Process previous run buffer
         extractRefsFromCommand(runBuffer, runStartLine, refs);
       }
 
       inRun = false;
       runBuffer = "";
       runStartLine = i + 1;
+      runIndent = line.match(/^\s*/)?.[0].length ?? 0;
 
       // Inline run: command (not multiline)
       const inlineMatch = trimmed.match(/^run:\s+(.+)$/);
@@ -115,11 +116,12 @@ function extractRunStepRefs(content) {
         runStartLine = i + 1;
       }
     } else if (inRun) {
-      // Inside a multiline run: block — check indentation
-      if (trimmed === "" || line.match(/^\s{6,}/)) {
+      const indent = line.match(/^\s*/)?.[0].length ?? 0;
+
+      // Inside a multiline run: block — must be more indented than the `run:` line
+      if (trimmed === "" || indent > runIndent) {
         runBuffer += trimmed + "\n";
       } else {
-        // Indentation decreased — end of multiline block
         extractRefsFromCommand(runBuffer, runStartLine, refs);
         inRun = false;
         runBuffer = "";
@@ -127,7 +129,6 @@ function extractRunStepRefs(content) {
     }
   }
 
-  // Flush remaining buffer
   if (inRun && runBuffer) {
     extractRefsFromCommand(runBuffer, runStartLine, refs);
   }
@@ -185,13 +186,17 @@ function validateWorkflowRef(rootDir, ref, workflowName, pkgScripts, canVerifyPk
       return { workflow: workflowName, line: ref.line, ref: nodeRef, type: "path_escape" };
     }
     const filePath = path.resolve(rootDir, nodeRef);
-    if (fs.existsSync(filePath)) return "valid";
+    try {
+      if (fs.statSync(filePath).isFile()) return "valid";
+    } catch {
+      // fall through
+    }
     return { workflow: workflowName, line: ref.line, ref: nodeRef, type: "missing_file" };
   }
 
   // npm run <script>
   if (!canVerifyPkgScripts) return "valid";
-  if (pkgScripts[ref.scriptRef]) return "valid";
+  if (Object.prototype.hasOwnProperty.call(pkgScripts, ref.scriptRef)) return "valid";
   return { workflow: workflowName, line: ref.line, ref: ref.scriptRef, type: "missing_script" };
 }
 
@@ -487,16 +492,51 @@ function checkCiCacheEffectiveness(rootDir, findings) {
 
       // Detect setup-node with cache
       if (line.startsWith("uses:") && line.includes("actions/setup-node")) {
-        // Look for cache: "npm" in the with: block below
-        for (let j = i + 1; j < Math.min(i + 10, lines.length); j++) {
-          const nextLine = lines[j].trim();
+        const usesIndent = lines[i].match(/^\s*/)?.[0].length ?? 0;
+
+        let inWithBlock = false;
+        let withIndent = 0;
+
+        for (let j = i + 1; j < Math.min(i + 25, lines.length); j++) {
+          const raw = lines[j];
+          const indent = raw.match(/^\s*/)?.[0].length ?? 0;
+          const nextLine = raw.trim();
+
+          // Stop if indentation returns to the step level (new step / new top-level key)
+          if (indent <= usesIndent && (nextLine.startsWith("- ") || nextLine.includes(":"))) break;
+
+          if (nextLine === "with:") {
+            inWithBlock = true;
+            withIndent = indent;
+            continue;
+          }
+
+          if (!inWithBlock) continue;
+
+          // If indentation returns to (or above) `with:` level, we're out of `with:`
+          if (indent <= withIndent) {
+            inWithBlock = false;
+            continue;
+          }
+
           if (nextLine.startsWith("cache:")) {
-            totalCacheSteps++;
-            effectiveCacheSteps++; // setup-node cache is generally well-configured
+            const cacheValue = nextLine
+              .slice("cache:".length)
+              .trim()
+              .replace(/^["']|["']$/g, "");
+            if (cacheValue === "npm" || cacheValue === "yarn" || cacheValue === "pnpm") {
+              totalCacheSteps++;
+              effectiveCacheSteps++;
+            } else {
+              totalCacheSteps++;
+              cacheIssues.push({
+                workflow: workflow.name,
+                line: j + 1,
+                issues: [`setup-node cache value is unusual: ${cacheValue || "(empty)"}`],
+              });
+            }
             break;
           }
-          // Stop if we hit another step
-          if (nextLine.startsWith("- name:") || nextLine.startsWith("uses:")) break;
         }
       }
     }
@@ -580,12 +620,14 @@ function checkCiCacheEffectiveness(rootDir, findings) {
  */
 function validateCacheKey(keyValue, rootDir, issues) {
   // Check for hash-based keys (good practice)
-  if (!keyValue.includes("hashFiles") && !keyValue.includes("hash")) {
+  const hasHashFilesExpr =
+    keyValue.includes("hashFiles(") || (keyValue.includes("${{") && keyValue.includes("hashFiles"));
+  if (!hasHashFilesExpr) {
     issues.push("Cache key does not use hashFiles() — may have stale hits");
   }
 
   // Check for hardcoded version strings in cache key
-  if (/v\d+/.test(keyValue) && !keyValue.includes("hashFiles")) {
+  if (/v\d+/.test(keyValue) && !hasHashFilesExpr) {
     issues.push("Cache key uses hardcoded version without file hash");
   }
 

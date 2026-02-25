@@ -90,8 +90,21 @@ function checkIndexFilesystemSync(rootDir, indexContent, findings) {
 
   // Check forward: indexed paths that don't exist on disk
   const missingOnDisk = [];
+  const rootAbs = path.resolve(rootDir);
+
   for (const indexedPath of indexedPaths) {
-    const fullPath = path.join(rootDir, indexedPath);
+    if (path.isAbsolute(indexedPath)) {
+      missingOnDisk.push(indexedPath);
+      continue;
+    }
+
+    const fullPath = path.resolve(rootAbs, indexedPath);
+    const relToRoot = path.relative(rootAbs, fullPath);
+    if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
+      missingOnDisk.push(indexedPath);
+      continue;
+    }
+
     try {
       const stat = fs.statSync(fullPath);
       if (!stat.isFile()) {
@@ -417,22 +430,30 @@ function extractMarkdownLinks(content) {
  * Returns relative paths from project root.
  */
 function scanDocsDirectory(rootDir) {
+  const MAX_DEPTH = 10;
+  const MAX_FILES = 5000;
   const files = new Set();
   const docsDir = path.join(rootDir, "docs");
+  const rootAbs = path.resolve(rootDir);
 
-  function walkDir(dir, prefix) {
+  function walkDir(dir, prefix, depth) {
+    if (depth > MAX_DEPTH) return;
+    if (files.size >= MAX_FILES) return;
+
     try {
-      // Path containment: ensure dir is inside rootDir
-      const rel = path.relative(rootDir, dir);
-      if (/^\.\.(?:[\\/]|$)/.test(rel)) return;
+      // Path containment: ensure dir is inside rootDir using resolved paths
+      const dirAbs = path.resolve(dir);
+      const rel = path.relative(rootAbs, dirAbs);
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || rel === "") return;
 
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const entries = fs.readdirSync(dirAbs, { withFileTypes: true });
       for (const entry of entries) {
+        if (files.size >= MAX_FILES) break;
         // Skip node_modules, .git, and hidden dirs
         if (entry.name[0] === "." || entry.name === "node_modules") continue;
         const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
         if (entry.isDirectory()) {
-          walkDir(path.join(dir, entry.name), relPath);
+          walkDir(path.join(dirAbs, entry.name), relPath, depth + 1);
         } else if (entry.isFile() && entry.name.endsWith(".md")) {
           files.add(`docs/${relPath}`);
         }
@@ -444,7 +465,7 @@ function scanDocsDirectory(rootDir) {
 
   try {
     if (fs.existsSync(docsDir)) {
-      walkDir(docsDir, "");
+      walkDir(docsDir, "", 0);
     }
   } catch {
     // docs/ not accessible
@@ -476,11 +497,11 @@ function scanRootMdFiles(rootDir) {
  */
 function resolveRelativePath(sourcePath, relativePath) {
   try {
-    if (path.isAbsolute(relativePath)) return relativePath.replace(/^[\\/]+/, "");
+    if (path.isAbsolute(relativePath)) return null;
     const sourceDir = path.dirname(sourcePath);
     const resolved = path.normalize(path.join(sourceDir, relativePath)).replace(/\\/g, "/");
-    // Path containment: reject if resolved escapes project root
-    if (/^\.\.(?:[\\/]|$)/.test(resolved)) return null;
+    // Path containment: reject if resolved escapes project root or is empty
+    if (/^\.\.(?:[\\/]|$)/.test(resolved) || resolved === "") return null;
     return resolved;
   } catch {
     return null;

@@ -29,17 +29,6 @@ try {
   process.exit(1);
 }
 
-// Symlink guard
-let isSafeToWrite;
-try {
-  ({ isSafeToWrite } = require(
-    path.join(__dirname, "..", "..", "..", "hooks", "lib", "symlink-guard")
-  ));
-} catch {
-  console.error("  [warn] symlink-guard unavailable; disabling state writes");
-  isSafeToWrite = () => false;
-}
-
 // Find project root
 function findProjectRoot() {
   let dir = __dirname;
@@ -56,6 +45,15 @@ function findProjectRoot() {
 }
 
 const ROOT_DIR = findProjectRoot();
+
+// Symlink guard
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require(path.join(ROOT_DIR, ".claude", "hooks", "lib", "symlink-guard")));
+} catch {
+  console.error("  [warn] symlink-guard unavailable; disabling state writes");
+  isSafeToWrite = () => false;
+}
 const args = process.argv.slice(2);
 const isCheckMode = args.includes("--check");
 const isSummaryMode = args.includes("--summary");
@@ -389,9 +387,11 @@ for (const [cat, data] of Object.entries(categoriesOutput)) {
   stateEntry.categories[cat] = { score: data.score, rating: data.rating };
 }
 
-if (isBatchMode) {
+const shouldWriteState = !isBatchMode && !isCheckMode && !isSummaryMode;
+if (!shouldWriteState) {
+  const skipReason = isBatchMode ? "batch mode" : isCheckMode ? "check mode" : "summary mode";
   console.error(
-    "  [batch] State write skipped (batch mode \u2014 run without --batch for final save)"
+    `  [state] State write skipped (${skipReason} \u2014 run without mode flags for final save)`
   );
 } else {
   const saved = stateManager.appendEntry(stateEntry);

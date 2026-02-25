@@ -299,7 +299,7 @@ function checkContentFreshness(rootDir, docFiles, findings) {
       const relRef = path.relative(rootDir, absRef).replace(/\\/g, "/");
 
       // Only allow references within repo root
-      if (/^\.\.(?:\/|$)/.test(relRef) || relRef === "") continue;
+      if (/^\.\.(?:[\\/]|$)/.test(relRef) || relRef === "") continue;
 
       const codeDate = getGitLastModified(rootDir, relRef);
       if (codeDate && codeDate > newestCodeDate) {

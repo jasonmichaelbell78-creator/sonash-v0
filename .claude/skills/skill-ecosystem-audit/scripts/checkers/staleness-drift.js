@@ -138,9 +138,10 @@ function checkVersionHistoryCurrency(skills, findings) {
     totalWithHistory > 0 ? Math.round((currentCount / totalWithHistory) * 100) : 100;
   const result = scoreMetric(currentPct, bench.current_pct, "higher-is-better");
 
+  let versionHistoryFindingCount = 0;
   for (const stale of staleSkills) {
     findings.push({
-      id: `SEA-40${findings.filter((f) => f.category === "version_history_currency").length}`,
+      id: `SEA-400-${++versionHistoryFindingCount}`,
       category: "version_history_currency",
       domain: DOMAIN,
       severity: "info",

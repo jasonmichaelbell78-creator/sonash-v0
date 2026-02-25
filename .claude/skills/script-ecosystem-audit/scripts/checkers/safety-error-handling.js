@@ -96,16 +96,25 @@ function collectScriptFiles(baseDir) {
  * Check if a given line index is inside a try block by walking backwards.
  */
 function isInsideTryCatch(lines, callLineIdx) {
+  // Reverse-scan brace balance:
+  //   depth > 0 => the call site is inside a block that started above the current scan line
   let depth = 0;
+
   for (let i = callLineIdx; i >= 0; i--) {
     const line = lines[i];
+
     for (let c = line.length - 1; c >= 0; c--) {
-      if (line[c] === "}") depth++;
-      if (line[c] === "{") depth--;
+      if (line[c] === "{") depth++;
+      if (line[c] === "}") depth--;
     }
-    if (/\bfunction\b|=>\s*\{/.test(line) && depth < 0) return false;
-    if (depth < 0 && /\btry\b/.test(line)) return true;
+
+    // Stop if we crossed a function boundary before finding a wrapping try
+    if (/\bfunction\b|=>\s*\{/.test(line) && depth <= 0) return false;
+
+    // If we see `try` while we're still inside an open block, assume the call is within that try
+    if (depth > 0 && /\btry\b/.test(line)) return true;
   }
+
   return false;
 }
 

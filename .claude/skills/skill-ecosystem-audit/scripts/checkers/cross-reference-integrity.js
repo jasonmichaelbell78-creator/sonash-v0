@@ -131,9 +131,10 @@ function checkSkillToSkillRefs(skills, skillNames, findings) {
   const validPct = totalRefs > 0 ? Math.round((validRefs / totalRefs) * 100) : 100;
   const result = scoreMetric(validPct, bench.valid_pct, "higher-is-better");
 
+  let skillToSkillFindingCount = 0;
   for (const broken of brokenRefs) {
     findings.push({
-      id: `SEA-20${findings.filter((f) => f.category === "skill_to_skill_refs").length}`,
+      id: `SEA-200-${++skillToSkillFindingCount}`,
       category: "skill_to_skill_refs",
       domain: DOMAIN,
       severity: "warning",
@@ -175,7 +176,19 @@ function checkSkillToScriptRefs(rootDir, skills, findings) {
       const scriptPath = match[1].replace(/^\.\//, "");
       totalRefs++;
 
-      const fullPath = path.join(rootDir, scriptPath);
+      if (path.isAbsolute(scriptPath)) {
+        brokenRefs.push({ from: name, scriptPath });
+        continue;
+      }
+
+      const rootAbs = path.resolve(rootDir);
+      const fullPath = path.resolve(rootAbs, scriptPath);
+      const rel = path.relative(rootAbs, fullPath);
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || rel === "") {
+        brokenRefs.push({ from: name, scriptPath });
+        continue;
+      }
+
       try {
         if (fs.existsSync(fullPath)) {
           validRefs++;
@@ -219,9 +232,10 @@ function checkSkillToScriptRefs(rootDir, skills, findings) {
   const validPct = totalRefs > 0 ? Math.round((validRefs / totalRefs) * 100) : 100;
   const result = scoreMetric(validPct, bench.valid_pct, "higher-is-better");
 
+  let skillToScriptFindingCount = 0;
   for (const broken of brokenRefs) {
     findings.push({
-      id: `SEA-21${findings.filter((f) => f.category === "skill_to_script_refs").length}`,
+      id: `SEA-210-${++skillToScriptFindingCount}`,
       category: "skill_to_script_refs",
       domain: DOMAIN,
       severity: "warning",

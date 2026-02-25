@@ -64,7 +64,8 @@ function collectScriptFiles(baseDir) {
       }
       const full = path.join(dir, entry);
       try {
-        const stat = fs.statSync(full);
+        const stat = fs.lstatSync(full);
+        if (stat.isSymbolicLink()) continue;
         if (stat.isDirectory()) {
           walk(full);
         } else if (stat.isFile() && entry.endsWith(".js")) {
@@ -233,15 +234,15 @@ function checkShebangEntryPoint(rootDir, scriptFiles) {
 
     if (!isPathContained(rootDir, ref)) {
       findings.push({
-        id: "SIA-111",
+        id: "SIA-113",
         category: "shebang_entry_point",
         domain: DOMAIN,
         severity: "error",
-        message: `npm script references missing file: ${ref}`,
-        details: `${ref} referenced in package.json scripts but file does not exist`,
-        impactScore: 80,
+        message: `npm script references unsafe path: ${ref}`,
+        details: `${ref} referenced in package.json scripts but is absolute or escapes repo root`,
+        impactScore: 85,
         frequency: 1,
-        blastRadius: 3,
+        blastRadius: 4,
       });
       continue;
     }

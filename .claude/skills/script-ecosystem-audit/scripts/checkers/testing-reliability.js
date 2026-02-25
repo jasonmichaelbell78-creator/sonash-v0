@@ -142,6 +142,7 @@ function checkTestCoverage(baseDir, scriptFiles, testFiles) {
   let totalScripts = 0;
   let coveredScripts = 0;
 
+  let testCoverageFindingCount = 0;
   for (const sf of scriptFiles) {
     // Skip test files themselves and lib files (tested via integration)
     if (
@@ -173,7 +174,7 @@ function checkTestCoverage(baseDir, scriptFiles, testFiles) {
       coveredScripts++;
     } else {
       findings.push({
-        id: "SIA-500",
+        id: `SIA-500-${++testCoverageFindingCount}`,
         category: "test_coverage",
         domain: DOMAIN,
         severity: "info",

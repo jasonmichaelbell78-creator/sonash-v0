@@ -75,7 +75,14 @@ function checkInternalLinkHealth(rootDir, docFiles, findings) {
     // Extract markdown links [text](path)
     const linkPattern = /\[([^\]]*)\]\(([^)]+)\)/g;
     for (const match of content.matchAll(linkPattern)) {
-      const linkTarget = match[2];
+      let linkTarget = match[2].trim();
+
+      // Remove optional title: (path "title") / (path 'title')
+      if (linkTarget.startsWith("<") && linkTarget.endsWith(">")) {
+        linkTarget = linkTarget.slice(1, -1).trim();
+      } else {
+        linkTarget = linkTarget.split(/\s+(?=(?:"|'))/)[0].trim();
+      }
 
       // Skip external links, anchors-only, mailto, etc.
       if (linkTarget.startsWith("http://") || linkTarget.startsWith("https://")) continue;
@@ -83,7 +90,7 @@ function checkInternalLinkHealth(rootDir, docFiles, findings) {
       if (linkTarget.startsWith("mailto:")) continue;
 
       // Strip anchor portion for file existence check
-      const filePart = linkTarget.split("#")[0];
+      const filePart = linkTarget.split("#")[0].trim();
       if (!filePart) continue;
 
       totalLinks++;
@@ -95,7 +102,7 @@ function checkInternalLinkHealth(rootDir, docFiles, findings) {
       // Path containment guard — reject paths escaping repo root
       const rootAbs = path.resolve(rootDir);
       const relToRoot = path.relative(rootAbs, resolvedPath);
-      if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || path.isAbsolute(relToRoot)) {
+      if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
         brokenLinks.push({ source: docPath, target: linkTarget });
         continue;
       }
@@ -236,6 +243,13 @@ function checkAnchorValidity(rootDir, docFiles, findings) {
       if (filePart) {
         const docDir = path.dirname(fullPath);
         targetPath = path.resolve(docDir, filePart);
+
+        const rootAbs = path.resolve(rootDir);
+        const relToRoot = path.relative(rootAbs, targetPath);
+        if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
+          brokenAnchors.push({ source: docPath, target: fullLink, anchor });
+          continue;
+        }
       } else {
         targetPath = fullPath; // same-file anchor
       }
@@ -316,6 +330,13 @@ function checkImageReferences(rootDir, docFiles, findings) {
       const docDir = path.dirname(fullPath);
       const resolvedPath = path.resolve(docDir, imgPath);
 
+      const rootAbs = path.resolve(rootDir);
+      const relToRoot = path.relative(rootAbs, resolvedPath);
+      if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
+        brokenImages.push({ source: docPath, target: imgPath });
+        continue;
+      }
+
       try {
         const stat = fs.statSync(resolvedPath);
         if (stat.isFile()) {
@@ -338,6 +359,13 @@ function checkImageReferences(rootDir, docFiles, findings) {
       totalImages++;
       const docDir = path.dirname(fullPath);
       const resolvedPath = path.resolve(docDir, imgPath);
+
+      const rootAbs = path.resolve(rootDir);
+      const relToRoot = path.relative(rootAbs, resolvedPath);
+      if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
+        brokenImages.push({ source: docPath, target: imgPath });
+        continue;
+      }
 
       try {
         const stat = fs.statSync(resolvedPath);
@@ -418,16 +446,17 @@ function collectDocFiles(rootDir) {
   // docs/ recursive
   function walkDir(dir, prefix) {
     try {
-      // Path containment: ensure dir is inside rootDir
-      const rel = path.relative(rootDir, dir);
-      if (/^\.\.(?:[\\/]|$)/.test(rel)) return;
+      const rootAbs = path.resolve(rootDir);
+      const dirAbs = path.resolve(dir);
+      const rel = path.relative(rootAbs, dirAbs);
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || rel === "") return;
 
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const entries = fs.readdirSync(dirAbs, { withFileTypes: true });
       for (const entry of entries) {
         if (entry.name[0] === "." || entry.name === "node_modules") continue;
         const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
         if (entry.isDirectory()) {
-          walkDir(path.join(dir, entry.name), relPath);
+          walkDir(path.join(dirAbs, entry.name), relPath);
         } else if (entry.isFile() && entry.name.endsWith(".md")) {
           files.push(`docs/${relPath}`);
         }
