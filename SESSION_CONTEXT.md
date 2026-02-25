@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 5.7 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 5.8 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-24 (Session #185 end)
+2026-02-25 (Session #186 end)
 
 ## Purpose
 
@@ -29,12 +29,11 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-02-24 **Branch**: `claude/new-session-cRRW5` **Working
-On**: Session end — hook/PR audit fixes and quality improvements committed
-**Files Modified**: 10+ files across hook-ecosystem-audit and pr-ecosystem-audit
-skills
+**Last Checkpoint**: 2026-02-25 **Branch**: `claude/cherry-pick-commits-TNgtU`
+**Working On**: Skill ecosystem overhaul complete — 20 skills trimmed, audit
+score D/65 → B/83 **Files Modified**: 86 files (-3,659 net lines)
 
-**Next Step**: Create PR for audit fixes, begin S0 resolution sprint.
+**Next Step**: Create PR for skill overhaul, begin S0 resolution sprint.
 
 **Uncommitted Work**: None — all pushed to remote
 
@@ -51,6 +50,19 @@ skills
 ---
 
 ## Recent Session Summaries
+
+**Session #186 Summary** (SKILL ECOSYSTEM OVERHAUL — BLOAT REDUCTION):
+
+- Ran skill-ecosystem-audit: D/65 → B/83 (+18 points, 0 errors)
+- Trimmed 20 oversized SKILL.md files under 500 lines (avg 64% reduction, -9,221
+  lines total)
+- Created 10 companion files extracting prompts/templates/examples/archives
+- Added 2 shared templates: `_shared/SKILL_STANDARDS.md`,
+  `_shared/AUDIT_TEMPLATE.md`
+- Fixed circular dependency false positives in cross-reference-integrity.js
+- Fixed 3 content issues: missing "When to Use", phantom script refs
+- Added 5 DEBT items (DEBT-7568 to DEBT-7572) for remaining warnings
+- TDMS: 4,606 items (238 resolved), 22 S0, 703 S1
 
 **Session #185 Summary** (ECOSYSTEM AUDIT QUALITY — HOOK + PR AUDIT FIXES):
 
@@ -77,15 +89,6 @@ skills
 - Documentation housekeeping: full sweep across 302 docs
 - TDMS: 4,576 items (237 resolved), 35 S0, 738 S1
 
-**Session #183 Summary** (PR #384 RETRO + PR #386 R1/R2 + RETRO ENFORCEMENT):
-
-- Wrote PR #384 retrospective — 4 rounds, 197 items, ~2.5 avoidable
-- Implemented PR #384 retro action items: pattern check `|| vs ??` enforcement
-- PR #386 R1/R2 review fixes: SonarCloud regex, CC reduction, S5852 string
-  parsing, concurrency-safe tmp handling
-- **NEW:** CC regression checker, S5852 regex complexity pattern
-- TDMS: 4,577 items (237 resolved), 35 S0, 738 S1
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
@@ -108,7 +111,7 @@ skills
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/new-session-cRRW5`
+**Current Branch**: `claude/cherry-pick-commits-TNgtU`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -118,12 +121,13 @@ skills
 
 ### Immediate Priority (Next Session)
 
-1. **Create PR for audit quality fixes** — Branch `claude/new-session-cRRW5` has
-   hook audit 63→99, PR audit 87→94, and 5 quality improvements
-2. **Begin resolving S0 critical items** — 36 S0 items in TDMS
+1. **Create PR for skill ecosystem overhaul** — Branch
+   `claude/cherry-pick-commits-TNgtU` has 20 trimmed skills, shared templates,
+   audit checker fixes
+2. **Begin resolving S0 critical items** — 22 S0 items in TDMS
 3. **Run `/sprint start 4`** — Begin sprint-4 (lib/ + hooks/ + app/), 132 items
-4. **Run remaining ecosystem audits** — tdms-ecosystem-audit and
-   session-ecosystem-audit are available but not yet run
+4. **Address DEBT-7570** — Add COMPLETE: protocol to companion prompts.md files
+   (D5 Agent Orchestration at 59/100)
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -131,9 +135,9 @@ skills
 
 ## Pending PR Reviews
 
-**Status**: Branch `claude/new-session-cRRW5` pushed — needs PR creation
+**Status**: Branch `claude/cherry-pick-commits-TNgtU` pushed — needs PR creation
 
-**Last Processed**: 2026-02-24 (Session #185: audit quality fixes pushed)
+**Last Processed**: 2026-02-25 (Session #186: skill ecosystem overhaul pushed)
 
 ---
 
@@ -198,6 +202,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                                    | Author |
 | ------- | ---------- | -------------------------------------------------------------------------- | ------ |
+| 5.8     | 2026-02-25 | Session #186 end: skill ecosystem overhaul, 20 skills trimmed, D→B         | Claude |
 | 5.7     | 2026-02-24 | Session #185 end: hook audit 63→99, PR audit 87→94, 5 quality improvements | Claude |
 | 5.6     | 2026-02-24 | Session #184 end: 3 ecosystem audit skills (hook/tdms/session)             | Claude |
 | 5.5     | 2026-02-23 | Session #183 end: PR #384 retro + PR #386 R1/R2 + date fix                 | Claude |
