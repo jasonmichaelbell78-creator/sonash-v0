@@ -223,7 +223,8 @@ function deduplicateFindings(findings) {
 
   for (const f of findings) {
     // Generate a dedup key from the core issue (file + core message)
-    const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.js)/);
+    const rawText = f.patchTarget || f.details || f.message || "";
+    const fileMatch = String(rawText).match(/([\w./-]+\.js)\b/);
     const file = fileMatch ? fileMatch[1] : "";
     const key = file ? `${file}:${f.severity}` : null;
 
