@@ -287,6 +287,50 @@ function gatherSessionNotes() {
 }
 
 /**
+ * Detect active ecosystem audits by scanning for progress files
+ */
+function gatherActiveAudits() {
+  const TMP_DIR = path.join(projectDir, ".claude", "tmp");
+  const AUDIT_PROGRESS_PATTERN = /-audit-progress\.json$/;
+
+  try {
+    if (!fs.existsSync(TMP_DIR)) return null;
+    const files = fs.readdirSync(TMP_DIR).filter((f) => AUDIT_PROGRESS_PATTERN.test(f));
+    if (files.length === 0) return null;
+
+    const activeAudits = [];
+    for (const f of files) {
+      try {
+        const fullPath = path.join(TMP_DIR, f);
+        const stat = fs.statSync(fullPath);
+        // Only include if < 2 hours old
+        if (Date.now() - stat.mtimeMs > 2 * 60 * 60 * 1000) continue;
+
+        const data = loadJson(fullPath);
+        if (!data) continue;
+
+        activeAudits.push({
+          file: f,
+          auditName: f.replace(/-progress\.json$/, "").replace(/-audit$/, "-ecosystem-audit"),
+          currentFinding: data.currentFindingIndex || 0,
+          totalFindings: data.totalFindings || 0,
+          decisionsCount: (data.decisions || []).length,
+          score: data.score || null,
+          grade: data.grade || null,
+          timestamp: data.auditTimestamp || null,
+        });
+      } catch {
+        // Skip unreadable progress files
+      }
+    }
+
+    return activeAudits.length > 0 ? activeAudits : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Detect compaction trigger from hook arguments
  */
 function getCompactionTrigger() {
@@ -315,6 +359,7 @@ function main() {
   const teamStatus = gatherTeamStatus();
   const activePlan = gatherActivePlan();
   const sessionNotes = gatherSessionNotes();
+  const activeAudits = gatherActiveAudits();
 
   const handoff = {
     timestamp: new Date().toISOString(),
@@ -332,6 +377,7 @@ function main() {
     teamStatus: teamStatus,
     activePlan: activePlan,
     sessionNotes: sessionNotes,
+    activeAudits: activeAudits,
     recovery: {
       instruction:
         "CONTEXT WAS COMPACTED. Read this handoff to restore session state. " +
@@ -340,6 +386,9 @@ function main() {
         (teamStatus ? "teamStatus (active agent team info - check teammate progress). " : "") +
         (activePlan ? `activePlan (executing plan: ${activePlan.file}). ` : "") +
         (sessionNotes ? "sessionNotes (AI-written context about current task/intent). " : "") +
+        (activeAudits
+          ? `activeAudits (${activeAudits.length} ecosystem audit(s) in progress — resume with their /skill commands). `
+          : "") +
         "Continue from where the session left off.",
     },
   };
@@ -365,6 +414,13 @@ function main() {
     }
     if (sessionNotes) {
       console.error(`   Session notes: ${sessionNotes.notes?.length || 0} entries`);
+    }
+    if (activeAudits) {
+      for (const audit of activeAudits) {
+        console.error(
+          `   Active audit: ${audit.auditName} (finding ${audit.currentFinding}/${audit.totalFindings})`
+        );
+      }
     }
     console.error(`   Trigger: ${trigger}`);
     console.error("");
