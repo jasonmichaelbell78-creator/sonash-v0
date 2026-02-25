@@ -35,22 +35,22 @@ const BLOCKING = process.argv.includes("--blocking");
 const KNOWN_PATTERN_RULES = [
   {
     name: "statSync-without-lstat",
-    // Matches statSync( but not lstatSync(
     searchPattern: String.raw`\bstatSync\s*\(`,
-    excludeFilePattern: /lstatSync/,
+    excludeFilePattern: /\bisSymbolicLink\s*\(/,
     description: "statSync without symlink check — use lstatSync + isSymbolicLink() guard",
     recommended: "Replace statSync() with lstatSync() and add isSymbolicLink() skip",
   },
   {
     name: "path-resolve-without-containment",
-    // Matches path.resolve( or resolve( in contexts without a containment check nearby
     searchPattern: String.raw`path\.resolve\s*\(`,
-    // Files that also contain validatePathInDir or startsWith( are likely guarded
-    excludeFilePattern: /validatePathInDir|\.startsWith\s*\(/,
+    excludeFilePattern: /\bvalidatePathInDir\s*\(/,
     description: "path.resolve() without path containment guard",
     recommended: "Add validatePathInDir() or startsWith(allowedDir) check after path.resolve()",
   },
 ];
+
+/** Normalize path separators for cross-platform comparison */
+const toPosixPath = (p) => p.replaceAll("\\", "/");
 
 // Minimum function name length to avoid noise from common names
 const MIN_FUNC_NAME_LENGTH = 6;
@@ -259,20 +259,25 @@ function searchForFunction(funcName) {
   const results = [];
   const safeName = escapeForRegex(funcName);
   const definitionPattern = String.raw`(function[[:space:]]+${safeName}[[:space:]]*\(|(const|let|var)[[:space:]]+${safeName}[[:space:]]*=|[^a-zA-Z0-9_$]${safeName}[[:space:]]*\([^)]*\)[[:space:]]*\{)`;
+  const globs = SEARCH_DIRS.flatMap((d) => [`:(glob)${d}**/*.js`, `:(glob)${d}**/*.mjs`]);
 
-  for (const searchDir of SEARCH_DIRS) {
-    try {
-      const output = execFileSync(
-        "git",
-        ["grep", "-nE", definitionPattern, "--", `${searchDir}**/*.js`, `${searchDir}**/*.mjs`],
-        { encoding: "utf8", maxBuffer: 5 * 1024 * 1024, cwd: process.cwd() }
-      );
-      for (const line of output.trim().split("\n").filter(Boolean)) {
-        const parsed = parseGrepLine(line);
-        if (parsed) results.push(parsed);
-      }
-    } catch {
-      // grep returns exit code 1 when no matches — ignore
+  try {
+    const output = execFileSync("git", ["grep", "-nE", "-e", definitionPattern, "--", ...globs], {
+      encoding: "utf8",
+      maxBuffer: 5 * 1024 * 1024,
+      cwd: process.cwd(),
+    });
+    for (const line of output.trim().split("\n").filter(Boolean)) {
+      const parsed = parseGrepLine(line);
+      if (parsed) results.push(parsed);
+    }
+  } catch (err) {
+    // grep returns exit code 1 when no matches — only ignore that case
+    if (err && typeof err === "object" && "status" in err && err.status !== 1) {
+      if (VERBOSE)
+        console.warn(
+          `  [func-search] git grep failed for ${funcName}: ${String(err).slice(0, 150)}`
+        );
     }
   }
   return results;
@@ -337,56 +342,72 @@ function analyze() {
 }
 
 /**
+ * Search for files matching a pattern rule across all target directories.
+ * Returns deduplicated array of file paths.
+ */
+function findPatternMatches(rule) {
+  const matches = [];
+  const globs = SEARCH_DIRS.flatMap((d) => [
+    `:(glob)${d}**/*.js`,
+    `:(glob)${d}**/*.mjs`,
+    `:(glob)${d}**/*.ts`,
+    `:(glob)${d}**/*.tsx`,
+  ]);
+
+  try {
+    const output = execFileSync("git", ["grep", "-lE", "-e", rule.searchPattern, "--", ...globs], {
+      encoding: "utf8",
+      maxBuffer: 5 * 1024 * 1024,
+      cwd: process.cwd(),
+    });
+    for (const file of output.trim().split("\n").filter(Boolean)) {
+      const normalized = toPosixPath(file.replace(/^\.\//, ""));
+      if (!shouldSkipMatch(normalized)) matches.push(normalized);
+    }
+  } catch (err) {
+    if (!err || typeof err !== "object" || !("status" in err) || err.status !== 1) {
+      if (VERBOSE) console.warn(`  [pattern-search] git grep failed: ${String(err).slice(0, 150)}`);
+    }
+  }
+
+  return [...new Set(matches)];
+}
+
+/**
+ * Filter matched files to those without the exclude guard pattern.
+ */
+function filterUnguardedFiles(files, excludePattern) {
+  if (!excludePattern) return files;
+  return files.filter((file) => {
+    try {
+      const content = readFileSync(file, "utf8");
+      return !excludePattern.test(content);
+    } catch {
+      return true; // If we can't read it, flag it
+    }
+  });
+}
+
+/**
  * Check known security/quality patterns across changed files.
  * If a changed file fixes a known pattern (e.g., statSync→lstatSync),
  * warn about sibling files in the same directory that still have the old pattern.
  */
 function checkKnownPatterns(changedPaths) {
   const warnings = [];
+  const posixChangedPaths = new Set([...changedPaths].map(toPosixPath));
 
   for (const rule of KNOWN_PATTERN_RULES) {
-    // Search all target dirs for the risky pattern
-    const matches = [];
-    for (const searchDir of SEARCH_DIRS) {
-      try {
-        const output = execFileSync(
-          "git",
-          ["grep", "-lE", rule.searchPattern, "--", `${searchDir}**/*.js`, `${searchDir}**/*.mjs`],
-          { encoding: "utf8", maxBuffer: 5 * 1024 * 1024, cwd: process.cwd() }
-        );
-        for (const file of output.trim().split("\n").filter(Boolean)) {
-          if (shouldSkipMatch(file)) continue;
-          matches.push(file.replace(/^\.\//, ""));
-        }
-      } catch {
-        // grep returns exit code 1 when no matches
-      }
-    }
-
-    // Dedup matches across SEARCH_DIRS
-    const uniqueMatches = [...new Set(matches)];
-
+    const uniqueMatches = findPatternMatches(rule);
     if (uniqueMatches.length === 0) continue;
 
-    // Filter out files that have the exclude pattern (already guarded)
-    // Read working-tree content (not HEAD) to see current state during pre-push
-    const unguardedFiles = rule.excludeFilePattern
-      ? uniqueMatches.filter((file) => {
-          try {
-            const content = readFileSync(file, "utf8");
-            return !rule.excludeFilePattern.test(content);
-          } catch {
-            return true; // If we can't read it, flag it
-          }
-        })
-      : uniqueMatches;
-
+    const unguardedFiles = filterUnguardedFiles(uniqueMatches, rule.excludeFilePattern);
     if (unguardedFiles.length === 0) continue;
 
-    // Only warn if at least one changed file is among the matches (implies developer
-    // is working in this area and may have fixed some but not all)
-    const changedInArea = unguardedFiles.some((f) => changedPaths.has(f));
-    const unchangedFiles = unguardedFiles.filter((f) => !changedPaths.has(f));
+    // Check uniqueMatches (not unguardedFiles) — a fixed file is no longer unguarded
+    // but still indicates the developer is working in this area
+    const changedInArea = uniqueMatches.some((f) => posixChangedPaths.has(f));
+    const unchangedFiles = unguardedFiles.filter((f) => !posixChangedPaths.has(f));
 
     if (changedInArea && unchangedFiles.length > 0) {
       warnings.push({
@@ -427,7 +448,7 @@ if (misses.length > 0) {
     console.log(`    Modified in: ${miss.changedIn.join(", ")}`);
     console.log(`    Also exists in (NOT modified):`);
     for (const m of miss.missedIn) {
-      console.log(`      - ${m.file}:${m.line}  ${m.content.substring(0, 80)}`);
+      console.log(`      - ${m.file}:${m.line}`);
     }
     console.log("");
   }

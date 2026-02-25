@@ -348,48 +348,24 @@ accumulate.
 > markdown during this period.
 
 <details>
-<summary>Previous Consolidation (#1)</summary>
+<summary>Previous Consolidation (#5) — 2026-02-25</summary>
 
-- **Date:** 2026-02-25
 - **Reviews consolidated:** #358-#382
-- **Recurring patterns:**
-  - No recurring patterns above threshold
+- **Recurring patterns:** No recurring patterns above threshold
 
 </details>
 <details>
-<summary>Previous Consolidation (#2)</summary>
+<summary>Previous Consolidation (#4) — 2026-02-24</summary>
 
-- **Date:** 2026-02-24
 - **Reviews consolidated:** #370-#379
-- **Recurring patterns:**
-  - No recurring patterns above threshold
+- **Recurring patterns:** No recurring patterns above threshold
 
 </details>
 <details>
-<summary>Previous Consolidation (#1)</summary>
+<summary>Previous Consolidation (#3) — 2026-02-23</summary>
 
-- **Date:** 2026-02-25
-- **Reviews consolidated:** #358-#378
-- **Recurring patterns:**
-  - No recurring patterns above threshold
-
-</details>
-<details>
-<summary>Previous Consolidation (#1)</summary>
-
-- **Date:** 2026-02-24
-- **Reviews consolidated:** #358-#375
-- **Recurring patterns:**
-  - No recurring patterns above threshold
-
-</details>
-<details>
-<summary>Previous Consolidation (#1)</summary>
-
-- **Date:** 2026-02-23
 - **Reviews consolidated:** #354-#369
-- **Recurring patterns:**
-  - No recurring patterns above threshold
+- **Recurring patterns:** No recurring patterns above threshold
 
 </details>
 <details>
@@ -1085,6 +1061,22 @@ _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
     negative lookbehind `(?<!-ecosystem)`.
   - **Hardcoded finding IDs**: `id: "SIA-400"` in loop produces duplicates.
     Fixed with counter suffix.
+
+### Review #375: PR #392 R1 (2026-02-25)
+
+- **Source**: SonarCloud (2), Qodo Compliance (1), Gemini (2), Qodo PR
+  Suggestions (13)
+- **Total Items**: 18 (8 fixed, 3 minor fixed, 7 rejected/deferred)
+- **Key Fix**: `checkKnownPatterns()` in check-propagation.js had logic flaw
+  where `changedInArea` checked `unguardedFiles` instead of `uniqueMatches` —
+  fixed files were excluded before the area check, making the check always skip.
+- **Pattern**: git glob pathspecs require `:(glob)` prefix when using
+  `execFileSync` (no shell expansion). Silent failure without it.
+- **Pattern**: Empty catch blocks on `execFileSync` should check
+  `err.status === 1` specifically, not swallow all errors.
+- **Rejected**: S4036 (PATH binary hijacking) — `execFileSync("git",...)` uses
+  hardcoded binary name, safe. Qodo raw audit entry removal —
+  pipeline-generated.
 
 ### Review #374: PR #388 R3 (2026-02-23)
 
