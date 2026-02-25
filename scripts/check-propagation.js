@@ -19,7 +19,8 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { statSync } from "node:fs";
+import { lstatSync, readFileSync } from "node:fs";
+// No path.dirname import — it returns backslash paths on Windows even for POSIX inputs
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB — skip huge files
 const SEARCH_DIRS = ["scripts/", ".claude/skills/", ".claude/hooks/"];
@@ -27,6 +28,43 @@ const IGNORE_DIRS = ["node_modules", ".git", "docs/archive", "__tests__"];
 const VERBOSE = process.argv.includes("--verbose");
 const STAGED_ONLY = process.argv.includes("--staged");
 const BLOCKING = process.argv.includes("--blocking");
+
+// ---- Known security/pattern propagation rules ----
+// These catch non-function patterns that historically cause multi-round review churn.
+// Each rule: { name, pattern (regex for grep -nE), description, recommended }
+// Added per PR #391 retro: path-containment and statSync→lstatSync caused ~2.5 avoidable rounds.
+const KNOWN_PATTERN_RULES = [
+  {
+    name: "statSync-without-lstat",
+    // \b is not valid in POSIX ERE (git grep -E) — use character class boundary
+    searchPattern: String.raw`(^|[^[:alnum:]_$])statSync[[:space:]]*\(`,
+    excludeFilePattern: /(^|[^A-Za-z0-9_$])isSymbolicLink\s*\(|\.isSymbolicLink\s*\(/,
+    description: "statSync without symlink check — use lstatSync + isSymbolicLink() guard",
+    recommended: "Replace statSync() with lstatSync() and add isSymbolicLink() skip",
+  },
+  {
+    name: "path-resolve-without-containment",
+    searchPattern: String.raw`(^|[^[:alnum:]_$])path\.resolve[[:space:]]*\(`,
+    excludeFilePattern: /(^|[^A-Za-z0-9_$])validatePathInDir\s*\(/,
+    description: "path.resolve() without path containment guard",
+    recommended: "Add validatePathInDir() or startsWith(allowedDir) check after path.resolve()",
+  },
+];
+
+/** Normalize path separators for cross-platform comparison */
+const toPosixPath = (filePath) => String(filePath).replaceAll("\\", "/");
+
+/** Convert repo-relative paths into an FS-friendly path */
+const toFsPath = (filePath) =>
+  process.platform === "win32" ? String(filePath).replaceAll("/", "\\") : String(filePath);
+
+/** POSIX-safe dirname — works on normalized forward-slash paths */
+const posixDirname = (filePath) => {
+  // Strip trailing slashes (safe: no regex DoS risk on bounded file paths)
+  const s = toPosixPath(filePath).replace(/\/+$/, "");
+  const idx = s.lastIndexOf("/");
+  return idx <= 0 ? "." : s.slice(0, idx);
+};
 
 // Minimum function name length to avoid noise from common names
 const MIN_FUNC_NAME_LENGTH = 6;
@@ -202,11 +240,16 @@ function escapeForRegex(str) {
  * Check if a grep match line should be skipped (ignore dirs, test files, large files).
  */
 function shouldSkipMatch(file) {
-  if (IGNORE_DIRS.some((d) => file.includes(d))) return true;
-  if (file.includes(".test.") || file.includes(".spec.")) return true;
+  const normalized = toPosixPath(file);
+  if (IGNORE_DIRS.some((d) => normalized.includes(d))) return true;
+  if (normalized.includes(".test.") || normalized.includes(".spec.")) return true;
   try {
-    return statSync(file).size > MAX_FILE_SIZE;
+    const stat = lstatSync(toFsPath(normalized));
+    if (stat.isSymbolicLink()) return true;
+    return stat.size > MAX_FILE_SIZE;
   } catch {
+    // File unreadable — skip it (logged in verbose mode for diagnostics)
+    if (VERBOSE) console.warn(`  [skip-match] unable to stat ${normalized}`);
     return true;
   }
 }
@@ -233,20 +276,27 @@ function searchForFunction(funcName) {
   const results = [];
   const safeName = escapeForRegex(funcName);
   const definitionPattern = String.raw`(function[[:space:]]+${safeName}[[:space:]]*\(|(const|let|var)[[:space:]]+${safeName}[[:space:]]*=|[^a-zA-Z0-9_$]${safeName}[[:space:]]*\([^)]*\)[[:space:]]*\{)`;
+  const globs = SEARCH_DIRS.flatMap((d) => [`:(glob)${d}**/*.js`, `:(glob)${d}**/*.mjs`]);
 
-  for (const searchDir of SEARCH_DIRS) {
-    try {
-      const output = execFileSync(
-        "git",
-        ["grep", "-nE", definitionPattern, "--", `${searchDir}**/*.js`, `${searchDir}**/*.mjs`],
-        { encoding: "utf8", maxBuffer: 5 * 1024 * 1024, cwd: process.cwd() }
-      );
-      for (const line of output.trim().split("\n").filter(Boolean)) {
-        const parsed = parseGrepLine(line);
-        if (parsed) results.push(parsed);
+  try {
+    const output = execFileSync("git", ["grep", "-nE", "-e", definitionPattern, "--", ...globs], {
+      encoding: "utf8",
+      maxBuffer: 5 * 1024 * 1024,
+      cwd: process.cwd(),
+    });
+    for (const line of output.trim().split("\n").filter(Boolean)) {
+      const parsed = parseGrepLine(line);
+      if (parsed) results.push(parsed);
+    }
+  } catch (err) {
+    // grep returns exit code 1 when no matches — only ignore that case
+    if (err && typeof err === "object" && "status" in err && err.status !== 1) {
+      const msg = err instanceof Error ? err.message.slice(0, 150) : "unknown error";
+      if (BLOCKING) {
+        console.error(`  [func-search] git grep failed for ${funcName}: ${msg}`);
+        process.exit(1);
       }
-    } catch {
-      // grep returns exit code 1 when no matches — ignore
+      if (VERBOSE) console.warn(`  [func-search] git grep failed for ${funcName}: ${msg}`);
     }
   }
   return results;
@@ -260,7 +310,7 @@ function analyze() {
 
   if (changedFiles.size === 0) {
     if (VERBOSE) console.log("  No JS file changes detected in target directories.");
-    return { misses: [], total: 0 };
+    return { misses: [], total: 0, patternWarnings: [] };
   }
 
   // Collect all changed file paths for exclusion
@@ -303,35 +353,158 @@ function analyze() {
     }
   }
 
-  return { misses, total: allFuncNames.size };
+  // ---- Pattern-based propagation checks ----
+  // Check known risky patterns in changed files and warn if similar files lack fixes
+  const patternWarnings = checkKnownPatterns(changedPaths);
+
+  return { misses, total: allFuncNames.size, patternWarnings };
+}
+
+/**
+ * Search for files matching a pattern rule across all target directories.
+ * Returns deduplicated array of file paths.
+ */
+function findPatternMatches(rule) {
+  const matches = [];
+  const globs = SEARCH_DIRS.flatMap((d) => [
+    `:(glob)${d}**/*.js`,
+    `:(glob)${d}**/*.mjs`,
+    `:(glob)${d}**/*.ts`,
+    `:(glob)${d}**/*.tsx`,
+  ]);
+
+  try {
+    const output = execFileSync("git", ["grep", "-lE", "-e", rule.searchPattern, "--", ...globs], {
+      encoding: "utf8",
+      maxBuffer: 5 * 1024 * 1024,
+      cwd: process.cwd(),
+    });
+    for (const file of output.trim().split("\n").filter(Boolean)) {
+      const normalized = toPosixPath(file.replace(/^\.\//, ""));
+      if (!shouldSkipMatch(normalized)) matches.push(normalized);
+    }
+  } catch (err) {
+    if (!err || typeof err !== "object" || !("status" in err) || err.status !== 1) {
+      if (VERBOSE)
+        console.warn(
+          `  [pattern-search] git grep failed: ${err instanceof Error ? err.message.slice(0, 150) : "unknown error"}`
+        );
+    }
+  }
+
+  return [...new Set(matches)];
+}
+
+/**
+ * Filter matched files to those without the exclude guard pattern.
+ */
+function filterUnguardedFiles(files, excludePattern) {
+  if (!excludePattern) return files;
+  return files.filter((file) => {
+    try {
+      const content = readFileSync(toFsPath(file), "utf8");
+      excludePattern.lastIndex = 0;
+      return !excludePattern.test(content);
+    } catch (err) {
+      if (VERBOSE) {
+        const msg = err instanceof Error ? err.message.slice(0, 120) : "unknown error";
+        console.warn(`  [pattern-guard] unable to read ${file}: ${msg}`);
+      }
+      return true; // Fail-open: treat unreadable as unguarded to avoid false-negatives
+    }
+  });
+}
+
+/**
+ * Check known security/quality patterns across changed files.
+ * If a changed file fixes a known pattern (e.g., statSync→lstatSync),
+ * warn about sibling files in the same directory that still have the old pattern.
+ */
+function checkKnownPatterns(changedPaths) {
+  const warnings = [];
+  const posixChangedPaths = new Set(
+    [...changedPaths].map((p) => toPosixPath(String(p).replace(/^\.\//, "")))
+  );
+
+  for (const rule of KNOWN_PATTERN_RULES) {
+    const uniqueMatches = findPatternMatches(rule);
+    if (uniqueMatches.length === 0) continue;
+
+    const unguardedFiles = filterUnguardedFiles(uniqueMatches, rule.excludeFilePattern);
+    if (unguardedFiles.length === 0) continue;
+
+    // Use directory overlap — a fixed file won't appear in uniqueMatches anymore
+    // (pattern removed), so check if any changed file shares a directory with unguarded files
+    const unguardedDirs = new Set(unguardedFiles.map((f) => toPosixPath(posixDirname(f))));
+    const changedInArea = [...posixChangedPaths].some((f) =>
+      unguardedDirs.has(toPosixPath(posixDirname(f)))
+    );
+    const unchangedFiles = unguardedFiles.filter((f) => !posixChangedPaths.has(f));
+
+    if (changedInArea && unchangedFiles.length > 0) {
+      warnings.push({
+        rule: rule.name,
+        description: rule.description,
+        recommended: rule.recommended,
+        unchangedFiles,
+      });
+    } else if (VERBOSE && unguardedFiles.length > 0) {
+      console.log(
+        `  [${rule.name}] ${unguardedFiles.length} files with pattern (no overlap with changes)`
+      );
+    }
+  }
+
+  return warnings;
 }
 
 // ---- Main ----
-const { misses, total } = analyze();
+const { misses, total, patternWarnings } = analyze();
 
-if (misses.length === 0) {
+const hasPatternWarnings = patternWarnings.length > 0;
+
+if (misses.length === 0 && !hasPatternWarnings) {
   if (total > 0) {
     console.log(`  ✅ Propagation check passed (${total} functions, no duplicates missed)`);
   }
   process.exit(0);
 }
 
-// Report misses
-console.log(`  ⚠️ Propagation check: ${misses.length} potential miss(es) found`);
-console.log("");
+// Report function-level misses
+if (misses.length > 0) {
+  console.log(`  ⚠️ Propagation check: ${misses.length} potential miss(es) found`);
+  console.log("");
 
-for (const miss of misses) {
-  console.log(`  Function: ${miss.funcName}`);
-  console.log(`    Modified in: ${miss.changedIn.join(", ")}`);
-  console.log(`    Also exists in (NOT modified):`);
-  for (const m of miss.missedIn) {
-    console.log(`      - ${m.file}:${m.line}  ${m.content.substring(0, 80)}`);
+  for (const miss of misses) {
+    console.log(`  Function: ${miss.funcName}`);
+    console.log(`    Modified in: ${miss.changedIn.join(", ")}`);
+    console.log(`    Also exists in (NOT modified):`);
+    for (const m of miss.missedIn) {
+      console.log(`      - ${m.file}:${m.line}`);
+    }
+    console.log("");
   }
+
+  console.log("  Action: Review the above files — if the same function was copy-pasted,");
+  console.log("  propagate your fix to all copies. If they're independent, ignore this warning.");
   console.log("");
 }
 
-console.log("  Action: Review the above files — if the same function was copy-pasted,");
-console.log("  propagate your fix to all copies. If they're independent, ignore this warning.");
-console.log("");
+// Report pattern-based warnings
+if (hasPatternWarnings) {
+  console.log(`  ⚠️ Known pattern propagation: ${patternWarnings.length} pattern(s) need review`);
+  console.log("");
+
+  for (const pw of patternWarnings) {
+    console.log(`  Pattern: ${pw.rule}`);
+    console.log(`    ${pw.description}`);
+    console.log(`    Files still using old pattern:`);
+    for (const f of pw.unchangedFiles) {
+      console.log(`      - ${f}`);
+    }
+    console.log(`    Recommended: ${pw.recommended}`);
+    console.log("");
+  }
+}
 
 process.exit(BLOCKING ? 1 : 0);
