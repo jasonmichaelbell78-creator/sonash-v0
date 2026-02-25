@@ -41,7 +41,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/session-end`                    | Session end verification checklist                   |
 | `/alerts`                         | Intelligent health dashboard with scoring            |
 | `/pr-ecosystem-audit`             | PR ecosystem diagnostic (18 categories, 5 domains)   |
-| `/hook-ecosystem-audit`           | Hook ecosystem diagnostic (16 categories, 5 domains) |
+| `/hook-ecosystem-audit`           | Hook ecosystem diagnostic (19 categories, 6 domains) |
 | `/tdms-ecosystem-audit`           | TDMS pipeline diagnostic (16 categories, 5 domains)  |
 | `/session-ecosystem-audit`        | Session system diagnostic (16 categories, 5 domains) |
 | `/checkpoint`                     | Save session state for recovery                      |

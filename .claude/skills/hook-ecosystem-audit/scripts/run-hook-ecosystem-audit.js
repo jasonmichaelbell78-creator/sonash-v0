@@ -4,7 +4,7 @@
 /**
  * Hook Ecosystem Audit — Main Orchestrator
  *
- * Runs all 5 domain checkers (16 categories), computes composite health score,
+ * Runs all 6 domain checkers (19 categories), computes composite health score,
  * generates patch suggestions, saves state for trending, and outputs v2 JSON.
  *
  * Usage:
@@ -94,6 +94,7 @@ try {
     require("./checkers/precommit-pipeline"),
     require("./checkers/functional-correctness"),
     require("./checkers/state-integration"),
+    require("./checkers/cicd-pipeline"),
   ];
 } catch (err) {
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
@@ -111,6 +112,7 @@ const DOMAIN_LABELS = {
   precommit_pipeline: "D3: Pre-commit Pipeline",
   functional_correctness: "D4: Functional Correctness",
   state_integration: "D5: State & Integration",
+  cicd_pipeline: "D6: CI/CD Pipeline Health",
 };
 
 const CATEGORY_LABELS = {
@@ -130,6 +132,9 @@ const CATEGORY_LABELS = {
   state_file_health: "State File Health",
   cross_hook_dependencies: "Cross-Hook Dependencies",
   compaction_resilience: "Compaction Resilience",
+  workflow_script_alignment: "Workflow↔Script Alignment",
+  bot_config_freshness: "Bot Configuration Freshness",
+  ci_cache_effectiveness: "CI Cache Effectiveness",
 };
 
 const CATEGORY_DOMAIN_MAP = {
@@ -149,13 +154,16 @@ const CATEGORY_DOMAIN_MAP = {
   state_file_health: "state_integration",
   cross_hook_dependencies: "state_integration",
   compaction_resilience: "state_integration",
+  workflow_script_alignment: "cicd_pipeline",
+  bot_config_freshness: "cicd_pipeline",
+  ci_cache_effectiveness: "cicd_pipeline",
 };
 
 // ============================================================================
 // RUN AUDIT
 // ============================================================================
 
-console.error("Hook Ecosystem Audit v1.0");
+console.error("Hook Ecosystem Audit v1.1");
 console.error("=========================");
 
 const allFindings = [];

@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
 
 /**
- * Internal benchmarks for Hook Ecosystem Audit — 16 categories.
+ * Internal benchmarks for Hook Ecosystem Audit — 19 categories.
  *
  * Each benchmark defines good/average/poor thresholds.
  * Direction: "higher-is-better" unless noted otherwise.
  *
- * Domain weights: D1=20%, D2=25%, D3=20%, D4=20%, D5=15%
+ * Domain weights: D1=18%, D2=23%, D3=18%, D4=18%, D5=13%, D6=10%
  */
 
 "use strict";
@@ -61,7 +61,7 @@ const BENCHMARKS = {
     accuracy_pct: { good: 90, average: 75, poor: 55, direction: "higher-is-better" },
   },
 
-  // ── Domain 5: State & Integration (15%) ──────────────────────────────────
+  // ── Domain 5: State & Integration (13%) ──────────────────────────────────
   state_file_health: {
     valid_pct: { good: 95, average: 80, poor: 60, direction: "higher-is-better" },
   },
@@ -71,38 +71,54 @@ const BENCHMARKS = {
   compaction_resilience: {
     layers_covered_pct: { good: 100, average: 75, poor: 50, direction: "higher-is-better" },
   },
+
+  // ── Domain 6: CI/CD Pipeline Health (10%) ──────────────────────────────────
+  workflow_script_alignment: {
+    valid_refs_pct: { good: 95, average: 80, poor: 60, direction: "higher-is-better" },
+  },
+  bot_config_freshness: {
+    config_score: { good: 90, average: 70, poor: 40, direction: "higher-is-better" },
+  },
+  ci_cache_effectiveness: {
+    effectiveness_pct: { good: 90, average: 75, poor: 50, direction: "higher-is-better" },
+  },
 };
 
 /**
  * Category weights for composite score calculation.
- * D1: 20%, D2: 25%, D3: 20%, D4: 20%, D5: 15%
+ * D1: 18%, D2: 23%, D3: 18%, D4: 18%, D5: 13%, D6: 10%
  */
 const CATEGORY_WEIGHTS = {
-  // Domain 1: Hook Configuration Health (20%)
-  settings_file_alignment: 0.07,
-  event_coverage_matchers: 0.07,
+  // Domain 1: Hook Configuration Health (18%)
+  settings_file_alignment: 0.06,
+  event_coverage_matchers: 0.06,
   global_local_consistency: 0.06,
 
-  // Domain 2: Code Quality & Security (25%)
-  error_handling_sanitization: 0.07,
+  // Domain 2: Code Quality & Security (23%)
+  error_handling_sanitization: 0.06,
   security_patterns: 0.07,
-  code_hygiene: 0.06,
+  code_hygiene: 0.05,
   regex_safety: 0.05,
 
-  // Domain 3: Pre-commit Pipeline (20%)
-  stage_ordering_completeness: 0.07,
-  bypass_override_controls: 0.07,
+  // Domain 3: Pre-commit Pipeline (18%)
+  stage_ordering_completeness: 0.06,
+  bypass_override_controls: 0.06,
   gate_effectiveness: 0.06,
 
-  // Domain 4: Functional Correctness (20%)
-  test_coverage: 0.07,
-  output_protocol_compliance: 0.07,
+  // Domain 4: Functional Correctness (18%)
+  test_coverage: 0.06,
+  output_protocol_compliance: 0.06,
   behavioral_accuracy: 0.06,
 
-  // Domain 5: State & Integration (15%)
+  // Domain 5: State & Integration (13%)
   state_file_health: 0.05,
-  cross_hook_dependencies: 0.05,
-  compaction_resilience: 0.05,
+  cross_hook_dependencies: 0.04,
+  compaction_resilience: 0.04,
+
+  // Domain 6: CI/CD Pipeline Health (10%)
+  workflow_script_alignment: 0.04,
+  bot_config_freshness: 0.03,
+  ci_cache_effectiveness: 0.03,
 };
 
 module.exports = { BENCHMARKS, CATEGORY_WEIGHTS };
