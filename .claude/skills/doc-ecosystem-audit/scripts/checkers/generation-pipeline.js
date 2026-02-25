@@ -51,6 +51,29 @@ function run(ctx) {
   return { domain: DOMAIN, findings, scores };
 }
 
+/**
+ * Validate a relative file path is contained within rootDir and exists as a file.
+ * Returns { ok, error } — ok true if file exists, error string if not.
+ */
+function validateContainedFile(rootDir, relFile) {
+  if (path.isAbsolute(relFile)) {
+    return { ok: false, error: `absolute_path` };
+  }
+  const rootAbs = path.resolve(rootDir);
+  const fullPath = path.resolve(rootAbs, relFile);
+  const relToRoot = path.relative(rootAbs, fullPath);
+  if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
+    return { ok: false, error: `path_escape` };
+  }
+  try {
+    const stat = fs.statSync(fullPath);
+    if (stat.isFile()) return { ok: true };
+    return { ok: false, error: `not_file` };
+  } catch {
+    return { ok: false, error: `not_found` };
+  }
+}
+
 // ── Category 11: Docs Index Correctness ───────────────────────────────────
 
 function checkDocsIndexCorrectness(rootDir, findings) {
@@ -107,31 +130,35 @@ function checkDocsIndexCorrectness(rootDir, findings) {
     const scriptMatch = docsIndexScriptValue.match(/node\s+([^\s]+\.js)/);
     if (scriptMatch) {
       const scriptFile = scriptMatch[1];
-      const scriptPath = path.join(rootDir, scriptFile);
-      try {
-        const stat = fs.statSync(scriptPath);
-        if (stat.isFile()) {
-          healthPassing++;
-        } else {
-          issues.push(`Script file ${scriptFile} is not a regular file`);
+
+      const check = validateContainedFile(rootDir, scriptFile);
+      if (check.ok) {
+        healthPassing++;
+      } else {
+        const errorMsgs = {
+          absolute_path: `Script file path is absolute: ${scriptFile}`,
+          path_escape: `Script file escapes repo root: ${scriptFile}`,
+          not_file: `Script file ${scriptFile} is not a regular file`,
+          not_found: `Script file ${scriptFile} not found on disk`,
+        };
+        issues.push(errorMsgs[check.error] || `Script file ${scriptFile} invalid`);
+        if (check.error === "not_found") {
+          findings.push({
+            id: "DEA-401",
+            category: "docs_index_correctness",
+            domain: DOMAIN,
+            severity: "error",
+            message: `docs:index script file not found: ${scriptFile}`,
+            details: `The npm script references ${scriptFile} but the file doesn't exist.`,
+            impactScore: 75,
+            frequency: 1,
+            blastRadius: 4,
+            patchType: "fix_pipeline",
+            patchTarget: scriptFile,
+            patchContent: "Create or fix the documentation index generator script",
+            patchImpact: "Restore docs:index pipeline functionality",
+          });
         }
-      } catch {
-        issues.push(`Script file ${scriptFile} not found on disk`);
-        findings.push({
-          id: "DEA-401",
-          category: "docs_index_correctness",
-          domain: DOMAIN,
-          severity: "error",
-          message: `docs:index script file not found: ${scriptFile}`,
-          details: `The npm script references ${scriptFile} but the file doesn't exist.`,
-          impactScore: 75,
-          frequency: 1,
-          blastRadius: 4,
-          patchType: "fix_pipeline",
-          patchTarget: scriptFile,
-          patchContent: "Create or fix the documentation index generator script",
-          patchImpact: "Restore docs:index pipeline functionality",
-        });
       }
     } else {
       healthPassing++; // Non-standard command format, assume ok

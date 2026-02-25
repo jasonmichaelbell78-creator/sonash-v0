@@ -60,15 +60,21 @@ function collectScriptFiles(baseDir) {
         continue;
       const full = path.join(dir, entry);
 
-      // Path containment guard - reject symlinks escaping baseDir
-      const relToBase = path.relative(baseDir, full);
-      if (/^\.\.(?:[\\/]|$)/.test(relToBase)) continue;
-
       try {
-        const stat = fs.statSync(full);
-        if (stat.isDirectory()) {
+        const lst = fs.lstatSync(full);
+
+        // Skip symlinks to prevent escaping baseDir via link targets
+        if (lst.isSymbolicLink()) continue;
+
+        // Path containment guard - apply to real path as well
+        const baseReal = fs.realpathSync(baseDir);
+        const fullReal = fs.realpathSync(full);
+        const relToBase = path.relative(baseReal, fullReal);
+        if (/^\.\.(?:[\\/]|$)/.test(relToBase)) continue;
+
+        if (lst.isDirectory()) {
           walk(full);
-        } else if (stat.isFile() && entry.endsWith(".js")) {
+        } else if (lst.isFile() && entry.endsWith(".js")) {
           const content = safeReadFile(full);
           results.push({
             name: entry,
@@ -250,7 +256,8 @@ function checkPathTraversalGuards(scriptFiles) {
   let compliantChecks = 0;
 
   // The correct pattern per CLAUDE.md: /^\.\.(?:[\\/]|$)/.test(rel)
-  const correctTraversalPattern = /\/\^\\\.\\\.(?:\(\?:\[[\\/\\\\]*\]|\(\?:[\\/\\\\])/;
+  const correctTraversalPattern =
+    /\/\^\s*\\\.\\\.\s*\(\?:\s*\[\s*\\\/\s*\\\\\s*\]\s*\|\s*\$\s*\)\s*\/\s*\.test\s*\(\s*\w+\s*\)/;
   const startsWithDotDot = /startsWith\s*\(\s*['"]\.\.['"]|startsWith\s*\(\s*['"]\.\.[\\/]['")\]]/;
   const pathTraversalCheck = /['"]\.\.['"]|dotdot|traversal|\.\.[\\/]/i;
 

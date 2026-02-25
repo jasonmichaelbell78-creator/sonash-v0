@@ -71,7 +71,10 @@ function checkDocumentationCoverage(rootDir, findings) {
 
   for (const system of systems) {
     // Check if any documentation mentions this system
-    const found = system.searchTerms.some((term) => allDocContent.includes(term));
+    const found = system.searchTerms.some((term) => {
+      const t = String(term || "").toLowerCase();
+      return t ? allDocContent.includes(t) : false;
+    });
     if (found) {
       covered++;
     } else {
@@ -149,11 +152,17 @@ function checkAgentDocReferences(rootDir, findings) {
   const invalid = [];
 
   for (const ref of refs) {
-    const fullPath = path.join(rootDir, ref.path);
+    if (path.isAbsolute(ref.path)) {
+      invalid.push(ref);
+      continue;
+    }
+
+    const rootAbs = path.resolve(rootDir);
+    const fullPath = path.resolve(rootAbs, ref.path);
 
     // Path containment guard
-    const relToRoot = path.relative(rootDir, fullPath);
-    if (/^\.\.(?:[\\/]|$)/.test(relToRoot)) {
+    const relToRoot = path.relative(rootAbs, fullPath);
+    if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || relToRoot === "") {
       invalid.push(ref);
       continue;
     }
@@ -279,8 +288,8 @@ function checkReadmeOnboarding(rootDir, findings) {
     const claudeHasReact = /react/i.test(claudeContent);
 
     // Both should agree on major stack components
-    if ((readmeHasNext || claudeHasNext) && (readmeHasReact || claudeHasReact)) {
-      consistencyOk = true;
+    if (readmeHasNext !== claudeHasNext || readmeHasReact !== claudeHasReact) {
+      consistencyOk = false;
     }
   }
   if (consistencyOk) {

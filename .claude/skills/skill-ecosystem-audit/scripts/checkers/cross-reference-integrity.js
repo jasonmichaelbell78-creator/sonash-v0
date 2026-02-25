@@ -197,13 +197,17 @@ function checkSkillToScriptRefs(rootDir, skills, findings) {
       try {
         const pkgPath = path.join(rootDir, "package.json");
         const pkgContent = safeReadFile(pkgPath);
-        if (pkgContent) {
-          const pkg = JSON.parse(pkgContent);
-          if (pkg.scripts && pkg.scripts[script]) {
-            validRefs++;
-          } else {
-            brokenRefs.push({ from: name, scriptPath: `npm run ${script}` });
-          }
+        if (!pkgContent) {
+          // Can't verify (missing/unreadable) — do not penalize
+          validRefs++;
+          continue;
+        }
+
+        const pkg = JSON.parse(pkgContent);
+        if (pkg.scripts && pkg.scripts[script]) {
+          validRefs++;
+        } else {
+          brokenRefs.push({ from: name, scriptPath: `npm run ${script}` });
         }
       } catch {
         // Can't verify, assume valid

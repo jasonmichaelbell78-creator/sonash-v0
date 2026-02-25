@@ -85,7 +85,7 @@ function checkHeaderCompliance(rootDir, docFiles, findings) {
     // Check 2: For docs/ files, check for Purpose section or frontmatter
     if (docPath.startsWith("docs/") && !docPath.includes("/audits/")) {
       const hasPurpose = /^##\s+Purpose/m.test(content);
-      const hasFrontmatter = /^---\s*\n[\s\S]*?\n---/m.test(content);
+      const hasFrontmatter = /^\s*---\s*\n[\s\S]*?\n---\s*(?:\n|$)/.test(content);
       const hasDescription = /^description:/m.test(content);
       if (!hasPurpose && !hasFrontmatter && !hasDescription) {
         // Only flag if it's a significant doc (>10 lines)
@@ -184,9 +184,23 @@ function checkFormattingConsistency(rootDir, docFiles, findings) {
     }
 
     // Check 2: Code blocks without language tags
-    const codeBlocks = content.match(/^```\s*$/gm);
-    if (codeBlocks && codeBlocks.length > 1) {
-      const untaggedCount = Math.ceil(codeBlocks.length / 2);
+    let inFence = false;
+    let untaggedCount = 0;
+
+    for (const line of content.split("\n")) {
+      const fence = line.match(/^```(\S*)\s*$/);
+      if (!fence) continue;
+
+      if (!inFence) {
+        const lang = (fence[1] || "").trim();
+        if (!lang) untaggedCount++;
+        inFence = true;
+      } else {
+        inFence = false;
+      }
+    }
+
+    if (untaggedCount > 0) {
       issues.push(`${untaggedCount} code block(s) without language tag`);
     }
 

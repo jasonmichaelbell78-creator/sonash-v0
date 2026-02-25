@@ -183,7 +183,7 @@ function checkTestCoverage(baseDir, scriptFiles, testFiles) {
         frequency: 1,
         blastRadius: 1,
         patchType: "add_test",
-        patchTarget: sf.filePath.replace(".js", ".test.js"),
+        patchTarget: sf.filePath.replace(/\.js$/, ".test.js"),
         patchContent: `Create test file for ${sf.name}`,
         patchImpact: "Increases test coverage for script infrastructure",
       });

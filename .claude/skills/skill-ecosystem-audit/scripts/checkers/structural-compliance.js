@@ -157,9 +157,10 @@ function checkFrontmatterSchema(skills, findings) {
   const validPct = skills.length > 0 ? Math.round((validCount / skills.length) * 100) : 100;
   const result = scoreMetric(validPct, bench.valid_pct, "higher-is-better");
 
+  let frontmatterFindingCount = 0;
   for (const inv of invalidSkills) {
     findings.push({
-      id: `SEA-10${findings.filter((f) => f.category === "frontmatter_schema").length + 1}`,
+      id: `SEA-100-${++frontmatterFindingCount}`,
       category: "frontmatter_schema",
       domain: DOMAIN,
       severity: "warning",

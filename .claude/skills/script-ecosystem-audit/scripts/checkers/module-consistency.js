@@ -86,6 +86,18 @@ function collectScriptFiles(baseDir) {
   return results;
 }
 
+/**
+ * Check if a relative path is contained within rootDir.
+ * Returns true if safe, false if absolute/escaping/empty.
+ */
+function isPathContained(rootDir, relPath) {
+  if (path.isAbsolute(relPath)) return false;
+  const rootAbs = path.resolve(rootDir);
+  const resolved = path.resolve(rootAbs, relPath);
+  const rel = path.relative(rootAbs, resolved);
+  return !(/^\.\.(?:[\\/]|$)/.test(rel) || rel === "");
+}
+
 // ============================================================================
 // CATEGORY 1: CJS/ESM Consistency
 // ============================================================================
@@ -118,6 +130,7 @@ function checkCjsEsmConsistency(scriptFiles) {
     totalDirs++;
     let cjsCount = 0;
     let esmCount = 0;
+    let mixedFileFindingCount = 0;
 
     for (const sf of files) {
       const usesCjs = requirePattern.test(sf.content) || /\bmodule\.exports\b/.test(sf.content);
@@ -128,7 +141,7 @@ function checkCjsEsmConsistency(scriptFiles) {
       else if (usesCjs && usesEsm) {
         // Mixed in a single file
         findings.push({
-          id: "SIA-100",
+          id: `SIA-100-${++mixedFileFindingCount}`,
           category: "cjs_esm_consistency",
           domain: DOMAIN,
           severity: "warning",
@@ -217,9 +230,24 @@ function checkShebangEntryPoint(rootDir, scriptFiles) {
 
   for (const ref of scriptFileRefs) {
     totalEntryPoints++;
-    const refPath = path.join(rootDir, ref);
+
+    if (!isPathContained(rootDir, ref)) {
+      findings.push({
+        id: "SIA-111",
+        category: "shebang_entry_point",
+        domain: DOMAIN,
+        severity: "error",
+        message: `npm script references missing file: ${ref}`,
+        details: `${ref} referenced in package.json scripts but file does not exist`,
+        impactScore: 80,
+        frequency: 1,
+        blastRadius: 3,
+      });
+      continue;
+    }
 
     // Check file exists
+    const refPath = path.resolve(rootDir, ref);
     try {
       const stat = fs.statSync(refPath);
       if (!stat.isFile()) {
@@ -259,7 +287,11 @@ function checkShebangEntryPoint(rootDir, scriptFiles) {
     if (sf.content.startsWith("#!/")) {
       // Valid shebang — check if it's correct
       const firstLine = sf.content.split("\n")[0].replace(/\r$/, "");
-      if (!/^(?:#!\/usr\/bin\/env\s+node|#!\/usr\/bin\/node)\b/.test(firstLine)) {
+      if (
+        !/^(?:#!\/usr\/bin\/env(?:\s+-S)?\s+node(?:\s+[-\w=]+)*|#!\/usr\/bin\/node)\b/.test(
+          firstLine
+        )
+      ) {
         findings.push({
           id: "SIA-112",
           category: "shebang_entry_point",

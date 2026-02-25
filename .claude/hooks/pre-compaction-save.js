@@ -289,6 +289,36 @@ function gatherSessionNotes() {
 /**
  * Detect active ecosystem audits by scanning for progress files
  */
+/** Parse a single audit progress file. Returns descriptor or null. */
+function parseAuditProgressFile(tmpDir, filename) {
+  try {
+    // Path containment guard (filename from readdirSync but verify anyway)
+    const resolved = path.resolve(tmpDir, filename);
+    const relToTmp = path.relative(tmpDir, resolved);
+    if (/^\.\.(?:[\\/]|$)/.test(relToTmp) || relToTmp === "") return null;
+    const fullPath = resolved;
+    const lst = fs.lstatSync(fullPath);
+    if (lst.isSymbolicLink()) return null;
+    if (Date.now() - lst.mtimeMs > 2 * 60 * 60 * 1000) return null;
+    const data = loadJson(fullPath);
+    if (!data) return null;
+    return {
+      file: filename,
+      auditName: filename
+        .replace(/-progress\.json$/, "")
+        .replace(/(?<!-ecosystem)-audit$/, "-ecosystem-audit"),
+      currentFinding: data.currentFindingIndex || 0,
+      totalFindings: data.totalFindings || 0,
+      decisionsCount: (data.decisions || []).length,
+      score: data.score || null,
+      grade: data.grade || null,
+      timestamp: data.auditTimestamp || null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 function gatherActiveAudits() {
   const TMP_DIR = path.join(projectDir, ".claude", "tmp");
   const AUDIT_PROGRESS_PATTERN = /-audit-progress\.json$/;
@@ -298,33 +328,7 @@ function gatherActiveAudits() {
     const files = fs.readdirSync(TMP_DIR).filter((f) => AUDIT_PROGRESS_PATTERN.test(f));
     if (files.length === 0) return null;
 
-    const activeAudits = [];
-    for (const f of files) {
-      try {
-        const fullPath = path.join(TMP_DIR, f);
-        const stat = fs.statSync(fullPath);
-        // Only include if < 2 hours old
-        if (Date.now() - stat.mtimeMs > 2 * 60 * 60 * 1000) continue;
-
-        const data = loadJson(fullPath);
-        if (!data) continue;
-
-        activeAudits.push({
-          file: f,
-          auditName: f
-            .replace(/-progress\.json$/, "")
-            .replace(/(?<!-ecosystem)-audit$/, "-ecosystem-audit"),
-          currentFinding: data.currentFindingIndex || 0,
-          totalFindings: data.totalFindings || 0,
-          decisionsCount: (data.decisions || []).length,
-          score: data.score || null,
-          grade: data.grade || null,
-          timestamp: data.auditTimestamp || null,
-        });
-      } catch {
-        // Skip unreadable progress files
-      }
-    }
+    const activeAudits = files.map((f) => parseAuditProgressFile(TMP_DIR, f)).filter(Boolean);
 
     return activeAudits.length > 0 ? activeAudits : null;
   } catch {

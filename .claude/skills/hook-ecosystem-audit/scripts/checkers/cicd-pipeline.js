@@ -162,6 +162,39 @@ function extractRefsFromCommand(command, line, refs) {
   }
 }
 
+/**
+ * Check if a node: script ref is contained within rootDir.
+ */
+function isNodeRefContained(rootDir, nodeRef) {
+  const rootAbs = path.resolve(rootDir);
+  const resolved = path.resolve(rootAbs, nodeRef);
+  const rel = path.relative(rootAbs, resolved);
+  return !(/^\.\.(?:[\\/]|$)/.test(rel) || rel === "");
+}
+
+/**
+ * Validate a single workflow script reference.
+ * Returns "valid" or an invalid-ref descriptor object.
+ */
+function validateWorkflowRef(rootDir, ref, workflowName, pkgScripts, canVerifyPkgScripts) {
+  if (ref.scriptRef.startsWith("npx:")) return "valid";
+
+  if (ref.scriptRef.startsWith("node:")) {
+    const nodeRef = ref.scriptRef.slice(5);
+    if (path.isAbsolute(nodeRef) || !isNodeRefContained(rootDir, nodeRef)) {
+      return { workflow: workflowName, line: ref.line, ref: nodeRef, type: "path_escape" };
+    }
+    const filePath = path.resolve(rootDir, nodeRef);
+    if (fs.existsSync(filePath)) return "valid";
+    return { workflow: workflowName, line: ref.line, ref: nodeRef, type: "missing_file" };
+  }
+
+  // npm run <script>
+  if (!canVerifyPkgScripts) return "valid";
+  if (pkgScripts[ref.scriptRef]) return "valid";
+  return { workflow: workflowName, line: ref.line, ref: ref.scriptRef, type: "missing_script" };
+}
+
 function checkWorkflowScriptAlignment(rootDir, findings) {
   const bench = BENCHMARKS.workflow_script_alignment;
   const workflows = readWorkflowFiles(rootDir);
@@ -185,12 +218,14 @@ function checkWorkflowScriptAlignment(rootDir, findings) {
   const pkgPath = path.join(rootDir, "package.json");
   const pkgRaw = safeReadFile(pkgPath);
   let pkgScripts = {};
+  let canVerifyPkgScripts = false;
   if (pkgRaw) {
     try {
       const pkg = JSON.parse(pkgRaw);
       pkgScripts = pkg.scripts || {};
+      canVerifyPkgScripts = true;
     } catch {
-      // Invalid package.json
+      // Invalid package.json (can't verify scripts)
     }
   }
 
@@ -202,35 +237,17 @@ function checkWorkflowScriptAlignment(rootDir, findings) {
     const refs = extractRunStepRefs(workflow.content);
     for (const ref of refs) {
       totalRefs++;
-
-      if (ref.scriptRef.startsWith("npx:")) {
-        // npx commands are valid if the tool is available (assume valid)
+      const result = validateWorkflowRef(
+        rootDir,
+        ref,
+        workflow.name,
+        pkgScripts,
+        canVerifyPkgScripts
+      );
+      if (result === "valid") {
         validRefs++;
-      } else if (ref.scriptRef.startsWith("node:")) {
-        // Check if the file exists
-        const filePath = path.join(rootDir, ref.scriptRef.slice(5));
-        if (fs.existsSync(filePath)) {
-          validRefs++;
-        } else {
-          invalidRefs.push({
-            workflow: workflow.name,
-            line: ref.line,
-            ref: ref.scriptRef.slice(5),
-            type: "missing_file",
-          });
-        }
       } else {
-        // npm run <script> — check if script exists in package.json
-        if (pkgScripts[ref.scriptRef]) {
-          validRefs++;
-        } else {
-          invalidRefs.push({
-            workflow: workflow.name,
-            line: ref.line,
-            ref: ref.scriptRef,
-            type: "missing_script",
-          });
-        }
+        invalidRefs.push(result);
       }
     }
   }
@@ -425,7 +442,11 @@ function checkBotConfigHealth(rootDir, botName, content) {
   }
 
   // Check if config file is essentially empty (< 10 bytes of real content)
-  const stripped = content.replace(/#[^\n]*/g, "").replace(/\s+/g, "");
+  const stripped = content
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l !== "" && !l.startsWith("#"))
+    .join("");
   if (stripped.length < 10) {
     issues.push("Config appears empty or contains only comments");
   }

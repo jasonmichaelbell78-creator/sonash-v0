@@ -2948,6 +2948,41 @@ total — 125 fixed, 7 rejected, 7 deferred
 
 ---
 
+#### Review #367: PR #389 R1 — Qodo + Gemini (2026-02-25)
+
+**Source**: Qodo (23 suggestions + 4 compliance) + Gemini (1 bug) **PR**: #389
+(ecosystem audit expansion + skill bloat reduction) **Items**: 25 total — 22
+fixed, 0 deferred, 2 rejected, 1 pre-fixed
+
+**Patterns Identified**:
+
+- **Path containment across new audit checkers**: 6 files had
+  `path.join(rootDir, ref)` without containment guards. All new audit checker
+  files that accept external file references need `path.isAbsolute()` +
+  `path.resolve()` + `path.relative()` containment check. This is a propagation
+  pattern — should be caught at code review time, not reviewer feedback time.
+- **Basename-only dedup in run files**: 3 run-\*-ecosystem-audit.js files used
+  basename-only regex for finding dedup, silently collapsing distinct findings
+  from different directories. Fix: prefer `f.patchTarget` and match full paths.
+- **Symlink skip via lstatSync**: New filesystem walker code should always use
+  `lstatSync` + `isSymbolicLink()` skip before `statSync`. This prevents
+  symlink-based directory escapes in audit tools.
+- **canVerifyPkgScripts flag**: When checker validates `npm run` scripts against
+  package.json, missing/unreadable package.json should not penalize the score.
+  Add explicit `canVerifyPkgScripts` boolean.
+- **Code fence counting needs state machine**: Regex `/^```\s*$/gm` counts both
+  opening and closing fences. Need line-by-line state machine to only count
+  opening fences without language tags.
+- **Frontmatter regex must anchor to file start**: Using `/m` flag with `^---`
+  matches horizontal rules mid-document. Remove `m` flag for frontmatter
+  detection.
+
+**Resolution**: 22 items fixed across 14 files. 2 rejected (safeReadFile silent
+catch is intentional; finding snippets are local-only). 1 pre-fixed (auditName
+negative lookbehind already applied). Tests: 293 pass, 0 fail.
+
+---
+
 #### Review #366: PR #384 R1 — SonarCloud + Qodo + CI (2026-02-22)
 
 **Source**: SonarCloud (17 issues) + Qodo (10 suggestions) + CI failure (1)
