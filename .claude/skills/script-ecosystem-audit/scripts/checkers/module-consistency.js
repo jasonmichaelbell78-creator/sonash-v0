@@ -259,7 +259,7 @@ function checkShebangEntryPoint(rootDir, scriptFiles) {
     if (sf.content.startsWith("#!/")) {
       // Valid shebang — check if it's correct
       const firstLine = sf.content.split("\n")[0].replace(/\r$/, "");
-      if (!/^#!\/usr\/bin\/env\s+node|^#!\/usr\/bin\/node/.test(firstLine)) {
+      if (!/^(?:#!\/usr\/bin\/env\s+node|#!\/usr\/bin\/node)\b/.test(firstLine)) {
         findings.push({
           id: "SIA-112",
           category: "shebang_entry_point",

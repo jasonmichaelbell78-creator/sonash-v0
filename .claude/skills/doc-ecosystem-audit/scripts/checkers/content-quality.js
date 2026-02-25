@@ -185,8 +185,9 @@ function checkFormattingConsistency(rootDir, docFiles, findings) {
 
     // Check 2: Code blocks without language tags
     const codeBlocks = content.match(/^```\s*$/gm);
-    if (codeBlocks && codeBlocks.length > 0) {
-      issues.push(`${codeBlocks.length} code block(s) without language tag`);
+    if (codeBlocks && codeBlocks.length > 1) {
+      const untaggedCount = Math.ceil(codeBlocks.length / 2);
+      issues.push(`${untaggedCount} code block(s) without language tag`);
     }
 
     // Check 3: Inconsistent list markers (mixing - and * in same section)
@@ -280,7 +281,13 @@ function checkContentFreshness(rootDir, docFiles, findings) {
     let newestCodeDate = 0;
     let newestCodeFile = "";
     for (const codeRef of codeRefs) {
-      const codeDate = getGitLastModified(rootDir, codeRef);
+      const absRef = path.resolve(rootDir, codeRef);
+      const relRef = path.relative(rootDir, absRef).replace(/\\/g, "/");
+
+      // Only allow references within repo root
+      if (/^\.\.(?:\/|$)/.test(relRef) || relRef === "") continue;
+
+      const codeDate = getGitLastModified(rootDir, relRef);
       if (codeDate && codeDate > newestCodeDate) {
         newestCodeDate = codeDate;
         newestCodeFile = codeRef;

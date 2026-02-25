@@ -310,6 +310,19 @@ function checkEcosystemAuditDirectories() {
   return ECOSYSTEM_AUDITS;
 }
 
+function isValidJsonlFile(filePath) {
+  try {
+    const content = fs.readFileSync(filePath, "utf8").trim();
+    if (!content) return true;
+    const lines = content.split("\n").filter(Boolean);
+    JSON.parse(lines[0]);
+    if (lines.length > 1) JSON.parse(lines[lines.length - 1]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function checkEcosystemAuditStateFiles() {
   console.log("\n=== Check 8: Ecosystem Audit State Files ===");
 
@@ -336,15 +349,9 @@ function checkEcosystemAuditStateFiles() {
     }
 
     // Quick corruption check: try to parse first and last lines as JSON
-    try {
-      const content = fs.readFileSync(filePath, "utf8").trim();
-      if (content) {
-        const lines = content.split("\n").filter(Boolean);
-        JSON.parse(lines[0]); // First line
-        if (lines.length > 1) JSON.parse(lines[lines.length - 1]); // Last line
-      }
+    if (isValidJsonlFile(filePath)) {
       stateFilesPassing++;
-    } catch {
+    } else {
       corruptStateFiles.push(stateFile);
     }
   }

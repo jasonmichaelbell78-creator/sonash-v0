@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.57 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
+**Document Version:** 17.58 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
 
 ## Purpose
 
@@ -759,6 +759,32 @@ accumulate.
   resolved by indexOf), CI pattern compliance blocker from RegExp constructor
   with variable, backward brace scanning direction (R3 got it wrong, R4
   corrected), null vs falsy distinction for safeReadFile returns
+
+### Review #375: PR #389 R1 (2026-02-24)
+
+- **Source**: SonarCloud (1), Qodo Compliance (3), CI Pattern Check (35
+  blocking), Gemini Code Assist (18)
+- **PR**: Ecosystem audit expansion — doc, script, skill audits + skill trimming
+- **Total items**: 57
+- **Fixed**: 55
+- **Deferred**: 0
+- **Rejected**: 2 (Gemini "use ESLint custom rules instead of static analysis" —
+  architectural suggestion beyond PR scope; Gemini "duplicate safeReadFile" —
+  only one definition found in file)
+- **Key patterns**:
+  - **Pattern checker false positives**: `exec-without-global` checker only
+    inspects the `while` line, not the regex definition line above. Added 6
+    files to verified-patterns.json. `unguarded-loadconfig` lookahead window (30
+    chars) too small for multi-require try/catch blocks — added 4 files.
+  - **Path traversal in new audit checkers**: 4 files lacked containment guards
+    on `path.resolve()` results. Added `/^\.\.(?:[\\/]|$)/.test(rel)` guards.
+  - **Dedup function O(n²)**: `deduped[deduped.indexOf(existing)]` pattern in 3
+    audit runners — replaced with Map-based O(n) approach.
+  - **Chained replace regex bug**: `.replace(/-audit$/, "-ecosystem-audit")`
+    double-transforms names already containing `-ecosystem-audit`. Fixed with
+    negative lookbehind `(?<!-ecosystem)`.
+  - **Hardcoded finding IDs**: `id: "SIA-400"` in loop produces duplicates.
+    Fixed with counter suffix.
 
 ### Review #374: PR #388 R3 (2026-02-23)
 

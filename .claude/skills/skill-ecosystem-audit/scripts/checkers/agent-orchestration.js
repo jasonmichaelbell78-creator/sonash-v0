@@ -180,7 +180,7 @@ function checkAgentSkillAlignment(rootDir, skills, findings) {
   // Pattern: | trigger | action | tool |
   const triggerEntries = [];
   const triggerTableRows = claudeMd.matchAll(
-    /^\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*(?:agent|skill)?\s*\|\s*(\w+)\s*\|/gm
+    /^\|\s*([^|]+?)\s*\|\s*`?([^`|]+)`?\s*\|\s*([\w-]+)\s*\|/gm
   );
   for (const match of triggerTableRows) {
     const trigger = match[1].trim();

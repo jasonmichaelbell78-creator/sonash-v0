@@ -64,6 +64,7 @@ function collectScriptFiles(baseDir) {
           walk(full);
         } else if (stat.isFile() && entry.endsWith(".js")) {
           const content = safeReadFile(full);
+          if (!content) continue;
           const relPath = path.relative(baseDir, full).replace(/\\/g, "/");
           const dirRel = path.relative(baseDir, dir).replace(/\\/g, "/") || ".";
           results.push({ name: entry, filePath: full, content, relPath, dir: dirRel });
@@ -95,6 +96,7 @@ function checkDocumentationHeaders(scriptFiles) {
     /^\/\/\s+\w+.*\n\/\/\s+\w+/m, // Multiple consecutive line comments
   ];
 
+  let docHeaderFindingCount = 0;
   for (const sf of scriptFiles) {
     // Skip test files
     if (sf.relPath.includes("__tests__") || sf.name.endsWith(".test.js")) continue;
@@ -122,7 +124,7 @@ function checkDocumentationHeaders(scriptFiles) {
       documentedScripts++;
     } else {
       findings.push({
-        id: "SIA-400",
+        id: `SIA-400-${++docHeaderFindingCount}`,
         category: "documentation_headers",
         domain: DOMAIN,
         severity: "info",

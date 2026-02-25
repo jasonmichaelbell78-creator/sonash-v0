@@ -214,28 +214,26 @@ allFindings.sort((a, b) => (b.impactScore || 0) - (a.impactScore || 0));
 
 // Deduplicate findings that reference the same file/issue from different domains
 function deduplicateFindings(findings) {
-  const seen = new Map();
-  const deduped = [];
+  const bestFindings = new Map();
+  const unkeyedFindings = [];
 
   for (const f of findings) {
     const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.js)/);
     const file = fileMatch ? fileMatch[1] : "";
-    const key = file ? `${file}:${f.severity}` : null;
+    const key = file ? `${file}:${f.severity}:${f.category}` : null;
 
-    if (key && seen.has(key)) {
-      const existing = seen.get(key);
-      if ((f.impactScore || 0) > (existing.impactScore || 0)) {
-        existing._supersededBy = f.id;
-        deduped[deduped.indexOf(existing)] = f;
-        seen.set(key, f);
-      }
-    } else {
-      if (key) seen.set(key, f);
-      deduped.push(f);
+    if (!key) {
+      unkeyedFindings.push(f);
+      continue;
+    }
+
+    const existing = bestFindings.get(key);
+    if (!existing || (f.impactScore || 0) > (existing.impactScore || 0)) {
+      bestFindings.set(key, f);
     }
   }
 
-  return deduped;
+  return [...unkeyedFindings, ...bestFindings.values()];
 }
 
 const dedupedFindings = deduplicateFindings(allFindings);

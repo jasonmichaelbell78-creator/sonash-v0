@@ -425,7 +425,7 @@ function checkBotConfigHealth(rootDir, botName, content) {
   }
 
   // Check if config file is essentially empty (< 10 bytes of real content)
-  const stripped = content.replace(/\s+/g, "").replace(/[#].*/g, "");
+  const stripped = content.replace(/#[^\n]*/g, "").replace(/\s+/g, "");
   if (stripped.length < 10) {
     issues.push("Config appears empty or contains only comments");
   }

@@ -150,6 +150,14 @@ function checkAgentDocReferences(rootDir, findings) {
 
   for (const ref of refs) {
     const fullPath = path.join(rootDir, ref.path);
+
+    // Path containment guard
+    const relToRoot = path.relative(rootDir, fullPath);
+    if (/^\.\.(?:[\\/]|$)/.test(relToRoot)) {
+      invalid.push(ref);
+      continue;
+    }
+
     try {
       const stat = fs.statSync(fullPath);
       if (stat.isFile() && stat.size > 0) {

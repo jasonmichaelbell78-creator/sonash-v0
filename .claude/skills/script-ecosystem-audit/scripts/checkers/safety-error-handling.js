@@ -59,6 +59,11 @@ function collectScriptFiles(baseDir) {
       if (entry === "node_modules" || entry === ".git" || entry === "dist" || entry === "build")
         continue;
       const full = path.join(dir, entry);
+
+      // Path containment guard - reject symlinks escaping baseDir
+      const relToBase = path.relative(baseDir, full);
+      if (/^\.\.(?:[\\/]|$)/.test(relToBase)) continue;
+
       try {
         const stat = fs.statSync(full);
         if (stat.isDirectory()) {
@@ -245,7 +250,7 @@ function checkPathTraversalGuards(scriptFiles) {
   let compliantChecks = 0;
 
   // The correct pattern per CLAUDE.md: /^\.\.(?:[\\/]|$)/.test(rel)
-  const correctTraversalPattern = /\^\\\.\\\.(?:\(\?:\[|(?:\\\\|\[\\\\\/\]))/;
+  const correctTraversalPattern = /\/\^\\\.\\\.(?:\(\?:\[[\\/\\\\]*\]|\(\?:[\\/\\\\])/;
   const startsWithDotDot = /startsWith\s*\(\s*['"]\.\.['"]|startsWith\s*\(\s*['"]\.\.[\\/]['")\]]/;
   const pathTraversalCheck = /['"]\.\.['"]|dotdot|traversal|\.\.[\\/]/i;
 

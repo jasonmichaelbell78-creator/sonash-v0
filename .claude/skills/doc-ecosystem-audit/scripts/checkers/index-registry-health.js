@@ -498,7 +498,8 @@ function computeSimilarity(str1, str2) {
   for (const w of words1) {
     if (words2.has(w)) overlap++;
   }
-  return overlap / Math.max(words1.size, words2.size);
+  const unionSize = words1.size + words2.size - overlap;
+  return unionSize === 0 ? 0 : overlap / unionSize;
 }
 
 module.exports = { run, DOMAIN };

@@ -311,7 +311,9 @@ function gatherActiveAudits() {
 
         activeAudits.push({
           file: f,
-          auditName: f.replace(/-progress\.json$/, "").replace(/-audit$/, "-ecosystem-audit"),
+          auditName: f
+            .replace(/-progress\.json$/, "")
+            .replace(/(?<!-ecosystem)-audit$/, "-ecosystem-audit"),
           currentFinding: data.currentFindingIndex || 0,
           totalFindings: data.totalFindings || 0,
           decisionsCount: (data.decisions || []).length,

@@ -29,17 +29,6 @@ try {
   process.exit(1);
 }
 
-// Symlink guard
-let isSafeToWrite;
-try {
-  ({ isSafeToWrite } = require(
-    path.join(__dirname, "..", "..", "..", "hooks", "lib", "symlink-guard")
-  ));
-} catch {
-  console.error("  [warn] symlink-guard unavailable; disabling state writes");
-  isSafeToWrite = () => false;
-}
-
 // Find project root
 function findProjectRoot() {
   let dir = __dirname;
@@ -56,6 +45,15 @@ function findProjectRoot() {
 }
 
 const ROOT_DIR = findProjectRoot();
+
+// Symlink guard
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require(path.join(ROOT_DIR, "hooks", "lib", "symlink-guard")));
+} catch {
+  console.error("  [warn] symlink-guard unavailable; disabling state writes");
+  isSafeToWrite = () => false;
+}
 const args = process.argv.slice(2);
 const isCheckMode = args.includes("--check");
 const isSummaryMode = args.includes("--summary");
@@ -220,28 +218,26 @@ allFindings.sort((a, b) => (b.impactScore || 0) - (a.impactScore || 0));
 
 // Deduplicate findings that reference the same file/issue from different domains
 function deduplicateFindings(findings) {
-  const seen = new Map();
-  const deduped = [];
+  const bestFindings = new Map();
+  const unkeyedFindings = [];
 
   for (const f of findings) {
     const fileMatch = (f.details || f.message || "").match(/([a-zA-Z0-9_-]+\.(?:md|js))/);
     const file = fileMatch ? fileMatch[1] : "";
     const key = file ? `${file}:${f.severity}:${f.category}` : null;
 
-    if (key && seen.has(key)) {
-      const existing = seen.get(key);
-      if ((f.impactScore || 0) > (existing.impactScore || 0)) {
-        existing._supersededBy = f.id;
-        deduped[deduped.indexOf(existing)] = f;
-        seen.set(key, f);
-      }
-    } else {
-      if (key) seen.set(key, f);
-      deduped.push(f);
+    if (!key) {
+      unkeyedFindings.push(f);
+      continue;
+    }
+
+    const existing = bestFindings.get(key);
+    if (!existing || (f.impactScore || 0) > (existing.impactScore || 0)) {
+      bestFindings.set(key, f);
     }
   }
 
-  return deduped;
+  return [...unkeyedFindings, ...bestFindings.values()];
 }
 
 const dedupedFindings = deduplicateFindings(allFindings);

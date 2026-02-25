@@ -116,18 +116,22 @@ function checkPackageJsonCoverage(rootDir, scriptFiles) {
       let refPath = match[1];
       if (!refPath.endsWith(".js")) refPath += ".js";
       // Resolve relative to the script's directory
-      const resolved = path
-        .relative(path.join(rootDir, "scripts"), path.resolve(path.dirname(sf.filePath), refPath))
-        .replace(/\\/g, "/");
-      internalRefs.add(resolved);
+      const scriptsRoot = path.join(rootDir, "scripts");
+      const absResolved = path.resolve(path.dirname(sf.filePath), refPath);
+      const relToScripts = path.relative(scriptsRoot, absResolved).replace(/\\/g, "/");
+      if (!/^\.\.(?:\/|$)/.test(relToScripts) && relToScripts !== "") {
+        internalRefs.add(relToScripts);
+      }
     }
     for (const match of sf.content.matchAll(importPattern)) {
       let refPath = match[1];
       if (!refPath.endsWith(".js")) refPath += ".js";
-      const resolved = path
-        .relative(path.join(rootDir, "scripts"), path.resolve(path.dirname(sf.filePath), refPath))
-        .replace(/\\/g, "/");
-      internalRefs.add(resolved);
+      const scriptsRoot = path.join(rootDir, "scripts");
+      const absResolved = path.resolve(path.dirname(sf.filePath), refPath);
+      const relToScripts = path.relative(scriptsRoot, absResolved).replace(/\\/g, "/");
+      if (!/^\.\.(?:\/|$)/.test(relToScripts) && relToScripts !== "") {
+        internalRefs.add(relToScripts);
+      }
     }
   }
 

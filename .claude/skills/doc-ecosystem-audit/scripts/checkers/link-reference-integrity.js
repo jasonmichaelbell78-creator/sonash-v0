@@ -92,6 +92,13 @@ function checkInternalLinkHealth(rootDir, docFiles, findings) {
       const docDir = path.dirname(fullPath);
       const resolvedPath = path.resolve(docDir, filePart);
 
+      // Path containment guard — reject paths escaping repo root
+      const relToRoot = path.relative(rootDir, resolvedPath);
+      if (/^\.\.(?:[\\/]|$)/.test(relToRoot) || path.isAbsolute(relToRoot)) {
+        brokenLinks.push({ source: docPath, target: linkTarget });
+        continue;
+      }
+
       try {
         const stat = fs.statSync(resolvedPath);
         if (stat.isFile() || stat.isDirectory()) {
