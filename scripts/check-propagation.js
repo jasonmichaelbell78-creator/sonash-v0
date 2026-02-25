@@ -286,7 +286,7 @@ function analyze() {
 
   if (changedFiles.size === 0) {
     if (VERBOSE) console.log("  No JS file changes detected in target directories.");
-    return { misses: [], total: 0 };
+    return { misses: [], total: 0, patternWarnings: [] };
   }
 
   // Collect all changed file paths for exclusion
