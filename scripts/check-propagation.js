@@ -19,7 +19,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { statSync } from "node:fs";
+import { lstatSync, readFileSync } from "node:fs";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB — skip huge files
 const SEARCH_DIRS = ["scripts/", ".claude/skills/", ".claude/hooks/"];
@@ -37,7 +37,7 @@ const KNOWN_PATTERN_RULES = [
     name: "statSync-without-lstat",
     // Matches statSync( but not lstatSync(
     searchPattern: String.raw`\bstatSync\s*\(`,
-    excludePattern: /lstatSync/,
+    excludeFilePattern: /lstatSync/,
     description: "statSync without symlink check — use lstatSync + isSymbolicLink() guard",
     recommended: "Replace statSync() with lstatSync() and add isSymbolicLink() skip",
   },
@@ -229,7 +229,9 @@ function shouldSkipMatch(file) {
   if (IGNORE_DIRS.some((d) => file.includes(d))) return true;
   if (file.includes(".test.") || file.includes(".spec.")) return true;
   try {
-    return statSync(file).size > MAX_FILE_SIZE;
+    const stat = lstatSync(file);
+    if (stat.isSymbolicLink()) return true;
+    return stat.size > MAX_FILE_SIZE;
   } catch {
     return true;
   }
@@ -361,22 +363,23 @@ function checkKnownPatterns(changedPaths) {
       }
     }
 
-    if (matches.length === 0) continue;
+    // Dedup matches across SEARCH_DIRS
+    const uniqueMatches = [...new Set(matches)];
+
+    if (uniqueMatches.length === 0) continue;
 
     // Filter out files that have the exclude pattern (already guarded)
+    // Read working-tree content (not HEAD) to see current state during pre-push
     const unguardedFiles = rule.excludeFilePattern
-      ? matches.filter((file) => {
+      ? uniqueMatches.filter((file) => {
           try {
-            const content = execFileSync("git", ["show", `HEAD:${file}`], {
-              encoding: "utf8",
-              maxBuffer: 2 * 1024 * 1024,
-            });
+            const content = readFileSync(file, "utf8");
             return !rule.excludeFilePattern.test(content);
           } catch {
             return true; // If we can't read it, flag it
           }
         })
-      : matches;
+      : uniqueMatches;
 
     if (unguardedFiles.length === 0) continue;
 
