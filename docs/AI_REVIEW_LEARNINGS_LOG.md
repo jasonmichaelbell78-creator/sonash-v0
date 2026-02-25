@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.58 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
+**Document Version:** 17.59 **Created:** 2026-01-02 **Last Updated:** 2026-02-25
 
 ## Purpose
 
@@ -1072,6 +1072,29 @@ _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
   `(^|[^[:alnum:]_$])` as word boundary equivalent.
 - **Pattern**: Security/lint checkers should fail-open (return true = flag it)
   not fail-closed (return false = skip it) on read errors.
+
+### Review #378: PR #392 R4 (2026-02-25)
+
+- **Source**: Qodo Compliance (3), SonarCloud (1), Qodo PR Suggestions (14)
+- **Total Items**: 18 (15 fixed, 3 rejected)
+- **Key Fix**: `excludeFilePattern` for statSync-without-lstat missed
+  `.isSymbolicLink()` method calls — added alternate branch to regex.
+- **Key Fix**: `changedPaths` normalization didn't strip `./` prefix, causing
+  path comparison mismatch with `findPatternMatches` output.
+- **Pattern**: Cross-platform path normalization must happen BEFORE string
+  checks (includes, endsWith) — not just before filesystem calls.
+- **Pattern**: In `--blocking` mode, unexpected git grep failures should
+  `process.exit(1)` not just warn.
+- **Data Quality**: JSONL audit records had `verified_by: true` (boolean)
+  instead of `"auto"` (string), `file:linenum` in file field, directory-only
+  paths. Fixed 111 audits.jsonl + 764 normalized-all.jsonl records.
+- **Rejected**: S5852 regex DoS on `/\/+$/` — single char class + quantifier
+  anchored to `$`, no backtracking. First flag (two-strikes N/A).
+- **Rejected**: `filterUnguardedFiles` fail-open → fail-closed — fail-open is
+  correct for security pattern detection (false negatives worse than false
+  positives).
+- **Rejected**: Structured logging for CLI script — `console.log` is correct
+  pattern for pre-push hooks.
 
 ### Review #377: PR #392 R2 (2026-02-25)
 

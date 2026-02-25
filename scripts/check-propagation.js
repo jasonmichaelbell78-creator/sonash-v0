@@ -38,13 +38,13 @@ const KNOWN_PATTERN_RULES = [
     name: "statSync-without-lstat",
     // \b is not valid in POSIX ERE (git grep -E) — use character class boundary
     searchPattern: String.raw`(^|[^[:alnum:]_$])statSync[[:space:]]*\(`,
-    excludeFilePattern: /(^|[^A-Za-z0-9_$])isSymbolicLink\s*\(/,
+    excludeFilePattern: /(^|[^A-Za-z0-9_$])isSymbolicLink\s*\(|\.isSymbolicLink\s*\(/,
     description: "statSync without symlink check — use lstatSync + isSymbolicLink() guard",
     recommended: "Replace statSync() with lstatSync() and add isSymbolicLink() skip",
   },
   {
     name: "path-resolve-without-containment",
-    searchPattern: String.raw`path\.resolve[[:space:]]*\(`,
+    searchPattern: String.raw`(^|[^[:alnum:]_$])path\.resolve[[:space:]]*\(`,
     excludeFilePattern: /(^|[^A-Za-z0-9_$])validatePathInDir\s*\(/,
     description: "path.resolve() without path containment guard",
     recommended: "Add validatePathInDir() or startsWith(allowedDir) check after path.resolve()",
@@ -52,15 +52,16 @@ const KNOWN_PATTERN_RULES = [
 ];
 
 /** Normalize path separators for cross-platform comparison */
-const toPosixPath = (p) => String(p).replaceAll("\\", "/");
+const toPosixPath = (filePath) => String(filePath).replaceAll("\\", "/");
 
 /** Convert repo-relative paths into an FS-friendly path */
-const toFsPath = (p) =>
-  process.platform === "win32" ? String(p).replaceAll("/", "\\") : String(p);
+const toFsPath = (filePath) =>
+  process.platform === "win32" ? String(filePath).replaceAll("/", "\\") : String(filePath);
 
 /** POSIX-safe dirname — works on normalized forward-slash paths */
-const posixDirname = (p) => {
-  const s = toPosixPath(p).replace(/\/+$/, "");
+const posixDirname = (filePath) => {
+  // Strip trailing slashes (safe: no regex DoS risk on bounded file paths)
+  const s = toPosixPath(filePath).replace(/\/+$/, "");
   const idx = s.lastIndexOf("/");
   return idx <= 0 ? "." : s.slice(0, idx);
 };
@@ -239,13 +240,16 @@ function escapeForRegex(str) {
  * Check if a grep match line should be skipped (ignore dirs, test files, large files).
  */
 function shouldSkipMatch(file) {
-  if (IGNORE_DIRS.some((d) => file.includes(d))) return true;
-  if (file.includes(".test.") || file.includes(".spec.")) return true;
+  const normalized = toPosixPath(file);
+  if (IGNORE_DIRS.some((d) => normalized.includes(d))) return true;
+  if (normalized.includes(".test.") || normalized.includes(".spec.")) return true;
   try {
-    const stat = lstatSync(toFsPath(file));
+    const stat = lstatSync(toFsPath(normalized));
     if (stat.isSymbolicLink()) return true;
     return stat.size > MAX_FILE_SIZE;
   } catch {
+    // File unreadable — skip it (logged in verbose mode for diagnostics)
+    if (VERBOSE) console.warn(`  [skip-match] unable to stat ${normalized}`);
     return true;
   }
 }
@@ -287,10 +291,12 @@ function searchForFunction(funcName) {
   } catch (err) {
     // grep returns exit code 1 when no matches — only ignore that case
     if (err && typeof err === "object" && "status" in err && err.status !== 1) {
-      if (VERBOSE)
-        console.warn(
-          `  [func-search] git grep failed for ${funcName}: ${err instanceof Error ? err.message.slice(0, 150) : "unknown error"}`
-        );
+      const msg = err instanceof Error ? err.message.slice(0, 150) : "unknown error";
+      if (BLOCKING) {
+        console.error(`  [func-search] git grep failed for ${funcName}: ${msg}`);
+        process.exit(1);
+      }
+      if (VERBOSE) console.warn(`  [func-search] git grep failed for ${funcName}: ${msg}`);
     }
   }
   return results;
@@ -416,7 +422,9 @@ function filterUnguardedFiles(files, excludePattern) {
  */
 function checkKnownPatterns(changedPaths) {
   const warnings = [];
-  const posixChangedPaths = new Set([...changedPaths].map(toPosixPath));
+  const posixChangedPaths = new Set(
+    [...changedPaths].map((p) => toPosixPath(String(p).replace(/^\.\//, "")))
+  );
 
   for (const rule of KNOWN_PATTERN_RULES) {
     const uniqueMatches = findPatternMatches(rule);
