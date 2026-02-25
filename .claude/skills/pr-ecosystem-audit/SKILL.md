@@ -8,8 +8,8 @@ description: |
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
-**Last Updated:** 2026-02-22
+**Document Version:** 1.2
+**Last Updated:** 2026-02-24
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -29,14 +29,94 @@ checkers), this is a deep root-cause analysis across 18 categories.
 
 ---
 
+## When to Use
+
+- |
+- User explicitly invokes `/pr-ecosystem-audit`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## CRITICAL RULES (Read First)
 
-1. **ALWAYS run the script first** — never generate findings without data
-2. **ALWAYS display the dashboard to the user** before starting the walkthrough
-3. **Present findings one at a time** using AskUserQuestion for decisions
-4. **Show patch suggestions inline** with each patchable finding
-5. **Create TDMS entries** for deferred findings via `/add-debt`
-6. **Save decisions** to session log for audit trail
+1. **CHECK for saved progress first** — resume from
+   `.claude/tmp/pr-audit-progress.json` if it exists and is < 2 hours old.
+2. **ALWAYS run the script first** — never generate findings without data
+3. **ALWAYS display the dashboard to the user** before starting the walkthrough
+4. **Present findings one at a time** using AskUserQuestion for decisions
+5. **Show patch suggestions inline** with each patchable finding
+6. **Create TDMS entries** for deferred findings via `/add-debt`
+7. **Save decisions** to session log for audit trail
+
+---
+
+## Compaction Guard
+
+Audits are long-running interactive workflows vulnerable to context compaction.
+To survive compaction, save progress after every decision and check for existing
+progress on startup.
+
+### State File
+
+Path: `.claude/tmp/pr-audit-progress.json`
+
+Schema:
+
+```json
+{
+  "auditTimestamp": "ISO timestamp of audit run",
+  "score": 85,
+  "grade": "B",
+  "totalFindings": 42,
+  "currentFindingIndex": 8,
+  "decisions": [
+    {
+      "findingIndex": 1,
+      "category": "skill_invocation_fidelity",
+      "message": "finding message",
+      "decision": "skip",
+      "note": "reason"
+    }
+  ],
+  "fixesApplied": ["description of fix"],
+  "findingsData": []
+}
+```
+
+### On Skill Start (Before Phase 1)
+
+1. Check if `.claude/tmp/pr-audit-progress.json` exists and is < 2 hours old
+2. If yes: **resume from saved position**
+   - Display the dashboard from saved data (skip re-running the audit script)
+   - Show: "Resuming audit from finding {n}/{total} ({n-1} already reviewed)"
+   - List prior decisions briefly: "{n} fixed, {n} skipped, {n} deferred"
+   - Continue the walkthrough from `currentFindingIndex`
+3. If no (or stale): proceed to Phase 1 normally
+
+### After Each Decision (During Phase 3)
+
+After each AskUserQuestion response, immediately save progress:
+
+1. Update `currentFindingIndex` to the next finding
+2. Append the decision to the `decisions` array
+3. If "Fix Now" was chosen, append to `fixesApplied`
+4. Write the updated JSON to `.claude/tmp/pr-audit-progress.json`
+
+### On Audit Completion (Phase 4)
+
+After the summary is presented, delete the progress file (audit is complete).
+
+---
+
+## Dependency Constraints
+
+This skill runs as a single-threaded sequential workflow (run script, display
+dashboard, walk through findings one-by-one). It does not spawn parallel agents
+internally. When invoked as part of `/comprehensive-ecosystem-audit`, it runs as
+one of 4 independent parallel agents in Stage 1 -- no ordering required relative
+to the hook, session, or TDMS audit agents.
 
 ---
 
@@ -379,5 +459,6 @@ evidence is implicit.
 
 | Version | Date       | Description                                                                                                                               |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.2     | 2026-02-24 | Add Compaction Guard with progress file, resume-on-start, save-after-decision, and cleanup-on-completion                                  |
 | 1.1     | 2026-02-22 | Add Checker Development Guide with data source, JSONL schema, retro/review separation, markdown extraction, path, and calibration lessons |
 | 1.0     | 2026-02-20 | Initial implementation                                                                                                                    |

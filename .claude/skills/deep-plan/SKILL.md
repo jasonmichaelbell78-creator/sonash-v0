@@ -302,3 +302,11 @@ After approval, implement the plan.
 - **PLANNING_DOC_TEMPLATE.md**: Deep-plan produces a lighter-weight plan focused
   on implementation steps. The full planning template is better for long-lived
   initiative tracking
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

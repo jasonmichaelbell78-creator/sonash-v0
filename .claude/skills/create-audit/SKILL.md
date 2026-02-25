@@ -18,6 +18,16 @@ integrations.
 
 ---
 
+## When to Use
+
+- Tasks related to create-audit
+- User explicitly invokes `/create-audit`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## What This Creates
 
 1. `.claude/skills/audit-<name>/SKILL.md` — Single-session audit skill
@@ -155,6 +165,10 @@ Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and filter matching patterns.
 ---
 
 ## Stage 1: Analysis (<N> Agents, Parallel)
+
+**Dependency constraints:** All Stage 1 agents are independent -- no ordering
+required. Stage 2 (synthesis) depends on all Stage 1 outputs being written to
+disk.
 
 <FOR EACH DOMAIN, generate an agent block:>
 

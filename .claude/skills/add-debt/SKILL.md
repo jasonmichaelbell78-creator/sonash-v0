@@ -24,6 +24,12 @@ discovered during PR review (deferred) or during ad-hoc development.
 - When you discover tech debt during development outside formal audits
 - When an item should be tracked but won't be fixed immediately
 
+**When NOT to Use:**
+
+- When running a formal audit — audits produce their own JSONL findings
+- When items should be fixed immediately rather than tracked
+- When the item is already tracked in MASTER_DEBT.jsonl (check first)
+
 **Output Location:** `docs/technical-debt/MASTER_DEBT.jsonl`
 
 ---
@@ -303,3 +309,11 @@ If ANY items are deferred during review:
   `sync-sonarcloud-debt`)
 - `verify-technical-debt` - Verify items in queue
 - `pr-review` - Full PR review workflow
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-13 | Initial implementation |

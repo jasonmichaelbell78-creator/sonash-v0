@@ -11,6 +11,16 @@ source: https://github.com/microsoft/markitdown
 
 # MarkItDown - File to Markdown Conversion
 
+## When to Use
+
+- "Convert files and office documents to Markdown. Supports PDF, DOCX, PPTX,
+- User explicitly invokes `/markitdown`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Overview
 
 MarkItDown is a Python tool developed by Microsoft for converting various file
@@ -504,3 +514,11 @@ print(result.text_content)
 - **OpenRouter Models**: https://openrouter.ai/models
 - **MCP Server**: markitdown-mcp (for Claude Desktop integration)
 - **Plugin Development**: See `packages/markitdown-sample-plugin`
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

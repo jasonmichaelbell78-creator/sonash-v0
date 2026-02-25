@@ -20,37 +20,65 @@ and creates an audit trail for accountability.
 
 ### Required Structure
 
-All skill files in `.claude/commands/` must include:
+All skill files live in `.claude/skills/<skill-name>/SKILL.md`. For full
+structural standards, see
+[SKILL_STANDARDS.md](../../.claude/skills/_shared/SKILL_STANDARDS.md).
 
 ```markdown
 ---
+name: skill-name
 description: Brief description of what the skill does
 ---
 
 # Skill Title
 
+## When to Use
+
+## When NOT to Use
+
 [Content describing the skill's purpose and usage]
+
+## Version History
 ```
+
+### Shared Templates
+
+Common boilerplate lives in `.claude/skills/_shared/`:
+
+- `AUDIT_TEMPLATE.md` — Evidence, TDMS intake, review procedures for audit
+  skills
+- `SKILL_STANDARDS.md` — Canonical structural and quality standards
+
+### Companion Files
+
+When a skill exceeds 500 lines, extract content to companion files in the same
+directory (e.g., `prompts.md`, `examples.md`, `domains.md`, `ARCHIVE.md`).
+Reference via Read tool instructions in SKILL.md.
 
 ### Validation
 
 Skills are automatically validated by `npm run skills:validate` which checks:
 
-- YAML frontmatter with `description` field
+- YAML frontmatter with `name` and `description` fields
 - Title heading (`# Title`)
+- Required sections: When to Use, When NOT to Use, Version History
 - Required sections for audit commands:
   - Pre-Audit Validation
   - Post-Audit
   - Output Requirements
 - File references exist
 - No deprecated patterns (TODO/FIXME/PLACEHOLDER)
+- Line count under 500 (warning) / 800 (error)
 
 ### Creating New Skills
 
-1. Create file in `.claude/commands/` with `.md` extension
-2. Include required frontmatter and title
-3. Run `npm run skills:validate` before committing
-4. Skill is automatically available via `/skill-name`
+1. Create directory `.claude/skills/<skill-name>/`
+2. Create `SKILL.md` with required frontmatter, sections, and version history
+3. Reference
+   [SKILL_STANDARDS.md](../../.claude/skills/_shared/SKILL_STANDARDS.md) for
+   full checklist
+4. Run `npm run skills:validate` before committing
+5. Skill is automatically available via `/skill-name`
 
 ---
 

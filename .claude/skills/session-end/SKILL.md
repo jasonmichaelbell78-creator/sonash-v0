@@ -7,6 +7,16 @@ description: Complete verification steps before ending the session
 
 Before ending the session, complete these steps:
 
+## When to Use
+
+- Tasks related to session-end
+- User explicitly invokes `/session-end`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## 1. Roadmap Check (if feature work done)
 
 If you implemented features or completed tasks this session, verify ROADMAP.md
@@ -191,3 +201,11 @@ npm run session:end
 This script commits and pushes all session-end changes.
 
 Session complete.
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

@@ -14,6 +14,16 @@ description:
 
 # Enhancement Audit
 
+## When to Use
+
+- Tasks related to audit-enhancements
+- User explicitly invokes `/audit-enhancements`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Overview
 
 Performs a comprehensive, multi-pass enhancement audit of the **entire** project
@@ -399,71 +409,15 @@ Sequential process (1-2 agents):
 
 ---
 
-## MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)
+## Phase 4: Interactive Review & TDMS Intake
 
-**Do NOT present findings for review until they have been cross-referenced
-against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
-inflated debt counts.
+> Read `.claude/skills/_shared/AUDIT_TEMPLATE.md` for: MASTER_DEBT
+> Cross-Reference, Interactive Review, and TDMS Intake procedures.
 
-### Process
+**Enhancement-specific additions to interactive review:**
 
-1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
-2. For each finding, search MASTER_DEBT by:
-   - Same file path (exact or substring match)
-   - Similar title/description (semantic overlap)
-   - Same root cause (e.g., same pattern in different wording)
-3. Classify each finding as:
-   - **Already Tracked**: Confident match in MASTER_DEBT → skip intake
-   - **New Finding**: No matching DEBT entry → proceed to interactive review
-   - **Possibly Related**: Partial overlap → flag for manual review
-4. Present only **New** and **Possibly Related** findings in the Interactive
-   Review below. Already Tracked items are skipped entirely.
-
----
-
-## Phase 4: Interactive Review (after MASTER_DEBT cross-reference)
-
-### Presentation Format
-
-Present findings in **batches of 3-5 items**, grouped by severity tier (S0
-first, then S1, S2, S3). Within each tier, group by category for coherence. Each
-batch shows full detail for every item:
-
-```markdown
-## S1 Batch 1: [Category Group] (N items)
-
-### DEBT-XXXX: [Title]
-
-**Severity:** S1 | **Effort:** E2 | **Confidence:** 85% **Category:**
-app-architecture
-
-**Current Approach:** [What exists now and why] **Proposed Improvement:** [What
-it would look like] **Why It Matters:** [The benefit] **Counter-Argument:** [Why
-NOT to do this]
-
----
-
-### DEBT-YYYY: [Title]
-
-[... same format ...]
-
----
-
-**Decisions for this batch:** ACCEPT / DECLINE / DEFER each item
-```
-
-Do NOT present all items in a tier at once — batches of 3-5 keep decisions
-manageable. Wait for the user's decisions on each batch before presenting the
-next.
-
-### Processing Decisions
-
-After each batch of decisions:
-
-- Run `resolve-item.js` for each item:
+- Use `resolve-item.js` for each decision:
   `node scripts/debt/resolve-item.js DEBT-XXXX --action {accept|decline|defer} --reason "{user's reason}"`
-- If DECLINED: record reason
-- If DEFERRED: mark for re-evaluation
 - Save state to `${AUDIT_DIR}/audit-state.json` after each batch
 
 ### Post-Review: Roadmap Placement
@@ -473,9 +427,9 @@ a batch for roadmap placement:
 
 1. List all ACCEPTED items with their impact/effort ratings
 2. Propose placement in ROADMAP.md sections based on effort and category:
-   - E0 items → current Quick Wins milestone
-   - E1 items → current or next milestone
-   - E2+ items → appropriate future milestone
+   - E0 items --> current Quick Wins milestone
+   - E1 items --> current or next milestone
+   - E2+ items --> appropriate future milestone
 3. Get user confirmation on all placements at once
 4. Apply roadmap edits in a single pass
 5. Check for duplicate findings among accepted items and offer to merge
@@ -484,159 +438,49 @@ a batch for roadmap placement:
 
 ## State Persistence
 
-### File-Based (Source of Truth)
-
-`${AUDIT_DIR}/audit-state.json`:
-
-```json
-{
-  "audit_id": "audit-enhancements-YYYY-MM-DD",
-  "current_phase": 1,
-  "phase1_completed_agents": ["architecture", "ux"],
-  "phase1_pending_agents": [
-    "content",
-    "devx",
-    "infrastructure",
-    "testing",
-    "docs",
-    "workflow"
-  ],
-  "phase2_clusters": [],
-  "phase3_complete": false,
-  "phase4_review_progress": { "current": 0, "total": 0 },
-  "phase4_decisions": [],
-  "last_updated": "ISO timestamp"
-}
-```
-
-### Episodic Memory (Quick-Access Cache)
-
-Save to episodic memory after each phase for cross-session recall:
-
-```bash
-# Update audit-state.json (file-based state is the source of truth)
-# The audit-state.json file persists across sessions and compactions
-```
+Source of truth: `${AUDIT_DIR}/audit-state.json` — tracks `current_phase`,
+completed/pending agents per phase, review progress, and decisions. Update after
+every phase transition.
 
 ---
 
-## Honesty Guardrails
+## Enhancement-Specific Guardrails
 
-1. **Mandatory counter-argument**: Every finding MUST include
-   `counter_argument`. If the agent cannot articulate a genuine reason not to
-   make the change, the finding is suspect and should be reconsidered.
+In addition to the shared Honesty Guardrails (see AUDIT_TEMPLATE.md):
 
-2. **Confidence threshold**: Findings with `confidence < 70` go to
-   "Inconclusive" section, not main findings. Prevents suggestion inflation.
-
-3. **Evidence requirement**: Concrete file path + specific indicator required.
-   No vague "the codebase could benefit from..." findings.
-
-4. **No-change validation**: Phase 1 agents MUST explicitly list areas they
-   evaluated and found adequate. These become the "Strengths" section. An audit
-   that finds only problems is suspicious.
-
-5. **Consolidation bias guard**: Both over-consolidation ("merge everything")
-   and under-consolidation ("keep everything separate") are evaluated on merit.
-   No default direction.
-
-6. **Semantic dedup on proposed_outcome**: During Phase 3 synthesis, check for
-   findings with different `fingerprint` values but semantically similar
-   `proposed_outcome` text. Two findings that propose the same fix (e.g.,
-   "remove duplicate pattern check from pre-push") should be merged even if
-   discovered by different domain agents with different titles.
-
----
-
-## Persistence Rules
-
-- EVERY agent MUST write outputs to files, NEVER rely on conversation context
-- After each parallel stage, verify all output files exist and are non-empty
-- If any file missing, re-run the failed agent before proceeding
-- AUDIT_DIR variable must be verified before each agent spawn
-- Save audit-state.json after every phase transition
-
----
-
-## Context Recovery
-
-If the session is interrupted (compaction, timeout, crash):
-
-1. **Check for state file:**
-   `.claude/state/audit-enhancements-<date>.state.json`
-2. **If state file exists and is < 24 hours old:** Resume from last completed
-   stage
-3. **If state file is stale (> 24 hours):** Start fresh — findings may be
-   outdated
-4. **Always preserve:** Any partial findings already written to the output
-   directory
-
-### State File Format
-
-```json
-{
-  "audit_type": "enhancements",
-  "date": "YYYY-MM-DD",
-  "stage_completed": "analysis|review|report",
-  "partial_findings_path": "docs/audits/single-session/enhancements/audit-YYYY-MM-DD/",
-  "last_updated": "ISO-8601"
-}
-```
+- **No-change validation**: Phase 1 agents MUST explicitly list areas they
+  evaluated and found adequate. These become the "Strengths" section.
+- **Consolidation bias guard**: Evaluate over/under-consolidation on merit.
+- **Semantic dedup**: Merge findings with different fingerprints but similar
+  proposed fixes.
 
 ---
 
 ## Post-Audit
 
-1. Verify all findings ingested via `node scripts/debt/validate-schema.js`
-2. Generate metrics: `node scripts/debt/generate-metrics.js`
-3. Generate views: `node scripts/debt/generate-views.js`
-4. Save final state to `${AUDIT_DIR}/audit-state.json`
-5. Display summary to user with link to ENHANCEMENT_AUDIT_REPORT.md
+1. Save final state to `${AUDIT_DIR}/audit-state.json`
+2. Display summary to user with link to ENHANCEMENT_AUDIT_REPORT.md
 
 ### Pre-Commit Compatibility
 
-Enhancement audit JSONL files (stage-1-\*.jsonl, merged-all.jsonl) use a
-different schema than strict audit JSONL files (MASTER_DEBT.jsonl). The S0/S1
-audit validation hook will flag these as missing required fields.
-
-**When committing audit artifacts**, use:
+Enhancement audit JSONL files use a different schema than strict audit JSONL
+files. **When committing audit artifacts**, use:
 
 ```bash
 SKIP_AUDIT_VALIDATION=1 git commit -m "audit(enhancements): ..."
 ```
 
-This is expected and safe — enhancement findings are ingested into
-MASTER_DEBT.jsonl as `type: "enhancement"` items with
-`category: "enhancements"`.
-
 ---
 
 ## TDMS Integration
 
-**Canonical store**: `docs/technical-debt/MASTER_DEBT.jsonl` (with
-`category: "enhancements"` and `type: "enhancement"`) **Schema**:
-`scripts/config/audit-schema.json` **Schema docs**:
-`docs/templates/JSONL_SCHEMA_STANDARD.md` (Enhancement Type Extensions section)
-
-**Scripts**:
+**Skill-specific TDMS intake:**
 
 ```bash
 node scripts/debt/intake-audit.js <findings.jsonl> --source "audit-enhancements-YYYY-MM-DD"
-node scripts/debt/validate-schema.js
-node scripts/debt/generate-views.js
-node scripts/debt/generate-metrics.js
-node scripts/debt/resolve-item.js DEBT-XXXX --action accept --reason "..."
-node scripts/debt/dedup-multi-pass.js
 ```
 
-**npm shortcuts**:
-
-```bash
-npm run tdms:intake -- <findings.jsonl>
-npm run tdms:validate
-npm run tdms:views
-npm run tdms:metrics
-```
+Items ingested as `category: "enhancements"`, `type: "enhancement"` in TDMS.
 
 ---
 
@@ -647,3 +491,11 @@ For cross-model consensus audits, see:
 
 This template can be injected into any AI system (Claude, GPT, Gemini, Copilot)
 with the repo context for independent enhancement discovery.
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

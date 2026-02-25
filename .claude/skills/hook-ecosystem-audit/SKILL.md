@@ -1,15 +1,15 @@
 ---
 name: hook-ecosystem-audit
 description: |
-  Comprehensive diagnostic of the hook ecosystem — 16 categories across 5
+  Comprehensive diagnostic of the hook ecosystem — 19 categories across 6
   domains with composite health scoring, trend tracking, patch suggestions, and
-  interactive finding-by-finding walkthrough. Covers Claude Code hooks AND
-  pre-commit pipeline.
+  interactive finding-by-finding walkthrough. Covers Claude Code hooks,
+  pre-commit pipeline, AND CI/CD pipeline health.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-23
+**Document Version:** 1.2
+**Last Updated:** 2026-02-24
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -29,6 +29,16 @@ Complementary with `/pr-ecosystem-audit` (PR audit owns workflow state; hook
 audit owns hook internals).
 
 ---
+
+## When to Use
+
+- |
+- User explicitly invokes `/hook-ecosystem-audit`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
 
 ## CRITICAL RULES (Read First)
 
@@ -108,6 +118,16 @@ After the summary is presented, delete the progress file (audit is complete).
 
 ---
 
+## Dependency Constraints
+
+This skill runs as a single-threaded sequential workflow (run script, display
+dashboard, walk through findings one-by-one). It does not spawn parallel agents
+internally. When invoked as part of `/comprehensive-ecosystem-audit`, it runs as
+one of 4 independent parallel agents in Stage 1 -- no ordering required relative
+to the session, TDMS, or PR audit agents.
+
+---
+
 ## Phase 1: Run & Parse
 
 1. Run the hook test suite first to get live pass/fail data:
@@ -169,6 +189,11 @@ Hook Ecosystem Health: {grade} ({score}/100)  |  Trend: {sparkline} ({delta})
 │   State File Health             │  {s}  │ {rating} │ {trend}      │
 │   Cross-Hook Dependencies       │  {s}  │ {rating} │ {trend}      │
 │   Compaction Resilience         │  {s}  │ {rating} │ {trend}      │
+├─────────────────────────────────┼───────┼──────────┼──────────────┤
+│ D6: CI/CD Pipeline Health       │       │          │              │
+│   Workflow↔Script Alignment     │  {s}  │ {rating} │ {trend}      │
+│   Bot Configuration Freshness   │  {s}  │ {rating} │ {trend}      │
+│   CI Cache Effectiveness        │  {s}  │ {rating} │ {trend}      │
 └─────────────────────────────────┴───────┴──────────┴──────────────┘
 ```
 
@@ -341,7 +366,7 @@ Remaining Issues:
 
 ## Category Reference
 
-### Domain 1: Hook Configuration Health (20% weight)
+### Domain 1: Hook Configuration Health (18% weight)
 
 | Category                  | What It Checks                                                  |
 | ------------------------- | --------------------------------------------------------------- |
@@ -349,7 +374,7 @@ Remaining Issues:
 | Event Coverage & Matchers | All event types have handlers, matchers are valid regex         |
 | Global-Local Consistency  | Global hooks don't conflict with project hooks                  |
 
-### Domain 2: Code Quality & Security (25% weight)
+### Domain 2: Code Quality & Security (23% weight)
 
 | Category                      | What It Checks                                                 |
 | ----------------------------- | -------------------------------------------------------------- |
@@ -358,7 +383,7 @@ Remaining Issues:
 | Code Hygiene                  | Dead code, unused imports, TODO/FIXME markers                  |
 | Regex Safety                  | S5852 compliance, /g flag on exec() loops, complexity          |
 
-### Domain 3: Pre-commit Pipeline (20% weight)
+### Domain 3: Pre-commit Pipeline (18% weight)
 
 | Category                      | What It Checks                                         |
 | ----------------------------- | ------------------------------------------------------ |
@@ -366,7 +391,7 @@ Remaining Issues:
 | Bypass & Override Controls    | SKIP_CHECKS inventory, SKIP_REASON validation          |
 | Gate Effectiveness            | Blocking gates reachable, non-blocking use warnings    |
 
-### Domain 4: Functional Correctness (20% weight)
+### Domain 4: Functional Correctness (18% weight)
 
 | Category                   | What It Checks                                                |
 | -------------------------- | ------------------------------------------------------------- |
@@ -374,7 +399,7 @@ Remaining Issues:
 | Output Protocol Compliance | "ok"/block/warn output format, exit codes correct             |
 | Behavioral Accuracy        | Blocking hooks block, warnings warn, matchers match correctly |
 
-### Domain 5: State & Integration (15% weight)
+### Domain 5: State & Integration (13% weight)
 
 | Category                | What It Checks                                          |
 | ----------------------- | ------------------------------------------------------- |
@@ -382,14 +407,22 @@ Remaining Issues:
 | Cross-Hook Dependencies | Write-before-read ordering, no circular deps            |
 | Compaction Resilience   | Layer A-D coverage, pre-compaction save, recovery chain |
 
+### Domain 6: CI/CD Pipeline Health (10% weight)
+
+| Category                    | What It Checks                                                       |
+| --------------------------- | -------------------------------------------------------------------- |
+| Workflow↔Script Alignment   | GitHub Actions `run:` steps reference valid npm scripts/commands     |
+| Bot Configuration Freshness | Qodo, Gemini review bot configs exist and reference current patterns |
+| CI Cache Effectiveness      | Cache keys reference current lock files, no stale patterns           |
+
 ---
 
 ## Benchmarks
 
 Internal benchmarks are defined in `scripts/lib/benchmarks.js`. Each category
 scores 0-100 with ratings: good (90+), average (70-89), poor (<70). The
-composite grade uses weighted average across all 16 categories with domain
-weights: D1=20%, D2=25%, D3=20%, D4=20%, D5=15%.
+composite grade uses weighted average across all 19 categories with domain
+weights: D1=18%, D2=23%, D3=18%, D4=18%, D5=13%, D6=10%.
 
 ---
 
@@ -453,3 +486,4 @@ settings.json (hook registry)
 | ------- | ---------- | --------------------------------------------- |
 | 1.0     | 2026-02-23 | Initial implementation                        |
 | 1.1     | 2026-02-24 | Add compaction guard for progress persistence |
+| 1.2     | 2026-02-24 | Add D6: CI/CD Pipeline Health (3 categories)  |

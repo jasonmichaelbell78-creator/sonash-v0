@@ -17,6 +17,11 @@ description: |
 
 # Pre-Commit Fixer
 
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Purpose
 
 Eliminate the context-heavy fix-commit-retry loop that happens when pre-commit
@@ -170,3 +175,11 @@ This skill saves context by:
 2. Delegating ESLint/pattern fixes to bounded subagents
 3. Using deterministic templates for doc headers instead of researching format
 4. Capping retry cycles to prevent unbounded loops
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

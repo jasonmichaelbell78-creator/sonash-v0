@@ -16,6 +16,16 @@ The user provides frontend requirements: a component, page, application, or
 interface to build. They may include context about the purpose, audience, or
 technical constraints.
 
+## When to Use
+
+- Create distinctive, production-grade frontend interfaces with high design
+- User explicitly invokes `/frontend-design`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Design Thinking
 
 Before coding, understand the context and commit to a BOLD aesthetic direction:
@@ -85,3 +95,11 @@ vision well.
 Remember: Claude is capable of extraordinary creative work. Don't hold back,
 show what can truly be created when thinking outside the box and committing
 fully to a distinctive vision.
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

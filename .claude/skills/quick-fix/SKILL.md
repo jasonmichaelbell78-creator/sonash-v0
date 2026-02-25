@@ -8,6 +8,11 @@ description:
 
 Auto-suggest fixes for common pre-commit and pattern compliance issues.
 
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## When to Use
 
 - When pre-commit hook fails with lint errors
@@ -125,3 +130,11 @@ Apply auto-fixes? [Y/n]
 - Pre-commit hook - Runs lint, patterns, tests
 - scripts/check-pattern-compliance.js - Pattern checker
 - eslint.config.mjs - ESLint configuration
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

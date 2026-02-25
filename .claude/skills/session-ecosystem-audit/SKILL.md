@@ -34,6 +34,16 @@ audits ALL hooks; this skill audits the SESSION SYSTEM specifically).
 
 ---
 
+## When to Use
+
+- Tasks related to session-ecosystem-audit
+- User explicitly invokes `/session-ecosystem-audit`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## CRITICAL RULES (Read First)
 
 1. **CHECK for saved progress first** — resume from

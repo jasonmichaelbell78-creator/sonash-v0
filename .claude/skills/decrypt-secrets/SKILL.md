@@ -7,6 +7,11 @@ description: Decrypt MCP tokens for remote sessions
 
 Decrypt your encrypted MCP tokens at the start of a remote session.
 
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## When to Use
 
 - At the start of a remote/web session when MCP servers need tokens
@@ -57,3 +62,11 @@ If you haven't encrypted your secrets yet:
 - `.env.local.encrypted` uses AES-256-GCM encryption
 - Choose a strong passphrase (8+ characters)
 - Your passphrase is never stored anywhere
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

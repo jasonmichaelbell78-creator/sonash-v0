@@ -22,6 +22,16 @@ abslutely necessary. These scripts can be very large and thus pollute your
 context window. They exist to be called directly as black-box scripts rather
 than ingested into your context window.
 
+## When to Use
+
+- Toolkit for interacting with and testing local web applications using
+- User explicitly invokes `/webapp-testing`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Decision Tree: Choosing Your Approach
 
 ```
@@ -111,3 +121,11 @@ with sync_playwright() as p:
   - `element_discovery.py` - Discovering buttons, links, and inputs on a page
   - `static_html_automation.py` - Using file:// URLs for local HTML
   - `console_logging.py` - Capturing console logs during automation
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

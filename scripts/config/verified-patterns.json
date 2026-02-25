@@ -7,7 +7,11 @@
     "validate-schema.js",
     "generate-pending-alerts.js",
     "verify-sonar-phase.js",
-    "security-helpers.js"
+    "security-helpers.js",
+    "structural-compliance.js",
+    "cicd-pipeline.js",
+    "safety-error-handling.js",
+    "staleness-drift.js"
   ],
   "unguarded-loadconfig": [
     "alerts-reminder.js",
@@ -48,7 +52,11 @@
     "stop-serena-dashboard.js",
     "check-mcp-servers.js",
     "test-hooks.js",
-    "checker-regression.test.js"
+    "checker-regression.test.js",
+    "run-doc-ecosystem-audit.js",
+    "run-script-ecosystem-audit.js",
+    "run-skill-ecosystem-audit.js",
+    "audit-health-check.js"
   ],
   "unescaped-regexp-input": [
     "suggest-pattern-automation.js",
@@ -61,7 +69,7 @@
     "checker-regression.test.js"
   ],
   "write-without-symlink-guard": ["state-utils.js"],
-  "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
+  "unbounded-regex-quantifier": ["suggest-pattern-automation.js", "safety-error-handling.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
   "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
   "parseint-no-radix": ["verify-sonar-phase.js"],

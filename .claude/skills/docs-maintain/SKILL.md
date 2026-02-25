@@ -18,6 +18,11 @@ metadata:
 
 Unified skill for checking doc sync and updating doc artifacts.
 
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Usage
 
 ```
@@ -90,3 +95,11 @@ npm run docs:index && git add DOCUMENTATION_INDEX.md
 - `DOCUMENTATION_INDEX.md` - Auto-generated doc index
 - `docs/DOCUMENT_DEPENDENCIES.md` - Cross-doc triggers and sync protocols
 - Pre-commit hook (step 8) - Doc index enforcement
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

@@ -16,6 +16,16 @@ out of this. </EXTREMELY-IMPORTANT>
 
 # Using Skills
 
+## When to Use
+
+- Use when starting any conversation - establishes how to find and use skills,
+- User explicitly invokes `/using-superpowers`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## The Rule
 
 **Check for skills BEFORE ANY RESPONSE.** This includes clarifying questions.
@@ -84,3 +94,11 @@ The skill itself tells you which.
 ## User Instructions
 
 Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

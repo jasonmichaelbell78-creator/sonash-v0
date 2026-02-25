@@ -13,6 +13,16 @@ This skill provides personalized feedback on your recent coding work by
 analyzing your Claude Code chat interactions and identifying patterns that
 reveal strengths and areas for growth.
 
+## When to Use
+
+- Analyzes your recent Claude Code chat history to identify coding patterns,
+- User explicitly invokes `/developer-growth-analysis`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## When to Use This Skill
 
 Use this skill when you want to:
@@ -410,3 +420,11 @@ This skill:
 - Focuses on actionable improvements, not vague feedback
 - Provides specific time estimates based on complexity
 - Prioritizes areas that will have the most impact on your development velocity
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

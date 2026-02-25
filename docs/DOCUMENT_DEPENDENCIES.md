@@ -1,6 +1,6 @@
 # Document Dependencies
 
-**Document Type:** REFERENCE (Tier 4) **Version:** 1.9 **Created:** 2026-01-08
+**Document Type:** REFERENCE (Tier 4) **Version:** 2.0 **Created:** 2026-01-08
 **Status:** ACTIVE **Purpose:** Track template-instance relationships,
 cross-document dependencies, and synchronization requirements **Last Updated:**
 2026-02-07 (Session #141 - Remove deleted audit plan instances)
@@ -88,7 +88,23 @@ false positives.
 - **Quality protocols** → MUST sync (status tracking, dependencies)
 - **Content** → Instances contain project-specific content
 
-### 3. Schema Dependencies
+### 3. Skill Shared Templates
+
+| Template               | Consumers                           | Location                  | Sync Status |
+| ---------------------- | ----------------------------------- | ------------------------- | ----------- |
+| **SKILL_STANDARDS.md** | All 60+ skills in `.claude/skills/` | `.claude/skills/_shared/` | ✅ SYNCED   |
+| **AUDIT_TEMPLATE.md**  | All 9 `audit-*` skills              | `.claude/skills/_shared/` | ✅ SYNCED   |
+
+**Sync Requirements:**
+
+- **SKILL_STANDARDS.md changes** → All skills must conform to updated standards;
+  run `/skill-ecosystem-audit` to verify compliance
+- **AUDIT_TEMPLATE.md changes** → All audit skills reference this via Read tool;
+  changes propagate automatically on next invocation
+- **New shared template added** → Update this document, SKILL_STANDARDS.md, and
+  skill-creator/SKILL.md
+
+### 4. Schema Dependencies
 
 | Schema Definition            | Consumers                | Location                        | Sync Status |
 | ---------------------------- | ------------------------ | ------------------------------- | ----------- |
@@ -325,6 +341,7 @@ changes in one document affect the accuracy of another.
 | PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                                                         | Lessons learned must be captured                        | Manual   |
 | Deferred items → ROADMAP_FUTURE    | `AI_REVIEW_LEARNINGS_LOG.md` (change DEFERRED → TRIAGED)                             | Prevents duplicate alerts; keeps source updated         | Manual   |
 | New skill/command added            | `.claude/settings.json`, `.claude/COMMAND_REFERENCE.md`                              | Skill registry and reference must be complete           |
+| Skill shared template changed      | All consuming skills (see Section 3), `docs/audits/AUDIT_STANDARDS.md`               | Shared template changes affect all consumers            | Manual   |
 | Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md`                              | Security documentation must reflect current state       |
 | Firebase config changes            | `docs/FIREBASE_CHANGE_POLICY.md`                                                     | Policy requires documenting all Firebase changes        |
 | Test coverage changes              | `SESSION_CONTEXT.md` (Test Status line)                                              | Keep test counts current                                |
@@ -407,6 +424,7 @@ When reviewing documentation PRs:
 
 | Version | Date       | Changes                                                                                                                                          | Author      |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| 2.0     | 2026-02-25 | Added skill shared templates (SKILL_STANDARDS.md, AUDIT_TEMPLATE.md) to dependency tracking; added skill template change trigger.                | Claude Code |
 | 1.9     | 2026-02-07 | Removed 6 deleted Q1 audit plan instances (artifact cleanup Session #140); fixed stale TECHNICAL_DEBT_MASTER.md and docs/audits/canonical/ refs. | Claude Code |
 | 1.8     | 2026-02-01 | TDMS ALL 17 PHASES COMPLETE - Updated to note docs/audits/canonical/ was archived to docs/archive/technical-debt-sources-2026-01/; Session #123. | Claude Code |
 | 1.7     | 2026-01-30 | Added TDMS-related triggers: docs/plans/, docs/technical-debt/, docs/audits/canonical/, DEBT-XXXX resolution; Session #117.                      | Claude Code |

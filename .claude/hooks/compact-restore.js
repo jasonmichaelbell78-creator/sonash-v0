@@ -199,6 +199,21 @@ function main() {
     recovery.push("");
   }
 
+  // Active ecosystem audits
+  if (handoff.activeAudits?.length > 0) {
+    recovery.push("ACTIVE ECOSYSTEM AUDITS:");
+    for (const audit of handoff.activeAudits) {
+      const progress =
+        audit.totalFindings > 0
+          ? ` (finding ${audit.currentFinding}/${audit.totalFindings}, ${audit.decisionsCount} decided)`
+          : "";
+      const grade = audit.grade ? ` Grade: ${audit.grade}` : "";
+      recovery.push(`  ${audit.auditName}${progress}${grade}`);
+      recovery.push(`    Resume: re-invoke the audit skill to continue from saved progress`);
+    }
+    recovery.push("");
+  }
+
   recovery.push(
     "RECOVERY INSTRUCTION:",
     "Read .claude/state/handoff.json for full details.",
@@ -223,6 +238,12 @@ function main() {
   }
   if (handoff.sessionNotes?.notes?.length > 0) {
     console.error(`   Session notes: ${handoff.sessionNotes.notes.length} entries`);
+  }
+  if (handoff.activeAudits?.length > 0) {
+    console.error(`   Active audits: ${handoff.activeAudits.length} in progress`);
+    for (const audit of handoff.activeAudits) {
+      console.error(`     ${audit.auditName}: ${audit.currentFinding}/${audit.totalFindings}`);
+    }
   }
   console.error("\u2501".repeat(42));
 

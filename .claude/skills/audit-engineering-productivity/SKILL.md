@@ -133,7 +133,18 @@ Invoke all 3 agents in a SINGLE Task message:
 Task 1: dx-golden-path-auditor agent - audit setup, scripts, onboarding Task 2:
 debugging-ergonomics-auditor agent - audit logging, error handling Task 3:
 offline-support-auditor agent - audit persistence, service workers
+
+Each agent prompt MUST end with:
+
+CRITICAL RETURN PROTOCOL:
+
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: [agent-id] wrote N findings to [output-path]`
+- Do NOT return full findings content — orchestrator checks completion via file
 ```
+
+**Dependency constraints:** All 3 agents are independent -- no ordering
+required. Each audits a separate domain and writes to separate output sections.
 
 ---
 
@@ -295,77 +306,15 @@ and track carryover issues.
 
 ---
 
-## MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)
+## Standard Audit Procedures
 
-**Do NOT present findings for review until they have been cross-referenced
-against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
-inflated debt counts.
+> Read `.claude/skills/_shared/AUDIT_TEMPLATE.md` for: Evidence Requirements,
+> Dual-Pass Verification, Cross-Reference Validation, JSONL Output Format,
+> Context Recovery, Post-Audit Validation, MASTER_DEBT Cross-Reference,
+> Interactive Review, TDMS Intake & Commit, Documentation References, Agent
+> Return Protocol, and Honesty Guardrails.
 
-### Process
-
-1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
-2. For each finding, search MASTER_DEBT by:
-   - Same file path (exact or substring match)
-   - Similar title/description (semantic overlap)
-   - Same root cause (e.g., same pattern in different wording)
-3. Classify each finding as:
-   - **Already Tracked**: Confident match in MASTER_DEBT → skip intake
-   - **New Finding**: No matching DEBT entry → proceed to interactive review
-   - **Possibly Related**: Partial overlap → flag for manual review
-4. Present only **New** and **Possibly Related** findings in the Interactive
-   Review below. Already Tracked items are skipped entirely.
-
----
-
-## Interactive Review (MANDATORY — after MASTER_DEBT cross-reference, before TDMS intake)
-
-**Do NOT ingest findings into TDMS until the user has reviewed them.**
-
-### Presentation Format
-
-Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
-then S1, S2, S3). Within each severity, group by theme for coherence. Each item
-shows:
-
-```
-### DEBT-XXXX: [Title]
-**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
-**Current:** [What exists now]
-**Suggested Fix:** [Concrete remediation]
-**Acceptance Tests:** [How to verify]
-**Counter-argument:** [Why NOT to do this]
-**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
-```
-
-Do NOT present all items at once — batches of 3-5 keep decisions manageable.
-Wait for user decisions on each batch before presenting the next.
-
-### Decision Tracking (Compaction-Safe)
-
-Create `${AUDIT_DIR}/REVIEW_DECISIONS.md` after the first batch to track all
-decisions. Update after each batch. This file survives context compaction.
-
-### Processing Decisions
-
-After each batch:
-
-- Record decisions in REVIEW_DECISIONS.md
-- If DECLINED: remove from findings before TDMS intake
-- If DEFERRED: keep in TDMS as NEW status for future planning
-- If ACCEPTED: proceed to TDMS intake
-
-### Post-Review Summary
-
-After ALL findings reviewed, summarize:
-
-- Total accepted / declined / deferred
-- Proceed to TDMS Intake with accepted + deferred items only
-
----
-
-## TDMS Integration
-
-After audit completion, findings should be ingested into MASTER_DEBT.jsonl:
+**Skill-specific TDMS intake:**
 
 ```bash
 node scripts/debt/intake-audit.js \
@@ -373,38 +322,19 @@ node scripts/debt/intake-audit.js \
   --source "audit-engineering-productivity-$(date +%Y-%m-%d)"
 ```
 
-## Reset Threshold
-
-```bash
-node scripts/reset-audit-triggers.js --type=single --category=engineering-productivity --apply
-```
-
 ---
 
-## Context Recovery
+## When to Use
 
-If the session is interrupted (compaction, timeout, crash):
+- User explicitly invokes `/audit-engineering-productivity`
+- Engineering productivity or DX audit is needed
+- Called as part of `/audit-comprehensive` (Stage 2)
 
-1. **Check for state file:**
-   `.claude/state/audit-engineering-productivity-<date>.state.json`
-2. **If state file exists and is < 24 hours old:** Resume from last completed
-   stage
-3. **If state file is stale (> 24 hours):** Start fresh — findings may be
-   outdated
-4. **Always preserve:** Any partial findings already written to the output
-   directory
+## When NOT to Use
 
-### State File Format
-
-```json
-{
-  "audit_type": "engineering-productivity",
-  "date": "YYYY-MM-DD",
-  "stage_completed": "analysis|review|report",
-  "partial_findings_path": "docs/audits/single-session/engineering-productivity/audit-YYYY-MM-DD/",
-  "last_updated": "ISO-8601"
-}
-```
+- When you only need to audit code quality — use `/audit-code` instead
+- When you need CI/CD pipeline health — use `/audit-process` instead
+- When you need a comprehensive multi-domain audit — use `/audit-comprehensive`
 
 ---
 

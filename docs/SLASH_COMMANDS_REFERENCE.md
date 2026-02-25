@@ -1,7 +1,7 @@
 # Slash Commands & Skills Reference
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.1
+**Document Version:** 3.2
 **Last Updated:** 2026-02-23
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -81,7 +81,7 @@ Built-in Claude Code CLI commands (not project-specific).
 
 All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 
-### Audit & Code Quality (18 skills)
+### Audit & Code Quality (22 skills)
 
 | Skill                             | Description                                                     |
 | --------------------------------- | --------------------------------------------------------------- |
@@ -101,9 +101,13 @@ All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 | `/code-reviewer`                  | Run code review on recent changes                               |
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                           |
 | `/pr-ecosystem-audit`             | Comprehensive PR review ecosystem diagnostic                    |
-| `/hook-ecosystem-audit`           | Hook system health diagnostic (16 categories, 5 domains)        |
+| `/hook-ecosystem-audit`           | Hook system health diagnostic (19 categories, 6 domains)        |
 | `/tdms-ecosystem-audit`           | TDMS pipeline health diagnostic (16 categories, 5 domains)      |
 | `/session-ecosystem-audit`        | Session system health diagnostic (16 categories, 5 domains)     |
+| `/skill-ecosystem-audit`          | Skill ecosystem health diagnostic (21 categories, 5 domains)    |
+| `/doc-ecosystem-audit`            | Documentation ecosystem diagnostic (16 categories, 5 domains)   |
+| `/script-ecosystem-audit`         | Script infrastructure diagnostic (18 categories, 5 domains)     |
+| `/comprehensive-ecosystem-audit`  | Run all 7 ecosystem audits in staged waves with unified report  |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues              |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                            |
 
@@ -360,24 +364,48 @@ All skills reside in `.claude/skills/<skill-name>/SKILL.md`:
 
 ```
 .claude/skills/
-  SKILL_INDEX.md           # Index of all 58 skills
-  session-begin/SKILL.md   # Session start workflow
-  session-end/SKILL.md     # Session end workflow
-  audit-code/SKILL.md      # Code audit skill
+  _shared/                   # Shared templates and standards
+    SKILL_STANDARDS.md       # Canonical structural standards
+    AUDIT_TEMPLATE.md        # Common audit boilerplate
+  SKILL_INDEX.md             # Index of all skills
+  session-begin/SKILL.md     # Session start workflow
+  audit-code/SKILL.md        # Code audit skill
   ...
 ```
 
+### Canonical Standards
+
+All skills MUST follow
+[SKILL_STANDARDS.md](.claude/skills/_shared/SKILL_STANDARDS.md):
+
+- **Required sections**: YAML frontmatter (`name` + `description`), "When to
+  Use", "When NOT to Use", "Version History"
+- **Size limits**: < 500 lines (warning at 500, error at 800)
+- **Extraction**: Oversized skills extract to companion files (`prompts.md`,
+  `examples.md`, `domains.md`, `ARCHIVE.md`) in the same directory
+- **Agent prompts**: Must include `COMPLETE:` return protocol
+- **Parallel execution**: Must document dependency constraints
+
+Audit skills additionally reference
+[AUDIT_TEMPLATE.md](.claude/skills/_shared/AUDIT_TEMPLATE.md) for shared
+evidence, verification, and TDMS intake boilerplate.
+
 ### Creating New Skills
 
-Use `/skill-creator` to scaffold a new skill with proper structure.
+Use `/skill-creator` to scaffold a new skill with proper structure. Reference
+[SKILL_STANDARDS.md](.claude/skills/_shared/SKILL_STANDARDS.md) for the full
+quality checklist.
 
 ### Best Practices
 
 1. Skills should be self-contained with clear step-by-step instructions
 2. Include version history and last updated date
 3. Reference related skills and npm scripts
-4. Follow naming convention: `verb-noun` (e.g., `audit-code`, `session-begin`)
+4. Follow naming convention: `lowercase-kebab-case` (e.g., `audit-code`,
+   `session-begin`)
 5. Update SKILL_INDEX.md when adding/removing skills
+6. Use shared templates from `_shared/` instead of duplicating boilerplate
+7. Keep SKILL.md lean — extract detailed content to companion files
 
 ---
 
@@ -385,6 +413,7 @@ Use `/skill-creator` to scaffold a new skill with proper structure.
 
 | Version | Date       | Changes                                                            |
 | ------- | ---------- | ------------------------------------------------------------------ |
+| 3.2     | 2026-02-25 | Updated Skill Development section with canonical standards refs    |
 | 3.1     | 2026-02-23 | Added 8 missing npm scripts, removed phantom verify-technical-debt |
 | 3.0     | 2026-02-23 | Complete rewrite: 58 skills, 96 npm scripts, removed deprecated    |
 | 2.3     | 2026-02-02 | Updated audit skills with parallel architecture                    |

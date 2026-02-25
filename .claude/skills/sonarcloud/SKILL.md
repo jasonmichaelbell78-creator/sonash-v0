@@ -22,6 +22,16 @@ metadata:
 Unified orchestrator for all SonarCloud operations against the TDMS (Technical
 Debt Management System).
 
+## When to Use
+
+- Tasks related to sonarcloud
+- User explicitly invokes `/sonarcloud`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Modes
 
 | Mode        | Flag        | Purpose                                                              |
@@ -356,3 +366,11 @@ Full cleanup workflow: sync + report + create cleanup branch + track fixes.
   Operational runbook
 - [PROCEDURE.md](../../../docs/technical-debt/PROCEDURE.md) - TDMS operating
   procedures
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

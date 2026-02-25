@@ -21,6 +21,16 @@ To build powerful frontend claude.ai artifacts, follow these steps:
 **Stack**: React 18 + TypeScript + Vite + Parcel (bundling) + Tailwind CSS +
 shadcn/ui
 
+## When to Use
+
+- Suite of tools for creating elaborate, multi-component claude.ai HTML
+- User explicitly invokes `/artifacts-builder`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Design & Style Guidelines
 
 VERY IMPORTANT: To avoid what is often referred to as "AI slop", avoid using
@@ -94,3 +104,11 @@ if issues arise.
 ## Reference
 
 - **shadcn/ui components**: https://ui.shadcn.com/docs/components
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

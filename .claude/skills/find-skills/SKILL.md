@@ -18,6 +18,16 @@ description:
 This skill helps you discover and install skills and plugins from both the
 skills.sh ecosystem and Claude Code plugin marketplaces.
 
+## When to Use
+
+- Tasks related to find-skills
+- User explicitly invokes `/find-skills`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## When to Use This Skill
 
 Use this skill when the user:
@@ -145,3 +155,11 @@ I can still help you with this task directly! Would you like me to proceed?
 If this is something you do often, you could create your own skill:
 npx skills init my-xyz-skill
 ```
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

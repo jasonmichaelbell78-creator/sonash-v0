@@ -21,6 +21,16 @@ skill overlap, hook latency, context management, and automation gaps. It covers
 
 ---
 
+## When to Use
+
+- Tasks related to audit-ai-optimization
+- User explicitly invokes `/audit-ai-optimization`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Quick Reference
 
 | Stage | Name              | Parallel Agents | Output                           |
@@ -33,27 +43,11 @@ skill overlap, hook latency, context management, and automation gaps. It covers
 
 ---
 
-## CRITICAL: Persistence Rules
+## Persistence Rules
 
-**EVERY agent MUST write outputs directly to files. NEVER rely on conversation
-context.**
-
-1. **Agent outputs go to files, not conversation**
-   - Each agent prompt MUST include:
-     `Write findings to: ${AUDIT_DIR}/[filename].jsonl`
-   - Agents must use Write tool or Bash to create files
-   - If agent returns text instead of writing file, RE-RUN with explicit file
-     instruction
-
-2. **Verify after each stage**
-   - After parallel agents complete, verify all output files exist
-   - Check file sizes are non-zero: `wc -l ${AUDIT_DIR}/*.jsonl`
-   - If any file missing, do NOT proceed to next stage
-
-3. **CRITICAL RETURN PROTOCOL**
-   - Agents must return ONLY: `COMPLETE: [id] wrote N findings to [path]`
-   - Orchestrator checks completion via `wc -l` on JSONL files
-   - Do NOT read agent output content into orchestrator context
+See Agent Return Protocol in `.claude/skills/_shared/AUDIT_TEMPLATE.md`.
+Additionally: verify all output files exist after each stage before proceeding
+(`wc -l ${AUDIT_DIR}/*.jsonl`). Re-run any agent that fails to write its file.
 
 ---
 
@@ -91,14 +85,7 @@ context.**
 
 ### Step 0: Episodic Memory Search
 
-```javascript
-mcp__plugin_episodic -
-  memory_episodic -
-  memory__search({
-    query: ["ai-optimization", "token waste", "hook performance"],
-    limit: 5,
-  });
-```
+Search for: `["ai-optimization", "token waste", "hook performance"]`
 
 ### Step 1: Check Thresholds
 
@@ -114,40 +101,21 @@ AUDIT_DIR="docs/audits/single-session/ai-optimization/audit-${AUDIT_DATE}"
 mkdir -p "${AUDIT_DIR}"
 ```
 
-### Step 2.5: Verify Output Directory Variable (CRITICAL)
+### Step 3: Verify Output Directory Variable (CRITICAL)
 
-```bash
-echo "AUDIT_DIR is: ${AUDIT_DIR}"
-ls -la "${AUDIT_DIR}" || echo "ERROR: AUDIT_DIR does not exist"
+Verify `AUDIT_DIR` is set, exists, and is a proper subdirectory (not root).
 
-AUDIT_PATH=$(realpath "${AUDIT_DIR}" 2>/dev/null || echo "${AUDIT_DIR}")
-REPO_ROOT=$(realpath "." 2>/dev/null || echo ".")
-if [ -z "${AUDIT_DIR}" ] || [ "${AUDIT_PATH}" = "/" ] || [ "${AUDIT_PATH}" = "${REPO_ROOT}" ]; then
-  echo "FATAL: AUDIT_DIR must be a proper subdirectory under the repo, not root"
-  exit 1
-fi
-```
+### Step 4: Load Baselines
 
-### Step 3: Load Baselines
-
-```bash
-# Read false positives
-cat docs/technical-debt/FALSE_POSITIVES.jsonl 2>/dev/null
-
-# Read prior audit results
-ls docs/audits/single-session/ai-optimization/ 2>/dev/null
-
-# Count baseline metrics for comparison
-wc -l .claude/skills/*/SKILL.md 2>/dev/null | tail -1
-wc -l .claude/hooks/*.js 2>/dev/null | tail -1
-ls scripts/*.js | wc -l
-```
+Load `FALSE_POSITIVES.jsonl`, prior audit results, and count baseline metrics
+(skill lines, hook lines, script count).
 
 ---
 
 ## Stage 1: Core Efficiency (3 Agents, Parallel)
 
-**Goal:** Identify dead assets, fragile parsing, and token waste.
+**Goal:** Identify dead assets, fragile parsing, and token waste. All Stage 1
+agents are independent. Stage 2 depends on Stage 1; Stage 3 depends on both.
 
 ### Agent 1A: Dead Assets
 
@@ -391,15 +359,7 @@ Return ONLY: COMPLETE: 2E wrote N findings to ${AUDIT_DIR}/stage-2e-memory-state
 
 ### Stage 2 Checkpoint
 
-```bash
-for f in stage-2a-hook-efficiency.jsonl stage-2b-skill-architecture.jsonl stage-2c-mcp-config.jsonl stage-2d-context-optimization.jsonl stage-2e-memory-state.jsonl; do
-  if [ ! -s "${AUDIT_DIR}/$f" ]; then
-    echo "MISSING: $f — re-run agent"
-  else
-    echo "OK: $f ($(wc -l < "${AUDIT_DIR}/$f") findings)"
-  fi
-done
-```
+Verify all 5 stage-2 JSONL files exist and are non-empty before proceeding.
 
 ---
 
@@ -494,105 +454,19 @@ done
 
 ---
 
-## MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)
+## Standard Audit Procedures
 
-**Do NOT present findings for review until they have been cross-referenced
-against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
-inflated debt counts.
+> Read `.claude/skills/_shared/AUDIT_TEMPLATE.md` for: Evidence Requirements,
+> Dual-Pass Verification, Cross-Reference Validation, JSONL Output Format,
+> Context Recovery, Post-Audit Validation, MASTER_DEBT Cross-Reference,
+> Interactive Review, TDMS Intake & Commit, Documentation References, Agent
+> Return Protocol, and Honesty Guardrails.
 
-### Process
-
-1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
-2. For each finding, search MASTER_DEBT by:
-   - Same file path (exact or substring match)
-   - Similar title/description (semantic overlap)
-   - Same root cause (e.g., same pattern in different wording)
-3. Classify each finding as:
-   - **Already Tracked**: Confident match in MASTER_DEBT → skip intake
-   - **New Finding**: No matching DEBT entry → proceed to interactive review
-   - **Possibly Related**: Partial overlap → flag for manual review
-4. Present only **New** and **Possibly Related** findings in the Interactive
-   Review below. Already Tracked items are skipped entirely.
-
----
-
-## Interactive Review (MANDATORY — after MASTER_DEBT cross-reference, before TDMS intake)
-
-**Do NOT ingest findings into TDMS until the user has reviewed them.**
-
-### Presentation Format
-
-Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
-then S1, S2, S3). Within each severity, group by theme for coherence. Each item
-shows:
-
-```
-### DEBT-XXXX: [Title]
-**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
-**Current:** [What exists now]
-**Suggested Fix:** [Concrete remediation]
-**Acceptance Tests:** [How to verify]
-**Counter-argument:** [Why NOT to do this]
-**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
-```
-
-Do NOT present all items at once — batches of 3-5 keep decisions manageable.
-Wait for user decisions on each batch before presenting the next.
-
-### Decision Tracking (Compaction-Safe)
-
-Create `${AUDIT_DIR}/REVIEW_DECISIONS.md` after the first batch to track all
-decisions. Update after each batch. This file survives context compaction.
-
-### Processing Decisions
-
-After each batch:
-
-- Record decisions in REVIEW_DECISIONS.md
-- If DECLINED: remove from findings before TDMS intake
-- If DEFERRED: keep in TDMS as NEW status for future planning
-- If ACCEPTED: proceed to TDMS intake
-
-### Post-Review Summary
-
-After ALL findings reviewed, summarize:
-
-- Total accepted / declined / deferred
-- Proceed to TDMS Intake with accepted + deferred items only
-
----
-
-## Post-Audit
-
-### 1. Validate Schema
-
-```bash
-node scripts/debt/validate-schema.js ${AUDIT_DIR}/all-findings-deduped.jsonl
-```
-
-### 2. TDMS Intake
+**Skill-specific TDMS intake:**
 
 ```bash
 node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings-deduped.jsonl \
   --source "audit-ai-optimization-$(date +%Y-%m-%d)"
-```
-
-### 3. Regenerate Views
-
-```bash
-node scripts/debt/generate-views.js
-node scripts/debt/generate-metrics.js
-```
-
-### 4. Update AUDIT_TRACKER.md
-
-Update the AI Optimization row with audit date and finding counts.
-
-### 5. Commit Results
-
-```bash
-git add ${AUDIT_DIR}/ docs/technical-debt/
-git commit -m "audit(ai-optimization): $(wc -l < ${AUDIT_DIR}/all-findings-deduped.jsonl) findings across 12 domains"
 ```
 
 ---
@@ -614,36 +488,6 @@ If parallel execution is not available, run agents sequentially in this order:
 11. Agent 3C (Synthesis)
 
 Run checkpoints after agents 3, 8, and 11.
-
----
-
-## Context Recovery
-
-If the session is interrupted (compaction, timeout, crash):
-
-1. **Check for state file:**
-   `.claude/state/audit-ai-optimization-<date>.state.json`
-2. **If state file exists and is < 24 hours old:** Resume from last completed
-   stage
-3. **If state file is stale (> 24 hours):** Start fresh — findings may be
-   outdated
-4. **Always preserve:** Any partial findings already written to the output
-   directory
-5. **Re-derive AUDIT_DIR:** Look at the most recent
-   `docs/audits/single-session/ai-optimization/audit-*` directory
-6. **Re-read this SKILL.md** for agent prompts
-
-### State File Format
-
-```json
-{
-  "audit_type": "ai-optimization",
-  "date": "YYYY-MM-DD",
-  "stage_completed": "analysis|review|report",
-  "partial_findings_path": "docs/audits/single-session/ai-optimization/audit-YYYY-MM-DD/",
-  "last_updated": "ISO-8601"
-}
-```
 
 ---
 

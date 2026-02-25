@@ -12,6 +12,16 @@ metadata:
 
 # Gh Pr Checks Plan Fix
 
+## When to Use
+
+- Inspect GitHub PR checks with gh, pull failing GitHub Actions logs, summarize
+- User explicitly invokes `/gh-fix-ci`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Overview
 
 Use gh to locate failing PR checks, fetch GitHub Actions logs for actionable
@@ -89,3 +99,11 @@ Usage examples:
 - `python "<path-to-skill>/scripts/inspect_pr_checks.py" --repo "." --pr "123"`
 - `python "<path-to-skill>/scripts/inspect_pr_checks.py" --repo "." --pr "https://github.com/org/repo/pull/123" --json`
 - `python "<path-to-skill>/scripts/inspect_pr_checks.py" --repo "." --max-lines 200 --context 40`
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

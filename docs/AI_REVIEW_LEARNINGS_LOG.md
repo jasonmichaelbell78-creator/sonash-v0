@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.57 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
+**Document Version:** 17.58 **Created:** 2026-01-02 **Last Updated:** 2026-02-24
 
 ## Purpose
 
@@ -352,6 +352,15 @@ accumulate.
 
 - **Date:** 2026-02-24
 - **Reviews consolidated:** #370-#379
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#1)</summary>
+
+- **Date:** 2026-02-25
+- **Reviews consolidated:** #358-#378
 - **Recurring patterns:**
   - No recurring patterns above threshold
 
@@ -759,6 +768,32 @@ accumulate.
   resolved by indexOf), CI pattern compliance blocker from RegExp constructor
   with variable, backward brace scanning direction (R3 got it wrong, R4
   corrected), null vs falsy distinction for safeReadFile returns
+
+### Review #375: PR #389 R1 (2026-02-24)
+
+- **Source**: SonarCloud (1), Qodo Compliance (3), CI Pattern Check (35
+  blocking), Gemini Code Assist (18)
+- **PR**: Ecosystem audit expansion — doc, script, skill audits + skill trimming
+- **Total items**: 57
+- **Fixed**: 55
+- **Deferred**: 0
+- **Rejected**: 2 (Gemini "use ESLint custom rules instead of static analysis" —
+  architectural suggestion beyond PR scope; Gemini "duplicate safeReadFile" —
+  only one definition found in file)
+- **Key patterns**:
+  - **Pattern checker false positives**: `exec-without-global` checker only
+    inspects the `while` line, not the regex definition line above. Added 6
+    files to verified-patterns.json. `unguarded-loadconfig` lookahead window (30
+    chars) too small for multi-require try/catch blocks — added 4 files.
+  - **Path traversal in new audit checkers**: 4 files lacked containment guards
+    on `path.resolve()` results. Added `/^\.\.(?:[\\/]|$)/.test(rel)` guards.
+  - **Dedup function O(n²)**: `deduped[deduped.indexOf(existing)]` pattern in 3
+    audit runners — replaced with Map-based O(n) approach.
+  - **Chained replace regex bug**: `.replace(/-audit$/, "-ecosystem-audit")`
+    double-transforms names already containing `-ecosystem-audit`. Fixed with
+    negative lookbehind `(?<!-ecosystem)`.
+  - **Hardcoded finding IDs**: `id: "SIA-400"` in loop produces duplicates.
+    Fixed with counter suffix.
 
 ### Review #374: PR #388 R3 (2026-02-23)
 
@@ -2910,6 +2945,73 @@ total — 125 fixed, 7 rejected, 7 deferred
   file format varies. Always derive sprint name from filename as fallback.
 
 **Resolution**: 112 CI blocking violations → 0. All 30 pattern tests pass.
+
+---
+
+#### Review #368: PR #389 R2 — Qodo + Gemini + Compliance (2026-02-25)
+
+**Source**: Qodo (32 suggestions + 3 compliance) + Gemini (0 new) **PR**: #389
+(ecosystem audit expansion + skill bloat reduction) **Items**: 40 parsed — 31
+fixed, 0 deferred, 3 rejected, 6 stale (R1-fixed)
+
+**Patterns Identified**:
+
+- **collectScriptFiles symlink propagation**: `fs.statSync` in recursive walkers
+  appears in module-consistency.js AND code-quality.js (same pattern, different
+  files). Both need `lstatSync` + symlink skip. Always grep for duplicate walker
+  implementations.
+- **findings.filter ID generation**: O(n^2) anti-pattern appeared in 6 checker
+  files across 3 ecosystem audits. All produce non-unique IDs. Replace with
+  pre-loop counter everywhere.
+- **YAML multiline run: parsing**: Hardcoded `^\s{6,}` indentation fails for
+  non-standard nesting depths. Track `runIndent` dynamically.
+- **isInsideTryCatch brace logic**: When scanning backwards, `{` increments
+  depth (entering a block) and `}` decrements (leaving). The original code had
+  these swapped.
+- **resolveRelativePath absolute path stripping**: Stripping leading slashes
+  from absolute paths (`/etc/passwd` → `etc/passwd`) creates a valid-looking
+  relative path. Always reject absolute paths outright.
+- **DoS caps for recursive walkers**: New recursive walkers need MAX_DEPTH and
+  MAX_FILES constants to prevent CI abuse via deep/wide directory trees.
+
+**Resolution**: 31 items fixed across 17 files. Tests: 293 pass, 0 fail. 3
+rejected (safeRequire error surfacing, silent catches — all intentional). 6
+stale items already addressed in Review #367.
+
+---
+
+#### Review #367: PR #389 R1 — Qodo + Gemini (2026-02-25)
+
+**Source**: Qodo (23 suggestions + 4 compliance) + Gemini (1 bug) **PR**: #389
+(ecosystem audit expansion + skill bloat reduction) **Items**: 25 total — 22
+fixed, 0 deferred, 2 rejected, 1 pre-fixed
+
+**Patterns Identified**:
+
+- **Path containment across new audit checkers**: 6 files had
+  `path.join(rootDir, ref)` without containment guards. All new audit checker
+  files that accept external file references need `path.isAbsolute()` +
+  `path.resolve()` + `path.relative()` containment check. This is a propagation
+  pattern — should be caught at code review time, not reviewer feedback time.
+- **Basename-only dedup in run files**: 3 run-\*-ecosystem-audit.js files used
+  basename-only regex for finding dedup, silently collapsing distinct findings
+  from different directories. Fix: prefer `f.patchTarget` and match full paths.
+- **Symlink skip via lstatSync**: New filesystem walker code should always use
+  `lstatSync` + `isSymbolicLink()` skip before `statSync`. This prevents
+  symlink-based directory escapes in audit tools.
+- **canVerifyPkgScripts flag**: When checker validates `npm run` scripts against
+  package.json, missing/unreadable package.json should not penalize the score.
+  Add explicit `canVerifyPkgScripts` boolean.
+- **Code fence counting needs state machine**: Regex `/^```\s*$/gm` counts both
+  opening and closing fences. Need line-by-line state machine to only count
+  opening fences without language tags.
+- **Frontmatter regex must anchor to file start**: Using `/m` flag with `^---`
+  matches horizontal rules mid-document. Remove `m` flag for frontmatter
+  detection.
+
+**Resolution**: 22 items fixed across 14 files. 2 rejected (safeReadFile silent
+catch is intentional; finding snippets are local-only). 1 pre-fixed (auditName
+negative lookbehind already applied). Tests: 293 pass, 0 fail.
 
 ---
 

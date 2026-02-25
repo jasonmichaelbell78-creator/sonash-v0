@@ -8,6 +8,11 @@ description: Validate .claude folder configuration consistency
 Check the `.claude` folder for configuration consistency, documentation drift,
 and missing components.
 
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## When to Use
 
 - After modifying `.claude` folder contents
@@ -117,3 +122,11 @@ After running checks, provide:
 - [COMMAND_REFERENCE.md](../../COMMAND_REFERENCE.md)
 - [HOOKS.md](../../HOOKS.md)
 - [settings.json](../../settings.json)
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |
