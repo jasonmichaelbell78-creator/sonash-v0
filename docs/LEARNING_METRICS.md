@@ -33,8 +33,8 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 93.7% |
-| Patterns Learned          | 295   |
+| Learning Effectiveness    | 93.1% |
+| Patterns Learned          | 293   |
 | Patterns Automated        | 30    |
 | Patterns Failing          | 1     |
 | Critical Pattern Success  | 95.1% |
@@ -52,17 +52,17 @@ This is a **Tier 2 metrics document** - reference during:
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-3. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
+3. **[Documentation]** Improve documentation for "Relative path logging"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-4. **[Training]** Create guide for "Atomic write tmp guard"
+4. **[Training]** Create guide for "Segment\-based path check"
+   - Critical pattern with 5 recurrences needs dedicated guide
+   - Action: Create docs/agent_docs/SEGMENT_BASED_PATH_CHECK_GUIDE.md
+
+5. **[Training]** Create guide for "Atomic write tmp guard"
    - Critical pattern with 4 recurrences needs dedicated guide
    - Action: Create docs/agent_docs/ATOMIC_WRITE_TMP_GUARD_GUIDE.md
-
-5. **[Training]** Create guide for "Segment\-based path check"
-   - Critical pattern with 4 recurrences needs dedicated guide
-   - Action: Create docs/agent_docs/SEGMENT_BASED_PATH_CHECK_GUIDE.md
 
 ---
 
@@ -70,9 +70,9 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 295   | Pattern never recurred after documentation   |
+| ✅ LEARNED   | 293   | Pattern never recurred after documentation   |
 | 🔧 AUTOMATED | 30    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 21    | Pattern recurred 1-2 times - needs attention |
+| 🟡 WEAK      | 23    | Pattern recurred 1-2 times - needs attention |
 | 🔴 FAILED    | 1     | Pattern recurred 3+ times - needs automation |
 
 ---

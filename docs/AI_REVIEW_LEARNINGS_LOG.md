@@ -348,6 +348,15 @@ accumulate.
 > markdown during this period.
 
 <details>
+<summary>Previous Consolidation (#1)</summary>
+
+- **Date:** 2026-02-25
+- **Reviews consolidated:** #358-#382
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#2)</summary>
 
 - **Date:** 2026-02-24
@@ -617,6 +626,288 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### PR #391 Retrospective (2026-02-25)
+
+_Covers 3 review rounds. Reviews filed under "PR #389" naming due to branch
+reuse (`claude/cherry-pick-commits-TNgtU`). Also includes PR #390 retro (4
+rounds)._
+
+#### Review Cycle Summary — PR #391
+
+| Metric         | Value                                                                    |
+| -------------- | ------------------------------------------------------------------------ |
+| Rounds         | 3 (R1 2026-02-24, R2-R3 2026-02-25)                                      |
+| Total items    | 122                                                                      |
+| Fixed          | 108                                                                      |
+| Deferred       | 0                                                                        |
+| Rejected       | 7                                                                        |
+| Stale          | 6 (R3 items already fixed in R1)                                         |
+| Pre-fixed      | 1                                                                        |
+| Files changed  | 153 (+31,797/-18,702)                                                    |
+| Review sources | CI (Pattern Compliance), SonarCloud, Qodo Compliance+Suggestions, Gemini |
+
+**Note:** Review numbering collision — Reviews #367/#368 duplicated for PR #389
+vs PR #384. The PR #389 entries (lines ~2951/2983) use `####` h4 headers.
+
+#### Per-Round Breakdown — PR #391
+
+| Round     | Date       | Source                    | Items   | Fixed   | Rej.  | Stale | Key Patterns                                                                                   |
+| --------- | ---------- | ------------------------- | ------- | ------- | ----- | ----- | ---------------------------------------------------------------------------------------------- |
+| R1        | 2026-02-24 | CI+SonarCloud+Qodo+Gemini | 57      | 55      | 2     | 0     | CI pattern violations (35), path containment (4 files), dedup O(n²)→Map, chained replace regex |
+| R2        | 2026-02-25 | Qodo+Gemini               | 25      | 22      | 2     | 0     | Path containment (6 files), lstatSync+symlink skip, code fence state machine, frontmatter      |
+| R3        | 2026-02-25 | Qodo+Compliance           | 40      | 31      | 3     | 6     | symlink propagation, dedup IDs O(n²), YAML indentation, brace direction, DoS caps, abs reject  |
+| **Total** |            |                           | **122** | **108** | **7** | **6** |                                                                                                |
+
+**Trajectory:** 57 → 25 → 40. R3 spike from Qodo Compliance adding 6 stale items
+(already fixed in R1) plus new propagation findings.
+
+---
+
+#### Review Cycle Summary — PR #390
+
+| Metric         | Value                                           |
+| -------------- | ----------------------------------------------- |
+| Rounds         | 4 (R1–R4, all 2026-02-24)                       |
+| Total items    | 25                                              |
+| Fixed          | 20                                              |
+| Deferred       | 0                                               |
+| Rejected       | 4                                               |
+| Tracked (TDMS) | 1 (pre-existing docs:index date bug)            |
+| Files changed  | 10 (+942/-594)                                  |
+| Review sources | Qodo Compliance+Suggestions, SonarCloud, Gemini |
+
+#### Per-Round Breakdown — PR #390
+
+| Round     | Date       | Source                | Items  | Fixed  | Rej.  | Key Patterns                                                                  |
+| --------- | ---------- | --------------------- | ------ | ------ | ----- | ----------------------------------------------------------------------------- |
+| R1        | 2026-02-24 | Gemini+Qodo           | 8      | 7      | 0     | Metrics inconsistency, pattern syntax, section numbering, undefined var       |
+| R2        | 2026-02-24 | Qodo Suggestions      | 7      | 7      | 0     | Committer date (%cI), git log cache, backslash normalization, fd 0 stdin      |
+| R3        | 2026-02-24 | SonarCloud+Qodo       | 6      | 4      | 2     | git --follow, .has() for Map, cache key normalization, replaceAll propagation |
+| R4        | 2026-02-24 | Qodo Compliance+Sugg. | 4      | 2      | 2     | Deterministic date fallback, rejected numbering fix. 2 repeat rejections.     |
+| **Total** |            |                       | **25** | **20** | **4** |                                                                               |
+
+**Trajectory:** 8 → 7 → 6 → 4. Clean linear convergence.
+
+---
+
+#### Ping-Pong Chains
+
+##### PR #391 Chain 1: Path Containment Guards (R1→R2→R3, 3 rounds)
+
+| Round | What Happened                                                        | Files Affected             | Root Cause                    |
+| ----- | -------------------------------------------------------------------- | -------------------------- | ----------------------------- |
+| R1    | 4 files lacked containment guards on `path.resolve()` results        | 4 audit checker files      | New code without guards       |
+| R2    | 6 MORE files had same issue (path containment on external file refs) | 6 additional checker files | Propagation miss from R1      |
+| R3    | `resolveRelativePath` strips leading slashes from absolute paths     | Shared utility             | Edge case not caught in R1/R2 |
+
+**Avoidable rounds:** 1.5. R2 propagation miss (should have grepped all checkers
+in R1). R3 absolute path edge case was testable.
+
+**Prevention:** After adding a security guard (path containment, symlink check,
+etc.), immediately grep ALL similar files for the same missing guard.
+
+##### PR #391 Chain 2: Symlink/lstatSync Propagation (R1→R2→R3, 3 rounds)
+
+| Round | What Happened                                                     | Files Affected                     | Root Cause                    |
+| ----- | ----------------------------------------------------------------- | ---------------------------------- | ----------------------------- |
+| R1    | Some walkers used `statSync` without symlink check                | Audit runner files                 | New walker code               |
+| R2    | `lstatSync` + `isSymbolicLink()` skip recommended for all walkers | module-consistency, code-quality   | Same pattern, different files |
+| R3    | `collectScriptFiles` in 2 more files still had `statSync`         | content-quality, coverage-complete | Propagation miss from R2      |
+
+**Avoidable rounds:** 1. R3 was a pure propagation miss.
+
+**Prevention:** `check-propagation.js` should include `statSync→lstatSync`
+pattern. This is the **10th propagation recommendation** across retros.
+
+##### PR #391 Chain 3: Dedup ID Generation O(n²) (R1→R3, 2 rounds)
+
+| Round | What Happened                                           | Files Affected                  | Root Cause                       |
+| ----- | ------------------------------------------------------- | ------------------------------- | -------------------------------- |
+| R1    | Dedup used `deduped[deduped.indexOf(existing)]` — O(n²) | 3 audit runner files            | Copy-paste from template         |
+| R3    | 6 checker files had non-unique `id: "SIA-400"` in loops | 6 checker files across 3 audits | Same pattern, counter suffix fix |
+
+**Avoidable rounds:** 0.5. R3 IDs were a different manifestation of same
+dedup/uniqueness issue.
+
+##### PR #390 Chain 1: Qodo Repeat Rejections (R3→R4, 2 rounds)
+
+| Round | What Happened                                                           | Files | Root Cause                          |
+| ----- | ----------------------------------------------------------------------- | ----- | ----------------------------------- |
+| R3    | Rejected: PATH binary hijacking (S4036), swallowed exceptions           | 2     | Qodo Compliance standard findings   |
+| R4    | SAME 2 items re-raised by Qodo Compliance. Re-rejected with same reason | 2     | Qodo doesn't track prior rejections |
+
+**Avoidable rounds:** 1 (R4 entirely). Qodo Compliance re-raises rejected items.
+
+**Prevention:** Add batch rejection note in PR for repeat Qodo compliance items.
+
+##### PR #390 Chain 2: getLastModifiedDate Multi-Fix (R1→R2, 2 rounds)
+
+| Round | What Happened                                                                   | Files | Root Cause                      |
+| ----- | ------------------------------------------------------------------------------- | ----- | ------------------------------- |
+| R1    | Section numbering, undefined var, pattern syntax in retro action items          | 3     | Documentation quality issues    |
+| R2    | 3 improvements in same function: date format (%cI), caching, path normalization | 1     | Related suggestions not batched |
+
+**Avoidable rounds:** 0.5. R2's 3 improvements could have been anticipated as a
+single refactor pass in R1 if the function was examined holistically.
+
+**Total avoidable rounds: PR #391 ~3 of 3, PR #390 ~1.5 of 4 = ~4.5 of 7 total
+(~64%)**
+
+---
+
+#### Rejection Analysis
+
+##### PR #391 Rejections (7/122 = 5.7%)
+
+| Category                     | Count | Round | Examples                                                          |
+| ---------------------------- | ----- | ----- | ----------------------------------------------------------------- |
+| Architectural (out of scope) | 2     | R1    | "Use ESLint custom rules", "Duplicate safeReadFile"               |
+| Silent catch (intentional)   | 3     | R2,R3 | safeReadFile/safeRequire catches — graceful degradation by design |
+| Pre-fixed (stale)            | 1     | R2    | auditName negative lookbehind already applied                     |
+| Finding snippets local       | 1     | R2    | Audit snippets are local-only, no sanitization needed             |
+
+##### PR #390 Rejections (4/25 = 16%)
+
+| Category                   | Count | Round | Examples                                                |
+| -------------------------- | ----- | ----- | ------------------------------------------------------- |
+| PATH binary hijacking (FP) | 2     | R3,R4 | `execFileSync("git")` — hardcoded cmd, array args, safe |
+| Swallowed exceptions (FP)  | 2     | R3,R4 | Intentional graceful degradation with fallback chain    |
+
+**Overall rejection accuracy:** 11/11 correct (100%).
+
+**FP rate by source:** Qodo Compliance ~20% (repeat items inflate), Gemini ~10%
+(stale review), SonarCloud S4036 ~100% for local tooling scripts, CI ~5%.
+
+---
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                        | PRs Affected     | Rounds  | Already Automated? | Recommended Action                                        | Est. Effort |
+| ------------------------------ | ---------------- | ------- | ------------------ | --------------------------------------------------------- | ----------- |
+| Path containment propagation   | #391 R1→R2→R3    | 3       | No                 | Add path-containment to check-propagation.js patterns     | ~30 min     |
+| lstatSync propagation          | #388 R5→R6, #391 | 5       | Partial (script)   | Add statSync→lstatSync to propagation script              | ~15 min     |
+| Qodo Compliance repeat reject  | #390 R3→R4       | 2       | No                 | Batch-reject known Qodo compliance repeats in PR comments | ~5 min      |
+| Dedup/uniqueness in audit code | #391 R1, R3      | 2       | No                 | Add to audit skill template: unique ID + Map-based dedup  | ~10 min     |
+| Review number collisions       | #389/#384 (#367) | Ongoing | No                 | Auto-increment from JSONL max to prevent numbering gaps   | ~20 min     |
+
+---
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                        | Implemented?             | Impact on #390/#391                                        |
+| ------- | ----------------------------------------- | ------------------------ | ---------------------------------------------------------- |
+| PR #388 | pr-review Step 1.4: Verify reviewer HEAD  | **YES** (1 match)        | R3 stale items caught faster                               |
+| PR #388 | FIX_TEMPLATES #37: lazy-load typeof guard | **YES** (1 match)        | Not triggered in #390/#391                                 |
+| PR #388 | CODE_PATTERNS.md: POSIX ERE               | **YES** (2 matches)      | No POSIX ERE issues in #390/#391                           |
+| PR #388 | pr-retro Pattern 10: stale reviews        | **YES** (v2.6)           | Applied in #391 R3 stale item handling                     |
+| PR #388 | Heuristic test matrices                   | **NOT DONE**             | No impact (no new heuristics)                              |
+| PR #388 | Split multi-skill PRs                     | **NOT FOLLOWED**         | **DIRECT IMPACT**: #391 had 153 files, 3 rounds, 122 items |
+| PR #386 | S5852 regex complexity pre-push           | **NOT DONE** (DEBT-7543) | No impact (no S5852 in #390/#391)                          |
+| PR #386 | Small PRs = fewer rounds                  | **NOT FOLLOWED**         | Same as "split" above — 5th recommendation                 |
+
+**Implemented rate: 4/8 (50%).** All 4 "do now" items from PR #388 retro were
+implemented. The 2 process recommendations (split PRs, heuristic matrices) and 2
+automation items (S5852 pre-push, test matrices) remain unimplemented.
+
+---
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Avoidable Rounds | Rejections | Key Issue                              |
+| -------- | ------ | ----------- | ---------------- | ---------- | -------------------------------------- |
+| #384     | 4      | 197         | ~2.5             | ~18        | CI pattern cascade + CC                |
+| #386     | 2      | 25          | ~1               | 1          | S5852 regex + CC                       |
+| #388     | 7      | 144         | ~4.5             | 29         | Heuristic + regex + propagation        |
+| **#390** | **4**  | **25**      | **~1.5**         | **4**      | **Qodo repeats + date/cache fixes**    |
+| **#391** | **3**  | **122**     | **~3**           | **7**      | **Path containment + symlink + dedup** |
+
+**Persistent cross-PR patterns:**
+
+| Pattern                           | PRs Affected | Times Recommended | Status                        | Required Action                                     |
+| --------------------------------- | ------------ | ----------------- | ----------------------------- | --------------------------------------------------- |
+| Large PR scope → more rounds      | #383-#391    | **5x**            | **NOT FOLLOWED**              | Split multi-skill PRs — strongest signal in dataset |
+| Propagation check                 | #366-#391    | **10x**           | **PARTIAL** (script + manual) | Add path-containment + statSync patterns to script  |
+| Qodo Compliance repeat rejections | #390, #382   | 2x                | Not automated                 | Batch-reject template for known false positives     |
+| CC lint rule                      | #366-#371    | 5x                | **RESOLVED** (pre-commit)     | None                                                |
+| Local patterns:check before push  | #384-#388    | 3x                | **RESOLVED** (pre-push hook)  | None                                                |
+
+---
+
+#### Skills/Templates to Update
+
+1. **check-propagation.js:** Add `path.resolve.*containment` and
+   `statSync→lstatSync` patterns (~30 min)
+2. **Audit skill templates:** Add unique ID generation + Map-based dedup as
+   standard patterns (~10 min)
+3. **pr-review SKILL.md:** Add "batch-reject known Qodo Compliance repeat items
+   (PATH hijack, swallowed exceptions)" (~5 min)
+4. **reviews:sync script:** Auto-increment review numbers from JSONL max to
+   prevent numbering collisions (~20 min)
+
+---
+
+#### Process Improvements
+
+1. **Large PR scope remains the #1 systemic driver** — PR #391 had 153 files, 3
+   rounds, 122 items. PR #390 had 10 files, 4 rounds, 25 items. Scope correlates
+   with item count (15.3x files = 4.9x items) but not necessarily round count.
+   **5th retro recommending split.** Evidence: all PRs >50 files get 100+ review
+   items.
+2. **Propagation is the persistent #2 driver** — 10th recommendation. PR #391
+   had 2 propagation chains (path containment R1→R2, lstatSync R2→R3). The
+   `check-propagation.js` script exists but doesn't cover path containment or
+   statSync patterns. Adding these 2 patterns would eliminate ~1.5 rounds.
+3. **PR #390 shows small PRs work** — 10 files, 4 rounds, but only 25 items
+   (6.25 items/round). Rounds driven by Qodo repeat rejections, not real issues.
+   Effective fix rate: 20/21 real items (95%) in 2 rounds.
+4. **R1 review quality improving** — PR #391 R1 had 55/57 items fixed (96% fix
+   rate). PR #390 R1 had 7/8 (88%). Both are strong first-round execution.
+
+---
+
+#### Verdict
+
+**PR #391** had a **moderately efficient review cycle** — 3 rounds with 122
+items, 108 fixed. ~3 of 3 rounds were partially avoidable (~100%), all driven by
+propagation misses (path containment, lstatSync, dedup patterns). The massive
+scope (153 files, +31K/-18K lines) is the root cause — impossible to catch all
+propagation targets manually in a PR this large.
+
+**PR #390** had an **efficient review cycle** — 4 rounds with 25 items, 20
+fixed. ~1.5 of 4 rounds were avoidable (~38%), driven by Qodo Compliance
+re-raising already-rejected items (R4 entirely avoidable). The small scope (10
+files) kept item counts manageable.
+
+**Trend: Mixed.** Round count: #388(7) → **#390(4)** → **#391(3)**. Items per
+round: #388(20.6) → **#390(6.25)** → **#391(40.7)**. Rejection rate: #388(20%) →
+**#390(16%)** → **#391(5.7%)**. PR #391's high items/round reflects massive
+scope, not process regression. PR #390's clean cycle validates the "small PR"
+recommendation.
+
+**The single highest-impact change:** Add path-containment and
+statSync→lstatSync patterns to `check-propagation.js`. This would have
+eliminated ~2.5 rounds across both PRs. Combined with the 5x-recommended PR
+scope reduction, these two changes would prevent ~80% of avoidable review
+cycles.
+
+**Positive signals:** (1) All 4 "do now" action items from PR #388 retro were
+implemented. (2) PR #391 rejection rate dropped to 5.7% (best in series). (3) PR
+#390 demonstrates small PRs converge faster. (4) Review number collision is a
+data quality issue, not a process issue.
+
+**Data quality issue:** Review numbers #367 and #368 are used for both PR #384
+and PR #389, creating ambiguity in the learnings log. Recommend auto-increment
+from JSONL max.
+
+---
+
+### PR #390 Retrospective (2026-02-25)
+
+_Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
+#390" section._
+
+---
 
 ### Review #382: PR #390 R4 (2026-02-24)
 
