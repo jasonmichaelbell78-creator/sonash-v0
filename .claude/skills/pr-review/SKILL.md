@@ -130,6 +130,18 @@ in one pass.
 Before investigating reviewer items, compare reviewer's commit against HEAD. If
 stale (2+ behind), reject ALL items from that reviewer as a batch.
 
+### 13. Qodo Compliance Batch Rejection
+
+Qodo Compliance re-raises the same items across rounds even when already
+rejected. When processing R2+ rounds:
+
+1. Check learning log for prior rejections in the same PR
+2. If an item matches a previously rejected item (same rule ID + same file),
+   mark as **repeat-rejected** without re-investigating
+3. Add a single batch note: "N items repeat-rejected (same justification as RX)"
+4. Known repeat offenders: S4036 (PATH binary hijacking on hardcoded
+   `execFileSync`), swallowed exceptions in graceful degradation chains
+
 ---
 
 ## STEP 0: CONTEXT LOADING
@@ -329,6 +341,7 @@ source. Separate commits for Critical fixes if needed.
 
 | Version | Date       | Description                                                                   |
 | ------- | ---------- | ----------------------------------------------------------------------------- |
+| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.    |
 | 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks       |
 | 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388. |
 | 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.     |

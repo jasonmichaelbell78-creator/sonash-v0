@@ -1,8 +1,8 @@
 # Fix Templates for Qodo PR Review Findings
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.8
-**Last Updated:** 2026-02-17
+**Document Version:** 2.4
+**Last Updated:** 2026-02-25
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -1955,10 +1955,103 @@ propagation check (both `isSafeToWrite` and `sanitizeInput`).
 
 ---
 
+### Template 38: statSync→lstatSync Symlink Guard
+
+**When to use:** Any file walker, existence check, or stat call that may
+encounter symlinks. `statSync` follows symlinks, which can escape directory
+boundaries or cause infinite loops.
+
+**Source:** PR #391 retro — caused 5 avoidable review rounds across PRs #388 and
+#391. The 10th propagation recommendation in the retro series.
+
+### Bad Code
+
+```javascript
+const stats = fs.statSync(filePath);
+if (stats.isDirectory()) {
+  walkDir(filePath);
+}
+```
+
+### Good Code
+
+```javascript
+const stats = fs.lstatSync(filePath);
+if (stats.isSymbolicLink()) {
+  // Skip symlinks to prevent directory escape and infinite loops
+  return;
+}
+if (stats.isDirectory()) {
+  walkDir(filePath);
+}
+```
+
+### Propagation Grep
+
+```bash
+grep -rn 'statSync\b' scripts/ .claude/hooks/ --include="*.js" | grep -v lstatSync
+```
+
+Fix ALL instances in one pass. Every `statSync` in a file walker must be
+`lstatSync` with a symlink skip.
+
+---
+
+### Template 39: Unique Audit Finding IDs in Loops
+
+**When to use:** Audit checkers that generate finding objects inside loops. Each
+finding must have a unique `id` to prevent dedup collisions.
+
+**Source:** PR #391 retro — 6 checker files had non-unique `id: "SIA-400"` in
+loops, causing findings to overwrite each other.
+
+### Bad Code
+
+```javascript
+for (const file of files) {
+  findings.push({
+    id: "SIA-400", // Same ID for every finding — dedup drops all but one
+    file,
+    message: `Issue in ${file}`,
+  });
+}
+```
+
+### Good Code
+
+```javascript
+let counter = 0;
+for (const file of files) {
+  findings.push({
+    id: `SIA-400-${++counter}`, // Unique per finding
+    file,
+    message: `Issue in ${file}`,
+  });
+}
+```
+
+Use a Map for dedup instead of Array indexOf:
+
+```javascript
+// BAD: O(n²) dedup
+const idx = deduped.indexOf(existing);
+deduped[idx] = merged;
+
+// GOOD: O(1) Map-based dedup
+const dedupMap = new Map(); // key: canonical ID → value: finding
+for (const f of findings) {
+  dedupMap.set(f.id, f); // last-write-wins or merge
+}
+const deduped = [...dedupMap.values()];
+```
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                                    |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.4     | 2026-02-25 | Add Templates 38-39 (statSync→lstatSync guard, unique audit IDs). Source: PR #390/#391 retro.             |
 | 2.3     | 2026-02-24 | Add Template 37 (lazy-load module with typeof guard). Source: PR #388 retro.                              |
 | 2.2     | 2026-02-22 | Add Template 36 (atomic dual-JSONL write with rollback). Source: PR #383 retro.                           |
 | 2.1     | 2026-02-20 | Add Template 35 (mapping/enumeration audit). Source: PR #382 retro.                                       |

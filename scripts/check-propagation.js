@@ -28,6 +28,30 @@ const VERBOSE = process.argv.includes("--verbose");
 const STAGED_ONLY = process.argv.includes("--staged");
 const BLOCKING = process.argv.includes("--blocking");
 
+// ---- Known security/pattern propagation rules ----
+// These catch non-function patterns that historically cause multi-round review churn.
+// Each rule: { name, pattern (regex for grep -nE), description, recommended }
+// Added per PR #391 retro: path-containment and statSync→lstatSync caused ~2.5 avoidable rounds.
+const KNOWN_PATTERN_RULES = [
+  {
+    name: "statSync-without-lstat",
+    // Matches statSync( but not lstatSync(
+    searchPattern: String.raw`\bstatSync\s*\(`,
+    excludePattern: /lstatSync/,
+    description: "statSync without symlink check — use lstatSync + isSymbolicLink() guard",
+    recommended: "Replace statSync() with lstatSync() and add isSymbolicLink() skip",
+  },
+  {
+    name: "path-resolve-without-containment",
+    // Matches path.resolve( or resolve( in contexts without a containment check nearby
+    searchPattern: String.raw`path\.resolve\s*\(`,
+    // Files that also contain validatePathInDir or startsWith( are likely guarded
+    excludeFilePattern: /validatePathInDir|\.startsWith\s*\(/,
+    description: "path.resolve() without path containment guard",
+    recommended: "Add validatePathInDir() or startsWith(allowedDir) check after path.resolve()",
+  },
+];
+
 // Minimum function name length to avoid noise from common names
 const MIN_FUNC_NAME_LENGTH = 6;
 // Common utility names to skip (too generic to be meaningful duplicates)
@@ -303,35 +327,128 @@ function analyze() {
     }
   }
 
-  return { misses, total: allFuncNames.size };
+  // ---- Pattern-based propagation checks ----
+  // Check known risky patterns in changed files and warn if similar files lack fixes
+  const patternWarnings = checkKnownPatterns(changedPaths);
+
+  return { misses, total: allFuncNames.size, patternWarnings };
+}
+
+/**
+ * Check known security/quality patterns across changed files.
+ * If a changed file fixes a known pattern (e.g., statSync→lstatSync),
+ * warn about sibling files in the same directory that still have the old pattern.
+ */
+function checkKnownPatterns(changedPaths) {
+  const warnings = [];
+
+  for (const rule of KNOWN_PATTERN_RULES) {
+    // Search all target dirs for the risky pattern
+    const matches = [];
+    for (const searchDir of SEARCH_DIRS) {
+      try {
+        const output = execFileSync(
+          "git",
+          ["grep", "-lE", rule.searchPattern, "--", `${searchDir}**/*.js`, `${searchDir}**/*.mjs`],
+          { encoding: "utf8", maxBuffer: 5 * 1024 * 1024, cwd: process.cwd() }
+        );
+        for (const file of output.trim().split("\n").filter(Boolean)) {
+          if (shouldSkipMatch(file)) continue;
+          matches.push(file.replace(/^\.\//, ""));
+        }
+      } catch {
+        // grep returns exit code 1 when no matches
+      }
+    }
+
+    if (matches.length === 0) continue;
+
+    // Filter out files that have the exclude pattern (already guarded)
+    const unguardedFiles = rule.excludeFilePattern
+      ? matches.filter((file) => {
+          try {
+            const content = execFileSync("git", ["show", `HEAD:${file}`], {
+              encoding: "utf8",
+              maxBuffer: 2 * 1024 * 1024,
+            });
+            return !rule.excludeFilePattern.test(content);
+          } catch {
+            return true; // If we can't read it, flag it
+          }
+        })
+      : matches;
+
+    if (unguardedFiles.length === 0) continue;
+
+    // Only warn if at least one changed file is among the matches (implies developer
+    // is working in this area and may have fixed some but not all)
+    const changedInArea = unguardedFiles.some((f) => changedPaths.has(f));
+    const unchangedFiles = unguardedFiles.filter((f) => !changedPaths.has(f));
+
+    if (changedInArea && unchangedFiles.length > 0) {
+      warnings.push({
+        rule: rule.name,
+        description: rule.description,
+        recommended: rule.recommended,
+        unchangedFiles,
+      });
+    } else if (VERBOSE && unguardedFiles.length > 0) {
+      console.log(
+        `  [${rule.name}] ${unguardedFiles.length} files with pattern (no overlap with changes)`
+      );
+    }
+  }
+
+  return warnings;
 }
 
 // ---- Main ----
-const { misses, total } = analyze();
+const { misses, total, patternWarnings } = analyze();
 
-if (misses.length === 0) {
+const hasPatternWarnings = patternWarnings.length > 0;
+
+if (misses.length === 0 && !hasPatternWarnings) {
   if (total > 0) {
     console.log(`  ✅ Propagation check passed (${total} functions, no duplicates missed)`);
   }
   process.exit(0);
 }
 
-// Report misses
-console.log(`  ⚠️ Propagation check: ${misses.length} potential miss(es) found`);
-console.log("");
+// Report function-level misses
+if (misses.length > 0) {
+  console.log(`  ⚠️ Propagation check: ${misses.length} potential miss(es) found`);
+  console.log("");
 
-for (const miss of misses) {
-  console.log(`  Function: ${miss.funcName}`);
-  console.log(`    Modified in: ${miss.changedIn.join(", ")}`);
-  console.log(`    Also exists in (NOT modified):`);
-  for (const m of miss.missedIn) {
-    console.log(`      - ${m.file}:${m.line}  ${m.content.substring(0, 80)}`);
+  for (const miss of misses) {
+    console.log(`  Function: ${miss.funcName}`);
+    console.log(`    Modified in: ${miss.changedIn.join(", ")}`);
+    console.log(`    Also exists in (NOT modified):`);
+    for (const m of miss.missedIn) {
+      console.log(`      - ${m.file}:${m.line}  ${m.content.substring(0, 80)}`);
+    }
+    console.log("");
   }
+
+  console.log("  Action: Review the above files — if the same function was copy-pasted,");
+  console.log("  propagate your fix to all copies. If they're independent, ignore this warning.");
   console.log("");
 }
 
-console.log("  Action: Review the above files — if the same function was copy-pasted,");
-console.log("  propagate your fix to all copies. If they're independent, ignore this warning.");
-console.log("");
+// Report pattern-based warnings
+if (hasPatternWarnings) {
+  console.log(`  ⚠️ Known pattern propagation: ${patternWarnings.length} pattern(s) need review`);
+  console.log("");
+
+  for (const pw of patternWarnings) {
+    console.log(`  Pattern: ${pw.rule}`);
+    console.log(`    ${pw.description}`);
+    console.log(`    Files still using old pattern:`);
+    for (const f of pw.unchangedFiles) {
+      console.log(`      - ${f}`);
+    }
+    console.log(`    Recommended: ${pw.recommended}`);
+    console.log("");
+  }
+}
 
 process.exit(BLOCKING ? 1 : 0);
