@@ -12,6 +12,16 @@ description:
 
 Complete toolkit for senior frontend with modern tools and best practices.
 
+## When to Use
+
+- Comprehensive frontend development skill for building modern, performant web
+- User explicitly invokes `/senior-frontend`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Quick Start
 
 ### Main Capabilities
@@ -222,3 +232,11 @@ Check the comprehensive troubleshooting section in
 - Workflow Guide: `references/nextjs_optimization_guide.md`
 - Technical Guide: `references/frontend_best_practices.md`
 - Tool Scripts: `scripts/` directory
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

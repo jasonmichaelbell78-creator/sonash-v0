@@ -13,6 +13,16 @@ description:
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
+## When to Use
+
+- Tasks related to test-suite
+- User explicitly invokes `/test-suite`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Purpose
 
 Multi-phase UI testing orchestration for SoNash. Runs smoke tests, feature
@@ -308,3 +318,11 @@ Protocol files live at `.claude/test-protocols/{feature-name}.protocol.json`.
 - The `_base.protocol.json` defines common assertions applied to all protocols
 - Always install Playwright first: `npx playwright install` (if browser_navigate
   fails)
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

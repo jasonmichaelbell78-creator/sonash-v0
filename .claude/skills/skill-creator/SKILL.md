@@ -11,6 +11,16 @@ license: Complete terms in LICENSE.txt
 
 This skill provides guidance for creating effective skills.
 
+## When to Use
+
+- Tasks related to skill-creator
+- User explicitly invokes `/skill-creator`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## About Skills
 
 Skills are modular, self-contained packages that extend Claude's capabilities by
@@ -117,9 +127,12 @@ Skills use a three-level loading system to manage context efficiently:
 
 ## Skill Creation Process
 
-**Before creating skills**, review the project's
-[Skill & Agent Policy](../../../docs/agent_docs/SKILL_AGENT_POLICY.md) for
-naming conventions, scope rules, and usage policies.
+**Before creating skills**, review:
+
+- [SKILL_STANDARDS.md](../_shared/SKILL_STANDARDS.md) — Required sections, size
+  limits, agent orchestration standards, and quality checklist
+- [Skill & Agent Policy](../../../docs/agent_docs/SKILL_AGENT_POLICY.md) —
+  Naming conventions, scope rules, and usage policies
 
 To create a skill, follow the "Skill Creation Process" in order, skipping steps
 only if there is a clear reason why they are not applicable.
@@ -287,3 +300,11 @@ right after using the skill, with fresh context of how the skill performed.
 2. Notice struggles or inefficiencies
 3. Identify how SKILL.md or bundled resources should be updated
 4. Implement changes and test again
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

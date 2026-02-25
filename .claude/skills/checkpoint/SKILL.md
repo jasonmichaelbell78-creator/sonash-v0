@@ -18,6 +18,11 @@ metadata:
 
 Save current state so you can recover after compaction or session failure.
 
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Usage
 
 ```
@@ -155,3 +160,11 @@ On resume after compaction:
 2. Read any `.claude/state/task-*.state.json`
 3. If MCP was used: `mcp__memory__search_nodes("Session_")`
 4. Cross-reference with `git log` and `git status`
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

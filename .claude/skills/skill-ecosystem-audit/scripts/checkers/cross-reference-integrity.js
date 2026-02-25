@@ -95,30 +95,29 @@ function checkSkillToSkillRefs(skills, skillNames, findings) {
   for (const skill of skills) {
     const { content, name } = skill;
 
-    // Match patterns: `/skill-name`, "see skill-name skill", "`skill-name`" used as skill ref
-    // Look for /skill-name invocations
-    const slashRefs = content.matchAll(/\/([a-z][a-z0-9-]+[a-z0-9])/g);
+    // Match slash-command invocations: `/skill-name` at start of line or after whitespace
+    // This avoids matching path segments like docs/technical-debt/foo
+    const slashRefs = content.matchAll(
+      /(?:^|[\s`(])\/([a-z][a-z0-9-]+[a-z0-9])(?=[\s`),.:;!?\]]|$)/gm
+    );
     for (const match of slashRefs) {
       const ref = match[1];
-      // Filter common non-skill paths
-      if (ref.startsWith("dev") || ref.startsWith("tmp") || ref.startsWith("usr")) continue;
       if (ref.length < 3) continue;
 
-      // Check if this looks like a skill reference (exists as a skill directory)
       if (skillNames.has(ref)) {
         totalRefs++;
         validRefs++;
       } else {
-        // Only count as broken ref if it looks like it could be a skill name
-        // (contains a hyphen, common in skill names)
-        if (ref.includes("-") && !ref.includes("/")) {
+        // Only count as broken if it looks like an intentional skill invocation
+        // (contains a hyphen, common in skill names, and is not a common CLI flag prefix)
+        if (ref.includes("-") && !ref.startsWith("no-")) {
           totalRefs++;
           brokenRefs.push({ from: name, ref, pattern: `/${ref}` });
         }
       }
     }
 
-    // Match backtick references to skills
+    // Match backtick references that correspond to known skill directory names
     const backtickRefs = content.matchAll(/`([a-z][a-z0-9-]+[a-z0-9])`/g);
     for (const match of backtickRefs) {
       const ref = match[1];
@@ -389,14 +388,32 @@ function checkEvidenceCitations(skills, findings) {
 function checkDependencyChainHealth(skills, skillNames, findings) {
   const bench = BENCHMARKS.dependency_chain_health;
 
-  // Build dependency graph: skill -> skills it references/invokes
+  // Build dependency graph: skill -> skills it actually invokes
+  // Exclude informational cross-references to avoid false circular dependency
+  // detection. Non-invocation contexts include:
+  //   - "Related Skills", "When NOT to Use", "See Also" sections
+  //   - File paths in backticks (e.g., `node .claude/skills/hook-eco.../scripts/...`)
+  //   - Parenthetical context (e.g., "When invoked as part of /skill-name")
   const depGraph = {};
+  const infoSectionPattern =
+    /^#+\s*(?:Related\b|When NOT to Use|See Also|Complementary|Individual audits)[^\n]*\n([\s\S]*?)(?=\n#+\s|\n---|$)/gim;
+
   for (const skill of skills) {
     const { content, name } = skill;
     depGraph[name] = new Set();
 
-    // Find skill invocations: /skill-name, "invoke skill-name", "run skill-name"
-    const invocations = content.matchAll(/\/([a-z][a-z0-9-]+[a-z0-9])/g);
+    // Strip informational sections
+    let strippedContent = content.replace(infoSectionPattern, "");
+    // Strip backtick-quoted code/paths (contains file paths like /skill-name/scripts/)
+    strippedContent = strippedContent.replace(/`[^`]+`/g, "");
+    // Strip "invoked as part of /skill" contextual mentions
+    strippedContent = strippedContent.replace(
+      /(?:invoked|run|called)\s+(?:as\s+)?part\s+of\s+\/[a-z][a-z0-9-]+/gi,
+      ""
+    );
+
+    // Find skill invocations: /skill-name
+    const invocations = strippedContent.matchAll(/\/([a-z][a-z0-9-]+[a-z0-9])/g);
     for (const match of invocations) {
       const ref = match[1];
       if (skillNames.has(ref) && ref !== name) {

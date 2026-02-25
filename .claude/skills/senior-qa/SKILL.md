@@ -12,6 +12,16 @@ description:
 
 Complete toolkit for senior qa with modern tools and best practices.
 
+## When to Use
+
+- Comprehensive QA and testing skill for quality assurance, test automation, and
+- User explicitly invokes `/senior-qa`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Quick Start
 
 ### Main Capabilities
@@ -222,3 +232,11 @@ Check the comprehensive troubleshooting section in
 - Workflow Guide: `references/test_automation_patterns.md`
 - Technical Guide: `references/qa_best_practices.md`
 - Tool Scripts: `scripts/` directory
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

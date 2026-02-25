@@ -8,6 +8,16 @@ description:
 
 # Excel Analysis
 
+## When to Use
+
+- Analyze Excel spreadsheets, create pivot tables, generate charts, and perform
+- User explicitly invokes `/Excel Analysis`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Quick start
 
 Read Excel files with pandas:
@@ -248,3 +258,11 @@ wb.save("formatted.xlsx")
 - **xlrd** - Reading older .xls files
 - **xlsxwriter** - Advanced Excel writing capabilities
 - **matplotlib** - Chart generation
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

@@ -12,6 +12,16 @@ description:
 
 Complete toolkit for senior devops with modern tools and best practices.
 
+## When to Use
+
+- Comprehensive DevOps skill for CI/CD, infrastructure automation,
+- User explicitly invokes `/senior-devops`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Quick Start
 
 ### Main Capabilities
@@ -222,3 +232,11 @@ Check the comprehensive troubleshooting section in
 - Workflow Guide: `references/infrastructure_as_code.md`
 - Technical Guide: `references/deployment_strategies.md`
 - Tool Scripts: `scripts/` directory
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

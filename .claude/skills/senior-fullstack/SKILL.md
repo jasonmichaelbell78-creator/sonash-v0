@@ -12,6 +12,16 @@ description:
 
 Complete toolkit for senior fullstack with modern tools and best practices.
 
+## When to Use
+
+- Comprehensive fullstack development skill for building complete web
+- User explicitly invokes `/senior-fullstack`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Quick Start
 
 ### Main Capabilities
@@ -222,3 +232,11 @@ Check the comprehensive troubleshooting section in
 - Workflow Guide: `references/architecture_patterns.md`
 - Technical Guide: `references/development_workflows.md`
 - Tool Scripts: `scripts/` directory
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

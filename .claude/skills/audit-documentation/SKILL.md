@@ -10,919 +10,191 @@ estimated_time_sequential: 90 min
 
 # Single-Session Documentation Audit
 
+## When to Use
+
+- User explicitly invokes `/audit-documentation`
+
+## When NOT to Use
+
+- When a more specialized skill exists for the specific task
+
 ## Execution Mode Selection
 
-| Condition                                 | Mode       | Time    |
-| ----------------------------------------- | ---------- | ------- |
-| Task tool available + no context pressure | Parallel   | ~20 min |
-| Task tool unavailable                     | Sequential | ~90 min |
-| Context running low (<20% remaining)      | Sequential | ~90 min |
-| User requests sequential                  | Sequential | ~90 min |
+| Condition                    | Mode       | Time    |
+| ---------------------------- | ---------- | ------- |
+| Task tool available          | Parallel   | ~20 min |
+| Task tool unavailable        | Sequential | ~90 min |
+| Context low (<20% remaining) | Sequential | ~90 min |
 
 ---
 
 ## Overview
 
-This audit uses parallel agent execution across 6 stages to comprehensively
-analyze documentation quality, accuracy, and lifecycle status. Each stage
-produces JSONL output that feeds into the final synthesis.
+6-stage parallel audit analyzing documentation quality, accuracy, and lifecycle.
+Each stage produces JSONL output for synthesis.
 
-**Version:** 2.0 **Total Agents:** 18 parallel agents across 5 stages + 1
-synthesis stage
-
-**Output Directory:**
+**Total Agents:** 18 across 5 stages + 1 synthesis stage **Output:**
 `docs/audits/single-session/documentation/audit-[YYYY-MM-DD]/`
+
+**Agent prompts and templates:** See [prompts.md](prompts.md) for all agent
+prompt text, JSONL schemas, and report templates.
 
 ---
 
 ## Pre-Audit Validation
 
-**Step 0: Episodic Memory Search (Session #128)**
-
-Before running documentation audit, search for context from past sessions:
-
-```javascript
-// Search for past documentation audit findings
-mcp__plugin_episodic -
-  memory_episodic -
-  memory__search({
-    query: ["documentation audit", "stale docs", "broken links"],
-    limit: 5,
-  });
-
-// Search for doc structure decisions
-mcp__plugin_episodic -
-  memory_episodic -
-  memory__search({
-    query: ["DOCUMENTATION_STANDARDS", "tier", "lifecycle"],
-    limit: 5,
-  });
-```
-
-**Why this matters:**
-
-- Compare against previous doc health metrics
-- Identify recurring documentation gaps
-- Track which docs were flagged for updates before
-- Prevent re-flagging known orphans or intentional gaps
-
----
-
-**Step 1: Read False Positives Database**
-
-Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and filter findings matching:
-
-- Category: `documentation`
-- Expired entries (skip if `expires` date passed)
-
-Note patterns to exclude from final findings.
-
-**Step 2: Check Prior Audit Results**
-
-Check `docs/audits/single-session/documentation/` for previous audit outputs to:
-
-- Compare against previous doc health metrics
-- Avoid re-flagging resolved issues
-- Track recurring patterns
-
-**Step 3: Verify Output Directory**
-
-```bash
-AUDIT_DIR="docs/audits/single-session/documentation/audit-$(date +%Y-%m-%d)"
-mkdir -p "$AUDIT_DIR"
-echo "Audit output: $AUDIT_DIR"
-```
-
-**Step 4: Check Thresholds**
-
-Run `npm run review:check` and report results. If no thresholds are triggered:
-
-- Display: "⚠️ No review thresholds triggered. Proceed anyway? (This is a
-  lightweight single-session audit)"
-- Continue with audit regardless (user invoked intentionally)
+1. **Episodic Memory Search** — past documentation audit findings
+2. **Read False Positives** — `docs/technical-debt/FALSE_POSITIVES.jsonl`
+3. **Check Prior Audits** — `docs/audits/single-session/documentation/`
+4. **Verify Output Directory** — `mkdir -p "$AUDIT_DIR"`
+5. **Check Thresholds** — `npm run review:check`
 
 ---
 
 ## Stage 1: Inventory & Baseline (3 Parallel Agents)
 
-Launch these 3 agents in parallel:
+**Dependencies:** 1A, 1B, 1C are fully independent. Stage 2 depends on 1C's link
+graph.
 
-### Agent 1A: Document Inventory
+| Agent | Task               | Output                 |
+| ----- | ------------------ | ---------------------- |
+| 1A    | Document inventory | `stage-1-inventory.md` |
+| 1B    | Baseline metrics   | `stage-1-baselines.md` |
+| 1C    | Link extraction    | `stage-1-links.json`   |
 
-**Task:** Build complete document catalog
-
-```
-Count all .md files by directory and tier:
-- Root level: ROADMAP.md, README.md, etc.
-- docs/: by subdirectory
-- .claude/: skills, plans
-
-Extract metadata from each:
-- Version number (if present)
-- Last Updated date (if present)
-- Status field (if present)
-- Word count
-
-Output: ${AUDIT_DIR}/stage-1-inventory.md
-Format: Markdown summary with counts and file list
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 1A wrote inventory to [path]`
-- Do NOT return findings content in your response
-```
-
-### Agent 1B: Baseline Metrics
-
-**Task:** Capture current state via existing tools
-
-```bash
-# Run these commands and capture output:
-npm run docs:check > ${AUDIT_DIR}/baseline-docs-check.txt 2>&1
-npm run docs:sync-check > ${AUDIT_DIR}/baseline-sync-check.txt 2>&1
-npm run format:check -- docs/ > ${AUDIT_DIR}/baseline-format-check.txt 2>&1
-
-# Check DOCUMENTATION_INDEX.md for orphans
-grep -c "orphan" docs/DOCUMENTATION_INDEX.md || echo "0"
-```
-
-Output: `${AUDIT_DIR}/stage-1-baselines.md`
-
-**CRITICAL RETURN PROTOCOL:**
-
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 1B wrote baselines to [path]`
-- Do NOT return findings content in your response
-
-### Agent 1C: Link Extraction
-
-**Task:** Build link graph for later stages
-
-```
-Extract from all .md files:
-1. Internal links: [text](path.md) -> list with source file:line
-2. External URLs: https://... -> list with source file:line
-3. Anchor links: #section -> list with source file:line
-
-Output: ${AUDIT_DIR}/stage-1-links.json
-Schema:
-{
-  "internal": [{"source": "file.md", "line": 1, "target": "other.md", "text": "..."}],
-  "external": [{"source": "file.md", "line": 1, "url": "https://...", "text": "..."}],
-  "anchors": [{"source": "file.md", "line": 1, "anchor": "#section", "text": "..."}]
-}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 1C wrote N links to [path]`
-- Do NOT return findings content in your response
-```
-
-### Stage 1 Completion Audit
-
-Before proceeding to Stage 2, verify:
-
-- [ ] `stage-1-inventory.md` exists and is non-empty
-- [ ] `stage-1-baselines.md` exists with metrics
-- [ ] `stage-1-links.json` exists and is valid JSON
-- [ ] Display summary: "Stage 1 Complete: X docs, Y internal links, Z external
-      URLs"
+**Completion:** Verify all 3 files exist and are non-empty.
 
 ---
 
 ## Stage 2: Link Validation (4 Parallel Agents)
 
-Launch these 4 agents in parallel using Stage 1 outputs:
+| Agent | Task                   | Output                         |
+| ----- | ---------------------- | ------------------------------ |
+| 2A    | Internal link checker  | `stage-2-internal-links.jsonl` |
+| 2B    | External URL checker   | `stage-2-external-links.jsonl` |
+| 2C    | Cross-reference valid. | `stage-2-cross-refs.jsonl`     |
+| 2D    | Orphan & connectivity  | `stage-2-orphans.jsonl`        |
 
-### Agent 2A: Internal Link Checker
-
-**Task:** Verify internal .md links resolve
-
-```
-For each internal link from stage-1-links.json:
-1. Check target file exists
-2. If link has anchor (#section), verify heading exists in target
-3. Detect circular references (A→B→C→A)
-
-Output: ${AUDIT_DIR}/stage-2-internal-links.jsonl
-JSONL schema per finding (JSONL_SCHEMA_STANDARD.md format):
-{
-  "category": "documentation",
-  "title": "Broken internal link to target.md",
-  "fingerprint": "documentation::source.md::broken-link-target",
-  "severity": "S1|S2",
-  "effort": "E0",
-  "confidence": 90,
-  "files": ["source.md:123"],
-  "why_it_matters": "Broken links frustrate readers and indicate stale documentation",
-  "suggested_fix": "Update link to correct path or remove if target no longer exists",
-  "acceptance_tests": ["Link resolves correctly", "No 404 when clicking"],
-  "evidence": ["target: path.md", "resolved: /full/path.md"]
-}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 2A wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Agent 2B: External URL Checker
-
-**Task:** HTTP HEAD requests to external URLs
-
-```bash
-# Use the new script for external link checking
-npm run docs:external-links -- --output ${AUDIT_DIR}/stage-2-external-links.jsonl
-```
-
-Or manually check each URL from stage-1-links.json with:
-
-- 10-second timeout
-- Rate limiting (100ms between same domain)
-- Cache results
-- Flag: 404, 403, 5xx, timeouts, redirects
-
-Output: `${AUDIT_DIR}/stage-2-external-links.jsonl`
-
-JSONL schema per finding:
-`{"category":"documentation","title":"...","fingerprint":"documentation::source.md::broken-external-url","severity":"S1|S2","effort":"E0","confidence":0-100,"files":["source.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
-
-**CRITICAL RETURN PROTOCOL:**
-
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 2B wrote N findings to [path]`
-- Do NOT return findings content in your response
-
-### Agent 2C: Cross-Reference Validator
-
-**Task:** Verify references to project artifacts
-
-```
-Check documentation references:
-1. ROADMAP item references (P1.2, Phase 3, etc.) - do they exist?
-2. PR/Issue references (#123) - format valid?
-3. SESSION_CONTEXT references - files mentioned exist?
-4. Skill/hook path references - paths valid?
-
-Output: ${AUDIT_DIR}/stage-2-cross-refs.jsonl
-
-JSONL schema per finding:
-{"category":"documentation","title":"...","fingerprint":"documentation::source.md::broken-cross-ref","severity":"S1|S2","effort":"E0|E1","confidence":0-100,"files":["source.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 2C wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Agent 2D: Orphan & Connectivity
-
-**Task:** Find disconnected documents
-
-```
-From stage-1-links.json, identify:
-1. Docs with zero inbound links (orphans)
-2. Docs with only broken outbound links
-3. Isolated clusters (group of docs only linking to each other)
-
-Exclude from orphan detection:
-- README.md (entry point)
-- Root-level canonical docs
-- Archive docs
-
-Output: ${AUDIT_DIR}/stage-2-orphans.jsonl
-
-JSONL schema per finding:
-{"category":"documentation","title":"...","fingerprint":"documentation::file.md::orphaned-doc","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 2D wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Stage 2 Completion Audit
-
-Before proceeding to Stage 3, verify:
-
-- [ ] All 4 JSONL files exist
-- [ ] Run schema validation:
-      `node scripts/debt/validate-schema.js ${AUDIT_DIR}/stage-2-*.jsonl`
-- [ ] Display summary: "Stage 2 Complete: X link issues found"
+**Completion:** Validate JSONL schemas:
+`node scripts/debt/validate-schema.js ${AUDIT_DIR}/stage-2-*.jsonl`
 
 ---
 
 ## Stage 3: Content Quality (4 Parallel Agents)
 
-Launch these 4 agents in parallel:
-
-### Agent 3A: Accuracy Checker
-
-**Task:** Verify content matches codebase
-
-```bash
-# Use the new script for accuracy checking
-node scripts/check-content-accuracy.js --output ${AUDIT_DIR}/stage-3-accuracy.jsonl
-```
-
-Checks:
-
-- Version numbers match package.json
-- File paths mentioned exist
-- npm script references valid
-- Code snippet syntax (basic validation)
-
-Output: `${AUDIT_DIR}/stage-3-accuracy.jsonl`
-
-JSONL schema per finding:
-`{"category":"documentation","title":"...","fingerprint":"documentation::file.md::accuracy-issue","severity":"S1|S2","effort":"E0|E1","confidence":0-100,"files":["file.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
-
-**CRITICAL RETURN PROTOCOL:**
-
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 3A wrote N findings to [path]`
-- Do NOT return findings content in your response
-
-### Agent 3B: Completeness Checker
-
-**Task:** Check for missing/incomplete content
-
-```
-For each document, check:
-1. Required sections present per tier:
-   - Tier 1: Purpose, Version History
-   - Tier 2: Purpose, Version History, AI Instructions
-   - Tier 3+: Purpose, Status, Version History
-2. No TODO/TBD/FIXME placeholders
-3. No empty sections (heading with no content)
-4. No stub documents (< 100 words, excluding code blocks)
-
-Output: ${AUDIT_DIR}/stage-3-completeness.jsonl
-
-JSONL schema per finding:
-{"category":"documentation","title":"...","fingerprint":"documentation::file.md::completeness-issue","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 3B wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Agent 3C: Coherence Checker
-
-**Task:** Check terminology and duplication
-
-```
-Analyze across all documents:
-1. Terminology inconsistency:
-   - "skill" vs "command" vs "slash command"
-   - "agent" vs "subagent" vs "worker"
-   - Collect all term usages, flag inconsistencies
-2. Duplicate content:
-   - Exact match: identical content blocks (>50 words)
-   - Fuzzy match: 80%+ similarity (same topic, minor rewording)
-3. Contradictory information (conflicting guidance for same task)
-
-Output: ${AUDIT_DIR}/stage-3-coherence.jsonl
-
-JSONL schema per finding:
-{"category":"documentation","title":"...","fingerprint":"documentation::file.md::coherence-issue","severity":"S2|S3","effort":"E1|E2","confidence":0-100,"files":["file.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 3C wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Agent 3D: Freshness Checker
-
-**Task:** Check for stale content
-
-```bash
-# Use the new script for placement/staleness
-npm run docs:placement -- --output ${AUDIT_DIR}/stage-3-freshness.jsonl
-```
-
-Tier-specific staleness thresholds:
-
-- Tier 1 (Canonical): >60 days
-- Tier 2 (Foundation): >90 days
-- Tier 3+ (Planning/Reference/Guides): >120 days
-
-Additional checks:
-
-- Outdated version references
-- Deprecated terminology still used
-
-Output: `${AUDIT_DIR}/stage-3-freshness.jsonl`
-
-JSONL schema per finding:
-`{"category":"documentation","title":"...","fingerprint":"documentation::file.md::stale-content","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
-
-**CRITICAL RETURN PROTOCOL:**
-
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 3D wrote N findings to [path]`
-- Do NOT return findings content in your response
-
-### Stage 3 Completion Audit
-
-Before proceeding to Stage 4, verify:
-
-- [ ] All 4 JSONL files exist
-- [ ] Schema validation passes
-- [ ] Display summary: "Stage 3 Complete: X content quality issues"
+| Agent | Task                 | Output                       |
+| ----- | -------------------- | ---------------------------- |
+| 3A    | Accuracy checker     | `stage-3-accuracy.jsonl`     |
+| 3B    | Completeness checker | `stage-3-completeness.jsonl` |
+| 3C    | Coherence checker    | `stage-3-coherence.jsonl`    |
+| 3D    | Freshness checker    | `stage-3-freshness.jsonl`    |
 
 ---
 
 ## Stage 4: Format & Structure (3 Parallel Agents)
 
-Launch these 3 agents in parallel:
-
-### Agent 4A: Markdown Lint
-
-**Task:** Run markdownlint on all docs
-
-```bash
-# Note: docs:lint should lint all markdown locations:
-# "*.md" "docs/**/*.md" ".claude/**/*.md"
-npm run docs:lint > ${AUDIT_DIR}/markdownlint-raw.txt 2>&1
-
-# Parse output into JSONL findings
-# Each markdownlint violation becomes a finding
-```
-
-Convert violations to JSONL format in `${AUDIT_DIR}/stage-4-markdownlint.jsonl`
-
-JSONL schema per finding:
-`{"category":"documentation","title":"...","fingerprint":"documentation::file.md::markdownlint-rule","severity":"S3","effort":"E0","confidence":0-100,"files":["file.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
-
-**CRITICAL RETURN PROTOCOL:**
-
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 4A wrote N findings to [path]`
-- Do NOT return findings content in your response
-
-### Agent 4B: Prettier Compliance
-
-**Task:** Check Prettier formatting
-
-```bash
-npm run format:check -- docs/ > ${AUDIT_DIR}/prettier-raw.txt 2>&1
-
-# Parse output for files that need formatting
-```
-
-Convert violations to JSONL format in `${AUDIT_DIR}/stage-4-prettier.jsonl`
-
-JSONL schema per finding:
-`{"category":"documentation","title":"...","fingerprint":"documentation::file.md::prettier-violation","severity":"S3","effort":"E0","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
-
-**CRITICAL RETURN PROTOCOL:**
-
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 4B wrote N findings to [path]`
-- Do NOT return findings content in your response
-
-### Agent 4C: Structure Standards
-
-**Task:** Check document structure conventions
-
-````
-For each document, verify:
-1. Frontmatter present and valid (for skill docs)
-2. Required headers per tier
-3. Version history format (table with Version|Date|Description)
-4. Table formatting consistency (aligned pipes)
-5. Code block language tags (all ``` blocks have language)
-6. Heading uniqueness (no duplicate headings in same doc)
-
-Output: ${AUDIT_DIR}/stage-4-structure.jsonl
-
-JSONL schema per finding:
-{"category":"documentation","title":"...","fingerprint":"documentation::file.md::structure-issue","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 4C wrote N findings to [path]`
-- Do NOT return findings content in your response
-````
-
-### Stage 4 Completion Audit
-
-Before proceeding to Stage 5, verify:
-
-- [ ] All 3 JSONL files exist
-- [ ] Schema validation passes
-- [ ] Display summary: "Stage 4 Complete: X format issues"
+| Agent | Task                | Output                       |
+| ----- | ------------------- | ---------------------------- |
+| 4A    | Markdown lint       | `stage-4-markdownlint.jsonl` |
+| 4B    | Prettier compliance | `stage-4-prettier.jsonl`     |
+| 4C    | Structure standards | `stage-4-structure.jsonl`    |
 
 ---
 
-## Stage 5: Placement & Lifecycle (4 Parallel Agents)
+## Stage 5: Placement & Lifecycle (3+1 Agents)
 
-Launch Agents 5A, 5B, 5C in parallel, then 5D sequentially after 5B completes:
+5A, 5B, 5C run in parallel. 5D runs after 5B completes.
 
-### Agent 5A: Location Validator
-
-**Task:** Check documents in correct directories
-
-```
-Verify placement rules:
-- Plans → docs/plans/ or .planning/
-- Archives → docs/archive/
-- Templates → docs/templates/
-- Audits → docs/audits/
-- Tier 1 → root level
-- Tier 2 → docs/ or root
-
-Output: ${AUDIT_DIR}/stage-5-location.jsonl
-
-JSONL schema per finding:
-{"category":"documentation","title":"...","fingerprint":"documentation::file.md::wrong-location","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 5A wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Agent 5B: Archive Candidate Finder (Surface-Level)
-
-**Task:** Quick scan for archive candidates
-
-```
-Surface-level detection:
-1. Completed plans not archived (status: completed)
-2. Session handoffs > 30 days old
-3. Old audit results (> 60 days, likely in MASTER_DEBT.jsonl already)
-4. Plans not referenced in current ROADMAP.md
-
-Output: ${AUDIT_DIR}/stage-5-archive-candidates-raw.jsonl
-
-JSONL schema per finding:
-{"category":"documentation","title":"...","fingerprint":"documentation::file.md::archive-candidate","severity":"S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 5B wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Agent 5C: Cleanup Candidate Finder
-
-**Task:** Find files that should be deleted/merged
-
-```
-Identify:
-1. Exact duplicate files (same content hash)
-2. Near-empty files (< 50 words)
-3. Draft files > 60 days old
-4. Temp/test files (names starting with temp, test, scratch)
-5. Merge candidates (fragmented docs on same topic)
-
-Output: ${AUDIT_DIR}/stage-5-cleanup-candidates.jsonl
-
-JSONL schema per finding:
-{"category":"documentation","title":"...","fingerprint":"documentation::file.md::cleanup-candidate","severity":"S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 5C wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Agent 5D: Deep Lifecycle Analysis (Runs After 5B)
-
-**Sequential dependency: Read 5B output first**
-
-**Task:** Detailed analysis of archive candidates
-
-```
-For each candidate from stage-5-archive-candidates-raw.jsonl:
-1. Read the actual document content
-2. Determine original purpose
-3. Assess current status:
-   - Purpose met? (completed successfully)
-   - Overtaken? (superseded by other work)
-   - Deprecated? (no longer relevant)
-4. Check if content was consumed:
-   - Audit findings → in MASTER_DEBT.jsonl?
-   - Plan outcomes → documented elsewhere?
-5. Provide recommendation with justification
-
-Output: ${AUDIT_DIR}/stage-5-lifecycle-analysis.jsonl
-Extended schema:
-{
-  ...standard fields...,
-  "purpose": "Original intent of the document",
-  "status_reason": "Why marked for archive",
-  "consumed_by": "Where content lives now (if applicable)",
-  "recommendation": "ARCHIVE|DELETE|KEEP|MERGE_INTO:<target>"
-}
-
-**CRITICAL RETURN PROTOCOL:**
-- Write findings to the specified output file using Write tool or Bash
-- Return ONLY: `COMPLETE: 5D wrote N findings to [path]`
-- Do NOT return findings content in your response
-```
-
-### Stage 5 Completion Audit
-
-Before proceeding to Stage 6, verify:
-
-- [ ] All 4 JSONL files exist (5A, 5B raw, 5C, 5D analysis)
-- [ ] Schema validation passes
-- [ ] Display summary: "Stage 5 Complete: X lifecycle issues, Y archive
-      candidates"
+| Agent | Task               | Output                                 | Dep |
+| ----- | ------------------ | -------------------------------------- | --- |
+| 5A    | Location validator | `stage-5-location.jsonl`               | -   |
+| 5B    | Archive candidates | `stage-5-archive-candidates-raw.jsonl` | -   |
+| 5C    | Cleanup candidates | `stage-5-cleanup-candidates.jsonl`     | -   |
+| 5D    | Deep lifecycle     | `stage-5-lifecycle-analysis.jsonl`     | 5B  |
 
 ---
 
 ## Stage 6: Synthesis & Prioritization (Sequential)
 
-This stage runs sequentially after all parallel stages complete.
-
-### Step 6.1: Merge All Findings
+### 6.1 Merge All Findings
 
 ```bash
-# Combine all stage outputs
-cat ${AUDIT_DIR}/stage-2-*.jsonl \
-    ${AUDIT_DIR}/stage-3-*.jsonl \
-    ${AUDIT_DIR}/stage-4-*.jsonl \
-    ${AUDIT_DIR}/stage-5-location.jsonl \
-    ${AUDIT_DIR}/stage-5-archive-candidates-raw.jsonl \
-    ${AUDIT_DIR}/stage-5-cleanup-candidates.jsonl \
-    ${AUDIT_DIR}/stage-5-lifecycle-analysis.jsonl > ${AUDIT_DIR}/all-findings-raw.jsonl
+cat ${AUDIT_DIR}/stage-2-*.jsonl ${AUDIT_DIR}/stage-3-*.jsonl \
+    ${AUDIT_DIR}/stage-4-*.jsonl ${AUDIT_DIR}/stage-5-*.jsonl \
+    > ${AUDIT_DIR}/all-findings-raw.jsonl
 ```
 
-### Step 6.2: Deduplicate
+### 6.2 Deduplicate
 
-**Input:** `${AUDIT_DIR}/all-findings-raw.jsonl` **Output:**
-`${AUDIT_DIR}/all-findings-deduped.jsonl`
+Remove duplicates by file:line. Keep higher severity/confidence/evidence count.
 
-```
-Remove duplicates where same file:line appears from multiple agents.
-Keep the finding with:
-1. Higher severity
-2. Higher confidence
-3. More evidence items
-```
+### 6.3 Cross-Reference FALSE_POSITIVES.jsonl
 
-### Step 6.3: Cross-Reference FALSE_POSITIVES.jsonl
+Filter by file pattern, title pattern, expiration dates.
 
-**Input:** `${AUDIT_DIR}/all-findings-deduped.jsonl` **Output:**
-`${AUDIT_DIR}/all-findings.jsonl` (final file for TDMS intake)
+### 6.4 Priority Scoring
 
 ```
-Filter out findings matching patterns in docs/technical-debt/FALSE_POSITIVES.jsonl:
-- Match by file pattern
-- Match by title pattern
-- Check expiration dates
+priority = (severityWeight * categoryMultiplier * confidenceWeight) / effortWeight
 ```
 
-### Step 6.4: Priority Scoring
+Weights: severity S0=100/S1=50/S2=20/S3=5, category links=1.5/accuracy=1.3/
+freshness=1.0/format=0.8, confidence HIGH=1.0/MEDIUM=0.7/LOW=0.4, effort
+E0=1/E1=2/E2=4/E3=8.
 
-```
-For each finding, calculate priority:
+### 6.5 Generate Action Plan
 
-priority = (severityWeight × categoryMultiplier × confidenceWeight) / effortWeight
+Three queues: Immediate Fixes (S0/S1, E0/E1), Archive Queue, Delete/Merge Queue.
 
-Where:
-- severityWeight: S0=100, S1=50, S2=20, S3=5
-- categoryMultiplier: links=1.5, accuracy=1.3, freshness=1.0, format=0.8
-- confidenceWeight: HIGH=1.0, MEDIUM=0.7, LOW=0.4
-- effortWeight: E0=1, E1=2, E2=4, E3=8
+### 6.6 Generate Final Report
 
-Sort findings by priority descending.
-```
-
-### Step 6.5: Generate Action Plan
-
-```
-Create three queues:
-
-1. IMMEDIATE FIXES (S0/S1, E0/E1):
-   - List with specific file:line and fix command
-
-2. ARCHIVE QUEUE:
-   - node scripts/archive-doc.js commands for each candidate
-
-3. DELETE/MERGE QUEUE:
-   - Justification for each deletion
-   - Merge target for consolidations
-```
-
-### Step 6.6: Generate Final Report
-
-Output: `${AUDIT_DIR}/FINAL_REPORT.md`
-
-````markdown
-# Documentation Audit Report - [DATE]
-
-## Executive Summary
-
-- **Total findings:** X
-- **By severity:** S0: X, S1: X, S2: X, S3: X
-- **By category:** Links: X, Content: X, Format: X, Lifecycle: X
-- **False positives filtered:** X
-
-## Baseline Comparison
-
-| Metric               | Before | After Fixes |
-| -------------------- | ------ | ----------- |
-| docs:check errors    | X      | -           |
-| docs:sync issues     | X      | -           |
-| Orphaned docs        | X      | -           |
-| Stale docs (>90 day) | X      | -           |
-
-## Top 20 Priority Items
-
-| #   | Severity | File | Issue | Effort |
-| --- | -------- | ---- | ----- | ------ |
-| 1   | S1       | ...  | ...   | E0     |
-
-## Stage-by-Stage Breakdown
-
-### Stage 2: Link Validation
-
-- Internal link errors: X
-- External link errors: X
-- Orphaned documents: X
-
-### Stage 3: Content Quality
-
-- Accuracy issues: X
-- Completeness issues: X
-- Coherence issues: X
-- Freshness issues: X
-
-### Stage 4: Format & Structure
-
-- Markdownlint violations: X
-- Prettier violations: X
-- Structure issues: X
-
-### Stage 5: Lifecycle
-
-- Location issues: X
-- Archive candidates: X
-- Cleanup candidates: X
-
-## Action Plan
-
-### Immediate Fixes (Do Now)
-
-1. `file.md:line` - Fix description
-
-### Archive Queue
-
-```bash
-node scripts/archive-doc.js "path/to/doc.md"
-```
-````
-
-### Cleanup Queue
-
-- DELETE: `path/to/temp-file.md` (reason)
-- MERGE: `fragmented.md` → `main-doc.md`
-
-## Recommendations
-
-1. ...
-2. ...
+Output `${AUDIT_DIR}/FINAL_REPORT.md`. See [prompts.md](prompts.md) for
+template.
 
 ---
 
-## MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)
+## MASTER_DEBT Cross-Reference (MANDATORY)
 
-**Do NOT present findings for review until they have been cross-referenced
-against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
-inflated debt counts.
-
-### Process
-
-1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
-2. For each finding, search MASTER_DEBT by:
-   - Same file path (exact or substring match)
-   - Similar title/description (semantic overlap)
-   - Same root cause (e.g., same pattern in different wording)
-3. Classify each finding as:
-   - **Already Tracked**: Confident match in MASTER_DEBT → skip intake
-   - **New Finding**: No matching DEBT entry → proceed to interactive review
-   - **Possibly Related**: Partial overlap → flag for manual review
-4. Present only **New** and **Possibly Related** findings in the Interactive
-   Review below. Already Tracked items are skipped entirely.
+Before presenting findings, cross-reference against MASTER_DEBT.jsonl by file
+path, title similarity, root cause. Classify: **Already Tracked** (skip) |
+**New** (review) | **Possibly Related** (flag). Only New and Possibly Related
+proceed to Interactive Review.
 
 ---
 
-## Interactive Review (MANDATORY — after MASTER_DEBT cross-reference, before TDMS intake)
+## Interactive Review (MANDATORY)
 
-**Do NOT ingest findings into TDMS until the user has reviewed them.**
-
-### Presentation Format
-
-Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
-then S1, S2, S3). Within each severity, group by theme for coherence. Each item
-shows:
-
-```
-### DEBT-XXXX: [Title]
-**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
-**Current:** [What exists now]
-**Suggested Fix:** [Concrete remediation]
-**Acceptance Tests:** [How to verify]
-**Counter-argument:** [Why NOT to do this]
-**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
-```
-
-Do NOT present all items at once — batches of 3-5 keep decisions manageable.
-Wait for user decisions on each batch before presenting the next.
-
-### Decision Tracking (Compaction-Safe)
-
-Create `${AUDIT_DIR}/REVIEW_DECISIONS.md` after the first batch to track all
-decisions. Update after each batch. This file survives context compaction.
-
-### Processing Decisions
-
-After each batch:
-
-- Record decisions in REVIEW_DECISIONS.md
-- If DECLINED: remove from findings before TDMS intake
-- If DEFERRED: keep in TDMS as NEW status for future planning
-- If ACCEPTED: proceed to TDMS intake
-
-### Post-Review Summary
-
-After ALL findings reviewed, summarize:
-
-- Total accepted / declined / deferred
-- Proceed to TDMS Intake with accepted + deferred items only
+Present in batches of 3-5 by severity. Each shows: title, severity, effort,
+confidence, current state, suggested fix, acceptance tests, counter-argument,
+recommendation. Track decisions in `${AUDIT_DIR}/REVIEW_DECISIONS.md`. See
+[prompts.md](prompts.md) for format.
 
 ---
 
 ## Post-Audit Validation
 
-**Before finalizing the audit:**
+```bash
+node scripts/validate-audit.js ${AUDIT_DIR}/all-findings.jsonl
+```
 
-1. **Run Validation Script:**
-
-   ```bash
-   node scripts/validate-audit.js ${AUDIT_DIR}/all-findings.jsonl
-   ```
-
-2. **Validation Checks:**
-   - All findings have required fields
-   - No matches in FALSE_POSITIVES.jsonl (or documented override)
-   - No duplicate findings
-   - All S0/S1 have HIGH or MEDIUM confidence
-   - All S0/S1 have verification evidence
-
-3. **If validation fails:**
-   - Review flagged findings
-   - Fix or document exceptions
-   - Re-run validation
+Check: required fields, no FALSE_POSITIVES matches, no duplicates, S0/S1 have
+HIGH/MEDIUM confidence.
 
 ---
 
 ## TDMS Intake & Commit
 
-1. Display summary to user
-2. Confirm files saved to `${AUDIT_DIR}/`:
-   - [ ] stage-1-\*.md, stage-1-links.json
-   - [ ] stage-2-\*.jsonl
-   - [ ] stage-3-\*.jsonl
-   - [ ] stage-4-\*.jsonl
-   - [ ] stage-5-\*.jsonl
-   - [ ] all-findings.jsonl (merged, deduplicated)
-   - [ ] FINAL_REPORT.md
-3. Run `node scripts/validate-audit.js ${AUDIT_DIR}/all-findings.jsonl`
-4. **Validate CANON schema** (if audit updates CANON files):
-   ```bash
-   npm run validate:canon
-   ```
-   Ensure all CANON files pass validation before committing.
-5. **Update AUDIT_TRACKER.md** - Add entry to "Documentation Audits" table:
-   - Date: Today's date
-   - Session: Current session number from SESSION_CONTEXT.md
-   - Commits Covered: Number of commits since last documentation audit
-   - Files Covered: Number of files analyzed
-   - Findings: Total count (e.g., "5 S1, 12 S2, 8 S3")
-   - Reset Threshold: YES (single-session audits reset that category's
-     threshold)
-   - Run:
-     `node scripts/reset-audit-triggers.js --type=single --category=documentation --apply`
-6. **TDMS Integration (MANDATORY)** - Ingest findings to canonical debt store:
-   ```bash
-   node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings.jsonl --source "audit-documentation-$(date +%Y-%m-%d)"
-   ```
-   This assigns DEBT-XXXX IDs and adds to
-   `docs/technical-debt/MASTER_DEBT.jsonl`. See
-   `docs/technical-debt/PROCEDURE.md` for the full TDMS workflow.
-7. Ask: "Would you like me to fix any of these issues now?"
+1. Verify all stage files saved
+2. Run schema validation
+3. `npm run validate:canon` (if CANON files updated)
+4. Update AUDIT_TRACKER.md
+5. Reset triggers:
+   `node scripts/reset-audit-triggers.js --type=single --category=documentation --apply`
+6. **TDMS Intake:**
+   `node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings.jsonl --source "audit-documentation-$(date +%Y-%m-%d)"`
+7. Ask: "Fix any issues now?"
 
----
-
-## Category Mapping for TDMS
+## Category Mapping
 
 | Stage         | Category ID Prefix | TDMS Category |
 | ------------- | ------------------ | ------------- |
@@ -935,55 +207,19 @@ After ALL findings reviewed, summarize:
 
 ## Context Recovery
 
-If the session is interrupted (compaction, timeout, crash):
+If interrupted: check `.claude/state/audit-documentation-<date>.state.json`. If
+< 24h old, resume from last stage. If stale, start fresh. Preserve partial
+findings in output directory.
 
-1. **Check for state file:**
-   `.claude/state/audit-documentation-<date>.state.json`
-2. **If state file exists and is < 24 hours old:** Resume from last completed
-   stage
-3. **If state file is stale (> 24 hours):** Start fresh — findings may be
-   outdated
-4. **Always preserve:** Any partial findings already written to the output
-   directory
+State file tracks: `audit_type`, `date`, `stage_completed`,
+`partial_findings_path`, `last_updated`.
 
-### State File Format
-
-```json
-{
-  "audit_type": "documentation",
-  "date": "YYYY-MM-DD",
-  "stage_completed": "analysis|review|report",
-  "partial_findings_path": "docs/audits/single-session/documentation/audit-YYYY-MM-DD/",
-  "last_updated": "ISO-8601"
-}
-```
-
-### Additional Recovery Steps
-
-#### If Stage Fails
-
-1. **Missing output file:** Re-run specific agent with explicit file write
-2. **Empty output file:** Check agent for errors, re-run with verbose
-3. **Schema validation fails:** Parse errors line-by-line, fix malformed
-4. **Context compaction:** Verify AUDIT_DIR path, re-run from last checkpoint
-
-#### If Context Compacts Mid-Audit
-
-Read the partial outputs already saved to `${AUDIT_DIR}/` and resume from the
-last completed stage.
-
----
-
-## Multi-AI Escalation
-
-Multi-AI audits are triggered by total commits or time elapsed (not single audit
-counts). Check `npm run review:check` for current multi-AI trigger status.
+**Stage failures:** Re-run specific agent. **Empty output:** Check for errors.
+**Context compaction:** Re-read `${AUDIT_DIR}/` and resume.
 
 ---
 
 ## Update Dependencies
-
-When modifying this skill, also update:
 
 | Document                                                | Section                        |
 | ------------------------------------------------------- | ------------------------------ |
@@ -994,30 +230,19 @@ When modifying this skill, also update:
 
 ## Version History
 
-| Version | Date       | Description                                                              |
-| ------- | ---------- | ------------------------------------------------------------------------ |
-| 2.1     | 2026-02-23 | Add mandatory MASTER_DEBT cross-reference step before interactive review |
-| 2.0     | 2026-02-02 | Complete rewrite: 6-stage parallel audit with 18 agents                  |
-| 1.0     | 2025-xx-xx | Original single-session sequential audit                                 |
+| Version | Date       | Description                                             |
+| ------- | ---------- | ------------------------------------------------------- |
+| 2.2     | 2026-02-24 | Trim to <500 lines: extract prompts to prompts.md       |
+| 2.1     | 2026-02-23 | Add mandatory MASTER_DEBT cross-reference step          |
+| 2.0     | 2026-02-02 | Complete rewrite: 6-stage parallel audit with 18 agents |
+| 1.0     | 2025-xx-xx | Original single-session sequential audit                |
 
 ---
 
 ## Documentation References
 
-Before running this audit, review:
-
-### TDMS Integration (Required)
-
 - [PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
-- [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) - Canonical debt
-  store
-- Intake command:
-  `node scripts/debt/intake-audit.js <output.jsonl> --source "audit-documentation-<date>"`
-
-### Documentation Standards (Critical for This Audit)
-
 - [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Output
-  format requirements and TDMS field mapping
-- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - **The
-  canonical guide** this audit validates against (5-tier hierarchy, metadata
-  requirements, quality protocols)
+  format
+- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - 5-tier
+  hierarchy

@@ -19,6 +19,16 @@ escalation, then aggregates findings into a comprehensive report.
 
 ---
 
+## When to Use
+
+- Tasks related to audit-comprehensive
+- User explicitly invokes `/audit-comprehensive`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Overview
 
 This skill orchestrates a complete codebase audit across all 9 domains:
@@ -74,6 +84,12 @@ boundaries.
 **Token budget:** 250K total for the team. If approaching budget, lead messages
 teammates to wrap up and collects partial results.
 
+**CRITICAL RETURN PROTOCOL for all agents (both team and subagent modes):**
+
+- Each audit agent writes its report to the output directory
+- Return ONLY: `COMPLETE: [audit-domain] wrote N findings to [output-path]`
+- Do NOT return full findings content -- orchestrator checks completion via file
+
 **Fallback:** If team formation fails or teammates error out, fall back to the
 staged subagent execution flow below.
 
@@ -95,21 +111,25 @@ Pre-Flight Validation
         v
 Stage 1: Technical Core (4 agents parallel)
   - audit-code, audit-security, audit-performance, audit-refactoring
+  - Dependency: All 4 agents are independent -- no ordering required
   - Checkpoint: verify 4 reports + S0/S1 escalation check
         |
         v
 Stage 2: Supporting (3 agents parallel)
   - audit-documentation, audit-process, audit-engineering-productivity
+  - Dependency: All 3 agents are independent. Stage 2 depends on Stage 1 completion
   - Checkpoint: verify 3 reports
         |
         v
 Stage 2.5: Meta & Enhancement (2 agents parallel)
   - audit-enhancements, audit-ai-optimization
+  - Dependency: Both agents are independent. Stage 2.5 depends on Stage 2 completion
   - Checkpoint: verify 2 reports
         |
         v
 Stage 3: Aggregation (sequential)
   - audit-aggregator -> COMPREHENSIVE_AUDIT_REPORT.md
+  - Dependency: Requires all 9 domain reports from Stages 1, 2, and 2.5
         |
         v
 Stage 3.5: MASTER_DEBT Deduplication (MANDATORY)

@@ -14,6 +14,16 @@ description:
 
 Complete toolkit for senior architect with modern tools and best practices.
 
+## When to Use
+
+- Comprehensive software architecture skill for designing scalable, maintainable
+- User explicitly invokes `/senior-architect`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Quick Start
 
 ### Main Capabilities
@@ -224,3 +234,11 @@ Check the comprehensive troubleshooting section in
 - Workflow Guide: `references/system_design_workflows.md`
 - Technical Guide: `references/tech_decision_guide.md`
 - Tool Scripts: `scripts/` directory
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

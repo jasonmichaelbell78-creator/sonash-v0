@@ -7,6 +7,16 @@ description: Show dependency-resolved next tasks from ROADMAP.md active sprint
 
 Shows which tasks are ready to work on based on dependency resolution.
 
+## When to Use
+
+- Tasks related to task-next
+- User explicitly invokes `/task-next`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Usage
 
 ```
@@ -77,3 +87,11 @@ Rules:
 - Annotation must be in square brackets at the end of the line
 - Tasks without `[depends:]` are considered independent (always ready)
 - Circular dependencies are detected and reported as errors
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

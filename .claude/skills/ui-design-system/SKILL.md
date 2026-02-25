@@ -11,6 +11,16 @@ description:
 
 Professional toolkit for creating and maintaining scalable design systems.
 
+## When to Use
+
+- UI design system toolkit for Senior UI Designer including design token
+- User explicitly invokes `/ui-design-system`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Core Capabilities
 
 - Design token generation (colors, typography, spacing)
@@ -39,3 +49,11 @@ Generates complete design system tokens from brand colors.
 - Shadow and animation tokens
 - Responsive breakpoints
 - Multiple export formats
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

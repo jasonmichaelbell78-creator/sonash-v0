@@ -1,7 +1,7 @@
 # Audit Standards
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-02-14
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -94,9 +94,13 @@ Decision Tree:
 
 ## 5. SKILL.md Structure Standard
 
-Every audit skill (`/audit-<name>`) MUST include these sections:
+Every audit skill (`/audit-<name>`) MUST follow the canonical skill standards in
+[SKILL_STANDARDS.md](../../.claude/skills/_shared/SKILL_STANDARDS.md), plus
+these audit-specific requirements:
 
-```markdown
+### Required YAML Frontmatter
+
+```yaml
 ---
 name: audit-<name>
 description: <one-line description>
@@ -105,41 +109,38 @@ fallback_available: true|false
 estimated_time_parallel: <X> min
 estimated_time_sequential: <X> min
 ---
-
-# Single-Session <Name> Audit
-
-## Purpose
-
-<What this audit checks and why>
-
-## Execution Mode Selection
-
-<Table: parallel vs sequential conditions>
-
-## Pre-Audit Validation
-
-1. Episodic memory search for prior findings
-2. Read docs/technical-debt/FALSE_POSITIVES.jsonl
-3. Check prior audit results in output directory
-4. Verify output directory exists
-
-## Agent Architecture
-
-<Stages with agent definitions, parallel grouping>
-
-## Output Format
-
-- JSONL per JSONL_SCHEMA_STANDARD.md
-- Category field: <category name>
-- Output dir: docs/audits/single-session/<category>/audit-YYYY-MM-DD/
-
-## Post-Audit
-
-1. Validate JSONL schema
-2. Run TDMS intake
-3. Update AUDIT_TRACKER.md
-4. Commit results
 ```
+
+### Required Sections (in addition to standard skill sections)
+
+- **Pre-Audit Validation** — Episodic memory search, FALSE_POSITIVES check,
+  prior audit results, output directory verification
+- **Execution Mode Selection** — Parallel vs sequential conditions table
+- **Agent Architecture** — Stages with agent definitions, parallel grouping
+- **Output Requirements** — JSONL format, category field, output directory
+- **Post-Audit** — Schema validation, TDMS intake, tracker update, commit
+
+### Shared Audit Boilerplate
+
+Audit skills MUST reference the shared template instead of duplicating common
+procedures:
+
+```markdown
+> Read `.claude/skills/_shared/AUDIT_TEMPLATE.md` for: Evidence Requirements,
+> Dual-Pass Verification, Cross-Reference Validation, JSONL Output Format,
+> Context Recovery, Post-Audit Validation, MASTER_DEBT Cross-Reference,
+> Interactive Review, TDMS Intake & Commit, and Honesty Guardrails.
+```
+
+See [AUDIT_TEMPLATE.md](../../.claude/skills/_shared/AUDIT_TEMPLATE.md) for the
+full shared template.
+
+### Size Limits
+
+Audit skills follow the standard size limits (< 500 lines warning, 800 error).
+When a skill exceeds 500 lines, extract content to companion files in the same
+directory (e.g., `prompts.md`, `domains.md`). See SKILL_STANDARDS.md for
+extraction strategy.
 
 ### Required Agent Prompt Elements
 
@@ -150,6 +151,9 @@ Each agent prompt MUST include:
 - FALSE_POSITIVES.jsonl exclusion instructions
 - Category and fingerprint format
 - Evidence requirements
+- **COMPLETE return protocol**:
+  `COMPLETE: [agent-id] wrote N findings to [path]`
+- **Dependency constraints**: Document which agents are independent
 
 ---
 
@@ -329,6 +333,7 @@ and generate all required files.
 
 ## Version History
 
-| Version | Date       | Change           |
-| ------- | ---------- | ---------------- |
-| 1.0     | 2026-02-14 | Initial creation |
+| Version | Date       | Change                                                    |
+| ------- | ---------- | --------------------------------------------------------- |
+| 1.1     | 2026-02-25 | Reference shared SKILL_STANDARDS.md and AUDIT_TEMPLATE.md |
+| 1.0     | 2026-02-14 | Initial creation                                          |

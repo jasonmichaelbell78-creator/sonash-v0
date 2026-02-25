@@ -30,6 +30,16 @@ audit owns hook internals).
 
 ---
 
+## When to Use
+
+- |
+- User explicitly invokes `/hook-ecosystem-audit`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## CRITICAL RULES (Read First)
 
 1. **CHECK for saved progress first** — resume from
@@ -105,6 +115,16 @@ resumes exactly where it left off — no repeated questions, no lost decisions.
 ### On Audit Completion (Phase 4)
 
 After the summary is presented, delete the progress file (audit is complete).
+
+---
+
+## Dependency Constraints
+
+This skill runs as a single-threaded sequential workflow (run script, display
+dashboard, walk through findings one-by-one). It does not spawn parallel agents
+internally. When invoked as part of `/comprehensive-ecosystem-audit`, it runs as
+one of 4 independent parallel agents in Stage 1 -- no ordering required relative
+to the session, TDMS, or PR audit agents.
 
 ---
 

@@ -20,6 +20,16 @@ for user approval.
 
 ---
 
+## When to Use
+
+- Tasks related to verify-technical-debt
+- User explicitly invokes `/verify-technical-debt`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Overview
 
 **Phase 1 (Verify):** Walk through NEW items, check if each issue still exists
@@ -308,3 +318,11 @@ Mark as RESOLVED when:
 - `sonarcloud` - Import from SonarCloud
 - `add-debt` - Add items manually or from PR reviews
 - `task-next` - Show next prioritized tasks from ROADMAP.md
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

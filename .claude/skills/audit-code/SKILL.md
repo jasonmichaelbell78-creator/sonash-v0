@@ -9,6 +9,16 @@ estimated_time_sequential: 50 min
 
 # Single-Session Code Review Audit
 
+## When to Use
+
+- Tasks related to audit-code
+- User explicitly invokes `/audit-code`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Execution Mode Selection
 
 | Condition                                 | Mode       | Time    |
@@ -73,7 +83,19 @@ Task 1: hygiene-and-types agent - audit code hygiene and TypeScript patterns
 Task 2: framework-and-testing agent - audit React/Next.js patterns and test
 coverage Task 3: security-and-debugging agent - audit security, AI patterns,
 debugging
+
+Each agent prompt MUST end with:
+
+CRITICAL RETURN PROTOCOL:
+
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: [agent-id] wrote N findings to [output-path]`
+- Do NOT return full findings content — orchestrator checks completion via file
 ```
+
+**Dependency constraints:** All 3 agents are independent -- no ordering
+required. Each writes to a separate JSONL section. Results are merged after all
+agents complete.
 
 ### Coordination Rules
 
@@ -265,66 +287,6 @@ If outdated, note discrepancies but proceed with current values.
 
 ---
 
-## Evidence Requirements (MANDATORY)
-
-**All findings MUST include:**
-
-1. **File:Line Reference** - Exact location (e.g., `lib/utils.ts:45`)
-2. **Code Snippet** - The actual problematic code (3-5 lines of context)
-3. **Verification Method** - How you confirmed this is an issue (grep output,
-   lint output)
-4. **Standard Reference** - ESLint rule, TypeScript error, or React best
-   practice citation
-
-**Confidence Levels:**
-
-- **HIGH (90%+)**: Confirmed by external tool (ESLint, TypeScript, tests),
-  verified file exists, code snippet matches
-- **MEDIUM (70-89%)**: Found via pattern search, file verified, but no tool
-  confirmation
-- **LOW (<70%)**: Pattern match only, needs manual verification
-
-**S0/S1 findings require:**
-
-- HIGH or MEDIUM confidence (LOW confidence S0/S1 must be escalated)
-- Dual-pass verification (re-read the code after initial finding)
-- Cross-reference with ESLint or TypeScript output
-
----
-
-## Cross-Reference Validation
-
-Before finalizing findings, cross-reference with:
-
-1. **ESLint output** - Mark findings as "TOOL_VALIDATED" if ESLint flagged same
-   issue
-2. **TypeScript errors** - Mark type findings as "TOOL_VALIDATED" if tsc flagged
-   same issue
-3. **Test failures** - Mark testing findings as "TOOL_VALIDATED" if test suite
-   flagged same area
-4. **Prior audits** - Check `docs/audits/single-session/code/` for duplicate
-   findings
-
-Findings without tool validation should note: `"cross_ref": "MANUAL_ONLY"`
-
----
-
-## Dual-Pass Verification (S0/S1 Only)
-
-For all S0 (Critical) and S1 (High) findings:
-
-1. **First Pass**: Identify the issue, note file:line and initial evidence
-2. **Second Pass**: Re-read the actual code in context
-   - Verify the issue is real and not a false positive
-   - Check for existing handling or intentional patterns
-   - Confirm file and line still exist
-3. **Decision**: Mark as CONFIRMED or DOWNGRADE (with reason)
-
-Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or
-`"verified": "DOWNGRADED_TO_S2"`
-
----
-
 ## Output Requirements
 
 **1. Markdown Summary (display to user):**
@@ -369,54 +331,7 @@ Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or
 
 Create file: `docs/audits/single-session/code/audit-[YYYY-MM-DD].jsonl`
 
-**CRITICAL - Use JSONL_SCHEMA_STANDARD.md format:**
-
-```json
-{
-  "category": "code-quality",
-  "title": "Short specific title",
-  "fingerprint": "code-quality::path/to/file.ts::identifier",
-  "severity": "S0|S1|S2|S3",
-  "effort": "E0|E1|E2|E3",
-  "confidence": 90,
-  "files": ["path/to/file.ts:123"],
-  "why_it_matters": "1-3 sentences explaining impact",
-  "suggested_fix": "Concrete remediation direction",
-  "acceptance_tests": ["Array of verification steps"],
-  "evidence": ["code snippet", "grep output", "lint output"]
-}
-```
-
-**For S0/S1 findings, ALSO include verification_steps:**
-
-```json
-{
-  "verification_steps": {
-    "first_pass": {
-      "method": "grep|tool_output|file_read|code_search",
-      "evidence_collected": ["initial evidence"]
-    },
-    "second_pass": {
-      "method": "contextual_review|exploitation_test|manual_verification",
-      "confirmed": true,
-      "notes": "Confirmation notes"
-    },
-    "tool_confirmation": {
-      "tool": "eslint|typescript|sonarcloud|patterns_check|NONE",
-      "reference": "Tool output or NONE justification"
-    }
-  }
-}
-```
-
-**⚠️ REQUIRED FIELDS (per JSONL_SCHEMA_STANDARD.md):**
-
-- `category` - MUST be `code-quality` (normalized from
-  Hygiene/Types/Framework/etc.)
-- `fingerprint` - Format: `<category>::<primary_file>::<identifier>`
-- `files` - Array with file paths (include line as `file.ts:123`)
-- `confidence` - Number 0-100 (not string)
-- `acceptance_tests` - Non-empty array of verification steps
+**Category field:** `category` MUST be `code-quality`
 
 **3. Markdown Report (save to file):**
 
@@ -426,194 +341,29 @@ Full markdown report with all findings, baselines, and recommendations.
 
 ---
 
-## Context Recovery
+## Standard Audit Procedures
 
-If the session is interrupted (compaction, timeout, crash):
+> Read `.claude/skills/_shared/AUDIT_TEMPLATE.md` for: Evidence Requirements,
+> Dual-Pass Verification, Cross-Reference Validation, JSONL Output Format,
+> Context Recovery, Post-Audit Validation, MASTER_DEBT Cross-Reference,
+> Interactive Review, TDMS Intake & Commit, Documentation References, Agent
+> Return Protocol, and Honesty Guardrails.
 
-1. **Check for state file:**
-   `.claude/state/audit-code-quality-<date>.state.json`
-2. **If state file exists and is < 24 hours old:** Resume from last completed
-   stage
-3. **If state file is stale (> 24 hours):** Start fresh — findings may be
-   outdated
-4. **Always preserve:** Any partial findings already written to the output
-   directory
+**Skill-specific TDMS intake:**
 
-### State File Format
-
-```json
-{
-  "audit_type": "code-quality",
-  "date": "YYYY-MM-DD",
-  "stage_completed": "analysis|review|report",
-  "partial_findings_path": "docs/audits/single-session/code/audit-YYYY-MM-DD/",
-  "last_updated": "ISO-8601"
-}
+```bash
+node scripts/debt/intake-audit.js <output.jsonl> --source "audit-code-<date>"
 ```
-
----
-
-## Post-Audit Validation
-
-**Before finalizing the audit:**
-
-1. **Run Validation Script:**
-
-   ```bash
-   node scripts/validate-audit.js docs/audits/single-session/code/audit-[YYYY-MM-DD].jsonl
-   ```
-
-2. **Validation Checks:**
-   - All findings have required fields
-   - No matches in FALSE_POSITIVES.jsonl (or documented override)
-   - No duplicate findings
-   - All S0/S1 have HIGH or MEDIUM confidence
-   - All S0/S1 have DUAL_PASS_CONFIRMED or TOOL_VALIDATED
-
-3. **If validation fails:**
-   - Review flagged findings
-   - Fix or document exceptions
-   - Re-run validation
-
----
-
-## MASTER_DEBT Cross-Reference (MANDATORY — before Interactive Review)
-
-**Do NOT present findings for review until they have been cross-referenced
-against MASTER_DEBT.jsonl.** Skipping this step causes duplicate TDMS intake and
-inflated debt counts.
-
-### Process
-
-1. Read `docs/technical-debt/MASTER_DEBT.jsonl` (all entries)
-2. For each finding, search MASTER_DEBT by:
-   - Same file path (exact or substring match)
-   - Similar title/description (semantic overlap)
-   - Same root cause (e.g., same pattern in different wording)
-3. Classify each finding as:
-   - **Already Tracked**: Confident match in MASTER_DEBT → skip intake
-   - **New Finding**: No matching DEBT entry → proceed to interactive review
-   - **Possibly Related**: Partial overlap → flag for manual review
-4. Present only **New** and **Possibly Related** findings in the Interactive
-   Review below. Already Tracked items are skipped entirely.
-
----
-
-## Interactive Review (MANDATORY — after MASTER_DEBT cross-reference, before TDMS intake)
-
-**Do NOT ingest findings into TDMS until the user has reviewed them.**
-
-### Presentation Format
-
-Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
-then S1, S2, S3). Within each severity, group by theme for coherence. Each item
-shows:
-
-```
-### DEBT-XXXX: [Title]
-**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
-**Current:** [What exists now]
-**Suggested Fix:** [Concrete remediation]
-**Acceptance Tests:** [How to verify]
-**Counter-argument:** [Why NOT to do this]
-**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
-```
-
-Do NOT present all items at once — batches of 3-5 keep decisions manageable.
-Wait for user decisions on each batch before presenting the next.
-
-### Decision Tracking (Compaction-Safe)
-
-Create `docs/audits/single-session/code/REVIEW_DECISIONS.md` after the first
-batch to track all decisions. Update after each batch. This file survives
-context compaction.
-
-### Processing Decisions
-
-After each batch:
-
-- Record decisions in REVIEW_DECISIONS.md
-- If DECLINED: remove from findings before TDMS intake
-- If DEFERRED: keep in TDMS as NEW status for future planning
-- If ACCEPTED: proceed to TDMS intake
-
-### Post-Review Summary
-
-After ALL findings reviewed, summarize:
-
-- Total accepted / declined / deferred
-- Proceed to TDMS Intake with accepted + deferred items only
-
----
-
-## TDMS Intake & Commit
-
-1. Display summary to user
-2. Confirm files saved to `docs/audits/single-session/code/`
-3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Validate CANON schema** (if audit updates CANON files):
-   ```bash
-   npm run validate:canon
-   ```
-   Ensure all CANON files pass validation before committing.
-5. **Update AUDIT_TRACKER.md** - Add entry to "Code Audits" table:
-   - Date: Today's date
-   - Session: Current session number from SESSION_CONTEXT.md
-   - Commits Covered: Number of commits since last code audit
-   - Files Covered: Number of files analyzed
-   - Findings: Total count (e.g., "3 S1, 5 S2, 2 S3")
-   - Reset Threshold: YES (single-session audits reset that category's
-     threshold)
-   - Run:
-     `node scripts/reset-audit-triggers.js --type=single --category=code --apply`
-6. **TDMS Integration (MANDATORY)** - Ingest findings to canonical debt store:
-   ```bash
-   node scripts/debt/intake-audit.js docs/audits/single-session/code/audit-[YYYY-MM-DD].jsonl --source "audit-code-[DATE]"
-   ```
-   This assigns DEBT-XXXX IDs and adds to
-   `docs/technical-debt/MASTER_DEBT.jsonl`. See
-   `docs/technical-debt/PROCEDURE.md` for the full TDMS workflow.
-7. Ask: "Would you like me to fix any of these issues now?"
-
----
-
-## Threshold System
-
-### Category-Specific Thresholds
-
-This audit **resets the code category threshold** in
-`docs/audits/AUDIT_TRACKER.md` (single-session audits reset their own category;
-multi-AI audits reset all thresholds). Reset means the commit counter for this
-category starts counting from zero after this audit.
 
 **Code audit triggers (check AUDIT_TRACKER.md):**
 
 - 25+ commits since last code audit, OR
 - 15+ code files modified since last code audit
 
-### Multi-AI Escalation
-
-Multi-AI audits are triggered by total commits or time elapsed (not single audit
-counts). Check `npm run review:check` for current multi-AI trigger status.
-
 ---
 
-## Documentation References
+## Version History
 
-Before running this audit, review:
-
-### TDMS Integration (Required)
-
-- [PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
-- [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) - Canonical debt
-  store
-- Intake command:
-  `node scripts/debt/intake-audit.js <output.jsonl> --source "audit-code-<date>"`
-
-### Documentation Standards (Required)
-
-- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Output
-  format requirements and TDMS field mapping
-- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - 5-tier doc
-  hierarchy
-- [CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) - Anti-patterns to check
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

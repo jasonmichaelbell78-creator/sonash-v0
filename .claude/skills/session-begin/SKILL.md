@@ -37,6 +37,16 @@ started:
 
 Before starting any work, complete these verification steps:
 
+## When to Use
+
+- Tasks related to session-begin
+- User explicitly invokes `/session-begin`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## 0. Secrets Decryption Check (REMOTE SESSIONS)
 
 **Check if MCP tokens need decrypting:**
@@ -338,3 +348,11 @@ full dependency matrix.
 ---
 
 Ready to begin session. What would you like to work on?
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

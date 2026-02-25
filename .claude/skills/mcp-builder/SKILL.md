@@ -10,6 +10,16 @@ license: Complete terms in LICENSE.txt
 
 # MCP Server Development Guide
 
+## When to Use
+
+- Guide for creating high-quality MCP (Model Context Protocol) servers that
+- User explicitly invokes `/mcp-builder`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Overview
 
 To create high-quality MCP (Model Context Protocol) servers that enable LLMs to
@@ -409,3 +419,11 @@ Load these resources as needed during development:
   - XML format specifications
   - Example questions and answers
   - Running an evaluation with the provided scripts
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

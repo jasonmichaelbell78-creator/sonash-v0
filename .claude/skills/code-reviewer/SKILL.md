@@ -13,6 +13,16 @@ description:
 
 Code review toolkit tailored for the SoNash codebase.
 
+## When to Use
+
+- Tasks related to code-reviewer
+- User explicitly invokes `/code-reviewer`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Scope — When to Use
 
 - **Ad-hoc code reviews** during development (reviewing changes before moving
@@ -179,3 +189,11 @@ npm run patterns:check
 - `docs/agent_docs/CODE_PATTERNS.md` — 230+ patterns from 259 reviews
 - `docs/agent_docs/SECURITY_CHECKLIST.md` — Pre-write security checklist
 - `docs/agent_docs/FIX_TEMPLATES.md` — Standard fix patterns
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

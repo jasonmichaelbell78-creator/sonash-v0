@@ -13,6 +13,16 @@ description:
 
 Complete toolkit for senior backend with modern tools and best practices.
 
+## When to Use
+
+- Comprehensive backend development skill for building scalable backend systems
+- User explicitly invokes `/senior-backend`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Quick Start
 
 ### Main Capabilities
@@ -223,3 +233,11 @@ Check the comprehensive troubleshooting section in
 - Workflow Guide: `references/database_optimization_guide.md`
 - Technical Guide: `references/backend_security_practices.md`
 - Tool Scripts: `scripts/` directory
+
+---
+
+## Version History
+
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.0     | 2026-02-25 | Initial implementation |

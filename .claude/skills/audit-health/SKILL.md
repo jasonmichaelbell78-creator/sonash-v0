@@ -13,6 +13,16 @@ description:
 
 # Audit System Health Check
 
+## When to Use
+
+- Meta-check for audit system health — runs diagnostics on domain audits and
+- User explicitly invokes `/audit-health`
+
+## When NOT to Use
+
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
+
 ## Purpose
 
 Quick meta-check that verifies the audit ecosystem is healthy and suggests which
@@ -72,7 +82,7 @@ Report any missing prerequisites that would block future audits.
 
 ---
 
-## Step 4b: Ecosystem Audit Health
+## Step 5: Ecosystem Audit Health
 
 Review the ecosystem audit checks (7-9) from the health check output and compile
 a detailed table:
@@ -95,7 +105,7 @@ Replace `{status}` with PASS or FAIL based on health check results.
 
 ---
 
-## Step 5: Summary and Recommendations
+## Step 6: Summary and Recommendations
 
 Compile a summary report:
 
