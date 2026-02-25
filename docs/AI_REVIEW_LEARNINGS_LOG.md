@@ -1062,6 +1062,17 @@ _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
   - **Hardcoded finding IDs**: `id: "SIA-400"` in loop produces duplicates.
     Fixed with counter suffix.
 
+### Review #378: PR #392 R3 (2026-02-25)
+
+- **Source**: Qodo PR Suggestions (5)
+- **Total Items**: 5 (3 fixed, 2 deferred pipeline-generated)
+- **Key Fix**: `path.dirname` on Windows returns backslash paths even for POSIX
+  inputs — must use string-based `posixDirname` for cross-platform.
+- **Pattern**: `\b` is NOT valid in POSIX ERE (`git grep -E`). Use
+  `(^|[^[:alnum:]_$])` as word boundary equivalent.
+- **Pattern**: Security/lint checkers should fail-open (return true = flag it)
+  not fail-closed (return false = skip it) on read errors.
+
 ### Review #377: PR #392 R2 (2026-02-25)
 
 - **Source**: SonarCloud (1), Qodo Compliance (3 repeat-rejected), Qodo PR

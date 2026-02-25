@@ -20,7 +20,7 @@
 
 import { execFileSync } from "node:child_process";
 import { lstatSync, readFileSync } from "node:fs";
-import { dirname } from "node:path";
+// No path.dirname import — it returns backslash paths on Windows even for POSIX inputs
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB — skip huge files
 const SEARCH_DIRS = ["scripts/", ".claude/skills/", ".claude/hooks/"];
@@ -36,15 +36,16 @@ const BLOCKING = process.argv.includes("--blocking");
 const KNOWN_PATTERN_RULES = [
   {
     name: "statSync-without-lstat",
-    searchPattern: String.raw`\bstatSync\s*\(`,
-    excludeFilePattern: /\bisSymbolicLink\s*\(/,
+    // \b is not valid in POSIX ERE (git grep -E) — use character class boundary
+    searchPattern: String.raw`(^|[^[:alnum:]_$])statSync[[:space:]]*\(`,
+    excludeFilePattern: /(^|[^A-Za-z0-9_$])isSymbolicLink\s*\(/,
     description: "statSync without symlink check — use lstatSync + isSymbolicLink() guard",
     recommended: "Replace statSync() with lstatSync() and add isSymbolicLink() skip",
   },
   {
     name: "path-resolve-without-containment",
-    searchPattern: String.raw`path\.resolve\s*\(`,
-    excludeFilePattern: /\bvalidatePathInDir\s*\(/,
+    searchPattern: String.raw`path\.resolve[[:space:]]*\(`,
+    excludeFilePattern: /(^|[^A-Za-z0-9_$])validatePathInDir\s*\(/,
     description: "path.resolve() without path containment guard",
     recommended: "Add validatePathInDir() or startsWith(allowedDir) check after path.resolve()",
   },
@@ -56,6 +57,13 @@ const toPosixPath = (p) => String(p).replaceAll("\\", "/");
 /** Convert repo-relative paths into an FS-friendly path */
 const toFsPath = (p) =>
   process.platform === "win32" ? String(p).replaceAll("/", "\\") : String(p);
+
+/** POSIX-safe dirname — works on normalized forward-slash paths */
+const posixDirname = (p) => {
+  const s = toPosixPath(p).replace(/\/+$/, "");
+  const idx = s.lastIndexOf("/");
+  return idx <= 0 ? "." : s.slice(0, idx);
+};
 
 // Minimum function name length to avoid noise from common names
 const MIN_FUNC_NAME_LENGTH = 6;
@@ -396,7 +404,7 @@ function filterUnguardedFiles(files, excludePattern) {
         const msg = err instanceof Error ? err.message.slice(0, 120) : "unknown error";
         console.warn(`  [pattern-guard] unable to read ${file}: ${msg}`);
       }
-      return false; // Skip unreadable files rather than false-positive
+      return true; // Fail-open: treat unreadable as unguarded to avoid false-negatives
     }
   });
 }
@@ -419,9 +427,9 @@ function checkKnownPatterns(changedPaths) {
 
     // Use directory overlap — a fixed file won't appear in uniqueMatches anymore
     // (pattern removed), so check if any changed file shares a directory with unguarded files
-    const unguardedDirs = new Set(unguardedFiles.map((f) => toPosixPath(dirname(f))));
+    const unguardedDirs = new Set(unguardedFiles.map((f) => toPosixPath(posixDirname(f))));
     const changedInArea = [...posixChangedPaths].some((f) =>
-      unguardedDirs.has(toPosixPath(dirname(f)))
+      unguardedDirs.has(toPosixPath(posixDirname(f)))
     );
     const unchangedFiles = unguardedFiles.filter((f) => !posixChangedPaths.has(f));
 
