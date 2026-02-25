@@ -20,6 +20,7 @@
 
 import { execFileSync } from "node:child_process";
 import { lstatSync, readFileSync } from "node:fs";
+import { dirname } from "node:path";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB — skip huge files
 const SEARCH_DIRS = ["scripts/", ".claude/skills/", ".claude/hooks/"];
@@ -50,7 +51,11 @@ const KNOWN_PATTERN_RULES = [
 ];
 
 /** Normalize path separators for cross-platform comparison */
-const toPosixPath = (p) => p.replaceAll("\\", "/");
+const toPosixPath = (p) => String(p).replaceAll("\\", "/");
+
+/** Convert repo-relative paths into an FS-friendly path */
+const toFsPath = (p) =>
+  process.platform === "win32" ? String(p).replaceAll("/", "\\") : String(p);
 
 // Minimum function name length to avoid noise from common names
 const MIN_FUNC_NAME_LENGTH = 6;
@@ -229,7 +234,7 @@ function shouldSkipMatch(file) {
   if (IGNORE_DIRS.some((d) => file.includes(d))) return true;
   if (file.includes(".test.") || file.includes(".spec.")) return true;
   try {
-    const stat = lstatSync(file);
+    const stat = lstatSync(toFsPath(file));
     if (stat.isSymbolicLink()) return true;
     return stat.size > MAX_FILE_SIZE;
   } catch {
@@ -276,7 +281,7 @@ function searchForFunction(funcName) {
     if (err && typeof err === "object" && "status" in err && err.status !== 1) {
       if (VERBOSE)
         console.warn(
-          `  [func-search] git grep failed for ${funcName}: ${String(err).slice(0, 150)}`
+          `  [func-search] git grep failed for ${funcName}: ${err instanceof Error ? err.message.slice(0, 150) : "unknown error"}`
         );
     }
   }
@@ -366,7 +371,10 @@ function findPatternMatches(rule) {
     }
   } catch (err) {
     if (!err || typeof err !== "object" || !("status" in err) || err.status !== 1) {
-      if (VERBOSE) console.warn(`  [pattern-search] git grep failed: ${String(err).slice(0, 150)}`);
+      if (VERBOSE)
+        console.warn(
+          `  [pattern-search] git grep failed: ${err instanceof Error ? err.message.slice(0, 150) : "unknown error"}`
+        );
     }
   }
 
@@ -380,10 +388,15 @@ function filterUnguardedFiles(files, excludePattern) {
   if (!excludePattern) return files;
   return files.filter((file) => {
     try {
-      const content = readFileSync(file, "utf8");
+      const content = readFileSync(toFsPath(file), "utf8");
+      excludePattern.lastIndex = 0;
       return !excludePattern.test(content);
-    } catch {
-      return true; // If we can't read it, flag it
+    } catch (err) {
+      if (VERBOSE) {
+        const msg = err instanceof Error ? err.message.slice(0, 120) : "unknown error";
+        console.warn(`  [pattern-guard] unable to read ${file}: ${msg}`);
+      }
+      return false; // Skip unreadable files rather than false-positive
     }
   });
 }
@@ -404,9 +417,12 @@ function checkKnownPatterns(changedPaths) {
     const unguardedFiles = filterUnguardedFiles(uniqueMatches, rule.excludeFilePattern);
     if (unguardedFiles.length === 0) continue;
 
-    // Check uniqueMatches (not unguardedFiles) — a fixed file is no longer unguarded
-    // but still indicates the developer is working in this area
-    const changedInArea = uniqueMatches.some((f) => posixChangedPaths.has(f));
+    // Use directory overlap — a fixed file won't appear in uniqueMatches anymore
+    // (pattern removed), so check if any changed file shares a directory with unguarded files
+    const unguardedDirs = new Set(unguardedFiles.map((f) => toPosixPath(dirname(f))));
+    const changedInArea = [...posixChangedPaths].some((f) =>
+      unguardedDirs.has(toPosixPath(dirname(f)))
+    );
     const unchangedFiles = unguardedFiles.filter((f) => !posixChangedPaths.has(f));
 
     if (changedInArea && unchangedFiles.length > 0) {

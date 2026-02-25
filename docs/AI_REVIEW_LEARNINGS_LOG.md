@@ -1062,7 +1062,21 @@ _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
   - **Hardcoded finding IDs**: `id: "SIA-400"` in loop produces duplicates.
     Fixed with counter suffix.
 
-### Review #375: PR #392 R1 (2026-02-25)
+### Review #377: PR #392 R2 (2026-02-25)
+
+- **Source**: SonarCloud (1), Qodo Compliance (3 repeat-rejected), Qodo PR
+  Suggestions (9)
+- **Total Items**: 13 (6 fixed, 3 repeat-rejected, 4 deferred)
+- **Key Fix**: `changedInArea` R1 fix was incomplete — checking `uniqueMatches`
+  still misses files where the pattern was removed. Directory overlap approach
+  correctly detects when dev is working in an area with the pattern.
+- **Pattern**: `String(err)` on exec error objects produces `[object Object]` —
+  use `err.message` or structured access instead.
+- **Pattern**: Always reset `regex.lastIndex = 0` before `.test()` in loops to
+  prevent stateful regex bugs.
+- **3 Qodo Compliance items repeat-rejected** (same justification as R1 #376)
+
+### Review #376: PR #392 R1 (2026-02-25)
 
 - **Source**: SonarCloud (2), Qodo Compliance (1), Gemini (2), Qodo PR
   Suggestions (13)
