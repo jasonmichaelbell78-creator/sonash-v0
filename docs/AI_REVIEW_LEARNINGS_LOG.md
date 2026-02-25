@@ -359,6 +359,15 @@ accumulate.
 <details>
 <summary>Previous Consolidation (#1)</summary>
 
+- **Date:** 2026-02-25
+- **Reviews consolidated:** #358-#378
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#1)</summary>
+
 - **Date:** 2026-02-24
 - **Reviews consolidated:** #358-#375
 - **Recurring patterns:**
