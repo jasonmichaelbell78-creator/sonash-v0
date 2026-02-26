@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 5.9 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 6.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-26 (Session #190 start)
+2026-02-26 (Session #190)
 
 ## Purpose
 
@@ -51,6 +51,18 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 
 ## Recent Session Summaries
 
+**Session #190** (OVER-ENGINEERING RESOLUTION + PR #394 REVIEW):
+
+- Resolved over-engineering findings #3-#15: deleted 6 stub skills (5,595
+  lines), 5 dead app files (650 lines), 3 dead scripts, markitdown skill
+- ESLint AST migration: 25 regex patterns migrated to `eslint-plugin-sonash`
+  v3.0 (Phases 1-2 complete)
+- PR #394 R1 review: 86 items parsed, 42 fixed, 16 enhancement suggestions
+  analyzed (see `.claude/plans/ESLINT_ENHANCEMENT_SUGGESTIONS_PLAN.md`)
+- DEBT-7595, DEBT-7596 created for 2 deferred Qodo suggestions
+- Learning log Review #369 added
+- TDMS: 4,628 items (238 resolved)
+
 **Session #189** (OVER-ENGINEERING AUDIT):
 
 - Deep-plan research: 6 parallel agents identified 15 ranked over-engineering
@@ -68,13 +80,6 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
   hardening
 - Skill ecosystem overhaul prep, branch sync + session-end
 - TDMS: 4,610 items (238 resolved), 22 S0, 703 S1
-
-**Session #186** (SKILL ECOSYSTEM OVERHAUL):
-
-- Trimmed 20 SKILL.md files under 500 lines (-9,221 lines), 10 companion files
-  created
-- Added `_shared/SKILL_STANDARDS.md` + `_shared/AUDIT_TEMPLATE.md`
-- TDMS: 4,606 items (238 resolved), 22 S0, 703 S1
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -108,12 +113,11 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 
 ### Immediate Priority (Next Session)
 
-1. **Continue over-engineering findings walkthrough** — Findings #3-#15 pending
-   interactive review (see `.claude/state/over-engineering-findings.md`)
-2. **Finding #3**: 22 Audit Skills (most never run) — skill proliferation,
-   duplicated lib/ code
-3. **Finding #4**: 100K Lines of Scripts for a JSONL File
-4. **Finding #5**: TDMS Destructive Overwrite Pattern (generate-views.js)
+1. **ESLint enhancement suggestions plan** — 11 items ready for implementation
+   (see `.claude/plans/ESLINT_ENHANCEMENT_SUGGESTIONS_PLAN.md`), ~2-3 hours
+2. **PR #394 merge** — review cycle in progress, may need R2 fixes
+3. **Over-engineering findings** — #3-#15 resolved; may need follow-up on
+   deferred items (#3 audit skills, #7+ low-priority)
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
