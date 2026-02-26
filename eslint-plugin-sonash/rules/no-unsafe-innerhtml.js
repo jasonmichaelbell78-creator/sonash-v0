@@ -27,15 +27,33 @@ module.exports = {
         const left = node.left;
 
         if (
-          left.type === "MemberExpression" &&
-          left.property.type === "Identifier" &&
-          left.property.name === "innerHTML"
+          left.type !== "MemberExpression" ||
+          left.property.type !== "Identifier" ||
+          left.property.name !== "innerHTML"
         ) {
-          context.report({
-            node,
-            messageId: "unsafeInnerHTML",
-          });
+          return;
         }
+
+        // Allow DOMPurify.sanitize() on the right side
+        const right = node.right;
+        if (right?.type === "CallExpression") {
+          const rCallee =
+            right.callee.type === "ChainExpression" ? right.callee.expression : right.callee;
+          if (
+            rCallee.type === "MemberExpression" &&
+            rCallee.object?.type === "Identifier" &&
+            rCallee.object.name === "DOMPurify" &&
+            rCallee.property?.type === "Identifier" &&
+            rCallee.property.name === "sanitize"
+          ) {
+            return;
+          }
+        }
+
+        context.report({
+          node,
+          messageId: "unsafeInnerHTML",
+        });
       },
     };
   },

@@ -1242,6 +1242,46 @@ _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 
 ---
 
+### Review #391: PR #394 R8 (2026-02-26)
+
+- **Source**: SonarCloud (1 — optional chain), Qodo Compliance (4), Qodo PR
+  Suggestions (14), CI Pattern Compliance (blocking — pre-existing)
+- **PR**: PR #394 — ESLint plugin + TDMS script robustness round
+- **Items**: 17 unique → 13 fixed, 3 rejected, 1 pre-existing (CI)
+- **Fixed**: (1) `no-unsafe-division` optional chain cleanup (SonarCloud); (2)
+  `hasStringInterpolation()` no longer false-positives on `"a" + "b"` static
+  concatenation; (3) `getCalleeName()` now handles computed members
+  `obj["prop"]`; (4) `getCalleeName()` unwraps TS-ESTree wrapper nodes
+  (TSNonNullExpression, TSAsExpression, etc.); (5) `no-non-atomic-write`
+  `walkAstNodes` stops at function boundaries — nested function renameSync no
+  longer falsely satisfies outer writeFileSync; (6) `no-empty-path-check` skips
+  non-identifier receivers to avoid false positives on expressions; (7)
+  `no-unescaped-regexp-input` allows `escapeRegExp()` helper calls; (8)
+  `no-unsafe-innerhtml` allows `DOMPurify.sanitize()` on RHS; (9)
+  `normalize-file-path.js` preserves UNC `//server/share` paths + re-strips
+  leading slash after org prefix removal; (10) `normalize-category.js` coerces
+  non-string input to String before `.toLowerCase()`; (11)
+  `generate-content-hash.js` now uses shared `normalizeFilePath()` instead of
+  inline regex; (12) `generate-views.js` ingest loop warns on invalid JSON lines
+  instead of silently swallowing; (13) `generate-views.js` `appendNewItems`
+  checks if MASTER_DEBT.jsonl ends with newline before appending to prevent
+  JSONL line merge corruption
+- **Rejected**: (a) Qodo Compliance "secure logging" — internal CLI, line slice
+  is safe and aids debugging; (b) Qodo Compliance "path exposure" — internal
+  CLI, filesystem paths are expected output; (c) Qodo Compliance "untrusted JSON
+  ingestion" — internal TDMS tooling, schema validation already handled by
+  `ensureDefaults()`
+- **Key Learning**: (1) AST utility functions should handle both JS and TS node
+  wrappers — TS-ESTree wraps nodes in TSNonNullExpression etc. which breaks bare
+  type checks. Use a while-loop unwrapper. (2) `BinaryExpression` with `+`
+  operator needs deeper inspection — two static string literals concatenated
+  (`"a" + "b"`) is NOT interpolation, only dynamic values are. (3) JSONL append
+  operations must check trailing newline — `appendFileSync` doesn't add a
+  separator, so missing trailing newline in the master file corrupts the
+  boundary.
+
+---
+
 ### Review #390: PR #394 R7 (2026-02-26)
 
 - **Source**: SonarCloud (5 new — CC 17>15, 2 move-to-outer-scope, 2 optional

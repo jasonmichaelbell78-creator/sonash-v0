@@ -1,6 +1,7 @@
 "use strict";
 
 const crypto = require("node:crypto");
+const normalizeFilePath = require("./normalize-file-path");
 
 /**
  * Generate a content-based SHA256 hash for TDMS dedup.
@@ -11,7 +12,7 @@ const crypto = require("node:crypto");
  * @returns {string} Hex SHA256 hash
  */
 function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
+  const normalizedFile = normalizeFilePath(item.file || "", { stripRepoRoot: true }).toLowerCase();
   const hashInput = [
     normalizedFile,
     item.line || 0,

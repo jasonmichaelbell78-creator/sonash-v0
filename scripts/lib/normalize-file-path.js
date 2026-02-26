@@ -23,8 +23,11 @@ function normalizeFilePath(filePath, options = {}) {
   // Convert Windows backslashes to forward slashes
   let normalized = input.replaceAll("\\", "/");
 
-  // Remove leading ./ and all leading slashes
-  normalized = normalized.replace(/^\.\//, "").replace(/^\/+/, "");
+  // Remove leading ./ and leading slashes (preserve UNC paths //server/share)
+  normalized = normalized.replace(/^\.\//, "");
+  if (!normalized.startsWith("//")) {
+    normalized = normalized.replace(/^\/+/, "");
+  }
 
   // Optionally strip absolute paths that include the repo root
   if (stripRepoRoot) {
@@ -45,6 +48,10 @@ function normalizeFilePath(filePath, options = {}) {
     const isWindowsDrive = beforeColon.length === 1 && /^[A-Za-z]$/.test(beforeColon);
     if (!isWindowsDrive) {
       normalized = normalized.substring(colonIndex + 1);
+      // Re-strip leading slashes after prefix removal (but preserve UNC)
+      if (!normalized.startsWith("//")) {
+        normalized = normalized.replace(/^\/+/, "");
+      }
     }
   }
 

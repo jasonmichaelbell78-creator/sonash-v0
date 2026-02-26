@@ -46,6 +46,20 @@ module.exports = {
           }
         }
 
+        // Allow common explicit escaping helpers (e.g., escapeRegExp(input))
+        if (firstArg.type === "CallExpression") {
+          const argCallee = firstArg.callee;
+          const unwrapped = argCallee.type === "ChainExpression" ? argCallee.expression : argCallee;
+          if (
+            (unwrapped.type === "Identifier" && /escape.*regexp/i.test(unwrapped.name)) ||
+            (unwrapped.type === "MemberExpression" &&
+              unwrapped.property?.type === "Identifier" &&
+              /escape.*regexp/i.test(unwrapped.property.name))
+          ) {
+            return;
+          }
+        }
+
         // Flag: Identifier, MemberExpression, template literals with expressions,
         // or string concatenation with non-literal parts
         context.report({ node, messageId: "unescapedInput" });

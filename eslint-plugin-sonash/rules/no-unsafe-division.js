@@ -10,9 +10,9 @@
 function getCheckedName(test) {
   if (!test || test.type !== "BinaryExpression") return null;
   let nameNode;
-  if (test.operator === ">" && test.right?.type === "Literal" && test.right?.value === 0) {
+  if (test.operator === ">" && test.right?.type === "Literal" && test.right.value === 0) {
     nameNode = test.left;
-  } else if (test.operator === "<" && test.left?.type === "Literal" && test.left?.value === 0) {
+  } else if (test.operator === "<" && test.left?.type === "Literal" && test.left.value === 0) {
     nameNode = test.right;
   }
   if (!nameNode) return null;

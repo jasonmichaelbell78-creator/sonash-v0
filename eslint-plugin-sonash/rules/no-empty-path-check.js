@@ -60,7 +60,7 @@ module.exports = {
         const receiver = callee.object;
         const receiverName = receiver?.type === "Identifier" ? receiver.name : null;
         if (!receiverName) {
-          context.report({ node, messageId: "missingEmptyCheck" });
+          // Can't reliably enforce pattern when receiver isn't a simple identifier
           return;
         }
 

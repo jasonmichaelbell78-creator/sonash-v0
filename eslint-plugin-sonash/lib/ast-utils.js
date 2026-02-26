@@ -13,13 +13,30 @@
  */
 function getCalleeName(callee) {
   if (!callee) return null;
-  // Unwrap ChainExpression (optional chaining: fs?.readFileSync())
-  const node = callee.type === "ChainExpression" ? callee.expression : callee;
+  // Unwrap wrapper nodes: optional chaining + TS-ESTree wrappers
+  let node = callee;
+  while (node) {
+    if (node.type === "ChainExpression") node = node.expression;
+    else if (node.type === "TSNonNullExpression") node = node.expression;
+    else if (node.type === "TSAsExpression") node = node.expression;
+    else if (node.type === "TSSatisfiesExpression") node = node.expression;
+    else if (node.type === "TSInstantiationExpression") node = node.expression;
+    else break;
+  }
   if (node.type === "Identifier") {
     return node.name;
   }
-  if (node.type === "MemberExpression" && node.property?.type === "Identifier") {
-    return node.property.name;
+  if (node.type === "MemberExpression") {
+    if (node.property?.type === "Identifier") {
+      return node.property.name;
+    }
+    if (
+      node.computed &&
+      node.property?.type === "Literal" &&
+      typeof node.property.value === "string"
+    ) {
+      return node.property.value;
+    }
   }
   return null;
 }
@@ -52,8 +69,20 @@ function getEnclosingScope(node) {
  */
 function hasStringInterpolation(argNode) {
   if (!argNode) return false;
-  if (argNode.type === "TemplateLiteral" && argNode.expressions.length > 0) return true;
-  if (argNode.type === "BinaryExpression" && argNode.operator === "+") return true;
+  if (argNode.type === "TemplateLiteral") {
+    return argNode.expressions.length > 0;
+  }
+  if (argNode.type === "BinaryExpression" && argNode.operator === "+") {
+    const left = argNode.left;
+    const right = argNode.right;
+    // If both sides are static strings, this is safe — not interpolation
+    const isStatic = (n) =>
+      (n.type === "Literal" && typeof n.value === "string") ||
+      (n.type === "TemplateLiteral" && n.expressions.length === 0);
+    if (isStatic(left) && isStatic(right)) return false;
+    // Otherwise, dynamic concatenation is interpolation
+    return true;
+  }
   // Recurse into conditional/logical expressions to catch nested interpolation
   if (argNode.type === "ConditionalExpression") {
     return hasStringInterpolation(argNode.consequent) || hasStringInterpolation(argNode.alternate);

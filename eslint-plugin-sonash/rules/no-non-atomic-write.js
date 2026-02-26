@@ -34,6 +34,15 @@ function walkAstNodes(node, visitor, seen = new WeakSet()) {
   if (!node || seen.has(node)) return;
   seen.add(node);
   visitor(node);
+  // Don't cross function boundaries — a renameSync inside a nested function
+  // does not make the outer writeFileSync atomic
+  if (
+    node.type === "FunctionDeclaration" ||
+    node.type === "FunctionExpression" ||
+    node.type === "ArrowFunctionExpression"
+  ) {
+    return;
+  }
   for (const key of Object.keys(node)) {
     if (key === "parent") continue;
     visitAstChild(node[key], visitor, seen);

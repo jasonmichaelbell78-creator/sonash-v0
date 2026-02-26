@@ -17,9 +17,10 @@ const DEFAULT_CATEGORY = categoryMappings.defaultCategory;
  */
 function normalizeCategory(cat) {
   if (!cat) return DEFAULT_CATEGORY;
-  const normalized = CATEGORY_MAP[cat];
+  const raw = typeof cat === "string" ? cat : String(cat);
+  const normalized = CATEGORY_MAP[raw];
   if (normalized) return normalized;
-  const lower = cat.toLowerCase();
+  const lower = raw.toLowerCase();
   if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
   return DEFAULT_CATEGORY;
 }

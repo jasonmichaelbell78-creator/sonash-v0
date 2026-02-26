@@ -546,8 +546,22 @@ function loadMasterItems() {
 }
 
 function appendNewItems(newItems, masterItems) {
-  const appendData = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
+  let appendData = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
   try {
+    // Ensure we don't merge the last existing JSONL line with the first appended line
+    const stat = fs.statSync(MASTER_FILE);
+    if (stat.size > 0) {
+      const fd = fs.openSync(MASTER_FILE, "r");
+      try {
+        const buf = Buffer.alloc(1);
+        fs.readSync(fd, buf, 0, 1, stat.size - 1);
+        if (buf.toString("utf8") !== "\n") {
+          appendData = "\n" + appendData;
+        }
+      } finally {
+        fs.closeSync(fd);
+      }
+    }
     fs.appendFileSync(MASTER_FILE, appendData);
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
@@ -580,11 +594,13 @@ function ingestFromDeduped(masterItems) {
   const masterHashes = new Set(masterItems.map((i) => i.content_hash).filter(Boolean));
   const newItems = [];
 
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     let item;
     try {
       item = JSON.parse(line);
     } catch {
+      console.warn(`  ⚠️ Invalid JSON in deduped.jsonl at line ${i + 1} — skipping`);
       continue;
     }
 
