@@ -37,7 +37,7 @@ module.exports = {
           // Check if the variable was escaped (look for .replace() call with escape pattern)
           // This is a heuristic — we check the parent expression
           const parent = node.parent;
-          if (parent && parent.type === "VariableDeclarator" && parent.init === node) {
+          if (parent?.type === "VariableDeclarator" && parent?.init === node) {
             // Check if the variable name suggests it's already escaped
             const varName = parent.id.type === "Identifier" ? parent.id.name : "";
             if (/escape/i.test(varName)) return;

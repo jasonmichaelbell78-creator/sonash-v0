@@ -7,6 +7,18 @@
 
 "use strict";
 
+/**
+ * Check if a node is a comparison to empty string: x === '' or x === ""
+ */
+function isEmptyStringCheck(node) {
+  if (node?.type !== "BinaryExpression") return false;
+  if (node.operator !== "===" && node.operator !== "==") return false;
+  return (
+    (node.left.type === "Literal" && node.left.value === "") ||
+    (node.right.type === "Literal" && node.right.value === "")
+  );
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -70,17 +82,5 @@ module.exports = {
         }
       },
     };
-
-    /**
-     * Check if a node is a comparison to empty string: x === '' or x === ""
-     */
-    function isEmptyStringCheck(node) {
-      if (!node || node.type !== "BinaryExpression") return false;
-      if (node.operator !== "===" && node.operator !== "==") return false;
-      return (
-        (node.left.type === "Literal" && node.left.value === "") ||
-        (node.right.type === "Literal" && node.right.value === "")
-      );
-    }
   },
 };

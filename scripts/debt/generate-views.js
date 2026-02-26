@@ -534,9 +534,9 @@ function loadMasterItems() {
   }
   const lines = content.split("\n").filter((line) => line.trim());
   const items = [];
-  for (let i = 0; i < lines.length; i++) {
+  for (const line of lines) {
     try {
-      items.push(JSON.parse(lines[i]));
+      items.push(JSON.parse(line));
     } catch {
       // Skip invalid lines
     }
@@ -552,7 +552,7 @@ function ingestFromDeduped(masterItems) {
     return 0;
   }
 
-  const { idMap, itemMap, maxId } = loadExistingItems();
+  const { idMap, maxId } = loadExistingItems();
   let nextId = maxId + 1;
   let newCount = 0;
 
@@ -583,6 +583,9 @@ function ingestFromDeduped(masterItems) {
 
     item.id = assignResult.id;
     masterIds.add(item.id);
+    if (item.content_hash) {
+      masterHashes.add(item.content_hash);
+    }
     nextId++;
     ensureDefaults(item);
     newItems.push(item);
@@ -592,7 +595,13 @@ function ingestFromDeduped(masterItems) {
   if (newCount > 0) {
     // Append new items to MASTER (not overwrite)
     const appendData = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
-    fs.appendFileSync(MASTER_FILE, appendData);
+    try {
+      fs.appendFileSync(MASTER_FILE, appendData);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.error(`❌ Failed to append to MASTER_DEBT.jsonl: ${errMsg}`);
+      process.exit(1);
+    }
     masterItems.push(...newItems);
     console.log(`  📥 Ingested ${newCount} new item(s) from deduped.jsonl`);
   } else {

@@ -247,7 +247,7 @@ describe("sonash/no-path-startswith", () => {
         'name.startsWith("hello")',
         'str.startsWith("prefix")',
         'url.startsWith("https")',
-        "const result = /^\\.\\./.test(rel)",
+        String.raw`const result = /^\\.\\./.test(rel)`,
       ],
       invalid: [
         {
@@ -267,7 +267,7 @@ describe("sonash/no-path-startswith", () => {
           errors: [{ messageId: "pathStartsWith" }],
         },
         {
-          code: 'p.startsWith("\\\\")',
+          code: String.raw`p.startsWith("\\")`,
           errors: [{ messageId: "pathStartsWith" }],
         },
       ],

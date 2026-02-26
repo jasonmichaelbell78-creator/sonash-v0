@@ -6,6 +6,59 @@
 
 "use strict";
 
+/**
+ * Check if a node is inside the try block (not catch/finally) of a TryStatement.
+ * Stops traversal at function boundaries.
+ */
+function isInsideTryBlock(node) {
+  let current = node.parent;
+  while (current) {
+    if (current.type === "TryStatement") {
+      // Verify the node falls within the try block's source range, not catch/finally
+      const block = current.block;
+      if (node.range?.[0] >= block.range?.[0] && node.range?.[1] <= block.range?.[1]) {
+        return true;
+      }
+    }
+    // Stop at function boundaries
+    if (
+      current.type === "FunctionDeclaration" ||
+      current.type === "FunctionExpression" ||
+      current.type === "ArrowFunctionExpression"
+    ) {
+      break;
+    }
+    current = current.parent;
+  }
+  return false;
+}
+
+/**
+ * Return the resolved function name for a callee node, or null if not determinable.
+ */
+function getCalleeName(callee) {
+  if (callee.type === "Identifier") {
+    return callee.name;
+  }
+  if (callee.type === "MemberExpression" && callee.property?.type === "Identifier") {
+    return callee.property.name;
+  }
+  return null;
+}
+
+/**
+ * Return true when the require() call should be flagged:
+ * - argument is a string literal
+ * - path is relative or absolute (not a bare node_modules specifier)
+ */
+function isLocalRequireCall(node) {
+  if (node.arguments.length === 0) return false;
+  const arg = node.arguments[0];
+  if (arg.type !== "Literal" || typeof arg.value !== "string") return false;
+  const path = arg.value;
+  return path.startsWith(".") || path.startsWith("/");
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -24,37 +77,9 @@ module.exports = {
   create(context) {
     const configFunctions = new Set(["loadConfig"]);
 
-    /**
-     * Check if a node is inside a TryStatement's block.
-     */
-    function isInsideTryBlock(node) {
-      let current = node.parent;
-      while (current) {
-        if (current.type === "TryStatement") return true;
-        // Stop at function boundaries
-        if (
-          current.type === "FunctionDeclaration" ||
-          current.type === "FunctionExpression" ||
-          current.type === "ArrowFunctionExpression"
-        ) {
-          break;
-        }
-        current = current.parent;
-      }
-      return false;
-    }
-
     return {
       CallExpression(node) {
-        const callee = node.callee;
-        let funcName;
-
-        if (callee.type === "Identifier") {
-          funcName = callee.name;
-        } else if (callee.type === "MemberExpression" && callee.property.type === "Identifier") {
-          funcName = callee.property.name;
-        }
-
+        const funcName = getCalleeName(node.callee);
         if (!funcName) return;
 
         // Check loadConfig calls
@@ -69,16 +94,8 @@ module.exports = {
           return;
         }
 
-        // Check require() calls with string literal path (dynamic requires)
-        if (funcName === "require" && node.arguments.length > 0) {
-          const arg = node.arguments[0];
-          // Only flag require with a string path (not computed)
-          if (arg.type !== "Literal" || typeof arg.value !== "string") return;
-
-          // Skip standard node_modules imports (they don't fail the same way)
-          const path = arg.value;
-          if (!path.startsWith(".") && !path.startsWith("/")) return;
-
+        // Check require() calls with a local string path
+        if (funcName === "require" && isLocalRequireCall(node)) {
           if (!isInsideTryBlock(node)) {
             context.report({
               node,

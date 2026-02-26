@@ -38,9 +38,8 @@ module.exports = {
         // Check first argument is console.error
         const firstArg = node.arguments[0];
         if (
-          firstArg &&
-          firstArg.type === "MemberExpression" &&
-          firstArg.object.type === "Identifier" &&
+          firstArg?.type === "MemberExpression" &&
+          firstArg.object?.type === "Identifier" &&
           firstArg.object.name === "console" &&
           firstArg.property.type === "Identifier" &&
           firstArg.property.name === "error"

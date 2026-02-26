@@ -13,7 +13,7 @@
     "safety-error-handling.js",
     "staleness-drift.js"
   ],
-  "write-without-symlink-guard": ["state-utils.js"],
+  "write-without-symlink-guard": ["state-utils.js", "generate-views.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
   "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
   "process-exit-without-cleanup": ["validate-schema.js"],

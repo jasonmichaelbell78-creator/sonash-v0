@@ -6,6 +6,24 @@
 
 "use strict";
 
+/**
+ * Check if an expression node references "index" (common map callback parameter name).
+ */
+function containsIndexIdentifier(node) {
+  if (!node) return false;
+  if (node.type === "Identifier" && node.name === "index") return true;
+  if (node.type === "BinaryExpression") {
+    return containsIndexIdentifier(node.left) || containsIndexIdentifier(node.right);
+  }
+  if (node.type === "TemplateLiteral") {
+    return node.expressions.some(containsIndexIdentifier);
+  }
+  if (node.type === "CallExpression") {
+    return node.arguments.some(containsIndexIdentifier);
+  }
+  return false;
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -22,24 +40,6 @@ module.exports = {
   },
 
   create(context) {
-    /**
-     * Check if an expression node references "index" (common map callback parameter name).
-     */
-    function containsIndexIdentifier(node) {
-      if (!node) return false;
-      if (node.type === "Identifier" && node.name === "index") return true;
-      if (node.type === "BinaryExpression") {
-        return containsIndexIdentifier(node.left) || containsIndexIdentifier(node.right);
-      }
-      if (node.type === "TemplateLiteral") {
-        return node.expressions.some(containsIndexIdentifier);
-      }
-      if (node.type === "CallExpression") {
-        return node.arguments.some(containsIndexIdentifier);
-      }
-      return false;
-    }
-
     return {
       JSXAttribute(node) {
         // Check for key={...} attribute
@@ -48,7 +48,7 @@ module.exports = {
         }
 
         // Value must be a JSX expression container: key={expr}
-        if (!node.value || node.value.type !== "JSXExpressionContainer") {
+        if (node.value?.type !== "JSXExpressionContainer") {
           return;
         }
 

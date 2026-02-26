@@ -29,9 +29,9 @@ function normalizeFilePath(filePath, options = {}) {
   // Optionally strip absolute paths that include the repo root
   if (stripRepoRoot) {
     const repoNameRaw = process.env.REPO_DIRNAME;
-    const repoName = repoNameRaw && repoNameRaw.trim() ? repoNameRaw.trim() : "sonash-v0";
+    const repoName = repoNameRaw?.trim() || "sonash-v0";
     const escaped = repoName.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-    const repoRootMatch = normalized.match(new RegExp(`(?:^|/)${escaped}/(.*)$`));
+    const repoRootMatch = new RegExp(`(?:^|/)${escaped}/(.*)$`).exec(normalized);
     if (repoRootMatch) {
       normalized = repoRootMatch[1];
     }

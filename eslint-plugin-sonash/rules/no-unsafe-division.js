@@ -6,6 +6,41 @@
 
 "use strict";
 
+/**
+ * Check if the division is guarded by a > 0 check in the same expression.
+ */
+function isGuarded(node) {
+  let current = node.parent;
+  while (current) {
+    // Check for ternary guard: total > 0 ? (x / total) : 0
+    if (current.type === "ConditionalExpression" && current.consequent) {
+      const test = current.test;
+      if (
+        test.type === "BinaryExpression" &&
+        test.operator === ">" &&
+        test.right.type === "Literal" &&
+        test.right.value === 0
+      ) {
+        return true;
+      }
+    }
+    // Check for if statement guard
+    if (current.type === "IfStatement") {
+      const test = current.test;
+      if (
+        test?.type === "BinaryExpression" &&
+        test.operator === ">" &&
+        test.right?.type === "Literal" &&
+        test.right.value === 0
+      ) {
+        return true;
+      }
+    }
+    current = current.parent;
+  }
+  return false;
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -23,43 +58,6 @@ module.exports = {
 
   create(context) {
     const dangerousNames = new Set(["total", "count", "length", "size", "denominator"]);
-
-    /**
-     * Check if the division is guarded by a > 0 check in the same expression.
-     */
-    function isGuarded(node) {
-      let current = node.parent;
-      while (current) {
-        // Check for ternary guard: total > 0 ? (x / total) : 0
-        if (current.type === "ConditionalExpression" && current.consequent) {
-          const test = current.test;
-          if (
-            test.type === "BinaryExpression" &&
-            test.operator === ">" &&
-            test.right.type === "Literal" &&
-            test.right.value === 0
-          ) {
-            return true;
-          }
-        }
-        // Check for if statement guard
-        if (current.type === "IfStatement") {
-          const test = current.test;
-          if (
-            test &&
-            test.type === "BinaryExpression" &&
-            test.operator === ">" &&
-            test.right &&
-            test.right.type === "Literal" &&
-            test.right.value === 0
-          ) {
-            return true;
-          }
-        }
-        current = current.parent;
-      }
-      return false;
-    }
 
     return {
       BinaryExpression(node) {

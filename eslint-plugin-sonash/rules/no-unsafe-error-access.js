@@ -7,16 +7,37 @@
 "use strict";
 
 /**
+ * Generic AST walker. Calls visitor(node) for every node in the subtree.
+ * Skips the synthetic `parent` property to avoid infinite cycles.
+ */
+function walkAst(node, visitor) {
+  if (!node) return;
+  visitor(node);
+  for (const key of Object.keys(node)) {
+    if (key === "parent") continue;
+    const child = node[key];
+    if (child && typeof child === "object") {
+      if (Array.isArray(child)) {
+        for (const item of child) {
+          if (item && typeof item.type === "string") {
+            walkAst(item, visitor);
+          }
+        }
+      } else if (typeof child.type === "string") {
+        walkAst(child, visitor);
+      }
+    }
+  }
+}
+
+/**
  * Check if a node contains an instanceof Error check for the given parameter name.
  */
 function hasInstanceofErrorCheck(blockBody, paramName) {
   let found = false;
 
-  function walk(node) {
-    if (!node || found) {
-      return;
-    }
-
+  const visitor = (node) => {
+    if (found) return;
     if (
       node.type === "BinaryExpression" &&
       node.operator === "instanceof" &&
@@ -26,30 +47,11 @@ function hasInstanceofErrorCheck(blockBody, paramName) {
       node.right.name === "Error"
     ) {
       found = true;
-      return;
     }
-
-    for (const key of Object.keys(node)) {
-      if (key === "parent") {
-        continue;
-      }
-      const child = node[key];
-      if (child && typeof child === "object") {
-        if (Array.isArray(child)) {
-          for (const item of child) {
-            if (item && typeof item.type === "string") {
-              walk(item);
-            }
-          }
-        } else if (typeof child.type === "string") {
-          walk(child);
-        }
-      }
-    }
-  }
+  };
 
   for (const stmt of blockBody) {
-    walk(stmt);
+    walkAst(stmt, visitor);
   }
 
   return found;
@@ -61,42 +63,20 @@ function hasInstanceofErrorCheck(blockBody, paramName) {
 function findMessageAccesses(blockBody, paramName) {
   const accesses = [];
 
-  function walk(node) {
-    if (!node) {
-      return;
-    }
-
+  const visitor = (node) => {
     if (
       node.type === "MemberExpression" &&
       node.object.type === "Identifier" &&
       node.object.name === paramName &&
-      node.property.type === "Identifier" &&
+      node.property?.type === "Identifier" &&
       node.property.name === "message"
     ) {
       accesses.push(node);
     }
-
-    for (const key of Object.keys(node)) {
-      if (key === "parent") {
-        continue;
-      }
-      const child = node[key];
-      if (child && typeof child === "object") {
-        if (Array.isArray(child)) {
-          for (const item of child) {
-            if (item && typeof item.type === "string") {
-              walk(item);
-            }
-          }
-        } else if (typeof child.type === "string") {
-          walk(child);
-        }
-      }
-    }
-  }
+  };
 
   for (const stmt of blockBody) {
-    walk(stmt);
+    walkAst(stmt, visitor);
   }
 
   return accesses;

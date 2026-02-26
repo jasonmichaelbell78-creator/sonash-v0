@@ -104,7 +104,7 @@ describe("Pattern: overconfident-security [medium]", () => {
 });
 
 describe("Pattern: exit-code-capture [high]", () => {
-  const pattern = /\$\(\s*[^)]{1,500}\s*\)\s*;\s*if\s+\[\s*\$\?\s/g;
+  const pattern = /\$\([^)]{1,500}\)\s*;\s*if\s+\[\s*\$\?\s/g;
 
   test("detects $? after assignment", () => {
     testPattern(pattern, ['OUT=$(some_command); if [ $? -ne 0 ]; then echo "fail"; fi'], []);

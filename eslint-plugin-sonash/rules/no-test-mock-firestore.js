@@ -41,7 +41,7 @@ module.exports = {
 
         // Check first argument is 'firebase/firestore'
         const firstArg = node.arguments[0];
-        if (firstArg && firstArg.type === "Literal" && firstArg.value === "firebase/firestore") {
+        if (firstArg?.type === "Literal" && firstArg?.value === "firebase/firestore") {
           context.report({ node, messageId: "mockFirestore" });
         }
       },

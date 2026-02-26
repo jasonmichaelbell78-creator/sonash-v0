@@ -54,12 +54,12 @@ module.exports = {
     }
 
     return {
-      // const apiKey = "AKIAIOSFODNN7EXAMPLE"
+      // Variable declaration with secret-like name
       VariableDeclarator(node) {
         checkAssignment(node.id, node.init, node);
       },
 
-      // apiKey = "AKIAIOSFODNN7EXAMPLE"
+      // Assignment to secret-like name
       AssignmentExpression(node) {
         const left = node.left;
         if (left.type === "Identifier") {
@@ -69,7 +69,7 @@ module.exports = {
         }
       },
 
-      // { apiKey: "AKIAIOSFODNN7EXAMPLE" }
+      // Object property with secret-like name
       Property(node) {
         checkAssignment(node.key, node.value, node);
       },

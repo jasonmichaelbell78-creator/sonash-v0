@@ -1,7 +1,7 @@
 "use strict";
 /* global __dirname */
 
-const path = require("path");
+const path = require("node:path");
 
 const categoryMappings = require(path.join(__dirname, "../config/category-mappings.json"));
 
