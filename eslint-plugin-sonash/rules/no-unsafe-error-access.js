@@ -30,6 +30,15 @@ function visitChild(child, visitor) {
 function walkAst(node, visitor) {
   if (!node) return;
   visitor(node);
+  // Do not cross function boundaries — guards/accesses in nested functions
+  // do not apply to the outer catch parameter
+  if (
+    node.type === "FunctionDeclaration" ||
+    node.type === "FunctionExpression" ||
+    node.type === "ArrowFunctionExpression"
+  ) {
+    return;
+  }
   for (const key of Object.keys(node)) {
     if (key === "parent") continue;
     const child = node[key];
@@ -101,10 +110,11 @@ function isMessageMember(member, paramName) {
   const obj = member.object;
   const prop = member.property;
   if (obj?.type !== "Identifier" || obj.name !== paramName) return false;
-  return (
-    (!member.computed && prop?.type === "Identifier" && prop.name === "message") ||
-    (member.computed && prop?.type === "Literal" && prop.value === "message")
-  );
+  const isMessageIdentifier =
+    !member.computed && prop?.type === "Identifier" && prop.name === "message";
+  const isMessageComputed =
+    member.computed && typeof prop?.value === "string" && prop.value === "message";
+  return isMessageIdentifier || isMessageComputed;
 }
 
 /** @type {import('eslint').Rule.RuleModule} */

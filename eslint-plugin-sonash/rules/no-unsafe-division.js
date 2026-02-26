@@ -10,15 +10,19 @@
 function getCheckedName(test) {
   if (!test || test.type !== "BinaryExpression") return null;
   let nameNode;
-  if (test.operator === ">" && test.right?.type === "Literal" && test.right.value === 0) {
+  if (test.operator === ">" && test.right?.type === "Literal" && test.right?.value === 0) {
     nameNode = test.left;
-  } else if (test.operator === "<" && test.left?.type === "Literal" && test.left.value === 0) {
+  } else if (test.operator === "<" && test.left?.type === "Literal" && test.left?.value === 0) {
     nameNode = test.right;
   }
   if (!nameNode) return null;
   if (nameNode.type === "Identifier") return nameNode.name;
-  if (nameNode.type === "MemberExpression" && nameNode.property?.type === "Identifier") {
-    return nameNode.property.name;
+  if (
+    nameNode.type === "MemberExpression" &&
+    nameNode.object?.type === "Identifier" &&
+    nameNode.property?.type === "Identifier"
+  ) {
+    return `${nameNode.object.name}.${nameNode.property.name}`;
   }
   return null;
 }
@@ -70,11 +74,18 @@ module.exports = {
           name = right.name;
         }
         // Member expression: x / arr.length
-        else if (right.type === "MemberExpression" && right.property.type === "Identifier") {
-          name = right.property.name;
+        else if (
+          right.type === "MemberExpression" &&
+          right.object?.type === "Identifier" &&
+          right.property?.type === "Identifier"
+        ) {
+          name = `${right.object.name}.${right.property.name}`;
         }
 
-        if (!name || !dangerousNames.has(name)) return;
+        if (!name) return;
+        // Check the property name (or full key) against dangerous names
+        const propName = name.includes(".") ? name.split(".")[1] : name;
+        if (!dangerousNames.has(propName)) return;
 
         // Skip if already guarded by a check on the same divisor
         if (isGuarded(node, name)) return;

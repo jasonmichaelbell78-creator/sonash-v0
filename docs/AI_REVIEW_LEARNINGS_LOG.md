@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.66 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.67 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1239,6 +1239,41 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #390: PR #394 R7 (2026-02-26)
+
+- **Source**: SonarCloud (5 new — CC 17>15, 2 move-to-outer-scope, 2 optional
+  chain), Qodo PR Suggestions (14 new on R6 code at e23481f)
+- **PR**: PR #394 — ESLint plugin robustness round
+- **Items**: 19 total → 9 fixed, 2 rejected, 8 deferred
+- **Fixed**: (1) `walkAstNodes` CC 17→≤15 via `visitAstChild` extraction +
+  WeakSet cycle safety; (2-3) `hasUnboundedDot`/`getStaticParts` moved to outer
+  module scope (SonarCloud `javascript:S1530`); (4) `no-div-onclick-no-role`
+  optional chain `attr.name?.type` (SonarCloud); (5) `no-unsafe-division`
+  optional chain `test.right?.value` + full `object.property` key for
+  MemberExpression guards — prevents `total.length > 0 ? x / arr.length : 0`
+  false negative; (6) `walkAst` in `no-unsafe-error-access` stops at function
+  boundaries — prevents nested function accesses matching outer catch; (7)
+  `isMessageMember` uses `typeof prop?.value === "string"` for parser compat;
+  (8) Updated divisor extraction to full `obj.prop` key; (9) Added
+  `arr.length > 0` valid test case
+- **Rejected**: (a) Skip safe literals in shell/sql injection —
+  `hasStringInterpolation` already returns false for Literals/plain templates,
+  change is no-op; (b) Correct regex escaping in normalize-file-path.js —
+  `String.raw\`\\$&\`` and
+  `"\\$&"` produce identical strings, suggestion is
+  incorrect
+- **Deferred**: 8 items (UNC paths, base ID on master, hash normalization, fail
+  fast JSON, escaped-input FPs, shadowing FPs, compliance TOCTOU/atomic/logging)
+- **Key Learning**: (1) Extracting a `visitAstChild` helper from `walkAstNodes`
+  is the cleanest way to split CC without changing behavior — the outer loop and
+  inner child-type dispatch go into separate functions. (2) AST walkers must
+  stop at function boundaries (FunctionDeclaration/Expression/Arrow) to respect
+  scope — `err.message` inside `() => { err.message }` is a different `err`. (3)
+  For MemberExpression guard matching, use full `object.property` key (e.g.
+  `arr.length`) not just the property name — prevents unrelated guards matching.
 
 ---
 

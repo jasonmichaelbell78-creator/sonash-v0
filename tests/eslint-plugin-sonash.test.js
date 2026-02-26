@@ -415,6 +415,7 @@ describe("sonash/no-unsafe-division", () => {
         "const avg = n / 2",
         "const half = x / fixedDivisor",
         "if (total > 0) { const pct = count / total; }",
+        "const avg = arr.length > 0 ? (sum / arr.length) : 0",
       ],
       invalid: [
         {

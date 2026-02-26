@@ -19,20 +19,24 @@ function findContainingBlock(node) {
   return null;
 }
 
-function walkAstNodes(node, visitor) {
-  if (!node) return;
+function visitAstChild(child, visitor, seen) {
+  if (!child || typeof child !== "object") return;
+  if (Array.isArray(child)) {
+    for (const c of child) {
+      if (c && typeof c.type === "string") walkAstNodes(c, visitor, seen);
+    }
+  } else if (typeof child.type === "string") {
+    walkAstNodes(child, visitor, seen);
+  }
+}
+
+function walkAstNodes(node, visitor, seen = new WeakSet()) {
+  if (!node || seen.has(node)) return;
+  seen.add(node);
   visitor(node);
   for (const key of Object.keys(node)) {
     if (key === "parent") continue;
-    const child = node[key];
-    if (!child || typeof child !== "object") continue;
-    if (Array.isArray(child)) {
-      for (const c of child) {
-        if (c && typeof c.type === "string") walkAstNodes(c, visitor);
-      }
-    } else if (typeof child.type === "string") {
-      walkAstNodes(child, visitor);
-    }
+    visitAstChild(node[key], visitor, seen);
   }
 }
 
