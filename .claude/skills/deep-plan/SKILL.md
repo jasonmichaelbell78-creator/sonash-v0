@@ -295,8 +295,8 @@ After approval, implement the plan.
 
 ## Integration with Existing Tools
 
-- **plan-mode-suggestion.js hook**: When this hook fires for complex tasks,
-  deep-plan is an alternative to basic plan mode
+- **user-prompt-handler.js hook**: When plan-mode suggestion logic fires for
+  complex tasks, deep-plan is an alternative to basic plan mode
 - **GSD framework**: For multi-phase projects, use GSD planner. Deep-plan is for
   single-feature/system planning that needs thorough discovery
 - **PLANNING_DOC_TEMPLATE.md**: Deep-plan produces a lighter-weight plan focused

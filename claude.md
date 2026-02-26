@@ -58,9 +58,8 @@ Section 7).
 | exec() loops       | `/g` flag REQUIRED (no /g = infinite loop)                                   |
 | Regex two-strikes  | If SonarCloud flags a regex twice, replace with string parsing — don't patch |
 
-**Full Reference**:
-[docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (230+
-patterns with priority tiers from 347 reviews)
+**Full Reference** (consult only when writing scripts or hooks):
+[docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md)
 
 **Pre-Write Checklist**:
 [docs/agent_docs/SECURITY_CHECKLIST.md](docs/agent_docs/SECURITY_CHECKLIST.md) -
@@ -129,10 +128,6 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 **Before adding features**: Align with ROADMAP.md vision (Privacy-First,
 Evidence-Based).
 
-## Version History
+---
 
-| Version | Date       | Change                                            |
-| ------- | ---------- | ------------------------------------------------- |
-| 5.1     | 2026-02-10 | Add Purpose/Version History for CI doc lint       |
-| 5.0     | 2026-02-10 | 77% reduction: 497→118 lines, extract to ref docs |
-| 4.2     | 2026-02-09 | Agent teams, compaction safety layers             |
+**Version**: 5.2 (2026-02-26) | [Full version history](docs/SESSION_HISTORY.md)
