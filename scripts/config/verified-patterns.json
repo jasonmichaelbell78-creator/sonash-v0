@@ -17,7 +17,7 @@
   "git-without-separator": ["surface-lessons-learned.js"],
   "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
   "process-exit-without-cleanup": ["validate-schema.js"],
-  "missing-array-isarray": ["validate-schema.js", "analyze-placement.js"],
+  "missing-array-isarray": ["validate-schema.js", "analyze-placement.js", "generate-views.js"],
   "missing-bom-handling": ["validate-schema.js"],
   "unbounded-file-read": ["track-session.js", "hook-analytics.js"],
   "rename-no-fallback": ["archive-doc.js", "run-consolidation.js"],
