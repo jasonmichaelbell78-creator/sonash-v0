@@ -1,8 +1,8 @@
 # Fix Templates for Qodo PR Review Findings
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.4
-**Last Updated:** 2026-02-25
+**Document Version:** 2.6
+**Last Updated:** 2026-02-26
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -2133,22 +2133,290 @@ Before writing a catch block return, answer:
 
 ---
 
+### Template 42: ESLint Rule CC Extraction — visitChild Pattern
+
+**When to use:** An ESLint rule's `create()` function or any helper has
+cyclomatic complexity (CC) >10. Extract node-type-specific logic into helper
+functions that accept context via closure or parameter.
+
+**Source:** PR #394 retro — CC extraction was requested in 5 of 12 review
+rounds. SonarCloud S3776 flagged `create()` functions repeatedly.
+
+#### Bad Code
+
+```javascript
+// CC 25+ — all node handling inline in create()
+module.exports = {
+  create(context) {
+    return {
+      CallExpression(node) {
+        // 15 lines of logic...
+        if (node.callee.type === "MemberExpression") {
+          // nested checks...
+          if (node.callee.property.name === "exec") {
+            // more checks...
+          }
+        }
+      },
+      AssignmentExpression(node) {
+        // 10 lines of logic...
+      },
+    };
+  },
+};
+```
+
+#### Good Code
+
+```javascript
+// Extract each visitor into a helper — CC ≤10 each
+function visitCallExpression(context, node) {
+  // focused logic for CallExpression
+  const calleeName = getCalleeName(node.callee);
+  if (!calleeName) return;
+  // ...
+}
+
+function visitAssignment(context, node) {
+  // focused logic for AssignmentExpression
+}
+
+module.exports = {
+  create(context) {
+    return {
+      CallExpression(node) {
+        visitCallExpression(context, node);
+      },
+      AssignmentExpression(node) {
+        visitAssignment(context, node);
+      },
+    };
+  },
+};
+```
+
+#### Target CC
+
+- Each helper: CC ≤10 (not ≤15 — leave margin for future additions)
+- `create()` itself: CC ≤5 (just dispatching to helpers)
+
+#### Propagation
+
+After extracting one helper, check ALL other visitors in the same rule file:
+
+```bash
+grep -c 'if\|&&\|||' eslint-plugin-sonash/rules/<rule>.js
+```
+
+---
+
+### Template 43: ChainExpression Unwrap + WeakSet Dedup in AST Utilities
+
+**When to use:** Adding or modifying AST utility functions that traverse or
+inspect AST nodes. Must handle `ChainExpression` wrappers (optional chaining
+`?.`) and avoid infinite loops from circular parent references.
+
+**Source:** PR #394 R4→R5→R6 — ChainExpression support was missing from 3
+separate AST utilities, each discovered in a different round.
+
+#### Bad Code
+
+```javascript
+// Doesn't handle optional chaining: obj?.method()
+function isMethodCall(node) {
+  if (node.type === "MemberExpression") {
+    return node.property.name === "exec";
+  }
+  return false;
+}
+
+// Traverses parent chain without cycle detection
+function isInsideTryBlock(node) {
+  let current = node.parent;
+  while (current) {
+    if (current.type === "TryStatement") return true;
+    current = current.parent;
+  }
+  return false;
+}
+```
+
+#### Good Code
+
+```javascript
+const { unwrapNode } = require("../lib/ast-utils");
+
+// Always unwrap before type checks
+function isMethodCall(node) {
+  const unwrapped = unwrapNode(node);
+  if (unwrapped.type === "MemberExpression") {
+    return unwrapped.property?.name === "exec";
+  }
+  return false;
+}
+
+// Use WeakSet to prevent infinite loops from circular refs
+function isInsideTryBlock(node) {
+  const seen = new WeakSet();
+  let current = node.parent;
+  while (current) {
+    if (seen.has(current)) return false; // circular ref safety
+    seen.add(current);
+    if (current.type === "TryStatement") return true;
+    current = current.parent;
+  }
+  return false;
+}
+```
+
+#### Propagation Check
+
+After adding ChainExpression support to ONE utility, audit ALL others:
+
+```bash
+grep -rn 'node\.type\|callee\.type\|expression\.type' eslint-plugin-sonash/ --include="*.js" | grep -v 'unwrapNode\|ChainExpression\|WRAPPER_TYPES'
+```
+
+---
+
+### Template 44: Generic AST Walker (Object.keys + Recurse)
+
+**When to use:** Traversing AST subtrees to find specific patterns (e.g.,
+checking if any descendant contains a certain node type). Use `Object.keys` +
+recurse instead of hand-enumerating Statement/Expression types.
+
+**Source:** PR #394 R1-R5 — hand-enumerated node types caused missed cases
+(LogicalExpression, ConditionalExpression, SequenceExpression) across 5 rounds.
+
+#### Bad Code
+
+```javascript
+// Hand-enumerated — misses LogicalExpression, ConditionalExpression, etc.
+function containsDivision(node) {
+  if (node.type === "BinaryExpression" && node.operator === "/") return true;
+  if (node.type === "BinaryExpression") {
+    return containsDivision(node.left) || containsDivision(node.right);
+  }
+  if (node.type === "AssignmentExpression") {
+    return containsDivision(node.right);
+  }
+  // Forgot: LogicalExpression, ConditionalExpression, SequenceExpression,
+  // TemplateLiteral expressions, SpreadElement, ArrayExpression...
+  return false;
+}
+```
+
+#### Good Code
+
+```javascript
+/**
+ * Generic AST descendant search.
+ * Walks all object-typed children (excluding "parent" to avoid cycles).
+ */
+function containsNodeMatching(node, predicate, seen = new WeakSet()) {
+  if (!node || typeof node !== "object" || seen.has(node)) return false;
+  seen.add(node);
+
+  if (predicate(node)) return true;
+
+  for (const key of Object.keys(node)) {
+    if (key === "parent") continue; // avoid circular refs
+    const child = node[key];
+    if (Array.isArray(child)) {
+      for (const item of child) {
+        if (containsNodeMatching(item, predicate, seen)) return true;
+      }
+    } else if (child && typeof child === "object" && child.type) {
+      if (containsNodeMatching(child, predicate, seen)) return true;
+    }
+  }
+  return false;
+}
+
+// Usage:
+const hasDivision = containsNodeMatching(
+  node,
+  (n) => n.type === "BinaryExpression" && n.operator === "/"
+);
+```
+
+#### When to Use Generic vs. Specific
+
+| Scenario                            | Approach                    |
+| ----------------------------------- | --------------------------- |
+| Need exhaustive descendant search   | Generic walker              |
+| Need only direct children           | Hand-enumerate (faster)     |
+| Performance-critical hot path       | Hand-enumerate with WeakSet |
+| Checking 2+ nested expression types | Generic walker              |
+
+---
+
+### Template 45: Quoted-Value Secret Redaction
+
+**When to use:** Sanitizing log output or error messages that may contain
+secrets in quoted format (e.g., `API_KEY="my multi-word secret"`).
+
+**Source:** PR #393 retro — `sanitizeInput()` and `sanitizeError()` missed
+quoted-value secrets because the `\S+` pattern stops at whitespace.
+
+#### Bad Code
+
+```javascript
+// Misses: token="multi word secret"
+// Misses: API_KEY="abc 123 def"
+const SECRET_PATTERNS = [/(?:api[_-]?key|token|secret|password)[=:]\s*\S+/gi];
+```
+
+#### Good Code
+
+```javascript
+const SECRET_PATTERNS = [
+  // Double-quoted values (handles JSON "key": "val", escaped quotes, nonempty)
+  /(?:"?(?:api[_-]?key|token|secret|password|auth|credential)"?\s*[=:]\s*)"([^"\\]|\\.)+"/gi,
+  // Single-quoted values
+  /(?:"?(?:api[_-]?key|token|secret|password|auth|credential)"?\s*[=:]\s*)'[^']+'/gi,
+  // Unquoted values (bounded delimiter class, min 2 chars)
+  /(?:"?(?:api[_-]?key|token|secret|password|auth|credential)"?\s*[=:]\s*)[^\s"',;)\]}]{2,}/gi,
+];
+```
+
+#### Pattern Order
+
+Quoted patterns MUST come before unquoted patterns. If unquoted matches first,
+it captures only the opening `"` and leaves the rest exposed.
+
+#### Edge Cases Handled
+
+| Input                   | Old Result                 | New Result             |
+| ----------------------- | -------------------------- | ---------------------- |
+| `token="multi word"`    | `[REDACTED]"multi word"`   | `[REDACTED]`           |
+| `token="abc\"def"`      | `[REDACTED]\"def"`         | `[REDACTED]`           |
+| `token='single quoted'` | `[REDACTED]'single...`     | `[REDACTED]`           |
+| `token=""`              | `[REDACTED]` (empty match) | No match (nonempty)    |
+| `token=\n`              | `[REDACTED]` (empty match) | No match (min 2 chars) |
+| `token=abc123`          | `[REDACTED]`               | `[REDACTED]`           |
+| `secret=val);next()`    | `[REDACTED]);next()`       | `[REDACTED]` only val  |
+
+---
+
 ## Version History
 
-| Version | Date       | Change                                                                                                                  |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
-| 2.5     | 2026-02-25 | Add Templates 40-41 (path normalization before string checks, error-handling direction comment). Source: PR #392 retro. |
-| 2.4     | 2026-02-25 | Add Templates 38-39 (statSync→lstatSync guard, unique audit IDs). Source: PR #390/#391 retro.                           |
-| 2.3     | 2026-02-24 | Add Template 37 (lazy-load module with typeof guard). Source: PR #388 retro.                                            |
-| 2.2     | 2026-02-22 | Add Template 36 (atomic dual-JSONL write with rollback). Source: PR #383 retro.                                         |
-| 2.1     | 2026-02-20 | Add Template 35 (mapping/enumeration audit). Source: PR #382 retro.                                                     |
-| 2.0     | 2026-02-19 | Add Template 34 (evidence/array merge with deep dedup). Source: PR #379 retro.                                          |
-| 1.9     | 2026-02-18 | Add Templates 31-33 (realpathSync lifecycle, safety flag hoist, path containment). Source: PR #374 retro.               |
-| 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                                      |
-| 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.                         |
-| 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                                        |
-| 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro.                     |
-| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                                                 |
-| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)                                                                          |
-| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write)                                                                    |
-| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis                                                                          |
+| Version | Date       | Change                                                                                                                                                  |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.7     | 2026-02-26 | Update Template 45: harden quoted regex (escaped quotes), add single-quoted pattern, delimiter-bounded unquoted. Source: PR #395 R1.                    |
+| 2.6     | 2026-02-26 | Add Templates 42-45 (CC extraction visitChild, ChainExpression unwrap, generic AST walker, quoted-value secret redaction). Source: PR #393/#394 retros. |
+| 2.5     | 2026-02-25 | Add Templates 40-41 (path normalization before string checks, error-handling direction comment). Source: PR #392 retro.                                 |
+| 2.4     | 2026-02-25 | Add Templates 38-39 (statSync→lstatSync guard, unique audit IDs). Source: PR #390/#391 retro.                                                           |
+| 2.3     | 2026-02-24 | Add Template 37 (lazy-load module with typeof guard). Source: PR #388 retro.                                                                            |
+| 2.2     | 2026-02-22 | Add Template 36 (atomic dual-JSONL write with rollback). Source: PR #383 retro.                                                                         |
+| 2.1     | 2026-02-20 | Add Template 35 (mapping/enumeration audit). Source: PR #382 retro.                                                                                     |
+| 2.0     | 2026-02-19 | Add Template 34 (evidence/array merge with deep dedup). Source: PR #379 retro.                                                                          |
+| 1.9     | 2026-02-18 | Add Templates 31-33 (realpathSync lifecycle, safety flag hoist, path containment). Source: PR #374 retro.                                               |
+| 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                                                                      |
+| 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.                                                         |
+| 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                                                                        |
+| 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro.                                                     |
+| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                                                                                 |
+| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)                                                                                                          |
+| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write)                                                                                                    |
+| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis                                                                                                          |

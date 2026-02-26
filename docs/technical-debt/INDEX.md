@@ -9,35 +9,35 @@
 
 ---
 
-**Total Items:** 4630
+**Total Items:** 8349
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
-| S0 (Critical) | 36    |
-| S1 (High)     | 742   |
-| S2 (Medium)   | 1896  |
-| S3 (Low)      | 1956  |
+| S0 (Critical) | 67    |
+| S1 (High)     | 1288  |
+| S2 (Medium)   | 3385  |
+| S3 (Low)      | 3609  |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 2683  |
-| documentation            | 492   |
-| security                 | 416   |
-| process                  | 356   |
-| refactoring              | 329   |
-| ai-optimization          | 127   |
-| performance              | 98    |
-| enhancements             | 82    |
-| engineering-productivity | 47    |
+| code-quality             | 4625  |
+| documentation            | 982   |
+| security                 | 715   |
+| process                  | 712   |
+| refactoring              | 651   |
+| ai-optimization          | 254   |
+| performance              | 178   |
+| enhancements             | 154   |
+| engineering-productivity | 78    |
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 3114  |
-| RESOLVED       | 238   |
-| FALSE_POSITIVE | 249   |
-| NEW            | 1029  |
+| VERIFIED       | 5340  |
+| RESOLVED       | 477   |
+| FALSE_POSITIVE | 498   |
+| NEW            | 2034  |
 
 ## Views
 
@@ -114,6 +114,62 @@
   (scripts/check-review-needed.js:214)
 - **DEBT-7544**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
   firebase-admin) (package-lock.json:0)
+- **DEBT-9286**: Legacy journalEntries collection allows direct client writes
+  (bypasses Functi... (firestore.rules:0)
+- **DEBT-9288**: Multiple CI quality gates configured as non-blocking
+  (continue-on-error: true) (.github/workflows/ci.yml:0)
+- **DEBT-9289**: useJournal creates redundant auth listener + potential memory
+  leak from neste... (hooks/use-journal.ts:0)
+- **DEBT-9290**: App Check disabled on all production Cloud Functions
+  (functions/src/index.ts:0)
+- **DEBT-9291**: Legacy journalEntries collection allows direct client writes
+  (bypasses functi... (firestore.rules:0)
+- **DEBT-9292**: App Check disabled on all Cloud Functions and client init
+  disabled (functions/src/index.ts:0)
+- **DEBT-9293**: Legacy journalEntries collection allows direct client writes
+  bypassing valida... (firestore.rules:0)
+- **DEBT-9294**: useJournal creates redundant auth listener + potential memory
+  leak (hooks/use-journal.ts:0)
+- **DEBT-9295**: CI quality gates non-blocking allowing regressions
+  (.github/workflows/ci.yml:0)
+- **DEBT-9296**: Re-enable App Check on Cloud Functions (N/A:0)
+- **DEBT-9297**: Close legacy journalEntries write path (N/A:0)
+- **DEBT-9298**: Fix useJournal memory leak (N/A:0)
+- **DEBT-9300**: Convert CI gates to blocking (N/A:0)
+- **DEBT-9301**: Re-enable App Check on Cloud Functions (lib/firebase.ts:45)
+- **DEBT-9302**: Close legacy journalEntries write path
+  (lib/firestore-service.ts:156)
+- **DEBT-9303**: Fix useJournal memory leak (hooks/use-journal.ts:156)
+- **DEBT-9729**: Security risk: Client-side filtering of sensitive data
+  (hooks/use-journal.ts:174)
+- **DEBT-10314**: CI gap: pull_request_target security vulnerability allows
+  untrusted code exec... (.github/workflows/deploy-firebase.yml:7)
+- **DEBT-10556**: Error handling: continueOnError used appropriately in
+  settings.json (.claude/settings.json:24)
+- **DEBT-10557**: Security: Potential command injection in resolve-item.js
+  execSync (scripts/debt/resolve-item.js:21)
+- **DEBT-10779**: pattern-check.js spawns subprocess every Write/Edit/MultiEdit
+  (~100ms latency) (.claude/hooks/pattern-check.js:0)
+- **DEBT-10815**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (N/A:0)
+- **DEBT-10816**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (.claude/hooks/commit-tracker.js:0)
+- **DEBT-10817**: SESSION_DECISIONS.md Decision Block Regex in
+  auto-save-context.js (.claude/hooks/auto-save-context.js:0)
+- **DEBT-10826**: SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ideation
+  document never... (docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md:0)
+- **DEBT-10866**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (All 57 files with AI Instructions sections:0)
+- **DEBT-11094**: Remove this use of the "void" operator.
+  (scripts/assign-review-tier.js:458)
+- **DEBT-11124**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:69)
+- **DEBT-11125**: Review this potentially hard-coded password.
+  (tests/utils/logger.test.ts:96)
+- **DEBT-11126**: Make sure that executing this OS command is safe here.
+  (scripts/check-review-needed.js:214)
+- **DEBT-11283**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
+  firebase-admin) (package-lock.json:0)
 
 ## High Priority Items (S1)
 
@@ -161,7 +217,7 @@
 - **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/add-false-positive.js:139)
 
-_...and 722 more. See [by-severity.md](./views/by-severity.md)_
+_...and 1268 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.70 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.72 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1248,6 +1248,176 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### PR #393 Retrospective (2026-02-26)
+
+_Over-engineering audit: hook consolidation, token reduction, dead code cleanup.
+PR scope: 44 files (+10,605/-many). 2 review rounds._
+
+**Review Cycle Summary:**
+
+| Metric      | Value                              |
+| ----------- | ---------------------------------- |
+| Rounds      | 2 (R1: 2026-02-25, R2: 2026-02-26) |
+| Total items | 15 (6 unique R1 + 9 R2)            |
+| Fixed       | 6                                  |
+| Deferred    | 0                                  |
+| Rejected    | 9 (5 Qodo repeats + 4 design/FP)   |
+
+**Ping-Pong Chains:** None. Clean forward progression.
+
+**Rejection accuracy:** 9/9 correct (100%).
+
+**Key findings:** (1) Deletion-heavy PRs have lower review surface — 44 files
+but only 2 rounds. (2) Gemini + Qodo convergence on quoted-value secret
+redaction bug (high-signal multi-source agreement). (3) Qodo Compliance FP rate
+78% — 5 repeats + 2 design rejections.
+
+**Action items:** Add quoted-value secret redaction edge case tests. Pattern:
+`KEY="multi word"` + `KEY=\n` boundary. Implemented in FIX_TEMPLATE #45.
+
+**Verdict:** Efficient 2-round cycle. ~0 rounds avoidable. First 2-round PR in
+the #384-#394 series.
+
+---
+
+### PR #394 Retrospective (2026-02-26)
+
+_Resolve over-engineering findings: delete 12K+ lines of dead code, migrate
+linter to ESLint AST. PR scope: 151 files (+11,460/-many). 12 review rounds._
+
+**Review Cycle Summary:**
+
+| Metric      | Value                              |
+| ----------- | ---------------------------------- |
+| Rounds      | 12 (R1-R12, all 2026-02-26)        |
+| Total items | ~321                               |
+| Fixed       | ~153                               |
+| Deferred    | ~35 (Enhancement Plan items)       |
+| Rejected    | ~112 (~40 Qodo Compliance repeats) |
+
+**Ping-Pong Chains (5):**
+
+1. **Chain 1: walkAst/containsCallTo CC** (R1→R2→R3→R6→R7, 5 rounds, ~2
+   avoidable). CC extracted incrementally instead of to ≤10 in one pass.
+2. **Chain 2: isInsideTryBlock** (R1→R2, 2 rounds, 1 avoidable). 4th occurrence
+   of this pattern across PRs #374, #375, #388, #394. Now BLOCKING.
+3. **Chain 3: hasRenameSyncNearby** (R1→R3→R5, 3 rounds, ~1 avoidable).
+   Hand-enumerated AST types insufficient; generic walker needed.
+4. **Chain 4: ChainExpression** (R4→R5→R6, 3 rounds, ~1 avoidable). Added to one
+   utility, missed 2 others. Fix-one-audit-all principle.
+5. **Chain 5: Qodo Compliance repeats** (R1→R12, ~40 items). Batch-rejected per
+   pr-review v3.3.
+
+**Total avoidable rounds: ~5 of 12 (~42%)**
+
+**Key findings:** (1) Large PR scope is dominant efficiency problem — 151 files,
+12 rounds. (2) CC reduction predictably incremental — target ≤10 not ≤15. (3)
+ChainExpression is new systemic AST pattern — fix one, audit all. (4) Generic
+AST walker (Object.keys + recurse) > hand-enumerated types. (5) Lazy quantifiers
+(`.*?`, `.+?`) are NOT safe for ReDoS — still unbounded.
+
+**Action items implemented:**
+
+- FIX_TEMPLATE #42: ESLint rule CC extraction (visitChild pattern)
+- FIX_TEMPLATE #43: ChainExpression unwrap + WeakSet dedup
+- FIX_TEMPLATE #44: Generic AST walker
+- FIX_TEMPLATE #45: Quoted-value secret redaction
+- CODE_PATTERNS: 4 new patterns (lazy quantifiers, generic walker, per-access
+  guard, fix-one-audit-all)
+- pr-retro: Pattern 8 upgraded to BLOCKING, Patterns 12-13 added
+- pr-review: Pre-checks #16-17 added
+
+**Verdict:** Inefficient but productive — 12 rounds, ~153 fixes, ~42% avoidable.
+Single highest-impact change: split large PRs. Second: create ESLint rule
+template with built-in ChainExpression/walker/CC patterns.
+
+---
+
+### Review #397: PR #395 R2 (2026-02-26)
+
+- **Source**: Qodo PR Suggestions (8)
+- **PR**: PR #395 — retro action items, secret redaction hardening
+- **Items**: 8 unique → 7 fixed, 0 deferred, 1 rejected
+
+#### Security Fixes (2)
+
+1. **sanitize-error.js + sanitize-input.js: JSON key quoting** — Added `"?`
+   around keyword names to handle JSON format `"token": "value"`. Both files
+   updated consistently. (Qodo impact 9)
+
+#### TDMS Data Quality Fixes (5)
+
+2. **DEBT-7598**: Added missing `source: "intake"` field
+3. **DEBT-7603**: Anchored file/line from source_file metadata
+4. **DEBT-7606/7607**: Merged duplicate "Medium Severity" entries into single
+   canonical entry
+5. **DEBT-7609**: Fixed line metadata (0 → 4)
+6. **DEBT-7611**: Fixed truncated title (removed trailing "and"), line 0 → 5
+
+All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl.
+
+#### Rejected (1)
+
+7. **DEBT-7595 roadmap_ref null→""** — Rejected. We standardized on `null` for
+   empty optional fields in R1. The `""` convention is inconsistent with the
+   rest of the file.
+
+#### Patterns
+
+- **JSON format coverage**: Secret redaction must handle `"key": "value"` not
+  just `key=value`. The `"?` wrapper around keyword names handles both formats.
+- **FIX_TEMPLATE #45 updated**: Reflected JSON key handling in template.
+
+---
+
+### Review #396: PR #395 R1 (2026-02-26)
+
+- **Source**: Qodo PR Suggestions (9), Gemini Code Assist (1), Qodo Compliance
+  (2 informational)
+- **PR**: PR #395 — retro action items, ESLint migration, over-engineering
+  cleanup
+- **Items**: 10 unique actionable → 10 fixed, 0 deferred, 0 rejected
+
+#### Security Fixes (5)
+
+1. **sanitize-error.js: Consolidate unquoted patterns** — Replaced 4 individual
+   unquoted patterns (password, api_key, token, secret) with single consolidated
+   regex adding `credential` and `auth` keywords. Aligned with sanitize-input.js
+   pattern. (Qodo impact 8, Gemini high)
+2. **sanitize-error.js: Harden quoted regex** — Changed `[^"]*` to
+   `([^"\\]|\\.)+` to handle escaped quotes and require nonempty values.
+   Propagated to sanitize-input.js. (Qodo impact 7)
+3. **sanitize-input.js: Single-quoted secrets** — Added `'[^']+'` pattern
+   between quoted and unquoted. Propagated to sanitize-error.js. (Qodo impact 7)
+4. **sanitize-input.js: Delimiter refinement** — Changed `\S{2,}` to
+   `[^\s"',;)\]}]{2,}` to avoid consuming trailing delimiters. Propagated to
+   sanitize-error.js. (Qodo impact 7)
+5. **FIX_TEMPLATE #45 updated** — Reflected all 4 pattern improvements in the
+   template's Good Code section and edge case table.
+
+#### TDMS Data Quality Fixes (5)
+
+6. **DEBT-7595**: `roadmap_ref: ""` → `null` for consistency
+7. **DEBT-7597**: Added missing `source: "intake"` field
+8. **DEBT-7602**: Made non-actionable header entry actionable (added source,
+   file, description, recommendation)
+9. **DEBT-7604/7605**: Merged duplicate "High Severity Findings" entries into
+   single canonical entry with merged_from array
+10. **DEBT-7610**: Fixed truncated title, added full description and
+    recommendation
+
+All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl
+(dual-file rule).
+
+#### Patterns
+
+- **Propagation discipline**: All sanitize-input.js fixes propagated to
+  sanitize-error.js and vice versa (pre-check #17)
+- **Schema consistency**: TDMS entries should always have `source` field and
+  `null` (not `""`) for empty optional fields
 
 ---
 

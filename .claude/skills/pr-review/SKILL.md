@@ -160,6 +160,35 @@ code. Before committing, define a test matrix of inputs→outputs covering: (1)
 target present + changed, (2) target present + unchanged, (3) target removed +
 changed, (4) no target + changed. Validate each case mentally or with examples.
 
+### 16. ESLint Rule CC: Extract Helpers Proactively
+
+**Trigger:** PR adds or modifies ESLint rules. If any `create()` function or
+helper has CC >10, extract into helper functions NOW (not after SonarCloud flags
+it). Use the visitChild/visitAstChild pattern from `ast-utils.js` (see
+FIX_TEMPLATE #42). Target CC ≤10 (not ≤15) to leave margin for future additions.
+
+```bash
+# Quick CC estimate — count branching keywords in a function
+grep -c 'if\|&&\|||\|case\|?\|catch' eslint-plugin-sonash/rules/<rule>.js
+```
+
+### 17. Fix-One-Audit-All Propagation Check
+
+**Trigger:** PR fixes a bug or adds handling for a pattern (ChainExpression,
+path normalization, guard pattern, etc.) in one file. Before committing, grep
+the codebase for ALL other instances of the same pattern gap:
+
+```bash
+# Example: after adding ChainExpression unwrap to one rule
+grep -rn 'node\.type\|callee\.type\|expression\.type' eslint-plugin-sonash/rules/ --include="*.js" | grep -v 'unwrapNode\|ChainExpression'
+
+# Example: after fixing path normalization in one file
+grep -rn 'includes\|endsWith\|\.has(\|startsWith' scripts/ --include="*.js" | grep -iv 'toPosixPath\|normalize'
+```
+
+If any other files have the same gap, fix them in the same commit to prevent
+review ping-pong. See pr-retro Pattern 13 (Fix-One-Audit-All).
+
 ---
 
 ## STEP 0: CONTEXT LOADING
@@ -357,12 +386,13 @@ source. Separate commits for Critical fixes if needed.
 
 ## Version History
 
-| Version | Date       | Description                                                                                 |
-| ------- | ---------- | ------------------------------------------------------------------------------------------- |
-| 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro. |
-| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                  |
-| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks                     |
-| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388.               |
-| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.                   |
-| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                                           |
-| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.                      |
+| Version | Date       | Description                                                                                         |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| 3.5     | 2026-02-26 | Add pre-checks #16 (ESLint CC extraction) and #17 (fix-one-audit-all). Source: PR #393/#394 retros. |
+| 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro.         |
+| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                          |
+| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks                             |
+| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388.                       |
+| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.                           |
+| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                                                   |
+| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.                              |
