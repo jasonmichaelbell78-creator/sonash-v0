@@ -17,26 +17,19 @@ function findContainingBlock(node) {
   return null;
 }
 
+function isCallToFunc(node, funcName) {
+  if (node.type !== "CallExpression") return false;
+  const callee = node.callee;
+  if (callee.type === "Identifier") return callee.name === funcName;
+  return callee.type === "MemberExpression" && callee.property?.name === funcName;
+}
+
 function containsCallTo(node, funcName) {
   if (!node) return false;
-  if (node.type === "ExpressionStatement") {
-    return containsCallTo(node.expression, funcName);
-  }
-  if (node.type === "CallExpression") {
-    const callee = node.callee;
-    if (callee.type === "Identifier" && callee.name === funcName) return true;
-    if (
-      callee.type === "MemberExpression" &&
-      callee.property?.type === "Identifier" &&
-      callee.property.name === funcName
-    ) {
-      return true;
-    }
-  }
-  // Check try/catch blocks
+  if (node.type === "ExpressionStatement") return containsCallTo(node.expression, funcName);
+  if (isCallToFunc(node, funcName)) return true;
   if (node.type === "TryStatement") {
-    if (containsCallTo(node.block, funcName)) return true;
-    if (node.handler && containsCallTo(node.handler.body, funcName)) return true;
+    return containsCallTo(node.block, funcName) || containsCallTo(node.handler?.body, funcName);
   }
   if (node.type === "BlockStatement" && Array.isArray(node.body)) {
     return node.body.some((s) => containsCallTo(s, funcName));
@@ -71,7 +64,7 @@ function isWritingToTmpFile(firstArg) {
   // Template literal ending in .tmp: `${path}.tmp`
   if (firstArg.type === "TemplateLiteral") {
     const lastQuasi = firstArg.quasis[firstArg.quasis.length - 1];
-    if (lastQuasi && lastQuasi.value.raw.endsWith(".tmp")) return true;
+    if (lastQuasi?.value.raw.endsWith(".tmp")) return true;
   }
   // String concatenation ending in .tmp: path + '.tmp'
   if (firstArg.type === "BinaryExpression" && firstArg.operator === "+") {

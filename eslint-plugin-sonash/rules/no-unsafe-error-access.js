@@ -6,6 +6,10 @@
 
 "use strict";
 
+function isAstNode(val) {
+  return val && typeof val === "object" && typeof val.type === "string";
+}
+
 /**
  * Generic AST walker. Calls visitor(node) for every node in the subtree.
  * Skips the synthetic `parent` property to avoid infinite cycles.
@@ -16,16 +20,13 @@ function walkAst(node, visitor) {
   for (const key of Object.keys(node)) {
     if (key === "parent") continue;
     const child = node[key];
-    if (child && typeof child === "object") {
-      if (Array.isArray(child)) {
-        for (const item of child) {
-          if (item && typeof item.type === "string") {
-            walkAst(item, visitor);
-          }
-        }
-      } else if (typeof child.type === "string") {
-        walkAst(child, visitor);
+    if (!child || typeof child !== "object") continue;
+    if (Array.isArray(child)) {
+      for (const item of child) {
+        if (isAstNode(item)) walkAst(item, visitor);
       }
+    } else if (isAstNode(child)) {
+      walkAst(child, visitor);
     }
   }
 }
@@ -100,12 +101,11 @@ module.exports = {
   create(context) {
     return {
       CatchClause(node) {
-        const param = node.param;
-        if (!param || param.type !== "Identifier") {
+        if (node.param?.type !== "Identifier") {
           return;
         }
 
-        const paramName = param.name;
+        const paramName = node.param.name;
         const body = node.body.body;
 
         if (hasInstanceofErrorCheck(body, paramName)) {

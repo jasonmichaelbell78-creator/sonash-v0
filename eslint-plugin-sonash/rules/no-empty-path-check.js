@@ -49,7 +49,7 @@ module.exports = {
         }
 
         const firstArg = node.arguments[0];
-        if (!firstArg || firstArg.type !== "Literal" || firstArg.value !== "..") {
+        if (firstArg?.type !== "Literal" || firstArg.value !== "..") {
           return;
         }
 

@@ -534,15 +534,28 @@ function loadMasterItems() {
   }
   const lines = content.split("\n").filter((line) => line.trim());
   const items = [];
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
     try {
-      items.push(JSON.parse(line));
+      items.push(JSON.parse(lines[i]));
     } catch {
-      // Skip invalid lines
+      console.warn(`  Warning: invalid JSON at line ${i + 1}: ${lines[i].slice(0, 80)}...`);
     }
   }
   console.log(`  Loaded ${items.length} items from MASTER_DEBT.jsonl`);
   return items;
+}
+
+function appendNewItems(newItems, masterItems) {
+  const appendData = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
+  try {
+    fs.appendFileSync(MASTER_FILE, appendData);
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Failed to append to MASTER_DEBT.jsonl: ${errMsg}`);
+    process.exit(1);
+  }
+  masterItems.push(...newItems);
+  console.log(`  📥 Ingested ${newItems.length} new item(s) from deduped.jsonl`);
 }
 
 // Ingest new items from deduped.jsonl into MASTER (append-only)
@@ -554,7 +567,6 @@ function ingestFromDeduped(masterItems) {
 
   const { idMap, maxId } = loadExistingItems();
   let nextId = maxId + 1;
-  let newCount = 0;
 
   let content;
   try {
@@ -576,39 +588,25 @@ function ingestFromDeduped(masterItems) {
       continue;
     }
 
-    // Skip if already in MASTER (by hash or existing ID match)
     if (item.content_hash && masterHashes.has(item.content_hash)) continue;
     const assignResult = assignStableId(item, idMap, masterIds, nextId);
-    if (!assignResult.isNew) continue; // Already has an ID in MASTER
+    if (!assignResult.isNew) continue;
 
     item.id = assignResult.id;
     masterIds.add(item.id);
-    if (item.content_hash) {
-      masterHashes.add(item.content_hash);
-    }
+    if (item.content_hash) masterHashes.add(item.content_hash);
     nextId++;
     ensureDefaults(item);
     newItems.push(item);
-    newCount++;
   }
 
-  if (newCount > 0) {
-    // Append new items to MASTER (not overwrite)
-    const appendData = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
-    try {
-      fs.appendFileSync(MASTER_FILE, appendData);
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      console.error(`❌ Failed to append to MASTER_DEBT.jsonl: ${errMsg}`);
-      process.exit(1);
-    }
-    masterItems.push(...newItems);
-    console.log(`  📥 Ingested ${newCount} new item(s) from deduped.jsonl`);
+  if (newItems.length > 0) {
+    appendNewItems(newItems, masterItems);
   } else {
     console.log("  ✅ No new items in deduped.jsonl");
   }
 
-  return newCount;
+  return newItems.length;
 }
 
 function main() {

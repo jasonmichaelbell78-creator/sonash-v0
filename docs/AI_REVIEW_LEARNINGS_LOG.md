@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.62 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.63 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1239,6 +1239,34 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #385: PR #394 R2 (2026-02-26)
+
+- **Source**: SonarCloud (7 new), Qodo PR Suggestions (~20), Qodo Compliance (5
+  repeat), CI (393 blocking — all pre-existing)
+- **PR**: PR #394 — Over-engineering resolution, ESLint AST migration
+- **Items**: ~32 total → 8 fixed, 7 deferred (overlap with Enhancement Plan),
+  ~17 rejected/skipped
+- **Fixed**: (1) CC reduction: `containsCallTo` extracted `isCallToFunc` helper;
+  (2) CC reduction: `walkAst` extracted `isAstNode` helper; (3) CC reduction:
+  `ingestFromDeduped` extracted `appendNewItems` helper; (4) Optional chain in
+  `no-non-atomic-write.js`; (5) Optional chain in `no-empty-path-check.js`; (6)
+  Optional chain in `no-unsafe-error-access.js`; (7) `isInsideTryBlock`
+  rewritten from range-based to parent-traversal (eliminates range dependency);
+  (8) JSONL parse warnings with line numbers in `loadMasterItems`
+- **Deferred to Enhancement Plan**: 7 items already tracked in
+  `.claude/plans/ESLINT_ENHANCEMENT_SUGGESTIONS_PLAN.md` (empty check receiver,
+  escaped regex dots, index key types, DOMPurify exemption, binary write FP,
+  category trim, atomic write improvements)
+- **Rejected**: 5 Compliance items repeat-rejected (same justification as R1),
+  process.exit in library (CLI-only), shared path normalization (hash-breaking),
+  Windows require paths (Linux-only CI), range:true in tests (eliminated by
+  parent traversal fix), ~5 other low-value suggestions
+- **Key Learning**: Parent-traversal (`prev === current.block`) is more robust
+  than range-based checks for determining try-block containment. Range requires
+  parser options and can fail silently.
 
 ---
 

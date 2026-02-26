@@ -11,14 +11,12 @@
  * Stops traversal at function boundaries.
  */
 function isInsideTryBlock(node) {
+  let prev = node;
   let current = node.parent;
   while (current) {
-    if (current.type === "TryStatement") {
-      // Verify the node falls within the try block's source range, not catch/finally
-      const block = current.block;
-      if (node.range?.[0] >= block.range?.[0] && node.range?.[1] <= block.range?.[1]) {
-        return true;
-      }
+    // Guarded only when the call is inside the `try { ... }` block, not catch/finally
+    if (current.type === "TryStatement" && prev === current.block) {
+      return true;
     }
     // Stop at function boundaries
     if (
@@ -28,6 +26,7 @@ function isInsideTryBlock(node) {
     ) {
       break;
     }
+    prev = current;
     current = current.parent;
   }
   return false;
