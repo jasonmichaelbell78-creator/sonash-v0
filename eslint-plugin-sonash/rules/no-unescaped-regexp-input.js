@@ -10,7 +10,8 @@ const { unwrapNode } = require("../lib/ast-utils");
 
 /** Check if the first arg is a safe static input (literal or empty template) */
 function isSafeStaticInput(arg) {
-  if (arg.type === "Literal") return true;
+  if (arg.type === "Literal" && (typeof arg.value === "string" || arg.value instanceof RegExp))
+    return true;
   return arg.type === "TemplateLiteral" && arg.expressions.length === 0;
 }
 
@@ -48,19 +49,22 @@ module.exports = {
   },
 
   create(context) {
+    function checkRegExpCtor(node) {
+      if (node.callee.type !== "Identifier" || node.callee.name !== "RegExp") return;
+      const firstArg = node.arguments[0];
+      if (!firstArg) return;
+      if (isSafeStaticInput(firstArg)) return;
+      if (isEscapedVariable(firstArg)) return;
+      if (isEscapeHelper(firstArg)) return;
+      context.report({ node, messageId: "unescapedInput" });
+    }
+
     return {
       NewExpression(node) {
-        if (node.callee.type !== "Identifier" || node.callee.name !== "RegExp") {
-          return;
-        }
-
-        const firstArg = node.arguments[0];
-        if (!firstArg) return;
-        if (isSafeStaticInput(firstArg)) return;
-        if (isEscapedVariable(firstArg)) return;
-        if (isEscapeHelper(firstArg)) return;
-
-        context.report({ node, messageId: "unescapedInput" });
+        checkRegExpCtor(node);
+      },
+      CallExpression(node) {
+        checkRegExpCtor(node);
       },
     };
   },

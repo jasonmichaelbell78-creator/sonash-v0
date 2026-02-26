@@ -77,37 +77,39 @@ function containsCallTo(node, funcName) {
   return found;
 }
 
+/** Check if a variable was assigned a .tmp path in the containing block */
+function isVarAssignedToTmp(argNode, renameNode) {
+  const block = findContainingBlock(renameNode);
+  const body = block?.body;
+  if (!Array.isArray(body)) return false;
+  for (const stmt of body) {
+    if (stmt.type !== "VariableDeclaration") continue;
+    for (const decl of stmt.declarations) {
+      if (
+        decl.id?.type === "Identifier" &&
+        decl.id.name === argNode.name &&
+        isWritingToTmpFile(decl.init)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/** Check if a renameSync first arg references a .tmp path (directly or via variable) */
+function isRenameSyncFromTmp(n) {
+  if (n.type !== "CallExpression" || getCalleeName(n.callee) !== "renameSync") return false;
+  const firstArg = n.arguments?.[0];
+  if (!firstArg) return false;
+  if (isWritingToTmpFile(firstArg)) return true;
+  return firstArg.type === "Identifier" && isVarAssignedToTmp(firstArg, n);
+}
+
 function containsRenameSyncFromTmp(node) {
   let found = false;
   walkAstNodes(node, (n) => {
-    if (found) return;
-    if (n.type !== "CallExpression" || getCalleeName(n.callee) !== "renameSync") return;
-    const firstArg = n.arguments?.[0];
-    if (!firstArg) return;
-    if (isWritingToTmpFile(firstArg)) {
-      found = true;
-      return;
-    }
-    // Also check if arg is a variable assigned to a .tmp path
-    if (firstArg.type === "Identifier") {
-      const block = findContainingBlock(n);
-      const body = block?.body;
-      if (Array.isArray(body)) {
-        for (const stmt of body) {
-          if (stmt.type !== "VariableDeclaration") continue;
-          for (const decl of stmt.declarations) {
-            if (
-              decl.id?.type === "Identifier" &&
-              decl.id.name === firstArg.name &&
-              isWritingToTmpFile(decl.init)
-            ) {
-              found = true;
-              return;
-            }
-          }
-        }
-      }
-    }
+    if (!found && isRenameSyncFromTmp(n)) found = true;
   });
   return found;
 }

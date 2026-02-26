@@ -141,13 +141,7 @@
 | DEBT-2547 | Shell script hooks may be redundant with Node.js versions     | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-2549 | Filesystem MCP server configured but noted as unused          | S3       | .mcp.json                                                                                        | 0    |
 
-## architecture (1)
-
-| ID        | Title                                                        | Severity | File          | Line |
-| --------- | ------------------------------------------------------------ | -------- | ------------- | ---- |
-| DEBT-7593 | SQLite migration for TDMS pipeline — research + implement... | S1       | scripts/debt/ | 0    |
-
-## code-quality (2681)
+## code-quality (2683)
 
 | ID        | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | --------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -2816,6 +2810,8 @@
 | DEBT-7549 | Update zod from 4.3.5 to 4.3.6 (patch within semver range)      | S3       | package.json                                                                                                                                                                | 0    |
 | DEBT-7553 | Update react-day-picker from 9.8.0 to 9.13.2 (minor versi...    | S3       | package.json                                                                                                                                                                | 0    |
 | DEBT-7565 | KNOWN_HOOKS hardcoded array should be dynamically derived...    | S3       | .claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js                                                                                              | 30   |
+| DEBT-7595 | Improve template literal cross-boundary pattern detection...    | S3       | eslint-plugin-sonash/rules/no-unbounded-regex.js                                                                                                                            | 0    |
+| DEBT-7596 | Extend no-math-max-spread to catch filtered/mapped spread...    | S3       | eslint-plugin-sonash/rules/no-math-max-spread.js                                                                                                                            | 0    |
 | DEBT-0851 | Multiple CI quality gates configured as non-blocking (con...    | S0       | .github/workflows/ci.yml                                                                                                                                                    | 0    |
 | DEBT-0852 | useJournal creates redundant auth listener + potential me...    | S0       | hooks/use-journal.ts                                                                                                                                                        | 0    |
 | DEBT-0861 | Fix useJournal memory leak                                      | S0       | N/A                                                                                                                                                                         | 0    |
@@ -3933,7 +3929,7 @@
 | DEBT-2120 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                                                   | 24   |
 | DEBT-2121 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 
-## refactoring (327)
+## refactoring (329)
 
 | ID        | Title                                                        | Severity | File                                                                             | Line |
 | --------- | ------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------- | ---- |
@@ -3957,6 +3953,7 @@
 | DEBT-7059 | Add E2E tests for critical user flows                        | S1       | N/A                                                                              | 0    |
 | DEBT-7385 | Anonymous Auth Data Loss                                     | S1       | components/providers/auth-provider.tsx                                           | 0    |
 | DEBT-7469 | check-pattern-compliance.js god script — 1917 lines, esli... | S1       | scripts/check-pattern-compliance.js                                              | 0    |
+| DEBT-7593 | SQLite migration for TDMS pipeline — research + implement... | S1       | scripts/debt/                                                                    | 0    |
 | DEBT-0459 | Step1WorksheetCard large component (845 lines) with neste... | S2       | components/growth/Step1WorksheetCard.tsx                                         | 1    |
 | DEBT-0460 | ResourcesPage large component (728 lines) mixing meetings... | S2       | components/notebook/pages/resources-page.tsx                                     | 1    |
 | DEBT-0461 | reCAPTCHA token fetch pattern repeated 5x across codebase    | S2       | hooks/use-journal.ts                                                             | 281  |
@@ -4264,6 +4261,7 @@
 | DEBT-7526 | Two parallel error utilities — merge errors.ts and callab... | S3       | lib/utils/errors.ts                                                              | 0    |
 | DEBT-7564 | DRY: consolidate checkErrorHandlingCoverage with hook aud... | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 183  |
 | DEBT-7566 | DRY: consolidate dual-write check with file-io-safety.js ... | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js     | 404  |
+| DEBT-7594 | Consider ajv schema validation for TDMS instead of hand-w... | S3       | scripts/debt/validate-schema.js                                                  | 0    |
 
 ## security (416)
 

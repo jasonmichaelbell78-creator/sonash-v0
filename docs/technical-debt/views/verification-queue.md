@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 1025
+**Items Needing Verification:** 1029
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -67,6 +67,7 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-7545 | HIGH: minimatch ReDoS vulnerability (21 advisories, trans...    | S1       | package-lock.json                                                                | 0         |
 | DEBT-7563 | Command injection risk in generateCommandPatch — sanitize...    | S1       | .claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js               | 50        |
 | DEBT-7592 | 453 pre-existing blocking pattern violations in scripts/d...    | S1       | scripts/debt/                                                                    | 0         |
+| DEBT-7593 | SQLite migration for TDMS pipeline — research + implement...    | S1       | scripts/debt/                                                                    | 0         |
 | DEBT-2132 | Untitled finding                                                | S2       | N/A                                                                              | 0         |
 | DEBT-2180 | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
 | DEBT-2186 | Missing ARIA labels on critical navigation tabs                 | S2       | src/components                                                                   | 0         |
@@ -1037,6 +1038,9 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-7585 | settings.json team config health issue                          | S3       | N/A                                                                              | undefined |
 | DEBT-7590 | settings.json team config health issue                          | S3       | N/A                                                                              | 0         |
 | DEBT-7591 | step_continuity checker false positive on Step/Stage tran...    | S3       | N/A                                                                              | 0         |
+| DEBT-7594 | Consider ajv schema validation for TDMS instead of hand-w...    | S3       | scripts/debt/validate-schema.js                                                  | 0         |
+| DEBT-7595 | Improve template literal cross-boundary pattern detection...    | S3       | eslint-plugin-sonash/rules/no-unbounded-regex.js                                 | 0         |
+| DEBT-7596 | Extend no-math-max-spread to catch filtered/mapped spread...    | S3       | eslint-plugin-sonash/rules/no-math-max-spread.js                                 | 0         |
 | DEBT-2457 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | All 57 files with AI Instructions sections                                       | 0         |
 | DEBT-2459 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...    | S0       | .claude/hooks/auto-save-context.js                                               | 0         |
 | DEBT-2468 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...    | S0       | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                               | 0         |

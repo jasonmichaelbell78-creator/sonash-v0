@@ -573,6 +573,27 @@ function appendNewItems(newItems, masterItems) {
   console.log(`  📥 Ingested ${newItems.length} new item(s) from deduped.jsonl`);
 }
 
+/** Compute the highest DEBT-NNNN numeric suffix from master items */
+function getMaxDebtId(masterItems) {
+  return masterItems.reduce((max, item) => {
+    const id = typeof item.id === "string" ? item.id : "";
+    const m = /^DEBT-(\d+)$/.exec(id);
+    if (!m) return max;
+    const n = Number(m[1]);
+    return Number.isFinite(n) ? Math.max(max, n) : max;
+  }, 0);
+}
+
+/** Parse a single JSONL line, returning the item or null on failure */
+function parseJsonlLine(line, lineNum) {
+  try {
+    return JSON.parse(line.trim());
+  } catch {
+    console.warn(`  ⚠️ Invalid JSON in deduped.jsonl at line ${lineNum} — skipping`);
+    return null;
+  }
+}
+
 // Ingest new items from deduped.jsonl into MASTER (append-only)
 function ingestFromDeduped(masterItems) {
   if (!fs.existsSync(INPUT_FILE)) {
@@ -581,14 +602,7 @@ function ingestFromDeduped(masterItems) {
   }
 
   const { idMap } = loadExistingItems();
-  const maxIdFromMaster = masterItems.reduce((max, item) => {
-    const id = typeof item.id === "string" ? item.id : "";
-    const m = /^DEBT-(\d+)$/.exec(id);
-    if (!m) return max;
-    const n = Number(m[1]);
-    return Number.isFinite(n) ? Math.max(max, n) : max;
-  }, 0);
-  let nextId = maxIdFromMaster + 1;
+  let nextId = getMaxDebtId(masterItems) + 1;
 
   let content;
   try {
@@ -604,13 +618,8 @@ function ingestFromDeduped(masterItems) {
   const newItems = [];
 
   for (let i = 0; i < lines.length; i++) {
-    let item;
-    try {
-      item = JSON.parse(lines[i].trim());
-    } catch {
-      console.warn(`  ⚠️ Invalid JSON in deduped.jsonl at line ${i + 1} — skipping`);
-      continue;
-    }
+    const item = parseJsonlLine(lines[i], i + 1);
+    if (!item) continue;
 
     if (item.content_hash && masterHashes.has(item.content_hash)) continue;
     const assignResult = assignStableId(item, idMap, masterIds, nextId);
@@ -639,6 +648,9 @@ function main() {
   console.log("📝 Generating TDMS views and final output...\n");
 
   const items = loadMasterItems();
+
+  // Ensure MASTER items have required defaults for view generation
+  for (const item of items) ensureDefaults(item);
 
   // --ingest: also process deduped.jsonl for new items (used by consolidate-all.js)
   if (ingestMode) {

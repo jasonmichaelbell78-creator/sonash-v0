@@ -19,39 +19,33 @@ function extractName(nameNode) {
   return null;
 }
 
+const isZero = (n) => n?.type === "Literal" && n.value === 0;
+const isOne = (n) => n?.type === "Literal" && n.value === 1;
+
+/** Extract divisor name from a BinaryExpression non-zero guard */
+function getCheckedNameFromBinary(test) {
+  const { operator, left, right } = test;
+  // total > 0 OR 0 < total
+  if (operator === ">" && isZero(right)) return extractName(left);
+  if (operator === "<" && isZero(left)) return extractName(right);
+  // total !== 0 OR 0 !== total
+  if ((operator === "!==" || operator === "!=") && isZero(right)) return extractName(left);
+  if ((operator === "!==" || operator === "!=") && isZero(left)) return extractName(right);
+  // total >= 1 OR 1 <= total
+  if (operator === ">=" && isOne(right)) return extractName(left);
+  if (operator === "<=" && isOne(left)) return extractName(right);
+  return null;
+}
+
 /** Extract the guarded divisor name from common non-zero checks */
 function getCheckedName(test) {
   if (!test) return null;
-
   // Truthy guard: if (total) / total ? ... : ...
-  if (test.type === "Identifier" || test.type === "MemberExpression") {
-    return extractName(test);
-  }
-
+  if (test.type === "Identifier" || test.type === "MemberExpression") return extractName(test);
   // Negated truthy guard: if (!total)
-  if (test.type === "UnaryExpression" && test.operator === "!") {
+  if (test.type === "UnaryExpression" && test.operator === "!")
     return getCheckedName(test.argument);
-  }
-
-  if (test.type !== "BinaryExpression") return null;
-
-  const isZero = (n) => n?.type === "Literal" && n.value === 0;
-  const isOne = (n) => n?.type === "Literal" && n.value === 1;
-
-  // total > 0 OR 0 < total
-  if (test.operator === ">" && isZero(test.right)) return extractName(test.left);
-  if (test.operator === "<" && isZero(test.left)) return extractName(test.right);
-
-  // total !== 0 OR 0 !== total
-  if ((test.operator === "!==" || test.operator === "!=") && isZero(test.right))
-    return extractName(test.left);
-  if ((test.operator === "!==" || test.operator === "!=") && isZero(test.left))
-    return extractName(test.right);
-
-  // total >= 1 OR 1 <= total
-  if (test.operator === ">=" && isOne(test.right)) return extractName(test.left);
-  if (test.operator === "<=" && isOne(test.left)) return extractName(test.right);
-
+  if (test.type === "BinaryExpression") return getCheckedNameFromBinary(test);
   return null;
 }
 

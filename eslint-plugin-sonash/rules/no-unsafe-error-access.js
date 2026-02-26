@@ -50,31 +50,47 @@ function walkAst(node, visitor) {
  * Check if a node contains an instanceof Error check for the given parameter name.
  */
 function isErrorClass(node) {
-  return node?.type === "Identifier" && /Error$/.test(node.name);
+  return node?.type === "Identifier" && node.name.endsWith("Error");
 }
 
-function hasInstanceofErrorCheck(blockBody, paramName) {
-  let found = false;
+/** Check if an IfStatement test is `paramName instanceof SomeError` */
+function isInstanceofGuardTest(test, paramName) {
+  return (
+    test?.type === "BinaryExpression" &&
+    test.operator === "instanceof" &&
+    test.left?.type === "Identifier" &&
+    test.left.name === paramName &&
+    isErrorClass(test.right)
+  );
+}
 
-  const visitor = (node) => {
-    if (found) return;
-    if (
-      node.type === "IfStatement" &&
-      node.test?.type === "BinaryExpression" &&
-      node.test.operator === "instanceof" &&
-      node.test.left?.type === "Identifier" &&
-      node.test.left.name === paramName &&
-      isErrorClass(node.test.right)
-    ) {
-      found = true;
-    }
-  };
-
-  for (const stmt of blockBody) {
-    walkAst(stmt, visitor);
+/** Check if node is contained within container (walk parent chain) */
+function isNodeWithin(node, container) {
+  let current = node;
+  while (current) {
+    if (current === container) return true;
+    current = current.parent;
   }
+  return false;
+}
 
-  return found;
+/** Check if a specific access node is guarded by an instanceof check in an ancestor IfStatement */
+function isAccessGuarded(accessNode, paramName) {
+  let current = accessNode.parent;
+  while (current) {
+    if (current.type === "IfStatement" && isInstanceofGuardTest(current.test, paramName)) {
+      return current.consequent && isNodeWithin(accessNode, current.consequent);
+    }
+    if (
+      current.type === "FunctionDeclaration" ||
+      current.type === "FunctionExpression" ||
+      current.type === "ArrowFunctionExpression"
+    ) {
+      return false;
+    }
+    current = current.parent;
+  }
+  return false;
 }
 
 /**
@@ -146,12 +162,9 @@ module.exports = {
         const paramName = node.param.name;
         const body = node.body.body;
 
-        if (hasInstanceofErrorCheck(body, paramName)) {
-          return;
-        }
-
         const accesses = findMessageAccesses(body, paramName);
         for (const access of accesses) {
+          if (isAccessGuarded(access, paramName)) continue;
           context.report({
             node: access,
             messageId: "unsafeErrorAccess",

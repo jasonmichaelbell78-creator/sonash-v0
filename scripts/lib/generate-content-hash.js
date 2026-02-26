@@ -24,14 +24,14 @@ function generateContentHash(item) {
     String(v || "")
       .toLowerCase()
       .trim()
-      .replace(/\s+/g, " ")
+      .replaceAll(/\s+/g, " ")
       .substring(0, max);
-  const hashInput = [
+  const hashInput = JSON.stringify([
     normalizedFile,
     line,
     normalizeText(safeItem.title, 100),
     normalizeText(safeItem.description, 200),
-  ].join("|");
+  ]);
   return crypto.createHash("sha256").update(hashInput).digest("hex");
 }
 

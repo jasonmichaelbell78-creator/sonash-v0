@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.68 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.69 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1248,6 +1248,37 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #394: PR #394 R11 (2026-02-26)
+
+- **Source**: SonarCloud (7 issues + 1 hotspot), CI (1 — 393 pre-existing
+  violations), Qodo Compliance (4 repeats), Qodo PR Suggestions (7)
+- **PR**: PR #394 — ESLint plugin + TDMS script robustness round
+- **Items**: 20 unique → 14 fixed, 6 rejected (4 Qodo Compliance repeats, 1
+  S4036 hardcoded execSync, 1 CI pre-existing violations)
+- **Fixed**: (1) no-non-atomic-write.js CC 24→15 — extract `isVarAssignedToTmp`,
+  `isRenameSyncFromTmp` helpers; (2) no-unsafe-division.js CC 17→15 — extract
+  `getCheckedNameFromBinary`, move `isZero`/`isOne` to module level; (3)
+  no-unsafe-error-access.js `endsWith("Error")` instead of regex, per-access
+  `isAccessGuarded` replacing block-level check; (4) no-unbounded-regex.js
+  remove lazy quantifier exemption (.\*? still ReDoS), add `isRegExpCallee` for
+  member invocations; (5) no-unescaped-regexp-input.js string-only literals +
+  RegExp literal support + CallExpression handler; (6) generate-views.js CC
+  reduction via `getMaxDebtId`/`parseJsonlLine` + `ensureDefaults` on MASTER
+  items; (7) generate-content-hash.js `JSON.stringify` hash input +
+  `replaceAll`; (8) normalize-category.js `Object.hasOwn()` x2; (9) test updates
+  for lazy quantifier and string-only literal changes
+- **Rejected**: (A) S4036 PATH hijacking — hardcoded `execFileSync("git", ...)`
+  not user-controlled; (B) CI 393 violations — all pre-existing from earlier PR
+  commits; (C) Qodo Compliance x4 — repeat rejections from R10
+- **Patterns**: Lazy quantifiers (.\*?, .+?) are still unbounded for ReDoS;
+  RegExp literals should be treated as safe static input; per-access instanceof
+  guard is more correct than block-level check; `JSON.stringify` prevents hash
+  collisions from delimiter-containing content
+- **Process**: Direct sequential fixes — 5 ESLint rules + 3 scripts + test
+  updates. Context compaction mid-session recovered cleanly.
 
 ---
 

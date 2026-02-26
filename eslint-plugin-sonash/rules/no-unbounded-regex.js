@@ -18,7 +18,6 @@ function hasUnboundedDot(pattern) {
     if (backslashes % 2 === 1) continue; // dot is escaped
     const q = pattern[i + 1];
     if (q !== "*" && q !== "+") continue;
-    if (pattern[i + 2] === "?") continue; // already lazy
     return true;
   }
   return false;
@@ -53,8 +52,17 @@ module.exports = {
   },
 
   create(context) {
+    function isRegExpCallee(callee) {
+      if (callee.type === "Identifier" && callee.name === "RegExp") return true;
+      return (
+        callee.type === "MemberExpression" &&
+        callee.property?.type === "Identifier" &&
+        callee.property.name === "RegExp"
+      );
+    }
+
     function checkRegExpCall(node, callee, args) {
-      if (callee.type !== "Identifier" || callee.name !== "RegExp") return;
+      if (!isRegExpCallee(callee)) return;
       const firstArg = args[0];
       if (!firstArg) return;
       const parts = getStaticParts(firstArg);

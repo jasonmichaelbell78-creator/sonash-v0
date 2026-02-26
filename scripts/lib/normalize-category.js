@@ -19,9 +19,9 @@ function normalizeCategory(cat) {
   if (cat == null) return DEFAULT_CATEGORY;
   const raw = (typeof cat === "string" ? cat : String(cat)).trim();
   if (!raw) return DEFAULT_CATEGORY;
-  if (Object.prototype.hasOwnProperty.call(CATEGORY_MAP, raw)) return CATEGORY_MAP[raw];
+  if (Object.hasOwn(CATEGORY_MAP, raw)) return CATEGORY_MAP[raw];
   const lower = raw.toLowerCase();
-  if (Object.prototype.hasOwnProperty.call(CATEGORY_MAP, lower)) return CATEGORY_MAP[lower];
+  if (Object.hasOwn(CATEGORY_MAP, lower)) return CATEGORY_MAP[lower];
   return DEFAULT_CATEGORY;
 }
 

@@ -363,13 +363,7 @@ describe("sonash/no-writefile-missing-encoding", () => {
 describe("sonash/no-unbounded-regex", () => {
   test("detects unbounded quantifiers in dynamic RegExp", () => {
     ruleTester.run("no-unbounded-regex", plugin.rules["no-unbounded-regex"], {
-      valid: [
-        'new RegExp("pattern")',
-        'new RegExp("a.{0,100}?b")',
-        'new RegExp("test.*?end")',
-        'new RegExp("lazy.+?match")',
-        "/greedy.*/",
-      ],
+      valid: ['new RegExp("pattern")', 'new RegExp("a.{0,100}?b")', "/greedy.*/"],
       invalid: [
         {
           code: 'new RegExp("start.*end")',
@@ -377,6 +371,14 @@ describe("sonash/no-unbounded-regex", () => {
         },
         {
           code: 'new RegExp("prefix.+suffix")',
+          errors: [{ messageId: "unboundedRegex" }],
+        },
+        {
+          code: 'new RegExp("test.*?end")',
+          errors: [{ messageId: "unboundedRegex" }],
+        },
+        {
+          code: 'new RegExp("lazy.+?match")',
           errors: [{ messageId: "unboundedRegex" }],
         },
       ],

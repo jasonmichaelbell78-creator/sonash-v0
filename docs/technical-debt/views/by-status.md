@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (1025)
+## NEW (1029)
 
 | ID        | Title                                                           | Severity | Category                 |
 | --------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -64,6 +64,7 @@
 | DEBT-7545 | HIGH: minimatch ReDoS vulnerability (21 advisories, trans...    | S1       | security                 |
 | DEBT-7563 | Command injection risk in generateCommandPatch — sanitize...    | S1       | security                 |
 | DEBT-7592 | 453 pre-existing blocking pattern violations in scripts/d...    | S1       | code-quality             |
+| DEBT-7593 | SQLite migration for TDMS pipeline — research + implement...    | S1       | refactoring              |
 | DEBT-2132 | Untitled finding                                                | S2       | code-quality             |
 | DEBT-2180 | Date formats inconsistent across the app                        | S2       | enhancements             |
 | DEBT-2186 | Missing ARIA labels on critical navigation tabs                 | S2       | enhancements             |
@@ -1034,6 +1035,9 @@
 | DEBT-7585 | settings.json team config health issue                          | S3       | engineering-productivity |
 | DEBT-7590 | settings.json team config health issue                          | S3       | engineering-productivity |
 | DEBT-7591 | step_continuity checker false positive on Step/Stage tran...    | S3       | engineering-productivity |
+| DEBT-7594 | Consider ajv schema validation for TDMS instead of hand-w...    | S3       | refactoring              |
+| DEBT-7595 | Improve template literal cross-boundary pattern detection...    | S3       | code-quality             |
+| DEBT-7596 | Extend no-math-max-spread to catch filtered/mapped spread...    | S3       | code-quality             |
 | DEBT-2457 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | code-quality             |
 | DEBT-2459 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...    | S0       | code-quality             |
 | DEBT-2468 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...    | S0       | code-quality             |
