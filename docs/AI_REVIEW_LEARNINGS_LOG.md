@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.69 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.70 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1248,6 +1248,28 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #395: PR #394 R12 (2026-02-26)
+
+- **Source**: SonarCloud (2), CI (1 — 393 pre-existing), Qodo Compliance (4
+  repeats), Qodo PR Suggestions (10+)
+- **PR**: PR #394 — ESLint plugin + TDMS script robustness round
+- **Items**: 17 unique → 7 fixed, 4 Qodo Compliance repeat-rejected, 6 rejected
+- **Fixed**: (1) no-unbounded-regex.js — move `isRegExpCallee` to outer scope
+  (SonarCloud); (2) generate-views.js — CC reduction via `readDedupedLines`
+  extraction (SonarCloud); (3) no-unescaped-regexp-input.js — use
+  `arg.regex != null` instead of `instanceof RegExp` for parser robustness;
+  (4-5) no-unsafe-division.js — LogicalExpression support in `getCheckedName` +
+  function boundary stop in `isGuarded`; (6-7) no-unsafe-error-access.js —
+  LogicalExpression in `isInstanceofGuardTest` + early-exit guard pattern
+  (`if (!(err instanceof Error)) return;`)
+- **Rejected**: no-non-atomic-write rename destination matching
+  (over-engineering), no-unguarded-loadconfig range-based containment (current
+  approach correct), no-writefile-missing-encoding options detection (scope
+  creep), read-jsonl crash-proof logging (already handled), normalize-file-path
+  regex escaping (reviewer display artifact), CI 393 pre-existing violations
 
 ---
 

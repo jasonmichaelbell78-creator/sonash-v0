@@ -594,25 +594,29 @@ function parseJsonlLine(line, lineNum) {
   }
 }
 
-// Ingest new items from deduped.jsonl into MASTER (append-only)
-function ingestFromDeduped(masterItems) {
+/** Read deduped.jsonl lines, returning null if file missing/unreadable */
+function readDedupedLines() {
   if (!fs.existsSync(INPUT_FILE)) {
     console.log("  ⏭️ No deduped.jsonl found — skipping ingest");
-    return 0;
+    return null;
   }
-
-  const { idMap } = loadExistingItems();
-  let nextId = getMaxDebtId(masterItems) + 1;
-
-  let content;
   try {
-    content = fs.readFileSync(INPUT_FILE, "utf8");
+    const content = fs.readFileSync(INPUT_FILE, "utf8");
+    return content.split("\n").filter((line) => line.trim());
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.warn(`  ⚠️ Cannot read deduped.jsonl (${errMsg}) — skipping ingest`);
-    return 0;
+    return null;
   }
-  const lines = content.split("\n").filter((line) => line.trim());
+}
+
+// Ingest new items from deduped.jsonl into MASTER (append-only)
+function ingestFromDeduped(masterItems) {
+  const lines = readDedupedLines();
+  if (!lines) return 0;
+
+  const { idMap } = loadExistingItems();
+  let nextId = getMaxDebtId(masterItems) + 1;
   const masterIds = new Set(masterItems.map((i) => i.id).filter(Boolean));
   const masterHashes = new Set(masterItems.map((i) => i.content_hash).filter(Boolean));
   const newItems = [];

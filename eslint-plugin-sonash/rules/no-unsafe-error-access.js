@@ -53,15 +53,24 @@ function isErrorClass(node) {
   return node?.type === "Identifier" && node.name.endsWith("Error");
 }
 
-/** Check if an IfStatement test is `paramName instanceof SomeError` */
+/** Check if an IfStatement test is `paramName instanceof SomeError` (supports compound && guards) */
 function isInstanceofGuardTest(test, paramName) {
-  return (
+  if (
     test?.type === "BinaryExpression" &&
     test.operator === "instanceof" &&
     test.left?.type === "Identifier" &&
     test.left.name === paramName &&
     isErrorClass(test.right)
-  );
+  ) {
+    return true;
+  }
+  // Combined guards: if (err instanceof Error && err.code === 'X')
+  if (test?.type === "LogicalExpression" && test.operator === "&&") {
+    return (
+      isInstanceofGuardTest(test.left, paramName) || isInstanceofGuardTest(test.right, paramName)
+    );
+  }
+  return false;
 }
 
 /** Check if node is contained within container (walk parent chain) */
@@ -74,12 +83,41 @@ function isNodeWithin(node, container) {
   return false;
 }
 
+/** Check if test is a negated instanceof guard: !(err instanceof Error) */
+function isNegatedInstanceofGuardTest(test, paramName) {
+  return (
+    test?.type === "UnaryExpression" &&
+    test.operator === "!" &&
+    isInstanceofGuardTest(test.argument, paramName)
+  );
+}
+
+/** Check if a consequent always exits (return/throw) — used for early-exit guard detection */
+function consequentAlwaysExits(consequent) {
+  if (!consequent) return false;
+  if (consequent.type === "ReturnStatement" || consequent.type === "ThrowStatement") return true;
+  if (consequent.type === "BlockStatement") {
+    return consequent.body.some((s) => s.type === "ReturnStatement" || s.type === "ThrowStatement");
+  }
+  return false;
+}
+
 /** Check if a specific access node is guarded by an instanceof check in an ancestor IfStatement */
 function isAccessGuarded(accessNode, paramName) {
   let current = accessNode.parent;
   while (current) {
-    if (current.type === "IfStatement" && isInstanceofGuardTest(current.test, paramName)) {
-      return current.consequent && isNodeWithin(accessNode, current.consequent);
+    if (current.type === "IfStatement") {
+      // Direct guard: if (err instanceof Error) { ... err.message ... }
+      if (isInstanceofGuardTest(current.test, paramName)) {
+        return current.consequent && isNodeWithin(accessNode, current.consequent);
+      }
+      // Early-exit guard: if (!(err instanceof Error)) return/throw; ... err.message
+      if (
+        isNegatedInstanceofGuardTest(current.test, paramName) &&
+        consequentAlwaysExits(current.consequent)
+      ) {
+        return !isNodeWithin(accessNode, current.consequent);
+      }
     }
     if (
       current.type === "FunctionDeclaration" ||

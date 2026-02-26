@@ -36,6 +36,16 @@ function getStaticParts(expr) {
   return [];
 }
 
+/** Check if a callee is a RegExp constructor (direct or member) */
+function isRegExpCallee(callee) {
+  if (callee.type === "Identifier" && callee.name === "RegExp") return true;
+  return (
+    callee.type === "MemberExpression" &&
+    callee.property?.type === "Identifier" &&
+    callee.property.name === "RegExp"
+  );
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -52,15 +62,6 @@ module.exports = {
   },
 
   create(context) {
-    function isRegExpCallee(callee) {
-      if (callee.type === "Identifier" && callee.name === "RegExp") return true;
-      return (
-        callee.type === "MemberExpression" &&
-        callee.property?.type === "Identifier" &&
-        callee.property.name === "RegExp"
-      );
-    }
-
     function checkRegExpCall(node, callee, args) {
       if (!isRegExpCallee(callee)) return;
       const firstArg = args[0];

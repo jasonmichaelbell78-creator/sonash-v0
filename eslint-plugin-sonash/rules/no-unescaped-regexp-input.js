@@ -10,8 +10,7 @@ const { unwrapNode } = require("../lib/ast-utils");
 
 /** Check if the first arg is a safe static input (literal or empty template) */
 function isSafeStaticInput(arg) {
-  if (arg.type === "Literal" && (typeof arg.value === "string" || arg.value instanceof RegExp))
-    return true;
+  if (arg.type === "Literal" && (typeof arg.value === "string" || arg.regex != null)) return true;
   return arg.type === "TemplateLiteral" && arg.expressions.length === 0;
 }
 

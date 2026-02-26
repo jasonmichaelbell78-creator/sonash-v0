@@ -46,6 +46,10 @@ function getCheckedName(test) {
   if (test.type === "UnaryExpression" && test.operator === "!")
     return getCheckedName(test.argument);
   if (test.type === "BinaryExpression") return getCheckedNameFromBinary(test);
+  // Combined guards: if (total > 0 && otherCheck)
+  if (test.type === "LogicalExpression" && test.operator === "&&") {
+    return getCheckedName(test.left) || getCheckedName(test.right);
+  }
   return null;
 }
 
@@ -60,6 +64,14 @@ function isGuarded(node, divisorName) {
     }
     if (current.type === "IfStatement") {
       if (getCheckedName(current.test) === divisorName) return true;
+    }
+    // Don't cross function boundaries — outer guards don't apply to nested functions
+    if (
+      current.type === "FunctionDeclaration" ||
+      current.type === "FunctionExpression" ||
+      current.type === "ArrowFunctionExpression"
+    ) {
+      return false;
     }
     current = current.parent;
   }
