@@ -1,7 +1,7 @@
 # Over-Engineering Research Findings
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-02-26
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -161,6 +161,6 @@
 - **SQLite for TDMS** (Finding #9) — DEFERRED as DEBT-7593, placed high in Grand
   Plan
 - **ajv schema validation** — DEFERRED as DEBT-7594 (S3, low priority)
-- **Regex linter → ESLint plugin** — IMPLEMENTED (11 patterns migrated, 8 custom
-  AST rules + 3 built-in rules)
+- **Regex linter → ESLint plugin** — IMPLEMENTED (25 patterns migrated in 2
+  phases: Phase 1 = 11 rules, Phase 2 = 14 rules; eslint-plugin-sonash v3.0.0)
 - **HookRunner framework** — DISMISSED (Finding #2 already consolidated hooks)
