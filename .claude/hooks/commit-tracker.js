@@ -269,7 +269,21 @@ function reportCommitFailure() {
       if (typeof envGitDir === "string" && envGitDir.length > 0) {
         return path.isAbsolute(envGitDir) ? envGitDir : path.resolve(process.cwd(), envGitDir);
       }
-      return path.join(process.cwd(), ".git");
+      const dotGitPath = path.join(process.cwd(), ".git");
+      try {
+        const st = fs.statSync(dotGitPath);
+        if (st.isFile()) {
+          const txt = fs.readFileSync(dotGitPath, "utf8").trim();
+          const m = txt.match(/^gitdir:\s*(.+)\s*$/i);
+          if (m && m[1]) {
+            const resolved = m[1].trim();
+            return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
+          }
+        }
+      } catch {
+        // best-effort — fall through to default
+      }
+      return dotGitPath;
     })();
     const logFile = path.join(gitDir, "hook-output.log");
 
@@ -301,8 +315,15 @@ function reportCommitFailure() {
             const afterSep = idx + keyword.length + sep.length;
             let valueStart = afterSep;
             while (valueStart < result.length && result[valueStart] === " ") valueStart++;
-            let valueEnd = valueStart;
-            while (valueEnd < result.length && result[valueEnd] !== " ") valueEnd++;
+            let valueEnd;
+            const quote = result[valueStart];
+            if (quote === '"' || quote === "'") {
+              const endQuote = result.indexOf(quote, valueStart + 1);
+              valueEnd = endQuote === -1 ? result.length : endQuote + 1;
+            } else {
+              valueEnd = valueStart;
+              while (valueEnd < result.length && result[valueEnd] !== " ") valueEnd++;
+            }
             if (valueEnd > valueStart) {
               result = result.slice(0, valueStart) + "[REDACTED]" + result.slice(valueEnd);
             }
@@ -316,10 +337,10 @@ function reportCommitFailure() {
       })
       .join("\n");
 
-    console.log("Pre-commit hook failed. Output from .git/hook-output.log:");
-    console.log("---");
-    console.log(sanitized);
-    console.log("---");
+    console.error("Pre-commit hook failed. Output from .git/hook-output.log:");
+    console.error("---");
+    console.error(sanitized);
+    console.error("---");
   } catch {
     // Best-effort — never block on failure reporting
   }

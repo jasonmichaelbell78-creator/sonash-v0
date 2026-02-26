@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.60 **Created:** 2026-01-02 **Last Updated:** 2026-02-25
+**Document Version:** 17.61 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1230,6 +1230,26 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #383: PR #393 R1 (2026-02-25)
+
+- **Source**: Qodo Compliance (4), Qodo PR Suggestions (4), Gemini Code Review
+  (1), CI Failure (1)
+- **PR**: PR #393 — Over-engineering audit: hook consolidation, token reduction
+- **Items**: 6 unique (after dedup) — 4 fixed, 0 deferred, 2 rejected
+- **Fixed**: Atomic write pattern for log rotation (tmp+rename), quoted-value
+  secret redaction (handle `"foo bar"` boundaries), failure output to stderr,
+  linked gitdir resolution (worktree/submodule `.git` files)
+- **Rejected**: (1) Swallowed errors in reportCommitFailure — by design,
+  best-effort function that must never block; (2) Log rotation memory efficiency
+  — 10KB file cap makes Buffer.alloc optimization unnecessary
+- **Patterns**: Gemini and Qodo independently flagged the same redaction bug —
+  confirms high-signal issue; CI blocking violation was real (non-atomic write)
+- **Key Learning**: Secret sanitization must handle quoted values — space-based
+  tokenization leaks secrets containing spaces. Always test redaction logic
+  against `KEY="multi word secret"` patterns.
 
 ---
 

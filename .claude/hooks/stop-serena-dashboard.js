@@ -126,7 +126,9 @@ function log(message, level = "INFO") {
       const lines = content.split("\n").filter(Boolean);
       const kept = lines.slice(-50).join("\n") + "\n";
       if (isSafeToWrite(LOG_FILE)) {
-        fs.writeFileSync(LOG_FILE, kept, { mode: 0o600 });
+        const tmpFile = LOG_FILE + ".tmp." + process.pid;
+        fs.writeFileSync(tmpFile, kept, { mode: 0o600 });
+        fs.renameSync(tmpFile, LOG_FILE);
       }
     }
   } catch {
