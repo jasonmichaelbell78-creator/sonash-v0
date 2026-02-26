@@ -319,26 +319,7 @@ const ANTI_PATTERNS = [
   // JavaScript/TypeScript patterns
   // unsafe-error-message: MIGRATED to ESLint sonash/no-unsafe-error-access (AST-based, no false positives)
   // catch-console-error: MIGRATED to ESLint sonash/no-catch-console-error (AST-based)
-  {
-    id: "path-startswith",
-    severity: "critical",
-    pattern: /\.startsWith\s*\(\s*['"`][./\\]+['"`]\s*\)/g,
-    message: "Path validation with startsWith() fails on Windows or edge cases",
-    fix: 'Use: path.relative() and check for ".." prefix with regex',
-    review: "#17, #18",
-    fileTypes: [".js", ".ts"],
-    // Exclude files verified:
-    // 2026-01-04:
-    // - check-pattern-compliance.js: contains patterns as strings
-    // - archive-doc.js: uses startsWith('/'), startsWith('\\') to detect & reject absolute paths
-    // - phase-complete-check.js: uses path.relative() THEN startsWith('..') which is correct
-    // 2026-01-12 (Review #134):
-    // - pattern-check.js: L61,64 check for absolute paths (/, //, drive letters) before path.relative() containment at L98
-    // 2026-02-05 (Review #249):
-    // - normalize-format.js: L219 startsWith("//") is comment detection, not path validation
-    pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check|pattern-check|normalize-format)\.js$/,
-  },
+  // path-startswith: MIGRATED to ESLint sonash/no-path-startswith (AST-based)
   {
     id: "regex-global-test-loop",
     severity: "high",
@@ -407,34 +388,14 @@ const ANTI_PATTERNS = [
     // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
     // 2026-02-05 (Review #249): eval-check-stage.js, eval-snapshot.js, unify-findings.js, normalize-format.js
     //   all use /^\.\.(?:[\\/]|$)/.test(relative) in validateSessionPath (not startsWith)
+    // eslint-plugin-sonash rules and tests contain ".." as string literals in AST checks
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|eval-check-stage|eval-snapshot|unify-findings|normalize-format)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|eval-check-stage|eval-snapshot|unify-findings|normalize-format|no-empty-path-check|eslint-plugin-sonash\.test)\.js$/,
   },
-  {
-    id: "hardcoded-api-key",
-    severity: "critical",
-    pattern:
-      /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Z0-9_/+=-]{20,}['"`]/gi,
-    message: "Potential hardcoded API key or secret detected",
-    fix: "Use environment variables: process.env.API_KEY",
-    review: "Security Standards",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-    exclude: /(?:test|mock|fake|dummy|example|placeholder|xxx+|your[_-]?api|insert[_-]?your)/i,
-  },
+  // hardcoded-api-key: MIGRATED to ESLint sonash/no-hardcoded-secrets (AST-based)
   // unsafe-innerhtml: MIGRATED to ESLint sonash/no-unsafe-innerhtml (AST-based)
   // eval-usage: REMOVED — covered by ESLint no-eval (in js.configs.recommended)
-  {
-    id: "sql-injection-risk",
-    severity: "critical",
-    pattern:
-      /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g,
-    message: "Potential SQL injection: string interpolation or concatenation in query",
-    fix: 'Use parameterized queries with placeholders (e.g., db.query("SELECT * FROM users WHERE id = ?", [userId]))',
-    review: "Security Standards",
-    fileTypes: [".js", ".ts"],
-    // 2026-02-05 (Review #249): generate-views.js uses .get() on Map objects with template strings, not SQL queries
-    pathExclude: /(?:^|[\\/])generate-views\.js$/,
-  },
+  // sql-injection-risk: MIGRATED to ESLint sonash/no-sql-injection (AST-based)
   {
     id: "unsanitized-error-response",
     severity: "critical",
@@ -559,135 +520,22 @@ const ANTI_PATTERNS = [
     review: "#33",
     fileTypes: [".js", ".ts"],
   },
-  {
-    id: "empty-path-not-rejected",
-    severity: "critical",
-    pattern:
-      /(?:startsWith\s*\(\s*['"`]\.\.['"`]\s*\)|\.isAbsolute\s*\(\s*rel\s*\))(?![\s\S]{0,50}===\s*['"`]['"`])/g,
-    message: 'Path validation may miss empty string edge case (rel === "")',
-    fix: 'Add: rel === "" || rel.startsWith("..") || path.isAbsolute(rel)',
-    review: "#40",
-    fileTypes: [".js", ".ts"],
-    // Exclude files verified to check for empty string (regex looks FORWARD only, misses rel === '' at START):
-    // - phase-complete-check.js: L55, L140, L165, L244 all have `rel === '' || rel.startsWith('..')`
-    // - .claude/hooks/*.js: All verified 2026-01-12 (Review #134) to have `rel === '' ||` at start of condition
-    // - check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
-    // - validate-paths.js: L73 has `rel === "" ||` at start of condition (Review #200)
-    // - analyze-learning-effectiveness.js: L1076 has `rel === "" ||` at start of condition (Review #200)
-    // - security-helpers.js: L104-108 validates empty/falsy paths upfront + L113 has `rel === "" ||` (Review #202)
-    // 2026-01-27 audit (Review #210): check-remote-session-context.js and track-agent-invocation.js
-    // both use `/^\.\.(?:[\\/]|$)/.test(rel)` which correctly handles empty rel (same path = valid)
-    // 2026-01-27 audit (Review #212):
-    // - check-roadmap-health.js: L175 has `rel === "" ||` at start of condition
-    // 2026-01-29 audit (Review #217 R4):
-    // - check-doc-headers.js: L117 has `rel === "" ||` at start of condition
-    // 2026-02-02 audit (Review #224):
-    // - statusline.js (hooks/global): L64 has `rel === "" ||` at start of condition
-    // - sync-claude-settings.js: L47 has `rel === "" ||` in isPathContained helper
-    // 2026-02-03 audit (Review #226 R3):
-    // - ai-pattern-checks.js: L82 uses `rel !== "" && (isAbsolute || regex)` - equivalent logic, handles empty
-    // 2026-02-05 (Review #249): eval-check-stage.js, eval-snapshot.js, unify-findings.js, normalize-format.js
-    //   all have `rel === "" ||` in validateSessionPath
-    // 2026-02-06 (Review #256): extract-agent-findings.js L29 has `rel === "" ||` at start of condition
-    // 2026-02-06 (Review #258): generate-detailed-sonar-report.js L33 has `rel === "" ||` at start of condition
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
-    pathExcludeList: [
-      "phase-complete-check.js",
-      "check-edit-requirements.js",
-      "check-write-requirements.js",
-      "check-requirements.js",
-      "check-mcp-servers.js",
-      "pattern-check.js",
-      "session-start.js",
-      "validate-paths.js",
-      "analyze-learning-effectiveness.js",
-      "security-helpers.js",
-      "check-remote-session-context.js",
-      "track-agent-invocation.js",
-      "check-roadmap-health.js",
-      "check-doc-headers.js",
-      "statusline.js",
-      "sync-claude-settings.js",
-      "ai-pattern-checks.js",
-      "eval-check-stage.js",
-      "eval-snapshot.js",
-      "unify-findings.js",
-      "normalize-format.js",
-      "extract-agent-findings.js",
-      "generate-detailed-sonar-report.js",
-      "place-unassigned-debt.js",
-      "analyze-placement.js",
-      "post-write-validator.js",
-    ],
-  },
+  // empty-path-not-rejected: MIGRATED to ESLint sonash/no-empty-path-check (AST-based)
 
-  // Test patterns from Consolidation #14 (Reviews #180-201)
-  {
-    id: "test-mock-firestore-directly",
-    severity: "high",
-    // Catch vi.mock or jest.mock of firebase/firestore in test files
-    // App uses Cloud Functions for writes - mock httpsCallable instead
-    pattern: /(?:vi|jest)\.mock\s*\(\s*['"`]firebase\/firestore['"`]/g,
-    message:
-      "Mocking firebase/firestore directly - app uses Cloud Functions (httpsCallable) for writes",
-    fix: 'Mock firebase/functions instead: vi.mock("firebase/functions", () => ({ httpsCallable: vi.fn(() => vi.fn().mockResolvedValue({ data: {} })) }))',
-    review: "#185, #180-201 (recurring 6x)",
-    fileTypes: [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx", ".test.js", ".test.jsx"],
-  },
+  // test-mock-firestore-directly: MIGRATED to ESLint sonash/no-test-mock-firestore (AST-based)
 
   // --- New patterns from PR Review Churn Analysis (Session #151) ---
   // These patterns were identified from top 20 Qodo findings across 259 reviews
 
-  // Unguarded loadConfig (15x in reviews)
-  {
-    id: "unguarded-loadconfig",
-    severity: "high",
-    pattern: /\b(?:loadConfig|require)\s*\(\s*['"`][^'"`)]+['"`]\s*\)(?![\s\S]{0,30}catch)/g,
-    message: "loadConfig/require without try/catch - crashes on missing or malformed config",
-    fix: "Wrap in try/catch with graceful fallback or clear error message",
-    review: "#36, #37, Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    // Only check scripts and hooks (not app code where require is standard)
-    pathFilter: /(?:^|\/)(?:scripts|\.claude\/hooks|\.husky)\//,
-    // Exclude files with verified error handling
-    // check-pattern-sync.js: CJS require() calls at top-level are standard node module loading
-    pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|load-config|check-pattern-sync|security-helpers|analyze-learning-effectiveness)\.js$/,
-    pathExcludeList: verifiedPatterns["unguarded-loadconfig"] || [],
-  },
+  // unguarded-loadconfig: MIGRATED to ESLint sonash/no-unguarded-loadconfig (AST-based)
 
   // silent-catch-block: REMOVED — covered by ESLint no-empty (in js.configs.recommended)
 
-  // writeFileSync without atomic write pattern (10x in reviews)
-  {
-    id: "non-atomic-write",
-    severity: "high",
-    pattern: /writeFileSync\s*\([^)]+\)(?![\s\S]{0,80}(?:unlinkSync|renameSync|tmpdir|\.tmp))/g,
-    message: "writeFileSync without atomic write pattern - partial writes on crash corrupt data",
-    fix: "Write to tmp file first, then rename: writeFileSync(path + '.tmp', data); renameSync(path + '.tmp', path);",
-    review: "#284, Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    // Only flag in scripts that write critical state files
-    pathFilter: /(?:^|\/)(?:scripts|\.claude)\//,
-    // Exclude files verified to use atomic writes or where non-atomic is acceptable
-    pathExcludeList: verifiedPatterns["non-atomic-write"] || [],
-  },
+  // non-atomic-write: MIGRATED to ESLint sonash/no-non-atomic-write (AST-based)
 
   // object-assign-parsed-json: MIGRATED to ESLint sonash/no-object-assign-json (AST-based)
 
-  // Unbounded regex quantifiers (8x in reviews)
-  {
-    id: "unbounded-regex-quantifier",
-    severity: "high",
-    pattern: /new\s+RegExp\s*\([^)]*['"`][^'"]*(?:\.\*(?!\?)|\.\+(?!\?))[^'"]*['"`]/g,
-    message: "Unbounded .* or .+ in dynamic RegExp - potential ReDoS or performance issue",
-    fix: "Use bounded quantifiers: [\\s\\S]{0,N}? or .{0,N}? with explicit limits",
-    review: "#53, Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    // check-pattern-sync.js: uses .* in extractPatterns() for flexible pattern matching (intentional)
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|check-pattern-sync)\.js$/,
-    pathExcludeList: verifiedPatterns["unbounded-regex-quantifier"] || [],
-  },
+  // unbounded-regex-quantifier: MIGRATED to ESLint sonash/no-unbounded-regex (AST-based)
 
   // Missing Array.isArray checks (7x in reviews)
   {
@@ -704,18 +552,7 @@ const ANTI_PATTERNS = [
     pathExcludeList: verifiedPatterns["missing-array-isarray"] || [],
   },
 
-  // Unescaped user input in RegExp constructor (7x in reviews)
-  {
-    id: "unescaped-regexp-input",
-    severity: "high",
-    pattern: /new\s+RegExp\s*\(\s*(?!['"`/])(?:\w+(?:\.\w+)*)\s*[,)]/g,
-    message: "Variable in RegExp constructor without escaping - special chars break regex",
-    fix: "Escape input: new RegExp(str.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'))",
-    review: "Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|inline-patterns)\.js$/,
-    pathExcludeList: verifiedPatterns["unescaped-regexp-input"] || [],
-  },
+  // unescaped-regexp-input: MIGRATED to ESLint sonash/no-unescaped-regexp-input (AST-based)
 
   // exec() loop without /g flag (6x in reviews)
   {
@@ -792,32 +629,9 @@ const ANTI_PATTERNS = [
     pathExcludeList: verifiedPatterns["unbounded-file-read"] || [],
   },
 
-  // Shell command injection via string concatenation
-  {
-    id: "shell-command-injection",
-    severity: "critical",
-    pattern: /exec(?:Sync)?\s*\(\s*(?:`[^`]*\$\{|['"`][^'"]*['"`]\s*\+\s*(?!['"`]))/g,
-    message: "Shell command built with string interpolation - command injection risk",
-    fix: "Use execFileSync with array args: execFileSync('cmd', ['arg1', userInput])",
-    review: "#31, #38, Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
-  },
+  // shell-command-injection: MIGRATED to ESLint sonash/no-shell-injection (AST-based)
 
-  // Missing encoding in writeFileSync
-  {
-    id: "writefile-missing-encoding",
-    severity: "medium",
-    pattern: /writeFileSync\s*\(\s*[^,]+,\s*[^,]+\s*\)(?!\s*;?\s*\/\/\s*binary)/g,
-    message: "writeFileSync without explicit encoding - defaults to UTF-8 but intent unclear",
-    fix: "Add encoding: writeFileSync(path, data, 'utf-8') or { encoding: 'utf-8' }",
-    review: "Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    pathFilter: /(?:^|\/)(?:scripts|\.claude)\//,
-    // Exclude files already using options object with encoding
-    pathExclude: /encoding/,
-    pathExcludeList: verifiedPatterns["writefile-missing-encoding"] || [],
-  },
+  // writefile-missing-encoding: MIGRATED to ESLint sonash/no-writefile-missing-encoding (AST-based)
 
   // ═══════════════════════════════════════════════════════════════════
   // Phase 7: New enforcement rules for previously unenforced categories
@@ -826,27 +640,8 @@ const ANTI_PATTERNS = [
 
   // --- React/Frontend ---
 
-  // Unstable list keys: key={index} causes unnecessary re-renders
-  {
-    id: "unstable-list-key",
-    severity: "high",
-    pattern: /key=\{[^}]*\bindex\b[^}]*\}/g,
-    message: "Using array index as React key - causes unnecessary re-renders and bugs on reorder",
-    fix: "Use a stable unique identifier: key={item.id} or key={item.canonId}",
-    review: "CODE_PATTERNS.md React/Frontend - Key stability",
-    fileTypes: [".jsx", ".tsx"],
-  },
-
-  // Clickable div without ARIA role
-  {
-    id: "div-onclick-no-role",
-    severity: "medium",
-    pattern: /<div(?![^>]*\brole\s*=)[^>]*\bonClick\b[^>]*>/g,
-    message: "Clickable <div> without role attribute - inaccessible to screen readers",
-    fix: 'Add role="button" or use <button> element instead: <button onClick={...}>',
-    review: "CODE_PATTERNS.md React/Frontend - Accessible toggle switches",
-    fileTypes: [".jsx", ".tsx"],
-  },
+  // unstable-list-key: MIGRATED to ESLint sonash/no-index-key (AST-based)
+  // div-onclick-no-role: MIGRATED to ESLint sonash/no-div-onclick-no-role (AST-based)
 
   // --- JS/TS ---
 
@@ -910,20 +705,7 @@ const ANTI_PATTERNS = [
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
 
-  // Division without zero guard (8x recurrence)
-  // Matches `/ total` etc. only when NOT preceded by `> 0 ?` guard on same line
-  {
-    id: "unsafe-division",
-    severity: "high",
-    pattern: /^(?!.*>\s*0\s*\?).*[^/*]\s\/\s*(?:total|count|length|size|denominator)\b/gm,
-    message: "Division by variable that could be 0 - returns Infinity/NaN",
-    fix: "Use safePercent(n, total) helper or guard: total > 0 ? (n / total) * 100 : 0",
-    review: "CODE_PATTERNS.md JS/TS - Safe percentage, Review #226 (8x recurrence)",
-    fileTypes: [".js", ".ts"],
-    pathFilter: /(?:^|\/)scripts\//,
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
-    exclude: /safePercent|\/\/|\/\*|\* /,
-  },
+  // unsafe-division: MIGRATED to ESLint sonash/no-unsafe-division (AST-based)
 
   // renameSync without prior rmSync on Windows (8x recurrence)
   {

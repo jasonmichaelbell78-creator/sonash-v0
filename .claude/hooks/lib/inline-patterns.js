@@ -3,52 +3,29 @@
  * Inline pattern checks for the post-write-validator hook.
  * Extracted from post-write-validator.js (AI-4.2)
  *
- * These are a fast subset of the patterns in scripts/check-pattern-compliance.js,
- * run per-file on write/edit to catch issues early.
+ * These are a fast subset of patterns run per-file on write/edit to catch issues early.
+ *
+ * NOTE: Many JS/TS patterns have been migrated to ESLint AST-based rules in
+ * eslint-plugin-sonash (v3.0). This file retains only patterns that:
+ * 1. Check non-JS content (bash, YAML, shell)
+ * 2. Are not yet covered by ESLint rules
+ * 3. Provide fast inline feedback for common issues
+ *
+ * Migrated to ESLint (removed from here):
+ * - unsafe-error-message → sonash/no-unsafe-error-access
+ * - path-startswith → sonash/no-path-startswith
+ * - hardcoded-api-key → sonash/no-hardcoded-secrets
+ * - unsafe-innerhtml → sonash/no-unsafe-innerhtml
+ * - eval-usage → ESLint no-eval
+ * - unstable-list-key → sonash/no-index-key
+ * - div-onclick-no-role → sonash/no-div-onclick-no-role
+ * - test-mock-firestore-directly → sonash/no-test-mock-firestore
+ * - sql-injection-risk → sonash/no-sql-injection
+ * - shell-command-injection → sonash/no-shell-injection
+ * - sql-injection-template → sonash/no-sql-injection
  */
 
 const INLINE_PATTERNS = [
-  {
-    id: "unsafe-error-message",
-    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\b\1\b\.message/g,
-    message: "Unsafe error.message access - crashes if non-Error is thrown",
-    fix: "Use: error instanceof Error ? error.message : String(error)",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-  },
-  {
-    id: "path-startswith",
-    pattern: /\.startsWith\s*\(\s*['"`][./\\]+['"`]\s*\)/g,
-    message: "Path validation with startsWith() fails on Windows or edge cases",
-    fix: 'Use: path.relative() and check for ".." prefix with regex',
-    fileTypes: [".js", ".ts"],
-    pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check|pattern-check|normalize-format|post-write-validator)\.js$/,
-  },
-  {
-    id: "hardcoded-api-key",
-    pattern:
-      /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Z0-9_/+=-]{20,}['"`]/gi,
-    message: "Potential hardcoded API key or secret detected",
-    fix: "Use environment variables: process.env.API_KEY",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-    exclude: /(?:test|mock|fake|dummy|example|placeholder|xxx+|your[_-]?api|insert[_-]?your)/i,
-  },
-  {
-    id: "unsafe-innerhtml",
-    pattern: /\.innerHTML\s*=/g,
-    message: "innerHTML assignment can lead to XSS vulnerabilities",
-    fix: "Use textContent for text, or sanitize with DOMPurify for HTML",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-  },
-  {
-    id: "eval-usage",
-    pattern: /\beval\s*\(/g,
-    message: "ev" + "al() is a security risk - allows arbitrary code execution",
-    fix: "Avoid ev" + "al. Use JSON.parse for JSON, or restructure code",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-    pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|security-check|pattern-check|post-write-validator)\.js$/,
-  },
   {
     id: "npm-install-automation",
     pattern: /npm\s+install\b[^\n]*/g,
@@ -65,46 +42,6 @@ const INLINE_PATTERNS = [
     fix: "Use: if ! OUT=$(cmd); then",
     fileTypes: [".sh", ".yml", ".yaml"],
   },
-  {
-    id: "unstable-list-key",
-    pattern: /key=\{[^}]*\bindex\b[^}]*\}/g,
-    message: "Using array index as React key - causes unnecessary re-renders",
-    fix: "Use a stable unique identifier: key={item.id}",
-    fileTypes: [".jsx", ".tsx"],
-  },
-  {
-    id: "div-onclick-no-role",
-    pattern: /<div(?![^>]*\brole\s*=)[^>]*\bonClick\b[^>]*>/g,
-    message: "Clickable <div> without role attribute - inaccessible to screen readers",
-    fix: 'Add role="button" or use <button> element instead',
-    fileTypes: [".jsx", ".tsx"],
-  },
-  {
-    id: "test-mock-firestore-directly",
-    pattern: /(?:vi|jest)\.mock\s*\(\s*['"`]firebase\/firestore['"`]/g,
-    message:
-      "Mocking firebase/firestore directly - app uses Cloud Functions (httpsCallable) for writes",
-    fix: 'Mock firebase/functions instead: vi.mock("firebase/functions", ...)',
-    fileTypes: [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx", ".test.js", ".test.jsx"],
-  },
-  {
-    id: "sql-injection-risk",
-    pattern:
-      /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g,
-    message: "Potential SQL injection: string interpolation in query",
-    fix: "Use parameterized queries with placeholders",
-    fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])generate-views\.js$/,
-  },
-  {
-    id: "shell-command-injection",
-    pattern: /exec(?:Sync)?\s*\(\s*(?:`[^`]*\$\{|['"`][^'"]*['"`]\s*\+\s*(?!['"`]))/g,
-    message: "Shell command built with string interpolation - command injection risk",
-    fix: "Use execFileSync with array args",
-    fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
-  },
-
   {
     id: "exec-no-global-flag",
     pattern: /while\s*\(\s*\(\s*\w+\s*=\s*(?:\w+)\.exec\s*\([^)]+\)\s*\)/g,
@@ -208,13 +145,6 @@ const INLINE_PATTERNS = [
     message: "Suspense without fallback prop - shows nothing during loading",
     fix: "Add fallback prop: <Suspense fallback={<Loading />}>",
     fileTypes: [".jsx", ".tsx"],
-  },
-  {
-    id: "sql-injection-template",
-    pattern: /(?:query|execute)\s*\(\s*`[^`]*\$\{/g,
-    message: "SQL query with template literal interpolation - injection risk",
-    fix: "Use parameterized queries with placeholders",
-    fileTypes: [".js", ".ts"],
   },
 ];
 

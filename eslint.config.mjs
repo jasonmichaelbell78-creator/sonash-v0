@@ -97,11 +97,18 @@ export default [
       "sonash/no-unguarded-file-read": "warn",
       "sonash/no-stat-without-lstat": "warn",
       "sonash/no-toctou-file-ops": "warn",
-      // Migrated from regex check-pattern-compliance.js patterns
+      // Migrated from regex check-pattern-compliance.js patterns (Phase 1)
       "sonash/no-raw-error-log": "warn",
       "sonash/no-catch-console-error": "warn",
       "sonash/no-object-assign-json": "warn",
       "sonash/no-math-max-spread": "warn",
+      // Migrated from regex patterns (Phase 2)
+      "sonash/no-shell-injection": "warn",
+      "sonash/no-writefile-missing-encoding": "warn",
+      "sonash/no-unbounded-regex": "warn",
+      "sonash/no-unescaped-regexp-input": "warn",
+      "sonash/no-unguarded-loadconfig": "warn",
+      "sonash/no-non-atomic-write": "warn",
     },
   },
   // SoNash rules - code quality (all JS/TS/TSX/JSX)
@@ -115,6 +122,23 @@ export default [
       "sonash/no-unsafe-innerhtml": "warn",
       "sonash/no-unsafe-error-access": "warn",
       "sonash/no-hallucinated-api": "warn",
+      // Phase 2 migrations
+      "sonash/no-sql-injection": "warn",
+      "sonash/no-hardcoded-secrets": "warn",
+      "sonash/no-path-startswith": "warn",
+      "sonash/no-empty-path-check": "warn",
+      "sonash/no-unsafe-division": "warn",
+    },
+  },
+  // SoNash rules - React/JSX quality
+  {
+    files: ["**/*.{tsx,jsx}"],
+    plugins: {
+      sonash,
+    },
+    rules: {
+      "sonash/no-index-key": "warn",
+      "sonash/no-div-onclick-no-role": "warn",
     },
   },
   // SoNash rules - test quality
@@ -125,6 +149,7 @@ export default [
     },
     rules: {
       "sonash/no-trivial-assertions": "warn",
+      "sonash/no-test-mock-firestore": "warn",
     },
   },
 ];

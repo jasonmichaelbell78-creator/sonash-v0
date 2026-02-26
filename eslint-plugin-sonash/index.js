@@ -13,6 +13,20 @@
  * - Math.max(...arr) without length guard returns -Infinity
  * - Trivial test assertions provide false confidence
  * - AI-hallucinated API calls cause runtime errors
+ * - Shell command injection via string interpolation
+ * - SQL injection via string interpolation in queries
+ * - Array index as React key causes re-render bugs
+ * - Clickable div without ARIA role is inaccessible
+ * - Path validation with startsWith fails on Windows
+ * - Hardcoded API keys/secrets in source code
+ * - Mocking firebase/firestore directly (use functions)
+ * - writeFileSync without encoding parameter
+ * - Unbounded regex quantifiers risk ReDoS
+ * - Unescaped variable input in RegExp constructor
+ * - Division by potentially-zero variables
+ * - loadConfig/require without try/catch
+ * - Path traversal check missing empty string edge case
+ * - writeFileSync without atomic write pattern
  */
 
 "use strict";
@@ -28,11 +42,26 @@ const noObjectAssignJson = require("./rules/no-object-assign-json");
 const noMathMaxSpread = require("./rules/no-math-max-spread");
 const noTrivialAssertions = require("./rules/no-trivial-assertions");
 const noHallucinatedApi = require("./rules/no-hallucinated-api");
+// Phase 2: Migrated from regex check-pattern-compliance.js patterns
+const noShellInjection = require("./rules/no-shell-injection");
+const noSqlInjection = require("./rules/no-sql-injection");
+const noIndexKey = require("./rules/no-index-key");
+const noDivOnclickNoRole = require("./rules/no-div-onclick-no-role");
+const noPathStartswith = require("./rules/no-path-startswith");
+const noHardcodedSecrets = require("./rules/no-hardcoded-secrets");
+const noTestMockFirestore = require("./rules/no-test-mock-firestore");
+const noWritefileMissingEncoding = require("./rules/no-writefile-missing-encoding");
+const noUnboundedRegex = require("./rules/no-unbounded-regex");
+const noUnescapedRegexpInput = require("./rules/no-unescaped-regexp-input");
+const noUnsafeDivision = require("./rules/no-unsafe-division");
+const noUnguardedLoadconfig = require("./rules/no-unguarded-loadconfig");
+const noEmptyPathCheck = require("./rules/no-empty-path-check");
+const noNonAtomicWrite = require("./rules/no-non-atomic-write");
 
 const plugin = {
   meta: {
     name: "eslint-plugin-sonash",
-    version: "2.0.0",
+    version: "3.0.0",
   },
   rules: {
     "no-unguarded-file-read": noUnguardedFileRead,
@@ -46,6 +75,21 @@ const plugin = {
     "no-math-max-spread": noMathMaxSpread,
     "no-trivial-assertions": noTrivialAssertions,
     "no-hallucinated-api": noHallucinatedApi,
+    // Phase 2 rules
+    "no-shell-injection": noShellInjection,
+    "no-sql-injection": noSqlInjection,
+    "no-index-key": noIndexKey,
+    "no-div-onclick-no-role": noDivOnclickNoRole,
+    "no-path-startswith": noPathStartswith,
+    "no-hardcoded-secrets": noHardcodedSecrets,
+    "no-test-mock-firestore": noTestMockFirestore,
+    "no-writefile-missing-encoding": noWritefileMissingEncoding,
+    "no-unbounded-regex": noUnboundedRegex,
+    "no-unescaped-regexp-input": noUnescapedRegexpInput,
+    "no-unsafe-division": noUnsafeDivision,
+    "no-unguarded-loadconfig": noUnguardedLoadconfig,
+    "no-empty-path-check": noEmptyPathCheck,
+    "no-non-atomic-write": noNonAtomicWrite,
   },
   configs: {},
 };
@@ -67,6 +111,20 @@ plugin.configs.recommended = {
     "sonash/no-math-max-spread": "warn",
     "sonash/no-trivial-assertions": "warn",
     "sonash/no-hallucinated-api": "warn",
+    "sonash/no-shell-injection": "warn",
+    "sonash/no-sql-injection": "warn",
+    "sonash/no-index-key": "warn",
+    "sonash/no-div-onclick-no-role": "warn",
+    "sonash/no-path-startswith": "warn",
+    "sonash/no-hardcoded-secrets": "warn",
+    "sonash/no-test-mock-firestore": "warn",
+    "sonash/no-writefile-missing-encoding": "warn",
+    "sonash/no-unbounded-regex": "warn",
+    "sonash/no-unescaped-regexp-input": "warn",
+    "sonash/no-unsafe-division": "warn",
+    "sonash/no-unguarded-loadconfig": "warn",
+    "sonash/no-empty-path-check": "warn",
+    "sonash/no-non-atomic-write": "warn",
   },
 };
 

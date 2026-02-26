@@ -4,6 +4,18 @@
  * Tests that ANTI_PATTERNS regex/testFn patterns correctly detect violations
  * and do NOT false-positive on clean code.
  *
+ * NOTE: Many patterns have been migrated to ESLint AST-based rules in
+ * eslint-plugin-sonash (v3.0). See tests/eslint-plugin-sonash.test.js for
+ * those tests. This file only tests patterns that remain in the regex checker.
+ *
+ * Migrated to ESLint (tests moved to eslint-plugin-sonash.test.js):
+ * - eval-usage → no-eval, unsafe-innerhtml → no-unsafe-innerhtml
+ * - hardcoded-api-key → no-hardcoded-secrets, sql-injection-risk → no-sql-injection
+ * - shell-command-injection → no-shell-injection, path-startswith → no-path-startswith
+ * - unsafe-error-message → no-unsafe-error-access, test-mock-firestore → no-test-mock-firestore
+ * - unstable-list-key → no-index-key, hallucinated-apis → no-hallucinated-api
+ * - trivial-assertions → no-trivial-assertions
+ *
  * Run: npm run test:patterns
  */
 
@@ -27,123 +39,7 @@ function testPattern(pattern, shouldMatch, shouldNotMatch) {
 }
 
 // ═══════════════════════════════════════════════════
-// Critical Severity Patterns
-// ═══════════════════════════════════════════════════
-
-describe("Pattern: eval-usage [critical]", () => {
-  const pattern = /\beval\s*\(/g;
-
-  test("detects eval() usage", () => {
-    testPattern(pattern, ["eval('alert(1)')"], []);
-  });
-
-  test("allows clean code", () => {
-    testPattern(pattern, [], ["const evaluate = fn();", "evaluation(x)"]);
-  });
-});
-
-describe("Pattern: unsafe-innerhtml [critical]", () => {
-  const pattern = /\.innerHTML\s*=/g;
-
-  test("detects innerHTML assignment", () => {
-    testPattern(pattern, ['el.innerHTML = "<b>hi</b>"', "node.innerHTML = userInput"], []);
-  });
-
-  test("allows safe alternatives", () => {
-    testPattern(pattern, [], ['el.textContent = "safe"', "el.innerText = value"]);
-  });
-});
-
-describe("Pattern: hardcoded-api-key [critical]", () => {
-  const pattern =
-    /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Z0-9_/+=-]{20,}['"`]/gi;
-
-  test("detects hardcoded secrets", () => {
-    testPattern(
-      pattern,
-      [
-        'const api_key = "AKIAIOSFODNN7EXAMPLE12345"',
-        'const secret = "abcdefghijklmnopqrstuvwxyz1234567890"',
-      ],
-      []
-    );
-  });
-
-  test("allows env vars and placeholders", () => {
-    testPattern(pattern, [], ["const key = process.env.API_KEY", 'const token = "short"']);
-  });
-});
-
-/**
- * String-based detection: check if a DB method call uses interpolation/concatenation.
- * Replaces complex regex (SonarCloud S5843: complexity 35) with function-based test.
- */
-function hasSqlInjectionRisk(code) {
-  const dbMethods = ["query", "execute", "exec", "prepare", "run", "all", "get"];
-  const hasDbMethod = dbMethods.some((m) => code.includes(m + "(") || code.includes(m + " ("));
-  if (!hasDbMethod) return false;
-  return code.includes("${") || /['"`]\s*\+\s*(?!['"`])/.test(code);
-}
-
-describe("Pattern: sql-injection-risk [critical]", () => {
-  test("detects interpolation in queries", () => {
-    expect(hasSqlInjectionRisk("db.query(`SELECT * FROM users WHERE id = ${userId}`)")).toBe(true);
-  });
-
-  test("allows parameterized queries", () => {
-    expect(hasSqlInjectionRisk('db.query("SELECT * FROM users WHERE id = ?", [userId])')).toBe(
-      false
-    );
-    expect(hasSqlInjectionRisk('db.execute("SELECT 1")')).toBe(false);
-  });
-});
-
-describe("Pattern: shell-command-injection [critical]", () => {
-  const pattern = /exec(?:Sync)?\s*\(\s*(?:`[^`]*\$\{|['"`][^'"]*['"`]\s*\+\s*(?!['"`]))/g;
-
-  test("detects interpolated shell commands", () => {
-    testPattern(pattern, ["execSync(`git add ${file}`)", 'exec("rm " + userInput)'], []);
-  });
-
-  test("allows safe exec patterns", () => {
-    testPattern(pattern, [], ['execFileSync("git", ["add", file])', 'execSync("git status")']);
-  });
-});
-
-describe("Pattern: path-startswith [critical]", () => {
-  const pattern = /\.startsWith\s*\(\s*['"`][./\\]+['"`]\s*\)/g;
-
-  test("detects startsWith for path validation", () => {
-    testPattern(
-      pattern,
-      ['filePath.startsWith("./")', 'rel.startsWith("..")', 'p.startsWith("/")'],
-      []
-    );
-  });
-
-  test("allows non-path startsWith", () => {
-    testPattern(pattern, [], ['name.startsWith("hello")', 'str.startsWith("prefix")']);
-  });
-});
-
-describe("Pattern: unsafe-error-message [critical]", () => {
-  const pattern = /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\b\1\b\.message/g;
-
-  test("detects unsafe error.message", () => {
-    testPattern(pattern, ["catch (err) { console.log(err.message) }"], []);
-  });
-
-  test("allows instanceof-guarded access", () => {
-    testPattern(
-      pattern,
-      [],
-      ["catch (err) { if (err instanceof Error) console.log(err.message) }"]
-    );
-  });
-});
-
-// ═══════════════════════════════════════════════════
-// High Severity Patterns
+// Active Regex Patterns (still in check-pattern-compliance.js)
 // ═══════════════════════════════════════════════════
 
 describe("Pattern: exec-without-global [high]", () => {
@@ -151,72 +47,6 @@ describe("Pattern: exec-without-global [high]", () => {
 
   test("detects exec in while loop", () => {
     testPattern(pattern, ["while ((match = regex.exec(content)) !== null)"], []);
-  });
-});
-
-describe("Pattern: test-mock-firestore-directly [high]", () => {
-  const pattern = /(?:vi|jest)\.mock\s*\(\s*['"`]firebase\/firestore['"`]/g;
-
-  test("detects direct firestore mocking", () => {
-    testPattern(pattern, ['vi.mock("firebase/firestore")', "jest.mock('firebase/firestore')"], []);
-  });
-
-  test("allows functions mocking", () => {
-    testPattern(pattern, [], ['vi.mock("firebase/functions")', 'jest.mock("firebase/auth")']);
-  });
-});
-
-describe("Pattern: unstable-list-key [high]", () => {
-  const pattern = /key=\{[^}]*\bindex\b[^}]*\}/g;
-
-  test("detects index as key", () => {
-    testPattern(pattern, ["<li key={index}>", "<Item key={i + index} />"], []);
-  });
-
-  test("allows stable keys", () => {
-    testPattern(pattern, [], ["<li key={item.id}>", "<Item key={item.canonId} />"]);
-  });
-});
-
-describe("Pattern: hallucinated-apis [high]", () => {
-  const pattern =
-    /crypto\.secureHash\(|firebase\.verifyAppCheck\(|React\.useServerState\(|next\.getServerAuth\(|firestore\.atomicUpdate\(/g;
-
-  test("detects non-existent APIs", () => {
-    testPattern(
-      pattern,
-      ["crypto.secureHash(data)", "React.useServerState()", "firestore.atomicUpdate(doc)"],
-      []
-    );
-  });
-
-  test("allows real APIs", () => {
-    testPattern(
-      pattern,
-      [],
-      ["crypto.createHash('sha256')", "React.useState()", "firestore.doc('users/123')"]
-    );
-  });
-});
-
-// ═══════════════════════════════════════════════════
-// Medium Severity Patterns (style/quality)
-// ═══════════════════════════════════════════════════
-
-describe("Pattern: trivial-assertions [medium]", () => {
-  const pattern =
-    /expect\(true\)\.toBe\(true\)|expect\(1\)\.toBe\(1\)|expect\(false\)\.toBe\(false\)|assert\.ok\(true\)|assert\.equal\(1,\s*1\)/g;
-
-  test("detects trivial tests", () => {
-    testPattern(pattern, ["expect(true).toBe(true)", "expect(1).toBe(1)", "assert.ok(true)"], []);
-  });
-
-  test("allows meaningful assertions", () => {
-    testPattern(
-      pattern,
-      [],
-      ["expect(result).toBe(true)", "expect(count).toBe(1)", "assert.ok(isValid)"]
-    );
   });
 });
 
@@ -273,6 +103,61 @@ describe("Pattern: overconfident-security [medium]", () => {
   });
 });
 
+describe("Pattern: exit-code-capture [high]", () => {
+  const pattern = /\$\(\s*[^)]{1,500}\s*\)\s*;\s*if\s+\[\s*\$\?\s/g;
+
+  test("detects $? after assignment", () => {
+    testPattern(pattern, ['OUT=$(some_command); if [ $? -ne 0 ]; then echo "fail"; fi'], []);
+  });
+
+  test("allows correct patterns", () => {
+    testPattern(pattern, [], ['if ! OUT=$(some_command); then echo "fail"; fi']);
+  });
+});
+
+describe("Pattern: npm-install-automation [high]", () => {
+  const pattern = /npm\s+install\b[^\n]*/g;
+
+  test("detects npm install in scripts", () => {
+    testPattern(pattern, ["npm install express"], []);
+  });
+
+  test("allows npm ci", () => {
+    testPattern(pattern, [], ["npm ci"]);
+  });
+});
+
+describe("Pattern: regex-global-test-loop [high]", () => {
+  const pattern =
+    /new\s+RegExp\s*\([^)]{1,500},\s*['"`][^'"]{0,200}g[^'"]{0,200}['"`]\s*\)[\s\S]{0,200}\.test\s*\(/g;
+
+  test("detects global regex with .test() in loop", () => {
+    testPattern(pattern, ["new RegExp('pattern', 'g'); regex.test(str)"], []);
+  });
+});
+
+describe("Pattern: unsanitized-error-response [critical]", () => {
+  const pattern =
+    /res\.(?:json|send|status\s*\([^)]*\)\s*\.json)\s*\(\s*\{[\s\S]{0,300}?(?:error|err|e|exception)\.(?:message|stack|toString\s*\()/g;
+
+  test("detects raw error in response", () => {
+    testPattern(pattern, ["res.json({ error: err.message })"], []);
+  });
+
+  test("allows sanitized responses", () => {
+    testPattern(pattern, [], ['res.json({ error: "An error occurred" })']);
+  });
+});
+
+describe("Pattern: naive-data-fetch [high]", () => {
+  const pattern =
+    /(?:\.get\(\)\.then\([^)]{0,100}\.filter\(|getDocs\([^)]{0,100}\)[^;]{0,100}\.filter\()/g;
+
+  test("detects fetch-all-then-filter", () => {
+    testPattern(pattern, [".get().then(docs => docs.filter(d => d.type === 'active'))"], []);
+  });
+});
+
 // ═══════════════════════════════════════════════════
 // Known False Positive Cases (regression tests)
 // These caused the pre-commit disaster and MUST pass
@@ -298,8 +183,6 @@ try {
 
 describe("Known FP: JSON.parse inside try/catch", () => {
   test("should NOT trigger when properly wrapped in try/catch", () => {
-    // This was the #2 FP pattern (24 exclusions) - now removed from patterns
-    // Verify the silent-catch-block pattern doesn't FP on intentional empty catches
     const silentCatch = /catch\s*\(\w*\)\s*\{\}/g;
     const code = `
 try {
