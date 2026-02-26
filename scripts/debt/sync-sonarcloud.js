@@ -32,6 +32,7 @@ const crypto = require("node:crypto");
 const { execFileSync } = require("node:child_process");
 const readline = require("node:readline");
 const os = require("node:os");
+const generateContentHash = require("../lib/generate-content-hash");
 
 // Try to load dotenv if available
 try {
@@ -142,18 +143,6 @@ function parseArgs(args) {
     }
   }
   return parsed;
-}
-
-// Generate content hash for deduplication
-function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
-  const hashInput = [
-    normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
-  ].join("|");
-  return crypto.createHash("sha256").update(hashInput).digest("hex");
 }
 
 // Normalize file path from SonarCloud format

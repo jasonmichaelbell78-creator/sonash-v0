@@ -15,7 +15,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const crypto = require("node:crypto");
+const generateContentHash = require("../lib/generate-content-hash");
+const normalizeFilePath = require("../lib/normalize-file-path");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(PROJECT_ROOT, "docs/technical-debt");
@@ -41,32 +42,6 @@ const SCAN_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".css"]);
 const KEYWORD_RE = /\b(TODO|FIXME|HACK|XXX|WORKAROUND)(?=[:(])/gi;
 
 const SEVERITY_MAP = { TODO: "S3", FIXME: "S2", HACK: "S2", XXX: "S2", WORKAROUND: "S2" };
-
-// --- Reused from intake-audit.js ---
-
-function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
-  const hashInput = [
-    normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
-  ].join("|");
-  return crypto.createHash("sha256").update(hashInput).digest("hex");
-}
-
-function normalizeFilePath(filePath) {
-  if (!filePath) return "";
-  let normalized = filePath.replaceAll("\\", "/").replace(/^\.\//, "").replace(/^\/+/, "");
-  const colonIndex = normalized.indexOf(":");
-  if (colonIndex > 0) {
-    const beforeColon = normalized.substring(0, colonIndex);
-    if (!(beforeColon.length === 1 && /^[A-Za-z]$/.test(beforeColon))) {
-      normalized = normalized.substring(colonIndex + 1);
-    }
-  }
-  return normalized;
-}
 
 // --- Comment detection ---
 

@@ -52,29 +52,9 @@ function parseArgs(argv) {
   return opts;
 }
 
-// ── File I/O helpers ───────────────────────────────────────────────────────
-function readJsonl(filePath) {
-  try {
-    const text = fs.readFileSync(filePath, "utf8").trim();
-    if (!text) return [];
-    const lines = text.split("\n");
-    const items = [];
-    for (let i = 0; i < lines.length; i++) {
-      try {
-        items.push(JSON.parse(lines[i]));
-      } catch (error_) {
-        console.warn(
-          `  Warning: failed to parse line ${i + 1} in ${path.basename(filePath)}: ${sanitizeError(error_)}`
-        );
-      }
-    }
-    return items;
-  } catch (err) {
-    console.error("Failed to read JSONL:", sanitizeError(err));
-    process.exit(1);
-  }
-}
+const readJsonl = require("../lib/read-jsonl");
 
+// ── File I/O helpers ───────────────────────────────────────────────────────
 function readJsonSafe(filePath) {
   try {
     if (!fs.existsSync(filePath)) return null;

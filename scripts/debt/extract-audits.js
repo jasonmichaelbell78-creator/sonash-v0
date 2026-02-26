@@ -16,38 +16,10 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { glob } = require("glob");
 
+const normalizeCategory = require("../lib/normalize-category");
+
 const AUDITS_DIR = path.join(__dirname, "../../docs/audits");
 const OUTPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/audits.jsonl");
-
-// Map original categories to normalized categories
-const CATEGORY_MAP = {
-  code: "code-quality",
-  security: "security",
-  performance: "performance",
-  documentation: "documentation",
-  process: "process",
-  refactoring: "refactoring",
-  "engineering-productivity": "engineering-productivity",
-  enhancements: "enhancements",
-  "ai-optimization": "ai-optimization",
-  "code-quality": "code-quality",
-  "Hygiene/Duplication": "code-quality",
-  "Types/Correctness": "code-quality",
-  Testing: "code-quality",
-  "Next/React Boundaries": "code-quality",
-  Security: "security",
-};
-
-// Normalize category
-function normalizeCategory(cat) {
-  if (!cat) return "code-quality";
-  const normalized = CATEGORY_MAP[cat];
-  if (normalized) return normalized;
-  // Try lowercase
-  const lower = cat.toLowerCase();
-  if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
-  return "code-quality";
-}
 
 // Extract primary file from various fields
 function extractFile(item) {

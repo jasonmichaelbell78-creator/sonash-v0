@@ -34,6 +34,8 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { execSync } = require("node:child_process");
 const { sanitizeError } = require("../lib/security-helpers.js");
+const generateContentHash = require("../lib/generate-content-hash");
+const normalizeFilePath = require("../lib/normalize-file-path");
 
 const { loadConfig } = require("../config/load-config");
 
@@ -73,25 +75,6 @@ function parseArgs(args) {
     }
   }
   return parsed;
-}
-
-// Generate content hash for deduplication
-function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
-  const hashInput = [
-    normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
-  ].join("|");
-  return crypto.createHash("sha256").update(hashInput).digest("hex");
-}
-
-// Normalize file path
-function normalizeFilePath(filePath) {
-  if (!filePath) return "";
-  let normalized = filePath.replace(/^\.\//, "").replace(/^\//, "");
-  return normalized;
 }
 
 // Get next DEBT ID
