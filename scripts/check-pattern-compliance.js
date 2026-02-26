@@ -577,7 +577,8 @@ const ANTI_PATTERNS = [
     fix: "Always use -- before file arguments: git add -- file.txt",
     review: "#31, #38, Session #151 analysis",
     fileTypes: [".js", ".ts", ".sh"],
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    // eslint-plugin-sonash.test.js contains git commands as test strings for shell-injection rule
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|eslint-plugin-sonash\.test)\.js$/,
     pathExcludeList: verifiedPatterns["git-without-separator"] || [],
   },
 
