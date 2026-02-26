@@ -30,11 +30,11 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 4626  |
-| Open Items      | 4139  |
-| Resolved        | 238   |
-| False Positives | 249   |
-| Resolution Rate | 5%    |
+| Total Items     | 8349  |
+| Open Items      | 7374  |
+| Resolved        | 477   |
+| False Positives | 498   |
+| Resolution Rate | 6%    |
 
 ---
 
@@ -42,11 +42,11 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 1025  |
-| VERIFIED       | 3114  |
+| NEW            | 2034  |
+| VERIFIED       | 5340  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 238   |
-| FALSE_POSITIVE | 249   |
+| RESOLVED       | 477   |
+| FALSE_POSITIVE | 498   |
 
 ---
 
@@ -54,10 +54,10 @@ distribution.
 
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
-| S0 (Critical) | 36    | 1%         |
-| S1 (High)     | 741   | 16%        |
-| S2 (Medium)   | 1896  | 41%        |
-| S3 (Low)      | 1953  | 42%        |
+| S0 (Critical) | 67    | 1%         |
+| S1 (High)     | 1288  | 15%        |
+| S2 (Medium)   | 3385  | 41%        |
+| S3 (Low)      | 3609  | 43%        |
 
 ---
 
@@ -65,21 +65,21 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 2681  |
-| documentation            | 492   |
-| security                 | 416   |
-| process                  | 356   |
-| refactoring              | 327   |
-| ai-optimization          | 127   |
-| performance              | 98    |
-| enhancements             | 82    |
-| engineering-productivity | 47    |
+| code-quality             | 4625  |
+| documentation            | 982   |
+| security                 | 715   |
+| process                  | 712   |
+| refactoring              | 651   |
+| ai-optimization          | 254   |
+| performance              | 178   |
+| enhancements             | 154   |
+| engineering-productivity | 78    |
 
 ---
 
 ## Alerts
 
-### S0 Critical Alerts (22)
+### S0 Critical Alerts (39)
 
 - **DEBT-0852**: useJournal creates redundant auth listener + potential memor
   (hooks/use-journal.ts:0)
@@ -101,7 +101,7 @@ distribution.
 - **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
   (N/A:0)
 
-### S1 High Priority Alerts (704)
+### S1 High Priority Alerts (1214)
 
 - **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -124,7 +124,7 @@ distribution.
 - **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 694 more S1 items_
+_...and 1204 more S1 items_
 
 ---
 
@@ -132,7 +132,7 @@ _...and 694 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 1025 items |
+| Verification Queue   | 2034 items |
 | Avg Age (Open Items) | 13 days    |
 | Oldest Item Age      | 27 days    |
 | Oldest Item          | DEBT-0002  |
@@ -143,22 +143,23 @@ _...and 694 more S1 items_
 
 | Source                       | Count |
 | ---------------------------- | ----- |
-| sonarcloud                   | 1542  |
-| audit                        | 1462  |
-| unknown                      | 379   |
-| dec-2025-report              | 331   |
-| review                       | 327   |
-| sonarcloud-paste             | 282   |
-| context                      | 126   |
-| roadmap                      | 89    |
-| intake                       | 30    |
-| manual                       | 29    |
-| pr-deferred                  | 10    |
-| pr-review                    | 7     |
+| audit                        | 2868  |
+| sonarcloud                   | 2562  |
+| unknown                      | 758   |
+| review                       | 638   |
+| dec-2025-report              | 638   |
+| sonarcloud-paste             | 286   |
+| context                      | 252   |
+| roadmap                      | 172   |
+| intake                       | 60    |
+| manual                       | 58    |
+| pr-deferred                  | 20    |
+| pr-review                    | 16    |
+| pr-review-366-r2             | 6     |
 | code-comment                 | 5     |
-| pr-review-366-r2             | 3     |
-| alerts-self-audit-2026-02-16 | 2     |
-| session-180                  | 2     |
+| alerts-self-audit-2026-02-16 | 4     |
+| session-180                  | 4     |
+| over-engineering-research    | 2     |
 
 ---
 

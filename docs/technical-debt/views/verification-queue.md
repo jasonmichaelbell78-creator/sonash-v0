@@ -9,1039 +9,2044 @@
 
 ---
 
-**Items Needing Verification:** 1029
+**Items Needing Verification:** 2034
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
 
-| ID        | Title                                                           | Severity | File                                                                             | Line      |
-| --------- | --------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------- | --------- |
-| DEBT-2433 | AUDIT_TRACKER.md audit log tables                               | S1       | docs/AUDIT_TRACKER.md                                                            | 0         |
-| DEBT-2434 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas     | S1       | docs/EXPANSION_EVALUATION_TRACKER.md                                             | 0         |
-| DEBT-2435 | AUDIT_TRACKER.md threshold matrix and version history           | S1       | docs/AUDIT_TRACKER.md                                                            | 0         |
-| DEBT-2464 | generate-pending-alerts.js fragile DEFERRED item extraction     | S1       | scripts/generate-pending-alerts.js                                               | 0         |
-| DEBT-2469 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused          | S1       | docs/HOOKIFY_STRATEGY.md                                                         | 0         |
-| DEBT-3529 | Critical Findings (Must Fix Immediately)                        | S1       | N/A                                                                              | 0         |
-| DEBT-3543 | CRITICAL (Production Blockers)                                  | S1       | N/A                                                                              | 0         |
-| DEBT-3546 | Anonymous Auth Data Loss                                        | S1       | components/providers/auth-provider.tsx                                           | 171       |
-| DEBT-3578 | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
-| DEBT-3579 | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
-| DEBT-3648 | CRITICAL: Missing Error Boundaries                              | S1       | N/A                                                                              | 0         |
-| DEBT-3655 | CQ-3: Missing Null Checks 🔴 CRITICAL                           | S1       | components/providers/auth-provider.tsx                                           | 129       |
-| DEBT-3692 | §2.2 - Critical                                                 | S1       | N/A                                                                              | 0         |
-| DEBT-3745 | Firestore Security Rules Bypass (daily_logs direct write)       | S1       | N/A                                                                              | 0         |
-| DEBT-3746 | Rate Limiter Fail-Open Vulnerability                            | S1       | N/A                                                                              | 0         |
-| DEBT-3880 | Add `npm audit --audit-level=high` to `.husky/pre-push`         | S1       | N/A                                                                              | 0         |
-| DEBT-6938 | Missing Firestore Rule for security_logs Collection             | S1       | N/A                                                                              | 135       |
-| DEBT-6954 | Firestore security_logs Collection Has No Explicit Rule         | S1       | N/A                                                                              | 228       |
-| DEBT-6996 | No Supply Chain Security (SBOM)                                 | S1       | N/A                                                                              | 399       |
-| DEBT-7010 | Critical Findings (Must Fix Immediately)                        | S1       | N/A                                                                              | 0         |
-| DEBT-7024 | CRITICAL (Production Blockers)                                  | S1       | N/A                                                                              | 0         |
-| DEBT-7059 | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
-| DEBT-7126 | CRITICAL: Missing Error Boundaries                              | S1       | N/A                                                                              | 0         |
-| DEBT-7170 | §2.2 - Critical                                                 | S1       | N/A                                                                              | 0         |
-| DEBT-7223 | Firestore Security Rules Bypass (daily_logs direct write)       | S1       | N/A                                                                              | 0         |
-| DEBT-7224 | Rate Limiter Fail-Open Vulnerability                            | S1       | N/A                                                                              | 0         |
-| DEBT-7357 | Add `npm audit --audit-level=high` to `.husky/pre-push`         | S1       | N/A                                                                              | 0         |
-| DEBT-7377 | Fix Windows EINVAL spawn issue in run-alerts.js causing 3...    | S1       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
-| DEBT-7385 | Anonymous Auth Data Loss                                        | S1       | components/providers/auth-provider.tsx                                           | 0         |
-| DEBT-7402 | CQ-1: useEffect Dependency Array Issues 🔴 CRITICAL             | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7403 | CQ-3: Missing Null Checks 🔴 CRITICAL                           | S1       | components/providers/auth-provider.tsx                                           | 0         |
-| DEBT-7406 | CQ-7: Missing Input Validation 🔴 CRITICAL                      | S1       | lib/db/users.ts                                                                  | 0         |
-| DEBT-7409 | B-1: Race Condition in Auto-Save 🔴 CRITICAL                    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7410 | B-2: Listener Cleanup Memory Leak 🔴 CRITICAL                   | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7414 | P-1: All Fonts Loaded on Initial Page Load 🔴 CRITICAL          | S1       | app/layout.tsx                                                                   | 0         |
-| DEBT-7416 | S-1: Client-Side Date ID Manipulation 🔴 CRITICAL               | S1       | lib/firestore-service.ts                                                         | 0         |
-| DEBT-7452 | Critical (Logic/Security)                                       | S1       | firestore.rules                                                                  | 0         |
-| DEBT-7463 | ARCHITECTURE.md Firestore rules diagram contradicts actua...    | S1       | ARCHITECTURE.md                                                                  | 210       |
-| DEBT-7464 | TodayPage stale referenceDate after midnight — not covere...    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7465 | Support circle contacts are hardcoded demo data; Call/Tex...    | S1       | components/notebook/pages/support-page.tsx                                       | 0         |
-| DEBT-7466 | Onboarding promises data export/deletion that don't exist...    | S1       | components/onboarding/onboarding-wizard.tsx                                      | 419       |
-| DEBT-7467 | Tab navigation keyboard inaccessible — no role=tablist, a...    | S1       | components/notebook/tab-navigation.tsx                                           | 0         |
-| DEBT-7468 | No crisis/SOS emergency button in recovery app — resource...    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7469 | check-pattern-compliance.js god script — 1917 lines, esli...    | S1       | scripts/check-pattern-compliance.js                                              | 0         |
-| DEBT-7470 | Playwright installed but zero E2E tests — no config, no t...    | S1       | playwright.config.ts                                                             | 0         |
-| DEBT-7471 | Deploy workflow has no needs: dependency on CI — can depl...    | S1       | .github/workflows/deploy-firebase.yml                                            | 0         |
-| DEBT-7472 | Session-start hook 7 blocking synchronous subprocess call...    | S1       | .claude/hooks/session-start.js                                                   | 0         |
-| DEBT-7473 | 8 skills exceed 500 lines; 9 audit skills with unclear di...    | S1       | .claude/skills/                                                                  | 0         |
-| DEBT-7545 | HIGH: minimatch ReDoS vulnerability (21 advisories, trans...    | S1       | package-lock.json                                                                | 0         |
-| DEBT-7563 | Command injection risk in generateCommandPatch — sanitize...    | S1       | .claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js               | 50        |
-| DEBT-7592 | 453 pre-existing blocking pattern violations in scripts/d...    | S1       | scripts/debt/                                                                    | 0         |
-| DEBT-7593 | SQLite migration for TDMS pipeline — research + implement...    | S1       | scripts/debt/                                                                    | 0         |
-| DEBT-2132 | Untitled finding                                                | S2       | N/A                                                                              | 0         |
-| DEBT-2180 | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
-| DEBT-2186 | Missing ARIA labels on critical navigation tabs                 | S2       | src/components                                                                   | 0         |
-| DEBT-2441 | EXPANSION_EVALUATION_TRACKER.md command reference table         | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                                             | 0         |
-| DEBT-2446 | ai-review.js - Unused AI review prompt applicator               | S2       | scripts/ai-review.js                                                             | 0         |
-| DEBT-2448 | create-canonical-findings.js - Unused canonical findings ...    | S2       | scripts/create-canonical-findings.js                                             | 0         |
-| DEBT-2449 | generate-pending-alerts.js - Unused session-start alert g...    | S2       | scripts/generate-pending-alerts.js                                               | 0         |
-| DEBT-2451 | migrate-existing-findings.js - Unused legacy findings mig...    | S2       | scripts/migrate-existing-findings.js                                             | 0         |
-| DEBT-2453 | regenerate-findings-index.js - Unused canonical findings ...    | S2       | scripts/regenerate-findings-index.js                                             | 0         |
-| DEBT-2456 | update-legacy-lines.js - Unused legacy findings line numb...    | S2       | scripts/update-legacy-lines.js                                                   | 0         |
-| DEBT-2472 | PLAN_MAP.md - 242 lines documentation hierarchy map never...    | S2       | docs/PLAN_MAP.md                                                                 | 0         |
-| DEBT-2473 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev...    | S2       | docs/MCP_SERVER_AUDIT.md                                                         | 0         |
-| DEBT-2479 | Audit inventory stage files (6 files) - generated but unr...    | S2       | docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md                 | 0         |
-| DEBT-2481 | Plan documents with zero inbound refs - 5 planning files ...    | S2       | docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                                | 0         |
-| DEBT-2548 | Dead Documentation: Code Review Checklist references            | S2       | 140                                                                              | 0         |
-| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools        | S2       | unknown                                                                          | 0         |
-| DEBT-2749 | Firebase deployment lacks rollback on partial failure           | S2       | unknown                                                                          | 0         |
-| DEBT-2751 | SonarCloud not enforced in CI gates                             | S2       | ci.yml                                                                           | 0         |
-| DEBT-2752 | Sentry disabled in dev mode by default                          | S2       | sentry.client.ts                                                                 | 0         |
-| DEBT-2753 | Hook performance not tracked - no metrics                       | S2       | unknown                                                                          | 0         |
-| DEBT-2754 | Pre-push duplicates pre-commit pattern checks                   | S2       | pre-push                                                                         | 0         |
-| DEBT-2758 | No focus trap management in modals and dialogs                  | S2       | dialog.tsx                                                                       | 0         |
-| DEBT-2759 | Missing error state illustrations - plain text only             | S2       | unknown                                                                          | 0         |
-| DEBT-2760 | Missing loading skeletons on data-heavy pages                   | S2       | unknown                                                                          | 0         |
-| DEBT-2761 | No optimistic updates for form submissions                      | S2       | unknown                                                                          | 0         |
-| DEBT-2762 | Missing keyboard shortcuts for power users                      | S2       | unknown                                                                          | 0         |
-| DEBT-2763 | Form validation shows errors only on submit                     | S2       | mood-form.tsx                                                                    | 0         |
-| DEBT-2764 | Missing Cloud Functions integration tests                       | S2       | admin.ts                                                                         | 0         |
-| DEBT-2765 | No visual regression testing despite Playwright                 | S2       | unknown                                                                          | 0         |
-| DEBT-2766 | Coverage thresholds not enforced despite c8                     | S2       | package.json                                                                     | 0         |
-| DEBT-2767 | Limited script testing - 5 test files for 60+ scripts           | S2       | unknown                                                                          | 0         |
-| DEBT-2768 | No performance benchmarks for pagination and data loading       | S2       | unknown                                                                          | 0         |
-| DEBT-2769 | Error boundary and Sentry integration not tested                | S2       | unknown                                                                          | 0         |
-| DEBT-2770 | Flaky timing in rate limiter tests using real setTimeout        | S2       | unknown                                                                          | 0         |
-| DEBT-2771 | msw installed but unused for API mocking                        | S2       | package.json                                                                     | 0         |
-| DEBT-2772 | Unknown                                                         | S2       | unknown                                                                          | 0         |
-| DEBT-2777 | Lazy load Leaflet and Recharts with dynamic imports             | S2       | unknown                                                                          | 0         |
-| DEBT-2779 | Unknown                                                         | S2       | unknown                                                                          | 0         |
-| DEBT-2780 | AI_WORKFLOW.md size optimization - 872 lines                    | S2       | unknown                                                                          | 0         |
-| DEBT-2782 | Security guidance consolidation - overlapping docs              | S2       | unknown                                                                          | 0         |
-| DEBT-2784 | Cross-reference navigation overhead                             | S2       | unknown                                                                          | 0         |
-| DEBT-2785 | Pre-commit hook parallelization - 40% faster                    | S2       | pre-commit                                                                       | 0         |
-| DEBT-2786 | CI non-blocking checks should block                             | S2       | ci.yml                                                                           | 0         |
-| DEBT-2787 | Script consolidation - 30+ scripts with inconsistent CLI        | S2       | unknown                                                                          | 0         |
-| DEBT-2788 | Unknown                                                         | S2       | unknown                                                                          | 0         |
-| DEBT-2789 | Error messages don't guide user to fix the problem              | S2       | unknown                                                                          | 0         |
-| DEBT-2790 | Inconsistent terminology - meeting vs session                   | S2       | unknown                                                                          | 0         |
-| DEBT-2791 | Confirmation dialogs lack specific consequences                 | S2       | unknown                                                                          | 0         |
-| DEBT-2792 | Loading text inconsistency                                      | S2       | dashboard-tab.tsx                                                                | 0         |
-| DEBT-2794 | Success feedback messages too brief                             | S2       | dashboard-tab.tsx                                                                | 0         |
-| DEBT-2795 | Unknown                                                         | S2       | unknown                                                                          | 0         |
-| DEBT-2796 | Extract meeting time parsing logic - ~80 lines duplicated       | S2       | unknown                                                                          | 0         |
-| DEBT-2797 | Migrate useAuth consumers to focused hooks - 16 components      | S2       | unknown                                                                          | 0         |
-| DEBT-2798 | Extract common form state logic - ~150 lines duplicate          | S2       | unknown                                                                          | 0         |
-| DEBT-2799 | Create barrel exports for component directories                 | S2       | unknown                                                                          | 0         |
-| DEBT-2800 | Collocate related quote components                              | S2       | daily-quote-card.tsx                                                             | 0         |
-| DEBT-2801 | Standardize export style - 38 default vs 69 named               | S2       | unknown                                                                          | 0         |
-| DEBT-2803 | Consolidate regex pattern linter into ESLint plugin             | S2       | unknown                                                                          | 0         |
-| DEBT-2804 | writeFileSync without atomic write pattern                      | S2       | unknown                                                                          | 0         |
-| DEBT-2805 | writeFileSync without atomic write pattern                      | S2       | archive-doc.js                                                                   | 0         |
-| DEBT-2806 | Unknown                                                         | S2       | unknown                                                                          | 0         |
-| DEBT-2807 | Unknown                                                         | S2       | unknown                                                                          | 0         |
-| DEBT-2808 | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
-| DEBT-2810 | Unknown                                                         | S2       | unknown                                                                          | 0         |
-| DEBT-2814 | Pre-push duplicates pre-commit pattern checks                   | S2       | E0                                                                               | 0         |
-| DEBT-3139 | Security utilities partially tested — secure-caller teste...    | S2       | lib/firebase/account-linking.ts                                                  | 0         |
-| DEBT-3530 | High Severity Findings (Security & Stability)                   | S2       | N/A                                                                              | 0         |
-| DEBT-3549 | OPTIMIZATION (Performance & Complexity)                         | S2       | N/A                                                                              | 0         |
-| DEBT-3558 | Top 3 High-Impact Changes                                       | S2       | N/A                                                                              | 0         |
-| DEBT-3585 | Inconsistent patterns (throw vs return)                         | S2       | N/A                                                                              | 0         |
-| DEBT-3589 | **A3: Error Handling** — 1 week — High — P0                     | S2       | N/A                                                                              | 0         |
-| DEBT-3591 | **A4: Image Optimization** — 3 days — High — P1                 | S2       | N/A                                                                              | 0         |
-| DEBT-3592 | **A1: Context Splitting** — 1 week — Very High — P0             | S2       | N/A                                                                              | 0         |
-| DEBT-3593 | **A2: Component Decomposition** — 2 weeks — High — P1           | S2       | N/A                                                                              | 0         |
-| DEBT-3594 | **A5: Bundle Optimization** — 1 week — High — P1                | S2       | N/A                                                                              | 0         |
-| DEBT-3595 | **Breaking Changes** — Medium — High — Comprehensive test...    | S2       | N/A                                                                              | 0         |
-| DEBT-3596 | **Performance Regression** — Low — High — Benchmark befor...    | S2       | N/A                                                                              | 0         |
-| DEBT-3599 | Weaknesses (Areas for Improvement) ⚠️                           | S2       | N/A                                                                              | 0         |
-| DEBT-3616 | Problem: Inconsistent Patterns                                  | S2       | N/A                                                                              | 0         |
-| DEBT-3626 | Image Optimization                                              | S2       | N/A                                                                              | 0         |
-| DEBT-3630 | Bundle Size Analysis & Optimization                             | S2       | N/A                                                                              | 0         |
-| DEBT-3636 | Optimization Strategies                                         | S2       | N/A                                                                              | 0         |
-| DEBT-3639 | Problem: Inconsistent Abstraction                               | S2       | N/A                                                                              | 0         |
-| DEBT-3649 | Context Proliferation Risk                                      | S2       | auth-provider.tsx                                                                | 0         |
-| DEBT-3654 | CQ-2: Inconsistent Date Handling 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
-| DEBT-3661 | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | N/A                                                                              | 49        |
-| DEBT-3671 | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | N/A                                                                              | 49        |
-| DEBT-3672 | P-3: No Code Splitting 🟡 HIGH                                  | S2       | N/A                                                                              | 0         |
-| DEBT-3676 | S-2: Missing Rate Limiting 🟡 HIGH                              | S2       | N/A                                                                              | 0         |
-| DEBT-3694 | §3.1 - High                                                     | S2       | N/A                                                                              | 0         |
-| DEBT-3695 | S-2 (Missing Rate Limiting)                                     | S2       | N/A                                                                              | 0         |
-| DEBT-3697 | CQ-2 (Inconsistent Date Handling)                               | S2       | N/A                                                                              | 0         |
-| DEBT-3700 | B-2 (Listener Cleanup Memory Leak)                              | S2       | N/A                                                                              | 0         |
-| DEBT-3707 | Finding #1 - High                                               | S2       | N/A                                                                              | 0         |
-| DEBT-3708 | Finding #2 - High                                               | S2       | N/A                                                                              | 0         |
-| DEBT-3711 | §3.3 (Missing Admin Checks)                                     | S2       | N/A                                                                              | 0         |
-| DEBT-3747 | Inconsistent Date Handling / Timezone Issues                    | S2       | N/A                                                                              | 0         |
-| DEBT-3748 | Listener Memory Leaks / Cleanup Issues                          | S2       | N/A                                                                              | 0         |
-| DEBT-3749 | useEffect Dependency Issues (isEditing)                         | S2       | N/A                                                                              | 0         |
-| DEBT-3750 | Missing Pagination for Large Datasets                           | S2       | N/A                                                                              | 0         |
-| DEBT-3751 | Onboarding Overwrites Existing Profiles                         | S2       | N/A                                                                              | 0         |
-| DEBT-3752 | Resources Page Auth Race Condition                              | S2       | N/A                                                                              | 0         |
-| DEBT-3804 | 🏆 TOP 3 HIGH-IMPACT CHANGES                                    | S2       | N/A                                                                              | 0         |
-| DEBT-3806 | AuthProvider Optimization                                       | S2       | N/A                                                                              | 0         |
-| DEBT-3826 | Optimization (Complexity/Performance)                           | S2       | N/A                                                                              | 0         |
-| DEBT-3847 | RISK: Rich Text Editor                                          | S2       | N/A                                                                              | 0         |
-| DEBT-3848 | RISK: Sharing Journal Entries                                   | S2       | N/A                                                                              | 0         |
-| DEBT-6917 | Zero Next.js Error/Loading/NotFound Boundary Pages              | S2       | N/A                                                                              | 8         |
-| DEBT-6918 | lib/ Directory Structure Much Richer Than Plan Documents        | S2       | N/A                                                                              | 20        |
-| DEBT-6920 | Sentry Integration Not Covered Anywhere in Plan                 | S2       | N/A                                                                              | 45        |
-| DEBT-6922 | Component Directory Count Mismatch                              | S2       | N/A                                                                              | 53        |
-| DEBT-6924 | 98 Components Use 'use client' — No Server Components           | S2       | N/A                                                                              | 62        |
-| DEBT-6926 | Zero eslint-disable, Zero @ts-ignore in Source                  | S2       | N/A                                                                              | 70        |
-| DEBT-6927 | 26 TODO Comments in Scripts + 1 in CI Workflows                 | S2       | N/A                                                                              | 78        |
-| DEBT-6929 | Public Assets Need Verification                                 | S2       | N/A                                                                              | 85        |
-| DEBT-6931 | types/ Directory at Root Level                                  | S2       | N/A                                                                              | 97        |
-| DEBT-6933 | 6 Console Statements in Production Components                   | S2       | N/A                                                                              | 104       |
-| DEBT-6935 | Sentry in Cloud Functions — Separate Integration Not In Plan    | S2       | N/A                                                                              | 113       |
-| DEBT-6940 | Cloud Functions File Coverage Incomplete in Plan                | S2       | N/A                                                                              | 147       |
-| DEBT-6942 | Database Abstraction Layer Not in Plan                          | S2       | N/A                                                                              | 158       |
-| DEBT-6944 | Celebrations System — Rich But Not Covered                      | S2       | N/A                                                                              | 169       |
-| DEBT-6946 | Permissions-Policy Header Blocks Features the App Uses (S1)     | S2       | N/A                                                                              | 179       |
-| DEBT-6948 | Static Export Architecture — Plan Should Document Implica...    | S2       | N/A                                                                              | 195       |
-| DEBT-6950 | Tailwind v4 Configuration (CSS-based, not JS)                   | S2       | N/A                                                                              | 207       |
-| DEBT-6952 | 5 Orphaned Hook Files Not Registered in settings.json           | S2       | N/A                                                                              | 216       |
-| DEBT-6956 | Storage Rules Missing File Size and Content Type Restrict...    | S2       | N/A                                                                              | 241       |
-| DEBT-6958 | Cloud Functions Scale Vastly Underestimated                     | S2       | N/A                                                                              | 251       |
-| DEBT-6960 | Scheduled Jobs Coverage Gap                                     | S2       | N/A                                                                              | 269       |
-| DEBT-6962 | Zod Schema Completeness Not Verified                            | S2       | N/A                                                                              | 286       |
-| DEBT-6964 | Root package.json Has NO `engines` Field                        | S2       | N/A                                                                              | 300       |
-| DEBT-6966 | No Environment Variable Validation Script                       | S2       | N/A                                                                              | 308       |
-| DEBT-6968 | Test Framework = Node Built-in `node --test` + c8 Coverage      | S2       | N/A                                                                              | 316       |
-| DEBT-6970 | Playwright Installed But No Tests                               | S2       | N/A                                                                              | 326       |
-| DEBT-6972 | MSW (Mock Service Worker) Configured But Not Validated          | S2       | N/A                                                                              | 332       |
-| DEBT-6974 | ESLint Complexity Enforcement Has Gap                           | S2       | N/A                                                                              | 337       |
-| DEBT-6976 | Markdownlint Has 19 Rules Disabled                              | S2       | N/A                                                                              | 343       |
-| DEBT-6978 | knip Ignores 19 Dependencies                                    | S2       | N/A                                                                              | 348       |
-| DEBT-6980 | Multi-Package Dependency Management                             | S2       | N/A                                                                              | 353       |
-| DEBT-6982 | @dataconnect/generated Uses file: Protocol                      | S2       | N/A                                                                              | 360       |
-| DEBT-6984 | Skill Registry vs Disk Mismatch                                 | S2       | N/A                                                                              | 366       |
-| DEBT-6986 | Agent Count Discrepancy                                         | S2       | N/A                                                                              | 372       |
-| DEBT-6988 | TDMS Has 18 Scripts Not 8                                       | S2       | N/A                                                                              | 377       |
-| DEBT-6990 | TDMS Has Rich Substructure                                      | S2       | N/A                                                                              | 382       |
-| DEBT-6992 | Error Knowledge Base Unmapped                                   | S2       | N/A                                                                              | 387       |
-| DEBT-6994 | No Firestore Indexes Validation                                 | S2       | N/A                                                                              | 393       |
-| DEBT-6999 | Hardcoded reCAPTCHA Site Key Fallback                           | S2       | N/A                                                                              | 126       |
-| DEBT-7001 | Duplicate file content reads across PostToolUse hooks           | S2       | .claude/hooks/firestore-write-block.js                                           | 0         |
-| DEBT-7005 | 30 markdownlint errors across docs/ — broken links, empha...    | S2       | docs/                                                                            | 0         |
-| DEBT-7011 | High Severity Findings (Security & Stability)                   | S2       | N/A                                                                              | 0         |
-| DEBT-7030 | OPTIMIZATION (Performance & Complexity)                         | S2       | N/A                                                                              | 0         |
-| DEBT-7039 | Top 3 High-Impact Changes                                       | S2       | N/A                                                                              | 0         |
-| DEBT-7064 | Inconsistent patterns (throw vs return)                         | S2       | N/A                                                                              | 0         |
-| DEBT-7068 | **A3: Error Handling** — 1 week — High — P0                     | S2       | N/A                                                                              | 0         |
-| DEBT-7070 | **A4: Image Optimization** — 3 days — High — P1                 | S2       | N/A                                                                              | 0         |
-| DEBT-7071 | **A1: Context Splitting** — 1 week — Very High — P0             | S2       | N/A                                                                              | 0         |
-| DEBT-7072 | **A2: Component Decomposition** — 2 weeks — High — P1           | S2       | N/A                                                                              | 0         |
-| DEBT-7073 | **A5: Bundle Optimization** — 1 week — High — P1                | S2       | N/A                                                                              | 0         |
-| DEBT-7074 | **Breaking Changes** — Medium — High — Comprehensive test...    | S2       | N/A                                                                              | 0         |
-| DEBT-7075 | **Performance Regression** — Low — High — Benchmark befor...    | S2       | N/A                                                                              | 0         |
-| DEBT-7078 | Weaknesses (Areas for Improvement) ⚠️                           | S2       | N/A                                                                              | 0         |
-| DEBT-7094 | Problem: Inconsistent Patterns                                  | S2       | N/A                                                                              | 0         |
-| DEBT-7104 | Image Optimization                                              | S2       | N/A                                                                              | 0         |
-| DEBT-7108 | Bundle Size Analysis & Optimization                             | S2       | N/A                                                                              | 0         |
-| DEBT-7114 | Optimization Strategies                                         | S2       | N/A                                                                              | 0         |
-| DEBT-7117 | Problem: Inconsistent Abstraction                               | S2       | N/A                                                                              | 0         |
-| DEBT-7132 | CQ-2: Inconsistent Date Handling 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
-| DEBT-7139 | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
-| DEBT-7149 | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | N/A                                                                              | 0         |
-| DEBT-7150 | P-3: No Code Splitting 🟡 HIGH                                  | S2       | N/A                                                                              | 0         |
-| DEBT-7154 | S-2: Missing Rate Limiting 🟡 HIGH                              | S2       | N/A                                                                              | 0         |
-| DEBT-7172 | §3.1 - High                                                     | S2       | N/A                                                                              | 0         |
-| DEBT-7173 | S-2 (Missing Rate Limiting)                                     | S2       | N/A                                                                              | 0         |
-| DEBT-7175 | CQ-2 (Inconsistent Date Handling)                               | S2       | N/A                                                                              | 0         |
-| DEBT-7178 | B-2 (Listener Cleanup Memory Leak)                              | S2       | N/A                                                                              | 0         |
-| DEBT-7185 | Finding #1 - High                                               | S2       | N/A                                                                              | 0         |
-| DEBT-7186 | Finding #2 - High                                               | S2       | N/A                                                                              | 0         |
-| DEBT-7189 | §3.3 (Missing Admin Checks)                                     | S2       | N/A                                                                              | 0         |
-| DEBT-7225 | Inconsistent Date Handling / Timezone Issues                    | S2       | N/A                                                                              | 0         |
-| DEBT-7226 | Listener Memory Leaks / Cleanup Issues                          | S2       | N/A                                                                              | 0         |
-| DEBT-7227 | useEffect Dependency Issues (isEditing)                         | S2       | N/A                                                                              | 0         |
-| DEBT-7228 | Missing Pagination for Large Datasets                           | S2       | N/A                                                                              | 0         |
-| DEBT-7229 | Onboarding Overwrites Existing Profiles                         | S2       | N/A                                                                              | 0         |
-| DEBT-7230 | Resources Page Auth Race Condition                              | S2       | N/A                                                                              | 0         |
-| DEBT-7282 | 🏆 TOP 3 HIGH-IMPACT CHANGES                                    | S2       | N/A                                                                              | 0         |
-| DEBT-7284 | AuthProvider Optimization                                       | S2       | N/A                                                                              | 0         |
-| DEBT-7304 | Optimization (Complexity/Performance)                           | S2       | N/A                                                                              | 0         |
-| DEBT-7324 | RISK: Rich Text Editor                                          | S2       | N/A                                                                              | 0         |
-| DEBT-7325 | RISK: Sharing Journal Entries                                   | S2       | N/A                                                                              | 0         |
-| DEBT-7376 | Upgrade eslint to 10.x + typescript-eslint to 9.x to reso...    | S2       | package.json                                                                     | 0         |
-| DEBT-7400 | Context Proliferation Risk                                      | S2       | auth-provider.tsx                                                                | 0         |
-| DEBT-7401 | No Offline Support                                              | S2       | lib/firebase.ts                                                                  | 0         |
-| DEBT-7404 | CQ-5: Console Logging in Production 🟡 HIGH                     | S2       | lib/logger.ts                                                                    | 0         |
-| DEBT-7407 | CQ-8: No Loading States for Mutations 🟡 HIGH                   | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7411 | B-3: Onboarding Wizard AnimatePresence Issue 🟡 HIGH            | S2       | components/onboarding/onboarding-wizard.tsx                                      | 0         |
-| DEBT-7412 | B-4: Meeting Time Sort Failure 🟡 HIGH                          | S2       | lib/db/meetings.ts                                                               | 0         |
-| DEBT-7418 | S-4: No XSS Protection on User Input 🟡 HIGH                    | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7432 | Fix Auto-Save Race Condition (B-1)                              | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7433 | Fix Listener Memory Leak (B-2)                                  | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7457 | Untitled                                                        | S2       | N/A                                                                              | 0         |
-| DEBT-7474 | aggregate-audit-findings.js god script — 25+ functions, n...    | S2       | scripts/aggregate-audit-findings.js                                              | 0         |
-| DEBT-7475 | Cloud Functions structure in ARCHITECTURE.md shows non-ex...    | S2       | ARCHITECTURE.md                                                                  | 479       |
-| DEBT-7476 | Test pipeline requires 3 compilation steps — 10-20s overh...    | S2       | package.json                                                                     | 0         |
-| DEBT-7477 | Large Text preference saves to Firestore but is never rea...    | S2       | components/settings/settings-page.tsx                                            | 0         |
-| DEBT-7478 | README test count stale: 89/91 vs actual 293/294                | S2       | README.md                                                                        | 111       |
-| DEBT-7479 | README agent/skill counts wrong: 24/23 vs actual 25/59          | S2       | README.md                                                                        | 117       |
-| DEBT-7480 | README Growth tab marked Planned/feature-flagged but full...    | S2       | README.md                                                                        | 239       |
-| DEBT-7481 | DEVELOPMENT.md lib/ structure shows only 3 entries — miss...    | S2       | DEVELOPMENT.md                                                                   | 169       |
-| DEBT-7482 | Duplicate claude.md is byte-for-byte copy of CLAUDE.md — ...    | S2       | claude.md                                                                        | 0         |
-| DEBT-7483 | DOCUMENTATION*STANDARDS.md references non-existent MULTI*...    | S2       | docs/DOCUMENTATION_STANDARDS.md                                                  | 178       |
-| DEBT-7484 | ROADMAP.md Last Updated uses session number not date — 29...    | S2       | ROADMAP.md                                                                       | 6         |
-| DEBT-7485 | framer-motion imported directly in 36 non-lazy client com...    | S2       | lib/firebase.ts                                                                  | 0         |
-| DEBT-7486 | wood-table.jpg LCP image not preloaded — browser can't pr...    | S2       | app/layout.tsx                                                                   | 0         |
-| DEBT-7487 | 3 PNG images 2.0-2.8 MB served uncompressed — WebP conver...    | S2       | public/images/                                                                   | 0         |
-| DEBT-7488 | MoodSparkline fires separate 30-doc Firestore read on eve...    | S2       | components/notebook/visualizations/mood-sparkline.tsx                            | 16        |
-| DEBT-7489 | Preview deploy channel commented out — no PR-level stagin...    | S2       | .github/workflows/deploy-firebase.yml                                            | 0         |
-| DEBT-7490 | 181 ESLint warning baseline — warning noise masks real is...    | S2       | N/A                                                                              | 0         |
-| DEBT-7491 | PostToolUse hooks fire on every Read/Write/Edit/Bash — 18...    | S2       | .claude/settings.json                                                            | 0         |
-| DEBT-7492 | Dev server uses webpack by default — no Turbopack flag          | S2       | package.json                                                                     | 0         |
-| DEBT-7493 | AI_WORKFLOW.md 874 lines mandated reading every session —...    | S2       | AI_WORKFLOW.md                                                                   | 0         |
-| DEBT-7494 | .claude/state/ and .claude/tmp/ unbounded growth — 76KB +...    | S2       | .claude/state/                                                                   | 0         |
-| DEBT-7495 | settings.local.json 250+ permission entries — unreadable ...    | S2       | .claude/settings.local.json                                                      | 0         |
-| DEBT-7496 | getFunctions() + httpsCallable pattern repeated 28 times ...    | S2       | components/admin/admin-crud-table.tsx                                            | 0         |
-| DEBT-7497 | links-tab.tsx and prayers-tab.tsx ~90% code duplication         | S2       | components/admin/links-tab.tsx                                                   | 0         |
-| DEBT-7498 | window.confirm() used for 10 destructive actions — non-st...    | S2       | N/A                                                                              | 0         |
-| DEBT-7499 | Sign-in modal lacks role=dialog, aria-modal, focus trap —...    | S2       | components/auth/sign-in-modal.tsx                                                | 0         |
-| DEBT-7500 | No data export or account deletion despite onboarding pro...    | S2       | components/settings/settings-page.tsx                                            | 0         |
-| DEBT-7501 | No noscript fallback — JavaScript-disabled users see blan...    | S2       | app/layout.tsx                                                                   | 0         |
-| DEBT-7502 | Only 7-day mood sparkline — no 30/90-day history visualiz...    | S2       | components/notebook/visualizations/mood-sparkline.tsx                            | 0         |
-| DEBT-7503 | Fixed notebook width 340px/800px breaks at 428-767px view...    | S2       | components/notebook/notebook-shell.tsx                                           | 200       |
-| DEBT-7504 | Tap to set clean date has cursor-pointer but no onClick h...    | S2       | components/notebook/pages/today-page.tsx                                         | 877       |
-| DEBT-7505 | Share meeting button toasts success without calling clipb...    | S2       | components/notebook/pages/resources-page.tsx                                     | 497       |
-| DEBT-7506 | No Forgot password flow — email users have no recovery path     | S2       | components/auth/sign-in-modal.tsx                                                | 0         |
-| DEBT-7507 | WCAG 2.1 AA contrast unverified — amber-on-amber may fail...    | S2       | N/A                                                                              | 0         |
-| DEBT-7508 | No skip-to-content link — keyboard users must tab through...    | S2       | app/layout.tsx                                                                   | 0         |
-| DEBT-7509 | Step 4 Inventory and Step 8 List buttons are motion.butto...    | S2       | components/growth/growth-page.tsx                                                | 88        |
-| DEBT-7510 | History tab hard-limited to 7 days — older entries invisible    | S2       | components/notebook/pages/history-page.tsx                                       | 131       |
-| DEBT-7511 | gsd-planner.md and gsd-debugger.md ~125K tokens per 4-age...    | S2       | .claude/agents/global/gsd-planner.md                                             | 0         |
-| DEBT-7512 | security-engineer.md contains irrelevant Terraform/HCL ex...    | S2       | .claude/agents/security-engineer.md                                              | 0         |
-| DEBT-7513 | VALIDATION_FAILURE severity mapped to INFO — attack probi...    | S2       | functions/src/security-logger.ts                                                 | 371       |
-| DEBT-7514 | NotebookShell SVG data URL recomputed every render              | S2       | components/notebook/notebook-shell.tsx                                           | 0         |
-| DEBT-7515 | Onboarding progress dots are div elements with no accessi...    | S2       | components/onboarding/onboarding-wizard.tsx                                      | 187       |
-| DEBT-7516 | No CHANGELOG, no versioning strategy, no release tagging        | S2       | package.json                                                                     | 0         |
-| DEBT-7517 | 356-line FORM_SECTIONS config embedded in Step1WorksheetC...    | S2       | components/growth/Step1WorksheetCard.tsx                                         | 124       |
-| DEBT-7543 | S5852 regex complexity pre-push automation — check ALL re...    | S2       | scripts/check-pattern-compliance.js                                              | 0         |
-| DEBT-7546 | Update react + react-dom from 19.2.3 to 19.2.4 (pinned ex...    | S2       | package.json                                                                     | 0         |
-| DEBT-7550 | Upgrade lucide-react from 0.454.0 to latest (120+ version...    | S2       | package.json                                                                     | 0         |
-| DEBT-7551 | Upgrade react-resizable-panels from 2.x to 4.x (2 major v...    | S2       | package.json                                                                     | 0         |
-| DEBT-7552 | Upgrade recharts from 2.x to 3.x (1 major version behind)       | S2       | package.json                                                                     | 0         |
-| DEBT-7554 | Evaluate ESLint 10 upgrade (9.39.3 -> 10.0.2)                   | S2       | package.json                                                                     | 0         |
-| DEBT-7556 | Create tdms-ecosystem-audit skill (HIGH priority gap)           | S2       | .claude/skills/                                                                  | 0         |
-| DEBT-7557 | Create precommit-ecosystem-audit skill (HIGH priority gap)      | S2       | .claude/skills/                                                                  | 0         |
-| DEBT-7559 | Replace regex-based isInsideTryCatch with AST parser (acorn)    | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js    | 77        |
-| DEBT-7560 | Replace regex-based extractStateFileRefs with AST parser ...    | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js        | 240       |
-| DEBT-7561 | Replace regex-based isInsideTryCatch with AST parser (babel)    | S2       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 119       |
-| DEBT-7562 | Replace regex-based isInsideTryCatch with AST parser            | S2       | .claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js | 119       |
-| DEBT-7567 | safeReadFile silently swallows errors without context           | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js    | 35        |
-| DEBT-7568 | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | undefined |
-| DEBT-7569 | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | undefined |
-| DEBT-7570 | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | undefined |
-| DEBT-7572 | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | 0         |
-| DEBT-7573 | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | 0         |
-| DEBT-7574 | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | 0         |
-| DEBT-7576 | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | undefined |
-| DEBT-7577 | Add JSONL schema validation to intake scripts                   | S2       | scripts/debt/intake-audit.js                                                     | 1         |
-| DEBT-7578 | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | undefined |
-| DEBT-7579 | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | undefined |
-| DEBT-7581 | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | undefined |
-| DEBT-7582 | Auto-increment review numbers from JSONL max to prevent c...    | S2       | scripts/reviews-sync.js                                                          | 1         |
-| DEBT-7583 | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | undefined |
-| DEBT-7584 | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | undefined |
-| DEBT-7586 | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | 0         |
-| DEBT-7587 | Add cross-platform path normalization pattern to CODE_PAT...    | S2       | docs/agent_docs/CODE_PATTERNS.md                                                 | 1         |
-| DEBT-7588 | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | 0         |
-| DEBT-7589 | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | 0         |
-| DEBT-0001 | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
-| DEBT-2443 | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
-| DEBT-2447 | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |
-| DEBT-2450 | generate-placement-report.js - Unused roadmap placement s...    | S3       | scripts/generate-placement-report.js                                             | 0         |
-| DEBT-2452 | redeploy-admin-dashboard.sh - Firebase deployment helper ...    | S3       | scripts/redeploy-admin-dashboard.sh                                              | 0         |
-| DEBT-2476 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve...    | S3       | docs/AUTOMATION_AUDIT_REPORT.md                                                  | 0         |
-| DEBT-3137 | 1 skipped test without linked issue — integration test fo...    | S3       | tests/firestore-service.test.ts                                                  | 149       |
-| DEBT-3144 | Next.js build warns about workspace root detection              | S3       | next.config.ts                                                                   | 0         |
-| DEBT-3531 | Medium Severity & Code Quality Findings                         | S3       | N/A                                                                              | 0         |
-| DEBT-3534 | Potential Root Cause A: API Key Restrictions (Most Likely)      | S3       | N/A                                                                              | 6         |
-| DEBT-3535 | Potential Root Cause B: Firebase App Check API Not Enabled      | S3       | N/A                                                                              | 0         |
-| DEBT-3536 | Potential Root Cause C: "Zombie" Token or Project/App Mis...    | S3       | N/A                                                                              | 0         |
-| DEBT-3537 | Potential Root Cause D: System Time Skew (Edge Case)            | S3       | N/A                                                                              | 0         |
-| DEBT-3538 | Recommended Immediate Action                                    | S3       | N/A                                                                              | 0         |
-| DEBT-3539 | Execution Flow Analysis                                         | S3       | N/A                                                                              | 0         |
-| DEBT-3540 | Code Smells Identified                                          | S3       | N/A                                                                              | 0         |
-| DEBT-3541 | 🚨 DANGEROUS PATTERNS                                           | S3       | N/A                                                                              | 0         |
-| DEBT-3542 | 🔍 EDGE CASES                                                   | S3       | N/A                                                                              | 0         |
-| DEBT-3547 | Race Conditions in State                                        | S3       | N/A                                                                              | 136       |
-| DEBT-3550 | Inefficient Equality Checking                                   | S3       | components/providers/auth-provider.tsx                                           | 82        |
-| DEBT-3553 | Dynamic Import Anti-Pattern                                     | S3       | N/A                                                                              | 111       |
-| DEBT-3554 | Type Gymnastics                                                 | S3       | N/A                                                                              | 54        |
-| DEBT-3555 | STYLE/READABILITY                                               | S3       | N/A                                                                              | 0         |
-| DEBT-3556 | Refactoring Strategy                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3559 | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)          | S3       | N/A                                                                              | 0         |
-| DEBT-3560 | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics)    | S3       | N/A                                                                              | 0         |
-| DEBT-3561 | 🏆 #3: Server-Side Security Documentation (Guided Migration)    | S3       | N/A                                                                              | 0         |
-| DEBT-3562 | METRICS & VALIDATION                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3563 | Security Posture                                                | S3       | N/A                                                                              | 0         |
-| DEBT-3564 | Immediate (This PR)                                             | S3       | N/A                                                                              | 0         |
-| DEBT-3565 | Short-Term (Next Sprint)                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3566 | Long-Term (Production Readiness)                                | S3       | N/A                                                                              | 0         |
-| DEBT-3567 | Remove dangerous non-null assertions                            | S3       | N/A                                                                              | 0         |
-| DEBT-3568 | Add runtime checks before export                                | S3       | N/A                                                                              | 0         |
-| DEBT-3569 | Create isFirebaseTimestamp() type guard                         | S3       | N/A                                                                              | 0         |
-| DEBT-3570 | Create isFirestoreError() type guard                            | S3       | N/A                                                                              | 0         |
-| DEBT-3571 | Remove type gymnastics from components                          | S3       | N/A                                                                              | 0         |
-| DEBT-3572 | Add JSDoc warnings about client-side limitations                | S3       | N/A                                                                              | 0         |
-| DEBT-3573 | Implement Cloud Functions for rate limiting                     | S3       | N/A                                                                              | 0         |
-| DEBT-3574 | Add Firebase App Check                                          | S3       | N/A                                                                              | 0         |
-| DEBT-3575 | Implement account linking for anonymous users                   | S3       | N/A                                                                              | 0         |
-| DEBT-3576 | Split AuthProvider into focused contexts                        | S3       | N/A                                                                              | 0         |
-| DEBT-3577 | Add integration tests for Firestore operations                  | S3       | N/A                                                                              | 0         |
-| DEBT-3580 | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
-| DEBT-3581 | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
-| DEBT-3582 | Add performance monitoring                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3583 | AuthProvider has 7 state variables (SRP violation)              | S3       | N/A                                                                              | 0         |
-| DEBT-3584 | book-cover.tsx = 337 lines (mixed concerns)                     | S3       | N/A                                                                              | 0         |
-| DEBT-3586 | Adapter exists but not used consistently                        | S3       | N/A                                                                              | 0         |
-| DEBT-3587 | Only 10-15% coverage                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3588 | Unknown size, heavy dependencies                                | S3       | N/A                                                                              | 0         |
-| DEBT-3590 | **A6: Adapter Pattern** — 3 days — Medium — P1                  | S3       | N/A                                                                              | 0         |
-| DEBT-3597 | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks...    | S3       | N/A                                                                              | 0         |
-| DEBT-3598 | **Team Capacity** — Medium — Medium — Parallel work on M1...    | S3       | N/A                                                                              | 0         |
-| DEBT-3600 | Improvement Roadmap                                             | S3       | N/A                                                                              | 0         |
-| DEBT-3601 | Target Architecture Quality: 4.8/5                              | S3       | N/A                                                                              | 0         |
-| DEBT-3602 | Split AuthProvider into Focused Contexts                        | S3       | N/A                                                                              | 0         |
-| DEBT-3603 | Problem Statement                                               | S3       | N/A                                                                              | 0         |
-| DEBT-3604 | Solution: Split into 3 Focused Contexts                         | S3       | N/A                                                                              | 0         |
-| DEBT-3605 | Architecture                                                    | S3       | N/A                                                                              | 0         |
-| DEBT-3606 | Estimated Effort                                                | S3       | N/A                                                                              | 0         |
-| DEBT-3607 | Decompose Large Components                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3608 | Problem: `book-cover.tsx` (337 lines)                           | S3       | N/A                                                                              | 0         |
-| DEBT-3609 | Solution: Extract 4 Sub-Components                              | S3       | N/A                                                                              | 0         |
-| DEBT-3610 | `CleanDaysCalculator.tsx` (Pure Logic)                          | S3       | components/recovery/clean-days-calculator.tsx                                    | 0         |
-| DEBT-3611 | `BookAnimation.tsx` (Animation Logic)                           | S3       | components/notebook/book-animation.tsx                                           | 0         |
-| DEBT-3612 | `BookAuthGuard.tsx` (Auth Logic)                                | S3       | components/notebook/book-auth-guard.tsx                                          | 0         |
-| DEBT-3614 | Component Size Target                                           | S3       | N/A                                                                              | 0         |
-| DEBT-3615 | Standardize Error Handling                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3617 | Solution: Result<T> Type Pattern                                | S3       | N/A                                                                              | 0         |
-| DEBT-3618 | Define `Result<T>` Type                                         | S3       | lib/types/result.ts                                                              | 0         |
-| DEBT-3620 | Update Component Usage                                          | S3       | components/pages/today-page.tsx                                                  | 0         |
-| DEBT-3621 | Error Handling Strategy Document                                | S3       | docs/ERROR_HANDLING.md                                                           | 0         |
-| DEBT-3622 | When to Use Each Pattern                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3623 | Result<T> (Preferred for services)                              | S3       | N/A                                                                              | 0         |
-| DEBT-3624 | Throw (Use sparingly)                                           | S3       | N/A                                                                              | 0         |
-| DEBT-3625 | Error Boundaries (UI layer)                                     | S3       | N/A                                                                              | 0         |
-| DEBT-3627 | Problem: Direct Image Usage                                     | S3       | N/A                                                                              | 0         |
-| DEBT-3628 | Solution: Next.js Image Component                               | S3       | N/A                                                                              | 0         |
-| DEBT-3629 | Audit Checklist                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-3631 | Problem: Unknown Bundle Size                                    | S3       | N/A                                                                              | 0         |
-| DEBT-3632 | Solution: Bundle Analysis                                       | S3       | N/A                                                                              | 0         |
-| DEBT-3633 | Install Analyzer                                                | S3       | N/A                                                                              | 0         |
-| DEBT-3634 | Configure Next.js                                               | S3       | N/A                                                                              | 0         |
-| DEBT-3635 | Run Analysis                                                    | S3       | N/A                                                                              | 0         |
-| DEBT-3637 | Bundle Size Targets                                             | S3       | N/A                                                                              | 0         |
-| DEBT-3638 | Database Adapter Pattern Consistency                            | S3       | N/A                                                                              | 0         |
-| DEBT-3640 | Benefits of Adapter Pattern                                     | S3       | N/A                                                                              | 0         |
-| DEBT-3641 | Implementation                                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3642 | Add responsive sizes attribute                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3643 | Update AuthProvider to use adapter                              | S3       | N/A                                                                              | 0         |
-| DEBT-3644 | Update all components to use adapter                            | S3       | docs/ARCHITECTURE.md                                                             | 0         |
-| DEBT-3645 | Add adapter interface tests                                     | S3       | N/A                                                                              | 0         |
-| DEBT-3646 | Remove direct FirestoreService imports                          | S3       | N/A                                                                              | 0         |
-| DEBT-3647 | Key Findings:                                                   | S3       | N/A                                                                              | 0         |
-| DEBT-3651 | Code Quality Issues                                             | S3       | N/A                                                                              | 0         |
-| DEBT-3652 | Severity Legend:                                                | S3       | N/A                                                                              | 0         |
-| DEBT-3656 | CQ-4: Hardcoded Magic Strings 🟢 MEDIUM                         | S3       | N/A                                                                              | 0         |
-| DEBT-3663 | CQ-11: No Component Documentation 🟢 MEDIUM                     | S3       | N/A                                                                              | 0         |
-| DEBT-3668 | B-5: Anonymous Session Edge Case 🟢 MEDIUM                      | S3       | components/providers/auth-provider.tsx                                           | 145       |
-| DEBT-3669 | Performance Issues                                              | S3       | N/A                                                                              | 0         |
-| DEBT-3674 | Security Issues                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-3679 | Testing Coverage                                                | S3       | N/A                                                                              | 0         |
-| DEBT-3680 | Accessibility Issues                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3681 | A-1: Missing ARIA Labels 🟢 MEDIUM                              | S3       | tab-navigation.tsx                                                               | 248       |
-| DEBT-3682 | A-2: Focus Management 🟢 MEDIUM                                 | S3       | N/A                                                                              | 0         |
-| DEBT-3683 | Summary of Issues                                               | S3       | N/A                                                                              | 0         |
-| DEBT-3684 | Recommended Prioritization                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3685 | Long-Term Recommendations                                       | S3       | N/A                                                                              | 0         |
-| DEBT-3686 | Add Error Boundaries                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3687 | Implement Offline Support                                       | S3       | N/A                                                                              | 0         |
-| DEBT-3688 | Add Monitoring                                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3689 | Refactor State Management                                       | S3       | N/A                                                                              | 0         |
-| DEBT-3690 | Add End-to-End Tests                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3691 | Performance Budget                                              | S3       | N/A                                                                              | 0         |
-| DEBT-3693 | S-2 (related: rate limiting)                                    | S3       | N/A                                                                              | 0         |
-| DEBT-3696 | Not explicitly listed                                           | S3       | N/A                                                                              | 0         |
-| DEBT-3698 | Finding #3 (UTC vs local)                                       | S3       | N/A                                                                              | 0         |
-| DEBT-3699 | §4.2 (Listener Memory Leaks)                                    | S3       | N/A                                                                              | 0         |
-| DEBT-3701 | P-2 (Real-time Listeners Not Optimized)                         | S3       | N/A                                                                              | 0         |
-| DEBT-3702 | §4.2 (implied in listener issues)                               | S3       | N/A                                                                              | 0         |
-| DEBT-3703 | CQ-1 (isEditing in deps)                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3704 | P-2 (unnecessary re-subscriptions)                              | S3       | N/A                                                                              | 0         |
-| DEBT-3705 | §3.4 (getAllMeetings, Journal queries)                          | S3       | N/A                                                                              | 0         |
-| DEBT-3706 | (implied in performance)                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3709 | B-3 (AnimatePresence Issue - different bug)                     | S3       | N/A                                                                              | 0         |
-| DEBT-3710 | B-5 (Anonymous Session Edge Case)                               | S3       | N/A                                                                              | 0         |
-| DEBT-3712 | Finding #4 (Meeting seed/clear exposed)                         | S3       | N/A                                                                              | 0         |
-| DEBT-3713 | Firebase App Check                                              | S3       | N/A                                                                              | 0         |
-| DEBT-3714 | Server-side validation (Zod)                                    | S3       | N/A                                                                              | 0         |
-| DEBT-3715 | Rate limiting (10 req/min)                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3716 | Audit logging                                                   | S3       | N/A                                                                              | 0         |
-| DEBT-3717 | GDPR compliance                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-3718 | Dependency versions                                             | S3       | N/A                                                                              | 0         |
-| DEBT-3719 | Remove allow create, update from daily_logs                     | S3       | N/A                                                                              | 0         |
-| DEBT-3720 | Change to fail-closed strategy                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3721 | Add admin claim check or hide buttons                           | S3       | N/A                                                                              | 0         |
-| DEBT-3723 | Check existing profile before recreate                          | S3       | N/A                                                                              | 0         |
-| DEBT-3724 | Create unified getDateId() utility                              | S3       | N/A                                                                              | 0         |
-| DEBT-3725 | Track lifecycle with refs, proper cleanup                       | S3       | N/A                                                                              | 0         |
-| DEBT-3726 | Use ref instead of state                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3727 | Implement proper debounce                                       | S3       | N/A                                                                              | 0         |
-| DEBT-3728 | Gate fetches on auth readiness                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3729 | Add limit() to queries                                          | S3       | N/A                                                                              | 0         |
-| DEBT-3730 | Refactor TodayPage, ResourcesPage                               | S3       | N/A                                                                              | 0         |
-| DEBT-3731 | Add hard NODE_ENV check                                         | S3       | N/A                                                                              | 0         |
-| DEBT-3732 | Fix AnimatePresence conditional                                 | S3       | N/A                                                                              | 0         |
-| DEBT-3733 | Normalize time format                                           | S3       | N/A                                                                              | 0         |
-| DEBT-3734 | Extract to constants file                                       | S3       | N/A                                                                              | 0         |
-| DEBT-3735 | Add saving indicators                                           | S3       | N/A                                                                              | 0         |
-| DEBT-3736 | Excessive fonts                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-3737 | Code splitting                                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3738 | Unused dependencies                                             | S3       | N/A                                                                              | 0         |
-| DEBT-3739 | Component documentation                                         | S3       | N/A                                                                              | 0         |
-| DEBT-3740 | Accessibility (ARIA)                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3741 | Environment logging                                             | S3       | N/A                                                                              | 0         |
-| DEBT-3742 | ✅ Proceed                                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3743 | ✅ Proceed (deferred to M4)                                     | S3       | N/A                                                                              | 0         |
-| DEBT-3744 | Issues Reported by Multiple Sources (Consolidated)              | S3       | N/A                                                                              | 0         |
-| DEBT-3753 | 🟢 Admin Reset Button Missing Protection                        | S3       | N/A                                                                              | 0         |
-| DEBT-3754 | Issues Already Addressed (per AI_HANDOFF/ROADMAP)               | S3       | N/A                                                                              | 0         |
-| DEBT-3755 | Consolidated Action Plan                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3756 | Roadmap Feature Decision Resolution                             | S3       | N/A                                                                              | 0         |
-| DEBT-3757 | Risk Factor A: "Bleeding Edge" Stack Instability                | S3       | N/A                                                                              | 0         |
-| DEBT-3759 | Dependency Compatibility Check                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3760 | Summary of Actions                                              | S3       | N/A                                                                              | 0         |
-| DEBT-3761 | Prefix with \_index                                             | S3       | tab-navigation.tsx                                                               | 21        |
-| DEBT-3762 | Remove unused import                                            | S3       | firestore-adapter.ts                                                             | 11        |
-| DEBT-3764 | Use or remove                                                   | S3       | scripts/seed-meetings.ts                                                         | 68        |
-| DEBT-3765 | Use FormEvent<HTMLFormElement>                                  | S3       | sign-in-modal.tsx                                                                | 0         |
-| DEBT-3766 | Use unknown instead                                             | S3       | firebase-types.ts                                                                | 0         |
-| DEBT-3767 | Use proper mock types                                           | S3       | N/A                                                                              | 0         |
-| DEBT-3768 | Add to deps or use useCallback                                  | S3       | today-page.tsx                                                                   | 115       |
-| DEBT-3769 | Warning Breakdown by Category                                   | S3       | N/A                                                                              | 0         |
-| DEBT-3770 | Category 1: Unused Variables (10 warnings)                      | S3       | tab-navigation.tsx                                                               | 0         |
-| DEBT-3771 | Category 2: Explicit `any` Types (18 warnings)                  | S3       | sign-in-modal.tsx                                                                | 0         |
-| DEBT-3772 | Category 3: React Hooks Dependencies (1 warning)                | S3       | today-page.tsx                                                                   | 0         |
-| DEBT-3773 | ESLint Configuration Improvements                               | S3       | N/A                                                                              | 0         |
-| DEBT-3774 | Recommendation 1: Stricter Rules for Application Code           | S3       | N/A                                                                              | 0         |
-| DEBT-3775 | Recommendation 2: Pre-commit Hook                               | S3       | N/A                                                                              | 0         |
-| DEBT-3776 | Recommendation 3: CI Enforcement                                | S3       | N/A                                                                              | 0         |
-| DEBT-3777 | Long-Term Maintenance                                           | S3       | N/A                                                                              | 0         |
-| DEBT-3778 | Prevent Future Warnings                                         | S3       | N/A                                                                              | 0         |
-| DEBT-3779 | Update this plan with new patterns                              | S3       | N/A                                                                              | 0         |
-| DEBT-3780 | SoNash Refactoring Action Plan                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3793 | Add Rate Limiting (S-2)                                         | S3       | N/A                                                                              | 0         |
-| DEBT-3797 | 17-22. Other Phase 3 Items                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3798 | 24-26. Other Phase 4 Items                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3800 | Test Files to Create                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3801 | 📊 Impact Summary                                               | S3       | N/A                                                                              | 0         |
-| DEBT-3803 | Issues Addressed: 15                                            | S3       | N/A                                                                              | 0         |
-| DEBT-3805 | 📈 PERFORMANCE IMPROVEMENTS                                     | S3       | N/A                                                                              | 0         |
-| DEBT-3807 | 🔒 SECURITY ENHANCEMENTS                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3808 | Enhanced Validation                                             | S3       | firestore-validation.ts                                                          | 0         |
-| DEBT-3809 | 🧪 TESTING RECOMMENDATIONS                                      | S3       | N/A                                                                              | 0         |
-| DEBT-3810 | Immediate Testing Needed                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3811 | Future Test Coverage                                            | S3       | firebase-guards.ts                                                               | 0         |
-| DEBT-3812 | 🚀 DEPLOYMENT CHECKLIST                                         | S3       | N/A                                                                              | 0         |
-| DEBT-3813 | Production Readiness (Before Launch)                            | S3       | N/A                                                                              | 0         |
-| DEBT-3814 | 💰 COST-BENEFIT ANALYSIS                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3815 | 🎓 KEY LEARNINGS                                                | S3       | N/A                                                                              | 0         |
-| DEBT-3816 | What Needs Improvement                                          | S3       | N/A                                                                              | 0         |
-| DEBT-3817 | Recommendations for Future PRs                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3818 | 📚 DOCUMENTATION ADDED                                          | S3       | N/A                                                                              | 0         |
-| DEBT-3819 | 🔄 BACKWARD COMPATIBILITY                                       | S3       | N/A                                                                              | 0         |
-| DEBT-3820 | Add tests for firebase-guards.ts utilities                      | S3       | firebase-guards.ts                                                               | 0         |
-| DEBT-3821 | Add tests for enhanced security validation                      | S3       | N/A                                                                              | 0         |
-| DEBT-3822 | Add integration tests for Firebase operations                   | S3       | N/A                                                                              | 0         |
-| DEBT-3823 | Implement Firebase App Check                                    | S3       | N/A                                                                              | 0         |
-| DEBT-3824 | Add server-side authorization                                   | S3       | N/A                                                                              | 0         |
-| DEBT-3827 | Style/Readability                                               | S3       | N/A                                                                              | 0         |
-| DEBT-3828 | Fix `firestore.rules` Date Logic                                | S3       | N/A                                                                              | 0         |
-| DEBT-3831 | React's Default XSS Protection                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3832 | Verification of User Input Handling                             | S3       | N/A                                                                              | 0         |
-| DEBT-3833 | Journal Entry Text (today-page.tsx:312-324)                     | S3       | N/A                                                                              | 0         |
-| DEBT-3834 | Nickname Display (book-cover.tsx:221)                           | S3       | N/A                                                                              | 0         |
-| DEBT-3835 | Clean Time Display (today-page.tsx:183)                         | S3       | N/A                                                                              | 0         |
-| DEBT-3836 | Meeting Data (resources-page.tsx:227-236)                       | S3       | N/A                                                                              | 0         |
-| DEBT-3837 | Dangerous Patterns Audit                                        | S3       | N/A                                                                              | 0         |
-| DEBT-3838 | Search for `dangerouslySetInnerHTML`                            | S3       | N/A                                                                              | 0         |
-| DEBT-3839 | Search for `innerHTML`                                          | S3       | N/A                                                                              | 0         |
-| DEBT-3840 | Search for `eval()`                                             | S3       | N/A                                                                              | 0         |
-| DEBT-3841 | Search for `document.write`                                     | S3       | N/A                                                                              | 0         |
-| DEBT-3842 | Third-Party Libraries XSS Risk                                  | S3       | N/A                                                                              | 0         |
-| DEBT-3843 | Framer Motion                                                   | S3       | N/A                                                                              | 0         |
-| DEBT-3844 | React Hook Form                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-3845 | Sonner (Toast Library)                                          | S3       | N/A                                                                              | 105       |
-| DEBT-3846 | Future Risks (If Features Are Added)                            | S3       | N/A                                                                              | 0         |
-| DEBT-3849 | Defense-in-Depth: Content Security Policy                       | S3       | N/A                                                                              | 0         |
-| DEBT-3850 | Recommendation:                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-3851 | Firestore Security for XSS Context                              | S3       | N/A                                                                              | 0         |
-| DEBT-3852 | Current Rules (firestore.rules:33-36):                          | S3       | N/A                                                                              | 0         |
-| DEBT-3853 | Summary of Protections                                          | S3       | document.write                                                                   | 0         |
-| DEBT-3854 | Manual XSS Tests:                                               | S3       | N/A                                                                              | 0         |
-| DEBT-3855 | Automated Testing:                                              | S3       | N/A                                                                              | 0         |
-| DEBT-3856 | Implement CSP headers in next.config.mjs                        | S3       | N/A                                                                              | 0         |
-| DEBT-3857 | Add XSS test cases to test suite                                | S3       | N/A                                                                              | 0         |
-| DEBT-3858 | Error Tracing Tab - includes npm audit display                  | S3       | N/A                                                                              | 0         |
-| DEBT-3859 | Remove duplicate test run from pre-push (done) - ✅ Session     | S3       | N/A                                                                              | 0         |
-| DEBT-3860 | Add file extension filters to hook matchers                     | S3       | N/A                                                                              | 0         |
-| DEBT-3861 | Automated fix suggestions - Generate patches                    | S3       | N/A                                                                              | 0         |
-| DEBT-3862 | Broken deploy triage runbook (30min)                            | S3       | N/A                                                                              | 0         |
-| DEBT-3863 | Claude Fix Bundle format - docs/CLAUDE_FIX_BUNDLE.md            | S3       | docs/CLAUDE_FIX_BUNDLE.md                                                        | 0         |
-| DEBT-3864 | Reduce SESSION_CONTEXT.md - Archive history to                  | S3       | N/A                                                                              | 0         |
-| DEBT-3865 | Remove unused gemini-generated images (-4MB)                    | S3       | N/A                                                                              | 0         |
-| DEBT-3866 | Convert remaining images to WebP format (-90% size)             | S3       | N/A                                                                              | 0         |
-| DEBT-3867 | Preload LCP image (wood-table.jpg)                              | S3       | N/A                                                                              | 0         |
-| DEBT-3868 | Code-split admin panel                                          | S3       | N/A                                                                              | 0         |
-| DEBT-3869 | Add Content Security Policy                                     | S3       | N/A                                                                              | 0         |
-| DEBT-3870 | Make reCAPTCHA fail-closed when configured                      | S3       | N/A                                                                              | 0         |
-| DEBT-3872 | Integrate with CI (fail on diff > threshold)                    | S3       | N/A                                                                              | 0         |
-| DEBT-3873 | Test Results Tab - Show pass/fail summary                       | S3       | N/A                                                                              | 0         |
-| DEBT-3874 | Cleanup Utilities - Reset state between tests                   | S3       | N/A                                                                              | 0         |
-| DEBT-3875 | Security Rules Tests - Test firestore.rules coverage            | S3       | N/A                                                                              | 0         |
-| DEBT-3876 | Compare options: Semgrep, CodeQL, ESLint security plugins       | S3       | N/A                                                                              | 0         |
-| DEBT-3877 | ENH-0063: Remove duplicate pattern check from pre-push ho...    | S3       | N/A                                                                              | 0         |
-| DEBT-3878 | Include helpful fix hints in error messages                     | S3       | N/A                                                                              | 0         |
-| DEBT-3881 | Wire `Sentry.captureException()` in error paths                 | S3       | N/A                                                                              | 0         |
-| DEBT-3882 | Fix Prettier baseline (run `npm run format`)                    | S3       | N/A                                                                              | 0         |
-| DEBT-3883 | Fix knip baseline (7 unused deps)                               | S3       | N/A                                                                              | 0         |
-| DEBT-3884 | Remove all `continue-on-error: true` flags                      | S3       | N/A                                                                              | 0         |
-| DEBT-3889 | Logs tab error state on network failure                         | S3       | N/A                                                                              | 0         |
-| DEBT-3890 | Privilege save error handling and revert                        | S3       | N/A                                                                              | 0         |
-| DEBT-3891 | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_     | S3       | N/A                                                                              | 0         |
-| DEBT-3892 | M4.5-SEC-005 - Security rules for new collections               | S3       | N/A                                                                              | 0         |
-| DEBT-3893 | RND-AUDIT - Security Audit Planning (1 day)                     | S3       | N/A                                                                              | 0         |
-| DEBT-3894 | F12.11 - Slow Rollout (progressive feature disclosure)          | S3       | N/A                                                                              | 0         |
-| DEBT-3895 | T6.5 - Sync performance tracking                                | S3       | N/A                                                                              | 0         |
-| DEBT-3896 | T9.2 - Data retention policy (user choice for auto-cleanup)     | S3       | N/A                                                                              | 0         |
-| DEBT-3897 | T8.7 - Extract offline-core package (optimization; not re...    | S3       | N/A                                                                              | 0         |
-| DEBT-6873 | No tests for regex global state reset edge cases with con...    | S3       | N/A                                                                              | 19        |
-| DEBT-6874 | No test for Unicode private use area (U+E000-U+F8FF) patt...    | S3       | N/A                                                                              | 20        |
-| DEBT-6875 | No integration test verifying both .js and .ts versions p...    | S3       | N/A                                                                              | 23        |
-| DEBT-6876 | No test for `parseCliArgs` with edge cases (consecutive f...    | S3       | N/A                                                                              | 30        |
-| DEBT-6877 | No test for `maskEmail` with unusual domain structures (s...    | S3       | N/A                                                                              | 32        |
-| DEBT-6878 | No test for `safeRegexExec` infinite loop prevention with...    | S3       | N/A                                                                              | 34        |
-| DEBT-6879 | No test for symlink traversal at boundary (deeply nested ...    | S3       | N/A                                                                              | 39        |
-| DEBT-6880 | No test for realpathSync behavior when symlink target is ...    | S3       | N/A                                                                              | 41        |
-| DEBT-6881 | No test for mixed ASCII/Unicode control character combina...    | S3       | N/A                                                                              | 45        |
-| DEBT-6882 | No test for Bidi override patterns at start/end/middle of...    | S3       | N/A                                                                              | 46        |
-| DEBT-6883 | No test for static export behavior (no API routes expected)     | S3       | N/A                                                                              | 109       |
-| DEBT-6884 | No test for CSS generation with custom Tailwind config          | S3       | N/A                                                                              | 118       |
-| DEBT-6885 | No test for circular dependencies between path-aliased mo...    | S3       | N/A                                                                              | 124       |
-| DEBT-6886 | No test for tsc-alias handling of nested paths                  | S3       | N/A                                                                              | 133       |
-| DEBT-6887 | No visibility into why specific modules are excluded            | S3       | N/A                                                                              | 156       |
-| DEBT-6888 | No integration testing of actual user workflows                 | S3       | N/A                                                                              | 161       |
-| DEBT-6889 | No test for API response mocking consistency                    | S3       | N/A                                                                              | 166       |
-| DEBT-6890 | No integration test for Firestore operations                    | S3       | N/A                                                                              | 171       |
-| DEBT-6891 | No test for custom ESLint plugin rules                          | S3       | N/A                                                                              | 176       |
-| DEBT-6892 | No test ensuring doc-only detection doesn't accidentally ...    | S3       | N/A                                                                              | 184       |
-| DEBT-6893 | No test for false positives/negatives of symlink detection      | S3       | N/A                                                                              | 207       |
-| DEBT-6894 | No test for rule behavior on minified/transpiled code           | S3       | N/A                                                                              | 208       |
-| DEBT-6895 | Existing code can have CC > 15 (113 pre-existing violatio...    | S3       | N/A                                                                              | 213       |
-| DEBT-6896 | No blocking enforcer for actual cognitive complexity meas...    | S3       | N/A                                                                              | 215       |
-| DEBT-6897 | Local Prettier version mismatch could cause CI failures         | S3       | N/A                                                                              | 220       |
-| DEBT-6898 | No test for Markdown consistency standards                      | S3       | N/A                                                                              | 225       |
-| DEBT-6899 | No validation that ignored deps are actually necessary          | S3       | N/A                                                                              | 229       |
-| DEBT-6900 | `eslint-plugin-security` configured but no rules visible        | S3       | N/A                                                                              | 239       |
-| DEBT-6901 | No visibility into which security rules are active              | S3       | N/A                                                                              | 243       |
-| DEBT-6902 | No test for rule enforcement                                    | S3       | N/A                                                                              | 244       |
-| DEBT-6903 | No synchronized version management (e.g., Firebase lib ve...    | S3       | N/A                                                                              | 278       |
-| DEBT-6904 | `npm ci` in CI doesn't install functions dependencies aut...    | S3       | N/A                                                                              | 280       |
-| DEBT-6905 | No validation script checks version compatibility               | S3       | N/A                                                                              | 287       |
-| DEBT-6906 | No test validating file:// dependency resolve                   | S3       | N/A                                                                              | 291       |
-| DEBT-6907 | No protection against symlink attacks on file:// paths          | S3       | N/A                                                                              | 292       |
-| DEBT-6908 | No audit for version mismatches that could cause runtime ...    | S3       | N/A                                                                              | 298       |
-| DEBT-6909 | No lockfile integrity check in CI                               | S3       | N/A                                                                              | 302       |
-| DEBT-6910 | No validation that ignored items are actually necessary         | S3       | N/A                                                                              | 306       |
-| DEBT-6911 | No test for false negatives (truly unused deps that slip ...    | S3       | N/A                                                                              | 307       |
-| DEBT-6912 | Indicates peer dependency conflicts not resolved                | S3       | N/A                                                                              | 311       |
-| DEBT-6913 | No test for breaking changes in next major versions             | S3       | N/A                                                                              | 312       |
-| DEBT-6914 | No SBOMs (Software Bill of Materials) generated                 | S3       | N/A                                                                              | 316       |
-| DEBT-6915 | No npm audit integration beyond pre-push hook warning           | S3       | N/A                                                                              | 317       |
-| DEBT-6916 | Node.js built-in modules assumed but not validated              | S3       | N/A                                                                              | 321       |
-| DEBT-6919 | \*\* Domain 6 Step 2 needs complete lib/ enumeration, not j...  | S3       | N/A                                                                              | 42        |
-| DEBT-6921 | \*\* No domain covers: Is Sentry configured correctly? Is D...  | S3       | N/A                                                                              | 50        |
-| DEBT-6923 | \*\* Plan needs accurate enumeration.                           | S3       | N/A                                                                              | 60        |
-| DEBT-6925 | \*\* Domain 6 "Client/Server boundary audit" should verify ...  | S3       | N/A                                                                              | 66        |
-| DEBT-6928 | \*\* Domain 9 should include a TODO/FIXME audit as a specif...  | S3       | N/A                                                                              | 82        |
-| DEBT-6930 | \*\* Domain 15 should include a public assets audit: verify...  | S3       | N/A                                                                              | 94        |
-| DEBT-6932 | \*\* Type definition organization should be part of Domain ...  | S3       | N/A                                                                              | 101       |
-| DEBT-6934 | \*\* Domain 6 "console.log in production code" search needs...  | S3       | N/A                                                                              | 109       |
-| DEBT-6936 | \*\* Domain 7 needs a dedicated "Sentry integration in Clou...  | S3       | N/A                                                                              | 119       |
-| DEBT-6937 | \*\* Domain 7 and Domain 8 should both flag this — server c...  | S3       | N/A                                                                              | 132       |
-| DEBT-6939 | \*\* Domain 8 should verify that `security_logs` has an exp...  | S3       | N/A                                                                              | 143       |
-| DEBT-6941 | \*\* Domain 7 should list ALL 8 function source files expli...  | S3       | N/A                                                                              | 155       |
-| DEBT-6943 | \*\* Domain 6 needs a "Data access layer audit" step.           | S3       | N/A                                                                              | 167       |
-| DEBT-6945 | \*\* Domain 6 should explicitly review the celebration subs...  | S3       | N/A                                                                              | 175       |
-| DEBT-6947 | \*\* Domain 8 (Security) should cross-reference Permissions...  | S3       | N/A                                                                              | 191       |
-| DEBT-6949 | \*\* Domain 2 should explicitly verify this architecture ch...  | S3       | N/A                                                                              | 203       |
-| DEBT-6951 | \*\* Domain 2 should check that the CSS-based Tailwind conf...  | S3       | N/A                                                                              | 212       |
-| DEBT-6953 | \*\* Domain 10 should include bidirectional cross-reference...  | S3       | N/A                                                                              | 225       |
-| DEBT-6955 | \*\* Domain 8 should verify EVERY collection written by Clo...  | S3       | N/A                                                                              | 237       |
-| DEBT-6957 | \*\* Domain 8 step 3 mentions "size limits" but the plan sh...  | S3       | N/A                                                                              | 247       |
-| DEBT-6959 | \*\* Domain 7 "~12 files" label severely underestimates sco...  | S3       | N/A                                                                              | 264       |
-| DEBT-6961 | \*\* Each job should be verified for: correct schedule, ide...  | S3       | N/A                                                                              | 282       |
-| DEBT-6963 | \*\* Domain 7 should explicitly: (1) compare each Zod schema    | S3       | N/A                                                                              | 291       |
-| DEBT-6965 | \*\* Domain 1 should check for engines field AND Domain 5 s...  | S3       | N/A                                                                              | 305       |
-| DEBT-6967 | \** Domain 1 should include "validate all NEXT*PUBLIC\*\* v...  | S3       | N/A                                                                              | 313       |
-| DEBT-6969 | \*\* Domain 3 should flag: no coverage thresholds, limited ...  | S3       | N/A                                                                              | 323       |
-| DEBT-6971 | \*\* Domain 3 should verify: intended for future use? Shoul...  | S3       | N/A                                                                              | 329       |
-| DEBT-6973 | \*\* Domain 3 should check if MSW is actually used              | S3       | N/A                                                                              | 335       |
-| DEBT-6975 | \*\* Domain 4 should enumerate existing complexity violations   | S3       | N/A                                                                              | 341       |
-| DEBT-6977 | \*\* Domain 4 should verify each disabled rule has justific...  | S3       | N/A                                                                              | 346       |
-| DEBT-6979 | \*\* Domain 5 should verify each entry is still needed          | S3       | N/A                                                                              | 351       |
-| DEBT-6981 | \*\* Domain 5 should test: can all 3 packages install clean...  | S3       | N/A                                                                              | 357       |
-| DEBT-6983 | \*\* Domain 5 should verify source directory exists and con...  | S3       | N/A                                                                              | 363       |
-| DEBT-6985 | \*\* Domain 11 needs 3-way reconciliation                       | S3       | N/A                                                                              | 370       |
-| DEBT-6987 | \*\* Domain 12 count correction needed                          | S3       | N/A                                                                              | 375       |
-| DEBT-6989 | \*\* Domain 16 needs complete inventory, Domain 9 must exec...  | S3       | N/A                                                                              | 380       |
-| DEBT-6991 | \*\* Domain 16 should audit ALL artifacts, not just MASTER\_... | S3       | N/A                                                                              | 385       |
-| DEBT-6993 | \*\* Domain 6 should review for completeness and accuracy       | S3       | N/A                                                                              | 391       |
-| DEBT-6995 | \*\* Domain 8 should include index validation                   | S3       | N/A                                                                              | 397       |
-| DEBT-6997 | \*\* Domain 5 and Domain 13 should flag SBOM absence            | S3       | N/A                                                                              | 402       |
-| DEBT-7012 | Medium Severity & Code Quality Findings                         | S3       | N/A                                                                              | 0         |
-| DEBT-7015 | Potential Root Cause A: API Key Restrictions (Most Likely)      | S3       | N/A                                                                              | 0         |
-| DEBT-7016 | Potential Root Cause B: Firebase App Check API Not Enabled      | S3       | N/A                                                                              | 0         |
-| DEBT-7017 | Potential Root Cause C: "Zombie" Token or Project/App Mis...    | S3       | N/A                                                                              | 0         |
-| DEBT-7018 | Potential Root Cause D: System Time Skew (Edge Case)            | S3       | N/A                                                                              | 0         |
-| DEBT-7019 | Recommended Immediate Action                                    | S3       | N/A                                                                              | 0         |
-| DEBT-7020 | Execution Flow Analysis                                         | S3       | N/A                                                                              | 0         |
-| DEBT-7021 | Code Smells Identified                                          | S3       | N/A                                                                              | 0         |
-| DEBT-7022 | 🚨 DANGEROUS PATTERNS                                           | S3       | N/A                                                                              | 0         |
-| DEBT-7023 | 🔍 EDGE CASES                                                   | S3       | N/A                                                                              | 0         |
-| DEBT-7028 | Race Conditions in State                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7034 | Dynamic Import Anti-Pattern                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7035 | Type Gymnastics                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7036 | STYLE/READABILITY                                               | S3       | N/A                                                                              | 0         |
-| DEBT-7037 | Refactoring Strategy                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7040 | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)          | S3       | N/A                                                                              | 0         |
-| DEBT-7041 | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics)    | S3       | N/A                                                                              | 0         |
-| DEBT-7042 | 🏆 #3: Server-Side Security Documentation (Guided Migration)    | S3       | N/A                                                                              | 0         |
-| DEBT-7043 | METRICS & VALIDATION                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7044 | Security Posture                                                | S3       | N/A                                                                              | 0         |
-| DEBT-7045 | Immediate (This PR)                                             | S3       | N/A                                                                              | 0         |
-| DEBT-7046 | Short-Term (Next Sprint)                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7047 | Long-Term (Production Readiness)                                | S3       | N/A                                                                              | 0         |
-| DEBT-7048 | Remove dangerous non-null assertions                            | S3       | N/A                                                                              | 0         |
-| DEBT-7049 | Add runtime checks before export                                | S3       | N/A                                                                              | 0         |
-| DEBT-7050 | Create isFirebaseTimestamp() type guard                         | S3       | N/A                                                                              | 0         |
-| DEBT-7051 | Create isFirestoreError() type guard                            | S3       | N/A                                                                              | 0         |
-| DEBT-7052 | Remove type gymnastics from components                          | S3       | N/A                                                                              | 0         |
-| DEBT-7053 | Add JSDoc warnings about client-side limitations                | S3       | N/A                                                                              | 0         |
-| DEBT-7054 | Implement Cloud Functions for rate limiting                     | S3       | N/A                                                                              | 0         |
-| DEBT-7055 | Add Firebase App Check                                          | S3       | N/A                                                                              | 0         |
-| DEBT-7056 | Implement account linking for anonymous users                   | S3       | N/A                                                                              | 0         |
-| DEBT-7057 | Split AuthProvider into focused contexts                        | S3       | N/A                                                                              | 0         |
-| DEBT-7058 | Add integration tests for Firestore operations                  | S3       | N/A                                                                              | 0         |
-| DEBT-7060 | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
-| DEBT-7061 | Add performance monitoring                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7062 | AuthProvider has 7 state variables (SRP violation)              | S3       | N/A                                                                              | 0         |
-| DEBT-7063 | book-cover.tsx = 337 lines (mixed concerns)                     | S3       | N/A                                                                              | 0         |
-| DEBT-7065 | Adapter exists but not used consistently                        | S3       | N/A                                                                              | 0         |
-| DEBT-7066 | Only 10-15% coverage                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7067 | Unknown size, heavy dependencies                                | S3       | N/A                                                                              | 0         |
-| DEBT-7069 | **A6: Adapter Pattern** — 3 days — Medium — P1                  | S3       | N/A                                                                              | 0         |
-| DEBT-7076 | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks...    | S3       | N/A                                                                              | 0         |
-| DEBT-7077 | **Team Capacity** — Medium — Medium — Parallel work on M1...    | S3       | N/A                                                                              | 0         |
-| DEBT-7079 | Improvement Roadmap                                             | S3       | N/A                                                                              | 0         |
-| DEBT-7080 | Target Architecture Quality: 4.8/5                              | S3       | N/A                                                                              | 0         |
-| DEBT-7081 | Problem Statement                                               | S3       | N/A                                                                              | 0         |
-| DEBT-7082 | Solution: Split into 3 Focused Contexts                         | S3       | N/A                                                                              | 0         |
-| DEBT-7083 | Architecture                                                    | S3       | N/A                                                                              | 0         |
-| DEBT-7084 | Estimated Effort                                                | S3       | N/A                                                                              | 0         |
-| DEBT-7085 | Decompose Large Components                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7086 | Problem: `book-cover.tsx` (337 lines)                           | S3       | N/A                                                                              | 0         |
-| DEBT-7087 | Solution: Extract 4 Sub-Components                              | S3       | N/A                                                                              | 0         |
-| DEBT-7092 | Component Size Target                                           | S3       | N/A                                                                              | 0         |
-| DEBT-7093 | Standardize Error Handling                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7095 | Solution: Result<T> Type Pattern                                | S3       | N/A                                                                              | 0         |
-| DEBT-7100 | When to Use Each Pattern                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7101 | Result<T> (Preferred for services)                              | S3       | N/A                                                                              | 0         |
-| DEBT-7102 | Throw (Use sparingly)                                           | S3       | N/A                                                                              | 0         |
-| DEBT-7103 | Error Boundaries (UI layer)                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7105 | Problem: Direct Image Usage                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7106 | Solution: Next.js Image Component                               | S3       | N/A                                                                              | 0         |
-| DEBT-7107 | Audit Checklist                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7109 | Problem: Unknown Bundle Size                                    | S3       | N/A                                                                              | 0         |
-| DEBT-7110 | Solution: Bundle Analysis                                       | S3       | N/A                                                                              | 0         |
-| DEBT-7111 | Install Analyzer                                                | S3       | N/A                                                                              | 0         |
-| DEBT-7112 | Configure Next.js                                               | S3       | N/A                                                                              | 0         |
-| DEBT-7113 | Run Analysis                                                    | S3       | N/A                                                                              | 0         |
-| DEBT-7115 | Bundle Size Targets                                             | S3       | N/A                                                                              | 0         |
-| DEBT-7116 | Database Adapter Pattern Consistency                            | S3       | N/A                                                                              | 0         |
-| DEBT-7118 | Benefits of Adapter Pattern                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7119 | Implementation                                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7120 | Add responsive sizes attribute                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7121 | Update AuthProvider to use adapter                              | S3       | N/A                                                                              | 0         |
-| DEBT-7123 | Add adapter interface tests                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7124 | Remove direct FirestoreService imports                          | S3       | N/A                                                                              | 0         |
-| DEBT-7125 | Key Findings:                                                   | S3       | N/A                                                                              | 0         |
-| DEBT-7129 | Code Quality Issues                                             | S3       | N/A                                                                              | 0         |
-| DEBT-7130 | Severity Legend:                                                | S3       | N/A                                                                              | 0         |
-| DEBT-7134 | CQ-4: Hardcoded Magic Strings 🟢 MEDIUM                         | S3       | N/A                                                                              | 0         |
-| DEBT-7141 | CQ-11: No Component Documentation 🟢 MEDIUM                     | S3       | N/A                                                                              | 0         |
-| DEBT-7147 | Performance Issues                                              | S3       | N/A                                                                              | 0         |
-| DEBT-7152 | Security Issues                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7157 | Testing Coverage                                                | S3       | N/A                                                                              | 0         |
-| DEBT-7158 | Accessibility Issues                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7160 | A-2: Focus Management 🟢 MEDIUM                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7161 | Summary of Issues                                               | S3       | N/A                                                                              | 0         |
-| DEBT-7162 | Recommended Prioritization                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7163 | Long-Term Recommendations                                       | S3       | N/A                                                                              | 0         |
-| DEBT-7164 | Add Error Boundaries                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7165 | Implement Offline Support                                       | S3       | N/A                                                                              | 0         |
-| DEBT-7166 | Add Monitoring                                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7167 | Refactor State Management                                       | S3       | N/A                                                                              | 0         |
-| DEBT-7168 | Add End-to-End Tests                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7169 | Performance Budget                                              | S3       | N/A                                                                              | 0         |
-| DEBT-7171 | S-2 (related: rate limiting)                                    | S3       | N/A                                                                              | 0         |
-| DEBT-7174 | Not explicitly listed                                           | S3       | N/A                                                                              | 0         |
-| DEBT-7176 | Finding #3 (UTC vs local)                                       | S3       | N/A                                                                              | 0         |
-| DEBT-7177 | §4.2 (Listener Memory Leaks)                                    | S3       | N/A                                                                              | 0         |
-| DEBT-7179 | P-2 (Real-time Listeners Not Optimized)                         | S3       | N/A                                                                              | 0         |
-| DEBT-7180 | §4.2 (implied in listener issues)                               | S3       | N/A                                                                              | 0         |
-| DEBT-7181 | CQ-1 (isEditing in deps)                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7182 | P-2 (unnecessary re-subscriptions)                              | S3       | N/A                                                                              | 0         |
-| DEBT-7183 | §3.4 (getAllMeetings, Journal queries)                          | S3       | N/A                                                                              | 0         |
-| DEBT-7184 | (implied in performance)                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7187 | B-3 (AnimatePresence Issue - different bug)                     | S3       | N/A                                                                              | 0         |
-| DEBT-7188 | B-5 (Anonymous Session Edge Case)                               | S3       | N/A                                                                              | 0         |
-| DEBT-7190 | Finding #4 (Meeting seed/clear exposed)                         | S3       | N/A                                                                              | 0         |
-| DEBT-7191 | Firebase App Check                                              | S3       | N/A                                                                              | 0         |
-| DEBT-7192 | Server-side validation (Zod)                                    | S3       | N/A                                                                              | 0         |
-| DEBT-7193 | Rate limiting (10 req/min)                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7194 | Audit logging                                                   | S3       | N/A                                                                              | 0         |
-| DEBT-7195 | GDPR compliance                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7196 | Dependency versions                                             | S3       | N/A                                                                              | 0         |
-| DEBT-7197 | Remove allow create, update from daily_logs                     | S3       | N/A                                                                              | 0         |
-| DEBT-7198 | Change to fail-closed strategy                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7199 | Add admin claim check or hide buttons                           | S3       | N/A                                                                              | 0         |
-| DEBT-7201 | Check existing profile before recreate                          | S3       | N/A                                                                              | 0         |
-| DEBT-7202 | Create unified getDateId() utility                              | S3       | N/A                                                                              | 0         |
-| DEBT-7203 | Track lifecycle with refs, proper cleanup                       | S3       | N/A                                                                              | 0         |
-| DEBT-7204 | Use ref instead of state                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7205 | Implement proper debounce                                       | S3       | N/A                                                                              | 0         |
-| DEBT-7206 | Gate fetches on auth readiness                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7207 | Add limit() to queries                                          | S3       | N/A                                                                              | 0         |
-| DEBT-7208 | Refactor TodayPage, ResourcesPage                               | S3       | N/A                                                                              | 0         |
-| DEBT-7209 | Add hard NODE_ENV check                                         | S3       | N/A                                                                              | 0         |
-| DEBT-7210 | Fix AnimatePresence conditional                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7211 | Normalize time format                                           | S3       | N/A                                                                              | 0         |
-| DEBT-7212 | Extract to constants file                                       | S3       | N/A                                                                              | 0         |
-| DEBT-7213 | Add saving indicators                                           | S3       | N/A                                                                              | 0         |
-| DEBT-7214 | Excessive fonts                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7215 | Code splitting                                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7216 | Unused dependencies                                             | S3       | N/A                                                                              | 0         |
-| DEBT-7217 | Component documentation                                         | S3       | N/A                                                                              | 0         |
-| DEBT-7218 | Accessibility (ARIA)                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7219 | Environment logging                                             | S3       | N/A                                                                              | 0         |
-| DEBT-7220 | ✅ Proceed                                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7221 | ✅ Proceed (deferred to M4)                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7222 | Issues Reported by Multiple Sources (Consolidated)              | S3       | N/A                                                                              | 0         |
-| DEBT-7231 | 🟢 Admin Reset Button Missing Protection                        | S3       | N/A                                                                              | 0         |
-| DEBT-7232 | Issues Already Addressed (per AI_HANDOFF/ROADMAP)               | S3       | N/A                                                                              | 0         |
-| DEBT-7233 | Consolidated Action Plan                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7234 | Roadmap Feature Decision Resolution                             | S3       | N/A                                                                              | 0         |
-| DEBT-7235 | Risk Factor A: "Bleeding Edge" Stack Instability                | S3       | N/A                                                                              | 0         |
-| DEBT-7237 | Dependency Compatibility Check                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7238 | Summary of Actions                                              | S3       | N/A                                                                              | 0         |
-| DEBT-7245 | Use proper mock types                                           | S3       | N/A                                                                              | 0         |
-| DEBT-7247 | Warning Breakdown by Category                                   | S3       | N/A                                                                              | 0         |
-| DEBT-7251 | ESLint Configuration Improvements                               | S3       | N/A                                                                              | 0         |
-| DEBT-7252 | Recommendation 1: Stricter Rules for Application Code           | S3       | N/A                                                                              | 0         |
-| DEBT-7253 | Recommendation 2: Pre-commit Hook                               | S3       | N/A                                                                              | 0         |
-| DEBT-7254 | Recommendation 3: CI Enforcement                                | S3       | N/A                                                                              | 0         |
-| DEBT-7255 | Long-Term Maintenance                                           | S3       | N/A                                                                              | 0         |
-| DEBT-7256 | Prevent Future Warnings                                         | S3       | N/A                                                                              | 0         |
-| DEBT-7257 | Update this plan with new patterns                              | S3       | N/A                                                                              | 0         |
-| DEBT-7258 | SoNash Refactoring Action Plan                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7271 | Add Rate Limiting (S-2)                                         | S3       | N/A                                                                              | 0         |
-| DEBT-7275 | 17-22. Other Phase 3 Items                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7276 | 24-26. Other Phase 4 Items                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7278 | Test Files to Create                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7279 | 📊 Impact Summary                                               | S3       | N/A                                                                              | 0         |
-| DEBT-7281 | Issues Addressed: 15                                            | S3       | N/A                                                                              | 0         |
-| DEBT-7283 | 📈 PERFORMANCE IMPROVEMENTS                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7285 | 🔒 SECURITY ENHANCEMENTS                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7287 | 🧪 TESTING RECOMMENDATIONS                                      | S3       | N/A                                                                              | 0         |
-| DEBT-7288 | Immediate Testing Needed                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7290 | 🚀 DEPLOYMENT CHECKLIST                                         | S3       | N/A                                                                              | 0         |
-| DEBT-7291 | Production Readiness (Before Launch)                            | S3       | N/A                                                                              | 0         |
-| DEBT-7292 | 💰 COST-BENEFIT ANALYSIS                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7293 | 🎓 KEY LEARNINGS                                                | S3       | N/A                                                                              | 0         |
-| DEBT-7294 | What Needs Improvement                                          | S3       | N/A                                                                              | 0         |
-| DEBT-7295 | Recommendations for Future PRs                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7296 | 📚 DOCUMENTATION ADDED                                          | S3       | N/A                                                                              | 0         |
-| DEBT-7297 | 🔄 BACKWARD COMPATIBILITY                                       | S3       | N/A                                                                              | 0         |
-| DEBT-7299 | Add tests for enhanced security validation                      | S3       | N/A                                                                              | 0         |
-| DEBT-7300 | Add integration tests for Firebase operations                   | S3       | N/A                                                                              | 0         |
-| DEBT-7301 | Implement Firebase App Check                                    | S3       | N/A                                                                              | 0         |
-| DEBT-7302 | Add server-side authorization                                   | S3       | N/A                                                                              | 0         |
-| DEBT-7305 | Fix `firestore.rules` Date Logic                                | S3       | N/A                                                                              | 0         |
-| DEBT-7308 | React's Default XSS Protection                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7309 | Verification of User Input Handling                             | S3       | N/A                                                                              | 0         |
-| DEBT-7310 | Journal Entry Text (today-page.tsx:312-324)                     | S3       | N/A                                                                              | 0         |
-| DEBT-7311 | Nickname Display (book-cover.tsx:221)                           | S3       | N/A                                                                              | 0         |
-| DEBT-7312 | Clean Time Display (today-page.tsx:183)                         | S3       | N/A                                                                              | 0         |
-| DEBT-7313 | Meeting Data (resources-page.tsx:227-236)                       | S3       | N/A                                                                              | 0         |
-| DEBT-7314 | Dangerous Patterns Audit                                        | S3       | N/A                                                                              | 0         |
-| DEBT-7315 | Search for `dangerouslySetInnerHTML`                            | S3       | N/A                                                                              | 0         |
-| DEBT-7316 | Search for `innerHTML`                                          | S3       | N/A                                                                              | 0         |
-| DEBT-7317 | Search for `eval()`                                             | S3       | N/A                                                                              | 0         |
-| DEBT-7318 | Search for `document.write`                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7319 | Third-Party Libraries XSS Risk                                  | S3       | N/A                                                                              | 0         |
-| DEBT-7320 | Framer Motion                                                   | S3       | N/A                                                                              | 0         |
-| DEBT-7321 | React Hook Form                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7322 | Sonner (Toast Library)                                          | S3       | N/A                                                                              | 0         |
-| DEBT-7323 | Future Risks (If Features Are Added)                            | S3       | N/A                                                                              | 0         |
-| DEBT-7326 | Defense-in-Depth: Content Security Policy                       | S3       | N/A                                                                              | 0         |
-| DEBT-7327 | Recommendation:                                                 | S3       | N/A                                                                              | 0         |
-| DEBT-7328 | Firestore Security for XSS Context                              | S3       | N/A                                                                              | 0         |
-| DEBT-7329 | Current Rules (firestore.rules:33-36):                          | S3       | N/A                                                                              | 0         |
-| DEBT-7331 | Manual XSS Tests:                                               | S3       | N/A                                                                              | 0         |
-| DEBT-7332 | Automated Testing:                                              | S3       | N/A                                                                              | 0         |
-| DEBT-7333 | Implement CSP headers in next.config.mjs                        | S3       | N/A                                                                              | 0         |
-| DEBT-7334 | Add XSS test cases to test suite                                | S3       | N/A                                                                              | 0         |
-| DEBT-7335 | Error Tracing Tab - includes npm audit display                  | S3       | N/A                                                                              | 0         |
-| DEBT-7336 | Remove duplicate test run from pre-push (done) - ✅ Session     | S3       | N/A                                                                              | 0         |
-| DEBT-7337 | Add file extension filters to hook matchers                     | S3       | N/A                                                                              | 0         |
-| DEBT-7338 | Automated fix suggestions - Generate patches                    | S3       | N/A                                                                              | 0         |
-| DEBT-7339 | Broken deploy triage runbook (30min)                            | S3       | N/A                                                                              | 0         |
-| DEBT-7341 | Reduce SESSION_CONTEXT.md - Archive history to                  | S3       | N/A                                                                              | 0         |
-| DEBT-7342 | Remove unused gemini-generated images (-4MB)                    | S3       | N/A                                                                              | 0         |
-| DEBT-7343 | Convert remaining images to WebP format (-90% size)             | S3       | N/A                                                                              | 0         |
-| DEBT-7344 | Preload LCP image (wood-table.jpg)                              | S3       | N/A                                                                              | 0         |
-| DEBT-7345 | Code-split admin panel                                          | S3       | N/A                                                                              | 0         |
-| DEBT-7346 | Add Content Security Policy                                     | S3       | N/A                                                                              | 0         |
-| DEBT-7347 | Make reCAPTCHA fail-closed when configured                      | S3       | N/A                                                                              | 0         |
-| DEBT-7348 | Create `/test-suite` skill with 5-phase pipeline ✅             | S3       | N/A                                                                              | 0         |
-| DEBT-7349 | Integrate with CI (fail on diff > threshold)                    | S3       | N/A                                                                              | 0         |
-| DEBT-7350 | Test Results Tab - Show pass/fail summary                       | S3       | N/A                                                                              | 0         |
-| DEBT-7351 | Cleanup Utilities - Reset state between tests                   | S3       | N/A                                                                              | 0         |
-| DEBT-7352 | Security Rules Tests - Test firestore.rules coverage            | S3       | N/A                                                                              | 0         |
-| DEBT-7353 | Compare options: Semgrep, CodeQL, ESLint security plugins       | S3       | N/A                                                                              | 0         |
-| DEBT-7354 | ENH-0063: Remove duplicate pattern check from pre-push ho...    | S3       | N/A                                                                              | 0         |
-| DEBT-7355 | Include helpful fix hints in error messages                     | S3       | N/A                                                                              | 0         |
-| DEBT-7356 | Add learning entry reminder to pre-commit hook                  | S3       | N/A                                                                              | 0         |
-| DEBT-7358 | Wire `Sentry.captureException()` in error paths                 | S3       | N/A                                                                              | 0         |
-| DEBT-7359 | Fix Prettier baseline (run `npm run format`)                    | S3       | N/A                                                                              | 0         |
-| DEBT-7360 | Fix knip baseline (7 unused deps)                               | S3       | N/A                                                                              | 0         |
-| DEBT-7361 | Remove all `continue-on-error: true` flags                      | S3       | N/A                                                                              | 0         |
-| DEBT-7362 | Export `redactSensitiveUrl` from `lib/utils/error-export....    | S3       | lib/utils/error-export.ts                                                        | 0         |
-| DEBT-7363 | Error summary card on Dashboard (count + trend) ✅              | S3       | N/A                                                                              | 0         |
-| DEBT-7364 | Deep links to Sentry for each error ✅                          | S3       | N/A                                                                              | 0         |
-| DEBT-7365 | Recent security events display (from existing `logSecurit...    | S3       | N/A                                                                              | 0         |
-| DEBT-7366 | Logs tab error state on network failure                         | S3       | N/A                                                                              | 0         |
-| DEBT-7367 | Privilege save error handling and revert                        | S3       | N/A                                                                              | 0         |
-| DEBT-7368 | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_     | S3       | N/A                                                                              | 0         |
-| DEBT-7369 | M4.5-SEC-005 - Security rules for new collections               | S3       | N/A                                                                              | 0         |
-| DEBT-7370 | RND-AUDIT - Security Audit Planning (1 day)                     | S3       | N/A                                                                              | 0         |
-| DEBT-7371 | F12.11 - Slow Rollout (progressive feature disclosure)          | S3       | N/A                                                                              | 0         |
-| DEBT-7372 | T6.5 - Sync performance tracking                                | S3       | N/A                                                                              | 0         |
-| DEBT-7373 | T9.2 - Data retention policy (user choice for auto-cleanup)     | S3       | N/A                                                                              | 0         |
-| DEBT-7374 | T8.7 - Extract offline-core package (optimization; not re...    | S3       | N/A                                                                              | 0         |
-| DEBT-7375 | Pass limit to FirestoreService when it supports configura...    | S3       | lib/database/firestore-adapter.ts                                                | 0         |
-| DEBT-7378 | Refactor to reduce cognitive complexity (currently 29, ta...    | S3       | scripts/check-content-accuracy.js                                                | 0         |
-| DEBT-7379 | Create a userIdHash → uid lookup collection for better pe...    | S3       | functions/src/admin.ts                                                           | 0         |
-| DEBT-7380 | Consider pre-computing cohort retention in a daily job          | S3       | functions/src/admin.ts                                                           | 0         |
-| DEBT-7381 | AI Model Comparison                                             | S3       | package.json                                                                     | 0         |
-| DEBT-7382 | Add limit(50) to queries in lib/db/meetings.ts and              | S3       | lib/db/meetings.ts                                                               | 0         |
-| DEBT-7383 | Unsafe Non-Null Assertions                                      | S3       | lib/firebase.ts                                                                  | 0         |
-| DEBT-7384 | Client-Side Security Theater                                    | S3       | lib/security/firestore-validation.ts                                             | 0         |
-| DEBT-7386 | No Server-Side Rate Limiting                                    | S3       | lib/utils/rate-limiter.ts                                                        | 0         |
-| DEBT-7387 | Inefficient Equality Checking                                   | S3       | auth-provider.tsx                                                                | 0         |
-| DEBT-7388 | Massive Context Provider (God Object)                           | S3       | auth-provider.tsx                                                                | 0         |
-| DEBT-7389 | Large God Component                                             | S3       | components/notebook/book-cover.tsx                                               | 0         |
-| DEBT-7390 | Refactor #5: Split AuthProvider (Optional - Breaking Change)    | S3       | components/providers/auth-provider.tsx                                           | 0         |
-| DEBT-7391 | `CleanDaysCalculator.tsx` (Pure Logic)                          | S3       | components/recovery/clean-days-calculator.tsx                                    | 0         |
-| DEBT-7392 | `BookAnimation.tsx` (Animation Logic)                           | S3       | components/notebook/book-animation.tsx                                           | 0         |
-| DEBT-7393 | `BookAuthGuard.tsx` (Auth Logic)                                | S3       | components/notebook/book-auth-guard.tsx                                          | 0         |
-| DEBT-7394 | `BookCover.tsx` (Simplified Composition)                        | S3       | components/notebook/book-cover.tsx                                               | 0         |
-| DEBT-7395 | Define `Result<T>` Type                                         | S3       | lib/types/result.ts                                                              | 0         |
-| DEBT-7396 | Standardize Service Methods                                     | S3       | lib/firestore-service.ts                                                         | 0         |
-| DEBT-7397 | Update Component Usage                                          | S3       | components/pages/today-page.tsx                                                  | 0         |
-| DEBT-7398 | Error Handling Strategy Document                                | S3       | docs/ERROR_HANDLING.md                                                           | 0         |
-| DEBT-7399 | Update all components to use adapter                            | S3       | docs/ARCHITECTURE.md                                                             | 0         |
-| DEBT-7405 | CQ-6: Unused Dependencies 🟢 MEDIUM                             | S3       | package.json                                                                     | 0         |
-| DEBT-7408 | CQ-10: Excessive Font Loading ⚪ LOW                            | S3       | app/layout.tsx                                                                   | 0         |
-| DEBT-7413 | B-5: Anonymous Session Edge Case 🟢 MEDIUM                      | S3       | components/providers/auth-provider.tsx                                           | 0         |
-| DEBT-7415 | P-4: localStorage Sync on Every Keystroke 🟢 MEDIUM             | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7417 | S-3: Exposed Firebase Config 🟢 MEDIUM                          | S3       | lib/firebase.ts                                                                  | 0         |
-| DEBT-7419 | A-1: Missing ARIA Labels 🟢 MEDIUM                              | S3       | tab-navigation.tsx                                                               | 0         |
-| DEBT-7420 | Refactor lib/firebase.ts exports                                | S3       | lib/firebase.ts                                                                  | 0         |
-| DEBT-7421 | Risk Factor B: Node.js 24 Runtime in Cloud Functions            | S3       | functions/package.json                                                           | 0         |
-| DEBT-7422 | Prefix with \_index                                             | S3       | tab-navigation.tsx                                                               | 0         |
-| DEBT-7423 | Remove unused import                                            | S3       | firestore-adapter.ts                                                             | 0         |
-| DEBT-7424 | Remove or export if used elsewhere                              | S3       | lib/db/users.ts                                                                  | 0         |
-| DEBT-7425 | Use or remove                                                   | S3       | scripts/seed-meetings.ts                                                         | 0         |
-| DEBT-7426 | Use FormEvent<HTMLFormElement>                                  | S3       | sign-in-modal.tsx                                                                | 0         |
-| DEBT-7427 | Use unknown instead                                             | S3       | firebase-types.ts                                                                | 0         |
-| DEBT-7428 | Add to deps or use useCallback                                  | S3       | today-page.tsx                                                                   | 0         |
-| DEBT-7429 | Category 1: Unused Variables (10 warnings)                      | S3       | tab-navigation.tsx                                                               | 0         |
-| DEBT-7430 | Category 2: Explicit `any` Types (18 warnings)                  | S3       | sign-in-modal.tsx                                                                | 0         |
-| DEBT-7431 | Category 3: React Hooks Dependencies (1 warning)                | S3       | today-page.tsx                                                                   | 0         |
-| DEBT-7434 | Standardize Date Handling (CQ-2)                                | S3       | lib/utils/date-utils.ts                                                          | 0         |
-| DEBT-7435 | Remove @ts-ignore and Add Type Guards (CQ-3)                    | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7436 | Add Input Validation with Zod (CQ-7)                            | S3       | lib/db/users.ts                                                                  | 0         |
-| DEBT-7437 | Add Server-Side Date Validation (S-1)                           | S3       | firestore.rules                                                                  | 0         |
-| DEBT-7438 | Remove Unused Fonts (P-1)                                       | S3       | app/layout.tsx                                                                   | 0         |
-| DEBT-7439 | Fix Onboarding Animation (B-3)                                  | S3       | components/onboarding/onboarding-wizard.tsx                                      | 0         |
-| DEBT-7440 | Environment-Aware Logging (CQ-5)                                | S3       | lib/logger.ts                                                                    | 0         |
-| DEBT-7441 | Add Loading States (CQ-8)                                       | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7442 | Optimize Real-Time Listeners (P-2)                              | S3       | components/providers/auth-provider.tsx                                           | 0         |
-| DEBT-7443 | Implement Code Splitting (P-3)                                  | S3       | components/notebook/book-cover.tsx                                               | 0         |
-| DEBT-7444 | Fix useEffect Dependencies (CQ-1)                               | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
-| DEBT-7445 | Extract Magic Strings (CQ-4)                                    | S3       | lib/constants.ts                                                                 | 0         |
-| DEBT-7446 | Remove Unused Dependencies (CQ-6)                               | S3       | package.json                                                                     | 0         |
-| DEBT-7447 | Reduce Firebase Coupling (CQ-9)                                 | S3       | lib/database/database-interface.ts                                               | 0         |
-| DEBT-7448 | Files Changed: 6                                                | S3       | lib/firebase.ts                                                                  | 0         |
-| DEBT-7449 | Enhanced Validation                                             | S3       | firestore-validation.ts                                                          | 0         |
-| DEBT-7450 | Future Test Coverage                                            | S3       | firebase-guards.ts                                                               | 0         |
-| DEBT-7451 | Add tests for firebase-guards.ts utilities                      | S3       | firebase-guards.ts                                                               | 0         |
-| DEBT-7453 | Simplify `FirestoreService` (Remove Manual DI)                  | S3       | lib/firestore-service.ts                                                         | 0         |
-| DEBT-7454 | Decouple `AuthProvider`                                         | S3       | components/providers/auth-provider.tsx                                           | 0         |
-| DEBT-7455 | Summary of Protections                                          | S3       | document.write                                                                   | 0         |
-| DEBT-7456 | Claude Fix Bundle format - docs/CLAUDE_FIX_BUNDLE.md            | S3       | docs/CLAUDE_FIX_BUNDLE.md                                                        | 0         |
-| DEBT-7518 | Stale // ... existing metadata ... comment — code-generat...    | S3       | app/layout.tsx                                                                   | 66        |
-| DEBT-7519 | \_checkInSteps computed via useMemo but never consumed — w...   | S3       | components/notebook/pages/today-page.tsx                                         | 332       |
-| DEBT-7520 | Missing use client directive in entry-wizard.tsx                | S3       | components/journal/entry-wizard.tsx                                              | 1         |
-| DEBT-7521 | meeting-countdown.tsx is dead code — superseded by Compac...    | S3       | components/widgets/meeting-countdown.tsx                                         | 0         |
-| DEBT-7522 | Three underscore-prefixed dead functions in resources-pag...    | S3       | components/notebook/pages/resources-page.tsx                                     | 596       |
-| DEBT-7523 | Local isSameDay reimplemented — date-fns already imported       | S3       | components/notebook/pages/resources-page.tsx                                     | 78        |
-| DEBT-7524 | Debug console.log in today-page.tsx dev guard — specific ...    | S3       | components/notebook/pages/today-page.tsx                                         | 639       |
-| DEBT-7525 | \_appCheck exported but always undefined in lib/firebase.ts     | S3       | lib/firebase.ts                                                                  | 40        |
-| DEBT-7526 | Two parallel error utilities — merge errors.ts and callab...    | S3       | lib/utils/errors.ts                                                              | 0         |
-| DEBT-7527 | Admin password reset returns distinct No user found — use...    | S3       | functions/src/admin.ts                                                           | 3374      |
-| DEBT-7528 | Missing COEP header — document intentional absence due to...    | S3       | firebase.json                                                                    | 0         |
-| DEBT-7529 | Rate limit document IDs contain raw Firebase UID and IP —...    | S3       | functions/src/firestore-rate-limiter.ts                                          | 39        |
-| DEBT-7530 | Mobile block via user-agent — security theater; needs cla...    | S3       | app/admin/page.tsx                                                               | 36        |
-| DEBT-7531 | searchUsersByNickname prefix query has no input length va...    | S3       | functions/src/admin.ts                                                           | 286       |
-| DEBT-7532 | Hook log file .git/hook-output.log grows unboundedly            | S3       | .husky/pre-commit                                                                | 0         |
-| DEBT-7533 | require_skip_reason() function duplicated verbatim in pre...    | S3       | .husky/pre-commit                                                                | 0         |
-| DEBT-7534 | 96-101 npm scripts with no grouping, no help, no discover...    | S3       | package.json                                                                     | 0         |
-| DEBT-7535 | next dev without --turbopack flag                               | S3       | package.json                                                                     | 0         |
-| DEBT-7536 | 3-step test compilation adds 10-20s overhead — full Vites...    | S3       | package.json                                                                     | 0         |
-| DEBT-7537 | No type-check npm script alias — DEVELOPMENT.md reference...    | S3       | package.json                                                                     | 0         |
-| DEBT-7538 | nul Windows artifact file committed to repo                     | S3       | nul                                                                              | 0         |
-| DEBT-7539 | tsconfig.json incremental: true with noEmit: true — redun...    | S3       | tsconfig.json                                                                    | 0         |
-| DEBT-7540 | No i18n infrastructure — all strings hardcoded in English       | S3       | N/A                                                                              | 0         |
-| DEBT-7541 | Journal lock screen component exists but is never importe...    | S3       | components/journal/lock-screen.tsx                                               | 0         |
-| DEBT-7542 | Swipe navigation has no visual affordance — only hint is ...    | S3       | components/notebook/notebook-shell.tsx                                           | 1132      |
-| DEBT-7547 | Update firebase from 12.8.0 to 12.9.0 (within semver range)     | S3       | package.json                                                                     | 0         |
-| DEBT-7548 | Update tailwindcss + @tailwindcss/postcss from 4.1.18 to ...    | S3       | package.json                                                                     | 0         |
-| DEBT-7549 | Update zod from 4.3.5 to 4.3.6 (patch within semver range)      | S3       | package.json                                                                     | 0         |
-| DEBT-7553 | Update react-day-picker from 9.8.0 to 9.13.2 (minor versi...    | S3       | package.json                                                                     | 0         |
-| DEBT-7558 | Create learning-ecosystem-audit skill (MEDIUM-HIGH priori...    | S3       | .claude/skills/                                                                  | 0         |
-| DEBT-7564 | DRY: consolidate checkErrorHandlingCoverage with hook aud...    | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 183       |
-| DEBT-7565 | KNOWN_HOOKS hardcoded array should be dynamically derived...    | S3       | .claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js   | 30        |
-| DEBT-7566 | DRY: consolidate dual-write check with file-io-safety.js ...    | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js     | 404       |
-| DEBT-7571 | settings.json team config health issue                          | S3       | N/A                                                                              | undefined |
-| DEBT-7575 | settings.json team config health issue                          | S3       | N/A                                                                              | 0         |
-| DEBT-7580 | settings.json team config health issue                          | S3       | N/A                                                                              | undefined |
-| DEBT-7585 | settings.json team config health issue                          | S3       | N/A                                                                              | undefined |
-| DEBT-7590 | settings.json team config health issue                          | S3       | N/A                                                                              | 0         |
-| DEBT-7591 | step_continuity checker false positive on Step/Stage tran...    | S3       | N/A                                                                              | 0         |
-| DEBT-7594 | Consider ajv schema validation for TDMS instead of hand-w...    | S3       | scripts/debt/validate-schema.js                                                  | 0         |
-| DEBT-7595 | Improve template literal cross-boundary pattern detection...    | S3       | eslint-plugin-sonash/rules/no-unbounded-regex.js                                 | 0         |
-| DEBT-7596 | Extend no-math-max-spread to catch filtered/mapped spread...    | S3       | eslint-plugin-sonash/rules/no-math-max-spread.js                                 | 0         |
-| DEBT-2457 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | All 57 files with AI Instructions sections                                       | 0         |
-| DEBT-2459 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...    | S0       | .claude/hooks/auto-save-context.js                                               | 0         |
-| DEBT-2468 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...    | S0       | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                               | 0         |
-| DEBT-7544 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |
+| ID         | Title                                                           | Severity | File                                                                             | Line      |
+| ---------- | --------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------- | --------- |
+| DEBT-2433  | AUDIT_TRACKER.md audit log tables                               | S1       | docs/AUDIT_TRACKER.md                                                            | 0         |
+| DEBT-2434  | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas     | S1       | docs/EXPANSION_EVALUATION_TRACKER.md                                             | 0         |
+| DEBT-2435  | AUDIT_TRACKER.md threshold matrix and version history           | S1       | docs/AUDIT_TRACKER.md                                                            | 0         |
+| DEBT-2464  | generate-pending-alerts.js fragile DEFERRED item extraction     | S1       | scripts/generate-pending-alerts.js                                               | 0         |
+| DEBT-2469  | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused          | S1       | docs/HOOKIFY_STRATEGY.md                                                         | 0         |
+| DEBT-3529  | Critical Findings (Must Fix Immediately)                        | S1       | N/A                                                                              | 0         |
+| DEBT-3543  | CRITICAL (Production Blockers)                                  | S1       | N/A                                                                              | 0         |
+| DEBT-3546  | Anonymous Auth Data Loss                                        | S1       | components/providers/auth-provider.tsx                                           | 171       |
+| DEBT-3578  | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
+| DEBT-3579  | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
+| DEBT-3648  | CRITICAL: Missing Error Boundaries                              | S1       | N/A                                                                              | 0         |
+| DEBT-3655  | CQ-3: Missing Null Checks 🔴 CRITICAL                           | S1       | components/providers/auth-provider.tsx                                           | 129       |
+| DEBT-3692  | §2.2 - Critical                                                 | S1       | N/A                                                                              | 0         |
+| DEBT-3745  | Firestore Security Rules Bypass (daily_logs direct write)       | S1       | N/A                                                                              | 0         |
+| DEBT-3746  | Rate Limiter Fail-Open Vulnerability                            | S1       | N/A                                                                              | 0         |
+| DEBT-3880  | Add `npm audit --audit-level=high` to `.husky/pre-push`         | S1       | N/A                                                                              | 0         |
+| DEBT-6938  | Missing Firestore Rule for security_logs Collection             | S1       | N/A                                                                              | 135       |
+| DEBT-6954  | Firestore security_logs Collection Has No Explicit Rule         | S1       | N/A                                                                              | 228       |
+| DEBT-6996  | No Supply Chain Security (SBOM)                                 | S1       | N/A                                                                              | 399       |
+| DEBT-7010  | Critical Findings (Must Fix Immediately)                        | S1       | N/A                                                                              | 0         |
+| DEBT-7024  | CRITICAL (Production Blockers)                                  | S1       | N/A                                                                              | 0         |
+| DEBT-7059  | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
+| DEBT-7126  | CRITICAL: Missing Error Boundaries                              | S1       | N/A                                                                              | 0         |
+| DEBT-7170  | §2.2 - Critical                                                 | S1       | N/A                                                                              | 0         |
+| DEBT-7223  | Firestore Security Rules Bypass (daily_logs direct write)       | S1       | N/A                                                                              | 0         |
+| DEBT-7224  | Rate Limiter Fail-Open Vulnerability                            | S1       | N/A                                                                              | 0         |
+| DEBT-7357  | Add `npm audit --audit-level=high` to `.husky/pre-push`         | S1       | N/A                                                                              | 0         |
+| DEBT-7377  | Fix Windows EINVAL spawn issue in run-alerts.js causing 3...    | S1       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
+| DEBT-7385  | Anonymous Auth Data Loss                                        | S1       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7402  | CQ-1: useEffect Dependency Array Issues 🔴 CRITICAL             | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7403  | CQ-3: Missing Null Checks 🔴 CRITICAL                           | S1       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7406  | CQ-7: Missing Input Validation 🔴 CRITICAL                      | S1       | lib/db/users.ts                                                                  | 0         |
+| DEBT-7409  | B-1: Race Condition in Auto-Save 🔴 CRITICAL                    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7410  | B-2: Listener Cleanup Memory Leak 🔴 CRITICAL                   | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7414  | P-1: All Fonts Loaded on Initial Page Load 🔴 CRITICAL          | S1       | app/layout.tsx                                                                   | 0         |
+| DEBT-7416  | S-1: Client-Side Date ID Manipulation 🔴 CRITICAL               | S1       | lib/firestore-service.ts                                                         | 0         |
+| DEBT-7452  | Critical (Logic/Security)                                       | S1       | firestore.rules                                                                  | 0         |
+| DEBT-7463  | ARCHITECTURE.md Firestore rules diagram contradicts actua...    | S1       | ARCHITECTURE.md                                                                  | 210       |
+| DEBT-7464  | TodayPage stale referenceDate after midnight — not covere...    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7465  | Support circle contacts are hardcoded demo data; Call/Tex...    | S1       | components/notebook/pages/support-page.tsx                                       | 0         |
+| DEBT-7466  | Onboarding promises data export/deletion that don't exist...    | S1       | components/onboarding/onboarding-wizard.tsx                                      | 419       |
+| DEBT-7467  | Tab navigation keyboard inaccessible — no role=tablist, a...    | S1       | components/notebook/tab-navigation.tsx                                           | 0         |
+| DEBT-7468  | No crisis/SOS emergency button in recovery app — resource...    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7469  | check-pattern-compliance.js god script — 1917 lines, esli...    | S1       | scripts/check-pattern-compliance.js                                              | 0         |
+| DEBT-7470  | Playwright installed but zero E2E tests — no config, no t...    | S1       | playwright.config.ts                                                             | 0         |
+| DEBT-7471  | Deploy workflow has no needs: dependency on CI — can depl...    | S1       | .github/workflows/deploy-firebase.yml                                            | 0         |
+| DEBT-7472  | Session-start hook 7 blocking synchronous subprocess call...    | S1       | .claude/hooks/session-start.js                                                   | 0         |
+| DEBT-7473  | 8 skills exceed 500 lines; 9 audit skills with unclear di...    | S1       | .claude/skills/                                                                  | 0         |
+| DEBT-7545  | HIGH: minimatch ReDoS vulnerability (21 advisories, trans...    | S1       | package-lock.json                                                                | 0         |
+| DEBT-7563  | Command injection risk in generateCommandPatch — sanitize...    | S1       | .claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js               | 50        |
+| DEBT-7592  | 453 pre-existing blocking pattern violations in scripts/d...    | S1       | scripts/debt/                                                                    | 0         |
+| DEBT-7593  | SQLite migration for TDMS pipeline — research + implement...    | S1       | scripts/debt/                                                                    | 0         |
+| DEBT-7602  | Critical Findings (Must Fix Immediately)                        | S1       | N/A                                                                              | 0         |
+| DEBT-7603  | Critical Findings (Must Fix Immediately)                        | S1       | N/A                                                                              | 0         |
+| DEBT-7629  | CRITICAL (Production Blockers)                                  | S1       | N/A                                                                              | 0         |
+| DEBT-7630  | CRITICAL (Production Blockers)                                  | S1       | N/A                                                                              | 0         |
+| DEBT-7634  | Anonymous Auth Data Loss                                        | S1       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7635  | Anonymous Auth Data Loss                                        | S1       | components/providers/auth-provider.tsx                                           | 171       |
+| DEBT-7693  | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
+| DEBT-7694  | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
+| DEBT-7695  | Add E2E tests for critical user flows                           | S1       | N/A                                                                              | 0         |
+| DEBT-7830  | CRITICAL: Missing Error Boundaries                              | S1       | N/A                                                                              | 0         |
+| DEBT-7831  | CRITICAL: Missing Error Boundaries                              | S1       | N/A                                                                              | 0         |
+| DEBT-7840  | CQ-1: useEffect Dependency Array Issues 🔴 CRITICAL             | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7841  | CQ-1: useEffect Dependency Array Issues 🔴 CRITICAL             | S1       | components/notebook/pages/today-page.tsx                                         | 84        |
+| DEBT-7844  | CQ-3: Missing Null Checks 🔴 CRITICAL                           | S1       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7845  | CQ-3: Missing Null Checks 🔴 CRITICAL                           | S1       | components/providers/auth-provider.tsx                                           | 129       |
+| DEBT-7851  | CQ-7: Missing Input Validation 🔴 CRITICAL                      | S1       | lib/db/users.ts                                                                  | 0         |
+| DEBT-7852  | CQ-7: Missing Input Validation 🔴 CRITICAL                      | S1       | lib/db/users.ts                                                                  | 74        |
+| DEBT-7858  | B-1: Race Condition in Auto-Save 🔴 CRITICAL                    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7859  | B-1: Race Condition in Auto-Save 🔴 CRITICAL                    | S1       | components/notebook/pages/today-page.tsx                                         | 86        |
+| DEBT-7860  | B-2: Listener Cleanup Memory Leak 🔴 CRITICAL                   | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7861  | B-2: Listener Cleanup Memory Leak 🔴 CRITICAL                   | S1       | components/notebook/pages/today-page.tsx                                         | 77        |
+| DEBT-7867  | P-1: All Fonts Loaded on Initial Page Load 🔴 CRITICAL          | S1       | app/layout.tsx                                                                   | 0         |
+| DEBT-7868  | P-1: All Fonts Loaded on Initial Page Load 🔴 CRITICAL          | S1       | app/layout.tsx                                                                   | 30        |
+| DEBT-7875  | S-1: Client-Side Date ID Manipulation 🔴 CRITICAL               | S1       | lib/firestore-service.ts                                                         | 0         |
+| DEBT-7876  | S-1: Client-Side Date ID Manipulation 🔴 CRITICAL               | S1       | lib/firestore-service.ts                                                         | 78        |
+| DEBT-7906  | §2.2 - Critical                                                 | S1       | N/A                                                                              | 0         |
+| DEBT-7907  | §2.2 - Critical                                                 | S1       | N/A                                                                              | 0         |
+| DEBT-8012  | Firestore Security Rules Bypass (daily_logs direct write)       | S1       | N/A                                                                              | 0         |
+| DEBT-8013  | Firestore Security Rules Bypass (daily_logs direct write)       | S1       | N/A                                                                              | 0         |
+| DEBT-8014  | Rate Limiter Fail-Open Vulnerability                            | S1       | N/A                                                                              | 0         |
+| DEBT-8015  | Rate Limiter Fail-Open Vulnerability                            | S1       | N/A                                                                              | 0         |
+| DEBT-8167  | Critical (Logic/Security)                                       | S1       | firestore.rules                                                                  | 0         |
+| DEBT-8168  | Critical (Logic/Security)                                       | S1       | firestore.rules                                                                  | 0         |
+| DEBT-8275  | Add `npm audit --audit-level=high` to `.husky/pre-push`         | S1       | N/A                                                                              | 0         |
+| DEBT-8276  | Add `npm audit --audit-level=high` to `.husky/pre-push`         | S1       | N/A                                                                              | 0         |
+| DEBT-8311  | Extract this nested ternary operation into an independent...    | S1       | components/admin/errors-tab.tsx                                                  | 458       |
+| DEBT-8312  | Prefer `childNode.remove()` over `parentNode.removeChild(...    | S1       | lib/utils/error-export.ts                                                        | 322       |
+| DEBT-8379  | Missing Firestore Rule for security_logs Collection             | S1       | N/A                                                                              | 135       |
+| DEBT-8395  | Firestore security_logs Collection Has No Explicit Rule         | S1       | N/A                                                                              | 228       |
+| DEBT-8437  | No Supply Chain Security (SBOM)                                 | S1       | N/A                                                                              | 399       |
+| DEBT-11196 | Fix Windows EINVAL spawn issue in run-alerts.js causing 3...    | S1       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
+| DEBT-11202 | ARCHITECTURE.md Firestore rules diagram contradicts actua...    | S1       | ARCHITECTURE.md                                                                  | 210       |
+| DEBT-11203 | TodayPage stale referenceDate after midnight — not covere...    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-11204 | Support circle contacts are hardcoded demo data; Call/Tex...    | S1       | components/notebook/pages/support-page.tsx                                       | 0         |
+| DEBT-11205 | Onboarding promises data export/deletion that don't exist...    | S1       | components/onboarding/onboarding-wizard.tsx                                      | 419       |
+| DEBT-11206 | Tab navigation keyboard inaccessible — no role=tablist, a...    | S1       | components/notebook/tab-navigation.tsx                                           | 0         |
+| DEBT-11207 | No crisis/SOS emergency button in recovery app — resource...    | S1       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-11208 | check-pattern-compliance.js god script — 1917 lines, esli...    | S1       | scripts/check-pattern-compliance.js                                              | 0         |
+| DEBT-11209 | Playwright installed but zero E2E tests — no config, no t...    | S1       | playwright.config.ts                                                             | 0         |
+| DEBT-11210 | Deploy workflow has no needs: dependency on CI — can depl...    | S1       | .github/workflows/deploy-firebase.yml                                            | 0         |
+| DEBT-11211 | Session-start hook 7 blocking synchronous subprocess call...    | S1       | .claude/hooks/session-start.js                                                   | 0         |
+| DEBT-11212 | 8 skills exceed 500 lines; 9 audit skills with unclear di...    | S1       | .claude/skills/                                                                  | 0         |
+| DEBT-11284 | HIGH: minimatch ReDoS vulnerability (21 advisories, trans...    | S1       | package-lock.json                                                                | 0         |
+| DEBT-11302 | Command injection risk in generateCommandPatch — sanitize...    | S1       | .claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js               | 50        |
+| DEBT-11315 | 453 pre-existing blocking pattern violations in scripts/d...    | S1       | scripts/debt/                                                                    | 0         |
+| DEBT-2132  | Untitled finding                                                | S2       | N/A                                                                              | 0         |
+| DEBT-2180  | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
+| DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | src/components                                                                   | 0         |
+| DEBT-2441  | EXPANSION_EVALUATION_TRACKER.md command reference table         | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                                             | 0         |
+| DEBT-2446  | ai-review.js - Unused AI review prompt applicator               | S2       | scripts/ai-review.js                                                             | 0         |
+| DEBT-2448  | create-canonical-findings.js - Unused canonical findings ...    | S2       | scripts/create-canonical-findings.js                                             | 0         |
+| DEBT-2449  | generate-pending-alerts.js - Unused session-start alert g...    | S2       | scripts/generate-pending-alerts.js                                               | 0         |
+| DEBT-2451  | migrate-existing-findings.js - Unused legacy findings mig...    | S2       | scripts/migrate-existing-findings.js                                             | 0         |
+| DEBT-2453  | regenerate-findings-index.js - Unused canonical findings ...    | S2       | scripts/regenerate-findings-index.js                                             | 0         |
+| DEBT-2456  | update-legacy-lines.js - Unused legacy findings line numb...    | S2       | scripts/update-legacy-lines.js                                                   | 0         |
+| DEBT-2472  | PLAN_MAP.md - 242 lines documentation hierarchy map never...    | S2       | docs/PLAN_MAP.md                                                                 | 0         |
+| DEBT-2473  | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev...    | S2       | docs/MCP_SERVER_AUDIT.md                                                         | 0         |
+| DEBT-2479  | Audit inventory stage files (6 files) - generated but unr...    | S2       | docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md                 | 0         |
+| DEBT-2481  | Plan documents with zero inbound refs - 5 planning files ...    | S2       | docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                                | 0         |
+| DEBT-2548  | Dead Documentation: Code Review Checklist references            | S2       | 140                                                                              | 0         |
+| DEBT-2748  | Duplicate hook validation for Write+Edit+MultiEdit tools        | S2       | unknown                                                                          | 0         |
+| DEBT-2749  | Firebase deployment lacks rollback on partial failure           | S2       | unknown                                                                          | 0         |
+| DEBT-2751  | SonarCloud not enforced in CI gates                             | S2       | ci.yml                                                                           | 0         |
+| DEBT-2752  | Sentry disabled in dev mode by default                          | S2       | sentry.client.ts                                                                 | 0         |
+| DEBT-2753  | Hook performance not tracked - no metrics                       | S2       | unknown                                                                          | 0         |
+| DEBT-2754  | Pre-push duplicates pre-commit pattern checks                   | S2       | pre-push                                                                         | 0         |
+| DEBT-2758  | No focus trap management in modals and dialogs                  | S2       | dialog.tsx                                                                       | 0         |
+| DEBT-2759  | Missing error state illustrations - plain text only             | S2       | unknown                                                                          | 0         |
+| DEBT-2760  | Missing loading skeletons on data-heavy pages                   | S2       | unknown                                                                          | 0         |
+| DEBT-2761  | No optimistic updates for form submissions                      | S2       | unknown                                                                          | 0         |
+| DEBT-2762  | Missing keyboard shortcuts for power users                      | S2       | unknown                                                                          | 0         |
+| DEBT-2763  | Form validation shows errors only on submit                     | S2       | mood-form.tsx                                                                    | 0         |
+| DEBT-2764  | Missing Cloud Functions integration tests                       | S2       | admin.ts                                                                         | 0         |
+| DEBT-2765  | No visual regression testing despite Playwright                 | S2       | unknown                                                                          | 0         |
+| DEBT-2766  | Coverage thresholds not enforced despite c8                     | S2       | package.json                                                                     | 0         |
+| DEBT-2767  | Limited script testing - 5 test files for 60+ scripts           | S2       | unknown                                                                          | 0         |
+| DEBT-2768  | No performance benchmarks for pagination and data loading       | S2       | unknown                                                                          | 0         |
+| DEBT-2769  | Error boundary and Sentry integration not tested                | S2       | unknown                                                                          | 0         |
+| DEBT-2770  | Flaky timing in rate limiter tests using real setTimeout        | S2       | unknown                                                                          | 0         |
+| DEBT-2771  | msw installed but unused for API mocking                        | S2       | package.json                                                                     | 0         |
+| DEBT-2772  | Unknown                                                         | S2       | unknown                                                                          | 0         |
+| DEBT-2777  | Lazy load Leaflet and Recharts with dynamic imports             | S2       | unknown                                                                          | 0         |
+| DEBT-2779  | Unknown                                                         | S2       | unknown                                                                          | 0         |
+| DEBT-2780  | AI_WORKFLOW.md size optimization - 872 lines                    | S2       | unknown                                                                          | 0         |
+| DEBT-2782  | Security guidance consolidation - overlapping docs              | S2       | unknown                                                                          | 0         |
+| DEBT-2784  | Cross-reference navigation overhead                             | S2       | unknown                                                                          | 0         |
+| DEBT-2785  | Pre-commit hook parallelization - 40% faster                    | S2       | pre-commit                                                                       | 0         |
+| DEBT-2786  | CI non-blocking checks should block                             | S2       | ci.yml                                                                           | 0         |
+| DEBT-2787  | Script consolidation - 30+ scripts with inconsistent CLI        | S2       | unknown                                                                          | 0         |
+| DEBT-2788  | Unknown                                                         | S2       | unknown                                                                          | 0         |
+| DEBT-2789  | Error messages don't guide user to fix the problem              | S2       | unknown                                                                          | 0         |
+| DEBT-2790  | Inconsistent terminology - meeting vs session                   | S2       | unknown                                                                          | 0         |
+| DEBT-2791  | Confirmation dialogs lack specific consequences                 | S2       | unknown                                                                          | 0         |
+| DEBT-2792  | Loading text inconsistency                                      | S2       | dashboard-tab.tsx                                                                | 0         |
+| DEBT-2794  | Success feedback messages too brief                             | S2       | dashboard-tab.tsx                                                                | 0         |
+| DEBT-2795  | Unknown                                                         | S2       | unknown                                                                          | 0         |
+| DEBT-2796  | Extract meeting time parsing logic - ~80 lines duplicated       | S2       | unknown                                                                          | 0         |
+| DEBT-2797  | Migrate useAuth consumers to focused hooks - 16 components      | S2       | unknown                                                                          | 0         |
+| DEBT-2798  | Extract common form state logic - ~150 lines duplicate          | S2       | unknown                                                                          | 0         |
+| DEBT-2799  | Create barrel exports for component directories                 | S2       | unknown                                                                          | 0         |
+| DEBT-2800  | Collocate related quote components                              | S2       | daily-quote-card.tsx                                                             | 0         |
+| DEBT-2801  | Standardize export style - 38 default vs 69 named               | S2       | unknown                                                                          | 0         |
+| DEBT-2803  | Consolidate regex pattern linter into ESLint plugin             | S2       | unknown                                                                          | 0         |
+| DEBT-2804  | writeFileSync without atomic write pattern                      | S2       | unknown                                                                          | 0         |
+| DEBT-2805  | writeFileSync without atomic write pattern                      | S2       | archive-doc.js                                                                   | 0         |
+| DEBT-2806  | Unknown                                                         | S2       | unknown                                                                          | 0         |
+| DEBT-2807  | Unknown                                                         | S2       | unknown                                                                          | 0         |
+| DEBT-2808  | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
+| DEBT-2810  | Unknown                                                         | S2       | unknown                                                                          | 0         |
+| DEBT-2814  | Pre-push duplicates pre-commit pattern checks                   | S2       | E0                                                                               | 0         |
+| DEBT-3139  | Security utilities partially tested — secure-caller teste...    | S2       | lib/firebase/account-linking.ts                                                  | 0         |
+| DEBT-3530  | High Severity Findings (Security & Stability)                   | S2       | N/A                                                                              | 0         |
+| DEBT-3549  | OPTIMIZATION (Performance & Complexity)                         | S2       | N/A                                                                              | 0         |
+| DEBT-3558  | Top 3 High-Impact Changes                                       | S2       | N/A                                                                              | 0         |
+| DEBT-3585  | Inconsistent patterns (throw vs return)                         | S2       | N/A                                                                              | 0         |
+| DEBT-3589  | **A3: Error Handling** — 1 week — High — P0                     | S2       | N/A                                                                              | 0         |
+| DEBT-3591  | **A4: Image Optimization** — 3 days — High — P1                 | S2       | N/A                                                                              | 0         |
+| DEBT-3592  | **A1: Context Splitting** — 1 week — Very High — P0             | S2       | N/A                                                                              | 0         |
+| DEBT-3593  | **A2: Component Decomposition** — 2 weeks — High — P1           | S2       | N/A                                                                              | 0         |
+| DEBT-3594  | **A5: Bundle Optimization** — 1 week — High — P1                | S2       | N/A                                                                              | 0         |
+| DEBT-3595  | **Breaking Changes** — Medium — High — Comprehensive test...    | S2       | N/A                                                                              | 0         |
+| DEBT-3596  | **Performance Regression** — Low — High — Benchmark befor...    | S2       | N/A                                                                              | 0         |
+| DEBT-3599  | Weaknesses (Areas for Improvement) ⚠️                           | S2       | N/A                                                                              | 0         |
+| DEBT-3616  | Problem: Inconsistent Patterns                                  | S2       | N/A                                                                              | 0         |
+| DEBT-3626  | Image Optimization                                              | S2       | N/A                                                                              | 0         |
+| DEBT-3630  | Bundle Size Analysis & Optimization                             | S2       | N/A                                                                              | 0         |
+| DEBT-3636  | Optimization Strategies                                         | S2       | N/A                                                                              | 0         |
+| DEBT-3639  | Problem: Inconsistent Abstraction                               | S2       | N/A                                                                              | 0         |
+| DEBT-3649  | Context Proliferation Risk                                      | S2       | auth-provider.tsx                                                                | 0         |
+| DEBT-3654  | CQ-2: Inconsistent Date Handling 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
+| DEBT-3661  | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | N/A                                                                              | 49        |
+| DEBT-3671  | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | N/A                                                                              | 49        |
+| DEBT-3672  | P-3: No Code Splitting 🟡 HIGH                                  | S2       | N/A                                                                              | 0         |
+| DEBT-3676  | S-2: Missing Rate Limiting 🟡 HIGH                              | S2       | N/A                                                                              | 0         |
+| DEBT-3694  | §3.1 - High                                                     | S2       | N/A                                                                              | 0         |
+| DEBT-3695  | S-2 (Missing Rate Limiting)                                     | S2       | N/A                                                                              | 0         |
+| DEBT-3697  | CQ-2 (Inconsistent Date Handling)                               | S2       | N/A                                                                              | 0         |
+| DEBT-3700  | B-2 (Listener Cleanup Memory Leak)                              | S2       | N/A                                                                              | 0         |
+| DEBT-3707  | Finding #1 - High                                               | S2       | N/A                                                                              | 0         |
+| DEBT-3708  | Finding #2 - High                                               | S2       | N/A                                                                              | 0         |
+| DEBT-3711  | §3.3 (Missing Admin Checks)                                     | S2       | N/A                                                                              | 0         |
+| DEBT-3747  | Inconsistent Date Handling / Timezone Issues                    | S2       | N/A                                                                              | 0         |
+| DEBT-3748  | Listener Memory Leaks / Cleanup Issues                          | S2       | N/A                                                                              | 0         |
+| DEBT-3749  | useEffect Dependency Issues (isEditing)                         | S2       | N/A                                                                              | 0         |
+| DEBT-3750  | Missing Pagination for Large Datasets                           | S2       | N/A                                                                              | 0         |
+| DEBT-3751  | Onboarding Overwrites Existing Profiles                         | S2       | N/A                                                                              | 0         |
+| DEBT-3752  | Resources Page Auth Race Condition                              | S2       | N/A                                                                              | 0         |
+| DEBT-3804  | 🏆 TOP 3 HIGH-IMPACT CHANGES                                    | S2       | N/A                                                                              | 0         |
+| DEBT-3806  | AuthProvider Optimization                                       | S2       | N/A                                                                              | 0         |
+| DEBT-3826  | Optimization (Complexity/Performance)                           | S2       | N/A                                                                              | 0         |
+| DEBT-3847  | RISK: Rich Text Editor                                          | S2       | N/A                                                                              | 0         |
+| DEBT-3848  | RISK: Sharing Journal Entries                                   | S2       | N/A                                                                              | 0         |
+| DEBT-6917  | Zero Next.js Error/Loading/NotFound Boundary Pages              | S2       | N/A                                                                              | 8         |
+| DEBT-6918  | lib/ Directory Structure Much Richer Than Plan Documents        | S2       | N/A                                                                              | 20        |
+| DEBT-6920  | Sentry Integration Not Covered Anywhere in Plan                 | S2       | N/A                                                                              | 45        |
+| DEBT-6922  | Component Directory Count Mismatch                              | S2       | N/A                                                                              | 53        |
+| DEBT-6924  | 98 Components Use 'use client' — No Server Components           | S2       | N/A                                                                              | 62        |
+| DEBT-6926  | Zero eslint-disable, Zero @ts-ignore in Source                  | S2       | N/A                                                                              | 70        |
+| DEBT-6927  | 26 TODO Comments in Scripts + 1 in CI Workflows                 | S2       | N/A                                                                              | 78        |
+| DEBT-6929  | Public Assets Need Verification                                 | S2       | N/A                                                                              | 85        |
+| DEBT-6931  | types/ Directory at Root Level                                  | S2       | N/A                                                                              | 97        |
+| DEBT-6933  | 6 Console Statements in Production Components                   | S2       | N/A                                                                              | 104       |
+| DEBT-6935  | Sentry in Cloud Functions — Separate Integration Not In Plan    | S2       | N/A                                                                              | 113       |
+| DEBT-6940  | Cloud Functions File Coverage Incomplete in Plan                | S2       | N/A                                                                              | 147       |
+| DEBT-6942  | Database Abstraction Layer Not in Plan                          | S2       | N/A                                                                              | 158       |
+| DEBT-6944  | Celebrations System — Rich But Not Covered                      | S2       | N/A                                                                              | 169       |
+| DEBT-6946  | Permissions-Policy Header Blocks Features the App Uses (S1)     | S2       | N/A                                                                              | 179       |
+| DEBT-6948  | Static Export Architecture — Plan Should Document Implica...    | S2       | N/A                                                                              | 195       |
+| DEBT-6950  | Tailwind v4 Configuration (CSS-based, not JS)                   | S2       | N/A                                                                              | 207       |
+| DEBT-6952  | 5 Orphaned Hook Files Not Registered in settings.json           | S2       | N/A                                                                              | 216       |
+| DEBT-6956  | Storage Rules Missing File Size and Content Type Restrict...    | S2       | N/A                                                                              | 241       |
+| DEBT-6958  | Cloud Functions Scale Vastly Underestimated                     | S2       | N/A                                                                              | 251       |
+| DEBT-6960  | Scheduled Jobs Coverage Gap                                     | S2       | N/A                                                                              | 269       |
+| DEBT-6962  | Zod Schema Completeness Not Verified                            | S2       | N/A                                                                              | 286       |
+| DEBT-6964  | Root package.json Has NO `engines` Field                        | S2       | N/A                                                                              | 300       |
+| DEBT-6966  | No Environment Variable Validation Script                       | S2       | N/A                                                                              | 308       |
+| DEBT-6968  | Test Framework = Node Built-in `node --test` + c8 Coverage      | S2       | N/A                                                                              | 316       |
+| DEBT-6970  | Playwright Installed But No Tests                               | S2       | N/A                                                                              | 326       |
+| DEBT-6972  | MSW (Mock Service Worker) Configured But Not Validated          | S2       | N/A                                                                              | 332       |
+| DEBT-6974  | ESLint Complexity Enforcement Has Gap                           | S2       | N/A                                                                              | 337       |
+| DEBT-6976  | Markdownlint Has 19 Rules Disabled                              | S2       | N/A                                                                              | 343       |
+| DEBT-6978  | knip Ignores 19 Dependencies                                    | S2       | N/A                                                                              | 348       |
+| DEBT-6980  | Multi-Package Dependency Management                             | S2       | N/A                                                                              | 353       |
+| DEBT-6982  | @dataconnect/generated Uses file: Protocol                      | S2       | N/A                                                                              | 360       |
+| DEBT-6984  | Skill Registry vs Disk Mismatch                                 | S2       | N/A                                                                              | 366       |
+| DEBT-6986  | Agent Count Discrepancy                                         | S2       | N/A                                                                              | 372       |
+| DEBT-6988  | TDMS Has 18 Scripts Not 8                                       | S2       | N/A                                                                              | 377       |
+| DEBT-6990  | TDMS Has Rich Substructure                                      | S2       | N/A                                                                              | 382       |
+| DEBT-6992  | Error Knowledge Base Unmapped                                   | S2       | N/A                                                                              | 387       |
+| DEBT-6994  | No Firestore Indexes Validation                                 | S2       | N/A                                                                              | 393       |
+| DEBT-6999  | Hardcoded reCAPTCHA Site Key Fallback                           | S2       | N/A                                                                              | 126       |
+| DEBT-7001  | Duplicate file content reads across PostToolUse hooks           | S2       | .claude/hooks/firestore-write-block.js                                           | 0         |
+| DEBT-7005  | 30 markdownlint errors across docs/ — broken links, empha...    | S2       | docs/                                                                            | 0         |
+| DEBT-7011  | High Severity Findings (Security & Stability)                   | S2       | N/A                                                                              | 0         |
+| DEBT-7030  | OPTIMIZATION (Performance & Complexity)                         | S2       | N/A                                                                              | 0         |
+| DEBT-7039  | Top 3 High-Impact Changes                                       | S2       | N/A                                                                              | 0         |
+| DEBT-7064  | Inconsistent patterns (throw vs return)                         | S2       | N/A                                                                              | 0         |
+| DEBT-7068  | **A3: Error Handling** — 1 week — High — P0                     | S2       | N/A                                                                              | 0         |
+| DEBT-7070  | **A4: Image Optimization** — 3 days — High — P1                 | S2       | N/A                                                                              | 0         |
+| DEBT-7071  | **A1: Context Splitting** — 1 week — Very High — P0             | S2       | N/A                                                                              | 0         |
+| DEBT-7072  | **A2: Component Decomposition** — 2 weeks — High — P1           | S2       | N/A                                                                              | 0         |
+| DEBT-7073  | **A5: Bundle Optimization** — 1 week — High — P1                | S2       | N/A                                                                              | 0         |
+| DEBT-7074  | **Breaking Changes** — Medium — High — Comprehensive test...    | S2       | N/A                                                                              | 0         |
+| DEBT-7075  | **Performance Regression** — Low — High — Benchmark befor...    | S2       | N/A                                                                              | 0         |
+| DEBT-7078  | Weaknesses (Areas for Improvement) ⚠️                           | S2       | N/A                                                                              | 0         |
+| DEBT-7094  | Problem: Inconsistent Patterns                                  | S2       | N/A                                                                              | 0         |
+| DEBT-7104  | Image Optimization                                              | S2       | N/A                                                                              | 0         |
+| DEBT-7108  | Bundle Size Analysis & Optimization                             | S2       | N/A                                                                              | 0         |
+| DEBT-7114  | Optimization Strategies                                         | S2       | N/A                                                                              | 0         |
+| DEBT-7117  | Problem: Inconsistent Abstraction                               | S2       | N/A                                                                              | 0         |
+| DEBT-7132  | CQ-2: Inconsistent Date Handling 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
+| DEBT-7139  | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
+| DEBT-7149  | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | N/A                                                                              | 0         |
+| DEBT-7150  | P-3: No Code Splitting 🟡 HIGH                                  | S2       | N/A                                                                              | 0         |
+| DEBT-7154  | S-2: Missing Rate Limiting 🟡 HIGH                              | S2       | N/A                                                                              | 0         |
+| DEBT-7172  | §3.1 - High                                                     | S2       | N/A                                                                              | 0         |
+| DEBT-7173  | S-2 (Missing Rate Limiting)                                     | S2       | N/A                                                                              | 0         |
+| DEBT-7175  | CQ-2 (Inconsistent Date Handling)                               | S2       | N/A                                                                              | 0         |
+| DEBT-7178  | B-2 (Listener Cleanup Memory Leak)                              | S2       | N/A                                                                              | 0         |
+| DEBT-7185  | Finding #1 - High                                               | S2       | N/A                                                                              | 0         |
+| DEBT-7186  | Finding #2 - High                                               | S2       | N/A                                                                              | 0         |
+| DEBT-7189  | §3.3 (Missing Admin Checks)                                     | S2       | N/A                                                                              | 0         |
+| DEBT-7225  | Inconsistent Date Handling / Timezone Issues                    | S2       | N/A                                                                              | 0         |
+| DEBT-7226  | Listener Memory Leaks / Cleanup Issues                          | S2       | N/A                                                                              | 0         |
+| DEBT-7227  | useEffect Dependency Issues (isEditing)                         | S2       | N/A                                                                              | 0         |
+| DEBT-7228  | Missing Pagination for Large Datasets                           | S2       | N/A                                                                              | 0         |
+| DEBT-7229  | Onboarding Overwrites Existing Profiles                         | S2       | N/A                                                                              | 0         |
+| DEBT-7230  | Resources Page Auth Race Condition                              | S2       | N/A                                                                              | 0         |
+| DEBT-7282  | 🏆 TOP 3 HIGH-IMPACT CHANGES                                    | S2       | N/A                                                                              | 0         |
+| DEBT-7284  | AuthProvider Optimization                                       | S2       | N/A                                                                              | 0         |
+| DEBT-7304  | Optimization (Complexity/Performance)                           | S2       | N/A                                                                              | 0         |
+| DEBT-7324  | RISK: Rich Text Editor                                          | S2       | N/A                                                                              | 0         |
+| DEBT-7325  | RISK: Sharing Journal Entries                                   | S2       | N/A                                                                              | 0         |
+| DEBT-7376  | Upgrade eslint to 10.x + typescript-eslint to 9.x to reso...    | S2       | package.json                                                                     | 0         |
+| DEBT-7400  | Context Proliferation Risk                                      | S2       | auth-provider.tsx                                                                | 0         |
+| DEBT-7401  | No Offline Support                                              | S2       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7404  | CQ-5: Console Logging in Production 🟡 HIGH                     | S2       | lib/logger.ts                                                                    | 0         |
+| DEBT-7407  | CQ-8: No Loading States for Mutations 🟡 HIGH                   | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7411  | B-3: Onboarding Wizard AnimatePresence Issue 🟡 HIGH            | S2       | components/onboarding/onboarding-wizard.tsx                                      | 0         |
+| DEBT-7412  | B-4: Meeting Time Sort Failure 🟡 HIGH                          | S2       | lib/db/meetings.ts                                                               | 0         |
+| DEBT-7418  | S-4: No XSS Protection on User Input 🟡 HIGH                    | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7432  | Fix Auto-Save Race Condition (B-1)                              | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7433  | Fix Listener Memory Leak (B-2)                                  | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7457  | Untitled                                                        | S2       | N/A                                                                              | 0         |
+| DEBT-7474  | aggregate-audit-findings.js god script — 25+ functions, n...    | S2       | scripts/aggregate-audit-findings.js                                              | 0         |
+| DEBT-7475  | Cloud Functions structure in ARCHITECTURE.md shows non-ex...    | S2       | ARCHITECTURE.md                                                                  | 479       |
+| DEBT-7476  | Test pipeline requires 3 compilation steps — 10-20s overh...    | S2       | package.json                                                                     | 0         |
+| DEBT-7477  | Large Text preference saves to Firestore but is never rea...    | S2       | components/settings/settings-page.tsx                                            | 0         |
+| DEBT-7478  | README test count stale: 89/91 vs actual 293/294                | S2       | README.md                                                                        | 111       |
+| DEBT-7479  | README agent/skill counts wrong: 24/23 vs actual 25/59          | S2       | README.md                                                                        | 117       |
+| DEBT-7480  | README Growth tab marked Planned/feature-flagged but full...    | S2       | README.md                                                                        | 239       |
+| DEBT-7481  | DEVELOPMENT.md lib/ structure shows only 3 entries — miss...    | S2       | DEVELOPMENT.md                                                                   | 169       |
+| DEBT-7482  | Duplicate claude.md is byte-for-byte copy of CLAUDE.md — ...    | S2       | claude.md                                                                        | 0         |
+| DEBT-7483  | DOCUMENTATION*STANDARDS.md references non-existent MULTI*...    | S2       | docs/DOCUMENTATION_STANDARDS.md                                                  | 178       |
+| DEBT-7484  | ROADMAP.md Last Updated uses session number not date — 29...    | S2       | ROADMAP.md                                                                       | 6         |
+| DEBT-7485  | framer-motion imported directly in 36 non-lazy client com...    | S2       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7486  | wood-table.jpg LCP image not preloaded — browser can't pr...    | S2       | app/layout.tsx                                                                   | 0         |
+| DEBT-7487  | 3 PNG images 2.0-2.8 MB served uncompressed — WebP conver...    | S2       | public/images/                                                                   | 0         |
+| DEBT-7488  | MoodSparkline fires separate 30-doc Firestore read on eve...    | S2       | components/notebook/visualizations/mood-sparkline.tsx                            | 16        |
+| DEBT-7489  | Preview deploy channel commented out — no PR-level stagin...    | S2       | .github/workflows/deploy-firebase.yml                                            | 0         |
+| DEBT-7490  | 181 ESLint warning baseline — warning noise masks real is...    | S2       | N/A                                                                              | 0         |
+| DEBT-7491  | PostToolUse hooks fire on every Read/Write/Edit/Bash — 18...    | S2       | .claude/settings.json                                                            | 0         |
+| DEBT-7492  | Dev server uses webpack by default — no Turbopack flag          | S2       | package.json                                                                     | 0         |
+| DEBT-7493  | AI_WORKFLOW.md 874 lines mandated reading every session —...    | S2       | AI_WORKFLOW.md                                                                   | 0         |
+| DEBT-7494  | .claude/state/ and .claude/tmp/ unbounded growth — 76KB +...    | S2       | .claude/state/                                                                   | 0         |
+| DEBT-7495  | settings.local.json 250+ permission entries — unreadable ...    | S2       | .claude/settings.local.json                                                      | 0         |
+| DEBT-7496  | getFunctions() + httpsCallable pattern repeated 28 times ...    | S2       | components/admin/admin-crud-table.tsx                                            | 0         |
+| DEBT-7497  | links-tab.tsx and prayers-tab.tsx ~90% code duplication         | S2       | components/admin/links-tab.tsx                                                   | 0         |
+| DEBT-7498  | window.confirm() used for 10 destructive actions — non-st...    | S2       | N/A                                                                              | 0         |
+| DEBT-7499  | Sign-in modal lacks role=dialog, aria-modal, focus trap —...    | S2       | components/auth/sign-in-modal.tsx                                                | 0         |
+| DEBT-7500  | No data export or account deletion despite onboarding pro...    | S2       | components/settings/settings-page.tsx                                            | 0         |
+| DEBT-7501  | No noscript fallback — JavaScript-disabled users see blan...    | S2       | app/layout.tsx                                                                   | 0         |
+| DEBT-7502  | Only 7-day mood sparkline — no 30/90-day history visualiz...    | S2       | components/notebook/visualizations/mood-sparkline.tsx                            | 0         |
+| DEBT-7503  | Fixed notebook width 340px/800px breaks at 428-767px view...    | S2       | components/notebook/notebook-shell.tsx                                           | 200       |
+| DEBT-7504  | Tap to set clean date has cursor-pointer but no onClick h...    | S2       | components/notebook/pages/today-page.tsx                                         | 877       |
+| DEBT-7505  | Share meeting button toasts success without calling clipb...    | S2       | components/notebook/pages/resources-page.tsx                                     | 497       |
+| DEBT-7506  | No Forgot password flow — email users have no recovery path     | S2       | components/auth/sign-in-modal.tsx                                                | 0         |
+| DEBT-7507  | WCAG 2.1 AA contrast unverified — amber-on-amber may fail...    | S2       | N/A                                                                              | 0         |
+| DEBT-7508  | No skip-to-content link — keyboard users must tab through...    | S2       | app/layout.tsx                                                                   | 0         |
+| DEBT-7509  | Step 4 Inventory and Step 8 List buttons are motion.butto...    | S2       | components/growth/growth-page.tsx                                                | 88        |
+| DEBT-7510  | History tab hard-limited to 7 days — older entries invisible    | S2       | components/notebook/pages/history-page.tsx                                       | 131       |
+| DEBT-7511  | gsd-planner.md and gsd-debugger.md ~125K tokens per 4-age...    | S2       | .claude/agents/global/gsd-planner.md                                             | 0         |
+| DEBT-7512  | security-engineer.md contains irrelevant Terraform/HCL ex...    | S2       | .claude/agents/security-engineer.md                                              | 0         |
+| DEBT-7513  | VALIDATION_FAILURE severity mapped to INFO — attack probi...    | S2       | functions/src/security-logger.ts                                                 | 371       |
+| DEBT-7514  | NotebookShell SVG data URL recomputed every render              | S2       | components/notebook/notebook-shell.tsx                                           | 0         |
+| DEBT-7515  | Onboarding progress dots are div elements with no accessi...    | S2       | components/onboarding/onboarding-wizard.tsx                                      | 187       |
+| DEBT-7516  | No CHANGELOG, no versioning strategy, no release tagging        | S2       | package.json                                                                     | 0         |
+| DEBT-7517  | 356-line FORM_SECTIONS config embedded in Step1WorksheetC...    | S2       | components/growth/Step1WorksheetCard.tsx                                         | 124       |
+| DEBT-7543  | S5852 regex complexity pre-push automation — check ALL re...    | S2       | scripts/check-pattern-compliance.js                                              | 0         |
+| DEBT-7546  | Update react + react-dom from 19.2.3 to 19.2.4 (pinned ex...    | S2       | package.json                                                                     | 0         |
+| DEBT-7550  | Upgrade lucide-react from 0.454.0 to latest (120+ version...    | S2       | package.json                                                                     | 0         |
+| DEBT-7551  | Upgrade react-resizable-panels from 2.x to 4.x (2 major v...    | S2       | package.json                                                                     | 0         |
+| DEBT-7552  | Upgrade recharts from 2.x to 3.x (1 major version behind)       | S2       | package.json                                                                     | 0         |
+| DEBT-7554  | Evaluate ESLint 10 upgrade (9.39.3 -> 10.0.2)                   | S2       | package.json                                                                     | 0         |
+| DEBT-7556  | Create tdms-ecosystem-audit skill (HIGH priority gap)           | S2       | .claude/skills/                                                                  | 0         |
+| DEBT-7557  | Create precommit-ecosystem-audit skill (HIGH priority gap)      | S2       | .claude/skills/                                                                  | 0         |
+| DEBT-7559  | Replace regex-based isInsideTryCatch with AST parser (acorn)    | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js    | 77        |
+| DEBT-7560  | Replace regex-based extractStateFileRefs with AST parser ...    | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js        | 240       |
+| DEBT-7561  | Replace regex-based isInsideTryCatch with AST parser (babel)    | S2       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 119       |
+| DEBT-7562  | Replace regex-based isInsideTryCatch with AST parser            | S2       | .claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js | 119       |
+| DEBT-7567  | safeReadFile silently swallows errors without context           | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js    | 35        |
+| DEBT-7568  | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | undefined |
+| DEBT-7569  | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | undefined |
+| DEBT-7570  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | undefined |
+| DEBT-7572  | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | 0         |
+| DEBT-7573  | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | 0         |
+| DEBT-7574  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | 0         |
+| DEBT-7576  | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | undefined |
+| DEBT-7577  | Add JSONL schema validation to intake scripts                   | S2       | scripts/debt/intake-audit.js                                                     | 1         |
+| DEBT-7578  | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | undefined |
+| DEBT-7579  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | undefined |
+| DEBT-7581  | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | undefined |
+| DEBT-7582  | Auto-increment review numbers from JSONL max to prevent c...    | S2       | scripts/reviews-sync.js                                                          | 1         |
+| DEBT-7583  | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | undefined |
+| DEBT-7584  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | undefined |
+| DEBT-7586  | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | 0         |
+| DEBT-7588  | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | 0         |
+| DEBT-7589  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | 0         |
+| DEBT-7604  | High Severity Findings (Security & Stability)                   | S2       | N/A                                                                              | 0         |
+| DEBT-7605  | High Severity Findings (Security & Stability)                   | S2       | N/A                                                                              | 0         |
+| DEBT-7638  | OPTIMIZATION (Performance & Complexity)                         | S2       | N/A                                                                              | 0         |
+| DEBT-7639  | OPTIMIZATION (Performance & Complexity)                         | S2       | N/A                                                                              | 0         |
+| DEBT-7653  | Top 3 High-Impact Changes                                       | S2       | N/A                                                                              | 0         |
+| DEBT-7654  | Top 3 High-Impact Changes                                       | S2       | N/A                                                                              | 0         |
+| DEBT-7705  | Inconsistent patterns (throw vs return)                         | S2       | N/A                                                                              | 0         |
+| DEBT-7706  | Inconsistent patterns (throw vs return)                         | S2       | N/A                                                                              | 0         |
+| DEBT-7713  | **A3: Error Handling** — 1 week — High — P0                     | S2       | N/A                                                                              | 0         |
+| DEBT-7714  | **A3: Error Handling** — 1 week — High — P0                     | S2       | N/A                                                                              | 0         |
+| DEBT-7717  | **A4: Image Optimization** — 3 days — High — P1                 | S2       | N/A                                                                              | 0         |
+| DEBT-7718  | **A4: Image Optimization** — 3 days — High — P1                 | S2       | N/A                                                                              | 0         |
+| DEBT-7719  | **A1: Context Splitting** — 1 week — Very High — P0             | S2       | N/A                                                                              | 0         |
+| DEBT-7720  | **A1: Context Splitting** — 1 week — Very High — P0             | S2       | N/A                                                                              | 0         |
+| DEBT-7721  | **A2: Component Decomposition** — 2 weeks — High — P1           | S2       | N/A                                                                              | 0         |
+| DEBT-7722  | **A2: Component Decomposition** — 2 weeks — High — P1           | S2       | N/A                                                                              | 0         |
+| DEBT-7723  | **A5: Bundle Optimization** — 1 week — High — P1                | S2       | N/A                                                                              | 0         |
+| DEBT-7724  | **A5: Bundle Optimization** — 1 week — High — P1                | S2       | N/A                                                                              | 0         |
+| DEBT-7725  | **Breaking Changes** — Medium — High — Comprehensive test...    | S2       | N/A                                                                              | 0         |
+| DEBT-7726  | **Breaking Changes** — Medium — High — Comprehensive test...    | S2       | N/A                                                                              | 0         |
+| DEBT-7727  | **Performance Regression** — Low — High — Benchmark befor...    | S2       | N/A                                                                              | 0         |
+| DEBT-7728  | **Performance Regression** — Low — High — Benchmark befor...    | S2       | N/A                                                                              | 0         |
+| DEBT-7733  | Weaknesses (Areas for Improvement) ⚠️                           | S2       | N/A                                                                              | 0         |
+| DEBT-7734  | Weaknesses (Areas for Improvement) ⚠️                           | S2       | N/A                                                                              | 0         |
+| DEBT-7766  | Problem: Inconsistent Patterns                                  | S2       | N/A                                                                              | 0         |
+| DEBT-7767  | Problem: Inconsistent Patterns                                  | S2       | N/A                                                                              | 0         |
+| DEBT-7786  | Image Optimization                                              | S2       | N/A                                                                              | 0         |
+| DEBT-7787  | Image Optimization                                              | S2       | N/A                                                                              | 0         |
+| DEBT-7794  | Bundle Size Analysis & Optimization                             | S2       | N/A                                                                              | 0         |
+| DEBT-7795  | Bundle Size Analysis & Optimization                             | S2       | N/A                                                                              | 0         |
+| DEBT-7806  | Optimization Strategies                                         | S2       | N/A                                                                              | 0         |
+| DEBT-7807  | Optimization Strategies                                         | S2       | N/A                                                                              | 0         |
+| DEBT-7812  | Problem: Inconsistent Abstraction                               | S2       | N/A                                                                              | 0         |
+| DEBT-7813  | Problem: Inconsistent Abstraction                               | S2       | N/A                                                                              | 0         |
+| DEBT-7832  | Context Proliferation Risk                                      | S2       | auth-provider.tsx                                                                | 0         |
+| DEBT-7833  | Context Proliferation Risk                                      | S2       | auth-provider.tsx                                                                | 0         |
+| DEBT-7834  | No Offline Support                                              | S2       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7835  | No Offline Support                                              | S2       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7842  | CQ-2: Inconsistent Date Handling 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
+| DEBT-7843  | CQ-2: Inconsistent Date Handling 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
+| DEBT-7848  | CQ-5: Console Logging in Production 🟡 HIGH                     | S2       | lib/logger.ts                                                                    | 0         |
+| DEBT-7853  | CQ-8: No Loading States for Mutations 🟡 HIGH                   | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7854  | CQ-9: Tight Coupling to Firebase 🟡 HIGH                        | S2       | N/A                                                                              | 0         |
+| DEBT-7862  | B-3: Onboarding Wizard AnimatePresence Issue 🟡 HIGH            | S2       | components/onboarding/onboarding-wizard.tsx                                      | 0         |
+| DEBT-7863  | B-4: Meeting Time Sort Failure 🟡 HIGH                          | S2       | lib/db/meetings.ts                                                               | 0         |
+| DEBT-7869  | P-2: Real-time Listeners Not Optimized 🟡 HIGH                  | S2       | N/A                                                                              | 0         |
+| DEBT-7870  | P-3: No Code Splitting 🟡 HIGH                                  | S2       | N/A                                                                              | 0         |
+| DEBT-7871  | P-3: No Code Splitting 🟡 HIGH                                  | S2       | N/A                                                                              | 0         |
+| DEBT-7877  | S-2: Missing Rate Limiting 🟡 HIGH                              | S2       | N/A                                                                              | 0         |
+| DEBT-7878  | S-2: Missing Rate Limiting 🟡 HIGH                              | S2       | N/A                                                                              | 0         |
+| DEBT-7880  | S-4: No XSS Protection on User Input 🟡 HIGH                    | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7910  | §3.1 - High                                                     | S2       | N/A                                                                              | 0         |
+| DEBT-7911  | §3.1 - High                                                     | S2       | N/A                                                                              | 0         |
+| DEBT-7912  | S-2 (Missing Rate Limiting)                                     | S2       | N/A                                                                              | 0         |
+| DEBT-7913  | S-2 (Missing Rate Limiting)                                     | S2       | N/A                                                                              | 0         |
+| DEBT-7916  | CQ-2 (Inconsistent Date Handling)                               | S2       | N/A                                                                              | 0         |
+| DEBT-7917  | CQ-2 (Inconsistent Date Handling)                               | S2       | N/A                                                                              | 0         |
+| DEBT-7922  | B-2 (Listener Cleanup Memory Leak)                              | S2       | N/A                                                                              | 0         |
+| DEBT-7923  | B-2 (Listener Cleanup Memory Leak)                              | S2       | N/A                                                                              | 0         |
+| DEBT-7936  | Finding #1 - High                                               | S2       | N/A                                                                              | 0         |
+| DEBT-7937  | Finding #2 - High                                               | S2       | N/A                                                                              | 0         |
+| DEBT-7938  | Finding #1 - High                                               | S2       | N/A                                                                              | 0         |
+| DEBT-7939  | Finding #2 - High                                               | S2       | N/A                                                                              | 0         |
+| DEBT-7944  | §3.3 (Missing Admin Checks)                                     | S2       | N/A                                                                              | 0         |
+| DEBT-7945  | §3.3 (Missing Admin Checks)                                     | S2       | N/A                                                                              | 0         |
+| DEBT-8016  | Inconsistent Date Handling / Timezone Issues                    | S2       | N/A                                                                              | 0         |
+| DEBT-8017  | Inconsistent Date Handling / Timezone Issues                    | S2       | N/A                                                                              | 0         |
+| DEBT-8018  | Listener Memory Leaks / Cleanup Issues                          | S2       | N/A                                                                              | 0         |
+| DEBT-8019  | Listener Memory Leaks / Cleanup Issues                          | S2       | N/A                                                                              | 0         |
+| DEBT-8020  | useEffect Dependency Issues (isEditing)                         | S2       | N/A                                                                              | 0         |
+| DEBT-8021  | useEffect Dependency Issues (isEditing)                         | S2       | N/A                                                                              | 0         |
+| DEBT-8022  | Missing Pagination for Large Datasets                           | S2       | N/A                                                                              | 0         |
+| DEBT-8023  | Missing Pagination for Large Datasets                           | S2       | N/A                                                                              | 0         |
+| DEBT-8024  | Onboarding Overwrites Existing Profiles                         | S2       | N/A                                                                              | 0         |
+| DEBT-8025  | Onboarding Overwrites Existing Profiles                         | S2       | N/A                                                                              | 0         |
+| DEBT-8026  | Resources Page Auth Race Condition                              | S2       | N/A                                                                              | 0         |
+| DEBT-8027  | Resources Page Auth Race Condition                              | S2       | N/A                                                                              | 0         |
+| DEBT-8079  | Fix Auto-Save Race Condition (B-1)                              | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8080  | Fix Auto-Save Race Condition (B-1)                              | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8081  | Fix Listener Memory Leak (B-2)                                  | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8082  | Fix Listener Memory Leak (B-2)                                  | S2       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8125  | 🏆 TOP 3 HIGH-IMPACT CHANGES                                    | S2       | N/A                                                                              | 0         |
+| DEBT-8126  | 🏆 TOP 3 HIGH-IMPACT CHANGES                                    | S2       | N/A                                                                              | 0         |
+| DEBT-8129  | AuthProvider Optimization                                       | S2       | N/A                                                                              | 0         |
+| DEBT-8130  | AuthProvider Optimization                                       | S2       | N/A                                                                              | 0         |
+| DEBT-8169  | Optimization (Complexity/Performance)                           | S2       | N/A                                                                              | 0         |
+| DEBT-8170  | Optimization (Complexity/Performance)                           | S2       | N/A                                                                              | 0         |
+| DEBT-8209  | RISK: Rich Text Editor                                          | S2       | N/A                                                                              | 0         |
+| DEBT-8210  | RISK: Rich Text Editor                                          | S2       | N/A                                                                              | 0         |
+| DEBT-8211  | RISK: Sharing Journal Entries                                   | S2       | N/A                                                                              | 0         |
+| DEBT-8212  | RISK: Sharing Journal Entries                                   | S2       | N/A                                                                              | 0         |
+| DEBT-8357  | Zero Next.js Error/Loading/NotFound Boundary Pages              | S2       | N/A                                                                              | 8         |
+| DEBT-8358  | lib/ Directory Structure Much Richer Than Plan Documents        | S2       | N/A                                                                              | 20        |
+| DEBT-8360  | Sentry Integration Not Covered Anywhere in Plan                 | S2       | N/A                                                                              | 45        |
+| DEBT-8362  | Component Directory Count Mismatch                              | S2       | N/A                                                                              | 53        |
+| DEBT-8364  | 98 Components Use 'use client' — No Server Components           | S2       | N/A                                                                              | 62        |
+| DEBT-8366  | Zero eslint-disable, Zero @ts-ignore in Source                  | S2       | N/A                                                                              | 70        |
+| DEBT-8367  | 26 TODO Comments in Scripts + 1 in CI Workflows                 | S2       | N/A                                                                              | 78        |
+| DEBT-8369  | Public Assets Need Verification                                 | S2       | N/A                                                                              | 85        |
+| DEBT-8371  | types/ Directory at Root Level                                  | S2       | N/A                                                                              | 97        |
+| DEBT-8373  | 6 Console Statements in Production Components                   | S2       | N/A                                                                              | 104       |
+| DEBT-8375  | Sentry in Cloud Functions — Separate Integration Not In Plan    | S2       | N/A                                                                              | 113       |
+| DEBT-8377  | Hardcoded reCAPTCHA Site Key Fallback                           | S2       | N/A                                                                              | 126       |
+| DEBT-8381  | Cloud Functions File Coverage Incomplete in Plan                | S2       | N/A                                                                              | 147       |
+| DEBT-8383  | Database Abstraction Layer Not in Plan                          | S2       | N/A                                                                              | 158       |
+| DEBT-8385  | Celebrations System — Rich But Not Covered                      | S2       | N/A                                                                              | 169       |
+| DEBT-8387  | Permissions-Policy Header Blocks Features the App Uses (S1)     | S2       | N/A                                                                              | 179       |
+| DEBT-8389  | Static Export Architecture — Plan Should Document Implica...    | S2       | N/A                                                                              | 195       |
+| DEBT-8391  | Tailwind v4 Configuration (CSS-based, not JS)                   | S2       | N/A                                                                              | 207       |
+| DEBT-8393  | 5 Orphaned Hook Files Not Registered in settings.json           | S2       | N/A                                                                              | 216       |
+| DEBT-8397  | Storage Rules Missing File Size and Content Type Restrict...    | S2       | N/A                                                                              | 241       |
+| DEBT-8399  | Cloud Functions Scale Vastly Underestimated                     | S2       | N/A                                                                              | 251       |
+| DEBT-8401  | Scheduled Jobs Coverage Gap                                     | S2       | N/A                                                                              | 269       |
+| DEBT-8403  | Zod Schema Completeness Not Verified                            | S2       | N/A                                                                              | 286       |
+| DEBT-8405  | Root package.json Has NO `engines` Field                        | S2       | N/A                                                                              | 300       |
+| DEBT-8407  | No Environment Variable Validation Script                       | S2       | N/A                                                                              | 308       |
+| DEBT-8409  | Test Framework = Node Built-in `node --test` + c8 Coverage      | S2       | N/A                                                                              | 316       |
+| DEBT-8411  | Playwright Installed But No Tests                               | S2       | N/A                                                                              | 326       |
+| DEBT-8413  | MSW (Mock Service Worker) Configured But Not Validated          | S2       | N/A                                                                              | 332       |
+| DEBT-8415  | ESLint Complexity Enforcement Has Gap                           | S2       | N/A                                                                              | 337       |
+| DEBT-8417  | Markdownlint Has 19 Rules Disabled                              | S2       | N/A                                                                              | 343       |
+| DEBT-8419  | knip Ignores 19 Dependencies                                    | S2       | N/A                                                                              | 348       |
+| DEBT-8421  | Multi-Package Dependency Management                             | S2       | N/A                                                                              | 353       |
+| DEBT-8423  | @dataconnect/generated Uses file: Protocol                      | S2       | N/A                                                                              | 360       |
+| DEBT-8425  | Skill Registry vs Disk Mismatch                                 | S2       | N/A                                                                              | 366       |
+| DEBT-8427  | Agent Count Discrepancy                                         | S2       | N/A                                                                              | 372       |
+| DEBT-8429  | TDMS Has 18 Scripts Not 8                                       | S2       | N/A                                                                              | 377       |
+| DEBT-8431  | TDMS Has Rich Substructure                                      | S2       | N/A                                                                              | 382       |
+| DEBT-8433  | Error Knowledge Base Unmapped                                   | S2       | N/A                                                                              | 387       |
+| DEBT-8435  | No Firestore Indexes Validation                                 | S2       | N/A                                                                              | 393       |
+| DEBT-8439  | Untitled                                                        | S2       | N/A                                                                              | 0         |
+| DEBT-10568 | Untitled finding                                                | S2       | N/A                                                                              | 0         |
+| DEBT-10616 | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
+| DEBT-10622 | Missing ARIA labels on critical navigation tabs                 | S2       | src/components                                                                   | 0         |
+| DEBT-10644 | Duplicate file content reads across PostToolUse hooks           | S2       | .claude/hooks/firestore-write-block.js                                           | 0         |
+| DEBT-10932 | Dead Documentation: Code Review Checklist references            | S2       | 140                                                                              | 0         |
+| DEBT-10934 | Duplicate hook validation for Write+Edit+MultiEdit tools        | S2       | unknown                                                                          | 0         |
+| DEBT-10935 | Firebase deployment lacks rollback on partial failure           | S2       | unknown                                                                          | 0         |
+| DEBT-10936 | SonarCloud not enforced in CI gates                             | S2       | ci.yml                                                                           | 0         |
+| DEBT-10937 | Sentry disabled in dev mode by default                          | S2       | sentry.client.ts                                                                 | 0         |
+| DEBT-10938 | Hook performance not tracked - no metrics                       | S2       | unknown                                                                          | 0         |
+| DEBT-10939 | Pre-push duplicates pre-commit pattern checks                   | S2       | pre-push                                                                         | 0         |
+| DEBT-10940 | No focus trap management in modals and dialogs                  | S2       | dialog.tsx                                                                       | 0         |
+| DEBT-10941 | Missing error state illustrations - plain text only             | S2       | unknown                                                                          | 0         |
+| DEBT-10942 | Missing loading skeletons on data-heavy pages                   | S2       | unknown                                                                          | 0         |
+| DEBT-10943 | No optimistic updates for form submissions                      | S2       | unknown                                                                          | 0         |
+| DEBT-10944 | Missing keyboard shortcuts for power users                      | S2       | unknown                                                                          | 0         |
+| DEBT-10945 | Form validation shows errors only on submit                     | S2       | mood-form.tsx                                                                    | 0         |
+| DEBT-10946 | Missing Cloud Functions integration tests                       | S2       | admin.ts                                                                         | 0         |
+| DEBT-10947 | No visual regression testing despite Playwright                 | S2       | unknown                                                                          | 0         |
+| DEBT-10948 | Coverage thresholds not enforced despite c8                     | S2       | package.json                                                                     | 0         |
+| DEBT-10949 | Limited script testing - 5 test files for 60+ scripts           | S2       | unknown                                                                          | 0         |
+| DEBT-10950 | No performance benchmarks for pagination and data loading       | S2       | unknown                                                                          | 0         |
+| DEBT-10951 | Error boundary and Sentry integration not tested                | S2       | unknown                                                                          | 0         |
+| DEBT-10952 | Flaky timing in rate limiter tests using real setTimeout        | S2       | unknown                                                                          | 0         |
+| DEBT-10953 | msw installed but unused for API mocking                        | S2       | package.json                                                                     | 0         |
+| DEBT-10954 | Unknown                                                         | S2       | unknown                                                                          | 0         |
+| DEBT-10955 | Lazy load Leaflet and Recharts with dynamic imports             | S2       | unknown                                                                          | 0         |
+| DEBT-10956 | AI_WORKFLOW.md size optimization - 872 lines                    | S2       | unknown                                                                          | 0         |
+| DEBT-10957 | Security guidance consolidation - overlapping docs              | S2       | unknown                                                                          | 0         |
+| DEBT-10958 | Cross-reference navigation overhead                             | S2       | unknown                                                                          | 0         |
+| DEBT-10959 | Pre-commit hook parallelization - 40% faster                    | S2       | pre-commit                                                                       | 0         |
+| DEBT-10960 | CI non-blocking checks should block                             | S2       | ci.yml                                                                           | 0         |
+| DEBT-10961 | Script consolidation - 30+ scripts with inconsistent CLI        | S2       | unknown                                                                          | 0         |
+| DEBT-10962 | Error messages don't guide user to fix the problem              | S2       | unknown                                                                          | 0         |
+| DEBT-10963 | Inconsistent terminology - meeting vs session                   | S2       | unknown                                                                          | 0         |
+| DEBT-10964 | Confirmation dialogs lack specific consequences                 | S2       | unknown                                                                          | 0         |
+| DEBT-10965 | Loading text inconsistency                                      | S2       | dashboard-tab.tsx                                                                | 0         |
+| DEBT-10966 | Success feedback messages too brief                             | S2       | dashboard-tab.tsx                                                                | 0         |
+| DEBT-10967 | Extract meeting time parsing logic - ~80 lines duplicated       | S2       | unknown                                                                          | 0         |
+| DEBT-10968 | Migrate useAuth consumers to focused hooks - 16 components      | S2       | unknown                                                                          | 0         |
+| DEBT-10969 | Extract common form state logic - ~150 lines duplicate          | S2       | unknown                                                                          | 0         |
+| DEBT-10970 | Create barrel exports for component directories                 | S2       | unknown                                                                          | 0         |
+| DEBT-10971 | Collocate related quote components                              | S2       | daily-quote-card.tsx                                                             | 0         |
+| DEBT-10972 | Standardize export style - 38 default vs 69 named               | S2       | unknown                                                                          | 0         |
+| DEBT-10973 | Consolidate regex pattern linter into ESLint plugin             | S2       | unknown                                                                          | 0         |
+| DEBT-10974 | writeFileSync without atomic write pattern                      | S2       | unknown                                                                          | 0         |
+| DEBT-10975 | writeFileSync without atomic write pattern                      | S2       | archive-doc.js                                                                   | 0         |
+| DEBT-10976 | Pre-push duplicates pre-commit pattern checks                   | S2       | E0                                                                               | 0         |
+| DEBT-10984 | Security utilities partially tested — secure-caller teste...    | S2       | lib/firebase/account-linking.ts                                                  | 0         |
+| DEBT-11194 | 30 markdownlint errors across docs/ — broken links, empha...    | S2       | docs/                                                                            | 0         |
+| DEBT-11195 | Upgrade eslint to 10.x + typescript-eslint to 9.x to reso...    | S2       | package.json                                                                     | 0         |
+| DEBT-11213 | aggregate-audit-findings.js god script — 25+ functions, n...    | S2       | scripts/aggregate-audit-findings.js                                              | 0         |
+| DEBT-11214 | Cloud Functions structure in ARCHITECTURE.md shows non-ex...    | S2       | ARCHITECTURE.md                                                                  | 479       |
+| DEBT-11215 | Test pipeline requires 3 compilation steps — 10-20s overh...    | S2       | package.json                                                                     | 0         |
+| DEBT-11216 | Large Text preference saves to Firestore but is never rea...    | S2       | components/settings/settings-page.tsx                                            | 0         |
+| DEBT-11217 | README test count stale: 89/91 vs actual 293/294                | S2       | README.md                                                                        | 111       |
+| DEBT-11218 | README agent/skill counts wrong: 24/23 vs actual 25/59          | S2       | README.md                                                                        | 117       |
+| DEBT-11219 | README Growth tab marked Planned/feature-flagged but full...    | S2       | README.md                                                                        | 239       |
+| DEBT-11220 | DEVELOPMENT.md lib/ structure shows only 3 entries — miss...    | S2       | DEVELOPMENT.md                                                                   | 169       |
+| DEBT-11221 | Duplicate claude.md is byte-for-byte copy of CLAUDE.md — ...    | S2       | claude.md                                                                        | 0         |
+| DEBT-11222 | DOCUMENTATION*STANDARDS.md references non-existent MULTI*...    | S2       | docs/DOCUMENTATION_STANDARDS.md                                                  | 178       |
+| DEBT-11223 | ROADMAP.md Last Updated uses session number not date — 29...    | S2       | ROADMAP.md                                                                       | 6         |
+| DEBT-11224 | framer-motion imported directly in 36 non-lazy client com...    | S2       | lib/firebase.ts                                                                  | 0         |
+| DEBT-11225 | wood-table.jpg LCP image not preloaded — browser can't pr...    | S2       | app/layout.tsx                                                                   | 0         |
+| DEBT-11226 | 3 PNG images 2.0-2.8 MB served uncompressed — WebP conver...    | S2       | public/images/                                                                   | 0         |
+| DEBT-11227 | MoodSparkline fires separate 30-doc Firestore read on eve...    | S2       | components/notebook/visualizations/mood-sparkline.tsx                            | 16        |
+| DEBT-11228 | Preview deploy channel commented out — no PR-level stagin...    | S2       | .github/workflows/deploy-firebase.yml                                            | 0         |
+| DEBT-11229 | 181 ESLint warning baseline — warning noise masks real is...    | S2       | N/A                                                                              | 0         |
+| DEBT-11230 | PostToolUse hooks fire on every Read/Write/Edit/Bash — 18...    | S2       | .claude/settings.json                                                            | 0         |
+| DEBT-11231 | Dev server uses webpack by default — no Turbopack flag          | S2       | package.json                                                                     | 0         |
+| DEBT-11232 | AI_WORKFLOW.md 874 lines mandated reading every session —...    | S2       | AI_WORKFLOW.md                                                                   | 0         |
+| DEBT-11233 | .claude/state/ and .claude/tmp/ unbounded growth — 76KB +...    | S2       | .claude/state/                                                                   | 0         |
+| DEBT-11234 | settings.local.json 250+ permission entries — unreadable ...    | S2       | .claude/settings.local.json                                                      | 0         |
+| DEBT-11235 | getFunctions() + httpsCallable pattern repeated 28 times ...    | S2       | components/admin/admin-crud-table.tsx                                            | 0         |
+| DEBT-11236 | links-tab.tsx and prayers-tab.tsx ~90% code duplication         | S2       | components/admin/links-tab.tsx                                                   | 0         |
+| DEBT-11237 | window.confirm() used for 10 destructive actions — non-st...    | S2       | N/A                                                                              | 0         |
+| DEBT-11238 | Sign-in modal lacks role=dialog, aria-modal, focus trap —...    | S2       | components/auth/sign-in-modal.tsx                                                | 0         |
+| DEBT-11239 | No data export or account deletion despite onboarding pro...    | S2       | components/settings/settings-page.tsx                                            | 0         |
+| DEBT-11240 | No noscript fallback — JavaScript-disabled users see blan...    | S2       | app/layout.tsx                                                                   | 0         |
+| DEBT-11241 | Only 7-day mood sparkline — no 30/90-day history visualiz...    | S2       | components/notebook/visualizations/mood-sparkline.tsx                            | 0         |
+| DEBT-11242 | Fixed notebook width 340px/800px breaks at 428-767px view...    | S2       | components/notebook/notebook-shell.tsx                                           | 200       |
+| DEBT-11243 | Tap to set clean date has cursor-pointer but no onClick h...    | S2       | components/notebook/pages/today-page.tsx                                         | 877       |
+| DEBT-11244 | Share meeting button toasts success without calling clipb...    | S2       | components/notebook/pages/resources-page.tsx                                     | 497       |
+| DEBT-11245 | No Forgot password flow — email users have no recovery path     | S2       | components/auth/sign-in-modal.tsx                                                | 0         |
+| DEBT-11246 | WCAG 2.1 AA contrast unverified — amber-on-amber may fail...    | S2       | N/A                                                                              | 0         |
+| DEBT-11247 | No skip-to-content link — keyboard users must tab through...    | S2       | app/layout.tsx                                                                   | 0         |
+| DEBT-11248 | Step 4 Inventory and Step 8 List buttons are motion.butto...    | S2       | components/growth/growth-page.tsx                                                | 88        |
+| DEBT-11249 | History tab hard-limited to 7 days — older entries invisible    | S2       | components/notebook/pages/history-page.tsx                                       | 131       |
+| DEBT-11250 | gsd-planner.md and gsd-debugger.md ~125K tokens per 4-age...    | S2       | .claude/agents/global/gsd-planner.md                                             | 0         |
+| DEBT-11251 | security-engineer.md contains irrelevant Terraform/HCL ex...    | S2       | .claude/agents/security-engineer.md                                              | 0         |
+| DEBT-11252 | VALIDATION_FAILURE severity mapped to INFO — attack probi...    | S2       | functions/src/security-logger.ts                                                 | 371       |
+| DEBT-11253 | NotebookShell SVG data URL recomputed every render              | S2       | components/notebook/notebook-shell.tsx                                           | 0         |
+| DEBT-11254 | Onboarding progress dots are div elements with no accessi...    | S2       | components/onboarding/onboarding-wizard.tsx                                      | 187       |
+| DEBT-11255 | No CHANGELOG, no versioning strategy, no release tagging        | S2       | package.json                                                                     | 0         |
+| DEBT-11256 | 356-line FORM_SECTIONS config embedded in Step1WorksheetC...    | S2       | components/growth/Step1WorksheetCard.tsx                                         | 124       |
+| DEBT-11282 | S5852 regex complexity pre-push automation — check ALL re...    | S2       | scripts/check-pattern-compliance.js                                              | 0         |
+| DEBT-11285 | Update react + react-dom from 19.2.3 to 19.2.4 (pinned ex...    | S2       | package.json                                                                     | 0         |
+| DEBT-11289 | Upgrade lucide-react from 0.454.0 to latest (120+ version...    | S2       | package.json                                                                     | 0         |
+| DEBT-11290 | Upgrade react-resizable-panels from 2.x to 4.x (2 major v...    | S2       | package.json                                                                     | 0         |
+| DEBT-11291 | Upgrade recharts from 2.x to 3.x (1 major version behind)       | S2       | package.json                                                                     | 0         |
+| DEBT-11293 | Evaluate ESLint 10 upgrade (9.39.3 -> 10.0.2)                   | S2       | package.json                                                                     | 0         |
+| DEBT-11295 | Create tdms-ecosystem-audit skill (HIGH priority gap)           | S2       | .claude/skills/                                                                  | 0         |
+| DEBT-11296 | Create precommit-ecosystem-audit skill (HIGH priority gap)      | S2       | .claude/skills/                                                                  | 0         |
+| DEBT-11298 | Replace regex-based isInsideTryCatch with AST parser (acorn)    | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js    | 77        |
+| DEBT-11299 | Replace regex-based extractStateFileRefs with AST parser ...    | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js        | 240       |
+| DEBT-11300 | Replace regex-based isInsideTryCatch with AST parser (babel)    | S2       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 119       |
+| DEBT-11301 | Replace regex-based isInsideTryCatch with AST parser            | S2       | .claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js | 119       |
+| DEBT-11306 | safeReadFile silently swallows errors without context           | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js    | 35        |
+| DEBT-11307 | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | 0         |
+| DEBT-11308 | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | 0         |
+| DEBT-11309 | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | 0         |
+| DEBT-11312 | Add JSONL schema validation to intake scripts                   | S2       | scripts/debt/intake-audit.js                                                     | 1         |
+| DEBT-11313 | Auto-increment review numbers from JSONL max to prevent c...    | S2       | scripts/reviews-sync.js                                                          | 1         |
+| DEBT-11314 | Add cross-platform path normalization pattern to CODE_PAT...    | S2       | docs/agent_docs/CODE_PATTERNS.md                                                 | 1         |
+| DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
+| DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
+| DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |
+| DEBT-2450  | generate-placement-report.js - Unused roadmap placement s...    | S3       | scripts/generate-placement-report.js                                             | 0         |
+| DEBT-2452  | redeploy-admin-dashboard.sh - Firebase deployment helper ...    | S3       | scripts/redeploy-admin-dashboard.sh                                              | 0         |
+| DEBT-2476  | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve...    | S3       | docs/AUTOMATION_AUDIT_REPORT.md                                                  | 0         |
+| DEBT-3137  | 1 skipped test without linked issue — integration test fo...    | S3       | tests/firestore-service.test.ts                                                  | 149       |
+| DEBT-3144  | Next.js build warns about workspace root detection              | S3       | next.config.ts                                                                   | 0         |
+| DEBT-3531  | Medium Severity & Code Quality Findings                         | S3       | N/A                                                                              | 0         |
+| DEBT-3534  | Potential Root Cause A: API Key Restrictions (Most Likely)      | S3       | N/A                                                                              | 6         |
+| DEBT-3535  | Potential Root Cause B: Firebase App Check API Not Enabled      | S3       | N/A                                                                              | 0         |
+| DEBT-3536  | Potential Root Cause C: "Zombie" Token or Project/App Mis...    | S3       | N/A                                                                              | 0         |
+| DEBT-3537  | Potential Root Cause D: System Time Skew (Edge Case)            | S3       | N/A                                                                              | 0         |
+| DEBT-3538  | Recommended Immediate Action                                    | S3       | N/A                                                                              | 0         |
+| DEBT-3539  | Execution Flow Analysis                                         | S3       | N/A                                                                              | 0         |
+| DEBT-3540  | Code Smells Identified                                          | S3       | N/A                                                                              | 0         |
+| DEBT-3541  | 🚨 DANGEROUS PATTERNS                                           | S3       | N/A                                                                              | 0         |
+| DEBT-3542  | 🔍 EDGE CASES                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-3547  | Race Conditions in State                                        | S3       | N/A                                                                              | 136       |
+| DEBT-3550  | Inefficient Equality Checking                                   | S3       | components/providers/auth-provider.tsx                                           | 82        |
+| DEBT-3553  | Dynamic Import Anti-Pattern                                     | S3       | N/A                                                                              | 111       |
+| DEBT-3554  | Type Gymnastics                                                 | S3       | N/A                                                                              | 54        |
+| DEBT-3555  | STYLE/READABILITY                                               | S3       | N/A                                                                              | 0         |
+| DEBT-3556  | Refactoring Strategy                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3559  | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)          | S3       | N/A                                                                              | 0         |
+| DEBT-3560  | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics)    | S3       | N/A                                                                              | 0         |
+| DEBT-3561  | 🏆 #3: Server-Side Security Documentation (Guided Migration)    | S3       | N/A                                                                              | 0         |
+| DEBT-3562  | METRICS & VALIDATION                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3563  | Security Posture                                                | S3       | N/A                                                                              | 0         |
+| DEBT-3564  | Immediate (This PR)                                             | S3       | N/A                                                                              | 0         |
+| DEBT-3565  | Short-Term (Next Sprint)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3566  | Long-Term (Production Readiness)                                | S3       | N/A                                                                              | 0         |
+| DEBT-3567  | Remove dangerous non-null assertions                            | S3       | N/A                                                                              | 0         |
+| DEBT-3568  | Add runtime checks before export                                | S3       | N/A                                                                              | 0         |
+| DEBT-3569  | Create isFirebaseTimestamp() type guard                         | S3       | N/A                                                                              | 0         |
+| DEBT-3570  | Create isFirestoreError() type guard                            | S3       | N/A                                                                              | 0         |
+| DEBT-3571  | Remove type gymnastics from components                          | S3       | N/A                                                                              | 0         |
+| DEBT-3572  | Add JSDoc warnings about client-side limitations                | S3       | N/A                                                                              | 0         |
+| DEBT-3573  | Implement Cloud Functions for rate limiting                     | S3       | N/A                                                                              | 0         |
+| DEBT-3574  | Add Firebase App Check                                          | S3       | N/A                                                                              | 0         |
+| DEBT-3575  | Implement account linking for anonymous users                   | S3       | N/A                                                                              | 0         |
+| DEBT-3576  | Split AuthProvider into focused contexts                        | S3       | N/A                                                                              | 0         |
+| DEBT-3577  | Add integration tests for Firestore operations                  | S3       | N/A                                                                              | 0         |
+| DEBT-3580  | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
+| DEBT-3581  | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
+| DEBT-3582  | Add performance monitoring                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3583  | AuthProvider has 7 state variables (SRP violation)              | S3       | N/A                                                                              | 0         |
+| DEBT-3584  | book-cover.tsx = 337 lines (mixed concerns)                     | S3       | N/A                                                                              | 0         |
+| DEBT-3586  | Adapter exists but not used consistently                        | S3       | N/A                                                                              | 0         |
+| DEBT-3587  | Only 10-15% coverage                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3588  | Unknown size, heavy dependencies                                | S3       | N/A                                                                              | 0         |
+| DEBT-3590  | **A6: Adapter Pattern** — 3 days — Medium — P1                  | S3       | N/A                                                                              | 0         |
+| DEBT-3597  | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks...    | S3       | N/A                                                                              | 0         |
+| DEBT-3598  | **Team Capacity** — Medium — Medium — Parallel work on M1...    | S3       | N/A                                                                              | 0         |
+| DEBT-3600  | Improvement Roadmap                                             | S3       | N/A                                                                              | 0         |
+| DEBT-3601  | Target Architecture Quality: 4.8/5                              | S3       | N/A                                                                              | 0         |
+| DEBT-3602  | Split AuthProvider into Focused Contexts                        | S3       | N/A                                                                              | 0         |
+| DEBT-3603  | Problem Statement                                               | S3       | N/A                                                                              | 0         |
+| DEBT-3604  | Solution: Split into 3 Focused Contexts                         | S3       | N/A                                                                              | 0         |
+| DEBT-3605  | Architecture                                                    | S3       | N/A                                                                              | 0         |
+| DEBT-3606  | Estimated Effort                                                | S3       | N/A                                                                              | 0         |
+| DEBT-3607  | Decompose Large Components                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3608  | Problem: `book-cover.tsx` (337 lines)                           | S3       | N/A                                                                              | 0         |
+| DEBT-3609  | Solution: Extract 4 Sub-Components                              | S3       | N/A                                                                              | 0         |
+| DEBT-3610  | `CleanDaysCalculator.tsx` (Pure Logic)                          | S3       | components/recovery/clean-days-calculator.tsx                                    | 0         |
+| DEBT-3611  | `BookAnimation.tsx` (Animation Logic)                           | S3       | components/notebook/book-animation.tsx                                           | 0         |
+| DEBT-3612  | `BookAuthGuard.tsx` (Auth Logic)                                | S3       | components/notebook/book-auth-guard.tsx                                          | 0         |
+| DEBT-3614  | Component Size Target                                           | S3       | N/A                                                                              | 0         |
+| DEBT-3615  | Standardize Error Handling                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3617  | Solution: Result<T> Type Pattern                                | S3       | N/A                                                                              | 0         |
+| DEBT-3618  | Define `Result<T>` Type                                         | S3       | lib/types/result.ts                                                              | 0         |
+| DEBT-3620  | Update Component Usage                                          | S3       | components/pages/today-page.tsx                                                  | 0         |
+| DEBT-3621  | Error Handling Strategy Document                                | S3       | docs/ERROR_HANDLING.md                                                           | 0         |
+| DEBT-3622  | When to Use Each Pattern                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3623  | Result<T> (Preferred for services)                              | S3       | N/A                                                                              | 0         |
+| DEBT-3624  | Throw (Use sparingly)                                           | S3       | N/A                                                                              | 0         |
+| DEBT-3625  | Error Boundaries (UI layer)                                     | S3       | N/A                                                                              | 0         |
+| DEBT-3627  | Problem: Direct Image Usage                                     | S3       | N/A                                                                              | 0         |
+| DEBT-3628  | Solution: Next.js Image Component                               | S3       | N/A                                                                              | 0         |
+| DEBT-3629  | Audit Checklist                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-3631  | Problem: Unknown Bundle Size                                    | S3       | N/A                                                                              | 0         |
+| DEBT-3632  | Solution: Bundle Analysis                                       | S3       | N/A                                                                              | 0         |
+| DEBT-3633  | Install Analyzer                                                | S3       | N/A                                                                              | 0         |
+| DEBT-3634  | Configure Next.js                                               | S3       | N/A                                                                              | 0         |
+| DEBT-3635  | Run Analysis                                                    | S3       | N/A                                                                              | 0         |
+| DEBT-3637  | Bundle Size Targets                                             | S3       | N/A                                                                              | 0         |
+| DEBT-3638  | Database Adapter Pattern Consistency                            | S3       | N/A                                                                              | 0         |
+| DEBT-3640  | Benefits of Adapter Pattern                                     | S3       | N/A                                                                              | 0         |
+| DEBT-3641  | Implementation                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3642  | Add responsive sizes attribute                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3643  | Update AuthProvider to use adapter                              | S3       | N/A                                                                              | 0         |
+| DEBT-3644  | Update all components to use adapter                            | S3       | docs/ARCHITECTURE.md                                                             | 0         |
+| DEBT-3645  | Add adapter interface tests                                     | S3       | N/A                                                                              | 0         |
+| DEBT-3646  | Remove direct FirestoreService imports                          | S3       | N/A                                                                              | 0         |
+| DEBT-3647  | Key Findings:                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-3651  | Code Quality Issues                                             | S3       | N/A                                                                              | 0         |
+| DEBT-3652  | Severity Legend:                                                | S3       | N/A                                                                              | 0         |
+| DEBT-3656  | CQ-4: Hardcoded Magic Strings 🟢 MEDIUM                         | S3       | N/A                                                                              | 0         |
+| DEBT-3663  | CQ-11: No Component Documentation 🟢 MEDIUM                     | S3       | N/A                                                                              | 0         |
+| DEBT-3668  | B-5: Anonymous Session Edge Case 🟢 MEDIUM                      | S3       | components/providers/auth-provider.tsx                                           | 145       |
+| DEBT-3669  | Performance Issues                                              | S3       | N/A                                                                              | 0         |
+| DEBT-3674  | Security Issues                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-3679  | Testing Coverage                                                | S3       | N/A                                                                              | 0         |
+| DEBT-3680  | Accessibility Issues                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3681  | A-1: Missing ARIA Labels 🟢 MEDIUM                              | S3       | tab-navigation.tsx                                                               | 248       |
+| DEBT-3682  | A-2: Focus Management 🟢 MEDIUM                                 | S3       | N/A                                                                              | 0         |
+| DEBT-3683  | Summary of Issues                                               | S3       | N/A                                                                              | 0         |
+| DEBT-3684  | Recommended Prioritization                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3685  | Long-Term Recommendations                                       | S3       | N/A                                                                              | 0         |
+| DEBT-3686  | Add Error Boundaries                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3687  | Implement Offline Support                                       | S3       | N/A                                                                              | 0         |
+| DEBT-3688  | Add Monitoring                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3689  | Refactor State Management                                       | S3       | N/A                                                                              | 0         |
+| DEBT-3690  | Add End-to-End Tests                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3691  | Performance Budget                                              | S3       | N/A                                                                              | 0         |
+| DEBT-3693  | S-2 (related: rate limiting)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-3696  | Not explicitly listed                                           | S3       | N/A                                                                              | 0         |
+| DEBT-3698  | Finding #3 (UTC vs local)                                       | S3       | N/A                                                                              | 0         |
+| DEBT-3699  | §4.2 (Listener Memory Leaks)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-3701  | P-2 (Real-time Listeners Not Optimized)                         | S3       | N/A                                                                              | 0         |
+| DEBT-3702  | §4.2 (implied in listener issues)                               | S3       | N/A                                                                              | 0         |
+| DEBT-3703  | CQ-1 (isEditing in deps)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3704  | P-2 (unnecessary re-subscriptions)                              | S3       | N/A                                                                              | 0         |
+| DEBT-3705  | §3.4 (getAllMeetings, Journal queries)                          | S3       | N/A                                                                              | 0         |
+| DEBT-3706  | (implied in performance)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3709  | B-3 (AnimatePresence Issue - different bug)                     | S3       | N/A                                                                              | 0         |
+| DEBT-3710  | B-5 (Anonymous Session Edge Case)                               | S3       | N/A                                                                              | 0         |
+| DEBT-3712  | Finding #4 (Meeting seed/clear exposed)                         | S3       | N/A                                                                              | 0         |
+| DEBT-3713  | Firebase App Check                                              | S3       | N/A                                                                              | 0         |
+| DEBT-3714  | Server-side validation (Zod)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-3715  | Rate limiting (10 req/min)                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3716  | Audit logging                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-3717  | GDPR compliance                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-3718  | Dependency versions                                             | S3       | N/A                                                                              | 0         |
+| DEBT-3719  | Remove allow create, update from daily_logs                     | S3       | N/A                                                                              | 0         |
+| DEBT-3720  | Change to fail-closed strategy                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3721  | Add admin claim check or hide buttons                           | S3       | N/A                                                                              | 0         |
+| DEBT-3723  | Check existing profile before recreate                          | S3       | N/A                                                                              | 0         |
+| DEBT-3724  | Create unified getDateId() utility                              | S3       | N/A                                                                              | 0         |
+| DEBT-3725  | Track lifecycle with refs, proper cleanup                       | S3       | N/A                                                                              | 0         |
+| DEBT-3726  | Use ref instead of state                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3727  | Implement proper debounce                                       | S3       | N/A                                                                              | 0         |
+| DEBT-3728  | Gate fetches on auth readiness                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3729  | Add limit() to queries                                          | S3       | N/A                                                                              | 0         |
+| DEBT-3730  | Refactor TodayPage, ResourcesPage                               | S3       | N/A                                                                              | 0         |
+| DEBT-3731  | Add hard NODE_ENV check                                         | S3       | N/A                                                                              | 0         |
+| DEBT-3732  | Fix AnimatePresence conditional                                 | S3       | N/A                                                                              | 0         |
+| DEBT-3733  | Normalize time format                                           | S3       | N/A                                                                              | 0         |
+| DEBT-3734  | Extract to constants file                                       | S3       | N/A                                                                              | 0         |
+| DEBT-3735  | Add saving indicators                                           | S3       | N/A                                                                              | 0         |
+| DEBT-3736  | Excessive fonts                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-3737  | Code splitting                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3738  | Unused dependencies                                             | S3       | N/A                                                                              | 0         |
+| DEBT-3739  | Component documentation                                         | S3       | N/A                                                                              | 0         |
+| DEBT-3740  | Accessibility (ARIA)                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3741  | Environment logging                                             | S3       | N/A                                                                              | 0         |
+| DEBT-3742  | ✅ Proceed                                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3743  | ✅ Proceed (deferred to M4)                                     | S3       | N/A                                                                              | 0         |
+| DEBT-3744  | Issues Reported by Multiple Sources (Consolidated)              | S3       | N/A                                                                              | 0         |
+| DEBT-3753  | 🟢 Admin Reset Button Missing Protection                        | S3       | N/A                                                                              | 0         |
+| DEBT-3754  | Issues Already Addressed (per AI_HANDOFF/ROADMAP)               | S3       | N/A                                                                              | 0         |
+| DEBT-3755  | Consolidated Action Plan                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3756  | Roadmap Feature Decision Resolution                             | S3       | N/A                                                                              | 0         |
+| DEBT-3757  | Risk Factor A: "Bleeding Edge" Stack Instability                | S3       | N/A                                                                              | 0         |
+| DEBT-3759  | Dependency Compatibility Check                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3760  | Summary of Actions                                              | S3       | N/A                                                                              | 0         |
+| DEBT-3761  | Prefix with \_index                                             | S3       | tab-navigation.tsx                                                               | 21        |
+| DEBT-3762  | Remove unused import                                            | S3       | firestore-adapter.ts                                                             | 11        |
+| DEBT-3764  | Use or remove                                                   | S3       | scripts/seed-meetings.ts                                                         | 68        |
+| DEBT-3765  | Use FormEvent<HTMLFormElement>                                  | S3       | sign-in-modal.tsx                                                                | 0         |
+| DEBT-3766  | Use unknown instead                                             | S3       | firebase-types.ts                                                                | 0         |
+| DEBT-3767  | Use proper mock types                                           | S3       | N/A                                                                              | 0         |
+| DEBT-3768  | Add to deps or use useCallback                                  | S3       | today-page.tsx                                                                   | 115       |
+| DEBT-3769  | Warning Breakdown by Category                                   | S3       | N/A                                                                              | 0         |
+| DEBT-3770  | Category 1: Unused Variables (10 warnings)                      | S3       | tab-navigation.tsx                                                               | 0         |
+| DEBT-3771  | Category 2: Explicit `any` Types (18 warnings)                  | S3       | sign-in-modal.tsx                                                                | 0         |
+| DEBT-3772  | Category 3: React Hooks Dependencies (1 warning)                | S3       | today-page.tsx                                                                   | 0         |
+| DEBT-3773  | ESLint Configuration Improvements                               | S3       | N/A                                                                              | 0         |
+| DEBT-3774  | Recommendation 1: Stricter Rules for Application Code           | S3       | N/A                                                                              | 0         |
+| DEBT-3775  | Recommendation 2: Pre-commit Hook                               | S3       | N/A                                                                              | 0         |
+| DEBT-3776  | Recommendation 3: CI Enforcement                                | S3       | N/A                                                                              | 0         |
+| DEBT-3777  | Long-Term Maintenance                                           | S3       | N/A                                                                              | 0         |
+| DEBT-3778  | Prevent Future Warnings                                         | S3       | N/A                                                                              | 0         |
+| DEBT-3779  | Update this plan with new patterns                              | S3       | N/A                                                                              | 0         |
+| DEBT-3780  | SoNash Refactoring Action Plan                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3793  | Add Rate Limiting (S-2)                                         | S3       | N/A                                                                              | 0         |
+| DEBT-3797  | 17-22. Other Phase 3 Items                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3798  | 24-26. Other Phase 4 Items                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3800  | Test Files to Create                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3801  | 📊 Impact Summary                                               | S3       | N/A                                                                              | 0         |
+| DEBT-3803  | Issues Addressed: 15                                            | S3       | N/A                                                                              | 0         |
+| DEBT-3805  | 📈 PERFORMANCE IMPROVEMENTS                                     | S3       | N/A                                                                              | 0         |
+| DEBT-3807  | 🔒 SECURITY ENHANCEMENTS                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3808  | Enhanced Validation                                             | S3       | firestore-validation.ts                                                          | 0         |
+| DEBT-3809  | 🧪 TESTING RECOMMENDATIONS                                      | S3       | N/A                                                                              | 0         |
+| DEBT-3810  | Immediate Testing Needed                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3811  | Future Test Coverage                                            | S3       | firebase-guards.ts                                                               | 0         |
+| DEBT-3812  | 🚀 DEPLOYMENT CHECKLIST                                         | S3       | N/A                                                                              | 0         |
+| DEBT-3813  | Production Readiness (Before Launch)                            | S3       | N/A                                                                              | 0         |
+| DEBT-3814  | 💰 COST-BENEFIT ANALYSIS                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3815  | 🎓 KEY LEARNINGS                                                | S3       | N/A                                                                              | 0         |
+| DEBT-3816  | What Needs Improvement                                          | S3       | N/A                                                                              | 0         |
+| DEBT-3817  | Recommendations for Future PRs                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3818  | 📚 DOCUMENTATION ADDED                                          | S3       | N/A                                                                              | 0         |
+| DEBT-3819  | 🔄 BACKWARD COMPATIBILITY                                       | S3       | N/A                                                                              | 0         |
+| DEBT-3820  | Add tests for firebase-guards.ts utilities                      | S3       | firebase-guards.ts                                                               | 0         |
+| DEBT-3821  | Add tests for enhanced security validation                      | S3       | N/A                                                                              | 0         |
+| DEBT-3822  | Add integration tests for Firebase operations                   | S3       | N/A                                                                              | 0         |
+| DEBT-3823  | Implement Firebase App Check                                    | S3       | N/A                                                                              | 0         |
+| DEBT-3824  | Add server-side authorization                                   | S3       | N/A                                                                              | 0         |
+| DEBT-3827  | Style/Readability                                               | S3       | N/A                                                                              | 0         |
+| DEBT-3828  | Fix `firestore.rules` Date Logic                                | S3       | N/A                                                                              | 0         |
+| DEBT-3831  | React's Default XSS Protection                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3832  | Verification of User Input Handling                             | S3       | N/A                                                                              | 0         |
+| DEBT-3833  | Journal Entry Text (today-page.tsx:312-324)                     | S3       | N/A                                                                              | 0         |
+| DEBT-3834  | Nickname Display (book-cover.tsx:221)                           | S3       | N/A                                                                              | 0         |
+| DEBT-3835  | Clean Time Display (today-page.tsx:183)                         | S3       | N/A                                                                              | 0         |
+| DEBT-3836  | Meeting Data (resources-page.tsx:227-236)                       | S3       | N/A                                                                              | 0         |
+| DEBT-3837  | Dangerous Patterns Audit                                        | S3       | N/A                                                                              | 0         |
+| DEBT-3838  | Search for `dangerouslySetInnerHTML`                            | S3       | N/A                                                                              | 0         |
+| DEBT-3839  | Search for `innerHTML`                                          | S3       | N/A                                                                              | 0         |
+| DEBT-3840  | Search for `eval()`                                             | S3       | N/A                                                                              | 0         |
+| DEBT-3841  | Search for `document.write`                                     | S3       | N/A                                                                              | 0         |
+| DEBT-3842  | Third-Party Libraries XSS Risk                                  | S3       | N/A                                                                              | 0         |
+| DEBT-3843  | Framer Motion                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-3844  | React Hook Form                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-3845  | Sonner (Toast Library)                                          | S3       | N/A                                                                              | 105       |
+| DEBT-3846  | Future Risks (If Features Are Added)                            | S3       | N/A                                                                              | 0         |
+| DEBT-3849  | Defense-in-Depth: Content Security Policy                       | S3       | N/A                                                                              | 0         |
+| DEBT-3850  | Recommendation:                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-3851  | Firestore Security for XSS Context                              | S3       | N/A                                                                              | 0         |
+| DEBT-3852  | Current Rules (firestore.rules:33-36):                          | S3       | N/A                                                                              | 0         |
+| DEBT-3853  | Summary of Protections                                          | S3       | document.write                                                                   | 0         |
+| DEBT-3854  | Manual XSS Tests:                                               | S3       | N/A                                                                              | 0         |
+| DEBT-3855  | Automated Testing:                                              | S3       | N/A                                                                              | 0         |
+| DEBT-3856  | Implement CSP headers in next.config.mjs                        | S3       | N/A                                                                              | 0         |
+| DEBT-3857  | Add XSS test cases to test suite                                | S3       | N/A                                                                              | 0         |
+| DEBT-3858  | Error Tracing Tab - includes npm audit display                  | S3       | N/A                                                                              | 0         |
+| DEBT-3859  | Remove duplicate test run from pre-push (done) - ✅ Session     | S3       | N/A                                                                              | 0         |
+| DEBT-3860  | Add file extension filters to hook matchers                     | S3       | N/A                                                                              | 0         |
+| DEBT-3861  | Automated fix suggestions - Generate patches                    | S3       | N/A                                                                              | 0         |
+| DEBT-3862  | Broken deploy triage runbook (30min)                            | S3       | N/A                                                                              | 0         |
+| DEBT-3863  | Claude Fix Bundle format - docs/CLAUDE_FIX_BUNDLE.md            | S3       | docs/CLAUDE_FIX_BUNDLE.md                                                        | 0         |
+| DEBT-3864  | Reduce SESSION_CONTEXT.md - Archive history to                  | S3       | N/A                                                                              | 0         |
+| DEBT-3865  | Remove unused gemini-generated images (-4MB)                    | S3       | N/A                                                                              | 0         |
+| DEBT-3866  | Convert remaining images to WebP format (-90% size)             | S3       | N/A                                                                              | 0         |
+| DEBT-3867  | Preload LCP image (wood-table.jpg)                              | S3       | N/A                                                                              | 0         |
+| DEBT-3868  | Code-split admin panel                                          | S3       | N/A                                                                              | 0         |
+| DEBT-3869  | Add Content Security Policy                                     | S3       | N/A                                                                              | 0         |
+| DEBT-3870  | Make reCAPTCHA fail-closed when configured                      | S3       | N/A                                                                              | 0         |
+| DEBT-3872  | Integrate with CI (fail on diff > threshold)                    | S3       | N/A                                                                              | 0         |
+| DEBT-3873  | Test Results Tab - Show pass/fail summary                       | S3       | N/A                                                                              | 0         |
+| DEBT-3874  | Cleanup Utilities - Reset state between tests                   | S3       | N/A                                                                              | 0         |
+| DEBT-3875  | Security Rules Tests - Test firestore.rules coverage            | S3       | N/A                                                                              | 0         |
+| DEBT-3876  | Compare options: Semgrep, CodeQL, ESLint security plugins       | S3       | N/A                                                                              | 0         |
+| DEBT-3877  | ENH-0063: Remove duplicate pattern check from pre-push ho...    | S3       | N/A                                                                              | 0         |
+| DEBT-3878  | Include helpful fix hints in error messages                     | S3       | N/A                                                                              | 0         |
+| DEBT-3881  | Wire `Sentry.captureException()` in error paths                 | S3       | N/A                                                                              | 0         |
+| DEBT-3882  | Fix Prettier baseline (run `npm run format`)                    | S3       | N/A                                                                              | 0         |
+| DEBT-3883  | Fix knip baseline (7 unused deps)                               | S3       | N/A                                                                              | 0         |
+| DEBT-3884  | Remove all `continue-on-error: true` flags                      | S3       | N/A                                                                              | 0         |
+| DEBT-3889  | Logs tab error state on network failure                         | S3       | N/A                                                                              | 0         |
+| DEBT-3890  | Privilege save error handling and revert                        | S3       | N/A                                                                              | 0         |
+| DEBT-3891  | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_     | S3       | N/A                                                                              | 0         |
+| DEBT-3892  | M4.5-SEC-005 - Security rules for new collections               | S3       | N/A                                                                              | 0         |
+| DEBT-3893  | RND-AUDIT - Security Audit Planning (1 day)                     | S3       | N/A                                                                              | 0         |
+| DEBT-3894  | F12.11 - Slow Rollout (progressive feature disclosure)          | S3       | N/A                                                                              | 0         |
+| DEBT-3895  | T6.5 - Sync performance tracking                                | S3       | N/A                                                                              | 0         |
+| DEBT-3896  | T9.2 - Data retention policy (user choice for auto-cleanup)     | S3       | N/A                                                                              | 0         |
+| DEBT-3897  | T8.7 - Extract offline-core package (optimization; not re...    | S3       | N/A                                                                              | 0         |
+| DEBT-6873  | No tests for regex global state reset edge cases with con...    | S3       | N/A                                                                              | 19        |
+| DEBT-6874  | No test for Unicode private use area (U+E000-U+F8FF) patt...    | S3       | N/A                                                                              | 20        |
+| DEBT-6875  | No integration test verifying both .js and .ts versions p...    | S3       | N/A                                                                              | 23        |
+| DEBT-6876  | No test for `parseCliArgs` with edge cases (consecutive f...    | S3       | N/A                                                                              | 30        |
+| DEBT-6877  | No test for `maskEmail` with unusual domain structures (s...    | S3       | N/A                                                                              | 32        |
+| DEBT-6878  | No test for `safeRegexExec` infinite loop prevention with...    | S3       | N/A                                                                              | 34        |
+| DEBT-6879  | No test for symlink traversal at boundary (deeply nested ...    | S3       | N/A                                                                              | 39        |
+| DEBT-6880  | No test for realpathSync behavior when symlink target is ...    | S3       | N/A                                                                              | 41        |
+| DEBT-6881  | No test for mixed ASCII/Unicode control character combina...    | S3       | N/A                                                                              | 45        |
+| DEBT-6882  | No test for Bidi override patterns at start/end/middle of...    | S3       | N/A                                                                              | 46        |
+| DEBT-6883  | No test for static export behavior (no API routes expected)     | S3       | N/A                                                                              | 109       |
+| DEBT-6884  | No test for CSS generation with custom Tailwind config          | S3       | N/A                                                                              | 118       |
+| DEBT-6885  | No test for circular dependencies between path-aliased mo...    | S3       | N/A                                                                              | 124       |
+| DEBT-6886  | No test for tsc-alias handling of nested paths                  | S3       | N/A                                                                              | 133       |
+| DEBT-6887  | No visibility into why specific modules are excluded            | S3       | N/A                                                                              | 156       |
+| DEBT-6888  | No integration testing of actual user workflows                 | S3       | N/A                                                                              | 161       |
+| DEBT-6889  | No test for API response mocking consistency                    | S3       | N/A                                                                              | 166       |
+| DEBT-6890  | No integration test for Firestore operations                    | S3       | N/A                                                                              | 171       |
+| DEBT-6891  | No test for custom ESLint plugin rules                          | S3       | N/A                                                                              | 176       |
+| DEBT-6892  | No test ensuring doc-only detection doesn't accidentally ...    | S3       | N/A                                                                              | 184       |
+| DEBT-6893  | No test for false positives/negatives of symlink detection      | S3       | N/A                                                                              | 207       |
+| DEBT-6894  | No test for rule behavior on minified/transpiled code           | S3       | N/A                                                                              | 208       |
+| DEBT-6895  | Existing code can have CC > 15 (113 pre-existing violatio...    | S3       | N/A                                                                              | 213       |
+| DEBT-6896  | No blocking enforcer for actual cognitive complexity meas...    | S3       | N/A                                                                              | 215       |
+| DEBT-6897  | Local Prettier version mismatch could cause CI failures         | S3       | N/A                                                                              | 220       |
+| DEBT-6898  | No test for Markdown consistency standards                      | S3       | N/A                                                                              | 225       |
+| DEBT-6899  | No validation that ignored deps are actually necessary          | S3       | N/A                                                                              | 229       |
+| DEBT-6900  | `eslint-plugin-security` configured but no rules visible        | S3       | N/A                                                                              | 239       |
+| DEBT-6901  | No visibility into which security rules are active              | S3       | N/A                                                                              | 243       |
+| DEBT-6902  | No test for rule enforcement                                    | S3       | N/A                                                                              | 244       |
+| DEBT-6903  | No synchronized version management (e.g., Firebase lib ve...    | S3       | N/A                                                                              | 278       |
+| DEBT-6904  | `npm ci` in CI doesn't install functions dependencies aut...    | S3       | N/A                                                                              | 280       |
+| DEBT-6905  | No validation script checks version compatibility               | S3       | N/A                                                                              | 287       |
+| DEBT-6906  | No test validating file:// dependency resolve                   | S3       | N/A                                                                              | 291       |
+| DEBT-6907  | No protection against symlink attacks on file:// paths          | S3       | N/A                                                                              | 292       |
+| DEBT-6908  | No audit for version mismatches that could cause runtime ...    | S3       | N/A                                                                              | 298       |
+| DEBT-6909  | No lockfile integrity check in CI                               | S3       | N/A                                                                              | 302       |
+| DEBT-6910  | No validation that ignored items are actually necessary         | S3       | N/A                                                                              | 306       |
+| DEBT-6911  | No test for false negatives (truly unused deps that slip ...    | S3       | N/A                                                                              | 307       |
+| DEBT-6912  | Indicates peer dependency conflicts not resolved                | S3       | N/A                                                                              | 311       |
+| DEBT-6913  | No test for breaking changes in next major versions             | S3       | N/A                                                                              | 312       |
+| DEBT-6914  | No SBOMs (Software Bill of Materials) generated                 | S3       | N/A                                                                              | 316       |
+| DEBT-6915  | No npm audit integration beyond pre-push hook warning           | S3       | N/A                                                                              | 317       |
+| DEBT-6916  | Node.js built-in modules assumed but not validated              | S3       | N/A                                                                              | 321       |
+| DEBT-6919  | \*\* Domain 6 Step 2 needs complete lib/ enumeration, not j...  | S3       | N/A                                                                              | 42        |
+| DEBT-6921  | \*\* No domain covers: Is Sentry configured correctly? Is D...  | S3       | N/A                                                                              | 50        |
+| DEBT-6923  | \*\* Plan needs accurate enumeration.                           | S3       | N/A                                                                              | 60        |
+| DEBT-6925  | \*\* Domain 6 "Client/Server boundary audit" should verify ...  | S3       | N/A                                                                              | 66        |
+| DEBT-6928  | \*\* Domain 9 should include a TODO/FIXME audit as a specif...  | S3       | N/A                                                                              | 82        |
+| DEBT-6930  | \*\* Domain 15 should include a public assets audit: verify...  | S3       | N/A                                                                              | 94        |
+| DEBT-6932  | \*\* Type definition organization should be part of Domain ...  | S3       | N/A                                                                              | 101       |
+| DEBT-6934  | \*\* Domain 6 "console.log in production code" search needs...  | S3       | N/A                                                                              | 109       |
+| DEBT-6936  | \*\* Domain 7 needs a dedicated "Sentry integration in Clou...  | S3       | N/A                                                                              | 119       |
+| DEBT-6937  | \*\* Domain 7 and Domain 8 should both flag this — server c...  | S3       | N/A                                                                              | 132       |
+| DEBT-6939  | \*\* Domain 8 should verify that `security_logs` has an exp...  | S3       | N/A                                                                              | 143       |
+| DEBT-6941  | \*\* Domain 7 should list ALL 8 function source files expli...  | S3       | N/A                                                                              | 155       |
+| DEBT-6943  | \*\* Domain 6 needs a "Data access layer audit" step.           | S3       | N/A                                                                              | 167       |
+| DEBT-6945  | \*\* Domain 6 should explicitly review the celebration subs...  | S3       | N/A                                                                              | 175       |
+| DEBT-6947  | \*\* Domain 8 (Security) should cross-reference Permissions...  | S3       | N/A                                                                              | 191       |
+| DEBT-6949  | \*\* Domain 2 should explicitly verify this architecture ch...  | S3       | N/A                                                                              | 203       |
+| DEBT-6951  | \*\* Domain 2 should check that the CSS-based Tailwind conf...  | S3       | N/A                                                                              | 212       |
+| DEBT-6953  | \*\* Domain 10 should include bidirectional cross-reference...  | S3       | N/A                                                                              | 225       |
+| DEBT-6955  | \*\* Domain 8 should verify EVERY collection written by Clo...  | S3       | N/A                                                                              | 237       |
+| DEBT-6957  | \*\* Domain 8 step 3 mentions "size limits" but the plan sh...  | S3       | N/A                                                                              | 247       |
+| DEBT-6959  | \*\* Domain 7 "~12 files" label severely underestimates sco...  | S3       | N/A                                                                              | 264       |
+| DEBT-6961  | \*\* Each job should be verified for: correct schedule, ide...  | S3       | N/A                                                                              | 282       |
+| DEBT-6963  | \*\* Domain 7 should explicitly: (1) compare each Zod schema    | S3       | N/A                                                                              | 291       |
+| DEBT-6965  | \*\* Domain 1 should check for engines field AND Domain 5 s...  | S3       | N/A                                                                              | 305       |
+| DEBT-6967  | \** Domain 1 should include "validate all NEXT*PUBLIC\*\* v...  | S3       | N/A                                                                              | 313       |
+| DEBT-6969  | \*\* Domain 3 should flag: no coverage thresholds, limited ...  | S3       | N/A                                                                              | 323       |
+| DEBT-6971  | \*\* Domain 3 should verify: intended for future use? Shoul...  | S3       | N/A                                                                              | 329       |
+| DEBT-6973  | \*\* Domain 3 should check if MSW is actually used              | S3       | N/A                                                                              | 335       |
+| DEBT-6975  | \*\* Domain 4 should enumerate existing complexity violations   | S3       | N/A                                                                              | 341       |
+| DEBT-6977  | \*\* Domain 4 should verify each disabled rule has justific...  | S3       | N/A                                                                              | 346       |
+| DEBT-6979  | \*\* Domain 5 should verify each entry is still needed          | S3       | N/A                                                                              | 351       |
+| DEBT-6981  | \*\* Domain 5 should test: can all 3 packages install clean...  | S3       | N/A                                                                              | 357       |
+| DEBT-6983  | \*\* Domain 5 should verify source directory exists and con...  | S3       | N/A                                                                              | 363       |
+| DEBT-6985  | \*\* Domain 11 needs 3-way reconciliation                       | S3       | N/A                                                                              | 370       |
+| DEBT-6987  | \*\* Domain 12 count correction needed                          | S3       | N/A                                                                              | 375       |
+| DEBT-6989  | \*\* Domain 16 needs complete inventory, Domain 9 must exec...  | S3       | N/A                                                                              | 380       |
+| DEBT-6991  | \*\* Domain 16 should audit ALL artifacts, not just MASTER\_... | S3       | N/A                                                                              | 385       |
+| DEBT-6993  | \*\* Domain 6 should review for completeness and accuracy       | S3       | N/A                                                                              | 391       |
+| DEBT-6995  | \*\* Domain 8 should include index validation                   | S3       | N/A                                                                              | 397       |
+| DEBT-6997  | \*\* Domain 5 and Domain 13 should flag SBOM absence            | S3       | N/A                                                                              | 402       |
+| DEBT-7012  | Medium Severity & Code Quality Findings                         | S3       | N/A                                                                              | 0         |
+| DEBT-7015  | Potential Root Cause A: API Key Restrictions (Most Likely)      | S3       | N/A                                                                              | 0         |
+| DEBT-7016  | Potential Root Cause B: Firebase App Check API Not Enabled      | S3       | N/A                                                                              | 0         |
+| DEBT-7017  | Potential Root Cause C: "Zombie" Token or Project/App Mis...    | S3       | N/A                                                                              | 0         |
+| DEBT-7018  | Potential Root Cause D: System Time Skew (Edge Case)            | S3       | N/A                                                                              | 0         |
+| DEBT-7019  | Recommended Immediate Action                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7020  | Execution Flow Analysis                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7021  | Code Smells Identified                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7022  | 🚨 DANGEROUS PATTERNS                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7023  | 🔍 EDGE CASES                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7028  | Race Conditions in State                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7034  | Dynamic Import Anti-Pattern                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7035  | Type Gymnastics                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7036  | STYLE/READABILITY                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7037  | Refactoring Strategy                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7040  | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)          | S3       | N/A                                                                              | 0         |
+| DEBT-7041  | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics)    | S3       | N/A                                                                              | 0         |
+| DEBT-7042  | 🏆 #3: Server-Side Security Documentation (Guided Migration)    | S3       | N/A                                                                              | 0         |
+| DEBT-7043  | METRICS & VALIDATION                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7044  | Security Posture                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7045  | Immediate (This PR)                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7046  | Short-Term (Next Sprint)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7047  | Long-Term (Production Readiness)                                | S3       | N/A                                                                              | 0         |
+| DEBT-7048  | Remove dangerous non-null assertions                            | S3       | N/A                                                                              | 0         |
+| DEBT-7049  | Add runtime checks before export                                | S3       | N/A                                                                              | 0         |
+| DEBT-7050  | Create isFirebaseTimestamp() type guard                         | S3       | N/A                                                                              | 0         |
+| DEBT-7051  | Create isFirestoreError() type guard                            | S3       | N/A                                                                              | 0         |
+| DEBT-7052  | Remove type gymnastics from components                          | S3       | N/A                                                                              | 0         |
+| DEBT-7053  | Add JSDoc warnings about client-side limitations                | S3       | N/A                                                                              | 0         |
+| DEBT-7054  | Implement Cloud Functions for rate limiting                     | S3       | N/A                                                                              | 0         |
+| DEBT-7055  | Add Firebase App Check                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7056  | Implement account linking for anonymous users                   | S3       | N/A                                                                              | 0         |
+| DEBT-7057  | Split AuthProvider into focused contexts                        | S3       | N/A                                                                              | 0         |
+| DEBT-7058  | Add integration tests for Firestore operations                  | S3       | N/A                                                                              | 0         |
+| DEBT-7060  | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
+| DEBT-7061  | Add performance monitoring                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7062  | AuthProvider has 7 state variables (SRP violation)              | S3       | N/A                                                                              | 0         |
+| DEBT-7063  | book-cover.tsx = 337 lines (mixed concerns)                     | S3       | N/A                                                                              | 0         |
+| DEBT-7065  | Adapter exists but not used consistently                        | S3       | N/A                                                                              | 0         |
+| DEBT-7066  | Only 10-15% coverage                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7067  | Unknown size, heavy dependencies                                | S3       | N/A                                                                              | 0         |
+| DEBT-7069  | **A6: Adapter Pattern** — 3 days — Medium — P1                  | S3       | N/A                                                                              | 0         |
+| DEBT-7076  | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks...    | S3       | N/A                                                                              | 0         |
+| DEBT-7077  | **Team Capacity** — Medium — Medium — Parallel work on M1...    | S3       | N/A                                                                              | 0         |
+| DEBT-7079  | Improvement Roadmap                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7080  | Target Architecture Quality: 4.8/5                              | S3       | N/A                                                                              | 0         |
+| DEBT-7081  | Problem Statement                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7082  | Solution: Split into 3 Focused Contexts                         | S3       | N/A                                                                              | 0         |
+| DEBT-7083  | Architecture                                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7084  | Estimated Effort                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7085  | Decompose Large Components                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7086  | Problem: `book-cover.tsx` (337 lines)                           | S3       | N/A                                                                              | 0         |
+| DEBT-7087  | Solution: Extract 4 Sub-Components                              | S3       | N/A                                                                              | 0         |
+| DEBT-7092  | Component Size Target                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7093  | Standardize Error Handling                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7095  | Solution: Result<T> Type Pattern                                | S3       | N/A                                                                              | 0         |
+| DEBT-7100  | When to Use Each Pattern                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7101  | Result<T> (Preferred for services)                              | S3       | N/A                                                                              | 0         |
+| DEBT-7102  | Throw (Use sparingly)                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7103  | Error Boundaries (UI layer)                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7105  | Problem: Direct Image Usage                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7106  | Solution: Next.js Image Component                               | S3       | N/A                                                                              | 0         |
+| DEBT-7107  | Audit Checklist                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7109  | Problem: Unknown Bundle Size                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7110  | Solution: Bundle Analysis                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7111  | Install Analyzer                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7112  | Configure Next.js                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7113  | Run Analysis                                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7115  | Bundle Size Targets                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7116  | Database Adapter Pattern Consistency                            | S3       | N/A                                                                              | 0         |
+| DEBT-7118  | Benefits of Adapter Pattern                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7119  | Implementation                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7120  | Add responsive sizes attribute                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7121  | Update AuthProvider to use adapter                              | S3       | N/A                                                                              | 0         |
+| DEBT-7123  | Add adapter interface tests                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7124  | Remove direct FirestoreService imports                          | S3       | N/A                                                                              | 0         |
+| DEBT-7125  | Key Findings:                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7129  | Code Quality Issues                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7130  | Severity Legend:                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7134  | CQ-4: Hardcoded Magic Strings 🟢 MEDIUM                         | S3       | N/A                                                                              | 0         |
+| DEBT-7141  | CQ-11: No Component Documentation 🟢 MEDIUM                     | S3       | N/A                                                                              | 0         |
+| DEBT-7147  | Performance Issues                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7152  | Security Issues                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7157  | Testing Coverage                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7158  | Accessibility Issues                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7160  | A-2: Focus Management 🟢 MEDIUM                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7161  | Summary of Issues                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7162  | Recommended Prioritization                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7163  | Long-Term Recommendations                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7164  | Add Error Boundaries                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7165  | Implement Offline Support                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7166  | Add Monitoring                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7167  | Refactor State Management                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7168  | Add End-to-End Tests                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7169  | Performance Budget                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7171  | S-2 (related: rate limiting)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7174  | Not explicitly listed                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7176  | Finding #3 (UTC vs local)                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7177  | §4.2 (Listener Memory Leaks)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7179  | P-2 (Real-time Listeners Not Optimized)                         | S3       | N/A                                                                              | 0         |
+| DEBT-7180  | §4.2 (implied in listener issues)                               | S3       | N/A                                                                              | 0         |
+| DEBT-7181  | CQ-1 (isEditing in deps)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7182  | P-2 (unnecessary re-subscriptions)                              | S3       | N/A                                                                              | 0         |
+| DEBT-7183  | §3.4 (getAllMeetings, Journal queries)                          | S3       | N/A                                                                              | 0         |
+| DEBT-7184  | (implied in performance)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7187  | B-3 (AnimatePresence Issue - different bug)                     | S3       | N/A                                                                              | 0         |
+| DEBT-7188  | B-5 (Anonymous Session Edge Case)                               | S3       | N/A                                                                              | 0         |
+| DEBT-7190  | Finding #4 (Meeting seed/clear exposed)                         | S3       | N/A                                                                              | 0         |
+| DEBT-7191  | Firebase App Check                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7192  | Server-side validation (Zod)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7193  | Rate limiting (10 req/min)                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7194  | Audit logging                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7195  | GDPR compliance                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7196  | Dependency versions                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7197  | Remove allow create, update from daily_logs                     | S3       | N/A                                                                              | 0         |
+| DEBT-7198  | Change to fail-closed strategy                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7199  | Add admin claim check or hide buttons                           | S3       | N/A                                                                              | 0         |
+| DEBT-7201  | Check existing profile before recreate                          | S3       | N/A                                                                              | 0         |
+| DEBT-7202  | Create unified getDateId() utility                              | S3       | N/A                                                                              | 0         |
+| DEBT-7203  | Track lifecycle with refs, proper cleanup                       | S3       | N/A                                                                              | 0         |
+| DEBT-7204  | Use ref instead of state                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7205  | Implement proper debounce                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7206  | Gate fetches on auth readiness                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7207  | Add limit() to queries                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7208  | Refactor TodayPage, ResourcesPage                               | S3       | N/A                                                                              | 0         |
+| DEBT-7209  | Add hard NODE_ENV check                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7210  | Fix AnimatePresence conditional                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7211  | Normalize time format                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7212  | Extract to constants file                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7213  | Add saving indicators                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7214  | Excessive fonts                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7215  | Code splitting                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7216  | Unused dependencies                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7217  | Component documentation                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7218  | Accessibility (ARIA)                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7219  | Environment logging                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7220  | ✅ Proceed                                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7221  | ✅ Proceed (deferred to M4)                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7222  | Issues Reported by Multiple Sources (Consolidated)              | S3       | N/A                                                                              | 0         |
+| DEBT-7231  | 🟢 Admin Reset Button Missing Protection                        | S3       | N/A                                                                              | 0         |
+| DEBT-7232  | Issues Already Addressed (per AI_HANDOFF/ROADMAP)               | S3       | N/A                                                                              | 0         |
+| DEBT-7233  | Consolidated Action Plan                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7234  | Roadmap Feature Decision Resolution                             | S3       | N/A                                                                              | 0         |
+| DEBT-7235  | Risk Factor A: "Bleeding Edge" Stack Instability                | S3       | N/A                                                                              | 0         |
+| DEBT-7237  | Dependency Compatibility Check                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7238  | Summary of Actions                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7245  | Use proper mock types                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7247  | Warning Breakdown by Category                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7251  | ESLint Configuration Improvements                               | S3       | N/A                                                                              | 0         |
+| DEBT-7252  | Recommendation 1: Stricter Rules for Application Code           | S3       | N/A                                                                              | 0         |
+| DEBT-7253  | Recommendation 2: Pre-commit Hook                               | S3       | N/A                                                                              | 0         |
+| DEBT-7254  | Recommendation 3: CI Enforcement                                | S3       | N/A                                                                              | 0         |
+| DEBT-7255  | Long-Term Maintenance                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7256  | Prevent Future Warnings                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7257  | Update this plan with new patterns                              | S3       | N/A                                                                              | 0         |
+| DEBT-7258  | SoNash Refactoring Action Plan                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7271  | Add Rate Limiting (S-2)                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7275  | 17-22. Other Phase 3 Items                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7276  | 24-26. Other Phase 4 Items                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7278  | Test Files to Create                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7279  | 📊 Impact Summary                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7281  | Issues Addressed: 15                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7283  | 📈 PERFORMANCE IMPROVEMENTS                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7285  | 🔒 SECURITY ENHANCEMENTS                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7287  | 🧪 TESTING RECOMMENDATIONS                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7288  | Immediate Testing Needed                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7290  | 🚀 DEPLOYMENT CHECKLIST                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7291  | Production Readiness (Before Launch)                            | S3       | N/A                                                                              | 0         |
+| DEBT-7292  | 💰 COST-BENEFIT ANALYSIS                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7293  | 🎓 KEY LEARNINGS                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7294  | What Needs Improvement                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7295  | Recommendations for Future PRs                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7296  | 📚 DOCUMENTATION ADDED                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7297  | 🔄 BACKWARD COMPATIBILITY                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7299  | Add tests for enhanced security validation                      | S3       | N/A                                                                              | 0         |
+| DEBT-7300  | Add integration tests for Firebase operations                   | S3       | N/A                                                                              | 0         |
+| DEBT-7301  | Implement Firebase App Check                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7302  | Add server-side authorization                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7305  | Fix `firestore.rules` Date Logic                                | S3       | N/A                                                                              | 0         |
+| DEBT-7308  | React's Default XSS Protection                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7309  | Verification of User Input Handling                             | S3       | N/A                                                                              | 0         |
+| DEBT-7310  | Journal Entry Text (today-page.tsx:312-324)                     | S3       | N/A                                                                              | 0         |
+| DEBT-7311  | Nickname Display (book-cover.tsx:221)                           | S3       | N/A                                                                              | 0         |
+| DEBT-7312  | Clean Time Display (today-page.tsx:183)                         | S3       | N/A                                                                              | 0         |
+| DEBT-7313  | Meeting Data (resources-page.tsx:227-236)                       | S3       | N/A                                                                              | 0         |
+| DEBT-7314  | Dangerous Patterns Audit                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7315  | Search for `dangerouslySetInnerHTML`                            | S3       | N/A                                                                              | 0         |
+| DEBT-7316  | Search for `innerHTML`                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7317  | Search for `eval()`                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7318  | Search for `document.write`                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7319  | Third-Party Libraries XSS Risk                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7320  | Framer Motion                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7321  | React Hook Form                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7322  | Sonner (Toast Library)                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7323  | Future Risks (If Features Are Added)                            | S3       | N/A                                                                              | 0         |
+| DEBT-7326  | Defense-in-Depth: Content Security Policy                       | S3       | N/A                                                                              | 0         |
+| DEBT-7327  | Recommendation:                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7328  | Firestore Security for XSS Context                              | S3       | N/A                                                                              | 0         |
+| DEBT-7329  | Current Rules (firestore.rules:33-36):                          | S3       | N/A                                                                              | 0         |
+| DEBT-7331  | Manual XSS Tests:                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7332  | Automated Testing:                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7333  | Implement CSP headers in next.config.mjs                        | S3       | N/A                                                                              | 0         |
+| DEBT-7334  | Add XSS test cases to test suite                                | S3       | N/A                                                                              | 0         |
+| DEBT-7335  | Error Tracing Tab - includes npm audit display                  | S3       | N/A                                                                              | 0         |
+| DEBT-7336  | Remove duplicate test run from pre-push (done) - ✅ Session     | S3       | N/A                                                                              | 0         |
+| DEBT-7337  | Add file extension filters to hook matchers                     | S3       | N/A                                                                              | 0         |
+| DEBT-7338  | Automated fix suggestions - Generate patches                    | S3       | N/A                                                                              | 0         |
+| DEBT-7339  | Broken deploy triage runbook (30min)                            | S3       | N/A                                                                              | 0         |
+| DEBT-7341  | Reduce SESSION_CONTEXT.md - Archive history to                  | S3       | N/A                                                                              | 0         |
+| DEBT-7342  | Remove unused gemini-generated images (-4MB)                    | S3       | N/A                                                                              | 0         |
+| DEBT-7343  | Convert remaining images to WebP format (-90% size)             | S3       | N/A                                                                              | 0         |
+| DEBT-7344  | Preload LCP image (wood-table.jpg)                              | S3       | N/A                                                                              | 0         |
+| DEBT-7345  | Code-split admin panel                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7346  | Add Content Security Policy                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7347  | Make reCAPTCHA fail-closed when configured                      | S3       | N/A                                                                              | 0         |
+| DEBT-7348  | Create `/test-suite` skill with 5-phase pipeline ✅             | S3       | N/A                                                                              | 0         |
+| DEBT-7349  | Integrate with CI (fail on diff > threshold)                    | S3       | N/A                                                                              | 0         |
+| DEBT-7350  | Test Results Tab - Show pass/fail summary                       | S3       | N/A                                                                              | 0         |
+| DEBT-7351  | Cleanup Utilities - Reset state between tests                   | S3       | N/A                                                                              | 0         |
+| DEBT-7352  | Security Rules Tests - Test firestore.rules coverage            | S3       | N/A                                                                              | 0         |
+| DEBT-7353  | Compare options: Semgrep, CodeQL, ESLint security plugins       | S3       | N/A                                                                              | 0         |
+| DEBT-7354  | ENH-0063: Remove duplicate pattern check from pre-push ho...    | S3       | N/A                                                                              | 0         |
+| DEBT-7355  | Include helpful fix hints in error messages                     | S3       | N/A                                                                              | 0         |
+| DEBT-7356  | Add learning entry reminder to pre-commit hook                  | S3       | N/A                                                                              | 0         |
+| DEBT-7358  | Wire `Sentry.captureException()` in error paths                 | S3       | N/A                                                                              | 0         |
+| DEBT-7359  | Fix Prettier baseline (run `npm run format`)                    | S3       | N/A                                                                              | 0         |
+| DEBT-7360  | Fix knip baseline (7 unused deps)                               | S3       | N/A                                                                              | 0         |
+| DEBT-7361  | Remove all `continue-on-error: true` flags                      | S3       | N/A                                                                              | 0         |
+| DEBT-7362  | Export `redactSensitiveUrl` from `lib/utils/error-export....    | S3       | lib/utils/error-export.ts                                                        | 0         |
+| DEBT-7363  | Error summary card on Dashboard (count + trend) ✅              | S3       | N/A                                                                              | 0         |
+| DEBT-7364  | Deep links to Sentry for each error ✅                          | S3       | N/A                                                                              | 0         |
+| DEBT-7365  | Recent security events display (from existing `logSecurit...    | S3       | N/A                                                                              | 0         |
+| DEBT-7366  | Logs tab error state on network failure                         | S3       | N/A                                                                              | 0         |
+| DEBT-7367  | Privilege save error handling and revert                        | S3       | N/A                                                                              | 0         |
+| DEBT-7368  | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_     | S3       | N/A                                                                              | 0         |
+| DEBT-7369  | M4.5-SEC-005 - Security rules for new collections               | S3       | N/A                                                                              | 0         |
+| DEBT-7370  | RND-AUDIT - Security Audit Planning (1 day)                     | S3       | N/A                                                                              | 0         |
+| DEBT-7371  | F12.11 - Slow Rollout (progressive feature disclosure)          | S3       | N/A                                                                              | 0         |
+| DEBT-7372  | T6.5 - Sync performance tracking                                | S3       | N/A                                                                              | 0         |
+| DEBT-7373  | T9.2 - Data retention policy (user choice for auto-cleanup)     | S3       | N/A                                                                              | 0         |
+| DEBT-7374  | T8.7 - Extract offline-core package (optimization; not re...    | S3       | N/A                                                                              | 0         |
+| DEBT-7375  | Pass limit to FirestoreService when it supports configura...    | S3       | lib/database/firestore-adapter.ts                                                | 0         |
+| DEBT-7378  | Refactor to reduce cognitive complexity (currently 29, ta...    | S3       | scripts/check-content-accuracy.js                                                | 0         |
+| DEBT-7379  | Create a userIdHash → uid lookup collection for better pe...    | S3       | functions/src/admin.ts                                                           | 0         |
+| DEBT-7380  | Consider pre-computing cohort retention in a daily job          | S3       | functions/src/admin.ts                                                           | 0         |
+| DEBT-7381  | AI Model Comparison                                             | S3       | package.json                                                                     | 0         |
+| DEBT-7382  | Add limit(50) to queries in lib/db/meetings.ts and              | S3       | lib/db/meetings.ts                                                               | 0         |
+| DEBT-7383  | Unsafe Non-Null Assertions                                      | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7384  | Client-Side Security Theater                                    | S3       | lib/security/firestore-validation.ts                                             | 0         |
+| DEBT-7386  | No Server-Side Rate Limiting                                    | S3       | lib/utils/rate-limiter.ts                                                        | 0         |
+| DEBT-7387  | Inefficient Equality Checking                                   | S3       | auth-provider.tsx                                                                | 0         |
+| DEBT-7388  | Massive Context Provider (God Object)                           | S3       | auth-provider.tsx                                                                | 0         |
+| DEBT-7389  | Large God Component                                             | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-7390  | Refactor #5: Split AuthProvider (Optional - Breaking Change)    | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7391  | `CleanDaysCalculator.tsx` (Pure Logic)                          | S3       | components/recovery/clean-days-calculator.tsx                                    | 0         |
+| DEBT-7392  | `BookAnimation.tsx` (Animation Logic)                           | S3       | components/notebook/book-animation.tsx                                           | 0         |
+| DEBT-7393  | `BookAuthGuard.tsx` (Auth Logic)                                | S3       | components/notebook/book-auth-guard.tsx                                          | 0         |
+| DEBT-7394  | `BookCover.tsx` (Simplified Composition)                        | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-7395  | Define `Result<T>` Type                                         | S3       | lib/types/result.ts                                                              | 0         |
+| DEBT-7396  | Standardize Service Methods                                     | S3       | lib/firestore-service.ts                                                         | 0         |
+| DEBT-7397  | Update Component Usage                                          | S3       | components/pages/today-page.tsx                                                  | 0         |
+| DEBT-7398  | Error Handling Strategy Document                                | S3       | docs/ERROR_HANDLING.md                                                           | 0         |
+| DEBT-7399  | Update all components to use adapter                            | S3       | docs/ARCHITECTURE.md                                                             | 0         |
+| DEBT-7405  | CQ-6: Unused Dependencies 🟢 MEDIUM                             | S3       | package.json                                                                     | 0         |
+| DEBT-7408  | CQ-10: Excessive Font Loading ⚪ LOW                            | S3       | app/layout.tsx                                                                   | 0         |
+| DEBT-7413  | B-5: Anonymous Session Edge Case 🟢 MEDIUM                      | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7415  | P-4: localStorage Sync on Every Keystroke 🟢 MEDIUM             | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7417  | S-3: Exposed Firebase Config 🟢 MEDIUM                          | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7419  | A-1: Missing ARIA Labels 🟢 MEDIUM                              | S3       | tab-navigation.tsx                                                               | 0         |
+| DEBT-7420  | Refactor lib/firebase.ts exports                                | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7421  | Risk Factor B: Node.js 24 Runtime in Cloud Functions            | S3       | functions/package.json                                                           | 0         |
+| DEBT-7422  | Prefix with \_index                                             | S3       | tab-navigation.tsx                                                               | 0         |
+| DEBT-7423  | Remove unused import                                            | S3       | firestore-adapter.ts                                                             | 0         |
+| DEBT-7424  | Remove or export if used elsewhere                              | S3       | lib/db/users.ts                                                                  | 0         |
+| DEBT-7425  | Use or remove                                                   | S3       | scripts/seed-meetings.ts                                                         | 0         |
+| DEBT-7426  | Use FormEvent<HTMLFormElement>                                  | S3       | sign-in-modal.tsx                                                                | 0         |
+| DEBT-7427  | Use unknown instead                                             | S3       | firebase-types.ts                                                                | 0         |
+| DEBT-7428  | Add to deps or use useCallback                                  | S3       | today-page.tsx                                                                   | 0         |
+| DEBT-7429  | Category 1: Unused Variables (10 warnings)                      | S3       | tab-navigation.tsx                                                               | 0         |
+| DEBT-7430  | Category 2: Explicit `any` Types (18 warnings)                  | S3       | sign-in-modal.tsx                                                                | 0         |
+| DEBT-7431  | Category 3: React Hooks Dependencies (1 warning)                | S3       | today-page.tsx                                                                   | 0         |
+| DEBT-7434  | Standardize Date Handling (CQ-2)                                | S3       | lib/utils/date-utils.ts                                                          | 0         |
+| DEBT-7435  | Remove @ts-ignore and Add Type Guards (CQ-3)                    | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7436  | Add Input Validation with Zod (CQ-7)                            | S3       | lib/db/users.ts                                                                  | 0         |
+| DEBT-7437  | Add Server-Side Date Validation (S-1)                           | S3       | firestore.rules                                                                  | 0         |
+| DEBT-7438  | Remove Unused Fonts (P-1)                                       | S3       | app/layout.tsx                                                                   | 0         |
+| DEBT-7439  | Fix Onboarding Animation (B-3)                                  | S3       | components/onboarding/onboarding-wizard.tsx                                      | 0         |
+| DEBT-7440  | Environment-Aware Logging (CQ-5)                                | S3       | lib/logger.ts                                                                    | 0         |
+| DEBT-7441  | Add Loading States (CQ-8)                                       | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7442  | Optimize Real-Time Listeners (P-2)                              | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7443  | Implement Code Splitting (P-3)                                  | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-7444  | Fix useEffect Dependencies (CQ-1)                               | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7445  | Extract Magic Strings (CQ-4)                                    | S3       | lib/constants.ts                                                                 | 0         |
+| DEBT-7446  | Remove Unused Dependencies (CQ-6)                               | S3       | package.json                                                                     | 0         |
+| DEBT-7447  | Reduce Firebase Coupling (CQ-9)                                 | S3       | lib/database/database-interface.ts                                               | 0         |
+| DEBT-7448  | Files Changed: 6                                                | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7449  | Enhanced Validation                                             | S3       | firestore-validation.ts                                                          | 0         |
+| DEBT-7450  | Future Test Coverage                                            | S3       | firebase-guards.ts                                                               | 0         |
+| DEBT-7451  | Add tests for firebase-guards.ts utilities                      | S3       | firebase-guards.ts                                                               | 0         |
+| DEBT-7453  | Simplify `FirestoreService` (Remove Manual DI)                  | S3       | lib/firestore-service.ts                                                         | 0         |
+| DEBT-7454  | Decouple `AuthProvider`                                         | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7455  | Summary of Protections                                          | S3       | document.write                                                                   | 0         |
+| DEBT-7456  | Claude Fix Bundle format - docs/CLAUDE_FIX_BUNDLE.md            | S3       | docs/CLAUDE_FIX_BUNDLE.md                                                        | 0         |
+| DEBT-7518  | Stale // ... existing metadata ... comment — code-generat...    | S3       | app/layout.tsx                                                                   | 66        |
+| DEBT-7519  | \_checkInSteps computed via useMemo but never consumed — w...   | S3       | components/notebook/pages/today-page.tsx                                         | 332       |
+| DEBT-7520  | Missing use client directive in entry-wizard.tsx                | S3       | components/journal/entry-wizard.tsx                                              | 1         |
+| DEBT-7521  | meeting-countdown.tsx is dead code — superseded by Compac...    | S3       | components/widgets/meeting-countdown.tsx                                         | 0         |
+| DEBT-7522  | Three underscore-prefixed dead functions in resources-pag...    | S3       | components/notebook/pages/resources-page.tsx                                     | 596       |
+| DEBT-7523  | Local isSameDay reimplemented — date-fns already imported       | S3       | components/notebook/pages/resources-page.tsx                                     | 78        |
+| DEBT-7524  | Debug console.log in today-page.tsx dev guard — specific ...    | S3       | components/notebook/pages/today-page.tsx                                         | 639       |
+| DEBT-7525  | \_appCheck exported but always undefined in lib/firebase.ts     | S3       | lib/firebase.ts                                                                  | 40        |
+| DEBT-7526  | Two parallel error utilities — merge errors.ts and callab...    | S3       | lib/utils/errors.ts                                                              | 0         |
+| DEBT-7527  | Admin password reset returns distinct No user found — use...    | S3       | functions/src/admin.ts                                                           | 3374      |
+| DEBT-7528  | Missing COEP header — document intentional absence due to...    | S3       | firebase.json                                                                    | 0         |
+| DEBT-7529  | Rate limit document IDs contain raw Firebase UID and IP —...    | S3       | functions/src/firestore-rate-limiter.ts                                          | 39        |
+| DEBT-7530  | Mobile block via user-agent — security theater; needs cla...    | S3       | app/admin/page.tsx                                                               | 36        |
+| DEBT-7531  | searchUsersByNickname prefix query has no input length va...    | S3       | functions/src/admin.ts                                                           | 286       |
+| DEBT-7532  | Hook log file .git/hook-output.log grows unboundedly            | S3       | .husky/pre-commit                                                                | 0         |
+| DEBT-7533  | require_skip_reason() function duplicated verbatim in pre...    | S3       | .husky/pre-commit                                                                | 0         |
+| DEBT-7534  | 96-101 npm scripts with no grouping, no help, no discover...    | S3       | package.json                                                                     | 0         |
+| DEBT-7535  | next dev without --turbopack flag                               | S3       | package.json                                                                     | 0         |
+| DEBT-7536  | 3-step test compilation adds 10-20s overhead — full Vites...    | S3       | package.json                                                                     | 0         |
+| DEBT-7537  | No type-check npm script alias — DEVELOPMENT.md reference...    | S3       | package.json                                                                     | 0         |
+| DEBT-7538  | nul Windows artifact file committed to repo                     | S3       | nul                                                                              | 0         |
+| DEBT-7539  | tsconfig.json incremental: true with noEmit: true — redun...    | S3       | tsconfig.json                                                                    | 0         |
+| DEBT-7540  | No i18n infrastructure — all strings hardcoded in English       | S3       | N/A                                                                              | 0         |
+| DEBT-7541  | Journal lock screen component exists but is never importe...    | S3       | components/journal/lock-screen.tsx                                               | 0         |
+| DEBT-7542  | Swipe navigation has no visual affordance — only hint is ...    | S3       | components/notebook/notebook-shell.tsx                                           | 1132      |
+| DEBT-7547  | Update firebase from 12.8.0 to 12.9.0 (within semver range)     | S3       | package.json                                                                     | 0         |
+| DEBT-7548  | Update tailwindcss + @tailwindcss/postcss from 4.1.18 to ...    | S3       | package.json                                                                     | 0         |
+| DEBT-7549  | Update zod from 4.3.5 to 4.3.6 (patch within semver range)      | S3       | package.json                                                                     | 0         |
+| DEBT-7553  | Update react-day-picker from 9.8.0 to 9.13.2 (minor versi...    | S3       | package.json                                                                     | 0         |
+| DEBT-7558  | Create learning-ecosystem-audit skill (MEDIUM-HIGH priori...    | S3       | .claude/skills/                                                                  | 0         |
+| DEBT-7564  | DRY: consolidate checkErrorHandlingCoverage with hook aud...    | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 183       |
+| DEBT-7565  | KNOWN_HOOKS hardcoded array should be dynamically derived...    | S3       | .claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js   | 30        |
+| DEBT-7566  | DRY: consolidate dual-write check with file-io-safety.js ...    | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js     | 404       |
+| DEBT-7571  | settings.json team config health issue                          | S3       | N/A                                                                              | undefined |
+| DEBT-7575  | settings.json team config health issue                          | S3       | N/A                                                                              | 0         |
+| DEBT-7580  | settings.json team config health issue                          | S3       | N/A                                                                              | undefined |
+| DEBT-7585  | settings.json team config health issue                          | S3       | N/A                                                                              | undefined |
+| DEBT-7590  | settings.json team config health issue                          | S3       | N/A                                                                              | 0         |
+| DEBT-7591  | step_continuity checker false positive on Step/Stage tran...    | S3       | N/A                                                                              | 0         |
+| DEBT-7594  | Consider ajv schema validation for TDMS instead of hand-w...    | S3       | scripts/debt/validate-schema.js                                                  | 0         |
+| DEBT-7595  | Improve template literal cross-boundary pattern detection...    | S3       | eslint-plugin-sonash/rules/no-unbounded-regex.js                                 | 0         |
+| DEBT-7596  | Extend no-math-max-spread to catch filtered/mapped spread...    | S3       | eslint-plugin-sonash/rules/no-math-max-spread.js                                 | 0         |
+| DEBT-7597  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
+| DEBT-7598  | Pass limit to FirestoreService when it supports configura...    | S3       | lib/database/firestore-adapter.ts                                                | 0         |
+| DEBT-7599  | Refactor to reduce cognitive complexity (currently 29, ta...    | S3       | scripts/check-content-accuracy.js                                                | 0         |
+| DEBT-7600  | Create a userIdHash → uid lookup collection for better pe...    | S3       | functions/src/admin.ts                                                           | 0         |
+| DEBT-7601  | Consider pre-computing cohort retention in a daily job          | S3       | functions/src/admin.ts                                                           | 0         |
+| DEBT-7606  | Medium Severity & Code Quality Findings                         | S3       | N/A                                                                              | 0         |
+| DEBT-7607  | Medium Severity & Code Quality Findings                         | S3       | N/A                                                                              | 0         |
+| DEBT-7608  | AI Model Comparison                                             | S3       | package.json                                                                     | 0         |
+| DEBT-7609  | AI Model Comparison                                             | S3       | package.json                                                                     | 0         |
+| DEBT-7610  | Add limit(50) to queries in lib/db/meetings.ts and              | S3       | lib/db/meetings.ts                                                               | 0         |
+| DEBT-7611  | Add limit(50) to queries in lib/db/meetings.ts and              | S3       | lib/db/meetings.ts                                                               | 0         |
+| DEBT-7612  | Potential Root Cause A: API Key Restrictions (Most Likely)      | S3       | N/A                                                                              | 0         |
+| DEBT-7613  | Potential Root Cause B: Firebase App Check API Not Enabled      | S3       | N/A                                                                              | 0         |
+| DEBT-7614  | Potential Root Cause B: Firebase App Check API Not Enabled      | S3       | N/A                                                                              | 0         |
+| DEBT-7615  | Potential Root Cause C: "Zombie" Token or Project/App Mis...    | S3       | N/A                                                                              | 0         |
+| DEBT-7616  | Potential Root Cause C: "Zombie" Token or Project/App Mis...    | S3       | N/A                                                                              | 0         |
+| DEBT-7617  | Potential Root Cause D: System Time Skew (Edge Case)            | S3       | N/A                                                                              | 0         |
+| DEBT-7618  | Potential Root Cause D: System Time Skew (Edge Case)            | S3       | N/A                                                                              | 0         |
+| DEBT-7619  | Recommended Immediate Action                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7620  | Recommended Immediate Action                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7621  | Execution Flow Analysis                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7622  | Execution Flow Analysis                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7623  | Code Smells Identified                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7624  | Code Smells Identified                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7625  | 🚨 DANGEROUS PATTERNS                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7626  | 🚨 DANGEROUS PATTERNS                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7627  | 🔍 EDGE CASES                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7628  | 🔍 EDGE CASES                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7631  | Unsafe Non-Null Assertions                                      | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7632  | Client-Side Security Theater                                    | S3       | lib/security/firestore-validation.ts                                             | 0         |
+| DEBT-7633  | Client-Side Security Theater                                    | S3       | lib/security/firestore-validation.ts                                             | 0         |
+| DEBT-7636  | Race Conditions in State                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7637  | No Server-Side Rate Limiting                                    | S3       | lib/utils/rate-limiter.ts                                                        | 0         |
+| DEBT-7640  | Inefficient Equality Checking                                   | S3       | auth-provider.tsx                                                                | 0         |
+| DEBT-7641  | Massive Context Provider (God Object)                           | S3       | auth-provider.tsx                                                                | 0         |
+| DEBT-7642  | Massive Context Provider (God Object)                           | S3       | auth-provider.tsx                                                                | 0         |
+| DEBT-7643  | Large God Component                                             | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-7644  | Large God Component                                             | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-7645  | Dynamic Import Anti-Pattern                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7646  | Type Gymnastics                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7647  | STYLE/READABILITY                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7648  | STYLE/READABILITY                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7649  | Refactoring Strategy                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7650  | Refactoring Strategy                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7651  | Refactor #5: Split AuthProvider (Optional - Breaking Change)    | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7652  | Refactor #5: Split AuthProvider (Optional - Breaking Change)    | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7655  | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)          | S3       | N/A                                                                              | 0         |
+| DEBT-7656  | 🏆 #1: Safe Firebase Initialization (Prevents Crashes)          | S3       | N/A                                                                              | 0         |
+| DEBT-7657  | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics)    | S3       | N/A                                                                              | 0         |
+| DEBT-7658  | 🏆 #2: Type Guards for Firebase (Eliminates Type Gymnastics)    | S3       | N/A                                                                              | 0         |
+| DEBT-7659  | 🏆 #3: Server-Side Security Documentation (Guided Migration)    | S3       | N/A                                                                              | 0         |
+| DEBT-7660  | 🏆 #3: Server-Side Security Documentation (Guided Migration)    | S3       | N/A                                                                              | 0         |
+| DEBT-7661  | METRICS & VALIDATION                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7662  | METRICS & VALIDATION                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7663  | Security Posture                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7664  | Security Posture                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7665  | Immediate (This PR)                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7666  | Immediate (This PR)                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7667  | Short-Term (Next Sprint)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7668  | Short-Term (Next Sprint)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7669  | Long-Term (Production Readiness)                                | S3       | N/A                                                                              | 0         |
+| DEBT-7670  | Long-Term (Production Readiness)                                | S3       | N/A                                                                              | 0         |
+| DEBT-7671  | Remove dangerous non-null assertions                            | S3       | N/A                                                                              | 0         |
+| DEBT-7672  | Remove dangerous non-null assertions                            | S3       | N/A                                                                              | 0         |
+| DEBT-7673  | Add runtime checks before export                                | S3       | N/A                                                                              | 0         |
+| DEBT-7674  | Add runtime checks before export                                | S3       | N/A                                                                              | 0         |
+| DEBT-7675  | Create isFirebaseTimestamp() type guard                         | S3       | N/A                                                                              | 0         |
+| DEBT-7676  | Create isFirebaseTimestamp() type guard                         | S3       | N/A                                                                              | 0         |
+| DEBT-7677  | Create isFirestoreError() type guard                            | S3       | N/A                                                                              | 0         |
+| DEBT-7678  | Create isFirestoreError() type guard                            | S3       | N/A                                                                              | 0         |
+| DEBT-7679  | Remove type gymnastics from components                          | S3       | N/A                                                                              | 0         |
+| DEBT-7680  | Remove type gymnastics from components                          | S3       | N/A                                                                              | 0         |
+| DEBT-7681  | Add JSDoc warnings about client-side limitations                | S3       | N/A                                                                              | 0         |
+| DEBT-7682  | Add JSDoc warnings about client-side limitations                | S3       | N/A                                                                              | 0         |
+| DEBT-7683  | Implement Cloud Functions for rate limiting                     | S3       | N/A                                                                              | 0         |
+| DEBT-7684  | Implement Cloud Functions for rate limiting                     | S3       | N/A                                                                              | 0         |
+| DEBT-7685  | Add Firebase App Check                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7686  | Add Firebase App Check                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7687  | Implement account linking for anonymous users                   | S3       | N/A                                                                              | 0         |
+| DEBT-7688  | Implement account linking for anonymous users                   | S3       | N/A                                                                              | 0         |
+| DEBT-7689  | Split AuthProvider into focused contexts                        | S3       | N/A                                                                              | 0         |
+| DEBT-7690  | Split AuthProvider into focused contexts                        | S3       | N/A                                                                              | 0         |
+| DEBT-7691  | Add integration tests for Firestore operations                  | S3       | N/A                                                                              | 0         |
+| DEBT-7692  | Add integration tests for Firestore operations                  | S3       | N/A                                                                              | 0         |
+| DEBT-7696  | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
+| DEBT-7697  | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
+| DEBT-7698  | Implement external logging (Sentry)                             | S3       | N/A                                                                              | 0         |
+| DEBT-7699  | Add performance monitoring                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7700  | Add performance monitoring                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7701  | AuthProvider has 7 state variables (SRP violation)              | S3       | N/A                                                                              | 0         |
+| DEBT-7702  | AuthProvider has 7 state variables (SRP violation)              | S3       | N/A                                                                              | 0         |
+| DEBT-7703  | book-cover.tsx = 337 lines (mixed concerns)                     | S3       | N/A                                                                              | 0         |
+| DEBT-7704  | book-cover.tsx = 337 lines (mixed concerns)                     | S3       | N/A                                                                              | 0         |
+| DEBT-7707  | Adapter exists but not used consistently                        | S3       | N/A                                                                              | 0         |
+| DEBT-7708  | Adapter exists but not used consistently                        | S3       | N/A                                                                              | 0         |
+| DEBT-7709  | Only 10-15% coverage                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7710  | Only 10-15% coverage                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7711  | Unknown size, heavy dependencies                                | S3       | N/A                                                                              | 0         |
+| DEBT-7712  | Unknown size, heavy dependencies                                | S3       | N/A                                                                              | 0         |
+| DEBT-7715  | **A6: Adapter Pattern** — 3 days — Medium — P1                  | S3       | N/A                                                                              | 0         |
+| DEBT-7716  | **A6: Adapter Pattern** — 3 days — Medium — P1                  | S3       | N/A                                                                              | 0         |
+| DEBT-7729  | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks...    | S3       | N/A                                                                              | 0         |
+| DEBT-7730  | **Schedule Slip** — Medium — Medium — Prioritize P0 tasks...    | S3       | N/A                                                                              | 0         |
+| DEBT-7731  | **Team Capacity** — Medium — Medium — Parallel work on M1...    | S3       | N/A                                                                              | 0         |
+| DEBT-7732  | **Team Capacity** — Medium — Medium — Parallel work on M1...    | S3       | N/A                                                                              | 0         |
+| DEBT-7735  | Improvement Roadmap                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7736  | Improvement Roadmap                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7737  | Target Architecture Quality: 4.8/5                              | S3       | N/A                                                                              | 0         |
+| DEBT-7738  | Target Architecture Quality: 4.8/5                              | S3       | N/A                                                                              | 0         |
+| DEBT-7739  | Split AuthProvider into Focused Contexts                        | S3       | N/A                                                                              | 0         |
+| DEBT-7740  | Problem Statement                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7741  | Problem Statement                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7742  | Solution: Split into 3 Focused Contexts                         | S3       | N/A                                                                              | 0         |
+| DEBT-7743  | Solution: Split into 3 Focused Contexts                         | S3       | N/A                                                                              | 0         |
+| DEBT-7744  | Architecture                                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7745  | Architecture                                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7746  | Estimated Effort                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7747  | Estimated Effort                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7748  | Decompose Large Components                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7749  | Decompose Large Components                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7750  | Problem: `book-cover.tsx` (337 lines)                           | S3       | N/A                                                                              | 0         |
+| DEBT-7751  | Problem: `book-cover.tsx` (337 lines)                           | S3       | N/A                                                                              | 0         |
+| DEBT-7752  | Solution: Extract 4 Sub-Components                              | S3       | N/A                                                                              | 0         |
+| DEBT-7753  | Solution: Extract 4 Sub-Components                              | S3       | N/A                                                                              | 0         |
+| DEBT-7754  | `CleanDaysCalculator.tsx` (Pure Logic)                          | S3       | components/recovery/clean-days-calculator.tsx                                    | 0         |
+| DEBT-7755  | `CleanDaysCalculator.tsx` (Pure Logic)                          | S3       | components/recovery/clean-days-calculator.tsx                                    | 0         |
+| DEBT-7756  | `BookAnimation.tsx` (Animation Logic)                           | S3       | components/notebook/book-animation.tsx                                           | 0         |
+| DEBT-7757  | `BookAnimation.tsx` (Animation Logic)                           | S3       | components/notebook/book-animation.tsx                                           | 0         |
+| DEBT-7758  | `BookAuthGuard.tsx` (Auth Logic)                                | S3       | components/notebook/book-auth-guard.tsx                                          | 0         |
+| DEBT-7759  | `BookAuthGuard.tsx` (Auth Logic)                                | S3       | components/notebook/book-auth-guard.tsx                                          | 0         |
+| DEBT-7760  | `BookCover.tsx` (Simplified Composition)                        | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-7761  | `BookCover.tsx` (Simplified Composition)                        | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-7762  | Component Size Target                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7763  | Component Size Target                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7764  | Standardize Error Handling                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7765  | Standardize Error Handling                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7768  | Solution: Result<T> Type Pattern                                | S3       | N/A                                                                              | 0         |
+| DEBT-7769  | Solution: Result<T> Type Pattern                                | S3       | N/A                                                                              | 0         |
+| DEBT-7770  | Define `Result<T>` Type                                         | S3       | lib/types/result.ts                                                              | 0         |
+| DEBT-7771  | Define `Result<T>` Type                                         | S3       | lib/types/result.ts                                                              | 0         |
+| DEBT-7772  | Standardize Service Methods                                     | S3       | lib/firestore-service.ts                                                         | 0         |
+| DEBT-7773  | Standardize Service Methods                                     | S3       | lib/firestore-service.ts                                                         | 0         |
+| DEBT-7774  | Update Component Usage                                          | S3       | components/pages/today-page.tsx                                                  | 0         |
+| DEBT-7775  | Update Component Usage                                          | S3       | components/pages/today-page.tsx                                                  | 0         |
+| DEBT-7776  | Error Handling Strategy Document                                | S3       | docs/ERROR_HANDLING.md                                                           | 0         |
+| DEBT-7777  | Error Handling Strategy Document                                | S3       | docs/ERROR_HANDLING.md                                                           | 0         |
+| DEBT-7778  | When to Use Each Pattern                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7779  | When to Use Each Pattern                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7780  | Result<T> (Preferred for services)                              | S3       | N/A                                                                              | 0         |
+| DEBT-7781  | Result<T> (Preferred for services)                              | S3       | N/A                                                                              | 0         |
+| DEBT-7782  | Throw (Use sparingly)                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7783  | Throw (Use sparingly)                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7784  | Error Boundaries (UI layer)                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7785  | Error Boundaries (UI layer)                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7788  | Problem: Direct Image Usage                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7789  | Problem: Direct Image Usage                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7790  | Solution: Next.js Image Component                               | S3       | N/A                                                                              | 0         |
+| DEBT-7791  | Solution: Next.js Image Component                               | S3       | N/A                                                                              | 0         |
+| DEBT-7792  | Audit Checklist                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7793  | Audit Checklist                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7796  | Problem: Unknown Bundle Size                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7797  | Problem: Unknown Bundle Size                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7798  | Solution: Bundle Analysis                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7799  | Solution: Bundle Analysis                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7800  | Install Analyzer                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7801  | Install Analyzer                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7802  | Configure Next.js                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7803  | Configure Next.js                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7804  | Run Analysis                                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7805  | Run Analysis                                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7808  | Bundle Size Targets                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7809  | Bundle Size Targets                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7810  | Database Adapter Pattern Consistency                            | S3       | N/A                                                                              | 0         |
+| DEBT-7811  | Database Adapter Pattern Consistency                            | S3       | N/A                                                                              | 0         |
+| DEBT-7814  | Benefits of Adapter Pattern                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7815  | Benefits of Adapter Pattern                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7816  | Implementation                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7817  | Implementation                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7818  | Add responsive sizes attribute                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7819  | Add responsive sizes attribute                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7820  | Update AuthProvider to use adapter                              | S3       | N/A                                                                              | 0         |
+| DEBT-7821  | Update AuthProvider to use adapter                              | S3       | N/A                                                                              | 0         |
+| DEBT-7822  | Update all components to use adapter                            | S3       | docs/ARCHITECTURE.md                                                             | 0         |
+| DEBT-7823  | Update all components to use adapter                            | S3       | docs/ARCHITECTURE.md                                                             | 0         |
+| DEBT-7824  | Add adapter interface tests                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7825  | Add adapter interface tests                                     | S3       | N/A                                                                              | 0         |
+| DEBT-7826  | Remove direct FirestoreService imports                          | S3       | N/A                                                                              | 0         |
+| DEBT-7827  | Remove direct FirestoreService imports                          | S3       | N/A                                                                              | 0         |
+| DEBT-7828  | Key Findings:                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7829  | Key Findings:                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7836  | Code Quality Issues                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7837  | Code Quality Issues                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7838  | Severity Legend:                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7839  | Severity Legend:                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7846  | CQ-4: Hardcoded Magic Strings 🟢 MEDIUM                         | S3       | N/A                                                                              | 0         |
+| DEBT-7847  | CQ-4: Hardcoded Magic Strings 🟢 MEDIUM                         | S3       | N/A                                                                              | 0         |
+| DEBT-7849  | CQ-6: Unused Dependencies 🟢 MEDIUM                             | S3       | package.json                                                                     | 0         |
+| DEBT-7850  | CQ-6: Unused Dependencies 🟢 MEDIUM                             | S3       | package.json                                                                     | 0         |
+| DEBT-7855  | CQ-10: Excessive Font Loading ⚪ LOW                            | S3       | app/layout.tsx                                                                   | 0         |
+| DEBT-7856  | CQ-11: No Component Documentation 🟢 MEDIUM                     | S3       | N/A                                                                              | 0         |
+| DEBT-7857  | CQ-11: No Component Documentation 🟢 MEDIUM                     | S3       | N/A                                                                              | 0         |
+| DEBT-7864  | B-5: Anonymous Session Edge Case 🟢 MEDIUM                      | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-7865  | Performance Issues                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7866  | Performance Issues                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7872  | P-4: localStorage Sync on Every Keystroke 🟢 MEDIUM             | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-7873  | Security Issues                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7874  | Security Issues                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7879  | S-3: Exposed Firebase Config 🟢 MEDIUM                          | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7881  | Testing Coverage                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7882  | Testing Coverage                                                | S3       | N/A                                                                              | 0         |
+| DEBT-7883  | Accessibility Issues                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7884  | Accessibility Issues                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7885  | A-1: Missing ARIA Labels 🟢 MEDIUM                              | S3       | tab-navigation.tsx                                                               | 0         |
+| DEBT-7886  | A-2: Focus Management 🟢 MEDIUM                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7887  | A-2: Focus Management 🟢 MEDIUM                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7888  | Summary of Issues                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7889  | Summary of Issues                                               | S3       | N/A                                                                              | 0         |
+| DEBT-7890  | Recommended Prioritization                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7891  | Recommended Prioritization                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7892  | Long-Term Recommendations                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7893  | Long-Term Recommendations                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7894  | Add Error Boundaries                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7895  | Add Error Boundaries                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7896  | Implement Offline Support                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7897  | Implement Offline Support                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7898  | Add Monitoring                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7899  | Add Monitoring                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7900  | Refactor State Management                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7901  | Refactor State Management                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7902  | Add End-to-End Tests                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7903  | Add End-to-End Tests                                            | S3       | N/A                                                                              | 0         |
+| DEBT-7904  | Performance Budget                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7905  | Performance Budget                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7908  | S-2 (related: rate limiting)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7909  | S-2 (related: rate limiting)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7914  | Not explicitly listed                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7915  | Not explicitly listed                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7918  | Finding #3 (UTC vs local)                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7919  | Finding #3 (UTC vs local)                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7920  | §4.2 (Listener Memory Leaks)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7921  | §4.2 (Listener Memory Leaks)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7924  | P-2 (Real-time Listeners Not Optimized)                         | S3       | N/A                                                                              | 0         |
+| DEBT-7925  | P-2 (Real-time Listeners Not Optimized)                         | S3       | N/A                                                                              | 0         |
+| DEBT-7926  | §4.2 (implied in listener issues)                               | S3       | N/A                                                                              | 0         |
+| DEBT-7927  | §4.2 (implied in listener issues)                               | S3       | N/A                                                                              | 0         |
+| DEBT-7928  | CQ-1 (isEditing in deps)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7929  | CQ-1 (isEditing in deps)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7930  | P-2 (unnecessary re-subscriptions)                              | S3       | N/A                                                                              | 0         |
+| DEBT-7931  | P-2 (unnecessary re-subscriptions)                              | S3       | N/A                                                                              | 0         |
+| DEBT-7932  | §3.4 (getAllMeetings, Journal queries)                          | S3       | N/A                                                                              | 0         |
+| DEBT-7933  | §3.4 (getAllMeetings, Journal queries)                          | S3       | N/A                                                                              | 0         |
+| DEBT-7934  | (implied in performance)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7935  | (implied in performance)                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7940  | B-3 (AnimatePresence Issue - different bug)                     | S3       | N/A                                                                              | 0         |
+| DEBT-7941  | B-3 (AnimatePresence Issue - different bug)                     | S3       | N/A                                                                              | 0         |
+| DEBT-7942  | B-5 (Anonymous Session Edge Case)                               | S3       | N/A                                                                              | 0         |
+| DEBT-7943  | B-5 (Anonymous Session Edge Case)                               | S3       | N/A                                                                              | 0         |
+| DEBT-7946  | Finding #4 (Meeting seed/clear exposed)                         | S3       | N/A                                                                              | 0         |
+| DEBT-7947  | Finding #4 (Meeting seed/clear exposed)                         | S3       | N/A                                                                              | 0         |
+| DEBT-7948  | Firebase App Check                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7949  | Firebase App Check                                              | S3       | N/A                                                                              | 0         |
+| DEBT-7950  | Server-side validation (Zod)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7951  | Server-side validation (Zod)                                    | S3       | N/A                                                                              | 0         |
+| DEBT-7952  | Rate limiting (10 req/min)                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7953  | Rate limiting (10 req/min)                                      | S3       | N/A                                                                              | 0         |
+| DEBT-7954  | Audit logging                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7955  | Audit logging                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-7956  | GDPR compliance                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7957  | GDPR compliance                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7958  | Dependency versions                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7959  | Dependency versions                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7960  | Remove allow create, update from daily_logs                     | S3       | N/A                                                                              | 0         |
+| DEBT-7961  | Remove allow create, update from daily_logs                     | S3       | N/A                                                                              | 0         |
+| DEBT-7962  | Change to fail-closed strategy                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7963  | Change to fail-closed strategy                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7964  | Add admin claim check or hide buttons                           | S3       | N/A                                                                              | 0         |
+| DEBT-7965  | Add admin claim check or hide buttons                           | S3       | N/A                                                                              | 0         |
+| DEBT-7966  | Refactor lib/firebase.ts exports                                | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7967  | Refactor lib/firebase.ts exports                                | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-7968  | Check existing profile before recreate                          | S3       | N/A                                                                              | 0         |
+| DEBT-7969  | Check existing profile before recreate                          | S3       | N/A                                                                              | 0         |
+| DEBT-7970  | Create unified getDateId() utility                              | S3       | N/A                                                                              | 0         |
+| DEBT-7971  | Create unified getDateId() utility                              | S3       | N/A                                                                              | 0         |
+| DEBT-7972  | Track lifecycle with refs, proper cleanup                       | S3       | N/A                                                                              | 0         |
+| DEBT-7973  | Track lifecycle with refs, proper cleanup                       | S3       | N/A                                                                              | 0         |
+| DEBT-7974  | Use ref instead of state                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7975  | Use ref instead of state                                        | S3       | N/A                                                                              | 0         |
+| DEBT-7976  | Implement proper debounce                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7977  | Implement proper debounce                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7978  | Gate fetches on auth readiness                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7979  | Gate fetches on auth readiness                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7980  | Add limit() to queries                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7981  | Add limit() to queries                                          | S3       | N/A                                                                              | 0         |
+| DEBT-7982  | Refactor TodayPage, ResourcesPage                               | S3       | N/A                                                                              | 0         |
+| DEBT-7983  | Refactor TodayPage, ResourcesPage                               | S3       | N/A                                                                              | 0         |
+| DEBT-7984  | Add hard NODE_ENV check                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7985  | Add hard NODE_ENV check                                         | S3       | N/A                                                                              | 0         |
+| DEBT-7986  | Fix AnimatePresence conditional                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7987  | Fix AnimatePresence conditional                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7988  | Normalize time format                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7989  | Normalize time format                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7990  | Extract to constants file                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7991  | Extract to constants file                                       | S3       | N/A                                                                              | 0         |
+| DEBT-7992  | Add saving indicators                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7993  | Add saving indicators                                           | S3       | N/A                                                                              | 0         |
+| DEBT-7994  | Excessive fonts                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7995  | Excessive fonts                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-7996  | Code splitting                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7997  | Code splitting                                                  | S3       | N/A                                                                              | 0         |
+| DEBT-7998  | Unused dependencies                                             | S3       | N/A                                                                              | 0         |
+| DEBT-7999  | Unused dependencies                                             | S3       | N/A                                                                              | 0         |
+| DEBT-8000  | Component documentation                                         | S3       | N/A                                                                              | 0         |
+| DEBT-8001  | Component documentation                                         | S3       | N/A                                                                              | 0         |
+| DEBT-8002  | Accessibility (ARIA)                                            | S3       | N/A                                                                              | 0         |
+| DEBT-8003  | Accessibility (ARIA)                                            | S3       | N/A                                                                              | 0         |
+| DEBT-8004  | Environment logging                                             | S3       | N/A                                                                              | 0         |
+| DEBT-8005  | Environment logging                                             | S3       | N/A                                                                              | 0         |
+| DEBT-8006  | ✅ Proceed                                                      | S3       | N/A                                                                              | 0         |
+| DEBT-8007  | ✅ Proceed                                                      | S3       | N/A                                                                              | 0         |
+| DEBT-8008  | ✅ Proceed (deferred to M4)                                     | S3       | N/A                                                                              | 0         |
+| DEBT-8009  | ✅ Proceed (deferred to M4)                                     | S3       | N/A                                                                              | 0         |
+| DEBT-8010  | Issues Reported by Multiple Sources (Consolidated)              | S3       | N/A                                                                              | 0         |
+| DEBT-8011  | Issues Reported by Multiple Sources (Consolidated)              | S3       | N/A                                                                              | 0         |
+| DEBT-8028  | 🟢 Admin Reset Button Missing Protection                        | S3       | N/A                                                                              | 0         |
+| DEBT-8029  | 🟢 Admin Reset Button Missing Protection                        | S3       | N/A                                                                              | 0         |
+| DEBT-8030  | Issues Already Addressed (per AI_HANDOFF/ROADMAP)               | S3       | N/A                                                                              | 0         |
+| DEBT-8031  | Issues Already Addressed (per AI_HANDOFF/ROADMAP)               | S3       | N/A                                                                              | 0         |
+| DEBT-8032  | Consolidated Action Plan                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8033  | Consolidated Action Plan                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8034  | Roadmap Feature Decision Resolution                             | S3       | N/A                                                                              | 0         |
+| DEBT-8035  | Roadmap Feature Decision Resolution                             | S3       | N/A                                                                              | 0         |
+| DEBT-8036  | Risk Factor A: "Bleeding Edge" Stack Instability                | S3       | N/A                                                                              | 0         |
+| DEBT-8037  | Risk Factor A: "Bleeding Edge" Stack Instability                | S3       | N/A                                                                              | 0         |
+| DEBT-8038  | Risk Factor B: Node.js 24 Runtime in Cloud Functions            | S3       | functions/package.json                                                           | 0         |
+| DEBT-8039  | Risk Factor B: Node.js 24 Runtime in Cloud Functions            | S3       | functions/package.json                                                           | 0         |
+| DEBT-8040  | Dependency Compatibility Check                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8041  | Dependency Compatibility Check                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8042  | Summary of Actions                                              | S3       | N/A                                                                              | 0         |
+| DEBT-8043  | Summary of Actions                                              | S3       | N/A                                                                              | 0         |
+| DEBT-8044  | Prefix with \_index                                             | S3       | tab-navigation.tsx                                                               | 0         |
+| DEBT-8045  | Remove unused import                                            | S3       | firestore-adapter.ts                                                             | 0         |
+| DEBT-8046  | Remove or export if used elsewhere                              | S3       | lib/db/users.ts                                                                  | 0         |
+| DEBT-8047  | Use or remove                                                   | S3       | scripts/seed-meetings.ts                                                         | 0         |
+| DEBT-8048  | Use FormEvent<HTMLFormElement>                                  | S3       | sign-in-modal.tsx                                                                | 0         |
+| DEBT-8049  | Use FormEvent<HTMLFormElement>                                  | S3       | sign-in-modal.tsx                                                                | 0         |
+| DEBT-8050  | Use unknown instead                                             | S3       | firebase-types.ts                                                                | 0         |
+| DEBT-8051  | Use unknown instead                                             | S3       | firebase-types.ts                                                                | 0         |
+| DEBT-8052  | Use proper mock types                                           | S3       | N/A                                                                              | 0         |
+| DEBT-8053  | Use proper mock types                                           | S3       | N/A                                                                              | 0         |
+| DEBT-8054  | Add to deps or use useCallback                                  | S3       | today-page.tsx                                                                   | 0         |
+| DEBT-8055  | Warning Breakdown by Category                                   | S3       | N/A                                                                              | 0         |
+| DEBT-8056  | Warning Breakdown by Category                                   | S3       | N/A                                                                              | 0         |
+| DEBT-8057  | Category 1: Unused Variables (10 warnings)                      | S3       | tab-navigation.tsx                                                               | 0         |
+| DEBT-8058  | Category 1: Unused Variables (10 warnings)                      | S3       | tab-navigation.tsx                                                               | 0         |
+| DEBT-8059  | Category 2: Explicit `any` Types (18 warnings)                  | S3       | sign-in-modal.tsx                                                                | 0         |
+| DEBT-8060  | Category 2: Explicit `any` Types (18 warnings)                  | S3       | sign-in-modal.tsx                                                                | 0         |
+| DEBT-8061  | Category 3: React Hooks Dependencies (1 warning)                | S3       | today-page.tsx                                                                   | 0         |
+| DEBT-8062  | Category 3: React Hooks Dependencies (1 warning)                | S3       | today-page.tsx                                                                   | 0         |
+| DEBT-8063  | ESLint Configuration Improvements                               | S3       | N/A                                                                              | 0         |
+| DEBT-8064  | ESLint Configuration Improvements                               | S3       | N/A                                                                              | 0         |
+| DEBT-8065  | Recommendation 1: Stricter Rules for Application Code           | S3       | N/A                                                                              | 0         |
+| DEBT-8066  | Recommendation 1: Stricter Rules for Application Code           | S3       | N/A                                                                              | 0         |
+| DEBT-8067  | Recommendation 2: Pre-commit Hook                               | S3       | N/A                                                                              | 0         |
+| DEBT-8068  | Recommendation 2: Pre-commit Hook                               | S3       | N/A                                                                              | 0         |
+| DEBT-8069  | Recommendation 3: CI Enforcement                                | S3       | N/A                                                                              | 0         |
+| DEBT-8070  | Recommendation 3: CI Enforcement                                | S3       | N/A                                                                              | 0         |
+| DEBT-8071  | Long-Term Maintenance                                           | S3       | N/A                                                                              | 0         |
+| DEBT-8072  | Long-Term Maintenance                                           | S3       | N/A                                                                              | 0         |
+| DEBT-8073  | Prevent Future Warnings                                         | S3       | N/A                                                                              | 0         |
+| DEBT-8074  | Prevent Future Warnings                                         | S3       | N/A                                                                              | 0         |
+| DEBT-8075  | Update this plan with new patterns                              | S3       | N/A                                                                              | 0         |
+| DEBT-8076  | Update this plan with new patterns                              | S3       | N/A                                                                              | 0         |
+| DEBT-8077  | SoNash Refactoring Action Plan                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8078  | SoNash Refactoring Action Plan                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8083  | Standardize Date Handling (CQ-2)                                | S3       | lib/utils/date-utils.ts                                                          | 0         |
+| DEBT-8084  | Standardize Date Handling (CQ-2)                                | S3       | lib/utils/date-utils.ts                                                          | 0         |
+| DEBT-8085  | Remove @ts-ignore and Add Type Guards (CQ-3)                    | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8086  | Remove @ts-ignore and Add Type Guards (CQ-3)                    | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8087  | Add Input Validation with Zod (CQ-7)                            | S3       | lib/db/users.ts                                                                  | 0         |
+| DEBT-8088  | Add Input Validation with Zod (CQ-7)                            | S3       | lib/db/users.ts                                                                  | 0         |
+| DEBT-8089  | Add Server-Side Date Validation (S-1)                           | S3       | firestore.rules                                                                  | 0         |
+| DEBT-8090  | Add Server-Side Date Validation (S-1)                           | S3       | firestore.rules                                                                  | 0         |
+| DEBT-8091  | Remove Unused Fonts (P-1)                                       | S3       | app/layout.tsx                                                                   | 0         |
+| DEBT-8092  | Remove Unused Fonts (P-1)                                       | S3       | app/layout.tsx                                                                   | 0         |
+| DEBT-8093  | Fix Onboarding Animation (B-3)                                  | S3       | components/onboarding/onboarding-wizard.tsx                                      | 0         |
+| DEBT-8094  | Fix Onboarding Animation (B-3)                                  | S3       | components/onboarding/onboarding-wizard.tsx                                      | 0         |
+| DEBT-8095  | Environment-Aware Logging (CQ-5)                                | S3       | lib/logger.ts                                                                    | 0         |
+| DEBT-8096  | Environment-Aware Logging (CQ-5)                                | S3       | lib/logger.ts                                                                    | 0         |
+| DEBT-8097  | Add Loading States (CQ-8)                                       | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8098  | Add Loading States (CQ-8)                                       | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8099  | Optimize Real-Time Listeners (P-2)                              | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-8100  | Optimize Real-Time Listeners (P-2)                              | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-8101  | Implement Code Splitting (P-3)                                  | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-8102  | Implement Code Splitting (P-3)                                  | S3       | components/notebook/book-cover.tsx                                               | 0         |
+| DEBT-8103  | Add Rate Limiting (S-2)                                         | S3       | N/A                                                                              | 0         |
+| DEBT-8104  | Add Rate Limiting (S-2)                                         | S3       | N/A                                                                              | 0         |
+| DEBT-8105  | Fix useEffect Dependencies (CQ-1)                               | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8106  | Fix useEffect Dependencies (CQ-1)                               | S3       | components/notebook/pages/today-page.tsx                                         | 0         |
+| DEBT-8107  | Extract Magic Strings (CQ-4)                                    | S3       | lib/constants.ts                                                                 | 0         |
+| DEBT-8108  | Extract Magic Strings (CQ-4)                                    | S3       | lib/constants.ts                                                                 | 0         |
+| DEBT-8109  | Remove Unused Dependencies (CQ-6)                               | S3       | package.json                                                                     | 0         |
+| DEBT-8110  | Remove Unused Dependencies (CQ-6)                               | S3       | package.json                                                                     | 0         |
+| DEBT-8111  | 17-22. Other Phase 3 Items                                      | S3       | N/A                                                                              | 0         |
+| DEBT-8112  | 24-26. Other Phase 4 Items                                      | S3       | N/A                                                                              | 0         |
+| DEBT-8113  | 17-22. Other Phase 3 Items                                      | S3       | N/A                                                                              | 0         |
+| DEBT-8114  | 24-26. Other Phase 4 Items                                      | S3       | N/A                                                                              | 0         |
+| DEBT-8115  | Reduce Firebase Coupling (CQ-9)                                 | S3       | lib/database/database-interface.ts                                               | 0         |
+| DEBT-8116  | Reduce Firebase Coupling (CQ-9)                                 | S3       | lib/database/database-interface.ts                                               | 0         |
+| DEBT-8117  | Test Files to Create                                            | S3       | N/A                                                                              | 0         |
+| DEBT-8118  | Test Files to Create                                            | S3       | N/A                                                                              | 0         |
+| DEBT-8119  | 📊 Impact Summary                                               | S3       | N/A                                                                              | 0         |
+| DEBT-8120  | 📊 Impact Summary                                               | S3       | N/A                                                                              | 0         |
+| DEBT-8121  | Files Changed: 6                                                | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-8122  | Files Changed: 6                                                | S3       | lib/firebase.ts                                                                  | 0         |
+| DEBT-8123  | Issues Addressed: 15                                            | S3       | N/A                                                                              | 0         |
+| DEBT-8124  | Issues Addressed: 15                                            | S3       | N/A                                                                              | 0         |
+| DEBT-8127  | 📈 PERFORMANCE IMPROVEMENTS                                     | S3       | N/A                                                                              | 0         |
+| DEBT-8128  | 📈 PERFORMANCE IMPROVEMENTS                                     | S3       | N/A                                                                              | 0         |
+| DEBT-8131  | 🔒 SECURITY ENHANCEMENTS                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8132  | 🔒 SECURITY ENHANCEMENTS                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8133  | Enhanced Validation                                             | S3       | firestore-validation.ts                                                          | 0         |
+| DEBT-8134  | Enhanced Validation                                             | S3       | firestore-validation.ts                                                          | 0         |
+| DEBT-8135  | 🧪 TESTING RECOMMENDATIONS                                      | S3       | N/A                                                                              | 0         |
+| DEBT-8136  | 🧪 TESTING RECOMMENDATIONS                                      | S3       | N/A                                                                              | 0         |
+| DEBT-8137  | Immediate Testing Needed                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8138  | Immediate Testing Needed                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8139  | Future Test Coverage                                            | S3       | firebase-guards.ts                                                               | 0         |
+| DEBT-8140  | Future Test Coverage                                            | S3       | firebase-guards.ts                                                               | 0         |
+| DEBT-8141  | 🚀 DEPLOYMENT CHECKLIST                                         | S3       | N/A                                                                              | 0         |
+| DEBT-8142  | 🚀 DEPLOYMENT CHECKLIST                                         | S3       | N/A                                                                              | 0         |
+| DEBT-8143  | Production Readiness (Before Launch)                            | S3       | N/A                                                                              | 0         |
+| DEBT-8144  | Production Readiness (Before Launch)                            | S3       | N/A                                                                              | 0         |
+| DEBT-8145  | 💰 COST-BENEFIT ANALYSIS                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8146  | 💰 COST-BENEFIT ANALYSIS                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8147  | 🎓 KEY LEARNINGS                                                | S3       | N/A                                                                              | 0         |
+| DEBT-8148  | 🎓 KEY LEARNINGS                                                | S3       | N/A                                                                              | 0         |
+| DEBT-8149  | What Needs Improvement                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8150  | What Needs Improvement                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8151  | Recommendations for Future PRs                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8152  | Recommendations for Future PRs                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8153  | 📚 DOCUMENTATION ADDED                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8154  | 📚 DOCUMENTATION ADDED                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8155  | 🔄 BACKWARD COMPATIBILITY                                       | S3       | N/A                                                                              | 0         |
+| DEBT-8156  | 🔄 BACKWARD COMPATIBILITY                                       | S3       | N/A                                                                              | 0         |
+| DEBT-8157  | Add tests for firebase-guards.ts utilities                      | S3       | firebase-guards.ts                                                               | 0         |
+| DEBT-8158  | Add tests for firebase-guards.ts utilities                      | S3       | firebase-guards.ts                                                               | 0         |
+| DEBT-8159  | Add tests for enhanced security validation                      | S3       | N/A                                                                              | 0         |
+| DEBT-8160  | Add tests for enhanced security validation                      | S3       | N/A                                                                              | 0         |
+| DEBT-8161  | Add integration tests for Firebase operations                   | S3       | N/A                                                                              | 0         |
+| DEBT-8162  | Add integration tests for Firebase operations                   | S3       | N/A                                                                              | 0         |
+| DEBT-8163  | Implement Firebase App Check                                    | S3       | N/A                                                                              | 0         |
+| DEBT-8164  | Implement Firebase App Check                                    | S3       | N/A                                                                              | 0         |
+| DEBT-8165  | Add server-side authorization                                   | S3       | N/A                                                                              | 0         |
+| DEBT-8166  | Add server-side authorization                                   | S3       | N/A                                                                              | 0         |
+| DEBT-8171  | Style/Readability                                               | S3       | N/A                                                                              | 0         |
+| DEBT-8172  | Fix `firestore.rules` Date Logic                                | S3       | N/A                                                                              | 0         |
+| DEBT-8173  | Fix `firestore.rules` Date Logic                                | S3       | N/A                                                                              | 0         |
+| DEBT-8174  | Simplify `FirestoreService` (Remove Manual DI)                  | S3       | lib/firestore-service.ts                                                         | 0         |
+| DEBT-8175  | Simplify `FirestoreService` (Remove Manual DI)                  | S3       | lib/firestore-service.ts                                                         | 0         |
+| DEBT-8176  | Decouple `AuthProvider`                                         | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-8177  | Decouple `AuthProvider`                                         | S3       | components/providers/auth-provider.tsx                                           | 0         |
+| DEBT-8178  | React's Default XSS Protection                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8179  | React's Default XSS Protection                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8180  | Verification of User Input Handling                             | S3       | N/A                                                                              | 0         |
+| DEBT-8181  | Verification of User Input Handling                             | S3       | N/A                                                                              | 0         |
+| DEBT-8182  | Journal Entry Text (today-page.tsx:312-324)                     | S3       | N/A                                                                              | 0         |
+| DEBT-8183  | Journal Entry Text (today-page.tsx:312-324)                     | S3       | N/A                                                                              | 0         |
+| DEBT-8184  | Nickname Display (book-cover.tsx:221)                           | S3       | N/A                                                                              | 0         |
+| DEBT-8185  | Nickname Display (book-cover.tsx:221)                           | S3       | N/A                                                                              | 0         |
+| DEBT-8186  | Clean Time Display (today-page.tsx:183)                         | S3       | N/A                                                                              | 0         |
+| DEBT-8187  | Clean Time Display (today-page.tsx:183)                         | S3       | N/A                                                                              | 0         |
+| DEBT-8188  | Meeting Data (resources-page.tsx:227-236)                       | S3       | N/A                                                                              | 0         |
+| DEBT-8189  | Meeting Data (resources-page.tsx:227-236)                       | S3       | N/A                                                                              | 0         |
+| DEBT-8190  | Dangerous Patterns Audit                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8191  | Dangerous Patterns Audit                                        | S3       | N/A                                                                              | 0         |
+| DEBT-8192  | Search for `dangerouslySetInnerHTML`                            | S3       | N/A                                                                              | 0         |
+| DEBT-8193  | Search for `dangerouslySetInnerHTML`                            | S3       | N/A                                                                              | 0         |
+| DEBT-8194  | Search for `innerHTML`                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8195  | Search for `innerHTML`                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8196  | Search for `eval()`                                             | S3       | N/A                                                                              | 0         |
+| DEBT-8197  | Search for `eval()`                                             | S3       | N/A                                                                              | 0         |
+| DEBT-8198  | Search for `document.write`                                     | S3       | N/A                                                                              | 0         |
+| DEBT-8199  | Search for `document.write`                                     | S3       | N/A                                                                              | 0         |
+| DEBT-8200  | Third-Party Libraries XSS Risk                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8201  | Third-Party Libraries XSS Risk                                  | S3       | N/A                                                                              | 0         |
+| DEBT-8202  | Framer Motion                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-8203  | Framer Motion                                                   | S3       | N/A                                                                              | 0         |
+| DEBT-8204  | React Hook Form                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-8205  | React Hook Form                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-8206  | Sonner (Toast Library)                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8207  | Future Risks (If Features Are Added)                            | S3       | N/A                                                                              | 0         |
+| DEBT-8208  | Future Risks (If Features Are Added)                            | S3       | N/A                                                                              | 0         |
+| DEBT-8213  | Defense-in-Depth: Content Security Policy                       | S3       | N/A                                                                              | 0         |
+| DEBT-8214  | Defense-in-Depth: Content Security Policy                       | S3       | N/A                                                                              | 0         |
+| DEBT-8215  | Recommendation:                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-8216  | Recommendation:                                                 | S3       | N/A                                                                              | 0         |
+| DEBT-8217  | Firestore Security for XSS Context                              | S3       | N/A                                                                              | 0         |
+| DEBT-8218  | Firestore Security for XSS Context                              | S3       | N/A                                                                              | 0         |
+| DEBT-8219  | Current Rules (firestore.rules:33-36):                          | S3       | N/A                                                                              | 0         |
+| DEBT-8220  | Current Rules (firestore.rules:33-36):                          | S3       | N/A                                                                              | 0         |
+| DEBT-8221  | Summary of Protections                                          | S3       | document.write                                                                   | 0         |
+| DEBT-8222  | Summary of Protections                                          | S3       | document.write                                                                   | 0         |
+| DEBT-8223  | Manual XSS Tests:                                               | S3       | N/A                                                                              | 0         |
+| DEBT-8224  | Manual XSS Tests:                                               | S3       | N/A                                                                              | 0         |
+| DEBT-8225  | Automated Testing:                                              | S3       | N/A                                                                              | 0         |
+| DEBT-8226  | Automated Testing:                                              | S3       | N/A                                                                              | 0         |
+| DEBT-8227  | Implement CSP headers in next.config.mjs                        | S3       | N/A                                                                              | 0         |
+| DEBT-8228  | Implement CSP headers in next.config.mjs                        | S3       | N/A                                                                              | 0         |
+| DEBT-8229  | Add XSS test cases to test suite                                | S3       | N/A                                                                              | 0         |
+| DEBT-8230  | Add XSS test cases to test suite                                | S3       | N/A                                                                              | 0         |
+| DEBT-8231  | Error Tracing Tab - includes npm audit display                  | S3       | N/A                                                                              | 0         |
+| DEBT-8232  | Error Tracing Tab - includes npm audit display                  | S3       | N/A                                                                              | 0         |
+| DEBT-8233  | Remove duplicate test run from pre-push (done) - ✅ Session     | S3       | N/A                                                                              | 0         |
+| DEBT-8234  | Remove duplicate test run from pre-push (done) - ✅ Session     | S3       | N/A                                                                              | 0         |
+| DEBT-8235  | Add file extension filters to hook matchers                     | S3       | N/A                                                                              | 0         |
+| DEBT-8236  | Add file extension filters to hook matchers                     | S3       | N/A                                                                              | 0         |
+| DEBT-8237  | Automated fix suggestions - Generate patches                    | S3       | N/A                                                                              | 0         |
+| DEBT-8238  | Automated fix suggestions - Generate patches                    | S3       | N/A                                                                              | 0         |
+| DEBT-8239  | Broken deploy triage runbook (30min)                            | S3       | N/A                                                                              | 0         |
+| DEBT-8240  | Broken deploy triage runbook (30min)                            | S3       | N/A                                                                              | 0         |
+| DEBT-8241  | Claude Fix Bundle format - docs/CLAUDE_FIX_BUNDLE.md            | S3       | docs/CLAUDE_FIX_BUNDLE.md                                                        | 0         |
+| DEBT-8242  | Claude Fix Bundle format - docs/CLAUDE_FIX_BUNDLE.md            | S3       | docs/CLAUDE_FIX_BUNDLE.md                                                        | 0         |
+| DEBT-8243  | Reduce SESSION_CONTEXT.md - Archive history to                  | S3       | N/A                                                                              | 0         |
+| DEBT-8244  | Reduce SESSION_CONTEXT.md - Archive history to                  | S3       | N/A                                                                              | 0         |
+| DEBT-8245  | Remove unused gemini-generated images (-4MB)                    | S3       | N/A                                                                              | 0         |
+| DEBT-8246  | Remove unused gemini-generated images (-4MB)                    | S3       | N/A                                                                              | 0         |
+| DEBT-8247  | Convert remaining images to WebP format (-90% size)             | S3       | N/A                                                                              | 0         |
+| DEBT-8248  | Convert remaining images to WebP format (-90% size)             | S3       | N/A                                                                              | 0         |
+| DEBT-8249  | Preload LCP image (wood-table.jpg)                              | S3       | N/A                                                                              | 0         |
+| DEBT-8250  | Preload LCP image (wood-table.jpg)                              | S3       | N/A                                                                              | 0         |
+| DEBT-8251  | Code-split admin panel                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8252  | Code-split admin panel                                          | S3       | N/A                                                                              | 0         |
+| DEBT-8253  | Add Content Security Policy                                     | S3       | N/A                                                                              | 0         |
+| DEBT-8254  | Add Content Security Policy                                     | S3       | N/A                                                                              | 0         |
+| DEBT-8255  | Make reCAPTCHA fail-closed when configured                      | S3       | N/A                                                                              | 0         |
+| DEBT-8256  | Make reCAPTCHA fail-closed when configured                      | S3       | N/A                                                                              | 0         |
+| DEBT-8257  | Create `/test-suite` skill with 5-phase pipeline ✅             | S3       | N/A                                                                              | 0         |
+| DEBT-8259  | Integrate with CI (fail on diff > threshold)                    | S3       | N/A                                                                              | 0         |
+| DEBT-8260  | Integrate with CI (fail on diff > threshold)                    | S3       | N/A                                                                              | 0         |
+| DEBT-8261  | Test Results Tab - Show pass/fail summary                       | S3       | N/A                                                                              | 0         |
+| DEBT-8262  | Test Results Tab - Show pass/fail summary                       | S3       | N/A                                                                              | 0         |
+| DEBT-8263  | Cleanup Utilities - Reset state between tests                   | S3       | N/A                                                                              | 0         |
+| DEBT-8264  | Cleanup Utilities - Reset state between tests                   | S3       | N/A                                                                              | 0         |
+| DEBT-8265  | Security Rules Tests - Test firestore.rules coverage            | S3       | N/A                                                                              | 0         |
+| DEBT-8266  | Security Rules Tests - Test firestore.rules coverage            | S3       | N/A                                                                              | 0         |
+| DEBT-8267  | Compare options: Semgrep, CodeQL, ESLint security plugins       | S3       | N/A                                                                              | 0         |
+| DEBT-8268  | Compare options: Semgrep, CodeQL, ESLint security plugins       | S3       | N/A                                                                              | 0         |
+| DEBT-8269  | ENH-0063: Remove duplicate pattern check from pre-push ho...    | S3       | N/A                                                                              | 0         |
+| DEBT-8270  | ENH-0063: Remove duplicate pattern check from pre-push ho...    | S3       | N/A                                                                              | 0         |
+| DEBT-8271  | Include helpful fix hints in error messages                     | S3       | N/A                                                                              | 0         |
+| DEBT-8272  | Include helpful fix hints in error messages                     | S3       | N/A                                                                              | 0         |
+| DEBT-8273  | Add learning entry reminder to pre-commit hook                  | S3       | N/A                                                                              | 0         |
+| DEBT-8277  | Wire `Sentry.captureException()` in error paths                 | S3       | N/A                                                                              | 0         |
+| DEBT-8278  | Wire `Sentry.captureException()` in error paths                 | S3       | N/A                                                                              | 0         |
+| DEBT-8279  | Fix Prettier baseline (run `npm run format`)                    | S3       | N/A                                                                              | 0         |
+| DEBT-8280  | Fix Prettier baseline (run `npm run format`)                    | S3       | N/A                                                                              | 0         |
+| DEBT-8281  | Fix knip baseline (7 unused deps)                               | S3       | N/A                                                                              | 0         |
+| DEBT-8282  | Fix knip baseline (7 unused deps)                               | S3       | N/A                                                                              | 0         |
+| DEBT-8283  | Remove all `continue-on-error: true` flags                      | S3       | N/A                                                                              | 0         |
+| DEBT-8284  | Remove all `continue-on-error: true` flags                      | S3       | N/A                                                                              | 0         |
+| DEBT-8285  | Export `redactSensitiveUrl` from `lib/utils/error-export....    | S3       | lib/utils/error-export.ts                                                        | 0         |
+| DEBT-8287  | Error summary card on Dashboard (count + trend) ✅              | S3       | N/A                                                                              | 0         |
+| DEBT-8289  | Deep links to Sentry for each error ✅                          | S3       | N/A                                                                              | 0         |
+| DEBT-8291  | Recent security events display (from existing `logSecurit...    | S3       | N/A                                                                              | 0         |
+| DEBT-8293  | Logs tab error state on network failure                         | S3       | N/A                                                                              | 0         |
+| DEBT-8294  | Logs tab error state on network failure                         | S3       | N/A                                                                              | 0         |
+| DEBT-8295  | Privilege save error handling and revert                        | S3       | N/A                                                                              | 0         |
+| DEBT-8296  | Privilege save error handling and revert                        | S3       | N/A                                                                              | 0         |
+| DEBT-8297  | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_     | S3       | N/A                                                                              | 0         |
+| DEBT-8298  | DEDUP-0001 - Re-enable Firebase App Check _(moved from M2)_     | S3       | N/A                                                                              | 0         |
+| DEBT-8299  | M4.5-SEC-005 - Security rules for new collections               | S3       | N/A                                                                              | 0         |
+| DEBT-8300  | M4.5-SEC-005 - Security rules for new collections               | S3       | N/A                                                                              | 0         |
+| DEBT-8301  | RND-AUDIT - Security Audit Planning (1 day)                     | S3       | N/A                                                                              | 0         |
+| DEBT-8302  | RND-AUDIT - Security Audit Planning (1 day)                     | S3       | N/A                                                                              | 0         |
+| DEBT-8303  | F12.11 - Slow Rollout (progressive feature disclosure)          | S3       | N/A                                                                              | 0         |
+| DEBT-8304  | F12.11 - Slow Rollout (progressive feature disclosure)          | S3       | N/A                                                                              | 0         |
+| DEBT-8305  | T6.5 - Sync performance tracking                                | S3       | N/A                                                                              | 0         |
+| DEBT-8306  | T6.5 - Sync performance tracking                                | S3       | N/A                                                                              | 0         |
+| DEBT-8307  | T9.2 - Data retention policy (user choice for auto-cleanup)     | S3       | N/A                                                                              | 0         |
+| DEBT-8308  | T9.2 - Data retention policy (user choice for auto-cleanup)     | S3       | N/A                                                                              | 0         |
+| DEBT-8309  | T8.7 - Extract offline-core package (optimization; not re...    | S3       | N/A                                                                              | 0         |
+| DEBT-8310  | T8.7 - Extract offline-core package (optimization; not re...    | S3       | N/A                                                                              | 0         |
+| DEBT-8313  | No tests for regex global state reset edge cases with con...    | S3       | N/A                                                                              | 19        |
+| DEBT-8314  | No test for Unicode private use area (U+E000-U+F8FF) patt...    | S3       | N/A                                                                              | 20        |
+| DEBT-8315  | No integration test verifying both .js and .ts versions p...    | S3       | N/A                                                                              | 23        |
+| DEBT-8316  | No test for `parseCliArgs` with edge cases (consecutive f...    | S3       | N/A                                                                              | 30        |
+| DEBT-8317  | No test for `maskEmail` with unusual domain structures (s...    | S3       | N/A                                                                              | 32        |
+| DEBT-8318  | No test for `safeRegexExec` infinite loop prevention with...    | S3       | N/A                                                                              | 34        |
+| DEBT-8319  | No test for symlink traversal at boundary (deeply nested ...    | S3       | N/A                                                                              | 39        |
+| DEBT-8320  | No test for realpathSync behavior when symlink target is ...    | S3       | N/A                                                                              | 41        |
+| DEBT-8321  | No test for mixed ASCII/Unicode control character combina...    | S3       | N/A                                                                              | 45        |
+| DEBT-8322  | No test for Bidi override patterns at start/end/middle of...    | S3       | N/A                                                                              | 46        |
+| DEBT-8323  | No test for static export behavior (no API routes expected)     | S3       | N/A                                                                              | 109       |
+| DEBT-8324  | No test for CSS generation with custom Tailwind config          | S3       | N/A                                                                              | 118       |
+| DEBT-8325  | No test for circular dependencies between path-aliased mo...    | S3       | N/A                                                                              | 124       |
+| DEBT-8326  | No test for tsc-alias handling of nested paths                  | S3       | N/A                                                                              | 133       |
+| DEBT-8327  | No visibility into why specific modules are excluded            | S3       | N/A                                                                              | 156       |
+| DEBT-8328  | No integration testing of actual user workflows                 | S3       | N/A                                                                              | 161       |
+| DEBT-8329  | No test for API response mocking consistency                    | S3       | N/A                                                                              | 166       |
+| DEBT-8330  | No integration test for Firestore operations                    | S3       | N/A                                                                              | 171       |
+| DEBT-8331  | No test for custom ESLint plugin rules                          | S3       | N/A                                                                              | 176       |
+| DEBT-8332  | No test ensuring doc-only detection doesn't accidentally ...    | S3       | N/A                                                                              | 184       |
+| DEBT-8333  | No test for false positives/negatives of symlink detection      | S3       | N/A                                                                              | 207       |
+| DEBT-8334  | No test for rule behavior on minified/transpiled code           | S3       | N/A                                                                              | 208       |
+| DEBT-8335  | Existing code can have CC > 15 (113 pre-existing violatio...    | S3       | N/A                                                                              | 213       |
+| DEBT-8336  | No blocking enforcer for actual cognitive complexity meas...    | S3       | N/A                                                                              | 215       |
+| DEBT-8337  | Local Prettier version mismatch could cause CI failures         | S3       | N/A                                                                              | 220       |
+| DEBT-8338  | No test for Markdown consistency standards                      | S3       | N/A                                                                              | 225       |
+| DEBT-8339  | No validation that ignored deps are actually necessary          | S3       | N/A                                                                              | 229       |
+| DEBT-8340  | `eslint-plugin-security` configured but no rules visible        | S3       | N/A                                                                              | 239       |
+| DEBT-8341  | No visibility into which security rules are active              | S3       | N/A                                                                              | 243       |
+| DEBT-8342  | No test for rule enforcement                                    | S3       | N/A                                                                              | 244       |
+| DEBT-8343  | No synchronized version management (e.g., Firebase lib ve...    | S3       | N/A                                                                              | 278       |
+| DEBT-8344  | `npm ci` in CI doesn't install functions dependencies aut...    | S3       | N/A                                                                              | 280       |
+| DEBT-8345  | No validation script checks version compatibility               | S3       | N/A                                                                              | 287       |
+| DEBT-8346  | No test validating file:// dependency resolve                   | S3       | N/A                                                                              | 291       |
+| DEBT-8347  | No protection against symlink attacks on file:// paths          | S3       | N/A                                                                              | 292       |
+| DEBT-8348  | No audit for version mismatches that could cause runtime ...    | S3       | N/A                                                                              | 298       |
+| DEBT-8349  | No lockfile integrity check in CI                               | S3       | N/A                                                                              | 302       |
+| DEBT-8350  | No validation that ignored items are actually necessary         | S3       | N/A                                                                              | 306       |
+| DEBT-8351  | No test for false negatives (truly unused deps that slip ...    | S3       | N/A                                                                              | 307       |
+| DEBT-8352  | Indicates peer dependency conflicts not resolved                | S3       | N/A                                                                              | 311       |
+| DEBT-8353  | No test for breaking changes in next major versions             | S3       | N/A                                                                              | 312       |
+| DEBT-8354  | No SBOMs (Software Bill of Materials) generated                 | S3       | N/A                                                                              | 316       |
+| DEBT-8355  | No npm audit integration beyond pre-push hook warning           | S3       | N/A                                                                              | 317       |
+| DEBT-8356  | Node.js built-in modules assumed but not validated              | S3       | N/A                                                                              | 321       |
+| DEBT-8359  | \*\* Domain 6 Step 2 needs complete lib/ enumeration, not j...  | S3       | N/A                                                                              | 42        |
+| DEBT-8361  | \*\* No domain covers: Is Sentry configured correctly? Is D...  | S3       | N/A                                                                              | 50        |
+| DEBT-8363  | \*\* Plan needs accurate enumeration.                           | S3       | N/A                                                                              | 60        |
+| DEBT-8365  | \*\* Domain 6 "Client/Server boundary audit" should verify ...  | S3       | N/A                                                                              | 66        |
+| DEBT-8368  | \*\* Domain 9 should include a TODO/FIXME audit as a specif...  | S3       | N/A                                                                              | 82        |
+| DEBT-8370  | \*\* Domain 15 should include a public assets audit: verify...  | S3       | N/A                                                                              | 94        |
+| DEBT-8372  | \*\* Type definition organization should be part of Domain ...  | S3       | N/A                                                                              | 101       |
+| DEBT-8374  | \*\* Domain 6 "console.log in production code" search needs...  | S3       | N/A                                                                              | 109       |
+| DEBT-8376  | \*\* Domain 7 needs a dedicated "Sentry integration in Clou...  | S3       | N/A                                                                              | 119       |
+| DEBT-8378  | \*\* Domain 7 and Domain 8 should both flag this — server c...  | S3       | N/A                                                                              | 132       |
+| DEBT-8380  | \*\* Domain 8 should verify that `security_logs` has an exp...  | S3       | N/A                                                                              | 143       |
+| DEBT-8382  | \*\* Domain 7 should list ALL 8 function source files expli...  | S3       | N/A                                                                              | 155       |
+| DEBT-8384  | \*\* Domain 6 needs a "Data access layer audit" step.           | S3       | N/A                                                                              | 167       |
+| DEBT-8386  | \*\* Domain 6 should explicitly review the celebration subs...  | S3       | N/A                                                                              | 175       |
+| DEBT-8388  | \*\* Domain 8 (Security) should cross-reference Permissions...  | S3       | N/A                                                                              | 191       |
+| DEBT-8390  | \*\* Domain 2 should explicitly verify this architecture ch...  | S3       | N/A                                                                              | 203       |
+| DEBT-8392  | \*\* Domain 2 should check that the CSS-based Tailwind conf...  | S3       | N/A                                                                              | 212       |
+| DEBT-8394  | \*\* Domain 10 should include bidirectional cross-reference...  | S3       | N/A                                                                              | 225       |
+| DEBT-8396  | \*\* Domain 8 should verify EVERY collection written by Clo...  | S3       | N/A                                                                              | 237       |
+| DEBT-8398  | \*\* Domain 8 step 3 mentions "size limits" but the plan sh...  | S3       | N/A                                                                              | 247       |
+| DEBT-8400  | \*\* Domain 7 "~12 files" label severely underestimates sco...  | S3       | N/A                                                                              | 264       |
+| DEBT-8402  | \*\* Each job should be verified for: correct schedule, ide...  | S3       | N/A                                                                              | 282       |
+| DEBT-8404  | \*\* Domain 7 should explicitly: (1) compare each Zod schema    | S3       | N/A                                                                              | 291       |
+| DEBT-8406  | \*\* Domain 1 should check for engines field AND Domain 5 s...  | S3       | N/A                                                                              | 305       |
+| DEBT-8408  | \** Domain 1 should include "validate all NEXT*PUBLIC\*\* v...  | S3       | N/A                                                                              | 313       |
+| DEBT-8410  | \*\* Domain 3 should flag: no coverage thresholds, limited ...  | S3       | N/A                                                                              | 323       |
+| DEBT-8412  | \*\* Domain 3 should verify: intended for future use? Shoul...  | S3       | N/A                                                                              | 329       |
+| DEBT-8414  | \*\* Domain 3 should check if MSW is actually used              | S3       | N/A                                                                              | 335       |
+| DEBT-8416  | \*\* Domain 4 should enumerate existing complexity violations   | S3       | N/A                                                                              | 341       |
+| DEBT-8418  | \*\* Domain 4 should verify each disabled rule has justific...  | S3       | N/A                                                                              | 346       |
+| DEBT-8420  | \*\* Domain 5 should verify each entry is still needed          | S3       | N/A                                                                              | 351       |
+| DEBT-8422  | \*\* Domain 5 should test: can all 3 packages install clean...  | S3       | N/A                                                                              | 357       |
+| DEBT-8424  | \*\* Domain 5 should verify source directory exists and con...  | S3       | N/A                                                                              | 363       |
+| DEBT-8426  | \*\* Domain 11 needs 3-way reconciliation                       | S3       | N/A                                                                              | 370       |
+| DEBT-8428  | \*\* Domain 12 count correction needed                          | S3       | N/A                                                                              | 375       |
+| DEBT-8430  | \*\* Domain 16 needs complete inventory, Domain 9 must exec...  | S3       | N/A                                                                              | 380       |
+| DEBT-8432  | \*\* Domain 16 should audit ALL artifacts, not just MASTER\_... | S3       | N/A                                                                              | 385       |
+| DEBT-8434  | \*\* Domain 6 should review for completeness and accuracy       | S3       | N/A                                                                              | 391       |
+| DEBT-8436  | \*\* Domain 8 should include index validation                   | S3       | N/A                                                                              | 397       |
+| DEBT-8438  | \*\* Domain 5 and Domain 13 should flag SBOM absence            | S3       | N/A                                                                              | 402       |
+| DEBT-10982 | 1 skipped test without linked issue — integration test fo...    | S3       | tests/firestore-service.test.ts                                                  | 149       |
+| DEBT-10989 | Next.js build warns about workspace root detection              | S3       | next.config.ts                                                                   | 0         |
+| DEBT-11063 | Inefficient Equality Checking                                   | S3       | components/providers/auth-provider.tsx                                           | 82        |
+| DEBT-11257 | Stale // ... existing metadata ... comment — code-generat...    | S3       | app/layout.tsx                                                                   | 66        |
+| DEBT-11258 | \_checkInSteps computed via useMemo but never consumed — w...   | S3       | components/notebook/pages/today-page.tsx                                         | 332       |
+| DEBT-11259 | Missing use client directive in entry-wizard.tsx                | S3       | components/journal/entry-wizard.tsx                                              | 1         |
+| DEBT-11260 | meeting-countdown.tsx is dead code — superseded by Compac...    | S3       | components/widgets/meeting-countdown.tsx                                         | 0         |
+| DEBT-11261 | Three underscore-prefixed dead functions in resources-pag...    | S3       | components/notebook/pages/resources-page.tsx                                     | 596       |
+| DEBT-11262 | Local isSameDay reimplemented — date-fns already imported       | S3       | components/notebook/pages/resources-page.tsx                                     | 78        |
+| DEBT-11263 | Debug console.log in today-page.tsx dev guard — specific ...    | S3       | components/notebook/pages/today-page.tsx                                         | 639       |
+| DEBT-11264 | \_appCheck exported but always undefined in lib/firebase.ts     | S3       | lib/firebase.ts                                                                  | 40        |
+| DEBT-11265 | Two parallel error utilities — merge errors.ts and callab...    | S3       | lib/utils/errors.ts                                                              | 0         |
+| DEBT-11266 | Admin password reset returns distinct No user found — use...    | S3       | functions/src/admin.ts                                                           | 3374      |
+| DEBT-11267 | Missing COEP header — document intentional absence due to...    | S3       | firebase.json                                                                    | 0         |
+| DEBT-11268 | Rate limit document IDs contain raw Firebase UID and IP —...    | S3       | functions/src/firestore-rate-limiter.ts                                          | 39        |
+| DEBT-11269 | Mobile block via user-agent — security theater; needs cla...    | S3       | app/admin/page.tsx                                                               | 36        |
+| DEBT-11270 | searchUsersByNickname prefix query has no input length va...    | S3       | functions/src/admin.ts                                                           | 286       |
+| DEBT-11271 | Hook log file .git/hook-output.log grows unboundedly            | S3       | .husky/pre-commit                                                                | 0         |
+| DEBT-11272 | require_skip_reason() function duplicated verbatim in pre...    | S3       | .husky/pre-commit                                                                | 0         |
+| DEBT-11273 | 96-101 npm scripts with no grouping, no help, no discover...    | S3       | package.json                                                                     | 0         |
+| DEBT-11274 | next dev without --turbopack flag                               | S3       | package.json                                                                     | 0         |
+| DEBT-11275 | 3-step test compilation adds 10-20s overhead — full Vites...    | S3       | package.json                                                                     | 0         |
+| DEBT-11276 | No type-check npm script alias — DEVELOPMENT.md reference...    | S3       | package.json                                                                     | 0         |
+| DEBT-11277 | nul Windows artifact file committed to repo                     | S3       | nul                                                                              | 0         |
+| DEBT-11278 | tsconfig.json incremental: true with noEmit: true — redun...    | S3       | tsconfig.json                                                                    | 0         |
+| DEBT-11279 | No i18n infrastructure — all strings hardcoded in English       | S3       | N/A                                                                              | 0         |
+| DEBT-11280 | Journal lock screen component exists but is never importe...    | S3       | components/journal/lock-screen.tsx                                               | 0         |
+| DEBT-11281 | Swipe navigation has no visual affordance — only hint is ...    | S3       | components/notebook/notebook-shell.tsx                                           | 1132      |
+| DEBT-11286 | Update firebase from 12.8.0 to 12.9.0 (within semver range)     | S3       | package.json                                                                     | 0         |
+| DEBT-11287 | Update tailwindcss + @tailwindcss/postcss from 4.1.18 to ...    | S3       | package.json                                                                     | 0         |
+| DEBT-11288 | Update zod from 4.3.5 to 4.3.6 (patch within semver range)      | S3       | package.json                                                                     | 0         |
+| DEBT-11292 | Update react-day-picker from 9.8.0 to 9.13.2 (minor versi...    | S3       | package.json                                                                     | 0         |
+| DEBT-11297 | Create learning-ecosystem-audit skill (MEDIUM-HIGH priori...    | S3       | .claude/skills/                                                                  | 0         |
+| DEBT-11303 | DRY: consolidate checkErrorHandlingCoverage with hook aud...    | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 183       |
+| DEBT-11304 | KNOWN_HOOKS hardcoded array should be dynamically derived...    | S3       | .claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js   | 30        |
+| DEBT-11305 | DRY: consolidate dual-write check with file-io-safety.js ...    | S3       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js     | 404       |
+| DEBT-11310 | settings.json team config health issue                          | S3       | N/A                                                                              | 0         |
+| DEBT-11311 | step_continuity checker false positive on Step/Stage tran...    | S3       | N/A                                                                              | 0         |
+| DEBT-2457  | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | All 57 files with AI Instructions sections                                       | 0         |
+| DEBT-2459  | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...    | S0       | .claude/hooks/auto-save-context.js                                               | 0         |
+| DEBT-2468  | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...    | S0       | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                               | 0         |
+| DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |
+| DEBT-10866 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | All 57 files with AI Instructions sections                                       | 0         |
+| DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |
