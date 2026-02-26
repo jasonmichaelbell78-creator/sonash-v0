@@ -119,12 +119,6 @@
             "command": "node .claude/hooks/commit-tracker.js $ARGUMENTS",
             "statusMessage": "Tracking commits...",
             "continueOnError": true
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/commit-failure-reporter.js $ARGUMENTS",
-            "statusMessage": "Checking commit status...",
-            "continueOnError": true
           }
         ]
       },
@@ -146,24 +140,6 @@
             "type": "command",
             "command": "node .claude/hooks/user-prompt-handler.js $ARGUMENTS",
             "statusMessage": "Processing user prompt..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/analyze-user-request.js $ARGUMENTS",
-            "statusMessage": "Analyzing request for task routing...",
-            "continueOnError": true
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/plan-mode-suggestion.js $ARGUMENTS",
-            "statusMessage": "Checking task complexity...",
-            "continueOnError": true
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/session-end-reminder.js $ARGUMENTS",
-            "statusMessage": "Checking session status...",
-            "continueOnError": true
           }
         ]
       }

@@ -117,6 +117,37 @@ function log(message, level = "INFO") {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.error(`[ERROR] Failed to write to log: ${sanitizeInput(errMsg)}`);
   }
+
+  // Cap log file at 10KB to prevent unbounded growth (over-engineering audit)
+  try {
+    const stats = fs.statSync(LOG_FILE);
+    if (stats.size > 10 * 1024) {
+      const content = fs.readFileSync(LOG_FILE, "utf8");
+      const lines = content.split("\n").filter(Boolean);
+      const kept = lines.slice(-50).join("\n") + "\n";
+      if (isSafeToWrite(LOG_FILE)) {
+        const tmpFile = LOG_FILE + ".tmp." + process.pid;
+        try {
+          // Remove destination first for Windows cross-platform compatibility
+          try {
+            fs.rmSync(LOG_FILE, { force: true });
+          } catch {
+            /* best-effort */
+          }
+          fs.writeFileSync(tmpFile, kept, { mode: 0o600 });
+          fs.renameSync(tmpFile, LOG_FILE);
+        } catch {
+          try {
+            fs.rmSync(tmpFile, { force: true });
+          } catch {
+            /* cleanup */
+          }
+        }
+      }
+    }
+  } catch {
+    // Non-critical — rotation failure doesn't block
+  }
 }
 
 function getProcessInfo(pid) {

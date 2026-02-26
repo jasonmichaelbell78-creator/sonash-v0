@@ -56,16 +56,15 @@ Four event types are configured:
 
 ## PostToolUse Hooks
 
-| Matcher         | Hook                         | Purpose                          |
-| --------------- | ---------------------------- | -------------------------------- |
-| Write           | `post-write-validator.js`    | Validate write operations        |
-| Edit            | `post-write-validator.js`    | Validate edit operations         |
-| MultiEdit       | `post-write-validator.js`    | Validate multiedit operations    |
-| Read            | `post-read-handler.js`       | Process read operations          |
-| AskUserQuestion | `decision-save-prompt.js`    | Check decision documentation     |
-| Bash            | `commit-tracker.js`          | Track git commits to JSONL log   |
-| Bash            | `commit-failure-reporter.js` | Report failed commits            |
-| Task            | `track-agent-invocation.js`  | Track agent/subagent invocations |
+| Matcher         | Hook                        | Purpose                             |
+| --------------- | --------------------------- | ----------------------------------- |
+| Write           | `post-write-validator.js`   | Validate write operations           |
+| Edit            | `post-write-validator.js`   | Validate edit operations            |
+| MultiEdit       | `post-write-validator.js`   | Validate multiedit operations       |
+| Read            | `post-read-handler.js`      | Process read operations             |
+| AskUserQuestion | `decision-save-prompt.js`   | Check decision documentation        |
+| Bash            | `commit-tracker.js`         | Track git commits + report failures |
+| Task            | `track-agent-invocation.js` | Track agent/subagent invocations    |
 
 ---
 
@@ -81,25 +80,21 @@ Four event types are configured:
 
 **Location:** `.claude/hooks/`
 
-| File                              | Event(s)             | Purpose                                         |
-| --------------------------------- | -------------------- | ----------------------------------------------- |
-| `session-start.js`                | SessionStart         | Environment setup (deps, build, patterns)       |
-| `check-mcp-servers.js`            | SessionStart         | MCP server availability check                   |
-| `check-remote-session-context.js` | SessionStart         | Remote branch context check                     |
-| `compact-restore.js`              | SessionStart:compact | Restore context after compaction                |
-| `pre-compaction-save.js`          | PreCompact           | Save state snapshot before compaction           |
-| `post-write-validator.js`         | PostToolUse          | Validate Write/Edit/MultiEdit operations        |
-| `post-read-handler.js`            | PostToolUse          | Process Read operations                         |
-| `decision-save-prompt.js`         | PostToolUse          | Decision documentation on AskUserQuestion       |
-| `commit-tracker.js`               | PostToolUse          | Track commits to .claude/state/commit-log.jsonl |
-| `commit-failure-reporter.js`      | PostToolUse          | Report failed git commits                       |
-| `track-agent-invocation.js`       | PostToolUse          | Track Task/agent invocations                    |
-| `user-prompt-handler.js`          | UserPromptSubmit     | Process user prompts (triggers, context)        |
-| `alerts-reminder.js`              | (utility)            | Alert session reminders                         |
-| `plan-mode-suggestion.js`         | (utility)            | Plan mode suggestions                           |
-| `session-end-reminder.js`         | (utility)            | Session end reminders                           |
-| `state-utils.js`                  | (shared lib)         | Shared utilities for hook state management      |
-| `stop-serena-dashboard.js`        | (utility)            | Stop Serena dashboard process                   |
+| File                              | Event(s)             | Purpose                                    |
+| --------------------------------- | -------------------- | ------------------------------------------ |
+| `session-start.js`                | SessionStart         | Environment setup (deps, build, patterns)  |
+| `check-mcp-servers.js`            | SessionStart         | MCP server availability check              |
+| `check-remote-session-context.js` | SessionStart         | Remote branch context check                |
+| `compact-restore.js`              | SessionStart:compact | Restore context after compaction           |
+| `pre-compaction-save.js`          | PreCompact           | Save state snapshot before compaction      |
+| `post-write-validator.js`         | PostToolUse          | Validate Write/Edit/MultiEdit operations   |
+| `post-read-handler.js`            | PostToolUse          | Process Read operations                    |
+| `decision-save-prompt.js`         | PostToolUse          | Decision documentation on AskUserQuestion  |
+| `commit-tracker.js`               | PostToolUse          | Track commits + report failures            |
+| `track-agent-invocation.js`       | PostToolUse          | Track Task/agent invocations               |
+| `user-prompt-handler.js`          | UserPromptSubmit     | Process user prompts (triggers, context)   |
+| `state-utils.js`                  | (shared lib)         | Shared utilities for hook state management |
+| `stop-serena-dashboard.js`        | (utility)            | Stop Serena dashboard process              |
 
 ### Global Hooks
 

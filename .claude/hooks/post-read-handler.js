@@ -4,10 +4,12 @@
 /**
  * post-read-handler.js - Consolidated PostToolUse (Read) hook
  *
- * Replaces 3 separate hooks with 1 process:
+ * Replaces 2 separate hooks with 1 process:
  *   1. large-context-warning.js — Context tracking + large file warnings
  *   2. auto-save-context.js — Auto-save context to MCP memory when thresholds hit
- *   3. compaction-handoff.js — Compaction-safe handoff state generation
+ *
+ * Phase 3 (compaction-handoff) removed — pre-compaction-save.js is the
+ * authoritative handoff writer (fires on PreCompact with richer data).
  *
  * Shared work:
  *   - Single argv[2] JSON parse
@@ -19,15 +21,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { gitExec, projectDir } = require("./lib/git-utils.js");
+const { projectDir } = require("./lib/git-utils.js");
 const { loadJson, saveJson } = require("./lib/state-utils.js");
-
-let rotateHelpers;
-try {
-  rotateHelpers = require("./lib/rotate-state.js");
-} catch {
-  rotateHelpers = null;
-}
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
@@ -38,10 +33,6 @@ const SESSION_FILE_LIMIT = 15;
 // auto-save-context thresholds
 const FILE_READ_THRESHOLD_AUTOSAVE = 20;
 const SAVE_INTERVAL_MINUTES = 15;
-
-// compaction-handoff thresholds
-const FILE_READ_THRESHOLD_HANDOFF = 25;
-const HANDOFF_COOLDOWN_MINUTES = 10;
 
 // ─── Project directory ───────────────────────────────────────────────────────
 // projectDir is resolved by git-utils.js
@@ -56,12 +47,8 @@ const CONTEXT_TRACKING_FILE = path.join(
   ".context-tracking-state.json"
 );
 const SESSION_STATE_FILE = path.join(projectDir, ".claude", "hooks", ".session-state.json");
-const SESSION_AGENTS_FILE = path.join(projectDir, ".claude", "hooks", ".session-agents.json");
-const PENDING_ALERTS_FILE = path.join(projectDir, ".claude", "pending-alerts.json");
 const SESSION_DECISIONS_FILE = path.join(projectDir, "docs", "SESSION_DECISIONS.md");
 const AUTOSAVE_STATE_FILE = path.join(projectDir, ".claude", "hooks", ".auto-save-state.json");
-const HANDOFF_STATE_FILE = path.join(projectDir, ".claude", "hooks", ".handoff-state.json");
-const HANDOFF_OUTPUT = path.join(projectDir, ".claude", "state", "handoff.json");
 
 // ─── Shared utilities (from lib/state-utils.js and lib/git-utils.js) ────────
 
@@ -314,7 +301,7 @@ function runAutoSaveContext() {
   const contextData = {
     metrics: metrics,
     sessionState: loadJson(SESSION_STATE_FILE),
-    alerts: loadJson(PENDING_ALERTS_FILE)?.alerts || [],
+    alerts: [],
     decisions: getRecentDecisions(3),
   };
 
@@ -339,163 +326,7 @@ function runAutoSaveContext() {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// PHASE 3: Compaction Handoff (from compaction-handoff.js)
-// ═══════════════════════════════════════════════════════════════════════════
-
-function gatherGitContext() {
-  return {
-    branch: gitExec(["rev-parse", "--abbrev-ref", "HEAD"]),
-    lastCommit: gitExec(["log", "--oneline", "-1"]),
-    uncommittedFiles: gitExec(["diff", "-z", "--name-only"], { trim: false })
-      .split("\0")
-      .filter((f) => f.length > 0),
-    untrackedFiles: gitExec(["ls-files", "-z", "--others", "--exclude-standard"], { trim: false })
-      .split("\0")
-      .filter((f) => f.length > 0)
-      .slice(0, 20), // Cap at 20
-    stagedFiles: gitExec(["diff", "-z", "--cached", "--name-only"], { trim: false })
-      .split("\0")
-      .filter((f) => f.length > 0),
-  };
-}
-
-function gatherTaskStates() {
-  const stateDir = path.join(projectDir, ".claude", "state");
-  try {
-    const files = fs
-      .readdirSync(stateDir)
-      .filter((f) => f.startsWith("task-") && f.endsWith(".state.json"));
-    return files.map((f) => {
-      const data = loadJson(path.join(stateDir, f));
-      if (!data) return { file: f, error: "unreadable" };
-      const steps = (data.steps || []).map((s) => ({
-        name: s.name,
-        status: s.status,
-      }));
-      return {
-        file: f,
-        task: data.task || f,
-        lastUpdated: data.lastUpdated || null,
-        steps: steps,
-        resumePoint: data.resume_point || data.context?.status || null,
-      };
-    });
-  } catch {
-    return [];
-  }
-}
-
-function getSessionCounter() {
-  try {
-    const contextPath = path.join(projectDir, "SESSION_CONTEXT.md");
-    const content = fs.readFileSync(contextPath, "utf8");
-    // Resilient: optional bold markers, flexible spacing, "Count"/"Counter" (P001 fix)
-    const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
-    return match ? parseInt(match[1], 10) : null;
-  } catch {
-    return null;
-  }
-}
-
-function buildHandoff() {
-  const sessionAgents = loadJson(SESSION_AGENTS_FILE) || { agentsInvoked: [] };
-  const sessionState = loadJson(SESSION_STATE_FILE) || {};
-  const gitContext = gatherGitContext();
-
-  // Summarize agent activity
-  const agentSummary = {};
-  for (const inv of sessionAgents.agentsInvoked || []) {
-    if (!agentSummary[inv.agent]) {
-      agentSummary[inv.agent] = { count: 0, descriptions: [] };
-    }
-    agentSummary[inv.agent].count++;
-    if (inv.description && agentSummary[inv.agent].descriptions.length < 3) {
-      agentSummary[inv.agent].descriptions.push(inv.description);
-    }
-  }
-
-  // Layer B enhancements: task states + recent commits + session counter
-  const taskStates = gatherTaskStates();
-  const recentCommits = gitExec(["log", "--oneline", "-10"])
-    .split("\n")
-    .filter((l) => l.length > 0);
-  const sessionCounter = getSessionCounter();
-
-  return {
-    timestamp: new Date().toISOString(),
-    sessionId: sessionState.currentSessionId || null,
-    sessionCounter: sessionCounter,
-    git: {
-      branch: gitContext.branch,
-      lastCommit: gitContext.lastCommit,
-      recentCommits: recentCommits,
-      uncommittedFiles: gitContext.uncommittedFiles,
-      stagedFiles: gitContext.stagedFiles,
-      untrackedFiles: gitContext.untrackedFiles,
-    },
-    contextMetrics: {
-      filesRead: contextState.filesRead?.length || 0,
-      filesList: (contextState.filesRead || []).slice(-15), // Last 15 files (OPT #73)
-    },
-    agentsUsed: agentSummary,
-    taskStates: taskStates,
-    recovery: {
-      instruction:
-        "Read this file at session start to restore context. " +
-        "Check git status for uncommitted work. " +
-        "Review agentsUsed to understand what was done. " +
-        "Check taskStates for in-progress multi-step task details. " +
-        "Use recentCommits to understand what was accomplished.",
-    },
-  };
-}
-
-function runCompactionHandoff() {
-  // Check cooldown
-  const handoffState = loadJson(HANDOFF_STATE_FILE) || { lastWrite: 0 };
-  const minutesSinceLast = (Date.now() - handoffState.lastWrite) / (1000 * 60);
-  if (minutesSinceLast < HANDOFF_COOLDOWN_MINUTES) {
-    return;
-  }
-
-  // Check if context threshold hit (reuse already-loaded contextState)
-  const filesRead = contextState.filesRead?.length || 0;
-  if (filesRead < FILE_READ_THRESHOLD_HANDOFF) {
-    return;
-  }
-
-  // Build and write handoff
-  const handoff = buildHandoff();
-  if (saveJson(HANDOFF_OUTPUT, handoff)) {
-    // Prune filesList to cap at 15 entries (OPT #73)
-    if (rotateHelpers && typeof rotateHelpers.pruneJsonKey === "function") {
-      try {
-        rotateHelpers.pruneJsonKey(HANDOFF_OUTPUT, "contextMetrics.filesList", 15);
-      } catch {
-        // Non-critical — pruning failure doesn't block handoff
-      }
-    }
-
-    // Update cooldown state
-    saveJson(HANDOFF_STATE_FILE, { lastWrite: Date.now(), filesAtWrite: filesRead });
-
-    console.error("");
-    console.error("  COMPACTION HANDOFF PREPARED");
-    console.error("\u2501".repeat(42));
-    console.error(`   Session: #${handoff.sessionCounter || "?"}`);
-    console.error(`   Branch: ${handoff.git.branch}`);
-    console.error(`   Files read: ${handoff.contextMetrics.filesRead}`);
-    console.error(`   Uncommitted: ${handoff.git.uncommittedFiles.length} files`);
-    console.error(`   Agents used: ${Object.keys(handoff.agentsUsed).length} types`);
-    console.error(`   Task states: ${handoff.taskStates.length} tracked`);
-    console.error(`   Recent commits: ${handoff.git.recentCommits.length}`);
-    console.error("");
-    console.error("   Handoff saved to: .claude/state/handoff.json");
-    console.error("   This file survives compaction for session recovery.");
-    console.error("\u2501".repeat(42));
-  }
-}
+// Phase 3 (compaction-handoff) removed — pre-compaction-save.js is authoritative
 
 // ═══════════════════════════════════════════════════════════════════════════
 // MAIN
@@ -517,15 +348,6 @@ function main() {
   } catch (err) {
     console.warn(
       `post-read-handler: auto-save error: ${err instanceof Error ? err.message : String(err)}`
-    );
-  }
-
-  try {
-    // Phase 3: Compaction handoff
-    runCompactionHandoff();
-  } catch (err) {
-    console.warn(
-      `post-read-handler: compaction handoff error: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 

@@ -41,3 +41,6 @@
 {"timestamp":"2026-02-24T02:48:52.253Z","action":"intake-pr-deferred","pr_number":388,"item_id":"DEBT-7565","file":".claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js","severity":"S3"}
 {"timestamp":"2026-02-24T02:48:54.713Z","action":"intake-pr-deferred","pr_number":388,"item_id":"DEBT-7566","file":".claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js","severity":"S3"}
 {"timestamp":"2026-02-24T03:32:27.541Z","action":"intake-pr-deferred","pr_number":388,"item_id":"DEBT-7567","file":".claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js","severity":"S2"}
+{"timestamp":"2026-02-26T00:28:34.963Z","action":"intake-manual","item_id":"DEBT-7577","file":"scripts/debt/intake-audit.js","severity":"S2","category":"process"}
+{"timestamp":"2026-02-26T00:28:42.109Z","action":"intake-manual","item_id":"DEBT-7582","file":"scripts/reviews-sync.js","severity":"S2","category":"process"}
+{"timestamp":"2026-02-26T00:28:49.975Z","action":"intake-manual","item_id":"DEBT-7587","file":"docs/agent_docs/CODE_PATTERNS.md","severity":"S2","category":"process"}

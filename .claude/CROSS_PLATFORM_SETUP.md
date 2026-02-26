@@ -98,7 +98,6 @@ These scripts in the repo use bash features and won't work on Windows CMD:
 
 | Script                                                        | Platform  | Alternative                  |
 | ------------------------------------------------------------- | --------- | ---------------------------- |
-| `.claude/hooks/analyze-user-request.sh`                       | Unix only | Use `.js` version            |
 | `.claude/hooks/pattern-check.sh`                              | Unix only | Use `npm run patterns:check` |
 | `.claude/skills/systematic-debugging/find-polluter.sh`        | Unix only | Manual or WSL                |
 | `.claude/skills/artifacts-builder/scripts/bundle-artifact.sh` | Unix only | Manual or WSL                |

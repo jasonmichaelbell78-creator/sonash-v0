@@ -1,8 +1,8 @@
 # Hook & Session State Files Schema
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
-**Last Updated:** 2026-02-23
+**Document Version:** 1.2
+**Last Updated:** 2026-02-26
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -37,10 +37,33 @@ These files track in-session state and are reset each session.
 }
 ```
 
-### `.context-tracking-state.json` (DEPRECATED)
+### `.context-tracking-state.json`
 
-> **Note:** The hooks `large-context-warning.js` and `auto-save-context.js` that
-> wrote/read this file no longer exist. This state file may be a leftover.
+**Writers:** `post-read-handler.js` (Phase 1) **Readers:**
+`post-read-handler.js` (Phase 1 + Phase 2), `pre-compaction-save.js`,
+`user-prompt-handler.js`
+
+```json
+{
+  "filesRead": ["string (relative file paths)"],
+  "lastReset": "number (epoch ms)",
+  "warningShown": "boolean"
+}
+```
+
+Auto-resets after 30 minutes of inactivity (new session heuristic).
+
+### `.auto-save-state.json`
+
+**Writers:** `post-read-handler.js` (Phase 2) **Readers:**
+`post-read-handler.js` (Phase 2, self)
+
+```json
+{
+  "lastSave": "number (epoch ms)",
+  "saveCount": "number"
+}
+```
 
 ### `.commit-tracker-state.json`
 
@@ -97,12 +120,15 @@ These files survive compaction and span sessions.
 {"timestamp":"ISO","hash":"SHA","shortHash":"7-char","message":"string","author":"string","authorDate":"ISO","branch":"string","filesChanged":0,"filesList":["string"],"session":null|number}
 ```
 
-**Retention:** Append-only. No automatic cleanup.
+**Retention:** Append-only with rotation. `commit-tracker.js` rotates at 500
+entries, keeping the most recent 300.
 
 ### `pending-reviews.json` (gitignored, DEPRECATED)
 
-> **Note:** The hook `agent-trigger-enforcer.js` that wrote this file no longer
-> exists. This file may be a leftover from earlier versions.
+> **Note:** Created by `session-end` skill cleanup and referenced by
+> `pre-compaction-save.js`, `post-write-validator.js`, `state-utils.js`. The
+> original writer (`agent-trigger-enforcer.js`) no longer exists. File is
+> ephemeral — deleted at session end.
 
 ### `agent-invocations.jsonl`
 

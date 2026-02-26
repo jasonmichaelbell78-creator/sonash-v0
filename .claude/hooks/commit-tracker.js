@@ -235,8 +235,116 @@ function main() {
     }
   }
 
+  // --- Commit failure reporting (merged from commit-failure-reporter.js) ---
+  // If the commit command failed, surface pre-commit hook output
+  reportCommitFailure();
+
   console.log("ok");
   process.exit(0);
+}
+
+/**
+ * Report commit failures by reading .git/hook-output.log.
+ * Surfaces pre-commit hook output that would otherwise be invisible.
+ * Merged from commit-failure-reporter.js to eliminate redundant process spawn.
+ */
+function reportCommitFailure() {
+  try {
+    const arg = process.argv[2] || "";
+    if (!arg) return;
+
+    let exitCode = 0;
+    try {
+      const parsed = JSON.parse(arg);
+      const rawExitCode =
+        parsed.exit_code ?? (parsed.tool_output && parsed.tool_output.exit_code) ?? 0;
+      exitCode = Number(rawExitCode);
+      if (!Number.isFinite(exitCode)) exitCode = 0;
+    } catch {
+      return;
+    }
+
+    const gitDir = (() => {
+      const envGitDir = process.env.GIT_DIR;
+      if (typeof envGitDir === "string" && envGitDir.length > 0) {
+        return path.isAbsolute(envGitDir) ? envGitDir : path.resolve(process.cwd(), envGitDir);
+      }
+      const dotGitPath = path.join(process.cwd(), ".git");
+      try {
+        const st = fs.statSync(dotGitPath);
+        if (st.isFile()) {
+          const txt = fs.readFileSync(dotGitPath, "utf8").trim();
+          const m = txt.match(/^gitdir:\s*(.+)\s*$/i);
+          if (m && m[1]) {
+            const resolved = m[1].trim();
+            return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
+          }
+        }
+      } catch {
+        // best-effort — fall through to default
+      }
+      return dotGitPath;
+    })();
+    const logFile = path.join(gitDir, "hook-output.log");
+
+    // Read hook output log if it exists and is fresh (<60s old)
+    let content;
+    try {
+      const stats = fs.statSync(logFile);
+      if (stats.size === 0 || Date.now() - stats.mtimeMs > 60000) return;
+      content = fs.readFileSync(logFile, "utf8").trim();
+      if (!content) return;
+    } catch {
+      return;
+    }
+
+    // If exit code says success AND log has no failure evidence, skip
+    const hookPassed = /All pre-commit checks passed/.test(content);
+    if (exitCode === 0 && hookPassed) return;
+    if (exitCode === 0 && !content.includes("\u274C")) return;
+
+    // Sanitize and output hook failure
+    const sanitized = content
+      .split("\n")
+      .map((line) => {
+        let result = line;
+        for (const keyword of ["token", "key", "secret", "password", "credential"]) {
+          for (const sep of ["=", ":"]) {
+            const idx = result.toLowerCase().indexOf(keyword + sep);
+            if (idx === -1) continue;
+            const afterSep = idx + keyword.length + sep.length;
+            let valueStart = afterSep;
+            while (valueStart < result.length && result[valueStart] === " ") valueStart++;
+            if (valueStart >= result.length) continue;
+            let valueEnd;
+            const quote = result[valueStart];
+            if (quote === '"' || quote === "'") {
+              const endQuote = result.indexOf(quote, valueStart + 1);
+              valueEnd = endQuote === -1 ? result.length : endQuote + 1;
+            } else {
+              valueEnd = valueStart;
+              while (valueEnd < result.length && result[valueEnd] !== " ") valueEnd++;
+            }
+            if (valueEnd > valueStart) {
+              result = result.slice(0, valueStart) + "[REDACTED]" + result.slice(valueEnd);
+            }
+          }
+        }
+        result = result.replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***");
+        result = result.replaceAll(/ghs_[A-Za-z0-9_]{36,}/g, "ghs_***REDACTED***");
+        result = result.replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, "sk-***REDACTED***");
+        result = result.replaceAll(/AKIA[A-Z0-9]{12,}/g, "AKIA***REDACTED***");
+        return result;
+      })
+      .join("\n");
+
+    console.error("Pre-commit hook failed. Output from .git/hook-output.log:");
+    console.error("---");
+    console.error(sanitized);
+    console.error("---");
+  } catch {
+    // Best-effort — never block on failure reporting
+  }
 }
 
 main();
