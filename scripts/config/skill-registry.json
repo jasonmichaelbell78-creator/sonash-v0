@@ -1,12 +1,16 @@
 {
-  "generatedAt": "2026-02-13T18:28:48.577Z",
-  "skillCount": 56,
+  "generatedAt": "2026-02-26T12:27:21.941Z",
+  "skillCount": 60,
   "skills": [
+    {
+      "name": "_shared",
+      "source": ".claude/skills"
+    },
     {
       "name": "add-debt",
       "source": ".claude/skills",
-      "description": "Add technical debt items to MASTER_DEBT.jsonl (manual or PR-deferred)",
-      "displayName": "add-debt"
+      "displayName": "add-debt",
+      "description": "description: >-"
     },
     {
       "name": "alerts",
@@ -27,6 +31,12 @@
       "displayName": "audit-aggregator"
     },
     {
+      "name": "audit-ai-optimization",
+      "source": ".claude/skills",
+      "description": "Run a single-session AI optimization audit on the codebase",
+      "displayName": "audit-ai-optimization"
+    },
+    {
       "name": "audit-code",
       "source": ".claude/skills",
       "description": "Run a single-session code review audit on the codebase",
@@ -35,7 +45,7 @@
     {
       "name": "audit-comprehensive",
       "source": ".claude/skills",
-      "description": "Run all 7 domain audits in staged waves and aggregate results",
+      "description": "Run all 9 domain audits in staged waves and aggregate results",
       "displayName": "audit-comprehensive"
     },
     {
@@ -55,6 +65,12 @@
       "source": ".claude/skills",
       "displayName": "audit-enhancements",
       "description": "Run a comprehensive enhancement audit across the entire project - code,"
+    },
+    {
+      "name": "audit-health",
+      "source": ".claude/skills",
+      "displayName": "audit-health",
+      "description": "Meta-check for audit system health — runs diagnostics on domain audits and"
     },
     {
       "name": "audit-performance",
@@ -83,20 +99,33 @@
     {
       "name": "checkpoint",
       "source": ".claude/skills",
-      "description": "Quick save of current session state for recovery after failures",
-      "displayName": "checkpoint"
+      "displayName": "checkpoint",
+      "description": "description: |"
     },
     {
       "name": "code-reviewer",
       "source": ".claude/skills",
       "displayName": "code-reviewer",
-      "description": "Comprehensive code review skill for TypeScript, JavaScript, Python, Swift,"
+      "version": "\"2.0\"",
+      "description": "version: \"2.0\""
+    },
+    {
+      "name": "comprehensive-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "comprehensive-ecosystem-audit",
+      "description": "description: |"
     },
     {
       "name": "content-research-writer",
       "source": ".claude/skills",
       "displayName": "content-research-writer",
       "description": "Assists in writing high-quality content by conducting research, adding"
+    },
+    {
+      "name": "create-audit",
+      "source": ".claude/skills",
+      "displayName": "create-audit",
+      "description": "Interactive wizard to scaffold a new audit type with skill, template, and"
     },
     {
       "name": "decrypt-secrets",
@@ -117,34 +146,28 @@
       "description": "Analyzes your recent Claude Code chat history to identify coding patterns,"
     },
     {
+      "name": "doc-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "doc-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
       "name": "doc-optimizer",
       "source": ".claude/skills",
       "displayName": "doc-optimizer",
       "description": "Scan all docs, auto-fix formatting/headers/links, report issues as JSONL, and"
     },
     {
-      "name": "docs-sync",
+      "name": "docs-maintain",
       "source": ".claude/skills",
-      "description": "Document Sync Check",
-      "displayName": "docs-sync"
-    },
-    {
-      "name": "docs-update",
-      "source": ".claude/skills",
-      "displayName": "docs-update",
-      "description": "Automatically update documentation artifacts when markdown files change"
+      "displayName": "docs-maintain",
+      "description": "description: |"
     },
     {
       "name": "excel-analysis",
       "source": ".claude/skills",
       "displayName": "Excel Analysis",
       "description": "Analyze Excel spreadsheets, create pivot tables, generate charts, and perform"
-    },
-    {
-      "name": "expansion-evaluation",
-      "source": ".claude/skills",
-      "displayName": "expansion-evaluation",
-      "description": "description: >-"
     },
     {
       "name": "find-skills",
@@ -163,6 +186,12 @@
       "source": ".claude/skills",
       "displayName": "gh-fix-ci",
       "description": "Inspect GitHub PR checks with gh, pull failing GitHub Actions logs, summarize"
+    },
+    {
+      "name": "hook-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "hook-ecosystem-audit",
+      "description": "description: |"
     },
     {
       "name": "market-research-reports",
@@ -189,10 +218,16 @@
       "description": "Interactive orchestrator for multi-AI consensus audits with any-format input"
     },
     {
+      "name": "pr-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "pr-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
       "name": "pr-retro",
       "source": ".claude/skills",
       "displayName": "pr-retro",
-      "description": "PR Review Retrospective — actionable analysis of a PR's review cycle"
+      "description": "PR Review Retrospective -- actionable analysis of a PR's review cycle"
     },
     {
       "name": "pr-review",
@@ -213,52 +248,22 @@
       "description": "Auto-suggest fixes for common pre-commit and pattern compliance issues"
     },
     {
-      "name": "save-context",
+      "name": "script-ecosystem-audit",
       "source": ".claude/skills",
-      "displayName": "save-context",
+      "displayName": "script-ecosystem-audit",
       "description": "description: |"
-    },
-    {
-      "name": "senior-architect",
-      "source": ".claude/skills",
-      "displayName": "senior-architect",
-      "description": "Comprehensive software architecture skill for designing scalable, maintainable"
-    },
-    {
-      "name": "senior-backend",
-      "source": ".claude/skills",
-      "displayName": "senior-backend",
-      "description": "Comprehensive backend development skill for building scalable backend systems"
-    },
-    {
-      "name": "senior-devops",
-      "source": ".claude/skills",
-      "displayName": "senior-devops",
-      "description": "Comprehensive DevOps skill for CI/CD, infrastructure automation,"
-    },
-    {
-      "name": "senior-frontend",
-      "source": ".claude/skills",
-      "displayName": "senior-frontend",
-      "description": "Comprehensive frontend development skill for building modern, performant web"
-    },
-    {
-      "name": "senior-fullstack",
-      "source": ".claude/skills",
-      "displayName": "senior-fullstack",
-      "description": "Comprehensive fullstack development skill for building complete web"
-    },
-    {
-      "name": "senior-qa",
-      "source": ".claude/skills",
-      "displayName": "senior-qa",
-      "description": "Comprehensive QA and testing skill for quality assurance, test automation, and"
     },
     {
       "name": "session-begin",
       "source": ".claude/skills",
       "description": "Complete verification steps before starting any work session",
       "displayName": "session-begin"
+    },
+    {
+      "name": "session-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "session-ecosystem-audit",
+      "description": "description: |"
     },
     {
       "name": "session-end",
@@ -273,16 +278,29 @@
       "description": "Guide for creating effective skills. This skill should be used when users want"
     },
     {
+      "name": "skill-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "skill-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
       "name": "sonarcloud",
       "source": ".claude/skills",
       "displayName": "sonarcloud",
       "description": "description: |"
     },
     {
-      "name": "sonarcloud-sprint",
+      "name": "sprint",
       "source": ".claude/skills",
-      "displayName": "sonarcloud-sprint",
-      "description": "Run a SonarCloud cleanup sprint. Fetches fresh issues via public API,"
+      "displayName": "sprint",
+      "description": "description: >-"
+    },
+    {
+      "name": "system-test",
+      "source": ".claude/skills",
+      "displayName": "system-test",
+      "version": "\"4.0\"",
+      "description": "23-domain interactive system/repo test plan with per-finding review,"
     },
     {
       "name": "systematic-debugging",
@@ -295,6 +313,12 @@
       "source": ".claude/skills",
       "description": "Show dependency-resolved next tasks from ROADMAP.md active sprint",
       "displayName": "task-next"
+    },
+    {
+      "name": "tdms-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "tdms-ecosystem-audit",
+      "description": "description: |"
     },
     {
       "name": "test-suite",
