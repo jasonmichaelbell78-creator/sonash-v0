@@ -315,6 +315,7 @@ function reportCommitFailure() {
             const afterSep = idx + keyword.length + sep.length;
             let valueStart = afterSep;
             while (valueStart < result.length && result[valueStart] === " ") valueStart++;
+            if (valueStart >= result.length) continue;
             let valueEnd;
             const quote = result[valueStart];
             if (quote === '"' || quote === "'") {

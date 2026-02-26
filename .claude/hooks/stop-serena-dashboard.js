@@ -127,8 +127,22 @@ function log(message, level = "INFO") {
       const kept = lines.slice(-50).join("\n") + "\n";
       if (isSafeToWrite(LOG_FILE)) {
         const tmpFile = LOG_FILE + ".tmp." + process.pid;
-        fs.writeFileSync(tmpFile, kept, { mode: 0o600 });
-        fs.renameSync(tmpFile, LOG_FILE);
+        try {
+          // Remove destination first for Windows cross-platform compatibility
+          try {
+            fs.rmSync(LOG_FILE, { force: true });
+          } catch {
+            /* best-effort */
+          }
+          fs.writeFileSync(tmpFile, kept, { mode: 0o600 });
+          fs.renameSync(tmpFile, LOG_FILE);
+        } catch {
+          try {
+            fs.rmSync(tmpFile, { force: true });
+          } catch {
+            /* cleanup */
+          }
+        }
       }
     }
   } catch {
