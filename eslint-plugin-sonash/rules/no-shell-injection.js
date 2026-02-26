@@ -6,6 +6,8 @@
 
 "use strict";
 
+const { getCalleeName, hasStringInterpolation } = require("../lib/ast-utils");
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -26,33 +28,10 @@ module.exports = {
 
     return {
       CallExpression(node) {
-        const callee = node.callee;
-        let funcName;
+        const funcName = getCalleeName(node.callee);
+        if (!funcName || !execFunctions.has(funcName)) return;
 
-        // Direct call: exec(...) or execSync(...)
-        if (callee.type === "Identifier") {
-          funcName = callee.name;
-        }
-        // Member call: child_process.exec(...)
-        else if (callee.type === "MemberExpression" && callee.property.type === "Identifier") {
-          funcName = callee.property.name;
-        }
-
-        if (!funcName || !execFunctions.has(funcName)) {
-          return;
-        }
-
-        const firstArg = node.arguments[0];
-        if (!firstArg) return;
-
-        // Flag template literals with expressions: exec(`cmd ${var}`)
-        if (firstArg.type === "TemplateLiteral" && firstArg.expressions.length > 0) {
-          context.report({ node, messageId: "shellInjection" });
-          return;
-        }
-
-        // Flag string concatenation: exec("cmd " + var)
-        if (firstArg.type === "BinaryExpression" && firstArg.operator === "+") {
+        if (hasStringInterpolation(node.arguments[0])) {
           context.report({ node, messageId: "shellInjection" });
         }
       },

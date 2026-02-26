@@ -6,6 +6,8 @@
 
 "use strict";
 
+const { getCalleeName } = require("../lib/ast-utils");
+
 function findContainingBlock(node) {
   let current = node.parent;
   while (current) {
@@ -19,9 +21,7 @@ function findContainingBlock(node) {
 
 function isCallToFunc(node, funcName) {
   if (node.type !== "CallExpression") return false;
-  const callee = node.callee;
-  if (callee.type === "Identifier") return callee.name === funcName;
-  return callee.type === "MemberExpression" && callee.property?.name === funcName;
+  return getCalleeName(node.callee) === funcName;
 }
 
 function containsCallTo(node, funcName) {
@@ -44,16 +44,17 @@ function hasRenameSyncNearby(block, targetNode) {
   const body = block.body;
   if (!Array.isArray(body)) return false;
 
-  // Find the statement containing the writeFileSync
-  const writeIndex = body.findIndex(
-    (stmt) => stmt.range?.[0] <= targetNode.range?.[0] && stmt.range?.[1] >= targetNode.range?.[1]
-  );
+  // Walk up from targetNode to find containing statement in the block
+  let containingStmt = targetNode;
+  while (containingStmt.parent && containingStmt.parent !== block) {
+    containingStmt = containingStmt.parent;
+  }
+  const writeIndex = body.indexOf(containingStmt);
 
-  // Check statements after the write for renameSync/unlinkSync
+  // Check statements after the write for renameSync (the atomic rename step)
   const startIndex = writeIndex === -1 ? 0 : writeIndex + 1;
   for (let i = startIndex; i < body.length; i++) {
     if (containsCallTo(body[i], "renameSync")) return true;
-    if (containsCallTo(body[i], "unlinkSync")) return true;
   }
   return false;
 }
@@ -77,9 +78,6 @@ function isWritingToTmpFile(firstArg) {
       return true;
     }
   }
-  // Variable that looks like a tmp path
-  if (firstArg.type === "Identifier" && /tmp/i.test(firstArg.name)) return true;
-
   return false;
 }
 
@@ -101,16 +99,7 @@ module.exports = {
   create(context) {
     return {
       CallExpression(node) {
-        const callee = node.callee;
-        let funcName;
-
-        if (callee.type === "Identifier") {
-          funcName = callee.name;
-        } else if (callee.type === "MemberExpression" && callee.property?.type === "Identifier") {
-          funcName = callee.property.name;
-        }
-
-        if (funcName !== "writeFileSync") return;
+        if (getCalleeName(node.callee) !== "writeFileSync") return;
 
         // Check the first argument — if it's writing to a .tmp file, this IS the atomic pattern
         if (isWritingToTmpFile(node.arguments[0])) return;

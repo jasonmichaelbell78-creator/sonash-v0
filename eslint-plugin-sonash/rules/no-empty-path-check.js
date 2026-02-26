@@ -8,14 +8,17 @@
 "use strict";
 
 /**
- * Check if a node is a comparison to empty string: x === '' or x === ""
+ * Check if a node is a comparison to empty string for a specific variable:
+ * relName === '' or '' === relName
  */
-function isEmptyStringCheck(node) {
+function isEmptyStringCheck(node, relName) {
   if (node?.type !== "BinaryExpression") return false;
   if (node.operator !== "===" && node.operator !== "==") return false;
+  const isEmptyLiteral = (n) => n?.type === "Literal" && n.value === "";
+  const isRelIdentifier = (n) => n?.type === "Identifier" && n.name === relName;
   return (
-    (node.left.type === "Literal" && node.left.value === "") ||
-    (node.right.type === "Literal" && node.right.value === "")
+    (isRelIdentifier(node.left) && isEmptyLiteral(node.right)) ||
+    (isRelIdentifier(node.right) && isEmptyLiteral(node.left))
   );
 }
 
@@ -53,26 +56,40 @@ module.exports = {
           return;
         }
 
-        // Check if there's a rel === '' check in the same logical expression
+        // Extract receiver variable name from .startsWith("..") call
+        const receiver = callee.object;
+        const receiverName = receiver?.type === "Identifier" ? receiver.name : null;
+        if (!receiverName) {
+          context.report({ node, messageId: "missingEmptyCheck" });
+          return;
+        }
+
+        // Check if there's a receiverName === '' check in the same logical expression
         const parent = node.parent;
         if (!parent) {
           context.report({ node, messageId: "missingEmptyCheck" });
           return;
         }
 
-        // Walk up LogicalExpression (||) parents to find rel === '' check
+        // Walk up LogicalExpression (||) parents to find receiverName === '' check
         let hasEmptyCheck = false;
         let current = parent;
-        while (current && current.type === "LogicalExpression" && current.operator === "||") {
-          if (isEmptyStringCheck(current.left) || isEmptyStringCheck(current.right)) {
+        while (current?.type === "LogicalExpression" && current.operator === "||") {
+          if (
+            isEmptyStringCheck(current.left, receiverName) ||
+            isEmptyStringCheck(current.right, receiverName)
+          ) {
             hasEmptyCheck = true;
             break;
           }
           current = current.parent;
         }
-        // Also check the immediate parent if it's a unary ! or logical &&
+        // Also check the immediate parent if it's a logical &&
         if (!hasEmptyCheck && parent.type === "LogicalExpression") {
-          if (isEmptyStringCheck(parent.left) || isEmptyStringCheck(parent.right)) {
+          if (
+            isEmptyStringCheck(parent.left, receiverName) ||
+            isEmptyStringCheck(parent.right, receiverName)
+          ) {
             hasEmptyCheck = true;
           }
         }

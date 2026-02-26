@@ -6,6 +6,8 @@
 
 "use strict";
 
+const { getCalleeName } = require("../lib/ast-utils");
+
 /**
  * Check if a node is inside the try block (not catch/finally) of a TryStatement.
  * Stops traversal at function boundaries.
@@ -14,11 +16,9 @@ function isInsideTryBlock(node) {
   let prev = node;
   let current = node.parent;
   while (current) {
-    // Guarded only when the call is inside the `try { ... }` block, not catch/finally
     if (current.type === "TryStatement" && prev === current.block) {
       return true;
     }
-    // Stop at function boundaries
     if (
       current.type === "FunctionDeclaration" ||
       current.type === "FunctionExpression" ||
@@ -30,19 +30,6 @@ function isInsideTryBlock(node) {
     current = current.parent;
   }
   return false;
-}
-
-/**
- * Return the resolved function name for a callee node, or null if not determinable.
- */
-function getCalleeName(callee) {
-  if (callee.type === "Identifier") {
-    return callee.name;
-  }
-  if (callee.type === "MemberExpression" && callee.property?.type === "Identifier") {
-    return callee.property.name;
-  }
-  return null;
 }
 
 /**

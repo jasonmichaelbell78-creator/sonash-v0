@@ -6,6 +6,8 @@
 
 "use strict";
 
+const { getCalleeName } = require("../lib/ast-utils");
+
 const FILE_READ_METHODS = new Set([
   "readFileSync",
   "readFile",
@@ -18,23 +20,7 @@ const FILE_READ_METHODS = new Set([
  * Handles both bare calls (readFileSync()) and member calls (fs.readFileSync()).
  */
 function isFileReadCall(node) {
-  const callee = node.callee;
-
-  // Bare call: readFileSync(...)
-  if (callee.type === "Identifier" && FILE_READ_METHODS.has(callee.name)) {
-    return true;
-  }
-
-  // Member call: fs.readFileSync(...)
-  if (
-    callee.type === "MemberExpression" &&
-    callee.property.type === "Identifier" &&
-    FILE_READ_METHODS.has(callee.property.name)
-  ) {
-    return true;
-  }
-
-  return false;
+  return FILE_READ_METHODS.has(getCalleeName(node.callee));
 }
 
 /**

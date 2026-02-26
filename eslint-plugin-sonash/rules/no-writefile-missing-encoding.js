@@ -6,6 +6,8 @@
 
 "use strict";
 
+const { getCalleeName } = require("../lib/ast-utils");
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -24,19 +26,7 @@ module.exports = {
   create(context) {
     return {
       CallExpression(node) {
-        const callee = node.callee;
-        let funcName;
-
-        // Direct call: writeFileSync(...)
-        if (callee.type === "Identifier") {
-          funcName = callee.name;
-        }
-        // Member call: fs.writeFileSync(...)
-        else if (callee.type === "MemberExpression" && callee.property.type === "Identifier") {
-          funcName = callee.property.name;
-        }
-
-        if (funcName !== "writeFileSync") return;
+        if (getCalleeName(node.callee) !== "writeFileSync") return;
 
         // writeFileSync(path, data) — missing encoding (only 2 args)
         if (node.arguments.length === 2) {

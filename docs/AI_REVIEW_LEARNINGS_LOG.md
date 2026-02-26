@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.63 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.64 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1239,6 +1239,39 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #386: PR #394 R3 (2026-02-26)
+
+- **Source**: SonarCloud (2 new + Quality Gate failure), Qodo PR Suggestions
+  (~25 across R1-R3), Qodo Compliance (8 items, 5 repeat-rejected), Gemini (1
+  comment), CI (393 blocking — all pre-existing)
+- **PR**: PR #394 — Over-engineering resolution, ESLint AST migration
+- **Items**: ~42 total → 8 fixed, ~10 deferred (overlap with Enhancement Plan),
+  ~24 rejected/repeat
+- **Fixed**: (1) walkAst CC 16→≤15 via `visitChild` extraction; (2)
+  `no-empty-path-check.js` optional chain + same-variable receiver check (Plan
+  Item 8); (3) `no-unbounded-regex.js` template literal join `""` not `"_"`; (4)
+  `no-non-atomic-write.js` remove `/tmp/i` heuristic bypass; (5)
+  `hasRenameSyncNearby` rewritten from range-based to parent traversal; (6)
+  Remove `unlinkSync` as atomic write indicator; (7) Shared AST utilities
+  extraction (`lib/ast-utils.js`) — `getCalleeName`, `getEnclosingScope`,
+  `hasStringInterpolation` deduplicated across 8 rule files; (8) Updated tests
+  for new `tmpPath` behavior
+- **Deferred**: ~10 Qodo suggestions already tracked in Enhancement Plan (Items
+  9-10, 14-18) or enhancement-level (computed property detection, scope
+  analysis, JSX spread handling, Windows paths, custom error classes)
+- **Rejected**: (1) Qodo "Fix rule file parse error" — FALSE POSITIVE (display
+  truncation, not actual code issue); (2) 5 Qodo Compliance repeat-rejected
+  (TOCTOU, silent parse, raw content — all addressed in R2); (3) CI 393 blockers
+  — pre-existing, tracked in Phase 1 of fix plan; (4) ~10 low-value suggestions
+  (library process.exit, binary write FP, timing attacks in tests)
+- **Key Learning**: Shared utility extraction (`lib/ast-utils.js`) is the
+  correct approach for reducing SonarCloud duplication across ESLint rule files.
+  A single `getCalleeName` function replaces 5+ inline callee resolution blocks.
+  Quality Gate duplication threshold (3%) requires proactive deduplication when
+  adding multiple structurally similar files.
 
 ---
 

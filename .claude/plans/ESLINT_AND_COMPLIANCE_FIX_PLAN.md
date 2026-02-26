@@ -171,6 +171,8 @@ These improve the ESLint rules and TDMS scripts but do not block CI.
   identifier in `isEmptyStringCheck`.
 - **Effort:** E1 (small)
 - **Priority:** P1 — correctness bug
+- **Status:** DONE (fixed in R3 — receiver variable extraction +
+  isEmptyStringCheck now takes relName parameter)
 
 ### Item 9: Escaped quantifier false positives in regex patterns
 
@@ -277,6 +279,8 @@ These improve the ESLint rules and TDMS scripts but do not block CI.
   with "tmp" (e.g., `tmpPath`, `pathTmp`).
 - **Effort:** E0 (trivial)
 - **Priority:** P3
+- **Status:** DONE (fixed in R3 — removed heuristic entirely; only `.tmp` suffix
+  patterns on template literals and string concatenation are accepted)
 
 ### Item 18: Trim and coerce category inputs (partial)
 

@@ -11,6 +11,19 @@ function isAstNode(val) {
 }
 
 /**
+ * Process a single child value — recurse if AST node, iterate if array.
+ */
+function visitChild(child, visitor) {
+  if (Array.isArray(child)) {
+    for (const item of child) {
+      if (isAstNode(item)) walkAst(item, visitor);
+    }
+  } else if (isAstNode(child)) {
+    walkAst(child, visitor);
+  }
+}
+
+/**
  * Generic AST walker. Calls visitor(node) for every node in the subtree.
  * Skips the synthetic `parent` property to avoid infinite cycles.
  */
@@ -20,14 +33,7 @@ function walkAst(node, visitor) {
   for (const key of Object.keys(node)) {
     if (key === "parent") continue;
     const child = node[key];
-    if (!child || typeof child !== "object") continue;
-    if (Array.isArray(child)) {
-      for (const item of child) {
-        if (isAstNode(item)) walkAst(item, visitor);
-      }
-    } else if (isAstNode(child)) {
-      walkAst(child, visitor);
-    }
+    if (child && typeof child === "object") visitChild(child, visitor);
   }
 }
 

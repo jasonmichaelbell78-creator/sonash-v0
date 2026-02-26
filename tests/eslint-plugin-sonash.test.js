@@ -479,14 +479,21 @@ describe("sonash/no-non-atomic-write", () => {
   test("requires atomic write pattern", () => {
     ruleTester.run("no-non-atomic-write", plugin.rules["no-non-atomic-write"], {
       valid: [
-        // Writing to tmp file (this IS the atomic pattern)
-        'writeFileSync(tmpPath, data, "utf-8")',
+        // Writing to .tmp suffix file (this IS the atomic pattern)
+        'writeFileSync(path + ".tmp", data, "utf-8")',
+        // Template literal ending in .tmp
+        "writeFileSync(`${path}.tmp`, data, 'utf-8')",
         // Block with renameSync nearby
         '{ writeFileSync(path + ".tmp", data, "utf-8"); renameSync(path + ".tmp", path); }',
       ],
       invalid: [
         {
           code: 'writeFileSync(outputPath, data, "utf-8")',
+          errors: [{ messageId: "nonAtomicWrite" }],
+        },
+        {
+          // Variable name containing "tmp" is NOT sufficient — must use .tmp suffix
+          code: 'writeFileSync(tmpPath, data, "utf-8")',
           errors: [{ messageId: "nonAtomicWrite" }],
         },
       ],
