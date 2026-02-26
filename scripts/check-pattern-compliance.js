@@ -317,27 +317,8 @@ const ANTI_PATTERNS = [
   },
 
   // JavaScript/TypeScript patterns
-  {
-    id: "unsafe-error-message",
-    severity: "critical",
-    // Match catch blocks with .message access that DON'T have instanceof check anywhere in block
-    // Uses [^}] to constrain search to current catch block (Review #53: prevents false negatives)
-    // Note: May miss deeply nested blocks, but safer than unbounded [\s\S]
-    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\b\1\b\.message/g,
-    message: "Unsafe error.message access - crashes if non-Error is thrown",
-    fix: "Use: error instanceof Error ? error.message : String(error)",
-    review: "#17, #51, #53",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-  },
-  {
-    id: "catch-console-error",
-    severity: "high",
-    pattern: /\.catch\s*\(\s*console\.error\s*\)/g,
-    message: "Unsanitized error logging - may expose sensitive paths/credentials",
-    fix: "Use: .catch((e) => console.error(sanitizeError(e))) or handle specific errors",
-    review: "#20",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-  },
+  // unsafe-error-message: MIGRATED to ESLint sonash/no-unsafe-error-access (AST-based, no false positives)
+  // catch-console-error: MIGRATED to ESLint sonash/no-catch-console-error (AST-based)
   {
     id: "path-startswith",
     severity: "critical",
@@ -440,29 +421,8 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     exclude: /(?:test|mock|fake|dummy|example|placeholder|xxx+|your[_-]?api|insert[_-]?your)/i,
   },
-  {
-    id: "unsafe-innerhtml",
-    severity: "critical",
-    pattern: /\.innerHTML\s*=/g,
-    message: "innerHTML assignment can lead to XSS vulnerabilities",
-    fix: "Use textContent for text, or sanitize with DOMPurify for HTML",
-    review: "Security Standards",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-  },
-  {
-    id: "eval-usage",
-    severity: "critical",
-    pattern: /\beval\s*\(/g,
-    message: "eval() is a security risk - allows arbitrary code execution",
-    fix: "Avoid eval. Use JSON.parse for JSON, or restructure code",
-    review: "Security Standards",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-    // Exclude check-pattern-compliance.js and pattern-check.js: contain pattern definitions as strings (meta-detection)
-    // 2026-01-20 audit (PR #286):
-    // - security-check.js: Contains regex pattern /\beval\s*\(/ at L42 as detection pattern, not actual eval usage
-    // 2026-02-13 (OPT-H002): pattern-check.js now has inline pattern defs including eval-usage regex
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-check|pattern-check)\.js$/,
-  },
+  // unsafe-innerhtml: MIGRATED to ESLint sonash/no-unsafe-innerhtml (AST-based)
+  // eval-usage: REMOVED — covered by ESLint no-eval (in js.configs.recommended)
   {
     id: "sql-injection-risk",
     severity: "critical",
@@ -696,18 +656,7 @@ const ANTI_PATTERNS = [
     pathExcludeList: verifiedPatterns["unguarded-loadconfig"] || [],
   },
 
-  // Silent catch blocks (11x in reviews)
-  {
-    id: "silent-catch-block",
-    severity: "high",
-    pattern: /catch\s*\(\s*\w*\s*\)\s*\{\s*\}/g,
-    message: "Empty catch block silently swallows errors - hides bugs",
-    fix: "At minimum log the error: catch (err) { console.warn('Context:', sanitizeError(err)); }",
-    review: "#283, #284, Session #151 analysis",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-    // Files verified to have intentional empty catches (cleanup code, best-effort ops)
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-helpers)\.js$/,
-  },
+  // silent-catch-block: REMOVED — covered by ESLint no-empty (in js.configs.recommended)
 
   // writeFileSync without atomic write pattern (10x in reviews)
   {
@@ -724,18 +673,7 @@ const ANTI_PATTERNS = [
     pathExcludeList: verifiedPatterns["non-atomic-write"] || [],
   },
 
-  // Prototype pollution via Object.assign on parsed JSON (9x in reviews)
-  {
-    id: "object-assign-parsed-json",
-    severity: "critical",
-    pattern:
-      /Object\.assign\s*\(\s*\{\s*\}\s*,\s*(?:JSON\.parse|parsed|item|entry|record|finding|doc)\b/g,
-    message: "Object.assign from parsed JSON can carry __proto__ (prototype pollution)",
-    fix: "Use structuredClone() or filter dangerous keys (__proto__, constructor, prototype)",
-    review: "#283, Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
-  },
+  // object-assign-parsed-json: MIGRATED to ESLint sonash/no-object-assign-json (AST-based)
 
   // Unbounded regex quantifiers (8x in reviews)
   {
@@ -823,18 +761,7 @@ const ANTI_PATTERNS = [
     pathExcludeList: verifiedPatterns["process-exit-without-cleanup"] || [],
   },
 
-  // console.error with raw error object (not just .message)
-  {
-    id: "console-error-raw-object",
-    severity: "medium",
-    pattern: /console\.(?:error|warn)\s*\(\s*(?:['"`][^'"]*['"`]\s*,\s*)?(?:err|error|e)\s*\)/g,
-    message: "Logging raw error object may expose stack traces and sensitive paths",
-    fix: "Use: console.error('Context:', sanitizeError(err))",
-    review: "#283, #284, Session #151 analysis",
-    fileTypes: [".js", ".ts"],
-    pathFilter: /(?:^|\/)(?:scripts|\.claude)\//,
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|sanitize-error)\.js$/,
-  },
+  // console-error-raw-object: MIGRATED to ESLint sonash/no-raw-error-log (AST-based)
 
   // Missing BOM handling for file reads
   {
@@ -923,31 +850,9 @@ const ANTI_PATTERNS = [
 
   // --- JS/TS ---
 
-  // parseInt without radix
-  {
-    id: "parseint-no-radix",
-    severity: "medium",
-    pattern: /parseInt\s*\([^\n,)]+\)(?!\s*,)/g,
-    message: "parseInt() without radix parameter - may parse as octal in legacy engines",
-    fix: "Always specify radix: parseInt(str, 10) or use Number.parseInt(str, 10)",
-    review: "CODE_PATTERNS.md JS/TS - Number.parseInt radix",
-    fileTypes: [".js", ".ts", ".jsx", ".tsx"],
-    exclude: /Number\.parseInt/,
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
-    pathExcludeList: verifiedPatterns["parseint-no-radix"] || [],
-  },
+  // parseint-no-radix: REMOVED — covered by ESLint `radix` rule (added to config)
 
-  // Math.max with spread on potentially empty array
-  {
-    id: "math-max-spread-no-guard",
-    severity: "medium",
-    pattern: /Math\.max\(\s*\.\.\.[^)]+\)/g,
-    message: "Math.max(...arr) returns -Infinity on empty array - add length guard",
-    fix: "Guard empty: arr.length > 0 ? Math.max(...arr) : defaultValue",
-    review: "CODE_PATTERNS.md JS/TS - Math.max empty array, Review #216",
-    fileTypes: [".js", ".ts"],
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
-  },
+  // math-max-spread-no-guard: MIGRATED to ESLint sonash/no-math-max-spread (AST-based)
 
   // startsWith('/') instead of path.isAbsolute
   {
@@ -1323,16 +1228,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:lib|app|components|pages)\//,
   },
-  {
-    id: "trivial-assertions",
-    severity: "medium",
-    pattern:
-      /expect\(true\)\.toBe\(true\)|expect\(1\)\.toBe\(1\)|expect\(false\)\.toBe\(false\)|assert\.ok\(true\)|assert\.equal\(1,\s*1\)/g,
-    message: "Test that always passes without testing real behavior",
-    fix: "Write assertions that test actual behavior: expect(result).toBe(expected)",
-    review: "ai-behavior",
-    fileTypes: [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx", ".test.js", ".test.jsx"],
-  },
+  // trivial-assertions: MIGRATED to ESLint sonash/no-trivial-assertions (AST-based)
   {
     id: "ai-todo-markers",
     severity: "medium",
@@ -1361,16 +1257,7 @@ const ANTI_PATTERNS = [
     review: "ai-behavior",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
   },
-  {
-    id: "hallucinated-apis",
-    severity: "high",
-    pattern:
-      /crypto\.secureHash\(|firebase\.verifyAppCheck\(|React\.useServerState\(|next\.getServerAuth\(|firestore\.atomicUpdate\(/g,
-    message: "Call to API method that doesn't exist (hallucinated by AI)",
-    fix: "Check the actual API documentation for the correct method name",
-    review: "ai-behavior",
-    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-  },
+  // hallucinated-apis: MIGRATED to ESLint sonash/no-hallucinated-api (AST-based)
   {
     id: "naive-data-fetch",
     severity: "high",

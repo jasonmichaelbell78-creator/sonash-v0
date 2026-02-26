@@ -72,7 +72,6 @@
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js", "safety-error-handling.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
   "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
-  "parseint-no-radix": ["verify-sonar-phase.js"],
   "non-atomic-write": [
     "alerts-reminder.js",
     "analyze-user-request.js",

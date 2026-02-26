@@ -158,10 +158,9 @@
 
 ### Qodo Architectural Themes Worth Reconsidering
 
-- **SQLite for TDMS** (Finding #9) — rejected twice, fragility is real
-- **ajv schema validation** — deferred twice, hand-written validation produced 8
-  bugs
-- **Regex linter → ESLint plugin** — 2 DEBT entries, false-positive churn in
-  reviews
-- **HookRunner framework** — deferred, but shared infra was built reactively
-  anyway
+- **SQLite for TDMS** (Finding #9) — DEFERRED as DEBT-7593, placed high in Grand
+  Plan
+- **ajv schema validation** — DEFERRED as DEBT-7594 (S3, low priority)
+- **Regex linter → ESLint plugin** — IMPLEMENTED (11 patterns migrated, 8 custom
+  AST rules + 3 built-in rules)
+- **HookRunner framework** — DISMISSED (Finding #2 already consolidated hooks)

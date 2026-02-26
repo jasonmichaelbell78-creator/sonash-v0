@@ -47,6 +47,10 @@ export default [
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "no-console": "off",
+      // Replaces regex parseint-no-radix pattern in check-pattern-compliance.js
+      radix: "warn",
+      // Replaces regex eval-usage pattern (eval is a security risk)
+      "no-eval": "error",
       // CC limit — recommended in 5 consecutive PR retros (#367-#371), ~20 avoidable rounds.
       // "warn" globally (113 pre-existing violations). Pre-commit hook runs CC as error
       // on staged files only, blocking new CC >15 functions without breaking existing code.
@@ -76,7 +80,7 @@ export default [
     files: [".husky/**/*.js"],
     rules: { complexity: ["error", 15] },
   },
-  // SoNash security rules - applied only to high-risk script/hook directories
+  // SoNash rules - file I/O security (scripts/hooks only)
   {
     files: [
       "scripts/**/*.js",
@@ -93,6 +97,34 @@ export default [
       "sonash/no-unguarded-file-read": "warn",
       "sonash/no-stat-without-lstat": "warn",
       "sonash/no-toctou-file-ops": "warn",
+      // Migrated from regex check-pattern-compliance.js patterns
+      "sonash/no-raw-error-log": "warn",
+      "sonash/no-catch-console-error": "warn",
+      "sonash/no-object-assign-json": "warn",
+      "sonash/no-math-max-spread": "warn",
+    },
+  },
+  // SoNash rules - code quality (all JS/TS/TSX/JSX)
+  {
+    files: ["**/*.{js,ts,tsx,jsx}"],
+    plugins: {
+      sonash,
+    },
+    rules: {
+      // Migrated from regex patterns — AST-based, zero false positives on comments/strings
+      "sonash/no-unsafe-innerhtml": "warn",
+      "sonash/no-unsafe-error-access": "warn",
+      "sonash/no-hallucinated-api": "warn",
+    },
+  },
+  // SoNash rules - test quality
+  {
+    files: ["**/*.test.{js,ts,tsx,jsx}", "**/*.spec.{js,ts,tsx,jsx}"],
+    plugins: {
+      sonash,
+    },
+    rules: {
+      "sonash/no-trivial-assertions": "warn",
     },
   },
 ];
