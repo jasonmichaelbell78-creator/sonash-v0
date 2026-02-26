@@ -31,7 +31,10 @@ module.exports = {
         const funcName = getCalleeName(node.callee);
         if (!funcName || !execFunctions.has(funcName)) return;
 
-        if (hasStringInterpolation(node.arguments[0])) {
+        const firstArg = node.arguments[0];
+        if (!firstArg) return;
+
+        if (hasStringInterpolation(firstArg)) {
           context.report({ node, messageId: "shellInjection" });
         }
       },

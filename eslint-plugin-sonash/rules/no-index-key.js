@@ -11,15 +11,19 @@
  */
 function containsIndexIdentifier(node) {
   if (!node) return false;
-  if (node.type === "Identifier" && node.name === "index") return true;
-  if (node.type === "BinaryExpression") {
-    return containsIndexIdentifier(node.left) || containsIndexIdentifier(node.right);
+  const n = node.type === "ChainExpression" ? node.expression : node;
+  if (n.type === "Identifier" && n.name === "index") return true;
+  if (n.type === "MemberExpression") {
+    return containsIndexIdentifier(n.object) || (n.computed && containsIndexIdentifier(n.property));
   }
-  if (node.type === "TemplateLiteral") {
-    return node.expressions.some(containsIndexIdentifier);
+  if (n.type === "BinaryExpression") {
+    return containsIndexIdentifier(n.left) || containsIndexIdentifier(n.right);
   }
-  if (node.type === "CallExpression") {
-    return node.arguments.some(containsIndexIdentifier);
+  if (n.type === "TemplateLiteral") {
+    return n.expressions.some(containsIndexIdentifier);
+  }
+  if (n.type === "CallExpression") {
+    return containsIndexIdentifier(n.callee) || n.arguments.some(containsIndexIdentifier);
   }
   return false;
 }

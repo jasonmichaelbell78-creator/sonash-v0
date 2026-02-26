@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.65 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.66 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1239,6 +1239,38 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #389: PR #394 R6 (2026-02-26)
+
+- **Source**: SonarCloud (1 new — CC 19>15 on containsCallTo), Qodo PR
+  Suggestions (12 new on R5 code at ef1bf7e)
+- **PR**: PR #394 — Over-engineering resolution, ESLint AST migration
+- **Items**: 13 total → 11 fixed, 1 deferred, 1 N/A (no-non-atomic-write
+  renameSync arg validation re-raise)
+- **Fixed**: (1) `containsCallTo` CC reduction via `walkAstNodes` extraction
+  (SonarCloud Critical); (2) `no-unbounded-regex` replaced regex lookbehind with
+  manual string scan — fixes subtle bug on `\\.*` (even backslash count) and
+  adds BinaryExpression concat detection; (3) `no-div-onclick-no-role` added
+  `JSXIdentifier` type check — prevents crash on JSXNamespacedName; (4)
+  `no-hallucinated-api` added ChainExpression unwrap for `crypto?.secureHash()`;
+  (5) `no-index-key` `containsIndexIdentifier` extended with MemberExpression
+  (`index.toString()`), ChainExpression, and callee support; (6)
+  `no-unsafe-division` `isGuarded` now verifies guard variable matches divisor
+  name — catches `total > 0 ? items / count : 0`; (7-8)
+  `no-sql-injection`/`no-shell-injection` null guards on `arguments[0]`; (9)
+  `generate-views.js` `.filter(Boolean)` on masterIds; (10)
+  `findMessageAccesses` ChainExpression dedup via WeakSet — prevents double
+  report on `err?.message`; (11) Added tests for err?.message, concat regex,
+  mismatched guard
+- **Deferred**: hasRenameSyncNearby arg validation — complex, re-raised from R5
+- **Key Learning**: (1) ChainExpression unwrap in AST walkers causes double
+  reports — the walker visits both ChainExpression and its inner
+  MemberExpression. Use WeakSet to dedup. (2) Regex lookbehinds with backslash
+  counting are subtly broken — `(?<!\\)` only checks one position, but `\\` (two
+  backslashes) means the preceding `\` escapes the OTHER `\`, leaving the dot
+  literal. Manual scan with backslash parity check is more correct.
 
 ---
 

@@ -38,16 +38,17 @@ module.exports = {
     return {
       CallExpression(node) {
         const callee = node.callee;
+        const unwrapped = callee.type === "ChainExpression" ? callee.expression : callee;
 
         if (
-          callee.type !== "MemberExpression" ||
-          callee.object.type !== "Identifier" ||
-          callee.property.type !== "Identifier"
+          unwrapped.type !== "MemberExpression" ||
+          unwrapped.object.type !== "Identifier" ||
+          unwrapped.property.type !== "Identifier"
         ) {
           return;
         }
 
-        const key = `${callee.object.name}.${callee.property.name}`;
+        const key = `${unwrapped.object.name}.${unwrapped.property.name}`;
 
         if (HALLUCINATED_SET.has(key)) {
           context.report({

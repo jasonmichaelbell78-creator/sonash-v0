@@ -6,35 +6,34 @@
 
 "use strict";
 
+/** Extract the variable name from the left/right side of a > 0 or < 0 check */
+function getCheckedName(test) {
+  if (!test || test.type !== "BinaryExpression") return null;
+  let nameNode;
+  if (test.operator === ">" && test.right?.type === "Literal" && test.right.value === 0) {
+    nameNode = test.left;
+  } else if (test.operator === "<" && test.left?.type === "Literal" && test.left.value === 0) {
+    nameNode = test.right;
+  }
+  if (!nameNode) return null;
+  if (nameNode.type === "Identifier") return nameNode.name;
+  if (nameNode.type === "MemberExpression" && nameNode.property?.type === "Identifier") {
+    return nameNode.property.name;
+  }
+  return null;
+}
+
 /**
- * Check if the division is guarded by a > 0 check in the same expression.
+ * Check if the division is guarded by a > 0 check on the same divisor variable.
  */
-function isGuarded(node) {
+function isGuarded(node, divisorName) {
   let current = node.parent;
   while (current) {
-    // Check for ternary guard: total > 0 ? (x / total) : 0
-    if (current.type === "ConditionalExpression" && current.consequent) {
-      const test = current.test;
-      if (
-        test.type === "BinaryExpression" &&
-        test.operator === ">" &&
-        test.right.type === "Literal" &&
-        test.right.value === 0
-      ) {
-        return true;
-      }
+    if (current.type === "ConditionalExpression") {
+      if (getCheckedName(current.test) === divisorName) return true;
     }
-    // Check for if statement guard
     if (current.type === "IfStatement") {
-      const test = current.test;
-      if (
-        test?.type === "BinaryExpression" &&
-        test.operator === ">" &&
-        test.right?.type === "Literal" &&
-        test.right.value === 0
-      ) {
-        return true;
-      }
+      if (getCheckedName(current.test) === divisorName) return true;
     }
     current = current.parent;
   }
@@ -77,8 +76,8 @@ module.exports = {
 
         if (!name || !dangerousNames.has(name)) return;
 
-        // Skip if already guarded
-        if (isGuarded(node)) return;
+        // Skip if already guarded by a check on the same divisor
+        if (isGuarded(node, name)) return;
 
         context.report({
           node,

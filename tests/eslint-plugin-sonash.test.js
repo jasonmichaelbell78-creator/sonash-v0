@@ -623,13 +623,41 @@ describe("Edge cases: false positive prevention", () => {
     });
   });
 
-  test("no-unsafe-error-access detects optional chaining message access", () => {
+  test("no-unsafe-error-access detects optional chaining and computed message access", () => {
     ruleTester.run("no-unsafe-error-access", plugin.rules["no-unsafe-error-access"], {
       valid: ["try { f() } catch (err) { if (err instanceof Error) { console.log(err.message) } }"],
       invalid: [
         {
           code: 'try { f() } catch (err) { console.log(err["message"]) }',
           errors: [{ messageId: "unsafeErrorAccess" }],
+        },
+        {
+          code: "try { f() } catch (err) { console.log(err?.message) }",
+          errors: [{ messageId: "unsafeErrorAccess" }],
+        },
+      ],
+    });
+  });
+
+  test("no-unbounded-regex detects unbounded in string concatenation", () => {
+    ruleTester.run("no-unbounded-regex", plugin.rules["no-unbounded-regex"], {
+      valid: [],
+      invalid: [
+        {
+          code: 'new RegExp("start.*" + suffix)',
+          errors: [{ messageId: "unboundedRegex" }],
+        },
+      ],
+    });
+  });
+
+  test("no-unsafe-division detects mismatched guard variables", () => {
+    ruleTester.run("no-unsafe-division", plugin.rules["no-unsafe-division"], {
+      valid: [],
+      invalid: [
+        {
+          code: "const pct = total > 0 ? (items / count) * 100 : 0",
+          errors: [{ messageId: "unsafeDivision" }],
         },
       ],
     });

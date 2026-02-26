@@ -38,7 +38,8 @@ module.exports = {
             hasSpread = true;
             continue;
           }
-          if (attr.type !== "JSXAttribute" || !attr.name) continue;
+          if (attr.type !== "JSXAttribute" || !attr.name || attr.name.type !== "JSXIdentifier")
+            continue;
           const name = attr.name.name;
           if (name === "onClick") hasOnClick = true;
           if (name === "role") hasRole = true;

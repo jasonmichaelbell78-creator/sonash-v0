@@ -70,24 +70,23 @@ function hasInstanceofErrorCheck(blockBody, paramName) {
  */
 function findMessageAccesses(blockBody, paramName) {
   const accesses = [];
+  const seen = new WeakSet();
 
   const visitor = (node) => {
-    // Unwrap optional chaining: err?.message
-    const unwrapped = node?.type === "ChainExpression" ? node.expression : node;
-    if (unwrapped?.type !== "MemberExpression") return;
-
-    const obj = unwrapped.object;
-    const prop = unwrapped.property;
-
-    if (obj?.type !== "Identifier" || obj.name !== paramName) return;
-
-    // Standard: err.message  |  Optional: err?.message
-    const isMessageProp =
-      (!unwrapped.computed && prop?.type === "Identifier" && prop.name === "message") ||
-      (unwrapped.computed && prop?.type === "Literal" && prop.value === "message");
-
-    if (isMessageProp) {
-      accesses.push(node);
+    // Handle ChainExpression (err?.message) — report the outer node, mark inner
+    if (node.type === "ChainExpression" && node.expression?.type === "MemberExpression") {
+      const member = node.expression;
+      if (isMessageMember(member, paramName)) {
+        seen.add(member);
+        accesses.push(node);
+      }
+      return;
+    }
+    // Handle plain MemberExpression (err.message, err["message"]) — skip if already seen
+    if (node.type === "MemberExpression" && !seen.has(node)) {
+      if (isMessageMember(node, paramName)) {
+        accesses.push(node);
+      }
     }
   };
 
@@ -96,6 +95,16 @@ function findMessageAccesses(blockBody, paramName) {
   }
 
   return accesses;
+}
+
+function isMessageMember(member, paramName) {
+  const obj = member.object;
+  const prop = member.property;
+  if (obj?.type !== "Identifier" || obj.name !== paramName) return false;
+  return (
+    (!member.computed && prop?.type === "Identifier" && prop.name === "message") ||
+    (member.computed && prop?.type === "Literal" && prop.value === "message")
+  );
 }
 
 /** @type {import('eslint').Rule.RuleModule} */

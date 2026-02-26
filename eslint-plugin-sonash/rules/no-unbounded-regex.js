@@ -22,8 +22,36 @@ module.exports = {
   },
 
   create(context) {
-    // Matches .* or .+ where the dot is not escaped and NOT followed by ? (not already lazy)
-    const unboundedPattern = /(?<!\\)\.[*+](?!\?)/;
+    /**
+     * Check if a pattern string contains an unescaped, unbounded .* or .+
+     * Counts preceding backslashes to correctly handle \\.*
+     */
+    function hasUnboundedDot(pattern) {
+      for (let i = 0; i < pattern.length - 1; i++) {
+        if (pattern[i] !== ".") continue;
+        let backslashes = 0;
+        for (let j = i - 1; j >= 0 && pattern[j] === "\\"; j--) backslashes++;
+        if (backslashes % 2 === 1) continue; // dot is escaped
+        const q = pattern[i + 1];
+        if (q !== "*" && q !== "+") continue;
+        if (pattern[i + 2] === "?") continue; // already lazy
+        return true;
+      }
+      return false;
+    }
+
+    /** Extract static string parts from Literal, TemplateLiteral, or BinaryExpression */
+    function getStaticParts(expr) {
+      if (!expr) return [];
+      if (expr.type === "Literal" && typeof expr.value === "string") return [expr.value];
+      if (expr.type === "TemplateLiteral") {
+        return expr.quasis.map((q) => q.value.cooked ?? q.value.raw);
+      }
+      if (expr.type === "BinaryExpression" && expr.operator === "+") {
+        return [...getStaticParts(expr.left), ...getStaticParts(expr.right)];
+      }
+      return [];
+    }
 
     return {
       NewExpression(node) {
@@ -35,19 +63,9 @@ module.exports = {
         const firstArg = node.arguments[0];
         if (!firstArg) return;
 
-        // Check string literal patterns
-        if (firstArg.type === "Literal" && typeof firstArg.value === "string") {
-          if (unboundedPattern.test(firstArg.value)) {
-            context.report({ node, messageId: "unboundedRegex" });
-          }
-        }
-
-        // Check template literal patterns
-        if (firstArg.type === "TemplateLiteral") {
-          const fullText = firstArg.quasis.map((q) => q.value.cooked ?? q.value.raw).join("");
-          if (unboundedPattern.test(fullText)) {
-            context.report({ node, messageId: "unboundedRegex" });
-          }
+        const parts = getStaticParts(firstArg);
+        if (parts.some((p) => hasUnboundedDot(p))) {
+          context.report({ node, messageId: "unboundedRegex" });
         }
       },
     };

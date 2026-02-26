@@ -576,7 +576,7 @@ function ingestFromDeduped(masterItems) {
     return 0;
   }
   const lines = content.split("\n").filter((line) => line.trim());
-  const masterIds = new Set(masterItems.map((i) => i.id));
+  const masterIds = new Set(masterItems.map((i) => i.id).filter(Boolean));
   const masterHashes = new Set(masterItems.map((i) => i.content_hash).filter(Boolean));
   const newItems = [];
 

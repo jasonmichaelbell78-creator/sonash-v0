@@ -19,36 +19,31 @@ function findContainingBlock(node) {
   return null;
 }
 
-function isCallToFunc(node, funcName) {
-  if (node.type !== "CallExpression") return false;
-  return getCalleeName(node.callee) === funcName;
+function walkAstNodes(node, visitor) {
+  if (!node) return;
+  visitor(node);
+  for (const key of Object.keys(node)) {
+    if (key === "parent") continue;
+    const child = node[key];
+    if (!child || typeof child !== "object") continue;
+    if (Array.isArray(child)) {
+      for (const c of child) {
+        if (c && typeof c.type === "string") walkAstNodes(c, visitor);
+      }
+    } else if (typeof child.type === "string") {
+      walkAstNodes(child, visitor);
+    }
+  }
 }
 
 function containsCallTo(node, funcName) {
   if (!node) return false;
-
   let found = false;
-  const walk = (n) => {
-    if (!n || found) return;
-    if (n.type === "CallExpression" && getCalleeName(n.callee) === funcName) {
+  walkAstNodes(node, (n) => {
+    if (!found && n.type === "CallExpression" && getCalleeName(n.callee) === funcName) {
       found = true;
-      return;
     }
-    for (const key of Object.keys(n)) {
-      if (key === "parent") continue;
-      const child = n[key];
-      if (!child || typeof child !== "object") continue;
-      if (Array.isArray(child)) {
-        for (const c of child) {
-          if (c && typeof c.type === "string") walk(c);
-        }
-      } else if (typeof child.type === "string") {
-        walk(child);
-      }
-    }
-  };
-
-  walk(node);
+  });
   return found;
 }
 
