@@ -142,6 +142,24 @@ rejected. When processing R2+ rounds:
 4. Known repeat offenders: S4036 (PATH binary hijacking on hardcoded
    `execFileSync`), swallowed exceptions in graceful degradation chains
 
+### 14. Cross-Platform Path Normalization
+
+**Trigger:** PR modifies path-handling code (includes, endsWith, has, startsWith
+on file paths). Verify ALL string-based path comparisons in modified files use
+POSIX-normalized paths. After fixing one path comparison, grep the same file for
+all others:
+
+```bash
+grep -n 'includes\|endsWith\|\.has(\|startsWith' <modified-file> | grep -iv 'toPosixPath\|normalize'
+```
+
+### 15. Logic Fix Test Matrix
+
+**Trigger:** PR fixes logic bugs in pattern-matching, filtering, or detection
+code. Before committing, define a test matrix of inputs→outputs covering: (1)
+target present + changed, (2) target present + unchanged, (3) target removed +
+changed, (4) no target + changed. Validate each case mentally or with examples.
+
 ---
 
 ## STEP 0: CONTEXT LOADING
@@ -339,11 +357,12 @@ source. Separate commits for Critical fixes if needed.
 
 ## Version History
 
-| Version | Date       | Description                                                                   |
-| ------- | ---------- | ----------------------------------------------------------------------------- |
-| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.    |
-| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks       |
-| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388. |
-| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.     |
-| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                             |
-| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.        |
+| Version | Date       | Description                                                                                 |
+| ------- | ---------- | ------------------------------------------------------------------------------------------- |
+| 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro. |
+| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                  |
+| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks                     |
+| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388.               |
+| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.                   |
+| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                                           |
+| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.                      |

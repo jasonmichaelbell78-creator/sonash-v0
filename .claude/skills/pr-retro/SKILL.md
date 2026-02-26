@@ -166,6 +166,14 @@ archived. See [ARCHIVE.md](ARCHIVE.md).
 - **Fix:** Compare reviewer's commit against HEAD before investigating. If
   stale, reject all items as batch.
 
+### Pattern 11: Cross-Platform Path Normalization
+
+- **PRs:** #388 (R5-R6), #391 (R1-R3), #392 (R3-R4)
+- **Fix:** After fixing any path handling, grep the same file for ALL
+  string-based path comparisons (includes, endsWith, has, startsWith) and verify
+  each uses POSIX-normalized paths.
+- **Templates:** FIX_TEMPLATES #40, pr-review Step 0.5 #14
+
 ---
 
 ## COMPLIANCE MECHANISMS
@@ -205,10 +213,11 @@ Before saving, verify ALL mandatory sections present:
 
 ## Version History
 
-| Version | Date       | Description                                                |
-| ------- | ---------- | ---------------------------------------------------------- |
-| 2.7     | 2026-02-24 | Trim to <500 lines: archive patterns 1-5 to ARCHIVE.md     |
-| 2.6     | 2026-02-24 | Add Pattern 10 (stale reviewer comments). Source: PR #388. |
-| 2.5     | 2026-02-22 | Add Pattern 9 (dual-file JSONL sync). Source: PR #383.     |
-| 2.4     | 2026-02-19 | Add Pattern 8 (algorithm hardening). Source: PR #379.      |
-| 2.3     | 2026-02-18 | Add Patterns 6-7. Source: PR #374.                         |
+| Version | Date       | Description                                                                |
+| ------- | ---------- | -------------------------------------------------------------------------- |
+| 2.8     | 2026-02-25 | Add Pattern 11 (cross-platform path normalization). Source: PR #392 retro. |
+| 2.7     | 2026-02-24 | Trim to <500 lines: archive patterns 1-5 to ARCHIVE.md                     |
+| 2.6     | 2026-02-24 | Add Pattern 10 (stale reviewer comments). Source: PR #388.                 |
+| 2.5     | 2026-02-22 | Add Pattern 9 (dual-file JSONL sync). Source: PR #383.                     |
+| 2.4     | 2026-02-19 | Add Pattern 8 (algorithm hardening). Source: PR #379.                      |
+| 2.3     | 2026-02-18 | Add Patterns 6-7. Source: PR #374.                                         |

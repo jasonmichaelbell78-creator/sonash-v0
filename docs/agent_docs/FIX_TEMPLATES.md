@@ -2047,21 +2047,108 @@ const deduped = [...dedupMap.values()];
 
 ---
 
+### Template 40: POSIX Path Normalization Before String Checks
+
+**When to use:** Any string-based path comparison (includes, endsWith, has,
+startsWith) on file paths that may contain backslashes on Windows.
+
+**Source:** PR #392 R3→R4 (cross-platform path normalization chain, 3
+consecutive PRs)
+
+#### Bad Code
+
+```javascript
+// Windows: file = "scripts\\check-propagation.js"
+if (IGNORE_DIRS.some((d) => file.includes(d))) return true;
+if (file.includes(".test.")) return true;
+
+// changedPaths may have "./" prefix from git, matches fail against grep output
+const posixChangedPaths = new Set([...changedPaths].map(toPosixPath));
+```
+
+#### Good Code
+
+```javascript
+// Normalize BEFORE any string-based checks
+const normalized = toPosixPath(file);
+if (IGNORE_DIRS.some((d) => normalized.includes(d))) return true;
+if (normalized.includes(".test.")) return true;
+
+// Strip ./ prefix AND normalize separators for comparison parity
+const posixChangedPaths = new Set(
+  [...changedPaths].map((p) => toPosixPath(String(p).replace(/^\.\//, "")))
+);
+```
+
+#### Propagation Check
+
+After fixing one path comparison in a file, grep for ALL others:
+
+```bash
+grep -n 'includes\|endsWith\|\.has(\|startsWith' <file> | grep -iv 'toPosixPath\|normalize'
+```
+
+---
+
+### Template 41: Error-Handling Direction Comment
+
+**When to use:** When a catch block's return value determines fail-open (flag
+it) vs fail-closed (skip it) behavior, especially in security/quality checkers.
+
+**Source:** PR #392 R2→R3→R4 (fail-open direction flip-flopped 3 rounds)
+
+#### Bad Code
+
+```javascript
+} catch {
+  return true;  // What does true mean here? Flag or skip?
+}
+```
+
+#### Good Code
+
+```javascript
+} catch {
+  // Fail-open: treat unreadable as unguarded to avoid false-negatives
+  // (security checkers should flag uncertain cases, not skip them)
+  return true;
+}
+
+// OR for non-security code:
+
+} catch {
+  // Fail-closed: skip unreadable files to avoid false-positive warnings
+  // (user-facing warnings should not fire on transient I/O errors)
+  return false;
+}
+```
+
+#### Decision Framework
+
+Before writing a catch block return, answer:
+
+1. **Is this a security/quality checker?** → Fail-open (return true = flag it)
+2. **Is this user-facing output?** → Fail-closed (return false = skip it)
+3. **Document the choice** with an inline comment explaining why
+
+---
+
 ## Version History
 
-| Version | Date       | Change                                                                                                    |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
-| 2.4     | 2026-02-25 | Add Templates 38-39 (statSync→lstatSync guard, unique audit IDs). Source: PR #390/#391 retro.             |
-| 2.3     | 2026-02-24 | Add Template 37 (lazy-load module with typeof guard). Source: PR #388 retro.                              |
-| 2.2     | 2026-02-22 | Add Template 36 (atomic dual-JSONL write with rollback). Source: PR #383 retro.                           |
-| 2.1     | 2026-02-20 | Add Template 35 (mapping/enumeration audit). Source: PR #382 retro.                                       |
-| 2.0     | 2026-02-19 | Add Template 34 (evidence/array merge with deep dedup). Source: PR #379 retro.                            |
-| 1.9     | 2026-02-18 | Add Templates 31-33 (realpathSync lifecycle, safety flag hoist, path containment). Source: PR #374 retro. |
-| 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                        |
-| 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.           |
-| 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                          |
-| 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro.       |
-| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                                   |
-| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)                                                            |
-| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write)                                                      |
-| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis                                                            |
+| Version | Date       | Change                                                                                                                  |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 2.5     | 2026-02-25 | Add Templates 40-41 (path normalization before string checks, error-handling direction comment). Source: PR #392 retro. |
+| 2.4     | 2026-02-25 | Add Templates 38-39 (statSync→lstatSync guard, unique audit IDs). Source: PR #390/#391 retro.                           |
+| 2.3     | 2026-02-24 | Add Template 37 (lazy-load module with typeof guard). Source: PR #388 retro.                                            |
+| 2.2     | 2026-02-22 | Add Template 36 (atomic dual-JSONL write with rollback). Source: PR #383 retro.                                         |
+| 2.1     | 2026-02-20 | Add Template 35 (mapping/enumeration audit). Source: PR #382 retro.                                                     |
+| 2.0     | 2026-02-19 | Add Template 34 (evidence/array merge with deep dedup). Source: PR #379 retro.                                          |
+| 1.9     | 2026-02-18 | Add Templates 31-33 (realpathSync lifecycle, safety flag hoist, path containment). Source: PR #374 retro.               |
+| 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                                      |
+| 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.                         |
+| 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                                        |
+| 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro.                     |
+| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                                                 |
+| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)                                                                          |
+| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write)                                                                    |
+| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis                                                                          |
