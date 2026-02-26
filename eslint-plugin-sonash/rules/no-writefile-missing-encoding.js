@@ -28,9 +28,16 @@ module.exports = {
       CallExpression(node) {
         if (getCalleeName(node.callee) !== "writeFileSync") return;
 
-        // writeFileSync(path, data) — missing encoding (only 2 args)
+        // writeFileSync(path, data) — missing encoding (only 2 args, string data only)
         if (node.arguments.length === 2) {
-          context.report({ node, messageId: "missingEncoding" });
+          const dataArg = node.arguments[1];
+          const isStringLike =
+            (dataArg?.type === "Literal" && typeof dataArg.value === "string") ||
+            dataArg?.type === "TemplateLiteral" ||
+            (dataArg?.type === "BinaryExpression" && dataArg.operator === "+");
+          if (isStringLike) {
+            context.report({ node, messageId: "missingEncoding" });
+          }
         }
       },
     };

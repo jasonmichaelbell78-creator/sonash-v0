@@ -6,6 +6,8 @@
 
 "use strict";
 
+const { unwrapNode } = require("../lib/ast-utils");
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -27,12 +29,12 @@ module.exports = {
 
     return {
       CallExpression(node) {
-        const callee = node.callee;
+        const callee = unwrapNode(node.callee);
 
         // Check for .startsWith(...)
         if (
           callee.type !== "MemberExpression" ||
-          callee.property.type !== "Identifier" ||
+          callee.property?.type !== "Identifier" ||
           callee.property.name !== "startsWith"
         ) {
           return;

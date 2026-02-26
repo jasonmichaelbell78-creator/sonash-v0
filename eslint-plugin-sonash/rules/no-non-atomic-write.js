@@ -19,6 +19,23 @@ function findContainingBlock(node) {
   return null;
 }
 
+function getEnclosingTryStatement(node) {
+  let prev = node;
+  let current = node.parent;
+  while (current) {
+    if (current.type === "TryStatement" && prev === current.block) return current;
+    if (
+      current.type === "FunctionDeclaration" ||
+      current.type === "FunctionExpression" ||
+      current.type === "ArrowFunctionExpression"
+    )
+      return null;
+    prev = current;
+    current = current.parent;
+  }
+  return null;
+}
+
 function visitAstChild(child, visitor, seen) {
   if (!child || typeof child !== "object") return;
   if (Array.isArray(child)) {
@@ -66,7 +83,31 @@ function containsRenameSyncFromTmp(node) {
     if (found) return;
     if (n.type !== "CallExpression" || getCalleeName(n.callee) !== "renameSync") return;
     const firstArg = n.arguments?.[0];
-    if (firstArg && isWritingToTmpFile(firstArg)) found = true;
+    if (!firstArg) return;
+    if (isWritingToTmpFile(firstArg)) {
+      found = true;
+      return;
+    }
+    // Also check if arg is a variable assigned to a .tmp path
+    if (firstArg.type === "Identifier") {
+      const block = findContainingBlock(n);
+      const body = block?.body;
+      if (Array.isArray(body)) {
+        for (const stmt of body) {
+          if (stmt.type !== "VariableDeclaration") continue;
+          for (const decl of stmt.declarations) {
+            if (
+              decl.id?.type === "Identifier" &&
+              decl.id.name === firstArg.name &&
+              isWritingToTmpFile(decl.init)
+            ) {
+              found = true;
+              return;
+            }
+          }
+        }
+      }
+    }
   });
   return found;
 }
@@ -138,6 +179,10 @@ module.exports = {
         // Look in the same function/block for renameSync nearby (atomic pattern)
         const block = findContainingBlock(node);
         if (block && hasRenameSyncNearby(block, node)) return;
+
+        // Also allow atomic rename in a finally block wrapping this write
+        const enclosingTry = getEnclosingTryStatement(node);
+        if (enclosingTry?.finalizer && containsRenameSyncFromTmp(enclosingTry.finalizer)) return;
 
         context.report({ node, messageId: "nonAtomicWrite" });
       },

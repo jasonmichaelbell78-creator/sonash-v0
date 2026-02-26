@@ -7,6 +7,8 @@
 
 "use strict";
 
+const { unwrapNode } = require("../lib/ast-utils");
+
 /**
  * Check if a node is a comparison to empty string for a specific variable:
  * relName === '' or '' === relName
@@ -40,12 +42,12 @@ module.exports = {
   create(context) {
     return {
       CallExpression(node) {
-        const callee = node.callee;
+        const callee = unwrapNode(node.callee);
 
         // Check for .startsWith('..')
         if (
           callee.type !== "MemberExpression" ||
-          callee.property.type !== "Identifier" ||
+          callee.property?.type !== "Identifier" ||
           callee.property.name !== "startsWith"
         ) {
           return;

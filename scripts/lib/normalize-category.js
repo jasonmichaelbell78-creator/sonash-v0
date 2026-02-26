@@ -16,12 +16,12 @@ const DEFAULT_CATEGORY = categoryMappings.defaultCategory;
  * @returns {string} Normalized canonical category
  */
 function normalizeCategory(cat) {
-  if (!cat) return DEFAULT_CATEGORY;
+  if (cat == null) return DEFAULT_CATEGORY;
   const raw = (typeof cat === "string" ? cat : String(cat)).trim();
-  const normalized = CATEGORY_MAP[raw];
-  if (normalized) return normalized;
+  if (!raw) return DEFAULT_CATEGORY;
+  if (Object.prototype.hasOwnProperty.call(CATEGORY_MAP, raw)) return CATEGORY_MAP[raw];
   const lower = raw.toLowerCase();
-  if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
+  if (Object.prototype.hasOwnProperty.call(CATEGORY_MAP, lower)) return CATEGORY_MAP[lower];
   return DEFAULT_CATEGORY;
 }
 

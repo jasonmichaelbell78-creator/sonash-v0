@@ -14,12 +14,9 @@ function isSafeStaticInput(arg) {
   return arg.type === "TemplateLiteral" && arg.expressions.length === 0;
 }
 
-/** Check if the result variable name suggests the input is already escaped */
+/** Check if the variable name suggests the input is already escaped */
 function isEscapedVariable(node) {
-  const parent = node.parent;
-  if (parent?.type !== "VariableDeclarator" || parent.init !== node) return false;
-  const varName = parent.id.type === "Identifier" ? parent.id.name : "";
-  return /escape/i.test(varName);
+  return node?.type === "Identifier" && /escape/i.test(node.name);
 }
 
 /** Check if the argument is a call to an escapeRegExp-like helper */
@@ -60,7 +57,7 @@ module.exports = {
         const firstArg = node.arguments[0];
         if (!firstArg) return;
         if (isSafeStaticInput(firstArg)) return;
-        if (firstArg.type === "Identifier" && isEscapedVariable(node)) return;
+        if (isEscapedVariable(firstArg)) return;
         if (isEscapeHelper(firstArg)) return;
 
         context.report({ node, messageId: "unescapedInput" });

@@ -65,12 +65,19 @@ module.exports = {
         if (left.type === "Identifier") {
           checkAssignment(left, node.right, node);
         } else if (left.type === "MemberExpression" && left.property) {
-          checkAssignment(left.property, node.right, node);
+          if (
+            !left.computed ||
+            (left.property.type === "Literal" && typeof left.property.value === "string")
+          ) {
+            checkAssignment(left.property, node.right, node);
+          }
         }
       },
 
       // Object property with secret-like name
       Property(node) {
+        if (node.computed && !(node.key?.type === "Literal" && typeof node.key.value === "string"))
+          return;
         checkAssignment(node.key, node.value, node);
       },
     };

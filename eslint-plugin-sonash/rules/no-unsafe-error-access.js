@@ -59,11 +59,12 @@ function hasInstanceofErrorCheck(blockBody, paramName) {
   const visitor = (node) => {
     if (found) return;
     if (
-      node.type === "BinaryExpression" &&
-      node.operator === "instanceof" &&
-      node.left.type === "Identifier" &&
-      node.left.name === paramName &&
-      isErrorClass(node.right)
+      node.type === "IfStatement" &&
+      node.test?.type === "BinaryExpression" &&
+      node.test.operator === "instanceof" &&
+      node.test.left?.type === "Identifier" &&
+      node.test.left.name === paramName &&
+      isErrorClass(node.test.right)
     ) {
       found = true;
     }

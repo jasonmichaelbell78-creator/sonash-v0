@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.67 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.68 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1248,6 +1248,37 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #393: PR #394 R10 (2026-02-26)
+
+- **Source**: CI (1 — test file false positives), Qodo Compliance (3), Qodo PR
+  Suggestions (19)
+- **PR**: PR #394 — ESLint plugin + TDMS script robustness round
+- **Items**: 24 unique → 20 fixed, 4 rejected (3 Qodo Compliance repeats, 1
+  correct code)
+- **Fixed**: (1) SEC-003/007/010 test file excludes in security-check.js; (2)
+  SEC-004 cross-platform path separator `[\\/]`; (3) SKIP_PATTERNS add
+  backup/out dirs; (4) `hasInstanceofErrorCheck` require IfStatement wrapper;
+  (5) `isEscapedVariable` check arg name not result var; (6) `getCheckedName`
+  expand to truthy/!== 0/>= 1/negated guards; (7) `isLocalRequireCall` add
+  Windows abs/UNC paths; (8) `containsRenameSyncFromTmp` recognize tmp-path
+  variables; (9) `getEnclosingTryStatement` for finally-block atomic renames;
+  (10) `no-empty-path-check` optional chain via unwrapNode; (11)
+  `no-path-startswith` optional chain via unwrapNode; (12)
+  `no-hardcoded-secrets` skip computed keys; (13)
+  `no-writefile-missing-encoding` only flag string data; (14) generate-views.js
+  trim JSONL lines; (15) normalize-category.js hasOwnProperty.call; (16)
+  generate-content-hash.js null guard + normalize text; (17-20) test updates for
+  new behaviors
+- **Rejected**: (A) normalize-file-path.js regex — `String.raw` is correct; (B)
+  Qodo Compliance x3 — repeat of R9 rejections (internal tooling)
+- **Patterns**: Cross-platform path separators in regex excludes; backup/out
+  dirs should always be skipped; parallel agents effective for 20+ items
+- **Process**: Parallel agent execution (2 agents, 20 items) completed all fixes
+  correctly; one test needed adjustment for writefile-missing-encoding behavior
+  change
 
 ---
 

@@ -348,11 +348,11 @@ describe("sonash/no-writefile-missing-encoding", () => {
       ],
       invalid: [
         {
-          code: "writeFileSync(path, data)",
+          code: 'writeFileSync(path, "hello world")',
           errors: [{ messageId: "missingEncoding" }],
         },
         {
-          code: "fs.writeFileSync(outFile, content)",
+          code: "fs.writeFileSync(outFile, `some ${content}`)",
           errors: [{ messageId: "missingEncoding" }],
         },
       ],

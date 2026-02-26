@@ -6,15 +6,7 @@
 
 "use strict";
 
-/** Extract the variable name from the left/right side of a > 0 or < 0 check */
-function getCheckedName(test) {
-  if (test?.type !== "BinaryExpression") return null;
-  let nameNode;
-  if (test.operator === ">" && test.right?.type === "Literal" && test.right.value === 0) {
-    nameNode = test.left;
-  } else if (test.operator === "<" && test.left?.type === "Literal" && test.left.value === 0) {
-    nameNode = test.right;
-  }
+function extractName(nameNode) {
   if (!nameNode) return null;
   if (nameNode.type === "Identifier") return nameNode.name;
   if (
@@ -27,8 +19,44 @@ function getCheckedName(test) {
   return null;
 }
 
+/** Extract the guarded divisor name from common non-zero checks */
+function getCheckedName(test) {
+  if (!test) return null;
+
+  // Truthy guard: if (total) / total ? ... : ...
+  if (test.type === "Identifier" || test.type === "MemberExpression") {
+    return extractName(test);
+  }
+
+  // Negated truthy guard: if (!total)
+  if (test.type === "UnaryExpression" && test.operator === "!") {
+    return getCheckedName(test.argument);
+  }
+
+  if (test.type !== "BinaryExpression") return null;
+
+  const isZero = (n) => n?.type === "Literal" && n.value === 0;
+  const isOne = (n) => n?.type === "Literal" && n.value === 1;
+
+  // total > 0 OR 0 < total
+  if (test.operator === ">" && isZero(test.right)) return extractName(test.left);
+  if (test.operator === "<" && isZero(test.left)) return extractName(test.right);
+
+  // total !== 0 OR 0 !== total
+  if ((test.operator === "!==" || test.operator === "!=") && isZero(test.right))
+    return extractName(test.left);
+  if ((test.operator === "!==" || test.operator === "!=") && isZero(test.left))
+    return extractName(test.right);
+
+  // total >= 1 OR 1 <= total
+  if (test.operator === ">=" && isOne(test.right)) return extractName(test.left);
+  if (test.operator === "<=" && isOne(test.left)) return extractName(test.right);
+
+  return null;
+}
+
 /**
- * Check if the division is guarded by a > 0 check on the same divisor variable.
+ * Check if the division is guarded by a non-zero check on the same divisor variable.
  */
 function isGuarded(node, divisorName) {
   let current = node.parent;

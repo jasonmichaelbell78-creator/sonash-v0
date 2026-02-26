@@ -12,12 +12,25 @@ const normalizeFilePath = require("./normalize-file-path");
  * @returns {string} Hex SHA256 hash
  */
 function generateContentHash(item) {
-  const normalizedFile = normalizeFilePath(item.file || "", { stripRepoRoot: true }).toLowerCase();
+  const safeItem = item && typeof item === "object" ? item : {};
+  const normalizedFile = normalizeFilePath(safeItem.file || "", {
+    stripRepoRoot: true,
+  }).toLowerCase();
+  const line =
+    typeof safeItem.line === "number"
+      ? safeItem.line
+      : Number.parseInt(String(safeItem.line || "0"), 10) || 0;
+  const normalizeText = (v, max) =>
+    String(v || "")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, " ")
+      .substring(0, max);
   const hashInput = [
     normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
+    line,
+    normalizeText(safeItem.title, 100),
+    normalizeText(safeItem.description, 200),
   ].join("|");
   return crypto.createHash("sha256").update(hashInput).digest("hex");
 }

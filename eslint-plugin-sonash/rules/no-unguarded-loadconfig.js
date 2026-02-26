@@ -42,7 +42,9 @@ function isLocalRequireCall(node) {
   const arg = node.arguments[0];
   if (arg.type !== "Literal" || typeof arg.value !== "string") return false;
   const path = arg.value;
-  return path.startsWith(".") || path.startsWith("/");
+  const isWindowsAbs = /^[A-Za-z]:[\\/]/.test(path);
+  const isUnc = path.startsWith("\\\\");
+  return path.startsWith(".") || path.startsWith("/") || isWindowsAbs || isUnc;
 }
 
 /** @type {import('eslint').Rule.RuleModule} */

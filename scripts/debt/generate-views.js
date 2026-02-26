@@ -535,10 +535,11 @@ function loadMasterItems() {
   const lines = content.split("\n").filter((line) => line.trim());
   const items = [];
   for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
     try {
-      items.push(JSON.parse(lines[i]));
+      items.push(JSON.parse(line));
     } catch {
-      console.warn(`  Warning: invalid JSON at line ${i + 1}: ${lines[i].slice(0, 80)}...`);
+      console.warn(`  Warning: invalid JSON at line ${i + 1} — skipping`);
     }
   }
   console.log(`  Loaded ${items.length} items from MASTER_DEBT.jsonl`);
@@ -603,10 +604,9 @@ function ingestFromDeduped(masterItems) {
   const newItems = [];
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
     let item;
     try {
-      item = JSON.parse(line);
+      item = JSON.parse(lines[i].trim());
     } catch {
       console.warn(`  ⚠️ Invalid JSON in deduped.jsonl at line ${i + 1} — skipping`);
       continue;
