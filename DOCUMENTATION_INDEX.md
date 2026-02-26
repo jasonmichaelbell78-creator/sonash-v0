@@ -580,7 +580,7 @@ _Reference_
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑8      | 2026-02-25    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-23    |
-| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-02-25    |
+| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-02-26    |
 
 ### scripts (Tier 4)
 

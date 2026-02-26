@@ -348,6 +348,15 @@ accumulate.
 > markdown during this period.
 
 <details>
+<summary>Previous Consolidation (#1)</summary>
+
+- **Date:** 2026-02-26
+- **Reviews consolidated:** #358-#384
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#5) — 2026-02-25</summary>
 
 - **Reviews consolidated:** #358-#382

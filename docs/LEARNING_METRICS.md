@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-02-25
+**Last Updated:** 2026-02-26
 
 ---
 
@@ -27,19 +27,19 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #358 - #371 (14 reviews) **Analysis Date:** 2026-02-25
+**Review Range:** #358 - #371 (14 reviews) **Analysis Date:** 2026-02-26
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
 | Learning Effectiveness    | 93.1% |
-| Patterns Learned          | 293   |
+| Patterns Learned          | 294   |
 | Patterns Automated        | 30    |
 | Patterns Failing          | 1     |
-| Critical Pattern Success  | 95.1% |
+| Critical Pattern Success  | 95.2% |
 | Automation Coverage       | 21.0% |
-| Total Documented Patterns | 347   |
+| Total Documented Patterns | 348   |
 | Total Automated Patterns  | 73    |
 
 ### Top Recommended Actions
@@ -70,7 +70,7 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 293   | Pattern never recurred after documentation   |
+| ✅ LEARNED   | 294   | Pattern never recurred after documentation   |
 | 🔧 AUTOMATED | 30    | Pattern recurred but now enforced by tooling |
 | 🟡 WEAK      | 23    | Pattern recurred 1-2 times - needs attention |
 | 🔴 FAILED    | 1     | Pattern recurred 3+ times - needs automation |
@@ -81,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-02-25 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-02-26 | Rewritten to focus on Claude's learning effectiveness |
