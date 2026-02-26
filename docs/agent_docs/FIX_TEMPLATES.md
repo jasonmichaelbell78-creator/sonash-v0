@@ -2371,10 +2371,12 @@ const SECRET_PATTERNS = [/(?:api[_-]?key|token|secret|password)[=:]\s*\S+/gi];
 
 ```javascript
 const SECRET_PATTERNS = [
-  // Quoted values first (greedy match inside quotes)
-  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*"[^"]*"/gi,
-  // Unquoted values (min 2 chars to avoid empty-match noise from token=\n)
-  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S{2,}/gi,
+  // Double-quoted values first (handles escaped quotes, requires nonempty)
+  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*"([^"\\]|\\.)+"/gi,
+  // Single-quoted values
+  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*'[^']+'/gi,
+  // Unquoted values (bounded delimiter class, min 2 chars)
+  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*[^\s"',;)\]}]{2,}/gi,
 ];
 ```
 
@@ -2385,11 +2387,15 @@ it captures only the opening `"` and leaves the rest exposed.
 
 #### Edge Cases Handled
 
-| Input                | Old Result                 | New Result             |
-| -------------------- | -------------------------- | ---------------------- |
-| `token="multi word"` | `[REDACTED]"multi word"`   | `[REDACTED]`           |
-| `token=\n`           | `[REDACTED]` (empty match) | No match (min 2 chars) |
-| `token=abc123`       | `[REDACTED]`               | `[REDACTED]`           |
+| Input                   | Old Result                 | New Result             |
+| ----------------------- | -------------------------- | ---------------------- |
+| `token="multi word"`    | `[REDACTED]"multi word"`   | `[REDACTED]`           |
+| `token="abc\"def"`      | `[REDACTED]\"def"`         | `[REDACTED]`           |
+| `token='single quoted'` | `[REDACTED]'single...`     | `[REDACTED]`           |
+| `token=""`              | `[REDACTED]` (empty match) | No match (nonempty)    |
+| `token=\n`              | `[REDACTED]` (empty match) | No match (min 2 chars) |
+| `token=abc123`          | `[REDACTED]`               | `[REDACTED]`           |
+| `secret=val);next()`    | `[REDACTED]);next()`       | `[REDACTED]` only val  |
 
 ---
 
@@ -2397,6 +2403,7 @@ it captures only the opening `"` and leaves the rest exposed.
 
 | Version | Date       | Change                                                                                                                                                  |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.7     | 2026-02-26 | Update Template 45: harden quoted regex (escaped quotes), add single-quoted pattern, delimiter-bounded unquoted. Source: PR #395 R1.                    |
 | 2.6     | 2026-02-26 | Add Templates 42-45 (CC extraction visitChild, ChainExpression unwrap, generic AST walker, quoted-value secret redaction). Source: PR #393/#394 retros. |
 | 2.5     | 2026-02-25 | Add Templates 40-41 (path normalization before string checks, error-handling direction comment). Source: PR #392 retro.                                 |
 | 2.4     | 2026-02-25 | Add Templates 38-39 (statSync→lstatSync guard, unique audit IDs). Source: PR #390/#391 retro.                                                           |

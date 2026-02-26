@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.70 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.71 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1333,6 +1333,54 @@ AST walker (Object.keys + recurse) > hand-enumerated types. (5) Lazy quantifiers
 **Verdict:** Inefficient but productive — 12 rounds, ~153 fixes, ~42% avoidable.
 Single highest-impact change: split large PRs. Second: create ESLint rule
 template with built-in ChainExpression/walker/CC patterns.
+
+---
+
+### Review #396: PR #395 R1 (2026-02-26)
+
+- **Source**: Qodo PR Suggestions (9), Gemini Code Assist (1), Qodo Compliance
+  (2 informational)
+- **PR**: PR #395 — retro action items, ESLint migration, over-engineering
+  cleanup
+- **Items**: 10 unique actionable → 10 fixed, 0 deferred, 0 rejected
+
+#### Security Fixes (5)
+
+1. **sanitize-error.js: Consolidate unquoted patterns** — Replaced 4 individual
+   unquoted patterns (password, api_key, token, secret) with single consolidated
+   regex adding `credential` and `auth` keywords. Aligned with sanitize-input.js
+   pattern. (Qodo impact 8, Gemini high)
+2. **sanitize-error.js: Harden quoted regex** — Changed `[^"]*` to
+   `([^"\\]|\\.)+` to handle escaped quotes and require nonempty values.
+   Propagated to sanitize-input.js. (Qodo impact 7)
+3. **sanitize-input.js: Single-quoted secrets** — Added `'[^']+'` pattern
+   between quoted and unquoted. Propagated to sanitize-error.js. (Qodo impact 7)
+4. **sanitize-input.js: Delimiter refinement** — Changed `\S{2,}` to
+   `[^\s"',;)\]}]{2,}` to avoid consuming trailing delimiters. Propagated to
+   sanitize-error.js. (Qodo impact 7)
+5. **FIX_TEMPLATE #45 updated** — Reflected all 4 pattern improvements in the
+   template's Good Code section and edge case table.
+
+#### TDMS Data Quality Fixes (5)
+
+6. **DEBT-7595**: `roadmap_ref: ""` → `null` for consistency
+7. **DEBT-7597**: Added missing `source: "intake"` field
+8. **DEBT-7602**: Made non-actionable header entry actionable (added source,
+   file, description, recommendation)
+9. **DEBT-7604/7605**: Merged duplicate "High Severity Findings" entries into
+   single canonical entry with merged_from array
+10. **DEBT-7610**: Fixed truncated title, added full description and
+    recommendation
+
+All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl
+(dual-file rule).
+
+#### Patterns
+
+- **Propagation discipline**: All sanitize-input.js fixes propagated to
+  sanitize-error.js and vice versa (pre-check #17)
+- **Schema consistency**: TDMS entries should always have `source` field and
+  `null` (not `""`) for empty optional fields
 
 ---
 
