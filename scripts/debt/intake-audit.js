@@ -47,6 +47,8 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const os = require("node:os");
 const { execFileSync } = require("node:child_process");
+const generateContentHash = require("../lib/generate-content-hash");
+const normalizeFilePath = require("../lib/normalize-file-path");
 
 // Prototype pollution protection - filter dangerous keys from untrusted objects
 const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
@@ -82,38 +84,6 @@ const VALID_SEVERITIES = schema.validSeverities;
 const VALID_TYPES = schema.validTypes;
 const VALID_STATUSES = schema.validStatuses;
 const VALID_EFFORTS = schema.validEfforts;
-
-// Generate content hash for deduplication
-function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
-  const hashInput = [
-    normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
-  ].join("|");
-  return crypto.createHash("sha256").update(hashInput).digest("hex");
-}
-
-// Normalize file path
-function normalizeFilePath(filePath) {
-  if (!filePath) return "";
-  // Convert Windows backslashes to forward slashes for consistent hashing
-  // Remove leading ./ and all leading slashes
-  let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "");
-  // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
-  // But preserve Windows drive letters (e.g., "C:\path\to\file")
-  const colonIndex = normalized.indexOf(":");
-  if (colonIndex > 0) {
-    // Check if this looks like a Windows drive letter (single letter before colon)
-    const beforeColon = normalized.substring(0, colonIndex);
-    const isWindowsDrive = beforeColon.length === 1 && /^[A-Za-z]$/.test(beforeColon);
-    if (!isWindowsDrive) {
-      normalized = normalized.substring(colonIndex + 1);
-    }
-  }
-  return normalized;
-}
 
 // Map first file entry from files[] array to file field (shared by both format mappers)
 function mapFirstFileToFile(firstFile, item, mapped, metadata) {

@@ -44,3 +44,4 @@
 {"timestamp":"2026-02-26T00:28:34.963Z","action":"intake-manual","item_id":"DEBT-7577","file":"scripts/debt/intake-audit.js","severity":"S2","category":"process"}
 {"timestamp":"2026-02-26T00:28:42.109Z","action":"intake-manual","item_id":"DEBT-7582","file":"scripts/reviews-sync.js","severity":"S2","category":"process"}
 {"timestamp":"2026-02-26T00:28:49.975Z","action":"intake-manual","item_id":"DEBT-7587","file":"docs/agent_docs/CODE_PATTERNS.md","severity":"S2","category":"process"}
+{"timestamp":"2026-02-26T12:14:43.182Z","action":"intake-manual","item_id":"DEBT-7592","file":"scripts/debt/","severity":"S1","category":"code-quality"}

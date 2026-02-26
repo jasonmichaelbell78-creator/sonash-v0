@@ -26,28 +26,7 @@ const DEDUPED_PATH = path.join(__dirname, "..", "docs", "technical-debt", "raw",
 // Git baseline: commit before the S0 inflation (53 S0 items at this point)
 const BASELINE_COMMIT = "08763212";
 
-function readJsonl(filePath) {
-  try {
-    return fs
-      .readFileSync(filePath, "utf8")
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .flatMap((l, idx) => {
-        try {
-          return [JSON.parse(l)];
-        } catch {
-          console.warn(
-            `  WARN: malformed JSON at ${path.basename(filePath)}:${idx + 1} — skipping`
-          );
-          return [];
-        }
-      });
-  } catch (err) {
-    console.error(`Failed to read ${filePath}: ${err.message}`);
-    process.exit(1);
-  }
-}
+const readJsonl = require("./lib/read-jsonl");
 
 function readJsonlFromGit(commit, relPath) {
   try {

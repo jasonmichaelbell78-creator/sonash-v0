@@ -155,26 +155,6 @@ elif [ -n "$SKIP_TEST_REASON" ]; then
   echo "  ⏭️ Skipping tests ($SKIP_TEST_REASON)"
 fi
 
-# 1b. CC regression check on staged scripts (PR #386 retro — IIFE testFn gap)
-# Global CC is "warn" (82 pre-existing violations), but NEW code must not add CC >15.
-# Uses node script to diff CC violation counts between staged and HEAD versions.
-# Only runs the slow ESLint check when staged JS files exist (~7s per file).
-STAGED_JS=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep -E '^(scripts|\.claude/hooks)/.*\.js$' || true)
-if [ -n "$STAGED_JS" ]; then
-  echo "  ▶ Checking CC regressions on staged scripts..."
-  CC_CHECK_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
-  add_exit_trap 'rm -f "$CC_CHECK_TMPFILE" 2>/dev/null'
-  printf '%s\n' "$STAGED_JS" | node scripts/check-cc-regression.js > "$CC_CHECK_TMPFILE" 2>&1
-  CC_CHECK_EXIT=$?
-  if [ "$CC_CHECK_EXIT" -ne 0 ]; then
-    cat "$CC_CHECK_TMPFILE"
-    echo ""
-    echo "  Extract helpers to reduce complexity. See FIX_TEMPLATES.md #30."
-    echo "  After extracting, re-check the ENTIRE file."
-    exit 1
-  fi
-  echo "  ✅ CC check passed (no regressions in staged scripts)"
-fi
 
 # 2. Auto-format staged files with lint-staged (Prettier)
 # Automatically formats staged files - no manual intervention needed

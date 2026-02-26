@@ -42,8 +42,9 @@ const STEPS = [
     required: true,
   },
   {
-    name: "Generate views and final output",
+    name: "Ingest new items and generate views",
     script: "generate-views.js",
+    args: ["--ingest"],
     required: true,
   },
 ];
@@ -65,7 +66,8 @@ function runStep(step, index) {
   console.log(`${"═".repeat(60)}\n`);
 
   try {
-    execFileSync(process.execPath, [scriptPath], {
+    const args = [scriptPath, ...(step.args || [])];
+    execFileSync(process.execPath, args, {
       stdio: "inherit",
       cwd: path.join(__dirname, "../.."),
     });

@@ -9,24 +9,24 @@
 
 ---
 
-**Total Items:** 4625
+**Total Items:** 4630
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
 | S0 (Critical) | 36    |
-| S1 (High)     | 740   |
+| S1 (High)     | 742   |
 | S2 (Medium)   | 1896  |
-| S3 (Low)      | 1953  |
+| S3 (Low)      | 1956  |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 2680  |
+| code-quality             | 2683  |
 | documentation            | 492   |
 | security                 | 416   |
 | process                  | 356   |
-| refactoring              | 327   |
+| refactoring              | 329   |
 | ai-optimization          | 127   |
 | performance              | 98    |
 | enhancements             | 82    |
@@ -34,10 +34,10 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 1024  |
 | VERIFIED       | 3114  |
 | RESOLVED       | 238   |
 | FALSE_POSITIVE | 249   |
+| NEW            | 1029  |
 
 ## Views
 
@@ -94,60 +94,74 @@
   document never... (docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md:0)
 - **DEBT-2457**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
   unnecessary tokens p... (All 57 files with AI Instructions sections:0)
-- **DEBT-3972**: Remove this use of the "void" operator.
-  (scripts/assign-review-tier.js:458)
-- **DEBT-4399**: Review this potentially hard-coded password.
-  (lib/utils/errors.ts:69)
-- **DEBT-4401**: Review this potentially hard-coded password.
-  (tests/utils/logger.test.ts:96)
-- **DEBT-4403**: Make sure that executing this OS command is safe here.
-  (scripts/check-review-needed.js:214)
-- **DEBT-7544**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
-  firebase-admin) (package-lock.json:0)
 - **DEBT-2458**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
   (.claude/hooks/commit-tracker.js:0)
 - **DEBT-2459**: SESSION_DECISIONS.md Decision Block Regex in
   auto-save-context.js (.claude/hooks/auto-save-context.js:0)
 - **DEBT-2468**: SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ideation
   document never... (docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md:0)
+- **DEBT-3972**: Remove this use of the "void" operator.
+  (scripts/assign-review-tier.js:458)
+- **DEBT-4399**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:69)
 - **DEBT-4400**: Review this potentially hard-coded password.
   (lib/utils/errors.ts:71)
+- **DEBT-4401**: Review this potentially hard-coded password.
+  (tests/utils/logger.test.ts:96)
 - **DEBT-4402**: Review this potentially hard-coded password.
   (tests/utils/logger.test.ts:130)
+- **DEBT-4403**: Make sure that executing this OS command is safe here.
+  (scripts/check-review-needed.js:214)
+- **DEBT-7544**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
+  firebase-admin) (package-lock.json:0)
 
 ## High Priority Items (S1)
 
-- **DEBT-7010**: Critical Findings (Must Fix Immediately) (N/A:0)
-- **DEBT-3529**: Critical Findings (Must Fix Immediately) (N/A:0)
-- **DEBT-7024**: CRITICAL (Production Blockers) (N/A:0)
-- **DEBT-3543**: CRITICAL (Production Blockers) (N/A:0)
-- **DEBT-7385**: Anonymous Auth Data Loss
-  (components/providers/auth-provider.tsx:0)
-- **DEBT-3546**: Anonymous Auth Data Loss
-  (components/providers/auth-provider.tsx:171)
-- **DEBT-7059**: Add E2E tests for critical user flows (N/A:0)
-- **DEBT-3578**: Add E2E tests for critical user flows (N/A:0)
-- **DEBT-3579**: Add E2E tests for critical user flows (N/A:0)
-- **DEBT-7126**: CRITICAL: Missing Error Boundaries (N/A:0)
-- **DEBT-3648**: CRITICAL: Missing Error Boundaries (N/A:0)
-- **DEBT-7402**: CQ-1: useEffect Dependency Array Issues 🔴 CRITICAL
-  (components/notebook/pages/today-page.tsx:0)
-- **DEBT-3653**: CQ-1: useEffect Dependency Array Issues 🔴 CRITICAL
-  (components/notebook/pages/today-page.tsx:84)
-- **DEBT-7403**: CQ-3: Missing Null Checks 🔴 CRITICAL
-  (components/providers/auth-provider.tsx:0)
-- **DEBT-3655**: CQ-3: Missing Null Checks 🔴 CRITICAL
-  (components/providers/auth-provider.tsx:129)
-- **DEBT-7406**: CQ-7: Missing Input Validation 🔴 CRITICAL (lib/db/users.ts:0)
-- **DEBT-3659**: CQ-7: Missing Input Validation 🔴 CRITICAL (lib/db/users.ts:74)
-- **DEBT-7409**: B-1: Race Condition in Auto-Save 🔴 CRITICAL
-  (components/notebook/pages/today-page.tsx:0)
-- **DEBT-3664**: B-1: Race Condition in Auto-Save 🔴 CRITICAL
-  (components/notebook/pages/today-page.tsx:86)
-- **DEBT-7410**: B-2: Listener Cleanup Memory Leak 🔴 CRITICAL
-  (components/notebook/pages/today-page.tsx:0)
+- **DEBT-0002**: Provide a compare function to avoid sorting elements
+  alphabetically. (app/meetings/all/page.tsx:164)
+- **DEBT-0003**: Provide a compare function to avoid sorting elements
+  alphabetically. (components/notebook/pages/resources-page.tsx:306)
+- **DEBT-0004**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an... (.claude/hooks/session-start.sh:264)
+- **DEBT-0005**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an... (.claude/hooks/pattern-check.sh:89)
+- **DEBT-0006**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an... (scripts/check-review-triggers.sh:44)
+- **DEBT-0007**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an...
+  (.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:7)
+- **DEBT-0008**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an...
+  (.claude/skills/artifacts-builder/scripts/init-artifact.sh:11)
+- **DEBT-0009**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an...
+  (.claude/skills/systematic-debugging/find-polluter.sh:8)
+- **DEBT-0010**: Exporting mutable 'let' binding, use 'const' instead.
+  (lib/firebase.ts:137)
+- **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity from
+  20 to the 15 a... (lib/db/meetings.ts:21)
+- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (components/admin/admin-crud-table.tsx:83)
+- **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity from
+  22 to the 15 a... (functions/src/admin.ts:576)
+- **DEBT-0014**: Refactor this function to reduce its Cognitive Complexity from
+  18 to the 15 a... (functions/src/index.ts:486)
+- **DEBT-0015**: Refactor this code to not nest functions more than 4 levels
+  deep. (hooks/use-daily-quote.ts:159)
+- **DEBT-0016**: Refactor this function to reduce its Cognitive Complexity from
+  29 to the 15 a... (scripts/validate-canon-schema.js:235)
+- **DEBT-0017**: Refactor this function to reduce its Cognitive Complexity from
+  21 to the 15 a... (scripts/normalize-canon-ids.js:188)
+- **DEBT-0018**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (scripts/check-review-needed.js:254)
+- **DEBT-0019**: Refactor this function to reduce its Cognitive Complexity from
+  29 to the 15 a... (scripts/generate-documentation-index.js:141)
+- **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity from
+  34 to the 15 a... (scripts/validate-audit.js:211)
+- **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (scripts/add-false-positive.js:139)
 
-_...and 720 more. See [by-severity.md](./views/by-severity.md)_
+_...and 722 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

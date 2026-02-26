@@ -118,44 +118,7 @@ function validatePath(inputPath, label) {
   return realResolved;
 }
 
-// Category normalization map - all keys lowercase for consistent lookup
-const CATEGORY_MAP = {
-  // Code audit categories
-  types: "code-quality",
-  hygiene: "code-quality",
-  framework: "code-quality",
-  testing: "code-quality",
-  aicode: "code-quality",
-  // Security audit
-  security: "security",
-  auth: "security",
-  headers: "security",
-  data: "security",
-  deps: "security",
-  // Performance audit
-  rendering: "performance",
-  bundle: "performance",
-  datafetching: "performance",
-  datafetch: "performance",
-  memory: "performance",
-  corewebvitals: "performance",
-  webvitals: "performance",
-  performance: "performance",
-  // Refactoring audit
-  godobject: "refactoring",
-  duplication: "refactoring",
-  complexity: "refactoring",
-  architecture: "refactoring",
-  techdebt: "refactoring",
-  // Documentation audit
-  documentation: "documentation",
-  // Process audit
-  process: "process",
-  // Engineering productivity
-  goldenpath: "engineering-productivity",
-  debugging: "engineering-productivity",
-  offlinesupport: "engineering-productivity",
-};
+const normalizeCategory = require("../lib/normalize-category");
 
 // Confidence string to number
 const CONFIDENCE_MAP = {
@@ -163,39 +126,6 @@ const CONFIDENCE_MAP = {
   MEDIUM: 70,
   LOW: 50,
 };
-
-function normalizeCategory(category) {
-  // Guard against missing/invalid category
-  if (typeof category !== "string" || category.trim() === "") {
-    console.warn(`  Warning: Missing/invalid category, defaulting to "code-quality"`);
-    return "code-quality";
-  }
-
-  // Normalize whitespace and case upfront
-  const trimmed = category.trim();
-  const lower = trimmed.toLowerCase();
-
-  // Valid normalized categories
-  const validCategories = new Set([
-    "security",
-    "performance",
-    "code-quality",
-    "documentation",
-    "process",
-    "refactoring",
-    "engineering-productivity",
-  ]);
-
-  // Check if already normalized (case/whitespace tolerant)
-  if (validCategories.has(lower)) return lower;
-
-  // Try lookup in category map
-  if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
-
-  // Default fallback
-  console.warn(`  Warning: Unknown category "${category}", defaulting to "code-quality"`);
-  return "code-quality";
-}
 
 /**
  * Sanitize a fingerprint component to prevent delimiter collisions

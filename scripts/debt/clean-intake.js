@@ -48,31 +48,7 @@ const VALID_CATEGORIES = new Set([
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-/**
- * Read a JSONL file into an array of objects.
- * Wraps in try/catch per CLAUDE.md file-read rule.
- */
-function readJsonl(filePath) {
-  let raw;
-  try {
-    raw = fs.readFileSync(filePath, "utf-8");
-  } catch (err) {
-    console.error(`Failed to read ${path.basename(filePath)}: ${err.code || "UNKNOWN"}`);
-    process.exit(1);
-  }
-  const items = [];
-  const lines = raw.split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    try {
-      items.push(JSON.parse(line));
-    } catch {
-      console.warn(`  Skipping malformed JSON at line ${i + 1}`);
-    }
-  }
-  return items;
-}
+const readJsonl = require("../lib/read-jsonl");
 
 /**
  * Simple string similarity (Dice coefficient on bigrams).

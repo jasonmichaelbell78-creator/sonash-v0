@@ -1,17 +1,22 @@
 #!/usr/bin/env node
 /* global __dirname */
 /**
- * Generate TDMS Views and Final Output
+ * Generate TDMS Views
  *
- * Reads: docs/technical-debt/raw/deduped.jsonl
+ * Default mode: Reads MASTER_DEBT.jsonl and generates markdown views (read-only).
+ * --ingest mode: Also processes deduped.jsonl, assigns DEBT IDs to new items,
+ *                and appends them to MASTER_DEBT.jsonl before generating views.
+ *
+ * Reads: docs/technical-debt/MASTER_DEBT.jsonl (always)
+ *        docs/technical-debt/raw/deduped.jsonl (only with --ingest)
  * Outputs:
- *   - docs/technical-debt/MASTER_DEBT.jsonl (final canonical with DEBT-XXXX IDs)
  *   - docs/technical-debt/INDEX.md (human-readable index)
  *   - docs/technical-debt/views/by-severity.md
  *   - docs/technical-debt/views/by-category.md
  *   - docs/technical-debt/views/by-status.md
  *   - docs/technical-debt/views/verification-queue.md
  *   - docs/technical-debt/LEGACY_ID_MAPPING.json
+ *   - docs/technical-debt/MASTER_DEBT.jsonl (only with --ingest, append-only)
  */
 
 const fs = require("node:fs");
@@ -513,38 +518,147 @@ function mergeManualItems(items) {
   return mergedCount;
 }
 
-function main() {
-  // Sync safety guard (Session #179)
-  // If MASTER is newer than deduped, auto-sync to prevent overwrite regression
+// Read all items from MASTER_DEBT.jsonl (source of truth)
+function loadMasterItems() {
+  if (!fs.existsSync(MASTER_FILE)) {
+    console.error(`❌ MASTER_DEBT.jsonl not found: ${MASTER_FILE}`);
+    process.exit(1);
+  }
+  let content;
   try {
-    const masterStat = fs.statSync(MASTER_FILE);
-    const dedupedStat = fs.statSync(DEDUPED_FILE);
-    if (masterStat.mtimeMs > dedupedStat.mtimeMs + 5000) {
-      console.warn("⚠️  MASTER_DEBT.jsonl is newer than deduped.jsonl — auto-syncing...");
-      const { execFileSync } = require("node:child_process");
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Cannot read MASTER_DEBT.jsonl: ${errMsg}`);
+    process.exit(1);
+  }
+  const lines = content.split("\n").filter((line) => line.trim());
+  const items = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    try {
+      items.push(JSON.parse(line));
+    } catch {
+      console.warn(`  Warning: invalid JSON at line ${i + 1} — skipping`);
+    }
+  }
+  console.log(`  Loaded ${items.length} items from MASTER_DEBT.jsonl`);
+  return items;
+}
+
+function appendNewItems(newItems, masterItems) {
+  let appendData = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
+  try {
+    // Ensure we don't merge the last existing JSONL line with the first appended line
+    const stat = fs.statSync(MASTER_FILE);
+    if (stat.size > 0) {
+      const fd = fs.openSync(MASTER_FILE, "r");
       try {
-        execFileSync("node", [path.join(__dirname, "sync-deduped.js"), "--apply"], {
-          stdio: "pipe",
-        });
-      } catch {
-        console.warn("   sync-deduped.js failed, continuing with existing deduped.jsonl");
+        const buf = Buffer.alloc(1);
+        fs.readSync(fd, buf, 0, 1, stat.size - 1);
+        if (buf.toString("utf8") !== "\n") {
+          appendData = "\n" + appendData;
+        }
+      } finally {
+        fs.closeSync(fd);
       }
     }
-  } catch {
-    // Files may not exist yet, continue normally
+    fs.appendFileSync(MASTER_FILE, appendData);
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Failed to append to MASTER_DEBT.jsonl: ${errMsg}`);
+    process.exit(1);
   }
+  masterItems.push(...newItems);
+  console.log(`  📥 Ingested ${newItems.length} new item(s) from deduped.jsonl`);
+}
+
+/** Compute the highest DEBT-NNNN numeric suffix from master items */
+function getMaxDebtId(masterItems) {
+  return masterItems.reduce((max, item) => {
+    const id = typeof item.id === "string" ? item.id : "";
+    const m = /^DEBT-(\d+)$/.exec(id);
+    if (!m) return max;
+    const n = Number(m[1]);
+    return Number.isFinite(n) ? Math.max(max, n) : max;
+  }, 0);
+}
+
+/** Parse a single JSONL line, returning the item or null on failure */
+function parseJsonlLine(line, lineNum) {
+  try {
+    return JSON.parse(line.trim());
+  } catch {
+    console.warn(`  ⚠️ Invalid JSON in deduped.jsonl at line ${lineNum} — skipping`);
+    return null;
+  }
+}
+
+/** Read deduped.jsonl lines, returning null if file missing/unreadable */
+function readDedupedLines() {
+  if (!fs.existsSync(INPUT_FILE)) {
+    console.log("  ⏭️ No deduped.jsonl found — skipping ingest");
+    return null;
+  }
+  try {
+    const content = fs.readFileSync(INPUT_FILE, "utf8");
+    return content.split("\n").filter((line) => line.trim());
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`  ⚠️ Cannot read deduped.jsonl (${errMsg}) — skipping ingest`);
+    return null;
+  }
+}
+
+// Ingest new items from deduped.jsonl into MASTER (append-only)
+function ingestFromDeduped(masterItems) {
+  const lines = readDedupedLines();
+  if (!lines) return 0;
+
+  const { idMap } = loadExistingItems();
+  let nextId = getMaxDebtId(masterItems) + 1;
+  const masterIds = new Set(masterItems.map((i) => i.id).filter(Boolean));
+  const masterHashes = new Set(masterItems.map((i) => i.content_hash).filter(Boolean));
+  const newItems = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const item = parseJsonlLine(lines[i], i + 1);
+    if (!item) continue;
+
+    if (item.content_hash && masterHashes.has(item.content_hash)) continue;
+    const assignResult = assignStableId(item, idMap, masterIds, nextId);
+    if (!assignResult.isNew) continue;
+
+    item.id = assignResult.id;
+    masterIds.add(item.id);
+    if (item.content_hash) masterHashes.add(item.content_hash);
+    nextId++;
+    ensureDefaults(item);
+    newItems.push(item);
+  }
+
+  if (newItems.length > 0) {
+    appendNewItems(newItems, masterItems);
+  } else {
+    console.log("  ✅ No new items in deduped.jsonl");
+  }
+
+  return newItems.length;
+}
+
+function main() {
+  const ingestMode = process.argv.includes("--ingest");
 
   console.log("📝 Generating TDMS views and final output...\n");
 
-  const { items, newCount, preservedCount } = readAndAssignIds();
-  mergeManualItems(items);
+  const items = loadMasterItems();
 
-  writeMasterFile(items);
+  // Ensure MASTER items have required defaults for view generation
+  for (const item of items) ensureDefaults(item);
 
-  // Warn if many new IDs were assigned (potential instability)
-  if (newCount > 0 && preservedCount > 0 && newCount > 10) {
-    const newPct = ((newCount / items.length) * 100).toFixed(1);
-    console.log(`  ⚠️  ${newCount} new IDs assigned (${newPct}%) - check for ID drift`);
+  // --ingest: also process deduped.jsonl for new items (used by consolidate-all.js)
+  if (ingestMode) {
+    ingestFromDeduped(items);
   }
 
   items.sort(severitySort);

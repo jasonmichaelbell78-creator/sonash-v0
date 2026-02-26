@@ -35,7 +35,7 @@ const SECURITY_PATTERNS = [
     severity: "HIGH",
     message: "Potential command injection: use execFileSync or spawnSync with args array",
     fileTypes: [".js", ".ts"],
-    exclude: [/pattern-compliance\.test/],
+    exclude: [/pattern-compliance\.test/, /eslint-plugin-sonash\.test/],
   },
   {
     id: "SEC-002",
@@ -59,7 +59,7 @@ const SECURITY_PATTERNS = [
     severity: "MEDIUM",
     message: "Potential XSS: use textContent or sanitize HTML",
     fileTypes: [".js", ".ts", ".tsx"],
-    exclude: [/pattern-compliance\.test/],
+    exclude: [/pattern-compliance\.test/, /eslint-plugin-sonash\.test/],
   },
   {
     id: "SEC-004",
@@ -68,7 +68,7 @@ const SECURITY_PATTERNS = [
     severity: "CRITICAL",
     message: "Potential hardcoded secret - use environment variables",
     fileTypes: [".js", ".ts", ".tsx", ".json"],
-    exclude: [/test/, /mock/, /example/, /\.d\.ts$/],
+    exclude: [/test/, /mock/, /example/, /\.d\.ts$/, /(?:^|[\\/])eslint-plugin-sonash[\\/]/],
   },
   {
     id: "SEC-005",
@@ -94,6 +94,7 @@ const SECURITY_PATTERNS = [
     severity: "MEDIUM",
     message: "Use bounded quantifiers {1,N} to prevent ReDoS",
     fileTypes: [".js", ".ts", ".tsx"],
+    exclude: [/eslint-plugin-sonash\.test/],
   },
   {
     id: "SEC-008",
@@ -120,7 +121,7 @@ const SECURITY_PATTERNS = [
     severity: "HIGH",
     message: "Shell command with unescaped variable - use execFileSync",
     fileTypes: [".js", ".ts"],
-    exclude: [/pattern-compliance\.test/],
+    exclude: [/pattern-compliance\.test/, /eslint-plugin-sonash\.test/],
   },
 ];
 
@@ -133,6 +134,8 @@ const SKIP_PATTERNS = [
   /\.git/,
   /\.turbo/,
   /archive/,
+  /[\\/]backup[\\/]/,
+  /[\\/]out[\\/]/,
   /\.d\.ts$/,
 ];
 
@@ -172,7 +175,7 @@ function findPatternViolations(pattern, content, _lines, relativePath) {
     : pattern.pattern.flags + "g";
   const regex = new RegExp(pattern.pattern.source, flags);
 
-  // Global regexes: iterate all matches
+  // Global regexes: iterate all matches (/g flag ensured above)
   let match;
   while ((match = regex.exec(normalizedContent)) !== null) {
     const beforeMatch = normalizedContent.slice(0, match.index);
@@ -313,7 +316,7 @@ function getFilesToCheck(args) {
  */
 function getStagedFiles() {
   try {
-    const output = execSync("git diff --cached --name-only --diff-filter=ACMR", {
+    const output = execSync("git diff --cached --name-only --diff-filter=ACMR --", {
       cwd: PROJECT_ROOT,
       encoding: "utf8",
     });

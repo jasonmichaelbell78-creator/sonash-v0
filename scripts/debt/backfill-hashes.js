@@ -15,21 +15,9 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const crypto = require("node:crypto");
+const generateContentHash = require("../lib/generate-content-hash");
 
 const MASTER_FILE = path.join(__dirname, "../../docs/technical-debt/MASTER_DEBT.jsonl");
-
-// Generate content hash for deduplication — identical to intake-audit.js
-function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
-  const hashInput = [
-    normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
-  ].join("|");
-  return crypto.createHash("sha256").update(hashInput).digest("hex");
-}
 
 function main() {
   const args = process.argv.slice(2);

@@ -13,7 +13,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const crypto = require("node:crypto");
+const generateContentHash = require("../lib/generate-content-hash");
+const normalizeFilePath = require("../lib/normalize-file-path");
 const { glob } = require("glob");
 const { loadConfig } = require("../config/load-config");
 
@@ -35,51 +36,6 @@ const VALID_TYPES = schema.validTypes;
 const VALID_STATUSES = schema.validStatuses;
 const VALID_EFFORTS = schema.validEfforts;
 
-// Generate deterministic content hash for deduplication
-function generateContentHash(item) {
-  // Normalize file path for hash (remove leading ./ or /)
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
-
-  // Create hash input from key fields
-  const hashInput = [
-    normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
-  ].join("|");
-
-  return crypto.createHash("sha256").update(hashInput).digest("hex");
-}
-
-// Normalize file path
-function normalizeFilePath(filePath) {
-  if (!filePath) return "";
-  const input = typeof filePath === "string" ? filePath : String(filePath);
-  // Convert Windows backslashes to forward slashes for consistent hashing
-  // Then remove leading ./ and all leading slashes
-  let normalized = input.replaceAll("\\", "/").replace(/^\.\//, "").replace(/^\/+/, "");
-  // Strip absolute paths that include the repo root (e.g., home/user/sonash-v0/...)
-  const repoNameRaw = process.env.REPO_DIRNAME;
-  const repoName = repoNameRaw && repoNameRaw.trim() ? repoNameRaw.trim() : "sonash-v0";
-  const escaped = repoName.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-  const repoRootMatch = normalized.match(new RegExp(`(?:^|/)${escaped}/(.*)$`));
-  if (repoRootMatch) {
-    normalized = repoRootMatch[1];
-  }
-  // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
-  // But preserve Windows drive letters (e.g., "C:\path\to\file")
-  const colonIndex = normalized.indexOf(":");
-  if (colonIndex > 0) {
-    // Check if this looks like a Windows drive letter (single letter before colon)
-    const beforeColon = normalized.substring(0, colonIndex);
-    const isWindowsDrive = beforeColon.length === 1 && /^[A-Za-z]$/.test(beforeColon);
-    if (!isWindowsDrive) {
-      normalized = normalized.substring(colonIndex + 1);
-    }
-  }
-  return normalized;
-}
-
 // Ensure value is in valid set
 function ensureValid(value, validSet, defaultValue) {
   if (validSet.includes(value)) return value;
@@ -91,13 +47,13 @@ function normalizeItem(item) {
   const normalized = {
     // Required fields
     source_id: item.source_id || "unknown",
-    source_file: normalizeFilePath(item.source_file || "unknown"),
+    source_file: normalizeFilePath(item.source_file || "unknown", { stripRepoRoot: true }),
 
     // Normalized fields
     category: ensureValid(item.category, VALID_CATEGORIES, "code-quality"),
     severity: ensureValid(item.severity, VALID_SEVERITIES, "S2"),
     type: ensureValid(item.type, VALID_TYPES, "code-smell"),
-    file: normalizeFilePath(item.file),
+    file: normalizeFilePath(item.file, { stripRepoRoot: true }),
     // Parse line numbers from strings (e.g., "123" -> 123), default to 0 for invalid
     line: (() => {
       const parsedLine =

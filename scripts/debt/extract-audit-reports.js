@@ -19,7 +19,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const crypto = require("node:crypto");
+const generateContentHash = require("../lib/generate-content-hash");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const REPORTS_DIR = path.join(PROJECT_ROOT, "docs/archive/2025-dec-reports");
@@ -123,17 +123,6 @@ const REPORT_CONFIG = {
 };
 
 // --- Shared utilities (from extract-scattered-debt.js) ---
-
-function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
-  const hashInput = [
-    normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
-  ].join("|");
-  return crypto.createHash("sha256").update(hashInput).digest("hex");
-}
 
 function loadExistingHashes() {
   const hashes = new Set();

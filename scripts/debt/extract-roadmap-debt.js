@@ -20,7 +20,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const crypto = require("node:crypto");
+const generateContentHash = require("../lib/generate-content-hash");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const ROADMAP_FILE = path.join(PROJECT_ROOT, "ROADMAP.md");
@@ -29,17 +29,6 @@ const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 const OUTPUT_FILE = path.join(DEBT_DIR, "raw/scattered-intake.jsonl");
 
 // --- Shared utilities ---
-
-function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
-  const hashInput = [
-    normalizedFile,
-    item.line || 0,
-    (item.title || "").toLowerCase().substring(0, 100),
-    (item.description || "").toLowerCase().substring(0, 200),
-  ].join("|");
-  return crypto.createHash("sha256").update(hashInput).digest("hex");
-}
 
 function loadExistingHashes() {
   const hashes = new Set();

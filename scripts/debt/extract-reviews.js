@@ -16,36 +16,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { glob } = require("glob");
 
+const normalizeCategory = require("../lib/normalize-category");
+
 const REVIEWS_DIR = path.join(__dirname, "../../docs/reviews");
 const AGGREGATION_DIR = path.join(__dirname, "../../docs/aggregation");
 const OUTPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/reviews.jsonl");
-
-// Category normalization
-const CATEGORY_MAP = {
-  code: "code-quality",
-  security: "security",
-  performance: "performance",
-  documentation: "documentation",
-  process: "process",
-  refactoring: "refactoring",
-  perf: "performance",
-  docs: "documentation",
-  "code-quality": "code-quality",
-  "Hygiene/Duplication": "code-quality",
-  "Types/Correctness": "code-quality",
-  Testing: "code-quality",
-  "Next/React Boundaries": "code-quality",
-  Security: "security",
-};
-
-function normalizeCategory(cat) {
-  if (!cat) return "code-quality";
-  const normalized = CATEGORY_MAP[cat];
-  if (normalized) return normalized;
-  const lower = cat.toLowerCase();
-  if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
-  return "code-quality";
-}
 
 function extractFile(item) {
   if (item.file && typeof item.file === "string") return item.file;

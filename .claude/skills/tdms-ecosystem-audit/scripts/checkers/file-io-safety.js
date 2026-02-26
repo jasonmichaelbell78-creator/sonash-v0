@@ -423,7 +423,6 @@ function checkMasterDedupedSync(rootDir, debtScripts) {
     "sync-sonarcloud.js",
     "intake-manual.js",
     "intake-pr-deferred.js",
-    "intake-sonar-reliability.js",
     "sprint-intake.js",
   ];
 

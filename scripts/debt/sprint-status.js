@@ -63,27 +63,7 @@ function readTextSafe(filePath) {
   }
 }
 
-/** Parse a JSONL file into an array of objects. Skips malformed lines. */
-function readJsonlSafe(filePath) {
-  try {
-    const raw = fs.readFileSync(filePath, "utf8");
-    const items = [];
-    const lines = raw.split("\n");
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed) continue;
-      try {
-        items.push(JSON.parse(trimmed));
-      } catch {
-        console.warn(`  WARN: skipping malformed JSONL line in ${path.basename(filePath)}`);
-      }
-    }
-    return items;
-  } catch {
-    // Ignore: safe fallback — missing or unreadable file returns empty array to caller
-    return [];
-  }
-}
+const readJsonl = require("../lib/read-jsonl");
 
 /** Get file mtime safely — returns null on error */
 function getFileMtime(filePath) {
@@ -175,7 +155,7 @@ function gatherData() {
 
   const activeSprint = readJsonSafe(PATHS.activeSprint);
 
-  const masterItems = readJsonlSafe(PATHS.master);
+  const masterItems = readJsonl(PATHS.master, { safe: true });
   const masterById = new Map();
   for (const item of masterItems) {
     if (item.id) masterById.set(item.id, item);
@@ -185,7 +165,7 @@ function gatherData() {
 
   const metrics = readJsonSafe(PATHS.metrics);
 
-  const dedupedItems = readJsonlSafe(PATHS.deduped);
+  const dedupedItems = readJsonl(PATHS.deduped, { safe: true });
   const dedupedByHash = new Map();
   for (const item of dedupedItems) {
     if (item.content_hash) dedupedByHash.set(item.content_hash, item);

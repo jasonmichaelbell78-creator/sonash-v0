@@ -6,40 +6,20 @@
 
 "use strict";
 
+const { getCalleeName, getEnclosingScope } = require("../lib/ast-utils");
+
 /**
  * Check if a CallExpression is an existsSync call (bare or member).
  */
 function isExistsSyncCall(node) {
-  const callee = node.callee;
-  if (callee.type === "Identifier" && callee.name === "existsSync") {
-    return true;
-  }
-  if (
-    callee.type === "MemberExpression" &&
-    callee.property.type === "Identifier" &&
-    callee.property.name === "existsSync"
-  ) {
-    return true;
-  }
-  return false;
+  return getCalleeName(node.callee) === "existsSync";
 }
 
 /**
  * Check if a CallExpression is a readFileSync call (bare or member).
  */
 function isReadFileSyncCall(node) {
-  const callee = node.callee;
-  if (callee.type === "Identifier" && callee.name === "readFileSync") {
-    return true;
-  }
-  if (
-    callee.type === "MemberExpression" &&
-    callee.property.type === "Identifier" &&
-    callee.property.name === "readFileSync"
-  ) {
-    return true;
-  }
-  return false;
+  return getCalleeName(node.callee) === "readFileSync";
 }
 
 /**
@@ -63,24 +43,7 @@ function getArgKey(node) {
   return null;
 }
 
-/**
- * Find the closest function or program scope ancestor.
- */
-function getEnclosingScope(node) {
-  let current = node.parent;
-  while (current) {
-    if (
-      current.type === "FunctionDeclaration" ||
-      current.type === "FunctionExpression" ||
-      current.type === "ArrowFunctionExpression" ||
-      current.type === "Program"
-    ) {
-      return current;
-    }
-    current = current.parent;
-  }
-  return null;
-}
+// getEnclosingScope imported from ../lib/ast-utils
 
 /**
  * Get the start index of a node, using range or loc fallback.

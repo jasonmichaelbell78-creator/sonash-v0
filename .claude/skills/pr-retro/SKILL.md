@@ -5,8 +5,8 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.7
-**Last Updated:** 2026-02-24
+**Document Version:** 2.9
+**Last Updated:** 2026-02-26
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -15,9 +15,13 @@ description:
 Analyze the review cycle for a completed PR and produce a **comprehensive,
 actionable retrospective**.
 
-**Invocation:** `/pr-retro <PR#>`
+**Invocation:**
 
-**When to use:** When the user decides the review cycle is done.
+- `/pr-retro` (no args) → **Missing Retros Dashboard**
+- `/pr-retro <PR#>` → Single-PR retrospective
+
+**When to use:** When the user decides the review cycle is done, or wants to
+discover which PRs are missing retros.
 
 ---
 
@@ -37,6 +41,68 @@ actionable retrospective**.
 4. **Reference actual round data** -- specific rounds, files, items.
 5. **Check previous retro action items** -- verify implemented vs documented.
 6. **Cross-PR systemic analysis is mandatory** -- check last 3-5 retros.
+
+---
+
+## STEP 0: DETECT MODE
+
+If **no PR# argument** is provided, run **Dashboard Mode** (below) instead of
+the single-PR retro (Steps 1-5).
+
+If a PR# is provided, skip to Step 1.
+
+---
+
+## DASHBOARD MODE: Missing Retros
+
+When invoked as `/pr-retro` with no arguments, show a dashboard of merged PRs
+that are missing retrospectives.
+
+### D1. Get Merged PRs
+
+```bash
+gh pr list --state merged --limit 100 --json number,title,mergedAt,author
+```
+
+### D2. Get Existing Retros
+
+Grep `docs/AI_REVIEW_LEARNINGS_LOG.md` and `docs/archive/REVIEWS_*.md` for retro
+headers using a relaxed pattern:
+
+```
+/^###\s+PR\s+#(\d+)\s+Retrospective/
+```
+
+Collect all PR numbers that already have retros.
+
+### D3. Filter Out Non-Candidates
+
+A PR needs a retro only if it had review activity. Skip PRs that:
+
+- Have **zero review entries** in `docs/AI_REVIEW_LEARNINGS_LOG.md`,
+  `docs/archive/REVIEWS_*.md`, or `docs/reviews/reviews.jsonl`
+- Are **automated/bot PRs** (author login contains `[bot]`, or title starts with
+  `chore(deps)`, `build(deps)`, or `Bump `)
+
+### D4. Compute Missing Set
+
+Diff merged PRs against existing retros and non-candidates → missing retros.
+
+### D5. Display Dashboard
+
+Show a markdown table sorted by merge date (newest first):
+
+```
+| PR# | Title | Merged | Author |
+|-----|-------|--------|--------|
+| #NNN | ... | YYYY-MM-DD | ... |
+```
+
+If no PRs are missing retros, say: "All reviewed PRs have retros. Nice work!"
+
+End with: **Run `/pr-retro <PR#>` to create a retro for any of these.**
+
+**Dashboard mode ends here — do NOT continue to Steps 1-5.**
 
 ---
 
@@ -215,6 +281,7 @@ Before saving, verify ALL mandatory sections present:
 
 | Version | Date       | Description                                                                |
 | ------- | ---------- | -------------------------------------------------------------------------- |
+| 2.9     | 2026-02-26 | Add dashboard mode: `/pr-retro` (no args) shows missing retros.            |
 | 2.8     | 2026-02-25 | Add Pattern 11 (cross-platform path normalization). Source: PR #392 retro. |
 | 2.7     | 2026-02-24 | Trim to <500 lines: archive patterns 1-5 to ARCHIVE.md                     |
 | 2.6     | 2026-02-24 | Add Pattern 10 (stale reviewer comments). Source: PR #388.                 |

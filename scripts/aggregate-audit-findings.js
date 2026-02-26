@@ -650,7 +650,7 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
     }
     // Index by files (basename)
     for (const file of item.files || []) {
-      const normalizedFile = file.replace(/^.*\//, ""); // basename only
+      const normalizedFile = file.replace(/^.*\//, "");
       if (!roadmapByFile.has(normalizedFile)) {
         roadmapByFile.set(normalizedFile, []);
       }

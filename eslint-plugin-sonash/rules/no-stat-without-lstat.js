@@ -6,6 +6,8 @@
 
 "use strict";
 
+const { getCalleeName, getEnclosingScope } = require("../lib/ast-utils");
+
 /**
  * Extract the path argument name from a statSync/lstatSync call.
  * Returns the identifier name if the first argument is a simple identifier, null otherwise.
@@ -21,56 +23,18 @@ function getPathArgName(node) {
  * Check if a CallExpression is a statSync call (bare or member).
  */
 function isStatSyncCall(node) {
-  const callee = node.callee;
-  if (callee.type === "Identifier" && callee.name === "statSync") {
-    return true;
-  }
-  if (
-    callee.type === "MemberExpression" &&
-    callee.property.type === "Identifier" &&
-    callee.property.name === "statSync"
-  ) {
-    return true;
-  }
-  return false;
+  return getCalleeName(node.callee) === "statSync";
 }
 
 /**
  * Check if a CallExpression is an lstatSync call (bare or member).
  */
 function isLstatSyncCall(node) {
-  const callee = node.callee;
-  if (callee.type === "Identifier" && callee.name === "lstatSync") {
-    return true;
-  }
-  if (
-    callee.type === "MemberExpression" &&
-    callee.property.type === "Identifier" &&
-    callee.property.name === "lstatSync"
-  ) {
-    return true;
-  }
-  return false;
+  return getCalleeName(node.callee) === "lstatSync";
 }
 
-/**
- * Get a stable scope key for a node by finding its closest function/program ancestor.
- */
-function getScopeKey(node) {
-  let current = node.parent;
-  while (current) {
-    if (
-      current.type === "FunctionDeclaration" ||
-      current.type === "FunctionExpression" ||
-      current.type === "ArrowFunctionExpression" ||
-      current.type === "Program"
-    ) {
-      return current;
-    }
-    current = current.parent;
-  }
-  return null;
-}
+// getScopeKey is getEnclosingScope from shared ast-utils
+const getScopeKey = getEnclosingScope;
 
 /**
  * Track an lstatSync call in the scope map.

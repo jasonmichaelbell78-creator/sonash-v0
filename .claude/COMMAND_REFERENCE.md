@@ -70,13 +70,6 @@ Source: `.claude/skills/*/SKILL.md`
 | `/decrypt-secrets`                | Decrypt MCP tokens for remote sessions                         |
 | `/gh-fix-ci`                      | Fix failing GitHub CI actions                                  |
 | `/market-research-reports`        | Generate market research reports                               |
-| `/markitdown`                     | Convert file formats to markdown                               |
-| `/senior-architect`               | Architecture guidance and decisions                            |
-| `/senior-backend`                 | Backend development expertise                                  |
-| `/senior-devops`                  | DevOps and infrastructure guidance                             |
-| `/senior-frontend`                | Frontend development expertise                                 |
-| `/senior-fullstack`               | Full-stack development guidance                                |
-| `/senior-qa`                      | QA and testing expertise                                       |
 | `/sprint`                         | TDMS sprint workflow automation                                |
 | `/ui-design-system`               | Design system components toolkit                               |
 | `/using-superpowers`              | Claude skills usage guide                                      |

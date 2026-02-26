@@ -341,6 +341,15 @@ demoted to S1 in Session #179 — they are code quality, not critical.
 
 See GRAND_PLAN_V2.md for full sprint details and execution strategy.
 
+#### Priority Research: SQLite Migration for TDMS (DEBT-7593)
+
+- [ ] **Research phase** [S1, P0]: Evaluate SQLite migration for TDMS pipeline —
+      current JSONL has O(n²) dedup, ID instability, fragility. Research should
+      also explore what else in the repo benefits from SQLite (review pipeline,
+      audit aggregation, metrics tracking). Produces migration plan + scope.
+- [ ] **Implementation phase** [E3]: Migrate 37 scripts from JSONL to SQLite,
+      preserve all data, eliminate sync-deduped.js and dual-write patterns.
+
 ### Track B - Dev Dashboard (Expanded)
 
 > **Full spec:** See

@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 5.9 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 6.1 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-26 (Session #189 end)
+2026-02-26 (Session #190)
 
 ## Purpose
 
@@ -41,7 +41,7 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 
 ## Session Tracking
 
-**Current Session Count**: 189 (since Jan 1, 2026)
+**Current Session Count**: 190 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -50,6 +50,22 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 ---
 
 ## Recent Session Summaries
+
+**Session #190** (OVER-ENGINEERING RESOLUTION + PR #394 REVIEW):
+
+- Resolved over-engineering findings #3-#15: deleted 6 stub skills (5,595
+  lines), 5 dead app files (650 lines), 3 dead scripts, markitdown skill
+- ESLint AST migration: 25 regex patterns migrated to `eslint-plugin-sonash`
+  v3.0 (Phases 1-2 complete)
+- PR #394 R1 review: 86 items parsed, 42 fixed, 16 enhancement suggestions
+- PR #394 R2 review: 8 fixed (3 CC reductions, 3 optional chains,
+  isInsideTryBlock parent traversal, JSONL parse warnings), 7 deferred to plan
+- 393 CI blocking violations investigated — all pre-existing across 20 files
+- Plan expanded: `ESLINT_AND_COMPLIANCE_FIX_PLAN.md` (18 items: 7 compliance
+  P0 + 11 ESLint P1-P3)
+- DEBT-7595, DEBT-7596 created for 2 deferred Qodo suggestions
+- Learning log Reviews #369, #385 added
+- TDMS: 4,628 items (238 resolved)
 
 **Session #189** (OVER-ENGINEERING AUDIT):
 
@@ -68,13 +84,6 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
   hardening
 - Skill ecosystem overhaul prep, branch sync + session-end
 - TDMS: 4,610 items (238 resolved), 22 S0, 703 S1
-
-**Session #186** (SKILL ECOSYSTEM OVERHAUL):
-
-- Trimmed 20 SKILL.md files under 500 lines (-9,221 lines), 10 companion files
-  created
-- Added `_shared/SKILL_STANDARDS.md` + `_shared/AUDIT_TEMPLATE.md`
-- TDMS: 4,606 items (238 resolved), 22 S0, 703 S1
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -98,9 +107,9 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/new-session-SkJbD`
+**Current Branch**: `claude/new-session-6YdAQ`
 
-**Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
+**Test Status**: 99.6% pass rate (282/283 tests passing, 1 skipped)
 
 ---
 
@@ -108,12 +117,15 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 
 ### Immediate Priority (Next Session)
 
-1. **Continue over-engineering findings walkthrough** — Findings #3-#15 pending
-   interactive review (see `.claude/state/over-engineering-findings.md`)
-2. **Finding #3**: 22 Audit Skills (most never run) — skill proliferation,
-   duplicated lib/ code
-3. **Finding #4**: 100K Lines of Scripts for a JSONL File
-4. **Finding #5**: TDMS Destructive Overwrite Pattern (generate-views.js)
+1. **ESLint + Compliance fix plan** — 18 items (7 P0 compliance blockers + 11
+   ESLint enhancements), ~5-8 hours across 1-2 sessions. See
+   `.claude/plans/ESLINT_AND_COMPLIANCE_FIX_PLAN.md`
+   - Phase 1 (P0): Fix 393 CI blocking violations (326 Array.isArray, 42
+     symlink, 11 rename, 6 rmSync, 6 isSafeToWrite, 1 exec, 1 path.join)
+   - Phase 2 (P1-P3): 8 remaining ESLint enhancements (3 already done in R2)
+2. **PR #394 merge** — blocked by Phase 1 compliance violations
+3. **Over-engineering findings** — #3-#15 resolved; may need follow-up on
+   deferred items (#3 audit skills, #7+ low-priority)
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -186,5 +198,5 @@ npm run docs:check   # Documentation linting
 
 ---
 
-**END OF SESSION_CONTEXT.md** | **Version**: 6.0 (2026-02-26) |
+**END OF SESSION_CONTEXT.md** | **Version**: 6.1 (2026-02-26) |
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)
