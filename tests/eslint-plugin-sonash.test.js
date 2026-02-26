@@ -560,4 +560,32 @@ describe("Edge cases: false positive prevention", () => {
       invalid: [],
     });
   });
+
+  test("no-shell-injection detects nested interpolation in conditional/logical", () => {
+    ruleTester.run("no-shell-injection", plugin.rules["no-shell-injection"], {
+      valid: [],
+      invalid: [
+        {
+          code: 'exec(debug ? ("rm " + userInput) : "echo safe")',
+          errors: [{ messageId: "shellInjection" }],
+        },
+        {
+          code: "exec(fallback || `cmd ${arg}`)",
+          errors: [{ messageId: "shellInjection" }],
+        },
+      ],
+    });
+  });
+
+  test("no-unbounded-regex detects unbounded in template literals", () => {
+    ruleTester.run("no-unbounded-regex", plugin.rules["no-unbounded-regex"], {
+      valid: [],
+      invalid: [
+        {
+          code: "new RegExp(`prefix.*${suffix}`)",
+          errors: [{ messageId: "unboundedRegex" }],
+        },
+      ],
+    });
+  });
 });

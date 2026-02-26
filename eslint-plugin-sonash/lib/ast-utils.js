@@ -7,15 +7,19 @@
 
 /**
  * Extract the function name from a CallExpression callee node.
- * Handles Identifier (bare calls) and MemberExpression (obj.method) forms.
+ * Handles Identifier (bare calls), MemberExpression (obj.method),
+ * and ChainExpression (obj?.method) forms for optional chaining support.
  * Returns null if the callee is not determinable.
  */
 function getCalleeName(callee) {
-  if (callee.type === "Identifier") {
-    return callee.name;
+  if (!callee) return null;
+  // Unwrap ChainExpression (optional chaining: fs?.readFileSync())
+  const node = callee.type === "ChainExpression" ? callee.expression : callee;
+  if (node.type === "Identifier") {
+    return node.name;
   }
-  if (callee.type === "MemberExpression" && callee.property?.type === "Identifier") {
-    return callee.property.name;
+  if (node.type === "MemberExpression" && node.property?.type === "Identifier") {
+    return node.property.name;
   }
   return null;
 }
@@ -42,12 +46,21 @@ function getEnclosingScope(node) {
 
 /**
  * Check if an argument node contains string interpolation (template literal with
- * expressions or string concatenation). Used for injection detection rules.
+ * expressions or string concatenation). Recursively checks BinaryExpression
+ * children to catch nested concatenation like: "SELECT " + (prefix + userInput).
+ * Used for injection detection rules.
  */
 function hasStringInterpolation(argNode) {
   if (!argNode) return false;
   if (argNode.type === "TemplateLiteral" && argNode.expressions.length > 0) return true;
   if (argNode.type === "BinaryExpression" && argNode.operator === "+") return true;
+  // Recurse into conditional/logical expressions to catch nested interpolation
+  if (argNode.type === "ConditionalExpression") {
+    return hasStringInterpolation(argNode.consequent) || hasStringInterpolation(argNode.alternate);
+  }
+  if (argNode.type === "LogicalExpression") {
+    return hasStringInterpolation(argNode.left) || hasStringInterpolation(argNode.right);
+  }
   return false;
 }
 

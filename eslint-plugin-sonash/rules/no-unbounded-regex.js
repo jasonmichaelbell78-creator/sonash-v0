@@ -44,7 +44,7 @@ module.exports = {
 
         // Check template literal patterns
         if (firstArg.type === "TemplateLiteral") {
-          const fullText = firstArg.quasis.map((q) => q.value.raw).join("");
+          const fullText = firstArg.quasis.map((q) => q.value.cooked ?? q.value.raw).join("");
           if (unboundedPattern.test(fullText)) {
             context.report({ node, messageId: "unboundedRegex" });
           }

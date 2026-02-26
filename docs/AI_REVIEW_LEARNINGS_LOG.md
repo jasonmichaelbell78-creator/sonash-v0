@@ -1242,6 +1242,37 @@ _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 
 ---
 
+### Review #387: PR #394 R4 (2026-02-26)
+
+- **Source**: Qodo PR Suggestions (8 new on R3 code), Qodo Compliance (repeat
+  across 4 checkpoints), CI (393 blocking — same pre-existing), SonarCloud
+  Quality Gate (11.7% duplication — same), Gemini (1 stale comment), ESLint
+  (2390 warnings, 0 errors)
+- **PR**: PR #394 — Over-engineering resolution, ESLint AST migration
+- **Items**: ~20 total → 3 fixed, 5 deferred, ~12 rejected/repeat
+- **Fixed**: (1) `hasStringInterpolation` made recursive — prevents injection
+  rule bypass via nested `BinaryExpression` (Qodo importance 9/10); (2)
+  `getCalleeName` handles `ChainExpression` for optional chaining
+  (`fs?.readFileSync`) — prevents rule misses (importance 8/10); (3)
+  `no-unbounded-regex` uses `q.value.cooked ?? q.value.raw` for accurate
+  template literal analysis (importance 7/10)
+- **Deferred**: (1) walkAst stopAtFunctionBoundary — enhancement, not a bug; (2)
+  Recognize `!rel`/`rel.length === 0` in isEmptyStringCheck — enhancement; (3)
+  Tie length guards to same array in no-math-max-spread — enhancement; (4)
+  Cross-platform hash stabilization — Linux-only CI; (5) Windows absolute
+  requires in no-unguarded-loadconfig — Linux-only CI
+- **Rejected**: (1) All Qodo Compliance items — repeat-rejected from R1-R3
+  (TOCTOU, silent parse, raw content, missing actor, sample secrets, weak
+  validation); (2) CI 393 blockers — pre-existing, tracked in Phase 1; (3)
+  Quality Gate duplication 11.7% — structural similarity in 25 rule files, not
+  extractable; (4) Gemini hasRenameSyncNearby — stale, already fixed in R3
+- **Key Learning**: Qodo batch rejection for R2+ rounds is effective — 12+ items
+  repeat-rejected without re-investigation. Recursive `hasStringInterpolation`
+  is a real correctness fix: `"SELECT " + (prefix + userInput)` was being
+  missed.
+
+---
+
 ### Review #386: PR #394 R3 (2026-02-26)
 
 - **Source**: SonarCloud (2 new + Quality Gate failure), Qodo PR Suggestions
