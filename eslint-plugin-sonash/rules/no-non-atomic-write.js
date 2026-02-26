@@ -26,18 +26,30 @@ function isCallToFunc(node, funcName) {
 
 function containsCallTo(node, funcName) {
   if (!node) return false;
-  if (node.type === "ExpressionStatement") return containsCallTo(node.expression, funcName);
-  if (isCallToFunc(node, funcName)) return true;
-  if (node.type === "TryStatement") {
-    return containsCallTo(node.block, funcName) || containsCallTo(node.handler?.body, funcName);
-  }
-  if (node.type === "BlockStatement" && Array.isArray(node.body)) {
-    return node.body.some((s) => containsCallTo(s, funcName));
-  }
-  if (node.type === "IfStatement") {
-    return containsCallTo(node.consequent, funcName) || containsCallTo(node.alternate, funcName);
-  }
-  return false;
+
+  let found = false;
+  const walk = (n) => {
+    if (!n || found) return;
+    if (n.type === "CallExpression" && getCalleeName(n.callee) === funcName) {
+      found = true;
+      return;
+    }
+    for (const key of Object.keys(n)) {
+      if (key === "parent") continue;
+      const child = n[key];
+      if (!child || typeof child !== "object") continue;
+      if (Array.isArray(child)) {
+        for (const c of child) {
+          if (c && typeof c.type === "string") walk(c);
+        }
+      } else if (typeof child.type === "string") {
+        walk(child);
+      }
+    }
+  };
+
+  walk(node);
+  return found;
 }
 
 function hasRenameSyncNearby(block, targetNode) {

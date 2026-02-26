@@ -66,18 +66,27 @@ function hasInstanceofErrorCheck(blockBody, paramName) {
 
 /**
  * Find all MemberExpression nodes accessing .message on the given parameter name.
+ * Handles: err.message, err?.message, err["message"]
  */
 function findMessageAccesses(blockBody, paramName) {
   const accesses = [];
 
   const visitor = (node) => {
-    if (
-      node.type === "MemberExpression" &&
-      node.object.type === "Identifier" &&
-      node.object.name === paramName &&
-      node.property?.type === "Identifier" &&
-      node.property.name === "message"
-    ) {
+    // Unwrap optional chaining: err?.message
+    const unwrapped = node?.type === "ChainExpression" ? node.expression : node;
+    if (unwrapped?.type !== "MemberExpression") return;
+
+    const obj = unwrapped.object;
+    const prop = unwrapped.property;
+
+    if (obj?.type !== "Identifier" || obj.name !== paramName) return;
+
+    // Standard: err.message  |  Optional: err?.message
+    const isMessageProp =
+      (!unwrapped.computed && prop?.type === "Identifier" && prop.name === "message") ||
+      (unwrapped.computed && prop?.type === "Literal" && prop.value === "message");
+
+    if (isMessageProp) {
       accesses.push(node);
     }
   };

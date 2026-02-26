@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.64 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.65 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1239,6 +1239,39 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #388: PR #394 R5 (2026-02-26)
+
+- **Source**: Qodo PR Suggestions (~10 new on R4 code at 5176cdf), Qodo
+  Compliance (repeat across 4 checkpoints), CI (393 blocking — same
+  pre-existing), SonarCloud Quality Gate (11.6% duplication — same), Gemini (1
+  stale comment)
+- **PR**: PR #394 — Over-engineering resolution, ESLint AST migration
+- **Items**: ~20 total → 5 fixed, 4 deferred, ~11 rejected/repeat
+- **Fixed**: (1) `no-unescaped-regexp-input` extended to catch template literals
+  with expressions and string concatenation — was only detecting
+  Identifier/MemberExpression (Qodo importance 9/10); (2) `no-unbounded-regex`
+  added negative lookbehind `(?<!\\)` to avoid false positives on escaped dots
+  like `\.*` (importance 8/10); (3) `findMessageAccesses` in
+  `no-unsafe-error-access` now unwraps ChainExpression for `err?.message` and
+  handles computed `err["message"]` (importance 8/10); (4) `containsCallTo` in
+  `no-non-atomic-write` replaced with generic AST walker — limited traversal
+  missed renameSync in VariableDeclarations, ReturnStatements, finally blocks
+  (importance 8/10); (5) `no-div-onclick-no-role` skips reporting when
+  JSXSpreadAttribute present — `{...props}` could pass role (importance 7/10)
+- **Deferred**: (1) hasRenameSyncNearby arg validation — complex, enhancement
+  level; (2) read-jsonl.js throw instead of process.exit — callers need
+  updating; (3) describe.sequential for RuleTester — no actual flakes observed;
+  (4) normalizeFilePath in generate-content-hash.js — consistency only
+- **Rejected**: All Qodo Compliance items — repeat-rejected from R1-R4; CI 393
+  blockers — pre-existing; Quality Gate duplication — structural; Gemini
+  hasRenameSyncNearby — stale (fixed in R3)
+- **Key Learning**: The generic AST walker pattern (iterate Object.keys, skip
+  "parent", recurse into nodes/arrays) is more robust than hand-enumerating
+  statement types. Every new AST node type is automatically handled. Applied to
+  containsCallTo — same pattern should be considered for future AST utilities.
 
 ---
 

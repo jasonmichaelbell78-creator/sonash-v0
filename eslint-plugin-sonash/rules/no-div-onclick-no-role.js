@@ -31,15 +31,20 @@ module.exports = {
 
         let hasOnClick = false;
         let hasRole = false;
+        let hasSpread = false;
 
         for (const attr of node.attributes) {
+          if (attr.type === "JSXSpreadAttribute") {
+            hasSpread = true;
+            continue;
+          }
           if (attr.type !== "JSXAttribute" || !attr.name) continue;
           const name = attr.name.name;
           if (name === "onClick") hasOnClick = true;
           if (name === "role") hasRole = true;
         }
 
-        if (hasOnClick && !hasRole) {
+        if (hasOnClick && !hasRole && !hasSpread) {
           context.report({ node, messageId: "missingRole" });
         }
       },

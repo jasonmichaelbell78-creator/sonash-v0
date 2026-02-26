@@ -22,8 +22,8 @@ module.exports = {
   },
 
   create(context) {
-    // Matches .* or .+ that are NOT followed by ? (i.e., not already lazy)
-    const unboundedPattern = /\.[*+](?!\?)/;
+    // Matches .* or .+ where the dot is not escaped and NOT followed by ? (not already lazy)
+    const unboundedPattern = /(?<!\\)\.[*+](?!\?)/;
 
     return {
       NewExpression(node) {

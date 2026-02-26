@@ -588,4 +588,50 @@ describe("Edge cases: false positive prevention", () => {
       ],
     });
   });
+
+  test("no-unbounded-regex allows escaped dots", () => {
+    ruleTester.run("no-unbounded-regex", plugin.rules["no-unbounded-regex"], {
+      valid: [String.raw`new RegExp("prefix\\.*suffix")`],
+      invalid: [],
+    });
+  });
+
+  test("no-unescaped-regexp-input catches template literals and concatenation", () => {
+    ruleTester.run("no-unescaped-regexp-input", plugin.rules["no-unescaped-regexp-input"], {
+      valid: [
+        'new RegExp("literal")',
+        "new RegExp(`no-expressions`)",
+        "const escapedRegex = new RegExp(escapedStr)",
+      ],
+      invalid: [
+        {
+          code: "new RegExp(`${userInput}`)",
+          errors: [{ messageId: "unescapedInput" }],
+        },
+        {
+          code: 'new RegExp("^" + userInput)',
+          errors: [{ messageId: "unescapedInput" }],
+        },
+      ],
+    });
+  });
+
+  test("no-div-onclick-no-role allows spread attributes", () => {
+    jsxRuleTester.run("no-div-onclick-no-role", plugin.rules["no-div-onclick-no-role"], {
+      valid: ["const el = <div onClick={handler} {...props}>click</div>"],
+      invalid: [],
+    });
+  });
+
+  test("no-unsafe-error-access detects optional chaining message access", () => {
+    ruleTester.run("no-unsafe-error-access", plugin.rules["no-unsafe-error-access"], {
+      valid: ["try { f() } catch (err) { if (err instanceof Error) { console.log(err.message) } }"],
+      invalid: [
+        {
+          code: 'try { f() } catch (err) { console.log(err["message"]) }',
+          errors: [{ messageId: "unsafeErrorAccess" }],
+        },
+      ],
+    });
+  });
 });
