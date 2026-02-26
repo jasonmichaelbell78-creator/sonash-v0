@@ -34,7 +34,7 @@
 - alerts-reminder.js exists but isn't wired in settings.json (dead file)
 - Estimated +200-400ms latency per user message from 4 Node spawns
 
-### #3: 22 Audit Skills, Most Never Run — STATUS: PENDING
+### #3: 22 Audit Skills, Most Never Run — STATUS: DEFERRED
 
 - 9 domain audits (audit-code, audit-security, etc.) — 6 of 9 have ZERO results
 - 7 ecosystem audits (hook-, session-, tdms-, pr-, skill-, doc-,
@@ -47,7 +47,7 @@
 - 7 ecosystem audits are structurally identical — could be 1 parametric skill
   with --domain
 
-### #4: 100K Lines of Scripts for a JSONL File — STATUS: PENDING
+### #4: 100K Lines of Scripts for a JSONL File — STATUS: IMPLEMENTED (A+B+C+D)
 
 - scripts/debt/ = 37 scripts, 17,876 lines
 - scripts/ top-level = 56 scripts, 29,852 lines
@@ -60,7 +60,7 @@
 - Two parallel master findings files (MASTER_DEBT.jsonl AND
   MASTER_ISSUE_LIST.jsonl)
 
-### #5: TDMS Destructive Overwrite Pattern — STATUS: PENDING
+### #5: TDMS Destructive Overwrite Pattern — STATUS: IMPLEMENTED
 
 - generate-views.js reads deduped.jsonl and OVERWRITES MASTER_DEBT.jsonl
 - sync-deduped.js (205 lines) exists ONLY to compensate for this
@@ -69,7 +69,7 @@
 - Fix is ~10 lines: make generate-views.js read-only (derive views without
   overwriting source)
 
-### #6: 6 Stub senior-\* Skills (Dead Code) — STATUS: PENDING
+### #6: 6 Stub senior-\* Skills (Dead Code) — STATUS: IMPLEMENTED
 
 - senior-architect, senior-backend, senior-devops, senior-frontend,
   senior-fullstack, senior-qa
@@ -78,7 +78,7 @@
 - Scripts print status and return findings: []
 - ~1,500 lines SKILL.md + 2,052 lines Python stubs = 3,552 lines of nothing
 
-### #7: Duplicate UserPromptSubmit Hook Logic — STATUS: PENDING
+### #7: Duplicate UserPromptSubmit Hook Logic — STATUS: IMPLEMENTED (resolved with #2)
 
 - (Subset of #2) user-prompt-handler.js contains runAnalyze(), runSessionEnd(),
   runPlanSuggestion()
@@ -87,7 +87,7 @@
 - matchesWord/matchesPhrase helpers copy-pasted into both files
 - .directive-dedup.json exists to paper over the double-emission
 
-### #8: Dead App Code — STATUS: PENDING
+### #8: Dead App Code — STATUS: IMPLEMENTED
 
 - lib/database/database-interface.ts + firestore-adapter.ts = 188 lines, 0
   production imports
