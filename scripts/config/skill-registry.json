@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-02-26T12:27:21.941Z",
-  "skillCount": 60,
+  "generatedAt": "2026-02-26T12:51:11.204Z",
+  "skillCount": 59,
   "skills": [
     {
       "name": "_shared",
@@ -198,12 +198,6 @@
       "source": ".claude/skills",
       "displayName": "market-research-reports",
       "description": "\"Generate comprehensive market research reports (50+ pages) in the style of"
-    },
-    {
-      "name": "markitdown",
-      "source": ".claude/skills",
-      "displayName": "markitdown",
-      "description": "\"Convert files and office documents to Markdown. Supports PDF, DOCX, PPTX,"
     },
     {
       "name": "mcp-builder",

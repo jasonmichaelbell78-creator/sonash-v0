@@ -70,7 +70,6 @@ Source: `.claude/skills/*/SKILL.md`
 | `/decrypt-secrets`                | Decrypt MCP tokens for remote sessions                         |
 | `/gh-fix-ci`                      | Fix failing GitHub CI actions                                  |
 | `/market-research-reports`        | Generate market research reports                               |
-| `/markitdown`                     | Convert file formats to markdown                               |
 | `/sprint`                         | TDMS sprint workflow automation                                |
 | `/ui-design-system`               | Design system components toolkit                               |
 | `/using-superpowers`              | Claude skills usage guide                                      |

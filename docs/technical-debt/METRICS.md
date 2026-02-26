@@ -30,8 +30,8 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 4625  |
-| Open Items      | 4138  |
+| Total Items     | 4626  |
+| Open Items      | 4139  |
 | Resolved        | 238   |
 | False Positives | 249   |
 | Resolution Rate | 5%    |
@@ -42,7 +42,7 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 1024  |
+| NEW            | 1025  |
 | VERIFIED       | 3114  |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 238   |
@@ -55,7 +55,7 @@ distribution.
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 36    | 1%         |
-| S1 (High)     | 740   | 16%        |
+| S1 (High)     | 741   | 16%        |
 | S2 (Medium)   | 1896  | 41%        |
 | S3 (Low)      | 1953  | 42%        |
 
@@ -65,7 +65,7 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 2680  |
+| code-quality             | 2681  |
 | documentation            | 492   |
 | security                 | 416   |
 | process                  | 356   |
@@ -101,7 +101,7 @@ distribution.
 - **DEBT-2381**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
   (N/A:0)
 
-### S1 High Priority Alerts (703)
+### S1 High Priority Alerts (704)
 
 - **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -124,7 +124,7 @@ distribution.
 - **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 693 more S1 items_
+_...and 694 more S1 items_
 
 ---
 
@@ -132,7 +132,7 @@ _...and 693 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 1024 items |
+| Verification Queue   | 1025 items |
 | Avg Age (Open Items) | 13 days    |
 | Oldest Item Age      | 27 days    |
 | Oldest Item          | DEBT-0002  |
@@ -152,7 +152,7 @@ _...and 693 more S1 items_
 | context                      | 126   |
 | roadmap                      | 89    |
 | intake                       | 30    |
-| manual                       | 28    |
+| manual                       | 29    |
 | pr-deferred                  | 10    |
 | pr-review                    | 7     |
 | code-comment                 | 5     |

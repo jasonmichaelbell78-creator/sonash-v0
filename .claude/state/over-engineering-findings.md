@@ -96,7 +96,7 @@
 - components/theme-provider.tsx = 8 lines, not used in layout
 - Total: ~551 lines of confirmed dead code
 
-### #9: SQLite Migration for TDMS (Qodo Was Right) — STATUS: PENDING
+### #9: SQLite Migration for TDMS (Qodo Was Right) — STATUS: DEFERRED (roadmap)
 
 - Suggested twice, rejected with "TDMS is established" (not a technical
   argument)
@@ -106,7 +106,7 @@
   complexity
 - E3 effort but would structurally fix Finding #5
 
-### #10: Review Pipeline Circular Format — STATUS: PENDING
+### #10: Review Pipeline Circular Format — STATUS: DEFERRED (subsumable by #9)
 
 - AI_REVIEW_LEARNINGS_LOG.md (markdown) → reviews.jsonl (JSONL) →
   suggested-rules.md (markdown)
@@ -115,7 +115,7 @@
 - reviews:repair mode confirms drift happens between the two formats
 - 5 scripts, ~3,100 lines for this pipeline
 
-### #11: Two Parallel Master Findings Files — STATUS: PENDING
+### #11: Two Parallel Master Findings Files — STATUS: DEFERRED (ephemeral output, subsumable by #9)
 
 - MASTER_DEBT.jsonl (TDMS pipeline) AND MASTER_ISSUE_LIST.jsonl (aggregation
   pipeline)
@@ -124,7 +124,7 @@
   pipeline
 - Separate pipelines maintaining overlapping content
 
-### #12: Shared Lib Gaps — STATUS: PENDING
+### #12: Shared Lib Gaps — STATUS: PARTIALLY RESOLVED (major gaps fixed in #4, minor remain)
 
 - 3x Levenshtein distance implementations (dedup-multi-pass,
   aggregate-audit-findings, aggregate-category)
@@ -133,20 +133,20 @@
 - validateContainedPath duplicated in 3 multi-ai scripts
 - CANONICAL_CATEGORIES defined identically in 2 scripts
 
-### #13: 105 npm Scripts — STATUS: PENDING
+### #13: 105 npm Scripts — STATUS: SKIPPED (symptom of tooling volume, not root cause)
 
 - 80% are for AI/meta tooling, not the app
 - Typical Next.js app has 8-12
 - ecosystem:audit:all just prints "Use /comprehensive-ecosystem-audit skill"
 
-### #14: markitdown Skill Bloat — STATUS: PENDING
+### #14: markitdown Skill Bloat — STATUS: IMPLEMENTED (deleted 4,334 lines)
 
 - 524 lines (over 500-line limit) + 8 companion files
 - Wrapper around external open-source tool
 - More docs than the upstream library
 - No evidence of usage for SoNash work
 
-### #15: App-Level Duplicates — STATUS: PENDING
+### #15: App-Level Duplicates — STATUS: DEFERRED (2 dead components + 2 non-duplicates)
 
 - 2x error modules (callable-errors.ts + errors.ts) with competing isAuthError
 - 2x timestamp utils (firebase-guards.ts + firebase-types.ts) with competing
