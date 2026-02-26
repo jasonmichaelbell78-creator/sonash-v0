@@ -5,7 +5,7 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.9
+**Document Version:** 3.0
 **Last Updated:** 2026-02-26
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -214,11 +214,15 @@ archived. See [ARCHIVE.md](ARCHIVE.md).
   coding
 - **Templates:** FIX_TEMPLATES #33, #9
 
-### Pattern 8: Incremental Algorithm Hardening
+### Pattern 8: Incremental Algorithm Hardening (**BLOCKING**)
 
-- **PRs:** #379 (7 rounds, 4 avoidable ~57%)
-- **Fix:** Algorithm Design Pre-Check in pr-review Step 0.5
-- **Templates:** FIX_TEMPLATES #34
+- **PRs:** #379 (7 rounds, 4 avoidable ~57%), #394 (12 rounds — CC extraction
+  appeared in 5 rounds; `isInsideTryBlock` parent traversal appeared in PRs
+  #374, #375, #388, #394)
+- **Fix:** Use FIX_TEMPLATE #42 (visitChild CC extraction) IMMEDIATELY when any
+  ESLint rule `create()` has CC >10. Do not wait for SonarCloud to flag it.
+- **Templates:** FIX_TEMPLATES #34, #42
+- **Status:** BLOCKING — 4th occurrence across PRs. Apply template proactively.
 
 ### Pattern 9: Dual-File JSONL Sync Fragility
 
@@ -239,6 +243,30 @@ archived. See [ARCHIVE.md](ARCHIVE.md).
   string-based path comparisons (includes, endsWith, has, startsWith) and verify
   each uses POSIX-normalized paths.
 - **Templates:** FIX_TEMPLATES #40, pr-review Step 0.5 #14
+
+### Pattern 12: ChainExpression Propagation
+
+- **PRs:** #394 (R4→R5→R6 — ChainExpression support added to one AST utility,
+  then discovered missing in 2 more across subsequent rounds)
+- **Fix:** After adding ChainExpression support to one AST utility, audit ALL
+  AST utilities for the same gap:
+  ```bash
+  grep -rn 'node\.type\|callee\.type' eslint-plugin-sonash/ --include="*.js" | grep -v 'unwrapNode\|ChainExpression'
+  ```
+- **Templates:** FIX_TEMPLATES #43
+
+### Pattern 13: Fix-One-Audit-All (Generalized)
+
+- **PRs:** #388 (path normalization 3×), #394 (ChainExpression 3×, CC extraction
+  5×)
+- **Fix:** After fixing ANY pattern in one location, grep the codebase for all
+  other instances of the same pattern gap and fix them in the same round. This
+  is the generalized version of Patterns 5, 11, and 12.
+- **Process:** Before committing a fix, run a propagation grep:
+  1. Identify the pattern you just fixed (e.g., missing unwrapNode call)
+  2. Grep for all files that have the same unpatched pattern
+  3. Fix all instances in the same commit
+- **Templates:** N/A (process pattern, not code template)
 
 ---
 
@@ -279,12 +307,13 @@ Before saving, verify ALL mandatory sections present:
 
 ## Version History
 
-| Version | Date       | Description                                                                |
-| ------- | ---------- | -------------------------------------------------------------------------- |
-| 2.9     | 2026-02-26 | Add dashboard mode: `/pr-retro` (no args) shows missing retros.            |
-| 2.8     | 2026-02-25 | Add Pattern 11 (cross-platform path normalization). Source: PR #392 retro. |
-| 2.7     | 2026-02-24 | Trim to <500 lines: archive patterns 1-5 to ARCHIVE.md                     |
-| 2.6     | 2026-02-24 | Add Pattern 10 (stale reviewer comments). Source: PR #388.                 |
-| 2.5     | 2026-02-22 | Add Pattern 9 (dual-file JSONL sync). Source: PR #383.                     |
-| 2.4     | 2026-02-19 | Add Pattern 8 (algorithm hardening). Source: PR #379.                      |
-| 2.3     | 2026-02-18 | Add Patterns 6-7. Source: PR #374.                                         |
+| Version | Date       | Description                                                                                                                      |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 3.0     | 2026-02-26 | Upgrade Pattern 8 to BLOCKING. Add Patterns 12-13 (ChainExpression propagation, fix-one-audit-all). Source: PR #393/#394 retros. |
+| 2.9     | 2026-02-26 | Add dashboard mode: `/pr-retro` (no args) shows missing retros.                                                                  |
+| 2.8     | 2026-02-25 | Add Pattern 11 (cross-platform path normalization). Source: PR #392 retro.                                                       |
+| 2.7     | 2026-02-24 | Trim to <500 lines: archive patterns 1-5 to ARCHIVE.md                                                                           |
+| 2.6     | 2026-02-24 | Add Pattern 10 (stale reviewer comments). Source: PR #388.                                                                       |
+| 2.5     | 2026-02-22 | Add Pattern 9 (dual-file JSONL sync). Source: PR #383.                                                                           |
+| 2.4     | 2026-02-19 | Add Pattern 8 (algorithm hardening). Source: PR #379.                                                                            |
+| 2.3     | 2026-02-18 | Add Patterns 6-7. Source: PR #374.                                                                                               |

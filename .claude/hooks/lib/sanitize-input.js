@@ -17,8 +17,9 @@ const SECRET_PATTERNS = [
   /bearer\s+[A-Z0-9._-]+/gi,
   // Basic auth
   /basic\s+[A-Z0-9+/=]+/gi,
-  // Key=value patterns with sensitive names
-  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S+/gi,
+  // Key=value patterns with sensitive names (quoted values first, then unquoted)
+  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*"[^"]*"/gi,
+  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S{2,}/gi,
 ];
 
 /**

@@ -22,11 +22,12 @@ const SENSITIVE_PATTERNS = [
   /\/etc\/[^\s]+/gi, // System config paths
   /\/var\/[^\s]+/gi, // Variable data paths
 
-  // Credentials and secrets
-  /password[=:]\s*\S+/gi, // Password assignments
-  /api[_-]?key[=:]\s*\S+/gi, // API keys
-  /token[=:]\s*\S+/gi, // Tokens
-  /secret[=:]\s*\S+/gi, // Secrets
+  // Credentials and secrets (quoted values first, then unquoted with min-length)
+  /(?:password|api[_-]?key|token|secret|credential|auth)[=:]\s*"[^"]*"/gi,
+  /password[=:]\s*\S{2,}/gi, // Password assignments
+  /api[_-]?key[=:]\s*\S{2,}/gi, // API keys
+  /token[=:]\s*\S{2,}/gi, // Tokens
+  /secret[=:]\s*\S{2,}/gi, // Secrets
   /Bearer\s+[A-Z0-9._-]+/gi, // Bearer tokens
 
   // Connection strings

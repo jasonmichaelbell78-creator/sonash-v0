@@ -1251,6 +1251,91 @@ _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 
 ---
 
+### PR #393 Retrospective (2026-02-26)
+
+_Over-engineering audit: hook consolidation, token reduction, dead code cleanup.
+PR scope: 44 files (+10,605/-many). 2 review rounds._
+
+**Review Cycle Summary:**
+
+| Metric      | Value                              |
+| ----------- | ---------------------------------- |
+| Rounds      | 2 (R1: 2026-02-25, R2: 2026-02-26) |
+| Total items | 15 (6 unique R1 + 9 R2)            |
+| Fixed       | 6                                  |
+| Deferred    | 0                                  |
+| Rejected    | 9 (5 Qodo repeats + 4 design/FP)   |
+
+**Ping-Pong Chains:** None. Clean forward progression.
+
+**Rejection accuracy:** 9/9 correct (100%).
+
+**Key findings:** (1) Deletion-heavy PRs have lower review surface — 44 files
+but only 2 rounds. (2) Gemini + Qodo convergence on quoted-value secret
+redaction bug (high-signal multi-source agreement). (3) Qodo Compliance FP rate
+78% — 5 repeats + 2 design rejections.
+
+**Action items:** Add quoted-value secret redaction edge case tests. Pattern:
+`KEY="multi word"` + `KEY=\n` boundary. Implemented in FIX_TEMPLATE #45.
+
+**Verdict:** Efficient 2-round cycle. ~0 rounds avoidable. First 2-round PR in
+the #384-#394 series.
+
+---
+
+### PR #394 Retrospective (2026-02-26)
+
+_Resolve over-engineering findings: delete 12K+ lines of dead code, migrate
+linter to ESLint AST. PR scope: 151 files (+11,460/-many). 12 review rounds._
+
+**Review Cycle Summary:**
+
+| Metric      | Value                              |
+| ----------- | ---------------------------------- |
+| Rounds      | 12 (R1-R12, all 2026-02-26)        |
+| Total items | ~321                               |
+| Fixed       | ~153                               |
+| Deferred    | ~35 (Enhancement Plan items)       |
+| Rejected    | ~112 (~40 Qodo Compliance repeats) |
+
+**Ping-Pong Chains (5):**
+
+1. **Chain 1: walkAst/containsCallTo CC** (R1→R2→R3→R6→R7, 5 rounds, ~2
+   avoidable). CC extracted incrementally instead of to ≤10 in one pass.
+2. **Chain 2: isInsideTryBlock** (R1→R2, 2 rounds, 1 avoidable). 4th occurrence
+   of this pattern across PRs #374, #375, #388, #394. Now BLOCKING.
+3. **Chain 3: hasRenameSyncNearby** (R1→R3→R5, 3 rounds, ~1 avoidable).
+   Hand-enumerated AST types insufficient; generic walker needed.
+4. **Chain 4: ChainExpression** (R4→R5→R6, 3 rounds, ~1 avoidable). Added to one
+   utility, missed 2 others. Fix-one-audit-all principle.
+5. **Chain 5: Qodo Compliance repeats** (R1→R12, ~40 items). Batch-rejected per
+   pr-review v3.3.
+
+**Total avoidable rounds: ~5 of 12 (~42%)**
+
+**Key findings:** (1) Large PR scope is dominant efficiency problem — 151 files,
+12 rounds. (2) CC reduction predictably incremental — target ≤10 not ≤15. (3)
+ChainExpression is new systemic AST pattern — fix one, audit all. (4) Generic
+AST walker (Object.keys + recurse) > hand-enumerated types. (5) Lazy quantifiers
+(`.*?`, `.+?`) are NOT safe for ReDoS — still unbounded.
+
+**Action items implemented:**
+
+- FIX_TEMPLATE #42: ESLint rule CC extraction (visitChild pattern)
+- FIX_TEMPLATE #43: ChainExpression unwrap + WeakSet dedup
+- FIX_TEMPLATE #44: Generic AST walker
+- FIX_TEMPLATE #45: Quoted-value secret redaction
+- CODE_PATTERNS: 4 new patterns (lazy quantifiers, generic walker, per-access
+  guard, fix-one-audit-all)
+- pr-retro: Pattern 8 upgraded to BLOCKING, Patterns 12-13 added
+- pr-review: Pre-checks #16-17 added
+
+**Verdict:** Inefficient but productive — 12 rounds, ~153 fixes, ~42% avoidable.
+Single highest-impact change: split large PRs. Second: create ESLint rule
+template with built-in ChainExpression/walker/CC patterns.
+
+---
+
 ### Review #395: PR #394 R12 (2026-02-26)
 
 - **Source**: SonarCloud (2), CI (1 — 393 pre-existing), Qodo Compliance (4
