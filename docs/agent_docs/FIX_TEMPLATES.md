@@ -2371,12 +2371,12 @@ const SECRET_PATTERNS = [/(?:api[_-]?key|token|secret|password)[=:]\s*\S+/gi];
 
 ```javascript
 const SECRET_PATTERNS = [
-  // Double-quoted values first (handles escaped quotes, requires nonempty)
-  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*"([^"\\]|\\.)+"/gi,
+  // Double-quoted values (handles JSON "key": "val", escaped quotes, nonempty)
+  /(?:"?(?:api[_-]?key|token|secret|password|auth|credential)"?\s*[=:]\s*)"([^"\\]|\\.)+"/gi,
   // Single-quoted values
-  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*'[^']+'/gi,
+  /(?:"?(?:api[_-]?key|token|secret|password|auth|credential)"?\s*[=:]\s*)'[^']+'/gi,
   // Unquoted values (bounded delimiter class, min 2 chars)
-  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*[^\s"',;)\]}]{2,}/gi,
+  /(?:"?(?:api[_-]?key|token|secret|password|auth|credential)"?\s*[=:]\s*)[^\s"',;)\]}]{2,}/gi,
 ];
 ```
 

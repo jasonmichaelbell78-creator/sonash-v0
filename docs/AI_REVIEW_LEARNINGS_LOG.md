@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.71 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.72 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1333,6 +1333,43 @@ AST walker (Object.keys + recurse) > hand-enumerated types. (5) Lazy quantifiers
 **Verdict:** Inefficient but productive — 12 rounds, ~153 fixes, ~42% avoidable.
 Single highest-impact change: split large PRs. Second: create ESLint rule
 template with built-in ChainExpression/walker/CC patterns.
+
+---
+
+### Review #397: PR #395 R2 (2026-02-26)
+
+- **Source**: Qodo PR Suggestions (8)
+- **PR**: PR #395 — retro action items, secret redaction hardening
+- **Items**: 8 unique → 7 fixed, 0 deferred, 1 rejected
+
+#### Security Fixes (2)
+
+1. **sanitize-error.js + sanitize-input.js: JSON key quoting** — Added `"?`
+   around keyword names to handle JSON format `"token": "value"`. Both files
+   updated consistently. (Qodo impact 9)
+
+#### TDMS Data Quality Fixes (5)
+
+2. **DEBT-7598**: Added missing `source: "intake"` field
+3. **DEBT-7603**: Anchored file/line from source_file metadata
+4. **DEBT-7606/7607**: Merged duplicate "Medium Severity" entries into single
+   canonical entry
+5. **DEBT-7609**: Fixed line metadata (0 → 4)
+6. **DEBT-7611**: Fixed truncated title (removed trailing "and"), line 0 → 5
+
+All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl.
+
+#### Rejected (1)
+
+7. **DEBT-7595 roadmap_ref null→""** — Rejected. We standardized on `null` for
+   empty optional fields in R1. The `""` convention is inconsistent with the
+   rest of the file.
+
+#### Patterns
+
+- **JSON format coverage**: Secret redaction must handle `"key": "value"` not
+  just `key=value`. The `"?` wrapper around keyword names handles both formats.
+- **FIX_TEMPLATE #45 updated**: Reflected JSON key handling in template.
 
 ---
 
