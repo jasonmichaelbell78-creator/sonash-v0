@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-25 **Active Documents:** 326 **Archived Documents:** 103
+**Generated:** 2026-02-26 **Active Documents:** 326 **Archived Documents:** 103
 
 ---
 
@@ -1401,7 +1401,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-25 | Auto-generated from codebase scan |
+| Auto    | 2026-02-26 | Auto-generated from codebase scan |
 
 ---
 
