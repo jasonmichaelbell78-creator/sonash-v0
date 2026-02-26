@@ -1,6 +1,6 @@
 # Session Context
 
-**Document Version**: 6.0 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 6.1 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 2026-02-26 (Session #190)
 
@@ -58,9 +58,13 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 - ESLint AST migration: 25 regex patterns migrated to `eslint-plugin-sonash`
   v3.0 (Phases 1-2 complete)
 - PR #394 R1 review: 86 items parsed, 42 fixed, 16 enhancement suggestions
-  analyzed (see `.claude/plans/ESLINT_ENHANCEMENT_SUGGESTIONS_PLAN.md`)
+- PR #394 R2 review: 8 fixed (3 CC reductions, 3 optional chains,
+  isInsideTryBlock parent traversal, JSONL parse warnings), 7 deferred to plan
+- 393 CI blocking violations investigated — all pre-existing across 20 files
+- Plan expanded: `ESLINT_AND_COMPLIANCE_FIX_PLAN.md` (18 items: 7 compliance
+  P0 + 11 ESLint P1-P3)
 - DEBT-7595, DEBT-7596 created for 2 deferred Qodo suggestions
-- Learning log Review #369 added
+- Learning log Reviews #369, #385 added
 - TDMS: 4,628 items (238 resolved)
 
 **Session #189** (OVER-ENGINEERING AUDIT):
@@ -105,7 +109,7 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 
 **Current Branch**: `claude/new-session-6YdAQ`
 
-**Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
+**Test Status**: 99.6% pass rate (282/283 tests passing, 1 skipped)
 
 ---
 
@@ -113,9 +117,13 @@ Modified**: hooks, settings, docs, STATE_SCHEMA, MEMORY, SESSION_CONTEXT
 
 ### Immediate Priority (Next Session)
 
-1. **ESLint enhancement suggestions plan** — 11 items ready for implementation
-   (see `.claude/plans/ESLINT_ENHANCEMENT_SUGGESTIONS_PLAN.md`), ~2-3 hours
-2. **PR #394 merge** — review cycle in progress, may need R2 fixes
+1. **ESLint + Compliance fix plan** — 18 items (7 P0 compliance blockers + 11
+   ESLint enhancements), ~5-8 hours across 1-2 sessions. See
+   `.claude/plans/ESLINT_AND_COMPLIANCE_FIX_PLAN.md`
+   - Phase 1 (P0): Fix 393 CI blocking violations (326 Array.isArray, 42
+     symlink, 11 rename, 6 rmSync, 6 isSafeToWrite, 1 exec, 1 path.join)
+   - Phase 2 (P1-P3): 8 remaining ESLint enhancements (3 already done in R2)
+2. **PR #394 merge** — blocked by Phase 1 compliance violations
 3. **Over-engineering findings** — #3-#15 resolved; may need follow-up on
    deferred items (#3 audit skills, #7+ low-priority)
 
@@ -190,5 +198,5 @@ npm run docs:check   # Documentation linting
 
 ---
 
-**END OF SESSION_CONTEXT.md** | **Version**: 6.0 (2026-02-26) |
+**END OF SESSION_CONTEXT.md** | **Version**: 6.1 (2026-02-26) |
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)
