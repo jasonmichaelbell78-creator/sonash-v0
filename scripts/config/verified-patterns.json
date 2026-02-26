@@ -11,10 +11,11 @@
     "structural-compliance.js",
     "cicd-pipeline.js",
     "safety-error-handling.js",
-    "staleness-drift.js"
+    "staleness-drift.js",
+    "security-check.js"
   ],
   "write-without-symlink-guard": ["state-utils.js", "generate-views.js"],
-  "git-without-separator": ["surface-lessons-learned.js"],
+  "git-without-separator": ["surface-lessons-learned.js", "security-check.js"],
   "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
   "process-exit-without-cleanup": ["validate-schema.js"],
   "missing-array-isarray": ["validate-schema.js", "analyze-placement.js", "generate-views.js"],

@@ -68,7 +68,7 @@ const SECURITY_PATTERNS = [
     severity: "CRITICAL",
     message: "Potential hardcoded secret - use environment variables",
     fileTypes: [".js", ".ts", ".tsx", ".json"],
-    exclude: [/test/, /mock/, /example/, /\.d\.ts$/],
+    exclude: [/test/, /mock/, /example/, /\.d\.ts$/, /eslint-plugin-sonash/],
   },
   {
     id: "SEC-005",
@@ -172,7 +172,7 @@ function findPatternViolations(pattern, content, _lines, relativePath) {
     : pattern.pattern.flags + "g";
   const regex = new RegExp(pattern.pattern.source, flags);
 
-  // Global regexes: iterate all matches
+  // Global regexes: iterate all matches (/g flag ensured above)
   let match;
   while ((match = regex.exec(normalizedContent)) !== null) {
     const beforeMatch = normalizedContent.slice(0, match.index);
@@ -313,7 +313,7 @@ function getFilesToCheck(args) {
  */
 function getStagedFiles() {
   try {
-    const output = execSync("git diff --cached --name-only --diff-filter=ACMR", {
+    const output = execSync("git diff --cached --name-only --diff-filter=ACMR --", {
       cwd: PROJECT_ROOT,
       encoding: "utf8",
     });

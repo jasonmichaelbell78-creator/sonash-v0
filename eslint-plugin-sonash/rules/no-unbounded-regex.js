@@ -53,20 +53,22 @@ module.exports = {
   },
 
   create(context) {
+    function checkRegExpCall(node, callee, args) {
+      if (callee.type !== "Identifier" || callee.name !== "RegExp") return;
+      const firstArg = args[0];
+      if (!firstArg) return;
+      const parts = getStaticParts(firstArg);
+      if (parts.some((p) => hasUnboundedDot(p))) {
+        context.report({ node, messageId: "unboundedRegex" });
+      }
+    }
+
     return {
       NewExpression(node) {
-        // Check for new RegExp(...)
-        if (node.callee.type !== "Identifier" || node.callee.name !== "RegExp") {
-          return;
-        }
-
-        const firstArg = node.arguments[0];
-        if (!firstArg) return;
-
-        const parts = getStaticParts(firstArg);
-        if (parts.some((p) => hasUnboundedDot(p))) {
-          context.report({ node, messageId: "unboundedRegex" });
-        }
+        checkRegExpCall(node, node.callee, node.arguments);
+      },
+      CallExpression(node) {
+        checkRegExpCall(node, node.callee, node.arguments);
       },
     };
   },

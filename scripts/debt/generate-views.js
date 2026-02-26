@@ -579,14 +579,22 @@ function ingestFromDeduped(masterItems) {
     return 0;
   }
 
-  const { idMap, maxId } = loadExistingItems();
-  let nextId = maxId + 1;
+  const { idMap } = loadExistingItems();
+  const maxIdFromMaster = masterItems.reduce((max, item) => {
+    const id = typeof item.id === "string" ? item.id : "";
+    const m = /^DEBT-(\d+)$/.exec(id);
+    if (!m) return max;
+    const n = Number(m[1]);
+    return Number.isFinite(n) ? Math.max(max, n) : max;
+  }, 0);
+  let nextId = maxIdFromMaster + 1;
 
   let content;
   try {
     content = fs.readFileSync(INPUT_FILE, "utf8");
-  } catch {
-    console.warn("  ⚠️ Cannot read deduped.jsonl — skipping ingest");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`  ⚠️ Cannot read deduped.jsonl (${errMsg}) — skipping ingest`);
     return 0;
   }
   const lines = content.split("\n").filter((line) => line.trim());

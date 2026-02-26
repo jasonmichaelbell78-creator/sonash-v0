@@ -6,6 +6,35 @@
 
 "use strict";
 
+const { unwrapNode } = require("../lib/ast-utils");
+
+/** Check if the first arg is a safe static input (literal or empty template) */
+function isSafeStaticInput(arg) {
+  if (arg.type === "Literal") return true;
+  return arg.type === "TemplateLiteral" && arg.expressions.length === 0;
+}
+
+/** Check if the result variable name suggests the input is already escaped */
+function isEscapedVariable(node) {
+  const parent = node.parent;
+  if (parent?.type !== "VariableDeclarator" || parent.init !== node) return false;
+  const varName = parent.id.type === "Identifier" ? parent.id.name : "";
+  return /escape/i.test(varName);
+}
+
+/** Check if the argument is a call to an escapeRegExp-like helper */
+function isEscapeHelper(arg) {
+  if (arg.type !== "CallExpression") return false;
+  const unwrapped = unwrapNode(arg.callee);
+  if (unwrapped.type === "Identifier") {
+    return /escape.*regexp/i.test(unwrapped.name);
+  }
+  if (unwrapped.type === "MemberExpression" && unwrapped.property?.type === "Identifier") {
+    return /escape.*regexp/i.test(unwrapped.property.name);
+  }
+  return false;
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -24,44 +53,16 @@ module.exports = {
   create(context) {
     return {
       NewExpression(node) {
-        // Check for new RegExp(...)
         if (node.callee.type !== "Identifier" || node.callee.name !== "RegExp") {
           return;
         }
 
         const firstArg = node.arguments[0];
         if (!firstArg) return;
+        if (isSafeStaticInput(firstArg)) return;
+        if (firstArg.type === "Identifier" && isEscapedVariable(node)) return;
+        if (isEscapeHelper(firstArg)) return;
 
-        // Skip safe literal inputs
-        if (firstArg.type === "Literal") return;
-        // Skip plain template literals with no expressions
-        if (firstArg.type === "TemplateLiteral" && firstArg.expressions.length === 0) return;
-
-        // Check if the result variable name suggests the input is already escaped
-        if (firstArg.type === "Identifier") {
-          const parent = node.parent;
-          if (parent?.type === "VariableDeclarator" && parent?.init === node) {
-            const varName = parent.id.type === "Identifier" ? parent.id.name : "";
-            if (/escape/i.test(varName)) return;
-          }
-        }
-
-        // Allow common explicit escaping helpers (e.g., escapeRegExp(input))
-        if (firstArg.type === "CallExpression") {
-          const argCallee = firstArg.callee;
-          const unwrapped = argCallee.type === "ChainExpression" ? argCallee.expression : argCallee;
-          if (
-            (unwrapped.type === "Identifier" && /escape.*regexp/i.test(unwrapped.name)) ||
-            (unwrapped.type === "MemberExpression" &&
-              unwrapped.property?.type === "Identifier" &&
-              /escape.*regexp/i.test(unwrapped.property.name))
-          ) {
-            return;
-          }
-        }
-
-        // Flag: Identifier, MemberExpression, template literals with expressions,
-        // or string concatenation with non-literal parts
         context.report({ node, messageId: "unescapedInput" });
       },
     };

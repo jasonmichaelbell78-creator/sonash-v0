@@ -348,6 +348,15 @@ accumulate.
 > markdown during this period.
 
 <details>
+<summary>Previous Consolidation (#3)</summary>
+
+- **Date:** 2026-02-26
+- **Reviews consolidated:** #380-#391
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#1)</summary>
 
 - **Date:** 2026-02-26
@@ -1239,6 +1248,32 @@ from JSONL max.
 
 _Incorporated into PR #391 dual retro above. See "Review Cycle Summary — PR
 #390" section._
+
+---
+
+### Review #392: PR #394 R9 (2026-02-26)
+
+- **Source**: SonarCloud (4), CI (1 — SEC-004 false positive), Qodo Compliance
+  (2), Qodo PR Suggestions (8)
+- **PR**: PR #394 — ESLint plugin + TDMS script robustness round
+- **Items**: 15 unique → 13 fixed, 2 rejected (stale)
+- **Fixed**: (1) SEC-004 false positive — add eslint-plugin-sonash to exclude
+  list; (2) CC 16→15 on `getCalleeName()` — extract `unwrapNode()` helper; (3)
+  CC 22→15 on `no-unescaped-regexp-input` — extract `isEscapedInput()` and
+  `isEscapeHelper()` helpers; (4) `hasRenameSyncNearby()` now validates rename
+  is from .tmp file; (5) `no-unbounded-regex` also checks `RegExp()` call form;
+  (6) `no-unsafe-innerhtml` catches computed `el['innerHTML']`; (7)
+  `hasStringInterpolation` if-then-else → single return; (8)
+  `no-unsafe-division` optional chain; (9) generate-views.js swallowed error →
+  log error info; (10) `normalizeCategory()` trims input; (11)
+  `hasInstanceofErrorCheck` recognizes Error subclass guards; (12)
+  `ingestFromDeduped` derives maxId from in-memory masterItems; (13)
+  generate-views.js JSONL log sanitized
+- **Rejected**: (A) `hasStringInterpolation` "incomplete" — function was already
+  complete (stale review); (B) "Fix escaping guidance" — regex in message was
+  already correctly escaped
+- **Patterns**: CC reduction via helper extraction; security scanner exclusion
+  for rule files; optional chaining simplification
 
 ---
 

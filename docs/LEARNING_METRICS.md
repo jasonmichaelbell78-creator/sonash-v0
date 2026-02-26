@@ -33,36 +33,36 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 93.1% |
+| Learning Effectiveness    | 92.0% |
 | Patterns Learned          | 294   |
-| Patterns Automated        | 30    |
-| Patterns Failing          | 1     |
-| Critical Pattern Success  | 95.2% |
-| Automation Coverage       | 21.0% |
+| Patterns Automated        | 26    |
+| Patterns Failing          | 2     |
+| Critical Pattern Success  | 92.8% |
+| Automation Coverage       | 13.8% |
 | Total Documented Patterns | 348   |
-| Total Automated Patterns  | 73    |
+| Total Automated Patterns  | 48    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Signal error code semantics"
+1. **[Automation]** Automate "Safe percentage"
+   - Recurred 5 times after documentation \(Reviews: 358, 360, 366, 369, 371\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+2. **[Automation]** Automate "Signal error code semantics"
    - Recurred 3 times after documentation \(Reviews: 358, 360, 361\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Documentation]** Improve documentation for "Input length DoS"
+3. **[Documentation]** Improve documentation for "Input length DoS"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-3. **[Documentation]** Improve documentation for "Relative path logging"
+4. **[Documentation]** Improve documentation for "Relative path logging"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-4. **[Training]** Create guide for "Segment\-based path check"
+5. **[Training]** Create guide for "Segment\-based path check"
    - Critical pattern with 5 recurrences needs dedicated guide
    - Action: Create docs/agent_docs/SEGMENT_BASED_PATH_CHECK_GUIDE.md
-
-5. **[Training]** Create guide for "Atomic write tmp guard"
-   - Critical pattern with 4 recurrences needs dedicated guide
-   - Action: Create docs/agent_docs/ATOMIC_WRITE_TMP_GUARD_GUIDE.md
 
 ---
 
@@ -71,9 +71,9 @@ This is a **Tier 2 metrics document** - reference during:
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
 | ✅ LEARNED   | 294   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 30    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 23    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 1     | Pattern recurred 3+ times - needs automation |
+| 🔧 AUTOMATED | 26    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 26    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 2     | Pattern recurred 3+ times - needs automation |
 
 ---
 

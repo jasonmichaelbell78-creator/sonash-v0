@@ -60,6 +60,17 @@ function containsCallTo(node, funcName) {
   return found;
 }
 
+function containsRenameSyncFromTmp(node) {
+  let found = false;
+  walkAstNodes(node, (n) => {
+    if (found) return;
+    if (n.type !== "CallExpression" || getCalleeName(n.callee) !== "renameSync") return;
+    const firstArg = n.arguments?.[0];
+    if (firstArg && isWritingToTmpFile(firstArg)) found = true;
+  });
+  return found;
+}
+
 function hasRenameSyncNearby(block, targetNode) {
   const body = block.body;
   if (!Array.isArray(body)) return false;
@@ -71,10 +82,10 @@ function hasRenameSyncNearby(block, targetNode) {
   }
   const writeIndex = body.indexOf(containingStmt);
 
-  // Check statements after the write for renameSync (the atomic rename step)
+  // Check statements after the write for renameSync from a .tmp file (atomic rename step)
   const startIndex = writeIndex === -1 ? 0 : writeIndex + 1;
   for (let i = startIndex; i < body.length; i++) {
-    if (containsCallTo(body[i], "renameSync")) return true;
+    if (containsRenameSyncFromTmp(body[i])) return true;
   }
   return false;
 }

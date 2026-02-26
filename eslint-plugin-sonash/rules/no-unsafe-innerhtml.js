@@ -26,11 +26,13 @@ module.exports = {
       AssignmentExpression(node) {
         const left = node.left;
 
-        if (
-          left.type !== "MemberExpression" ||
-          left.property.type !== "Identifier" ||
-          left.property.name !== "innerHTML"
-        ) {
+        const isInnerHtmlProp =
+          (left.property?.type === "Identifier" && left.property.name === "innerHTML") ||
+          (left.computed &&
+            left.property?.type === "Literal" &&
+            left.property.value === "innerHTML");
+
+        if (left.type !== "MemberExpression" || !isInnerHtmlProp) {
           return;
         }
 

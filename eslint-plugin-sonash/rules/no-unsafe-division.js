@@ -8,7 +8,7 @@
 
 /** Extract the variable name from the left/right side of a > 0 or < 0 check */
 function getCheckedName(test) {
-  if (!test || test.type !== "BinaryExpression") return null;
+  if (test?.type !== "BinaryExpression") return null;
   let nameNode;
   if (test.operator === ">" && test.right?.type === "Literal" && test.right.value === 0) {
     nameNode = test.left;

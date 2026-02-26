@@ -49,6 +49,10 @@ function walkAst(node, visitor) {
 /**
  * Check if a node contains an instanceof Error check for the given parameter name.
  */
+function isErrorClass(node) {
+  return node?.type === "Identifier" && /Error$/.test(node.name);
+}
+
 function hasInstanceofErrorCheck(blockBody, paramName) {
   let found = false;
 
@@ -59,8 +63,7 @@ function hasInstanceofErrorCheck(blockBody, paramName) {
       node.operator === "instanceof" &&
       node.left.type === "Identifier" &&
       node.left.name === paramName &&
-      node.right.type === "Identifier" &&
-      node.right.name === "Error"
+      isErrorClass(node.right)
     ) {
       found = true;
     }

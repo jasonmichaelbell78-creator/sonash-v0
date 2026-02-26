@@ -5,6 +5,25 @@
 
 "use strict";
 
+const WRAPPER_TYPES = new Set([
+  "ChainExpression",
+  "TSNonNullExpression",
+  "TSAsExpression",
+  "TSSatisfiesExpression",
+  "TSInstantiationExpression",
+]);
+
+/**
+ * Unwrap ChainExpression, TS-ESTree wrappers, etc. to the inner expression.
+ */
+function unwrapNode(node) {
+  let current = node;
+  while (current && WRAPPER_TYPES.has(current.type)) {
+    current = current.expression;
+  }
+  return current;
+}
+
 /**
  * Extract the function name from a CallExpression callee node.
  * Handles Identifier (bare calls), MemberExpression (obj.method),
@@ -13,16 +32,7 @@
  */
 function getCalleeName(callee) {
   if (!callee) return null;
-  // Unwrap wrapper nodes: optional chaining + TS-ESTree wrappers
-  let node = callee;
-  while (node) {
-    if (node.type === "ChainExpression") node = node.expression;
-    else if (node.type === "TSNonNullExpression") node = node.expression;
-    else if (node.type === "TSAsExpression") node = node.expression;
-    else if (node.type === "TSSatisfiesExpression") node = node.expression;
-    else if (node.type === "TSInstantiationExpression") node = node.expression;
-    else break;
-  }
+  const node = unwrapNode(callee);
   if (node.type === "Identifier") {
     return node.name;
   }
@@ -75,13 +85,10 @@ function hasStringInterpolation(argNode) {
   if (argNode.type === "BinaryExpression" && argNode.operator === "+") {
     const left = argNode.left;
     const right = argNode.right;
-    // If both sides are static strings, this is safe — not interpolation
     const isStatic = (n) =>
       (n.type === "Literal" && typeof n.value === "string") ||
       (n.type === "TemplateLiteral" && n.expressions.length === 0);
-    if (isStatic(left) && isStatic(right)) return false;
-    // Otherwise, dynamic concatenation is interpolation
-    return true;
+    return !(isStatic(left) && isStatic(right));
   }
   // Recurse into conditional/logical expressions to catch nested interpolation
   if (argNode.type === "ConditionalExpression") {
@@ -94,6 +101,7 @@ function hasStringInterpolation(argNode) {
 }
 
 module.exports = {
+  unwrapNode,
   getCalleeName,
   getEnclosingScope,
   hasStringInterpolation,
