@@ -33,13 +33,13 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 91.6% |
-| Patterns Learned          | 302   |
+| Learning Effectiveness    | 91.7% |
+| Patterns Learned          | 304   |
 | Patterns Automated        | 26    |
 | Patterns Failing          | 11    |
-| Critical Pattern Success  | 93.5% |
-| Automation Coverage       | 13.7% |
-| Total Documented Patterns | 358   |
+| Critical Pattern Success  | 93.6% |
+| Automation Coverage       | 13.6% |
+| Total Documented Patterns | 360   |
 | Total Automated Patterns  | 49    |
 
 ### Top Recommended Actions
@@ -70,7 +70,7 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 302   | Pattern never recurred after documentation   |
+| ✅ LEARNED   | 304   | Pattern never recurred after documentation   |
 | 🔧 AUTOMATED | 26    | Pattern recurred but now enforced by tooling |
 | 🟡 WEAK      | 19    | Pattern recurred 1-2 times - needs attention |
 | 🔴 FAILED    | 11    | Pattern recurred 3+ times - needs automation |
