@@ -256,12 +256,6 @@ function isValidFilePath(filePath) {
   if (f.endsWith("/") || f.endsWith("\\")) return false;
   // Must contain a dot (file extension) or a path separator
   if (!f.includes(".") && !f.includes("/") && !f.includes("\\")) return false;
-  // Warn-level: if path has a slash but no dot after the last slash, it might be a directory
-  const lastSlash = Math.max(f.lastIndexOf("/"), f.lastIndexOf("\\"));
-  if (lastSlash >= 0) {
-    const basename = f.substring(lastSlash + 1);
-    if (!basename.includes(".")) return false;
-  }
   return true;
 }
 
@@ -334,14 +328,11 @@ function checkRequiredFields(mappedItem) {
 
     // Detect file:linenum pattern left after normalization and split it out
     const lineNumMatch = normalizedFile.match(/^(.+):(\d+)$/);
-    if (lineNumMatch) {
+    if (lineNumMatch && isValidFilePath(lineNumMatch[1])) {
       mappedItem.file = lineNumMatch[1];
       if (mappedItem.line === undefined || mappedItem.line === 0) {
         mappedItem.line = Number.parseInt(lineNumMatch[2], 10);
       }
-      warnings.push(
-        `Extracted line number from file path: "${normalizedFile}" → file="${mappedItem.file}", line=${lineNumMatch[2]}`
-      );
     }
 
     if (!isValidFilePath(mappedItem.file)) {
@@ -363,16 +354,16 @@ function checkRequiredFields(mappedItem) {
   // Validate verified_by type: must be a string (not boolean or number) if present
   if (mappedItem.verified_by !== undefined && mappedItem.verified_by !== null) {
     if (typeof mappedItem.verified_by !== "string") {
-      warnings.push(
-        `verified_by has wrong type: expected string, got ${typeof mappedItem.verified_by} (${JSON.stringify(mappedItem.verified_by)})`
-      );
       if (mappedItem.verified_by === true) {
         mappedItem.verified_by = "auto";
+        warnings.push(`verified_by coerced from boolean true → "auto"`);
       } else if (mappedItem.verified_by === false) {
         mappedItem.verified_by = null;
+        warnings.push(`verified_by coerced from boolean false → null (not verified)`);
       } else {
-        // Coerce other types (e.g., number) to string
-        mappedItem.verified_by = String(mappedItem.verified_by);
+        const coerced = String(mappedItem.verified_by);
+        warnings.push(`verified_by coerced from ${typeof mappedItem.verified_by} → "${coerced}"`);
+        mappedItem.verified_by = coerced;
       }
     }
   }

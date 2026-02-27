@@ -909,7 +909,10 @@ function runSyncMode(content) {
     }
   }
 
-  const maxExistingId = Math.max(0, ...existingIds);
+  let maxExistingId = 0;
+  for (const id of existingIds) {
+    if (id > maxExistingId) maxExistingId = id;
+  }
   let nextOffset = 1;
 
   for (const review of mdReviews) {
@@ -918,8 +921,9 @@ function runSyncMode(content) {
     const existing = existingById.get(review.id);
     if (!existing) continue; // id in set but object missing — treat as no collision
 
-    // Content match check: same title AND same PR means identical review, not a collision.
-    const sameContent = existing.title === review.title && existing.pr === review.pr;
+    // Content match check: same title, PR, and date means identical review, not a collision.
+    const sameContent =
+      existing.title === review.title && existing.pr === review.pr && existing.date === review.date;
     if (sameContent) continue;
 
     // True collision — different content under the same review number.
@@ -929,7 +933,7 @@ function runSyncMode(content) {
     review.id = newId;
     // Track the new id so subsequent collisions won't reuse it
     existingIds.add(newId);
-    console.log(`  \u26a0\ufe0f  Review #${oldId} renumbered to #${newId} (collision)`);
+    console.log(`  ⚠️  Review #${oldId} renumbered to #${newId} (collision)`);
   }
   // --- End DEBT-7582 ---
 
