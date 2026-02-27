@@ -1,0 +1,69 @@
+# Clean up stale branches from merged PRs
+# Runs weekly and deletes branches that were merged > 7 days ago
+name: Cleanup Stale Branches
+
+on:
+  schedule:
+    # Every Monday at 6am UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete merged branches
+        run: |
+          echo "Fetching merged branches..."
+          # Get branches merged into main, excluding main itself and current branch
+          MERGED=$(git branch -r --merged origin/main | grep -v 'main$' | grep -v HEAD | sed 's/origin\///')
+
+          if [ -z "$MERGED" ]; then
+            echo "No merged branches to clean up."
+            exit 0
+          fi
+
+          echo "Found merged branches:"
+          echo "$MERGED"
+          echo ""
+
+          DELETED=0
+          SKIPPED=0
+
+          for branch in $MERGED; do
+            # Skip protected patterns
+            if echo "$branch" | grep -qE '^(main|develop|release/)'; then
+              echo "  SKIP (protected): $branch"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
+            # Check if branch was merged more than 7 days ago
+            LAST_COMMIT_DATE=$(git log -1 --format=%ci "origin/$branch" 2>/dev/null || echo "")
+            if [ -z "$LAST_COMMIT_DATE" ]; then
+              echo "  SKIP (no date): $branch"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
+            DAYS_AGO=$(( ($(date +%s) - $(date -d "$LAST_COMMIT_DATE" +%s)) / 86400 ))
+            if [ "$DAYS_AGO" -lt 7 ]; then
+              echo "  SKIP (${DAYS_AGO}d old): $branch"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
+            echo "  DELETE (${DAYS_AGO}d old): $branch"
+            git push origin --delete "$branch" 2>/dev/null || echo "    Failed to delete $branch"
+            DELETED=$((DELETED + 1))
+          done
+
+          echo ""
+          echo "Summary: $DELETED deleted, $SKIPPED skipped"
