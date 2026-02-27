@@ -329,13 +329,16 @@ function parseMarkdownReviews(content) {
       }
     }
 
-    // Format 3: inline patterns after **Pattern(s):** header (semicolon-separated)
+    // Format 3: inline patterns after **Pattern(s):** header (semicolon-/comma-separated)
     // Matches "**Pattern:**" or "**Patterns:**" but not other bold labels
-    const inlinePatternMatch = /\*\*Patterns?:?\*\*:?\s+([A-Z][^\n]+)/.exec(raw);
+    const inlinePatternMatch = /\*\*Patterns?:?\*\*:?\s+([^\n]+)/i.exec(raw);
     if (inlinePatternMatch) {
       const inlineText = inlinePatternMatch[1].trim();
-      // Split on semicolons for multiple patterns
-      const parts = inlineText.includes(";") ? inlineText.split(";") : [inlineText];
+      // Split on semicolons or commas for multiple patterns
+      const parts = inlineText
+        .split(/[;,]/)
+        .map((s) => s.trim())
+        .filter(Boolean);
       for (const part of parts) {
         const pattern = part
           .trim()
@@ -758,8 +761,9 @@ function runRepairMode(content) {
   }
 
   // Load from active log + all archive files for complete coverage
+  // Active log first: wins dedup on ID collisions (newer data takes priority)
   const archiveContent = loadArchiveContent();
-  const combinedContent = archiveContent + "\n" + content;
+  const combinedContent = content + "\n" + archiveContent;
   log(`  📚 Reading from active log + archive files`);
 
   const reviews = parseMarkdownReviews(combinedContent);

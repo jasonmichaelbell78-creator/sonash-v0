@@ -199,6 +199,76 @@ function breakStaleLock(lockPath) {
 }
 
 /**
+ * Guard: throw if `lockPath` is an existing symlink. ENOENT (no file) is fine.
+ *
+ * @param {string} lockPath - Absolute path to the lock file
+ * @throws {Error} If lockPath is a symlink or stat fails for a reason other than ENOENT
+ */
+function guardLockSymlink(lockPath) {
+  try {
+    if (fs.lstatSync(lockPath).isSymbolicLink()) {
+      throw new Error(`Refusing to create lock over symlink: ${lockPath}`);
+    }
+  } catch (statErr) {
+    if (statErr.code !== "ENOENT") throw statErr;
+    // ENOENT is fine — the lock file does not exist yet
+  }
+}
+
+/**
+ * Check whether an existing lock is still held by a live process.
+ * Returns `true` if the lock holder is still alive (lock is valid),
+ * `false` if the lock is stale and safe to break.
+ *
+ * Handles NaN/invalid timestamps by treating them as stale.
+ * On same-host locks, verifies the PID is still running before breaking.
+ *
+ * @param {object} existing - Parsed lock file contents
+ * @returns {boolean} true if lock holder is alive
+ */
+function isLockHolderAlive(existing) {
+  const ts = Number(existing && existing.timestamp);
+  const ageMs = Number.isFinite(ts) ? Date.now() - ts : LOCK_STALE_MS + 1;
+  if (ageMs <= LOCK_STALE_MS) return true; // not stale yet
+
+  // Stale by age — check if same host and PID still alive
+  const sameHost = String(existing.hostname || "") === os.hostname();
+  if (sameHost && typeof existing.pid === "number") {
+    try {
+      process.kill(existing.pid, 0); // signal 0 = existence check
+      return true; // process still running despite old timestamp
+    } catch {
+      // Process doesn't exist — confirmed stale
+    }
+  }
+  return false; // stale: old + either different host or dead process
+}
+
+/**
+ * Attempt to break an existing lock if it's stale.
+ * Returns `true` if the lock was broken (caller should retry),
+ * `false` if the lock is still validly held.
+ *
+ * @param {string} lockPath - Absolute path to the lock file
+ * @returns {boolean} true if lock was broken
+ */
+function tryBreakExistingLock(lockPath) {
+  try {
+    const existing = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+    if (isLockHolderAlive(existing)) return false; // lock is valid
+    breakStaleLock(lockPath);
+    return true;
+  } catch (readErr) {
+    // Can't read/parse lock file — log and attempt removal
+    process.stderr.write(
+      `[safe-fs] WARNING: unreadable lock file (${readErr.code || readErr.message}), removing: ${lockPath}\n`
+    );
+    breakStaleLock(lockPath);
+    return true;
+  }
+}
+
+/**
  * Acquire an advisory lock on `filePath`.
  * Creates `${filePath}.lock` containing `{ pid, timestamp, hostname }`.
  * Spins up to `timeoutMs` waiting for an existing lock to clear.
@@ -217,51 +287,22 @@ function acquireLock(filePath, timeoutMs) {
     timestamp: Date.now(),
     hostname: os.hostname(),
   });
-
   const deadline = Date.now() + timeout;
 
   while (true) {
-    // Guard: refuse to write if lockPath is already a symlink
-    try {
-      if (fs.lstatSync(lockPath).isSymbolicLink()) {
-        throw new Error(`Refusing to create lock over symlink: ${lockPath}`);
-      }
-    } catch (statErr) {
-      if (statErr.code !== "ENOENT") throw statErr;
-      // ENOENT is fine — the lock file does not exist yet
-    }
-
+    guardLockSymlink(lockPath);
     try {
       // O_EXCL: fail if file already exists (atomic create)
       fs.writeFileSync(lockPath, lockData, { flag: "wx" });
       return lockPath;
     } catch (err) {
       if (err.code !== "EEXIST") throw err;
-
-      // Lock exists — check if stale
-      try {
-        const existing = JSON.parse(fs.readFileSync(lockPath, "utf8"));
-        if (Date.now() - existing.timestamp > LOCK_STALE_MS) {
-          // Stale lock — force-break it (symlink-safe)
-          breakStaleLock(lockPath);
-          continue; // retry immediately
-        }
-      } catch (readErr) {
-        // Can't read/parse lock file — log and attempt removal
-        process.stderr.write(
-          `[safe-fs] WARNING: unreadable lock file (${readErr.code || readErr.message}), removing: ${lockPath}\n`
-        );
-        breakStaleLock(lockPath);
-        continue;
-      }
-
+      if (tryBreakExistingLock(lockPath)) continue; // stale → retry
       if (Date.now() >= deadline) {
         throw new Error(
           `Lock timeout: could not acquire lock on ${path.basename(filePath)} within ${timeout}ms`
         );
       }
-
-      // Sleep without busy-spin
       sleepSync(LOCK_SPIN_MS);
     }
   }
@@ -330,6 +371,9 @@ function writeMasterDebtSync(items, options) {
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   withLock(masterPath, () => {
+    fs.mkdirSync(path.dirname(masterPath), { recursive: true });
+    fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
+
     // Atomic write to MASTER
     const tmpPath = `${masterPath}.tmp.${process.pid}`;
     try {
@@ -376,6 +420,9 @@ function appendMasterDebtSync(newItems, options) {
   const content = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   withLock(masterPath, () => {
+    fs.mkdirSync(path.dirname(masterPath), { recursive: true });
+    fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
+
     safeAppendFileSync(masterPath, content);
     safeAppendFileSync(dedupedPath, content);
   });

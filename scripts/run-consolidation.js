@@ -496,15 +496,14 @@ function updateVersionHistory(content, newPatterns, consolidationNumber, range, 
   const patternNames = newPatterns.map((p) => p.pattern).join(", ");
   const newRow = `| ${newVersion}     | ${today}   | **CONSOLIDATION #${consolidationNumber}:** Auto-added ${newPatterns.length} patterns (${patternNames}). Source: Reviews #${range.start}-#${range.end}. |`;
 
-  // Insert before the first version row
+  // Insert new row immediately after the table separator line (| --- |)
   const versionHeaderIdx = content.indexOf("## Version History");
   if (versionHeaderIdx !== -1) {
-    const firstRowIdx = content.indexOf("\n|", content.indexOf("| ---", versionHeaderIdx));
-    if (firstRowIdx !== -1) {
-      const nextRowStart = content.indexOf("\n|", firstRowIdx + 1);
-      if (nextRowStart !== -1) {
-        content =
-          content.slice(0, nextRowStart + 1) + newRow + "\n" + content.slice(nextRowStart + 1);
+    const sepIdx = content.indexOf("| ---", versionHeaderIdx);
+    if (sepIdx !== -1) {
+      const sepLineEnd = content.indexOf("\n", sepIdx);
+      if (sepLineEnd !== -1) {
+        content = content.slice(0, sepLineEnd + 1) + newRow + "\n" + content.slice(sepLineEnd + 1);
       }
     }
   }

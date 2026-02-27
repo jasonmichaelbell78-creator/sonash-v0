@@ -1746,6 +1746,37 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #401: Maintenance PR R2 (2026-02-27)
+
+- **Source**: SonarCloud (1) + Qodo Compliance (5) + Qodo PR Suggestions (15)
+- **PR**: Maintenance — pipeline repair + deep-plan automation + TDMS refresh
+- **Items**: 19 unique → 8 fixed, 8 deferred (JSONL metadata), 4 rejected
+  (compliance items for dev tool)
+- **Key fixes**:
+  - safe-fs.js: CRITICAL — acquireLock CC 22→~12 via 3 extracted helpers
+    (`guardLockSymlink`, `isLockHolderAlive`, `tryBreakExistingLock`)
+  - safe-fs.js: NaN-safe timestamp validation (`Number.isFinite`) prevents stale
+    lock detection from breaking on corrupted lock data
+  - safe-fs.js: PID-alive check (`process.kill(pid, 0)`) prevents breaking locks
+    held by live processes on the same host
+  - safe-fs.js: mkdirSync for output directories in dual-write functions
+  - sync-reviews-to-jsonl.js: Active log concatenated BEFORE archive so newer
+    data wins dedup on ID collisions (data loss prevention)
+  - sync-reviews-to-jsonl.js: Inline pattern regex now case-insensitive with
+    comma+semicolon splitting
+  - run-consolidation.js: Version row insertion uses separator line anchor
+    instead of fragile multi-skip logic
+  - normalized-all.jsonl: Fixed 2 truncated titles ("...meetings.ts and")
+- **Rejections**: TOCTOU symlink (defense-in-depth, O_EXCL is real guard),
+  silent catches (intentional fail-safe), audit trails (dev tool), structured
+  logging (dev tool)
+- **Deferred**: 8 JSONL metadata quality items (line numbers, source locations,
+  duplicates, provenance) — auto-generated data, fix intake script instead
+- **Patterns**: CC-Extract-Helpers-Proactively; NaN-Safe-Timestamp-Validation;
+  Active-Log-Priority-Over-Archive; PID-Alive-Lock-Check
+
+---
+
 #### Review #400: Maintenance PR R1 (2026-02-27)
 
 - **Source**: SonarCloud (17) + Qodo Compliance (2) + Qodo PR Suggestions (18) +
