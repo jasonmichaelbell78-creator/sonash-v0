@@ -409,14 +409,12 @@ function checkArchiveReferenceAccuracy(rootDir) {
 function detectDuplicateReviewNumbers(rootDir) {
   const learningsPath = path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
   const archiveDir = path.join(rootDir, "docs", "archive");
-  const reviewIdRe = /^#{2,4}\s+Review\s+#(\d+)/gm;
   const allIds = [];
 
   function extractIds(content) {
-    let match;
-    const re = new RegExp(reviewIdRe.source, reviewIdRe.flags);
-    while ((match = re.exec(content)) !== null) {
-      allIds.push(parseInt(match[1], 10));
+    const matches = content.matchAll(/^#{2,4}\s+Review\s+#(\d+)/gm);
+    for (const m of matches) {
+      allIds.push(parseInt(m[1], 10));
     }
   }
 
