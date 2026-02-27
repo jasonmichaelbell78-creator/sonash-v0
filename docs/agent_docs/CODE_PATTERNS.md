@@ -448,6 +448,8 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | Number.isFinite guards        | Guard numeric inputs with `Number.isFinite(n)` before math operations      | NaN/Infinity propagate silently through calculations (Reviews #275-#277) |
 | 🟡       | Fail-closed validation        | Security validation functions must return `false` on error, never throw    | Exceptions bypass security checks entirely (Reviews #269, #271, #276)    |
 | 🟡       | Atomic write cleanup          | Add `try { fs.rmSync(tmpPath, { force: true }) } catch {}` in write catch  | Failed atomic writes leave orphan .tmp files (Reviews #283, #284)        |
+| 🔴       | Same-path rename guard        | Check `src === dest` before destructive rename (`rmSync` + `renameSync`)   | Self-rename deletes the only copy (PR #396 R2 — real data loss bug)      |
+| 🟡       | TDMS DEBT entry consistency   | Use `null` (not `""`) for empty optional fields; always include `source`   | Schema inconsistency causes TDMS pipeline failures (4x across PRs)       |
 
 ---
 

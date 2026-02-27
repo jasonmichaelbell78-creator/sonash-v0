@@ -189,6 +189,20 @@ grep -rn 'includes\|endsWith\|\.has(\|startsWith' scripts/ --include="*.js" | gr
 If any other files have the same gap, fix them in the same commit to prevent
 review ping-pong. See pr-retro Pattern 13 (Fix-One-Audit-All).
 
+### 18. Test-Production Regex Sync
+
+**Trigger:** PR modifies a regex in a checker or compliance script. After
+updating the production regex, verify that corresponding test files use the
+matching pattern. Regex changes that break tests cause avoidable review rounds.
+
+```bash
+# After modifying a regex in a checker script, find the corresponding test
+grep -rn 'pattern_you_changed' tests/ --include="*.test.*"
+```
+
+Source: PR #396 retro (Chain 1: test regex not updated with production regex,
+~0.5 avoidable rounds).
+
 ---
 
 ## STEP 0: CONTEXT LOADING

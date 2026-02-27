@@ -252,8 +252,16 @@ function isValidFilePath(filePath) {
   // Reject generic placeholders
   const placeholders = ["multiple", "various", "several", "unknown", "n/a", "tbd"];
   if (placeholders.includes(f.toLowerCase())) return false;
+  // Reject directory-only paths (trailing slash)
+  if (f.endsWith("/") || f.endsWith("\\")) return false;
   // Must contain a dot (file extension) or a path separator
   if (!f.includes(".") && !f.includes("/") && !f.includes("\\")) return false;
+  // Warn-level: if path has a slash but no dot after the last slash, it might be a directory
+  const lastSlash = Math.max(f.lastIndexOf("/"), f.lastIndexOf("\\"));
+  if (lastSlash >= 0) {
+    const basename = f.substring(lastSlash + 1);
+    if (!basename.includes(".")) return false;
+  }
   return true;
 }
 
@@ -323,9 +331,22 @@ function checkRequiredFields(mappedItem) {
     );
   } else if (normalizedFile) {
     mappedItem.file = normalizedFile;
-    if (!isValidFilePath(normalizedFile)) {
+
+    // Detect file:linenum pattern left after normalization and split it out
+    const lineNumMatch = normalizedFile.match(/^(.+):(\d+)$/);
+    if (lineNumMatch) {
+      mappedItem.file = lineNumMatch[1];
+      if (mappedItem.line === undefined || mappedItem.line === 0) {
+        mappedItem.line = Number.parseInt(lineNumMatch[2], 10);
+      }
       warnings.push(
-        `Invalid file path: "${normalizedFile}" (must be repo-relative and not contain unsafe segments)`
+        `Extracted line number from file path: "${normalizedFile}" → file="${mappedItem.file}", line=${lineNumMatch[2]}`
+      );
+    }
+
+    if (!isValidFilePath(mappedItem.file)) {
+      warnings.push(
+        `Invalid file path: "${mappedItem.file}" (must be repo-relative and not contain unsafe segments)`
       );
     }
   }
@@ -337,6 +358,23 @@ function checkRequiredFields(mappedItem) {
     warnings.push(
       `S0/S1 finding missing verification_steps (recommended for critical/high severity)`
     );
+  }
+
+  // Validate verified_by type: must be a string (not boolean or number) if present
+  if (mappedItem.verified_by !== undefined && mappedItem.verified_by !== null) {
+    if (typeof mappedItem.verified_by !== "string") {
+      warnings.push(
+        `verified_by has wrong type: expected string, got ${typeof mappedItem.verified_by} (${JSON.stringify(mappedItem.verified_by)})`
+      );
+      if (mappedItem.verified_by === true) {
+        mappedItem.verified_by = "auto";
+      } else if (mappedItem.verified_by === false) {
+        mappedItem.verified_by = null;
+      } else {
+        // Coerce other types (e.g., number) to string
+        mappedItem.verified_by = String(mappedItem.verified_by);
+      }
+    }
   }
 
   return { errors, warnings };
@@ -371,7 +409,7 @@ function validateAndNormalize(item, sourceFile) {
     status: "NEW",
     roadmap_ref: mappedItem.roadmap_ref || null,
     created: new Date().toISOString().split("T")[0],
-    verified_by: null,
+    verified_by: typeof mappedItem.verified_by === "string" ? mappedItem.verified_by : null,
     resolution: null,
   };
 

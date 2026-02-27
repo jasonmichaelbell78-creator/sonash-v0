@@ -888,6 +888,51 @@ function runSyncMode(content) {
   log(`  JSONL reviews existing: ${existingIds.size}`);
   log(`  JSONL retros existing:  ${existingRetroIds.size}`);
 
+  // --- DEBT-7582: Collision detection & auto-renumbering ---
+  // Load full JSONL review objects keyed by id for content comparison.
+  const existingById = new Map();
+  if (existsSync(REVIEWS_FILE)) {
+    try {
+      const jsonlRaw = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
+      if (jsonlRaw) {
+        for (const line of jsonlRaw.split("\n")) {
+          try {
+            const obj = JSON.parse(line);
+            if (typeof obj.id === "number") existingById.set(obj.id, obj);
+          } catch {
+            /* skip malformed */
+          }
+        }
+      }
+    } catch {
+      /* skip read errors — loadExistingIds already warned */
+    }
+  }
+
+  const maxExistingId = Math.max(0, ...existingIds);
+  let nextOffset = 1;
+
+  for (const review of mdReviews) {
+    if (!existingIds.has(review.id)) continue; // no collision
+
+    const existing = existingById.get(review.id);
+    if (!existing) continue; // id in set but object missing — treat as no collision
+
+    // Content match check: same title AND same PR means identical review, not a collision.
+    const sameContent = existing.title === review.title && existing.pr === review.pr;
+    if (sameContent) continue;
+
+    // True collision — different content under the same review number.
+    const oldId = review.id;
+    const newId = maxExistingId + nextOffset;
+    nextOffset++;
+    review.id = newId;
+    // Track the new id so subsequent collisions won't reuse it
+    existingIds.add(newId);
+    console.log(`  \u26a0\ufe0f  Review #${oldId} renumbered to #${newId} (collision)`);
+  }
+  // --- End DEBT-7582 ---
+
   const missingReviews = mdReviews.filter((r) => !existingIds.has(r.id));
   const missingRetros = mdRetros.filter((r) => !existingRetroIds.has(r.id));
   missingReviews.sort((a, b) => a.id - b.id);
