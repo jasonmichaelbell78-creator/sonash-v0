@@ -31,8 +31,8 @@ distribution.
 | Metric          | Value |
 | --------------- | ----- |
 | Total Items     | 8354  |
-| Open Items      | 7379  |
-| Resolved        | 477   |
+| Open Items      | 7376  |
+| Resolved        | 480   |
 | False Positives | 498   |
 | Resolution Rate | 6%    |
 
@@ -42,10 +42,10 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 2039  |
+| NEW            | 2036  |
 | VERIFIED       | 5340  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 477   |
+| RESOLVED       | 480   |
 | FALSE_POSITIVE | 498   |
 
 ---
@@ -132,7 +132,7 @@ _...and 1206 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 2039 items |
+| Verification Queue   | 2036 items |
 | Avg Age (Open Items) | 14 days    |
 | Oldest Item Age      | 28 days    |
 | Oldest Item          | DEBT-0002  |

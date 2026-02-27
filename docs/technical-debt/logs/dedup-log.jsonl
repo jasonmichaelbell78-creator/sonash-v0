@@ -8,9 +8,6 @@
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:functions/src/admin.ts:2769","reason":"parametric title match (numbers stripped), lines: 0 vs 2769"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"code-comment:functions/src/admin.ts:3936","reason":"parametric title match (numbers stripped), lines: 0 vs 3936"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:4","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
-{"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:4","reason":"parametric title match (numbers stripped), lines: 0 vs 4"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:6","reason":"parametric title match (numbers stripped), lines: 0 vs 3000"}
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"unknown","reason":"parametric title match (numbers stripped), lines: 0 vs 0"}
@@ -87,7 +84,15 @@
 {"pass":0,"type":"parametric_match","kept":"unknown","removed":"dec-2025-report:XSS_PROTECTION_VERIFICATION.md:317","reason":"parametric title match (numbers stripped), lines: 0 vs 105"}
 {"pass":0,"type":"parametric_match","kept":"sonarcloud:AZwrA-pN94jZShN2JzMo","flagged":"sonarcloud:AZwrA-pN94jZShN2JzMs","reason":"parametric match skipped for S0/S1 — flagged for review"}
 {"pass":0,"type":"parametric_match","kept":"sonarcloud:AZwrA-pN94jZShN2JzMo","flagged":"sonarcloud:AZwrA-pN94jZShN2JzMo","reason":"parametric match skipped for S0/S1 — flagged for review"}
-{"pass":0,"type":"parametric_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:5","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:5","reason":"parametric title match (numbers stripped), lines: 0 vs 5"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:1","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:1","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:2","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:2","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:3","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:3","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:4","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:5","removed":"dec-2025-report:AGGREGATED_6MODEL_REPORT.md:5","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:7","removed":"dec-2025-report:APP_CHECK_DIAGNOSIS.md:7","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"unknown","removed":"unknown","reason":"identical content hash"}

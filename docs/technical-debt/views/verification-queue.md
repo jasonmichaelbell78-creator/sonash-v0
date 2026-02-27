@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2039
+**Items Needing Verification:** 2036
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -388,11 +388,9 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-7573  | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | 0         |
 | DEBT-7574  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | 0         |
 | DEBT-7576  | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | undefined |
-| DEBT-7577  | Add JSONL schema validation to intake scripts                   | S2       | scripts/debt/intake-audit.js                                                     | 1         |
 | DEBT-7578  | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | undefined |
 | DEBT-7579  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | undefined |
 | DEBT-7581  | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | undefined |
-| DEBT-7582  | Auto-increment review numbers from JSONL max to prevent c...    | S2       | scripts/reviews-sync.js                                                          | 1         |
 | DEBT-7583  | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | undefined |
 | DEBT-7584  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | undefined |
 | DEBT-7586  | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | 0         |
@@ -639,7 +637,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-11307 | doc-ecosystem-audit references missing script path              | S2       | N/A                                                                              | 0         |
 | DEBT-11308 | audit-comprehensive agent prompts lack context overflow g...    | S2       | N/A                                                                              | 0         |
 | DEBT-11309 | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | N/A                                                                              | 0         |
-| DEBT-11312 | Add JSONL schema validation to intake scripts                   | S2       | scripts/debt/intake-audit.js                                                     | 1         |
 | DEBT-11313 | Auto-increment review numbers from JSONL max to prevent c...    | S2       | scripts/reviews-sync.js                                                          | 1         |
 | DEBT-11314 | Add cross-platform path normalization pattern to CODE_PAT...    | S2       | docs/agent_docs/CODE_PATTERNS.md                                                 | 1         |
 | DEBT-11316 | High Severity Findings (Security & Stability)                   | S2       | N/A                                                                              | 0         |
