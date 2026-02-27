@@ -27,40 +27,40 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #385 - #399 (15 reviews) **Analysis Date:** 2026-02-27
+**Review Range:** #394 - #406 (13 reviews) **Analysis Date:** 2026-02-27
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 91.7% |
-| Patterns Learned          | 304   |
-| Patterns Automated        | 26    |
-| Patterns Failing          | 11    |
-| Critical Pattern Success  | 93.6% |
+| Learning Effectiveness    | 93.1% |
+| Patterns Learned          | 308   |
+| Patterns Automated        | 27    |
+| Patterns Failing          | 5     |
+| Critical Pattern Success  | 95.7% |
 | Automation Coverage       | 13.6% |
 | Total Documented Patterns | 360   |
 | Total Automated Patterns  | 49    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Atomic file writes"
-   - Recurred 6 times after documentation \(Reviews: 390, 391, 393, 395, 398\)
+1. **[Automation]** Automate "Binary file detection"
+   - Recurred 4 times after documentation \(Reviews: 395, 398, 400, 402\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Atomic file writes"
-   - Recurred 6 times after documentation \(Reviews: 390, 391, 393, 395, 398\)
+2. **[Automation]** Automate "Relative path logging"
+   - Recurred 4 times after documentation \(Reviews: 395, 398, 399, 402\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Automation]** Automate "Relative path logging"
-   - Recurred 5 times after documentation \(Reviews: 390, 391, 395, 398, 399\)
+3. **[Automation]** Automate "Delimiter consistency"
+   - Recurred 3 times after documentation \(Reviews: 394, 396, 402\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "POSIX shell compliance"
+4. **[Documentation]** Improve documentation for "Atomic file writes"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Set vs Array migration"
+5. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 304   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 26    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 19    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 11    | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 308   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 27    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 20    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 5     | Pattern recurred 3+ times - needs automation |
 
 ---
 
