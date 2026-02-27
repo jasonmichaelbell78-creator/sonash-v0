@@ -19,10 +19,11 @@
  * Exit codes: 0 = success, 1 = validation error, 2 = unexpected error
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { sanitizeError } from "./lib/sanitize-error.js";
+import { safeWriteFileSync } from "./lib/safe-fs.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -257,7 +258,7 @@ function main() {
 
   // Write changes
   try {
-    writeFileSync(TRACKER_PATH, updated, "utf-8");
+    safeWriteFileSync(TRACKER_PATH, updated, "utf-8");
     console.log("✅ AUDIT_TRACKER.md updated successfully.");
   } catch (error) {
     console.error("❌ Failed to write AUDIT_TRACKER.md:", sanitizeError(error));

@@ -19,6 +19,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
 
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(BASE_DIR, "MASTER_DEBT.jsonl");
@@ -256,10 +257,10 @@ distribution.
 
 | Severity | Count | % of Total |
 |----------|-------|------------|
-| S0 (Critical) | ${metrics.by_severity.S0 || 0} | ${metrics.summary.total > 0 ? Math.round(((metrics.by_severity.S0 || 0) / metrics.summary.total) * 100) : 0}% |
-| S1 (High) | ${metrics.by_severity.S1 || 0} | ${metrics.summary.total > 0 ? Math.round(((metrics.by_severity.S1 || 0) / metrics.summary.total) * 100) : 0}% |
-| S2 (Medium) | ${metrics.by_severity.S2 || 0} | ${metrics.summary.total > 0 ? Math.round(((metrics.by_severity.S2 || 0) / metrics.summary.total) * 100) : 0}% |
-| S3 (Low) | ${metrics.by_severity.S3 || 0} | ${metrics.summary.total > 0 ? Math.round(((metrics.by_severity.S3 || 0) / metrics.summary.total) * 100) : 0}% |
+| S0 (Critical) | ${metrics.by_severity.S0 ?? 0} | ${metrics.summary.total > 0 ? Math.round(((metrics.by_severity.S0 ?? 0) / metrics.summary.total) * 100) : 0}% |
+| S1 (High) | ${metrics.by_severity.S1 ?? 0} | ${metrics.summary.total > 0 ? Math.round(((metrics.by_severity.S1 ?? 0) / metrics.summary.total) * 100) : 0}% |
+| S2 (Medium) | ${metrics.by_severity.S2 ?? 0} | ${metrics.summary.total > 0 ? Math.round(((metrics.by_severity.S2 ?? 0) / metrics.summary.total) * 100) : 0}% |
+| S3 (Low) | ${metrics.by_severity.S3 ?? 0} | ${metrics.summary.total > 0 ? Math.round(((metrics.by_severity.S3 ?? 0) / metrics.summary.total) * 100) : 0}% |
 
 ---
 
@@ -347,7 +348,7 @@ function logMetricsGeneration(metrics) {
     };
 
     // Qodo R15: Explicit utf8 encoding for consistent output
-    fs.appendFileSync(METRICS_LOG, JSON.stringify(logEntry) + "\n", "utf8");
+    safeAppendFileSync(METRICS_LOG, JSON.stringify(logEntry) + "\n", "utf8");
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.warn(`⚠️ Failed to write metrics log: ${errMsg}`);
@@ -371,12 +372,12 @@ function main() {
     fs.mkdirSync(BASE_DIR, { recursive: true });
 
     // Write metrics.json
-    fs.writeFileSync(METRICS_JSON, JSON.stringify(metrics, null, 2) + "\n");
+    safeWriteFileSync(METRICS_JSON, JSON.stringify(metrics, null, 2) + "\n");
     console.log(`  ✅ ${METRICS_JSON}`);
 
     // Write METRICS.md
     const metricsMd = generateMetricsMd(metrics);
-    fs.writeFileSync(METRICS_MD, metricsMd);
+    safeWriteFileSync(METRICS_MD, metricsMd);
     console.log(`  ✅ ${METRICS_MD}`);
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);

@@ -1018,7 +1018,7 @@ function checkDebtMetrics() {
   const s1 = metrics.alerts?.s1_count || 0;
   const s2 = metrics.summary?.by_severity?.S2 || 0;
   const s3 = metrics.summary?.by_severity?.S3 || 0;
-  const total = metrics.summary?.total || 0;
+  const total = metrics.summary?.total ?? 0;
   const open = metrics.summary?.open || 0;
   const resolved = metrics.summary?.resolved || 0;
   const resRate = metrics.summary?.resolution_rate_pct || 0;
@@ -2657,7 +2657,7 @@ function checkPatternHotspots() {
   // Count files with 3+ violations
   const entries = Object.entries(files);
   const hotspots = entries.filter(
-    ([, count]) => (typeof count === "number" ? count : count?.count || 0) >= 3
+    ([, count]) => (typeof count === "number" ? count : (count?.count ?? 0)) >= 3
   );
 
   if (hotspots.length > BENCHMARKS.pattern_hotspots.repeat_offenders.poor) {
@@ -2697,7 +2697,7 @@ function checkPatternHotspots() {
     hotspotCount: hotspots.length,
     topHotspots: hotspots.slice(0, 5).map(([f, c]) => ({
       file: path.basename(f),
-      count: typeof c === "number" ? c : c?.count || 0,
+      count: typeof c === "number" ? c : (c?.count ?? 0),
     })),
   });
 }

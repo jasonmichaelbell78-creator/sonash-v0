@@ -148,7 +148,7 @@ function buildBySourceBreakdown(reviewsJsonl) {
     const source = review.source || "unknown";
     if (!bySource[source]) bySource[source] = { count: 0, items: 0 };
     bySource[source].count++;
-    bySource[source].items += review.items_total || 0;
+    bySource[source].items += review.items_total ?? 0;
   }
   return bySource;
 }

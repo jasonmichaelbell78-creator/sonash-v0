@@ -53,8 +53,16 @@ module.exports = {
       const firstArg = node.arguments[0];
       if (!firstArg) return;
       if (isSafeStaticInput(firstArg)) return;
+      // Check the INPUT variable name (not the result variable) for "escape" hints
       if (isEscapedVariable(firstArg)) return;
       if (isEscapeHelper(firstArg)) return;
+      // Also check if the input is a template literal where all expressions are escaped
+      if (firstArg.type === "TemplateLiteral") {
+        const allExpressionsEscaped = firstArg.expressions.every(
+          (expr) => isEscapedVariable(expr) || isEscapeHelper(expr)
+        );
+        if (allExpressionsEscaped && firstArg.expressions.length > 0) return;
+      }
       context.report({ node, messageId: "unescapedInput" });
     }
 

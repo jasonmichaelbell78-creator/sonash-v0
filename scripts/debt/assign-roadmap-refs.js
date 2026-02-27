@@ -31,6 +31,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -158,7 +159,7 @@ function generateAssignmentReport(stats, sortedTracks, dryRun) {
   report += `| code-quality | (default) | M2.1 |\n`;
 
   if (!dryRun) {
-    fs.writeFileSync(reportPath, report, "utf8");
+    safeWriteFileSync(reportPath, report, "utf8");
     console.log(`\n📝 Report saved to: ${reportPath}`);
   }
 }
@@ -189,7 +190,7 @@ function syncUpdatedItemsToDeduped(updatedItems) {
       return line;
     });
     const tmpDeduped = `${DEDUPED_FILE}.tmp`;
-    fs.writeFileSync(tmpDeduped, dedupedUpdated.join("\n") + "\n");
+    safeWriteFileSync(tmpDeduped, dedupedUpdated.join("\n") + "\n");
     atomicRename(tmpDeduped, DEDUPED_FILE);
   } catch (syncErr) {
     console.warn(
@@ -206,14 +207,14 @@ function syncUpdatedItemsToDeduped(updatedItems) {
  */
 function atomicRename(tmpPath, destPath) {
   try {
-    fs.renameSync(tmpPath, destPath);
+    safeRenameSync(tmpPath, destPath);
   } catch (error) {
     const code =
       error && typeof error === "object" && typeof error.code === "string" ? error.code : undefined;
     if (code === "EPERM" || code === "EEXIST" || code === "EACCES" || code === "EBUSY") {
       try {
         fs.rmSync(destPath, { force: true });
-        fs.renameSync(tmpPath, destPath);
+        safeRenameSync(tmpPath, destPath);
       } catch (fallbackErr) {
         try {
           fs.unlinkSync(tmpPath);
@@ -350,10 +351,10 @@ function main() {
     // Qodo R8: Windows-safe replace - remove destination before rename
     const TEMP_FILE = MASTER_FILE + ".tmp";
     try {
-      fs.writeFileSync(TEMP_FILE, updatedLines.join("\n") + "\n", "utf8");
+      safeWriteFileSync(TEMP_FILE, updatedLines.join("\n") + "\n", "utf8");
       // Windows doesn't allow rename over existing file - remove first (backup already exists)
       fs.rmSync(MASTER_FILE, { force: true });
-      fs.renameSync(TEMP_FILE, MASTER_FILE);
+      safeRenameSync(TEMP_FILE, MASTER_FILE);
 
       // Sync updated items to raw/deduped.jsonl (in-place update, not full copy)
       syncUpdatedItemsToDeduped(updatedItems);

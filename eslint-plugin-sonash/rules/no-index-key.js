@@ -6,13 +6,16 @@
 
 "use strict";
 
+/** Common map callback index parameter names */
+const INDEX_NAMES = new Set(["index", "i", "idx"]);
+
 /**
- * Check if an expression node references "index" (common map callback parameter name).
+ * Check if an expression node references a common index variable name.
  */
 function containsIndexIdentifier(node) {
   if (!node) return false;
   const n = node.type === "ChainExpression" ? node.expression : node;
-  if (n.type === "Identifier" && n.name === "index") return true;
+  if (n.type === "Identifier" && INDEX_NAMES.has(n.name)) return true;
   if (n.type === "MemberExpression") {
     return containsIndexIdentifier(n.object) || (n.computed && containsIndexIdentifier(n.property));
   }

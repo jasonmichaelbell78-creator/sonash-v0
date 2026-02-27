@@ -14,11 +14,12 @@
  * npm script: npm run metrics:review-churn
  */
 
-import { writeFileSync, mkdirSync, existsSync, lstatSync } from "node:fs";
+import { mkdirSync, existsSync, lstatSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { sanitizeError } from "../lib/sanitize-error.js";
+import { safeWriteFileSync } from "../lib/safe-fs.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -240,7 +241,7 @@ function appendMetrics(entries) {
   const lines = entries.map((e) => JSON.stringify(e)).join("\n") + "\n";
 
   try {
-    writeFileSync(METRICS_FILE, lines, { encoding: "utf8", flag: "a" });
+    safeWriteFileSync(METRICS_FILE, lines, { encoding: "utf8", flag: "a" });
   } catch (err) {
     console.error(`Failed to write metrics file: ${sanitizeError(err)}`);
   }

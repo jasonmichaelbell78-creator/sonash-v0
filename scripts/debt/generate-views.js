@@ -246,6 +246,9 @@ function ensureDefaults(item) {
   if (!item.status) {
     item.status = "NEW";
   }
+  // Trim category and status to prevent whitespace-induced duplicate groups
+  if (typeof item.category === "string") item.category = item.category.trim();
+  if (typeof item.status === "string") item.status = item.status.trim();
   // Normalize absolute paths to repo-relative
   item.file = normalizeFilePath(item.file);
   if (Array.isArray(item.evidence)) {
@@ -340,10 +343,10 @@ function generateIndexFile(items, bySeverity, byCategory, byStatus, today) {
 
 | Severity | Count |
 |----------|-------|
-| S0 (Critical) | ${bySeverity.S0?.length || 0} |
-| S1 (High) | ${bySeverity.S1?.length || 0} |
-| S2 (Medium) | ${bySeverity.S2?.length || 0} |
-| S3 (Low) | ${bySeverity.S3?.length || 0} |
+| S0 (Critical) | ${bySeverity.S0?.length ?? 0} |
+| S1 (High) | ${bySeverity.S1?.length ?? 0} |
+| S2 (Medium) | ${bySeverity.S2?.length ?? 0} |
+| S3 (Low) | ${bySeverity.S3?.length ?? 0} |
 
 | Category | Count |
 |----------|-------|
@@ -680,7 +683,7 @@ function main() {
   console.log(`\n📊 Final Summary:`);
   console.log(`   Total: ${items.length} items`);
   console.log(
-    `   S0: ${bySeverity.S0?.length || 0}, S1: ${bySeverity.S1?.length || 0}, S2: ${bySeverity.S2?.length || 0}, S3: ${bySeverity.S3?.length || 0}`
+    `   S0: ${bySeverity.S0?.length ?? 0}, S1: ${bySeverity.S1?.length ?? 0}, S2: ${bySeverity.S2?.length ?? 0}, S3: ${bySeverity.S3?.length ?? 0}`
   );
 }
 

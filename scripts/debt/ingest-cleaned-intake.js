@@ -16,6 +16,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
+const { safeAppendFileSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -31,15 +32,19 @@ const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
  * Parse a single JSONL line and accumulate hash/id info.
  * Returns true if parsed successfully, false otherwise.
  */
-function parseMasterLine(line, hashSet, idState) {
-  const item = JSON.parse(line);
-  if (item.content_hash) hashSet.add(item.content_hash);
-  if (item.id) {
-    const match = item.id.match(/DEBT-(\d+)/);
-    if (match) {
-      const num = Number.parseInt(match[1], 10);
-      if (num > idState.maxId) idState.maxId = num;
+function parseMasterLine(line, hashSet, idState, lineNum) {
+  try {
+    const item = JSON.parse(line);
+    if (item.content_hash) hashSet.add(item.content_hash);
+    if (item.id) {
+      const match = item.id.match(/DEBT-(\d+)/);
+      if (match) {
+        const num = Number.parseInt(match[1], 10);
+        if (num > idState.maxId) idState.maxId = num;
+      }
     }
+  } catch {
+    console.warn(`Skipping corrupt JSONL line ${lineNum ?? "?"}`);
   }
 }
 
@@ -122,7 +127,7 @@ function logIntake(activity) {
     timestamp: new Date().toISOString(),
     ...activity,
   };
-  fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
+  safeAppendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
 // --- Deduplicate input items against MASTER ---
@@ -157,7 +162,7 @@ function writeItems(newItems) {
   const newLines = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   try {
-    fs.appendFileSync(MASTER_FILE, newLines);
+    safeAppendFileSync(MASTER_FILE, newLines);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`    ERROR: Failed to append to MASTER_DEBT.jsonl: ${msg}`);
@@ -167,7 +172,7 @@ function writeItems(newItems) {
 
   try {
     fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-    fs.appendFileSync(DEDUPED_FILE, newLines);
+    safeAppendFileSync(DEDUPED_FILE, newLines);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`    ERROR: Failed to append to raw/deduped.jsonl: ${msg}`);

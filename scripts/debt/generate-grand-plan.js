@@ -18,6 +18,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(BASE_DIR, "MASTER_DEBT.jsonl");
@@ -439,7 +440,7 @@ ${buildCoverageReport(manifest)}
 `;
 
   try {
-    fs.writeFileSync(OUTPUT_FILE, md, "utf8");
+    safeWriteFileSync(OUTPUT_FILE, md, "utf8");
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`Failed to write output: ${msg}`);

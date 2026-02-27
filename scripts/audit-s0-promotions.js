@@ -27,6 +27,7 @@ const DEDUPED_PATH = path.join(__dirname, "..", "docs", "technical-debt", "raw",
 const BASELINE_COMMIT = "08763212";
 
 const readJsonl = require("./lib/read-jsonl");
+const { safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs");
 
 function readJsonlFromGit(commit, relPath) {
   try {
@@ -326,15 +327,15 @@ function applyDemotions(master, deduped, demotedToS1, demotedToS2) {
 
   const masterTmp = MASTER_PATH + ".tmp";
   const dedupedTmp = DEDUPED_PATH + ".tmp";
-  fs.writeFileSync(masterTmp, masterOutput, "utf8");
-  fs.writeFileSync(dedupedTmp, dedupedOutput, "utf8");
+  safeWriteFileSync(masterTmp, masterOutput, "utf8");
+  safeWriteFileSync(dedupedTmp, dedupedOutput, "utf8");
 
-  fs.renameSync(masterTmp, MASTER_PATH);
+  safeRenameSync(masterTmp, MASTER_PATH);
   try {
-    fs.renameSync(dedupedTmp, DEDUPED_PATH);
+    safeRenameSync(dedupedTmp, DEDUPED_PATH);
   } catch (renameErr) {
     try {
-      fs.renameSync(MASTER_PATH, masterTmp);
+      safeRenameSync(MASTER_PATH, masterTmp);
     } catch {
       /* ignore */
     }

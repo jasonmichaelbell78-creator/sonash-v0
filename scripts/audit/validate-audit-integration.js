@@ -26,6 +26,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { execFileSync } = require("node:child_process");
 const { loadConfig } = require("../config/load-config");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 // Import error sanitization helper
 let sanitizeError;
@@ -915,7 +916,7 @@ function saveValidationState(state) {
   if (!fs.existsSync(AUDIT_DIR)) {
     fs.mkdirSync(AUDIT_DIR, { recursive: true });
   }
-  fs.writeFileSync(VALIDATION_STATE_FILE, JSON.stringify(state, null, 2));
+  safeWriteFileSync(VALIDATION_STATE_FILE, JSON.stringify(state, null, 2));
 }
 
 /**
@@ -937,7 +938,7 @@ function generateValidationReport(state) {
 | Metric | Value |
 |--------|-------|
 | MASTER_DEBT.jsonl exists | ${state.baseline?.exists ? "Yes" : "No"} |
-| Item count | ${state.baseline?.itemCount || 0} |
+| Item count | ${state.baseline?.itemCount ?? 0} |
 | Last DEBT-ID | ${state.baseline?.lastDebtId || "N/A"} |
 | File hash | ${state.baseline?.fileHash || "N/A"} |
 
@@ -978,7 +979,7 @@ function generateValidationReport(state) {
         report += `| ${fileName} | - | - | - | NOT FOUND |\n`;
       } else {
         const status = (fileResult.summary?.blocking || 0) > 0 ? "BLOCKED" : "OK";
-        report += `| ${fileName} | ${fileResult.itemCount || 0} | ${fileResult.schemaIssues?.length || 0} | ${fileResult.summary?.blocking || 0} | ${status} |\n`;
+        report += `| ${fileName} | ${fileResult.itemCount ?? 0} | ${fileResult.schemaIssues?.length ?? 0} | ${fileResult.summary?.blocking ?? 0} | ${status} |\n`;
       }
     }
 
@@ -1021,7 +1022,7 @@ function generateValidationReport(state) {
   if (state.comparison) {
     report += `| Metric | Before | After | Change |\n`;
     report += `|--------|--------|-------|--------|\n`;
-    report += `| Item count | ${state.baseline?.itemCount || 0} | ${state.comparison.current?.itemCount || 0} | +${state.comparison.changes?.itemsAdded || 0} |\n`;
+    report += `| Item count | ${state.baseline?.itemCount ?? 0} | ${state.comparison.current?.itemCount ?? 0} | +${state.comparison.changes?.itemsAdded ?? 0} |\n`;
     report += `| File hash | ${state.baseline?.fileHash || "N/A"} | ${state.comparison.current?.fileHash || "N/A"} | ${state.comparison.changes?.hashChanged ? "Changed" : "Unchanged"} |\n`;
 
     if (state.comparison.changes?.newDebtIds?.length > 0) {
@@ -1191,7 +1192,7 @@ async function main() {
       if (!fs.existsSync(AUDIT_DIR)) {
         fs.mkdirSync(AUDIT_DIR, { recursive: true });
       }
-      fs.writeFileSync(VALIDATION_REPORT_FILE, report);
+      safeWriteFileSync(VALIDATION_REPORT_FILE, report);
       console.log(`\nValidation report generated: ${VALIDATION_REPORT_FILE}`);
       console.log(`Overall status: ${state.overallStatus}`);
 

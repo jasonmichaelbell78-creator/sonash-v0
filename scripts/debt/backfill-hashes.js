@@ -16,6 +16,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 const MASTER_FILE = path.join(__dirname, "../../docs/technical-debt/MASTER_DEBT.jsonl");
 
@@ -149,7 +150,7 @@ function main() {
   const output = outputLines.join("\n");
 
   try {
-    fs.writeFileSync(MASTER_FILE, output);
+    safeWriteFileSync(MASTER_FILE, output);
   } catch (err) {
     console.error(
       "Error: Failed to write MASTER_DEBT.jsonl: " +

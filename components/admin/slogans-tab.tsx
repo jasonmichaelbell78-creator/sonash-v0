@@ -15,12 +15,17 @@ import { recoverySlogans } from "@/data/slogans";
 
 // Seed from static data file
 async function seedSlogans() {
-  for (const item of recoverySlogans) {
-    await SlogansService.addSlogan({
-      text: item.text,
-      author: item.author,
-      source: item.source,
-    });
+  try {
+    for (const item of recoverySlogans) {
+      await SlogansService.addSlogan({
+        text: item.text,
+        author: item.author,
+        source: item.source,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to seed slogans:", error);
+    throw error;
   }
 }
 

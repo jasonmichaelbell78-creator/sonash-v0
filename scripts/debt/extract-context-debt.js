@@ -20,6 +20,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
+const { safeAppendFileSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const STATE_DIR = path.join(PROJECT_ROOT, ".claude/state");
@@ -323,7 +324,7 @@ function main() {
 
   if (findings.length > 0) {
     const jsonlContent = findings.map((f) => JSON.stringify(f)).join("\n") + "\n";
-    fs.appendFileSync(OUTPUT_FILE, jsonlContent, "utf-8");
+    safeAppendFileSync(OUTPUT_FILE, jsonlContent, "utf-8");
     console.log(
       `\n   Appended ${findings.length} items to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
     );

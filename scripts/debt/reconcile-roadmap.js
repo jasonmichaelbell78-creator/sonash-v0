@@ -16,6 +16,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 // --- Paths ---
 const ROOT = path.join(__dirname, "../..");
@@ -165,7 +166,7 @@ function buildGrandPlanSection(metrics, manifest) {
   let roadmapBound = 0;
   if (manifest.roadmap_bound) {
     for (const cat of Object.values(manifest.roadmap_bound)) {
-      roadmapBound += cat.count || 0;
+      roadmapBound += cat.count ?? 0;
     }
   }
 
@@ -306,7 +307,7 @@ function writeChanges(finalText) {
     process.exit(1);
   }
   try {
-    fs.writeFileSync(ROADMAP_PATH, finalText, "utf8");
+    safeWriteFileSync(ROADMAP_PATH, finalText, "utf8");
     console.log(`ROADMAP.md updated successfully.`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

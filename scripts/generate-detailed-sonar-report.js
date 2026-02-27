@@ -15,6 +15,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("./lib/safe-fs");
 
 // Try to load dotenv if available
 try {
@@ -337,7 +338,7 @@ This report contains **${allIssues.length} code issues** and **${hotspots.length
   };
 
   for (const sev of severityOrder) {
-    const count = bySeverity[sev]?.length || 0;
+    const count = bySeverity[sev]?.length ?? 0;
     if (count > 0) {
       // Guard against zero division when allIssues is empty
       const pct = allIssues.length > 0 ? ((count / allIssues.length) * 100).toFixed(1) : "0.0";
@@ -393,7 +394,7 @@ This report contains **${allIssues.length} code issues** and **${hotspots.length
   report += `
 ---
 
-## 🚨 PRIORITY: BLOCKER & CRITICAL Issues (${(bySeverity["BLOCKER"]?.length || 0) + (bySeverity["CRITICAL"]?.length || 0)} total)
+## 🚨 PRIORITY: BLOCKER & CRITICAL Issues (${(bySeverity["BLOCKER"]?.length ?? 0) + (bySeverity["CRITICAL"]?.length ?? 0)} total)
 
 These issues should be fixed first as they represent the most severe problems.
 
@@ -534,7 +535,7 @@ Security hotspots require manual review to determine if they represent actual vu
   // Write the report (ensure directory exists and handle errors gracefully)
   try {
     fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
-    fs.writeFileSync(OUTPUT_FILE, report);
+    safeWriteFileSync(OUTPUT_FILE, report);
     console.log(`\nReport written to: ${OUTPUT_FILE}`);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -548,7 +549,7 @@ Security hotspots require manual review to determine if they represent actual vu
   // Also output stats
   console.log("\n=== Summary ===");
   for (const sev of severityOrder) {
-    const count = bySeverity[sev]?.length || 0;
+    const count = bySeverity[sev]?.length ?? 0;
     if (count > 0) {
       console.log(`${sev}: ${count}`);
     }

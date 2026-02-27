@@ -22,6 +22,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { validatePathInDir, refuseSymlinkWithParents } = require("../lib/security-helpers");
+const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const REPO_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
@@ -116,12 +117,12 @@ function writeOutputJson(outputPath, payload) {
     // Refuse symlinked parents before writing files
     refuseSymlinkWithParents(outDir);
     refuseSymlinkWithParents(safePath);
-    fs.writeFileSync(tmpPath, JSON.stringify(payload, null, 2), "utf-8");
+    safeWriteFileSync(tmpPath, JSON.stringify(payload, null, 2), "utf-8");
     // Pre-remove destination for cross-platform renameSync compatibility
     if (fs.existsSync(safePath)) {
       fs.rmSync(safePath, { force: true });
     }
-    fs.renameSync(tmpPath, safePath);
+    safeRenameSync(tmpPath, safePath);
   } catch (err) {
     try {
       if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
@@ -184,8 +185,8 @@ function saveMasterDebt(items) {
   const tmpFile = path.join(dir, `.MASTER_DEBT.jsonl.tmp.${process.pid}`);
 
   try {
-    fs.writeFileSync(tmpFile, content);
-    fs.renameSync(tmpFile, MASTER_FILE);
+    safeWriteFileSync(tmpFile, content);
+    safeRenameSync(tmpFile, MASTER_FILE);
   } catch (err) {
     // Clean up temp file on error
     try {
@@ -206,7 +207,7 @@ function logResolution(activity) {
     timestamp: new Date().toISOString(),
     ...activity,
   };
-  fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
+  safeAppendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
 }
 
 // Load IDs from file

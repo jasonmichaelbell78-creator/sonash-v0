@@ -16,9 +16,10 @@
  *   const { findings, summary } = await unifyFindings(sessionPath);
  */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
 import { join, resolve, relative, isAbsolute, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
+import { safeWriteFileSync } from "../lib/safe-fs.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -392,7 +393,7 @@ function generateSummaryMarkdown(data) {
 ${Object.entries(categoryStats)
   .map(
     ([cat, stats]) =>
-      `| ${cat} | ${stats.total} | ${stats.S0 || 0} | ${stats.S1 || 0} | ${stats.S2 || 0} | ${stats.S3 || 0} |`
+      `| ${cat} | ${stats.total} | ${stats.S0 ?? 0} | ${stats.S1 ?? 0} | ${stats.S2 ?? 0} | ${stats.S3 ?? 0} |`
   )
   .join("\n")}
 
@@ -615,7 +616,7 @@ export async function unifyFindings(sessionPath) {
   // Count total sources
   let totalSources = 0;
   for (const f of unifiedFindings) {
-    totalSources += f.sources?.length || 0;
+    totalSources += f.sources?.length ?? 0;
   }
 
   // Extract session ID from path
@@ -624,7 +625,7 @@ export async function unifyFindings(sessionPath) {
   // Write unified findings
   const outputPath = join(finalDir, "UNIFIED-FINDINGS.jsonl");
   const jsonl = unifiedFindings.map((f) => JSON.stringify(f)).join("\n");
-  writeFileSync(outputPath, jsonl);
+  safeWriteFileSync(outputPath, jsonl);
 
   // Generate and write summary
   const summaryData = {
@@ -642,7 +643,7 @@ export async function unifyFindings(sessionPath) {
 
   const summaryMd = generateSummaryMarkdown(summaryData);
   const summaryPath = join(finalDir, "SUMMARY.md");
-  writeFileSync(summaryPath, summaryMd);
+  safeWriteFileSync(summaryPath, summaryMd);
 
   const summary = {
     session_id: sessionId,

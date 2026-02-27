@@ -1,0 +1,115 @@
+name: Pattern Compliance Audit
+
+on:
+  schedule:
+    # Weekly Monday 6am UTC — catches accumulated violations before the work week
+    - cron: "0 6 * * 1"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  full-repo-scan:
+    name: Full Repo Pattern Compliance Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run full pattern compliance scan
+        id: scan
+        run: |
+          set +e
+          OUTPUT=$(node scripts/check-pattern-compliance.js --all --json 2>&1)
+          EXIT_CODE=$?
+          echo "$OUTPUT" > compliance-report.json
+
+          # Extract counts from the text output for the summary
+          TEXT_OUTPUT=$(node scripts/check-pattern-compliance.js --all 2>&1)
+          BLOCKING=$(echo "$TEXT_OUTPUT" | grep -oP '^\S+ \K\d+(?= BLOCKING)' || echo "0")
+          WARNINGS=$(echo "$TEXT_OUTPUT" | grep -oP '^\S+ \K\d+(?= warning)' || echo "0")
+
+          echo "blocking=$BLOCKING" >> "$GITHUB_OUTPUT"
+          echo "warnings=$WARNINGS" >> "$GITHUB_OUTPUT"
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+
+          # Show summary in log
+          echo "## Pattern Compliance Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Blocking violations**: $BLOCKING" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Warnings**: $WARNINGS" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Run \`node scripts/check-pattern-compliance.js --all\` locally for full details." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create issue if violations exceed threshold
+        if: ${{ steps.scan.outputs.blocking > 0 || steps.scan.outputs.warnings > 75 }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BLOCKING: ${{ steps.scan.outputs.blocking }}
+          WARNINGS: ${{ steps.scan.outputs.warnings }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const blocking = Number(process.env.BLOCKING);
+            const warnings = Number(process.env.WARNINGS);
+            const WARNING_THRESHOLD = 75;
+
+            // Check if an open issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'pattern-compliance',
+              state: 'open',
+            });
+
+            const isBlockingOnly = blocking > 0 && warnings <= WARNING_THRESHOLD;
+            const isWarningOnly = blocking === 0 && warnings > WARNING_THRESHOLD;
+            const title = blocking > 0
+              ? `Pattern compliance: ${blocking} blocking violations detected`
+              : `Pattern compliance: warnings exceeded threshold (${warnings} > ${WARNING_THRESHOLD})`;
+
+            const body = [
+              '## Pattern Compliance Audit',
+              '',
+              `The weekly full-repo scan found **${blocking} blocking violations** and **${warnings} warnings**.`,
+              warnings > WARNING_THRESHOLD ? `\n> **Warning threshold exceeded:** ${warnings} > ${WARNING_THRESHOLD}. New warnings are accumulating — investigate and fix or add to verified-patterns.` : '',
+              '',
+              'Run locally:',
+              '```bash',
+              'node scripts/check-pattern-compliance.js --all',
+              '```',
+              '',
+              'Refer to the [ESLint + Compliance Fix Plan](.claude/plans/ESLINT_AND_COMPLIANCE_FIX_PLAN.md) for resolution guidance.',
+            ].join('\n');
+
+            if (existingIssues.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssues.data[0].number,
+                body: `## Weekly Scan Update\n\n- **Blocking**: ${blocking}\n- **Warnings**: ${warnings} (threshold: ${WARNING_THRESHOLD})\n- **Date**: ${new Date().toISOString().split('T')[0]}`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['pattern-compliance', 'tech-debt'],
+              });
+            }
+
+      - name: Upload compliance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report
+          path: compliance-report.json
+          retention-days: 30

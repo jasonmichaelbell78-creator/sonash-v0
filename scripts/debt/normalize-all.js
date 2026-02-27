@@ -17,6 +17,7 @@ const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
 const { glob } = require("glob");
 const { loadConfig } = require("../config/load-config");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 const RAW_DIR = path.join(__dirname, "../../docs/technical-debt/raw");
 const OUTPUT_FILE = path.join(RAW_DIR, "normalized-all.jsonl");
@@ -137,7 +138,7 @@ async function main() {
 
   // Write output
   const outputLines = items.map((item) => JSON.stringify(item));
-  fs.writeFileSync(OUTPUT_FILE, outputLines.join("\n") + "\n");
+  safeWriteFileSync(OUTPUT_FILE, outputLines.join("\n") + "\n");
 
   console.log(`\n✅ Normalized ${items.length} total items to ${OUTPUT_FILE}`);
 

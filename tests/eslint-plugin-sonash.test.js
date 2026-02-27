@@ -666,3 +666,59 @@ describe("Edge cases: false positive prevention", () => {
     });
   });
 });
+
+// ═══════════════════════════════════════════════════
+// Phase 2 Enhancement Tests — ESLint plan Items 10, 16
+// ═══════════════════════════════════════════════════
+
+describe("Phase 2: no-index-key expanded identifier set (Item 16)", () => {
+  test("detects key={i} and key={idx} in addition to key={index}", () => {
+    jsxRuleTester.run("no-index-key", plugin.rules["no-index-key"], {
+      valid: ["const el = <li key={item.id}>text</li>", "const el = <Item key={uniqueId} />"],
+      invalid: [
+        {
+          code: "const el = <li key={i}>text</li>",
+          errors: [{ messageId: "indexKey" }],
+        },
+        {
+          code: "const el = <li key={idx}>text</li>",
+          errors: [{ messageId: "indexKey" }],
+        },
+        {
+          code: "const el = <Item key={`item-${i}`} />",
+          errors: [{ messageId: "indexKey" }],
+        },
+        {
+          code: 'const el = <div key={"prefix" + idx}>content</div>',
+          errors: [{ messageId: "indexKey" }],
+        },
+      ],
+    });
+  });
+});
+
+describe("Phase 2: no-unescaped-regexp-input template literal escape (Item 10)", () => {
+  test("allows escaped expressions in template literals", () => {
+    ruleTester.run("no-unescaped-regexp-input", plugin.rules["no-unescaped-regexp-input"], {
+      valid: [
+        "new RegExp(`prefix-${escapedInput}`)",
+        "new RegExp(`${escapeRegExpHelper(raw)}`)",
+        "new RegExp(`start-${escapedInput}-end`)",
+      ],
+      invalid: [
+        {
+          code: "new RegExp(`${rawInput}`)",
+          errors: [{ messageId: "unescapedInput" }],
+        },
+        {
+          code: "new RegExp(`prefix-${unsafeVar}`)",
+          errors: [{ messageId: "unescapedInput" }],
+        },
+        {
+          code: "new RegExp(`${safe}-${unsafeVar}`)",
+          errors: [{ messageId: "unescapedInput" }],
+        },
+      ],
+    });
+  });
+});

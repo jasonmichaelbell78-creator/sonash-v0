@@ -94,7 +94,7 @@ function checkVersionHistoryCurrency(skills, findings) {
     const { content, name } = skill;
 
     // Find Version History section
-    const vhMatch = content.match(/#+\s*Version\s+History\b([\s\S]*?)(?=\n#+\s[^#]|$)/i);
+    const vhMatch = content.match(/#+\s*Version\s+History\b([\s\S]*?)(?=\r?\n#+\s[^#]|$)/i);
     if (!vhMatch) continue;
 
     totalWithHistory++;
@@ -260,7 +260,7 @@ function checkPatternReferenceSync(skills, findings) {
 
     // Find "Known Churn Pattern" or similar sections
     const churnMatch = content.match(
-      /#+\s*(?:Known\s+)?Churn\s+Pattern[s]?\b([\s\S]*?)(?=\n#+\s[^#]|$)/i
+      /#+\s*(?:Known\s+)?Churn\s+Pattern[s]?\b([\s\S]*?)(?=\r?\n#+\s[^#]|$)/i
     );
     if (!churnMatch) continue;
 

@@ -78,26 +78,37 @@ function calculateCleanTimeParts(start: Date): DurationPart[] | null {
  * Fetch weekly stats (days logged and current streak) for a user
  */
 async function fetchWeeklyStats(userId: string): Promise<{ daysLogged: number; streak: number }> {
-  const { collection, query, where, getDocs, orderBy, limit } = await import("firebase/firestore");
+  try {
+    const { collection, query, where, getDocs, orderBy, limit } =
+      await import("firebase/firestore");
 
-  const sevenDaysAgo = subDays(startOfDay(new Date()), 6);
-  const sevenDaysAgoId = format(sevenDaysAgo, "yyyy-MM-dd");
+    const sevenDaysAgo = subDays(startOfDay(new Date()), 6);
+    const sevenDaysAgoId = format(sevenDaysAgo, "yyyy-MM-dd");
 
-  const logsRef = collection(db, `users/${userId}/daily_logs`);
-  const q = query(logsRef, where("date", ">=", sevenDaysAgoId), orderBy("date", "desc"), limit(7));
-  const snapshot = await getDocs(q);
+    const logsRef = collection(db, `users/${userId}/daily_logs`);
+    const q = query(
+      logsRef,
+      where("date", ">=", sevenDaysAgoId),
+      orderBy("date", "desc"),
+      limit(7)
+    );
+    const snapshot = await getDocs(q);
 
-  const uniqueDays = new Set(snapshot.docs.map((doc) => doc.data().date as string));
+    const uniqueDays = new Set(snapshot.docs.map((doc) => doc.data().date as string));
 
-  // Calculate current streak (consecutive days from today backwards)
-  let streak = 0;
-  let checkDate = new Date();
-  while (uniqueDays.has(format(startOfDay(checkDate), "yyyy-MM-dd"))) {
-    streak++;
-    checkDate = subDays(checkDate, 1);
+    // Calculate current streak (consecutive days from today backwards)
+    let streak = 0;
+    let checkDate = new Date();
+    while (uniqueDays.has(format(startOfDay(checkDate), "yyyy-MM-dd"))) {
+      streak++;
+      checkDate = subDays(checkDate, 1);
+    }
+
+    return { daysLogged: uniqueDays.size, streak };
+  } catch (error) {
+    console.error("Error fetching weekly stats:", error);
+    return { daysLogged: 0, streak: 0 };
   }
-
-  return { daysLogged: uniqueDays.size, streak };
 }
 
 // Toggle button component for cravings/used questions

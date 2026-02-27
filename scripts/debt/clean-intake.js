@@ -49,6 +49,7 @@ const VALID_CATEGORIES = new Set([
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 const readJsonl = require("../lib/read-jsonl");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 /**
  * Simple string similarity (Dice coefficient on bigrams).
@@ -397,7 +398,7 @@ function main() {
   if (WRITE_MODE) {
     const output = surviving.map((item) => JSON.stringify(item)).join("\n") + "\n";
     try {
-      fs.writeFileSync(OUTPUT_FILE, output, "utf-8");
+      safeWriteFileSync(OUTPUT_FILE, output, "utf-8");
       console.log();
       console.log(
         `Wrote ${surviving.length} clean items to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`

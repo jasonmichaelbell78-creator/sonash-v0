@@ -21,6 +21,7 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("./lib/safe-fs");
 
 // Colors for output (defined early for error messages)
 const colors = {
@@ -117,7 +118,7 @@ function updateSessionContext() {
   if (content.includes("**Uncommitted Work**: Yes")) {
     content = content.replaceAll("**Uncommitted Work**: Yes", "**Uncommitted Work**: No");
     try {
-      fs.writeFileSync(SESSION_CONTEXT_PATH, content);
+      safeWriteFileSync(SESSION_CONTEXT_PATH, content);
     } catch (err) {
       log(`❌ Failed to write SESSION_CONTEXT.md: ${getErrorMessage(err)}`, colors.red);
       return false;

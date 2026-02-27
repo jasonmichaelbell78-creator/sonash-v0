@@ -45,7 +45,7 @@ function main() {
     const filePath = path.join(TMP_DIR, file);
     // Path containment check (Review #33-#40)
     const rel = path.relative(TMP_DIR, filePath);
-    if (rel.startsWith("..") || path.isAbsolute(rel)) continue;
+    if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
     try {
       const stat = fs.lstatSync(filePath);
       if (stat.isSymbolicLink()) continue;

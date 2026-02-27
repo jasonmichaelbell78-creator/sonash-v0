@@ -11,6 +11,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 const ROOT = path.join(__dirname, "../..");
 const LOGS_DIR = path.join(ROOT, "docs/technical-debt/logs");
@@ -58,7 +59,7 @@ function readJSON(filePath) {
  * Safely write JSON to a file with 2-space indent.
  */
 function writeJSON(filePath, data) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf8");
+  safeWriteFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf8");
 }
 
 /**

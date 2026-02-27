@@ -20,6 +20,7 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const readline = require("node:readline");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 // Use process.cwd() - scripts should be run from project root
 const PROJECT_ROOT = process.cwd();
@@ -247,9 +248,9 @@ async function main() {
     // Write .env.local atomically with secure permissions
     // Use temp file + rename to prevent race condition on permissions
     const tmpPath = `${ENV_LOCAL_PATH}.tmp`;
-    fs.writeFileSync(tmpPath, decrypted, { mode: SECURE_FILE_MODE });
+    safeWriteFileSync(tmpPath, decrypted, { mode: SECURE_FILE_MODE });
     fs.chmodSync(tmpPath, SECURE_FILE_MODE); // Ensure permissions even if mode flag ignored
-    fs.renameSync(tmpPath, ENV_LOCAL_PATH);
+    safeRenameSync(tmpPath, ENV_LOCAL_PATH);
 
     if (!quiet) {
       console.log("✅ Decrypted successfully!");

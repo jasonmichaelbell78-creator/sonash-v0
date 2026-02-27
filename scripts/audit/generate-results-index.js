@@ -232,7 +232,7 @@ function atomicWrite(content) {
     const realOutputDir = fs.realpathSync(outputDir);
     const realRepoRoot = fs.realpathSync(repoRoot);
     const rel = path.relative(realRepoRoot, realOutputDir);
-    if (rel.startsWith("..") || path.isAbsolute(rel)) {
+    if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
       console.error(`Error: Output directory resolves outside repo root: ${realOutputDir}`);
       process.exit(2);
     }

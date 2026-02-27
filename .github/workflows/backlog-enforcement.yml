@@ -76,12 +76,19 @@ jobs:
           exit $exit_code
 
       - name: Comment on PR (if warnings)
-        if: github.event_name == 'pull_request' && steps.backlog.outputs.exit_code != '0'
+        if: ${{ github.event_name == 'pull_request' && steps.backlog.outputs.exit_code != '0' }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          BACKLOG_TOTAL: ${{ steps.backlog.outputs.total }}
+          BACKLOG_S1: ${{ steps.backlog.outputs.s1 }}
+          SERVER_URL: ${{ github.server_url }}
+          REPO_NAME: ${{ github.repository }}
         with:
           script: |
-            const total = '${{ steps.backlog.outputs.total }}';
-            const s1 = '${{ steps.backlog.outputs.s1 }}';
+            const total = process.env.BACKLOG_TOTAL;
+            const s1 = process.env.BACKLOG_S1;
+            const serverUrl = process.env.SERVER_URL;
+            const repoName = process.env.REPO_NAME;
 
             const body = `## ⚠️ Backlog Health Warning
 
@@ -89,7 +96,7 @@ jobs:
             - **Total items**: ${total}
             - **S1 (Major) items**: ${s1}
 
-            Please review [AUDIT_FINDINGS_BACKLOG.md](\${{ github.server_url }}/\${{ github.repository }}/blob/main/docs/AUDIT_FINDINGS_BACKLOG.md) and consider addressing aging items.
+            Please review [AUDIT_FINDINGS_BACKLOG.md](${serverUrl}/${repoName}/blob/main/docs/AUDIT_FINDINGS_BACKLOG.md) and consider addressing aging items.
 
             Run \`npm run backlog:check\` locally for details.`;
 

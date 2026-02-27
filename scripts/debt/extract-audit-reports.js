@@ -20,6 +20,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
+const { safeAppendFileSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const REPORTS_DIR = path.join(PROJECT_ROOT, "docs/archive/2025-dec-reports");
@@ -969,7 +970,7 @@ function processAllReports(reportFiles, existingHashes, existingIntakeIds, verbo
 function writeFindings(findings) {
   const jsonlContent = findings.map((f) => JSON.stringify(f)).join("\n") + "\n";
   fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
-  fs.appendFileSync(OUTPUT_FILE, jsonlContent, "utf-8");
+  safeAppendFileSync(OUTPUT_FILE, jsonlContent, "utf-8");
   console.log(
     `\n   Appended ${findings.length} items to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
   );
