@@ -359,22 +359,29 @@ function parseMarkdownReviews(content) {
 
     // Format 4: bullet items under "Key Patterns" or "Patterns Identified" sections
     // String-based section extraction to avoid regex backtracking (S5852 proactive sweep)
-    const sectionStart =
-      raw.indexOf("**Key Patterns") !== -1
-        ? raw.indexOf("**Key Patterns")
-        : raw.indexOf("**Patterns Identified");
+    const rawLower = raw.toLowerCase();
+    let sectionStart = -1;
+    if (rawLower.includes("**key patterns")) {
+      sectionStart = rawLower.indexOf("**key patterns");
+    } else if (rawLower.includes("**patterns identified")) {
+      sectionStart = rawLower.indexOf("**patterns identified");
+    }
     let sectionBody = null;
-    if (sectionStart !== -1) {
+    if (sectionStart >= 0) {
       // Skip past the header line to get the body
       const headerEnd = raw.indexOf("\n", sectionStart);
       if (headerEnd !== -1) {
-        const rest = raw.slice(headerEnd + 1, headerEnd + 1 + 2000);
+        const rest = raw.slice(headerEnd + 1);
         // Find the end: next bold header, horizontal rule, or markdown heading
         const lines = rest.split("\n");
         const bodyLines = [];
+        let scanned = 0;
         for (const ln of lines) {
-          if (ln.startsWith("**") || ln.startsWith("---") || /^#{2,4}\s/.test(ln)) break;
+          const t = ln.trimStart();
+          if (t.startsWith("**") || t.startsWith("---") || /^#{2,4}\s/.test(t)) break;
           bodyLines.push(ln);
+          scanned++;
+          if (scanned >= 200) break; // safety cap for missing terminators
         }
         sectionBody = bodyLines.join("\n");
       }

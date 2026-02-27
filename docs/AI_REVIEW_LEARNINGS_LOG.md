@@ -1746,6 +1746,22 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #405: Maintenance PR R6 (2026-02-27)
+
+- **Source**: SonarCloud (2) + Qodo Compliance (5) + Qodo PR Suggestions (5)
+- **PR**: Maintenance — pipeline repair + deep-plan automation + TDMS refresh
+- **Items**: 12 total → 7 actionable (5 compliance batch-rejected), 7 fixed, 0
+  deferred, 0 rejected
+- **Key fix**: SonarCloud flagged the `indexOf() !== -1` ternary introduced in
+  R5 as both "unexpected negated condition" and "use .includes()". Both issues
+  on same line — R5's string-parsing approach was correct but used non-idiomatic
+  JS. Lesson: when replacing regex with string ops, use `.includes()` for
+  existence checks, not `.indexOf() !== -1`.
+- **Pattern**: indexOf-to-includes — every time `.indexOf(x) !== -1` is written,
+  use `.includes(x)` instead for readability and to avoid SonarCloud flags.
+
+---
+
 #### Review #404: Maintenance PR R5 (2026-02-27)
 
 - **Source**: SonarCloud (1) + Qodo Compliance (5) + Qodo PR Suggestions (2)

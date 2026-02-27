@@ -325,6 +325,18 @@ function releaseLock(filePath) {
   try {
     const existing = JSON.parse(fs.readFileSync(lockPath, "utf8"));
     if (existing.pid === process.pid) {
+      // Guard: refuse to remove if lockPath has been replaced with a symlink
+      try {
+        if (fs.lstatSync(lockPath).isSymbolicLink()) {
+          process.stderr.write(
+            `[safe-fs] WARNING: lock path is a symlink, refusing to remove: ${lockPath}\n`
+          );
+          return;
+        }
+      } catch {
+        // lstat failed — lock already gone
+        return;
+      }
       fs.rmSync(lockPath, { force: true });
     }
   } catch (err) {

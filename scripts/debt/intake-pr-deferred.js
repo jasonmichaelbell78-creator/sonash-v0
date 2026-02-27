@@ -268,7 +268,13 @@ Example:
 
   // Write to MASTER_DEBT.jsonl + raw/deduped.jsonl
   console.log("\n📝 Writing to MASTER_DEBT.jsonl + raw/deduped.jsonl...");
-  appendMasterDebtSync([newItem]);
+  try {
+    appendMasterDebtSync([newItem]);
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`\n❌ Failed to write to MASTER_DEBT.jsonl: ${errMsg}`);
+    process.exit(1);
+  }
 
   // Log intake activity
   logIntake({
