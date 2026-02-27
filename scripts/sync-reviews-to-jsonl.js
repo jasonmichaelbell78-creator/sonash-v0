@@ -364,7 +364,7 @@ function parseMarkdownReviews(content) {
         raw
       );
     if (patternSection) {
-      const sectionBullets = patternSection[1].matchAll(/^- \*?\*?([^*:\n]+)/gm);
+      const sectionBullets = patternSection[1].matchAll(/^\s*-\s+\*?\*?([^*:\n]+)/gm);
       for (const m of sectionBullets) {
         const pattern = m[1]
           .trim()
@@ -372,7 +372,12 @@ function parseMarkdownReviews(content) {
           .replaceAll(/[^a-z0-9\s-]/g, "")
           .replaceAll(/\s+/g, "-")
           .slice(0, 60);
-        if (pattern && pattern.length > 3 && !review.patterns.includes(pattern)) {
+        if (
+          pattern &&
+          pattern.length > 3 &&
+          !PATTERN_SKIP.has(pattern) &&
+          !review.patterns.includes(pattern)
+        ) {
           review.patterns.push(pattern);
         }
       }
@@ -886,6 +891,19 @@ function applySyncEntries(missing, missingReviews, missingRetros) {
 }
 
 /**
+ * Coerce an id value (number or string) to a finite integer, or Number.NaN.
+ * Extracted to reduce cognitive complexity in loadExistingReviewObjects.
+ *
+ * @param {unknown} id - The id value from a parsed JSONL object
+ * @returns {number} Finite integer or Number.NaN
+ */
+function parseNumericId(id) {
+  if (typeof id === "number") return id;
+  if (typeof id === "string") return Number.parseInt(id, 10);
+  return Number.NaN;
+}
+
+/**
  * Load full JSONL review objects keyed by numeric id for content comparison.
  * Returns a Map<number, object>. Skips malformed lines silently.
  */
@@ -898,12 +916,7 @@ function loadExistingReviewObjects() {
       for (const line of jsonlRaw.split("\n")) {
         try {
           const obj = JSON.parse(line);
-          const idNum =
-            typeof obj.id === "number"
-              ? obj.id
-              : typeof obj.id === "string"
-                ? Number.parseInt(obj.id, 10)
-                : NaN;
+          const idNum = parseNumericId(obj.id);
           if (Number.isFinite(idNum)) existingById.set(idNum, obj);
         } catch {
           /* skip malformed */

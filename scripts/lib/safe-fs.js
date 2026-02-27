@@ -293,6 +293,9 @@ function acquireLock(filePath, timeoutMs) {
   });
   const deadline = Date.now() + timeout;
 
+  // Ensure lock directory exists (supports first-write scenarios)
+  fs.mkdirSync(path.dirname(lockPath), { recursive: true });
+
   while (true) {
     guardLockSymlink(lockPath);
     try {
@@ -369,6 +372,28 @@ const DEFAULT_DEDUPED_PATH = path.join(DEBT_DIR, "raw", "deduped.jsonl");
  * @param {string} [options.masterPath] - Override MASTER_DEBT.jsonl path
  * @param {string} [options.dedupedPath] - Override deduped.jsonl path
  */
+/**
+ * Atomically write content to a file via a temp file + rename.
+ * Cleans up the temp file on failure.
+ *
+ * @param {string} targetPath - Destination file path
+ * @param {string} content - Content to write
+ */
+function atomicWriteViaTmp(targetPath, content) {
+  const tmpPath = `${targetPath}.tmp.${process.pid}`;
+  try {
+    safeWriteFileSync(tmpPath, content);
+    safeRenameSync(tmpPath, targetPath);
+  } catch (err) {
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {
+      /* cleanup */
+    }
+    throw err;
+  }
+}
+
 function writeMasterDebtSync(items, options) {
   const masterPath = options?.masterPath || DEFAULT_MASTER_PATH;
   const dedupedPath = options?.dedupedPath || DEFAULT_DEDUPED_PATH;
@@ -378,33 +403,8 @@ function writeMasterDebtSync(items, options) {
     fs.mkdirSync(path.dirname(masterPath), { recursive: true });
     fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
 
-    // Atomic write to MASTER
-    const tmpPath = `${masterPath}.tmp.${process.pid}`;
-    try {
-      safeWriteFileSync(tmpPath, content);
-      safeRenameSync(tmpPath, masterPath);
-    } catch (err) {
-      try {
-        fs.unlinkSync(tmpPath);
-      } catch {
-        /* cleanup */
-      }
-      throw err;
-    }
-
-    // Sync deduped.jsonl to match (full rewrite)
-    const dedupTmp = `${dedupedPath}.tmp.${process.pid}`;
-    try {
-      safeWriteFileSync(dedupTmp, content);
-      safeRenameSync(dedupTmp, dedupedPath);
-    } catch (err) {
-      try {
-        fs.unlinkSync(dedupTmp);
-      } catch {
-        /* cleanup */
-      }
-      throw err;
-    }
+    atomicWriteViaTmp(masterPath, content);
+    atomicWriteViaTmp(dedupedPath, content);
   });
 }
 
@@ -428,8 +428,10 @@ function appendMasterDebtSync(newItems, options) {
     fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
 
     // Capture sizes for rollback on partial failure
-    const masterSizeBefore = fs.existsSync(masterPath) ? fs.statSync(masterPath).size : 0;
-    const dedupedSizeBefore = fs.existsSync(dedupedPath) ? fs.statSync(dedupedPath).size : 0;
+    const masterExistedBefore = fs.existsSync(masterPath);
+    const dedupedExistedBefore = fs.existsSync(dedupedPath);
+    const masterSizeBefore = masterExistedBefore ? fs.statSync(masterPath).size : 0;
+    const dedupedSizeBefore = dedupedExistedBefore ? fs.statSync(dedupedPath).size : 0;
 
     try {
       safeAppendFileSync(masterPath, content);
@@ -437,12 +439,15 @@ function appendMasterDebtSync(newItems, options) {
     } catch (err) {
       // Roll back any partial append to maintain MASTER <-> deduped consistency
       try {
-        fs.truncateSync(masterPath, masterSizeBefore);
+        if (!masterExistedBefore && masterSizeBefore === 0) fs.rmSync(masterPath, { force: true });
+        else fs.truncateSync(masterPath, masterSizeBefore);
       } catch {
         /* best-effort */
       }
       try {
-        fs.truncateSync(dedupedPath, dedupedSizeBefore);
+        if (!dedupedExistedBefore && dedupedSizeBefore === 0)
+          fs.rmSync(dedupedPath, { force: true });
+        else fs.truncateSync(dedupedPath, dedupedSizeBefore);
       } catch {
         /* best-effort */
       }

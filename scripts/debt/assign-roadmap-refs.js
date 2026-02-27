@@ -284,7 +284,7 @@ function main() {
       const allItems = [];
       for (let i = 0; i < updatedLines.length; i++) {
         const line = updatedLines[i];
-        if (!line || !line.trim()) continue;
+        if (!line?.trim()) continue;
         try {
           allItems.push(JSON.parse(line));
         } catch {

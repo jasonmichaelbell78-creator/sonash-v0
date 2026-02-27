@@ -499,13 +499,23 @@ function updateVersionHistory(content, newPatterns, consolidationNumber, range, 
   const newRow = `| ${newVersion}     | ${today}   | **CONSOLIDATION #${consolidationNumber}:** Auto-added ${newPatterns.length} patterns (${shown}${more}). Source: Reviews #${range.start}-#${range.end}. |`;
 
   // Insert new row immediately after the table separator line (| --- |)
+  // Uses string parsing instead of regex to avoid backtracking DoS (S5852 two-strikes)
   const versionHeaderIdx = content.indexOf("## Version History");
   if (versionHeaderIdx !== -1) {
     const afterHeader = content.slice(versionHeaderIdx);
-    const sepRe = /^\|\s*-{3,}.*\|\s*$/m;
-    const sepMatch = sepRe.exec(afterHeader);
-    if (sepMatch) {
-      const sepAbsIdx = versionHeaderIdx + sepMatch.index;
+    const lines = afterHeader.split("\n");
+    let sepOffset = 0;
+    let foundSep = false;
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("|") && trimmed.endsWith("|") && trimmed.includes("---")) {
+        foundSep = true;
+        break;
+      }
+      sepOffset += line.length + 1; // +1 for the \n
+    }
+    if (foundSep) {
+      const sepAbsIdx = versionHeaderIdx + sepOffset;
       const sepLineEnd = content.indexOf("\n", sepAbsIdx);
       if (sepLineEnd !== -1) {
         content = content.slice(0, sepLineEnd + 1) + newRow + "\n" + content.slice(sepLineEnd + 1);

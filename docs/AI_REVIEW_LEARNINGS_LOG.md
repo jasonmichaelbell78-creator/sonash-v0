@@ -1746,6 +1746,26 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #403: Maintenance PR R4 (2026-02-27)
+
+- **Source**: SonarCloud (5) + Qodo Compliance (5) + Qodo PR Suggestions (4)
+- **PR**: Maintenance — pipeline repair + deep-plan automation + TDMS refresh
+- **Items**: 14 total → 9 actionable (5 compliance batch-rejected), 8 fixed, 0
+  deferred, 1 rejected (retro dedupe key over-strengthening)
+- **Key fix**: S5852 regex DoS — replaced backtracking regex with string parsing
+  (two-strikes rule). R3 applied regex per Qodo suggestion, R4 SonarCloud
+  flagged it as security hotspot. Lesson: reviewer suggestions can introduce new
+  issues; always validate regex for backtracking before adopting.
+- **Pattern**: review-suggestion-creates-new-issue — when a reviewer suggestion
+  is applied verbatim and the next round flags the result, apply the two-strikes
+  rule (Pre-check #10) to replace with a fundamentally different approach rather
+  than patching.
+- **CC reduction pattern**: When SonarCloud flags CC on a function you just
+  modified, extract the added logic into a named helper to keep CC within
+  budget. The nested ternary for ID parsing → `parseNumericId()` helper.
+
+---
+
 #### Review #402: Maintenance PR R3 (2026-02-27)
 
 - **Source**: Qodo Compliance (5) + Qodo PR Suggestions (12)
