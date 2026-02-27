@@ -644,6 +644,384 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews
 
+### PR #396 Retrospective (2026-02-27)
+
+_ESLint + pattern compliance fixes. PR scope: 27 items across safe-fs.js,
+check-pattern-compliance.js, categorize-and-assign.js, generate-views.js, and
+test files. 2 review rounds._
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                      |
+| -------------- | ---------------------------------------------------------- |
+| Rounds         | 2 (R1: 2026-02-26, R2: 2026-02-26)                         |
+| Total items    | 48 (38 R1 + 10 R2)                                         |
+| Fixed          | 30                                                         |
+| Deferred       | 1 (N/A — out of scope)                                     |
+| Rejected       | 16                                                         |
+| Duplicate      | 1                                                          |
+| Files changed  | ~15 (safe-fs.js, check-pattern-compliance.js, tests, etc.) |
+| Review sources | Qodo Compliance, SonarCloud, Qodo PR Suggestions, CI       |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                                   | Items  | Fixed  | Def.  | Rej.   | Key Patterns                                                                                                                       |
+| --------- | ---------- | ---------------------------------------- | ------ | ------ | ----- | ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| R1        | 2026-02-26 | Qodo Compliance (26), SonarCloud (12)    | 38     | 24     | 1     | 12     | safe-fs security (symlink guard, dir-over-file, atomic write cleanup, Unicode), path containment, regex broadening, unused imports |
+| R2        | 2026-02-26 | Qodo Compliance (4), Qodo PR (7), CI (1) | 10     | 6      | 0     | 4      | Same-path rename guard, test regex alignment, POSIX path normalization                                                             |
+| **Total** |            |                                          | **48** | **30** | **1** | **16** |                                                                                                                                    |
+
+**Trajectory:** 38 → 10. Strong convergence — 74% reduction in items from R1 to
+R2.
+
+**Severity distribution:** 0 CRITICAL, 6 MAJOR (security: symlink guard,
+same-path rename, atomic cleanup), 18 MINOR (code quality, regex), 24 TRIVIAL
+(unused imports, cosmetic). The security fixes in safe-fs.js were high-value
+real bug fixes.
+
+#### Ping-Pong Chains
+
+##### Chain 1: Test Regex Alignment (R1→R2, 2 rounds)
+
+| Round | What Happened                                                                          | Files Affected              | Root Cause                                     |
+| ----- | -------------------------------------------------------------------------------------- | --------------------------- | ---------------------------------------------- |
+| R1    | Broadened `no-raw-fs-write` regex with `\b` word boundary to detect destructured calls | check-pattern-compliance.js | Regex improvement                              |
+| R2    | Test file regex didn't match production regex (`\b(?:fs\.)?` pattern) — CI failing     | pattern-compliance.test.js  | Test not updated when production regex changed |
+
+**Resolution:** Aligned test regex with production regex pattern. Added
+`String.raw` for clarity.
+
+**Avoidable rounds:** 0.5. When modifying a regex in production code, the
+corresponding test regex should be updated in the same commit. This is a
+specific case of the general pattern: "when changing behavior, update tests in
+the same commit."
+
+**Prevention:** pr-review pre-check: after modifying any regex in a checker
+script, verify the corresponding test file uses the same pattern.
+
+##### Chain 2: Qodo Compliance Repeat Rejections (R1→R2, 2 rounds)
+
+| Round | What Happened                                              | Files Affected | Root Cause                          |
+| ----- | ---------------------------------------------------------- | -------------- | ----------------------------------- |
+| R1    | Rejected: TOCTOU, audit trails, logging — design decisions | safe-fs.js     | Qodo Compliance standard findings   |
+| R2    | Same 3 items re-raised + 1 ESM/CJS false positive          | safe-fs.js     | Qodo doesn't track prior rejections |
+
+**Resolution:** Batch-rejected per pr-review v3.3 Step 0.5 #13 with "same
+justification as R1" note.
+
+**Avoidable rounds:** 0.5 (4 of R2's 10 items were repeats/FP, ~40% of the
+round).
+
+**Total avoidable rounds: ~1 of 2 (~50%)**
+
+#### Rejection Analysis
+
+| Category                         | Count | Round(s) | Specific Items                                   | Justification                                 |
+| -------------------------------- | ----- | -------- | ------------------------------------------------ | --------------------------------------------- |
+| S4036 PATH binary hijacking (FP) | 1     | R1       | Hardcoded "node" in execSync                     | No shell injection risk, hardcoded binary     |
+| Arbitrary file overwrite (FP)    | 1     | R1       | safe-fs.js write — covered by directory guard    | Already guarded by isSafeToWrite              |
+| Missing audit log                | 1     | R1       | Single-user CLI tool, not a service              | CLI tools don't need audit trails             |
+| EXDEV rollback                   | 1     | R1       | Atomic write cross-device — copy succeeds = safe | Copy is the rollback mechanism itself         |
+| Error basename exposure          | 1     | R1       | Internal tool, not user-facing                   | Error paths in internal CLI are acceptable    |
+| Unbounded payload                | 1     | R1       | Internally constructed data                      | No external input                             |
+| No allowlist                     | 1     | R1       | All callers are hardcoded                        | Allowlist unnecessary for known callers       |
+| Consolidate isSafeToWrite        | 1     | R1       | Defensive fallback by design                     | Intentional redundancy                        |
+| Remove limit(200)                | 1     | R1       | Deliberate unbounded-query fix                   | The limit IS the fix                          |
+| test.before() suggestion         | 1     | R1       | Sequential test runner                           | test.before() not needed in sequential runner |
+| Pre-existing try/catch           | 1     | R1       | Out of scope for this PR                         | Pre-existing code, not changed in this PR     |
+| Temp cleanup concurrency         | 1     | R1       | Sequential execution                             | No concurrent access to temp files            |
+| Qodo Compliance repeats          | 3     | R2       | TOCTOU, audit trails, logging — same as R1       | Batch-rejected per pr-review v3.3             |
+| ESM/CJS import (FP)              | 1     | R2       | Runtime verified — module works correctly        | False positive — verified at runtime          |
+
+**Rejection accuracy:** 16/16 correct (100%). No wrongly rejected items
+resurfaced — all rejections held.
+
+**False-positive rate by source:**
+
+| Source           | Total Items | Rejected | FP Rate | Notes                                        |
+| ---------------- | ----------- | -------- | ------- | -------------------------------------------- |
+| Qodo Compliance  | 30          | 15       | 50%     | 12 R1 + 3 R2 repeats. Standard FP categories |
+| SonarCloud       | 12          | 0        | 0%      | All 12 items were actionable                 |
+| Qodo Suggestions | 7           | 1        | 14%     | ESM/CJS false positive                       |
+| CI               | 1           | 0        | 0%      | Test alignment fix was valid                 |
+
+**Trend:** Qodo Compliance FP rate (50%) continues high, driven by known
+categories (TOCTOU, audit trails, S4036). SonarCloud maintains 0% FP — all items
+actionable.
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                                      | This PR  | Cross-PR History      | Already Automated?       | Recommended Action                                          | Est. Effort |
+| -------------------------------------------- | -------- | --------------------- | ------------------------ | ----------------------------------------------------------- | ----------- |
+| Qodo Compliance repeat rejections            | R1→R2    | #390-#395             | **YES** (pr-review v3.3) | Done — batch rejection working as designed                  | Done        |
+| Test regex not updated with production regex | R1→R2    | New pattern           | No                       | pr-review pre-check: verify test patterns match production  | ~5 min      |
+| Unused import cleanup                        | R1 (11x) | Common across all PRs | Partial (ESLint)         | ESLint `no-unused-imports` rule should catch at commit time | ~10 min     |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                          | Implemented?              | Impact on PR #396                                 | Avoidable Rounds Caused |
+| ------- | ------------------------------------------- | ------------------------- | ------------------------------------------------- | ----------------------- |
+| PR #395 | Verify Template #45 JSON key quoting        | **YES** (done in #395)    | No trigger (no secret redaction in #396)          | 0                       |
+| PR #394 | FIX_TEMPLATE #42-44                         | **YES**                   | No trigger (no ESLint rule creation in #396)      | 0                       |
+| PR #394 | Split large PRs                             | **FOLLOWED**              | PR #396 is focused — ESLint compliance fixes only | -0.5 (saved ~0.5 round) |
+| PR #392 | Cross-platform path normalization pre-check | **YES** (pre-check #14)   | Applied in R2 — POSIX normalization for test file | 0                       |
+| PR #392 | JSONL schema validation                     | **NOT DONE** (DEBT-11312) | No trigger (no JSONL work in #396)                | 0                       |
+
+**Implemented rate:** 4/5 (80%). All "do now" items from recent retros were
+implemented or followed. Only JSONL schema validation remains deferred.
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Avoidable Rounds | Avoidable % | Rejections | Rej. Rate | Key Issue                             |
+| -------- | ------ | ----------- | ---------------- | ----------- | ---------- | --------- | ------------------------------------- |
+| #391     | 3      | 122         | ~3               | 100%        | 7          | 6%        | Path containment + symlink + dedup    |
+| #392     | 4      | 54          | ~2               | 50%         | 12         | 22%       | Logic + path normalization + JSONL    |
+| #393     | 2      | 15          | ~0               | 0%          | 9          | 60%       | Over-engineering cleanup (mostly FP)  |
+| #394     | 12     | ~321        | ~5               | 42%         | ~112       | 35%       | Large PR, CC, ChainExpression         |
+| #395     | 2      | 18          | ~0               | 0%          | 1          | 6%        | Focused: security + data quality      |
+| **#396** | **2**  | **48**      | **~1**           | **50%**     | **16**     | **33%**   | **ESLint compliance + safe-fs fixes** |
+
+**Persistent cross-PR patterns (updated):**
+
+| Pattern                       | PRs Affected           | Times Rec. | Status                        | Trend                             |
+| ----------------------------- | ---------------------- | ---------- | ----------------------------- | --------------------------------- |
+| Large PR scope → more rounds  | #383-#394              | **6x**     | **FOLLOWED** in #395, #396    | **Improving** — 3rd clean follow  |
+| TDMS data quality             | #383, #391, #392, #395 | **4x**     | Not automated (DEBT-11312)    | **Stable** — no trigger in #396   |
+| Qodo Compliance repeat reject | #390-#396              | **5x**     | **RESOLVED** (pr-review v3.3) | **Resolved** — batch-reject works |
+| Test/prod regex sync          | #396                   | **1x**     | Not automated                 | **New** — first occurrence        |
+
+#### Skills/Templates to Update
+
+| Item | Target Document             | Change                                                                                        | Priority | Est. Effort |
+| ---- | --------------------------- | --------------------------------------------------------------------------------------------- | -------- | ----------- |
+| 1    | pr-review SKILL.md Step 0.5 | Add pre-check #18: "After modifying regex in checker, verify test file uses matching pattern" | Do now   | ~5 min      |
+| 2    | CODE_PATTERNS.md            | Add pattern: same-path rename guard (`src === dest` early return before destructive ops)      | Do now   | ~3 min      |
+
+#### Process Improvements
+
+1. **safe-fs.js received substantive security fixes** — Symlink guard,
+   directory- over-file guard, tmp cleanup on atomic write failure, Unicode
+   codePointAt, and same-path rename guard are all real bugs with data-loss
+   potential. This PR had the highest ratio of genuine security findings to
+   total items.
+
+2. **SonarCloud 0% FP rate** — All 12 SonarCloud items in R1 were actionable.
+   This continues to validate SonarCloud as the highest-signal review source.
+
+3. **Qodo Compliance FP rate remains high (50%)** — Dominated by known FP
+   categories (TOCTOU on single-user CLI, audit trails, S4036 PATH). These could
+   be suppressed via `.qodo/suppression.yaml` to reduce noise.
+
+4. **Test-production regex sync is a new pattern** — When modifying a regex in
+   production code, the test should be updated in the same commit. This caused
+   ~0.5 avoidable rounds in R2. A pr-review pre-check can prevent recurrence.
+
+5. **Unused import cleanup (11 files)** — `writeFileSync` imports were removed
+   from 11 files. This suggests the ESLint `no-unused-imports` rule should be
+   enabled at the pre-commit level to catch these automatically.
+
+#### Verdict
+
+**PR #396** had a **moderately efficient review cycle** — 2 rounds with 48
+items, 30 fixed. **~1 of 2 rounds partially avoidable (~50%)**, driven by:
+
+- Chain 1: Test regex not updated with production regex (R1→R2, ~0.5 avoidable)
+- Chain 2: Qodo Compliance repeat rejections (R1→R2, ~0.5 avoidable)
+
+**Trend: Consistent 2-round cycles for focused PRs.**
+
+| Metric         | #393 | #394 | #395 | **#396** | Direction |
+| -------------- | ---- | ---- | ---- | -------- | --------- |
+| Rounds         | 2    | 12   | 2    | **2**    | Stable    |
+| Items/round    | 7.5  | 26.8 | 9.0  | **24.0** | Higher\*  |
+| Avoidable %    | 0%   | 42%  | 0%   | **50%**  | Moderate  |
+| Rejection rate | 60%  | 35%  | 6%   | **33%**  | Moderate  |
+
+\*Higher items/round driven by Qodo Compliance's 26-item R1 dump (many standard
+boilerplate findings). Excluding Qodo Compliance FP: 12 SonarCloud + ~12
+actionable Qodo items = 24 genuine items / 2 rounds = 12 items/round.
+
+**The single highest-impact change:** Add Qodo Compliance suppressions for known
+FP categories (TOCTOU on CLI tools, audit trails, S4036 PATH on hardcoded
+binaries). This would reduce R1 from 38 to ~26 items and eliminate the repeat
+rejection chain entirely.
+
+**Positive signals:** (1) safe-fs.js received 6 genuine security fixes (symlink,
+directory guard, atomic cleanup, Unicode, same-path rename). (2) SonarCloud
+maintained 0% FP rate. (3) Pre-check #14 (POSIX normalization) applied
+successfully in R2. (4) Focused PR scope — 2 rounds, not 12.
+
+---
+
+### PR #395 Retrospective (2026-02-27)
+
+_Retro action items implementation + secret redaction hardening + TDMS data
+quality fixes. PR scope: ~12 files. 2 review rounds._
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                    |
+| -------------- | -------------------------------------------------------- |
+| Rounds         | 2 (R1: 2026-02-26, R2: 2026-02-26)                       |
+| Total items    | 18 (10 R1 + 8 R2)                                        |
+| Fixed          | 17                                                       |
+| Deferred       | 0                                                        |
+| Rejected       | 1                                                        |
+| Files changed  | ~12 (sanitize-error.js, sanitize-input.js, MASTER_DEBT)  |
+| Review sources | Qodo PR Suggestions, Gemini Code Assist, Qodo Compliance |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                                       | Items  | Fixed  | Def.  | Rej.  | Key Patterns                                                          |
+| --------- | ---------- | -------------------------------------------- | ------ | ------ | ----- | ----- | --------------------------------------------------------------------- |
+| R1        | 2026-02-26 | Qodo PR (9), Gemini (1), Qodo Compliance (2) | 10     | 10     | 0     | 0     | Secret redaction consolidation, escaped quotes, single-quote patterns |
+| R2        | 2026-02-26 | Qodo PR Suggestions (8)                      | 8      | 7      | 0     | 1     | JSON key quoting, TDMS data quality (5 DEBT entries)                  |
+| **Total** |            |                                              | **18** | **17** | **0** | **1** |                                                                       |
+
+**Trajectory:** 10 → 8. Clean convergence — no item count spikes.
+
+**Severity distribution:** 0 CRITICAL, 5 MAJOR (security), 8 MINOR (TDMS data),
+5 TRIVIAL (cosmetic). Security fixes were high-value, data fixes were routine.
+
+#### Ping-Pong Chains
+
+None found. Clean forward progression across both rounds. R2 items were entirely
+new findings (JSON key quoting, different DEBT entries), not regressions from R1
+fixes.
+
+#### Rejection Analysis
+
+| Category                       | Count | Round | Items                         | Justification                                      |
+| ------------------------------ | ----- | ----- | ----------------------------- | -------------------------------------------------- |
+| Schema convention disagreement | 1     | R2    | DEBT-7595 roadmap_ref null→"" | Standardized on `null` in R1; `""` is inconsistent |
+
+**Rejection accuracy:** 1/1 correct (100%). The `null` convention was
+established in R1 and applied consistently — changing back to `""` would create
+inconsistency.
+
+**False-positive rate by source:**
+
+| Source          | Total Items | Rejected | FP Rate | Notes                     |
+| --------------- | ----------- | -------- | ------- | ------------------------- |
+| Qodo PR         | 17          | 1        | 6%      | Lowest FP rate in series  |
+| Qodo Compliance | 2           | 0        | 0%      | Informational only        |
+| Gemini          | 1           | 0        | 0%      | Converged with Qodo on #1 |
+
+**Trend:** Extremely low rejection rate (6%). Multi-source convergence (Gemini +
+Qodo) on the secret redaction consolidation was high-signal — both identified
+the same gap independently.
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                             | This PR  | Cross-PR History    | Already Automated?      | Recommended Action                               | Est. Effort |
+| ----------------------------------- | -------- | ------------------- | ----------------------- | ------------------------------------------------ | ----------- |
+| Dual-file propagation (sanitize-\*) | R1 all 4 | #393 (same pattern) | **YES** (pre-check #17) | Done — propagation discipline followed correctly | Done        |
+| TDMS data quality (missing fields)  | R1-R2    | #392 R4, #391       | No                      | Schema validation in intake scripts (DEBT-11312) | ~30 min     |
+| Secret redaction pattern gaps       | R1       | #393 (quoted-value) | Partial (#45)           | FIX_TEMPLATE #45 updated with all edge cases     | Done        |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                            | Implemented?              | Impact on PR #395                                      | Avoidable Rounds Caused     |
+| ------- | --------------------------------------------- | ------------------------- | ------------------------------------------------------ | --------------------------- |
+| PR #394 | FIX_TEMPLATE #42 CC extraction                | **YES** (template exists) | No trigger (no ESLint rule work in #395)               | 0                           |
+| PR #394 | FIX_TEMPLATE #43 ChainExpression unwrap       | **YES** (template exists) | No trigger (no AST work in #395)                       | 0                           |
+| PR #394 | Split large PRs                               | **FOLLOWED**              | PR #395 is focused scope — retro actions only          | -0.5 (saved ~0.5 round)     |
+| PR #393 | Quoted-value secret redaction edge case tests | **YES** (this PR)         | Core feature — PR IS this implementation               | 0                           |
+| PR #392 | Cross-platform path normalization pre-check   | **YES** (pre-check #14)   | No trigger (no path work in #395)                      | 0                           |
+| PR #392 | JSONL schema validation in intake scripts     | **NOT DONE** (DEBT-11312) | TDMS data quality items surfaced again (5 in R1, 5 R2) | 0 (items found, not caused) |
+| PR #392 | Auto-increment review numbers from JSONL max  | **NOT DONE** (DEBT-7582)  | No collision in #395                                   | 0                           |
+
+**Implemented rate:** 5/7 (71%). All "do now" items from #394 and #393 were
+implemented. 2 deferred TDMS items remain open but caused zero avoidable rounds.
+
+**Impact of unimplemented items:** 0 avoidable rounds. The TDMS data quality
+items in R1/R2 were organic findings from the PR's own DEBT entries, not caused
+by missing schema validation. Schema validation would have prevented the bad
+data from being created initially, but the PR's fix was the correct remediation.
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | Avoidable Rounds | Avoidable % | Rejections | Rej. Rate | Key Issue                            |
+| -------- | ------ | ----------- | ---------------- | ----------- | ---------- | --------- | ------------------------------------ |
+| #388     | 7      | 144         | ~4.5             | 64%         | 29         | 20%       | Heuristic + regex + propagation      |
+| #390     | 4      | 25          | ~1.5             | 38%         | 4          | 16%       | Qodo repeats + date/cache fixes      |
+| #391     | 3      | 122         | ~3               | 100%        | 7          | 6%        | Path containment + symlink + dedup   |
+| #392     | 4      | 54          | ~2               | 50%         | 12         | 22%       | Logic + path normalization + JSONL   |
+| #393     | 2      | 15          | ~0               | 0%          | 9          | 60%       | Over-engineering cleanup (mostly FP) |
+| #394     | 12     | ~321        | ~5               | 42%         | ~112       | 35%       | Large PR, CC, ChainExpression        |
+| **#395** | **2**  | **18**      | **~0**           | **0%**      | **1**      | **6%**    | **Focused: security + data quality** |
+
+**Persistent cross-PR patterns (updated):**
+
+| Pattern                      | PRs Affected           | Times Rec. | Status                          | Trend                                 |
+| ---------------------------- | ---------------------- | ---------- | ------------------------------- | ------------------------------------- |
+| Large PR scope → more rounds | #383-#394              | **6x**     | **FOLLOWED** in #395            | **Improving** — 2nd clean follow      |
+| TDMS data quality            | #383, #391, #392, #395 | **4x**     | Not automated (DEBT-11312)      | **Recurring** — needs validation      |
+| Dual-file propagation        | #393, #395             | **2x**     | **RESOLVED** (pre-check #17)    | **Resolved** — discipline followed    |
+| Secret redaction gaps        | #393, #395             | **2x**     | **RESOLVED** (FIX_TEMPLATE #45) | **Resolved** — template comprehensive |
+
+#### Skills/Templates to Update
+
+| Item | Target Document  | Change                                                                                     | Priority | Est. Effort |
+| ---- | ---------------- | ------------------------------------------------------------------------------------------ | -------- | ----------- |
+| 1    | FIX_TEMPLATES.md | Verify Template #45 covers JSON key quoting (`"token": "value"`)                           | Do now   | ~2 min      |
+| 2    | CODE_PATTERNS.md | Add pattern: TDMS DEBT entry must have `source` field and `null` for empty optional fields | Do now   | ~3 min      |
+
+**Note:** No new templates or pre-checks needed — PR #395 validated existing
+templates (#45) and pre-checks (#17). This is a positive signal that the tooling
+from prior retros is working.
+
+#### Process Improvements
+
+1. **Focused PR scope continues to pay off** — PR #395 had 2 rounds, 18 items,
+   0% avoidable. Compare: PR #394 had 12 rounds with 42% avoidable. The "retro
+   action items" scope was tight and well-defined.
+
+2. **Propagation discipline held** — All 4 security fixes in R1 were propagated
+   between `sanitize-error.js` and `sanitize-input.js` in the same commit. This
+   is pre-check #17 working as designed.
+
+3. **Multi-source convergence is high-signal** — Gemini and Qodo independently
+   identified the secret redaction consolidation gap. When 2+ reviewers converge
+   on the same finding, priority should be elevated automatically.
+
+4. **TDMS data quality is the remaining systemic issue** — 10 of 18 items were
+   TDMS data fixes (missing fields, duplicates, truncated titles). This is now
+   the 4th PR where TDMS data quality appears. Schema validation (DEBT-11312) is
+   the structural fix.
+
+5. **FIX_TEMPLATE #45 is production-validated** — Created in PR #393, applied
+   and refined in PR #395. The template correctly guided the secret redaction
+   improvements. R2's JSON key quoting addition extended the template further.
+
+#### Verdict
+
+**PR #395** had an **efficient review cycle** — 2 rounds with 18 items, 17
+fixed. **~0 rounds avoidable (0%)**. This is the best efficiency score since PR
+#393.
+
+**Trend: Continued improvement for focused PRs.**
+
+| Metric         | #392 | #393 | #394 | **#395** | Direction |
+| -------------- | ---- | ---- | ---- | -------- | --------- |
+| Rounds         | 4    | 2    | 12   | **2**    | Improving |
+| Items/round    | 13.5 | 7.5  | 26.8 | **9.0**  | Improving |
+| Avoidable %    | 50%  | 0%   | 42%  | **0%**   | Improving |
+| Rejection rate | 22%  | 60%  | 35%  | **6%**   | Improving |
+
+**The single highest-impact change:** Implement JSONL schema validation
+(DEBT-11312). This would eliminate ~55% of all items in this PR (10 of 18 were
+TDMS data quality fixes that schema validation would have prevented at intake
+time).
+
+**Positive signals:** (1) 0% avoidable rounds — only the 2nd PR to achieve this
+(after #393). (2) Propagation discipline (pre-check #17) fully followed — all
+sanitize-\* fixes cross-propagated. (3) FIX_TEMPLATE #45 production-validated
+and extended. (4) Lowest rejection rate in the series (6%). (5) Multi-source
+convergence confirmed as high-signal pattern.
+
+---
+
 ### PR #392 Retrospective (2026-02-25)
 
 _Covers 4 review rounds on `check-propagation.js` pattern checker + JSONL data

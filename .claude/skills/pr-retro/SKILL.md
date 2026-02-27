@@ -5,8 +5,8 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.0
-**Last Updated:** 2026-02-26
+**Document Version:** 3.1
+**Last Updated:** 2026-02-27
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -79,6 +79,8 @@ Collect all PR numbers that already have retros.
 
 A PR needs a retro only if it had review activity. Skip PRs that:
 
+- Are **below the retro baseline** — PR number < 395. All PRs before #395 have
+  been retroed or explicitly excluded as of 2026-02-27.
 - Have **zero review entries** in `docs/AI_REVIEW_LEARNINGS_LOG.md`,
   `docs/archive/REVIEWS_*.md`, or `docs/reviews/reviews.jsonl`
 - Are **automated/bot PRs** (author login contains `[bot]`, or title starts with
@@ -309,6 +311,7 @@ Before saving, verify ALL mandatory sections present:
 
 | Version | Date       | Description                                                                                                                      |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter. All earlier PRs retroed or excluded.                                      |
 | 3.0     | 2026-02-26 | Upgrade Pattern 8 to BLOCKING. Add Patterns 12-13 (ChainExpression propagation, fix-one-audit-all). Source: PR #393/#394 retros. |
 | 2.9     | 2026-02-26 | Add dashboard mode: `/pr-retro` (no args) shows missing retros.                                                                  |
 | 2.8     | 2026-02-25 | Add Pattern 11 (cross-platform path normalization). Source: PR #392 retro.                                                       |
