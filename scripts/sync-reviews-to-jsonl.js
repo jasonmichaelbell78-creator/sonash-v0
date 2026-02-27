@@ -358,15 +358,42 @@ function parseMarkdownReviews(content) {
     }
 
     // Format 4: bullet items under "Key Patterns" or "Patterns Identified" sections
-    // Bounded capture to prevent catastrophic backtracking on malformed input
-    const patternSection =
-      /\*\*(?:Key Patterns|Patterns Identified)[^*]*\*\*:?\s*\n([\s\S]{0,2000}?)(?=\n\*\*|\n---|\n#{2,4}\s|$)/.exec(
-        raw
-      );
-    if (patternSection) {
-      const sectionBullets = patternSection[1].matchAll(/^\s*-\s+\*?\*?([^*:\n]+)/gm);
-      for (const m of sectionBullets) {
-        const pattern = m[1]
+    // String-based section extraction to avoid regex backtracking (S5852 proactive sweep)
+    const sectionStart =
+      raw.indexOf("**Key Patterns") !== -1
+        ? raw.indexOf("**Key Patterns")
+        : raw.indexOf("**Patterns Identified");
+    let sectionBody = null;
+    if (sectionStart !== -1) {
+      // Skip past the header line to get the body
+      const headerEnd = raw.indexOf("\n", sectionStart);
+      if (headerEnd !== -1) {
+        const rest = raw.slice(headerEnd + 1, headerEnd + 1 + 2000);
+        // Find the end: next bold header, horizontal rule, or markdown heading
+        const lines = rest.split("\n");
+        const bodyLines = [];
+        for (const ln of lines) {
+          if (ln.startsWith("**") || ln.startsWith("---") || /^#{2,4}\s/.test(ln)) break;
+          bodyLines.push(ln);
+        }
+        sectionBody = bodyLines.join("\n");
+      }
+    }
+    if (sectionBody) {
+      // Line-by-line string parsing to avoid regex backtracking (S5852 two-strikes)
+      for (const bulletLine of sectionBody.split("\n")) {
+        const trimmed = bulletLine.trimStart();
+        if (!trimmed.startsWith("-")) continue;
+        // Strip leading "- " and optional bold markers "**"
+        let text = trimmed.slice(1).trimStart();
+        if (text.startsWith("**")) text = text.slice(2);
+        else if (text.startsWith("*")) text = text.slice(1);
+        // Stop at colon or star (captures pattern name only)
+        const colonIdx = text.indexOf(":");
+        const starIdx = text.indexOf("*");
+        if (colonIdx > 0 && (starIdx < 0 || colonIdx < starIdx)) text = text.slice(0, colonIdx);
+        else if (starIdx > 0) text = text.slice(0, starIdx);
+        const pattern = text
           .trim()
           .toLowerCase()
           .replaceAll(/[^a-z0-9\s-]/g, "")

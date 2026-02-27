@@ -1746,6 +1746,25 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #404: Maintenance PR R5 (2026-02-27)
+
+- **Source**: SonarCloud (1) + Qodo Compliance (5) + Qodo PR Suggestions (2)
+- **PR**: Maintenance — pipeline repair + deep-plan automation + TDMS refresh
+- **Items**: 8 total → 3 actionable (5 compliance batch-rejected), 1 fixed, 0
+  deferred, 2 rejected (atomicWriteViaTmp already guarded by inner calls; inline
+  pre-filter duplicates existing post-normalization check)
+- **Key fix**: S5852 regex in Format 4 bullet extraction — replaced matchAll
+  regex with line-by-line string parsing (same two-strikes pattern as R4).
+  SonarCloud flags `\s*-\s+` as backtracking even when input is bounded to 2000
+  chars. Lesson: when SonarCloud flags any regex in a file, proactively sweep
+  ALL regexes in that file (Pre-check #10) to avoid serial rounds.
+- **Pattern**: serial-regex-flagging — SonarCloud flags regexes one-per-round.
+  After fixing one, the next round flags another in the same file. Prevention:
+  on first S5852 flag, grep entire file for all regex patterns and replace any
+  with backtracking potential in the same commit.
+
+---
+
 #### Review #403: Maintenance PR R4 (2026-02-27)
 
 - **Source**: SonarCloud (5) + Qodo Compliance (5) + Qodo PR Suggestions (4)
