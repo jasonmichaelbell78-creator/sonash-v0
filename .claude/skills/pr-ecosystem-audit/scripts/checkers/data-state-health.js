@@ -188,12 +188,48 @@ function validateStateFiles(rootDir) {
   return { schemaValidCount, schemaTotalCount };
 }
 
+/**
+ * Check if consolidation state is stuck at zero (never completed).
+ * This was a real bug found in Session #193.
+ */
+function checkConsolidationStateHealth(rootDir) {
+  const consolidationPath = path.join(rootDir, ".claude", "state", "consolidation.json");
+  const reviewsJsonlPath = path.join(rootDir, ".claude", "state", "reviews.jsonl");
+  try {
+    if (!fs.existsSync(consolidationPath)) {
+      return { stuckAtZero: false, consolidationNumber: -1, lastConsolidated: -1 };
+    }
+    const state = JSON.parse(fs.readFileSync(consolidationPath, "utf8"));
+    const consolidationNumber = state.consolidationNumber || 0;
+    const lastConsolidated = parseInt(
+      String(state.lastConsolidatedReview || 0)
+        .toString()
+        .match(/(\d+)/)?.[1] || "0",
+      10
+    );
+
+    // Check if consolidation state is stuck at zero while reviews exist
+    let stuckAtZero = false;
+    if (consolidationNumber === 0 && lastConsolidated === 0 && fs.existsSync(reviewsJsonlPath)) {
+      const content = fs.readFileSync(reviewsJsonlPath, "utf8").trim();
+      const reviewCount = content.split("\n").filter(Boolean).length;
+      // Stuck if there are 10+ reviews but consolidation never ran
+      stuckAtZero = reviewCount >= 10;
+    }
+
+    return { stuckAtZero, consolidationNumber, lastConsolidated };
+  } catch {
+    return { stuckAtZero: false, consolidationNumber: -1, lastConsolidated: -1 };
+  }
+}
+
 function checkStateFileConsistency(rootDir, findings) {
   const bench = BENCHMARKS.state_file_consistency;
 
   const syncCheckPass = runSyncCheck(rootDir);
   const pointer = checkConsolidationPointer(rootDir);
   const stateValidation = validateStateFiles(rootDir);
+  const consolidationHealth = checkConsolidationStateHealth(rootDir);
 
   const schemaTotalCount = pointer.schemaTotalCount + stateValidation.schemaTotalCount;
   const schemaValidCount = pointer.schemaValidCount + stateValidation.schemaValidCount;
@@ -239,6 +275,24 @@ function checkStateFileConsistency(rootDir, findings) {
     });
   }
 
+  if (consolidationHealth.stuckAtZero) {
+    findings.push({
+      id: "PEA-503",
+      category: "state_file_consistency",
+      domain: DOMAIN,
+      severity: "error",
+      message: "Consolidation state stuck at #0 — pipeline never completed",
+      details:
+        "consolidation.json shows consolidationNumber=0 and lastConsolidatedReview=0 despite 10+ reviews existing. " +
+        "Run `node scripts/run-consolidation.js --apply` to fix. Root cause: state corruption or missing initial run.",
+      impactScore: 90,
+      frequency: 1,
+      blastRadius: 4,
+      patchType: "consolidation_command",
+      patchImpact: "Restore consolidation pipeline from stuck state",
+    });
+  }
+
   return {
     score: avgScore,
     rating: avgScore >= 90 ? "good" : avgScore >= 70 ? "average" : "poor",
@@ -247,11 +301,157 @@ function checkStateFileConsistency(rootDir, findings) {
       orphanedEntries,
       schemaValidPct,
       stateFilesChecked: schemaTotalCount,
+      consolidationNumber: consolidationHealth.consolidationNumber,
+      consolidationStuckAtZero: consolidationHealth.stuckAtZero,
     },
   };
 }
 
 // ── Category 6: Archive & Retention Health ─────────────────────────────────
+
+/**
+ * Check heading format consistency across active log and archive files.
+ * Standard format is `#### Review #N`. Newer reviews sometimes use `### Review #N`.
+ * Returns { inconsistentHeadings, totalHeadings }.
+ */
+function checkHeadingFormatConsistency(rootDir) {
+  const learningsPath = path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+  const archiveDir = path.join(rootDir, "docs", "archive");
+  let totalHeadings = 0;
+  let inconsistentHeadings = 0;
+
+  const standardRe = /^####\s+Review\s+#\d+/gm;
+  const nonStandardRe = /^###\s+Review\s+#\d+/gm; // 3 hashes instead of 4
+  const twoHashRe = /^##\s+Review\s+#\d+/gm; // 2 hashes
+
+  function countInContent(content) {
+    const standard = (content.match(standardRe) || []).length;
+    const nonStd3 = (content.match(nonStandardRe) || []).length;
+    const nonStd2 = (content.match(twoHashRe) || []).length;
+    return { standard, nonStandard: nonStd3 + nonStd2 };
+  }
+
+  try {
+    if (fs.existsSync(learningsPath)) {
+      const content = fs.readFileSync(learningsPath, "utf8");
+      const counts = countInContent(content);
+      totalHeadings += counts.standard + counts.nonStandard;
+      inconsistentHeadings += counts.nonStandard;
+    }
+  } catch {
+    // skip
+  }
+
+  try {
+    if (fs.existsSync(archiveDir)) {
+      const archiveFiles = fs.readdirSync(archiveDir).filter((f) => f.startsWith("REVIEWS_"));
+      for (const af of archiveFiles) {
+        try {
+          const content = fs.readFileSync(path.join(archiveDir, af), "utf8");
+          const counts = countInContent(content);
+          totalHeadings += counts.standard + counts.nonStandard;
+          inconsistentHeadings += counts.nonStandard;
+        } catch {
+          // skip
+        }
+      }
+    }
+  } catch {
+    // skip
+  }
+
+  return { inconsistentHeadings, totalHeadings };
+}
+
+/**
+ * Check archive reference section accuracy.
+ * The learnings log should list the correct number of archive files.
+ * Returns { claimedArchiveCount, actualArchiveCount, mismatch }.
+ */
+function checkArchiveReferenceAccuracy(rootDir) {
+  const learningsPath = path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+  const archiveDir = path.join(rootDir, "docs", "archive");
+  let claimedArchiveCount = 0;
+  let actualArchiveCount = 0;
+
+  try {
+    if (fs.existsSync(archiveDir)) {
+      actualArchiveCount = fs
+        .readdirSync(archiveDir)
+        .filter((f) => f.startsWith("REVIEWS_")).length;
+    }
+  } catch {
+    // skip
+  }
+
+  try {
+    if (fs.existsSync(learningsPath)) {
+      const content = fs.readFileSync(learningsPath, "utf8");
+      // Count "Archive N" references in the archive reference section
+      const archiveRefs = content.match(/\*\*Archive\s+\d+\*\*/g) || [];
+      claimedArchiveCount = archiveRefs.length;
+    }
+  } catch {
+    // skip
+  }
+
+  return {
+    claimedArchiveCount,
+    actualArchiveCount,
+    mismatch: claimedArchiveCount !== actualArchiveCount,
+  };
+}
+
+/**
+ * Detect duplicate review numbers across active log and archive files.
+ * Returns { duplicateNumbers, totalReviewNumbers }.
+ */
+function detectDuplicateReviewNumbers(rootDir) {
+  const learningsPath = path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+  const archiveDir = path.join(rootDir, "docs", "archive");
+  const reviewIdRe = /^#{2,4}\s+Review\s+#(\d+)/gm;
+  const allIds = [];
+
+  function extractIds(content) {
+    let match;
+    const re = new RegExp(reviewIdRe.source, reviewIdRe.flags);
+    while ((match = re.exec(content)) !== null) {
+      allIds.push(parseInt(match[1], 10));
+    }
+  }
+
+  try {
+    if (fs.existsSync(learningsPath)) {
+      extractIds(fs.readFileSync(learningsPath, "utf8"));
+    }
+  } catch {
+    // skip
+  }
+
+  try {
+    if (fs.existsSync(archiveDir)) {
+      const archiveFiles = fs.readdirSync(archiveDir).filter((f) => f.startsWith("REVIEWS_"));
+      for (const af of archiveFiles) {
+        try {
+          extractIds(fs.readFileSync(path.join(archiveDir, af), "utf8"));
+        } catch {
+          // skip
+        }
+      }
+    }
+  } catch {
+    // skip
+  }
+
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const id of allIds) {
+    if (seen.has(id)) duplicates.add(id);
+    seen.add(id);
+  }
+
+  return { duplicateNumbers: [...duplicates], totalReviewNumbers: allIds.length };
+}
 
 function checkArchiveRetentionHealth(rootDir, findings) {
   const bench = BENCHMARKS.archive_retention_health;
@@ -293,6 +493,15 @@ function checkArchiveRetentionHealth(rootDir, findings) {
   const archiveAccessiblePct =
     archiveCount > 0 ? Math.round((archiveAccessible / archiveCount) * 100) : 100;
 
+  // Heading format consistency
+  const headingCheck = checkHeadingFormatConsistency(rootDir);
+
+  // Archive reference accuracy
+  const refCheck = checkArchiveReferenceAccuracy(rootDir);
+
+  // Duplicate review numbers
+  const dupCheck = detectDuplicateReviewNumbers(rootDir);
+
   const r1 = scoreMetric(activeReviewCount, bench.active_review_count, "lower-is-better");
   const r2 = scoreMetric(archiveAccessiblePct, bench.archive_accessible_pct, "higher-is-better");
 
@@ -306,7 +515,7 @@ function checkArchiveRetentionHealth(rootDir, findings) {
       severity: activeReviewCount > 25 ? "error" : "warning",
       message: `${activeReviewCount} active reviews in learnings log (threshold: ${bench.active_review_count.good})`,
       details:
-        "Too many active reviews bloats the file and slows parsing. Run archival to move old reviews.",
+        "Too many active reviews bloats the file and slows parsing. Run `npm run reviews:archive -- --apply` to move old reviews.",
       impactScore: activeReviewCount > 25 ? 70 : 45,
       frequency: 1,
       blastRadius: 2,
@@ -315,10 +524,68 @@ function checkArchiveRetentionHealth(rootDir, findings) {
     });
   }
 
+  if (headingCheck.inconsistentHeadings > 0) {
+    findings.push({
+      id: "PEA-602",
+      category: "archive_retention_health",
+      domain: DOMAIN,
+      severity: "warning",
+      message: `${headingCheck.inconsistentHeadings}/${headingCheck.totalHeadings} review headings use non-standard format (### instead of ####)`,
+      details:
+        "Standard format is `#### Review #N`. Mixed formats break pattern extraction and archive scripts. " +
+        "Fix with: sed -i 's/^### Review #/#### Review #/g' in affected files.",
+      impactScore: 40,
+      frequency: headingCheck.inconsistentHeadings,
+      blastRadius: 2,
+      patchType: "sed_command",
+      patchImpact: "Standardize review heading format for reliable parsing",
+    });
+  }
+
+  if (refCheck.mismatch) {
+    findings.push({
+      id: "PEA-603",
+      category: "archive_retention_health",
+      domain: DOMAIN,
+      severity: "warning",
+      message: `Archive reference mismatch: log claims ${refCheck.claimedArchiveCount} files, ${refCheck.actualArchiveCount} exist on disk`,
+      details:
+        "The archive reference section in AI_REVIEW_LEARNINGS_LOG.md should list all REVIEWS_*.md files in docs/archive/. " +
+        "Update the reference section after archival operations.",
+      impactScore: 35,
+      frequency: 1,
+      blastRadius: 1,
+    });
+  }
+
+  if (dupCheck.duplicateNumbers.length > 0) {
+    findings.push({
+      id: "PEA-604",
+      category: "archive_retention_health",
+      domain: DOMAIN,
+      severity: "info",
+      message: `${dupCheck.duplicateNumbers.length} duplicate review number(s) detected: #${dupCheck.duplicateNumbers.slice(0, 5).join(", #")}`,
+      details:
+        "Duplicate review numbers occur when the same number is reused across different PRs. " +
+        "This is a known issue that doesn't require fixing but should be tracked for data integrity awareness.",
+      impactScore: 20,
+      frequency: dupCheck.duplicateNumbers.length,
+      blastRadius: 1,
+    });
+  }
+
   return {
     score: avgScore,
     rating: avgScore >= 90 ? "good" : avgScore >= 70 ? "average" : "poor",
-    metrics: { activeReviewCount, archiveCount, archiveAccessiblePct },
+    metrics: {
+      activeReviewCount,
+      archiveCount,
+      archiveAccessiblePct,
+      inconsistentHeadings: headingCheck.inconsistentHeadings,
+      totalHeadings: headingCheck.totalHeadings,
+      archiveRefMismatch: refCheck.mismatch,
+      duplicateReviewNumbers: dupCheck.duplicateNumbers.length,
+    },
   };
 }
 
@@ -398,9 +665,44 @@ function measureJsonlDrift(rootDir) {
   }
 }
 
+/**
+ * Measure pattern coverage in JSONL — what percentage of reviews have extracted patterns.
+ * Low coverage means the sync script's pattern extraction is failing.
+ * Returns { totalReviews, withPatterns, coveragePct }.
+ */
+function measurePatternCoverage(rootDir) {
+  const reviewsJsonlPath = path.join(rootDir, ".claude", "state", "reviews.jsonl");
+  try {
+    if (!fs.existsSync(reviewsJsonlPath))
+      return { totalReviews: 0, withPatterns: 0, coveragePct: 0 };
+    const content = fs.readFileSync(reviewsJsonlPath, "utf8");
+    const lines = content.trim().split("\n").filter(Boolean);
+    let totalReviews = 0;
+    let withPatterns = 0;
+    for (const line of lines) {
+      try {
+        const entry = JSON.parse(line);
+        // Only count actual reviews, not retros
+        if (entry.type === "retrospective") continue;
+        totalReviews++;
+        if (Array.isArray(entry.patterns) && entry.patterns.length > 0) {
+          withPatterns++;
+        }
+      } catch {
+        // skip corrupt lines
+      }
+    }
+    const coveragePct = totalReviews > 0 ? Math.round((withPatterns / totalReviews) * 100) : 0;
+    return { totalReviews, withPatterns, coveragePct };
+  } catch {
+    return { totalReviews: 0, withPatterns: 0, coveragePct: 0 };
+  }
+}
+
 function checkJsonlSyncFidelity(rootDir, findings) {
   const bench = BENCHMARKS.jsonl_sync_fidelity;
   const { driftCount, corruptedLines } = measureJsonlDrift(rootDir);
+  const patternCov = measurePatternCoverage(rootDir);
 
   const r1 = scoreMetric(driftCount, bench.drift_count, "lower-is-better");
   const r2 = scoreMetric(corruptedLines, bench.corrupted_lines, "lower-is-better");
@@ -439,10 +741,35 @@ function checkJsonlSyncFidelity(rootDir, findings) {
     });
   }
 
+  if (patternCov.totalReviews > 10 && patternCov.coveragePct < 50) {
+    findings.push({
+      id: "PEA-703",
+      category: "jsonl_sync_fidelity",
+      domain: DOMAIN,
+      severity: patternCov.coveragePct < 20 ? "error" : "warning",
+      message: `Low pattern coverage: ${patternCov.withPatterns}/${patternCov.totalReviews} reviews have patterns (${patternCov.coveragePct}%)`,
+      details:
+        "Pattern extraction from markdown reviews is failing for most entries. " +
+        "Run `npm run reviews:sync -- --repair --apply` to re-extract patterns from all reviews. " +
+        "This was a real bug found in Session #193 — the sync script only matched one markdown format.",
+      impactScore: patternCov.coveragePct < 20 ? 85 : 60,
+      frequency: patternCov.totalReviews - patternCov.withPatterns,
+      blastRadius: 3,
+      patchType: "sync_command",
+      patchImpact: "Re-extract patterns from markdown to populate JSONL entries",
+    });
+  }
+
   return {
     score: avgScore,
     rating: avgScore >= 90 ? "good" : avgScore >= 70 ? "average" : "poor",
-    metrics: { driftCount, corruptedLines },
+    metrics: {
+      driftCount,
+      corruptedLines,
+      patternCoveragePct: patternCov.coveragePct,
+      reviewsWithPatterns: patternCov.withPatterns,
+      totalReviewsInJsonl: patternCov.totalReviews,
+    },
   };
 }
 

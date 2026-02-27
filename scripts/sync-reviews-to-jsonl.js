@@ -276,17 +276,95 @@ function parseMarkdownReviews(content) {
       }
     }
 
-    // Patterns from numbered lists under "Patterns Identified" or "Key Patterns"
-    const patternMatches = raw.matchAll(/^\d+\.\s+\*\*([^*]+)\*\*/gm);
-    for (const m of patternMatches) {
+    // Patterns extraction — supports multiple markdown formats:
+    // 1. Numbered bold: "1. **Pattern name**: description"
+    // 2. Bullet bold: "- **Pattern name**: description"
+    // 3. Inline: "**Patterns:** text; text; text" or "**Pattern:** text"
+    // 4. Key Patterns bullets: "- Pattern name: description" (under Key Patterns section)
+
+    // Metadata labels to skip — these are field headers, not patterns
+    const PATTERN_SKIP = new Set([
+      "source",
+      "pr",
+      "prbranch",
+      "items",
+      "fixed",
+      "deferred",
+      "rejected",
+      "total-items",
+      "total",
+      "suggestions",
+      "resolution",
+      "resolution-stats",
+      "patterns-identified",
+      "patterns",
+      "pattern",
+      "key-patterns",
+      "key-learning",
+      "key-learnings",
+      "key-fix",
+      "key-fixes",
+      "context",
+      "rejections",
+      "process",
+      "approach",
+    ]);
+
+    // Format 1+2: numbered or bullet items with bold text
+    const boldItemMatches = raw.matchAll(/^(?:\d+\.|-)\s+\*\*([^*]+)\*\*/gm);
+    for (const m of boldItemMatches) {
       const pattern = m[1]
         .trim()
         .toLowerCase()
         .replaceAll(/[^a-z0-9\s-]/g, "")
         .replaceAll(/\s+/g, "-")
         .slice(0, 60);
-      if (pattern && !review.patterns.includes(pattern)) {
+      if (
+        pattern &&
+        pattern.length > 3 &&
+        !PATTERN_SKIP.has(pattern) &&
+        !review.patterns.includes(pattern)
+      ) {
         review.patterns.push(pattern);
+      }
+    }
+
+    // Format 3: inline patterns after **Pattern(s):** header (semicolon-separated)
+    // Matches "**Pattern:**" or "**Patterns:**" but not other bold labels
+    const inlinePatternMatch = raw.match(/\*\*Patterns?:?\*\*:?\s+([A-Z][^\n]+)/);
+    if (inlinePatternMatch) {
+      const inlineText = inlinePatternMatch[1].trim();
+      // Split on semicolons for multiple patterns
+      const parts = inlineText.includes(";") ? inlineText.split(";") : [inlineText];
+      for (const part of parts) {
+        const pattern = part
+          .trim()
+          .toLowerCase()
+          .replaceAll(/[^a-z0-9\s-]/g, "")
+          .replaceAll(/\s+/g, "-")
+          .slice(0, 60);
+        if (pattern && pattern.length > 3 && !review.patterns.includes(pattern)) {
+          review.patterns.push(pattern);
+        }
+      }
+    }
+
+    // Format 4: bullet items under "Key Patterns" or "Patterns Identified" sections
+    const patternSection = raw.match(
+      /\*\*(?:Key Patterns|Patterns Identified)[^*]*\*\*:?\s*\n([\s\S]*?)(?=\n\*\*|\n---|\n#{2,4}\s|$)/
+    );
+    if (patternSection) {
+      const sectionBullets = patternSection[1].matchAll(/^- \*?\*?([^*:\n]+)/gm);
+      for (const m of sectionBullets) {
+        const pattern = m[1]
+          .trim()
+          .toLowerCase()
+          .replaceAll(/[^a-z0-9\s-]/g, "")
+          .replaceAll(/\s+/g, "-")
+          .slice(0, 60);
+        if (pattern && pattern.length > 3 && !review.patterns.includes(pattern)) {
+          review.patterns.push(pattern);
+        }
       }
     }
 
@@ -614,7 +692,39 @@ function isSymlink(filePath) {
 // ── Mode handlers ─────────────────────────────────────────────────────────────
 
 /**
+ * Load review content from archive files in docs/archive/REVIEWS_*.md.
+ * Returns concatenated content from all archive files.
+ */
+function loadArchiveContent() {
+  const ARCHIVE_DIR = join(ROOT, "docs", "archive");
+  if (!existsSync(ARCHIVE_DIR)) return "";
+
+  const archivePattern = /^REVIEWS_\d+-\d+\.md$/;
+  let combined = "";
+
+  try {
+    const entries = fs.readdirSync(ARCHIVE_DIR);
+    const archiveFiles = entries.filter((e) => archivePattern.test(e)).sort();
+
+    for (const file of archiveFiles) {
+      const filePath = join(ARCHIVE_DIR, file);
+      if (isSymlink(filePath)) continue;
+      try {
+        combined += "\n" + readFileSync(filePath, "utf8");
+      } catch {
+        /* skip unreadable files */
+      }
+    }
+  } catch {
+    /* skip if dir unreadable */
+  }
+
+  return combined;
+}
+
+/**
  * Handle --repair mode: full rebuild of reviews.jsonl from markdown.
+ * Reads from both the active log AND archive files for complete coverage.
  */
 function runRepairMode(content) {
   log("🔧 REPAIR MODE: Full rebuild of reviews.jsonl from markdown\n");
@@ -645,13 +755,38 @@ function runRepairMode(content) {
     }
   }
 
-  const reviews = parseMarkdownReviews(content);
-  const retros = parseRetrospectives(content);
-  // Sort reviews by numeric id, retros go after reviews
-  reviews.sort((a, b) => a.id - b.id);
-  retros.sort((a, b) => a.pr - b.pr);
+  // Load from active log + all archive files for complete coverage
+  const archiveContent = loadArchiveContent();
+  const combinedContent = archiveContent + "\n" + content;
+  log(`  📚 Reading from active log + archive files`);
 
-  const allLines = [...reviews, ...retros].map((r) => JSON.stringify(r));
+  const reviews = parseMarkdownReviews(combinedContent);
+  const retros = parseRetrospectives(combinedContent);
+
+  // Deduplicate by ID (archives may have overlapping entries due to number collisions)
+  const seenReviewIds = new Set();
+  const dedupedReviews = [];
+  for (const r of reviews) {
+    if (!seenReviewIds.has(r.id)) {
+      seenReviewIds.add(r.id);
+      dedupedReviews.push(r);
+    }
+  }
+
+  const seenRetroIds = new Set();
+  const dedupedRetros = [];
+  for (const r of retros) {
+    const key = r.id;
+    if (!seenRetroIds.has(key)) {
+      seenRetroIds.add(key);
+      dedupedRetros.push(r);
+    }
+  }
+  // Sort by numeric id, retros go after reviews
+  dedupedReviews.sort((a, b) => a.id - b.id);
+  dedupedRetros.sort((a, b) => a.pr - b.pr);
+
+  const allLines = [...dedupedReviews, ...dedupedRetros].map((r) => JSON.stringify(r));
   try {
     atomicWriteFileSync(REVIEWS_FILE, allLines.join("\n") + "\n");
   } catch (err) {
@@ -662,19 +797,23 @@ function runRepairMode(content) {
 
   log(`  ✅ Rebuilt reviews.jsonl:`);
   log(
-    `     Reviews: ${reviews.length} (IDs: #${reviews[0]?.id || "?"}-#${reviews[reviews.length - 1]?.id || "?"})`
+    `     Reviews: ${dedupedReviews.length} (IDs: #${dedupedReviews[0]?.id || "?"}-#${dedupedReviews[dedupedReviews.length - 1]?.id || "?"})`
   );
   log(
-    `     Retros:  ${retros.length} (PRs: ${retros.map((r) => "#" + r.pr).join(", ") || "none"})`
+    `     Retros:  ${dedupedRetros.length} (PRs: ${dedupedRetros.map((r) => "#" + r.pr).join(", ") || "none"})`
   );
 
+  // Report pattern coverage
+  const withPatterns = dedupedReviews.filter((r) => r.patterns.length > 0);
+  log(`     Patterns: ${withPatterns.length}/${dedupedReviews.length} entries have patterns`);
+
   // Report severity coverage
-  const withSeverity = reviews.filter((r) => r.critical + r.major + r.minor + r.trivial > 0);
-  log(`     Severity data: ${withSeverity.length}/${reviews.length} entries have breakdown`);
+  const withSeverity = dedupedReviews.filter((r) => r.critical + r.major + r.minor + r.trivial > 0);
+  log(`     Severity data: ${withSeverity.length}/${dedupedReviews.length} entries have breakdown`);
 
   // Report learnings quality
-  const withLearnings = reviews.filter((r) => r.learnings.length > 0);
-  log(`     Learnings: ${withLearnings.length}/${reviews.length} entries have learnings`);
+  const withLearnings = dedupedReviews.filter((r) => r.learnings.length > 0);
+  log(`     Learnings: ${withLearnings.length}/${dedupedReviews.length} entries have learnings`);
 
   process.exitCode = 0;
 }

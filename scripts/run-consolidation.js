@@ -47,6 +47,7 @@ const CONSOLIDATION_FILE = join(STATE_DIR, "consolidation.json");
 const REVIEWS_FILE = join(STATE_DIR, "reviews.jsonl");
 const OUTPUT_DIR = join(ROOT_DIR, "consolidation-output");
 const OUTPUT_FILE = join(OUTPUT_DIR, "suggested-rules.md");
+const CODE_PATTERNS_FILE = join(ROOT_DIR, "docs", "agent_docs", "CODE_PATTERNS.md");
 
 // --- Config ---
 const THRESHOLD = 10;
@@ -255,6 +256,7 @@ function extractPatterns(reviews) {
 const PATTERN_KEYWORDS = [
   /command injection/gi,
   /path traversal/gi,
+  /regex dos/gi,
   /redos/gi,
   /prototype pollution/gi,
   /ssrf/gi,
@@ -264,6 +266,8 @@ const PATTERN_KEYWORDS = [
   /validation/gi,
   /security/gi,
   /cognitive complexity/gi,
+  /\bcc\b/gi,
+  /cc reduction/gi,
   /dead code/gi,
   /refactor/gi,
   /performance/gi,
@@ -272,15 +276,24 @@ const PATTERN_KEYWORDS = [
   /fail-closed/gi,
   /typescript/gi,
   /eslint/gi,
+  /sonarcloud/gi,
   /nullable/gi,
+  /symlink/gi,
+  /propagation/gi,
+  /atomic write/gi,
   /shell/gi,
   /bash/gi,
+  /crlf/gi,
   /cross-platform/gi,
   /github actions/gi,
+  /\bci\b/gi,
   /pre-commit/gi,
   /pre-push/gi,
+  /compliance/gi,
   /documentation/gi,
   /markdown/gi,
+  /qodo/gi,
+  /gemini/gi,
 ];
 
 function categorizePatterns(patterns) {
@@ -393,6 +406,146 @@ function generateRuleSuggestions(recurringPatterns, range) {
 }
 
 // =============================================================================
+// CODE_PATTERNS.MD: Auto-append new recurring patterns
+// =============================================================================
+
+/**
+ * Map a consolidation category to the CODE_PATTERNS.md section header.
+ */
+const CATEGORY_TO_SECTION = {
+  Security: "## Security",
+  "JavaScript/TypeScript": "## JavaScript/TypeScript",
+  "Bash/Shell": "## Bash/Shell",
+  "CI/Automation": "## CI/Automation",
+  Documentation: "## Documentation",
+  General: "## General",
+};
+
+/**
+ * Auto-append new recurring patterns to CODE_PATTERNS.md.
+ * - Checks each pattern against existing content to avoid duplicates
+ * - Appends to the correct category section
+ * - Updates version history
+ * Non-fatal: logs a warning if the update fails.
+ */
+function appendToCodePatterns(recurringPatterns, categories, consolidationNumber, range, today) {
+  try {
+    if (!existsSync(CODE_PATTERNS_FILE)) {
+      log("  ⚠️ CODE_PATTERNS.md not found, skipping auto-update", c.yellow);
+      return { added: 0 };
+    }
+    if (!isSafeToWrite(CODE_PATTERNS_FILE)) {
+      log("  ⚠️ Refusing to write: symlink detected at CODE_PATTERNS.md", c.yellow);
+      return { added: 0 };
+    }
+
+    let content = readFileSync(CODE_PATTERNS_FILE, "utf8");
+    const lowerContent = content.toLowerCase();
+    const newPatterns = [];
+
+    // Group patterns by their category
+    const patternsByCategory = new Map();
+    for (const [catName, catPatterns] of Object.entries(categories)) {
+      for (const p of catPatterns) {
+        if (p.count >= MIN_PATTERN_OCCURRENCES) {
+          // Check if pattern already exists in CODE_PATTERNS.md (fuzzy match)
+          const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
+          if (!lowerContent.includes(normalizedPattern)) {
+            if (!patternsByCategory.has(catName)) patternsByCategory.set(catName, []);
+            patternsByCategory.get(catName).push(p);
+            newPatterns.push(p);
+          }
+        }
+      }
+    }
+
+    if (newPatterns.length === 0) {
+      log("  ℹ️ No new patterns to add to CODE_PATTERNS.md (all already documented)", c.cyan);
+      return { added: 0 };
+    }
+
+    // Insert patterns into their respective sections
+    for (const [catName, patterns] of patternsByCategory) {
+      const sectionHeader = CATEGORY_TO_SECTION[catName] || CATEGORY_TO_SECTION["General"];
+      const sectionIdx = content.indexOf(sectionHeader);
+      if (sectionIdx === -1) continue;
+
+      // Find the next ## section after this one to insert before it
+      const afterSection = content.indexOf("\n## ", sectionIdx + sectionHeader.length);
+      const insertPoint =
+        afterSection !== -1 ? afterSection : content.indexOf("\n---\n", sectionIdx + 100);
+      if (insertPoint === -1) continue;
+
+      // Build pattern entries
+      const entries = patterns.map((p) => {
+        const title = p.pattern.replaceAll("-", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        return [
+          "",
+          `### ${title}`,
+          "",
+          `🟡 **Rule:** ${title} — recurring pattern from ${p.count} reviews (#${p.reviews.join(", #")})`,
+          "",
+          `**Source:** Consolidation #${consolidationNumber} (Reviews #${range.start}-#${range.end})`,
+          "",
+        ].join("\n");
+      });
+
+      content = content.slice(0, insertPoint) + entries.join("") + content.slice(insertPoint);
+    }
+
+    // Update version history
+    const versionMatch = content.match(/\|\s*([\d.]+)\s*\|\s*\d{4}-\d{2}-\d{2}/);
+    if (versionMatch) {
+      const currentVersion = Number.parseFloat(versionMatch[1]);
+      const newVersion = (currentVersion + 0.1).toFixed(1);
+      const patternNames = newPatterns.map((p) => p.pattern).join(", ");
+      const newRow = `| ${newVersion}     | ${today}   | **CONSOLIDATION #${consolidationNumber}:** Auto-added ${newPatterns.length} patterns (${patternNames}). Source: Reviews #${range.start}-#${range.end}. |`;
+
+      // Insert before the first version row
+      const versionHeaderIdx = content.indexOf("## Version History");
+      if (versionHeaderIdx !== -1) {
+        const firstRowIdx = content.indexOf("\n|", content.indexOf("| ---", versionHeaderIdx));
+        if (firstRowIdx !== -1) {
+          const nextRowStart = content.indexOf("\n|", firstRowIdx + 1);
+          if (nextRowStart !== -1) {
+            content =
+              content.slice(0, nextRowStart + 1) + newRow + "\n" + content.slice(nextRowStart + 1);
+          }
+        }
+      }
+
+      // Update document version in header
+      const headerVersionMatch = content.match(/\*\*Document Version:\*\*\s*([\d.]+)/);
+      if (headerVersionMatch) {
+        content = content.replace(
+          `**Document Version:** ${headerVersionMatch[1]}`,
+          `**Document Version:** ${newVersion}`
+        );
+      }
+    }
+
+    // Atomic write
+    const tmpPath = CODE_PATTERNS_FILE + ".consolidation.tmp";
+    if (!isSafeToWrite(tmpPath)) {
+      log("  ⚠️ Refusing to write: symlink at tmp path", c.yellow);
+      return { added: 0 };
+    }
+    writeFileSync(tmpPath, content, "utf8");
+    safeRename(tmpPath, CODE_PATTERNS_FILE);
+
+    log(`  ✅ CODE_PATTERNS.md: added ${newPatterns.length} new patterns`, c.green);
+    for (const p of newPatterns) {
+      log(`     + ${p.pattern} (${p.count}x, Reviews #${p.reviews.join(", #")})`, c.green);
+    }
+
+    return { added: newPatterns.length };
+  } catch (err) {
+    log(`  ⚠️ Failed to update CODE_PATTERNS.md: ${sanitizeError(err)}`, c.yellow);
+    return { added: 0 };
+  }
+}
+
+// =============================================================================
 // MARKDOWN: Append consolidation record to learnings log
 // =============================================================================
 
@@ -463,7 +616,7 @@ function appendConsolidationToMarkdown(newNumber, minId, maxId, today, recurring
 // APPLY: Update state atomically (JSON write, no markdown regex)
 // =============================================================================
 
-function applyConsolidation(state, reviews, recurringPatterns) {
+function applyConsolidation(state, reviews, recurringPatterns, categories) {
   if (reviews.length === 0) {
     log("❌ No reviews to consolidate.", c.red);
     process.exitCode = 2;
@@ -495,19 +648,34 @@ function applyConsolidation(state, reviews, recurringPatterns) {
   log(`  ✅ State updated in consolidation.json`, c.green);
   log(`  ✅ Next consolidation due after ${THRESHOLD} more reviews`, c.green);
 
-  // Generate rule suggestions
+  // Generate rule suggestions for compliance checker
   generateRuleSuggestions(recurringPatterns, { start: minId, end: maxId });
 
+  // Auto-update CODE_PATTERNS.md with new patterns
+  const codePatResult = appendToCodePatterns(
+    recurringPatterns,
+    categories,
+    newNumber,
+    { start: minId, end: maxId },
+    today
+  );
+
   if (autoMode) {
-    console.log(
-      `✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`
-    );
+    const parts = [
+      `✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`,
+    ];
+    if (codePatResult.added > 0) parts.push(`CODE_PATTERNS.md: +${codePatResult.added}`);
+    console.log(parts.join(", "));
   } else {
     log("");
     log(`${c.bold}📋 Next steps:${c.reset}`);
     log("  1. Review consolidation-output/suggested-rules.md");
-    log("  2. Add recurring patterns to docs/agent_docs/CODE_PATTERNS.md");
-    log("  3. Add automatable patterns to check-pattern-compliance.js");
+    if (codePatResult.added > 0) {
+      log(`  2. ✅ CODE_PATTERNS.md auto-updated (${codePatResult.added} new patterns)`);
+    } else {
+      log("  2. ✅ CODE_PATTERNS.md already up to date");
+    }
+    log("  3. Review suggested rules for check-pattern-compliance.js");
     log(`  4. Commit: 'chore: consolidation #${newNumber} — Reviews #${minId}-#${maxId}'`);
     log("");
   }
@@ -568,7 +736,7 @@ function main() {
 
     // 6. Apply or dry-run
     if (applyChanges) {
-      const applied = applyConsolidation(state, pending, recurringPatterns);
+      const applied = applyConsolidation(state, pending, recurringPatterns, categories);
       if (applied) {
         // Post-consolidation: learning effectiveness analysis
         log("\n📊 Running learning effectiveness analysis...", c.blue);

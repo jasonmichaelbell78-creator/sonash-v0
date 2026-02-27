@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-02-26
+**Last Updated:** 2026-02-27
 
 ---
 
@@ -27,42 +27,42 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #358 - #371 (14 reviews) **Analysis Date:** 2026-02-26
+**Review Range:** #385 - #399 (15 reviews) **Analysis Date:** 2026-02-27
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 92.0% |
-| Patterns Learned          | 294   |
+| Learning Effectiveness    | 91.6% |
+| Patterns Learned          | 302   |
 | Patterns Automated        | 26    |
-| Patterns Failing          | 2     |
-| Critical Pattern Success  | 92.8% |
-| Automation Coverage       | 13.8% |
-| Total Documented Patterns | 348   |
-| Total Automated Patterns  | 48    |
+| Patterns Failing          | 11    |
+| Critical Pattern Success  | 93.5% |
+| Automation Coverage       | 13.7% |
+| Total Documented Patterns | 358   |
+| Total Automated Patterns  | 49    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Safe percentage"
-   - Recurred 5 times after documentation \(Reviews: 358, 360, 366, 369, 371\)
+1. **[Automation]** Automate "Atomic file writes"
+   - Recurred 6 times after documentation \(Reviews: 390, 391, 393, 395, 398\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Signal error code semantics"
-   - Recurred 3 times after documentation \(Reviews: 358, 360, 361\)
+2. **[Automation]** Automate "Atomic file writes"
+   - Recurred 6 times after documentation \(Reviews: 390, 391, 393, 395, 398\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Documentation]** Improve documentation for "Input length DoS"
+3. **[Automation]** Automate "Relative path logging"
+   - Recurred 5 times after documentation \(Reviews: 390, 391, 395, 398, 399\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+4. **[Documentation]** Improve documentation for "POSIX shell compliance"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-4. **[Documentation]** Improve documentation for "Relative path logging"
+5. **[Documentation]** Improve documentation for "Set vs Array migration"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
-
-5. **[Training]** Create guide for "Segment\-based path check"
-   - Critical pattern with 5 recurrences needs dedicated guide
-   - Action: Create docs/agent_docs/SEGMENT_BASED_PATH_CHECK_GUIDE.md
 
 ---
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 294   | Pattern never recurred after documentation   |
+| ✅ LEARNED   | 302   | Pattern never recurred after documentation   |
 | 🔧 AUTOMATED | 26    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 26    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 2     | Pattern recurred 3+ times - needs automation |
+| 🟡 WEAK      | 19    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 11    | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -81,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-02-26 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-02-27 | Rewritten to focus on Claude's learning effectiveness |
