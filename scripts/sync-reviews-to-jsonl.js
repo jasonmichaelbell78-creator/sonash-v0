@@ -350,8 +350,9 @@ function parseMarkdownReviews(content) {
     }
 
     // Format 4: bullet items under "Key Patterns" or "Patterns Identified" sections
+    // Bounded capture to prevent catastrophic backtracking on malformed input
     const patternSection = raw.match(
-      /\*\*(?:Key Patterns|Patterns Identified)[^*]*\*\*:?\s*\n([\s\S]*?)(?=\n\*\*|\n---|\n#{2,4}\s|$)/
+      /\*\*(?:Key Patterns|Patterns Identified)[^*]*\*\*:?\s*\n([\s\S]{0,2000}?)(?=\n\*\*|\n---|\n#{2,4}\s|$)/
     );
     if (patternSection) {
       const sectionBullets = patternSection[1].matchAll(/^- \*?\*?([^*:\n]+)/gm);
