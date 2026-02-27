@@ -163,8 +163,8 @@ describe("Pattern: naive-data-fetch [high]", () => {
 // ═══════════════════════════════════════════════════
 
 describe("Pattern: no-raw-fs-write [medium]", () => {
-  // Matches the regex from check-pattern-compliance.js
-  const pattern = /(?:fs\.(?:writeFileSync|appendFileSync|renameSync)\s*\()/g;
+  // Must match the production regex in check-pattern-compliance.js exactly
+  const pattern = /\b(?:fs\.)?(?:writeFileSync|appendFileSync|renameSync)\s*\(/g;
 
   test("detects fs.writeFileSync(", () => {
     testPattern(

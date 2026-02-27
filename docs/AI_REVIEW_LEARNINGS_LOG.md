@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.73 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.74 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1333,6 +1333,27 @@ AST walker (Object.keys + recurse) > hand-enumerated types. (5) Lazy quantifiers
 **Verdict:** Inefficient but productive — 12 rounds, ~153 fixes, ~42% avoidable.
 Single highest-impact change: split large PRs. Second: create ESLint rule
 template with built-in ChainExpression/walker/CC patterns.
+
+---
+
+### Review #399: PR #396 R2 (2026-02-26)
+
+- **Source**: Qodo Compliance (4) + Qodo PR Suggestions (7) + CI Feedback (1)
+- **PR**: PR #396 — ESLint + pattern compliance fixes
+- **Items**: 10 unique → 6 fixed, 4 rejected
+- **Key fixes**:
+  - safe-fs.js: same-path rename guard (`absSrc === absDest` early return)
+    prevents data loss on self-rename
+  - pattern-compliance.test.js: aligned test regex with production regex
+    (`\b(?:fs\.)?` word boundary pattern) — CI was failing on this mismatch
+  - pattern-compliance.test.ts: POSIX path normalization for cross-platform
+    reliability
+  - safe-fs.test.ts: BOM assertion robustness, `t.skip()` for symlink tests
+  - library.ts: added `id` to 3 error log calls for debugging context
+- **Rejections**: ESM/CJS import (false positive — runtime verified), 3 repeats
+  from R1 (TOCTOU, audit trails, logging — same justification)
+- **Pattern**: Same-path rename is a real data loss bug — `rmSync(dest)` then
+  `renameSync(src, dest)` when src===dest deletes the only copy.
 
 ---
 

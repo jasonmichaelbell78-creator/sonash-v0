@@ -90,7 +90,7 @@ describe("check-pattern-compliance.js", () => {
 
       // Run compliance checker on this file — must use relative path
       // because the checker rejects absolute paths as a security measure
-      const relPath = path.relative(PROJECT_ROOT, testFile);
+      const relPath = path.relative(PROJECT_ROOT, testFile).split(path.sep).join(path.posix.sep);
       const result = runScript([relPath]);
 
       // Should find violations (exit code 0 means no critical, but output should mention it)

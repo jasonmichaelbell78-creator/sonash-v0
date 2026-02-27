@@ -97,7 +97,7 @@ describe("isSafeToWrite", () => {
     assert.equal(isSafeToWrite("relative/path.txt"), false);
   });
 
-  test("returns false for a symlinked file", () => {
+  test("returns false for a symlinked file", (t) => {
     const tmpDir = createTempDir();
     const realFile = path.join(tmpDir, "real.txt");
     const linkFile = path.join(tmpDir, "link.txt");
@@ -106,9 +106,7 @@ describe("isSafeToWrite", () => {
     try {
       fs.symlinkSync(realFile, linkFile);
     } catch {
-      // Symlink creation may fail on Windows without developer mode
-      // Skip the assertion in that case
-      console.log("Skipping symlink test: symlink creation not supported in this environment");
+      t.skip("Symlink creation not supported in this environment");
       return;
     }
 
@@ -152,7 +150,7 @@ describe("safeWriteFileSync", () => {
     assert.equal(content, "utf8 content");
   });
 
-  test("throws when path is a symlink", () => {
+  test("throws when path is a symlink", (t) => {
     const tmpDir = createTempDir();
     const realFile = path.join(tmpDir, "real.txt");
     const linkFile = path.join(tmpDir, "link.txt");
@@ -161,7 +159,7 @@ describe("safeWriteFileSync", () => {
     try {
       fs.symlinkSync(realFile, linkFile);
     } catch {
-      console.log("Skipping symlink test: symlink creation not supported in this environment");
+      t.skip("Symlink creation not supported in this environment");
       return;
     }
 
@@ -212,7 +210,7 @@ describe("safeAppendFileSync", () => {
     assert.equal(content, "first line\n");
   });
 
-  test("throws when path is a symlink", () => {
+  test("throws when path is a symlink", (t) => {
     const tmpDir = createTempDir();
     const realFile = path.join(tmpDir, "real.txt");
     const linkFile = path.join(tmpDir, "link.txt");
@@ -221,7 +219,7 @@ describe("safeAppendFileSync", () => {
     try {
       fs.symlinkSync(realFile, linkFile);
     } catch {
-      console.log("Skipping symlink test: symlink creation not supported in this environment");
+      t.skip("Symlink creation not supported in this environment");
       return;
     }
 
@@ -309,7 +307,7 @@ describe("safeRenameSync", () => {
     assert.equal(fs.existsSync(src), false, "source should be removed after EXDEV fallback");
   });
 
-  test("throws when destination is a symlink", () => {
+  test("throws when destination is a symlink", (t) => {
     const tmpDir = createTempDir();
     const src = path.join(tmpDir, "source.txt");
     const realDest = path.join(tmpDir, "real-dest.txt");
@@ -320,7 +318,7 @@ describe("safeRenameSync", () => {
     try {
       fs.symlinkSync(realDest, linkDest);
     } catch {
-      console.log("Skipping symlink test: symlink creation not supported in this environment");
+      t.skip("Symlink creation not supported in this environment");
       return;
     }
 
@@ -358,7 +356,7 @@ describe("safeAtomicWriteSync", () => {
     assert.equal(fs.readFileSync(filePath, "utf-8"), "updated");
   });
 
-  test("throws when final path is a symlink", () => {
+  test("throws when final path is a symlink", (t) => {
     const tmpDir = createTempDir();
     const realFile = path.join(tmpDir, "real.txt");
     const linkFile = path.join(tmpDir, "link.txt");
@@ -367,7 +365,7 @@ describe("safeAtomicWriteSync", () => {
     try {
       fs.symlinkSync(realFile, linkFile);
     } catch {
-      console.log("Skipping symlink test: symlink creation not supported in this environment");
+      t.skip("Symlink creation not supported in this environment");
       return;
     }
 
@@ -415,7 +413,8 @@ describe("readUtf8Sync", () => {
 
     const content = readUtf8Sync(filePath);
     assert.equal(content, "content with BOM");
-    assert.equal(content.codePointAt(0) === 0xfeff, false, "BOM should be stripped");
+    assert.ok(content.length > 0, "Expected non-empty content after stripping BOM");
+    assert.notEqual(content.codePointAt(0), 0xfeff, "BOM should be stripped");
   });
 
   test("returns content unchanged when no BOM", () => {

@@ -138,7 +138,7 @@ export async function updatePrayer(id: string, updates: Partial<PrayerInput>): P
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    logger.error("Error updating prayer", { error });
+    logger.error("Error updating prayer", { error, id });
     throw error;
   }
 }
@@ -148,7 +148,7 @@ export async function deletePrayer(id: string): Promise<void> {
     const prayerRef = doc(db, "prayers", id);
     await deleteDoc(prayerRef);
   } catch (error) {
-    logger.error("Error deleting prayer", { error });
+    logger.error("Error deleting prayer", { error, id });
     throw error;
   }
 }
@@ -157,7 +157,7 @@ export async function togglePrayerActive(id: string, isActive: boolean): Promise
   try {
     await updatePrayer(id, { isActive });
   } catch (error) {
-    logger.error("Error toggling prayer active status", { error });
+    logger.error("Error toggling prayer active status", { error, id });
     throw error;
   }
 }

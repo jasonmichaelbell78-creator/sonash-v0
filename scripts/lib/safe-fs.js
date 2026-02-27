@@ -90,6 +90,8 @@ function safeAppendFileSync(filePath, data, options) {
 function safeRenameSync(src, dest) {
   const absSrc = path.resolve(src);
   const absDest = path.resolve(dest);
+  // No-op if source and destination are the same (prevents self-deletion)
+  if (absSrc === absDest) return;
   if (!isSafeToWrite(absSrc)) {
     throw new Error(`Refusing to rename from symlinked source: ${path.basename(absSrc)}`);
   }
