@@ -11,7 +11,7 @@
  *   const { findings, report } = normalizeFormat(rawInput, 'security');
  */
 
-import { writeFileSync, readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join, resolve, relative, isAbsolute, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeWriteFileSync } from "../lib/safe-fs.js";

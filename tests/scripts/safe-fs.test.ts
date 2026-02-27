@@ -415,7 +415,7 @@ describe("readUtf8Sync", () => {
 
     const content = readUtf8Sync(filePath);
     assert.equal(content, "content with BOM");
-    assert.equal(content.charCodeAt(0) === 0xfeff, false, "BOM should be stripped");
+    assert.equal(content.codePointAt(0) === 0xfeff, false, "BOM should be stripped");
   });
 
   test("returns content unchanged when no BOM", () => {

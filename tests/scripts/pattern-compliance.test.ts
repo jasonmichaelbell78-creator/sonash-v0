@@ -88,19 +88,18 @@ describe("check-pattern-compliance.js", () => {
         `const fs = require("fs");\nfs.writeFileSync("output.txt", "data");\n`
       );
 
-      // Run compliance checker on this file
-      const result = runScript([testFile]);
+      // Run compliance checker on this file — must use relative path
+      // because the checker rejects absolute paths as a security measure
+      const relPath = path.relative(PROJECT_ROOT, testFile);
+      const result = runScript([relPath]);
 
       // Should find violations (exit code 0 means no critical, but output should mention it)
       // The no-raw-fs-write pattern is severity "medium" so it won't cause exit code 1
       // but it should appear in stdout
       const combined = result.stdout + result.stderr;
       assert.ok(
-        combined.includes("no-raw-fs-write") ||
-          combined.includes("writeFileSync") ||
-          combined.includes("safe-fs") ||
-          result.exitCode === 0, // Script ran successfully even if pattern didn't trigger on non-scripts/ path
-        "Should either detect raw fs write or run without error"
+        combined.includes("no-raw-fs-write") || combined.includes("writeFileSync"),
+        `Expected raw fs write to be detected. exitCode=${result.exitCode} stderr=${result.stderr.slice(0, 200)}`
       );
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });

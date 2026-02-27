@@ -461,7 +461,8 @@ function writeSprintIdFiles(keptInExisting, newSprints, existingSprintFiles) {
     const filePath = path.join(LOGS_DIR, fileName);
     // Path containment check
     const resolved = path.resolve(filePath);
-    if (!resolved.startsWith(path.resolve(LOGS_DIR))) {
+    const rel = path.relative(path.resolve(LOGS_DIR), resolved);
+    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
       console.error(`  Skipping ${fileName}: path traversal detected`);
       continue;
     }

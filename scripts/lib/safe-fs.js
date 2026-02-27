@@ -88,19 +88,29 @@ function safeAppendFileSync(filePath, data, options) {
  * @param {string} dest - Destination path
  */
 function safeRenameSync(src, dest) {
+  const absSrc = path.resolve(src);
   const absDest = path.resolve(dest);
+  if (!isSafeToWrite(absSrc)) {
+    throw new Error(`Refusing to rename from symlinked source: ${path.basename(absSrc)}`);
+  }
   if (!isSafeToWrite(absDest)) {
     throw new Error(`Refusing to rename to symlinked path: ${path.basename(absDest)}`);
   }
-  // Remove destination first (Windows fails if dest exists)
-  fs.rmSync(absDest, { force: true });
+  // Remove destination first (Windows fails if dest exists), but never clobber directories
+  if (fs.existsSync(absDest)) {
+    const st = fs.lstatSync(absDest);
+    if (st.isDirectory()) {
+      throw new Error(`Refusing to rename over directory: ${path.basename(absDest)}`);
+    }
+    fs.rmSync(absDest, { force: true });
+  }
   try {
-    fs.renameSync(src, absDest);
+    fs.renameSync(absSrc, absDest);
   } catch (err) {
     if (err.code === "EXDEV") {
       // Cross-device: copy then remove source
-      fs.copyFileSync(src, absDest);
-      fs.unlinkSync(src);
+      fs.copyFileSync(absSrc, absDest);
+      fs.unlinkSync(absSrc);
     } else {
       throw err;
     }
@@ -124,8 +134,13 @@ function safeAtomicWriteSync(filePath, data, options) {
   if (!isSafeToWrite(tmpPath)) {
     throw new Error(`Refusing atomic write via symlinked tmp path: ${path.basename(tmpPath)}`);
   }
-  fs.writeFileSync(tmpPath, data, options);
-  safeRenameSync(tmpPath, absPath);
+  try {
+    fs.writeFileSync(tmpPath, data, options);
+    safeRenameSync(tmpPath, absPath);
+  } catch (err) {
+    if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { force: true });
+    throw err;
+  }
 }
 
 /**
@@ -137,7 +152,7 @@ function safeAtomicWriteSync(filePath, data, options) {
 function readUtf8Sync(filePath) {
   const content = fs.readFileSync(filePath, "utf8");
   // Strip UTF-8 BOM if present
-  return content.charCodeAt(0) === 0xfeff ? content.slice(1) : content;
+  return content.codePointAt(0) === 0xfeff ? content.slice(1) : content;
 }
 
 module.exports = {

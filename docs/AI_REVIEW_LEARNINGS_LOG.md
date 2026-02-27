@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.72 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.73 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
 
 ## Purpose
 
@@ -1333,6 +1333,39 @@ AST walker (Object.keys + recurse) > hand-enumerated types. (5) Lazy quantifiers
 **Verdict:** Inefficient but productive — 12 rounds, ~153 fixes, ~42% avoidable.
 Single highest-impact change: split large PRs. Second: create ESLint rule
 template with built-in ChainExpression/walker/CC patterns.
+
+---
+
+### Review #398: PR #396 R1 (2026-02-26)
+
+- **Source**: Qodo Compliance (26) + SonarCloud (12)
+- **PR**: PR #396 — ESLint + pattern compliance fixes (27 items)
+- **Items**: 38 total → 24 fixed, 1 deferred (N/A), 12 rejected, 1 duplicate
+- **Key fixes**:
+  - safe-fs.js: source symlink guard, directory-over-file guard, tmp cleanup on
+    atomic write failure, `codePointAt` for Unicode correctness
+  - categorize-and-assign.js: path containment via `path.relative()` pattern
+  - check-pattern-compliance.js: broadened no-raw-fs-write regex with `\b` word
+    boundary to detect destructured `writeFileSync(` without matching
+    `safeWriteFileSync(`
+  - generate-views.js: `.trim()` on status field to prevent whitespace dedup
+    failures
+  - pattern-compliance.test.ts: relative path fix (absolute paths rejected by
+    security guard in checker), stricter assertion
+  - 11 files: removed unused `writeFileSync` imports
+  - check-roadmap-hygiene.js: reverted `\r?\n` to `\n` (regex CC reduction)
+  - pattern-compliance.test.js: `String.raw` fixes, new destructured test
+- **Rejections**: S4036 PATH binary hijacking (hardcoded "node"), arbitrary file
+  overwrite (covered by directory guard), missing audit log (single-user CLI),
+  EXDEV rollback (copy succeeds = safe), error basename exposure (internal
+  tool), unbounded payload (internally constructed), no allowlist (all callers
+  hardcoded), consolidate isSafeToWrite (defensive fallback by design), remove
+  limit(200) (deliberate unbounded-query fix), test.before() (sequential
+  runner), pre-existing try/catch (out of scope), temp cleanup concurrency
+  (sequential)
+- **Pattern**: Integration test must use relative paths when invoking the
+  compliance checker — the script rejects absolute paths as a security measure.
+  This was the root cause of the test failure after strictifying the assertion.
 
 ---
 

@@ -24,7 +24,7 @@
  *   2 - Script error
  */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, dirname, relative, extname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { sanitizeError } from "./lib/sanitize-error.js";

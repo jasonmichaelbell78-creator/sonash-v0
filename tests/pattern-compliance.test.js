@@ -178,11 +178,23 @@ describe("Pattern: no-raw-fs-write [medium]", () => {
   });
 
   test("detects fs.appendFileSync(", () => {
-    testPattern(pattern, ['fs.appendFileSync(logFile, line + "\\n")'], []);
+    testPattern(pattern, [String.raw`fs.appendFileSync(logFile, line + "\n")`], []);
   });
 
   test("detects fs.renameSync(", () => {
     testPattern(pattern, ["fs.renameSync(tmpPath, finalPath)"], []);
+  });
+
+  test("detects destructured writeFileSync(", () => {
+    testPattern(
+      pattern,
+      [
+        'writeFileSync(filePath, data, "utf-8")',
+        "appendFileSync(logFile, line)",
+        "renameSync(tmpPath, finalPath)",
+      ],
+      []
+    );
   });
 
   test("does NOT flag safeWriteFileSync(", () => {
@@ -197,7 +209,7 @@ describe("Pattern: no-raw-fs-write [medium]", () => {
   });
 
   test("does NOT flag safeAppendFileSync(", () => {
-    testPattern(pattern, [], ['safeAppendFileSync(logFile, line + "\\n")']);
+    testPattern(pattern, [], [String.raw`safeAppendFileSync(logFile, line + "\n")`]);
   });
 
   test("does NOT flag safeRenameSync(", () => {

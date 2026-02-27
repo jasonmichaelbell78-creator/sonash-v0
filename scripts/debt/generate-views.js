@@ -246,8 +246,9 @@ function ensureDefaults(item) {
   if (!item.status) {
     item.status = "NEW";
   }
-  // Trim category to prevent whitespace-induced duplicate groups
+  // Trim category and status to prevent whitespace-induced duplicate groups
   if (typeof item.category === "string") item.category = item.category.trim();
+  if (typeof item.status === "string") item.status = item.status.trim();
   // Normalize absolute paths to repo-relative
   item.file = normalizeFilePath(item.file);
   if (Array.isArray(item.evidence)) {

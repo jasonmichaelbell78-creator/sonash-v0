@@ -869,7 +869,7 @@ const ANTI_PATTERNS = [
   {
     id: "no-raw-fs-write",
     severity: "medium",
-    pattern: /(?:fs\.(?:writeFileSync|appendFileSync|renameSync)\s*\()/g,
+    pattern: /\b(?:fs\.)?(?:writeFileSync|appendFileSync|renameSync)\s*\(/g,
     message:
       "Direct fs.writeFileSync/appendFileSync/renameSync — use safe-fs.js helpers (safeWriteFileSync, safeAppendFileSync, safeRenameSync) for symlink guards + EXDEV fallback",
     fix: 'Import from scripts/lib/safe-fs.js: const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("./lib/safe-fs")',

@@ -14,7 +14,7 @@
  * npm script: npm run metrics:review-churn
  */
 
-import { writeFileSync, mkdirSync, existsSync, lstatSync } from "node:fs";
+import { mkdirSync, existsSync, lstatSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";

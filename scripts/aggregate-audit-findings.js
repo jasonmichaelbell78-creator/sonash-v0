@@ -18,7 +18,7 @@
  * - IMPLEMENTATION_PLAN.md
  */
 
-import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, mkdirSync, readdirSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeWriteFileSync } from "./lib/safe-fs.js";
