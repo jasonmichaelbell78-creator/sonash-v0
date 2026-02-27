@@ -324,7 +324,7 @@ function releaseLock(filePath) {
   const lockPath = `${path.resolve(filePath)}.lock`;
   try {
     const existing = JSON.parse(fs.readFileSync(lockPath, "utf8"));
-    if (existing.pid === process.pid) {
+    if (existing.pid === process.pid && existing.hostname === os.hostname()) {
       // Guard: refuse to remove if lockPath has been replaced with a symlink
       try {
         if (fs.lstatSync(lockPath).isSymbolicLink()) {
@@ -406,15 +406,42 @@ function atomicWriteViaTmp(targetPath, content) {
   }
 }
 
+/**
+ * Ensure parent directories exist for both debt file paths.
+ */
+function ensureDebtDirs(masterPath, dedupedPath) {
+  fs.mkdirSync(path.dirname(masterPath), { recursive: true });
+  fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
+}
+
+/**
+ * Capture file snapshot (exists + size) for later rollback.
+ * @returns {{ existed: boolean, size: number }}
+ */
+function snapshotFile(filePath) {
+  const existed = fs.existsSync(filePath);
+  return { existed, size: existed ? fs.statSync(filePath).size : 0 };
+}
+
+/**
+ * Best-effort rollback a file to its snapshot state.
+ */
+function rollbackFile(filePath, snapshot) {
+  try {
+    if (!snapshot.existed && snapshot.size === 0) fs.rmSync(filePath, { force: true });
+    else fs.truncateSync(filePath, snapshot.size);
+  } catch {
+    /* best-effort */
+  }
+}
+
 function writeMasterDebtSync(items, options) {
   const masterPath = options?.masterPath || DEFAULT_MASTER_PATH;
   const dedupedPath = options?.dedupedPath || DEFAULT_DEDUPED_PATH;
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   withLock(masterPath, () => {
-    fs.mkdirSync(path.dirname(masterPath), { recursive: true });
-    fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
-
+    ensureDebtDirs(masterPath, dedupedPath);
     atomicWriteViaTmp(masterPath, content);
     atomicWriteViaTmp(dedupedPath, content);
   });
@@ -436,33 +463,19 @@ function appendMasterDebtSync(newItems, options) {
   const content = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   withLock(masterPath, () => {
-    fs.mkdirSync(path.dirname(masterPath), { recursive: true });
-    fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
+    ensureDebtDirs(masterPath, dedupedPath);
 
     // Capture sizes for rollback on partial failure
-    const masterExistedBefore = fs.existsSync(masterPath);
-    const dedupedExistedBefore = fs.existsSync(dedupedPath);
-    const masterSizeBefore = masterExistedBefore ? fs.statSync(masterPath).size : 0;
-    const dedupedSizeBefore = dedupedExistedBefore ? fs.statSync(dedupedPath).size : 0;
+    const masterSnap = snapshotFile(masterPath);
+    const dedupedSnap = snapshotFile(dedupedPath);
 
     try {
       safeAppendFileSync(masterPath, content);
       safeAppendFileSync(dedupedPath, content);
     } catch (err) {
       // Roll back any partial append to maintain MASTER <-> deduped consistency
-      try {
-        if (!masterExistedBefore && masterSizeBefore === 0) fs.rmSync(masterPath, { force: true });
-        else fs.truncateSync(masterPath, masterSizeBefore);
-      } catch {
-        /* best-effort */
-      }
-      try {
-        if (!dedupedExistedBefore && dedupedSizeBefore === 0)
-          fs.rmSync(dedupedPath, { force: true });
-        else fs.truncateSync(dedupedPath, dedupedSizeBefore);
-      } catch {
-        /* best-effort */
-      }
+      rollbackFile(masterPath, masterSnap);
+      rollbackFile(dedupedPath, dedupedSnap);
       throw err;
     }
   });

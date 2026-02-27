@@ -140,6 +140,18 @@ function main() {
   // Write updated file — extract all parsed items for central writer
   const parsedItems = items.filter((entry) => entry.parsed !== null).map((entry) => entry.parsed);
 
+  // Abort if any non-empty lines failed to parse (prevents silent data loss)
+  if (parseErrors.length > 0) {
+    const failedSample = parseErrors
+      .slice(0, 5)
+      .map((e) => `  Line ${e.line}: ${e.message}`)
+      .join("\n");
+    console.error(
+      `Error: Refusing to write MASTER_DEBT.jsonl: ${parseErrors.length} line(s) failed to parse.\n${failedSample}`
+    );
+    process.exit(1);
+  }
+
   try {
     writeMasterDebtSync(parsedItems);
   } catch (err) {

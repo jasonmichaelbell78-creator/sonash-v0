@@ -200,7 +200,7 @@ function checkConsolidationStateHealth(rootDir) {
       return { stuckAtZero: false, consolidationNumber: -1, lastConsolidated: -1 };
     }
     const state = JSON.parse(fs.readFileSync(consolidationPath, "utf8"));
-    const consolidationNumber = state.consolidationNumber || 0;
+    const consolidationNumber = Number.parseInt(String(state.consolidationNumber ?? 0), 10) || 0;
     const lastConsolidated = parseInt(
       String(state.lastConsolidatedReview || 0)
         .toString()

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.74 **Created:** 2026-01-02 **Last Updated:** 2026-02-26
+**Document Version:** 17.75 **Created:** 2026-01-02 **Last Updated:** 2026-02-27
 
 ## Purpose
 
@@ -1743,6 +1743,23 @@ AST walker (Object.keys + recurse) > hand-enumerated types. (5) Lazy quantifiers
 **Verdict:** Inefficient but productive — 12 rounds, ~153 fixes, ~42% avoidable.
 Single highest-impact change: split large PRs. Second: create ESLint rule
 template with built-in ChainExpression/walker/CC patterns.
+
+---
+
+#### Review #406: Maintenance PR R7 (2026-02-27)
+
+- **Source**: SonarCloud (1) + Qodo Compliance (5) + Qodo PR Suggestions (5)
+- **PR**: Maintenance — pipeline repair + deep-plan automation + TDMS refresh
+- **Items**: 11 total → 6 actionable (5 compliance batch-rejected), 6 fixed, 0
+  deferred, 0 rejected
+- **Key fix**: SonarCloud CC=18 in intake-pr-deferred.js main() — R6's try/catch
+  addition pushed CC over the 15 threshold. Extracted `validateInputs()` helper
+  to reduce CC. Also reduced duplication by extracting `ensureDebtDirs()`,
+  `snapshotFile()`, and `rollbackFile()` helpers in safe-fs.js.
+- **Pattern**: CC-creep-from-error-handling — adding try/catch blocks to
+  existing functions can silently push CC over thresholds. When adding error
+  handling, check if the function is already near the CC limit and extract
+  proactively.
 
 ---
 

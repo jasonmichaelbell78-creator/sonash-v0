@@ -358,33 +358,29 @@ function parseMarkdownReviews(content) {
     }
 
     // Format 4: bullet items under "Key Patterns" or "Patterns Identified" sections
-    // String-based section extraction to avoid regex backtracking (S5852 proactive sweep)
-    const rawLower = raw.toLowerCase();
-    let sectionStart = -1;
-    if (rawLower.includes("**key patterns")) {
-      sectionStart = rawLower.indexOf("**key patterns");
-    } else if (rawLower.includes("**patterns identified")) {
-      sectionStart = rawLower.indexOf("**patterns identified");
+    // Line-by-line header search avoids Unicode length mismatch from toLowerCase()
+    const rawLines = raw.split("\n");
+    let sectionHeaderIdx = -1;
+    for (let li = 0; li < rawLines.length; li++) {
+      const lower = rawLines[li].toLowerCase();
+      if (lower.includes("**key patterns") || lower.includes("**patterns identified")) {
+        sectionHeaderIdx = li;
+        break;
+      }
     }
     let sectionBody = null;
-    if (sectionStart >= 0) {
-      // Skip past the header line to get the body
-      const headerEnd = raw.indexOf("\n", sectionStart);
-      if (headerEnd !== -1) {
-        const rest = raw.slice(headerEnd + 1);
-        // Find the end: next bold header, horizontal rule, or markdown heading
-        const lines = rest.split("\n");
-        const bodyLines = [];
-        let scanned = 0;
-        for (const ln of lines) {
-          const t = ln.trimStart();
-          if (t.startsWith("**") || t.startsWith("---") || /^#{2,4}\s/.test(t)) break;
-          bodyLines.push(ln);
-          scanned++;
-          if (scanned >= 200) break; // safety cap for missing terminators
-        }
-        sectionBody = bodyLines.join("\n");
+    if (sectionHeaderIdx >= 0) {
+      // Collect body lines after the header until a terminator
+      const bodyLines = [];
+      let scanned = 0;
+      for (let li = sectionHeaderIdx + 1; li < rawLines.length; li++) {
+        const t = rawLines[li].trimStart();
+        if (t.startsWith("**") || t.startsWith("---") || /^#{2,4}\s/.test(t)) break;
+        bodyLines.push(rawLines[li]);
+        scanned++;
+        if (scanned >= 200) break; // safety cap for missing terminators
       }
+      sectionBody = bodyLines.join("\n");
     }
     if (sectionBody) {
       // Line-by-line string parsing to avoid regex backtracking (S5852 two-strikes)
