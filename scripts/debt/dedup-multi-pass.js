@@ -21,6 +21,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/normalized-all.jsonl");
 const OUTPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
@@ -674,11 +675,11 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
     fs.mkdirSync(logDir, { recursive: true });
   }
 
-  fs.writeFileSync(OUTPUT_FILE, pass5Items.map((item) => JSON.stringify(item)).join("\n") + "\n");
-  fs.writeFileSync(LOG_FILE, dedupLog.map((entry) => JSON.stringify(entry)).join("\n") + "\n");
+  safeWriteFileSync(OUTPUT_FILE, pass5Items.map((item) => JSON.stringify(item)).join("\n") + "\n");
+  safeWriteFileSync(LOG_FILE, dedupLog.map((entry) => JSON.stringify(entry)).join("\n") + "\n");
 
   if (reviewNeeded.length > 0) {
-    fs.writeFileSync(
+    safeWriteFileSync(
       REVIEW_FILE,
       reviewNeeded.map((entry) => JSON.stringify(entry)).join("\n") + "\n"
     );

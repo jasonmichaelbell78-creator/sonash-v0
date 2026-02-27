@@ -64,6 +64,7 @@ function safeCloneObject(obj) {
 }
 
 const { loadConfig } = require("../config/load-config");
+const { safeAppendFileSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -452,7 +453,7 @@ function logIntake(activity) {
     timestamp: new Date().toISOString(),
     ...activity,
   };
-  fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
+  safeAppendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
 // Print format detection statistics
@@ -611,7 +612,7 @@ function printIntakeReport({
       pass_5: "Systemic pattern annotation",
     };
     for (const [key, name] of Object.entries(passNames)) {
-      const count = dedupBreakdown[key] || 0;
+      const count = dedupBreakdown[key] ?? 0;
       if (count > 0) {
         console.log(`     ${name}: ${count}`);
       }
@@ -801,12 +802,12 @@ async function main() {
   // Append to raw/normalized-all.jsonl (input for dedup-multi-pass)
   const NORMALIZED_FILE = path.join(DEBT_DIR, "raw/normalized-all.jsonl");
   fs.mkdirSync(path.dirname(NORMALIZED_FILE), { recursive: true });
-  fs.appendFileSync(NORMALIZED_FILE, newLines.join("\n") + "\n");
+  safeAppendFileSync(NORMALIZED_FILE, newLines.join("\n") + "\n");
 
   // Also append to raw/deduped.jsonl as fallback
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-  fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
+  safeAppendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
 
   // Log intake activity (including format statistics and confidence values)
   // Include user context for audit trail reconstruction (Qodo compliance)

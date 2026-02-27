@@ -15,12 +15,17 @@ import { glossaryData } from "@/data/glossary";
 
 // Seed from static data file
 async function seedGlossary() {
-  for (const item of glossaryData) {
-    await GlossaryService.addTerm({
-      term: item.term,
-      definition: item.definition,
-      category: item.category,
-    });
+  try {
+    for (const item of glossaryData) {
+      await GlossaryService.addTerm({
+        term: item.term,
+        definition: item.definition,
+        category: item.category,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to seed glossary:", error);
+    throw error;
   }
 }
 

@@ -19,6 +19,7 @@
 const { execSync, execFileSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const VELOCITY_LOG = path.join(PROJECT_ROOT, ".claude/state/velocity-log.jsonl");
@@ -235,7 +236,7 @@ function run() {
     }
 
     // Append to JSONL
-    fs.appendFileSync(VELOCITY_LOG, JSON.stringify(entry) + "\n", "utf8");
+    safeAppendFileSync(VELOCITY_LOG, JSON.stringify(entry) + "\n", "utf8");
   } catch (err) {
     process.stderr.write(
       `Warning: Could not write velocity log: ${err instanceof Error ? err.message : String(err)}\n`
@@ -279,7 +280,7 @@ function printRollingAverage() {
 
     // Last 10 sessions
     const recent = entries.slice(-10);
-    const total = recent.reduce((sum, e) => sum + (e.items_completed || 0), 0);
+    const total = recent.reduce((sum, e) => sum + (e.items_completed ?? 0), 0);
     const avg = (total / recent.length).toFixed(1);
 
     // Trend detection

@@ -274,6 +274,7 @@ const ANTI_PATTERNS = [
     fix: "Use: while IFS= read -r file; do ... done < file_list",
     review: "#4, #14",
     fileTypes: [".sh", ".yml", ".yaml"],
+    pathExcludeList: verifiedPatterns["for-file-iteration"] || [],
   },
   {
     id: "missing-trap",
@@ -341,6 +342,7 @@ const ANTI_PATTERNS = [
     fix: "Use env: block to pass value, then process.env.VAR",
     review: "#16",
     fileTypes: [".yml", ".yaml"],
+    pathExcludeList: verifiedPatterns["unsafe-interpolation"] || [],
   },
   {
     id: "hardcoded-temp-path",
@@ -439,6 +441,7 @@ const ANTI_PATTERNS = [
     // Review #252: eval-sonarcloud-snapshot.js L186 `file` from readdirSync; containment check at L200-201
     pathExclude:
       /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema|eval-check-stage|eval-snapshot|eval-sonarcloud-snapshot|state-utils)\.js$/,
+    pathExcludeList: verifiedPatterns["path-join-without-containment"] || [],
   },
   {
     id: "error-without-first-line",
@@ -862,6 +865,22 @@ const ANTI_PATTERNS = [
     pathExcludeList: verifiedPatterns["atomic-write-missing-tmp-guard"] || [],
   },
 
+  // Raw fs write operations in scripts/ — use safe-fs.js helpers instead (Session #192)
+  {
+    id: "no-raw-fs-write",
+    severity: "medium",
+    pattern: /(?:fs\.(?:writeFileSync|appendFileSync|renameSync)\s*\()/g,
+    message:
+      "Direct fs.writeFileSync/appendFileSync/renameSync — use safe-fs.js helpers (safeWriteFileSync, safeAppendFileSync, safeRenameSync) for symlink guards + EXDEV fallback",
+    fix: 'Import from scripts/lib/safe-fs.js: const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("./lib/safe-fs")',
+    review: "Session #192 — prevention pattern for future compliance drift",
+    fileTypes: [".js"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|safe-fs|security-helpers|session-start)\.js$/,
+    pathExcludeList: verifiedPatterns["no-raw-fs-write"] || [],
+  },
+
   // === Patterns automated from LEARNING_METRICS.md failing patterns ===
 
   // Pattern: "JSONL line parsing" — 14 recurrences (Reviews: 319, 336, 337, 339, 342)
@@ -1010,6 +1029,7 @@ const ANTI_PATTERNS = [
     review: "ai-behavior",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:lib|app|components|pages)\//,
+    pathExcludeList: verifiedPatterns["happy-path-only"] || [],
   },
   // trivial-assertions: MIGRATED to ESLint sonash/no-trivial-assertions (AST-based)
   {
@@ -1061,6 +1081,7 @@ const ANTI_PATTERNS = [
     review: "ai-behavior",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:lib|app|components|pages)\//,
+    pathExcludeList: verifiedPatterns["unbounded-query"] || [],
   },
 
   // Section-scoped regex parsing (4x recurrence)
@@ -1143,6 +1164,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|\/)scripts\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["audit-log-missing-context"] || [],
   },
 
   // Logical OR on numeric fields that could be 0 (PR #384 R2 recurrence)
@@ -1200,6 +1222,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|\/)scripts\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["logical-or-numeric-fallback"] || [],
   },
 
   // S5852 regex complexity — detect regexes likely to trigger SonarCloud S5852
@@ -1280,6 +1303,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|\/)scripts\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["regex-complexity-s5852"] || [],
   },
 ];
 

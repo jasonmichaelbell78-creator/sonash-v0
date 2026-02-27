@@ -128,7 +128,7 @@ function printSummary(results) {
     const icon = result.passed ? "PASS" : "FAIL";
     console.log(`  [${icon}] ${result.label}`);
     if (!result.passed && result.error) {
-      console.log(`         ${result.error.split("\n")[0].substring(0, 120)}`);
+      console.log(`         ${result.error.split("\n")[0].replace(/\r$/, "").substring(0, 120)}`);
     }
   }
 
@@ -178,7 +178,7 @@ function validateInputPath(inputFile) {
   }
 
   const rel = path.relative(repoReal, inputReal);
-  if (rel.startsWith("..") || path.isAbsolute(rel)) {
+  if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
     console.error(`Error: Input file must be within the repository root.`);
     console.error(`  Input:     ${inputReal}`);
     console.error(`  Repo root: ${repoReal}`);

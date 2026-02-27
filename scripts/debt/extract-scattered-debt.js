@@ -17,6 +17,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(PROJECT_ROOT, "docs/technical-debt");
@@ -428,8 +429,8 @@ function main() {
   fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
   const jsonlContent = newFindings.map((f) => JSON.stringify(f)).join("\n") + "\n";
   const tmpPath = OUTPUT_FILE + ".tmp";
-  fs.writeFileSync(tmpPath, jsonlContent, "utf-8");
-  fs.renameSync(tmpPath, OUTPUT_FILE);
+  safeWriteFileSync(tmpPath, jsonlContent, "utf-8");
+  safeRenameSync(tmpPath, OUTPUT_FILE);
   console.log(
     `\n   Wrote ${newFindings.length} items to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
   );

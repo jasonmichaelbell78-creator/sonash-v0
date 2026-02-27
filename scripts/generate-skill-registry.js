@@ -16,6 +16,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("./lib/safe-fs");
 
 const ROOT = path.join(__dirname, "..");
 const OUTPUT = path.join(__dirname, "config", "skill-registry.json");
@@ -149,7 +150,7 @@ function main() {
   };
 
   fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
-  fs.writeFileSync(OUTPUT, JSON.stringify(registry, null, 2) + "\n", "utf8");
+  safeWriteFileSync(OUTPUT, JSON.stringify(registry, null, 2) + "\n", "utf8");
   console.log(`Generated skill registry: ${skills.length} skills → ${path.relative(ROOT, OUTPUT)}`);
 }
 

@@ -98,8 +98,13 @@ function QuotesForm({
 
 // Seed helper
 async function seedQuotes() {
-  for (const q of SEED_QUOTES) {
-    await QuotesService.addQuote(q);
+  try {
+    for (const q of SEED_QUOTES) {
+      await QuotesService.addQuote(q);
+    }
+  } catch (error) {
+    console.error("Failed to seed quotes:", error);
+    throw error;
   }
 }
 

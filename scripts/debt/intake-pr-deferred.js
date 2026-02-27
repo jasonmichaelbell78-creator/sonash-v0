@@ -34,6 +34,7 @@ const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
 
 const { loadConfig } = require("../config/load-config");
+const { safeAppendFileSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -136,7 +137,7 @@ function logIntake(activity) {
     timestamp: new Date().toISOString(),
     ...activity,
   };
-  fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
+  safeAppendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
 // Main function
@@ -267,7 +268,7 @@ Example:
 
   // Write to MASTER_DEBT.jsonl
   console.log("\n📝 Writing to MASTER_DEBT.jsonl...");
-  fs.appendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
+  safeAppendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
 
   // Log intake activity
   logIntake({

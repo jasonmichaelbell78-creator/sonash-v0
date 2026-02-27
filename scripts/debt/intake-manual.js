@@ -38,6 +38,7 @@ const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
 
 const { loadConfig } = require("../config/load-config");
+const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -146,7 +147,7 @@ function logIntake(activity) {
     timestamp: new Date().toISOString(),
     ...activity,
   };
-  fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
+  safeAppendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
 // Validate all required and optional fields, exit on error
@@ -270,7 +271,7 @@ function writeItemToFiles(newItem) {
   const newItemJson = JSON.stringify(newItem) + "\n";
 
   try {
-    fs.appendFileSync(DEDUPED_FILE, newItemJson);
+    safeAppendFileSync(DEDUPED_FILE, newItemJson);
   } catch (writeError) {
     console.error(`Error writing to deduped file: ${sanitizeError(writeError)}`);
     process.exit(1);
@@ -278,7 +279,7 @@ function writeItemToFiles(newItem) {
 
   console.log("📝 Writing to MASTER_DEBT.jsonl...");
   try {
-    fs.appendFileSync(MASTER_FILE, newItemJson);
+    safeAppendFileSync(MASTER_FILE, newItemJson);
   } catch (writeError) {
     console.error(`Error writing to master file: ${sanitizeError(writeError)}`);
     rollbackDedupedFile(newItemJson);
@@ -316,7 +317,7 @@ function rollbackDedupedFile(appendedLine) {
       return;
     }
     lines.pop();
-    fs.writeFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");
+    safeWriteFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");
     console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
   } catch (rollbackError) {
     console.error(`  ⚠️ Failed to rollback deduped file: ${sanitizeError(rollbackError)}`);

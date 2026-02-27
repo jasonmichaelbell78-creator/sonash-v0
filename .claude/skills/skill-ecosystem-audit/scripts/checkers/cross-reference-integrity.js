@@ -414,7 +414,7 @@ function checkDependencyChainHealth(skills, skillNames, findings) {
   //   - Parenthetical context (e.g., "When invoked as part of /skill-name")
   const depGraph = {};
   const infoSectionPattern =
-    /^#+\s*(?:Related\b|When NOT to Use|See Also|Complementary|Individual audits)[^\n]*\n([\s\S]*?)(?=\n#+\s|\n---|$)/gim;
+    /^#+\s*(?:Related\b|When NOT to Use|See Also|Complementary|Individual audits)[^\n]*\r?\n([\s\S]*?)(?=\r?\n#+\s|\r?\n---|$)/gim;
 
   for (const skill of skills) {
     const { content, name } = skill;

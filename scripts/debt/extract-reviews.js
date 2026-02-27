@@ -17,6 +17,7 @@ const path = require("node:path");
 const { glob } = require("glob");
 
 const normalizeCategory = require("../lib/normalize-category");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 const REVIEWS_DIR = path.join(__dirname, "../../docs/reviews");
 const AGGREGATION_DIR = path.join(__dirname, "../../docs/aggregation");
@@ -230,7 +231,7 @@ async function main() {
 
   // Write JSONL output
   const outputLines = items.map((item) => JSON.stringify(item));
-  fs.writeFileSync(OUTPUT_FILE, outputLines.join("\n") + "\n");
+  safeWriteFileSync(OUTPUT_FILE, outputLines.join("\n") + "\n");
 
   console.log(`\n✅ Extracted ${items.length} unique items to ${OUTPUT_FILE}`);
 

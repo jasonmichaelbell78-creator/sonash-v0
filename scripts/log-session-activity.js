@@ -24,6 +24,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { safeAppendFileSync, safeRenameSync } = require("./lib/safe-fs");
 
 // Get repository root for consistent log location
 function getRepoRoot() {
@@ -171,12 +172,12 @@ function logEvent(eventData) {
       const stats = fs.statSync(LOG_FILE);
       if (stats.size > MAX_LOG_SIZE) {
         const backupFile = LOG_FILE.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
-        fs.renameSync(LOG_FILE, backupFile);
+        safeRenameSync(LOG_FILE, backupFile);
         console.log(`Log rotated to ${path.basename(backupFile)}`);
       }
     }
 
-    fs.appendFileSync(LOG_FILE, JSON.stringify(entry) + "\n");
+    safeAppendFileSync(LOG_FILE, JSON.stringify(entry) + "\n");
     return entry;
   } catch (err) {
     // Non-fatal: log write failure should not crash scripts/hooks
@@ -430,7 +431,7 @@ function clearLog() {
   if (fs.existsSync(LOG_FILE)) {
     // Archive old log before clearing
     const backupFile = LOG_FILE.replaceAll(".jsonl", `-archived-${Date.now()}.jsonl`);
-    fs.renameSync(LOG_FILE, backupFile);
+    safeRenameSync(LOG_FILE, backupFile);
     console.log(`Previous session log archived to ${path.basename(backupFile)}`);
   }
   // Create empty log with session_start

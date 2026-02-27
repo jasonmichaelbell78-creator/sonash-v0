@@ -33,6 +33,7 @@ const { execFileSync } = require("node:child_process");
 const readline = require("node:readline");
 const os = require("node:os");
 const generateContentHash = require("../lib/generate-content-hash");
+const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 // Try to load dotenv if available
 try {
@@ -221,7 +222,7 @@ function logIntake(activity) {
     outcome: activity.error ? "failure" : "success",
     ...activity,
   };
-  fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
+  safeAppendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
 // Prompt for confirmation
@@ -373,7 +374,7 @@ async function fetchSonarCloudHotspots(options) {
     const url = `${SONARCLOUD_API}/hotspots/search?${params}`;
     const data = await fetchHotspotPage(token, url);
     const paging = data.paging || {};
-    const total = paging.total || 0;
+    const total = paging.total ?? 0;
     totalPages = Math.ceil(total / pageSize);
 
     allHotspots.push(...(data.hotspots || []));
@@ -513,7 +514,7 @@ function logResolution(activity) {
       outcome: activity.error ? "failure" : "success",
       ...activity,
     };
-    fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
+    safeAppendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
   } catch (err) {
     console.warn(
       `  ⚠️ Failed to write resolution log: ${err instanceof Error ? err.message : String(err)}`
@@ -628,22 +629,22 @@ async function resolveStaleItems(options) {
   console.log("\n📝 Updating MASTER_DEBT.jsonl...");
   const updatedContent = updatedLines.join("\n") + "\n";
   const tmpMaster = `${MASTER_FILE}.tmp`;
-  fs.writeFileSync(tmpMaster, updatedContent);
-  fs.renameSync(tmpMaster, MASTER_FILE);
+  safeWriteFileSync(tmpMaster, updatedContent);
+  safeRenameSync(tmpMaster, MASTER_FILE);
 
   // Also update raw/deduped.jsonl to stay in sync
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
   console.log("📝 Updating raw/deduped.jsonl...");
   const tmpDeduped = `${DEDUPED_FILE}.tmp`;
-  fs.writeFileSync(tmpDeduped, updatedContent);
+  safeWriteFileSync(tmpDeduped, updatedContent);
   try {
-    fs.renameSync(tmpDeduped, DEDUPED_FILE);
+    safeRenameSync(tmpDeduped, DEDUPED_FILE);
   } catch {
     // Windows may fail rename if dest exists; fallback to rm + rename
     try {
       fs.rmSync(DEDUPED_FILE, { force: true });
-      fs.renameSync(tmpDeduped, DEDUPED_FILE);
+      safeRenameSync(tmpDeduped, DEDUPED_FILE);
     } catch (fallbackErr) {
       try {
         fs.unlinkSync(tmpDeduped);
@@ -782,7 +783,7 @@ function writeNewItems(newItems) {
   }
 
   try {
-    fs.appendFileSync(DEDUPED_FILE, newLinesStr);
+    safeAppendFileSync(DEDUPED_FILE, newLinesStr);
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error(`❌ Failed to write to deduped.jsonl: ${msg}`);
@@ -797,7 +798,7 @@ function writeNewItems(newItems) {
     // File doesn't exist yet, size = 0
   }
   try {
-    fs.appendFileSync(MASTER_FILE, newLinesStr);
+    safeAppendFileSync(MASTER_FILE, newLinesStr);
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error(`❌ Failed to write to MASTER_DEBT.jsonl: ${msg}`);

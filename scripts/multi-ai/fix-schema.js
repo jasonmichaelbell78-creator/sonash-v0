@@ -17,6 +17,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { safeWriteFileSync } from "../lib/safe-fs.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -562,7 +563,7 @@ export function processFile(inputPath, outputPath, category) {
 
   // Write output
   const jsonl = fixed.map((f) => JSON.stringify(f)).join("\n");
-  writeFileSync(outputPath, jsonl);
+  safeWriteFileSync(outputPath, jsonl);
 
   // Print report
   console.log(`\n=== Schema Fix Report ===`);

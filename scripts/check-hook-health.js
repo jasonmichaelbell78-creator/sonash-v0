@@ -15,6 +15,7 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("./lib/safe-fs");
 
 // Get and validate project directory (prevent arbitrary file write)
 const safeBaseDir = path.resolve(process.cwd());
@@ -66,7 +67,7 @@ function readSessionState() {
  */
 function writeSessionState(state) {
   try {
-    fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
+    safeWriteFileSync(stateFile, JSON.stringify(state, null, 2));
   } catch {
     // Ignore errors
   }

@@ -21,6 +21,7 @@
 import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { safeWriteFileSync } from "./lib/safe-fs.js";
 
 // ES module equivalent of __dirname (ESLint config expects this pattern)
 const __filename = fileURLToPath(import.meta.url);
@@ -1473,7 +1474,7 @@ function parseAllSources(allFindings, stats) {
  */
 function writeJsonl(filePath, items) {
   const payload = items.length > 0 ? items.map((f) => JSON.stringify(f)).join("\n") + "\n" : "";
-  writeFileSync(filePath, payload);
+  safeWriteFileSync(filePath, payload);
 }
 
 /**
@@ -1598,11 +1599,11 @@ function generateReports(masterList, stats, crossRefStats) {
     stats,
     crossRefStats
   );
-  writeFileSync(join(CONFIG.outputDir, "MASTER_ISSUE_LIST.md"), masterMd);
+  safeWriteFileSync(join(CONFIG.outputDir, "MASTER_ISSUE_LIST.md"), masterMd);
   console.log(`  Wrote: MASTER_ISSUE_LIST.md`);
 
   const implPlan = generateImplementationPlan(masterList, bucketCounts);
-  writeFileSync(join(CONFIG.outputDir, "IMPLEMENTATION_PLAN.md"), implPlan);
+  safeWriteFileSync(join(CONFIG.outputDir, "IMPLEMENTATION_PLAN.md"), implPlan);
   console.log(`  Wrote: IMPLEMENTATION_PLAN.md`);
 
   printSummary(stats, masterList, severityCounts, bucketCounts, crossRefStats);

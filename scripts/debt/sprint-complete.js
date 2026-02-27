@@ -13,6 +13,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 
 const ROOT = path.join(__dirname, "../..");
 const LOGS_DIR = path.join(ROOT, "docs/technical-debt/logs");
@@ -78,7 +79,7 @@ function readJSON(filePath) {
  * Write a JSON file with 2-space indent.
  */
 function writeJSON(filePath, data) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf-8");
+  safeWriteFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf-8");
 }
 
 /**
@@ -419,7 +420,7 @@ function main() {
   const report = buildSprintReport(sprintId, stats, sprintManifest, sprintEntry, carriedTo);
   const reportPath = path.join(LOGS_DIR, `${key}-report.md`);
   try {
-    fs.writeFileSync(reportPath, report, "utf-8");
+    safeWriteFileSync(reportPath, report, "utf-8");
   } catch (err) {
     console.error(`Error: Failed to write sprint report: ${err.message}`);
     process.exit(2);

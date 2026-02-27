@@ -6,6 +6,7 @@
  */
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const outputFile = process.argv[2];
 const destFile = process.argv[3];
@@ -188,9 +189,9 @@ fs.mkdirSync(path.dirname(safeDestFile), { recursive: true });
 const jsonl = findings.map((f) => JSON.stringify(f)).join("\n") + "\n";
 const tmpDest = `${safeDestFile}.tmp`;
 try {
-  fs.writeFileSync(tmpDest, jsonl);
+  safeWriteFileSync(tmpDest, jsonl);
   try {
-    fs.renameSync(tmpDest, safeDestFile);
+    safeRenameSync(tmpDest, safeDestFile);
   } catch {
     // Windows may fail rename if dest exists; fallback to copy + remove tmp
     try {

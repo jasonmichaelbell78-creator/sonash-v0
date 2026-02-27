@@ -16,6 +16,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from 
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
+import { safeWriteFileSync } from "../lib/safe-fs.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -236,7 +237,7 @@ function writeStateFile(session) {
     mkdirSync(CONFIG.stateDir, { recursive: true });
   }
 
-  writeFileSync(stateFilePath, JSON.stringify(session, null, 2));
+  safeWriteFileSync(stateFilePath, JSON.stringify(session, null, 2));
 }
 
 /**
@@ -252,7 +253,7 @@ function saveBackupState(session) {
     mkdirSync(sessionDir, { recursive: true });
   }
 
-  writeFileSync(backupPath, JSON.stringify(session, null, 2));
+  safeWriteFileSync(backupPath, JSON.stringify(session, null, 2));
 }
 
 /**
@@ -393,7 +394,7 @@ export function clearSession() {
       console.log(`Clearing session: ${session.session_id}`);
     }
     // Remove state file but keep output directory
-    writeFileSync(stateFilePath, "{}");
+    safeWriteFileSync(stateFilePath, "{}");
   }
 }
 

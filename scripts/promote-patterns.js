@@ -20,6 +20,7 @@
 
 const { existsSync, readFileSync, writeFileSync, lstatSync, renameSync } = require("node:fs");
 const { join } = require("node:path");
+const { safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs");
 
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
@@ -605,11 +606,8 @@ function applyPromotions(newPromotions, codePatternsContent) {
   // Atomic write: write to tmp, then rename
   const tmpPath = CODE_PATTERNS_FILE + ".tmp";
   try {
-    if (!isSafeToWrite(tmpPath)) {
-      throw new Error("symlink at tmp path");
-    }
-    writeFileSync(tmpPath, updatedContent, "utf8");
-    renameSync(tmpPath, CODE_PATTERNS_FILE);
+    safeWriteFileSync(tmpPath, updatedContent, "utf8");
+    safeRenameSync(tmpPath, CODE_PATTERNS_FILE);
   } catch (err) {
     console.error("Failed to write CODE_PATTERNS.md:", sanitizeError(err));
     process.exitCode = 2;

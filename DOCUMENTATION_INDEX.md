@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-26 **Active Documents:** 291 **Archived Documents:** 103
+**Generated:** 2026-02-27 **Active Documents:** 291 **Archived Documents:** 103
 
 ---
 
@@ -915,7 +915,7 @@ Documents with no inbound links (not referenced by any other document):
 | 43  | [.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)                                                                                               | Audit Ecosystem Full Health Remediation Plan                           | 4    | APPROVED                                                                |
 | 44  | [.claude/plans/audit-template-schema-overhaul.md](.claude/plans/audit-template-schema-overhaul.md)                                                                                         | Audit Template &amp; Schema Full Overhaul Plan                         | 4    | COMPLETE **Created:** 2026-02-06 **Session:** maa-2026-02-06-b87316     |
 | 45  | [.claude/plans/ecosystem-audit-expansion.md](.claude/plans/ecosystem-audit-expansion.md)                                                                                                   | Implementation Plan: Ecosystem Audit Expansion                         | 4    | ACTIVE                                                                  |
-| 46  | [.claude/plans/ESLINT_AND_COMPLIANCE_FIX_PLAN.md](.claude/plans/ESLINT_AND_COMPLIANCE_FIX_PLAN.md)                                                                                         | ESLint + Pattern Compliance Fix Plan — PR #394 Unblock                 | 4    | READY \(not started\)                                                   |
+| 46  | [.claude/plans/ESLINT_AND_COMPLIANCE_FIX_PLAN.md](.claude/plans/ESLINT_AND_COMPLIANCE_FIX_PLAN.md)                                                                                         | ESLint + Pattern Compliance Fix Plan — PR #394 Unblock                 | 4    | COMPLETE \(all 27 items done — Session #192\)                           |
 | 47  | [.claude/plans/learning-effectiveness-analyzer.md](.claude/plans/learning-effectiveness-analyzer.md)                                                                                       | Learning Effectiveness Analyzer - Implementation Plan                  | 4    | Planned - Implement after next PR review                                |
 | 48  | [.claude/plans/manifest-json-refactors.md](.claude/plans/manifest-json-refactors.md)                                                                                                       | Plan: Manifest JSON Refactors                                          | 4    | COMPLETE \(Completed Session #142, 2026-02-08 — consider archiving\)    |
 | 49  | [.claude/plans/pr-ecosystem-audit-plan.md](.claude/plans/pr-ecosystem-audit-plan.md)                                                                                                       | Implementation Plan: PR Ecosystem Audit Skill                          | 4    | COMPLETE                                                                |
@@ -1288,7 +1288,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-26 | Auto-generated from codebase scan |
+| Auto    | 2026-02-27 | Auto-generated from codebase scan |
 
 ---
 

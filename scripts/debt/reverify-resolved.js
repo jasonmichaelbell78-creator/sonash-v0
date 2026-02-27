@@ -17,6 +17,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const ROOT = path.resolve(__dirname, "../..");
 const MASTER_PATH = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
@@ -339,7 +340,7 @@ if (writeMode) {
 
   // Stage both tmp files
   const masterTmpPath = MASTER_PATH + ".tmp";
-  fs.writeFileSync(masterTmpPath, updatedLines.join("\n") + "\n", "utf8");
+  safeWriteFileSync(masterTmpPath, updatedLines.join("\n") + "\n", "utf8");
 
   let dedupedTmpPath = null;
   if (fs.existsSync(DEDUPED_PATH)) {
@@ -368,16 +369,16 @@ if (writeMode) {
       }
     }
     dedupedTmpPath = DEDUPED_PATH + ".tmp";
-    fs.writeFileSync(dedupedTmpPath, dedupedUpdated.join("\n") + "\n", "utf8");
+    safeWriteFileSync(dedupedTmpPath, dedupedUpdated.join("\n") + "\n", "utf8");
   }
 
   // Commit atomically
-  fs.renameSync(masterTmpPath, MASTER_PATH);
+  safeRenameSync(masterTmpPath, MASTER_PATH);
   try {
-    if (dedupedTmpPath) fs.renameSync(dedupedTmpPath, DEDUPED_PATH);
+    if (dedupedTmpPath) safeRenameSync(dedupedTmpPath, DEDUPED_PATH);
   } catch (renameErr) {
     try {
-      fs.renameSync(MASTER_PATH, masterTmpPath);
+      safeRenameSync(MASTER_PATH, masterTmpPath);
     } catch {
       /* ignore */
     }

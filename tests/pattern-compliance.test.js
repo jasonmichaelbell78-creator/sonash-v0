@@ -159,6 +159,67 @@ describe("Pattern: naive-data-fetch [high]", () => {
 });
 
 // ═══════════════════════════════════════════════════
+// Phase 1 Compliance Patterns (Session #192)
+// ═══════════════════════════════════════════════════
+
+describe("Pattern: no-raw-fs-write [medium]", () => {
+  // Matches the regex from check-pattern-compliance.js
+  const pattern = /(?:fs\.(?:writeFileSync|appendFileSync|renameSync)\s*\()/g;
+
+  test("detects fs.writeFileSync(", () => {
+    testPattern(
+      pattern,
+      [
+        'fs.writeFileSync(filePath, data, "utf-8")',
+        "fs.writeFileSync(output, JSON.stringify(obj))",
+      ],
+      []
+    );
+  });
+
+  test("detects fs.appendFileSync(", () => {
+    testPattern(pattern, ['fs.appendFileSync(logFile, line + "\\n")'], []);
+  });
+
+  test("detects fs.renameSync(", () => {
+    testPattern(pattern, ["fs.renameSync(tmpPath, finalPath)"], []);
+  });
+
+  test("does NOT flag safeWriteFileSync(", () => {
+    testPattern(
+      pattern,
+      [],
+      [
+        'safeWriteFileSync(filePath, data, "utf-8")',
+        "safeWriteFileSync(output, JSON.stringify(obj))",
+      ]
+    );
+  });
+
+  test("does NOT flag safeAppendFileSync(", () => {
+    testPattern(pattern, [], ['safeAppendFileSync(logFile, line + "\\n")']);
+  });
+
+  test("does NOT flag safeRenameSync(", () => {
+    testPattern(pattern, [], ["safeRenameSync(tmpPath, finalPath)"]);
+  });
+
+  test("does NOT flag readFileSync or other read operations", () => {
+    testPattern(
+      pattern,
+      [],
+      [
+        'fs.readFileSync(filePath, "utf-8")',
+        "fs.existsSync(filePath)",
+        "fs.mkdirSync(dir, { recursive: true })",
+        "fs.unlinkSync(tmpFile)",
+        "fs.copyFileSync(src, dest)",
+      ]
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════
 // Known False Positive Cases (regression tests)
 // These caused the pre-commit disaster and MUST pass
 // ═══════════════════════════════════════════════════

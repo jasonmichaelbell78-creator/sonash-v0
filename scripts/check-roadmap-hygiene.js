@@ -113,7 +113,7 @@ function checkSessionContextSync(roadmapContent, sessionContent) {
 
   // Extract sprint tracks section from ROADMAP (various heading formats)
   const sprintMatch = roadmapContent.match(
-    /###?\s+Sprint Tracks[^\n]*\n([\s\S]*?)(?=\n## [^#]|\n---\n|$)/
+    /###?\s+Sprint Tracks[^\n]*\r?\n([\s\S]*?)(?=\r?\n## [^#]|\r?\n---\r?\n|$)/
   );
   if (!sprintMatch) {
     issues.push("Cannot find Active Sprint section in ROADMAP.md");

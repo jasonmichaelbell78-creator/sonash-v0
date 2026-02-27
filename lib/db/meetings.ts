@@ -111,7 +111,8 @@ export const MeetingsService = {
       const meetingsRef = collection(db, "meetings");
       const q = query(
         meetingsRef,
-        where("day", "==", day)
+        where("day", "==", day),
+        limit(200)
         // orderBy("time", "asc") // Requires index, might fail first time. Let's do client sort for safety if index missing.
       );
 

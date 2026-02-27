@@ -21,6 +21,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError } = require("../lib/sanitize-error");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(PROJECT_ROOT, "docs/technical-debt");
@@ -204,8 +205,8 @@ function saveJsonl(filePath, items) {
   const dir = path.dirname(filePath);
   const tmpFile = path.join(dir, `.${path.basename(filePath)}.tmp.${process.pid}`);
   try {
-    fs.writeFileSync(tmpFile, content, "utf8");
-    fs.renameSync(tmpFile, filePath);
+    safeWriteFileSync(tmpFile, content, "utf8");
+    safeRenameSync(tmpFile, filePath);
   } catch (err) {
     try {
       fs.unlinkSync(tmpFile);
@@ -226,7 +227,8 @@ function fileExists(relPath) {
   // Path traversal guard — resolve and verify it stays within PROJECT_ROOT
   const absPath = path.resolve(PROJECT_ROOT, relPath);
   const relCheck = path.relative(PROJECT_ROOT, absPath);
-  if (relCheck === "" || relCheck.startsWith("..") || path.isAbsolute(relCheck)) return false;
+  if (relCheck === "" || /^\.\.(?:[\\/]|$)/.test(relCheck) || path.isAbsolute(relCheck))
+    return false;
   try {
     const stat = fs.statSync(absPath);
     return stat.isFile();
@@ -241,7 +243,7 @@ function fileExists(relPath) {
 function getLineCount(relPath) {
   const absPath = path.resolve(PROJECT_ROOT, relPath);
   const rel = path.relative(PROJECT_ROOT, absPath);
-  if (rel === "" || rel.startsWith("..") || path.isAbsolute(rel)) return 0;
+  if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) return 0;
   try {
     const content = fs.readFileSync(absPath, "utf8");
     return content.split("\n").length;
@@ -282,7 +284,8 @@ function patternFoundNearLine(relPath, line, keywords) {
   if (!keywords.length) return false;
   const absPath = path.resolve(PROJECT_ROOT, relPath);
   const relCheck2 = path.relative(PROJECT_ROOT, absPath);
-  if (relCheck2 === "" || relCheck2.startsWith("..") || path.isAbsolute(relCheck2)) return false;
+  if (relCheck2 === "" || /^\.\.(?:[\\/]|$)/.test(relCheck2) || path.isAbsolute(relCheck2))
+    return false;
   let content;
   try {
     content = fs.readFileSync(absPath, "utf8");
@@ -551,19 +554,19 @@ function writeAuditResults(masterItems, step3, report) {
   const dedupedTmp = DEDUPED_FILE + ".tmp";
   try {
     const masterContent = masterItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
-    fs.writeFileSync(masterTmp, masterContent, "utf8");
+    safeWriteFileSync(masterTmp, masterContent, "utf8");
     if (dedupedUpdated > 0) {
       const dedupedContent = dedupedItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
-      fs.writeFileSync(dedupedTmp, dedupedContent, "utf8");
+      safeWriteFileSync(dedupedTmp, dedupedContent, "utf8");
     }
     // Commit atomically
-    fs.renameSync(masterTmp, MASTER_FILE);
+    safeRenameSync(masterTmp, MASTER_FILE);
     if (dedupedUpdated > 0) {
       try {
-        fs.renameSync(dedupedTmp, DEDUPED_FILE);
+        safeRenameSync(dedupedTmp, DEDUPED_FILE);
       } catch (renameErr) {
         try {
-          fs.renameSync(MASTER_FILE, masterTmp);
+          safeRenameSync(MASTER_FILE, masterTmp);
         } catch {
           /* ignore */
         }
@@ -598,7 +601,7 @@ function writeAuditResults(masterItems, step3, report) {
     if (!fs.existsSync(LOG_DIR)) {
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }
-    fs.writeFileSync(REPORT_FILE, JSON.stringify(report, null, 2) + "\n");
+    safeWriteFileSync(REPORT_FILE, JSON.stringify(report, null, 2) + "\n");
     console.log(`  Wrote audit report to ${path.relative(PROJECT_ROOT, REPORT_FILE)}`);
   } catch (err) {
     console.error(`Failed to write report: ${sanitizeError(err)}`);

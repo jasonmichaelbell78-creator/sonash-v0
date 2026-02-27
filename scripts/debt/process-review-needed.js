@@ -18,6 +18,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(PROJECT_ROOT, "docs/technical-debt");
@@ -27,13 +28,17 @@ const INTAKE_FILE = path.join(DEBT_DIR, "raw/scattered-intake.jsonl");
 
 // --- Load existing data ---
 
-function parseMasterLine(line, hashes, sourceIds) {
-  const item = JSON.parse(line);
-  if (item.content_hash) hashes.add(item.content_hash);
-  if (item.source_id) sourceIds.add(item.source_id);
-  if (item.sonar_key) sourceIds.add(item.sonar_key);
-  if (Array.isArray(item.merged_from)) {
-    for (const m of item.merged_from) sourceIds.add(m);
+function parseMasterLine(line, hashes, sourceIds, lineNum) {
+  try {
+    const item = JSON.parse(line);
+    if (item.content_hash) hashes.add(item.content_hash);
+    if (item.source_id) sourceIds.add(item.source_id);
+    if (item.sonar_key) sourceIds.add(item.sonar_key);
+    if (Array.isArray(item.merged_from)) {
+      for (const m of item.merged_from) sourceIds.add(m);
+    }
+  } catch {
+    console.warn(`Skipping corrupt JSONL line ${lineNum ?? "?"}`);
   }
 }
 
@@ -237,18 +242,18 @@ function writeResults(newItems, manualReviewItems) {
     const nextSeq = findNextIntakeSeq();
     const entries = newItems.map((r, i) => buildIntakeEntry(r.pair.item_b, nextSeq + i, today));
     const jsonlContent = entries.map((e) => JSON.stringify(e)).join("\n") + "\n";
-    fs.appendFileSync(INTAKE_FILE, jsonlContent, "utf-8");
+    safeAppendFileSync(INTAKE_FILE, jsonlContent, "utf-8");
     console.log(
       `\n   Appended ${entries.length} items to ${path.relative(PROJECT_ROOT, INTAKE_FILE)}`
     );
   }
 
   if (manualReviewItems.length === 0) {
-    fs.writeFileSync(REVIEW_FILE, "", "utf-8");
+    safeWriteFileSync(REVIEW_FILE, "", "utf-8");
     console.log(`   Cleared ${path.relative(PROJECT_ROOT, REVIEW_FILE)} (all pairs resolved)`);
   } else {
     const remaining = manualReviewItems.map((r) => JSON.stringify(r.pair)).join("\n") + "\n";
-    fs.writeFileSync(REVIEW_FILE, remaining, "utf-8");
+    safeWriteFileSync(REVIEW_FILE, remaining, "utf-8");
     console.log(
       `   Kept ${manualReviewItems.length} unresolved pairs in ${path.relative(PROJECT_ROOT, REVIEW_FILE)}`
     );

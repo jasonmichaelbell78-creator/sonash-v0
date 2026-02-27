@@ -53,6 +53,7 @@ function parseArgs(argv) {
 }
 
 const readJsonl = require("../lib/read-jsonl");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 // ── File I/O helpers ───────────────────────────────────────────────────────
 function readJsonSafe(filePath) {
@@ -69,9 +70,9 @@ function writeJsonSafe(filePath, data) {
   try {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     const tmpPath = filePath + ".tmp";
-    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf8");
+    safeWriteFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf8");
     try {
-      fs.renameSync(tmpPath, filePath);
+      safeRenameSync(tmpPath, filePath);
     } catch {
       // Windows may fail rename if dest exists; remove dest first then retry
       try {
@@ -79,7 +80,7 @@ function writeJsonSafe(filePath, data) {
       } catch {
         /* ignore */
       }
-      fs.renameSync(tmpPath, filePath);
+      safeRenameSync(tmpPath, filePath);
     }
   } catch (err) {
     console.error(`Failed to write ${path.basename(filePath)}:`, sanitizeError(err));
@@ -282,7 +283,7 @@ function buildManifest(
         status: "COMPLETE",
         items: oldManifest.sprints[key].ids
           ? oldManifest.sprints[key].ids.length
-          : oldManifest.sprints[key].items || 0,
+          : (oldManifest.sprints[key].items ?? 0),
         focus: getExistingFocus(key),
       };
     }
@@ -458,6 +459,12 @@ function writeSprintIdFiles(keptInExisting, newSprints, existingSprintFiles) {
   for (const [sprintKey, ids] of newSprints.entries()) {
     const fileName = `sprint-${sprintKey}-ids.json`;
     const filePath = path.join(LOGS_DIR, fileName);
+    // Path containment check
+    const resolved = path.resolve(filePath);
+    if (!resolved.startsWith(path.resolve(LOGS_DIR))) {
+      console.error(`  Skipping ${fileName}: path traversal detected`);
+      continue;
+    }
     const data = {
       sprint: `sprint-${sprintKey}`,
       focus: getFocusForSprint(sprintKey),

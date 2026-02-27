@@ -116,28 +116,48 @@ export async function getAllPrayers(includeInactive = false): Promise<Prayer[]> 
 }
 
 export async function addPrayer(prayer: PrayerInput): Promise<string> {
-  const prayersRef = collection(db, "prayers");
-  const docRef = await addDoc(prayersRef, {
-    ...prayer,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-  return docRef.id;
+  try {
+    const prayersRef = collection(db, "prayers");
+    const docRef = await addDoc(prayersRef, {
+      ...prayer,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return docRef.id;
+  } catch (error) {
+    logger.error("Error adding prayer", { error });
+    throw error;
+  }
 }
 
 export async function updatePrayer(id: string, updates: Partial<PrayerInput>): Promise<void> {
-  const prayerRef = doc(db, "prayers", id);
-  await updateDoc(prayerRef, {
-    ...updates,
-    updatedAt: serverTimestamp(),
-  });
+  try {
+    const prayerRef = doc(db, "prayers", id);
+    await updateDoc(prayerRef, {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    logger.error("Error updating prayer", { error });
+    throw error;
+  }
 }
 
 export async function deletePrayer(id: string): Promise<void> {
-  const prayerRef = doc(db, "prayers", id);
-  await deleteDoc(prayerRef);
+  try {
+    const prayerRef = doc(db, "prayers", id);
+    await deleteDoc(prayerRef);
+  } catch (error) {
+    logger.error("Error deleting prayer", { error });
+    throw error;
+  }
 }
 
 export async function togglePrayerActive(id: string, isActive: boolean): Promise<void> {
-  await updatePrayer(id, { isActive });
+  try {
+    await updatePrayer(id, { isActive });
+  } catch (error) {
+    logger.error("Error toggling prayer active status", { error });
+    throw error;
+  }
 }

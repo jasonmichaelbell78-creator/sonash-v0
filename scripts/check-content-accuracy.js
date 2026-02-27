@@ -28,6 +28,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "
 import { join, dirname, relative, extname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { sanitizeError } from "./lib/sanitize-error.js";
+import { safeWriteFileSync } from "./lib/safe-fs.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -440,7 +441,7 @@ function outputFindings(allFindings) {
       ? JSON.stringify(allFindings, null, 2)
       : allFindings.map((f) => JSON.stringify(f)).join("\n");
 
-    writeFileSync(OUTPUT_FILE, output + "\n");
+    safeWriteFileSync(OUTPUT_FILE, output + "\n");
 
     if (!QUIET) {
       console.log(`\n📄 Results written to: ${OUTPUT_FILE}`);

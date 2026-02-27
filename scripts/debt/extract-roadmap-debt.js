@@ -21,6 +21,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
+const { safeAppendFileSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const ROADMAP_FILE = path.join(PROJECT_ROOT, "ROADMAP.md");
@@ -396,7 +397,7 @@ function printSummary(findings, totalDebt, verbose) {
 function writeFindings(findings) {
   const jsonlContent = findings.map((f) => JSON.stringify(f)).join("\n") + "\n";
   fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
-  fs.appendFileSync(OUTPUT_FILE, jsonlContent, "utf-8");
+  safeAppendFileSync(OUTPUT_FILE, jsonlContent, "utf-8");
   console.log(
     `\n   Appended ${findings.length} items to ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}`
   );

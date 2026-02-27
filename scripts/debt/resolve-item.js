@@ -19,6 +19,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
+const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -85,8 +86,8 @@ function saveMasterDebt(items) {
   const tmpFile = path.join(dir, `.MASTER_DEBT.jsonl.tmp.${process.pid}`);
 
   try {
-    fs.writeFileSync(tmpFile, content);
-    fs.renameSync(tmpFile, MASTER_FILE);
+    safeWriteFileSync(tmpFile, content);
+    safeRenameSync(tmpFile, MASTER_FILE);
   } catch (err) {
     // Clean up temp file on error
     try {
@@ -100,7 +101,7 @@ function saveMasterDebt(items) {
 
 // Append to false positives file
 function appendFalsePositive(item) {
-  fs.appendFileSync(FALSE_POSITIVES_FILE, JSON.stringify(item) + "\n");
+  safeAppendFileSync(FALSE_POSITIVES_FILE, JSON.stringify(item) + "\n");
 }
 
 // Log resolution activity
@@ -112,7 +113,7 @@ function logResolution(activity) {
     timestamp: new Date().toISOString(),
     ...activity,
   };
-  fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
+  safeAppendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
 }
 
 // Validate parsed arguments, exit on errors
@@ -173,7 +174,7 @@ function displayItemInfo(item, parsed) {
 function restoreMasterBackup(masterBackup) {
   if (masterBackup !== null) {
     try {
-      fs.writeFileSync(MASTER_FILE, masterBackup);
+      safeWriteFileSync(MASTER_FILE, masterBackup);
     } catch {
       // Ignore restore errors; user will need to recover from VCS
     }

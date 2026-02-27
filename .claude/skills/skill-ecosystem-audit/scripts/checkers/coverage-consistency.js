@@ -90,7 +90,9 @@ function checkScopeBoundaryClarity(skills, findings) {
     const { content, name } = skill;
 
     // Extract the "When to Use" section content
-    const whenToUseMatch = content.match(/#+\s*When\s+to\s+[Uu]se\b([\s\S]*?)(?=\n#+\s|\n---|$)/);
+    const whenToUseMatch = content.match(
+      /#+\s*When\s+to\s+[Uu]se\b([\s\S]*?)(?=\r?\n#+\s|\r?\n---|$)/
+    );
     if (whenToUseMatch) {
       // Extract keywords (lowercase, non-trivial words)
       const sectionText = whenToUseMatch[1].toLowerCase();
@@ -213,7 +215,7 @@ function checkTriggerAccuracy(rootDir, skills, findings) {
     totalChecked++;
 
     // Extract "When to Use" section
-    const whenMatch = content.match(/#+\s*When\s+to\s+[Uu]se\b([\s\S]*?)(?=\n#+\s|\n---|$)/);
+    const whenMatch = content.match(/#+\s*When\s+to\s+[Uu]se\b([\s\S]*?)(?=\r?\n#+\s|\r?\n---|$)/);
     if (!whenMatch) {
       mismatches.push({ name, reason: "no 'When to Use' section in skill" });
       continue;

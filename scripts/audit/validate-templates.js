@@ -371,6 +371,13 @@ function validateAllTemplates(files, jsonMode) {
   const results = [];
   for (const filename of files) {
     const filePath = path.join(TEMPLATES_DIR, filename);
+    // Path containment check - ensure resolved path stays within TEMPLATES_DIR
+    const resolved = path.resolve(filePath);
+    if (!resolved.startsWith(path.resolve(TEMPLATES_DIR))) {
+      if (jsonMode) results.push(emptyResult(filename, "Path traversal detected"));
+      else console.error(`Warning: Skipping ${filename}: path traversal detected`);
+      continue;
+    }
     const { content, error: readError } = safeReadFile(filePath);
 
     if (readError) {

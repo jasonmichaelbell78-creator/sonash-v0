@@ -454,7 +454,7 @@ function main() {
         // Symlink guard: prevent writing through symlinks (SEC-001)
         const realLogDir = fs.realpathSync(logDir);
         const rel = path.relative(realLogDir, logPath);
-        if (rel.startsWith("..") || path.isAbsolute(rel)) {
+        if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
           throw new Error("symlink/path traversal detected on directory");
         }
         if (fs.existsSync(logPath) && fs.lstatSync(logPath).isSymbolicLink()) {

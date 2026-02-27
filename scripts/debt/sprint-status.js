@@ -298,7 +298,7 @@ function checkRoadmapS0Stale(masterItems, roadmapText) {
   let roadmapS0Shown = 0;
   if (roadmapText) {
     const sectionMatch = roadmapText.match(
-      /### S0 Critical Debt \(Immediate Action\)([\s\S]*?)(?=\n###\s|\n## )/
+      /### S0 Critical Debt \(Immediate Action\)([\s\S]*?)(?=\r?\n###\s|\r?\n## )/
     );
     if (sectionMatch) {
       const tableRows = sectionMatch[1].match(/^\|\s*(?:~~)?DEBT-/gm);
@@ -384,7 +384,7 @@ function computeAllSprints(data) {
 
   for (const [sid, info] of Object.entries(manifest.sprints)) {
     const ids = sprintIds.get(sid) || [];
-    const total = ids.length || info.items || 0;
+    const total = ids.length || (info.items ?? 0);
 
     let resolved = 0;
     for (const sprintItemId of ids) {

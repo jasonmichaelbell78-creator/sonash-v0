@@ -19,6 +19,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { join, resolve, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
+import { safeWriteFileSync } from "../lib/safe-fs.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -537,7 +538,7 @@ export async function aggregateCategory(sessionPath, category) {
   // Write output
   const outputPath = join(sessionPath, "canon", `CANON-${category.toUpperCase()}.jsonl`);
   const jsonl = canonFindings.map((f) => JSON.stringify(f)).join("\n");
-  writeFileSync(outputPath, jsonl);
+  safeWriteFileSync(outputPath, jsonl);
 
   const report = {
     category,

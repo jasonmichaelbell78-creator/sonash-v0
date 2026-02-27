@@ -145,7 +145,7 @@ function calculateVelocity(entries) {
       for (const track of entry.tracks || []) {
         if (!trackBreakdown[track]) trackBreakdown[track] = { sessions: 0, items: 0 };
         trackBreakdown[track].sessions += 1;
-        trackBreakdown[track].items += entry.items_completed || 0;
+        trackBreakdown[track].items += entry.items_completed ?? 0;
       }
     }
   }
