@@ -314,6 +314,95 @@ function countUnreviewedRules(rootDir) {
   }
 }
 
+/**
+ * Check if CODE_PATTERNS.md was auto-updated by consolidation.
+ * Looks for the version history entry that matches consolidation number.
+ * Returns { autoUpdated, lastUpdateDate, patternsAutoAdded }.
+ */
+function checkCodePatternsAutoUpdate(rootDir, consolidationJson) {
+  const codePatternsPath = path.join(rootDir, "docs", "agent_docs", "CODE_PATTERNS.md");
+  try {
+    if (!fs.existsSync(codePatternsPath)) {
+      return { autoUpdated: false, lastUpdateDate: null, patternsAutoAdded: 0 };
+    }
+    const content = fs.readFileSync(codePatternsPath, "utf8");
+
+    // Look for auto-update markers in version history table rows
+    // Matches: | 3.7 | 2026-02-27 | **CONSOLIDATION #2:** Auto-added 6 patterns ...
+    // Target the specific consolidation number from state to avoid false positives
+    const targetNumber =
+      consolidationJson && typeof consolidationJson.consolidationNumber === "number"
+        ? consolidationJson.consolidationNumber
+        : null;
+    if (!targetNumber) {
+      return { autoUpdated: false, lastUpdateDate: null, patternsAutoAdded: 0 };
+    }
+
+    // Match the exact consolidation row and extract date + auto-added count
+    const rowRe = new RegExp(
+      String.raw`\|\s*[\d.]+\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|[^\n]*\*\*CONSOLIDATION\s+#${targetNumber}:\*\*\s*Auto-added\s+(\d+)`,
+      "i"
+    );
+    const rowMatch = content.match(rowRe);
+    if (rowMatch) {
+      return {
+        autoUpdated: true,
+        lastUpdateDate: rowMatch[1] || null,
+        patternsAutoAdded: Number.parseInt(rowMatch[2], 10),
+        consolidationRef: targetNumber,
+      };
+    }
+
+    return { autoUpdated: false, lastUpdateDate: null, patternsAutoAdded: 0 };
+  } catch {
+    return { autoUpdated: false, lastUpdateDate: null, patternsAutoAdded: 0 };
+  }
+}
+
+/**
+ * Count rule stubs in suggested-rules.md and compare against patterns in check-pattern-compliance.js.
+ * Returns { suggestedRules, adoptedRules, adoptionPct }.
+ */
+function measureRuleAdoptionRate(rootDir) {
+  const suggestedRulesPath = path.join(rootDir, "consolidation-output", "suggested-rules.md");
+  const compliancePath = path.join(rootDir, "scripts", "check-pattern-compliance.js");
+
+  let suggestedIds = [];
+  let complianceIds = [];
+
+  try {
+    if (fs.existsSync(suggestedRulesPath)) {
+      const content = fs.readFileSync(suggestedRulesPath, "utf8");
+      const idMatches = content.matchAll(/id:\s*"([\w-]+)"/g);
+      suggestedIds = [...idMatches].map((m) => m[1]);
+    }
+  } catch {
+    // skip
+  }
+
+  try {
+    if (fs.existsSync(compliancePath)) {
+      const content = fs.readFileSync(compliancePath, "utf8");
+      const idMatches = content.matchAll(/\bid:\s*['"]([\w-]+)['"]/g);
+      complianceIds = [...idMatches].map((m) => m[1]);
+    }
+  } catch {
+    // skip
+  }
+
+  const suggestedSet = new Set(suggestedIds);
+  const complianceSet = new Set(complianceIds);
+  let adopted = 0;
+  for (const id of suggestedSet) {
+    if (complianceSet.has(id)) adopted++;
+  }
+
+  const total = suggestedSet.size;
+  const adoptionPct = total > 0 ? Math.round((adopted / total) * 100) : 100;
+
+  return { suggestedRules: total, adoptedRules: adopted, adoptionPct };
+}
+
 function checkConsolidationPipelineHealth(rootDir, consolidationJson, reviewsJsonl, findings) {
   const bench = BENCHMARKS.consolidation_pipeline_health;
 
@@ -321,9 +410,12 @@ function checkConsolidationPipelineHealth(rootDir, consolidationJson, reviewsJso
   const pendingReviews = countPendingReviews(reviewsJsonl, lastConsolidatedId);
   const unreviewed = countUnreviewedRules(rootDir);
 
-  // Rule adoption rate: approximate by checking CODE_PATTERNS.md size
-  const codePatterns = safeReadFile(path.join(rootDir, "docs", "agent_docs", "CODE_PATTERNS.md"));
-  const ruleAdoptionPct = codePatterns.length > 500 ? 60 : 30; // Rough heuristic
+  // Rule adoption rate: compare suggested-rules.md against check-pattern-compliance.js
+  const ruleAdoption = measureRuleAdoptionRate(rootDir);
+  const ruleAdoptionPct = ruleAdoption.adoptionPct;
+
+  // CODE_PATTERNS.md auto-update status
+  const autoUpdate = checkCodePatternsAutoUpdate(rootDir, consolidationJson);
 
   const r1 = scoreMetric(pendingReviews, bench.pending_reviews, "lower-is-better");
   const r2 = scoreMetric(ruleAdoptionPct, bench.rule_adoption_pct, "higher-is-better");
@@ -345,10 +437,52 @@ function checkConsolidationPipelineHealth(rootDir, consolidationJson, reviewsJso
     });
   }
 
+  if (!autoUpdate.autoUpdated && consolidationJson && consolidationJson.consolidationNumber > 0) {
+    findings.push({
+      id: "PEA-1002",
+      category: "consolidation_pipeline_health",
+      domain: DOMAIN,
+      severity: "warning",
+      message: "CODE_PATTERNS.md not auto-updated by consolidation pipeline",
+      details:
+        "Consolidation completed but didn't auto-add patterns to CODE_PATTERNS.md. " +
+        "This step was automated in Session #193 — check that run-consolidation.js includes appendToCodePatterns().",
+      impactScore: 50,
+      frequency: 1,
+      blastRadius: 2,
+    });
+  }
+
+  if (ruleAdoption.suggestedRules > 0 && ruleAdoptionPct < 30) {
+    findings.push({
+      id: "PEA-1003",
+      category: "consolidation_pipeline_health",
+      domain: DOMAIN,
+      severity: "warning",
+      message: `Only ${ruleAdoption.adoptedRules}/${ruleAdoption.suggestedRules} suggested rules adopted into compliance checker (${ruleAdoptionPct}%)`,
+      details:
+        "suggested-rules.md contains patterns identified by consolidation that should be added to check-pattern-compliance.js. " +
+        "Review the suggested rules and integrate the most impactful ones.",
+      impactScore: 55,
+      frequency: ruleAdoption.suggestedRules,
+      blastRadius: 3,
+    });
+  }
+
   return {
     score: avgScore,
     rating: avgScore >= 90 ? "good" : avgScore >= 70 ? "average" : "poor",
-    metrics: { pendingReviews, lastConsolidatedId, unreviewed, ruleAdoptionPct },
+    metrics: {
+      pendingReviews,
+      lastConsolidatedId,
+      unreviewed,
+      ruleAdoptionPct,
+      suggestedRules: ruleAdoption.suggestedRules,
+      adoptedRules: ruleAdoption.adoptedRules,
+      codePatternsAutoUpdated: autoUpdate.autoUpdated,
+      codePatternsLastUpdate: autoUpdate.lastUpdateDate,
+      patternsAutoAdded: autoUpdate.patternsAutoAdded,
+    },
   };
 }
 

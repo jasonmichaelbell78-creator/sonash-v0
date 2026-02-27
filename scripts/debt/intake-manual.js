@@ -38,11 +38,10 @@ const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
 
 const { loadConfig } = require("../config/load-config");
-const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
+const { safeAppendFileSync, appendMasterDebtSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
-const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
 const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 
@@ -263,64 +262,14 @@ function displayNewItem(newItem) {
   }
 }
 
-// Write item to both deduped and master files with rollback on failure
+// Write item to both master and deduped files atomically
 function writeItemToFiles(newItem) {
-  console.log("\n📝 Writing to raw/deduped.jsonl (source file)...");
-  const rawDir = path.dirname(DEDUPED_FILE);
-  fs.mkdirSync(rawDir, { recursive: true });
-  const newItemJson = JSON.stringify(newItem) + "\n";
-
+  console.log("\n📝 Writing to MASTER_DEBT.jsonl + raw/deduped.jsonl...");
   try {
-    safeAppendFileSync(DEDUPED_FILE, newItemJson);
+    appendMasterDebtSync([newItem]);
   } catch (writeError) {
-    console.error(`Error writing to deduped file: ${sanitizeError(writeError)}`);
+    console.error(`Error writing to master/deduped files: ${sanitizeError(writeError)}`);
     process.exit(1);
-  }
-
-  console.log("📝 Writing to MASTER_DEBT.jsonl...");
-  try {
-    safeAppendFileSync(MASTER_FILE, newItemJson);
-  } catch (writeError) {
-    console.error(`Error writing to master file: ${sanitizeError(writeError)}`);
-    rollbackDedupedFile(newItemJson);
-    process.exit(1);
-  }
-}
-
-// Rollback deduped file by removing the last appended line (verified)
-function rollbackDedupedFile(appendedLine) {
-  try {
-    const deduped = fs.readFileSync(DEDUPED_FILE, "utf8");
-    const lines = deduped.split("\n");
-
-    // Guard for empty files
-    if (lines.length === 0) {
-      console.warn("  ⚠️ Rollback skipped: deduped file is empty");
-      return;
-    }
-
-    if (lines.length >= 2 && lines[lines.length - 1] === "") {
-      lines.pop();
-    }
-
-    if (lines.length === 0) {
-      console.warn("  ⚠️ Rollback skipped: deduped file is empty after removing trailing newline");
-      return;
-    }
-
-    // Normalize lines for comparison - strip \r and trimEnd
-    const lastLine = lines[lines.length - 1].replace(/\r/g, "").trimEnd();
-    const expectedLine = appendedLine.replace(/\n$/, "").replace(/\r/g, "").trimEnd();
-
-    if (lastLine !== expectedLine) {
-      console.warn("  ⚠️ Rollback skipped: last line does not match the appended entry");
-      return;
-    }
-    lines.pop();
-    safeWriteFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");
-    console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
-  } catch (rollbackError) {
-    console.error(`  ⚠️ Failed to rollback deduped file: ${sanitizeError(rollbackError)}`);
   }
 }
 

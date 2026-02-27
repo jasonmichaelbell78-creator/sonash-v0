@@ -1,4 +1,4 @@
-/* global module, require */
+/* global module, require, __dirname, process */
 /* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
 /**
  * rotate-state.js - Shared state file rotation helpers
@@ -196,4 +196,70 @@ function expireJsonlByAge(filePath, maxDays, timestampField) {
   }
 }
 
-module.exports = { rotateJsonl, pruneJsonKey, expireByAge, expireJsonlByAge };
+/**
+ * Rotate a JSONL file, archiving discarded entries instead of deleting.
+ * Appends evicted entries to `${filePath}.archive` (creates if missing).
+ * Uses advisory file locking to prevent concurrent rotation races.
+ *
+ * @param {string} filePath - Absolute path to JSONL file
+ * @param {number} maxEntries - Trigger rotation when line count exceeds this
+ * @param {number} [keepCount] - Lines to keep after rotation (default: 60% of maxEntries)
+ * @returns {{ rotated: boolean, before: number, after: number, archived: number }}
+ */
+function archiveRotateJsonl(filePath, maxEntries, keepCount) {
+  const keepRaw = keepCount || Math.floor(maxEntries * 0.6);
+  const keep = Math.max(1, keepRaw);
+  try {
+    // Import locking from safe-fs
+    let withLock;
+    try {
+      ({ withLock } = require(path.join(__dirname, "..", "..", "..", "scripts", "lib", "safe-fs")));
+    } catch {
+      // Fallback: no locking (degrade gracefully)
+      withLock = (_p, fn) => fn();
+    }
+
+    return withLock(filePath, () => {
+      const content = fs.readFileSync(filePath, "utf-8");
+      const lines = content.split("\n").filter((l) => l.trim().length > 0);
+
+      if (lines.length <= maxEntries) {
+        return { rotated: false, before: lines.length, after: lines.length, archived: 0 };
+      }
+
+      const evicted = lines.slice(0, -keep);
+      const kept = lines.slice(-keep);
+
+      // Archive evicted entries (append to .archive file)
+      const archivePath = `${filePath}.archive`;
+      if (evicted.length > 0) {
+        const archiveData = evicted.join("\n") + "\n";
+        if (isSafeToWrite(path.resolve(archivePath))) {
+          fs.appendFileSync(archivePath, archiveData, "utf-8");
+        }
+      }
+
+      // Atomic write for active file (existing pattern)
+      const tmpPath = `${filePath}.tmp`;
+      if (!isSafeToWrite(filePath) || !isSafeToWrite(tmpPath)) {
+        return { rotated: false, before: lines.length, after: lines.length, archived: 0 };
+      }
+      fs.writeFileSync(tmpPath, kept.join("\n") + "\n", "utf-8");
+      try {
+        fs.rmSync(filePath, { force: true });
+      } catch {
+        // best-effort remove before rename
+      }
+      fs.renameSync(tmpPath, filePath);
+
+      return { rotated: true, before: lines.length, after: kept.length, archived: evicted.length };
+    });
+  } catch (err) {
+    process.stderr.write(
+      `[archiveRotateJsonl] Error rotating ${filePath}: ${err.code || err.message}\n`
+    );
+    return { rotated: false, before: 0, after: 0, archived: 0 };
+  }
+}
+
+module.exports = { rotateJsonl, pruneJsonKey, expireByAge, expireJsonlByAge, archiveRotateJsonl };

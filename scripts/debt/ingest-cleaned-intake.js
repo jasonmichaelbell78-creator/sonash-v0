@@ -16,7 +16,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
-const { safeAppendFileSync } = require("../lib/safe-fs");
+const { safeAppendFileSync, appendMasterDebtSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -159,28 +159,14 @@ function deduplicateItems(inputItems, master, today) {
 // --- Write items to MASTER and deduped ---
 
 function writeItems(newItems) {
-  const newLines = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
-
   try {
-    safeAppendFileSync(MASTER_FILE, newLines);
+    appendMasterDebtSync(newItems);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error(`    ERROR: Failed to append to MASTER_DEBT.jsonl: ${msg}`);
+    console.error(`    ERROR: Failed to append to MASTER_DEBT.jsonl + deduped.jsonl: ${msg}`);
     process.exit(1);
   }
   console.log(`    Appended ${newItems.length} items to MASTER_DEBT.jsonl`);
-
-  try {
-    fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-    safeAppendFileSync(DEDUPED_FILE, newLines);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error(`    ERROR: Failed to append to raw/deduped.jsonl: ${msg}`);
-    console.error(
-      `    WARNING: MASTER_DEBT.jsonl was already updated — manual sync of deduped.jsonl required.`
-    );
-    process.exit(1);
-  }
   console.log(`    Appended ${newItems.length} items to raw/deduped.jsonl`);
 
   const masterLines = fs

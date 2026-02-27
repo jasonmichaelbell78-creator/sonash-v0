@@ -1,6 +1,6 @@
 # Code Review Patterns Reference
 
-**Document Version:** 3.6 **Source:** Distilled from 347 AI code reviews **Last
+**Document Version:** 3.7 **Source:** Distilled from 347 AI code reviews **Last
 Updated:** 2026-02-26
 
 ---
@@ -183,6 +183,13 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | EXIT trap chaining               | Use `add_exit_trap` helper NOT multiple `trap ... EXIT` overwrites                      | Second trap overwrites first cleanup (Review #327)     |
 
 ---
+
+### Cross Platform
+
+🟡 **Rule:** Cross Platform — recurring pattern from 4 reviews (#20, #40, #224,
+#299)
+
+**Source:** Consolidation #2 (Reviews #1-#399)
 
 ## npm/Dependencies
 
@@ -441,6 +448,8 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | Number.isFinite guards        | Guard numeric inputs with `Number.isFinite(n)` before math operations      | NaN/Infinity propagate silently through calculations (Reviews #275-#277) |
 | 🟡       | Fail-closed validation        | Security validation functions must return `false` on error, never throw    | Exceptions bypass security checks entirely (Reviews #269, #271, #276)    |
 | 🟡       | Atomic write cleanup          | Add `try { fs.rmSync(tmpPath, { force: true }) } catch {}` in write catch  | Failed atomic writes leave orphan .tmp files (Reviews #283, #284)        |
+| 🔴       | Same-path rename guard        | Check `src === dest` before destructive rename (`rmSync` + `renameSync`)   | Self-rename deletes the only copy (PR #396 R2 — real data loss bug)      |
+| 🟡       | TDMS DEBT entry consistency   | Use `null` (not `""`) for empty optional fields; always include `source`   | Schema inconsistency causes TDMS pipeline failures (4x across PRs)       |
 
 ---
 
@@ -585,6 +594,38 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ---
 
+### Refactor
+
+🟡 **Rule:** Refactor — recurring pattern from 3 reviews (#267, #345, #348)
+
+**Source:** Consolidation #2 (Reviews #1-#399)
+
+### Fail Closed
+
+🟡 **Rule:** Fail Closed — recurring pattern from 4 reviews (#291, #292, #343,
+#350)
+
+**Source:** Consolidation #2 (Reviews #1-#399)
+
+### Cc Reduction
+
+🟡 **Rule:** Cc Reduction — recurring pattern from 4 reviews (#326, #336, #354,
+#371)
+
+**Source:** Consolidation #2 (Reviews #1-#399)
+
+### Propagation
+
+🟡 **Rule:** Propagation — recurring pattern from 3 reviews (#328, #359, #361)
+
+**Source:** Consolidation #2 (Reviews #1-#399)
+
+### Gemini
+
+🟡 **Rule:** Gemini — recurring pattern from 4 reviews (#355, #356, #357, #370)
+
+**Source:** Consolidation #2 (Reviews #1-#399)
+
 ## Enforcement
 
 These patterns are automatically enforced by:
@@ -607,6 +648,7 @@ helpers.
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 3.6     | 2026-02-26 | Add 4 patterns: lazy quantifiers ReDoS, generic AST walker, per-access guard, fix-one-audit-all. Source: PR #394 retro.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 3.7     | 2026-02-27 | **CONSOLIDATION #2:** Auto-added 6 patterns (cross-platform, refactor, fail-closed, cc reduction, propagation, gemini). Source: Reviews #1-#399.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 3.5     | 2026-02-25 | Add path normalization before string checks pattern (🔴). Source: PR #392 retro (3 consecutive PRs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 3.4     | 2026-02-24 | Added 4 patterns: lazy-load typeof guard, self-referential set filter, null vs falsy in metrics (JS/TS); POSIX ERE in git grep (General). Source: PR #388 retro.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 3.3     | 2026-02-20 | Added 4 General patterns: severity mapping completeness, same-file regex DoS sweep, dedup boundary enumeration, state variable reset. Source: PR #382 retro.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |

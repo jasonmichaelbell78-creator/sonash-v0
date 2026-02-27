@@ -21,6 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { writeMasterDebtSync, appendMasterDebtSync } = require("../lib/safe-fs");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
@@ -295,7 +296,7 @@ function writeMasterFile(items) {
     const bNum = Number.parseInt((b.id || "").replaceAll("DEBT-", ""), 10) || 0;
     return aNum - bNum;
   });
-  fs.writeFileSync(MASTER_FILE, idSorted.map((item) => JSON.stringify(item)).join("\n") + "\n");
+  writeMasterDebtSync(idSorted);
   console.log(`  ✅ ${MASTER_FILE}`);
 }
 
@@ -550,23 +551,8 @@ function loadMasterItems() {
 }
 
 function appendNewItems(newItems, masterItems) {
-  let appendData = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
   try {
-    // Ensure we don't merge the last existing JSONL line with the first appended line
-    const stat = fs.statSync(MASTER_FILE);
-    if (stat.size > 0) {
-      const fd = fs.openSync(MASTER_FILE, "r");
-      try {
-        const buf = Buffer.alloc(1);
-        fs.readSync(fd, buf, 0, 1, stat.size - 1);
-        if (buf.toString("utf8") !== "\n") {
-          appendData = "\n" + appendData;
-        }
-      } finally {
-        fs.closeSync(fd);
-      }
-    }
-    fs.appendFileSync(MASTER_FILE, appendData);
+    appendMasterDebtSync(newItems);
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.error(`❌ Failed to append to MASTER_DEBT.jsonl: ${errMsg}`);

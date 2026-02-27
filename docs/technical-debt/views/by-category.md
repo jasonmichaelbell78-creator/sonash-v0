@@ -6523,7 +6523,7 @@
 | DEBT-7489  | Preview deploy channel commented out — no PR-level stagin...  | S2       | .github/workflows/deploy-firebase.yml                                   | 0    |
 | DEBT-7516  | No CHANGELOG, no versioning strategy, no release tagging      | S2       | package.json                                                            | 0    |
 | DEBT-7577  | Add JSONL schema validation to intake scripts                 | S2       | scripts/debt/intake-audit.js                                            | 1    |
-| DEBT-7582  | Auto-increment review numbers from JSONL max to prevent c...  | S2       | scripts/reviews-sync.js                                                 | 1    |
+| DEBT-7582  | Auto-increment review numbers from JSONL max to prevent c...  | S2       | scripts/sync-reviews-to-jsonl.js                                        | 1    |
 | DEBT-7587  | Add cross-platform path normalization pattern to CODE_PAT...  | S2       | docs/agent_docs/CODE_PATTERNS.md                                        | 1    |
 | DEBT-8881  | GitHub Actions using version tags instead of commit SHAs      | S2       | .github/workflows/auto-label-review-tier.yml                            | 18   |
 | DEBT-8893  | 28 scripts have 715 console.log/error/warn calls without ...  | S2       | scripts/                                                                | 0    |

@@ -1,6 +1,6 @@
 # Qodo PR-Agent Configuration
 # Created: 2026-02-17
-# Updated: 2026-02-20 (PR #382 retro — add scripts/debt/ compliance exclusion)
+# Updated: 2026-02-27 (PR #396 retro — add TOCTOU + S4036 suppressions)
 # Purpose: Suppress recurring false-positive review items that add noise
 # without actionable value. Each suppression has evidence from PR retros.
 
@@ -114,4 +114,17 @@ When checking compliance for files under scripts/, .claude/hooks/, scripts/debt/
      Internal paths in error output are useful for debugging, not a security
      concern. Do NOT flag "Raw error details" for scripts/debt/ files.
      (Rejected in PR #382 R3)
+
+6. For "TOCTOU (Time of Check to Time of Use)" on single-user CLI scripts:
+   - Scripts under scripts/ that check file existence then operate on it
+     are COMPLIANT. These are offline CLI tools with no concurrent access.
+   - Do NOT flag "TOCTOU race condition" for single-user CLI scripts.
+   (Rejected in PRs #395-#396, 6+ rounds with same rationale)
+
+7. For S4036 PATH Binary Hijacking:
+   - `execFileSync("git", [...])` and `execFileSync("node", [...])` with
+     hardcoded binary names and array arguments are COMPLIANT. No shell
+     injection risk — binary is hardcoded, not user-controlled.
+   - Do NOT flag "PATH binary hijacking" for hardcoded binary names.
+   (Rejected in PRs #392-#396, 10+ rounds with same rationale)
 """

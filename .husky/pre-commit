@@ -294,14 +294,21 @@ else
   CHANGED_MD_FILES=$(git diff --cached --name-only --diff-filter=ADM | grep -E '\.md$' || true)
   if [ -n "$CHANGED_MD_FILES" ]; then
     echo "  ▶ Auto-updating documentation index..."
+    # Atomic fail-safe: backup before generation, restore on failure (Finding 1)
+    cp DOCUMENTATION_INDEX.md DOCUMENTATION_INDEX.md.bak 2>/dev/null || true
     if npm run docs:index > /dev/null 2>&1; then
       # Format after regeneration so CI Prettier check passes
       npx prettier --write DOCUMENTATION_INDEX.md > /dev/null 2>&1 || true
       git add DOCUMENTATION_INDEX.md
       echo "  ✅ Documentation index updated and staged"
     else
-      echo "  ⚠️ Documentation index generation failed (non-blocking)"
+      # Restore original on failure — no partial/broken index gets committed
+      if [ -f DOCUMENTATION_INDEX.md.bak ]; then
+        mv DOCUMENTATION_INDEX.md.bak DOCUMENTATION_INDEX.md
+      fi
+      echo "  ⚠️ Documentation index generation failed, original preserved (non-blocking)"
     fi
+    rm -f DOCUMENTATION_INDEX.md.bak 2>/dev/null || true
   fi
 fi
 

@@ -34,7 +34,7 @@ const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
 
 const { loadConfig } = require("../config/load-config");
-const { safeAppendFileSync } = require("../lib/safe-fs");
+const { safeAppendFileSync, appendMasterDebtSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -140,6 +140,41 @@ function logIntake(activity) {
   safeAppendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
+// Validate required fields, severity, and category. Exits on failure.
+// Returns the validated category string.
+function validateInputs(parsed) {
+  const errors = [];
+  if (!parsed.pr) errors.push("--pr is required");
+  if (!parsed.file) errors.push("--file is required");
+  if (!parsed.title) errors.push("--title is required");
+  if (!parsed.severity) errors.push("--severity is required");
+
+  if (errors.length > 0) {
+    console.error("Error: Missing required arguments:");
+    for (const err of errors) {
+      console.error(`  - ${err}`);
+    }
+    process.exit(1);
+  }
+
+  if (!VALID_SEVERITIES.includes(parsed.severity)) {
+    console.error(
+      `Error: Invalid severity "${parsed.severity}". Must be one of: ${VALID_SEVERITIES.join(", ")}`
+    );
+    process.exit(1);
+  }
+
+  const category = parsed.category || "code-quality";
+  if (!VALID_CATEGORIES.includes(category)) {
+    console.error(
+      `Error: Invalid category "${category}". Must be one of: ${VALID_CATEGORIES.join(", ")}`
+    );
+    process.exit(1);
+  }
+
+  return category;
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -172,38 +207,7 @@ Example:
   }
 
   const parsed = parseArgs(args);
-
-  // Validate required fields
-  const errors = [];
-  if (!parsed.pr) errors.push("--pr is required");
-  if (!parsed.file) errors.push("--file is required");
-  if (!parsed.title) errors.push("--title is required");
-  if (!parsed.severity) errors.push("--severity is required");
-
-  if (errors.length > 0) {
-    console.error("Error: Missing required arguments:");
-    for (const err of errors) {
-      console.error(`  - ${err}`);
-    }
-    process.exit(1);
-  }
-
-  // Validate severity
-  if (!VALID_SEVERITIES.includes(parsed.severity)) {
-    console.error(
-      `Error: Invalid severity "${parsed.severity}". Must be one of: ${VALID_SEVERITIES.join(", ")}`
-    );
-    process.exit(1);
-  }
-
-  // Validate category if provided
-  const category = parsed.category || "code-quality";
-  if (!VALID_CATEGORIES.includes(category)) {
-    console.error(
-      `Error: Invalid category "${category}". Must be one of: ${VALID_CATEGORIES.join(", ")}`
-    );
-    process.exit(1);
-  }
+  const category = validateInputs(parsed);
 
   console.log("📥 Intake: Adding PR-deferred item...\n");
 
@@ -266,9 +270,18 @@ Example:
     process.exit(0);
   }
 
-  // Write to MASTER_DEBT.jsonl
-  console.log("\n📝 Writing to MASTER_DEBT.jsonl...");
-  safeAppendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
+  // Write to MASTER_DEBT.jsonl + raw/deduped.jsonl
+  console.log("\n📝 Writing to MASTER_DEBT.jsonl + raw/deduped.jsonl...");
+  try {
+    appendMasterDebtSync([newItem]);
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    const itemRef = newItem.id || newItem.content_hash || "unknown-item";
+    console.error(
+      `\n❌ Failed to append intake item (${itemRef}) to MASTER_DEBT.jsonl and/or raw/deduped.jsonl: ${errMsg}`
+    );
+    process.exit(1);
+  }
 
   // Log intake activity
   logIntake({

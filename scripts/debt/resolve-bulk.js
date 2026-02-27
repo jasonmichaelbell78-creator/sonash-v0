@@ -426,6 +426,65 @@ Example:
     );
   }
 
+  // Sync plan files after bulk resolution (Finding 13)
+  console.log("\n🔄 Syncing plan files...");
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, "reconcile-roadmap.js"), "--write"], {
+      stdio: "pipe",
+    });
+    console.log("  ✅ ROADMAP.md reconciled");
+  } catch {
+    console.warn("  ⚠️ reconcile-roadmap.js failed — run manually if needed");
+  }
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, "generate-grand-plan.js")], {
+      stdio: "pipe",
+    });
+    console.log("  ✅ GRAND_PLAN_V2.md + manifest regenerated");
+  } catch {
+    console.warn("  ⚠️ generate-grand-plan.js failed — run manually if needed");
+  }
+
+  // Scan active plan files for references to resolved DEBT IDs
+  const planFiles = [
+    path.join(REPO_ROOT, "ROADMAP_FUTURE.md"),
+    path.join(REPO_ROOT, "ROADMAP_LOG.md"),
+    path.join(REPO_ROOT, "docs", "OPERATIONAL_VISIBILITY_SPRINT.md"),
+  ];
+  try {
+    const plansDir = path.join(REPO_ROOT, ".claude", "plans");
+    const planDirFiles = fs
+      .readdirSync(plansDir)
+      .filter((f) => f.endsWith(".md"))
+      .map((f) => path.join(plansDir, f));
+    planFiles.push(...planDirFiles);
+  } catch {
+    // plans dir may not exist
+  }
+  const refsFound = [];
+  for (const filePath of planFiles) {
+    try {
+      if (!fs.existsSync(filePath)) continue;
+      const content = fs.readFileSync(filePath, "utf8");
+      const lines = content.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        for (const debtId of resolvedIds) {
+          if (lines[i].includes(debtId)) {
+            refsFound.push({ file: path.relative(REPO_ROOT, filePath), line: i + 1, id: debtId });
+          }
+        }
+      }
+    } catch {
+      // skip unreadable files
+    }
+  }
+  if (refsFound.length > 0) {
+    console.log(`\n  ℹ️ Resolved items also referenced in:`);
+    for (const ref of refsFound) {
+      console.log(`     ${ref.id} → ${ref.file} (line ${ref.line})`);
+    }
+  }
+
   // Summary
   const remainingOpen = items.filter((item) => item.status !== "RESOLVED").length;
   console.log(`\n📊 Summary:`);

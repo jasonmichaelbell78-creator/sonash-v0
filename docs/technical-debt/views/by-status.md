@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2039)
+## NEW (2036)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -385,11 +385,9 @@
 | DEBT-7573  | audit-comprehensive agent prompts lack context overflow g...    | S2       | engineering-productivity |
 | DEBT-7574  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | engineering-productivity |
 | DEBT-7576  | doc-ecosystem-audit references missing script path              | S2       | engineering-productivity |
-| DEBT-7577  | Add JSONL schema validation to intake scripts                   | S2       | process                  |
 | DEBT-7578  | audit-comprehensive agent prompts lack context overflow g...    | S2       | engineering-productivity |
 | DEBT-7579  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | engineering-productivity |
 | DEBT-7581  | doc-ecosystem-audit references missing script path              | S2       | engineering-productivity |
-| DEBT-7582  | Auto-increment review numbers from JSONL max to prevent c...    | S2       | process                  |
 | DEBT-7583  | audit-comprehensive agent prompts lack context overflow g...    | S2       | engineering-productivity |
 | DEBT-7584  | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | engineering-productivity |
 | DEBT-7586  | doc-ecosystem-audit references missing script path              | S2       | engineering-productivity |
@@ -636,7 +634,6 @@
 | DEBT-11307 | doc-ecosystem-audit references missing script path              | S2       | engineering-productivity |
 | DEBT-11308 | audit-comprehensive agent prompts lack context overflow g...    | S2       | engineering-productivity |
 | DEBT-11309 | D5 Agent Orchestration Health (59/100) — COMPLETE: protoc...    | S2       | engineering-productivity |
-| DEBT-11312 | Add JSONL schema validation to intake scripts                   | S2       | process                  |
 | DEBT-11313 | Auto-increment review numbers from JSONL max to prevent c...    | S2       | process                  |
 | DEBT-11314 | Add cross-platform path normalization pattern to CODE_PAT...    | S2       | process                  |
 | DEBT-11316 | High Severity Findings (Security & Stability)                   | S2       | security                 |
@@ -7402,7 +7399,7 @@
 
 _No items_
 
-## RESOLVED (477)
+## RESOLVED (480)
 
 | ID         | Title                                                         | Severity | Category                 |
 | ---------- | ------------------------------------------------------------- | -------- | ------------------------ |
@@ -7602,6 +7599,8 @@ _No items_
 | DEBT-2541  | Skills read entire large files when only headers/sections...  | S2       | ai-optimization          |
 | DEBT-7458  | Automate archival of completed ROADMAP.md items to ROADMA...  | S2       | process                  |
 | DEBT-7555  | Create hook-ecosystem-audit skill (HIGH priority gap)         | S2       | engineering-productivity |
+| DEBT-7577  | Add JSONL schema validation to intake scripts                 | S2       | process                  |
+| DEBT-7582  | Auto-increment review numbers from JSONL max to prevent c...  | S2       | process                  |
 | DEBT-7587  | Add cross-platform path normalization pattern to CODE_PAT...  | S2       | process                  |
 | DEBT-8712  | Add an explicit return statement at the end of the function.  | S2       | code-quality             |
 | DEBT-8713  | Assign this positional parameter to a local variable.         | S2       | code-quality             |
@@ -7729,6 +7728,7 @@ _No items_
 | DEBT-10925 | Skills read entire large files when only headers/sections...  | S2       | ai-optimization          |
 | DEBT-11197 | Automate archival of completed ROADMAP.md items to ROADMA...  | S2       | process                  |
 | DEBT-11294 | Create hook-ecosystem-audit skill (HIGH priority gap)         | S2       | engineering-productivity |
+| DEBT-11312 | Add JSONL schema validation to intake scripts                 | S2       | process                  |
 | DEBT-0786  | Template docs located outside docs/templates/ directory       | S3       | code-quality             |
 | DEBT-0787  | Test count mismatch between DEVELOPMENT.md and actual tes...  | S3       | code-quality             |
 | DEBT-1375  | No UI indicator for online/offline state                      | S3       | code-quality             |

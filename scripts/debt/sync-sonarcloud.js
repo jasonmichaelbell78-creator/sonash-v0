@@ -33,7 +33,7 @@ const { execFileSync } = require("node:child_process");
 const readline = require("node:readline");
 const os = require("node:os");
 const generateContentHash = require("../lib/generate-content-hash");
-const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("../lib/safe-fs");
+const { safeAppendFileSync, writeMasterDebtSync, appendMasterDebtSync } = require("../lib/safe-fs");
 
 // Try to load dotenv if available
 try {
@@ -616,44 +616,17 @@ async function resolveStaleItems(options) {
   const today = new Date().toISOString().split("T")[0];
   let resolvedCount = 0;
 
-  const updatedLines = existingItems.map((item) => {
+  for (const item of existingItems) {
     if (staleIds.has(item.id)) {
       item.status = "RESOLVED";
       item.resolution = "Fixed in SonarCloud (no longer reported)";
       item.resolved_date = today;
       resolvedCount++;
     }
-    return JSON.stringify(item);
-  });
-
-  console.log("\n📝 Updating MASTER_DEBT.jsonl...");
-  const updatedContent = updatedLines.join("\n") + "\n";
-  const tmpMaster = `${MASTER_FILE}.tmp`;
-  safeWriteFileSync(tmpMaster, updatedContent);
-  safeRenameSync(tmpMaster, MASTER_FILE);
-
-  // Also update raw/deduped.jsonl to stay in sync
-  const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
-  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-  console.log("📝 Updating raw/deduped.jsonl...");
-  const tmpDeduped = `${DEDUPED_FILE}.tmp`;
-  safeWriteFileSync(tmpDeduped, updatedContent);
-  try {
-    safeRenameSync(tmpDeduped, DEDUPED_FILE);
-  } catch {
-    // Windows may fail rename if dest exists; fallback to rm + rename
-    try {
-      fs.rmSync(DEDUPED_FILE, { force: true });
-      safeRenameSync(tmpDeduped, DEDUPED_FILE);
-    } catch (fallbackErr) {
-      try {
-        fs.unlinkSync(tmpDeduped);
-      } catch {
-        // ignore cleanup errors
-      }
-      throw fallbackErr;
-    }
   }
+
+  console.log("\n📝 Updating MASTER_DEBT.jsonl and deduped.jsonl...");
+  writeMasterDebtSync(existingItems);
 
   // Log resolutions
   logResolution({
@@ -766,58 +739,17 @@ function deduplicateAndAssignIds(issues, existingItems, preConverted = []) {
   return { newItems, alreadyTracked, contentDuplicates };
 }
 
-// Write new items to both deduped and master files
+// Write new items to both MASTER_DEBT.jsonl and deduped.jsonl via central writer
 function writeNewItems(newItems) {
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
-  console.log("\n📝 Writing new items to raw/deduped.jsonl...");
-  const newLinesStr = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
 
-  // Capture file size before appending for efficient rollback
-  let dedupedSizeBeforeAppend = 0;
+  console.log("\n📝 Appending new items to MASTER_DEBT.jsonl and deduped.jsonl...");
   try {
-    const stats = fs.statSync(DEDUPED_FILE);
-    dedupedSizeBeforeAppend = stats.size;
-  } catch {
-    // File doesn't exist yet, size = 0
-  }
-
-  try {
-    safeAppendFileSync(DEDUPED_FILE, newLinesStr);
+    appendMasterDebtSync(newItems);
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error(`❌ Failed to write to deduped.jsonl: ${msg}`);
-    process.exit(1);
-  }
-
-  console.log("📝 Writing new items to MASTER_DEBT.jsonl...");
-  let masterSizeBeforeAppend = 0;
-  try {
-    masterSizeBeforeAppend = fs.statSync(MASTER_FILE).size;
-  } catch {
-    // File doesn't exist yet, size = 0
-  }
-  try {
-    safeAppendFileSync(MASTER_FILE, newLinesStr);
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    console.error(`❌ Failed to write to MASTER_DEBT.jsonl: ${msg}`);
-    try {
-      fs.truncateSync(DEDUPED_FILE, dedupedSizeBeforeAppend);
-      console.warn("  ⚠️ Rolled back deduped.jsonl");
-    } catch (rollbackErr) {
-      console.warn(
-        `  ⚠️ Failed to rollback deduped.jsonl: ${rollbackErr instanceof Error ? rollbackErr.message : String(rollbackErr)}`
-      );
-    }
-    try {
-      fs.truncateSync(MASTER_FILE, masterSizeBeforeAppend);
-      console.warn("  ⚠️ Rolled back MASTER_DEBT.jsonl");
-    } catch (rollbackErr) {
-      console.warn(
-        `  ⚠️ Failed to rollback MASTER_DEBT.jsonl: ${rollbackErr instanceof Error ? rollbackErr.message : String(rollbackErr)}`
-      );
-    }
+    console.error(`❌ Failed to append to MASTER_DEBT.jsonl: ${msg}`);
     process.exit(1);
   }
 }

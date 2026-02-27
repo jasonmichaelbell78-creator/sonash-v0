@@ -19,7 +19,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
-const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("../lib/safe-fs");
+const { safeWriteFileSync, safeAppendFileSync, writeMasterDebtSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -78,25 +78,7 @@ function loadMasterDebt() {
 
 // Save items to MASTER_DEBT.jsonl with atomic write
 function saveMasterDebt(items) {
-  const lines = items.map((item) => JSON.stringify(item));
-  const content = lines.join("\n") + "\n";
-
-  // Atomic write: write to temp file then rename
-  const dir = path.dirname(MASTER_FILE);
-  const tmpFile = path.join(dir, `.MASTER_DEBT.jsonl.tmp.${process.pid}`);
-
-  try {
-    safeWriteFileSync(tmpFile, content);
-    safeRenameSync(tmpFile, MASTER_FILE);
-  } catch (err) {
-    // Clean up temp file on error
-    try {
-      fs.unlinkSync(tmpFile);
-    } catch {
-      // Ignore cleanup errors
-    }
-    throw err;
-  }
+  writeMasterDebtSync(items);
 }
 
 // Append to false positives file
@@ -273,6 +255,87 @@ function regenerateViews() {
   }
 }
 
+/**
+ * Scan a list of plan files for lines containing debtId.
+ * Returns an array of { file, line } objects (file is repo-relative).
+ * @param {string[]} planFiles - Absolute paths to files to scan
+ * @param {string} debtId - The DEBT-XXXX identifier to search for
+ * @param {string} ROOT - Repo root for computing relative paths
+ * @returns {Array<{file: string, line: number}>}
+ */
+function scanFilesForDebtRef(planFiles, debtId, ROOT) {
+  const refsFound = [];
+  for (const filePath of planFiles) {
+    try {
+      if (!fs.existsSync(filePath)) continue;
+      const content = fs.readFileSync(filePath, "utf8");
+      const lines = content.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(debtId)) {
+          refsFound.push({ file: path.relative(ROOT, filePath), line: i + 1 });
+        }
+      }
+    } catch {
+      // skip unreadable files
+    }
+  }
+  return refsFound;
+}
+
+// Sync plan files after resolution (Finding 13)
+function syncPlanFiles(debtId) {
+  const ROOT = path.join(__dirname, "../..");
+
+  // 1. Run reconcile-roadmap to update ROADMAP.md
+  console.log("\n🔄 Syncing plan files...");
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, "reconcile-roadmap.js"), "--write"], {
+      stdio: "pipe",
+    });
+    console.log("  ✅ ROADMAP.md reconciled");
+  } catch {
+    console.warn("  ⚠️ reconcile-roadmap.js failed — run manually if needed");
+  }
+
+  // 2. Regenerate GRAND_PLAN_V2.md + manifest
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, "generate-grand-plan.js")], {
+      stdio: "pipe",
+    });
+    console.log("  ✅ GRAND_PLAN_V2.md + manifest regenerated");
+  } catch {
+    console.warn("  ⚠️ generate-grand-plan.js failed — run manually if needed");
+  }
+
+  // 3. Scan active plan files for references to the resolved DEBT ID
+  const planFiles = [
+    path.join(ROOT, "ROADMAP_FUTURE.md"),
+    path.join(ROOT, "ROADMAP_LOG.md"),
+    path.join(ROOT, "docs", "OPERATIONAL_VISIBILITY_SPRINT.md"),
+  ];
+
+  // Also scan .claude/plans/*.md
+  const plansDir = path.join(ROOT, ".claude", "plans");
+  try {
+    const planDirFiles = fs
+      .readdirSync(plansDir)
+      .filter((f) => f.endsWith(".md"))
+      .map((f) => path.join(plansDir, f));
+    planFiles.push(...planDirFiles);
+  } catch {
+    // plans dir may not exist
+  }
+
+  const refsFound = scanFilesForDebtRef(planFiles, debtId, ROOT);
+
+  if (refsFound.length > 0) {
+    console.log(`\n  ℹ️ ${debtId} also referenced in:`);
+    for (const ref of refsFound) {
+      console.log(`     ${ref.file} (line ${ref.line})`);
+    }
+  }
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -328,6 +391,7 @@ Example:
   }
 
   regenerateViews();
+  syncPlanFiles(parsed.debtId);
   console.log(`\n📊 Remaining items in MASTER_DEBT.jsonl: ${items.length}`);
 }
 

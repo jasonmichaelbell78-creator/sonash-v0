@@ -18,6 +18,7 @@
  *   2 = Error
  */
 
+const crypto = require("node:crypto"); // catch-verified: core module
 const fs = require("node:fs"); // catch-verified: core module
 const pathMod = require("node:path"); // catch-verified: core module
 const { existsSync, readFileSync, mkdirSync, lstatSync, rmSync } = fs; // require() destructure
@@ -520,6 +521,7 @@ function validateAndParse() {
   }
 
   const content = readFileSync(LEARNINGS_LOG, "utf8");
+  const hashBefore = crypto.createHash("sha256").update(content).digest("hex");
   const lines = content.split("\n");
 
   // Parse all entry blocks
@@ -540,7 +542,7 @@ function validateAndParse() {
     return null;
   }
 
-  return { content, lines, entries };
+  return { content, lines, entries, hashBefore };
 }
 
 /**
@@ -573,6 +575,7 @@ function previewArchival(toArchive, toKeep) {
  * @param {string} opts.today - Today's date string (YYYY-MM-DD)
  * @param {number[]} opts.archiveReviewIds - Review IDs being archived
  * @param {number[]} opts.archiveRetroIds - Retro IDs being archived
+ * @param {string} opts.hashBefore - SHA-256 hash of the log at read time
  */
 function executeArchival(opts) {
   const {
@@ -585,6 +588,7 @@ function executeArchival(opts) {
     today,
     archiveReviewIds,
     archiveRetroIds,
+    hashBefore,
   } = opts;
   // Check archive path doesn't already exist
   if (existsSync(archivePath)) {
@@ -656,7 +660,18 @@ function executeArchival(opts) {
   // Step 5b: Update "Current Metrics" section
   updatedContent = updateCurrentMetrics(updatedContent, toKeep);
 
-  // Step 6: Write updated active log
+  // Step 6: Verify file wasn't modified during archival (Finding 4)
+  const currentContent = readFileSync(LEARNINGS_LOG, "utf8");
+  const hashAfter = crypto.createHash("sha256").update(currentContent).digest("hex");
+  if (hashBefore !== hashAfter) {
+    console.error(
+      "AI_REVIEW_LEARNINGS_LOG.md was modified during archival. Aborting to prevent data loss. Re-run."
+    );
+    process.exitCode = 2;
+    return;
+  }
+
+  // Step 7: Write updated active log
   try {
     atomicWrite(LEARNINGS_LOG, updatedContent);
   } catch (err) {
@@ -669,7 +684,7 @@ function executeArchival(opts) {
 
   log(`  Active log updated: ${toKeep.length} entries remaining`);
 
-  // Step 7: Summary
+  // Step 8: Summary
   log(`\nArchival complete:`);
   log(`  Archived: ${toArchive.length} entries -> docs/archive/${archiveFilename}`);
   log(`  Remaining: ${toKeep.length} entries in active log`);
@@ -691,7 +706,7 @@ function main() {
     const parsed = validateAndParse();
     if (!parsed) return;
 
-    const { lines, entries } = parsed;
+    const { lines, entries, hashBefore } = parsed;
 
     // Select entries for archival
     const { toArchive, toKeep } = selectEntriesForArchival(entries, keepCount);
@@ -753,6 +768,7 @@ function main() {
       today,
       archiveReviewIds,
       archiveRetroIds,
+      hashBefore,
     });
   } catch (err) {
     console.error("Error:", sanitizeError(err));
