@@ -331,7 +331,7 @@ function parseMarkdownReviews(content) {
 
     // Format 3: inline patterns after **Pattern(s):** header (semicolon-separated)
     // Matches "**Pattern:**" or "**Patterns:**" but not other bold labels
-    const inlinePatternMatch = raw.match(/\*\*Patterns?:?\*\*:?\s+([A-Z][^\n]+)/);
+    const inlinePatternMatch = /\*\*Patterns?:?\*\*:?\s+([A-Z][^\n]+)/.exec(raw);
     if (inlinePatternMatch) {
       const inlineText = inlinePatternMatch[1].trim();
       // Split on semicolons for multiple patterns
@@ -351,9 +351,10 @@ function parseMarkdownReviews(content) {
 
     // Format 4: bullet items under "Key Patterns" or "Patterns Identified" sections
     // Bounded capture to prevent catastrophic backtracking on malformed input
-    const patternSection = raw.match(
-      /\*\*(?:Key Patterns|Patterns Identified)[^*]*\*\*:?\s*\n([\s\S]{0,2000}?)(?=\n\*\*|\n---|\n#{2,4}\s|$)/
-    );
+    const patternSection =
+      /\*\*(?:Key Patterns|Patterns Identified)[^*]*\*\*:?\s*\n([\s\S]{0,2000}?)(?=\n\*\*|\n---|\n#{2,4}\s|$)/.exec(
+        raw
+      );
     if (patternSection) {
       const sectionBullets = patternSection[1].matchAll(/^- \*?\*?([^*:\n]+)/gm);
       for (const m of sectionBullets) {
@@ -798,7 +799,7 @@ function runRepairMode(content) {
 
   log(`  ✅ Rebuilt reviews.jsonl:`);
   log(
-    `     Reviews: ${dedupedReviews.length} (IDs: #${dedupedReviews[0]?.id || "?"}-#${dedupedReviews[dedupedReviews.length - 1]?.id || "?"})`
+    `     Reviews: ${dedupedReviews.length} (IDs: #${dedupedReviews[0]?.id || "?"}-#${dedupedReviews.at(-1)?.id || "?"})`
   );
   log(
     `     Retros:  ${dedupedRetros.length} (PRs: ${dedupedRetros.map((r) => "#" + r.pr).join(", ") || "none"})`
@@ -875,45 +876,42 @@ function applySyncEntries(missing, missingReviews, missingRetros) {
 }
 
 /**
- * Handle normal sync mode (dry-run, --apply, --check).
+ * Load full JSONL review objects keyed by numeric id for content comparison.
+ * Returns a Map<number, object>. Skips malformed lines silently.
  */
-function runSyncMode(content) {
-  const existingIds = loadExistingIds();
-  const existingRetroIds = loadExistingRetroIds();
-  const mdReviews = parseMarkdownReviews(content);
-  const mdRetros = parseRetrospectives(content);
-
-  log(`  Markdown reviews found: ${mdReviews.length}`);
-  log(`  Markdown retros found:  ${mdRetros.length}`);
-  log(`  JSONL reviews existing: ${existingIds.size}`);
-  log(`  JSONL retros existing:  ${existingRetroIds.size}`);
-
-  // --- DEBT-7582: Collision detection & auto-renumbering ---
-  // Load full JSONL review objects keyed by id for content comparison.
+function loadExistingReviewObjects() {
   const existingById = new Map();
-  if (existsSync(REVIEWS_FILE)) {
-    try {
-      const jsonlRaw = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
-      if (jsonlRaw) {
-        for (const line of jsonlRaw.split("\n")) {
-          try {
-            const obj = JSON.parse(line);
-            if (typeof obj.id === "number") existingById.set(obj.id, obj);
-          } catch {
-            /* skip malformed */
-          }
+  if (!existsSync(REVIEWS_FILE)) return existingById;
+  try {
+    const jsonlRaw = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
+    if (jsonlRaw) {
+      for (const line of jsonlRaw.split("\n")) {
+        try {
+          const obj = JSON.parse(line);
+          if (typeof obj.id === "number") existingById.set(obj.id, obj);
+        } catch {
+          /* skip malformed */
         }
       }
-    } catch {
-      /* skip read errors — loadExistingIds already warned */
     }
+  } catch {
+    /* skip read errors — loadExistingIds already warned */
   }
+  return existingById;
+}
 
+/**
+ * Detect id collisions between mdReviews and existingIds and renumber colliding
+ * reviews to ids above the current maximum. Mutates review.id in place.
+ * Returns the (mutated) mdReviews array.
+ */
+function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
   let maxExistingId = 0;
   for (const id of existingIds) {
     if (id > maxExistingId) maxExistingId = id;
   }
   let nextOffset = 1;
+  const newlyAssignedIds = new Set();
 
   for (const review of mdReviews) {
     if (!existingIds.has(review.id)) continue; // no collision
@@ -928,27 +926,27 @@ function runSyncMode(content) {
 
     // True collision — different content under the same review number.
     const oldId = review.id;
-    const newId = maxExistingId + nextOffset;
+    let newId = maxExistingId + nextOffset;
+    // Skip any ids already assigned in this pass to avoid reuse
+    while (newlyAssignedIds.has(newId)) {
+      nextOffset++;
+      newId = maxExistingId + nextOffset;
+    }
     nextOffset++;
     review.id = newId;
-    // Track the new id so subsequent collisions won't reuse it
-    existingIds.add(newId);
+    // Track the new id within this pass so subsequent collisions won't reuse it,
+    // but do NOT add to existingIds — that would incorrectly filter it out during
+    // the missing-review detection step.
+    newlyAssignedIds.add(newId);
     console.log(`  ⚠️  Review #${oldId} renumbered to #${newId} (collision)`);
   }
-  // --- End DEBT-7582 ---
+  return mdReviews;
+}
 
-  const missingReviews = mdReviews.filter((r) => !existingIds.has(r.id));
-  const missingRetros = mdRetros.filter((r) => !existingRetroIds.has(r.id));
-  missingReviews.sort((a, b) => a.id - b.id);
-  missingRetros.sort((a, b) => a.pr - b.pr);
-  const missing = [...missingReviews, ...missingRetros];
-
-  if (missing.length === 0) {
-    log("\n✅ All reviews and retros are synced. No drift detected.");
-    process.exitCode = 0;
-    return;
-  }
-
+/**
+ * Log the drift report and dispatch to the correct sync action (check / apply / dry-run).
+ */
+function reportAndApplySync(missing, missingReviews, missingRetros) {
   log(`\n⚠️  ${missing.length} entries in markdown but not in JSONL:`);
   if (missingReviews.length > 0) {
     log(`  Reviews: ${missingReviews.map((r) => "#" + r.id).join(", ")}`);
@@ -971,6 +969,40 @@ function runSyncMode(content) {
     }
     process.exitCode = 1;
   }
+}
+
+/**
+ * Handle normal sync mode (dry-run, --apply, --check).
+ */
+function runSyncMode(content) {
+  const existingIds = loadExistingIds();
+  const existingRetroIds = loadExistingRetroIds();
+  const mdReviews = parseMarkdownReviews(content);
+  const mdRetros = parseRetrospectives(content);
+
+  log(`  Markdown reviews found: ${mdReviews.length}`);
+  log(`  Markdown retros found:  ${mdRetros.length}`);
+  log(`  JSONL reviews existing: ${existingIds.size}`);
+  log(`  JSONL retros existing:  ${existingRetroIds.size}`);
+
+  // --- DEBT-7582: Collision detection & auto-renumbering ---
+  const existingById = loadExistingReviewObjects();
+  detectAndResolveCollisions(mdReviews, existingIds, existingById);
+  // --- End DEBT-7582 ---
+
+  const missingReviews = mdReviews.filter((r) => !existingIds.has(r.id));
+  const missingRetros = mdRetros.filter((r) => !existingRetroIds.has(r.id));
+  missingReviews.sort((a, b) => a.id - b.id);
+  missingRetros.sort((a, b) => a.pr - b.pr);
+  const missing = [...missingReviews, ...missingRetros];
+
+  if (missing.length === 0) {
+    log("\n✅ All reviews and retros are synced. No drift detected.");
+    process.exitCode = 0;
+    return;
+  }
+
+  reportAndApplySync(missing, missingReviews, missingRetros);
 }
 
 function main() {

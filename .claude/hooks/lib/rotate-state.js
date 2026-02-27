@@ -1,4 +1,4 @@
-/* global module, require, __dirname */
+/* global module, require, __dirname, process */
 /* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
 /**
  * rotate-state.js - Shared state file rotation helpers
@@ -254,7 +254,10 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
 
       return { rotated: true, before: lines.length, after: kept.length, archived: evicted.length };
     });
-  } catch {
+  } catch (err) {
+    process.stderr.write(
+      `[archiveRotateJsonl] Error rotating ${filePath}: ${err.code || err.message}\n`
+    );
     return { rotated: false, before: 0, after: 0, archived: 0 };
   }
 }

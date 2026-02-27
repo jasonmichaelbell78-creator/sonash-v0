@@ -205,7 +205,6 @@ function main() {
   };
 
   const updatedLines = [];
-  const updatedItems = new Map(); // Track items that were modified
 
   for (const line of lines) {
     stats.total++;
@@ -229,7 +228,6 @@ function main() {
         item.roadmap_ref = normalizedRef;
         stats.normalized = (stats.normalized || 0) + 1;
         updatedLines.push(JSON.stringify(item));
-        if (item.id) updatedItems.set(item.id, item); // Track normalized item
       } else {
         updatedLines.push(line);
       }
@@ -249,7 +247,6 @@ function main() {
     }
 
     updatedLines.push(JSON.stringify(item));
-    if (item.id) updatedItems.set(item.id, item); // Track newly assigned item
   }
 
   console.log("\n📈 Assignment Statistics:");

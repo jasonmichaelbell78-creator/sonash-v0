@@ -88,6 +88,50 @@ function buildCanonMap(fullMapping) {
 // --- Step 9a: Replace CANON -> DEBT IDs ---
 
 /**
+ * Collect all CANON-XXXX matches in a single line and process them in reverse
+ * order (to preserve string indices during replacement).
+ * Returns { line, replacedEntries, unmappedEntries }.
+ * @param {string} line
+ * @param {Map<string, string>} canonMap
+ * @param {number} lineNumber - 1-based line number for detail records
+ * @returns {{ line: string, replacedEntries: Array<[string, string]>, unmappedEntries: string[], details: Array<{line: number, canon: string, debt: string|null}> }}
+ */
+function processCanonRefsInLine(line, canonMap, lineNumber) {
+  const canonRefPattern = /CANON-(\d{4})/g;
+  /** @type {Array<{full: string, index: number}>} */
+  const matches = [];
+  let match;
+  while ((match = canonRefPattern.exec(line)) !== null) {
+    matches.push({ full: match[0], index: match.index });
+  }
+
+  /** @type {Array<[string, string]>} */
+  const replacedEntries = [];
+  /** @type {string[]} */
+  const unmappedEntries = [];
+  /** @type {Array<{line: number, canon: string, debt: string|null}>} */
+  const details = [];
+
+  // Process matches in reverse order to preserve indices during replacement
+  for (let j = matches.length - 1; j >= 0; j--) {
+    const m = matches[j];
+    const canonId = m.full;
+    const debtId = canonMap.get(canonId);
+
+    if (debtId) {
+      line = line.substring(0, m.index) + debtId + line.substring(m.index + canonId.length);
+      replacedEntries.push([canonId, debtId]);
+      details.push({ line: lineNumber, canon: canonId, debt: debtId });
+    } else {
+      unmappedEntries.push(canonId);
+      details.push({ line: lineNumber, canon: canonId, debt: null });
+    }
+  }
+
+  return { line, replacedEntries, unmappedEntries, details };
+}
+
+/**
  * Replace all CANON-XXXX references in the roadmap text.
  * Returns { text, replaced, unmapped, details, skippedFenced }.
  * @param {string} text
@@ -108,8 +152,7 @@ function replaceCanonIds(text, canonMap) {
   let skippedFenced = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
-    let match;
+    const line = lines[i];
 
     // Track fenced code blocks — skip replacements inside them
     if (line.trimStart().startsWith("```")) {
@@ -124,38 +167,20 @@ function replaceCanonIds(text, canonMap) {
       continue;
     }
 
-    // Reset lastIndex for each line
-    canonRefPattern.lastIndex = 0;
+    const result = processCanonRefsInLine(line, canonMap, i + 1);
 
-    // Collect all matches first to avoid mutation during iteration
-    /** @type {Array<{full: string, index: number}>} */
-    const matches = [];
-    while ((match = canonRefPattern.exec(line)) !== null) {
-      matches.push({ full: match[0], index: match.index });
-    }
-
-    if (matches.length === 0) {
+    if (result.replacedEntries.length === 0 && result.unmappedEntries.length === 0) {
       continue;
     }
 
-    // Process matches in reverse order to preserve indices
-    for (let j = matches.length - 1; j >= 0; j--) {
-      const m = matches[j];
-      const canonId = m.full;
-      const debtId = canonMap.get(canonId);
-
-      if (debtId) {
-        // Replace this occurrence
-        line = line.substring(0, m.index) + debtId + line.substring(m.index + canonId.length);
-        replaced.set(canonId, debtId);
-        details.push({ line: i + 1, canon: canonId, debt: debtId });
-      } else {
-        unmappedSet.add(canonId);
-        details.push({ line: i + 1, canon: canonId, debt: null });
-      }
+    lines[i] = result.line;
+    for (const [canonId, debtId] of result.replacedEntries) {
+      replaced.set(canonId, debtId);
     }
-
-    lines[i] = line;
+    for (const canonId of result.unmappedEntries) {
+      unmappedSet.add(canonId);
+    }
+    details.push(...result.details);
   }
 
   return {

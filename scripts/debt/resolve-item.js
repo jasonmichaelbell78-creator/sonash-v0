@@ -255,6 +255,33 @@ function regenerateViews() {
   }
 }
 
+/**
+ * Scan a list of plan files for lines containing debtId.
+ * Returns an array of { file, line } objects (file is repo-relative).
+ * @param {string[]} planFiles - Absolute paths to files to scan
+ * @param {string} debtId - The DEBT-XXXX identifier to search for
+ * @param {string} ROOT - Repo root for computing relative paths
+ * @returns {Array<{file: string, line: number}>}
+ */
+function scanFilesForDebtRef(planFiles, debtId, ROOT) {
+  const refsFound = [];
+  for (const filePath of planFiles) {
+    try {
+      if (!fs.existsSync(filePath)) continue;
+      const content = fs.readFileSync(filePath, "utf8");
+      const lines = content.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(debtId)) {
+          refsFound.push({ file: path.relative(ROOT, filePath), line: i + 1 });
+        }
+      }
+    } catch {
+      // skip unreadable files
+    }
+  }
+  return refsFound;
+}
+
 // Sync plan files after resolution (Finding 13)
 function syncPlanFiles(debtId) {
   const ROOT = path.join(__dirname, "../..");
@@ -299,21 +326,7 @@ function syncPlanFiles(debtId) {
     // plans dir may not exist
   }
 
-  const refsFound = [];
-  for (const filePath of planFiles) {
-    try {
-      if (!fs.existsSync(filePath)) continue;
-      const content = fs.readFileSync(filePath, "utf8");
-      const lines = content.split("\n");
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(debtId)) {
-          refsFound.push({ file: path.relative(ROOT, filePath), line: i + 1 });
-        }
-      }
-    } catch {
-      // skip unreadable files
-    }
-  }
+  const refsFound = scanFilesForDebtRef(planFiles, debtId, ROOT);
 
   if (refsFound.length > 0) {
     console.log(`\n  ℹ️ ${debtId} also referenced in:`);

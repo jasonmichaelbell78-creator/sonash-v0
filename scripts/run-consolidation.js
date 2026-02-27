@@ -423,6 +423,105 @@ const CATEGORY_TO_SECTION = {
 };
 
 /**
+ * Group patterns by category and filter out any already present in content.
+ * Returns { patternsByCategory, newPatterns }.
+ */
+function filterNewPatterns(categories, lowerContent) {
+  const patternsByCategory = new Map();
+  const newPatterns = [];
+
+  for (const [catName, catPatterns] of Object.entries(categories)) {
+    for (const p of catPatterns) {
+      if (p.count >= MIN_PATTERN_OCCURRENCES) {
+        // Check if pattern already exists in CODE_PATTERNS.md (fuzzy match)
+        const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
+        if (!lowerContent.includes(normalizedPattern)) {
+          if (!patternsByCategory.has(catName)) patternsByCategory.set(catName, []);
+          patternsByCategory.get(catName).push(p);
+          newPatterns.push(p);
+        }
+      }
+    }
+  }
+
+  return { patternsByCategory, newPatterns };
+}
+
+/**
+ * Insert new pattern entries into their respective section in content.
+ * Returns the updated content string.
+ */
+function insertPatternsIntoSections(content, patternsByCategory, consolidationNumber, range) {
+  for (const [catName, patterns] of patternsByCategory) {
+    const sectionHeader = CATEGORY_TO_SECTION[catName] || CATEGORY_TO_SECTION["General"];
+    const sectionIdx = content.indexOf(sectionHeader);
+    if (sectionIdx === -1) continue;
+
+    // Find the next ## section after this one to insert before it
+    const afterSection = content.indexOf("\n## ", sectionIdx + sectionHeader.length);
+    const insertPoint =
+      afterSection === -1 ? content.indexOf("\n---\n", sectionIdx + 100) : afterSection;
+    if (insertPoint === -1) continue;
+
+    // Build pattern entries
+    const entries = patterns.map((p) => {
+      const title = p.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase());
+      return [
+        "",
+        `### ${title}`,
+        "",
+        `🟡 **Rule:** ${title} — recurring pattern from ${p.count} reviews (#${p.reviews.join(", #")})`,
+        "",
+        `**Source:** Consolidation #${consolidationNumber} (Reviews #${range.start}-#${range.end})`,
+        "",
+      ].join("\n");
+    });
+
+    content = content.slice(0, insertPoint) + entries.join("") + content.slice(insertPoint);
+  }
+
+  return content;
+}
+
+/**
+ * Update the version history table and document version header in content.
+ * Returns the updated content string.
+ */
+function updateVersionHistory(content, newPatterns, consolidationNumber, range, today) {
+  const versionMatch = content.match(/\|\s*([\d.]+)\s*\|\s*\d{4}-\d{2}-\d{2}/);
+  if (!versionMatch) return content;
+
+  const currentVersion = Number.parseFloat(versionMatch[1]);
+  const newVersion = (currentVersion + 0.1).toFixed(1);
+  const patternNames = newPatterns.map((p) => p.pattern).join(", ");
+  const newRow = `| ${newVersion}     | ${today}   | **CONSOLIDATION #${consolidationNumber}:** Auto-added ${newPatterns.length} patterns (${patternNames}). Source: Reviews #${range.start}-#${range.end}. |`;
+
+  // Insert before the first version row
+  const versionHeaderIdx = content.indexOf("## Version History");
+  if (versionHeaderIdx !== -1) {
+    const firstRowIdx = content.indexOf("\n|", content.indexOf("| ---", versionHeaderIdx));
+    if (firstRowIdx !== -1) {
+      const nextRowStart = content.indexOf("\n|", firstRowIdx + 1);
+      if (nextRowStart !== -1) {
+        content =
+          content.slice(0, nextRowStart + 1) + newRow + "\n" + content.slice(nextRowStart + 1);
+      }
+    }
+  }
+
+  // Update document version in header
+  const headerVersionMatch = content.match(/\*\*Document Version:\*\*\s*([\d.]+)/);
+  if (headerVersionMatch) {
+    content = content.replace(
+      `**Document Version:** ${headerVersionMatch[1]}`,
+      `**Document Version:** ${newVersion}`
+    );
+  }
+
+  return content;
+}
+
+/**
  * Auto-append new recurring patterns to CODE_PATTERNS.md.
  * - Checks each pattern against existing content to avoid duplicates
  * - Appends to the correct category section
@@ -441,89 +540,18 @@ function appendToCodePatterns(recurringPatterns, categories, consolidationNumber
     }
 
     let content = readFileSync(CODE_PATTERNS_FILE, "utf8");
-    const lowerContent = content.toLowerCase();
-    const newPatterns = [];
-
-    // Group patterns by their category
-    const patternsByCategory = new Map();
-    for (const [catName, catPatterns] of Object.entries(categories)) {
-      for (const p of catPatterns) {
-        if (p.count >= MIN_PATTERN_OCCURRENCES) {
-          // Check if pattern already exists in CODE_PATTERNS.md (fuzzy match)
-          const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
-          if (!lowerContent.includes(normalizedPattern)) {
-            if (!patternsByCategory.has(catName)) patternsByCategory.set(catName, []);
-            patternsByCategory.get(catName).push(p);
-            newPatterns.push(p);
-          }
-        }
-      }
-    }
+    const { patternsByCategory, newPatterns } = filterNewPatterns(
+      categories,
+      content.toLowerCase()
+    );
 
     if (newPatterns.length === 0) {
       log("  ℹ️ No new patterns to add to CODE_PATTERNS.md (all already documented)", c.cyan);
       return { added: 0 };
     }
 
-    // Insert patterns into their respective sections
-    for (const [catName, patterns] of patternsByCategory) {
-      const sectionHeader = CATEGORY_TO_SECTION[catName] || CATEGORY_TO_SECTION["General"];
-      const sectionIdx = content.indexOf(sectionHeader);
-      if (sectionIdx === -1) continue;
-
-      // Find the next ## section after this one to insert before it
-      const afterSection = content.indexOf("\n## ", sectionIdx + sectionHeader.length);
-      const insertPoint =
-        afterSection !== -1 ? afterSection : content.indexOf("\n---\n", sectionIdx + 100);
-      if (insertPoint === -1) continue;
-
-      // Build pattern entries
-      const entries = patterns.map((p) => {
-        const title = p.pattern.replaceAll("-", " ").replace(/\b\w/g, (c) => c.toUpperCase());
-        return [
-          "",
-          `### ${title}`,
-          "",
-          `🟡 **Rule:** ${title} — recurring pattern from ${p.count} reviews (#${p.reviews.join(", #")})`,
-          "",
-          `**Source:** Consolidation #${consolidationNumber} (Reviews #${range.start}-#${range.end})`,
-          "",
-        ].join("\n");
-      });
-
-      content = content.slice(0, insertPoint) + entries.join("") + content.slice(insertPoint);
-    }
-
-    // Update version history
-    const versionMatch = content.match(/\|\s*([\d.]+)\s*\|\s*\d{4}-\d{2}-\d{2}/);
-    if (versionMatch) {
-      const currentVersion = Number.parseFloat(versionMatch[1]);
-      const newVersion = (currentVersion + 0.1).toFixed(1);
-      const patternNames = newPatterns.map((p) => p.pattern).join(", ");
-      const newRow = `| ${newVersion}     | ${today}   | **CONSOLIDATION #${consolidationNumber}:** Auto-added ${newPatterns.length} patterns (${patternNames}). Source: Reviews #${range.start}-#${range.end}. |`;
-
-      // Insert before the first version row
-      const versionHeaderIdx = content.indexOf("## Version History");
-      if (versionHeaderIdx !== -1) {
-        const firstRowIdx = content.indexOf("\n|", content.indexOf("| ---", versionHeaderIdx));
-        if (firstRowIdx !== -1) {
-          const nextRowStart = content.indexOf("\n|", firstRowIdx + 1);
-          if (nextRowStart !== -1) {
-            content =
-              content.slice(0, nextRowStart + 1) + newRow + "\n" + content.slice(nextRowStart + 1);
-          }
-        }
-      }
-
-      // Update document version in header
-      const headerVersionMatch = content.match(/\*\*Document Version:\*\*\s*([\d.]+)/);
-      if (headerVersionMatch) {
-        content = content.replace(
-          `**Document Version:** ${headerVersionMatch[1]}`,
-          `**Document Version:** ${newVersion}`
-        );
-      }
-    }
+    content = insertPatternsIntoSections(content, patternsByCategory, consolidationNumber, range);
+    content = updateVersionHistory(content, newPatterns, consolidationNumber, range, today);
 
     // Atomic write
     const tmpPath = CODE_PATTERNS_FILE + ".consolidation.tmp";

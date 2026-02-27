@@ -305,17 +305,12 @@ function detectAndMapFormat(item) {
 }
 
 /**
- * Check required fields and validate file paths on a mapped item.
- * Returns arrays of errors and warnings.
+ * Validate and normalize the file path on a mapped item.
+ * Mutates mappedItem.file and mappedItem.line in place.
+ * Returns an array of warning strings.
  */
-function checkRequiredFields(mappedItem) {
-  const errors = [];
+function validateFilePath(mappedItem) {
   const warnings = [];
-
-  if (!mappedItem.title) errors.push("Missing required field: title");
-  if (!mappedItem.severity) errors.push("Missing required field: severity");
-  if (!mappedItem.category) errors.push("Missing required field: category");
-
   const rawFile = typeof mappedItem.file === "string" ? mappedItem.file : "";
   const normalizedFile = normalizeFilePath(rawFile);
 
@@ -323,11 +318,14 @@ function checkRequiredFields(mappedItem) {
     warnings.push(
       `Invalid file path: "${rawFile}" (could not be normalized to a repo-relative path)`
     );
-  } else if (normalizedFile) {
+    return warnings;
+  }
+
+  if (normalizedFile) {
     mappedItem.file = normalizedFile;
 
     // Detect file:linenum pattern left after normalization and split it out
-    const lineNumMatch = normalizedFile.match(/^(.+):(\d+)$/);
+    const lineNumMatch = /^(.+):(\d+)$/.exec(normalizedFile);
     if (lineNumMatch && isValidFilePath(lineNumMatch[1])) {
       mappedItem.file = lineNumMatch[1];
       if (mappedItem.line === undefined || mappedItem.line === 0) {
@@ -342,6 +340,51 @@ function checkRequiredFields(mappedItem) {
     }
   }
 
+  return warnings;
+}
+
+/**
+ * Coerce verified_by to a valid string value if it is a non-string type.
+ * Mutates mappedItem.verified_by in place.
+ * Returns an array of warning strings.
+ */
+function coerceVerifiedBy(mappedItem) {
+  const warnings = [];
+
+  if (mappedItem.verified_by === undefined || mappedItem.verified_by === null) {
+    return warnings;
+  }
+
+  if (typeof mappedItem.verified_by !== "string") {
+    if (mappedItem.verified_by === true) {
+      mappedItem.verified_by = "auto";
+      warnings.push(`verified_by coerced from boolean true → "auto"`);
+    } else if (mappedItem.verified_by === false) {
+      mappedItem.verified_by = null;
+      warnings.push(`verified_by coerced from boolean false → null (not verified)`);
+    } else {
+      const coerced = String(mappedItem.verified_by);
+      warnings.push(`verified_by coerced from ${typeof mappedItem.verified_by} → "${coerced}"`);
+      mappedItem.verified_by = coerced;
+    }
+  }
+
+  return warnings;
+}
+
+/**
+ * Check required fields and validate file paths on a mapped item.
+ * Returns arrays of errors and warnings.
+ */
+function checkRequiredFields(mappedItem) {
+  const errors = [];
+
+  if (!mappedItem.title) errors.push("Missing required field: title");
+  if (!mappedItem.severity) errors.push("Missing required field: severity");
+  if (!mappedItem.category) errors.push("Missing required field: category");
+
+  const warnings = [...validateFilePath(mappedItem), ...coerceVerifiedBy(mappedItem)];
+
   if (
     (mappedItem.severity === "S0" || mappedItem.severity === "S1") &&
     !mappedItem.verification_steps
@@ -349,23 +392,6 @@ function checkRequiredFields(mappedItem) {
     warnings.push(
       `S0/S1 finding missing verification_steps (recommended for critical/high severity)`
     );
-  }
-
-  // Validate verified_by type: must be a string (not boolean or number) if present
-  if (mappedItem.verified_by !== undefined && mappedItem.verified_by !== null) {
-    if (typeof mappedItem.verified_by !== "string") {
-      if (mappedItem.verified_by === true) {
-        mappedItem.verified_by = "auto";
-        warnings.push(`verified_by coerced from boolean true → "auto"`);
-      } else if (mappedItem.verified_by === false) {
-        mappedItem.verified_by = null;
-        warnings.push(`verified_by coerced from boolean false → null (not verified)`);
-      } else {
-        const coerced = String(mappedItem.verified_by);
-        warnings.push(`verified_by coerced from ${typeof mappedItem.verified_by} → "${coerced}"`);
-        mappedItem.verified_by = coerced;
-      }
-    }
   }
 
   return { errors, warnings };

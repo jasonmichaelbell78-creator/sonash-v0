@@ -329,18 +329,27 @@ function checkCodePatternsAutoUpdate(rootDir, consolidationJson) {
 
     // Look for auto-update markers in version history table rows
     // Matches: | 3.7 | 2026-02-27 | **CONSOLIDATION #2:** Auto-added 6 patterns ...
-    // Split into: 1) find the date from the table row, 2) find consolidation + auto-added
-    const consolidationMatch = content.match(/CONSOLIDATION\s+#(\d+).*?Auto-added\s+(\d+)/i);
-    if (consolidationMatch) {
-      // Extract date from the same table row context
-      const dateMatch = content.match(
-        /\|\s*[\d.]+\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|[^|\n]*CONSOLIDATION/i
-      );
+    // Target the specific consolidation number from state to avoid false positives
+    const targetNumber =
+      consolidationJson && typeof consolidationJson.consolidationNumber === "number"
+        ? consolidationJson.consolidationNumber
+        : null;
+    if (!targetNumber) {
+      return { autoUpdated: false, lastUpdateDate: null, patternsAutoAdded: 0 };
+    }
+
+    // Match the exact consolidation row and extract date + auto-added count
+    const rowRe = new RegExp(
+      String.raw`\|\s*[\d.]+\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|[^\n]*\*\*CONSOLIDATION\s+#${targetNumber}:\*\*\s*Auto-added\s+(\d+)`,
+      "i"
+    );
+    const rowMatch = content.match(rowRe);
+    if (rowMatch) {
       return {
         autoUpdated: true,
-        lastUpdateDate: dateMatch ? dateMatch[1] : null,
-        patternsAutoAdded: parseInt(consolidationMatch[2], 10),
-        consolidationRef: parseInt(consolidationMatch[1], 10),
+        lastUpdateDate: rowMatch[1] || null,
+        patternsAutoAdded: Number.parseInt(rowMatch[2], 10),
+        consolidationRef: targetNumber,
       };
     }
 

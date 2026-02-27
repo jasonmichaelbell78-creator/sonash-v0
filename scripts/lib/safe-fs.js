@@ -169,6 +169,35 @@ const LOCK_STALE_MS = 60_000; // 60s — force-break stale locks (single-user CL
 const LOCK_SPIN_MS = 100; // polling interval
 const LOCK_TIMEOUT_MS = 5_000; // default timeout
 
+// Synchronous sleep using Atomics.wait (avoids busy-spin)
+const _sleepBuf = new SharedArrayBuffer(4);
+const _sleepArr = new Int32Array(_sleepBuf);
+function sleepSync(ms) {
+  Atomics.wait(_sleepArr, 0, 0, ms);
+}
+
+/**
+ * Break a stale lock at `lockPath` after verifying it is not a symlink.
+ * Logs a warning if the path is a symlink (skips removal in that case).
+ * Swallows removal errors — the outer retry loop handles any resulting EEXIST.
+ *
+ * @param {string} lockPath - Absolute path to the lock file
+ */
+function breakStaleLock(lockPath) {
+  try {
+    if (fs.lstatSync(lockPath).isSymbolicLink()) {
+      process.stderr.write(
+        `[safe-fs] WARNING: lock path is a symlink, refusing to remove: ${lockPath}\n`
+      );
+      return;
+    }
+  } catch {
+    // lstat failed (e.g. already gone) — nothing to remove
+    return;
+  }
+  fs.rmSync(lockPath, { force: true });
+}
+
 /**
  * Acquire an advisory lock on `filePath`.
  * Creates `${filePath}.lock` containing `{ pid, timestamp, hostname }`.
@@ -192,6 +221,16 @@ function acquireLock(filePath, timeoutMs) {
   const deadline = Date.now() + timeout;
 
   while (true) {
+    // Guard: refuse to write if lockPath is already a symlink
+    try {
+      if (fs.lstatSync(lockPath).isSymbolicLink()) {
+        throw new Error(`Refusing to create lock over symlink: ${lockPath}`);
+      }
+    } catch (statErr) {
+      if (statErr.code !== "ENOENT") throw statErr;
+      // ENOENT is fine — the lock file does not exist yet
+    }
+
     try {
       // O_EXCL: fail if file already exists (atomic create)
       fs.writeFileSync(lockPath, lockData, { flag: "wx" });
@@ -203,13 +242,16 @@ function acquireLock(filePath, timeoutMs) {
       try {
         const existing = JSON.parse(fs.readFileSync(lockPath, "utf8"));
         if (Date.now() - existing.timestamp > LOCK_STALE_MS) {
-          // Stale lock — force-break it
-          fs.rmSync(lockPath, { force: true });
+          // Stale lock — force-break it (symlink-safe)
+          breakStaleLock(lockPath);
           continue; // retry immediately
         }
-      } catch {
-        // Can't read lock file — remove and retry
-        fs.rmSync(lockPath, { force: true });
+      } catch (readErr) {
+        // Can't read/parse lock file — log and attempt removal
+        process.stderr.write(
+          `[safe-fs] WARNING: unreadable lock file (${readErr.code || readErr.message}), removing: ${lockPath}\n`
+        );
+        breakStaleLock(lockPath);
         continue;
       }
 
@@ -219,11 +261,8 @@ function acquireLock(filePath, timeoutMs) {
         );
       }
 
-      // Busy-wait (synchronous sleep for CLI scripts)
-      const waitUntil = Date.now() + LOCK_SPIN_MS;
-      while (Date.now() < waitUntil) {
-        // spin
-      }
+      // Sleep without busy-spin
+      sleepSync(LOCK_SPIN_MS);
     }
   }
 }
@@ -240,8 +279,11 @@ function releaseLock(filePath) {
     if (existing.pid === process.pid) {
       fs.rmSync(lockPath, { force: true });
     }
-  } catch {
+  } catch (err) {
     // Lock already gone or unreadable — nothing to do
+    process.stderr.write(
+      `[safe-fs] DEBUG: releaseLock skipped (${err.code || err.message}): ${lockPath}\n`
+    );
   }
 }
 
@@ -283,8 +325,8 @@ const DEFAULT_DEDUPED_PATH = path.join(DEBT_DIR, "raw", "deduped.jsonl");
  * @param {string} [options.dedupedPath] - Override deduped.jsonl path
  */
 function writeMasterDebtSync(items, options) {
-  const masterPath = (options && options.masterPath) || DEFAULT_MASTER_PATH;
-  const dedupedPath = (options && options.dedupedPath) || DEFAULT_DEDUPED_PATH;
+  const masterPath = options?.masterPath || DEFAULT_MASTER_PATH;
+  const dedupedPath = options?.dedupedPath || DEFAULT_DEDUPED_PATH;
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   withLock(masterPath, () => {
@@ -329,8 +371,8 @@ function writeMasterDebtSync(items, options) {
  */
 function appendMasterDebtSync(newItems, options) {
   if (!newItems || newItems.length === 0) return;
-  const masterPath = (options && options.masterPath) || DEFAULT_MASTER_PATH;
-  const dedupedPath = (options && options.dedupedPath) || DEFAULT_DEDUPED_PATH;
+  const masterPath = options?.masterPath || DEFAULT_MASTER_PATH;
+  const dedupedPath = options?.dedupedPath || DEFAULT_DEDUPED_PATH;
   const content = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
 
   withLock(masterPath, () => {

@@ -1746,6 +1746,34 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #400: Maintenance PR R1 (2026-02-27)
+
+- **Source**: SonarCloud (17) + Qodo Compliance (2) + Qodo PR Suggestions (18) +
+  Gemini (2)
+- **PR**: Maintenance — pipeline repair + deep-plan automation + TDMS refresh
+- **Items**: 37 total (32 unique after dedup) → 22 fixed, 10 deferred (JSONL
+  data quality), 1 rejected (false positive)
+- **Key fixes**:
+  - sync-reviews-to-jsonl.js: CRITICAL bug — `existingIds.add(newId)` caused
+    renumbered reviews to be silently dropped (data loss). Fixed with separate
+    `newlyAssignedIds` set.
+  - safe-fs.js: CRITICAL security — added symlink guard (`lstatSync` check) to
+    `acquireLock`/`breakStaleLock` to prevent symlink attacks on lock files.
+  - safe-fs.js: Replaced CPU-intensive busy-wait with `Atomics.wait()` sleep.
+  - 6 CC reductions via helper extraction (CC 40→~5, 35→~4, 26→~8, 18→~10,
+    18→~9, 16→~10) across 6 files.
+  - pattern-lifecycle.js: fixed false positive in consolidation auto-update
+    detection by targeting specific consolidation number.
+- **Rejections**: Qodo #21 (isSafeToWrite not imported in rotate-state.js) —
+  FALSE POSITIVE: import exists at module level (line 15).
+- **Deferred**: 10 JSONL metadata quality items in normalized-all.jsonl —
+  generated data file, should be fixed via intake script improvement.
+- **Patterns**: Fix-One-Audit-All; CC-Extract-Helpers-Proactively;
+  Separate-Tracking-Sets-For-Mutation
+- **Agents**: 4 parallel code-reviewer agents for CC reductions
+
+---
+
 #### Review #399: PR #396 R2 (2026-02-26)
 
 - **Source**: Qodo Compliance (4) + Qodo PR Suggestions (7) + CI Feedback (1)
