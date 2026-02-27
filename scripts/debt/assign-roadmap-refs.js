@@ -281,7 +281,19 @@ function main() {
 
     // Central writer handles both MASTER_DEBT.jsonl and deduped.jsonl atomically
     try {
-      const allItems = updatedLines.map((line) => JSON.parse(line));
+      const allItems = [];
+      for (let i = 0; i < updatedLines.length; i++) {
+        const line = updatedLines[i];
+        if (!line || !line.trim()) continue;
+        try {
+          allItems.push(JSON.parse(line));
+        } catch {
+          console.error(
+            `❌ Malformed JSONL at output line ${i + 1}; aborting write to prevent data loss.`
+          );
+          process.exit(4);
+        }
+      }
       writeMasterDebtSync(allItems);
 
       console.log("✅ MASTER_DEBT.jsonl updated successfully");

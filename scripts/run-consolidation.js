@@ -493,15 +493,20 @@ function updateVersionHistory(content, newPatterns, consolidationNumber, range, 
 
   const currentVersion = Number.parseFloat(versionMatch[1]);
   const newVersion = (currentVersion + 0.1).toFixed(1);
-  const patternNames = newPatterns.map((p) => p.pattern).join(", ");
-  const newRow = `| ${newVersion}     | ${today}   | **CONSOLIDATION #${consolidationNumber}:** Auto-added ${newPatterns.length} patterns (${patternNames}). Source: Reviews #${range.start}-#${range.end}. |`;
+  const patternNamesList = newPatterns.map((p) => p.pattern);
+  const shown = patternNamesList.slice(0, 10).join(", ");
+  const more = patternNamesList.length > 10 ? ` …(+${patternNamesList.length - 10} more)` : "";
+  const newRow = `| ${newVersion}     | ${today}   | **CONSOLIDATION #${consolidationNumber}:** Auto-added ${newPatterns.length} patterns (${shown}${more}). Source: Reviews #${range.start}-#${range.end}. |`;
 
   // Insert new row immediately after the table separator line (| --- |)
   const versionHeaderIdx = content.indexOf("## Version History");
   if (versionHeaderIdx !== -1) {
-    const sepIdx = content.indexOf("| ---", versionHeaderIdx);
-    if (sepIdx !== -1) {
-      const sepLineEnd = content.indexOf("\n", sepIdx);
+    const afterHeader = content.slice(versionHeaderIdx);
+    const sepRe = /^\|\s*-{3,}.*\|\s*$/m;
+    const sepMatch = sepRe.exec(afterHeader);
+    if (sepMatch) {
+      const sepAbsIdx = versionHeaderIdx + sepMatch.index;
+      const sepLineEnd = content.indexOf("\n", sepAbsIdx);
       if (sepLineEnd !== -1) {
         content = content.slice(0, sepLineEnd + 1) + newRow + "\n" + content.slice(sepLineEnd + 1);
       }

@@ -1746,6 +1746,39 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #402: Maintenance PR R3 (2026-02-27)
+
+- **Source**: Qodo Compliance (5) + Qodo PR Suggestions (12)
+- **PR**: Maintenance — pipeline repair + deep-plan automation + TDMS refresh
+- **Items**: 13 unique → 9 fixed, 3 deferred (JSONL metadata), 5 rejected (4
+  compliance repeat-rejected + 1 new compliance)
+- **Key fixes**:
+  - sync-reviews-to-jsonl.js: HIGH — retro dedupe used `r.id` as key which can
+    be undefined; switched to composite `pr:date` key to prevent data loss.
+  - safe-fs.js: HIGH — `appendMasterDebtSync` now captures file sizes before
+    dual-append and rolls back on partial failure to maintain MASTER<->deduped
+    consistency.
+  - sync-reviews-to-jsonl.js: collision resolution now checks `mdIds` set to
+    avoid assigning new IDs that collide with existing markdown review IDs.
+  - sync-reviews-to-jsonl.js: `loadExistingReviewObjects` now handles string IDs
+    via `Number.parseInt` to prevent collision detection misses.
+  - run-consolidation.js: version row insertion uses anchored regex for
+    separator detection; pattern names capped at 10 in table row.
+  - sync-reviews-to-jsonl.js: inline pattern filter now checks PATTERN_SKIP set.
+  - safe-fs.js: `breakStaleLock` rmSync wrapped in try/catch for crash safety.
+  - assign-roadmap-refs.js: defensive per-line JSONL parsing with abort on
+    malformed data.
+- **Rejections**: 4 Qodo Compliance repeat-rejected (same justification as R2:
+  swallowed exceptions, audit trails, secure logging, TOCTOU). 1 new: untrusted
+  exec — `execFileSync("npm")` runs on known trusted repo, PATH hijacking
+  requires compromised environment.
+- **Deferred**: 3 JSONL metadata items (TODO line numbers, report file/line,
+  duplicate entries) — fix intake pipeline, not data file.
+- **Patterns**: Composite-Key-For-Nullable-IDs; Rollback-On-Dual-Write-Failure;
+  Check-All-ID-Sets-On-Collision-Resolution
+
+---
+
 #### Review #401: Maintenance PR R2 (2026-02-27)
 
 - **Source**: SonarCloud (1) + Qodo Compliance (5) + Qodo PR Suggestions (15)

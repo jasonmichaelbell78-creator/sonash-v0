@@ -346,7 +346,12 @@ function parseMarkdownReviews(content) {
           .replaceAll(/[^a-z0-9\s-]/g, "")
           .replaceAll(/\s+/g, "-")
           .slice(0, 60);
-        if (pattern && pattern.length > 3 && !review.patterns.includes(pattern)) {
+        if (
+          pattern &&
+          pattern.length > 3 &&
+          !PATTERN_SKIP.has(pattern) &&
+          !review.patterns.includes(pattern)
+        ) {
           review.patterns.push(pattern);
         }
       }
@@ -779,12 +784,13 @@ function runRepairMode(content) {
     }
   }
 
-  const seenRetroIds = new Set();
+  const seenRetroKeys = new Set();
   const dedupedRetros = [];
   for (const r of retros) {
-    const key = r.id;
-    if (!seenRetroIds.has(key)) {
-      seenRetroIds.add(key);
+    // Composite key: r.id may be undefined for retros; use pr+date for uniqueness
+    const key = `retrospective:${String(r.pr ?? "")}:${String(r.date ?? "")}`;
+    if (!seenRetroKeys.has(key)) {
+      seenRetroKeys.add(key);
       dedupedRetros.push(r);
     }
   }
@@ -892,7 +898,13 @@ function loadExistingReviewObjects() {
       for (const line of jsonlRaw.split("\n")) {
         try {
           const obj = JSON.parse(line);
-          if (typeof obj.id === "number") existingById.set(obj.id, obj);
+          const idNum =
+            typeof obj.id === "number"
+              ? obj.id
+              : typeof obj.id === "string"
+                ? Number.parseInt(obj.id, 10)
+                : NaN;
+          if (Number.isFinite(idNum)) existingById.set(idNum, obj);
         } catch {
           /* skip malformed */
         }
@@ -914,6 +926,10 @@ function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
   for (const id of existingIds) {
     if (id > maxExistingId) maxExistingId = id;
   }
+
+  // Track all markdown review IDs to avoid assigning a new ID that collides
+  // with another markdown entry (not just JSONL entries).
+  const mdIds = new Set(mdReviews.map((r) => r.id));
   let nextOffset = 1;
   const newlyAssignedIds = new Set();
 
@@ -931,13 +947,17 @@ function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
     // True collision — different content under the same review number.
     const oldId = review.id;
     let newId = maxExistingId + nextOffset;
-    // Skip any ids already assigned in this pass to avoid reuse
-    while (newlyAssignedIds.has(newId)) {
+    // Skip any ids already assigned in this pass OR existing in markdown to avoid reuse
+    while (newlyAssignedIds.has(newId) || mdIds.has(newId)) {
       nextOffset++;
       newId = maxExistingId + nextOffset;
     }
     nextOffset++;
+
+    mdIds.delete(oldId);
     review.id = newId;
+    mdIds.add(newId);
+
     // Track the new id within this pass so subsequent collisions won't reuse it,
     // but do NOT add to existingIds — that would incorrectly filter it out during
     // the missing-review detection step.

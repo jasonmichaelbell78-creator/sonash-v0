@@ -195,7 +195,11 @@ function breakStaleLock(lockPath) {
     // lstat failed (e.g. already gone) — nothing to remove
     return;
   }
-  fs.rmSync(lockPath, { force: true });
+  try {
+    fs.rmSync(lockPath, { force: true });
+  } catch {
+    // best-effort; outer retry loop handles any remaining EEXIST
+  }
 }
 
 /**
@@ -423,8 +427,27 @@ function appendMasterDebtSync(newItems, options) {
     fs.mkdirSync(path.dirname(masterPath), { recursive: true });
     fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
 
-    safeAppendFileSync(masterPath, content);
-    safeAppendFileSync(dedupedPath, content);
+    // Capture sizes for rollback on partial failure
+    const masterSizeBefore = fs.existsSync(masterPath) ? fs.statSync(masterPath).size : 0;
+    const dedupedSizeBefore = fs.existsSync(dedupedPath) ? fs.statSync(dedupedPath).size : 0;
+
+    try {
+      safeAppendFileSync(masterPath, content);
+      safeAppendFileSync(dedupedPath, content);
+    } catch (err) {
+      // Roll back any partial append to maintain MASTER <-> deduped consistency
+      try {
+        fs.truncateSync(masterPath, masterSizeBefore);
+      } catch {
+        /* best-effort */
+      }
+      try {
+        fs.truncateSync(dedupedPath, dedupedSizeBefore);
+      } catch {
+        /* best-effort */
+      }
+      throw err;
+    }
   });
 }
 
