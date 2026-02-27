@@ -99,8 +99,8 @@ _Foundation technical reference_
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                       | This guide covers Firebase App Check configuration for the S... | ↓2 ↑1      | 2026-02-13    |
 | [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                              | This document defines the mandatory security review process ... | ↓2 ↑6      | 2026-02-23    |
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                        | This document defines **mandatory security standards** that ... | ↓10 ↑0     | 2026-02-23    |
-| [Implementation Plan](docs/aggregation/IMPLEMENTATION_PLAN.md)                                        | -                                                               | ↓0 ↑0      | 2026-02-02    |
-| [Master Issue List](docs/aggregation/MASTER_ISSUE_LIST.md)                                            | -                                                               | ↓0 ↑0      | 2026-02-02    |
+| [Implementation Plan](docs/aggregation/IMPLEMENTATION_PLAN.md)                                        | -                                                               | ↓0 ↑0      | 2026-02-27    |
+| [Master Issue List](docs/aggregation/MASTER_ISSUE_LIST.md)                                            | -                                                               | ↓0 ↑0      | 2026-02-27    |
 | [MCP Server Setup Guide](docs/MCP_SETUP.md)                                                           | This guide explains how to configure MCP (Model Context Prot... | ↓0 ↑0      | 2026-02-23    |
 | [Mining Agent 2: Pipeline Flow & Promotion Analysis](docs/aggregation/mining-agent2-pipeline-flow.md) | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-27    |
 | [Mining Agent 3: Retro & Action Item Analysis](docs/aggregation/mining-agent3-retro-actions.md)       | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-27    |
