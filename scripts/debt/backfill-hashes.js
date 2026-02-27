@@ -16,7 +16,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
-const { safeWriteFileSync } = require("../lib/safe-fs");
+const { writeMasterDebtSync } = require("../lib/safe-fs");
 
 const MASTER_FILE = path.join(__dirname, "../../docs/technical-debt/MASTER_DEBT.jsonl");
 
@@ -137,20 +137,11 @@ function main() {
     process.exit(0);
   }
 
-  // Write updated file
-  const outputLines = items.map((entry) => {
-    if (entry.updated && entry.parsed) {
-      return JSON.stringify(entry.parsed);
-    }
-    return entry.raw;
-  });
-
-  // Join lines; avoid adding trailing newline if original didn't have one
-  // But preserve the original trailing newline behavior
-  const output = outputLines.join("\n");
+  // Write updated file — extract all parsed items for central writer
+  const parsedItems = items.filter((entry) => entry.parsed !== null).map((entry) => entry.parsed);
 
   try {
-    safeWriteFileSync(MASTER_FILE, output);
+    writeMasterDebtSync(parsedItems);
   } catch (err) {
     console.error(
       "Error: Failed to write MASTER_DEBT.jsonl: " +

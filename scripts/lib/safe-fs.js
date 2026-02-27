@@ -8,12 +8,16 @@
  * - EXDEV fallback for renameSync (cross-drive moves)
  * - Pre-rename rmSync (Windows destination-exists failure)
  * - BOM stripping for UTF-8 reads
+ * - Advisory file locking for concurrent-write coordination
+ * - Central MASTER_DEBT writer (dual-write to MASTER + deduped)
  *
  * Created: Session #192 (ESLint + Pattern Compliance Fix Plan)
+ * Updated: Deep Plan — Automation & File Overwrite Fixes (Findings 2, 6, 7, 10)
  */
 
 const fs = require("node:fs");
 const path = require("node:path");
+const os = require("node:os");
 
 // Import isSafeToWrite from the canonical source
 let isSafeToWrite;
@@ -157,6 +161,184 @@ function readUtf8Sync(filePath) {
   return content.codePointAt(0) === 0xfeff ? content.slice(1) : content;
 }
 
+// =========================================================
+// Advisory file locking
+// =========================================================
+
+const LOCK_STALE_MS = 60_000; // 60s — force-break stale locks (single-user CLI)
+const LOCK_SPIN_MS = 100; // polling interval
+const LOCK_TIMEOUT_MS = 5_000; // default timeout
+
+/**
+ * Acquire an advisory lock on `filePath`.
+ * Creates `${filePath}.lock` containing `{ pid, timestamp, hostname }`.
+ * Spins up to `timeoutMs` waiting for an existing lock to clear.
+ * Stale locks (> 60s old) are automatically broken.
+ *
+ * @param {string} filePath - Path to lock (lock file = `${filePath}.lock`)
+ * @param {number} [timeoutMs=5000] - Max time to wait for lock
+ * @returns {string} Lock file path (for manual release if needed)
+ * @throws {Error} If lock cannot be acquired within timeout
+ */
+function acquireLock(filePath, timeoutMs) {
+  const timeout = timeoutMs || LOCK_TIMEOUT_MS;
+  const lockPath = `${path.resolve(filePath)}.lock`;
+  const lockData = JSON.stringify({
+    pid: process.pid,
+    timestamp: Date.now(),
+    hostname: os.hostname(),
+  });
+
+  const deadline = Date.now() + timeout;
+
+  while (true) {
+    try {
+      // O_EXCL: fail if file already exists (atomic create)
+      fs.writeFileSync(lockPath, lockData, { flag: "wx" });
+      return lockPath;
+    } catch (err) {
+      if (err.code !== "EEXIST") throw err;
+
+      // Lock exists — check if stale
+      try {
+        const existing = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+        if (Date.now() - existing.timestamp > LOCK_STALE_MS) {
+          // Stale lock — force-break it
+          fs.rmSync(lockPath, { force: true });
+          continue; // retry immediately
+        }
+      } catch {
+        // Can't read lock file — remove and retry
+        fs.rmSync(lockPath, { force: true });
+        continue;
+      }
+
+      if (Date.now() >= deadline) {
+        throw new Error(
+          `Lock timeout: could not acquire lock on ${path.basename(filePath)} within ${timeout}ms`
+        );
+      }
+
+      // Busy-wait (synchronous sleep for CLI scripts)
+      const waitUntil = Date.now() + LOCK_SPIN_MS;
+      while (Date.now() < waitUntil) {
+        // spin
+      }
+    }
+  }
+}
+
+/**
+ * Release an advisory lock. Only removes if current process owns it.
+ *
+ * @param {string} filePath - Path whose lock to release
+ */
+function releaseLock(filePath) {
+  const lockPath = `${path.resolve(filePath)}.lock`;
+  try {
+    const existing = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+    if (existing.pid === process.pid) {
+      fs.rmSync(lockPath, { force: true });
+    }
+  } catch {
+    // Lock already gone or unreadable — nothing to do
+  }
+}
+
+/**
+ * Execute `fn` while holding an advisory lock on `filePath`.
+ * Automatically releases on success or error (try/finally).
+ *
+ * @param {string} filePath - Path to lock
+ * @param {Function} fn - Function to execute under lock
+ * @param {number} [timeoutMs] - Lock acquisition timeout
+ * @returns {*} Return value of `fn`
+ */
+function withLock(filePath, fn, timeoutMs) {
+  acquireLock(filePath, timeoutMs);
+  try {
+    return fn();
+  } finally {
+    releaseLock(filePath);
+  }
+}
+
+// =========================================================
+// Central MASTER_DEBT writers (Findings 2 + 10)
+// =========================================================
+
+// Default paths — derived from this file's location
+const DEBT_DIR = path.join(__dirname, "..", "..", "docs", "technical-debt");
+const DEFAULT_MASTER_PATH = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
+const DEFAULT_DEDUPED_PATH = path.join(DEBT_DIR, "raw", "deduped.jsonl");
+
+/**
+ * Central MASTER_DEBT full-rewrite writer.
+ * Always writes to BOTH MASTER_DEBT.jsonl and deduped.jsonl.
+ * Uses file locking to prevent concurrent writes.
+ *
+ * @param {object[]} items - Full array of debt items
+ * @param {object} [options]
+ * @param {string} [options.masterPath] - Override MASTER_DEBT.jsonl path
+ * @param {string} [options.dedupedPath] - Override deduped.jsonl path
+ */
+function writeMasterDebtSync(items, options) {
+  const masterPath = (options && options.masterPath) || DEFAULT_MASTER_PATH;
+  const dedupedPath = (options && options.dedupedPath) || DEFAULT_DEDUPED_PATH;
+  const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
+
+  withLock(masterPath, () => {
+    // Atomic write to MASTER
+    const tmpPath = `${masterPath}.tmp.${process.pid}`;
+    try {
+      safeWriteFileSync(tmpPath, content);
+      safeRenameSync(tmpPath, masterPath);
+    } catch (err) {
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* cleanup */
+      }
+      throw err;
+    }
+
+    // Sync deduped.jsonl to match (full rewrite)
+    const dedupTmp = `${dedupedPath}.tmp.${process.pid}`;
+    try {
+      safeWriteFileSync(dedupTmp, content);
+      safeRenameSync(dedupTmp, dedupedPath);
+    } catch (err) {
+      try {
+        fs.unlinkSync(dedupTmp);
+      } catch {
+        /* cleanup */
+      }
+      throw err;
+    }
+  });
+}
+
+/**
+ * Append items to MASTER_DEBT.jsonl AND deduped.jsonl atomically.
+ * Uses file locking to prevent concurrent writes.
+ *
+ * @param {object[]} newItems - Items to append
+ * @param {object} [options]
+ * @param {string} [options.masterPath] - Override MASTER_DEBT.jsonl path
+ * @param {string} [options.dedupedPath] - Override deduped.jsonl path
+ */
+function appendMasterDebtSync(newItems, options) {
+  if (!newItems || newItems.length === 0) return;
+  const masterPath = (options && options.masterPath) || DEFAULT_MASTER_PATH;
+  const dedupedPath = (options && options.dedupedPath) || DEFAULT_DEDUPED_PATH;
+  const content = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
+
+  withLock(masterPath, () => {
+    safeAppendFileSync(masterPath, content);
+    safeAppendFileSync(dedupedPath, content);
+  });
+}
+
 module.exports = {
   isSafeToWrite,
   safeWriteFileSync,
@@ -164,4 +346,9 @@ module.exports = {
   safeRenameSync,
   safeAtomicWriteSync,
   readUtf8Sync,
+  acquireLock,
+  releaseLock,
+  withLock,
+  writeMasterDebtSync,
+  appendMasterDebtSync,
 };

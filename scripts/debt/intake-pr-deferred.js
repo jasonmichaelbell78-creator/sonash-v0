@@ -34,7 +34,7 @@ const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
 
 const { loadConfig } = require("../config/load-config");
-const { safeAppendFileSync } = require("../lib/safe-fs");
+const { safeAppendFileSync, appendMasterDebtSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -266,9 +266,9 @@ Example:
     process.exit(0);
   }
 
-  // Write to MASTER_DEBT.jsonl
-  console.log("\n📝 Writing to MASTER_DEBT.jsonl...");
-  safeAppendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
+  // Write to MASTER_DEBT.jsonl + raw/deduped.jsonl
+  console.log("\n📝 Writing to MASTER_DEBT.jsonl + raw/deduped.jsonl...");
+  appendMasterDebtSync([newItem]);
 
   // Log intake activity
   logIntake({

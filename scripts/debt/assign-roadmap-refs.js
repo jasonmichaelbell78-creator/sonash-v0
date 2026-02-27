@@ -31,7 +31,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
+const { safeWriteFileSync, writeMasterDebtSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -164,71 +164,6 @@ function generateAssignmentReport(stats, sortedTracks, dryRun) {
   }
 }
 
-/**
- * Sync updated items to raw/deduped.jsonl using in-place update
- * Uses atomic write (tmp + rename) with Windows-safe fallback
- *
- * @param {Map} updatedItems - Map of item ID to updated item object
- */
-function syncUpdatedItemsToDeduped(updatedItems) {
-  const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
-  if (!fs.existsSync(DEDUPED_FILE)) return;
-
-  try {
-    const dedupedContent = fs.readFileSync(DEDUPED_FILE, "utf8");
-    const dedupedLines = dedupedContent.split("\n");
-    const dedupedUpdated = dedupedLines.map((line) => {
-      if (!line.trim()) return line;
-      try {
-        const item = JSON.parse(line);
-        if (item.id && updatedItems.has(item.id)) {
-          return JSON.stringify(updatedItems.get(item.id));
-        }
-      } catch {
-        // keep original line if not valid JSON
-      }
-      return line;
-    });
-    const tmpDeduped = `${DEDUPED_FILE}.tmp`;
-    safeWriteFileSync(tmpDeduped, dedupedUpdated.join("\n") + "\n");
-    atomicRename(tmpDeduped, DEDUPED_FILE);
-  } catch (syncErr) {
-    console.warn(
-      `⚠️ Warning: Could not sync to deduped.jsonl: ${syncErr instanceof Error ? syncErr.message : String(syncErr)}`
-    );
-  }
-}
-
-/**
- * Atomic rename with Windows-safe fallback (rm + rename if direct rename fails)
- *
- * @param {string} tmpPath - Temporary file path (source)
- * @param {string} destPath - Destination file path
- */
-function atomicRename(tmpPath, destPath) {
-  try {
-    safeRenameSync(tmpPath, destPath);
-  } catch (error) {
-    const code =
-      error && typeof error === "object" && typeof error.code === "string" ? error.code : undefined;
-    if (code === "EPERM" || code === "EEXIST" || code === "EACCES" || code === "EBUSY") {
-      try {
-        fs.rmSync(destPath, { force: true });
-        safeRenameSync(tmpPath, destPath);
-      } catch (fallbackErr) {
-        try {
-          fs.unlinkSync(tmpPath);
-        } catch {
-          // ignore cleanup errors
-        }
-        throw fallbackErr;
-      }
-    } else {
-      throw error;
-    }
-  }
-}
-
 function main() {
   const opts = parseArgs(process.argv.slice(2));
 
@@ -347,26 +282,13 @@ function main() {
       process.exit(4);
     }
 
-    // Review #224 Qodo R6: Atomic write to prevent data corruption
-    // Qodo R8: Windows-safe replace - remove destination before rename
-    const TEMP_FILE = MASTER_FILE + ".tmp";
+    // Central writer handles both MASTER_DEBT.jsonl and deduped.jsonl atomically
     try {
-      safeWriteFileSync(TEMP_FILE, updatedLines.join("\n") + "\n", "utf8");
-      // Windows doesn't allow rename over existing file - remove first (backup already exists)
-      fs.rmSync(MASTER_FILE, { force: true });
-      safeRenameSync(TEMP_FILE, MASTER_FILE);
-
-      // Sync updated items to raw/deduped.jsonl (in-place update, not full copy)
-      syncUpdatedItemsToDeduped(updatedItems);
+      const allItems = updatedLines.map((line) => JSON.parse(line));
+      writeMasterDebtSync(allItems);
 
       console.log("✅ MASTER_DEBT.jsonl updated successfully");
     } catch (error_) {
-      // Clean up temp file on failure
-      try {
-        fs.unlinkSync(TEMP_FILE);
-      } catch {
-        /* ignore cleanup errors */
-      }
       const errMsg = error_ instanceof Error ? error_.message : String(error_);
       console.error(`❌ Failed to write MASTER_DEBT.jsonl: ${errMsg}`);
       process.exit(4);

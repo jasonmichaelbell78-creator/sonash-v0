@@ -89,10 +89,10 @@ function buildCanonMap(fullMapping) {
 
 /**
  * Replace all CANON-XXXX references in the roadmap text.
- * Returns { text, replaced, unmapped, details }.
+ * Returns { text, replaced, unmapped, details, skippedFenced }.
  * @param {string} text
  * @param {Map<string, string>} canonMap
- * @returns {{ text: string, replaced: Map<string, string>, unmapped: string[], details: Array<{line: number, canon: string, debt: string|null}> }}
+ * @returns {{ text: string, replaced: Map<string, string>, unmapped: string[], details: Array<{line: number, canon: string, debt: string|null}>, skippedFenced: number }}
  */
 function replaceCanonIds(text, canonMap) {
   const lines = text.split("\n");
@@ -104,10 +104,26 @@ function replaceCanonIds(text, canonMap) {
   const details = [];
 
   const canonRefPattern = /CANON-(\d{4})/g;
+  let inFence = false;
+  let skippedFenced = 0;
 
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     let match;
+
+    // Track fenced code blocks — skip replacements inside them
+    if (line.trimStart().startsWith("```")) {
+      inFence = !inFence;
+    }
+    if (inFence) {
+      // Don't count the opening fence line itself (already toggled above)
+      canonRefPattern.lastIndex = 0;
+      if (canonRefPattern.test(line)) {
+        skippedFenced++;
+      }
+      continue;
+    }
+
     // Reset lastIndex for each line
     canonRefPattern.lastIndex = 0;
 
@@ -147,6 +163,7 @@ function replaceCanonIds(text, canonMap) {
     replaced,
     unmapped: [...unmappedSet].sort(),
     details,
+    skippedFenced,
   };
 }
 
@@ -350,7 +367,23 @@ function main() {
   console.log(`Total CANON references replaced: ${totalReplacements}`);
   console.log(`Unique CANON IDs mapped: ${result9a.replaced.size}`);
   console.log(`Unmapped CANON IDs: ${result9a.unmapped.length}`);
+  console.log(`CANON references skipped (inside code fences): ${result9a.skippedFenced}`);
   console.log(`Grand Plan section updated: ${result9b.found ? "YES" : "NO"}`);
+
+  // Diff summary
+  console.log("\n--- Diff Summary ---\n");
+  const changes = [];
+  if (totalReplacements > 0) {
+    changes.push(`${totalReplacements} CANON->DEBT replacement(s)`);
+  }
+  if (result9b.found) {
+    changes.push("Grand Plan section rewritten");
+  }
+  if (changes.length > 0) {
+    console.log(`Changes staged: ${changes.join(", ")}`);
+  } else {
+    console.log("No changes to apply.");
+  }
 
   if (writeMode) writeChanges(result9b.text);
   else console.log("\nDry-run complete. Use --write to apply changes.");

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
+/* global require, process, console, __dirname */
 /* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
 /**
  * track-agent-invocation.js - PostToolUse hook for Task tool
@@ -15,7 +15,7 @@ const path = require("node:path");
 const { sanitizeInput } = require("./lib/sanitize-input");
 
 // Lazy-load shared helpers (best-effort — never block on import failure)
-let isSafeToWrite, rotateJsonl;
+let isSafeToWrite, rotateJsonl, withLock;
 try {
   isSafeToWrite = require("./lib/symlink-guard").isSafeToWrite;
   if (typeof isSafeToWrite !== "function") isSafeToWrite = () => true;
@@ -26,6 +26,11 @@ try {
   rotateJsonl = require("./lib/rotate-state").rotateJsonl;
 } catch {
   rotateJsonl = null;
+}
+try {
+  withLock = require(path.resolve(__dirname, "..", "..", "scripts", "lib", "safe-fs")).withLock;
+} catch {
+  withLock = null;
 }
 
 // Configuration
@@ -191,18 +196,27 @@ try {
   };
 
   if (isSafeToWrite(invocationsPath)) {
-    fs.appendFileSync(invocationsPath, JSON.stringify(persistEntry) + "\n");
+    // Use file locking to prevent append/rotation race (Finding 7)
+    const doAppendAndRotate = () => {
+      fs.appendFileSync(invocationsPath, JSON.stringify(persistEntry) + "\n");
 
-    // Rotate when file gets large (keep 60 of last 100 entries, only when > 64KB)
-    if (rotateJsonl) {
-      try {
-        const { size } = fs.lstatSync(invocationsPath);
-        if (size > 64 * 1024) {
-          rotateJsonl(invocationsPath, 100, 60);
+      // Rotate when file gets large (keep 60 of last 100 entries, only when > 64KB)
+      if (rotateJsonl) {
+        try {
+          const { size } = fs.lstatSync(invocationsPath);
+          if (size > 64 * 1024) {
+            rotateJsonl(invocationsPath, 100, 60);
+          }
+        } catch {
+          // Non-fatal
         }
-      } catch {
-        // Non-fatal
       }
+    };
+
+    if (withLock) {
+      withLock(invocationsPath, doAppendAndRotate);
+    } else {
+      doAppendAndRotate();
     }
   }
 } catch {

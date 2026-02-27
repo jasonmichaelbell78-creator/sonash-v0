@@ -444,6 +444,17 @@ try {
   }
 }
 
+// Sync reviews from markdown → JSONL (unblocks consolidation deadlock, Finding 12)
+try {
+  execFileSync("npm", ["run", "reviews:sync", "--", "--apply"], {
+    cwd: projectDir,
+    stdio: "pipe",
+    timeout: 15000,
+  });
+} catch {
+  // Non-fatal: session-begin will retry
+}
+
 // Archive health check: rotate reviews.jsonl when it exceeds 50 entries (OPT #74)
 try {
   const reviewsPath = path.join(projectDir, ".claude", "state", "reviews.jsonl");
@@ -455,10 +466,12 @@ try {
       .filter(Boolean).length;
     if (reviewCount > 50) {
       try {
-        const { rotateJsonl } = require("./lib/rotate-state.js");
-        const result = rotateJsonl(reviewsPath, 50, 30);
+        const { archiveRotateJsonl } = require("./lib/rotate-state.js");
+        const result = archiveRotateJsonl(reviewsPath, 50, 30);
         if (result.rotated) {
-          console.log(`   🔄 reviews.jsonl rotated: ${result.before} → ${result.after} entries`);
+          console.log(
+            `   🔄 reviews.jsonl rotated: ${result.before} → ${result.after} entries (${result.archived} archived)`
+          );
           // Re-sync from markdown source immediately after rotation to prevent
           // data loss. Without this, the audit checkers see only 30 entries until
           // session-begin runs reviews:sync. (PEA-501, PR #379 ecosystem audit)
@@ -488,15 +501,15 @@ try {
   // Non-fatal
 }
 
-// Rotate other state logs (same pattern as reviews.jsonl)
+// Rotate other state logs with archive-on-rotation (Findings 3, 6)
 try {
-  const { rotateJsonl } = require("./lib/rotate-state.js");
+  const { archiveRotateJsonl, rotateJsonl } = require("./lib/rotate-state.js");
   const hookWarningsPath = path.join(projectDir, ".claude", "state", "hook-warnings-log.jsonl");
   if (fs.existsSync(hookWarningsPath)) {
-    const hwResult = rotateJsonl(hookWarningsPath, 50, 30);
-    if (hwResult) {
+    const hwResult = archiveRotateJsonl(hookWarningsPath, 50, 30);
+    if (hwResult && hwResult.rotated) {
       console.log(
-        `   🔄 hook-warnings-log.jsonl rotated: ${hwResult.before} → ${hwResult.after} entries`
+        `   🔄 hook-warnings-log.jsonl rotated: ${hwResult.before} → ${hwResult.after} entries (${hwResult.archived} archived)`
       );
     }
   }
