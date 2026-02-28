@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Last Updated:** 2026-02-28
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -140,13 +140,18 @@ PIPE-08, PIPE-09, PIPE-10 **Success Criteria** (what must be TRUE):
 4. CLAUDE.md anti-patterns section can be regenerated from top patterns without
    manual editing
 5. All skill and agent invocations are tracked in a single invocations.jsonl
-   with structured origin fields **Plans**: TBD
+   with structured origin fields **Plans**: 4 plans
 
 Plans:
 
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md — Review writer CLI + JSONL-to-markdown renderer (PIPE-01,
+      PIPE-10)
+- [ ] 03-02-PLAN.md — Retro writer + auto-deferred items + invocation tracker
+      (PIPE-02, PIPE-03, PIPE-04)
+- [ ] 03-03-PLAN.md — Promotion pipeline + auto-generation of CODE_PATTERNS,
+      CLAUDE.md, FIX_TEMPLATE stubs (PIPE-05, PIPE-06, PIPE-07, PIPE-08)
+- [ ] 03-04-PLAN.md — Skill wiring (pr-review + pr-retro JSONL steps) + 3
+      security FIX_TEMPLATES (PIPE-09)
 
 ### Phase 4: Enforcement Expansion
 
@@ -278,7 +283,7 @@ with 5) -> 6 -> 7
 | ---------------------------- | -------------- | ----------- | ---------- |
 | 1. Storage Foundation        | 3/3            | Complete    | 2026-02-28 |
 | 2. Backfill & Data Migration | 3/3            | Complete    | 2026-02-28 |
-| 3. Core Pipeline             | 0/TBD          | Not started | -          |
+| 3. Core Pipeline             | 0/4            | Not started | -          |
 | 4. Enforcement Expansion     | 0/TBD          | Not started | -          |
 | 5. Health Monitoring         | 0/TBD          | Not started | -          |
 | 6. Gate Recalibration        | 0/TBD          | Not started | -          |
@@ -286,5 +291,5 @@ with 5) -> 6 -> 7
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28 (Phase 2 planned — 3
+_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28 (Phase 3 planned — 4
 plans in 2 waves)_
