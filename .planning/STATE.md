@@ -12,36 +12,36 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Reliably capture every review finding, track it through
 resolution, and prevent recurrence through automated enforcement — no data loss,
-no dead ends, no manual steps that get skipped. **Current focus:** Phase 2 —
-Backfill & Data Migration
+no dead ends, no manual steps that get skipped. **Current focus:** Phase 2
+complete -- Phase 3 next (Pipeline: New Reviews)
 
 ## Current Position
 
 Phase: 2 of 7 (Backfill & Data Migration) Plan: 3 of 3 in current phase Status:
-In progress (02-02 pending) Last activity: 2026-02-28 — Completed 02-03-PLAN.md
-(MASTER_DEBT.jsonl dedup, 16 duplicates removed, 8 tests)
+Phase complete Last activity: 2026-02-28 — Completed 02-02-PLAN.md (backfill
+orchestrator, 360 reviews + 19 retros, BKFL-04/05/06)
 
-Progress: [##........] ~24%
+Progress: [###.......] ~33%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 5
-- Average duration: 5.4 min
-- Total execution time: 27 min
+- Total plans completed: 6
+- Average duration: 7.2 min
+- Total execution time: 43 min
 
 **By Phase:**
 
 | Phase                      | Plans | Total  | Avg/Plan |
 | -------------------------- | ----- | ------ | -------- |
 | 01-storage-foundation      | 3     | 17 min | 5.7 min  |
-| 02-backfill-data-migration | 2     | 10 min | 5.0 min  |
+| 02-backfill-data-migration | 3     | 26 min | 8.7 min  |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-02 (10 min), 01-03 (4 min), 02-01 (6 min), 02-03 (4 min)
-- Trend: Stable (~5 min avg)
+- Last 5 plans: 01-03 (4 min), 02-01 (6 min), 02-03 (4 min), 02-02 (16 min)
+- Trend: 02-02 was larger (3 tasks + 4 deviations fixed), avg normalizing
 
 _Updated after each plan completion_
 
@@ -75,6 +75,16 @@ affecting current work:
   (title+total or pr), stub (id/date only)
 - 02-01: Field extractors exported individually for reuse by downstream scripts
 - 02-01: String-based severity parsing adapted from sync-reviews-to-jsonl.js
+- 02-02: Unicode em-dash (U+2014) added to header regex -- archives use real
+  em-dash not ASCII --
+- 02-02: read-jsonl.ts and write-jsonl.ts switched to findProjectRoot() for
+  cross-platform dist path reliability
+- 02-02: fix_rate clamped to max 1.0 for retro metrics
+- 02-02: BKFL-05 reports expected=406 vs actual=411 (v1 records post-date
+  consolidation)
+- 02-02: BKFL-06 auto-removes numeric-only and short patterns; flags #5/#13 for
+  manual investigation
+- 02-02: V1 migration: 20 records migrated (IDs 392-411), 30 skipped
 - 02-03: Review sources for dedup: review, pr-review, pr-review-366-r2,
   pr-deferred
 - 02-03: Title+source near-duplicates flagged but never auto-removed (too risky,
@@ -86,7 +96,6 @@ affecting current work:
 
 - Audit requested: run a final audit at the END of actual execution (not just
   initialization) to verify all goals were met
-- 02-02: backfill-reviews.ts execution plan still pending
 
 ### Blockers/Concerns
 
@@ -94,18 +103,18 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-28T22:03:00Z Stopped at: Completed 02-03-PLAN.md
-(MASTER_DEBT.jsonl dedup) Resume file: None
+Last session: 2026-02-28T22:26:00Z Stopped at: Completed 02-02-PLAN.md (backfill
+orchestrator) Resume file: None
 
 ### GSD Process Position
 
 - Phase 1-4: Complete (setup, brownfield, questioning, PROJECT.md)
-- Phase 5: Complete (config.json — YOLO, comprehensive, safe parallel)
-- Phase 6: Skipped (research — diagnosis IS the research)
-- Phase 7: Complete (REQUIREMENTS.md — 59 reqs across 8 categories)
-- Phase 8: Complete (ROADMAP.md — 7 phases, 59/59 mapped, audit passed)
+- Phase 5: Complete (config.json -- YOLO, comprehensive, safe parallel)
+- Phase 6: Skipped (research -- diagnosis IS the research)
+- Phase 7: Complete (REQUIREMENTS.md -- 59 reqs across 8 categories)
+- Phase 8: Complete (ROADMAP.md -- 7 phases, 59/59 mapped, audit passed)
 - Phase 9: N/A (no Phase 9 in process)
-- Phase 10: NOT STARTED — waiting on roadmap approval to show completion banner
+- Phase 10: NOT STARTED -- waiting on roadmap approval to show completion banner
 
 ### Audit Results (Initialization)
 
@@ -116,5 +125,5 @@ Last session: 2026-02-28T22:03:00Z Stopped at: Completed 02-03-PLAN.md
 - Zero blocking gaps
 - Minor: 14 requirements lack explicit success criteria (addressed during plan
   elaboration)
-- Minor: Phases 4/5 both write to warnings.jsonl (safe — different record types,
-  serialized writes)
+- Minor: Phases 4/5 both write to warnings.jsonl (safe -- different record
+  types, serialized writes)
