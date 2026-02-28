@@ -31,6 +31,7 @@ export default [
       ".claude/state/**",
       "docs/archive/**",
       "eslint-plugin-sonash/**",
+      "scripts/reviews/dist/**",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },
