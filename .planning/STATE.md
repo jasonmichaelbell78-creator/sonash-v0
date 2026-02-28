@@ -17,29 +17,29 @@ Storage Foundation
 
 ## Current Position
 
-Phase: 1 of 7 (Storage Foundation) Plan: 1 of 3 in current phase Status: In
-progress Last activity: 2026-02-28 — Completed 01-01-PLAN.md (Zod Schema
-Foundation)
+Phase: 1 of 7 (Storage Foundation) Plan: 2 of 3 in current phase Status: In
+progress Last activity: 2026-02-28 — Completed 01-02-PLAN.md (JSONL Utilities
+and Tests)
 
-Progress: [#.........] ~5%
+Progress: [##........] ~10%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 1
-- Average duration: 3 min
-- Total execution time: 3 min
+- Total plans completed: 2
+- Average duration: 6.5 min
+- Total execution time: 13 min
 
 **By Phase:**
 
-| Phase                 | Plans | Total | Avg/Plan |
-| --------------------- | ----- | ----- | -------- |
-| 01-storage-foundation | 1     | 3 min | 3 min    |
+| Phase                 | Plans | Total  | Avg/Plan |
+| --------------------- | ----- | ------ | -------- |
+| 01-storage-foundation | 2     | 13 min | 6.5 min  |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (3 min)
+- Last 5 plans: 01-01 (3 min), 01-02 (10 min)
 - Trend: Starting
 
 _Updated after each plan completion_
@@ -58,6 +58,12 @@ affecting current work:
   formally verified Phase 7
 - 01-01: Override exclude in scripts/reviews/tsconfig.json needed to prevent
   inherited exclusion from root tsconfig (which excludes scripts/)
+- 01-02: read-jsonl.js exports function directly (not named), use
+  `const readJsonl = require(...)`
+- 01-02: scripts/reviews/dist/\*\* added to ESLint ignores (compiled output was
+  being linted)
+- 01-02: Tests use findProjectRoot() walk-up pattern for reliable resolution
+  from dist-tests
 
 ### Pending Todos
 
@@ -76,8 +82,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-28T19:41:39Z Stopped at: Completed 01-01-PLAN.md (Zod
-Schema Foundation) Resume file: None
+Last session: 2026-02-28T19:55:20Z Stopped at: Completed 01-02-PLAN.md (JSONL
+Utilities and Tests) Resume file: None
 
 ### GSD Process Position
 
