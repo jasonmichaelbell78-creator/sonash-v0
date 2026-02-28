@@ -7,7 +7,9 @@
  * Seeds recent commits so the gap detector has data to work with.
  *
  * Usage: node scripts/seed-commit-log.js [count]
+ *         node scripts/seed-commit-log.js --sync
  *   count: Number of recent commits to seed (default: 50, max: 500)
+ *   --sync: Incremental mode — append commits newer than the latest in the log
  *
  * Output format matches commit-tracker.js entries in .claude/state/commit-log.jsonl
  */
@@ -49,7 +51,8 @@ try {
   isSafeToWrite = () => false;
 }
 
-const count = Math.max(1, Math.min(Number.parseInt(process.argv[2], 10) || 50, 500));
+const isSync = process.argv.includes("--sync");
+const count = isSync ? 500 : Math.max(1, Math.min(Number.parseInt(process.argv[2], 10) || 50, 500));
 
 /**
  * Get session counter from SESSION_CONTEXT.md
@@ -175,18 +178,152 @@ function writeEntries(entries) {
   }
 }
 
-function main() {
-  // Don't overwrite existing log
+/**
+ * Get the latest hash from the existing commit log
+ */
+function getLatestLogHash() {
   try {
-    const existing = fs.readFileSync(COMMIT_LOG, "utf8").trim();
-    if (existing.length > 0) {
-      console.log(
-        `commit-log.jsonl already has data (${existing.split("\n").length} entries). Skipping seed.`
-      );
+    const content = fs.readFileSync(COMMIT_LOG, "utf8").trim();
+    if (!content) return null;
+    const lines = content.split("\n").filter(Boolean);
+    // Walk backwards to find last valid entry
+    for (let i = lines.length - 1; i >= 0; i--) {
+      try {
+        const entry = JSON.parse(lines[i]);
+        if (entry.hash) return entry.hash;
+      } catch {
+        continue;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Get commits after a specific hash
+ */
+function getCommitsAfter(sinceHash) {
+  try {
+    const output = execFileSync(
+      "git",
+      [
+        "log",
+        `${sinceHash}..HEAD`,
+        "--format=%H%x00%h%x00%s%x00%an%x00%ad%x00%D",
+        "--date=iso-strict",
+      ],
+      { cwd: projectDir, encoding: "utf8", timeout: 15000 }
+    ).trim();
+    if (!output) return [];
+    return output.split("\n").filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Append entries to existing commit log (incremental sync)
+ */
+function appendEntries(entries) {
+  if (entries.length === 0) return;
+  const dir = path.dirname(COMMIT_LOG);
+  fs.mkdirSync(dir, { recursive: true });
+  if (!isSafeToWrite(COMMIT_LOG)) {
+    console.error("Symlink guard blocked append to commit-log.jsonl");
+    process.exit(1);
+  }
+  const content = entries.map((e) => JSON.stringify(e)).join("\n") + "\n";
+  fs.appendFileSync(COMMIT_LOG, content, "utf8");
+}
+
+/**
+ * Update commit-tracker state so the hook tracks from current HEAD
+ */
+function updateTrackerState() {
+  const TRACKER_STATE = path.join(projectDir, ".claude", "hooks", ".commit-tracker-state.json");
+  try {
+    const head = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: projectDir,
+      encoding: "utf8",
+      timeout: 5000,
+    }).trim();
+    if (!head) return;
+    if (!isSafeToWrite(TRACKER_STATE)) return;
+    fs.writeFileSync(
+      TRACKER_STATE,
+      JSON.stringify({ lastHead: head, updatedAt: new Date().toISOString() })
+    );
+  } catch {
+    // Non-critical
+  }
+}
+
+/**
+ * Sync mode: append commits newer than the latest in the log
+ */
+function syncMode() {
+  const latestHash = getLatestLogHash();
+  if (!latestHash) {
+    // No existing data — fall through to full seed
+    return false;
+  }
+
+  // Verify the hash still exists in git history
+  try {
+    execFileSync("git", ["cat-file", "-t", latestHash], {
+      cwd: projectDir,
+      encoding: "utf8",
+      timeout: 5000,
+    });
+  } catch {
+    console.warn(
+      `Latest log hash ${latestHash.slice(0, 7)} not found in git — falling back to full seed`
+    );
+    return false;
+  }
+
+  const lines = getCommitsAfter(latestHash);
+  if (lines.length === 0) {
+    console.log("commit-log.jsonl is up to date");
+    updateTrackerState();
+    return true;
+  }
+
+  const entries = parseCommitLines(lines, getSessionCounter());
+  // Reverse to oldest-first (git log returns newest-first)
+  entries.reverse();
+  appendEntries(entries);
+  updateTrackerState();
+  console.log(`Synced ${entries.length} new commits to commit-log.jsonl`);
+  return true;
+}
+
+function main() {
+  // --sync mode: incremental append
+  if (isSync) {
+    if (!syncMode()) {
+      // Fall through to full seed if sync couldn't find a baseline
+      console.log("No baseline found — performing full seed");
+    } else {
       process.exit(0);
     }
-  } catch {
-    // File doesn't exist — proceed with seeding
+  }
+
+  // Don't overwrite existing log (seed mode only)
+  if (!isSync) {
+    try {
+      const existing = fs.readFileSync(COMMIT_LOG, "utf8").trim();
+      if (existing.length > 0) {
+        console.log(
+          `commit-log.jsonl already has data (${existing.split("\n").length} entries). Skipping seed.`
+        );
+        process.exit(0);
+      }
+    } catch {
+      // File doesn't exist — proceed with seeding
+    }
   }
 
   const lines = getRecentCommits();
@@ -204,6 +341,7 @@ function main() {
   // Write oldest-first so log is chronological
   entries.reverse();
   writeEntries(entries);
+  updateTrackerState();
   console.log(`Seeded ${entries.length} commits to commit-log.jsonl`);
 }
 

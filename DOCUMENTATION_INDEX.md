@@ -236,7 +236,7 @@ _Claude Code skills_
 | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md)                                   | You have access to the systematic debugging skill at              | ↓0 ↑0      | 2026-01-12    |
 | [add-debt](.claude/skills/add-debt/SKILL.md)                                                                                        | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
-| [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | - User explicitly invokes `/alerts`                               | ↓0 ↑0      | 2026-02-24    |
+| [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | - User explicitly invokes `/alerts`                               | ↓0 ↑0      | 2026-02-28    |
 | [artifacts-builder](.claude/skills/artifacts-builder/SKILL.md)                                                                      | To build powerful frontend claude.ai artifacts, follow these...   | ↓0 ↑0      | 2026-02-24    |
 | [Audit Aggregator — Extended Examples](.claude/skills/audit-aggregator/examples.md)                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [audit-aggregator](.claude/skills/audit-aggregator/SKILL.md)                                                                        | -                                                                 | ↓0 ↑1      | 2026-02-24    |
@@ -579,7 +579,7 @@ _Reference_
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑8      | 2026-02-25    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-23    |
-| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-02-27    |
+| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-02-28    |
 
 ### scripts (Tier 4)
 

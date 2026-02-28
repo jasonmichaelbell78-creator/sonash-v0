@@ -1305,6 +1305,40 @@ const ANTI_PATTERNS = [
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
     pathExcludeList: verifiedPatterns["regex-complexity-s5852"] || [],
   },
+
+  // --- Patterns from Learning Effectiveness analysis (Session #197) ---
+  // Top 3 failing patterns: Binary file detection (5x), Relative path logging (4x), Delimiter consistency (3x)
+
+  // Binary file detection (5x recurrence) — too noisy for static regex; tracked as learning item only.
+  // Manual review: scripts doing glob/recursive file reads should check for NUL bytes.
+
+  {
+    id: "absolute-path-in-log",
+    severity: "medium",
+    pattern:
+      /(?:console\.(?:log|error|warn)\s*)\([^)]*(?:__dirname|__filename|process\.cwd\(\)|path\.(?:resolve|join)\([^)]*\))/g,
+    message:
+      "Logging absolute paths exposes filesystem structure — use path.relative(ROOT, target) instead",
+    fix: "Use path.relative(ROOT_DIR, filePath) before logging file paths",
+    review: "CODE_PATTERNS.md JS/TS - Relative path logging, Review #201 (4x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["absolute-path-in-log"] || [],
+  },
+
+  {
+    id: "git-log-pipe-delimiter",
+    severity: "medium",
+    pattern: /git\s+log[^\n]*--(?:format|pretty)=[^\n]*%[a-zA-Z][^\n]*\|[^\n]*%[a-zA-Z]/g,
+    message:
+      "git log format using | as delimiter — commit messages containing | will corrupt parsing",
+    fix: "Use \\x1f (Unit Separator) instead of | in git log --format fields",
+    review: "CODE_PATTERNS.md JS/TS - Delimiter consistency, Review #264 (3x recurrence)",
+    fileTypes: [".js", ".ts", ".sh"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["git-log-pipe-delimiter"] || [],
+  },
 ];
 
 /**

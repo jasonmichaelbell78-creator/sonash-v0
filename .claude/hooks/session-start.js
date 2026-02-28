@@ -455,6 +455,17 @@ try {
   // Non-fatal: session-begin will retry
 }
 
+// Sync commit log from git history (fills gaps when commit-tracker hook misses)
+try {
+  execFileSync("node", ["scripts/seed-commit-log.js", "--sync"], {
+    cwd: projectDir,
+    stdio: "pipe",
+    timeout: 10000,
+  });
+} catch {
+  // Non-fatal: commit log sync failure doesn't block session start
+}
+
 // Archive health check: rotate reviews.jsonl when it exceeds 50 entries (OPT #74)
 try {
   const reviewsPath = path.join(projectDir, ".claude", "state", "reviews.jsonl");

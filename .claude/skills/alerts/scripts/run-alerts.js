@@ -3484,6 +3484,7 @@ function computeHealthScore() {
     "backlog-health": 0.01,
     "github-actions": 0.02,
     sonarcloud: 0.02,
+    // Limited-mode operational checkers (low weight, contribute when measured)
     "reviews-sync": 0.01,
     "review-archive": 0.01,
     crossdoc: 0.01,
