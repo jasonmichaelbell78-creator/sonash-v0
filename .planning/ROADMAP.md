@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
       depends on
 - [x] **Phase 2: Backfill & Data Migration** - Parse all 13 archives into v2
       JSONL, fix data errors, establish clean baseline dataset
-- [ ] **Phase 3: Core Pipeline** - Skills write JSONL-first, auto-deferred
+- [x] **Phase 3: Core Pipeline** - Skills write JSONL-first, auto-deferred
       tracking, promotion automation, template generation
 - [ ] **Phase 4: Enforcement Expansion** - Semgrep + ESLint + regex rule
       expansion to hit 55-60% automated enforcement
@@ -144,13 +144,13 @@ PIPE-08, PIPE-09, PIPE-10 **Success Criteria** (what must be TRUE):
 
 Plans:
 
-- [ ] 03-01-PLAN.md — Review writer CLI + JSONL-to-markdown renderer (PIPE-01,
+- [x] 03-01-PLAN.md — Review writer CLI + JSONL-to-markdown renderer (PIPE-01,
       PIPE-10)
-- [ ] 03-02-PLAN.md — Retro writer + auto-deferred items + invocation tracker
+- [x] 03-02-PLAN.md — Retro writer + auto-deferred items + invocation tracker
       (PIPE-02, PIPE-03, PIPE-04)
-- [ ] 03-03-PLAN.md — Promotion pipeline + auto-generation of CODE_PATTERNS,
+- [x] 03-03-PLAN.md — Promotion pipeline + auto-generation of CODE_PATTERNS,
       CLAUDE.md, FIX_TEMPLATE stubs (PIPE-05, PIPE-06, PIPE-07, PIPE-08)
-- [ ] 03-04-PLAN.md — Skill wiring (pr-review + pr-retro JSONL steps) + 3
+- [x] 03-04-PLAN.md — Skill wiring (pr-review + pr-retro JSONL steps) + 3
       security FIX_TEMPLATES (PIPE-09)
 
 ### Phase 4: Enforcement Expansion
@@ -283,7 +283,7 @@ with 5) -> 6 -> 7
 | ---------------------------- | -------------- | ----------- | ---------- |
 | 1. Storage Foundation        | 3/3            | Complete    | 2026-02-28 |
 | 2. Backfill & Data Migration | 3/3            | Complete    | 2026-02-28 |
-| 3. Core Pipeline             | 0/4            | Not started | -          |
+| 3. Core Pipeline             | 4/4            | Complete    | 2026-02-28 |
 | 4. Enforcement Expansion     | 0/TBD          | Not started | -          |
 | 5. Health Monitoring         | 0/TBD          | Not started | -          |
 | 6. Gate Recalibration        | 0/TBD          | Not started | -          |
@@ -291,5 +291,5 @@ with 5) -> 6 -> 7
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28 (Phase 3 planned — 4
-plans in 2 waves)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28 (Phase 3 complete — 4/4
+plans executed, goal verified)_

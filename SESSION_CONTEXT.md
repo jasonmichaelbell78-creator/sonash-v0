@@ -126,13 +126,13 @@ FUNCTIONAL TESTING):
 
 ### Immediate Priority (Next Session)
 
-1. **PR review for maintenance branch** — PR created for
-   `claude/maintenance22726-md8WL` (15+ commits). Process Qodo/Gemini feedback.
-2. **Configure GitHub branch protection** — Set up ruleset via GitHub UI
-   (restrict deletions, block force push, require PR, require status checks)
-3. **Address ecosystem diagnosis findings** — Top S0 gaps: JSONL data loss,
-   deferred item tracking. See `docs/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md`
-4. **TDMS: 39 S0 critical items** — Address highest-severity debt items
+1. **PR for ecosystem v2 branch** — Phase 1-3 complete on
+   `claude/maintenance22726-md8WL`. Create PR, process Qodo/Gemini feedback.
+2. **Phase 4: Enforcement Expansion** — Semgrep + ESLint + regex rule expansion
+   to hit 55-60% automated enforcement. Can parallelize with Phase 5.
+3. **Phase 5: Health Monitoring** — 57-metric composite scoring, interactive
+   dashboard, warning lifecycle. Can parallelize with Phase 4.
+4. **TDMS: 67 S0 critical items** — Address highest-severity debt items
 5. **Track B: Dev Dashboard MVP** — Resume at ~10% progress
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
