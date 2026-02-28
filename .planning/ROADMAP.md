@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-02-28
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -86,13 +86,15 @@ TEST-01, TEST-06 **Success Criteria** (what must be TRUE):
 4. hasField() helper correctly distinguishes between null values and fields
    listed in completeness_missing for all 3 tiers
 5. Contract tests verify all 10 data handoff points pass with full/partial/stub
-   fixture data **Plans**: TBD
+   fixture data **Plans**: 3 plans
 
 Plans:
 
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
-- [ ] 01-03: TBD
+- [ ] 01-01-PLAN.md — Zod schemas for all 5 JSONL types + shared base record +
+      tsconfig setup
+- [ ] 01-02-PLAN.md — Write/read utilities, completeness helper, and unit tests
+- [ ] 01-03-PLAN.md — Test fixtures for all 3 completeness tiers + 7 contract
+      tests
 
 ### Phase 2: Backfill & Data Migration
 
@@ -271,7 +273,7 @@ with 5) -> 6 -> 7
 
 | Phase                        | Plans Complete | Status      | Completed |
 | ---------------------------- | -------------- | ----------- | --------- |
-| 1. Storage Foundation        | 0/TBD          | Not started | -         |
+| 1. Storage Foundation        | 0/3            | Planned     | -         |
 | 2. Backfill & Data Migration | 0/TBD          | Not started | -         |
 | 3. Core Pipeline             | 0/TBD          | Not started | -         |
 | 4. Enforcement Expansion     | 0/TBD          | Not started | -         |
