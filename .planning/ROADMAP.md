@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Last Updated:** 2026-02-28
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -111,12 +111,15 @@ must be TRUE):
 3. All existing MASTER_DEBT.jsonl review-sourced entries are deduplicated (no
    duplicate debt items for the same finding)
 4. Migration script run on existing data produces zero Zod validation errors on
-   output **Plans**: TBD
+   output **Plans**: 3 plans
 
 Plans:
 
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Markdown review parser with heading + table format support
+      and field extractors
+- [ ] 02-02-PLAN.md — Backfill orchestrator: read all archives, resolve
+      overlaps, write validated JSONL
+- [ ] 02-03-PLAN.md — MASTER_DEBT.jsonl deduplication of review-sourced entries
 
 ### Phase 3: Core Pipeline
 
@@ -274,7 +277,7 @@ with 5) -> 6 -> 7
 | Phase                        | Plans Complete | Status      | Completed  |
 | ---------------------------- | -------------- | ----------- | ---------- |
 | 1. Storage Foundation        | 3/3            | Complete    | 2026-02-28 |
-| 2. Backfill & Data Migration | 0/TBD          | Not started | -          |
+| 2. Backfill & Data Migration | 0/3            | Not started | -          |
 | 3. Core Pipeline             | 0/TBD          | Not started | -          |
 | 4. Enforcement Expansion     | 0/TBD          | Not started | -          |
 | 5. Health Monitoring         | 0/TBD          | Not started | -          |
@@ -283,4 +286,5 @@ with 5) -> 6 -> 7
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28 (Phase 1 complete)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28 (Phase 2 planned — 3
+plans in 2 waves)_
