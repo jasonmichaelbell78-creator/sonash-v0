@@ -1,8 +1,8 @@
 # Fix Templates for Qodo PR Review Findings
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.6
-**Last Updated:** 2026-02-26
+**Document Version:** 2.8
+**Last Updated:** 2026-02-28
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -2399,10 +2399,209 @@ it captures only the opening `"` and leaves the rest exposed.
 
 ---
 
+### Template 46: Error Sanitization Guard
+
+**When to use:** Any catch block that surfaces error info to logs, user output,
+or error responses. Raw `error.message` or `err.message` logged/returned without
+sanitization can leak system paths, credentials, or internal structure.
+
+**Source:** CODE_PATTERNS.md Critical Pattern #1, CLAUDE.md Section 4. Enforced
+by `npm run patterns:check`.
+
+#### Bad Code
+
+```javascript
+try {
+  await riskyOperation();
+} catch (err) {
+  // WRONG — raw error.message may contain system paths, credentials, stack traces
+  console.error(`Operation failed: ${err.message}`);
+  res.status(500).json({ error: err.message });
+}
+```
+
+#### Good Code
+
+```javascript
+const { sanitizeError } = require("../../scripts/lib/sanitize-error");
+
+try {
+  await riskyOperation();
+} catch (err) {
+  const safe = sanitizeError(err);
+  // safe.message has paths, credentials, and PII redacted
+  console.error(`Operation failed: ${safe.message}`);
+  res.status(500).json({ error: safe.message });
+}
+```
+
+#### Edge Cases
+
+| Case                          | Handling                                                         |
+| ----------------------------- | ---------------------------------------------------------------- |
+| Non-Error throws              | `sanitizeError` accepts any value, coerces to string             |
+| Nested error (`.cause`)       | Sanitize both: `sanitizeError(err)` + `sanitizeError(err.cause)` |
+| Error chains (AggregateError) | Iterate `.errors` array, sanitize each                           |
+| Logging for debugging         | Use `safe.message` for logs too — never bypass sanitizer         |
+
+#### Propagation Check
+
+```bash
+grep -rn 'error\.message\|err\.message\|\.message' scripts/ .claude/hooks/ --include="*.js" | grep -v 'sanitizeError\|sanitize-error\|safe\.\|\.test\.'
+```
+
+---
+
+### Template 47: Path Traversal Prevention
+
+**When to use:** Any code that constructs file paths from variables, CLI args,
+or external input. User-supplied or dynamic paths used without traversal check
+can escape the intended directory.
+
+**Source:** CODE_PATTERNS.md Critical Pattern #2, CLAUDE.md Section 4.
+`startsWith('..')` is NOT sufficient — it misses `../` on certain platforms.
+
+#### Bad Code
+
+```javascript
+// WRONG — startsWith('..') misses edge cases
+const userPath = req.query.file;
+if (userPath.startsWith("..")) throw new Error("Traversal detected");
+const filePath = path.join(BASE_DIR, userPath);
+fs.readFileSync(filePath);
+```
+
+#### Good Code
+
+```javascript
+const { validatePathInDir } = require("../../scripts/lib/security-helpers");
+
+// Option A: Use the project helper (recommended)
+const safePath = validatePathInDir(BASE_DIR, userPath);
+// validatePathInDir: normalizes, resolves, checks containment, returns validated path
+// Throws if path escapes BASE_DIR
+
+fs.readFileSync(path.join(BASE_DIR, safePath));
+```
+
+```javascript
+// Option B: Inline guard (when security-helpers not available)
+const normalized = path.normalize(userPath);
+
+// Check for traversal AFTER normalize (catches ../, ..\, encoded variants)
+if (/^\.\.(?:[\\/]|$)/.test(normalized)) {
+  throw new Error("Path traversal detected");
+}
+
+const resolved = path.resolve(BASE_DIR, normalized);
+
+// Containment check: resolved path must start with BASE_DIR + separator
+if (!resolved.startsWith(BASE_DIR + path.sep) && resolved !== BASE_DIR) {
+  throw new Error("Path escapes allowed directory");
+}
+
+fs.readFileSync(resolved);
+```
+
+#### Full Guard Chain
+
+1. **Normalize** — `path.normalize(userPath)` to collapse `./`, `../`
+2. **Regex check** — `/^\.\.(?:[\\/]|$)/.test(normalized)` (NOT
+   `startsWith('..')`)
+3. **Resolve** — `path.resolve(BASE_DIR, normalized)` to get absolute path
+4. **Containment** — verify resolved starts with `BASE_DIR + path.sep`
+5. **Symlink check** — optionally `lstatSync` to prevent symlink escapes
+
+#### Propagation Check
+
+```bash
+grep -rn 'path\.join\|path\.resolve' scripts/ .claude/hooks/ --include="*.js" | grep -v 'validatePathInDir\|containment\|traversal\|\.test\.'
+```
+
+---
+
+### Template 48: Symlink Guard for File Writes
+
+**When to use:** Any `fs.writeFileSync`, `fs.appendFileSync`, `fs.renameSync` in
+`scripts/` or `.claude/hooks/` without a preceding symlink check. Symlinks can
+redirect writes to arbitrary locations outside the repo.
+
+**Source:** CLAUDE.md Section 2, CODE_PATTERNS.md Critical Pattern #5. Enforced
+by `security-auditor` agent.
+
+#### Bad Code
+
+```javascript
+// WRONG — no symlink check before write
+fs.writeFileSync(outputPath, content, "utf8");
+fs.appendFileSync(logPath, entry + "\n", "utf8");
+fs.renameSync(tmpPath, finalPath);
+```
+
+#### Good Code
+
+```javascript
+const { isSafeToWrite } = require("../../scripts/lib/safe-fs");
+
+// Guard EVERY write operation
+if (!isSafeToWrite(outputPath)) {
+  console.warn(
+    `[script-name] Refusing write to symlinked path: ${path.basename(outputPath)}`
+  );
+  return; // or throw, depending on context
+}
+fs.writeFileSync(outputPath, content, "utf8");
+
+// Same for append
+if (!isSafeToWrite(logPath)) {
+  throw new Error(`Symlink detected at ${path.basename(logPath)}`);
+}
+fs.appendFileSync(logPath, entry + "\n", "utf8");
+
+// Same for rename (check BOTH source and destination)
+if (!isSafeToWrite(tmpPath) || !isSafeToWrite(finalPath)) {
+  throw new Error("Symlink detected in rename path");
+}
+fs.renameSync(tmpPath, finalPath);
+```
+
+#### Using safe-fs Wrappers (Preferred)
+
+```javascript
+const {
+  safeWriteFile,
+  safeAppendFile,
+  safeRenameFile,
+} = require("../../scripts/lib/safe-fs");
+
+// These wrappers include built-in symlink guards
+safeWriteFile(outputPath, content);
+safeAppendFile(logPath, entry + "\n");
+safeRenameFile(tmpPath, finalPath);
+```
+
+#### When `isSafeToWrite` Returns False
+
+| Context                | Action                                 |
+| ---------------------- | -------------------------------------- |
+| Security-critical path | `throw new Error(...)` — fail-closed   |
+| Logging/telemetry      | `console.warn(...)` + skip — fail-open |
+| Atomic write tmp file  | `throw` — never write to symlinked tmp |
+| User-facing output     | Log warning, return error to caller    |
+
+#### Propagation Check
+
+```bash
+grep -rn 'writeFileSync\|appendFileSync\|renameSync' scripts/ .claude/hooks/ --include="*.js" | grep -v 'isSafeToWrite\|safe-fs\|safeWriteFile\|safeAppendFile\|safeRenameFile\|\.test\.'
+```
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                                                                                  |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.8     | 2026-02-28 | Add Templates 46-48 (error sanitization guard, path traversal prevention, symlink guard for writes). Source: PIPE-09 security templates.                |
 | 2.7     | 2026-02-26 | Update Template 45: harden quoted regex (escaped quotes), add single-quoted pattern, delimiter-bounded unquoted. Source: PR #395 R1.                    |
 | 2.6     | 2026-02-26 | Add Templates 42-45 (CC extraction visitChild, ChainExpression unwrap, generic AST walker, quoted-value secret redaction). Source: PR #393/#394 retros. |
 | 2.5     | 2026-02-25 | Add Templates 40-41 (path normalization before string checks, error-handling direction comment). Source: PR #392 retro.                                 |
