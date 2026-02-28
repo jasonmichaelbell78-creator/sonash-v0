@@ -1,10 +1,15 @@
 # Session History Log
 
-## AI Instructions
+<!-- prettier-ignore-start -->
+**Document Version:** 1.2
+**Last Updated:** 2026-02-27
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
 
-**Purpose**: Append-only archive of session summaries from SESSION_CONTEXT.md.
-Preserves historical context while keeping SESSION_CONTEXT.md small and
-actionable.
+## Purpose
+
+Append-only archive of session summaries from SESSION_CONTEXT.md. Preserves
+historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 **Rules**:
 

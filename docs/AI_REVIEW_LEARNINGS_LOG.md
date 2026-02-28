@@ -1761,6 +1761,41 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #407: PR #398 R1 — Ecosystem Diagnosis + GitHub Automation (2026-02-27)
+
+- **Source**: Gemini Code Assist (1 critical, 6 suggestions) + Qodo PR
+  Suggestions (7) + SonarCloud S7637 (1) + CI/Prettier (1) + Doc Linter (1)
+- **PR**: #398 — Ecosystem diagnosis, Gemini config, GitHub automation
+- **Items**: 12 total → 9 fixed, 1 deferred (JSONL data truncation), 2 rejected
+- **Fixed**:
+  - CRITICAL: `.serena/project.yml` YAML indentation (duplicate `- typescript`)
+  - MAJOR: Pin GitHub Actions to SHA hashes (dependabot/fetch-metadata,
+    checkout)
+  - MAJOR: Known-duplicate ID logic now catches within-file dups (Qodo #11)
+  - MINOR: SESSION_HISTORY.md missing purpose section + doc headers
+  - MINOR: `escapeTableCell` used for link text caused `&amp;` — added
+    `escapeLinkText()` in generate-documentation-index.js
+  - MINOR: Broken DOCUMENTATION_INDEX table row (2-line split)
+  - MINOR: Prettier formatting on new GitHub workflow files
+  - TRIVIAL: Emoji in CI log → ASCII `INFO:`
+- **Rejected**: (2)
+  - Qodo #6 (filename pattern for table parsing): `!headings.found` is
+    content-aware and works for any naming convention, not just current
+  - Qodo #7 (normalize IDs to numbers): IDs already parsed as numbers via
+    `Number.parseInt()` at lines 122, 139 — type-safe comparison confirmed
+- **Deferred**: (1)
+  - Truncated JSONL title "...meetings.ts and" — pre-existing from source report
+    ingestion, title truncated in original source too. Can't recover.
+- **Patterns**:
+  - escapeTableCell-overuse: Don't use table-cell escaping for markdown link
+    text — `&` is valid in link text, only needs escaping in table cells
+  - sha-pin-actions: Always pin GitHub Actions to full commit SHA, not version
+    tags (prevents supply-chain attacks)
+- **Learnings**: New GitHub config files need Prettier formatting before commit.
+  Pre-commit hook catches this but CI also validates.
+
+---
+
 #### Review #406: Maintenance PR R7 (2026-02-27)
 
 - **Source**: SonarCloud (1) + Qodo Compliance (5) + Qodo PR Suggestions (5)

@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-27 **Active Documents:** 301 **Archived Documents:** 105
+**Generated:** 2026-02-28 **Active Documents:** 301 **Archived Documents:** 105
 
 ---
 
@@ -550,7 +550,7 @@ _Reference_
 | [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                  | This is a **one-page quick reference** for the SoNash review...   | ↓3 ↑4      | 2026-01-15    |
 | [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                  | This document provides **visual diagrams and flowcharts** fo...   | ↓2 ↑3      | 2026-01-15    |
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-01-24    |
-| [Session History Log](docs/SESSION_HISTORY.md)                                    | -                                                                 | ↓2 ↑1      | 2026-02-26    |
+| [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-02-27    |
 | [Slash Commands & Skills Reference](docs/SLASH_COMMANDS_REFERENCE.md)             | Comprehensive reference for all slash commands and skills av...   | ↓1 ↑0      | 2026-02-24    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-02-17    |
 
@@ -694,7 +694,7 @@ Documents with no inbound links (not referenced by any other document):
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [Find Skills](.agents/skills/find-skills/SKILL.md)
-- [Hook &amp; Session State Files Schema](.claude/STATE_SCHEMA.md)
+- [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)
 - [backend architect](.claude/agents/backend-architect.md)
 - [code reviewer](.claude/agents/code-reviewer.md)
 - [Example: Event-driven microservices architecture](.claude/agents/database-architect.md)
@@ -717,7 +717,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Research Summary: \[Project Name\]](.claude/agents/global/gsd-project-researcher.md)
 - [gsd research synthesizer](.claude/agents/global/gsd-research-synthesizer.md)
 - [gsd roadmapper](.claude/agents/global/gsd-roadmapper.md)
-- [Phase directory \(provided in prompt\)](.claude/agents/global/gsd-verifier.md)
+- [Phase directory (provided in prompt)](.claude/agents/global/gsd-verifier.md)
 - [markdown syntax formatter](.claude/agents/markdown-syntax-formatter.md)
 - [Create the MCP file](.claude/agents/mcp-expert.md)
 - [nextjs architecture expert](.claude/agents/nextjs-architecture-expert.md)
@@ -734,15 +734,15 @@ Documents with no inbound links (not referenced by any other document):
 - [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
 - [ESLint + Pattern Compliance Fix Plan — PR #394 Unblock](.claude/plans/ESLINT_AND_COMPLIANCE_FIX_PLAN.md)
 - [AI Optimization Audit Plan](.claude/plans/ai-optimization-audit.md)
-- [Audit Template &amp; Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)
-- [Deep Plan: Automation &amp; File Overwrite Fixes](.claude/plans/deep-plan-automation-overwrite-fixes.md)
+- [Audit Template & Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)
+- [Deep Plan: Automation & File Overwrite Fixes](.claude/plans/deep-plan-automation-overwrite-fixes.md)
 - [Implementation Plan: Ecosystem Audit Expansion](.claude/plans/ecosystem-audit-expansion.md)
 - [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md)
 - [Plan: Manifest JSON Refactors](.claude/plans/manifest-json-refactors.md)
 - [Implementation Plan: PR Ecosystem Audit Skill](.claude/plans/pr-ecosystem-audit-plan.md)
 - [Implementation Plan: AI Review Learnings System Overhaul](.claude/plans/review-learnings-overhaul.md)
 - [Comprehensive System/Repo Test Plan](.claude/plans/system-test-plan.md)
-- [Implementation Plan: Technical Debt Resolution &amp; Grand Plan V2](.claude/plans/technical-debt-resolution-plan.md)
+- [Implementation Plan: Technical Debt Resolution & Grand Plan V2](.claude/plans/technical-debt-resolution-plan.md)
 - [Skill Index](.claude/skills/SKILL_INDEX.md)
 - [Add Technical Debt](.claude/skills/add-debt/SKILL.md)
 - [Alerts -- Intelligent Health Dashboard](.claude/skills/alerts/SKILL.md)
@@ -785,10 +785,10 @@ Documents with no inbound links (not referenced by any other document):
 - [Data Analysis Patterns for Market Research](.claude/skills/market-research-reports/references/data_analysis_patterns.md)
 - [Market Research Report Structure Guide](.claude/skills/market-research-reports/references/report_structure_guide.md)
 - [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md)
-- [Market Research Reports — Section Templates &amp; Structure Guide](.claude/skills/market-research-reports/structure.md)
+- [Market Research Reports — Section Templates & Structure Guide](.claude/skills/market-research-reports/structure.md)
 - [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)
 - [Multi-AI Audit Orchestrator](.claude/skills/multi-ai-audit/SKILL.md)
-- [Multi-AI Audit — Templates, Examples &amp; Detailed Phase Instructions](.claude/skills/multi-ai-audit/templates.md)
+- [Multi-AI Audit — Templates, Examples & Detailed Phase Instructions](.claude/skills/multi-ai-audit/templates.md)
 - [PR Ecosystem Audit](.claude/skills/pr-ecosystem-audit/SKILL.md)
 - [PR Review Retrospective](.claude/skills/pr-retro/SKILL.md)
 - [PR Code Review Processor](.claude/skills/pr-review/SKILL.md)
@@ -818,14 +818,14 @@ Documents with no inbound links (not referenced by any other document):
 - [/test-suite — Unified Testing Suite](.claude/skills/test-suite/SKILL.md)
 - [UI Design System](.claude/skills/ui-design-system/SKILL.md)
 - [Using Skills](.claude/skills/using-superpowers/SKILL.md)
-- [UX Researcher &amp; Designer](.claude/skills/ux-researcher-designer/SKILL.md)
+- [UX Researcher & Designer](.claude/skills/ux-researcher-designer/SKILL.md)
 - [Validate Claude Folder](.claude/skills/validate-claude-folder/SKILL.md)
-- [Verify &amp; Triage Technical Debt](.claude/skills/verify-technical-debt/SKILL.md)
+- [Verify & Triage Technical Debt](.claude/skills/verify-technical-debt/SKILL.md)
 - [Web Application Testing](.claude/skills/webapp-testing/SKILL.md)
 - [agent research results](.claude/state/agent-research-results.md)
 - [Deep Plan — Full Findings Report](.claude/state/deep-plan-findings.md)
 - [Over-Engineering Research Findings](.claude/state/over-engineering-findings.md)
-- [Test Suite Report — 2026-02-07 \(smoke scope\)](.claude/test-results/2026-02-07-smoke-report.md)
+- [Test Suite Report — 2026-02-07 (smoke scope)](.claude/test-results/2026-02-07-smoke-report.md)
 - [SoNash Code Review Style Guide](.gemini/styleguide.md)
 - [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)
 - [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md)
@@ -839,11 +839,11 @@ Documents with no inbound links (not referenced by any other document):
 - [SoNash ROADMAP Deduplication Analysis](analysis/full_deduplication.md)
 - [Full Dependency Analysis](analysis/full_dependencies.md)
 - [SoNash ROADMAP.md Full Inventory](analysis/full_inventory.md)
-- [Pass 1: Structural Inventory &amp; Baseline](analysis/pass1_inventory.md)
+- [Pass 1: Structural Inventory & Baseline](analysis/pass1_inventory.md)
 - [ROADMAP Deep Analysis - Pass 2: Deduplication Analysis](analysis/pass2_deduplication.md)
 - [Pass 2 Deduplication - Executive Summary](analysis/pass2_summary.md)
 - [ROADMAP Deep Analysis - Pass 3: Dependency Graph Reconciliation](analysis/pass3_dependencies.md)
-- [Pass 4: Categorization &amp; Feature Group Alignment](analysis/pass4_categorization.md)
+- [Pass 4: Categorization & Feature Group Alignment](analysis/pass4_categorization.md)
 - [Pass 5: Effort Estimation Alignment](analysis/pass5_effort.md)
 - [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md)
 - [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)
@@ -854,9 +854,9 @@ Documents with no inbound links (not referenced by any other document):
 - [Master Issue List](docs/aggregation/MASTER_ISSUE_LIST.md)
 - [PR Review Ecosystem Diagnosis](docs/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md)
 - [Mining Report: Review Data Quality](docs/aggregation/mining-agent1-data-quality.md)
-- [Mining Agent 2: Pipeline Flow &amp; Promotion Analysis](docs/aggregation/mining-agent2-pipeline-flow.md)
-- [Mining Agent 3: Retro &amp; Action Item Analysis](docs/aggregation/mining-agent3-retro-actions.md)
-- [Mining Agent 4: Integration &amp; Automation](docs/aggregation/mining-agent4-integration.md)
+- [Mining Agent 2: Pipeline Flow & Promotion Analysis](docs/aggregation/mining-agent2-pipeline-flow.md)
+- [Mining Agent 3: Retro & Action Item Analysis](docs/aggregation/mining-agent3-retro-actions.md)
+- [Mining Agent 4: Integration & Automation](docs/aggregation/mining-agent4-integration.md)
 - [Audit vs MASTER_DEBT Deduplication Report](docs/audits/comprehensive/audit-2026-02-22/DEDUP_VS_MASTER_DEBT.md)
 - [MASTER_DEBT Internal Deduplication Report](docs/audits/comprehensive/audit-2026-02-22/MASTER_DEBT_DEDUP_REPORT.md)
 - [Audit Review Decisions — 2026-02-22](docs/audits/comprehensive/audit-2026-02-22/REVIEW_DECISIONS.md)
@@ -866,13 +866,13 @@ Documents with no inbound links (not referenced by any other document):
 - [Engineering Productivity Audit](docs/audits/comprehensive/audit-2026-02-22/engineering-productivity-audit.md)
 - [SoNash Enhancements Audit](docs/audits/comprehensive/audit-2026-02-22/enhancements-audit.md)
 - [Performance Audit — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/performance-audit.md)
-- [Process &amp; Automation Audit — sonash-v0](docs/audits/comprehensive/audit-2026-02-22/process-audit.md)
+- [Process & Automation Audit — sonash-v0](docs/audits/comprehensive/audit-2026-02-22/process-audit.md)
 - [Refactoring Audit — sonash-v0](docs/audits/comprehensive/audit-2026-02-22/refactoring-audit.md)
 - [Security Audit Report — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/security-audit.md)
 - [Multi-AI Audit Summary](docs/audits/multi-ai/maa-2026-02-17-182d43/final/SUMMARY.md)
 - [AI Optimization Audit — Summary Report](docs/audits/single-session/ai-optimization/audit-2026-02-12-legacy/SUMMARY.md)
 - [AI Optimization Audit — Summary Report](docs/audits/single-session/ai-optimization/audit-2026-02-13/SUMMARY.md)
-- [AI Optimization Audit Report \(2026-02-14\)](docs/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md)
+- [AI Optimization Audit Report (2026-02-14)](docs/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md)
 - [AI Optimization Audit — Review Decisions](docs/audits/single-session/ai-optimization/audit-2026-02-14/REVIEW_DECISIONS.md)
 - [System Test Plan Index — audit-2026-02-19](docs/audits/system-test/audit-2026-02-19/PLAN_INDEX.md)
 - [Review Decisions — System Test 2026-02-19](docs/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md)
@@ -1167,7 +1167,7 @@ Documents with no inbound links (not referenced by any other document):
 | 267 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md)                                                                                                                       | Sentry Integration Guide for SoNash Admin Panel                        | 2    | Active **Last Updated:**                                                |
 | 268 | [docs/SERVER_SIDE_SECURITY.md](docs/SERVER_SIDE_SECURITY.md)                                                                                                                               | Server-Side Security Implementation Guide                              | 2    | 🟡 RECOMMENDED BEFORE PUBLIC                                            |
 | 269 | [docs/SESSION_DECISIONS.md](docs/SESSION_DECISIONS.md)                                                                                                                                     | Session Decision Log                                                   | 4    | -                                                                       |
-| 270 | [docs/SESSION_HISTORY.md](docs/SESSION_HISTORY.md)                                                                                                                                         | Session History Log                                                    | 4    | -                                                                       |
+| 270 | [docs/SESSION_HISTORY.md](docs/SESSION_HISTORY.md)                                                                                                                                         | Session History Log                                                    | 4    | ACTIVE                                                                  |
 | 271 | [docs/SLASH_COMMANDS_REFERENCE.md](docs/SLASH_COMMANDS_REFERENCE.md)                                                                                                                       | Slash Commands &amp; Skills Reference                                  | 4    | ACTIVE                                                                  |
 | 272 | [docs/SONARCLOUD_CLEANUP_RUNBOOK.md](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                                                                                                                   | SonarCloud Cleanup Sprint Runbook                                      | 2    | -                                                                       |
 | 273 | [docs/technical-debt/FINAL_SYSTEM_AUDIT.md](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                                                                                                     | TDMS Final System Audit                                                | 3    | ACTIVE                                                                  |
@@ -1328,7 +1328,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-27 | Auto-generated from codebase scan |
+| Auto    | 2026-02-28 | Auto-generated from codebase scan |
 
 ---
 

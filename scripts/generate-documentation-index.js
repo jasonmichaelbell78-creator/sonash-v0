@@ -125,6 +125,14 @@ function canonicalizePath(inputPath) {
  * Prevents markdown injection via untrusted content (e.g., doc titles)
  * Escapes: ampersands, pipes, brackets, parentheses, backticks, angle brackets, backslashes
  */
+function escapeLinkText(text) {
+  if (!text) return "";
+  return String(text)
+    .replace(/\[/g, "\\[") // Escape brackets (prevents nested links)
+    .replace(/\]/g, "\\]")
+    .replace(/</g, "&lt;"); // Escape angle brackets (prevents HTML)
+}
+
 function escapeTableCell(text) {
   if (!text) return "";
   return String(text)
@@ -884,7 +892,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
       const doc = docsByPath.get(path);
       const title = doc ? doc.title : basename(path, ".md");
       const linkPath = encodeMarkdownPath(path);
-      lines.push(`- [${escapeTableCell(title)}](${linkPath})`);
+      lines.push(`- [${escapeLinkText(title)}](${linkPath})`);
     }
   }
   lines.push("", "---", "");

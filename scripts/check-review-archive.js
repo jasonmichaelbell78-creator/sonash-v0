@@ -330,12 +330,20 @@ function main() {
   let knownDupCount = 0;
   for (const [id, sources] of allIds) {
     if (sources.length > 1) {
-      // Skip known-duplicate IDs (historical ID reuse across PR cycles)
       const uniqueSources = [...new Set(sources)];
-      if (KNOWN_DUPLICATE_IDS.has(id) && uniqueSources.length > 1) {
-        knownDupCount++;
+
+      if (KNOWN_DUPLICATE_IDS.has(id)) {
+        // Known-duplicate IDs may legitimately appear across multiple files,
+        // but within-file duplicates are still bugs.
+        if (uniqueSources.length === 1 && sources.length > 1) {
+          warn(`Review #${id} appears ${sources.length} times in ${uniqueSources[0]}`);
+          dupCount++;
+        } else {
+          knownDupCount++;
+        }
         continue;
       }
+
       // Check if duplicates are within the same file
       if (uniqueSources.length === 1 && sources.length > 1) {
         warn(`Review #${id} appears ${sources.length} times in ${uniqueSources[0]}`);
@@ -346,7 +354,7 @@ function main() {
     }
   }
   if (knownDupCount > 0) {
-    console.log(`  ℹ️  ${knownDupCount} known-duplicate IDs skipped (historical ID reuse)`);
+    console.log(`  INFO: ${knownDupCount} known-duplicate IDs skipped (historical ID reuse)`);
   }
   if (dupCount === 0) ok("No duplicate reviews found");
   console.log();
