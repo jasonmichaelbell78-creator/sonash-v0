@@ -1,53 +1,55 @@
+<!-- prettier-ignore-start -->
+**Document Version:** 1.0
+**Last Updated:** 2026-02-28
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
+
 ---
-phase: 02-backfill-data-migration
-plan: 03
-subsystem: database
-tags: [dedup, jsonl, content-hash, data-quality, idempotent]
+
+phase: 02-backfill-data-migration plan: 03 subsystem: database tags: [dedup,
+jsonl, content-hash, data-quality, idempotent]
 
 # Dependency graph
+
 requires:
-  - phase: 01-storage-foundation
-    provides: "TypeScript compilation setup, tsconfig.json, test infrastructure"
-provides:
-  - "dedup-debt.ts script for content_hash-based deduplication of review-sourced
-    MASTER_DEBT.jsonl entries"
-  - "dedupReviewSourced() pure function for testable dedup logic"
-  - "Clean MASTER_DEBT.jsonl with 16 duplicate entries removed (4 hash groups)"
-  - "raw/deduped.jsonl synced per MEMORY.md critical rule"
-affects: [03-pipeline, 05-enforcement, generate-views]
+
+- phase: 01-storage-foundation provides: "TypeScript compilation setup,
+  tsconfig.json, test infrastructure" provides:
+- "dedup-debt.ts script for content_hash-based deduplication of review-sourced
+  MASTER_DEBT.jsonl entries"
+- "dedupReviewSourced() pure function for testable dedup logic"
+- "Clean MASTER_DEBT.jsonl with 16 duplicate entries removed (4 hash groups)"
+- "raw/deduped.jsonl synced per MEMORY.md critical rule" affects: [03-pipeline,
+  05-enforcement, generate-views]
 
 # Tech tracking
-tech-stack:
-  added: []
-  patterns:
-    - "content_hash dedup with lowest DEBT-NNNN ID retention"
-    - "title+source near-duplicate flagging (report-only, no auto-removal)"
-    - "atomic file write via temp + rename for JSONL files"
-    - "MASTER_DEBT.jsonl + raw/deduped.jsonl sync pattern"
 
-key-files:
-  created:
-    - scripts/reviews/dedup-debt.ts
-    - scripts/reviews/__tests__/dedup-debt.test.ts
-  modified:
-    - docs/technical-debt/MASTER_DEBT.jsonl
-    - docs/technical-debt/raw/deduped.jsonl
-    - scripts/reviews/tsconfig.json
-    - tsconfig.test.json
+tech-stack: added: [] patterns: - "content_hash dedup with lowest DEBT-NNNN ID
+retention" - "title+source near-duplicate flagging (report-only, no
+auto-removal)" - "atomic file write via temp + rename for JSONL files" -
+"MASTER_DEBT.jsonl + raw/deduped.jsonl sync pattern"
+
+key-files: created: - scripts/reviews/dedup-debt.ts -
+scripts/reviews/**tests**/dedup-debt.test.ts modified: -
+docs/technical-debt/MASTER_DEBT.jsonl - docs/technical-debt/raw/deduped.jsonl -
+scripts/reviews/tsconfig.json - tsconfig.test.json
 
 key-decisions:
-  - "Review sources include: review, pr-review, pr-review-366-r2, pr-deferred"
-  - "Title+source near-duplicates flagged but never auto-removed (too risky)"
-  - "Output sorted by DEBT-NNNN numeric ID for consistent ordering"
+
+- "Review sources include: review, pr-review, pr-review-366-r2, pr-deferred"
+- "Title+source near-duplicates flagged but never auto-removed (too risky)"
+- "Output sorted by DEBT-NNNN numeric ID for consistent ordering"
 
 patterns-established:
-  - "dedupReviewSourced(items): pure dedup function returning {kept, removed,
-    flagged}"
-  - "findProjectRoot(__dirname): walk-up resolution reused from Phase 1 pattern"
+
+- "dedupReviewSourced(items): pure dedup function returning {kept, removed,
+  flagged}"
+- "findProjectRoot(\_\_dirname): walk-up resolution reused from Phase 1 pattern"
 
 # Metrics
-duration: 4min
-completed: 2026-02-28
+
+duration: 4min completed: 2026-02-28
+
 ---
 
 # Phase 2 Plan 3: Deduplicate MASTER_DEBT.jsonl Summary
