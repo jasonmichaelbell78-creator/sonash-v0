@@ -1339,7 +1339,6 @@
 {"pass":1,"type":"exact_match","kept":"audit:hash-QWRkIGNvbXBv","removed":"audit:hash-QWRkIGNvbXBv","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-U2VjdXJpdHkg","removed":"audit:hash-U2VjdXJpdHkg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Q3Jvc3MtcmVm","removed":"audit:hash-Q3Jvc3MtcmVm","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:hash-UHJlLWNvbW1p","removed":"audit:hash-UHJlLWNvbW1p","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Q0kgbm9uLWJs","removed":"audit:hash-Q0kgbm9uLWJs","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-U2NyaXB0IGNv","removed":"audit:hash-U2NyaXB0IGNv","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-R2VuZXJpYyBi","removed":"audit:hash-R2VuZXJpYyBi","reason":"identical content hash"}
@@ -1549,6 +1548,7 @@
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/hooks/multiple-duplicated-gitexec-helper","removed":"audit:CANON-0023","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-heavy-context","removed":"audit:hash-Q29udGV4dCBP","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/audit-code/SKILL.md-heavy-context","removed":"audit:CANON-0043","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/pre-commit-fixer/SKILL.md-task-prompt-missing-structured-contract","removed":"audit:hash-UHJlLWNvbW1p","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/pre-commit-fixer/SKILL.md-task-prompt-missing-structured-contract","removed":"audit:CANON-0018","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills-duplicated-persistence-rules-boilerplate","removed":"audit:hash-Q1JJVElDQUwg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills-duplicated-persistence-rules-boilerplate","removed":"audit:CANON-0012","reason":"identical content hash"}

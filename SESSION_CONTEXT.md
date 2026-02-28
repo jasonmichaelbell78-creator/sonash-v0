@@ -100,7 +100,8 @@ FUNCTIONAL TESTING):
 - 123 files changed, +11,349/-7,363 lines
 - TDMS: 8,354 items (477 resolved)
 
-> For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
+> For older session summaries (incl. #193 and earlier), see
+> [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
