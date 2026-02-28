@@ -17,19 +17,19 @@ Core Pipeline
 
 ## Current Position
 
-Phase: 3 of 7 (Core Pipeline) Plan: 3 of 4 in current phase Status: In progress
-Last activity: 2026-02-28 — Completed 03-03-PLAN.md (promotion pipeline:
-promote-patterns, CLAUDE.md anti-patterns, FIX_TEMPLATES stubs)
+Phase: 3 of 7 (Core Pipeline) Plan: 4 of 4 in current phase Status: Phase
+complete Last activity: 2026-02-28 — Completed 03-04-PLAN.md (skill wiring &
+security templates)
 
-Progress: [####......] ~43%
+Progress: [#####.....] ~48%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 9
-- Average duration: 7.4 min
-- Total execution time: 67 min
+- Total plans completed: 10
+- Average duration: 7.1 min
+- Total execution time: 71 min
 
 **By Phase:**
 
@@ -37,13 +37,13 @@ Progress: [####......] ~43%
 | -------------------------- | ----- | ------ | -------- |
 | 01-storage-foundation      | 3     | 17 min | 5.7 min  |
 | 02-backfill-data-migration | 3     | 26 min | 8.7 min  |
-| 03-core-pipeline           | 3     | 24 min | 8.0 min  |
+| 03-core-pipeline           | 4     | 28 min | 7.0 min  |
 
 **Recent Trend:**
 
-- Last 5 plans: 02-03 (4 min), 02-02 (16 min), 03-01 (16 min), 03-02 (9 min),
-  03-03 (15 min)
-- Trend: 03-03 larger scope (3 scripts + 27 tests), velocity normalizing
+- Last 5 plans: 02-02 (16 min), 03-01 (16 min), 03-02 (9 min), 03-03 (15 min),
+  03-04 (4 min)
+- Trend: 03-04 fast (doc-only changes, no code/tests), Phase 3 complete
 
 _Updated after each plan completion_
 
@@ -112,6 +112,10 @@ affecting current work:
 - 03-03: FIX_TEMPLATES stubs use fuzzy matching to skip existing patterns
 - 03-03: run-consolidation.js untouched -- both pipelines coexist during
   transition
+- 03-04: Step 7.5 inserted between Steps 7 and 8 in pr-review to avoid
+  renumbering
+- 03-04: pr-retro dual-write uses sub-steps 4.1-4.4 within existing Step 4
+- 03-04: Security templates #46-#48 authored as full code examples, not stubs
 
 ### Pending Todos
 
@@ -124,8 +128,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-28T23:22:00Z Stopped at: Completed 03-03-PLAN.md
-(promotion pipeline) Resume file: None
+Last session: 2026-02-28T23:31:00Z Stopped at: Completed 03-04-PLAN.md (skill
+wiring & security templates) -- Phase 3 complete Resume file: None
 
 ### GSD Process Position
 
