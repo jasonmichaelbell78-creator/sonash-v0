@@ -17,6 +17,8 @@
     "components/providers/auth-provider.tsx",
     "lib/**/*.ts",
     "tests/**/*.ts",
-    "scripts/reviews/lib/**/*.ts"
-  ]
+    "scripts/reviews/lib/**/*.ts",
+    "scripts/reviews/__tests__/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist", "dist-tests"]
 }

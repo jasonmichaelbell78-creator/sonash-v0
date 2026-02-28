@@ -10,6 +10,6 @@
     "strict": true,
     "noEmit": false
   },
-  "include": ["lib/**/*.ts"],
+  "include": ["lib/**/*.ts", "dedup-debt.ts"],
   "exclude": ["node_modules", "dist"]
 }
