@@ -1,0 +1,8 @@
+{
+  "project": "PR Review Ecosystem v2",
+  "mode": "yolo",
+  "depth": "comprehensive",
+  "parallelization": "safe",
+  "created": "2026-02-28",
+  "notes": "Safe parallelization = independent plans run simultaneously, sequential when dependencies exist"
+}
