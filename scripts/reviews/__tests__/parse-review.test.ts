@@ -24,7 +24,9 @@ function findProjectRoot(startDir: string): string {
 const PROJECT_ROOT = findProjectRoot(__dirname);
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-const parseReview = require(path.resolve(PROJECT_ROOT, "scripts/reviews/dist/parse-review.js")) as {
+const parseReview = require(
+  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/parse-review.js")
+) as {
   parseArchiveFile: (
     filePath: string,
     content: string
@@ -79,7 +81,9 @@ const {
 } = parseReview;
 
 // Also load ReviewRecord schema for validation tests
-const schemas = require(path.resolve(PROJECT_ROOT, "scripts/reviews/dist/schemas/index.js")) as {
+const schemas = require(
+  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/schemas/index.js")
+) as {
   ReviewRecord: { parse: (v: unknown) => unknown };
 };
 const { ReviewRecord } = schemas;

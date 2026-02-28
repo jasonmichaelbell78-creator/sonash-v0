@@ -1,12 +1,27 @@
 import { z } from "zod";
 import * as path from "path";
+import * as fs from "fs";
+
+// Walk up from __dirname until we find package.json (works from both source and dist)
+function findProjectRoot(startDir: string): string {
+  let dir = startDir;
+  for (;;) {
+    try {
+      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+    } catch {
+      // existsSync race condition -- continue walking
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) throw new Error("Could not find project root");
+    dir = parent;
+  }
+}
 
 // read-jsonl.js exports the function directly (module.exports = readJsonl)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const readJsonl = require(path.resolve(__dirname, "../../lib/read-jsonl.js")) as (
-  filePath: string,
-  options?: { safe?: boolean; quiet?: boolean }
-) => Record<string, unknown>[];
+const readJsonl = require(
+  path.resolve(findProjectRoot(__dirname), "scripts/lib/read-jsonl.js")
+) as (filePath: string, options?: { safe?: boolean; quiet?: boolean }) => Record<string, unknown>[];
 
 /**
  * Result of reading and validating a JSONL file.

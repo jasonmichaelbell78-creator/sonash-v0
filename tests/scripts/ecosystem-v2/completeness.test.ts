@@ -24,7 +24,7 @@ const PROJECT_ROOT = findProjectRoot(__dirname);
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { hasField, validateCompleteness } = require(
-  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/completeness.js")
+  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/completeness.js")
 ) as {
   hasField: (record: { completeness_missing?: string[] }, field: string) => boolean;
   validateCompleteness: (

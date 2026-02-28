@@ -77,7 +77,8 @@ export function parseArchiveFile(filePath: string, content: string): ParsedEntry
 
     // Match review headers: #{2,4} Review #N[:] Title [(YYYY-MM-DD)]
     // Also handles em-dash variant: #### Review #N -- Title
-    const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+)(?::|\s+--)\s*(.*)/);
+    // Also handles Unicode em-dash: #### Review #N \u2014 Title
+    const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+)(?::|\s+--|\s+\u2014)\s*(.*)/);
     if (headerMatch) {
       if (current) entries.push(current);
 

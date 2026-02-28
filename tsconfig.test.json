@@ -18,7 +18,8 @@
     "lib/**/*.ts",
     "tests/**/*.ts",
     "scripts/reviews/lib/**/*.ts",
-    "scripts/reviews/__tests__/**/*.ts"
+    "scripts/reviews/__tests__/**/*.ts",
+    "scripts/reviews/backfill-reviews.ts"
   ],
   "exclude": ["node_modules", "dist", "dist-tests"]
 }

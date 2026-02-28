@@ -26,7 +26,7 @@ const PROJECT_ROOT = findProjectRoot(__dirname);
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { appendRecord } = require(
-  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/write-jsonl.js")
+  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/write-jsonl.js")
 ) as {
   appendRecord: (
     filePath: string,
@@ -37,7 +37,7 @@ const { appendRecord } = require(
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { ReviewRecord } = require(
-  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/schemas/index.js")
+  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/schemas/index.js")
 ) as {
   ReviewRecord: { parse: (v: unknown) => unknown };
 };

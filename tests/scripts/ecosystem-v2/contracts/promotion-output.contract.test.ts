@@ -24,7 +24,9 @@ function findProjectRoot(startDir: string): string {
 const PROJECT_ROOT = findProjectRoot(__dirname);
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const schemas = require(path.resolve(PROJECT_ROOT, "scripts/reviews/dist/schemas/index.js")) as {
+const schemas = require(
+  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/schemas/index.js")
+) as {
   ReviewRecord: { parse: (v: unknown) => Record<string, unknown> };
 };
 

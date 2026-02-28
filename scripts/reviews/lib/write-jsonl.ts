@@ -2,8 +2,25 @@ import { z } from "zod";
 import * as path from "path";
 import * as fs from "fs";
 
+// Walk up from __dirname until we find package.json (works from both source and dist)
+function findProjectRoot(startDir: string): string {
+  let dir = startDir;
+  for (;;) {
+    try {
+      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+    } catch {
+      // existsSync race condition -- continue walking
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) throw new Error("Could not find project root");
+    dir = parent;
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { withLock, isSafeToWrite } = require(path.resolve(__dirname, "../../lib/safe-fs.js")) as {
+const { withLock, isSafeToWrite } = require(
+  path.resolve(findProjectRoot(__dirname), "scripts/lib/safe-fs.js")
+) as {
   withLock: (filePath: string, fn: () => void, timeoutMs?: number) => void;
   isSafeToWrite: (filePath: string) => boolean;
 };

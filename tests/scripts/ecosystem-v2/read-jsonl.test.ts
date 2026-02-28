@@ -25,7 +25,7 @@ const PROJECT_ROOT = findProjectRoot(__dirname);
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { readValidatedJsonl } = require(
-  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/read-jsonl.js")
+  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/read-jsonl.js")
 ) as {
   readValidatedJsonl: (
     filePath: string,
@@ -38,7 +38,7 @@ const { readValidatedJsonl } = require(
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { ReviewRecord } = require(
-  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/schemas/index.js")
+  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/schemas/index.js")
 ) as {
   ReviewRecord: {
     safeParse: (v: unknown) => { success: boolean; data?: unknown; error?: { message: string } };
