@@ -1,0 +1,31 @@
+{
+  "id": "rev-2025-0312-pr389",
+  "date": "2025-03-12",
+  "schema_version": 1,
+  "completeness": "full",
+  "completeness_missing": [],
+  "origin": {
+    "type": "pr-review",
+    "pr": 389,
+    "round": 1,
+    "session": "session-142"
+  },
+  "title": "Firebase Auth Migration Review",
+  "pr": 389,
+  "source": "archive-12.md",
+  "total": 8,
+  "fixed": 5,
+  "deferred": 2,
+  "rejected": 1,
+  "patterns": ["error-sanitization", "missing-try-catch"],
+  "learnings": [
+    "Always wrap auth calls in try-catch",
+    "Use sanitize-error helper for all error logging"
+  ],
+  "severity_breakdown": { "critical": 1, "major": 3, "minor": 3, "trivial": 1 },
+  "per_round_detail": [{ "round": 1, "findings": 8, "fixed": 5 }],
+  "rejection_analysis": [
+    { "finding": "Add retry logic", "reason": "Over-engineering for current scale" }
+  ],
+  "ping_pong_chains": []
+}

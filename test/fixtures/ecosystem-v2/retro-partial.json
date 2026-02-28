@@ -1,0 +1,19 @@
+{
+  "id": "retro-2025-0415-pr412",
+  "date": "2025-04-15",
+  "schema_version": 1,
+  "completeness": "partial",
+  "completeness_missing": ["score", "metrics"],
+  "origin": {
+    "type": "pr-retro",
+    "pr": 412,
+    "session": "session-158"
+  },
+  "pr": 412,
+  "session": "session-158",
+  "top_wins": ["Clean CSS migration"],
+  "top_misses": ["Forgot to update docs"],
+  "process_changes": ["Update docs as part of PR checklist"],
+  "score": null,
+  "metrics": null
+}

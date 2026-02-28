@@ -1,0 +1,31 @@
+{
+  "id": "rev-2025-0415-pr412",
+  "date": "2025-04-15",
+  "schema_version": 1,
+  "completeness": "partial",
+  "completeness_missing": [
+    "severity_breakdown",
+    "per_round_detail",
+    "rejection_analysis",
+    "ping_pong_chains"
+  ],
+  "origin": {
+    "type": "pr-review",
+    "pr": 412,
+    "round": 1,
+    "session": "session-158"
+  },
+  "title": "Tailwind Config Cleanup",
+  "pr": 412,
+  "source": "archive-14.md",
+  "total": 5,
+  "fixed": 4,
+  "deferred": 1,
+  "rejected": 0,
+  "patterns": ["unused-imports"],
+  "learnings": ["Run lint before committing CSS changes"],
+  "severity_breakdown": null,
+  "per_round_detail": null,
+  "rejection_analysis": null,
+  "ping_pong_chains": null
+}

@@ -1,0 +1,21 @@
+{
+  "id": "defer-2025-0312-pr389-001",
+  "date": "2025-03-12",
+  "schema_version": 1,
+  "completeness": "full",
+  "completeness_missing": [],
+  "origin": {
+    "type": "pr-review",
+    "pr": 389,
+    "round": 1,
+    "session": "session-142"
+  },
+  "review_id": "rev-2025-0312-pr389",
+  "finding": "Add rate limiting to auth endpoints",
+  "reason": "Low traffic currently, will address before public launch",
+  "severity": "S2",
+  "status": "open",
+  "resolved_date": null,
+  "defer_count": 1,
+  "promoted_to_debt": false
+}

@@ -1,0 +1,21 @@
+{
+  "id": "defer-2025-0415-pr412-001",
+  "date": "2025-04-15",
+  "schema_version": 1,
+  "completeness": "partial",
+  "completeness_missing": ["reason", "severity", "resolved_date"],
+  "origin": {
+    "type": "pr-review",
+    "pr": 412,
+    "round": 1,
+    "session": "session-158"
+  },
+  "review_id": "rev-2025-0415-pr412",
+  "finding": "Consolidate duplicate Tailwind utility classes",
+  "reason": null,
+  "severity": null,
+  "status": "open",
+  "resolved_date": null,
+  "defer_count": 1,
+  "promoted_to_debt": false
+}
