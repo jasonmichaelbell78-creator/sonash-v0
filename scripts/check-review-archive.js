@@ -185,7 +185,7 @@ function extractReviewIds(filePath, opts = {}) {
     const useTable = includeTableIndex && !headings.found;
     const table = useTable ? parseTableIds(content) : { ids: [], found: false };
 
-    const ids = [...new Set([...headings.ids, ...table.ids])];
+    const ids = [...headings.ids, ...table.ids];
 
     // Store format metadata for reporting
     if (headings.found && table.found) {
@@ -334,11 +334,20 @@ function main() {
 
       if (KNOWN_DUPLICATE_IDS.has(id)) {
         // Known-duplicate IDs may legitimately appear across multiple files,
-        // but within-file duplicates are still bugs.
-        if (uniqueSources.length === 1 && sources.length > 1) {
-          warn(`Review #${id} appears ${sources.length} times in ${uniqueSources[0]}`);
-          dupCount++;
-        } else {
+        // but within-file duplicates are still bugs (even if the ID also appears in other files).
+        const countsBySource = sources.reduce((acc, src) => {
+          acc[src] = (acc[src] ?? 0) + 1;
+          return acc;
+        }, {});
+
+        for (const [src, count] of Object.entries(countsBySource)) {
+          if (count > 1) {
+            warn(`Review #${id} appears ${count} times in ${src}`);
+            dupCount++;
+          }
+        }
+
+        if (Object.keys(countsBySource).length > 1) {
           knownDupCount++;
         }
         continue;

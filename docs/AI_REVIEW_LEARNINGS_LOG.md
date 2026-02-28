@@ -2051,6 +2051,42 @@ All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl.
 
 ---
 
+#### Review #397: PR #398 R2 (2026-02-27)
+
+- **Source**: Qodo Compliance (2), SonarCloud (5), Qodo PR Suggestions (10)
+- **PR**: PR #398 — maintenance session: TDMS intake, doc index, review archive,
+  branch cleanup
+- **Items**: 17 total → 14 fixed, 0 deferred, 3 rejected
+- **Fixed**: (1) check-review-archive.js: remove premature `new Set()` dedup in
+  `extractReviewIds` that prevented within-file duplicate detection; (2)
+  check-review-archive.js: fix known-ID duplicate detection to use per-source
+  counting instead of single-source check, catching within-file dupes even when
+  ID appears across files; (3) cleanup-branches.yml: replace
+  `for branch in $MERGED` with `while IFS= read -r` to handle unusual branch
+  names safely; (4) cleanup-branches.yml: track failed deletions separately
+  instead of counting them as successful; (5) generate-documentation-index.js:
+  enhance `escapeLinkText` with newline, backslash, and backtick escaping;
+  (6-10) generate-documentation-index.js: convert all `replace(/x/g, ...)` to
+  `replaceAll()` with `String.raw` where applicable (SonarCloud x5); (11)
+  generate-documentation-index.js: propagate `replaceAll` to `escapeTableCell`
+  and 4 other call sites; (12) generate-documentation-index.js: fix
+  `extractTitle` to check YAML frontmatter `name:` field first and strip code
+  blocks before H1 search — fixes mismatched agent link labels; (13) regenerate
+  DOCUMENTATION_INDEX.md — fixes broken table row and mismatched labels
+- **Rejected**: (A) normalized-all.jsonl provenance standardization — generated
+  TDMS pipeline file, direct edits overwritten; (B) normalized-all.jsonl remove
+  ambiguous merged_from — same reason; (C) normalized-all.jsonl truncated title
+  — same reason
+- **Patterns**: Premature dedup (`new Set`) before duplicate detection defeats
+  the detection; YAML frontmatter files need title extraction to check `name:`
+  field before H1 regex; code comments (`# comment`) in fenced blocks
+  false-positive as H1 headings
+- **Process**: Standard sequential fixes — 3 script files + 1 workflow + 1
+  generated index. Propagation check caught `escapeTableCell` and 4 other
+  `.replace(/x/g)` call sites in same file.
+
+---
+
 #### Review #396: PR #395 R1 (2026-02-26)
 
 - **Source**: Qodo PR Suggestions (9), Gemini Code Assist (1), Qodo Compliance

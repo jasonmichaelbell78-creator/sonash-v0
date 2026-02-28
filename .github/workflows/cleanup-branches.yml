@@ -36,8 +36,14 @@ jobs:
 
           DELETED=0
           SKIPPED=0
+          FAILED=0
 
-          for branch in $MERGED; do
+          echo "$MERGED" | while IFS= read -r branch; do
+            # Skip empty lines
+            [ -z "$branch" ] && continue
+            # Trim whitespace
+            branch=$(echo "$branch" | xargs)
+
             # Skip protected patterns
             if echo "$branch" | grep -qE '^(main|develop|release/)'; then
               echo "  SKIP (protected): $branch"
@@ -61,9 +67,13 @@ jobs:
             fi
 
             echo "  DELETE (${DAYS_AGO}d old): $branch"
-            git push origin --delete "$branch" 2>/dev/null || echo "    Failed to delete $branch"
-            DELETED=$((DELETED + 1))
+            if git push origin --delete "$branch" 2>/dev/null; then
+              DELETED=$((DELETED + 1))
+            else
+              echo "    Failed to delete $branch"
+              FAILED=$((FAILED + 1))
+            fi
           done
 
           echo ""
-          echo "Summary: $DELETED deleted, $SKIPPED skipped"
+          echo "Summary: $DELETED deleted, $SKIPPED skipped, $FAILED failed"
