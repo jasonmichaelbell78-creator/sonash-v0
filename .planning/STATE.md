@@ -17,19 +17,19 @@ Core Pipeline
 
 ## Current Position
 
-Phase: 3 of 7 (Core Pipeline) Plan: 0 of TBD in current phase Status: Ready to
-plan Last activity: 2026-02-28 — Phase 2 verified and complete (3/3 plans, 360
-reviews backfilled, 16 debt duplicates removed, 7 requirements satisfied)
+Phase: 3 of 7 (Core Pipeline) Plan: 2 of TBD in current phase Status: In
+progress Last activity: 2026-02-28 — Completed 03-02-PLAN.md (writer CLIs:
+retro, deferred items, invocation)
 
-Progress: [###.......] ~29%
+Progress: [####......] ~38%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 6
-- Average duration: 7.2 min
-- Total execution time: 43 min
+- Total plans completed: 8
+- Average duration: 7.5 min
+- Total execution time: 52 min
 
 **By Phase:**
 
@@ -37,11 +37,13 @@ Progress: [###.......] ~29%
 | -------------------------- | ----- | ------ | -------- |
 | 01-storage-foundation      | 3     | 17 min | 5.7 min  |
 | 02-backfill-data-migration | 3     | 26 min | 8.7 min  |
+| 03-core-pipeline           | 2     | 9 min  | 4.5 min  |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-03 (4 min), 02-01 (6 min), 02-03 (4 min), 02-02 (16 min)
-- Trend: 02-02 was larger (3 tasks + 4 deviations fixed), avg normalizing
+- Last 5 plans: 02-01 (6 min), 02-03 (4 min), 02-02 (16 min), 03-01 (est), 03-02
+  (9 min)
+- Trend: 03-02 efficient (2 tasks, 1 deviation), velocity improving
 
 _Updated after each plan completion_
 
@@ -91,6 +93,13 @@ affecting current work:
   662 entries flagged)
 - 02-03: tsconfig.test.json needs explicit exclude override to prevent inherited
   scripts/ exclusion
+- 03-02: Deferred item IDs use {reviewId}-deferred-{N} pattern for parent
+  traceability
+- 03-02: Invocation auto-ID uses inv-{Date.now()} for uniqueness without
+  external deps
+- 03-02: All writers use appendRecord() for consistent locking/validation
+- 03-02: Writer pattern: exported library function + CLI entry with require.main
+  guard
 
 ### Pending Todos
 
@@ -103,8 +112,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-28T22:26:00Z Stopped at: Completed 02-02-PLAN.md (backfill
-orchestrator) Resume file: None
+Last session: 2026-02-28T23:15:29Z Stopped at: Completed 03-02-PLAN.md (writer
+CLIs) Resume file: None
 
 ### GSD Process Position
 
