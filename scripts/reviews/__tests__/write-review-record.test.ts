@@ -8,6 +8,7 @@
 import assert from "node:assert/strict";
 import { test, describe, beforeEach, afterEach } from "node:test";
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 import { execSync } from "node:child_process";
 
@@ -66,7 +67,7 @@ let tmpDir: string;
 // =========================================================
 
 beforeEach(() => {
-  tmpDir = fs.mkdtempSync(path.join(require("os").tmpdir(), "write-review-test-"));
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "write-review-test-"));
   // Create the data directory structure
   fs.mkdirSync(path.join(tmpDir, "data", "ecosystem-v2"), { recursive: true });
   // Create a package.json so findProjectRoot works
@@ -172,11 +173,10 @@ describe("getNextReviewId", () => {
 
 describe("CLI entry point", () => {
   test("exits 0 on success", () => {
-    const scriptPath = path.resolve(PROJECT_ROOT, "scripts/reviews/dist/write-review-record.js");
     const data = JSON.stringify(makeFullRecord());
 
     // Create a temp project root with proper structure for CLI test
-    const cliTmpDir = fs.mkdtempSync(path.join(require("os").tmpdir(), "write-review-cli-"));
+    const cliTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "write-review-cli-"));
     fs.mkdirSync(path.join(cliTmpDir, "data", "ecosystem-v2"), { recursive: true });
     fs.writeFileSync(path.join(cliTmpDir, "package.json"), "{}");
 
