@@ -13,5 +13,10 @@
     "esModuleInterop": true,
     "allowJs": false
   },
-  "include": ["components/providers/auth-provider.tsx", "lib/**/*.ts", "tests/**/*.ts"]
+  "include": [
+    "components/providers/auth-provider.tsx",
+    "lib/**/*.ts",
+    "tests/**/*.ts",
+    "scripts/reviews/lib/**/*.ts"
+  ]
 }
