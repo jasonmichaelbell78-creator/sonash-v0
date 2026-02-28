@@ -24,7 +24,7 @@ that unblocks the next.
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Storage Foundation** - Zod schemas, write utilities,
+- [x] **Phase 1: Storage Foundation** - Zod schemas, write utilities,
       completeness model, and contract tests for the JSONL layer everything else
       depends on
 - [ ] **Phase 2: Backfill & Data Migration** - Parse all 13 archives into v2
@@ -90,10 +90,10 @@ TEST-01, TEST-06 **Success Criteria** (what must be TRUE):
 
 Plans:
 
-- [ ] 01-01-PLAN.md — Zod schemas for all 5 JSONL types + shared base record +
+- [x] 01-01-PLAN.md — Zod schemas for all 5 JSONL types + shared base record +
       tsconfig setup
-- [ ] 01-02-PLAN.md — Write/read utilities, completeness helper, and unit tests
-- [ ] 01-03-PLAN.md — Test fixtures for all 3 completeness tiers + 7 contract
+- [x] 01-02-PLAN.md — Write/read utilities, completeness helper, and unit tests
+- [x] 01-03-PLAN.md — Test fixtures for all 3 completeness tiers + 7 contract
       tests
 
 ### Phase 2: Backfill & Data Migration
@@ -271,16 +271,16 @@ constraints.
 **Execution Order:** Phases execute in numeric order: 1 -> 2 -> 3 -> 4 (parallel
 with 5) -> 6 -> 7
 
-| Phase                        | Plans Complete | Status      | Completed |
-| ---------------------------- | -------------- | ----------- | --------- |
-| 1. Storage Foundation        | 0/3            | Planned     | -         |
-| 2. Backfill & Data Migration | 0/TBD          | Not started | -         |
-| 3. Core Pipeline             | 0/TBD          | Not started | -         |
-| 4. Enforcement Expansion     | 0/TBD          | Not started | -         |
-| 5. Health Monitoring         | 0/TBD          | Not started | -         |
-| 6. Gate Recalibration        | 0/TBD          | Not started | -         |
-| 7. Integration & Cutover     | 0/TBD          | Not started | -         |
+| Phase                        | Plans Complete | Status      | Completed  |
+| ---------------------------- | -------------- | ----------- | ---------- |
+| 1. Storage Foundation        | 3/3            | Complete    | 2026-02-28 |
+| 2. Backfill & Data Migration | 0/TBD          | Not started | -          |
+| 3. Core Pipeline             | 0/TBD          | Not started | -          |
+| 4. Enforcement Expansion     | 0/TBD          | Not started | -          |
+| 5. Health Monitoring         | 0/TBD          | Not started | -          |
+| 6. Gate Recalibration        | 0/TBD          | Not started | -          |
+| 7. Integration & Cutover     | 0/TBD          | Not started | -          |
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28 (Phase 1 complete)_
