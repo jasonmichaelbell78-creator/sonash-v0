@@ -17,30 +17,31 @@ Backfill & Data Migration
 
 ## Current Position
 
-Phase: 2 of 7 (Backfill & Data Migration) Plan: 0 of TBD in current phase
-Status: Ready to plan Last activity: 2026-02-28 — Phase 1 verified and complete
-(3/3 plans, 84 tests, 11 requirements satisfied)
+Phase: 2 of 7 (Backfill & Data Migration) Plan: 3 of 3 in current phase Status:
+In progress (02-02 pending) Last activity: 2026-02-28 — Completed 02-03-PLAN.md
+(MASTER_DEBT.jsonl dedup, 16 duplicates removed, 8 tests)
 
-Progress: [##........] ~14%
+Progress: [##........] ~24%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3
-- Average duration: 5.7 min
-- Total execution time: 17 min
+- Total plans completed: 5
+- Average duration: 5.4 min
+- Total execution time: 27 min
 
 **By Phase:**
 
-| Phase                 | Plans | Total  | Avg/Plan |
-| --------------------- | ----- | ------ | -------- |
-| 01-storage-foundation | 3     | 17 min | 5.7 min  |
+| Phase                      | Plans | Total  | Avg/Plan |
+| -------------------------- | ----- | ------ | -------- |
+| 01-storage-foundation      | 3     | 17 min | 5.7 min  |
+| 02-backfill-data-migration | 2     | 10 min | 5.0 min  |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (3 min), 01-02 (10 min), 01-03 (4 min)
-- Trend: Stabilizing
+- Last 5 plans: 01-02 (10 min), 01-03 (4 min), 02-01 (6 min), 02-03 (4 min)
+- Trend: Stable (~5 min avg)
 
 _Updated after each plan completion_
 
@@ -69,11 +70,23 @@ affecting current work:
 - 01-03: Contract tests simulate consumer logic to prove data shape
   compatibility beyond schema validation
 - 01-03: Phase 1 complete with 84 total tests across 11 test files
+- 02-01: Em-dash variant handled by single regex alternation (?:|\s+--)
+- 02-01: Completeness tiers: full (title+pr+total+resolution), partial
+  (title+total or pr), stub (id/date only)
+- 02-01: Field extractors exported individually for reuse by downstream scripts
+- 02-01: String-based severity parsing adapted from sync-reviews-to-jsonl.js
+- 02-03: Review sources for dedup: review, pr-review, pr-review-366-r2,
+  pr-deferred
+- 02-03: Title+source near-duplicates flagged but never auto-removed (too risky,
+  662 entries flagged)
+- 02-03: tsconfig.test.json needs explicit exclude override to prevent inherited
+  scripts/ exclusion
 
 ### Pending Todos
 
 - Audit requested: run a final audit at the END of actual execution (not just
   initialization) to verify all goals were met
+- 02-02: backfill-reviews.ts execution plan still pending
 
 ### Blockers/Concerns
 
@@ -81,8 +94,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-28 Stopped at: Phase 1 complete, verified, ready for Phase
-2 planning Resume file: None
+Last session: 2026-02-28T22:03:00Z Stopped at: Completed 02-03-PLAN.md
+(MASTER_DEBT.jsonl dedup) Resume file: None
 
 ### GSD Process Position
 
