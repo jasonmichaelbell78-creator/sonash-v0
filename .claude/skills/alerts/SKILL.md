@@ -4,8 +4,8 @@ description: |
   Intelligent health dashboard with scoring, benchmarks, trends, and interactive
   alert-by-alert workflow. Triggers: "alerts", "check alerts", "what needs
   attention", "system health", "show warnings", "pending issues". Default mode
-  (--limited) checks 13 categories. Use --full for comprehensive reporting with
-  all 33 categories.
+  (--limited) checks 16 categories. Use --full for comprehensive reporting with
+  all 36 categories.
 ---
 
 # Alerts -- Intelligent Health Dashboard
@@ -30,8 +30,8 @@ benchmarks, trends, and session plans.
 ## Usage
 
 ```
-/alerts           # Limited mode (default) - 13 categories
-/alerts --full    # Full mode - 33 categories
+/alerts           # Limited mode (default) - 16 categories
+/alerts --full    # Full mode - 36 categories
 ```
 
 ## Workflow
@@ -98,9 +98,10 @@ computation.
 
 ## Modes
 
-**Limited (13 categories):** Code Health, Security, Session Context, Debt,
+**Limited (16 categories):** Code Health, Security, Session Context, Debt,
 Learning, Agent Compliance, Hook Warnings, Skip Abuse, Test Results, Hook
-Health, Session State, Pattern Hotspots, Context Usage.
+Health, Session State, Pattern Hotspots, Context Usage, Reviews Sync, Review
+Archive Health, Cross-Document Dependencies.
 
 **Full (+20 categories):** Debt Intake/Resolution, Doc Health, Roadmap, Review
 Quality, Consolidation, Velocity, Session/Commit Activity, Roadmap

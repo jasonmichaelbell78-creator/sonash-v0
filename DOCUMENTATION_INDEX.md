@@ -595,7 +595,7 @@ _Uncategorized_
 
 | Document                                                           | Description | References | Last Modified |
 | ------------------------------------------------------------------ | ----------- | ---------- | ------------- |
-| [Generated TypeScript README](src/dataconnect-generated/README.md) | -           | ↓1 ↑1      | 2026-02-27    |
+| [Generated TypeScript README](src/dataconnect-generated/README.md) | -           | ↓1 ↑1      | 2026-02-28    |
 
 ### src > dataconnect-generated > .guides (Tier 4)
 
@@ -603,8 +603,8 @@ _Uncategorized_
 
 | Document                                                  | Description                                                     | References | Last Modified |
 | --------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Basic Usage](src/dataconnect-generated/.guides/usage.md) | Always prioritize using a supported framework over using the... | ↓0 ↑0      | 2026-02-27    |
-| [Setup](src/dataconnect-generated/.guides/setup.md)       | If the user hasn't already installed the SDK, always run the... | ↓0 ↑0      | 2026-02-27    |
+| [Basic Usage](src/dataconnect-generated/.guides/usage.md) | Always prioritize using a supported framework over using the... | ↓0 ↑0      | 2026-02-28    |
+| [Setup](src/dataconnect-generated/.guides/setup.md)       | If the user hasn't already installed the SDK, always run the... | ↓0 ↑0      | 2026-02-28    |
 
 ### src > dataconnect-generated > react (Tier 4)
 
@@ -612,7 +612,7 @@ _Uncategorized_
 
 | Document                                                            | Description | References | Last Modified |
 | ------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Generated React README](src/dataconnect-generated/react/README.md) | -           | ↓1 ↑1      | 2026-02-27    |
+| [Generated React README](src/dataconnect-generated/react/README.md) | -           | ↓1 ↑1      | 2026-02-28    |
 
 ### Technical Debt Views (Tier 4)
 

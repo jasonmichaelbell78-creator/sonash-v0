@@ -49,6 +49,18 @@
         ]
       }
     ],
+    "PreToolUse": [
+      {
+        "matcher": "^(?i)bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/block-push-to-main.js",
+            "statusMessage": "Checking push target..."
+          }
+        ]
+      }
+    ],
     "PreCompact": [
       {
         "hooks": [
