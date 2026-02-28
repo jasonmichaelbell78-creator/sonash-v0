@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-02-28
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -254,9 +254,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INTG-08     | Phase 7 | Pending |
 | TEST-01     | Phase 1 | Pending |
 | TEST-02     | Phase 7 | Pending |
-| TEST-03     | All     | Pending |
+| TEST-03     | Phase 7 | Pending |
 | TEST-04     | Phase 7 | Pending |
-| TEST-05     | All     | Pending |
+| TEST-05     | Phase 7 | Pending |
 | TEST-06     | Phase 1 | Pending |
 
 **Coverage:**
@@ -265,7 +265,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 - Mapped to phases: 59
 - Unmapped: 0
 
+**Notes:**
+
+- TEST-03 (39 test files) and TEST-05 (test-alongside mandate) are cross-cutting
+  constraints enforced from Phase 1 onward per PROJECT.md. Assigned to Phase 7
+  for formal verification but the constraint applies throughout.
+
 ---
 
-_Requirements defined: 2026-02-28_ _Last updated: 2026-02-28 after initial
-definition_
+_Requirements defined: 2026-02-28_ _Last updated: 2026-02-28 after roadmap
+creation (v1.1 — traceability updated, TEST-03/TEST-05 assigned to Phase 7)_
