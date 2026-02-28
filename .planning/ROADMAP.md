@@ -27,7 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Storage Foundation** - Zod schemas, write utilities,
       completeness model, and contract tests for the JSONL layer everything else
       depends on
-- [ ] **Phase 2: Backfill & Data Migration** - Parse all 13 archives into v2
+- [x] **Phase 2: Backfill & Data Migration** - Parse all 13 archives into v2
       JSONL, fix data errors, establish clean baseline dataset
 - [ ] **Phase 3: Core Pipeline** - Skills write JSONL-first, auto-deferred
       tracking, promotion automation, template generation
@@ -115,11 +115,11 @@ must be TRUE):
 
 Plans:
 
-- [ ] 02-01-PLAN.md — Markdown review parser with heading + table format support
+- [x] 02-01-PLAN.md — Markdown review parser with heading + table format support
       and field extractors
-- [ ] 02-02-PLAN.md — Backfill orchestrator: read all archives, resolve
+- [x] 02-02-PLAN.md — Backfill orchestrator: read all archives, resolve
       overlaps, write validated JSONL
-- [ ] 02-03-PLAN.md — MASTER_DEBT.jsonl deduplication of review-sourced entries
+- [x] 02-03-PLAN.md — MASTER_DEBT.jsonl deduplication of review-sourced entries
 
 ### Phase 3: Core Pipeline
 
@@ -277,7 +277,7 @@ with 5) -> 6 -> 7
 | Phase                        | Plans Complete | Status      | Completed  |
 | ---------------------------- | -------------- | ----------- | ---------- |
 | 1. Storage Foundation        | 3/3            | Complete    | 2026-02-28 |
-| 2. Backfill & Data Migration | 0/3            | Not started | -          |
+| 2. Backfill & Data Migration | 3/3            | Complete    | 2026-02-28 |
 | 3. Core Pipeline             | 0/TBD          | Not started | -          |
 | 4. Enforcement Expansion     | 0/TBD          | Not started | -          |
 | 5. Health Monitoring         | 0/TBD          | Not started | -          |

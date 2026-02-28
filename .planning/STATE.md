@@ -12,16 +12,16 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Reliably capture every review finding, track it through
 resolution, and prevent recurrence through automated enforcement — no data loss,
-no dead ends, no manual steps that get skipped. **Current focus:** Phase 2
-complete -- Phase 3 next (Pipeline: New Reviews)
+no dead ends, no manual steps that get skipped. **Current focus:** Phase 3 —
+Core Pipeline
 
 ## Current Position
 
-Phase: 2 of 7 (Backfill & Data Migration) Plan: 3 of 3 in current phase Status:
-Phase complete Last activity: 2026-02-28 — Completed 02-02-PLAN.md (backfill
-orchestrator, 360 reviews + 19 retros, BKFL-04/05/06)
+Phase: 3 of 7 (Core Pipeline) Plan: 0 of TBD in current phase Status: Ready to
+plan Last activity: 2026-02-28 — Phase 2 verified and complete (3/3 plans, 360
+reviews backfilled, 16 debt duplicates removed, 7 requirements satisfied)
 
-Progress: [###.......] ~33%
+Progress: [###.......] ~29%
 
 ## Performance Metrics
 
