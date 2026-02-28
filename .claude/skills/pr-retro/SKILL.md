@@ -5,8 +5,8 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.1
-**Last Updated:** 2026-02-27
+**Document Version:** 3.3
+**Last Updated:** 2026-02-28
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -168,9 +168,29 @@ Every section is MANDATORY. Scale depth to match review cycle complexity.
 
 ## STEP 4: SAVE TO LOG
 
+> Step 4.1 is the source of truth. Step 4.2 is the legacy view maintained during
+> transition. Both must be written.
+
+### 4.1 Write JSONL Record (source of truth)
+
+```bash
+cd scripts/reviews && npx tsc && node dist/write-retro-record.js --data '{"pr":PR_NUM,"date":"YYYY-MM-DD","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-retro","pr":PR_NUM,"tool":"write-retro-record.ts"},"session":null,"top_wins":["win1"],"top_misses":["miss1"],"process_changes":["change1"],"score":8.0,"metrics":{"total_findings":N,"fix_rate":0.8,"pattern_recurrence":N}}'
+```
+
+### 4.2 Append to Legacy Log (dual-write during transition)
+
 Append the **complete retrospective** to `docs/AI_REVIEW_LEARNINGS_LOG.md`. Then
-display the full retro to the user. Run `npm run reviews:sync -- --apply` to
-sync to JSONL.
+display the full retro to the user.
+
+### 4.3 Sync
+
+Run `npm run reviews:sync -- --apply` to sync to JSONL.
+
+### 4.4 Track Invocation
+
+```bash
+node dist/write-invocation.js --data '{"skill":"pr-retro","type":"skill","duration_ms":null,"success":true,"error":null,"context":{"pr":PR_NUM,"trigger":"user-invoked"}}'
+```
 
 ---
 
@@ -334,6 +354,7 @@ Before saving, verify ALL mandatory sections present:
 
 | Version | Date       | Description                                                                                                                      |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                              |
 | 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items. Update cross-skill integration table. Renumber Steps 5→6.               |
 | 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter. All earlier PRs retroed or excluded.                                      |
 | 3.0     | 2026-02-26 | Upgrade Pattern 8 to BLOCKING. Add Patterns 12-13 (ChainExpression propagation, fix-one-audit-all). Source: PR #393/#394 retros. |
