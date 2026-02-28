@@ -66,6 +66,13 @@ const KNOWN_SKIPPED_IDS = new Set([
   323, 335, 349,
 ]);
 
+// Known-duplicate review IDs: IDs that legitimately exist in multiple archive files
+// due to historical ID reuse across different PR cycles. Both copies contain unique
+// learnings and should be preserved.
+// - #366-#369: PR #383 R5-R8 in REVIEWS_347-369.md, reassigned to PRs #384/#389/#394
+//   in REVIEWS_358-388.md. Verified Session #195 (2026-02-27).
+const KNOWN_DUPLICATE_IDS = new Set([366, 367, 368, 369]);
+
 let issues = 0;
 
 function warn(msg) {
@@ -172,9 +179,13 @@ function extractReviewIds(filePath, opts = {}) {
     const content = readFileSync(filePath, "utf8");
 
     const headings = parseHeadingIds(content);
-    const table = includeTableIndex ? parseTableIds(content) : { ids: [], found: false };
+    // Only use table parsing for summary-only archives (no heading-based reviews).
+    // Files with #### Review #N headings contain retro tables whose PR numbers
+    // would false-positive as review IDs (e.g., | #386 | in a PR #386 retro table).
+    const useTable = includeTableIndex && !headings.found;
+    const table = useTable ? parseTableIds(content) : { ids: [], found: false };
 
-    const ids = [...new Set([...headings.ids, ...table.ids])];
+    const ids = [...headings.ids, ...table.ids];
 
     // Store format metadata for reporting
     if (headings.found && table.found) {
@@ -316,10 +327,33 @@ function main() {
   // 3. Duplicates check
   console.log("3. Duplicate Check:");
   let dupCount = 0;
+  let knownDupCount = 0;
   for (const [id, sources] of allIds) {
     if (sources.length > 1) {
-      // Check if duplicates are within the same file
       const uniqueSources = [...new Set(sources)];
+
+      if (KNOWN_DUPLICATE_IDS.has(id)) {
+        // Known-duplicate IDs may legitimately appear across multiple files,
+        // but within-file duplicates are still bugs (even if the ID also appears in other files).
+        const countsBySource = sources.reduce((acc, src) => {
+          acc[src] = (acc[src] ?? 0) + 1;
+          return acc;
+        }, {});
+
+        for (const [src, count] of Object.entries(countsBySource)) {
+          if (count > 1) {
+            warn(`Review #${id} appears ${count} times in ${src}`);
+            dupCount++;
+          }
+        }
+
+        if (Object.keys(countsBySource).length > 1) {
+          knownDupCount++;
+        }
+        continue;
+      }
+
+      // Check if duplicates are within the same file
       if (uniqueSources.length === 1 && sources.length > 1) {
         warn(`Review #${id} appears ${sources.length} times in ${uniqueSources[0]}`);
       } else if (uniqueSources.length > 1) {
@@ -327,6 +361,9 @@ function main() {
       }
       dupCount++;
     }
+  }
+  if (knownDupCount > 0) {
+    console.log(`  INFO: ${knownDupCount} known-duplicate IDs skipped (historical ID reuse)`);
   }
   if (dupCount === 0) ok("No duplicate reviews found");
   console.log();

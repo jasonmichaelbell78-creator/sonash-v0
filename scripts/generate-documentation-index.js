@@ -65,7 +65,7 @@ function isImageLink(href) {
  * Review #215: encodeURI doesn't encode () which breaks markdown link parsing
  */
 function encodeMarkdownPath(path) {
-  return encodeURI(path).replace(/\(/g, "%28").replace(/\)/g, "%29");
+  return encodeURI(path).replaceAll("(", "%28").replaceAll(")", "%29");
 }
 
 // Category definitions — from doc-generator-config.json
@@ -74,7 +74,7 @@ const FILE_OVERRIDES_RAW = genConfig.fileOverrides || {};
 const FILE_OVERRIDES = Object.create(null);
 for (const [k, v] of Object.entries(FILE_OVERRIDES_RAW)) {
   if (k === "_comment") continue;
-  const key = String(k).replaceAll("\\", "/").replace(/^\.\//, "");
+  const key = String(k).replaceAll("\\", "/").replace(/^\.\//, ""); // regex needed: anchored pattern
   if (key === "__proto__" || key === "constructor" || key === "prototype") continue;
   FILE_OVERRIDES[key] = v;
 }
@@ -121,25 +121,36 @@ function canonicalizePath(inputPath) {
 }
 
 /**
- * Escape special characters for markdown table cells
+ * Escape special characters for markdown link text [text](url)
  * Prevents markdown injection via untrusted content (e.g., doc titles)
- * Escapes: ampersands, pipes, brackets, parentheses, backticks, angle brackets, backslashes
+ * Escapes: newlines, backslashes, backticks, brackets, angle brackets
  */
+function escapeLinkText(text) {
+  if (!text) return "";
+  return String(text)
+    .replaceAll(/[\r\n]+/g, " ")
+    .replaceAll("\\", "\\\\")
+    .replaceAll("`", String.raw`\``)
+    .replaceAll("[", String.raw`\[`)
+    .replaceAll("]", String.raw`\]`)
+    .replaceAll("<", "&lt;");
+}
+
 function escapeTableCell(text) {
   if (!text) return "";
   return String(text)
-    .replace(/&/g, "&amp;") // Escape ampersand FIRST (before other HTML entities)
-    .replace(/\\/g, "\\\\") // Escape backslash second
-    .replace(/\|/g, "\\|") // Escape pipe (table delimiter)
-    .replace(/\[/g, "\\[") // Escape opening bracket
-    .replace(/\]/g, "\\]") // Escape closing bracket
-    .replace(/\(/g, "\\(") // Escape opening paren (prevents link injection)
-    .replace(/\)/g, "\\)") // Escape closing paren
-    .replace(/`/g, "\\`") // Escape backticks (prevents code injection)
-    .replace(/</g, "&lt;") // Escape angle brackets (prevents HTML)
-    .replace(/>/g, "&gt;")
-    .replace(/\n/g, " ") // Replace newlines with spaces
-    .replace(/\r/g, ""); // Remove carriage returns
+    .replaceAll("&", "&amp;") // Escape ampersand FIRST (before other HTML entities)
+    .replaceAll("\\", "\\\\") // Escape backslash second
+    .replaceAll("|", String.raw`\|`) // Escape pipe (table delimiter)
+    .replaceAll("[", String.raw`\[`) // Escape opening bracket
+    .replaceAll("]", String.raw`\]`) // Escape closing bracket
+    .replaceAll("(", String.raw`\(`) // Escape opening paren (prevents link injection)
+    .replaceAll(")", String.raw`\)`) // Escape closing paren
+    .replaceAll("`", String.raw`\``) // Escape backticks (prevents code injection)
+    .replaceAll("<", "&lt;") // Escape angle brackets (prevents HTML)
+    .replaceAll(">", "&gt;")
+    .replaceAll("\n", " ") // Replace newlines with spaces
+    .replaceAll("\r", ""); // Remove carriage returns
 }
 
 /**
@@ -277,14 +288,24 @@ function extractFrontmatter(content) {
  * Extract title from markdown content
  */
 function extractTitle(content, filename) {
-  // Look for first H1 heading (bounded to prevent ReDoS)
-  const h1Match = content.match(/^#\s+(.{1,500})$/m);
+  // Try YAML frontmatter name field first (agent/skill files)
+  const fmMatch = content.match(/^---\r?\n[\s\S]{0,2000}?\r?\n---/);
+  if (fmMatch) {
+    const nameMatch = fmMatch[0].match(/^name:\s*(.{1,200})$/m);
+    if (nameMatch) {
+      return nameMatch[1].trim();
+    }
+  }
+
+  // Strip fenced code blocks before searching for H1 (prevents matching comments)
+  const stripped = content.replaceAll(/```[\s\S]*?```/g, "");
+  const h1Match = stripped.match(/^#\s+(.{1,500})$/m);
   if (h1Match) {
     return h1Match[1].trim();
   }
 
   // Fall back to filename
-  return basename(filename, ".md").replace(/[-_]/g, " ");
+  return basename(filename, ".md").replaceAll(/[-_]/g, " ");
 }
 
 /**
@@ -485,7 +506,7 @@ function getCategory(filePath) {
   if (!category) {
     category = {
       path: dir,
-      name: dir.replace(/\//g, " > "),
+      name: dir.replaceAll("/", " > "),
       tier: 4,
       description: "Uncategorized",
     };
@@ -692,9 +713,9 @@ function formatDocumentRow(doc, referenceGraph) {
   } else {
     desc = "-";
   }
-  desc = desc.replace(/\|/g, "\\|");
+  desc = desc.replaceAll("|", String.raw`\|`);
   const linkPath = encodeMarkdownPath(doc.path);
-  const safeTitle = doc.title.replace(/\|/g, "\\|");
+  const safeTitle = doc.title.replaceAll("|", String.raw`\|`);
   return `| [${safeTitle}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`;
 }
 
@@ -884,7 +905,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
       const doc = docsByPath.get(path);
       const title = doc ? doc.title : basename(path, ".md");
       const linkPath = encodeMarkdownPath(path);
-      lines.push(`- [${escapeTableCell(title)}](${linkPath})`);
+      lines.push(`- [${escapeLinkText(title)}](${linkPath})`);
     }
   }
   lines.push("", "---", "");

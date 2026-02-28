@@ -174,21 +174,42 @@ sync to JSONL.
 
 ---
 
-## STEP 5: ENFORCE ACTION ITEM TRACKING (MANDATORY)
+## STEP 5: SYNC REVIEWER SUPPRESSIONS (MANDATORY)
 
-### 5.1 Create TDMS Entries
+After producing the retro, sync any rejected items to reviewer configs:
+
+### 5.0 Gemini Styleguide Sync
+
+If any review items were **rejected 2+ times with the same rationale** (in this
+PR or across PRs):
+
+1. Check if the pattern is already in `.gemini/styleguide.md` under "Do NOT
+   Flag"
+2. If not, append it with:
+   - The suppressed pattern description
+   - Which PRs it was rejected in
+   - Why it's a false positive
+3. Mirror the same suppression to `.qodo/pr-agent.toml` if not already there
+
+This prevents both Gemini and Qodo from re-raising the same rejected finding.
+
+---
+
+## STEP 6: ENFORCE ACTION ITEM TRACKING (MANDATORY)
+
+### 6.1 Create TDMS Entries
 
 Every action item not immediately implemented MUST get a DEBT entry via
 `/add-debt` with severity S2 (or S1 if cross-PR systemic), category
 `engineering-productivity`, source `review:pr-retro-<PR#>`.
 
-### 5.2 Flag Repeat Offenders
+### 6.2 Flag Repeat Offenders
 
 Same action item in 2+ retros without implementation: escalate to S1, bold
 warning **"BLOCKING -- recommended N times, never implemented"**, present as
 blocking issue.
 
-### 5.3 Verify Previous Tracking
+### 6.3 Verify Previous Tracking
 
 ```bash
 grep "pr-retro" docs/technical-debt/MASTER_DEBT.jsonl
@@ -286,18 +307,20 @@ Before saving, verify ALL mandatory sections present:
 - [ ] Skills/Templates to Update + Process Improvements
 - [ ] Verdict with 4 required points
 - [ ] TDMS entries for action items >5 min
+- [ ] Gemini/Qodo suppressions synced for rejected items (Step 5.0)
 - [ ] Full retro displayed to user
 - [ ] `npm run reviews:sync -- --apply`
 
 ### Cross-Skill Integration
 
-| Finding Type             | Action           | Target                        |
-| ------------------------ | ---------------- | ----------------------------- |
-| New automation candidate | Add pattern rule | `check-pattern-compliance.js` |
-| New fix template needed  | Add template     | `FIX_TEMPLATES.md`            |
-| Pre-push check missing   | Add to Step 0.5  | `pr-review SKILL.md`          |
-| Recurring noise          | Add suppression  | `.qodo/suppression.yaml`      |
-| Systemic issue           | Create DEBT      | TDMS via `/add-debt`          |
+| Finding Type             | Action             | Target                        |
+| ------------------------ | ------------------ | ----------------------------- |
+| New automation candidate | Add pattern rule   | `check-pattern-compliance.js` |
+| New fix template needed  | Add template       | `FIX_TEMPLATES.md`            |
+| Pre-push check missing   | Add to Step 0.5    | `pr-review SKILL.md`          |
+| Recurring noise (Qodo)   | Add suppression    | `.qodo/pr-agent.toml`         |
+| Recurring noise (Gemini) | Add to Do NOT Flag | `.gemini/styleguide.md`       |
+| Systemic issue           | Create DEBT        | TDMS via `/add-debt`          |
 
 ### Session Integration Points
 
@@ -311,6 +334,7 @@ Before saving, verify ALL mandatory sections present:
 
 | Version | Date       | Description                                                                                                                      |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items. Update cross-skill integration table. Renumber Steps 5→6.               |
 | 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter. All earlier PRs retroed or excluded.                                      |
 | 3.0     | 2026-02-26 | Upgrade Pattern 8 to BLOCKING. Add Patterns 12-13 (ChainExpression propagation, fix-one-audit-all). Source: PR #393/#394 retros. |
 | 2.9     | 2026-02-26 | Add dashboard mode: `/pr-retro` (no args) shows missing retros.                                                                  |
