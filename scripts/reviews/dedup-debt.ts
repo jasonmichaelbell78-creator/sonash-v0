@@ -191,12 +191,8 @@ function findProjectRoot(startDir: string): string {
   }
 }
 
-function main(): void {
-  const projectRoot = findProjectRoot(__dirname);
-  const masterPath = path.join(projectRoot, "docs", "technical-debt", "MASTER_DEBT.jsonl");
-  const dedupedPath = path.join(projectRoot, "docs", "technical-debt", "raw", "deduped.jsonl");
-
-  // Read MASTER_DEBT.jsonl
+/** Read and parse MASTER_DEBT.jsonl into DebtItem array. */
+function readDebtItems(masterPath: string): DebtItem[] {
   let rawContent: string;
   try {
     rawContent = fs.readFileSync(masterPath, "utf8");
@@ -210,7 +206,6 @@ function main(): void {
 
   const lines = rawContent.trim().split("\n");
   const items: DebtItem[] = [];
-
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
@@ -220,24 +215,22 @@ function main(): void {
       console.warn(`Warning: malformed JSON at line ${i + 1}, skipping`);
     }
   }
+  return items;
+}
 
-  const totalBefore = items.length;
-  const result = dedupReviewSourced(items);
-  const totalAfter = result.kept.length;
-
-  // Write MASTER_DEBT.jsonl atomically (write to temp then rename)
+/** Write dedup result to MASTER_DEBT.jsonl atomically and sync to raw/deduped.jsonl. */
+function writeDebtOutput(masterPath: string, dedupedPath: string, result: DedupResult): void {
   const tmpPath = masterPath + ".tmp";
   try {
     const output = result.kept.map((item) => JSON.stringify(item)).join("\n") + "\n";
     fs.writeFileSync(tmpPath, output, "utf8");
-    if (fs.existsSync(masterPath)) fs.unlinkSync(masterPath);
+    if (fs.existsSync(masterPath)) fs.rmSync(masterPath, { force: true });
     fs.renameSync(tmpPath, masterPath);
   } catch (err) {
     console.error(
       "Failed to write MASTER_DEBT.jsonl:",
       err instanceof Error ? err.message : String(err)
     );
-    // Clean up temp file
     try {
       fs.unlinkSync(tmpPath);
     } catch {
@@ -257,12 +250,23 @@ function main(): void {
     );
     process.exit(1);
   }
+}
 
-  // Summary
+function main(): void {
+  const projectRoot = findProjectRoot(__dirname);
+  const masterPath = path.join(projectRoot, "docs", "technical-debt", "MASTER_DEBT.jsonl");
+  const dedupedPath = path.join(projectRoot, "docs", "technical-debt", "raw", "deduped.jsonl");
+
+  const items = readDebtItems(masterPath);
+  const totalBefore = items.length;
+  const result = dedupReviewSourced(items);
+
+  writeDebtOutput(masterPath, dedupedPath, result);
+
   console.log("\n=== Dedup Summary ===");
   console.log(`Total entries before: ${totalBefore}`);
   console.log(`Duplicates removed:   ${result.removed.length}`);
-  console.log(`Total entries after:  ${totalAfter}`);
+  console.log(`Total entries after:  ${result.kept.length}`);
   console.log(`Title-based flags:    ${result.flagged.length}`);
 
   if (result.removed.length === 0) {

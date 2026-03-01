@@ -199,7 +199,11 @@
     "generate-results-index.js",
     "track-resolutions.js",
     "run-consolidation.js",
-    "safe-fs.js"
+    "safe-fs.js",
+    "dedup-debt.ts",
+    "generate-fix-template-stubs.ts",
+    "promote-patterns.ts",
+    "backfill-reviews.ts"
   ],
   "atomic-write-missing-tmp-guard": [
     "state-utils.js",

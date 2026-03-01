@@ -50,13 +50,13 @@ const HEADER_RE = /^#{2,4}\s+Review\s+#(\d+)(?::|\s+--|\s+\u2014)\s*(.*)/;
 const DATE_RE = /\((\d{4}-\d{2}-\d{2})\)\s*$/;
 const TABLE_ID_RE = /\|\s*#?(\d+)\s*\|/;
 const DATE_CELL_RE = /(\d{4}-\d{2}-\d{2})/;
-const BOLD_PR_RE = RegExp(String.raw`\*\*PR:?\*\*:?\s*#(\d+)`);
+const BOLD_PR_RE = /\*\*PR:?\*\*:?\s*#(\d+)/;
 const INLINE_PR_RE = /PR\s*#(\d+)/;
 const SLASH_PR_RE = /pr\/(\d+)/i;
-const BOLD_TOTAL_RE = RegExp(String.raw`\*\*(?:Total|Items):?\*\*:?\s*~?(\d+)`, "i");
+const BOLD_TOTAL_RE = /\*\*(?:Total|Items):?\*\*:?\s*~?(\d+)/i;
 const N_TOTAL_RE = /(\d+)\s+total\b/i;
 const N_ITEMS_RE = /(\d+)\s+items\b/i;
-const INLINE_PATTERN_RE = RegExp(String.raw`\*\*(?:Key\s+)?Patterns?:?\*\*:?\s+(.+)`, "i");
+const INLINE_PATTERN_RE = /\*\*(?:Key\s+)?Patterns?:?\*\*:?\s+(.+)/i;
 const SECTION_HEADING_RE = /^#{2,4}\s/;
 
 // ─── Heading-based parser ──────────────────────────────────────────────────────
@@ -73,13 +73,44 @@ function parseHeaderLine(
   const dateMatch = DATE_RE.exec(titleAndDate);
   const date = dateMatch ? dateMatch[1] : null;
   const title =
-    dateMatch && dateMatch.index !== undefined
-      ? titleAndDate.slice(0, dateMatch.index).trim()
-      : titleAndDate;
+    dateMatch?.index !== undefined ? titleAndDate.slice(0, dateMatch.index).trim() : titleAndDate;
 
   const cleanTitle = title.replace(/\s*--\s*$/, "").replace(/:\s*$/, "");
 
   return { reviewNumber, date, title: cleanTitle };
+}
+
+interface ArchiveParseState {
+  current: ParsedEntry | null;
+  inFence: boolean;
+  entries: ParsedEntry[];
+}
+
+function processArchiveLine(line: string, state: ArchiveParseState, filePath: string): void {
+  if (line.trim().startsWith("```")) {
+    state.inFence = !state.inFence;
+    if (state.current) state.current.rawLines.push(line);
+    return;
+  }
+  if (state.inFence) {
+    if (state.current) state.current.rawLines.push(line);
+    return;
+  }
+
+  const header = parseHeaderLine(line);
+  if (header) {
+    if (state.current) state.entries.push(state.current);
+    state.current = {
+      reviewNumber: header.reviewNumber,
+      date: header.date,
+      title: header.title,
+      rawLines: [],
+      sourceFile: filePath,
+    };
+    return;
+  }
+
+  if (state.current) state.current.rawLines.push(line);
 }
 
 /**
@@ -94,40 +125,12 @@ function parseHeaderLine(
  * Deduplicates within-file by reviewNumber, keeping the entry with the most rawLines.
  */
 export function parseArchiveFile(filePath: string, content: string): ParsedEntry[] {
-  const entries: ParsedEntry[] = [];
-  const lines = content.split("\n");
-  let current: ParsedEntry | null = null;
-  let inFence = false;
-
-  for (const line of lines) {
-    if (line.trim().startsWith("```")) {
-      inFence = !inFence;
-      if (current) current.rawLines.push(line);
-      continue;
-    }
-    if (inFence) {
-      if (current) current.rawLines.push(line);
-      continue;
-    }
-
-    const header = parseHeaderLine(line);
-    if (header) {
-      if (current) entries.push(current);
-      current = {
-        reviewNumber: header.reviewNumber,
-        date: header.date,
-        title: header.title,
-        rawLines: [],
-        sourceFile: filePath,
-      };
-      continue;
-    }
-
-    if (current) current.rawLines.push(line);
+  const state: ArchiveParseState = { current: null, inFence: false, entries: [] };
+  for (const line of content.split("\n")) {
+    processArchiveLine(line, state, filePath);
   }
-  if (current) entries.push(current);
-
-  return deduplicateEntries(entries);
+  if (state.current) state.entries.push(state.current);
+  return deduplicateEntries(state.entries);
 }
 
 /**
@@ -165,7 +168,7 @@ function parseTableCells(trimmed: string): string[] {
   const cells = trimmed.split("|").map((c) => c.trim());
   // Remove leading/trailing empty cells from pipe-delimited format
   if (cells.length >= 2 && cells[0] === "") cells.shift();
-  if (cells.length >= 2 && cells[cells.length - 1] === "") cells.pop();
+  if (cells.length >= 2 && cells.at(-1) === "") cells.pop();
   return cells;
 }
 
@@ -256,11 +259,11 @@ export function extractTotal(raw: string): number | null {
  * Looks for: **Label:** N, Label: N, Label N
  */
 export function extractCount(raw: string, label: string): number | null {
-  const boldPattern = RegExp(String.raw`\*\*${label}:?\*\*:?\s*~?(\d+)`, "i");
+  const boldPattern = new RegExp(String.raw`\*\*${label}:?\*\*:?\s*~?(\d+)`, "i");
   const boldMatch = boldPattern.exec(raw);
   if (boldMatch) return Number.parseInt(boldMatch[1], 10);
 
-  const colonPattern = RegExp(`${label}:\\s*~?(\\d+)`, "i");
+  const colonPattern = new RegExp(String.raw`${label}:\s*~?(\d+)`, "i");
   const colonMatch = colonPattern.exec(raw);
   if (colonMatch) return Number.parseInt(colonMatch[1], 10);
 
@@ -295,23 +298,25 @@ function extractInlinePatterns(line: string): string[] {
     .filter((s) => s.length > 0);
 }
 
-/**
- * Extract pattern names from bullet lists under **Patterns** or **Key Patterns** sections.
- */
-export function extractPatterns(raw: string): string[] {
-  const patterns: string[] = [];
+function extractSectionItems(
+  raw: string,
+  sectionHeaders: string[],
+  sectionKeyword: string,
+  includeInlinePatterns: boolean
+): string[] {
+  const items: string[] = [];
   const lines = raw.split("\n");
   let inSection = false;
-
-  const sectionHeaders = ["**patterns**", "**key patterns**", "**patterns:**", "**key patterns:**"];
 
   for (const line of lines) {
     const lower = line.toLowerCase();
 
     if (isSectionHeader(lower, sectionHeaders)) {
       inSection = true;
-      for (const part of extractInlinePatterns(line)) {
-        if (!patterns.includes(part)) patterns.push(part);
+      if (includeInlinePatterns) {
+        for (const part of extractInlinePatterns(line)) {
+          if (!items.includes(part)) items.push(part);
+        }
       }
       continue;
     }
@@ -319,58 +324,42 @@ export function extractPatterns(raw: string): string[] {
     if (!inSection) continue;
 
     const trimmed = line.trimStart();
-    if (isEndOfSection(trimmed, "pattern")) {
+    if (isEndOfSection(trimmed, sectionKeyword)) {
       inSection = false;
       continue;
     }
 
     const text = extractBulletText(trimmed);
-    if (text && !patterns.includes(text)) {
-      patterns.push(text);
+    if (text && !items.includes(text)) {
+      items.push(text);
     }
   }
 
-  return patterns;
+  return items;
+}
+
+/**
+ * Extract pattern names from bullet lists under **Patterns** or **Key Patterns** sections.
+ */
+export function extractPatterns(raw: string): string[] {
+  return extractSectionItems(
+    raw,
+    ["**patterns**", "**key patterns**", "**patterns:**", "**key patterns:**"],
+    "pattern",
+    true
+  );
 }
 
 /**
  * Extract learnings from bullet lists under **Learnings** or **Key Learnings** sections.
  */
 export function extractLearnings(raw: string): string[] {
-  const learnings: string[] = [];
-  const lines = raw.split("\n");
-  let inSection = false;
-
-  const sectionHeaders = [
-    "**learnings**",
-    "**key learnings**",
-    "**learnings:**",
-    "**key learnings:**",
-  ];
-
-  for (const line of lines) {
-    const lower = line.toLowerCase();
-
-    if (isSectionHeader(lower, sectionHeaders)) {
-      inSection = true;
-      continue;
-    }
-
-    if (!inSection) continue;
-
-    const trimmed = line.trimStart();
-    if (isEndOfSection(trimmed, "learning")) {
-      inSection = false;
-      continue;
-    }
-
-    const text = extractBulletText(trimmed);
-    if (text && !learnings.includes(text)) {
-      learnings.push(text);
-    }
-  }
-
-  return learnings;
+  return extractSectionItems(
+    raw,
+    ["**learnings**", "**key learnings**", "**learnings:**", "**key learnings:**"],
+    "learning",
+    false
+  );
 }
 
 /**

@@ -37,7 +37,7 @@ function findProjectRoot(startDir: string): string {
  * @returns Markdown string for the template stub
  */
 export function generateFixTemplateStub(pattern: RecurrenceResult, templateNumber: number): string {
-  const name = pattern.pattern.replaceAll("-", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+  const name = pattern.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase());
 
   const prList =
     pattern.distinctPRs.size > 0
@@ -81,6 +81,46 @@ function findNextTemplateNumber(content: string): number {
   return maxNum + 1;
 }
 
+/** Check if a pattern already has a template entry in FIX_TEMPLATES.md content. */
+function isPatternAlreadyTemplated(lowerContent: string, patternName: string): boolean {
+  const normalizedName = patternName.toLowerCase().replaceAll("-", " ");
+  const escaped = normalizedName.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+  const headingPattern = new RegExp(String.raw`## template \d+:.*` + escaped, "i");
+  return (
+    headingPattern.test(lowerContent) || lowerContent.includes(`**pattern:** ${normalizedName}`)
+  );
+}
+
+/** Write FIX_TEMPLATES.md atomically with cross-drive fallback. */
+function writeFixTemplatesAtomic(
+  fixTemplatesPath: string,
+  existingContent: string,
+  appendContent: string
+): void {
+  try {
+    const updatedContent = existingContent.trimEnd() + "\n" + appendContent + "\n";
+    const tmpPath = fixTemplatesPath + ".tmp";
+    fs.writeFileSync(tmpPath, updatedContent, "utf8");
+    try {
+      if (fs.existsSync(fixTemplatesPath)) fs.rmSync(fixTemplatesPath, { force: true });
+      fs.renameSync(tmpPath, fixTemplatesPath);
+    } catch {
+      fs.copyFileSync(tmpPath, fixTemplatesPath);
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* best-effort */
+      }
+    }
+  } catch (err) {
+    console.warn(
+      `[generate-fix-template-stubs] Warning: Could not write FIX_TEMPLATES.md: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+  }
+}
+
 /**
  * Append fix template stubs to FIX_TEMPLATES.md for patterns not already present.
  *
@@ -111,16 +151,7 @@ export function appendFixTemplateStubs(
   let appendContent = "";
 
   for (const p of patterns) {
-    // Check if pattern already has a template (match in heading or **Pattern:** line)
-    const normalizedName = p.pattern.toLowerCase().replaceAll("-", " ");
-    // Check "## Template N: <name>" headings and "**Pattern:** <name>" lines
-    const headingPattern = new RegExp(
-      `## template \\d+:.*${normalizedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
-      "i"
-    );
-    const hasTemplateHeading = headingPattern.test(lowerContent);
-    const hasPatternLine = lowerContent.includes(`**pattern:** ${normalizedName}`);
-    if (hasTemplateHeading || hasPatternLine) {
+    if (isPatternAlreadyTemplated(lowerContent, p.pattern)) {
       skipped.push(p.pattern);
       continue;
     }
@@ -132,31 +163,7 @@ export function appendFixTemplateStubs(
   }
 
   if (!dryRun && appendContent) {
-    try {
-      // Append to the end of the file (atomic: write .tmp then rename)
-      const updatedContent = content.trimEnd() + "\n" + appendContent + "\n";
-      const tmpPath = fixTemplatesPath + ".tmp";
-      fs.writeFileSync(tmpPath, updatedContent, "utf8");
-      try {
-        // Remove destination first (renameSync fails on Windows if dest exists)
-        if (fs.existsSync(fixTemplatesPath)) fs.rmSync(fixTemplatesPath, { force: true });
-        fs.renameSync(tmpPath, fixTemplatesPath);
-      } catch {
-        // Cross-drive fallback: copy + unlink
-        fs.copyFileSync(tmpPath, fixTemplatesPath);
-        try {
-          fs.unlinkSync(tmpPath);
-        } catch {
-          /* best-effort */
-        }
-      }
-    } catch (err) {
-      console.warn(
-        `[generate-fix-template-stubs] Warning: Could not write FIX_TEMPLATES.md: ${
-          err instanceof Error ? err.message : String(err)
-        }`
-      );
-    }
+    writeFixTemplatesAtomic(fixTemplatesPath, content, appendContent);
   }
 
   return { generated, skipped };

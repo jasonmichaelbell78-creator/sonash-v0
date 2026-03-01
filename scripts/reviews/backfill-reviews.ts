@@ -19,6 +19,10 @@ import {
 } from "./lib/parse-review";
 import { ReviewRecord, type ReviewRecordType } from "./lib/schemas/review";
 import { RetroRecord, type RetroRecordType } from "./lib/schemas/retro";
+import type { CompletenessTierType } from "./lib/schemas/shared";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+const { isSafeToWrite } = require("../lib/safe-fs") as { isSafeToWrite: (p: string) => boolean };
 
 // ---- Helpers ----------------------------------------------------------------
 
@@ -223,9 +227,7 @@ export interface RetroExtraction {
   rawContent: string;
 }
 
-const RETRO_HEADING_RE = /^###\s+PR\s+#(\d+)\s+Retrospective(?:\s.*?)?\s*\((\d{4}-\d{2}-\d{2})\)/;
-const SECTION_END_RE = /^###\s+[^#]/;
-const SUB_HEADING_RE = /^####/;
+const RETRO_HEADING_RE = /^###\s+PR\s+#(\d+)\s+Retrospective[^(]*\((\d{4}-\d{2}-\d{2})\)/;
 const PR_HEADING_RE = /^###\s+PR\s+#\d+/;
 
 function tryParseRetroHeading(line: string): { pr: number; date: string } | null {
@@ -238,7 +240,9 @@ function tryParseRetroHeading(line: string): { pr: number; date: string } | null
 }
 
 function isRetroSectionEnd(line: string): boolean {
-  return SECTION_END_RE.test(line) && !SUB_HEADING_RE.test(line) && !PR_HEADING_RE.test(line);
+  if (!line.startsWith("### ")) return false;
+  if (line.startsWith("####")) return false;
+  return !PR_HEADING_RE.test(line);
 }
 
 function extractRetrosFromContent(content: string, sourceFile: string): RetroExtraction[] {
@@ -352,14 +356,14 @@ function determineCompleteness(
   topMisses: string[],
   processChanges: string[],
   metrics: { total_findings: number; fix_rate: number; pattern_recurrence: number } | null
-): { completeness: "full" | "partial" | "stub"; missing: string[] } {
+): { completeness: CompletenessTierType; missing: string[] } {
   const missing: string[] = [];
   if (topWins.length === 0) missing.push("top_wins");
   if (topMisses.length === 0) missing.push("top_misses");
   if (processChanges.length === 0) missing.push("process_changes");
   if (metrics === null) missing.push("metrics");
 
-  let completeness: "full" | "partial" | "stub";
+  let completeness: CompletenessTierType;
   if (missing.length === 0) {
     completeness = "full";
   } else if (missing.length <= 2) {
@@ -738,17 +742,30 @@ function countTiers(records: ReviewRecordType[]): { full: number; partial: numbe
   return tiers;
 }
 
-function printSummary(
-  allRecords: ReviewRecordType[],
-  resolution: ResolutionResult,
-  retroResult: { records: RetroRecordType[]; missingReviewCount: number },
-  v1Result: { migrated: number },
-  reviewValidationErrors: number,
-  retroValidationErrors: number,
-  duplicateIds: number,
-  reviewsPath: string,
-  retrosPath: string
-): void {
+interface PrintSummaryOptions {
+  allRecords: ReviewRecordType[];
+  resolution: ResolutionResult;
+  retroResult: { records: RetroRecordType[]; missingReviewCount: number };
+  v1Result: { migrated: number };
+  reviewValidationErrors: number;
+  retroValidationErrors: number;
+  duplicateIds: number;
+  reviewsPath: string;
+  retrosPath: string;
+}
+
+function printSummary(options: PrintSummaryOptions): void {
+  const {
+    allRecords,
+    resolution,
+    retroResult,
+    v1Result,
+    reviewValidationErrors,
+    retroValidationErrors,
+    duplicateIds,
+    reviewsPath,
+    retrosPath,
+  } = options;
   const tiers = countTiers(allRecords);
   const reviewOutputCount = fs
     .readFileSync(reviewsPath, "utf8")
@@ -851,10 +868,16 @@ export async function runBackfill(): Promise<void> {
 
   const reviewsPath = path.join(outputDir, "reviews.jsonl");
   const reviewLines = allRecords.map((r) => JSON.stringify(r)).join("\n") + "\n";
+  if (!isSafeToWrite(reviewsPath)) {
+    throw new Error(`Symlink guard blocked write to ${reviewsPath}`);
+  }
   fs.writeFileSync(reviewsPath, reviewLines, "utf8");
 
   const retrosPath = path.join(outputDir, "retros.jsonl");
   const retroLines = retroResult.records.map((r) => JSON.stringify(r)).join("\n") + "\n";
+  if (!isSafeToWrite(retrosPath)) {
+    throw new Error(`Symlink guard blocked write to ${retrosPath}`);
+  }
   fs.writeFileSync(retrosPath, retroLines, "utf8");
 
   console.log("\nValidating output...");
@@ -862,7 +885,7 @@ export async function runBackfill(): Promise<void> {
   const retroValidationErrors = validateOutputFile(retrosPath, RetroRecord, "Retro");
   const duplicateIds = countDuplicateIds(allRecords);
 
-  printSummary(
+  printSummary({
     allRecords,
     resolution,
     retroResult,
@@ -871,16 +894,12 @@ export async function runBackfill(): Promise<void> {
     retroValidationErrors,
     duplicateIds,
     reviewsPath,
-    retrosPath
-  );
+    retrosPath,
+  });
 }
 
 // Run if executed directly
-void (async () => {
-  try {
-    await runBackfill();
-  } catch (err: unknown) {
-    console.error("Backfill failed:", err);
-    process.exit(1);
-  }
-})();
+runBackfill().catch((err: unknown) => {
+  console.error("Backfill failed:", err);
+  process.exit(1);
+});

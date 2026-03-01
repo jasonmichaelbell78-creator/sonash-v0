@@ -1761,6 +1761,29 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #408: PR #407 R3 — SonarCloud + Qodo Batch 1 (2026-02-28)
+
+- **Source**: SonarCloud (6 security hotspots, 35 code smells) + Qodo Reviewer
+  Guide (4 items)
+- **PR**: #407 — Maintenance/review pipeline fixes
+- **Items**: 45 total → 33 fixed, 6 rejected, 6 deferred
+- **Fixed**: RegExp literal conversions (6), replaceAll (5), String.raw (3),
+  optional chain (1), .at() (1), codePointAt (1), nested ternary extraction (1),
+  CC refactors (5: parseArchiveFile, extractPatterns/Learnings, promotePatterns,
+  appendFixTemplateStubs, dedup-debt main), printSummary param reduction (1),
+  async IIFE→.catch() (1), RETRO_HEADING_RE simplification (1), symlink guards
+  (1), startsWith conversion (1), type alias (1), rmSync guard (1),
+  verified-patterns.json (4 entries)
+- **Rejected**: S4036 PATH (repeat offender, hardcoded binary), S5852 x4 (safe
+  regexes, no nested quantifiers), threshold logic (out of scope)
+- **Deferred**: Race/dedup risk (architectural)
+- **Patterns**: CC extraction, replaceAll migration, String.raw for regex
+  constructors
+- **Learnings**: Batch SonarCloud code smells efficiently with parallel agents
+  per file group; module:commonjs precludes top-level await
+
+---
+
 #### Review #407: PR #398 R1 — Ecosystem Diagnosis + GitHub Automation (2026-02-27)
 
 - **Source**: Gemini Code Assist (1 critical, 6 suggestions) + Qodo PR

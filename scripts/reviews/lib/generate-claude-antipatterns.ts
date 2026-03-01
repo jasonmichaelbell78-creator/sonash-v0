@@ -55,7 +55,7 @@ export function generateAntiPatternsTable(patterns: RecurrenceResult[], maxPatte
 
   const rows = top.map((p) => {
     // Create a concise rule description from the pattern
-    const name = p.pattern.replaceAll("-", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+    const name = p.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase());
     const rule = `Recurring (${p.count}x, ${p.distinctPRs.size} PRs) -- review and add enforcement`;
     return `| ${name} | ${rule} |`;
   });

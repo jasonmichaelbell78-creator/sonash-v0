@@ -16,7 +16,7 @@ import { ReviewRecord, type ReviewRecordType } from "./schemas/review";
 
 /** Parse the numeric prefix from a review ID like "rev-123-..." */
 function parseRevNumber(id: string): number | null {
-  const m = id.match(/^rev-(\d+)(?:-|$)/);
+  const m = /^rev-(\d+)(?:-|$)/.exec(id);
   return m ? Number.parseInt(m[1], 10) : null;
 }
 
@@ -156,7 +156,7 @@ export function filterAlreadyPromoted(
   for (const p of patterns) {
     // Normalize for comparison: lowercase, replace hyphens with spaces
     const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
-    const escaped = normalizedPattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escaped = normalizedPattern.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const patternRegex = new RegExp(`\\b${escaped}\\b`, "i");
     if (patternRegex.test(lowerContent)) {
       alreadyPromoted.push(p.pattern);
@@ -205,11 +205,11 @@ export function generateRuleSkeleton(
     result.pattern
       .toLowerCase()
       .replaceAll(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
+      .replaceAll(/^-|-$/g, "")
       .slice(0, 40) || "unnamed";
   let hash = 0;
   for (let i = 0; i < result.pattern.length; i++)
-    hash = (hash * 31 + result.pattern.charCodeAt(i)) >>> 0;
+    hash = (hash * 31 + (result.pattern.codePointAt(i) ?? 0)) >>> 0;
   const suffix = hash.toString(16).padStart(8, "0").slice(0, 6);
   let id = `${base}-${suffix}`;
   while (usedIds.has(id)) id = `${id}x`;
@@ -283,8 +283,14 @@ function insertPromotedPatterns(content: string, patterns: RecurrenceResult[]): 
     const startIdx = sectionIdx + sectionHeader.length;
     const nextSection = content.indexOf("\n## ", startIdx);
     const hrSeparator = content.indexOf("\n---\n", startIdx);
-    const insertPoint =
-      nextSection !== -1 ? nextSection : hrSeparator !== -1 ? hrSeparator : startIdx;
+    let insertPoint: number;
+    if (nextSection >= 0) {
+      insertPoint = nextSection;
+    } else if (hrSeparator >= 0) {
+      insertPoint = hrSeparator;
+    } else {
+      insertPoint = startIdx;
+    }
     // startIdx fallback ensures we always have a valid insert point
 
     const entries = catPatterns.map((p) => buildCodePatternsEntry(p, catName)).join("");
@@ -329,6 +335,35 @@ function saveConsolidationState(projectRoot: string, lastProcessedId: string): v
   } catch {
     // Non-fatal -- log warning
     console.warn("[promote-patterns] Warning: Could not save consolidation state");
+  }
+}
+
+/**
+ * Write promoted patterns to CODE_PATTERNS.md using atomic tmp-file rename.
+ */
+function writePromotedPatterns(
+  codePatternsPath: string,
+  codePatternsContent: string,
+  newPatterns: RecurrenceResult[]
+): void {
+  const updatedContent = insertPromotedPatterns(codePatternsContent, newPatterns);
+  if (updatedContent === codePatternsContent) {
+    throw new Error("[promote-patterns] Promotion insertion produced no changes.");
+  }
+  const tmpPath = `${codePatternsPath}.tmp`;
+  try {
+    fs.writeFileSync(tmpPath, updatedContent, "utf8");
+    if (fs.existsSync(codePatternsPath)) fs.rmSync(codePatternsPath, { force: true });
+    fs.renameSync(tmpPath, codePatternsPath);
+  } catch (err) {
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {
+      /* ignore cleanup errors */
+    }
+    console.warn(
+      `[promote-patterns] Warning: Could not write CODE_PATTERNS.md: ${err instanceof Error ? err.message : String(err)}`
+    );
   }
 }
 
@@ -400,27 +435,7 @@ export function promotePatterns(options: {
         `[promote-patterns] CODE_PATTERNS.md not found. Refusing to create/overwrite.`
       );
     }
-    const updatedContent = insertPromotedPatterns(codePatternsContent, newPatterns);
-    if (updatedContent === codePatternsContent) {
-      throw new Error("[promote-patterns] Promotion insertion produced no changes.");
-    }
-    const tmpPath = `${codePatternsPath}.tmp`;
-    try {
-      fs.writeFileSync(tmpPath, updatedContent, "utf8");
-      // Remove destination first (renameSync fails on Windows if dest exists)
-      if (fs.existsSync(codePatternsPath)) fs.rmSync(codePatternsPath, { force: true });
-      fs.renameSync(tmpPath, codePatternsPath);
-    } catch (err) {
-      // Clean up temp file on failure
-      try {
-        fs.unlinkSync(tmpPath);
-      } catch {
-        /* ignore cleanup errors */
-      }
-      console.warn(
-        `[promote-patterns] Warning: Could not write CODE_PATTERNS.md: ${err instanceof Error ? err.message : String(err)}`
-      );
-    }
+    writePromotedPatterns(codePatternsPath, codePatternsContent, newPatterns);
   }
 
   // 5. Generate rule skeletons
