@@ -42,7 +42,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         id: changed-files
         # Pinned to v46.0.2 SHA for supply chain security (see CVE-2025-30066)
-        uses: tj-actions/changed-files@26a38635fc1173cc5820336ce97be6188d0de9f5 # v46.0.2
+        uses: tj-actions/changed-files@05f9457d921137103bb9687b6b571075f75a65f2 # v46.0.2
         with:
           files: |
             **/*.js
