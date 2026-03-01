@@ -96,12 +96,14 @@ CONFIG):
 
 | Item                              | Status   | Progress           |
 | --------------------------------- | -------- | ------------------ |
-| **PR Review Ecosystem v2**        | Active   | ~57% (4/7 phases)  |
+| **PR Review Ecosystem v2**        | SHIPPED  | v1.0 (7/7 phases)  |
 | Phase 1: Storage Foundation       | COMPLETE | Verified           |
 | Phase 2: Backfill & Migration     | COMPLETE | Verified           |
 | Phase 3: Core Pipeline            | COMPLETE | Verified           |
 | Phase 4: Enforcement Expansion    | COMPLETE | Verified (7/7)     |
-| Phase 5: Health Monitoring        | Next     | 0%                 |
+| Phase 5: Health Monitoring        | COMPLETE | Verified (7/7)     |
+| Phase 6: Gate Recalibration       | COMPLETE | Verified (9/9)     |
+| Phase 7: Integration & Cutover    | COMPLETE | Verified (5/5)     |
 | **Skill Quality Framework**       | COMPLETE | All 4 deliverables |
 | **Operational Visibility Sprint** | Active   | ~75%               |
 | **GRAND PLAN: Debt Elimination**  | Active   | ~6% (480/8354)     |
@@ -120,14 +122,16 @@ CONFIG):
 
 ### Immediate Priority (Next Session)
 
-1. **PR Review Ecosystem v2 COMPLETE** — All 7 phases executed, 59/59
-   requirements satisfied. Milestone audit pending.
+1. **PR Review Ecosystem v2 SHIPPED** — v1.0 milestone complete, audited,
+   archived. 7 phases, 30 plans, 59/59 requirements, 135 commits.
 2. **Process PR review feedback** — PR created for
    `claude/maintenance22726-md8WL`. Process Qodo/Gemini review comments.
 3. **TDMS: 67 S0 critical items** — Address highest-severity debt items
 4. **Track B: Dev Dashboard MVP** — Resume at ~10% progress
 
-**See**: [.planning/ROADMAP.md](.planning/ROADMAP.md) for ecosystem v2 phases
+**See**:
+[.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for
+archived milestone
 
 ---
 
