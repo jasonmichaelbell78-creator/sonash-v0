@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.6
+**Document Version:** 1.7
 **Last Updated:** 2026-03-01
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -229,14 +229,20 @@ must be TRUE):
 4. Deferred items deferred 2+ times auto-promote to S1 severity with a DEBT
    entry created
 5. Qodo suppression rules are pruned (19 rules audited, stale ones removed) and
-   SECURITY_CHECKLIST syncs with actual ESLint enforcement reality **Plans**:
-   TBD
+   SECURITY_CHECKLIST syncs with actual ESLint enforcement reality **Plans**: 5
+   plans
 
 Plans:
 
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
-- [ ] 06-03: TBD
+- [ ] 06-01-PLAN.md — Cross-doc deps recalibration + auto-fix mode (GATE-01,
+      GATE-02)
+- [ ] 06-02-PLAN.md — Override analytics with pattern detection (GATE-03)
+- [ ] 06-03-PLAN.md — Deferred item escalation + DEBT triage automation
+      (GATE-07, GATE-08)
+- [ ] 06-04-PLAN.md — Qodo suppression pruning + SECURITY_CHECKLIST sync
+      (GATE-05, GATE-06)
+- [ ] 06-05-PLAN.md — Auto-archive reviews + temporal coverage monitoring
+      (GATE-04, GATE-09)
 
 ### Phase 7: Integration & Cutover
 
@@ -299,10 +305,10 @@ with 5) -> 6 -> 7
 | 3. Core Pipeline             | 4/4            | Complete    | 2026-02-28 |
 | 4. Enforcement Expansion     | 6/6            | Complete    | 2026-03-01 |
 | 5. Health Monitoring         | 3/3            | Complete    | 2026-03-01 |
-| 6. Gate Recalibration        | 0/TBD          | Not started | -          |
+| 6. Gate Recalibration        | 0/5            | Not started | -          |
 | 7. Integration & Cutover     | 0/TBD          | Not started | -          |
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 5 complete — 3
-plans executed, HLTH-01 through HLTH-06 verified)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 6 planned — 5
+plans in 1 wave, all parallel, covering GATE-01 through GATE-09)_
