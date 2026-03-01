@@ -17,19 +17,19 @@ Gate Recalibration (next)
 
 ## Current Position
 
-Phase: 6 of 7 (Gate Recalibration) Plan: 4 of 5 in current phase Status: In
-progress Last activity: 2026-03-01 — Completed 06-04-PLAN.md (Qodo audit +
-SECURITY_CHECKLIST sync)
+Phase: 6 of 7 (Gate Recalibration) Plan: 5 of 5 in current phase Status: Phase
+complete Last activity: 2026-03-01 — Completed 06-05-PLAN.md (auto-archive +
+temporal coverage)
 
-Progress: [########..] ~83%
+Progress: [#########.] ~89%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 23
-- Average duration: 9.3 min
-- Total execution time: 212 min
+- Total plans completed: 24
+- Average duration: 10.1 min
+- Total execution time: 243 min
 
 **By Phase:**
 
@@ -40,13 +40,13 @@ Progress: [########..] ~83%
 | 03-core-pipeline           | 4     | 28 min | 7.0 min  |
 | 04-enforcement-expansion   | 6     | 59 min | 9.8 min  |
 | 05-health-monitoring       | 3     | 32 min | 10.7 min |
-| 06-gate-recalibration      | 4     | 50 min | 12.5 min |
+| 06-gate-recalibration      | 5     | 81 min | 16.2 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 05-03 (11 min), 06-01 (10 min), 06-02 (8 min), 06-03 (7 min),
-  06-04 (25 min)
-- Trend: Phase 6 in progress, 4/5 plans complete.
+- Last 5 plans: 06-01 (10 min), 06-02 (8 min), 06-03 (7 min), 06-04 (25 min),
+  06-05 (31 min)
+- Trend: Phase 6 complete. All 5 plans executed.
 
 _Updated after each plan completion_
 
@@ -164,6 +164,13 @@ affecting current work:
   none overlap with eslint-plugin-sonash
 - 06-04: Test file ignores kept in Qodo config (ESLint covers test quality)
 - 06-04: SECURITY_CHECKLIST enforcement: 34 ESLint, 8 Semgrep, 38 manual review
+- 06-05: Session activity detection uses lastBegin > lastEnd from
+  .session-state.json
+- 06-05: ISO week iteration uses Thursday anchoring for getISOWeek compatibility
+- 06-05: Temporal coverage added as Section 7 to avoid renumbering existing
+  sections
+- 06-05: Tests use mid-week dates to avoid UTC/local timezone boundary issues
+- 06-05: require.main guard on check-review-archive.js for testability
 
 ### Pending Todos
 
@@ -176,8 +183,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-01T20:56:00Z Stopped at: Completed 06-04-PLAN.md (Qodo
-audit + SECURITY_CHECKLIST sync) Resume file: None
+Last session: 2026-03-01T21:02:00Z Stopped at: Completed 06-05-PLAN.md
+(auto-archive + temporal coverage) -- Phase 6 complete Resume file: None
 
 ### GSD Process Position
 
