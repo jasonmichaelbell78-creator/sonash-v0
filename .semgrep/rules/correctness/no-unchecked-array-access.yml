@@ -9,7 +9,7 @@ rules:
       nullish check.
     metadata:
       category: correctness
-      code-pattern-ref: "General"
+      code-pattern-ref: "Array.isArray guards"
       confidence: LOW
     patterns:
       - pattern: $ARR[0]

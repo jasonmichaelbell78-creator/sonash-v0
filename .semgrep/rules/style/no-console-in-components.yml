@@ -8,7 +8,7 @@ rules:
       production components pollute browser devtools and may leak sensitive data.
     metadata:
       category: style
-      code-pattern-ref: "React/Frontend"
+      code-pattern-ref: "Error user-facing messages"
       confidence: HIGH
     pattern-either:
       - pattern: console.log(...)

@@ -8,7 +8,7 @@ rules:
       operator if intentionally fire-and-forget.
     metadata:
       category: correctness
-      code-pattern-ref: "General"
+      code-pattern-ref: "Safe error handling"
       confidence: MEDIUM
     patterns:
       - pattern-either:

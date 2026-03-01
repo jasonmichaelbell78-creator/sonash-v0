@@ -8,7 +8,7 @@ rules:
       codebase. Exception: Next.js page/layout files require default exports.
     metadata:
       category: style
-      code-pattern-ref: "JavaScript/TypeScript"
+      code-pattern-ref: "Node.js module prefix"
       confidence: MEDIUM
     pattern: |
       export default $EXPR

@@ -8,7 +8,7 @@ rules:
       document the justification.
     metadata:
       category: security
-      code-pattern-ref: "Security"
+      code-pattern-ref: "Markdown injection"
       confidence: HIGH
       cwe: "CWE-79: Cross-site Scripting (XSS)"
     patterns:

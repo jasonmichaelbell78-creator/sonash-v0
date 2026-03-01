@@ -8,7 +8,7 @@ rules:
       TIMEOUT_MS = 5000 are self-documenting.
     metadata:
       category: style
-      code-pattern-ref: "General"
+      code-pattern-ref: "Smart fallbacks"
       confidence: LOW
     patterns:
       - pattern-either:

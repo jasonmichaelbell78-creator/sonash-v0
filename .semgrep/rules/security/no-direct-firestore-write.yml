@@ -9,7 +9,7 @@ rules:
       and rate limiting.
     metadata:
       category: security
-      code-pattern-ref: "Security"
+      code-pattern-ref: "Dev data client-only"
       confidence: HIGH
       cwe: "CWE-284: Improper Access Control"
     pattern-either:

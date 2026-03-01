@@ -9,7 +9,7 @@ rules:
       consistent.
     metadata:
       category: style
-      code-pattern-ref: "Security"
+      code-pattern-ref: "Firestore batch chunking"
       confidence: HIGH
     pattern-either:
       - pattern: getDoc(...)

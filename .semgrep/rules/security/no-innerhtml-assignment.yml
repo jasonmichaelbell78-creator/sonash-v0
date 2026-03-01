@@ -8,7 +8,7 @@ rules:
       or a sanitization library (DOMPurify) for HTML content.
     metadata:
       category: security
-      code-pattern-ref: "Security"
+      code-pattern-ref: "Markdown injection"
       confidence: HIGH
       cwe: "CWE-79: Cross-site Scripting (XSS)"
     pattern-either:

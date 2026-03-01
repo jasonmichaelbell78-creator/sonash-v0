@@ -8,7 +8,7 @@ rules:
       escapeShellArg() or validateInput() before passing to shell commands.
     metadata:
       category: security
-      code-pattern-ref: "Security"
+      code-pattern-ref: "External input"
       confidence: HIGH
       cwe: "CWE-78: OS Command Injection"
     mode: taint

@@ -8,7 +8,7 @@ rules:
       disables type checking and defeats the purpose of TypeScript strict mode.
     metadata:
       category: style
-      code-pattern-ref: "JavaScript/TypeScript"
+      code-pattern-ref: "Robust non-Error"
       confidence: HIGH
     pattern-either:
       - pattern: "($X: any)"

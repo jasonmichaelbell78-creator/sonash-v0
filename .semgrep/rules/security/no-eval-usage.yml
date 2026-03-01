@@ -8,7 +8,7 @@ rules:
       data or explicit function references for dynamic dispatch.
     metadata:
       category: security
-      code-pattern-ref: "Security"
+      code-pattern-ref: "Shell interpolation"
       confidence: HIGH
       cwe: "CWE-95: Eval Injection"
     pattern-either:
