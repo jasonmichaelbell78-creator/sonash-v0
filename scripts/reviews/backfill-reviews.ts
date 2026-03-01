@@ -265,12 +265,13 @@ function tryParseRetroHeading(line: string): { pr: number; date: string } | null
 }
 
 function isRetroSectionEnd(line: string): boolean {
-  // End the current retro when any new ### section begins.
+  // End the current retro when a new section begins (same or higher level).
   // Retro headings are handled earlier via tryParseRetroHeading + continue,
-  // so this only fires for non-retro ### headings (PR reviews, other sections).
-  if (!line.startsWith("### ")) return false;
-  if (line.startsWith("####")) return false;
-  return true;
+  // so this only fires for non-retro headings.
+  if (tryParseRetroHeading(line)) return false;
+  if (line.startsWith("### ") && !line.startsWith("####")) return true;
+  if (line.startsWith("#### ")) return true;
+  return false;
 }
 
 function extractRetrosFromContent(content: string, sourceFile: string): RetroExtraction[] {
@@ -572,7 +573,13 @@ function computeV1MissingFields(v1: V1Record): string[] {
 }
 
 function buildV1ReviewRecord(v1: V1Record): ReviewRecordType {
-  const idNumber = typeof v1.id === "number" ? v1.id : Number.parseInt(String(v1.id), 10);
+  const rawId = v1.id;
+  const idNumber =
+    typeof rawId === "number"
+      ? rawId
+      : /^\d+$/.test(String(rawId).trim())
+        ? Number.parseInt(String(rawId), 10)
+        : Number.NaN;
   if (!Number.isFinite(idNumber) || idNumber <= 0) {
     throw new Error(`Invalid v1 record id: ${String(v1.id)}`);
   }
@@ -978,11 +985,7 @@ export async function runBackfill(): Promise<void> {
 }
 
 // Run if executed directly
-(async () => {
-  try {
-    await runBackfill();
-  } catch (err: unknown) {
-    console.error("Backfill failed:", err instanceof Error ? err.message : String(err));
-    process.exit(1);
-  }
-})();
+void runBackfill().catch((err: unknown) => {
+  console.error("Backfill failed:", err instanceof Error ? err.message : String(err));
+  process.exit(1);
+});

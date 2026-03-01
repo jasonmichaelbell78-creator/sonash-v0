@@ -43,6 +43,34 @@ export interface DeferredItemInput {
  * @param date - Date string in YYYY-MM-DD format
  * @returns Array of validated records that were written
  */
+/** Scan existing deferred items file to find the next available index for a given reviewId. */
+function findNextDeferredIndex(filePath: string, reviewId: string): number {
+  try {
+    const existing = fs.readFileSync(filePath, "utf8");
+    let maxExisting = 0;
+    const escapedId = reviewId.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+    const idPattern = new RegExp("^" + escapedId + String.raw`-deferred-(\d+)$`);
+    for (const line of existing.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        const parsed = JSON.parse(line) as { id?: unknown };
+        const id = typeof parsed.id === "string" ? parsed.id : "";
+        const m = idPattern.exec(id);
+        if (m) {
+          const n = Number.parseInt(m[1], 10);
+          if (n > maxExisting) maxExisting = n;
+        }
+      } catch {
+        // ignore malformed lines
+      }
+    }
+    return maxExisting + 1;
+  } catch {
+    // file doesn't exist yet — start at 1
+    return 1;
+  }
+}
+
 export function createDeferredItems(
   projectRoot: string,
   reviewId: string,
@@ -58,30 +86,7 @@ export function createDeferredItems(
   const filePath = path.resolve(projectRoot, "data/ecosystem-v2/deferred-items.jsonl");
   const created: DeferredItemRecordType[] = [];
 
-  // Scan existing items to prevent duplicate IDs on reruns
-  let startIndex = 1;
-  try {
-    const existing = fs.readFileSync(filePath, "utf8");
-    let maxExisting = 0;
-    for (const line of existing.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        const parsed = JSON.parse(line) as { id?: unknown };
-        const id = typeof parsed.id === "string" ? parsed.id : "";
-        const escapedId = reviewId.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-        const m = new RegExp("^" + escapedId + String.raw`-deferred-(\d+)$`).exec(id);
-        if (m) {
-          const n = Number.parseInt(m[1], 10);
-          if (n > maxExisting) maxExisting = n;
-        }
-      } catch {
-        // ignore malformed lines
-      }
-    }
-    startIndex = maxExisting + 1;
-  } catch {
-    // file doesn't exist yet — start at 1
-  }
+  const startIndex = findNextDeferredIndex(filePath, reviewId);
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];

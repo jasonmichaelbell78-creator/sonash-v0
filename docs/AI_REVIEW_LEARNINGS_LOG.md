@@ -2428,3 +2428,39 @@ All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl
   tests. Context compaction mid-session recovered cleanly.
 
 ---
+
+#### Review #419: PR #407 R11 — Qodo Suggestions + SonarCloud (2026-03-01)
+
+- **Source**: Qodo PR Suggestions (11), SonarCloud (3)
+- **PR**: PR #407 — PR Review Ecosystem v2 + Skill Quality Framework
+- **Items**: 14 total → 11 fixed, 2 rejected, 1 deferred
+- **Fixed**: (1) promote-patterns.ts — replace local `isSafeToWrite` with
+  `safe-fs.js` import (parent dir symlink walk); (2) promote-patterns.ts —
+  re-check symlinks before `copyFileSync` fallback; (3) dedup-debt.ts — remove
+  `rmSync` before `renameSync` (CRITICAL data loss prevention); (4)
+  generate-fix-template-stubs.ts — add `isSafeToWrite` guard before writes; (5)
+  generate-claude-antipatterns.ts — replace local `isSafeToWrite` with
+  `safe-fs.js` import (propagation fix); (6) parse-review.ts — track fence
+  marker type to prevent mixed backtick/tilde parsing bugs; (7)
+  seed-commit-log.js — drop partial first line when tail-reading mid-file; (8)
+  seed-commit-log.js — remove redundant triple symlink check in `appendEntries`;
+  (9) seed-commit-log.js — remove `rmSync` before `renameSync` in
+  `writeEntries`; (10) backfill-reviews.ts — fix `isRetroSectionEnd` to
+  terminate on `####` headings (prevent review content leaking into retros);
+  (11) write-deferred-items.ts — extract `findNextDeferredIndex` helper (CC
+  16→13)
+- **Rejected**: (A) Propagate exit codes in promote-patterns.js — `main()`
+  returns void, nothing to propagate; (B) Top-level await in promote-patterns.js
+  — CJS file, requires ESM
+- **Deferred**: withLock concurrency guard in seed-commit-log.js — seed script
+  rarely runs concurrently, over-engineering
+- **Patterns**: Local `isSafeToWrite` copies diverge from `safe-fs.js` canonical
+  implementation — always import from canonical source; `rmSync` before
+  `renameSync` is a recurring data loss pattern (3rd time fixed in this PR);
+  propagation discipline: when fixing `isSafeToWrite` in one file, grep and fix
+  all other local copies
+- **Process**: Sequential fixes, propagation check found 1 additional file
+  (generate-claude-antipatterns.ts) with same vulnerable local `isSafeToWrite`.
+  SonarCloud top-level await rejected for CJS compatibility.
+
+---

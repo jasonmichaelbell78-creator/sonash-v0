@@ -14,16 +14,6 @@ import * as path from "node:path";
 import { readValidatedJsonl } from "./read-jsonl";
 import { ReviewRecord, type ReviewRecordType } from "./schemas/review";
 
-/** Symlink guard: returns false if path is a symlink (blocks symlink-based write redirection). */
-function isSafeToWrite(filePath: string): boolean {
-  try {
-    if (!fs.existsSync(filePath)) return true;
-    return !fs.lstatSync(filePath).isSymbolicLink();
-  } catch {
-    return false;
-  }
-}
-
 /** Parse the numeric prefix from a review ID like "rev-123-..." or legacy "123" */
 function parseRevNumber(id: string): number | null {
   const rev = /^rev-(\d+)(?:-|$)/.exec(id);
@@ -47,6 +37,11 @@ function findProjectRoot(startDir: string): string {
     dir = parent;
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+const { isSafeToWrite } = require(
+  path.resolve(findProjectRoot(__dirname), "scripts/lib/safe-fs.js")
+) as { isSafeToWrite: (p: string) => boolean };
 
 /** Result of recurrence detection for a single pattern. */
 export interface RecurrenceResult {
@@ -408,7 +403,12 @@ function writePromotedPatterns(
     try {
       fs.renameSync(tmpPath, codePatternsPath);
     } catch {
-      // Cross-device fallback
+      // Cross-device fallback (re-check destination to prevent symlink race)
+      if (!isSafeToWrite(codePatternsPath)) {
+        throw new Error(
+          "[promote-patterns] Refusing to write CODE_PATTERNS.md because destination became unsafe (symlink)."
+        );
+      }
       fs.copyFileSync(tmpPath, codePatternsPath);
     }
   } catch (err) {

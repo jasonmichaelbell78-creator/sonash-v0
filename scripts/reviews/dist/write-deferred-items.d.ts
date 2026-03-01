@@ -11,15 +11,4 @@ export interface DeferredItemInput {
     reason?: string;
     severity?: string;
 }
-/**
- * Create DeferredItemRecords from review findings and append to deferred-items.jsonl.
- *
- * Each item gets a unique ID derived from the parent review ID: `{reviewId}-deferred-{N}`.
- *
- * @param projectRoot - Absolute path to project root
- * @param reviewId - Parent review ID (e.g., "rev-399")
- * @param items - Array of deferred findings
- * @param date - Date string in YYYY-MM-DD format
- * @returns Array of validated records that were written
- */
 export declare function createDeferredItems(projectRoot: string, reviewId: string, items: DeferredItemInput[], date: string): DeferredItemRecordType[];

@@ -151,12 +151,13 @@ function writeEntries(entries) {
   }
   try {
     fs.writeFileSync(tmpPath, content, "utf8");
-    // Remove destination first for Windows compat (Review #224)
-    if (fs.existsSync(COMMIT_LOG)) fs.rmSync(COMMIT_LOG, { force: true });
     try {
       fs.renameSync(tmpPath, COMMIT_LOG);
     } catch {
       // Cross-drive fallback: copy + unlink (Review #265)
+      if (!isSafeToWrite(COMMIT_LOG)) {
+        throw new Error("Symlink guard blocked write to commit-log.jsonl (fallback)");
+      }
       fs.copyFileSync(tmpPath, COMMIT_LOG);
       try {
         fs.unlinkSync(tmpPath);
@@ -194,7 +195,9 @@ function getLatestLogHash() {
       const len = stat.size - start;
       const buf = Buffer.alloc(len);
       fs.readSync(fd, buf, 0, len, start);
-      const text = buf.toString("utf8").trim();
+      // If we started mid-file, drop the partial first line to avoid parse failures
+      const alignedBuf = start === 0 ? buf : buf.subarray(buf.indexOf(0x0a) + 1);
+      const text = alignedBuf.toString("utf8").trim();
       if (!text) return null;
       const lines = text.split("\n").slice(-200).filter(Boolean);
       for (let i = lines.length - 1; i >= 0; i--) {
@@ -301,22 +304,13 @@ function appendEntries(entries) {
   if (entries.length === 0) return;
   const dir = path.dirname(COMMIT_LOG);
   fs.mkdirSync(dir, { recursive: true });
-  if (!isSafeToWrite(COMMIT_LOG)) {
-    console.error("Symlink guard blocked append to commit-log.jsonl");
-    process.exit(1);
-  }
   const existingHashes = readTailHashes(COMMIT_LOG);
   const filtered = entries.filter((e) => !existingHashes.has(e.hash));
   if (filtered.length === 0) return;
   const prefix = needsNewlinePrefix(COMMIT_LOG) ? "\n" : "";
   const content = prefix + filtered.map((e) => JSON.stringify(e)).join("\n") + "\n";
   if (!isSafeToWrite(COMMIT_LOG)) {
-    console.error("Symlink guard blocked append to commit-log.jsonl (post-check)");
-    process.exit(1);
-  }
-  // Re-verify target hasn't been swapped to symlink between guard check and write
-  if (!isSafeToWrite(COMMIT_LOG)) {
-    console.error("Symlink guard blocked append to commit-log.jsonl (pre-write check)");
+    console.error("Symlink guard blocked append to commit-log.jsonl");
     process.exit(1);
   }
   fs.appendFileSync(COMMIT_LOG, content, "utf8");
@@ -334,6 +328,8 @@ function updateTrackerState() {
       timeout: 5000,
     }).trim();
     if (!head) return;
+    const trackerDir = path.dirname(TRACKER_STATE);
+    fs.mkdirSync(trackerDir, { recursive: true });
     if (!isSafeToWrite(TRACKER_STATE)) return;
     fs.writeFileSync(
       TRACKER_STATE,

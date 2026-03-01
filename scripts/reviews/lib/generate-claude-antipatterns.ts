@@ -36,6 +36,11 @@ function findProjectRoot(startDir: string): string {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+const { isSafeToWrite } = require(
+  path.resolve(findProjectRoot(__dirname), "scripts/lib/safe-fs.js")
+) as { isSafeToWrite: (p: string) => boolean };
+
 const START_MARKER = "<!-- AUTO-ANTIPATTERNS-START -->";
 const END_MARKER = "<!-- AUTO-ANTIPATTERNS-END -->";
 
@@ -169,17 +174,6 @@ function wrapExistingTableWithMarkers(content: string): string {
     "\n" +
     after.trimStart()
   );
-}
-
-/** Symlink guard: returns false if path is a symlink (blocks symlink-based write redirection). */
-function isSafeToWrite(filePath: string): boolean {
-  try {
-    if (!fs.existsSync(filePath)) return true;
-    return !fs.lstatSync(filePath).isSymbolicLink();
-  } catch {
-    // If we can't stat an existing file, fail closed
-    return false;
-  }
 }
 
 /** Write CLAUDE.md with a warning on failure instead of throwing. */

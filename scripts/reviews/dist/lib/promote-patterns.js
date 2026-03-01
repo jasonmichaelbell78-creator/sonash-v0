@@ -53,17 +53,6 @@ const fs = __importStar(require("node:fs"));
 const path = __importStar(require("node:path"));
 const read_jsonl_1 = require("./read-jsonl");
 const review_1 = require("./schemas/review");
-/** Symlink guard: returns false if path is a symlink (blocks symlink-based write redirection). */
-function isSafeToWrite(filePath) {
-    try {
-        if (!fs.existsSync(filePath))
-            return true;
-        return !fs.lstatSync(filePath).isSymbolicLink();
-    }
-    catch {
-        return false;
-    }
-}
 /** Parse the numeric prefix from a review ID like "rev-123-..." or legacy "123" */
 function parseRevNumber(id) {
     const rev = /^rev-(\d+)(?:-|$)/.exec(id);
@@ -91,6 +80,8 @@ function findProjectRoot(startDir) {
         dir = parent;
     }
 }
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+const { isSafeToWrite } = require(path.resolve(findProjectRoot(__dirname), "scripts/lib/safe-fs.js"));
 /** Accumulate a single review's patterns into the pattern map. */
 function accumulateReviewPatterns(review, patternMap) {
     if (!review.patterns || review.patterns.length === 0)
@@ -369,7 +360,10 @@ function writePromotedPatterns(codePatternsPath, codePatternsContent, newPattern
             fs.renameSync(tmpPath, codePatternsPath);
         }
         catch {
-            // Cross-device fallback
+            // Cross-device fallback (re-check destination to prevent symlink race)
+            if (!isSafeToWrite(codePatternsPath)) {
+                throw new Error("[promote-patterns] Refusing to write CODE_PATTERNS.md because destination became unsafe (symlink).");
+            }
             fs.copyFileSync(tmpPath, codePatternsPath);
         }
     }

@@ -226,12 +226,13 @@ function writeDebtOutput(masterPath, dedupedPath, result) {
         const output = result.kept.map((item) => JSON.stringify(item)).join("\n") + "\n";
         fs.writeFileSync(tmpPath, output, "utf8");
         try {
-            if (fs.existsSync(masterPath))
-                fs.rmSync(masterPath, { force: true });
             fs.renameSync(tmpPath, masterPath);
         }
         catch {
-            // Cross-device fallback
+            // Cross-device fallback (re-check safety before non-atomic write)
+            if (fs.existsSync(masterPath) && fs.lstatSync(masterPath).isSymbolicLink()) {
+                throw new Error(`Refusing to write: ${path.basename(masterPath)} became a symlink`);
+            }
             fs.copyFileSync(tmpPath, masterPath);
         }
     }

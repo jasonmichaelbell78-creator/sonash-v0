@@ -83,13 +83,24 @@ function parseHeaderLine(
 interface ArchiveParseState {
   current: ParsedEntry | null;
   inFence: boolean;
+  fenceMarker: string | null;
   entries: ParsedEntry[];
 }
 
 function processArchiveLine(line: string, state: ArchiveParseState, filePath: string): void {
   const trimmed = line.trim();
   if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-    state.inFence = !state.inFence;
+    const fence = trimmed.startsWith("```") ? "```" : "~~~";
+    if (state.inFence) {
+      // Only close when the same fence type is used
+      if (state.fenceMarker === fence) {
+        state.inFence = false;
+        state.fenceMarker = null;
+      }
+    } else {
+      state.inFence = true;
+      state.fenceMarker = fence;
+    }
     if (state.current) state.current.rawLines.push(line);
     return;
   }
@@ -126,7 +137,12 @@ function processArchiveLine(line: string, state: ArchiveParseState, filePath: st
  * Deduplicates within-file by reviewNumber, keeping the entry with the most rawLines.
  */
 export function parseArchiveFile(filePath: string, content: string): ParsedEntry[] {
-  const state: ArchiveParseState = { current: null, inFence: false, entries: [] };
+  const state: ArchiveParseState = {
+    current: null,
+    inFence: false,
+    fenceMarker: null,
+    entries: [],
+  };
   for (const line of content.split("\n")) {
     processArchiveLine(line, state, filePath);
   }

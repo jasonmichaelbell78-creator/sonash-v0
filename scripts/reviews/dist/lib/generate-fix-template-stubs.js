@@ -67,6 +67,8 @@ function findProjectRoot(startDir) {
         dir = parent;
     }
 }
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+const { isSafeToWrite } = require(path.resolve(findProjectRoot(__dirname), "scripts/lib/safe-fs.js"));
 /**
  * Generate a fix template stub for a single pattern.
  *
@@ -127,6 +129,10 @@ function isPatternAlreadyTemplated(lowerContent, patternName) {
 /** Write FIX_TEMPLATES.md atomically with cross-drive fallback. */
 function writeFixTemplatesAtomic(fixTemplatesPath, existingContent, appendContent) {
     try {
+        if (!isSafeToWrite(fixTemplatesPath)) {
+            console.warn("[generate-fix-template-stubs] Warning: FIX_TEMPLATES.md is unsafe (symlink), skipping write");
+            return;
+        }
         const updatedContent = existingContent.trimEnd() + "\n" + appendContent + "\n";
         const tmpPath = `${fixTemplatesPath}.tmp-${process.pid}-${Date.now()}`;
         fs.writeFileSync(tmpPath, updatedContent, "utf8");
@@ -134,9 +140,16 @@ function writeFixTemplatesAtomic(fixTemplatesPath, existingContent, appendConten
             fs.renameSync(tmpPath, fixTemplatesPath);
         }
         catch {
+            if (!isSafeToWrite(fixTemplatesPath)) {
+                console.warn("[generate-fix-template-stubs] Warning: FIX_TEMPLATES.md became unsafe (symlink), skipping write");
+                return;
+            }
             fs.copyFileSync(tmpPath, fixTemplatesPath);
+        }
+        finally {
             try {
-                fs.unlinkSync(tmpPath);
+                if (fs.existsSync(tmpPath))
+                    fs.unlinkSync(tmpPath);
             }
             catch {
                 /* best-effort */
