@@ -27,16 +27,16 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #394 - #408 (16 reviews) **Analysis Date:** 2026-03-01
+**Review Range:** #394 - #417 (18 reviews) **Analysis Date:** 2026-03-01
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 92.8% |
-| Patterns Learned          | 306   |
+| Learning Effectiveness    | 92.0% |
+| Patterns Learned          | 303   |
 | Patterns Automated        | 30    |
-| Patterns Failing          | 6     |
+| Patterns Failing          | 10    |
 | Critical Pattern Success  | 94.8% |
 | Automation Coverage       | 14.1% |
 | Total Documented Patterns | 362   |
@@ -48,19 +48,19 @@ This is a **Tier 2 metrics document** - reference during:
    - Recurred 6 times after documentation \(Reviews: 398, 400, 402, 402, 408\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "AI reviewer verification"
-   - Recurred 4 times after documentation \(Reviews: 395, 400, 403, 408\)
+2. **[Automation]** Automate "Atomic file writes"
+   - Recurred 5 times after documentation \(Reviews: 395, 398, 402, 416, 417\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
 3. **[Automation]** Automate "Atomic file writes"
-   - Recurred 3 times after documentation \(Reviews: 395, 398, 402\)
+   - Recurred 5 times after documentation \(Reviews: 395, 398, 402, 416, 417\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
+4. **[Documentation]** Improve documentation for "Secure file permissions"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Multi\-file rollback"
+5. **[Documentation]** Improve documentation for "Signal error code semantics"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 306   | Pattern never recurred after documentation   |
+| ✅ LEARNED   | 303   | Pattern never recurred after documentation   |
 | 🔧 AUTOMATED | 30    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 20    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 6     | Pattern recurred 3+ times - needs automation |
+| 🟡 WEAK      | 19    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 10    | Pattern recurred 3+ times - needs automation |
 
 ---
 

@@ -135,7 +135,7 @@ _AI agent reference docs_
 | Document                                                                                     | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)                      | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-02-23    |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓6 ↑2      | 2026-02-27    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓6 ↑2      | 2026-03-01    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md)          | Detailed guidance for preventing loss of important decisions... | ↓2 ↑0      | 2026-02-23    |
 | [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)                | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-28    |
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)                      | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-02-23    |
@@ -206,7 +206,7 @@ _Planning & Active_
 | Document                                                                                               | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-02-08    |
-| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-02-28    |
+| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-03-01    |
 | [Lighthouse Integration Plan](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)                                     | -                                                               | ↓2 ↑2      | 2026-02-23    |
 | [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-02-23    |
 | [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                 | -                                                               | ↓2 ↑3      | 2026-02-23    |
@@ -606,7 +606,7 @@ _Uncategorized_
 
 | Document                                                                      | Description | References | Last Modified |
 | ----------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-02-28    |
+| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-03-01    |
 
 ### Core Documentation (Tier 4)
 

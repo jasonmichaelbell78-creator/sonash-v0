@@ -176,7 +176,9 @@
     "run-consolidation.js",
     "sprint-complete.js",
     "track-session.js",
-    "verify-resolutions.js"
+    "verify-resolutions.js",
+    "write-review-record.test.ts",
+    "backfill-reviews.ts"
   ],
   "rename-no-fallback": [
     "archive-doc.js",
@@ -221,7 +223,9 @@
     "generate-claude-antipatterns.js",
     "dedup-debt.js",
     "promote-patterns.js",
-    "render-reviews-to-md.js"
+    "render-reviews-to-md.js",
+    "render-reviews-to-md.ts",
+    "generate-fix-template-stubs.js"
   ],
   "atomic-write-missing-tmp-guard": [
     "state-utils.js",
@@ -311,5 +315,6 @@
     "suggest-pattern-automation.js",
     "validate-schema.js"
   ],
-  "for-file-iteration": ["find-polluter.sh"]
+  "for-file-iteration": ["find-polluter.sh"],
+  "no-raw-fs-write": ["run-alerts.js", "seed-commit-log.js"]
 }
