@@ -3,24 +3,35 @@ rules:
     languages: [javascript, typescript]
     severity: WARNING
     message: >-
-      Promise-returning function called without await, .then(), or .catch().
+      Known async function called without await, .then(), or .catch().
       Floating promises hide errors silently. Add await, .catch(), or void
       operator if intentionally fire-and-forget.
     metadata:
       category: correctness
       code-pattern-ref: "Safe error handling"
-      confidence: MEDIUM
-    patterns:
-      - pattern-either:
-          - pattern: |
-              $FN(...);
-      - pattern: |
-          $OBJ.$METHOD(...);
-      - pattern-not: await $FN(...)
-      - pattern-not: $FN(...).then(...)
-      - pattern-not: $FN(...).catch(...)
-      - pattern-not: void $FN(...)
-      - pattern-not: return $FN(...)
+      confidence: HIGH
+    pattern-either:
+      - patterns:
+          - pattern: fetch(...);
+          - pattern-not: await fetch(...)
+          - pattern-not: void fetch(...)
+          - pattern-not: return fetch(...)
+      - patterns:
+          - pattern: $OBJ.json();
+          - pattern-not: await $OBJ.json()
+          - pattern-not: return $OBJ.json()
+      - patterns:
+          - pattern: fs.promises.$METHOD(...);
+          - pattern-not: await fs.promises.$METHOD(...)
+          - pattern-not: return fs.promises.$METHOD(...)
+      - patterns:
+          - pattern: $OBJ.writeFile(...);
+          - pattern-not: await $OBJ.writeFile(...)
+          - pattern-not: return $OBJ.writeFile(...)
+      - patterns:
+          - pattern: $OBJ.readFile(...);
+          - pattern-not: await $OBJ.readFile(...)
+          - pattern-not: return $OBJ.readFile(...)
     paths:
       exclude:
         - tests/

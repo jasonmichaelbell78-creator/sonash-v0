@@ -58,7 +58,17 @@ function readJsonlEntries(filePath) {
   try {
     const content = fs.readFileSync(filePath, "utf8").trim();
     if (!content) return [];
-    return content.split("\n").map((line) => JSON.parse(line));
+    return content
+      .split("\n")
+      .map((line) => {
+        if (!line) return null;
+        try {
+          return JSON.parse(line);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
   } catch {
     return [];
   }
@@ -139,8 +149,8 @@ function computeTrend(entries) {
   const values = entries.slice(-5).map((e) => e.score);
   if (values.length < 2) return null;
 
-  const first = values[0];
-  const last = values[values.length - 1];
+  const first = values[0] ?? 0;
+  const last = values[values.length - 1] ?? 0;
   const delta = last - first;
   const deltaPercent = first !== 0 ? Math.round((delta / first) * 100) : 0;
 

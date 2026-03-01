@@ -27,7 +27,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { loadConfigWithRegex } = require("./config/load-config");
 const { validateSkipReason } = require("./lib/validate-skip-reason");
-const { safeWriteFile } = require("./lib/security-helpers");
+const { safeWriteFile, validatePathInDir } = require("./lib/security-helpers");
 
 // Parse arguments
 const args = process.argv.slice(2);
@@ -286,8 +286,12 @@ function attemptAutoFix(issue) {
 
   // For other doc files, append/update a "Last synced" comment
   try {
-    // Resolve the dependent file path
+    // Resolve and validate the dependent file path stays within repo
+    const repoRoot = path.resolve(__dirname, "..");
     const depPath = path.resolve(dep);
+    if (!validatePathInDir(repoRoot, depPath)) {
+      return { fixed: false, file: dep, action: "path outside repository" };
+    }
     if (!fs.existsSync(depPath)) {
       return { fixed: false, file: dep, action: "file not found" };
     }

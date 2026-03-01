@@ -53,7 +53,17 @@ function readJsonl(filePath) {
   try {
     const content = readFileSync(filePath, "utf8").trim();
     if (!content) return [];
-    return content.split("\n").map((line) => JSON.parse(line));
+    return content
+      .split("\n")
+      .map((line) => {
+        if (!line) return null;
+        try {
+          return JSON.parse(line);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
   } catch {
     return [];
   }
