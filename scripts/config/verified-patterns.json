@@ -36,7 +36,10 @@
     "transform-jsonl-schema.js",
     "run-consolidation.js",
     "safe-fs.js",
-    "reverify-resolved.js"
+    "reverify-resolved.js",
+    "dedup-debt.js",
+    "promote-patterns.js",
+    "render-reviews-to-md.js"
   ],
   "git-without-separator": [
     "surface-lessons-learned.js",
@@ -204,7 +207,12 @@
     "generate-fix-template-stubs.ts",
     "promote-patterns.ts",
     "backfill-reviews.ts",
-    "generate-claude-antipatterns.ts"
+    "generate-claude-antipatterns.ts",
+    "backfill-reviews.js",
+    "generate-claude-antipatterns.js",
+    "dedup-debt.js",
+    "promote-patterns.js",
+    "render-reviews-to-md.js"
   ],
   "atomic-write-missing-tmp-guard": [
     "state-utils.js",

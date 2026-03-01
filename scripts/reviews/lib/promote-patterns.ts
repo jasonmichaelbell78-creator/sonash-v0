@@ -266,11 +266,15 @@ const CATEGORY_TO_SECTION: Record<string, string> = {
 
 /** Find the insertion point after a section header (before next ## or ---). */
 function findInsertPoint(content: string, startIdx: number): number {
-  const nextSection = content.indexOf("\n## ", startIdx);
+  // Search from after the section header line to avoid inserting within the header
+  const headerLineEnd = content.indexOf("\n", startIdx);
+  const searchFrom = headerLineEnd >= 0 ? headerLineEnd + 1 : startIdx;
+
+  const nextSection = content.indexOf("\n## ", searchFrom);
   if (nextSection >= 0) return nextSection;
-  const hrSeparator = content.indexOf("\n---\n", startIdx);
+  const hrSeparator = content.indexOf("\n---\n", searchFrom);
   if (hrSeparator >= 0) return hrSeparator;
-  return startIdx;
+  return content.length;
 }
 
 /**
@@ -333,6 +337,11 @@ function loadConsolidationState(projectRoot: string): { lastProcessedId: string 
 function saveConsolidationState(projectRoot: string, lastProcessedId: string): void {
   const statePath = path.join(projectRoot, ".claude", "state", "consolidation.json");
   try {
+    // Symlink guard
+    if (fs.existsSync(statePath) && fs.lstatSync(statePath).isSymbolicLink()) {
+      console.warn("[promote-patterns] Warning: consolidation state path is a symlink, skipping");
+      return;
+    }
     let state: Record<string, unknown> = {};
     if (fs.existsSync(statePath)) {
       state = JSON.parse(fs.readFileSync(statePath, "utf8"));
@@ -341,7 +350,18 @@ function saveConsolidationState(projectRoot: string, lastProcessedId: string): v
     state.lastPromotionDate = new Date().toISOString().split("T")[0];
     const dir = path.dirname(statePath);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n", "utf8");
+    const tmpPath = `${statePath}.tmp-${process.pid}-${Date.now()}`;
+    fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8");
+    try {
+      fs.renameSync(tmpPath, statePath);
+    } catch {
+      fs.copyFileSync(tmpPath, statePath);
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* best-effort */
+      }
+    }
   } catch {
     // Non-fatal -- log warning
     console.warn("[promote-patterns] Warning: Could not save consolidation state");
@@ -360,29 +380,31 @@ function writePromotedPatterns(
   if (updatedContent === codePatternsContent) {
     throw new Error("[promote-patterns] Promotion insertion produced no changes.");
   }
+  if (fs.existsSync(codePatternsPath) && fs.lstatSync(codePatternsPath).isSymbolicLink()) {
+    throw new Error(
+      "[promote-patterns] Refusing to write CODE_PATTERNS.md because it is a symlink."
+    );
+  }
   const tmpPath = `${codePatternsPath}.tmp-${process.pid}-${Date.now()}`;
   try {
     fs.writeFileSync(tmpPath, updatedContent, "utf8");
     try {
+      if (fs.existsSync(codePatternsPath)) fs.rmSync(codePatternsPath, { force: true });
       fs.renameSync(tmpPath, codePatternsPath);
     } catch {
       // Cross-device fallback
       fs.copyFileSync(tmpPath, codePatternsPath);
-      try {
-        fs.unlinkSync(tmpPath);
-      } catch {
-        /* best-effort */
-      }
     }
   } catch (err) {
-    try {
-      fs.unlinkSync(tmpPath);
-    } catch {
-      /* ignore cleanup errors */
-    }
-    console.warn(
-      `[promote-patterns] Warning: Could not write CODE_PATTERNS.md: ${err instanceof Error ? err.message : String(err)}`
+    throw new Error(
+      `[promote-patterns] Failed to write CODE_PATTERNS.md: ${err instanceof Error ? err.message : String(err)}`
     );
+  } finally {
+    try {
+      if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
+    } catch {
+      /* best-effort cleanup */
+    }
   }
 }
 
@@ -428,6 +450,22 @@ export function promotePatterns(options: {
   // 1b. Filter by consolidation state to only process new records
   const { lastProcessedId } = loadConsolidationState(projectRoot);
   const lastProcessedNum = parseRevNumber(lastProcessedId);
+
+  // 2. Detect recurrence over the full corpus so thresholds are meaningful
+  const recurringAll = detectRecurrence(allReviews, minOccurrences, minPRs);
+
+  // Only consider patterns that appear in at least one newly-added review
+  const recurring =
+    lastProcessedNum === null
+      ? recurringAll
+      : recurringAll.filter((p) =>
+          p.reviewIds.some((id) => {
+            const n = parseRevNumber(id);
+            return n === null ? true : n > lastProcessedNum;
+          })
+        );
+
+  // Track which reviews are new (for state advancement later)
   const reviews =
     lastProcessedNum === null
       ? allReviews
@@ -435,9 +473,6 @@ export function promotePatterns(options: {
           const n = parseRevNumber(r.id);
           return n === null ? true : n > lastProcessedNum;
         });
-
-  // 2. Detect recurrence
-  const recurring = detectRecurrence(reviews, minOccurrences, minPRs);
 
   if (recurring.length === 0) {
     return {

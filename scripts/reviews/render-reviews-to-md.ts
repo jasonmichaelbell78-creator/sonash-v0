@@ -216,6 +216,10 @@ if (require.main === module) {
         console.error("--output must not be a symlink");
         process.exit(1);
       }
+      if (!st.isFile()) {
+        console.error("--output must be a file path (not a directory or special file)");
+        process.exit(1);
+      }
       const outReal = fs.realpathSync(resolvedOut);
       const outRel = path.relative(projectRootReal, outReal);
       if (/^\.\.(?:[\\/]|$)/.test(outRel)) {
@@ -224,7 +228,20 @@ if (require.main === module) {
       }
     }
 
-    fs.writeFileSync(resolvedOut, markdown, "utf8");
+    const tmpPath = `${resolvedOut}.tmp-${process.pid}-${Date.now()}`;
+    fs.writeFileSync(tmpPath, markdown, "utf8");
+    try {
+      if (fs.existsSync(resolvedOut)) fs.rmSync(resolvedOut, { force: true });
+      fs.renameSync(tmpPath, resolvedOut);
+    } catch {
+      // Cross-device fallback
+      fs.copyFileSync(tmpPath, resolvedOut);
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* best-effort */
+      }
+    }
     console.log(`Wrote ${filtered.length} review(s) to ${outputPath}`);
   } else {
     process.stdout.write(markdown);

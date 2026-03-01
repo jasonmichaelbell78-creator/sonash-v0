@@ -40,6 +40,7 @@ function isReviewSourced(item: DebtItem): boolean {
   if (REVIEW_SOURCES.has(item.source)) return true;
   // Treat session-tagged PR review sources as review-sourced (e.g., "pr-review-366-r2")
   if (item.source.startsWith("pr-review-")) return true;
+  if (item.source.startsWith("pr-deferred-")) return true;
   return false;
 }
 
@@ -228,32 +229,36 @@ function readDebtItems(masterPath: string): DebtItem[] {
 
 /** Write dedup result to MASTER_DEBT.jsonl atomically and sync to raw/deduped.jsonl. */
 function writeDebtOutput(masterPath: string, dedupedPath: string, result: DedupResult): void {
-  const tmpPath = masterPath + ".tmp";
+  // Symlink guard for both output paths
+  for (const p of [masterPath, dedupedPath]) {
+    if (fs.existsSync(p) && fs.lstatSync(p).isSymbolicLink()) {
+      console.error(`Refusing to write: ${path.basename(p)} is a symlink`);
+      process.exit(1);
+    }
+  }
+  const tmpPath = `${masterPath}.tmp-${process.pid}-${Date.now()}`;
   try {
     const output = result.kept.map((item) => JSON.stringify(item)).join("\n") + "\n";
     fs.writeFileSync(tmpPath, output, "utf8");
     try {
+      if (fs.existsSync(masterPath)) fs.rmSync(masterPath, { force: true });
       fs.renameSync(tmpPath, masterPath);
     } catch {
       // Cross-device fallback
       fs.copyFileSync(tmpPath, masterPath);
-      try {
-        fs.unlinkSync(tmpPath);
-      } catch {
-        /* best-effort */
-      }
     }
   } catch (err) {
     console.error(
       "Failed to write MASTER_DEBT.jsonl:",
       err instanceof Error ? err.message : String(err)
     );
+    process.exit(1);
+  } finally {
     try {
-      fs.unlinkSync(tmpPath);
+      if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
     } catch {
       // Intentionally swallowed: best-effort cleanup of temp file; failure is non-fatal
     }
-    process.exit(1);
   }
 
   // CRITICAL: Sync to raw/deduped.jsonl (per MEMORY.md)

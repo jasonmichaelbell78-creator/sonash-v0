@@ -32,7 +32,7 @@ process.stdin.on("end", () => {
     const command = (data.tool_input && data.tool_input.command) || "";
 
     // Fast bail: only inspect commands that look like git push
-    if (!/\bgit\b/.test(command) || !/\bpush\b/.test(command)) {
+    if (!/\bgit\b/i.test(command) || !/\bpush\b/i.test(command)) {
       process.exit(0);
     }
 
@@ -49,8 +49,10 @@ process.stdin.on("end", () => {
 
     for (const branch of PROTECTED_BRANCHES) {
       const escaped = escapeRegex(branch);
-      // Direct branch name as argument
-      const directPattern = new RegExp(`\\bgit\\s+push\\b[^|;&]*\\b${escaped}(?=\\s|$)`);
+      // Direct branch name as argument (use (?:\\s|^) to avoid matching substrings like "feature-main")
+      const directPattern = new RegExp(
+        `\\bgit\\s+push\\b[^|;&]*(?:\\s|^)(?:refs/heads/)?${escaped}(?=\\s|$)`
+      );
       // Refspec targeting protected branch (HEAD:main, feature:main, etc.)
       const refspecPattern = new RegExp(
         `\\bgit\\s+push\\b[^|;&]*:\\s*(?:refs/heads/)?${escaped}(?=\\s|$)`

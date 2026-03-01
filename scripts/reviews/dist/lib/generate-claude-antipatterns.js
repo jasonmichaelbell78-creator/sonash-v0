@@ -122,7 +122,7 @@ function updateClaudeMd(projectRoot, patterns, dryRun = false) {
     }
     const newTable = generateAntiPatternsTable(patterns);
     // Ensure markers exist (wrap on first run), then always replace between them.
-    if (content.indexOf(START_MARKER) === -1 && content.indexOf(END_MARKER) === -1) {
+    if (!content.includes(START_MARKER) && !content.includes(END_MARKER)) {
         content = wrapExistingTableWithMarkers(content);
     }
     const startIdx = content.indexOf(START_MARKER);
@@ -186,13 +186,14 @@ function wrapExistingTableWithMarkers(content) {
 /** Symlink guard: returns false if path is a symlink (blocks symlink-based write redirection). */
 function isSafeToWrite(filePath) {
     try {
-        if (fs.existsSync(filePath) && fs.lstatSync(filePath).isSymbolicLink())
-            return false;
+        if (!fs.existsSync(filePath))
+            return true;
+        return !fs.lstatSync(filePath).isSymbolicLink();
     }
     catch {
-        // If we can't stat, allow write (file may not exist yet)
+        // If we can't stat an existing file, fail closed
+        return false;
     }
-    return true;
 }
 /** Write CLAUDE.md with a warning on failure instead of throwing. */
 function writeClaudeMdSafe(claudePath, content) {
@@ -205,21 +206,22 @@ function writeClaudeMdSafe(claudePath, content) {
         fs.writeFileSync(tmpPath, content, "utf8");
         try {
             if (fs.existsSync(claudePath))
-                fs.rmSync(claudePath);
+                fs.rmSync(claudePath, { force: true });
             fs.renameSync(tmpPath, claudePath);
         }
         catch {
-            // Cross-device fallback
+            // Cross-device / platform fallback: re-check safety before writing target
+            if (!isSafeToWrite(claudePath)) {
+                console.warn("[generate-claude-antipatterns] Warning: CLAUDE.md became unsafe (symlink), skipping write");
+                return;
+            }
             fs.copyFileSync(tmpPath, claudePath);
-            try {
-                fs.unlinkSync(tmpPath);
-            }
-            catch {
-                /* best-effort */
-            }
         }
     }
     catch (err) {
+        console.warn(`[generate-claude-antipatterns] Warning: Could not write CLAUDE.md: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    finally {
         try {
             if (fs.existsSync(tmpPath))
                 fs.unlinkSync(tmpPath);
@@ -227,7 +229,6 @@ function writeClaudeMdSafe(claudePath, content) {
         catch {
             /* best-effort cleanup */
         }
-        console.warn(`[generate-claude-antipatterns] Warning: Could not write CLAUDE.md: ${err instanceof Error ? err.message : String(err)}`);
     }
 }
 /**

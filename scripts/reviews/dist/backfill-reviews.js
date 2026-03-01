@@ -170,7 +170,7 @@ function disambiguateRecords(resolved) {
                 let out = "";
                 while (x > 0) {
                     x -= 1;
-                    out = String.fromCharCode(97 + (x % 26)) + out;
+                    out = String.fromCodePoint(97 + (x % 26)) + out;
                     x = Math.floor(x / 26);
                 }
                 return out;
@@ -241,11 +241,14 @@ function tryParseRetroHeading(line) {
     };
 }
 function isRetroSectionEnd(line) {
+    // End the current retro when any new ### section begins.
+    // Retro headings are handled earlier via tryParseRetroHeading + continue,
+    // so this only fires for non-retro ### headings (PR reviews, other sections).
     if (!line.startsWith("### "))
         return false;
     if (line.startsWith("####"))
         return false;
-    return !PR_HEADING_RE.test(line);
+    return true;
 }
 function extractRetrosFromContent(content, sourceFile) {
     const retros = [];
@@ -584,13 +587,20 @@ function applyPatternCorrections(records) {
         if (!record.patterns)
             continue;
         const originalLength = record.patterns.length;
-        record.patterns = record.patterns.filter((p) => !isArtifactPattern(p));
-        applied += originalLength - record.patterns.length;
-        if (record.patterns.length === 0) {
+        const filtered = record.patterns.filter((p) => !isArtifactPattern(p));
+        applied += originalLength - filtered.length;
+        if (filtered.length === 0) {
             record.patterns = null;
             if (!record.completeness_missing.includes("patterns")) {
                 record.completeness_missing.push("patterns");
             }
+            // Keep completeness tier consistent with missing fields
+            if (record.completeness === "full") {
+                record.completeness = "partial";
+            }
+        }
+        else {
+            record.patterns = filtered;
         }
     }
     // Patterns #5 and #13 flagged for manual investigation
@@ -708,7 +718,10 @@ async function runBackfill() {
     const allRecords = [...resolution.records, ...v1Result.records];
     console.log("Step 6: BKFL-05 consolidation counter check...");
     const consolidationPath = path.join(PROJECT_ROOT, ".claude/state/consolidation.json");
-    const maxReviewNumber = allRecords.length > 0 ? Math.max(...allRecords.map((r) => extractReviewNumber(r.id))) : 0;
+    const reviewNums = allRecords
+        .map((r) => extractReviewNumber(r.id))
+        .filter((n) => n > 0);
+    const maxReviewNumber = reviewNums.length > 0 ? Math.max(...reviewNums) : 0;
     const consolidationResult = checkConsolidationCounter(consolidationPath, maxReviewNumber);
     if (consolidationResult.match) {
         console.log(`  BKFL-05: Consolidation counter: match (${consolidationResult.expected})`);
@@ -740,6 +753,8 @@ async function runBackfill() {
         try {
             fs.writeFileSync(tmpPath, reviewLines, "utf8");
             try {
+                if (fs.existsSync(reviewsPath))
+                    fs.rmSync(reviewsPath, { force: true });
                 fs.renameSync(tmpPath, reviewsPath);
             }
             catch {
@@ -767,6 +782,8 @@ async function runBackfill() {
         try {
             fs.writeFileSync(tmpPath, retroLines, "utf8");
             try {
+                if (fs.existsSync(retrosPath))
+                    fs.rmSync(retrosPath, { force: true });
                 fs.renameSync(tmpPath, retrosPath);
             }
             catch {
