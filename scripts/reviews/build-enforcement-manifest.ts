@@ -377,10 +377,10 @@ function buildMechanisms(pattern: PatternEntry, sources: RuleSource): Mechanisms
     }
   }
 
-  // Check Semgrep rules (by code-pattern-ref match against category or pattern name)
+  // Check Semgrep rules -- exact slug match only (no category-level or fuzzy matching)
   for (const [ref, ruleId] of sources.semgrepRules) {
     const refSlug = slugify(ref);
-    if (fuzzyMatch(refSlug, slug) || ref === pattern.category || ref === pattern.name) {
+    if (refSlug === slug) {
       mechanisms.semgrep = `active:${ruleId}`;
       break;
     }
