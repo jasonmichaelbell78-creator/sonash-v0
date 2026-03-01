@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.78 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
+**Document Version:** 17.79 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
 
 ## Purpose
 
@@ -692,6 +692,50 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #438: PR #407 R12 — SonarCloud + Qodo (2026-03-01)
+
+_PR Review Ecosystem v2 Phases 1-3. Round 12 of ongoing review cycle._
+
+**Source:** SonarCloud (5), Qodo PR Suggestions (10) **Total:** 15 **Fixed:** 4
+**Rejected:** 11
+
+**Severity:** 2 CRITICAL (CC reduction), 2 MAJOR (nested ternary, write
+hardening), 11 rejected
+
+**Items Fixed:**
+
+1. **Nested ternary extraction** (`backfill-reviews.ts:580`) — Extracted nested
+   ternary in `buildV1ReviewRecord` to if-else chain for readability
+2. **CC reduction: writeDebtOutput** (`dedup-debt.ts:231`) — CC 16→≤15 via
+   symlink guard extraction + cross-device write hardening (!isFile check)
+3. **CC reduction: processArchiveLine** (`parse-review.ts:90`) — CC 18→≤15 via
+   fence handling extraction to `processFenceLine` helper
+4. **Cross-device write hardening** (`dedup-debt.ts:247`) — Added !isFile()
+   check in cross-device fallback (combined with CC fix)
+
+**Rejected (with justification):**
+
+- SC: Top-level await ×2 (`promote-patterns.js`, `backfill-reviews.ts`) — CJS
+  modules (tsconfig module=commonjs, wrapper uses require). Top-level await
+  requires ESM.
+- Q: V1 ID type normalization — V1 IDs are always numeric from JSON.parse. Type
+  mismatch is hypothetical.
+- Q: Undated retro fallback — All retro headings have dates. Sentinel
+  "1970-01-01" would corrupt data.
+- Q: Table wrapping EOL regex — First-run code, markers already exist in
+  CLAUDE.md.
+- Q: Retro #### termination — Archives don't use #### within retro sections.
+- Q: Prefixed ID parsing — `rev-` is output format, not input. V1 has plain
+  numbers.
+- Q: safe-fs try-catch ×2 — Infrastructure file; crash is correct if missing.
+- Q: 4+ backtick fence tracking — Archives use standard ``` fences only.
+- Q: Temp file cleanup after fallback — finally block already handles this.
+
+**Patterns:** CJS-vs-ESM awareness (reject top-level await in CJS), CC
+extraction discipline, data format validation before accepting suggestions
+
+---
 
 ### PR #396 Retrospective (2026-02-27)
 

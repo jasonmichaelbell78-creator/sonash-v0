@@ -87,20 +87,24 @@ interface ArchiveParseState {
   entries: ParsedEntry[];
 }
 
+function processFenceLine(trimmed: string, state: ArchiveParseState): void {
+  const fence = trimmed.startsWith("```") ? "```" : "~~~";
+  if (state.inFence) {
+    // Only close when the same fence type is used
+    if (state.fenceMarker === fence) {
+      state.inFence = false;
+      state.fenceMarker = null;
+    }
+  } else {
+    state.inFence = true;
+    state.fenceMarker = fence;
+  }
+}
+
 function processArchiveLine(line: string, state: ArchiveParseState, filePath: string): void {
   const trimmed = line.trim();
   if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-    const fence = trimmed.startsWith("```") ? "```" : "~~~";
-    if (state.inFence) {
-      // Only close when the same fence type is used
-      if (state.fenceMarker === fence) {
-        state.inFence = false;
-        state.fenceMarker = null;
-      }
-    } else {
-      state.inFence = true;
-      state.fenceMarker = fence;
-    }
+    processFenceLine(trimmed, state);
     if (state.current) state.current.rawLines.push(line);
     return;
   }

@@ -574,12 +574,14 @@ function computeV1MissingFields(v1: V1Record): string[] {
 
 function buildV1ReviewRecord(v1: V1Record): ReviewRecordType {
   const rawId = v1.id;
-  const idNumber =
-    typeof rawId === "number"
-      ? rawId
-      : /^\d+$/.test(String(rawId).trim())
-        ? Number.parseInt(String(rawId), 10)
-        : Number.NaN;
+  let idNumber: number;
+  if (typeof rawId === "number") {
+    idNumber = rawId;
+  } else if (/^\d+$/.test(String(rawId).trim())) {
+    idNumber = Number.parseInt(String(rawId), 10);
+  } else {
+    idNumber = Number.NaN;
+  }
   if (!Number.isFinite(idNumber) || idNumber <= 0) {
     throw new Error(`Invalid v1 record id: ${String(v1.id)}`);
   }

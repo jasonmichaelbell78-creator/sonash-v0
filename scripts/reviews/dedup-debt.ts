@@ -227,28 +227,41 @@ function readDebtItems(masterPath: string): DebtItem[] {
   return items;
 }
 
-/** Write dedup result to MASTER_DEBT.jsonl atomically and sync to raw/deduped.jsonl. */
-function writeDebtOutput(masterPath: string, dedupedPath: string, result: DedupResult): void {
-  // Symlink guard for both output paths
-  for (const p of [masterPath, dedupedPath]) {
+function guardAgainstSymlinks(paths: string[]): void {
+  for (const p of paths) {
     if (fs.existsSync(p) && fs.lstatSync(p).isSymbolicLink()) {
       console.error(`Refusing to write: ${path.basename(p)} is a symlink`);
       process.exit(1);
     }
   }
+}
+
+function atomicWriteWithFallback(tmpPath: string, destPath: string): void {
+  try {
+    fs.renameSync(tmpPath, destPath);
+  } catch {
+    // Cross-device fallback (re-check safety before non-atomic write)
+    if (fs.existsSync(destPath)) {
+      const st = fs.lstatSync(destPath);
+      if (st.isSymbolicLink()) {
+        throw new Error(`Refusing to write: ${path.basename(destPath)} became a symlink`);
+      }
+      if (!st.isFile()) {
+        throw new Error(`Refusing to write: ${path.basename(destPath)} is not a regular file`);
+      }
+    }
+    fs.copyFileSync(tmpPath, destPath);
+  }
+}
+
+/** Write dedup result to MASTER_DEBT.jsonl atomically and sync to raw/deduped.jsonl. */
+function writeDebtOutput(masterPath: string, dedupedPath: string, result: DedupResult): void {
+  guardAgainstSymlinks([masterPath, dedupedPath]);
   const tmpPath = `${masterPath}.tmp-${process.pid}-${Date.now()}`;
   try {
     const output = result.kept.map((item) => JSON.stringify(item)).join("\n") + "\n";
     fs.writeFileSync(tmpPath, output, "utf8");
-    try {
-      fs.renameSync(tmpPath, masterPath);
-    } catch {
-      // Cross-device fallback (re-check safety before non-atomic write)
-      if (fs.existsSync(masterPath) && fs.lstatSync(masterPath).isSymbolicLink()) {
-        throw new Error(`Refusing to write: ${path.basename(masterPath)} became a symlink`);
-      }
-      fs.copyFileSync(tmpPath, masterPath);
-    }
+    atomicWriteWithFallback(tmpPath, masterPath);
   } catch (err) {
     console.error(
       "Failed to write MASTER_DEBT.jsonl:",
