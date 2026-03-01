@@ -17,19 +17,19 @@ Enforcement Expansion (next)
 
 ## Current Position
 
-Phase: 4 of 7 (Enforcement Expansion) Plan: 4 of 4 in current phase Status:
-Phase complete Last activity: 2026-03-01 — Completed 04-04-PLAN.md (enforcement
-manifest)
+Phase: 4 of 7 (Enforcement Expansion) Plan: 5 of 6 in current phase Status: In
+progress Last activity: 2026-03-01 — Completed 04-05-PLAN.md (semgrep ref fix
+gap closure)
 
-Progress: [########..] ~61%
+Progress: [########..] ~65%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 14
-- Average duration: 8.6 min
-- Total execution time: 121 min
+- Total plans completed: 15
+- Average duration: 8.3 min
+- Total execution time: 125 min
 
 **By Phase:**
 
@@ -38,14 +38,13 @@ Progress: [########..] ~61%
 | 01-storage-foundation      | 3     | 17 min | 5.7 min  |
 | 02-backfill-data-migration | 3     | 26 min | 8.7 min  |
 | 03-core-pipeline           | 4     | 28 min | 7.0 min  |
-| 04-enforcement-expansion   | 4     | 50 min | 12.5 min |
+| 04-enforcement-expansion   | 5     | 54 min | 10.8 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 03-04 (4 min), 04-01 (11 min), 04-02 (11 min), 04-03 (16 min),
-  04-04 (12 min)
-- Trend: Phase 4 complete; enforcement manifest capstone on par with phase
-  average
+- Last 5 plans: 04-01 (11 min), 04-02 (11 min), 04-03 (16 min), 04-04 (12 min),
+  04-05 (4 min)
+- Trend: Gap closure plan completed quickly; data fix + code fix pattern
 
 _Updated after each plan completion_
 
@@ -136,6 +135,7 @@ affecting current work:
   word overlap
 - 04-04: All patterns default to manual: code-review (never truly unenforced)
 - 04-04: Used node:test instead of vitest for test file (project convention)
+- 04-05: Keep fuzzyMatch for regex/ESLint but use exact slug match for Semgrep
 
 ### Pending Todos
 
@@ -148,8 +148,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-01T16:29:00Z Stopped at: Completed 04-04-PLAN.md
-(enforcement manifest) -- Phase 4 complete Resume file: None
+Last session: 2026-03-01T17:57:00Z Stopped at: Completed 04-05-PLAN.md (semgrep
+ref fix gap closure) Resume file: None
 
 ### GSD Process Position
 
