@@ -33,9 +33,9 @@ Decimal phases appear between their surrounding integers in numeric order.
       tracking, promotion automation, template generation
 - [x] **Phase 4: Enforcement Expansion** - Semgrep + ESLint + regex rule
       expansion to hit 55-60% automated enforcement
-- [ ] **Phase 5: Health Monitoring** - 57-metric composite scoring, interactive
+- [x] **Phase 5: Health Monitoring** - 57-metric composite scoring, interactive
       dashboard, warning lifecycle
-- [ ] **Phase 6: Gate Recalibration** - Cross-doc gate fixes, override
+- [x] **Phase 6: Gate Recalibration** - Cross-doc gate fixes, override
       analytics, automation of triage/escalation/archival
 - [ ] **Phase 7: Integration & Cutover** - Wire into sessions, E2E smoke test,
       v1-to-v2 swap, baseline score
@@ -234,14 +234,14 @@ must be TRUE):
 
 Plans:
 
-- [ ] 06-01-PLAN.md — Cross-doc deps recalibration + auto-fix mode (GATE-01,
+- [x] 06-01-PLAN.md — Cross-doc deps recalibration + auto-fix mode (GATE-01,
       GATE-02)
-- [ ] 06-02-PLAN.md — Override analytics with pattern detection (GATE-03)
-- [ ] 06-03-PLAN.md — Deferred item escalation + DEBT triage automation
+- [x] 06-02-PLAN.md — Override analytics with pattern detection (GATE-03)
+- [x] 06-03-PLAN.md — Deferred item escalation + DEBT triage automation
       (GATE-07, GATE-08)
-- [ ] 06-04-PLAN.md — Qodo suppression pruning + SECURITY_CHECKLIST sync
+- [x] 06-04-PLAN.md — Qodo suppression pruning + SECURITY_CHECKLIST sync
       (GATE-05, GATE-06)
-- [ ] 06-05-PLAN.md — Auto-archive reviews + temporal coverage monitoring
+- [x] 06-05-PLAN.md — Auto-archive reviews + temporal coverage monitoring
       (GATE-04, GATE-09)
 
 ### Phase 7: Integration & Cutover
@@ -305,10 +305,10 @@ with 5) -> 6 -> 7
 | 3. Core Pipeline             | 4/4            | Complete    | 2026-02-28 |
 | 4. Enforcement Expansion     | 6/6            | Complete    | 2026-03-01 |
 | 5. Health Monitoring         | 3/3            | Complete    | 2026-03-01 |
-| 6. Gate Recalibration        | 0/5            | Not started | -          |
+| 6. Gate Recalibration        | 5/5            | Complete    | 2026-03-01 |
 | 7. Integration & Cutover     | 0/TBD          | Not started | -          |
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 6 planned — 5
-plans in 1 wave, all parallel, covering GATE-01 through GATE-09)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 6 complete — 5
+plans executed, GATE-01 through GATE-09 verified)_
