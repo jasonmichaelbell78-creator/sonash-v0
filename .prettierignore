@@ -37,3 +37,6 @@ pnpm-lock.yaml
 
 # Logs
 *.log
+
+# Semgrep test annotation files (contain intentional code snippets, not valid parseable source)
+tests/semgrep/

@@ -212,6 +212,8 @@ const GLOBAL_EXCLUDE = [
   /^scripts\/check-pattern-compliance\.js$/,
   // Pattern test suite contains anti-pattern examples as test fixtures (not violations)
   /^tests\/pattern-compliance\.test\.js$/,
+  // Semgrep test fixtures contain intentionally bad code for static analysis detection
+  /^tests\/semgrep\//,
   // Archived/obsolete scripts - not actively maintained (Review #250)
   /^docs\/archive\//,
   // Development/build utility scripts (pre-existing debt - Review #136)
@@ -243,6 +245,8 @@ const GLOBAL_EXCLUDE = [
   // init-artifact.sh: deliberately uses npm/pnpm installs to bootstrap new artifact projects
   // This is a one-time setup script for the artifacts-builder skill
   /^\.claude\/skills\/artifacts-builder\/scripts\/init-artifact\.sh$/,
+  // Semgrep test annotation files contain intentional violations as test fixtures
+  /^tests\/semgrep\//,
 ];
 
 /**
