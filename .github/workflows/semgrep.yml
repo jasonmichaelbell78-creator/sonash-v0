@@ -34,6 +34,26 @@ jobs:
       # Checkout project source
       - uses: actions/checkout@v4
 
+      # Install Semgrep for local custom rules
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      # Run local custom rules from .semgrep/rules/
+      - name: Run local custom rules
+        run: |
+          semgrep --config .semgrep/rules/ \
+            --error \
+            --sarif \
+            --output=semgrep-local.sarif \
+            .
+
+      # Test Semgrep rules against annotation files
+      - name: Test Semgrep rules
+        run: |
+          semgrep --test \
+            --config .semgrep/rules/ \
+            tests/semgrep/
+
       # Scan code using project's configuration on https://semgrep.dev/manage
       - uses: returntocorp/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d
         with:
@@ -41,9 +61,17 @@ jobs:
           publishDeployment: ${{ secrets.SEMGREP_DEPLOYMENT_ID }}
           generateSarif: "1"
 
-      # Upload SARIF file generated in previous step
-      - name: Upload SARIF file
+      # Upload both SARIF files (local custom rules + cloud-managed rules)
+      - name: Upload local rules SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: semgrep-local.sarif
+          category: semgrep-local
+        if: always()
+
+      - name: Upload cloud rules SARIF
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
+          category: semgrep-cloud
         if: always()

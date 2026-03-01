@@ -16,6 +16,8 @@
  *   --verbose    Show detailed output
  *   --json       Output as JSON
  *   --fp-report  Show per-pattern false-positive exclusion counts
+ *   --fp-threshold=N   Set FP auto-disable threshold (default: 25)
+ *   --include-fp-disabled  Force all rules to run, even FP-disabled ones
  *
  * Severity tiers:
  *   critical - Always blocks (pre-commit + CI): security patterns
@@ -198,6 +200,9 @@ const ALL = args.includes("--all");
 const VERBOSE = args.includes("--verbose");
 const JSON_OUTPUT = args.includes("--json");
 const FP_REPORT = args.includes("--fp-report");
+const INCLUDE_FP_DISABLED = args.includes("--include-fp-disabled");
+const FP_THRESHOLD_ARG = args.find((a) => a.startsWith("--fp-threshold="));
+const FP_THRESHOLD = FP_THRESHOLD_ARG ? parseInt(FP_THRESHOLD_ARG.split("=")[1], 10) : 25;
 const FILES = args.filter((a) => !a.startsWith("--"));
 
 /**
