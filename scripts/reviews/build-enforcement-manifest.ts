@@ -339,10 +339,23 @@ function fuzzyMatch(ruleId: string, patternSlug: string): boolean {
   if (normalizedRule.includes(normalizedSlug)) return true;
   if (normalizedSlug.includes(normalizedRule)) return true;
 
-  // Check significant words (3+ chars)
-  const slugWords = normalizedSlug.split(/(?=[A-Z])|[^a-z0-9]/i).filter((w) => w.length >= 3);
-  const matchCount = slugWords.filter((w) => normalizedRule.includes(w.toLowerCase())).length;
-  return slugWords.length > 0 && matchCount >= Math.ceil(slugWords.length * 0.6);
+  // Check significant words (3+ chars) -- split BEFORE normalization to preserve word boundaries
+  const slugWords = patternSlug
+    .toLowerCase()
+    .split(/[-_]+/)
+    .filter((w) => w.length >= 3);
+  const ruleWords = ruleId
+    .toLowerCase()
+    .split(/[-_]+/)
+    .filter((w) => w.length >= 3);
+  const slugMatchCount = slugWords.filter((w) => normalizedRule.includes(w)).length;
+  const ruleMatchCount = ruleWords.filter((w) => normalizedSlug.includes(w)).length;
+
+  // Match if 60% of either side's words appear in the other
+  if (slugWords.length > 0 && slugMatchCount >= Math.ceil(slugWords.length * 0.6)) return true;
+  if (ruleWords.length > 0 && ruleMatchCount >= Math.ceil(ruleWords.length * 0.6)) return true;
+
+  return false;
 }
 
 /**
