@@ -1,0 +1,27 @@
+rules:
+  - id: sonash.correctness.no-unchecked-array-access
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      Array element accessed by index without a length or bounds check. This can
+      return undefined and cause downstream TypeError crashes. Check
+      array.length before accessing by index, or use array.at() with a
+      nullish check.
+    metadata:
+      category: correctness
+      code-pattern-ref: "General"
+      confidence: LOW
+    patterns:
+      - pattern: $ARR[0]
+      - pattern-not-inside: |
+          if ($ARR.length > 0) { ... }
+      - pattern-not-inside: |
+          if ($ARR && $ARR.length) { ... }
+    paths:
+      include:
+        - scripts/
+        - functions/
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

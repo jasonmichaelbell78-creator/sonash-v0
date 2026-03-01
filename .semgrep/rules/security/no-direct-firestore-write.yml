@@ -1,0 +1,37 @@
+rules:
+  - id: sonash.security.no-direct-firestore-write
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Direct Firestore write detected in app code. All writes to journal,
+      daily_logs, and inventoryEntries collections MUST go through Cloud
+      Functions (httpsCallable). Direct writes bypass security rules, App Check,
+      and rate limiting.
+    metadata:
+      category: security
+      code-pattern-ref: "Security"
+      confidence: HIGH
+      cwe: "CWE-284: Improper Access Control"
+    pattern-either:
+      - pattern: |
+          import { ..., setDoc, ... } from "firebase/firestore"
+      - pattern: |
+          import { ..., addDoc, ... } from "firebase/firestore"
+      - pattern: |
+          import { ..., updateDoc, ... } from "firebase/firestore"
+      - pattern: |
+          import { ..., deleteDoc, ... } from "firebase/firestore"
+      - pattern: setDoc($REF, ...)
+      - pattern: addDoc($REF, ...)
+      - pattern: updateDoc($REF, ...)
+      - pattern: deleteDoc($REF, ...)
+    paths:
+      include:
+        - app/
+        - components/
+        - lib/
+      exclude:
+        - functions/
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

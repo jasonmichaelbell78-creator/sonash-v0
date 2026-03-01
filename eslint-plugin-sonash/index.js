@@ -27,6 +27,13 @@
  * - loadConfig/require without try/catch
  * - Path traversal check missing empty string edge case
  * - writeFileSync without atomic write pattern
+ * - useEffect with timer but no cleanup function
+ * - Unsafe spread of unknown objects into JSX props
+ * - State update during render (infinite loop)
+ * - Async client components (not supported in React)
+ * - Suspense without ErrorBoundary wrapper
+ * - Unbounded array growth in useState
+ * - Inline function in useEffect dependency array
  */
 
 "use strict";
@@ -57,11 +64,19 @@ const noUnsafeDivision = require("./rules/no-unsafe-division");
 const noUnguardedLoadconfig = require("./rules/no-unguarded-loadconfig");
 const noEmptyPathCheck = require("./rules/no-empty-path-check");
 const noNonAtomicWrite = require("./rules/no-non-atomic-write");
+// Phase 3: AST rules for hooks misuse, unsafe patterns, React anti-patterns
+const noEffectMissingCleanup = require("./rules/no-effect-missing-cleanup");
+const noUnsafeSpread = require("./rules/no-unsafe-spread");
+const noStateUpdateInRender = require("./rules/no-state-update-in-render");
+const noAsyncComponent = require("./rules/no-async-component");
+const noMissingErrorBoundary = require("./rules/no-missing-error-boundary");
+const noUnboundedArrayInState = require("./rules/no-unbounded-array-in-state");
+const noCallbackInEffectDep = require("./rules/no-callback-in-effect-dep");
 
 const plugin = {
   meta: {
     name: "eslint-plugin-sonash",
-    version: "3.0.0",
+    version: "4.0.0",
   },
   rules: {
     "no-unguarded-file-read": noUnguardedFileRead,
@@ -90,6 +105,14 @@ const plugin = {
     "no-unguarded-loadconfig": noUnguardedLoadconfig,
     "no-empty-path-check": noEmptyPathCheck,
     "no-non-atomic-write": noNonAtomicWrite,
+    // Phase 3 rules
+    "no-effect-missing-cleanup": noEffectMissingCleanup,
+    "no-unsafe-spread": noUnsafeSpread,
+    "no-state-update-in-render": noStateUpdateInRender,
+    "no-async-component": noAsyncComponent,
+    "no-missing-error-boundary": noMissingErrorBoundary,
+    "no-unbounded-array-in-state": noUnboundedArrayInState,
+    "no-callback-in-effect-dep": noCallbackInEffectDep,
   },
   configs: {},
 };
@@ -125,6 +148,13 @@ plugin.configs.recommended = {
     "sonash/no-unguarded-loadconfig": "warn",
     "sonash/no-empty-path-check": "warn",
     "sonash/no-non-atomic-write": "warn",
+    "sonash/no-effect-missing-cleanup": "warn",
+    "sonash/no-unsafe-spread": "warn",
+    "sonash/no-state-update-in-render": "warn",
+    "sonash/no-async-component": "warn",
+    "sonash/no-missing-error-boundary": "warn",
+    "sonash/no-unbounded-array-in-state": "warn",
+    "sonash/no-callback-in-effect-dep": "warn",
   },
 };
 

@@ -1,0 +1,25 @@
+rules:
+  - id: sonash.style.no-inline-firestore-query
+    languages: [javascript, typescript]
+    severity: INFO
+    message: >-
+      Direct Firestore query (getDoc/getDocs) detected outside the service
+      layer. Add new queries to lib/firestore-service.ts following the
+      Repository Pattern. This keeps query logic centralized, testable, and
+      consistent.
+    metadata:
+      category: style
+      code-pattern-ref: "Security"
+      confidence: HIGH
+    pattern-either:
+      - pattern: getDoc(...)
+      - pattern: getDocs(...)
+    paths:
+      include:
+        - app/
+        - components/
+      exclude:
+        - lib/
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

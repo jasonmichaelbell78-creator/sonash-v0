@@ -1,0 +1,31 @@
+# Semgrep ignore file
+# Excludes non-source files and test fixtures from scanning
+
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+dist/
+coverage/
+out/
+
+# Test fixtures (contain intentional violations for Semgrep test annotations)
+tests/semgrep/
+
+# Documentation
+docs/
+*.md
+
+# Data files
+*.json
+*.jsonl
+
+# Config files
+*.config.js
+*.config.ts
+*.config.mjs
+
+# Generated files
+.planning/
+.claude/

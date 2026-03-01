@@ -1,0 +1,23 @@
+rules:
+  - id: sonash.correctness.file-read-without-try-catch
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      File read operation without try/catch. existsSync() check before read is a
+      race condition (TOCTOU). Always wrap file reads in try/catch to handle
+      missing/locked/permission-denied files gracefully.
+    metadata:
+      category: correctness
+      code-pattern-ref: "File Reads with try/catch"
+      confidence: HIGH
+    patterns:
+      - pattern-either:
+          - pattern: fs.readFileSync(...)
+          - pattern: readFileSync(...)
+      - pattern-not-inside: |
+          try { ... } catch (...) { ... }
+    paths:
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

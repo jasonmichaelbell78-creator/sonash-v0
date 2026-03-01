@@ -1,0 +1,40 @@
+rules:
+  - id: sonash.security.taint-path-traversal
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      User-controlled input flows to filesystem operations. This enables path
+      traversal attacks. Use validatePathInDir() or isPathContained() from
+      scripts/lib/security-helpers.js to validate paths stay within allowed
+      directories. Never use startsWith('..') -- use regex /^\.\.(?:[\/\\]|$)/.
+    metadata:
+      category: security
+      code-pattern-ref: "Path Traversal Check"
+      confidence: HIGH
+      cwe: "CWE-22: Path Traversal"
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: req.body
+              - pattern: req.query
+              - pattern: req.params
+              - pattern: process.argv
+              - pattern: req.body.$FIELD
+              - pattern: req.query.$FIELD
+              - pattern: req.params.$FIELD
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: fs.readFileSync($PATH, ...)
+              - pattern: fs.writeFileSync($PATH, ...)
+              - pattern: fs.readFile($PATH, ...)
+              - pattern: fs.writeFile($PATH, ...)
+              - pattern: path.join($BASE, $PATH)
+              - pattern: path.resolve($PATH)
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: validatePathInDir(...)
+              - pattern: isPathContained(...)
+              - pattern: sanitizePath(...)

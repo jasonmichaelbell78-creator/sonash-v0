@@ -1,0 +1,26 @@
+rules:
+  - id: sonash.correctness.async-without-try-catch
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      Async function uses await without try/catch error handling. Unhandled
+      promise rejections crash the process in Node.js. Wrap await calls in
+      try/catch or use .catch() on the returned promise.
+    metadata:
+      category: correctness
+      code-pattern-ref: "File Reads with try/catch"
+      confidence: MEDIUM
+    patterns:
+      - pattern: |
+          async function $FN(...) {
+            ...
+            await $EXPR;
+            ...
+          }
+      - pattern-not-inside: |
+          try { ... } catch (...) { ... }
+    paths:
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

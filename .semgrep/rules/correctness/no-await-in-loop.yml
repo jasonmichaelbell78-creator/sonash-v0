@@ -1,0 +1,42 @@
+rules:
+  - id: sonash.correctness.no-await-in-loop
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      await inside a loop executes async operations sequentially, which is
+      usually much slower than needed. Use Promise.all() or Promise.allSettled()
+      to parallelize independent operations.
+    metadata:
+      category: correctness
+      code-pattern-ref: "General"
+      confidence: MEDIUM
+    pattern-either:
+      - pattern: |
+          for (...) {
+            ...
+            await $EXPR;
+            ...
+          }
+      - pattern: |
+          for (... of ...) {
+            ...
+            await $EXPR;
+            ...
+          }
+      - pattern: |
+          for (... in ...) {
+            ...
+            await $EXPR;
+            ...
+          }
+      - pattern: |
+          while (...) {
+            ...
+            await $EXPR;
+            ...
+          }
+    paths:
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

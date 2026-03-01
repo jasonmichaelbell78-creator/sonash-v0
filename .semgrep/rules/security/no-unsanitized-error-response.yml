@@ -1,0 +1,38 @@
+rules:
+  - id: sonash.security.no-unsanitized-error-response
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Raw error.message or error.stack exposed in response. Use sanitizeError()
+      from scripts/lib/sanitize-error.js to prevent leaking internal details
+      (file paths, stack traces, dependency versions).
+    metadata:
+      category: security
+      code-pattern-ref: "Error Sanitization"
+      confidence: HIGH
+      cwe: "CWE-209: Generation of Error Message Containing Sensitive Information"
+    patterns:
+      - pattern-either:
+          - pattern: |
+              res.json({..., message: $ERR.message, ...})
+          - pattern: |
+              res.json({..., error: $ERR.message, ...})
+          - pattern: |
+              res.json({..., stack: $ERR.stack, ...})
+          - pattern: |
+              res.send($ERR.message)
+          - pattern: |
+              res.status(...).json({..., message: $ERR.message, ...})
+          - pattern: |
+              res.status(...).json({..., error: $ERR.message, ...})
+          - pattern: |
+              return { ..., error: $ERR.message, ... }
+          - pattern: |
+              return { ..., message: $ERR.message, ... }
+      - pattern-not-inside: |
+          sanitizeError(...)
+    paths:
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"
