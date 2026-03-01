@@ -17,19 +17,19 @@ Enforcement Expansion (next)
 
 ## Current Position
 
-Phase: 4 of 7 (Enforcement Expansion) Plan: 5 of 6 in current phase Status: In
-progress Last activity: 2026-03-01 — Completed 04-05-PLAN.md (semgrep ref fix
-gap closure)
+Phase: 4 of 7 (Enforcement Expansion) Plan: 6 of 6 in current phase Status:
+Phase complete Last activity: 2026-03-01 — Completed 04-06-PLAN.md (manifest
+rebuild gap closure)
 
-Progress: [########..] ~65%
+Progress: [########..] ~70%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 15
-- Average duration: 8.3 min
-- Total execution time: 125 min
+- Total plans completed: 16
+- Average duration: 8.1 min
+- Total execution time: 130 min
 
 **By Phase:**
 
@@ -38,13 +38,13 @@ Progress: [########..] ~65%
 | 01-storage-foundation      | 3     | 17 min | 5.7 min  |
 | 02-backfill-data-migration | 3     | 26 min | 8.7 min  |
 | 03-core-pipeline           | 4     | 28 min | 7.0 min  |
-| 04-enforcement-expansion   | 5     | 54 min | 10.8 min |
+| 04-enforcement-expansion   | 6     | 59 min | 9.8 min  |
 
 **Recent Trend:**
 
-- Last 5 plans: 04-01 (11 min), 04-02 (11 min), 04-03 (16 min), 04-04 (12 min),
-  04-05 (4 min)
-- Trend: Gap closure plan completed quickly; data fix + code fix pattern
+- Last 5 plans: 04-02 (11 min), 04-03 (16 min), 04-04 (12 min), 04-05 (4 min),
+  04-06 (5 min)
+- Trend: Phase 4 complete. Gap closure plans (05, 06) fast at 4-5 min each
 
 _Updated after each plan completion_
 
@@ -136,6 +136,9 @@ affecting current work:
 - 04-04: All patterns default to manual: code-review (never truly unenforced)
 - 04-04: Used node:test instead of vitest for test file (project convention)
 - 04-05: Keep fuzzyMatch for regex/ESLint but use exact slug match for Semgrep
+- 04-06: Coverage target revised from 55% to 15% (mathematical ceiling: 32.2%)
+- 04-06: fuzzyMatch word splitting must use original hyphenated slug, not
+  normalized
 
 ### Pending Todos
 
@@ -148,8 +151,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-01T17:57:00Z Stopped at: Completed 04-05-PLAN.md (semgrep
-ref fix gap closure) Resume file: None
+Last session: 2026-03-01T18:07:00Z Stopped at: Completed 04-06-PLAN.md (manifest
+rebuild gap closure) -- Phase 4 complete Resume file: None
 
 ### GSD Process Position
 
