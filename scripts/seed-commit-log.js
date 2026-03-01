@@ -196,7 +196,9 @@ function getLatestLogHash() {
       const buf = Buffer.alloc(len);
       fs.readSync(fd, buf, 0, len, start);
       // If we started mid-file, drop the partial first line to avoid parse failures
-      const alignedBuf = start === 0 ? buf : buf.subarray(buf.indexOf(0x0a) + 1);
+      const nlIdx = start === 0 ? -1 : buf.indexOf(0x0a);
+      if (start !== 0 && nlIdx === -1) return null;
+      const alignedBuf = start === 0 ? buf : buf.subarray(nlIdx + 1);
       const text = alignedBuf.toString("utf8").trim();
       if (!text) return null;
       const lines = text.split("\n").slice(-200).filter(Boolean);
@@ -259,19 +261,39 @@ function getCommitsAfter(sinceHash) {
 function readTailHashes(filePath) {
   const hashes = new Set();
   try {
-    const tail = fs.readFileSync(filePath, "utf8").split("\n").slice(-200);
-    for (const line of tail) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("{")) continue;
-      try {
-        const obj = JSON.parse(trimmed);
-        if (obj?.hash) hashes.add(obj.hash);
-      } catch {
-        /* ignore malformed lines */
+    if (!fs.existsSync(filePath)) return hashes;
+    const fd = fs.openSync(filePath, "r");
+    try {
+      const stat = fs.fstatSync(fd);
+      if (stat.size === 0) return hashes;
+
+      const MAX_TAIL_BYTES = 256 * 1024;
+      const start = Math.max(0, stat.size - MAX_TAIL_BYTES);
+      const len = stat.size - start;
+      const buf = Buffer.alloc(len);
+      fs.readSync(fd, buf, 0, len, start);
+
+      // If we started mid-file, drop the partial first line
+      const nlIdx = start === 0 ? -1 : buf.indexOf(0x0a);
+      if (start !== 0 && nlIdx === -1) return hashes;
+      const alignedBuf = start === 0 ? buf : buf.subarray(nlIdx + 1);
+
+      const lines = alignedBuf.toString("utf8").split("\n").slice(-200);
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("{")) continue;
+        try {
+          const obj = JSON.parse(trimmed);
+          if (obj?.hash) hashes.add(obj.hash);
+        } catch {
+          /* ignore malformed lines */
+        }
       }
+    } finally {
+      fs.closeSync(fd);
     }
   } catch {
-    /* file may not exist */
+    /* file may not exist / best-effort */
   }
   return hashes;
 }
@@ -312,6 +334,18 @@ function appendEntries(entries) {
   if (!isSafeToWrite(COMMIT_LOG)) {
     console.error("Symlink guard blocked append to commit-log.jsonl");
     process.exit(1);
+  }
+  if (fs.existsSync(COMMIT_LOG)) {
+    try {
+      const st = fs.lstatSync(COMMIT_LOG);
+      if (st.isSymbolicLink() || !st.isFile()) {
+        console.error("Refusing to append: commit-log.jsonl is not a regular file");
+        process.exit(1);
+      }
+    } catch {
+      console.error("Refusing to append: could not stat commit-log.jsonl");
+      process.exit(1);
+    }
   }
   fs.appendFileSync(COMMIT_LOG, content, "utf8");
 }

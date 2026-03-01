@@ -67,9 +67,13 @@ function parseHeaderLine(line) {
     return { reviewNumber, date, title: cleanTitle };
 }
 function processFenceLine(trimmed, state) {
-    const fence = trimmed.startsWith("```") ? "```" : "~~~";
+    var _a;
+    const match = /^(?<marker>`{3,}|~{3,})/.exec(trimmed);
+    if (!((_a = match === null || match === void 0 ? void 0 : match.groups) === null || _a === void 0 ? void 0 : _a.marker))
+        return;
+    const fence = match.groups.marker;
     if (state.inFence) {
-        // Only close when the same fence type is used
+        // Only close when the same fence marker (type + length) is used
         if (state.fenceMarker === fence) {
             state.inFence = false;
             state.fenceMarker = null;
@@ -271,7 +275,9 @@ function isSectionHeader(lower, keywords) {
     return keywords.some((kw) => lower.includes(kw));
 }
 function isEndOfSection(trimmed, sectionKeyword) {
-    if (trimmed.startsWith("**") && !trimmed.toLowerCase().includes(sectionKeyword)) {
+    // Only treat bold "Label:" lines as section boundaries, not arbitrary bold prose
+    const isBoldLabelLine = /^\*\*[^*]+:\*\*/.test(trimmed);
+    if (isBoldLabelLine && !trimmed.toLowerCase().includes(sectionKeyword)) {
         return true;
     }
     return trimmed.startsWith("---") || SECTION_HEADING_RE.test(trimmed);

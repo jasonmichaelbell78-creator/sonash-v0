@@ -229,8 +229,14 @@ function readDebtItems(masterPath: string): DebtItem[] {
 
 function guardAgainstSymlinks(paths: string[]): void {
   for (const p of paths) {
-    if (fs.existsSync(p) && fs.lstatSync(p).isSymbolicLink()) {
-      console.error(`Refusing to write: ${path.basename(p)} is a symlink`);
+    if (!fs.existsSync(p)) continue;
+    try {
+      if (fs.lstatSync(p).isSymbolicLink()) {
+        console.error(`Refusing to write: ${path.basename(p)} is a symlink`);
+        process.exit(1);
+      }
+    } catch {
+      console.error(`Refusing to write: could not stat ${path.basename(p)}`);
       process.exit(1);
     }
   }
@@ -249,8 +255,22 @@ function atomicWriteWithFallback(tmpPath: string, destPath: string): void {
       if (!st.isFile()) {
         throw new Error(`Refusing to write: ${path.basename(destPath)} is not a regular file`);
       }
+      fs.copyFileSync(tmpPath, destPath);
+    } else {
+      // Destination doesn't exist: use create-only flag to avoid clobbering via race
+      const data = fs.readFileSync(tmpPath);
+      const fd = fs.openSync(destPath, "wx", 0o644);
+      try {
+        fs.writeFileSync(fd, data);
+      } finally {
+        fs.closeSync(fd);
+      }
     }
-    fs.copyFileSync(tmpPath, destPath);
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {
+      // Intentionally swallowed: best-effort cleanup of tmp file after cross-device copy
+    }
   }
 }
 

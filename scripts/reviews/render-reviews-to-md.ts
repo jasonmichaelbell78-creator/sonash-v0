@@ -233,7 +233,18 @@ if (require.main === module) {
     try {
       fs.renameSync(tmpPath, resolvedOut);
     } catch {
-      // Cross-device fallback
+      // Cross-device fallback (re-check destination to prevent symlink race)
+      if (fs.existsSync(resolvedOut)) {
+        const st = fs.lstatSync(resolvedOut);
+        if (st.isSymbolicLink()) {
+          console.error("--output became a symlink during write (refusing)");
+          process.exit(1);
+        }
+        if (!st.isFile()) {
+          console.error("--output must be a file path (not a directory or special file)");
+          process.exit(1);
+        }
+      }
       fs.copyFileSync(tmpPath, resolvedOut);
       try {
         fs.unlinkSync(tmpPath);

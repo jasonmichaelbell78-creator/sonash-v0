@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.79 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
+**Document Version:** 17.80 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
 
 ## Purpose
 
@@ -348,6 +348,17 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#7)</summary>
+
+- **Date:** 2026-03-01
+- **Reviews consolidated:** #431-#441
+- **Recurring patterns:**
+  - qodo (5x)
+  - sonarcloud (5x)
+  - learnings (3x)
+
+</details>
 <details>
 <summary>Previous Consolidation (#6)</summary>
 
@@ -2506,5 +2517,42 @@ All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl
 - **Process**: Sequential fixes, propagation check found 1 additional file
   (generate-claude-antipatterns.ts) with same vulnerable local `isSafeToWrite`.
   SonarCloud top-level await rejected for CJS compatibility.
+
+#### Review #439: PR #407 R13 — Qodo Compliance/Suggestions + CI Fix (2026-03-01)
+
+- **Source**: Qodo Compliance (3), Qodo Code Suggestions (12), SonarCloud (2),
+  CI Blocker (1)
+- **PR**: PR #407 — PR Review Ecosystem v2
+- **Items**: 18 total → 13 fixed, 5 rejected
+- **Fixed**: (1) CI blocker: add unlinkSync to atomicWriteWithFallback in
+  dedup-debt.ts (pattern checker requires copy+unlink); (2) TOCTOU fix in
+  guardAgainstSymlinks — wrap lstatSync in try/catch; (3) parse-review.ts: track
+  exact fence marker length (`{3,}`) not just type; (4) parse-review.ts:
+  isEndOfSection only treats bold "Label:" lines as boundaries, not arbitrary
+  bold prose; (5) render-reviews-to-md.ts: re-check symlink before cross-device
+  fallback copyFileSync; (6) promote-patterns.ts: normalize content hyphens to
+  spaces for consistent duplicate detection; (7)
+  generate-claude-antipatterns.ts: escape `|` and newlines in markdown table
+  cells; (8) backfill-reviews.ts: sanitize JSONL logging (remove raw content,
+  log line number only); (9) backfill-reviews.ts: normalize v1.id to numeric
+  before Set.has() check; (10) write-invocation.ts: remove err.message from CLI
+  output; (11) seed-commit-log.js: handle no-newline edge case in tail read;
+  (12) seed-commit-log.js: optimize readTailHashes with bounded tail read; (13)
+  seed-commit-log.js: add lstatSync check before appendFileSync; (14)
+  dedup-debt.ts: use `wx` flag for create-only writes when dest doesn't exist
+- **Rejected**: (A) Top-level await in promote-patterns.js — repeat-rejected,
+  CJS file; (B) Top-level await in backfill-reviews.ts — uses correct CJS
+  `.catch()` pattern; (C) Accept more legacy ID formats in backfill — V1 only
+  uses numeric IDs; (D) Swallowed error context in readFileSync wrappers —
+  intentional graceful degradation; (E) Secure error handling broader concern —
+  internal CLI tool, not end-user-facing
+- **Patterns**: Pattern checker `rename-no-fallback` requires all 4 elements
+  (try, catch, copyFileSync, unlinkSync) within 30-line window — cleanup in
+  calling function's `finally` doesn't count; markdown fence parser should track
+  exact marker length per CommonMark spec; `isEndOfSection` false positives on
+  bold prose inside sections; `Set.has()` type mismatch between string IDs and
+  numeric Sets causes silent skip bugs
+- **Process**: Sequential fixes across 8 files. Propagation check clean. 414
+  tests pass, 0 failures. CI blocker was the only blocking item.
 
 ---

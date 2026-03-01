@@ -157,7 +157,7 @@ export function filterAlreadyPromoted(
   patterns: RecurrenceResult[],
   codePatternsContent: string
 ): { newPatterns: RecurrenceResult[]; alreadyPromoted: string[] } {
-  const lowerContent = codePatternsContent.toLowerCase();
+  const normalizedContent = codePatternsContent.toLowerCase().replaceAll("-", " ");
   const newPatterns: RecurrenceResult[] = [];
   const alreadyPromoted: string[] = [];
 
@@ -166,7 +166,7 @@ export function filterAlreadyPromoted(
     const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
     const escaped = normalizedPattern.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
     const patternRegex = new RegExp(`(?:^|[^a-z0-9])${escaped}(?:$|[^a-z0-9])`, "i");
-    if (patternRegex.test(lowerContent)) {
+    if (patternRegex.test(normalizedContent)) {
       alreadyPromoted.push(p.pattern);
     } else {
       newPatterns.push(p);

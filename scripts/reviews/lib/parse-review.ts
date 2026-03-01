@@ -88,9 +88,11 @@ interface ArchiveParseState {
 }
 
 function processFenceLine(trimmed: string, state: ArchiveParseState): void {
-  const fence = trimmed.startsWith("```") ? "```" : "~~~";
+  const match = /^(?<marker>`{3,}|~{3,})/.exec(trimmed);
+  if (!match?.groups?.marker) return;
+  const fence = match.groups.marker;
   if (state.inFence) {
-    // Only close when the same fence type is used
+    // Only close when the same fence marker (type + length) is used
     if (state.fenceMarker === fence) {
       state.inFence = false;
       state.fenceMarker = null;
@@ -308,7 +310,9 @@ function isSectionHeader(lower: string, keywords: string[]): boolean {
 }
 
 function isEndOfSection(trimmed: string, sectionKeyword: string): boolean {
-  if (trimmed.startsWith("**") && !trimmed.toLowerCase().includes(sectionKeyword)) {
+  // Only treat bold "Label:" lines as section boundaries, not arbitrary bold prose
+  const isBoldLabelLine = /^\*\*[^*]+:\*\*/.test(trimmed);
+  if (isBoldLabelLine && !trimmed.toLowerCase().includes(sectionKeyword)) {
     return true;
   }
   return trimmed.startsWith("---") || SECTION_HEADING_RE.test(trimmed);

@@ -141,7 +141,7 @@ function detectRecurrence(reviews, minOccurrences = 3, minDistinctPRs = 2) {
  * Checks against existing headings and table rows using fuzzy matching.
  */
 function filterAlreadyPromoted(patterns, codePatternsContent) {
-    const lowerContent = codePatternsContent.toLowerCase();
+    const normalizedContent = codePatternsContent.toLowerCase().replaceAll("-", " ");
     const newPatterns = [];
     const alreadyPromoted = [];
     for (const p of patterns) {
@@ -149,7 +149,7 @@ function filterAlreadyPromoted(patterns, codePatternsContent) {
         const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
         const escaped = normalizedPattern.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw `\$&`);
         const patternRegex = new RegExp(`(?:^|[^a-z0-9])${escaped}(?:$|[^a-z0-9])`, "i");
-        if (patternRegex.test(lowerContent)) {
+        if (patternRegex.test(normalizedContent)) {
             alreadyPromoted.push(p.pattern);
         }
         else {

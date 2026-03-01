@@ -107,12 +107,7 @@ function main() {
         console.log(`Tracked invocation ${record.id} (${record.skill})`);
     }
     catch (err) {
-        if (err instanceof Error) {
-            console.error(`Validation error: ${err.message}`);
-        }
-        else {
-            console.error("Unknown error");
-        }
+        console.error("Validation error: invocation record failed schema validation");
         process.exit(1);
     }
 }

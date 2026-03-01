@@ -561,10 +561,12 @@ function migrateV1Records(v1Path, existingIds) {
             v1 = JSON.parse(line);
         }
         catch {
-            console.warn(`Warning: Could not parse v1 record: ${line.slice(0, 40)}...`);
+            console.warn(`Warning: Could not parse v1 record at line ${lines.indexOf(line) + 1}`);
             continue;
         }
-        if (existingIds.has(v1.id) || parse_review_1.KNOWN_SKIPPED_IDS.has(v1.id)) {
+        const numericId = typeof v1.id === "number" ? v1.id : Number.NaN;
+        if ((Number.isFinite(numericId) && existingIds.has(numericId)) ||
+            (Number.isFinite(numericId) && parse_review_1.KNOWN_SKIPPED_IDS.has(numericId))) {
             skipped++;
             continue;
         }
