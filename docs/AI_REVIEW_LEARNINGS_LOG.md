@@ -1774,6 +1774,51 @@ template with built-in ChainExpression/walker/CC patterns.
 
 ---
 
+#### Review #417: PR #407 R8 — CI/Qodo/SonarCloud (2026-03-01)
+
+- **Source**: CI (3 blockers) + Qodo Code Suggestions (16) + Qodo Compliance (4)
+  - SonarCloud (4 code smells)
+- **PR**: #407 — PR Review Ecosystem v2 (round 8)
+- **Items**: 26 unique → 18 fixed, 0 deferred, 6 rejected, 2 not applicable
+- **Severity**: 3 CRITICAL (CI blockers), 7 MAJOR (security/logic), 5 MINOR, 3
+  TRIVIAL
+- **Fixed**: (1-3) CI: renameSync without rmSync in 3 dist files — added rmSync
+  before renameSync for Windows compat; (4) isSafeToWrite fail-closed — return
+  false on stat error instead of allowing write; (5) writeClaudeMdSafe
+  restructured with finally for tmp cleanup, re-check isSafeToWrite in cross-
+  device fallback; (6) rmSync before renameSync in writeClaudeMdSafe; (7)
+  block-push-to-main.js case-insensitive regex; (9) symlink guard for
+  CODE_PATTERNS.md write in promote-patterns; (10) rmSync+finally in
+  promote-patterns; (11) symlink guard for dedup-debt.ts (masterPath +
+  dedupedPath); (13) atomic writes for render-reviews-to-md.ts --output; (14)
+  detectRecurrence on full corpus then filter to new reviews — fixes threshold
+  accuracy; (15) isRetroSectionEnd logic bug — was returning false for PR
+  headings, causing retro content to bleed into next review; (16)
+  maxReviewNumber filters out 0s from non-matching IDs; (19)
+  applyPatternCorrections refactored: temp filtered variable, completeness tier
+  consistency; (20) String.fromCodePoint over fromCharCode; (24) .includes()
+  over .indexOf() in generate-claude-antipatterns
+- **Rejected**: (8) V1 ID type normalization — TS types enforce number, only
+  applies to erased JS; (12) CLAUDE.md line budget enforcement —
+  over-engineering for internal tool; (17) safeReadFile fail-fast — by design,
+  graceful degradation for missing optional sources; (22-23) Qodo Compliance
+  secure logging/error — internal dev tool, paths in logs are expected; (25)
+  top-level await — module:commonjs precludes it (repeat-rejected from R7)
+- **Patterns**: isRetroSectionEnd logic inversion — `!PR_HEADING_RE.test(line)`
+  meant retros did NOT end at PR headings, consuming subsequent content;
+  detectRecurrence must run on full corpus for accurate thresholds, then filter
+  to patterns appearing in new reviews; verified-patterns.json matches by
+  basename — TS source exclusions don't cover compiled dist JS files
+- **Learnings**: When CI blocks on dist files but source TS already has the
+  pattern, add the dist basename to verified-patterns.json; fail-closed is
+  always safer than fail-open for security guards; finally blocks prevent tmp
+  file leaks even when outer catch rethrows
+- **Process**: Full pr-review protocol with multi-pass parsing (26 items from 27
+  total, 1 duplicate). Sequential fixes, TypeScript rebuild, 0 blocking
+  violations, 0 lint errors, 414/415 tests pass (1 skipped).
+
+---
+
 #### Review #416: PR #407 R7 — SonarCloud + Qodo + CI (2026-03-01)
 
 - **Source**: SonarCloud (2) + Qodo Compliance (5) + Qodo Code Suggestions (15)
