@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-28 **Active Documents:** 333 **Archived Documents:** 105
+**Generated:** 2026-03-01 **Active Documents:** 333 **Archived Documents:** 105
 
 ---
 
@@ -320,7 +320,7 @@ _Claude Code skills_
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-02-24    |
 | [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                                                        | <!-- prettier-ignore-start -->                                    | ↓3 ↑0      | 2026-02-24    |
-| [skill-creator](.claude/skills/skill-creator/SKILL.md)                                                                              | This skill provides guidance for creating effective skills.       | ↓0 ↑2      | 2026-02-24    |
+| [skill-creator](.claude/skills/skill-creator/SKILL.md)                                                                              | This skill provides guidance for creating effective skills t...   | ↓0 ↑2      | 2026-02-24    |
 | [skill-ecosystem-audit](.claude/skills/skill-ecosystem-audit/SKILL.md)                                                              | Deep diagnostic of the entire skill ecosystem — SKILL.md fil...   | ↓0 ↑0      | 2026-02-24    |
 | [sonarcloud](.claude/skills/sonarcloud/SKILL.md)                                                                                    | Unified orchestrator for all SonarCloud operations against t...   | ↓0 ↑2      | 2026-02-24    |
 | [SonarCloud Enrichment (Step 1.5)](.claude/skills/pr-review/reference/SONARCLOUD_ENRICHMENT.md)                                     | When SonarCloud issues are detected in pasted feedback, auto...   | ↓1 ↑0      | 2026-02-14    |
@@ -1464,7 +1464,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-28 | Auto-generated from codebase scan |
+| Auto    | 2026-03-01 | Auto-generated from codebase scan |
 
 ---
 

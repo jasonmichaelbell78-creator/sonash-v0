@@ -1,8 +1,8 @@
 # Skill Standards
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-24
+**Document Version:** 2.0
+**Last Updated:** 2026-02-28
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -56,24 +56,59 @@ description: >-
 
 ---
 
+## Attention Management
+
+LLMs exhibit primacy bias — instructions at the top of a skill get more
+attention than instructions at the bottom. Skills MUST be structured to account
+for this:
+
+1. **Front-load critical rules.** MUST-do behaviors, phase structure, and hard
+   requirements go in the first third of the file.
+2. **Use checklists over prose.** A 5-item numbered list holds attention better
+   than 5 paragraphs explaining the same things.
+3. **Repeat critical rules at point-of-use.** If "always write ARTIFACT.md"
+   matters in Phase 2, say it in Phase 2 — don't rely on a single mention in the
+   overview.
+4. **Keep the core skill lean.** Move examples, templates, and reference
+   material to companion files. The core should contain WHAT to do; companions
+   show HOW with examples.
+
+---
+
+## Instruction Hierarchy
+
+Use MUST/SHOULD/MAY (RFC 2119 style) to distinguish requirement levels:
+
+| Keyword    | Meaning                                            |
+| ---------- | -------------------------------------------------- |
+| **MUST**   | Non-negotiable requirement. Violation = failure.   |
+| **SHOULD** | Strong recommendation. Skip only with good reason. |
+| **MAY**    | Optional behavior. Use judgment.                   |
+
+Every instruction in a skill should be classifiable as one of these. If an
+instruction reads at the same "volume" as everything else, it will be treated as
+optional regardless of intent.
+
+---
+
 ## Size Limits
 
 | Threshold | Action                                   |
 | --------- | ---------------------------------------- |
-| < 500     | Good -- no action needed                 |
-| 500-799   | Warning -- consider extracting content   |
-| 800+      | Error -- must extract to companion files |
+| < 300     | Good -- no action needed                 |
+| 300-499   | Warning -- consider extracting content   |
+| 500+      | Error -- must extract to companion files |
 
 ### Extraction Strategy
 
-When a skill exceeds 500 lines, extract content to companion files in the same
-skill directory:
+When a skill approaches 300 lines, extract content to companion files in the
+same skill directory:
 
 ```
 skill-name/
-├── SKILL.md          # Core instructions (< 500 lines)
+├── SKILL.md          # Core instructions (< 300 lines)
+├── REFERENCE.md      # Detailed examples, templates, question banks
 ├── prompts.md        # Agent prompt specifications (if multi-agent)
-├── examples.md       # Code examples, templates
 ├── domains.md        # Domain-specific tables/data
 ├── ARCHIVE.md        # Archived evidence, old version history
 └── scripts/          # Executable scripts
@@ -82,8 +117,8 @@ skill-name/
 Reference extracted files from SKILL.md:
 
 ```markdown
-> Read `.claude/skills/skill-name/prompts.md` for full agent prompt
-> specifications.
+> Read `.claude/skills/skill-name/REFERENCE.md` for detailed examples and
+> templates.
 ```
 
 ---
@@ -173,16 +208,72 @@ Audit skills reference the shared template instead of duplicating boilerplate:
 
 ---
 
+## Integration & Routing
+
+Skills MUST be aware of their neighbors:
+
+- **"When NOT to Use" MUST redirect** to specific alternatives, not just say
+  "when a more specialized skill exists." Name the skill.
+- **Routing guidance** belongs at the top of skills with close neighbors. If 3+
+  skills could plausibly handle the same trigger, the primary skill SHOULD
+  include a routing section distinguishing them.
+- **Handoff protocols** MUST be explicit. If a skill produces output consumed by
+  another skill, document the artifact contract: what files, what paths, what
+  format.
+
+---
+
+## Guard Rails & Error Handling
+
+Skills SHOULD address failure modes relevant to their domain:
+
+- What happens with bad input or missing context?
+- What if scope grows beyond the skill's boundaries?
+- What if the session compacts mid-execution? (especially for long-running
+  skills)
+- Recovery procedure: how to resume from a partial execution.
+
+For long-running skills (planning, auditing, multi-phase): persist state to
+`.claude/state/` and write artifacts to disk incrementally — not just at the
+end.
+
+---
+
+## User Experience
+
+Skills that involve multi-step interaction SHOULD include:
+
+- **Warm-up**: Brief orientation at start — what the skill does, what to expect
+- **Progress indicators**: "Batch 2 of 3" or "Step 3 of 7" where applicable
+- **Visual structure**: Consistent use of `##` headers, `---` dividers, tables,
+  bold for emphasis
+- **Closure signal**: Explicit completion message listing artifacts produced
+
+---
+
 ## Quality Checklist (for skill-creator)
 
-Before finalizing a new skill:
+### Structural Quality
 
 - [ ] YAML frontmatter with name + description
 - [ ] "When to Use" section with specific triggers
-- [ ] "When NOT to Use" section with alternatives
+- [ ] "When NOT to Use" section with named alternatives
 - [ ] "Version History" table at end of file
-- [ ] Under 500 lines (extract to companions if needed)
+- [ ] Under 300 lines core (extract to companions if needed)
 - [ ] Agent prompts include COMPLETE: return protocol (if multi-agent)
 - [ ] Parallel execution has dependency constraints documented
 - [ ] Cross-references resolve to existing skills/scripts
 - [ ] No duplicated boilerplate (use shared templates)
+
+### Behavioral Quality
+
+- [ ] Critical rules front-loaded (top third of file)
+- [ ] MUST/SHOULD/MAY hierarchy applied to all instructions
+- [ ] Critical rules repeated at point-of-use (not just in overview)
+- [ ] Checklists used instead of prose for multi-item requirements
+- [ ] "When NOT to Use" redirects to specific named skills
+- [ ] Error/failure paths addressed for the skill's domain
+- [ ] Long-running skills have compaction resilience (state persistence)
+- [ ] Multi-step skills have UX guidance (progress, warm-up, closure)
+- [ ] Project conventions referenced (CLAUDE.md), not duplicated
+- [ ] Guided prompts used instead of generic `[placeholder]` text
