@@ -258,8 +258,183 @@ function getJsonlMaxId() {
   }
 }
 
+/**
+ * Get ISO week string (YYYY-WNN) for a date.
+ * @param {Date} date
+ * @returns {string}
+ */
+function getISOWeek(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  // Set to nearest Thursday: current date + 4 - current day number (Mon=1, Sun=7)
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+}
+
+/**
+ * Advance an ISO week string by one week.
+ * @param {string} weekStr - Format "YYYY-WNN"
+ * @returns {string}
+ */
+function nextISOWeek(weekStr) {
+  const [yearStr, weekPart] = weekStr.split("-W");
+  const year = Number.parseInt(yearStr, 10);
+  const week = Number.parseInt(weekPart, 10);
+
+  // Jan 4 is always in ISO week 1
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const jan4Day = jan4.getUTCDay() || 7;
+  // Monday of week 1
+  const week1Monday = new Date(jan4);
+  week1Monday.setUTCDate(jan4.getUTCDate() - (jan4Day - 1));
+
+  // Thursday of target week (use Thursday to avoid boundary issues with getISOWeek)
+  const targetThursday = new Date(week1Monday);
+  targetThursday.setUTCDate(week1Monday.getUTCDate() + (week - 1) * 7 + 3);
+
+  // Advance 7 days to get Thursday of next week
+  targetThursday.setUTCDate(targetThursday.getUTCDate() + 7);
+
+  return getISOWeek(targetThursday);
+}
+
+/**
+ * Analyze temporal coverage of reviews.
+ * Detects weeks with no reviews between weeks that have reviews.
+ *
+ * @param {Array<{date?: string}>} [reviewsInput] - Optional array of review objects for testing.
+ *   If not provided, reads from REVIEWS_JSONL.
+ * @returns {{
+ *   noData: boolean,
+ *   weeksWithReviews: number,
+ *   gaps: Array<{week: string, before: string, beforeCount: number, after: string, afterCount: number}>,
+ *   longestGap: {start: string, end: string, length: number} | null
+ * }}
+ */
+function analyzeTemporalCoverage(reviewsInput) {
+  let reviews;
+  if (reviewsInput) {
+    reviews = reviewsInput;
+  } else {
+    if (!existsSync(REVIEWS_JSONL)) {
+      return { noData: true, weeksWithReviews: 0, gaps: [], longestGap: null };
+    }
+    try {
+      const lines = readFileSync(REVIEWS_JSONL, "utf8").replaceAll("\r\n", "\n").trim().split("\n");
+      reviews = [];
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          reviews.push(JSON.parse(line));
+        } catch {
+          /* skip malformed lines */
+        }
+      }
+    } catch {
+      return { noData: true, weeksWithReviews: 0, gaps: [], longestGap: null };
+    }
+  }
+
+  // Filter to reviews with valid date fields
+  const dated = reviews.filter((r) => r.date && typeof r.date === "string");
+  if (dated.length === 0) {
+    return { noData: true, weeksWithReviews: 0, gaps: [], longestGap: null };
+  }
+
+  // Group by ISO week
+  const weekMap = new Map(); // week string -> count
+  for (const review of dated) {
+    const d = new Date(review.date);
+    if (Number.isNaN(d.getTime())) continue;
+    const week = getISOWeek(d);
+    weekMap.set(week, (weekMap.get(week) || 0) + 1);
+  }
+
+  if (weekMap.size === 0) {
+    return { noData: true, weeksWithReviews: 0, gaps: [], longestGap: null };
+  }
+
+  // Sort weeks chronologically
+  const sortedWeeks = [...weekMap.keys()].sort();
+  const weeksWithReviews = sortedWeeks.length;
+
+  // Generate all weeks between first and last
+  const firstWeek = sortedWeeks[0];
+  const lastWeek = sortedWeeks[sortedWeeks.length - 1];
+
+  const allWeeks = [];
+  let current = firstWeek;
+  const MAX_WEEKS = 520; // ~10 years safety cap
+  let iterations = 0;
+  while (current <= lastWeek && iterations < MAX_WEEKS) {
+    allWeeks.push(current);
+    current = nextISOWeek(current);
+    iterations++;
+  }
+
+  // Detect gaps: weeks with no reviews between weeks that have reviews
+  const gaps = [];
+  for (let i = 0; i < allWeeks.length; i++) {
+    const week = allWeeks[i];
+    if (!weekMap.has(week)) {
+      // Find the nearest previous week with reviews
+      let beforeWeek = null;
+      let beforeCount = 0;
+      for (let j = i - 1; j >= 0; j--) {
+        if (weekMap.has(allWeeks[j])) {
+          beforeWeek = allWeeks[j];
+          beforeCount = weekMap.get(allWeeks[j]);
+          break;
+        }
+      }
+      // Find the nearest following week with reviews
+      let afterWeek = null;
+      let afterCount = 0;
+      for (let j = i + 1; j < allWeeks.length; j++) {
+        if (weekMap.has(allWeeks[j])) {
+          afterWeek = allWeeks[j];
+          afterCount = weekMap.get(allWeeks[j]);
+          break;
+        }
+      }
+
+      if (beforeWeek && afterWeek) {
+        gaps.push({ week, before: beforeWeek, beforeCount, after: afterWeek, afterCount });
+      }
+    }
+  }
+
+  // Find longest consecutive gap
+  let longestGap = null;
+  if (gaps.length > 0) {
+    let runStart = 0;
+    let maxLen = 1;
+    let maxStart = 0;
+    for (let i = 1; i < gaps.length; i++) {
+      if (nextISOWeek(gaps[i - 1].week) === gaps[i].week) {
+        const runLen = i - runStart + 1;
+        if (runLen > maxLen) {
+          maxLen = runLen;
+          maxStart = runStart;
+        }
+      } else {
+        runStart = i;
+      }
+    }
+    longestGap = {
+      start: gaps[maxStart].week,
+      end: gaps[maxStart + maxLen - 1].week,
+      length: maxLen,
+    };
+  }
+
+  return { noData: false, weeksWithReviews, gaps, longestGap };
+}
+
 function main() {
-  console.log("📋 Review Archive Health Check\n");
+  console.log("Review Archive Health Check\n");
 
   // 1. Heading format check
   console.log("1. Heading Format (#### required):");
@@ -499,21 +674,52 @@ function main() {
   }
   console.log();
 
+  // 7. Temporal Coverage
+  console.log("7. Temporal Coverage:");
+  const temporalResult = analyzeTemporalCoverage();
+  if (temporalResult.noData) {
+    console.log("  No temporal data available");
+  } else {
+    console.log(`  Weeks with reviews: ${temporalResult.weeksWithReviews}`);
+    console.log(`  Weeks with gaps: ${temporalResult.gaps.length}`);
+    if (temporalResult.longestGap) {
+      console.log(
+        `  Longest gap: ${temporalResult.longestGap.length} week(s) (${temporalResult.longestGap.start} to ${temporalResult.longestGap.end})`
+      );
+    }
+    if (temporalResult.gaps.length > 0) {
+      console.log("  Gap details:");
+      for (const gap of temporalResult.gaps) {
+        console.log(
+          `    ${gap.week}: No reviews (between ${gap.before}: ${gap.beforeCount} reviews and ${gap.after}: ${gap.afterCount} reviews)`
+        );
+      }
+    }
+    if (temporalResult.gaps.length === 0) {
+      ok("No temporal gaps detected");
+    }
+  }
+  console.log();
+
   // Summary
   console.log("─".repeat(50));
   if (issues === 0) {
-    console.log("✅ All checks passed");
+    console.log("All checks passed");
     process.exitCode = 0;
   } else {
-    console.log(`⚠️  ${issues} issue(s) found`);
+    console.log(`${issues} issue(s) found`);
     process.exitCode = 1;
   }
 }
 
-try {
-  main();
-} catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  console.error("Error:", msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]"));
-  process.exitCode = 2;
+if (require.main === module) {
+  try {
+    main();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Error:", msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]"));
+    process.exitCode = 2;
+  }
 }
+
+module.exports = { analyzeTemporalCoverage, getISOWeek };

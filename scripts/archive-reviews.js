@@ -10,6 +10,7 @@
  * Usage:
  *   npm run reviews:archive              # Preview (dry run)
  *   npm run reviews:archive -- --apply   # Apply archival
+ *   npm run reviews:archive -- --auto    # Auto mode (no confirmation, session-safe)
  *   npm run reviews:archive -- --keep 20 # Keep newest N reviews (default: 20)
  *
  * Exit codes:
@@ -40,6 +41,7 @@ const ARCHIVE_DIR = join(ROOT, "docs", "archive");
 
 const args = new Set(process.argv.slice(2));
 const applyMode = args.has("--apply");
+const autoMode = args.has("--auto");
 const quiet = args.has("--quiet");
 
 // Parse --keep N (default 20)
@@ -701,10 +703,45 @@ function executeArchival(opts) {
   process.exitCode = 0;
 }
 
+/**
+ * Check if a Claude session is currently active.
+ * Returns true if a session is active (archiving is unsafe).
+ */
+function isSessionActive() {
+  const sessionStatePath = join(ROOT, ".claude", "hooks", ".session-state.json");
+  try {
+    if (!existsSync(sessionStatePath)) return false;
+    const state = JSON.parse(readFileSync(sessionStatePath, "utf8"));
+    // Session is active if lastBegin > lastEnd (started but not ended)
+    if (state.lastBegin && state.lastEnd) {
+      return new Date(state.lastBegin) > new Date(state.lastEnd);
+    }
+    // If there's a begin but no end, session is active
+    if (state.lastBegin && !state.lastEnd) return true;
+    return false;
+  } catch {
+    // If we can't read session state, assume safe (no session tracking)
+    return false;
+  }
+}
+
 function main() {
   try {
+    // Auto mode: check session safety first
+    if (autoMode && isSessionActive()) {
+      log("Auto-archive: skipping -- active session detected (mid-session archival is unsafe)");
+      process.exitCode = 0;
+      return;
+    }
+
     const parsed = validateAndParse();
-    if (!parsed) return;
+    if (!parsed) {
+      // In auto mode, exit silently when no archival needed
+      if (autoMode && (process.exitCode === 0 || process.exitCode === undefined)) {
+        process.exitCode = 0;
+      }
+      return;
+    }
 
     const { lines, entries, hashBefore } = parsed;
 
@@ -752,12 +789,12 @@ function main() {
     log(`\n  Archive file:   docs/archive/${archiveFilename}`);
     log(`  Archive number: ${archiveNumber}`);
 
-    if (!applyMode) {
+    if (!applyMode && !autoMode) {
       previewArchival(toArchive, toKeep);
       return;
     }
 
-    // --- Apply mode ---
+    // --- Apply/Auto mode ---
     executeArchival({
       toArchive,
       toKeep,
