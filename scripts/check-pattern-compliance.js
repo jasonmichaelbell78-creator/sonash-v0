@@ -1348,7 +1348,231 @@ const ANTI_PATTERNS = [
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
     pathExcludeList: verifiedPatterns["git-log-pipe-delimiter"] || [],
   },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // Phase 4 Plan 03: New regex rules for banned imports, naming,
+  // security/safety, and correctness patterns (ENFR-03)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // --- Banned Imports (4 rules) ---
+
+  {
+    id: "banned-direct-firestore-write",
+    severity: "critical",
+    pattern:
+      /\b(?:setDoc|addDoc|updateDoc|deleteDoc)\b[\s\S]{0,200}?from\s+['"][^'"]*firebase\/firestore/g,
+    message:
+      "Direct Firestore write import in app code — use Cloud Functions (httpsCallable) for all writes",
+    fix: "Move write logic to a Cloud Function and call it via httpsCallable(). See CLAUDE.md Section 2.",
+    review: "CLAUDE.md Security Rule #1",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages|lib)\//,
+    pathExclude: /(?:^|[\\/])functions\//,
+  },
+  {
+    id: "banned-moment-import",
+    severity: "medium",
+    pattern: /\b(?:import\s+.*\bfrom\s+['"]moment['"]|require\s*\(\s*['"]moment['"]\s*\))/g,
+    message:
+      "Import of 'moment' library — use date-fns or Intl.DateTimeFormat instead (smaller bundle)",
+    fix: "Replace with date-fns: import { format } from 'date-fns' or use Intl.DateTimeFormat",
+    review: "Bundle size optimization",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "banned-lodash-full-import",
+    severity: "medium",
+    pattern:
+      /\b(?:import\s+_\s+from\s+['"]lodash['"]|(?:const|let|var)\s+_\s*=\s*require\s*\(\s*['"]lodash['"]\s*\))/g,
+    message:
+      "Full lodash import bundles entire library — use specific imports (lodash/get) or lodash-es",
+    fix: "Use: import get from 'lodash/get' or import { get } from 'lodash-es'",
+    review: "Bundle size optimization",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    // eslint-plugin-sonash.test.js contains lodash require as test fixture
+    pathExclude: /(?:^|[\\/])(?:tests?|__tests__)[\\/]/,
+  },
+  {
+    id: "banned-fs-in-client",
+    severity: "critical",
+    pattern:
+      /\b(?:import|require)\s*(?:\(?\s*['"](?:node:)?fs['"]|.*\bfrom\s+['"](?:node:)?fs['"])/g,
+    message: "Import of 'fs' module in client-side code — fs is server-only (Node.js)",
+    fix: "Move file operations to API routes or server components. Client code cannot access the filesystem.",
+    review: "Server/client boundary",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages)\//,
+    pathExclude: /(?:^|[\\/])(?:api|server)\//,
+  },
+
+  // --- Naming Violations (3 rules) ---
+
+  {
+    id: "no-generic-handler-name",
+    severity: "medium",
+    pattern: /\bfunction\s+handle(?:Click|Change|Submit)\s*\(/g,
+    message:
+      "Generic handler name (handleClick/handleChange/handleSubmit) — use descriptive prefix",
+    fix: "Rename to describe the action: handleLoginSubmit, handleEmailChange, handleDeleteClick, etc.",
+    review: "Code readability — generic names reduce searchability",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages)\//,
+  },
+  {
+    id: "no-single-letter-variable",
+    severity: "medium",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        // Detect: const/let/var followed by single letter (not i/j/k/e/_)
+        const m = /\b(?:const|let|var)\s+([a-df-hln-zA-Z])\s*[=;,]/.exec(line);
+        if (m) {
+          if (/\bfor\s*\(/.test(line)) continue;
+          matches.push({ line: i + 1, match: line.trim().slice(0, 80) });
+        }
+      }
+      return matches;
+    },
+    message: "Single-letter variable declaration — use descriptive names for readability",
+    fix: "Rename variable to describe its purpose: 'x' -> 'xCoordinate', 'n' -> 'itemCount', etc.",
+    review: "Code readability — single-letter vars reduce maintainability",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages|lib)\//,
+  },
+  {
+    id: "no-todo-without-ticket",
+    severity: "medium",
+    pattern: /\/\/\s*(?:TODO|FIXME)(?!.*(?:#\d|JIRA|GH-|issue|PROJ-|ENFR-|PIPE-|TEST-))/gi,
+    message: "TODO/FIXME comment without ticket reference — add issue number for tracking",
+    fix: "Add reference: // TODO(#123): description or // FIXME(GH-456): description",
+    review: "Task tracking — untracked TODOs become permanent debt",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages|lib)\//,
+    pathExclude: /(?:^|[\\/])(?:tests?|scripts|__tests__)\//,
+  },
+
+  // --- Security/Safety (4 rules) ---
+
+  {
+    id: "no-process-env-inline",
+    severity: "medium",
+    pattern: /\bprocess\.env\.\w+/g,
+    message: "Direct process.env access in component/page — use centralized config module",
+    fix: "Create/use a config module: export const config = { apiUrl: process.env.NEXT_PUBLIC_API_URL }",
+    review: "Config centralization — scattered env access is hard to audit",
+    fileTypes: [".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages)\//,
+    pathExclude: /(?:^|[\\/])(?:config|env|layout)\./,
+  },
+  {
+    id: "no-string-concat-in-query",
+    severity: "critical",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        const hasQuery = /\b(?:query|sql|SELECT|INSERT|UPDATE|DELETE|WHERE)\b/i.test(line);
+        const hasConcat =
+          /`[^`]*\$\{[^}]+\}[^`]*(?:WHERE|AND|OR|SET|VALUES)\b/i.test(line) ||
+          (/['"].*(?:WHERE|AND|OR|SET|VALUES)\b/i.test(line) && /\+\s*\w/.test(line));
+        if (hasQuery && hasConcat) {
+          matches.push({ line: i + 1, match: line.trim().slice(0, 100) });
+        }
+      }
+      return matches;
+    },
+    message: "String concatenation/template literal in SQL query — injection risk",
+    fix: "Use parameterized queries: db.query('SELECT * FROM users WHERE id = ?', [userId])",
+    review: "Security — SQL injection prevention",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|eslint-plugin-sonash\.test)\.js$/,
+  },
+  {
+    id: "no-document-cookie-access",
+    severity: "medium",
+    pattern: /\bdocument\.cookie\b/g,
+    message: "Direct document.cookie access — use a cookie utility for consistent handling",
+    fix: "Use a cookie utility library (js-cookie) or Next.js cookies() API for server components",
+    review: "Security — direct cookie access bypasses HttpOnly/Secure/SameSite defaults",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|cookie-utils?)\.js$/,
+  },
+  {
+    id: "no-window-location-assign",
+    severity: "medium",
+    pattern: /\bwindow\.location\.(?:href|assign|replace)\b/g,
+    message: "Direct window.location navigation — use Next.js router for SPA navigation",
+    fix: "Use: import { useRouter } from 'next/navigation'; router.push('/path')",
+    review: "Framework compliance — window.location causes full page reload",
+    fileTypes: [".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages)\//,
+  },
+
+  // --- Correctness (2 rules) ---
+
+  {
+    id: "no-json-parse-without-try",
+    severity: "medium",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!/JSON\.parse\s*\(/.test(line)) continue;
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        const context = lines.slice(Math.max(0, i - 15), i + 1).join("\n");
+        if (!/\btry\s*\{/.test(context)) {
+          matches.push({ line: i + 1, match: line.trim().slice(0, 100) });
+        }
+      }
+      return matches;
+    },
+    message: "JSON.parse() without try/catch — throws on invalid input, crashing the caller",
+    fix: "Wrap in try/catch: try { const data = JSON.parse(str); } catch { /* handle */ }",
+    review: "Correctness — unguarded JSON.parse is a common crash source",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages|lib)\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+  {
+    id: "no-array-index-as-key",
+    severity: "medium",
+    pattern:
+      /\.map\s*\(\s*\([^)]*,\s*(?:index|i|idx)\s*\)[\s\S]{0,300}?key\s*=\s*\{\s*(?:index|i|idx)\s*\}/g,
+    message: "Array index used as React key — causes incorrect reconciliation on reorder/delete",
+    fix: "Use a stable unique identifier: key={item.id} or key={item.slug}",
+    review: "React correctness — index keys cause subtle UI bugs on list mutations",
+    fileTypes: [".tsx", ".jsx"],
+    pathFilter: /(?:^|\/)(?:app|components|pages)\//,
+  },
 ];
+
+// ═══════════════════════════════════════════════════════════════════
+// FP Auto-Disable: Skip rules with exclusion counts > FP_THRESHOLD (ENFR-07)
+// ═══════════════════════════════════════════════════════════════════
+const FP_DISABLED_RULES = new Set();
+if (!INCLUDE_FP_DISABLED) {
+  for (const ap of ANTI_PATTERNS) {
+    const exclusions = verifiedPatterns[ap.id];
+    const count = Array.isArray(exclusions) ? exclusions.length : 0;
+    if (count > FP_THRESHOLD) {
+      FP_DISABLED_RULES.add(ap.id);
+      if (VERBOSE && !JSON_OUTPUT) {
+        console.log(
+          `[FP-DISABLED] Rule ${ap.id} skipped (${count} exclusions > threshold ${FP_THRESHOLD})`
+        );
+      }
+    }
+  }
+}
 
 /**
  * Get files to check based on options
@@ -1507,6 +1731,8 @@ function detectFileType(filePath, content, ext) {
  * @returns {boolean} True if pattern should be skipped
  */
 function shouldSkipPattern(antiPattern, ext, normalizedPath) {
+  // FP auto-disable: skip rules exceeding exclusion threshold (ENFR-07)
+  if (FP_DISABLED_RULES.has(antiPattern.id)) return true;
   if (!antiPattern.fileTypes.includes(ext)) return true;
   if (antiPattern.pathFilter && !antiPattern.pathFilter.test(normalizedPath)) return true;
   if (antiPattern.pathExclude?.test(normalizedPath)) return true;
@@ -1816,6 +2042,20 @@ function generateFpReport() {
   const highFp = sorted.filter(([, c]) => c > 10).length;
   const considerRemoval = sorted.filter(([, c]) => c > 20).length;
   console.log(`\nSummary: ${highFp} high-FP patterns, ${considerRemoval} candidates for removal`);
+
+  // AUTO-DISABLED section (ENFR-07)
+  const autoDisabled = sorted.filter(([, total]) => total > FP_THRESHOLD);
+  if (autoDisabled.length > 0) {
+    console.log(`\n--- AUTO-DISABLED (exclusions > ${FP_THRESHOLD}) ---`);
+    for (const [id, total] of autoDisabled) {
+      console.log(`  ${id}: ${total} exclusions (disabled)`);
+    }
+    console.log(`\nUse --include-fp-disabled to force-run these rules.`);
+    console.log(`Use --fp-threshold=N to change the cutoff (current: ${FP_THRESHOLD}).`);
+  } else {
+    console.log(`\n--- AUTO-DISABLED ---`);
+    console.log(`  None (all rules below threshold of ${FP_THRESHOLD})`);
+  }
 }
 
 /**

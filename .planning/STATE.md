@@ -123,6 +123,10 @@ affecting current work:
 - 04-02: no-state-update-in-render detects both setX pattern and dispatch calls
 - 04-02: tests/semgrep/ must be excluded from ESLint and pattern compliance
   (test fixtures)
+- 04-01: Semgrep test annotations use .ts extension excluded from
+  tsc/ESLint/Prettier
+- 04-01: Both local and cloud SARIF uploads use category parameter for dedup
+- 04-01: Semgrep installed via pip in CI, not added to package.json
 
 ### Pending Todos
 
