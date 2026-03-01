@@ -17,18 +17,19 @@ Enforcement Expansion (next)
 
 ## Current Position
 
-Phase: 4 of 7 (Enforcement Expansion) Plan: 2 of 4 in current phase Status: In
-progress Last activity: 2026-03-01 — Completed 04-02-PLAN.md (ESLint AST rules)
+Phase: 4 of 7 (Enforcement Expansion) Plan: 3 of 4 in current phase Status: In
+progress Last activity: 2026-03-01 — Completed 04-03-PLAN.md (regex rule
+expansion + FP auto-disable)
 
-Progress: [######....] ~52%
+Progress: [######....] ~57%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 12
-- Average duration: 7.6 min
-- Total execution time: 93 min
+- Total plans completed: 13
+- Average duration: 8.4 min
+- Total execution time: 109 min
 
 **By Phase:**
 
@@ -37,14 +38,14 @@ Progress: [######....] ~52%
 | 01-storage-foundation      | 3     | 17 min | 5.7 min  |
 | 02-backfill-data-migration | 3     | 26 min | 8.7 min  |
 | 03-core-pipeline           | 4     | 28 min | 7.0 min  |
-| 04-enforcement-expansion   | 2     | 22 min | 11.0 min |
+| 04-enforcement-expansion   | 3     | 38 min | 12.7 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 03-02 (9 min), 03-03 (15 min), 03-04 (4 min), 04-01 (11 min),
-  04-02 (11 min)
-- Trend: Phase 4 rules are slightly slower (complex AST rule creation +
-  pre-commit hook debugging)
+- Last 5 plans: 03-03 (15 min), 03-04 (4 min), 04-01 (11 min), 04-02 (11 min),
+  04-03 (16 min)
+- Trend: Phase 4 regex expansion slower due to concurrent agent conflict + test
+  debugging
 
 _Updated after each plan completion_
 
@@ -127,6 +128,10 @@ affecting current work:
   tsc/ESLint/Prettier
 - 04-01: Both local and cloud SARIF uploads use category parameter for dedup
 - 04-01: Semgrep installed via pip in CI, not added to package.json
+- 04-03: banned-direct-firestore-write regex uses writeOp-then-from order
+- 04-03: no-string-concat-in-query uses testFn with dual detection
+- 04-03: FP_THRESHOLD default 25 matches existing >20 CONSIDER REMOVAL heuristic
+- 04-03: Test file exclusions needed for lodash fixtures and SQL test fixtures
 
 ### Pending Todos
 
@@ -139,8 +144,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-01T16:06:00Z Stopped at: Completed 04-02-PLAN.md (ESLint
-AST rules) -- Phase 4 in progress Resume file: None
+Last session: 2026-03-01T16:12:00Z Stopped at: Completed 04-03-PLAN.md (regex
+rule expansion + FP auto-disable) -- Phase 4 in progress Resume file: None
 
 ### GSD Process Position
 
