@@ -33,6 +33,7 @@ export default [
       "eslint-plugin-sonash/**",
       "scripts/reviews/dist/**",
       "tests/semgrep/**",
+      ".temp-test-*/**",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },
