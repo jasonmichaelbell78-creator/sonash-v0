@@ -170,6 +170,11 @@ in sync. If no new reviews were added this session, the script exits cleanly.
 **Important:** This must run before the final commit (Step 9) so synced data is
 included. Session-begin will verify this was done and flag drift if skipped.
 
+> **v1/v2 Note (INTG-06):** This sync step uses the v1 script which bridges
+> legacy markdown reviews to JSONL. The v2 pipeline writes JSONL directly via
+> skills (pr-review, pr-retro). Both coexist: this step catches any
+> manually-written markdown reviews. Fallback: `npm run reviews:sync:v1`.
+
 ## 7c. Health Score Snapshot
 
 Run a full ecosystem health check and persist the score for trend tracking:

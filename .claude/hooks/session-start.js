@@ -13,6 +13,14 @@
  *   3. Compiles test files
  *   4. Checks pattern compliance
  *   5. Checks consolidation status
+ *
+ * === v1/v2 Script Status (INTG-06) ===
+ * sync-reviews-to-jsonl.js: v1 (bridges legacy markdown, v2 writes JSONL-first)
+ * run-consolidation.js: v1 (no full v2 replacement yet)
+ * check-pattern-compliance.js: v1 (pre-commit gate, v2 partial overlap)
+ * promote-patterns.js: v2 wrapper (calls scripts/reviews/lib/promote-patterns.ts)
+ * Both v1 and v2 pipelines coexist: v2 handles new data (JSONL-first),
+ * v1 scripts bridge legacy markdown data. Fallbacks at scripts/*.v1.js.
  */
 
 const { execSync, execFileSync } = require("node:child_process");
@@ -410,7 +418,7 @@ if (needsTestBuild) {
   console.log("📦 Skipping test build (dist-tests fresh, <1h old)");
 }
 
-// Pattern compliance check
+// Pattern compliance check (v1 — pre-commit gate, v2 partial overlap via verify-enforcement-manifest)
 try {
   execSync("node scripts/check-pattern-compliance.js", { stdio: "pipe" });
   console.log("🔍 Patterns: ✓ compliant");
@@ -424,7 +432,7 @@ try {
   warnings++;
 }
 
-// Auto-consolidation
+// Auto-consolidation (v1 — no full v2 replacement yet, reads from v2 JSONL data)
 try {
   const output = execSync("node scripts/run-consolidation.js --auto", { encoding: "utf8" });
   if (output.trim()) {
@@ -444,7 +452,7 @@ try {
   }
 }
 
-// Sync reviews from markdown → JSONL (unblocks consolidation deadlock, Finding 12)
+// Sync reviews from markdown → JSONL (v1 — bridges legacy markdown, v2 writes JSONL-first)
 try {
   execFileSync("npm", ["run", "reviews:sync", "--", "--apply"], {
     cwd: projectDir,
