@@ -244,19 +244,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GATE-07     | Phase 6 | Complete |
 | GATE-08     | Phase 6 | Complete |
 | GATE-09     | Phase 6 | Complete |
-| INTG-01     | Phase 7 | Pending  |
-| INTG-02     | Phase 7 | Pending  |
-| INTG-03     | Phase 7 | Pending  |
-| INTG-04     | Phase 7 | Pending  |
-| INTG-05     | Phase 7 | Pending  |
-| INTG-06     | Phase 7 | Pending  |
-| INTG-07     | Phase 7 | Pending  |
-| INTG-08     | Phase 7 | Pending  |
+| INTG-01     | Phase 7 | Complete |
+| INTG-02     | Phase 7 | Complete |
+| INTG-03     | Phase 7 | Complete |
+| INTG-04     | Phase 7 | Complete |
+| INTG-05     | Phase 7 | Complete |
+| INTG-06     | Phase 7 | Complete |
+| INTG-07     | Phase 7 | Complete |
+| INTG-08     | Phase 7 | Complete |
 | TEST-01     | Phase 1 | Complete |
-| TEST-02     | Phase 7 | Pending  |
-| TEST-03     | Phase 7 | Pending  |
-| TEST-04     | Phase 7 | Pending  |
-| TEST-05     | Phase 7 | Pending  |
+| TEST-02     | Phase 7 | Complete |
+| TEST-03     | Phase 7 | Complete |
+| TEST-04     | Phase 7 | Complete |
+| TEST-05     | Phase 7 | Complete |
 | TEST-06     | Phase 1 | Complete |
 
 **Coverage:**

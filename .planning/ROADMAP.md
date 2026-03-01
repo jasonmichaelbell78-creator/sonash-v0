@@ -37,7 +37,7 @@ Decimal phases appear between their surrounding integers in numeric order.
       dashboard, warning lifecycle
 - [x] **Phase 6: Gate Recalibration** - Cross-doc gate fixes, override
       analytics, automation of triage/escalation/archival
-- [ ] **Phase 7: Integration & Cutover** - Wire into sessions, E2E smoke test,
+- [x] **Phase 7: Integration & Cutover** - Wire into sessions, E2E smoke test,
       v1-to-v2 swap, baseline score
 
 ## Dependency Graph
@@ -266,17 +266,17 @@ INTG-04, INTG-05, INTG-06, INTG-07, INTG-08, TEST-02, TEST-03, TEST-04, TEST-05
 
 Plans:
 
-- [ ] 07-01-PLAN.md — Session lifecycle wiring: health:quick in session-start,
+- [x] 07-01-PLAN.md — Session lifecycle wiring: health:quick in session-start,
       health:score in session-end (INTG-01, INTG-02)
-- [ ] 07-02-PLAN.md — Verify Gemini config, compaction safeguards, cross-doc
+- [x] 07-02-PLAN.md — Verify Gemini config, compaction safeguards, cross-doc
       sync gaps (INTG-03, INTG-04, INTG-05)
-- [ ] 07-03-PLAN.md — v1-to-v2 script cutover with fallback preservation
+- [x] 07-03-PLAN.md — v1-to-v2 script cutover with fallback preservation
       (INTG-06)
-- [ ] 07-04-PLAN.md — E2E pipeline smoke test + cross-module integration test
+- [x] 07-04-PLAN.md — E2E pipeline smoke test + cross-module integration test
       (INTG-07, TEST-02)
-- [ ] 07-05-PLAN.md — Performance budget tests + test tier audit (TEST-03,
+- [x] 07-05-PLAN.md — Performance budget tests + test tier audit (TEST-03,
       TEST-04, TEST-05)
-- [ ] 07-06-PLAN.md — Baseline health score establishment + final verification
+- [x] 07-06-PLAN.md — Baseline health score establishment + final verification
       (INTG-08)
 
 ## Coverage Validation
@@ -307,17 +307,17 @@ constraints.
 **Execution Order:** Phases execute in numeric order: 1 -> 2 -> 3 -> 4 (parallel
 with 5) -> 6 -> 7
 
-| Phase                        | Plans Complete | Status      | Completed  |
-| ---------------------------- | -------------- | ----------- | ---------- |
-| 1. Storage Foundation        | 3/3            | Complete    | 2026-02-28 |
-| 2. Backfill & Data Migration | 3/3            | Complete    | 2026-02-28 |
-| 3. Core Pipeline             | 4/4            | Complete    | 2026-02-28 |
-| 4. Enforcement Expansion     | 6/6            | Complete    | 2026-03-01 |
-| 5. Health Monitoring         | 3/3            | Complete    | 2026-03-01 |
-| 6. Gate Recalibration        | 5/5            | Complete    | 2026-03-01 |
-| 7. Integration & Cutover     | 0/6            | Not started | -          |
+| Phase                        | Plans Complete | Status   | Completed  |
+| ---------------------------- | -------------- | -------- | ---------- |
+| 1. Storage Foundation        | 3/3            | Complete | 2026-02-28 |
+| 2. Backfill & Data Migration | 3/3            | Complete | 2026-02-28 |
+| 3. Core Pipeline             | 4/4            | Complete | 2026-02-28 |
+| 4. Enforcement Expansion     | 6/6            | Complete | 2026-03-01 |
+| 5. Health Monitoring         | 3/3            | Complete | 2026-03-01 |
+| 6. Gate Recalibration        | 5/5            | Complete | 2026-03-01 |
+| 7. Integration & Cutover     | 6/6            | Complete | 2026-03-01 |
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 7 planned — 6
-plans in 3 waves covering 12 requirements)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 7 complete — all
+7 phases executed, 59/59 requirements satisfied, milestone complete)_
