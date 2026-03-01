@@ -10,6 +10,8 @@ import * as fs from "node:fs";
 import { InvocationRecord, type InvocationRecordType } from "./lib/schemas/invocation";
 import { appendRecord } from "./lib/write-jsonl";
 
+let __invSeq = 0;
+
 // Walk up from startDir until we find package.json (works from both source and dist)
 function findProjectRoot(startDir: string): string {
   let dir = startDir;
@@ -41,7 +43,7 @@ export function writeInvocation(
 ): InvocationRecordType {
   const recordData: Record<string, unknown> = {
     ...data,
-    id: data.id ?? `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: data.id ?? `inv-${Date.now()}-${process.pid}-${++__invSeq}`,
     date: data.date ?? new Date().toISOString().slice(0, 10),
   };
 

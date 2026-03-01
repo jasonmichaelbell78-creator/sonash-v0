@@ -717,6 +717,29 @@ accumulate.
 
 ## Active Reviews
 
+### Review #441: PR #407 R17 — SonarCloud + Qodo + CI (2026-03-01)
+
+_PR Review Ecosystem v2 Phases 1-3. Round 17 of ongoing review cycle._
+
+**Source:** SonarCloud S2245 (1), SonarCloud code smells (2), CI blocker (1),
+Qodo Compliance (3), Qodo PR Suggestions (9) **Total:** 16 **Fixed:** 3
+**Rejected:** 2 **Pre-existing:** 11
+
+**Severity:** 1 CRITICAL (CI blocker: renameSafe missing unlinkSync after
+copyFileSync in cross-device fallback), 2 MINOR (Math.random PRNG for IDs,
+nested ternary extraction), 2 TRIVIAL rejected (top-level await in CJS files)
+
+- **Pattern**: `renameSafe` cross-device fallback must include tmpFile cleanup —
+  without `unlinkSync` after `copyFileSync`, stale temp files accumulate
+- **Pattern**: SonarCloud S2245 flags `Math.random()` even for non-security IDs;
+  `process.pid` + monotonic counter is collision-resistant without crypto
+  overhead
+- **Rejected**: Top-level await suggestions for files that compile to CJS
+  (require ESM)
+- **Process**: 3 source fixes, TypeScript rebuild, 414 tests pass, 0 CI blockers
+
+---
+
 ### Review #440: PR #407 R16 — Qodo + SonarCloud (2026-03-01)
 
 _PR Review Ecosystem v2 Phases 1-3. Round 16 of ongoing review cycle._

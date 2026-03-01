@@ -406,6 +406,11 @@ function renameSafe(tmpPath: string, destPath: string): void {
       }
     }
     fs.copyFileSync(tmpPath, destPath);
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {
+      /* best-effort cleanup */
+    }
   }
 }
 

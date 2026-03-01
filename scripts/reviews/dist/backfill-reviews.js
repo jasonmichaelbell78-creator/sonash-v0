@@ -618,11 +618,16 @@ function migrateV1Records(v1Path, existingIds) {
             continue;
         }
         const rawId = v1.id;
-        const numericId = typeof rawId === "number"
-            ? rawId
-            : /^\d+$/.test(String(rawId).trim())
-                ? Number.parseInt(String(rawId).trim(), 10)
-                : Number.NaN;
+        let numericId;
+        if (typeof rawId === "number") {
+            numericId = rawId;
+        }
+        else if (/^\d+$/.test(String(rawId).trim())) {
+            numericId = Number.parseInt(String(rawId).trim(), 10);
+        }
+        else {
+            numericId = Number.NaN;
+        }
         if ((Number.isFinite(numericId) && existingIds.has(numericId)) ||
             (Number.isFinite(numericId) && parse_review_1.KNOWN_SKIPPED_IDS.has(numericId))) {
             skipped++;

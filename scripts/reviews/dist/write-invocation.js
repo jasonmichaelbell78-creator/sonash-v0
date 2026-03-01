@@ -44,6 +44,7 @@ const path = __importStar(require("node:path"));
 const fs = __importStar(require("node:fs"));
 const invocation_1 = require("./lib/schemas/invocation");
 const write_jsonl_1 = require("./lib/write-jsonl");
+let __invSeq = 0;
 // Walk up from startDir until we find package.json (works from both source and dist)
 function findProjectRoot(startDir) {
     let dir = startDir;
@@ -75,7 +76,7 @@ function writeInvocation(projectRoot, data) {
     var _a, _b;
     const recordData = {
         ...data,
-        id: (_a = data.id) !== null && _a !== void 0 ? _a : `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        id: (_a = data.id) !== null && _a !== void 0 ? _a : `inv-${Date.now()}-${process.pid}-${++__invSeq}`,
         date: (_b = data.date) !== null && _b !== void 0 ? _b : new Date().toISOString().slice(0, 10),
     };
     const validated = invocation_1.InvocationRecord.parse(recordData);
