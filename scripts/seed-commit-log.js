@@ -303,11 +303,11 @@ function syncMode() {
 function main() {
   // --sync mode: incremental append
   if (isSync) {
-    if (!syncMode()) {
+    if (syncMode()) {
+      process.exit(0);
+    } else {
       // Fall through to full seed if sync couldn't find a baseline
       console.log("No baseline found — performing full seed");
-    } else {
-      process.exit(0);
     }
   }
 

@@ -61,7 +61,7 @@ describe("Contract: Promotion -> Enforcement Rules", () => {
     const rule = EnforcementRule.parse({
       pattern_id: "path-traversal-check",
       rule_type: "regex",
-      rule_content: "startsWith\\('\\.\\.'\\)",
+      rule_content: String.raw`startsWith\('\.\.'\)`,
       auto_generated: true,
       description: "Detect insecure path traversal checks",
       severity: "warning",

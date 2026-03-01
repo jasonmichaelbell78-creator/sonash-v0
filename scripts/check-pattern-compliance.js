@@ -1333,7 +1333,7 @@ const ANTI_PATTERNS = [
     pattern: /git\s+log[^\n]*--(?:format|pretty)=[^\n]*%[a-zA-Z][^\n]*\|[^\n]*%[a-zA-Z]/g,
     message:
       "git log format using | as delimiter — commit messages containing | will corrupt parsing",
-    fix: "Use \\x1f (Unit Separator) instead of | in git log --format fields",
+    fix: String.raw`Use \x1f (Unit Separator) instead of | in git log --format fields`,
     review: "CODE_PATTERNS.md JS/TS - Delimiter consistency, Review #264 (3x recurrence)",
     fileTypes: [".js", ".ts", ".sh"],
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,

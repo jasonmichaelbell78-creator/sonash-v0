@@ -8,8 +8,8 @@
  * and appends to data/ecosystem-v2/reviews.jsonl.
  */
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { ReviewRecord } from "./lib/schemas/review";
 import { appendRecord } from "./lib/write-jsonl";
 
@@ -34,34 +34,40 @@ function findProjectRoot(startDir: string): string {
  */
 export function getNextReviewId(projectRoot: string): string {
   const filePath = path.join(projectRoot, "data", "ecosystem-v2", "reviews.jsonl");
-  let maxNum = 0;
 
+  let content: string;
   try {
-    const content = fs.readFileSync(filePath, "utf8").trim();
-    if (!content) return "rev-1";
-
-    const lines = content.split("\n");
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      try {
-        const record = JSON.parse(line) as { id?: string };
-        if (record.id) {
-          const match = /^rev-(\d+)$/.exec(record.id);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num > maxNum) maxNum = num;
-          }
-        }
-      } catch {
-        // Skip malformed lines
-      }
-    }
+    content = fs.readFileSync(filePath, "utf8").trim();
   } catch {
     // File doesn't exist or can't be read -- start at 1
     return "rev-1";
   }
 
+  if (!content) return "rev-1";
+
+  const lines = content.split("\n");
+  let maxNum = 0;
+  for (const line of lines) {
+    const num = parseRevNumber(line);
+    if (num > maxNum) maxNum = num;
+  }
+
   return `rev-${maxNum + 1}`;
+}
+
+/** Parse a rev-N number from a JSONL line. Returns 0 if not parseable. */
+function parseRevNumber(line: string): number {
+  if (!line.trim()) return 0;
+  try {
+    const record = JSON.parse(line) as { id?: string };
+    if (!record.id) return 0;
+    const match = /^rev-(\d+)$/.exec(record.id);
+    if (!match) return 0;
+    return Number.parseInt(match[1], 10);
+  } catch {
+    // Skip malformed lines
+    return 0;
+  }
 }
 
 /**

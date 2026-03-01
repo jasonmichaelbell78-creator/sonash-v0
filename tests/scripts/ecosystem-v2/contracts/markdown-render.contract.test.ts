@@ -51,8 +51,7 @@ function renderReviewMarkdown(record: Record<string, unknown>): string {
   const typed = record as { completeness_missing?: string[] };
   const lines: string[] = [];
 
-  lines.push(`# Review: ${record.id}`);
-  lines.push(`**Date:** ${record.date}`);
+  lines.push(`# Review: ${record.id}`, `**Date:** ${record.date}`);
 
   if (hasField(typed, "title") && record.title) {
     lines.push(`**Title:** ${record.title as string}`);
@@ -65,7 +64,7 @@ function renderReviewMarkdown(record: Record<string, unknown>): string {
   }
 
   if (hasField(typed, "total") && record.total !== undefined && record.total !== null) {
-    lines.push(`**Findings:** ${record.total as number} total, ${record.fixed ?? 0} fixed`);
+    lines.push(`**Findings:** ${record.total as number} total, ${Number(record.fixed ?? 0)} fixed`);
   } else {
     lines.push("**Findings:** [data not available]");
   }

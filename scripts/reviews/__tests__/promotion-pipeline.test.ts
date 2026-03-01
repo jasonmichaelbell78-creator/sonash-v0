@@ -363,13 +363,13 @@ describe("Integration: full pipeline with mock reviews", () => {
 
     // Should find path-traversal (3x, 3 PRs), error-handling (3x, 3 PRs), xss (3x, 3 PRs)
     assert.equal(recurring.length, 3);
-    const patternNames = recurring.map((r: { pattern: string }) => r.pattern);
-    assert.ok(patternNames.includes("path-traversal"));
-    assert.ok(patternNames.includes("error-handling"));
-    assert.ok(patternNames.includes("xss"));
+    const patternNames = new Set(recurring.map((r: { pattern: string }) => r.pattern));
+    assert.ok(patternNames.has("path-traversal"));
+    assert.ok(patternNames.has("error-handling"));
+    assert.ok(patternNames.has("xss"));
 
     // one-off-pattern should NOT be included (only 1 occurrence)
-    assert.ok(!patternNames.includes("one-off-pattern"));
+    assert.ok(!patternNames.has("one-off-pattern"));
 
     // Step 2: Filter already promoted (simulating path-traversal already in CODE_PATTERNS)
     const codePatternsContent = `

@@ -121,68 +121,49 @@ export interface ResolutionResult {
   missingIds: number[];
 }
 
-export function resolveOverlaps(byNumber: Map<number, ParsedEntry[]>): ResolutionResult {
-  const resolved: ParsedEntry[] = [];
-  let overlapsResolved = 0;
-  let duplicatesDisambiguated = 0;
-  const skippedIds = 0;
-  const missingIds: number[] = [];
-
-  for (const [reviewNumber, entries] of byNumber) {
-    // Skip known-skipped IDs -- produce NO records
-    if (KNOWN_SKIPPED_IDS.has(reviewNumber)) {
-      continue;
-    }
-
-    if (entries.length === 1) {
-      resolved.push(entries[0]);
-      continue;
-    }
-
-    // KNOWN_DUPLICATE_IDS: keep BOTH copies with disambiguated IDs
-    if (KNOWN_DUPLICATE_IDS.has(reviewNumber)) {
-      // Sort by source file name to get deterministic a/b assignment
-      const sorted = [...entries].sort((a, b) => a.sourceFile.localeCompare(b.sourceFile));
-      // Keep both with disambiguated IDs (applied during record conversion)
-      for (const entry of sorted) {
-        resolved.push(entry);
-      }
-      duplicatesDisambiguated++;
-      continue;
-    }
-
-    // IDs 92-100: prefer heading format over table format
-    if (OVERLAP_IDS_92_100.has(reviewNumber)) {
-      const headingEntry = entries.find((e) =>
-        e.sourceFile.includes(HEADING_PREFERRED_SOURCE.replace("docs/archive/", ""))
-      );
-      if (headingEntry) {
-        resolved.push(headingEntry);
-        overlapsResolved++;
-        continue;
-      }
-    }
-
-    // General overlap: keep the entry with the most content
-    const best = entries.reduce((a, b) =>
-      a.rawLines.join("\n").length > b.rawLines.join("\n").length ? a : b
-    );
-    resolved.push(best);
-    overlapsResolved++;
+function resolveSingleEntry(
+  reviewNumber: number,
+  entries: ParsedEntry[]
+): { resolved: ParsedEntry[]; overlaps: number; duplicates: number } | null {
+  if (KNOWN_SKIPPED_IDS.has(reviewNumber)) {
+    return null;
   }
 
-  // Convert to v2 records, handling KNOWN_DUPLICATE_IDS disambiguation
+  if (entries.length === 1) {
+    return { resolved: [entries[0]], overlaps: 0, duplicates: 0 };
+  }
+
+  if (KNOWN_DUPLICATE_IDS.has(reviewNumber)) {
+    const sorted = [...entries].sort((a, b) => a.sourceFile.localeCompare(b.sourceFile));
+    return { resolved: sorted, overlaps: 0, duplicates: 1 };
+  }
+
+  if (OVERLAP_IDS_92_100.has(reviewNumber)) {
+    const headingEntry = entries.find((e) =>
+      e.sourceFile.includes(HEADING_PREFERRED_SOURCE.replace("docs/archive/", ""))
+    );
+    if (headingEntry) {
+      return { resolved: [headingEntry], overlaps: 1, duplicates: 0 };
+    }
+  }
+
+  const best = entries.reduce(
+    (a, b) => (a.rawLines.join("\n").length > b.rawLines.join("\n").length ? a : b),
+    entries[0]
+  );
+  return { resolved: [best], overlaps: 1, duplicates: 0 };
+}
+
+function disambiguateRecords(resolved: ParsedEntry[]): ReviewRecordType[] {
   const records: ReviewRecordType[] = [];
   const seenIds = new Set<string>();
 
-  // Sort resolved entries by reviewNumber for deterministic output
   resolved.sort((a, b) => a.reviewNumber - b.reviewNumber);
 
   for (const entry of resolved) {
     const record = toV2ReviewRecord(entry);
 
     if (KNOWN_DUPLICATE_IDS.has(entry.reviewNumber)) {
-      // Disambiguate: first occurrence gets -a, second gets -b
       const baseId = `rev-${entry.reviewNumber}`;
       const suffix = seenIds.has(baseId) ? "b" : "a";
       record.id = `${baseId}-${suffix}`;
@@ -195,6 +176,26 @@ export function resolveOverlaps(byNumber: Map<number, ParsedEntry[]>): Resolutio
     seenIds.add(record.id.replace(/-[ab]$/, ""));
     records.push(record);
   }
+
+  return records;
+}
+
+export function resolveOverlaps(byNumber: Map<number, ParsedEntry[]>): ResolutionResult {
+  const resolved: ParsedEntry[] = [];
+  let overlapsResolved = 0;
+  let duplicatesDisambiguated = 0;
+  const missingIds: number[] = [];
+
+  for (const [reviewNumber, entries] of byNumber) {
+    const result = resolveSingleEntry(reviewNumber, entries);
+    if (result === null) continue;
+
+    resolved.push(...result.resolved);
+    overlapsResolved += result.overlaps;
+    duplicatesDisambiguated += result.duplicates;
+  }
+
+  const records = disambiguateRecords(resolved);
 
   return {
     records,
@@ -222,54 +223,57 @@ export interface RetroExtraction {
   rawContent: string;
 }
 
-/**
- * Extract retrospective sections from archive content.
- * Looks for: ### PR #N Retrospective (YYYY-MM-DD)
- */
-export function extractRetros(projectRoot: string): RetroExtraction[] {
+const RETRO_HEADING_RE = /^###\s+PR\s+#(\d+)\s+Retrospective(?:\s.*?)?\s*\((\d{4}-\d{2}-\d{2})\)/;
+const SECTION_END_RE = /^###\s+[^#]/;
+const SUB_HEADING_RE = /^####/;
+const PR_HEADING_RE = /^###\s+PR\s+#\d+/;
+
+function tryParseRetroHeading(line: string): { pr: number; date: string } | null {
+  const retroMatch = RETRO_HEADING_RE.exec(line);
+  if (!retroMatch) return null;
+  return {
+    pr: Number.parseInt(retroMatch[1], 10),
+    date: retroMatch[2],
+  };
+}
+
+function isRetroSectionEnd(line: string): boolean {
+  return SECTION_END_RE.test(line) && !SUB_HEADING_RE.test(line) && !PR_HEADING_RE.test(line);
+}
+
+function extractRetrosFromContent(content: string, sourceFile: string): RetroExtraction[] {
   const retros: RetroExtraction[] = [];
+  const lines = content.split("\n");
+  let currentRetro: RetroExtraction | null = null;
 
-  for (const source of ARCHIVE_SOURCES) {
-    const filePath = path.join(projectRoot, source.file);
-    const content = safeReadFile(filePath);
-    if (content === null) continue;
-
-    const lines = content.split("\n");
-    let currentRetro: RetroExtraction | null = null;
-
-    for (const line of lines) {
-      // Match: ### PR #N Retrospective (YYYY-MM-DD) or ### PR #N Retrospective -- Final (YYYY-MM-DD)
-      const retroMatch = line.match(
-        /^###\s+PR\s+#(\d+)\s+Retrospective(?:\s.*?)?\s*\((\d{4}-\d{2}-\d{2})\)/
-      );
-      if (retroMatch) {
-        if (currentRetro) retros.push(currentRetro);
-        currentRetro = {
-          pr: Number.parseInt(retroMatch[1], 10),
-          date: retroMatch[2],
-          sourceFile: source.file,
-          rawContent: "",
-        };
-        continue;
-      }
-
-      // End retro on next ### heading (but not ####)
-      if (currentRetro && /^###\s+[^#]/.test(line) && !line.match(/^####/)) {
-        // New ### section that isn't a sub-heading -- end current retro
-        if (!line.match(/^###\s+PR\s+#\d+/)) {
-          retros.push(currentRetro);
-          currentRetro = null;
-        }
-      }
-
-      if (currentRetro) {
-        currentRetro.rawContent += line + "\n";
-      }
+  for (const line of lines) {
+    const parsed = tryParseRetroHeading(line);
+    if (parsed) {
+      if (currentRetro) retros.push(currentRetro);
+      currentRetro = {
+        pr: parsed.pr,
+        date: parsed.date,
+        sourceFile,
+        rawContent: "",
+      };
+      continue;
     }
-    if (currentRetro) retros.push(currentRetro);
-  }
 
-  // Deduplicate retros by PR number (keep most content)
+    if (currentRetro && isRetroSectionEnd(line)) {
+      retros.push(currentRetro);
+      currentRetro = null;
+    }
+
+    if (currentRetro) {
+      currentRetro.rawContent += line + "\n";
+    }
+  }
+  if (currentRetro) retros.push(currentRetro);
+
+  return retros;
+}
+
+function deduplicateRetros(retros: RetroExtraction[]): RetroExtraction[] {
   const byPR = new Map<number, RetroExtraction[]>();
   for (const retro of retros) {
     const existing = byPR.get(retro.pr);
@@ -285,8 +289,10 @@ export function extractRetros(projectRoot: string): RetroExtraction[] {
     if (copies.length === 1) {
       deduped.push(copies[0]);
     } else {
-      // Keep the one with the most content
-      const best = copies.reduce((a, b) => (a.rawContent.length > b.rawContent.length ? a : b));
+      const best = copies.reduce(
+        (a, b) => (a.rawContent.length > b.rawContent.length ? a : b),
+        copies[0]
+      );
       deduped.push(best);
     }
   }
@@ -294,9 +300,77 @@ export function extractRetros(projectRoot: string): RetroExtraction[] {
   return deduped;
 }
 
-/**
- * Convert RetroExtraction to RetroRecord with metrics (BKFL-04).
- */
+export function extractRetros(projectRoot: string): RetroExtraction[] {
+  const retros: RetroExtraction[] = [];
+
+  for (const source of ARCHIVE_SOURCES) {
+    const filePath = path.join(projectRoot, source.file);
+    const content = safeReadFile(filePath);
+    if (content === null) continue;
+
+    retros.push(...extractRetrosFromContent(content, source.file));
+  }
+
+  return deduplicateRetros(retros);
+}
+
+// ---- Retro record building helpers ------------------------------------------
+
+function computeMetricsFromReview(
+  review: ReviewRecordType
+): { total_findings: number; fix_rate: number; pattern_recurrence: number } | null {
+  if (review.total === null || review.total === undefined) return null;
+  const total = review.total;
+  const fixed = review.fixed ?? 0;
+  return {
+    total_findings: total,
+    fix_rate: total > 0 ? Math.min(1, Math.round((fixed / total) * 100) / 100) : 0,
+    pattern_recurrence: 0,
+  };
+}
+
+function computeMetricsFromContent(
+  raw: string
+): { total_findings: number; fix_rate: number; pattern_recurrence: number } | null {
+  const totalRe = /Total\s+items?\s*[|:]\s*~?(\d+)/i;
+  const fixedRe = /Fixed\s*[|:]\s*~?(\d+)/i;
+  const totalMatch = totalRe.exec(raw);
+  if (!totalMatch) return null;
+
+  const total = Number.parseInt(totalMatch[1], 10);
+  const fixedMatch = fixedRe.exec(raw);
+  const fixed = fixedMatch ? Number.parseInt(fixedMatch[1], 10) : 0;
+  return {
+    total_findings: total,
+    fix_rate: total > 0 ? Math.min(1, Math.round((fixed / total) * 100) / 100) : 0,
+    pattern_recurrence: 0,
+  };
+}
+
+function determineCompleteness(
+  topWins: string[],
+  topMisses: string[],
+  processChanges: string[],
+  metrics: { total_findings: number; fix_rate: number; pattern_recurrence: number } | null
+): { completeness: "full" | "partial" | "stub"; missing: string[] } {
+  const missing: string[] = [];
+  if (topWins.length === 0) missing.push("top_wins");
+  if (topMisses.length === 0) missing.push("top_misses");
+  if (processChanges.length === 0) missing.push("process_changes");
+  if (metrics === null) missing.push("metrics");
+
+  let completeness: "full" | "partial" | "stub";
+  if (missing.length === 0) {
+    completeness = "full";
+  } else if (missing.length <= 2) {
+    completeness = "partial";
+  } else {
+    completeness = "stub";
+  }
+
+  return { completeness, missing };
+}
+
 export function buildRetroRecords(
   retros: RetroExtraction[],
   reviewsByPR: Map<number, ReviewRecordType>
@@ -307,9 +381,7 @@ export function buildRetroRecords(
   for (const retro of retros) {
     const raw = retro.rawContent;
 
-    // Extract top wins (bullet lists under "Wins" or "What Went Well")
     const topWins = extractRetroSection(raw, ["wins", "what went well", "went well"]);
-    // Extract top misses (bullet lists under "Misses", "What Could Improve", "Issues")
     const topMisses = extractRetroSection(raw, [
       "misses",
       "what could improve",
@@ -317,7 +389,6 @@ export function buildRetroRecords(
       "issues",
       "pain points",
     ]);
-    // Extract process changes
     const processChanges = extractRetroSection(raw, [
       "process changes",
       "action items",
@@ -326,48 +397,22 @@ export function buildRetroRecords(
       "recommendations",
     ]);
 
-    // Compute metrics (BKFL-04)
     const associatedReview = reviewsByPR.get(retro.pr);
-    let metrics: { total_findings: number; fix_rate: number; pattern_recurrence: number } | null =
-      null;
+    let metrics = associatedReview ? computeMetricsFromReview(associatedReview) : null;
 
-    if (
-      associatedReview &&
-      associatedReview.total !== null &&
-      associatedReview.total !== undefined
-    ) {
-      const total = associatedReview.total;
-      const fixed = associatedReview.fixed ?? 0;
-      metrics = {
-        total_findings: total,
-        fix_rate: total > 0 ? Math.min(1, Math.round((fixed / total) * 100) / 100) : 0,
-        pattern_recurrence: 0, // Set to 0 for backfill; real recurrence computed in Phase 3
-      };
-    } else {
-      // Try to extract total from retro content itself
-      const totalMatch = raw.match(/Total\s+items?\s*[|:]\s*~?(\d+)/i);
-      const fixedMatch = raw.match(/Fixed\s*[|:]\s*~?(\d+)/i);
-      if (totalMatch) {
-        const total = Number.parseInt(totalMatch[1], 10);
-        const fixed = fixedMatch ? Number.parseInt(fixedMatch[1], 10) : 0;
-        metrics = {
-          total_findings: total,
-          fix_rate: total > 0 ? Math.min(1, Math.round((fixed / total) * 100) / 100) : 0,
-          pattern_recurrence: 0,
-        };
-      } else {
+    if (!metrics) {
+      metrics = computeMetricsFromContent(raw);
+      if (!metrics) {
         missingReviewCount++;
       }
     }
 
-    // Determine completeness
-    const missing: string[] = [];
-    if (topWins.length === 0) missing.push("top_wins");
-    if (topMisses.length === 0) missing.push("top_misses");
-    if (processChanges.length === 0) missing.push("process_changes");
-    if (metrics === null) missing.push("metrics");
-
-    const completeness = missing.length === 0 ? "full" : missing.length <= 2 ? "partial" : "stub";
+    const { completeness, missing } = determineCompleteness(
+      topWins,
+      topMisses,
+      processChanges,
+      metrics
+    );
 
     const record: RetroRecordType = {
       id: `retro-pr-${retro.pr}`,
@@ -395,9 +440,32 @@ export function buildRetroRecords(
   return { records, missingReviewCount };
 }
 
-/**
- * Extract bullet items from sections matching given headers in retro content.
- */
+// ---- Retro section extraction helpers ---------------------------------------
+
+function isMatchingSectionHeader(lower: string, headers: string[]): boolean {
+  return headers.some(
+    (h) =>
+      lower.includes(`**${h}**`) ||
+      lower.includes(`**${h}:**`) ||
+      (/^####?\s+/.test(lower) && lower.includes(h))
+  );
+}
+
+function isSectionEnd(trimmed: string, headers: string[]): boolean {
+  if (trimmed.startsWith("**") && !headers.some((h) => trimmed.toLowerCase().includes(h))) {
+    return true;
+  }
+  if (/^#{2,4}\s/.test(trimmed)) return true;
+  if (trimmed.startsWith("---")) return true;
+  return false;
+}
+
+function extractBulletText(trimmed: string): string | null {
+  if (!trimmed.startsWith("-") && !trimmed.startsWith("*")) return null;
+  const text = trimmed.replace(/^[-*]\s+/, "").trim();
+  return text.length > 0 ? text : null;
+}
+
 function extractRetroSection(raw: string, headers: string[]): string[] {
   const items: string[] = [];
   const lines = raw.split("\n");
@@ -406,37 +474,21 @@ function extractRetroSection(raw: string, headers: string[]): string[] {
   for (const line of lines) {
     const lower = line.toLowerCase();
 
-    // Check for matching section header
-    const isHeader = headers.some(
-      (h) =>
-        lower.includes(`**${h}**`) ||
-        lower.includes(`**${h}:**`) ||
-        (lower.match(/^####?\s+/) && lower.includes(h))
-    );
-
-    if (isHeader) {
+    if (isMatchingSectionHeader(lower, headers)) {
       inSection = true;
       continue;
     }
 
-    // End section on new header
     if (inSection) {
       const trimmed = line.trimStart();
-      if (
-        (trimmed.startsWith("**") && !headers.some((h) => trimmed.toLowerCase().includes(h))) ||
-        /^#{2,4}\s/.test(trimmed) ||
-        trimmed.startsWith("---")
-      ) {
+      if (isSectionEnd(trimmed, headers)) {
         inSection = false;
         continue;
       }
 
-      // Extract bullet items
-      if (trimmed.startsWith("-") || trimmed.startsWith("*")) {
-        const text = trimmed.replace(/^[-*]\s+/, "").trim();
-        if (text.length > 0 && !items.includes(text)) {
-          items.push(text);
-        }
+      const text = extractBulletText(trimmed);
+      if (text && !items.includes(text)) {
+        items.push(text);
       }
     }
   }
@@ -462,6 +514,67 @@ interface V1Record {
   trivial: number;
   total: number;
   learnings: string[];
+}
+
+function computeV1Completeness(v1: V1Record): "full" | "partial" | "stub" {
+  const hasTitle = Boolean(v1.title);
+  const hasPr = v1.pr !== null;
+  const hasTotal = v1.total > 0;
+  const hasResolution = v1.fixed > 0 || v1.deferred > 0;
+
+  if (hasTitle && hasPr && hasTotal && hasResolution) return "full";
+  if (hasTitle && (hasTotal || hasPr)) return "partial";
+  return "stub";
+}
+
+function computeV1MissingFields(v1: V1Record): string[] {
+  const missing: string[] = [];
+  if (!v1.title) missing.push("title");
+  if (v1.pr === null) missing.push("pr");
+  if (v1.total === 0 && v1.fixed === 0) missing.push("total", "fixed");
+  if (!Array.isArray(v1.patterns) || v1.patterns.length === 0) missing.push("patterns");
+  if (!Array.isArray(v1.learnings) || v1.learnings.length === 0) missing.push("learnings");
+  const hasSeverity = v1.critical > 0 || v1.major > 0 || v1.minor > 0 || v1.trivial > 0;
+  if (!hasSeverity) missing.push("severity_breakdown");
+  return missing;
+}
+
+function buildV1ReviewRecord(v1: V1Record): ReviewRecordType {
+  const v1Patterns = Array.isArray(v1.patterns) ? v1.patterns : [];
+  const v1Learnings = Array.isArray(v1.learnings) ? v1.learnings : [];
+  const hasSeverity = v1.critical > 0 || v1.major > 0 || v1.minor > 0 || v1.trivial > 0;
+
+  return ReviewRecord.parse({
+    id: `rev-${v1.id}`,
+    date: v1.date,
+    schema_version: 1,
+    completeness: computeV1Completeness(v1),
+    completeness_missing: computeV1MissingFields(v1),
+    origin: {
+      type: "migration",
+      tool: "backfill-reviews.ts",
+    },
+    title: v1.title || null,
+    pr: v1.pr ?? null,
+    source: v1.source || null,
+    total: v1.total > 0 ? v1.total : null,
+    fixed: v1.fixed > 0 ? v1.fixed : null,
+    deferred: v1.deferred > 0 ? v1.deferred : null,
+    rejected: v1.rejected > 0 ? v1.rejected : null,
+    patterns: v1Patterns.length > 0 ? v1Patterns : null,
+    learnings: v1Learnings.length > 0 ? v1Learnings : null,
+    severity_breakdown: hasSeverity
+      ? {
+          critical: v1.critical,
+          major: v1.major,
+          minor: v1.minor,
+          trivial: v1.trivial,
+        }
+      : null,
+    per_round_detail: null,
+    rejection_analysis: null,
+    ping_pong_chains: null,
+  });
 }
 
 export function migrateV1Records(
@@ -490,74 +603,12 @@ export function migrateV1Records(
       continue;
     }
 
-    // Skip if already captured from archives (archives are more complete)
-    if (existingIds.has(v1.id)) {
+    if (existingIds.has(v1.id) || KNOWN_SKIPPED_IDS.has(v1.id)) {
       skipped++;
       continue;
     }
 
-    // Skip known-skipped IDs
-    if (KNOWN_SKIPPED_IDS.has(v1.id)) {
-      skipped++;
-      continue;
-    }
-
-    const missing: string[] = [];
-    if (!v1.title) missing.push("title");
-    if (v1.pr === null) missing.push("pr");
-    if (v1.total === 0 && v1.fixed === 0) missing.push("total", "fixed");
-    const v1Patterns = Array.isArray(v1.patterns) ? v1.patterns : [];
-    const v1Learnings = Array.isArray(v1.learnings) ? v1.learnings : [];
-    if (v1Patterns.length === 0) missing.push("patterns");
-    if (v1Learnings.length === 0) missing.push("learnings");
-
-    const hasSeverity = v1.critical > 0 || v1.major > 0 || v1.minor > 0 || v1.trivial > 0;
-    if (!hasSeverity) missing.push("severity_breakdown");
-
-    const hasTitle = Boolean(v1.title);
-    const hasPr = v1.pr !== null;
-    const hasTotal = v1.total > 0;
-    const hasResolution = v1.fixed > 0 || v1.deferred > 0;
-    const completeness =
-      hasTitle && hasPr && hasTotal && hasResolution
-        ? "full"
-        : hasTitle && (hasTotal || hasPr)
-          ? "partial"
-          : "stub";
-
-    const record: ReviewRecordType = {
-      id: `rev-${v1.id}`,
-      date: v1.date,
-      schema_version: 1,
-      completeness,
-      completeness_missing: missing,
-      origin: {
-        type: "migration",
-        tool: "backfill-reviews.ts",
-      },
-      title: v1.title || null,
-      pr: v1.pr ?? null,
-      source: v1.source || null,
-      total: v1.total > 0 ? v1.total : null,
-      fixed: v1.fixed > 0 ? v1.fixed : null,
-      deferred: v1.deferred > 0 ? v1.deferred : null,
-      rejected: v1.rejected > 0 ? v1.rejected : null,
-      patterns: v1Patterns.length > 0 ? v1Patterns : null,
-      learnings: v1Learnings.length > 0 ? v1Learnings : null,
-      severity_breakdown: hasSeverity
-        ? {
-            critical: v1.critical,
-            major: v1.major,
-            minor: v1.minor,
-            trivial: v1.trivial,
-          }
-        : null,
-      per_round_detail: null,
-      rejection_analysis: null,
-      ping_pong_chains: null,
-    };
-
-    records.push(ReviewRecord.parse(record));
+    records.push(buildV1ReviewRecord(v1));
     migrated++;
   }
 
@@ -587,6 +638,11 @@ export function checkConsolidationCounter(
 
 // ---- BKFL-06: Pattern corrections -------------------------------------------
 
+function isArtifactPattern(pattern: string): boolean {
+  const trimmed = pattern.trim();
+  return /^#?\d+$/.test(trimmed) || trimmed.length < 3;
+}
+
 export function applyPatternCorrections(records: ReviewRecordType[]): {
   applied: number;
   flagged: number;
@@ -594,33 +650,13 @@ export function applyPatternCorrections(records: ReviewRecordType[]): {
   let applied = 0;
   let flagged = 0;
 
-  // Pattern #5 and #13 content errors referenced in requirements.
-  // Without specific error details in the requirements, we scan for
-  // known pattern names and flag any records that reference them.
   for (const record of records) {
     if (!record.patterns) continue;
 
-    for (let i = 0; i < record.patterns.length; i++) {
-      const pattern = record.patterns[i];
+    const originalLength = record.patterns.length;
+    record.patterns = record.patterns.filter((p) => !isArtifactPattern(p));
+    applied += originalLength - record.patterns.length;
 
-      // Flag patterns containing only IDs/numbers (likely parsing artifacts)
-      if (/^#?\d+$/.test(pattern.trim())) {
-        record.patterns.splice(i, 1);
-        i--;
-        applied++;
-        continue;
-      }
-
-      // Flag suspiciously short or empty patterns
-      if (pattern.trim().length < 3) {
-        record.patterns.splice(i, 1);
-        i--;
-        applied++;
-        continue;
-      }
-    }
-
-    // Clean up empty pattern arrays after corrections
     if (record.patterns.length === 0) {
       record.patterns = null;
       if (!record.completeness_missing.includes("patterns")) {
@@ -629,170 +665,93 @@ export function applyPatternCorrections(records: ReviewRecordType[]): {
     }
   }
 
-  // Log investigation items for patterns #5 and #13 since exact errors
-  // are not fully specified in requirements
-  flagged += 2; // Patterns #5 and #13 flagged for manual investigation
+  // Patterns #5 and #13 flagged for manual investigation
+  flagged += 2;
 
   return { applied, flagged };
 }
 
-// ---- Main orchestrator ------------------------------------------------------
+// ---- Main orchestrator helpers ----------------------------------------------
 
-export async function runBackfill(): Promise<void> {
-  console.log("=== PR Review Backfill ===\n");
-
-  // Step 1: Parse all sources
-  console.log("Step 1: Parsing archive sources...");
-  const byNumber = parseAllSources(PROJECT_ROOT);
-  console.log(
-    `  Parsed ${byNumber.size} unique review numbers from ${ARCHIVE_SOURCES.length} sources`
-  );
-
-  // Step 2-3: Resolve overlaps
-  console.log("Step 2-3: Resolving overlaps...");
-  const resolution = resolveOverlaps(byNumber);
-  console.log(`  Records: ${resolution.records.length}`);
-  console.log(`  Overlaps resolved: ${resolution.overlapsResolved}`);
-  console.log(`  Duplicate IDs disambiguated: ${resolution.duplicatesDisambiguated}`);
-  console.log(`  Skipped IDs filtered: ${resolution.skippedIds}`);
-
-  // Step 4: Retro extraction
-  console.log("Step 4: Extracting retrospectives...");
-  const retros = extractRetros(PROJECT_ROOT);
-  console.log(`  Found ${retros.length} retrospective sections`);
-
-  // Build review-by-PR lookup for BKFL-04 metrics
+function buildReviewsByPR(records: ReviewRecordType[]): Map<number, ReviewRecordType> {
   const reviewsByPR = new Map<number, ReviewRecordType>();
-  for (const record of resolution.records) {
-    if (record.pr !== null && record.pr !== undefined) {
-      // If multiple reviews for same PR, keep the one with the most data
-      const existing = reviewsByPR.get(record.pr);
-      if (!existing || (record.total !== null && record.total !== undefined)) {
-        reviewsByPR.set(record.pr, record);
-      }
+  for (const record of records) {
+    if (record.pr === null || record.pr === undefined) continue;
+    const existing = reviewsByPR.get(record.pr);
+    if (!existing || (record.total !== null && record.total !== undefined)) {
+      reviewsByPR.set(record.pr, record);
     }
   }
+  return reviewsByPR;
+}
 
-  const retroResult = buildRetroRecords(retros, reviewsByPR);
-  console.log(
-    `  BKFL-04: Retro metrics computed for ${retroResult.records.length} retro records (${retroResult.missingReviewCount} missing associated review)`
-  );
+function extractReviewNumber(id: string): number {
+  const revNumRe = /^rev-(\d+)/;
+  const match = revNumRe.exec(id);
+  return match ? Number.parseInt(match[1], 10) : 0;
+}
 
-  // Step 5: V1 migration
-  console.log("Step 5: Migrating v1 state records...");
-  const v1Path = path.join(PROJECT_ROOT, ".claude/state/reviews.jsonl");
-  const archiveIds = new Set(
-    resolution.records.map((r) => {
-      const match = r.id.match(/^rev-(\d+)/);
-      return match ? Number.parseInt(match[1], 10) : -1;
-    })
-  );
-  const v1Result = migrateV1Records(v1Path, archiveIds);
-  console.log(
-    `  V1 records migrated: ${v1Result.migrated}, skipped (already in archives): ${v1Result.skipped}`
-  );
-
-  // Merge v1 records into archive records
-  const allRecords = [...resolution.records, ...v1Result.records];
-
-  // Step 6: BKFL-05 -- Consolidation counter check
-  console.log("Step 6: BKFL-05 consolidation counter check...");
-  const consolidationPath = path.join(PROJECT_ROOT, ".claude/state/consolidation.json");
-  // Get the highest review number from all records
-  const maxReviewNumber = Math.max(
-    ...allRecords.map((r) => {
-      const match = r.id.match(/^rev-(\d+)/);
-      return match ? Number.parseInt(match[1], 10) : 0;
-    })
-  );
-  const consolidationResult = checkConsolidationCounter(consolidationPath, maxReviewNumber);
-  if (consolidationResult.match) {
-    console.log(`  BKFL-05: Consolidation counter: match (${consolidationResult.expected})`);
-  } else {
-    console.log(
-      `  BKFL-05: Consolidation counter: expected=${consolidationResult.expected}, actual=${consolidationResult.actual}`
-    );
-  }
-
-  // Step 7: BKFL-06 -- Pattern corrections
-  console.log("Step 7: BKFL-06 pattern corrections...");
-  const patternResult = applyPatternCorrections(allRecords);
-  console.log(
-    `  BKFL-06: Pattern corrections: ${patternResult.applied} applied, ${patternResult.flagged} flagged for investigation`
-  );
-
-  // Step 8: Sort and write output
-  console.log("Step 8: Writing output...");
-
-  // Sort reviews by reviewNumber ascending
-  allRecords.sort((a, b) => {
-    const numA = Number.parseInt(a.id.replace(/^rev-/, "").replace(/-[ab]$/, ""), 10);
-    const numB = Number.parseInt(b.id.replace(/^rev-/, "").replace(/-[ab]$/, ""), 10);
-    if (numA !== numB) return numA - numB;
-    return a.id.localeCompare(b.id);
-  });
-
-  // Sort retros by date ascending
-  retroResult.records.sort((a, b) => a.date.localeCompare(b.date));
-
-  // Create output directory
-  const outputDir = path.join(PROJECT_ROOT, "data/ecosystem-v2");
-  fs.mkdirSync(outputDir, { recursive: true });
-
-  // Write reviews.jsonl
-  const reviewsPath = path.join(outputDir, "reviews.jsonl");
-  const reviewLines = allRecords.map((r) => JSON.stringify(r)).join("\n") + "\n";
-  fs.writeFileSync(reviewsPath, reviewLines, "utf8");
-
-  // Write retros.jsonl
-  const retrosPath = path.join(outputDir, "retros.jsonl");
-  const retroLines = retroResult.records.map((r) => JSON.stringify(r)).join("\n") + "\n";
-  fs.writeFileSync(retrosPath, retroLines, "utf8");
-
-  // Validate output
-  console.log("\nValidating output...");
-  let reviewValidationErrors = 0;
-  const reviewContent = fs.readFileSync(reviewsPath, "utf8");
-  const reviewOutputLines = reviewContent.split("\n").filter((l) => l.trim().length > 0);
-  for (const line of reviewOutputLines) {
+function validateOutputFile(
+  filePath: string,
+  parser: { safeParse: (data: unknown) => { success: boolean; error?: { message: string } } },
+  label: string
+): number {
+  let errors = 0;
+  const content = fs.readFileSync(filePath, "utf8");
+  const outputLines = content.split("\n").filter((l) => l.trim().length > 0);
+  for (const line of outputLines) {
     const parsed = JSON.parse(line);
-    const result = ReviewRecord.safeParse(parsed);
+    const result = parser.safeParse(parsed);
     if (!result.success) {
-      console.error(`  Validation error: ${result.error.message}`);
-      reviewValidationErrors++;
+      console.error(`  ${label} validation error: ${result.error?.message}`);
+      errors++;
     }
   }
+  return errors;
+}
 
-  let retroValidationErrors = 0;
-  const retroContent = fs.readFileSync(retrosPath, "utf8");
-  const retroOutputLines = retroContent.split("\n").filter((l) => l.trim().length > 0);
-  for (const line of retroOutputLines) {
-    const parsed = JSON.parse(line);
-    const result = RetroRecord.safeParse(parsed);
-    if (!result.success) {
-      console.error(`  Retro validation error: ${result.error.message}`);
-      retroValidationErrors++;
-    }
-  }
-
-  // Check for duplicate IDs
+function countDuplicateIds(records: ReviewRecordType[]): number {
   const idSet = new Set<string>();
   let duplicateIds = 0;
-  for (const record of allRecords) {
+  for (const record of records) {
     if (idSet.has(record.id)) {
       console.error(`  Duplicate ID: ${record.id}`);
       duplicateIds++;
     }
     idSet.add(record.id);
   }
+  return duplicateIds;
+}
 
-  // Count completeness tiers
+function countTiers(records: ReviewRecordType[]): { full: number; partial: number; stub: number } {
   const tiers = { full: 0, partial: 0, stub: 0 };
-  for (const record of allRecords) {
+  for (const record of records) {
     tiers[record.completeness]++;
   }
+  return tiers;
+}
 
-  // Summary
+function printSummary(
+  allRecords: ReviewRecordType[],
+  resolution: ResolutionResult,
+  retroResult: { records: RetroRecordType[]; missingReviewCount: number },
+  v1Result: { migrated: number },
+  reviewValidationErrors: number,
+  retroValidationErrors: number,
+  duplicateIds: number,
+  reviewsPath: string,
+  retrosPath: string
+): void {
+  const tiers = countTiers(allRecords);
+  const reviewOutputCount = fs
+    .readFileSync(reviewsPath, "utf8")
+    .split("\n")
+    .filter((l) => l.trim().length > 0).length;
+  const retroOutputCount = fs
+    .readFileSync(retrosPath, "utf8")
+    .split("\n")
+    .filter((l) => l.trim().length > 0).length;
+
   console.log("\n=== Summary ===");
   console.log(`Total review records: ${allRecords.length}`);
   console.log(`  Full: ${tiers.full}, Partial: ${tiers.partial}, Stub: ${tiers.stub}`);
@@ -806,12 +765,115 @@ export async function runBackfill(): Promise<void> {
   console.log(`Retro validation errors: ${retroValidationErrors}`);
   console.log(`Duplicate IDs in output: ${duplicateIds}`);
   console.log(`\nOutput files:`);
-  console.log(`  ${reviewsPath} (${reviewOutputLines.length} records)`);
-  console.log(`  ${retrosPath} (${retroOutputLines.length} records)`);
+  console.log(`  ${reviewsPath} (${reviewOutputCount} records)`);
+  console.log(`  ${retrosPath} (${retroOutputCount} records)`);
+}
+
+// ---- Main orchestrator ------------------------------------------------------
+
+export async function runBackfill(): Promise<void> {
+  console.log("=== PR Review Backfill ===\n");
+
+  console.log("Step 1: Parsing archive sources...");
+  const byNumber = parseAllSources(PROJECT_ROOT);
+  console.log(
+    `  Parsed ${byNumber.size} unique review numbers from ${ARCHIVE_SOURCES.length} sources`
+  );
+
+  console.log("Step 2-3: Resolving overlaps...");
+  const resolution = resolveOverlaps(byNumber);
+  console.log(`  Records: ${resolution.records.length}`);
+  console.log(`  Overlaps resolved: ${resolution.overlapsResolved}`);
+  console.log(`  Duplicate IDs disambiguated: ${resolution.duplicatesDisambiguated}`);
+  console.log(`  Skipped IDs filtered: ${resolution.skippedIds}`);
+
+  console.log("Step 4: Extracting retrospectives...");
+  const retros = extractRetros(PROJECT_ROOT);
+  console.log(`  Found ${retros.length} retrospective sections`);
+
+  const reviewsByPR = buildReviewsByPR(resolution.records);
+
+  const retroResult = buildRetroRecords(retros, reviewsByPR);
+  console.log(
+    `  BKFL-04: Retro metrics computed for ${retroResult.records.length} retro records (${retroResult.missingReviewCount} missing associated review)`
+  );
+
+  console.log("Step 5: Migrating v1 state records...");
+  const v1Path = path.join(PROJECT_ROOT, ".claude/state/reviews.jsonl");
+  const archiveIds = new Set(
+    resolution.records.map((r) => extractReviewNumber(r.id)).filter((n) => n !== 0)
+  );
+  const v1Result = migrateV1Records(v1Path, archiveIds);
+  console.log(
+    `  V1 records migrated: ${v1Result.migrated}, skipped (already in archives): ${v1Result.skipped}`
+  );
+
+  const allRecords = [...resolution.records, ...v1Result.records];
+
+  console.log("Step 6: BKFL-05 consolidation counter check...");
+  const consolidationPath = path.join(PROJECT_ROOT, ".claude/state/consolidation.json");
+  const maxReviewNumber = Math.max(...allRecords.map((r) => extractReviewNumber(r.id)));
+  const consolidationResult = checkConsolidationCounter(consolidationPath, maxReviewNumber);
+  if (consolidationResult.match) {
+    console.log(`  BKFL-05: Consolidation counter: match (${consolidationResult.expected})`);
+  } else {
+    console.log(
+      `  BKFL-05: Consolidation counter: expected=${consolidationResult.expected}, actual=${consolidationResult.actual}`
+    );
+  }
+
+  console.log("Step 7: BKFL-06 pattern corrections...");
+  const patternResult = applyPatternCorrections(allRecords);
+  console.log(
+    `  BKFL-06: Pattern corrections: ${patternResult.applied} applied, ${patternResult.flagged} flagged for investigation`
+  );
+
+  console.log("Step 8: Writing output...");
+
+  allRecords.sort((a, b) => {
+    const numA = extractReviewNumber(a.id);
+    const numB = extractReviewNumber(b.id);
+    if (numA !== numB) return numA - numB;
+    return a.id.localeCompare(b.id);
+  });
+
+  retroResult.records.sort((a, b) => a.date.localeCompare(b.date));
+
+  const outputDir = path.join(PROJECT_ROOT, "data/ecosystem-v2");
+  fs.mkdirSync(outputDir, { recursive: true });
+
+  const reviewsPath = path.join(outputDir, "reviews.jsonl");
+  const reviewLines = allRecords.map((r) => JSON.stringify(r)).join("\n") + "\n";
+  fs.writeFileSync(reviewsPath, reviewLines, "utf8");
+
+  const retrosPath = path.join(outputDir, "retros.jsonl");
+  const retroLines = retroResult.records.map((r) => JSON.stringify(r)).join("\n") + "\n";
+  fs.writeFileSync(retrosPath, retroLines, "utf8");
+
+  console.log("\nValidating output...");
+  const reviewValidationErrors = validateOutputFile(reviewsPath, ReviewRecord, "Review");
+  const retroValidationErrors = validateOutputFile(retrosPath, RetroRecord, "Retro");
+  const duplicateIds = countDuplicateIds(allRecords);
+
+  printSummary(
+    allRecords,
+    resolution,
+    retroResult,
+    v1Result,
+    reviewValidationErrors,
+    retroValidationErrors,
+    duplicateIds,
+    reviewsPath,
+    retrosPath
+  );
 }
 
 // Run if executed directly
-runBackfill().catch((err) => {
-  console.error("Backfill failed:", err);
-  process.exit(1);
-});
+void (async () => {
+  try {
+    await runBackfill();
+  } catch (err: unknown) {
+    console.error("Backfill failed:", err);
+    process.exit(1);
+  }
+})();

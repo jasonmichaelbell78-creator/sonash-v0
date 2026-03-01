@@ -44,7 +44,42 @@ export const KNOWN_SKIPPED_IDS = new Set<number>([
  */
 export const KNOWN_DUPLICATE_IDS = new Set<number>([366, 367, 368, 369]);
 
+// ─── Regex patterns ─────────────────────────────────────────────────────────────
+
+const HEADER_RE = /^#{2,4}\s+Review\s+#(\d+)(?::|\s+--|\s+\u2014)\s*(.*)/;
+const DATE_RE = /\((\d{4}-\d{2}-\d{2})\)\s*$/;
+const TABLE_ID_RE = /\|\s*#?(\d+)\s*\|/;
+const DATE_CELL_RE = /(\d{4}-\d{2}-\d{2})/;
+const BOLD_PR_RE = RegExp(String.raw`\*\*PR:?\*\*:?\s*#(\d+)`);
+const INLINE_PR_RE = /PR\s*#(\d+)/;
+const SLASH_PR_RE = /pr\/(\d+)/i;
+const BOLD_TOTAL_RE = RegExp(String.raw`\*\*(?:Total|Items):?\*\*:?\s*~?(\d+)`, "i");
+const N_TOTAL_RE = /(\d+)\s+total\b/i;
+const N_ITEMS_RE = /(\d+)\s+items\b/i;
+const INLINE_PATTERN_RE = RegExp(String.raw`\*\*(?:Key\s+)?Patterns?:?\*\*:?\s+(.+)`, "i");
+const SECTION_HEADING_RE = /^#{2,4}\s/;
+
 // ─── Heading-based parser ──────────────────────────────────────────────────────
+
+function parseHeaderLine(
+  line: string
+): { reviewNumber: number; date: string | null; title: string } | null {
+  const headerMatch = HEADER_RE.exec(line);
+  if (!headerMatch) return null;
+
+  const reviewNumber = Number.parseInt(headerMatch[1], 10);
+  const titleAndDate = headerMatch[2].trim();
+
+  const dateMatch = DATE_RE.exec(titleAndDate);
+  const date = dateMatch ? dateMatch[1] : null;
+  const title = dateMatch
+    ? titleAndDate.slice(0, titleAndDate.lastIndexOf("(")).trim()
+    : titleAndDate;
+
+  const cleanTitle = title.replace(/\s*--\s*$/, "").replace(/:\s*$/, "");
+
+  return { reviewNumber, date, title: cleanTitle };
+}
 
 /**
  * Parse heading-based review entries from a markdown archive file.
@@ -64,7 +99,6 @@ export function parseArchiveFile(filePath: string, content: string): ParsedEntry
   let inFence = false;
 
   for (const line of lines) {
-    // Track code fences to avoid matching inside code blocks
     if (line.trim().startsWith("```")) {
       inFence = !inFence;
       if (current) current.rawLines.push(line);
@@ -75,30 +109,13 @@ export function parseArchiveFile(filePath: string, content: string): ParsedEntry
       continue;
     }
 
-    // Match review headers: #{2,4} Review #N[:] Title [(YYYY-MM-DD)]
-    // Also handles em-dash variant: #### Review #N -- Title
-    // Also handles Unicode em-dash: #### Review #N \u2014 Title
-    const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+)(?::|\s+--|\s+\u2014)\s*(.*)/);
-    if (headerMatch) {
+    const header = parseHeaderLine(line);
+    if (header) {
       if (current) entries.push(current);
-
-      const reviewNumber = Number.parseInt(headerMatch[1], 10);
-      const titleAndDate = headerMatch[2].trim();
-
-      // Extract date from end of title: (YYYY-MM-DD)
-      const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
-      const date = dateMatch ? dateMatch[1] : null;
-      const title = dateMatch
-        ? titleAndDate.slice(0, titleAndDate.lastIndexOf("(")).trim()
-        : titleAndDate;
-
-      // Clean trailing em-dash or colon artifacts from title
-      const cleanTitle = title.replace(/\s*--\s*$/, "").replace(/:\s*$/, "");
-
       current = {
-        reviewNumber,
-        date,
-        title: cleanTitle,
+        reviewNumber: header.reviewNumber,
+        date: header.date,
+        title: header.title,
         rawLines: [],
         sourceFile: filePath,
       };
@@ -109,7 +126,6 @@ export function parseArchiveFile(filePath: string, content: string): ParsedEntry
   }
   if (current) entries.push(current);
 
-  // Deduplicate within-file: keep the entry with the most rawLines content
   return deduplicateEntries(entries);
 }
 
@@ -132,9 +148,9 @@ function deduplicateEntries(entries: ParsedEntry[]): ParsedEntry[] {
     if (copies.length === 1) {
       result.push(copies[0]);
     } else {
-      // Keep the entry with the most content (rawLines joined length)
-      const best = copies.reduce((a, b) =>
-        a.rawLines.join("\n").length > b.rawLines.join("\n").length ? a : b
+      const best = copies.reduce(
+        (a, b) => (a.rawLines.join("\n").length > b.rawLines.join("\n").length ? a : b),
+        copies[0]
       );
       result.push(best);
     }
@@ -143,6 +159,37 @@ function deduplicateEntries(entries: ParsedEntry[]): ParsedEntry[] {
 }
 
 // ─── Table-based parser ────────────────────────────────────────────────────────
+
+function parseTableCells(trimmed: string): string[] {
+  return trimmed
+    .split("|")
+    .map((c) => c.trim())
+    .filter(Boolean);
+}
+
+function isSkippableRow(cells: string[]): boolean {
+  return cells.length < 2 || cells[0].startsWith("---") || cells[0].startsWith("ID");
+}
+
+function extractTableEntry(trimmed: string, filePath: string): ParsedEntry | null {
+  const idMatch = TABLE_ID_RE.exec(trimmed);
+  if (!idMatch) return null;
+
+  const cells = parseTableCells(trimmed);
+  if (isSkippableRow(cells)) return null;
+
+  const reviewNumber = Number.parseInt(idMatch[1], 10);
+
+  let date: string | null = null;
+  if (cells.length >= 2) {
+    const dateMatch = DATE_CELL_RE.exec(cells[1]);
+    if (dateMatch) date = dateMatch[1];
+  }
+
+  const title = cells.length >= 3 ? cells[2].trim() : "";
+
+  return { reviewNumber, date, title, rawLines: [], sourceFile: filePath };
+}
 
 /**
  * Parse table-format review entries (e.g., REVIEWS_101-136.md).
@@ -158,40 +205,8 @@ export function parseTableArchive(filePath: string, content: string): ParsedEntr
     const trimmed = line.trim();
     if (!trimmed.startsWith("|")) continue;
 
-    // Match table rows with review IDs: | #N | or | N |
-    const idMatch = trimmed.match(/\|\s*#?(\d+)\s*\|/);
-    if (!idMatch) continue;
-
-    const reviewNumber = Number.parseInt(idMatch[1], 10);
-
-    // Skip separator rows and header rows
-    const cells = trimmed
-      .split("|")
-      .map((c) => c.trim())
-      .filter(Boolean);
-    if (cells.length < 2) continue;
-    if (cells[0].startsWith("---") || cells[0].startsWith("ID")) continue;
-
-    // Try to extract date from second column
-    let date: string | null = null;
-    if (cells.length >= 2) {
-      const dateMatch = cells[1].match(/(\d{4}-\d{2}-\d{2})/);
-      if (dateMatch) date = dateMatch[1];
-    }
-
-    // Try to extract title from third column
-    let title = "";
-    if (cells.length >= 3) {
-      title = cells[2].trim();
-    }
-
-    entries.push({
-      reviewNumber,
-      date,
-      title,
-      rawLines: [],
-      sourceFile: filePath,
-    });
+    const entry = extractTableEntry(trimmed, filePath);
+    if (entry) entries.push(entry);
   }
 
   return entries;
@@ -205,16 +220,13 @@ export function parseTableArchive(filePath: string, content: string): ParsedEntr
  * Returns null for branch names (non-numeric).
  */
 export function extractPR(raw: string): number | null {
-  // **PR:** #389
-  const boldPR = raw.match(/\*\*PR:?\*\*:?\s*#(\d+)/);
+  const boldPR = BOLD_PR_RE.exec(raw);
   if (boldPR) return Number.parseInt(boldPR[1], 10);
 
-  // PR #42
-  const inlinePR = raw.match(/PR\s*#(\d+)/);
+  const inlinePR = INLINE_PR_RE.exec(raw);
   if (inlinePR) return Number.parseInt(inlinePR[1], 10);
 
-  // pr/42
-  const slashPR = raw.match(/pr\/(\d+)/i);
+  const slashPR = SLASH_PR_RE.exec(raw);
   if (slashPR) return Number.parseInt(slashPR[1], 10);
 
   return null;
@@ -225,16 +237,13 @@ export function extractPR(raw: string): number | null {
  * Looks for: **Total:** N, **Items:** N, N total, N items
  */
 export function extractTotal(raw: string): number | null {
-  // **Total:** 12 or **Items:** 5
-  const boldTotal = raw.match(/\*\*(?:Total|Items):?\*\*:?\s*~?(\d+)/i);
+  const boldTotal = BOLD_TOTAL_RE.exec(raw);
   if (boldTotal) return Number.parseInt(boldTotal[1], 10);
 
-  // N total (word boundary to avoid false positives)
-  const nTotal = raw.match(/(\d+)\s+total\b/i);
+  const nTotal = N_TOTAL_RE.exec(raw);
   if (nTotal) return Number.parseInt(nTotal[1], 10);
 
-  // N items
-  const nItems = raw.match(/(\d+)\s+items\b/i);
+  const nItems = N_ITEMS_RE.exec(raw);
   if (nItems) return Number.parseInt(nItems[1], 10);
 
   return null;
@@ -245,17 +254,43 @@ export function extractTotal(raw: string): number | null {
  * Looks for: **Label:** N, Label: N, Label N
  */
 export function extractCount(raw: string, label: string): number | null {
-  // **Fixed:** 3 or Fixed: 3
-  const boldPattern = new RegExp(`\\*\\*${label}:?\\*\\*:?\\s*~?(\\d+)`, "i");
-  const boldMatch = raw.match(boldPattern);
+  const boldPattern = RegExp(String.raw`\*\*${label}:?\*\*:?\s*~?(\d+)`, "i");
+  const boldMatch = boldPattern.exec(raw);
   if (boldMatch) return Number.parseInt(boldMatch[1], 10);
 
-  // Label: N (without bold)
-  const colonPattern = new RegExp(`${label}:\\s*~?(\\d+)`, "i");
-  const colonMatch = raw.match(colonPattern);
+  const colonPattern = RegExp(`${label}:\\s*~?(\\d+)`, "i");
+  const colonMatch = colonPattern.exec(raw);
   if (colonMatch) return Number.parseInt(colonMatch[1], 10);
 
   return null;
+}
+
+// ─── Section extraction helpers ─────────────────────────────────────────────────
+
+function isSectionHeader(lower: string, keywords: string[]): boolean {
+  return keywords.some((kw) => lower.includes(kw));
+}
+
+function isEndOfSection(trimmed: string, sectionKeyword: string): boolean {
+  if (trimmed.startsWith("**") && !trimmed.toLowerCase().includes(sectionKeyword)) {
+    return true;
+  }
+  return trimmed.startsWith("---") || SECTION_HEADING_RE.test(trimmed);
+}
+
+function extractBulletText(trimmed: string): string | null {
+  if (!trimmed.startsWith("-") && !trimmed.startsWith("*")) return null;
+  const text = trimmed.replace(/^[-*]\s+/, "").trim();
+  return text.length > 0 ? text : null;
+}
+
+function extractInlinePatterns(line: string): string[] {
+  const inlineMatch = INLINE_PATTERN_RE.exec(line);
+  if (!inlineMatch) return [];
+  return inlineMatch[1]
+    .split(/[;,]/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
 }
 
 /**
@@ -264,52 +299,32 @@ export function extractCount(raw: string, label: string): number | null {
 export function extractPatterns(raw: string): string[] {
   const patterns: string[] = [];
   const lines = raw.split("\n");
-  let inPatternSection = false;
+  let inSection = false;
+
+  const sectionHeaders = ["**patterns**", "**key patterns**", "**patterns:**", "**key patterns:**"];
 
   for (const line of lines) {
     const lower = line.toLowerCase();
 
-    // Detect pattern section headers
-    if (
-      lower.includes("**patterns**") ||
-      lower.includes("**key patterns**") ||
-      lower.includes("**patterns:**") ||
-      lower.includes("**key patterns:**")
-    ) {
-      inPatternSection = true;
-      // Check for inline patterns after the header (e.g., **Patterns:** foo; bar)
-      const inlineMatch = line.match(/\*\*(?:Key\s+)?Patterns?:?\*\*:?\s+(.+)/i);
-      if (inlineMatch) {
-        const parts = inlineMatch[1]
-          .split(/[;,]/)
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0);
-        for (const part of parts) {
-          if (!patterns.includes(part)) patterns.push(part);
-        }
+    if (isSectionHeader(lower, sectionHeaders)) {
+      inSection = true;
+      for (const part of extractInlinePatterns(line)) {
+        if (!patterns.includes(part)) patterns.push(part);
       }
       continue;
     }
 
-    // End pattern section on new section header or horizontal rule
-    if (inPatternSection) {
-      const trimmed = line.trimStart();
-      if (trimmed.startsWith("**") && !trimmed.toLowerCase().includes("pattern")) {
-        inPatternSection = false;
-        continue;
-      }
-      if (trimmed.startsWith("---") || /^#{2,4}\s/.test(trimmed)) {
-        inPatternSection = false;
-        continue;
-      }
+    if (!inSection) continue;
 
-      // Extract bullet items
-      if (trimmed.startsWith("-") || trimmed.startsWith("*")) {
-        const text = trimmed.replace(/^[-*]\s+/, "").trim();
-        if (text.length > 0 && !patterns.includes(text)) {
-          patterns.push(text);
-        }
-      }
+    const trimmed = line.trimStart();
+    if (isEndOfSection(trimmed, "pattern")) {
+      inSection = false;
+      continue;
+    }
+
+    const text = extractBulletText(trimmed);
+    if (text && !patterns.includes(text)) {
+      patterns.push(text);
     }
   }
 
@@ -322,41 +337,34 @@ export function extractPatterns(raw: string): string[] {
 export function extractLearnings(raw: string): string[] {
   const learnings: string[] = [];
   const lines = raw.split("\n");
-  let inLearningSection = false;
+  let inSection = false;
+
+  const sectionHeaders = [
+    "**learnings**",
+    "**key learnings**",
+    "**learnings:**",
+    "**key learnings:**",
+  ];
 
   for (const line of lines) {
     const lower = line.toLowerCase();
 
-    // Detect learning section headers
-    if (
-      lower.includes("**learnings**") ||
-      lower.includes("**key learnings**") ||
-      lower.includes("**learnings:**") ||
-      lower.includes("**key learnings:**")
-    ) {
-      inLearningSection = true;
+    if (isSectionHeader(lower, sectionHeaders)) {
+      inSection = true;
       continue;
     }
 
-    // End section on new section header or horizontal rule
-    if (inLearningSection) {
-      const trimmed = line.trimStart();
-      if (trimmed.startsWith("**") && !trimmed.toLowerCase().includes("learning")) {
-        inLearningSection = false;
-        continue;
-      }
-      if (trimmed.startsWith("---") || /^#{2,4}\s/.test(trimmed)) {
-        inLearningSection = false;
-        continue;
-      }
+    if (!inSection) continue;
 
-      // Extract bullet items
-      if (trimmed.startsWith("-") || trimmed.startsWith("*")) {
-        const text = trimmed.replace(/^[-*]\s+/, "").trim();
-        if (text.length > 0 && !learnings.includes(text)) {
-          learnings.push(text);
-        }
-      }
+    const trimmed = line.trimStart();
+    if (isEndOfSection(trimmed, "learning")) {
+      inSection = false;
+      continue;
+    }
+
+    const text = extractBulletText(trimmed);
+    if (text && !learnings.includes(text)) {
+      learnings.push(text);
     }
   }
 
@@ -376,7 +384,6 @@ export function extractSeverity(
   const minor = parseSeverityCount(raw, "minor");
   const trivial = parseSeverityCount(raw, "trivial");
 
-  // Return null if no severity data found
   if (critical === 0 && major === 0 && minor === 0 && trivial === 0) {
     return null;
   }
@@ -398,11 +405,9 @@ function parseSeverityCount(text: string, label: string): number {
     const pos = lowerText.indexOf(lowerLabel, idx);
     if (pos === -1) break;
 
-    // Try "Label: N" format
     const colonResult = tryLabelColonNumber(text, pos + lowerLabel.length);
     if (colonResult >= 0) return colonResult;
 
-    // Try "N Label" format
     const prefixResult = tryNumberBeforeLabel(text, pos - 1);
     if (prefixResult >= 0) return prefixResult;
 
@@ -452,7 +457,6 @@ export function toV2ReviewRecord(entry: ParsedEntry): ReviewRecordType {
   const raw = entry.rawLines.join("\n");
   const missing: string[] = [];
 
-  // Extract structured fields
   const pr = extractPR(raw);
   const total = extractTotal(raw);
   const fixed = extractCount(raw, "fixed");
@@ -462,7 +466,6 @@ export function toV2ReviewRecord(entry: ParsedEntry): ReviewRecordType {
   const learnings = extractLearnings(raw);
   const severity = extractSeverity(raw);
 
-  // Track missing fields for completeness assessment
   if (!entry.title) missing.push("title");
   if (pr === null) missing.push("pr");
   if (total === null) missing.push("total");
@@ -473,7 +476,6 @@ export function toV2ReviewRecord(entry: ParsedEntry): ReviewRecordType {
   if (learnings.length === 0) missing.push("learnings");
   if (severity === null) missing.push("severity_breakdown");
 
-  // Assign completeness tier
   const completeness = assignCompleteness(entry, pr, total, fixed, deferred);
 
   const record: ReviewRecordType = {
@@ -501,7 +503,6 @@ export function toV2ReviewRecord(entry: ParsedEntry): ReviewRecordType {
     ping_pong_chains: null,
   };
 
-  // Validate against Zod schema -- catches schema violations immediately
   return ReviewRecord.parse(record);
 }
 

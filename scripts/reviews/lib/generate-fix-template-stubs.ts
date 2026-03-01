@@ -8,8 +8,8 @@
  * PR references, and TODO placeholders for the actual fix example.
  */
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { readValidatedJsonl } from "./read-jsonl";
 import { ReviewRecord } from "./schemas/review";
 import { detectRecurrence, type RecurrenceResult } from "./promote-patterns";
@@ -37,7 +37,7 @@ function findProjectRoot(startDir: string): string {
  * @returns Markdown string for the template stub
  */
 export function generateFixTemplateStub(pattern: RecurrenceResult, templateNumber: number): string {
-  const name = pattern.pattern.replace(/-/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+  const name = pattern.pattern.replaceAll("-", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
 
   const prList =
     pattern.distinctPRs.size > 0
@@ -72,9 +72,9 @@ function findNextTemplateNumber(content: string): number {
   // Match "### Template NN:" or "## Template NN:" patterns
   const lines = content.split("\n");
   for (const line of lines) {
-    const match = line.match(/^#{2,3}\s+Template\s+(\d+)/);
+    const match = /^#{2,3}\s+Template\s+(\d+)/.exec(line);
     if (match) {
-      const num = parseInt(match[1], 10);
+      const num = Number.parseInt(match[1], 10);
       if (num > maxNum) maxNum = num;
     }
   }
@@ -112,7 +112,7 @@ export function appendFixTemplateStubs(
 
   for (const p of patterns) {
     // Check if pattern already has a template (fuzzy match on name)
-    const normalizedName = p.pattern.toLowerCase().replace(/-/g, " ");
+    const normalizedName = p.pattern.toLowerCase().replaceAll("-", " ");
     if (lowerContent.includes(normalizedName)) {
       skipped.push(p.pattern);
       continue;

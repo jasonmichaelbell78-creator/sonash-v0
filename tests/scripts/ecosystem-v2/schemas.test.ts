@@ -272,7 +272,7 @@ describe("SCHEMA_MAP", () => {
   });
 
   test("has correct keys", () => {
-    const keys = Object.keys(SCHEMA_MAP).sort();
+    const keys = Object.keys(SCHEMA_MAP).sort((a, b) => a.localeCompare(b));
     assert.deepEqual(keys, ["deferred-items", "invocations", "retros", "reviews", "warnings"]);
   });
 

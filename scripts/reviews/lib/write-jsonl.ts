@@ -1,6 +1,6 @@
 import { z } from "zod";
-import * as path from "path";
-import * as fs from "fs";
+import * as path from "node:path";
+import * as fs from "node:fs";
 
 // Walk up from __dirname until we find package.json (works from both source and dist)
 function findProjectRoot(startDir: string): string {

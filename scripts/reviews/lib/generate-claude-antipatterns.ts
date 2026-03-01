@@ -15,8 +15,8 @@
  * line count significantly (CLAUDE.md must stay ~120 lines).
  */
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { readValidatedJsonl } from "./read-jsonl";
 import { ReviewRecord } from "./schemas/review";
 import { detectRecurrence, type RecurrenceResult } from "./promote-patterns";
@@ -55,7 +55,7 @@ export function generateAntiPatternsTable(patterns: RecurrenceResult[], maxPatte
 
   const rows = top.map((p) => {
     // Create a concise rule description from the pattern
-    const name = p.pattern.replace(/-/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+    const name = p.pattern.replaceAll("-", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
     const rule = `Recurring (${p.count}x, ${p.distinctPRs.size} PRs) -- review and add enforcement`;
     return `| ${name} | ${rule} |`;
   });
@@ -102,48 +102,58 @@ export function updateClaudeMd(
     const after = content.slice(endIdx);
     content = before + "\n" + newTable + "\n" + after;
   } else {
-    // First run: find the existing "Top 5" table and wrap with markers
-    // Look for the table header in Section 4
-    const tableHeaderPattern = "| Pattern            | Rule";
-    const tableIdx = content.indexOf(tableHeaderPattern);
-    if (tableIdx === -1) {
-      throw new Error("Could not find the anti-patterns table in CLAUDE.md Section 4");
-    }
-
-    // Find the end of the table (next blank line or section)
-    let tableEnd = tableIdx;
-    const lines = content.slice(tableIdx).split("\n");
-    let lineOffset = 0;
-    for (const line of lines) {
-      lineOffset += line.length + 1;
-      // Table rows start with |, so stop at first non-table line after header
-      if (lineOffset > 10 && !line.startsWith("|")) {
-        tableEnd = tableIdx + lineOffset - line.length - 1;
-        break;
-      }
-    }
-
-    // Wrap the existing table with markers
-    const before = content.slice(0, tableIdx);
-    const existingTable = content.slice(tableIdx, tableEnd).trimEnd();
-    const after = content.slice(tableEnd);
-
-    content = before + START_MARKER + "\n" + existingTable + "\n" + END_MARKER + after;
+    // First run: wrap the existing table with markers
+    content = wrapExistingTableWithMarkers(content);
   }
 
   if (!dryRun) {
-    try {
-      fs.writeFileSync(claudePath, content, "utf8");
-    } catch (err) {
-      console.warn(
-        `[generate-claude-antipatterns] Warning: Could not write CLAUDE.md: ${
-          err instanceof Error ? err.message : String(err)
-        }`
-      );
-    }
+    writeClaudeMdSafe(claudePath, content);
   }
 
   return content;
+}
+
+/**
+ * First-run helper: finds the existing "Top 5" table in Section 4 and wraps it with markers.
+ */
+function wrapExistingTableWithMarkers(content: string): string {
+  const tableHeaderPattern = "| Pattern            | Rule";
+  const tableIdx = content.indexOf(tableHeaderPattern);
+  if (tableIdx === -1) {
+    throw new Error("Could not find the anti-patterns table in CLAUDE.md Section 4");
+  }
+
+  // Find the end of the table (next blank line or section)
+  let tableEnd = tableIdx;
+  const lines = content.slice(tableIdx).split("\n");
+  let lineOffset = 0;
+  for (const line of lines) {
+    lineOffset += line.length + 1;
+    // Table rows start with |, so stop at first non-table line after header
+    if (lineOffset > 10 && !line.startsWith("|")) {
+      tableEnd = tableIdx + lineOffset - line.length - 1;
+      break;
+    }
+  }
+
+  const before = content.slice(0, tableIdx);
+  const existingTable = content.slice(tableIdx, tableEnd).trimEnd();
+  const after = content.slice(tableEnd);
+
+  return before + START_MARKER + "\n" + existingTable + "\n" + END_MARKER + after;
+}
+
+/** Write CLAUDE.md with a warning on failure instead of throwing. */
+function writeClaudeMdSafe(claudePath: string, content: string): void {
+  try {
+    fs.writeFileSync(claudePath, content, "utf8");
+  } catch (err) {
+    console.warn(
+      `[generate-claude-antipatterns] Warning: Could not write CLAUDE.md: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+  }
 }
 
 /**

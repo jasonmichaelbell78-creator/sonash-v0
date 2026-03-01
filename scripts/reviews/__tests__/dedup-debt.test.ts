@@ -73,9 +73,9 @@ describe("dedupReviewSourced", () => {
     assert.equal(result.kept.length, 2, "should keep 2 entries");
     assert.equal(result.removed.length, 1, "should remove 1 duplicate");
 
-    const keptIds = result.kept.map((i: { id: string }) => i.id);
-    assert.ok(keptIds.includes("DEBT-0042"), "should keep DEBT-0042 (lower ID)");
-    assert.ok(keptIds.includes("DEBT-0100"), "should keep DEBT-0100 (unique hash)");
+    const keptIds = new Set(result.kept.map((i: { id: string }) => i.id));
+    assert.ok(keptIds.has("DEBT-0042"), "should keep DEBT-0042 (lower ID)");
+    assert.ok(keptIds.has("DEBT-0100"), "should keep DEBT-0100 (unique hash)");
     assert.equal(result.removed[0].id, "DEBT-0187", "should remove DEBT-0187 (higher ID)");
   });
 
@@ -92,10 +92,10 @@ describe("dedupReviewSourced", () => {
     assert.equal(result.kept.length, 3, "should keep 3 entries (2 non-review + 1 review)");
     assert.equal(result.removed.length, 1, "should remove 1 duplicate");
 
-    const keptIds = result.kept.map((i: { id: string }) => i.id);
-    assert.ok(keptIds.includes("DEBT-0001"), "sonarcloud entry preserved");
-    assert.ok(keptIds.includes("DEBT-0002"), "audit entry preserved");
-    assert.ok(keptIds.includes("DEBT-0003"), "kept lower-ID review entry");
+    const keptIds = new Set(result.kept.map((i: { id: string }) => i.id));
+    assert.ok(keptIds.has("DEBT-0001"), "sonarcloud entry preserved");
+    assert.ok(keptIds.has("DEBT-0002"), "audit entry preserved");
+    assert.ok(keptIds.has("DEBT-0003"), "kept lower-ID review entry");
   });
 
   test("entries without content_hash are always kept", () => {
@@ -156,7 +156,9 @@ describe("dedupReviewSourced", () => {
     assert.equal(result.removed.length, 0, "none removed");
     assert.equal(result.flagged.length, 2, "2 entries flagged as title-based near-duplicates");
 
-    const flaggedIds = result.flagged.map((i: { id: string }) => i.id).sort();
+    const flaggedIds = result.flagged
+      .map((i: { id: string }) => i.id)
+      .sort((a, b) => a.localeCompare(b));
     assert.deepStrictEqual(flaggedIds, ["DEBT-0050", "DEBT-0060"]);
   });
 

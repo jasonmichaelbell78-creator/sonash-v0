@@ -10,8 +10,8 @@
  *   node dist/render-reviews-to-md.js --last 5
  */
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { ReviewRecord, type ReviewRecordType } from "./lib/schemas/review";
 import { readValidatedJsonl } from "./lib/read-jsonl";
 
@@ -41,55 +41,34 @@ export function renderReviewRecord(record: ReviewRecordType): string {
 
   // Heading
   const title = record.title ?? "(untitled)";
-  lines.push(`### Review ${record.id}: ${title}`);
-  lines.push("");
+  lines.push(`### Review ${record.id}: ${title}`, "");
 
   // Completeness note for non-full records
   if (record.completeness !== "full") {
-    lines.push(`> **Completeness:** ${record.completeness}`);
-    if (record.completeness_missing && record.completeness_missing.length > 0) {
-      lines.push(`> **Missing fields:** ${record.completeness_missing.join(", ")}`);
-    }
-    lines.push("");
+    renderCompletenessNote(lines, record);
   }
 
   // Metadata line
-  const metaParts: string[] = [];
-  metaParts.push(`**Date:** ${record.date}`);
-  if (record.pr != null) {
-    metaParts.push(`**PR:** #${record.pr}`);
-  }
-  if (record.source != null) {
-    metaParts.push(`**Source:** ${record.source}`);
-  }
-  lines.push(metaParts.join(" | "));
-  lines.push("");
+  renderMetadata(lines, record);
 
   // Stats table (only if we have total)
   if (record.total != null) {
-    lines.push("| Total | Fixed | Deferred | Rejected |");
-    lines.push("|-------|-------|----------|----------|");
     lines.push(
-      `| ${record.total} | ${record.fixed ?? "-"} | ${record.deferred ?? "-"} | ${record.rejected ?? "-"} |`
+      "| Total | Fixed | Deferred | Rejected |",
+      "|-------|-------|----------|----------|",
+      `| ${record.total} | ${record.fixed ?? "-"} | ${record.deferred ?? "-"} | ${record.rejected ?? "-"} |`,
+      ""
     );
-    lines.push("");
   }
 
   // Severity breakdown
   if (record.severity_breakdown != null) {
-    const sb = record.severity_breakdown;
-    lines.push("**Severity Breakdown:**");
-    lines.push("");
-    lines.push("| Critical | Major | Minor | Trivial |");
-    lines.push("|----------|-------|-------|---------|");
-    lines.push(`| ${sb.critical} | ${sb.major} | ${sb.minor} | ${sb.trivial} |`);
-    lines.push("");
+    renderSeverityBreakdown(lines, record.severity_breakdown);
   }
 
   // Patterns
   if (record.patterns != null && record.patterns.length > 0) {
-    lines.push("**Patterns:**");
-    lines.push("");
+    lines.push("**Patterns:**", "");
     for (const pattern of record.patterns) {
       lines.push(`- ${pattern}`);
     }
@@ -98,8 +77,7 @@ export function renderReviewRecord(record: ReviewRecordType): string {
 
   // Learnings
   if (record.learnings != null && record.learnings.length > 0) {
-    lines.push("**Learnings:**");
-    lines.push("");
+    lines.push("**Learnings:**", "");
     for (const learning of record.learnings) {
       lines.push(`- ${learning}`);
     }
@@ -107,6 +85,43 @@ export function renderReviewRecord(record: ReviewRecordType): string {
   }
 
   return lines.join("\n");
+}
+
+/** Render completeness note for non-full records. */
+function renderCompletenessNote(lines: string[], record: ReviewRecordType): void {
+  lines.push(`> **Completeness:** ${record.completeness}`);
+  if (record.completeness_missing && record.completeness_missing.length > 0) {
+    lines.push(`> **Missing fields:** ${record.completeness_missing.join(", ")}`);
+  }
+  lines.push("");
+}
+
+/** Render metadata line (date, PR, source). */
+function renderMetadata(lines: string[], record: ReviewRecordType): void {
+  const metaParts: string[] = [];
+  metaParts.push(`**Date:** ${record.date}`);
+  if (record.pr != null) {
+    metaParts.push(`**PR:** #${record.pr}`);
+  }
+  if (record.source != null) {
+    metaParts.push(`**Source:** ${record.source}`);
+  }
+  lines.push(metaParts.join(" | "), "");
+}
+
+/** Render severity breakdown table. */
+function renderSeverityBreakdown(
+  lines: string[],
+  sb: NonNullable<ReviewRecordType["severity_breakdown"]>
+): void {
+  lines.push(
+    "**Severity Breakdown:**",
+    "",
+    "| Critical | Major | Minor | Trivial |",
+    "|----------|-------|-------|---------|",
+    `| ${sb.critical} | ${sb.major} | ${sb.minor} | ${sb.trivial} |`,
+    ""
+  );
 }
 
 /**
@@ -137,15 +152,15 @@ if (require.main === module) {
       outputPath = args[i + 1];
       i++;
     } else if (args[i] === "--filter-pr" && i + 1 < args.length) {
-      filterPr = parseInt(args[i + 1], 10);
-      if (isNaN(filterPr)) {
+      filterPr = Number.parseInt(args[i + 1], 10);
+      if (Number.isNaN(filterPr)) {
         console.error("--filter-pr requires a number");
         process.exit(1);
       }
       i++;
     } else if (args[i] === "--last" && i + 1 < args.length) {
-      lastN = parseInt(args[i + 1], 10);
-      if (isNaN(lastN) || lastN < 1) {
+      lastN = Number.parseInt(args[i + 1], 10);
+      if (Number.isNaN(lastN) || lastN < 1) {
         console.error("--last requires a positive number");
         process.exit(1);
       }

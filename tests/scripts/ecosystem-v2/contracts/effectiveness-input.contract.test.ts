@@ -121,7 +121,7 @@ describe("Contract: JSONL -> Effectiveness Analyzer", () => {
     const severityWeight: Record<string, number> = { S0: 4, S1: 3, S2: 2, S3: 1 };
     const weight =
       hasSeverity && typeof partialDeferred.severity === "string"
-        ? (severityWeight[partialDeferred.severity as string] ?? 0)
+        ? (severityWeight[partialDeferred.severity] ?? 0)
         : 0;
     assert.equal(typeof weight, "number");
     assert.ok(!Number.isNaN(weight));

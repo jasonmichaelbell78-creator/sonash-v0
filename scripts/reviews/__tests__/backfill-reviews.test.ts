@@ -207,7 +207,9 @@ describe("Overlap resolution", () => {
     assert.equal(result.records.length, 2);
     assert.equal(result.duplicatesDisambiguated, 1);
 
-    const ids = result.records.map((r: ReviewRecordType) => r.id).sort();
+    const ids = result.records
+      .map((r: ReviewRecordType) => r.id)
+      .sort((a, b) => a.localeCompare(b));
     assert.deepEqual(ids, ["rev-366-a", "rev-366-b"]);
 
     // Verify origin.session is set for disambiguation

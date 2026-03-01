@@ -79,12 +79,12 @@ describe("Contract: PR Review Skill -> reviews.jsonl", () => {
   });
 
   test("origin.type is always a valid enum value", () => {
-    const validTypes = ["pr-review", "pr-retro", "backfill", "migration", "manual"];
+    const validTypes = new Set(["pr-review", "pr-retro", "backfill", "migration", "manual"]);
     for (const fixture of [fullReview, partialReview, stubReview]) {
       const parsed = ReviewRecord.parse(fixture);
       const origin = parsed.origin as { type: string };
       assert.ok(
-        validTypes.includes(origin.type),
+        validTypes.has(origin.type),
         `origin.type "${origin.type}" is not a valid enum value`
       );
     }
@@ -93,7 +93,7 @@ describe("Contract: PR Review Skill -> reviews.jsonl", () => {
   test("all fixtures have required BaseRecord fields", () => {
     for (const fixture of [fullReview, partialReview, stubReview]) {
       const parsed = ReviewRecord.parse(fixture);
-      assert.ok(typeof parsed.id === "string" && (parsed.id as string).length > 0);
+      assert.ok(typeof parsed.id === "string" && parsed.id.length > 0);
       assert.ok(typeof parsed.date === "string");
       assert.ok(typeof parsed.schema_version === "number");
       assert.ok(parsed.origin !== null && parsed.origin !== undefined);

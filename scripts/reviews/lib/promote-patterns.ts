@@ -9,9 +9,8 @@
  * Does NOT modify run-consolidation.js — both coexist during transition.
  */
 
-import * as fs from "fs";
-import * as path from "path";
-import { z } from "zod";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { readValidatedJsonl } from "./read-jsonl";
 import { ReviewRecord, type ReviewRecordType } from "./schemas/review";
 
@@ -56,49 +55,49 @@ export interface PromotionResult {
   alreadyPromoted: string[];
 }
 
-/**
- * Detect patterns recurring N>=minOccurrences times across M>=minDistinctPRs distinct PRs.
- *
- * Normalizes pattern strings to lowercase for comparison.
- * Returns results sorted by count descending.
- */
-export function detectRecurrence(
-  reviews: ReviewRecordType[],
-  minOccurrences = 3,
-  minDistinctPRs = 2
-): RecurrenceResult[] {
-  const patternMap = new Map<
-    string,
-    { count: number; distinctPRs: Set<number>; reviewIds: Set<string> }
-  >();
+/** Accumulated data for a single normalized pattern. */
+interface PatternAccumulator {
+  count: number;
+  distinctPRs: Set<number>;
+  reviewIds: Set<string>;
+}
 
-  for (const review of reviews) {
-    if (!review.patterns || review.patterns.length === 0) continue;
+/** Accumulate a single review's patterns into the pattern map. */
+function accumulateReviewPatterns(
+  review: ReviewRecordType,
+  patternMap: Map<string, PatternAccumulator>
+): void {
+  if (!review.patterns || review.patterns.length === 0) return;
 
-    for (const rawPattern of review.patterns) {
-      const normalized = rawPattern.toLowerCase().trim();
-      if (!normalized) continue;
+  for (const rawPattern of review.patterns) {
+    const normalized = rawPattern.toLowerCase().trim();
+    if (!normalized) continue;
 
-      let entry = patternMap.get(normalized);
-      if (!entry) {
-        entry = { count: 0, distinctPRs: new Set(), reviewIds: new Set() };
-        patternMap.set(normalized, entry);
-      }
+    let entry = patternMap.get(normalized);
+    if (!entry) {
+      entry = { count: 0, distinctPRs: new Set(), reviewIds: new Set() };
+      patternMap.set(normalized, entry);
+    }
 
-      // Only count once per review (same pattern in same review = 1 occurrence)
-      if (!entry.reviewIds.has(review.id)) {
-        entry.count++;
-        entry.reviewIds.add(review.id);
-      }
+    // Only count once per review (same pattern in same review = 1 occurrence)
+    if (!entry.reviewIds.has(review.id)) {
+      entry.count++;
+      entry.reviewIds.add(review.id);
+    }
 
-      // Track distinct PRs (null/undefined PR = skip)
-      if (review.pr != null) {
-        entry.distinctPRs.add(review.pr);
-      }
+    // Track distinct PRs (null/undefined PR = skip)
+    if (review.pr != null) {
+      entry.distinctPRs.add(review.pr);
     }
   }
+}
 
-  // Filter to patterns meeting both thresholds
+/** Filter pattern map to entries meeting both thresholds and convert to results. */
+function filterAndSortPatterns(
+  patternMap: Map<string, PatternAccumulator>,
+  minOccurrences: number,
+  minDistinctPRs: number
+): RecurrenceResult[] {
   const results: RecurrenceResult[] = [];
   for (const [pattern, data] of patternMap) {
     if (data.count >= minOccurrences && data.distinctPRs.size >= minDistinctPRs) {
@@ -117,6 +116,26 @@ export function detectRecurrence(
 }
 
 /**
+ * Detect patterns recurring N>=minOccurrences times across M>=minDistinctPRs distinct PRs.
+ *
+ * Normalizes pattern strings to lowercase for comparison.
+ * Returns results sorted by count descending.
+ */
+export function detectRecurrence(
+  reviews: ReviewRecordType[],
+  minOccurrences = 3,
+  minDistinctPRs = 2
+): RecurrenceResult[] {
+  const patternMap = new Map<string, PatternAccumulator>();
+
+  for (const review of reviews) {
+    accumulateReviewPatterns(review, patternMap);
+  }
+
+  return filterAndSortPatterns(patternMap, minOccurrences, minDistinctPRs);
+}
+
+/**
  * Filter out patterns already present in CODE_PATTERNS.md.
  * Checks against existing headings and table rows using fuzzy matching.
  */
@@ -130,7 +149,7 @@ export function filterAlreadyPromoted(
 
   for (const p of patterns) {
     // Normalize for comparison: lowercase, replace hyphens with spaces
-    const normalizedPattern = p.pattern.toLowerCase().replace(/-/g, " ");
+    const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
     if (lowerContent.includes(normalizedPattern)) {
       alreadyPromoted.push(p.pattern);
     } else {
@@ -173,7 +192,7 @@ export function categorizePattern(pattern: string): string {
 export function generateRuleSkeleton(result: RecurrenceResult): RuleSkeleton {
   const rawId = result.pattern
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
+    .replaceAll(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 40);
   const id = rawId || "unnamed";
@@ -192,7 +211,7 @@ export function generateRuleSkeleton(result: RecurrenceResult): RuleSkeleton {
  * Build a CODE_PATTERNS.md entry for a promoted pattern.
  */
 function buildCodePatternsEntry(result: RecurrenceResult, category: string): string {
-  const title = result.pattern.replace(/-/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+  const title = result.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase());
 
   const prRefs =
     result.distinctPRs.size > 0
@@ -359,7 +378,7 @@ export function promotePatterns(options: {
 
   // 6. Update consolidation state (unless dry run)
   if (!options.dryRun && reviews.length > 0) {
-    const lastId = reviews[reviews.length - 1].id;
+    const lastId = reviews.at(-1)!.id;
     saveConsolidationState(projectRoot, lastId);
   }
 
@@ -379,10 +398,11 @@ export function main(args: string[]): void {
 
   const minOccIdx = args.indexOf("--min-occurrences");
   const minOccurrences =
-    minOccIdx !== -1 && args[minOccIdx + 1] ? parseInt(args[minOccIdx + 1], 10) : 3;
+    minOccIdx !== -1 && args[minOccIdx + 1] ? Number.parseInt(args[minOccIdx + 1], 10) : 3;
 
   const minPRsIdx = args.indexOf("--min-prs");
-  const minPRs = minPRsIdx !== -1 && args[minPRsIdx + 1] ? parseInt(args[minPRsIdx + 1], 10) : 2;
+  const minPRs =
+    minPRsIdx !== -1 && args[minPRsIdx + 1] ? Number.parseInt(args[minPRsIdx + 1], 10) : 2;
 
   console.log("=== Promote Patterns Pipeline ===");
   console.log(`Config: minOccurrences=${minOccurrences}, minPRs=${minPRs}, dryRun=${dryRun}`);

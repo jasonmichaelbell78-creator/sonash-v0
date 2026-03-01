@@ -8,8 +8,8 @@
  * - Idempotent: running on already-deduped data produces identical output.
  */
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 // =========================================================
 // Types
@@ -47,18 +47,20 @@ function isReviewSourced(item: DebtItem): boolean {
 function parseDebtId(id: string): number {
   const match = /^DEBT-(\d+)$/.exec(id);
   if (!match) return Infinity;
-  return parseInt(match[1], 10);
+  return Number.parseInt(match[1], 10);
 }
 
 // =========================================================
 // Core dedup logic (pure function, testable)
 // =========================================================
 
-export function dedupReviewSourced(items: DebtItem[]): DedupResult {
+/** Separate items into review-sourced and non-review-sourced. */
+function partitionBySource(items: DebtItem[]): {
+  reviewItems: DebtItem[];
+  nonReviewItems: DebtItem[];
+} {
   const reviewItems: DebtItem[] = [];
   const nonReviewItems: DebtItem[] = [];
-
-  // Separate by source
   for (const item of items) {
     if (isReviewSourced(item)) {
       reviewItems.push(item);
@@ -66,11 +68,16 @@ export function dedupReviewSourced(items: DebtItem[]): DedupResult {
       nonReviewItems.push(item);
     }
   }
+  return { reviewItems, nonReviewItems };
+}
 
-  // Dedup review-sourced by content_hash
+/** Group review items by content_hash, separating items without a hash. */
+function groupByContentHash(reviewItems: DebtItem[]): {
+  hashGroups: Map<string, DebtItem[]>;
+  noHashItems: DebtItem[];
+} {
   const hashGroups = new Map<string, DebtItem[]>();
   const noHashItems: DebtItem[] = [];
-
   for (const item of reviewItems) {
     if (!item.content_hash) {
       noHashItems.push(item);
@@ -83,12 +90,17 @@ export function dedupReviewSourced(items: DebtItem[]): DedupResult {
       hashGroups.set(item.content_hash, [item]);
     }
   }
+  return { hashGroups, noHashItems };
+}
 
+/** Collapse hash groups, keeping the entry with the lowest DEBT-NNNN ID. */
+function collapseHashGroups(hashGroups: Map<string, DebtItem[]>): {
+  kept: DebtItem[];
+  removed: DebtItem[];
+} {
   const kept: DebtItem[] = [];
   const removed: DebtItem[] = [];
-
   for (const [hash, group] of hashGroups) {
-    // Sort by DEBT-NNNN ID ascending, keep lowest
     group.sort((a, b) => parseDebtId(a.id) - parseDebtId(b.id));
     kept.push(group[0]);
     for (let i = 1; i < group.length; i++) {
@@ -98,15 +110,15 @@ export function dedupReviewSourced(items: DebtItem[]): DedupResult {
       );
     }
   }
+  return { kept, removed };
+}
 
-  // Items without content_hash are always kept
-  kept.push(...noHashItems);
-
-  // Secondary pass: flag title+source near-duplicates (do NOT remove)
+/** Flag title+source near-duplicates (does NOT remove them). */
+function flagTitleSourceDuplicates(items: DebtItem[]): DebtItem[] {
   const flagged: DebtItem[] = [];
   const titleSourceMap = new Map<string, DebtItem[]>();
 
-  for (const item of kept) {
+  for (const item of items) {
     if (!item.title || !item.source) continue;
     const key = `${item.title}|||${item.source}`;
     const group = titleSourceMap.get(key);
@@ -119,7 +131,6 @@ export function dedupReviewSourced(items: DebtItem[]): DedupResult {
 
   for (const [_key, group] of titleSourceMap) {
     if (group.length > 1) {
-      // Flag all entries in the group (but don't remove)
       for (const item of group) {
         flagged.push(item);
       }
@@ -128,6 +139,20 @@ export function dedupReviewSourced(items: DebtItem[]): DedupResult {
       );
     }
   }
+
+  return flagged;
+}
+
+export function dedupReviewSourced(items: DebtItem[]): DedupResult {
+  const { reviewItems, nonReviewItems } = partitionBySource(items);
+  const { hashGroups, noHashItems } = groupByContentHash(reviewItems);
+  const { kept, removed } = collapseHashGroups(hashGroups);
+
+  // Items without content_hash are always kept
+  kept.push(...noHashItems);
+
+  // Secondary pass: flag title+source near-duplicates (do NOT remove)
+  const flagged = flagTitleSourceDuplicates(kept);
 
   // Reassemble: non-review (untouched) + deduplicated review entries
   const allKept = [...nonReviewItems, ...kept];
@@ -162,7 +187,10 @@ function main(): void {
   try {
     rawContent = fs.readFileSync(masterPath, "utf8");
   } catch (err) {
-    console.error("Failed to read MASTER_DEBT.jsonl");
+    console.error(
+      "Failed to read MASTER_DEBT.jsonl:",
+      err instanceof Error ? err.message : String(err)
+    );
     process.exit(1);
   }
 
@@ -190,12 +218,15 @@ function main(): void {
     fs.writeFileSync(tmpPath, output, "utf8");
     fs.renameSync(tmpPath, masterPath);
   } catch (err) {
-    console.error("Failed to write MASTER_DEBT.jsonl");
+    console.error(
+      "Failed to write MASTER_DEBT.jsonl:",
+      err instanceof Error ? err.message : String(err)
+    );
     // Clean up temp file
     try {
       fs.unlinkSync(tmpPath);
     } catch {
-      // ignore cleanup failure
+      // Intentionally swallowed: best-effort cleanup of temp file; failure is non-fatal
     }
     process.exit(1);
   }
@@ -205,7 +236,10 @@ function main(): void {
     fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
     fs.copyFileSync(masterPath, dedupedPath);
   } catch (err) {
-    console.error("Failed to sync raw/deduped.jsonl");
+    console.error(
+      "Failed to sync raw/deduped.jsonl:",
+      err instanceof Error ? err.message : String(err)
+    );
     process.exit(1);
   }
 

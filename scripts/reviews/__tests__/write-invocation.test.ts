@@ -95,11 +95,11 @@ describe("writeInvocation", () => {
     const after = Date.now();
 
     assert.ok(
-      typeof result.id === "string" && (result.id as string).startsWith("inv-"),
+      typeof result.id === "string" && result.id.startsWith("inv-"),
       "ID should start with inv-"
     );
 
-    const timestamp = parseInt((result.id as string).replace("inv-", ""), 10);
+    const timestamp = Number.parseInt(result.id.replace("inv-", ""), 10);
     assert.ok(timestamp >= before && timestamp <= after, "timestamp should be within test window");
   });
 
