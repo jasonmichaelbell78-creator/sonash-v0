@@ -85,7 +85,7 @@ function findNextTemplateNumber(content: string): number {
 function isPatternAlreadyTemplated(lowerContent: string, patternName: string): boolean {
   const normalizedName = patternName.toLowerCase().replaceAll("-", " ");
   const escaped = normalizedName.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-  const headingPattern = new RegExp(String.raw`## template \d+:.*` + escaped, "i");
+  const headingPattern = new RegExp(String.raw`#{2,3}\s+template\s+\d+:.*` + escaped, "i");
   return (
     headingPattern.test(lowerContent) || lowerContent.includes(`**pattern:** ${normalizedName}`)
   );

@@ -460,7 +460,7 @@ try {
   execFileSync("node", ["scripts/seed-commit-log.js", "--sync"], {
     cwd: projectDir,
     stdio: "pipe",
-    timeout: 10000,
+    timeout: 20000,
   });
 } catch {
   // Non-fatal: commit log sync failure doesn't block session start

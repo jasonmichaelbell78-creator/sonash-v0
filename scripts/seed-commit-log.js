@@ -206,6 +206,13 @@ function getLatestLogHash() {
  * Get commits after a specific hash
  */
 function getCommitsAfter(sinceHash) {
+  // Validate sinceHash is a hex commit hash to prevent git arg injection
+  if (!/^[\da-f]{7,40}$/i.test(sinceHash)) {
+    console.warn(
+      `Warning: invalid sinceHash "${sinceHash.slice(0, 20)}", skipping incremental sync`
+    );
+    return [];
+  }
   try {
     const output = execFileSync(
       "git",
@@ -219,7 +226,8 @@ function getCommitsAfter(sinceHash) {
     ).trim();
     if (!output) return [];
     return output.split("\n").filter(Boolean);
-  } catch {
+  } catch (err) {
+    console.warn(`Warning: git log failed: ${err instanceof Error ? err.message : String(err)}`);
     return [];
   }
 }
@@ -254,9 +262,28 @@ function appendEntries(entries) {
   }
   const filtered = entries.filter((e) => !existingHashes.has(e.hash));
   if (filtered.length === 0) return;
-  // isSafeToWrite guard already checked at function entry (line 234)
+  // Ensure file ends with newline before appending to prevent JSONL corruption
+  let prefix = "";
+  try {
+    if (fs.existsSync(COMMIT_LOG)) {
+      const fd = fs.openSync(COMMIT_LOG, "r");
+      try {
+        const stat = fs.fstatSync(fd);
+        if (stat.size > 0) {
+          const buf = Buffer.alloc(1);
+          fs.readSync(fd, buf, 0, 1, stat.size - 1);
+          if (buf[0] !== 0x0a) prefix = "\n";
+        }
+      } finally {
+        fs.closeSync(fd);
+      }
+    }
+  } catch {
+    // Non-fatal; proceed without prefix
+  }
+  const content = prefix + filtered.map((e) => JSON.stringify(e)).join("\n") + "\n";
+  // isSafeToWrite guard already checked at function entry; re-check before write
   if (!isSafeToWrite(COMMIT_LOG)) return;
-  const content = filtered.map((e) => JSON.stringify(e)).join("\n") + "\n";
   fs.appendFileSync(COMMIT_LOG, content, "utf8");
 }
 

@@ -259,11 +259,12 @@ export function extractTotal(raw: string): number | null {
  * Looks for: **Label:** N, Label: N, Label N
  */
 export function extractCount(raw: string, label: string): number | null {
-  const boldPattern = new RegExp(String.raw`\*\*${label}:?\*\*:?\s*~?(\d+)`, "i");
+  const escapedLabel = label.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+  const boldPattern = new RegExp(String.raw`\*\*${escapedLabel}:?\*\*:?\s*~?(\d+)`, "i");
   const boldMatch = boldPattern.exec(raw);
   if (boldMatch) return Number.parseInt(boldMatch[1], 10);
 
-  const colonPattern = new RegExp(String.raw`${label}:\s*~?(\d+)`, "i");
+  const colonPattern = new RegExp(String.raw`${escapedLabel}:\s*~?(\d+)`, "i");
   const colonMatch = colonPattern.exec(raw);
   if (colonMatch) return Number.parseInt(colonMatch[1], 10);
 

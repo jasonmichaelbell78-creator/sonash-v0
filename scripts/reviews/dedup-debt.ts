@@ -104,7 +104,12 @@ function collapseHashGroups(
   const kept: DebtItem[] = [];
   const removed: DebtItem[] = [];
   for (const [hash, group] of hashGroups) {
-    group.sort((a, b) => parseDebtId(a.id) - parseDebtId(b.id));
+    group.sort((a, b) => {
+      const ai = parseDebtId(a.id);
+      const bi = parseDebtId(b.id);
+      if (ai !== bi) return ai - bi;
+      return a.id.localeCompare(b.id);
+    });
     kept.push(group[0]);
     for (let i = 1; i < group.length; i++) {
       removed.push(group[i]);
@@ -225,7 +230,17 @@ function writeDebtOutput(masterPath: string, dedupedPath: string, result: DedupR
     const output = result.kept.map((item) => JSON.stringify(item)).join("\n") + "\n";
     fs.writeFileSync(tmpPath, output, "utf8");
     if (fs.existsSync(masterPath)) fs.rmSync(masterPath, { force: true });
-    fs.renameSync(tmpPath, masterPath);
+    try {
+      fs.renameSync(tmpPath, masterPath);
+    } catch {
+      // Cross-device fallback
+      fs.copyFileSync(tmpPath, masterPath);
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* best-effort */
+      }
+    }
   } catch (err) {
     console.error(
       "Failed to write MASTER_DEBT.jsonl:",

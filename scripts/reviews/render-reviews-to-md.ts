@@ -191,7 +191,14 @@ if (require.main === module) {
 
   // Output
   if (outputPath) {
-    fs.writeFileSync(path.resolve(outputPath), markdown, "utf8");
+    const resolvedOut = path.resolve(projectRoot, outputPath);
+    const rel = path.relative(projectRoot, resolvedOut);
+    if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+      console.error("--output must be within the project root");
+      process.exit(1);
+    }
+    fs.mkdirSync(path.dirname(resolvedOut), { recursive: true });
+    fs.writeFileSync(resolvedOut, markdown, "utf8");
     console.log(`Wrote ${filtered.length} review(s) to ${outputPath}`);
   } else {
     process.stdout.write(markdown);

@@ -3280,7 +3280,15 @@ function checkReviewArchive() {
           null,
           "Run: npm run reviews:check-archive"
         );
-      } else if (issues > BENCHMARKS.review_archive.issues.poor) {
+      } else if (issues >= BENCHMARKS.review_archive.issues.poor) {
+        addAlert(
+          "review-archive",
+          "error",
+          `${issues} review archive issues`,
+          null,
+          "Run: npm run reviews:check-archive"
+        );
+      } else if (issues >= BENCHMARKS.review_archive.issues.average) {
         addAlert(
           "review-archive",
           "warning",
@@ -3288,8 +3296,6 @@ function checkReviewArchive() {
           null,
           "Run: npm run reviews:check-archive"
         );
-      } else if (issues > BENCHMARKS.review_archive.issues.average) {
-        addAlert("review-archive", "info", `${issues} review archive issues`, null, null);
       }
 
       addContext("review-archive", { issues });
@@ -3309,7 +3315,7 @@ function checkCrossdocDeps() {
       const issueMatch = output.match(/(\d+)\s+issue\(s\)/i);
       const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
 
-      if (issues > BENCHMARKS.crossdoc.issues.poor) {
+      if (issues >= BENCHMARKS.crossdoc.issues.poor) {
         addAlert(
           "crossdoc",
           "error",
@@ -3317,7 +3323,7 @@ function checkCrossdocDeps() {
           null,
           "Update dependent docs to match changes"
         );
-      } else if (issues > BENCHMARKS.crossdoc.issues.average) {
+      } else if (issues >= BENCHMARKS.crossdoc.issues.average) {
         addAlert(
           "crossdoc",
           "warning",

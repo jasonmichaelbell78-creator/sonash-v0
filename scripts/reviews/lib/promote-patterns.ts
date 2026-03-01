@@ -14,10 +14,13 @@ import * as path from "node:path";
 import { readValidatedJsonl } from "./read-jsonl";
 import { ReviewRecord, type ReviewRecordType } from "./schemas/review";
 
-/** Parse the numeric prefix from a review ID like "rev-123-..." */
+/** Parse the numeric prefix from a review ID like "rev-123-..." or legacy "123" */
 function parseRevNumber(id: string): number | null {
-  const m = /^rev-(\d+)(?:-|$)/.exec(id);
-  return m ? Number.parseInt(m[1], 10) : null;
+  const rev = /^rev-(\d+)(?:-|$)/.exec(id);
+  if (rev) return Number.parseInt(rev[1], 10);
+  // Accept legacy state values like "406"
+  if (/^\d+$/.test(id)) return Number.parseInt(id, 10);
+  return null;
 }
 
 // Walk up from __dirname until we find package.json (works from both source and dist)
@@ -354,7 +357,17 @@ function writePromotedPatterns(
   try {
     fs.writeFileSync(tmpPath, updatedContent, "utf8");
     if (fs.existsSync(codePatternsPath)) fs.rmSync(codePatternsPath, { force: true });
-    fs.renameSync(tmpPath, codePatternsPath);
+    try {
+      fs.renameSync(tmpPath, codePatternsPath);
+    } catch {
+      // Cross-device fallback
+      fs.copyFileSync(tmpPath, codePatternsPath);
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* best-effort */
+      }
+    }
   } catch (err) {
     try {
       fs.unlinkSync(tmpPath);

@@ -87,14 +87,12 @@ export function writeReviewRecord(
 ): ReturnType<typeof ReviewRecord.parse> {
   const filePath = path.join(projectRoot, "data", "ecosystem-v2", "reviews.jsonl");
 
-  // Auto-assign ID if not provided
-  // Note: ID assignment is not atomic, but this runs single-threaded
-  if (!data.id) {
-    data.id = getNextReviewId(projectRoot);
-  }
+  const recordData: Record<string, unknown> = {
+    ...data,
+    id: data.id ?? getNextReviewId(projectRoot),
+  };
 
-  // Validate -- throws ZodError if invalid
-  const validated = ReviewRecord.parse(data);
+  const validated = ReviewRecord.parse(recordData);
 
   // Append to JSONL file
   appendRecord(filePath, validated, ReviewRecord);

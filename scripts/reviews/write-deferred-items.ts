@@ -54,10 +54,36 @@ export function createDeferredItems(
   const filePath = path.resolve(projectRoot, "data/ecosystem-v2/deferred-items.jsonl");
   const created: DeferredItemRecordType[] = [];
 
+  // Scan existing items to prevent duplicate IDs on reruns
+  let startIndex = 1;
+  try {
+    const existing = fs.readFileSync(filePath, "utf8");
+    let maxExisting = 0;
+    for (const line of existing.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        const parsed = JSON.parse(line) as { id?: unknown };
+        const id = typeof parsed.id === "string" ? parsed.id : "";
+        const m = new RegExp(
+          `^${reviewId.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)}-deferred-(\\d+)$`
+        ).exec(id);
+        if (m) {
+          const n = Number.parseInt(m[1], 10);
+          if (n > maxExisting) maxExisting = n;
+        }
+      } catch {
+        // ignore malformed lines
+      }
+    }
+    startIndex = maxExisting + 1;
+  } catch {
+    // file doesn't exist yet — start at 1
+  }
+
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const record = {
-      id: `${reviewId}-deferred-${i + 1}`,
+      id: `${reviewId}-deferred-${startIndex + i}`,
       date,
       schema_version: 1,
       completeness: "full" as const,

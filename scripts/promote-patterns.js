@@ -26,6 +26,13 @@ try {
   console.error(err instanceof Error ? err.message : String(err));
   process.exit(1);
 }
+
+if (typeof main !== "function") {
+  console.error(
+    "promote-patterns module loaded, but no callable `main` export was found. Rebuild scripts/reviews and verify dist output."
+  );
+  process.exit(1);
+}
 /* eslint-enable no-undef */
 
 main(process.argv.slice(2));
