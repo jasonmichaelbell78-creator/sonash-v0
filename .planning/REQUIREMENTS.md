@@ -95,17 +95,17 @@ Requirements for the v2 rebuild. Each maps to roadmap phases.
 
 ### Health Monitoring & Dashboard
 
-- [ ] **HLTH-01**: 10 health check scripts covering all ecosystem dimensions
+- [x] **HLTH-01**: 10 health check scripts covering all ecosystem dimensions
       (UC-37)
-- [ ] **HLTH-02**: 57-metric composite scoring across 8 categories with letter
+- [x] **HLTH-02**: 57-metric composite scoring across 8 categories with letter
       grades (UC-35)
-- [ ] **HLTH-03**: ecosystem-health-log.jsonl — persists health scores across
+- [x] **HLTH-03**: ecosystem-health-log.jsonl — persists health scores across
       sessions for trending (UC-35)
-- [ ] **HLTH-04**: Interactive /ecosystem-health dashboard skill with 13
+- [x] **HLTH-04**: Interactive /ecosystem-health dashboard skill with 13
       dimensions and drill-down (UC-13)
-- [ ] **HLTH-05**: Warning lifecycle system — warnings tracked from creation
+- [x] **HLTH-05**: Warning lifecycle system — warnings tracked from creation
       through resolution (UC-12)
-- [ ] **HLTH-06**: Mid-session alerts for metric degradation (new duplicates,
+- [x] **HLTH-06**: Mid-session alerts for metric degradation (new duplicates,
       aged deferrals) (Q18)
 
 ### Gate Recalibration & Automation
@@ -229,12 +229,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ENFR-05     | Phase 4 | Complete |
 | ENFR-06     | Phase 4 | Complete |
 | ENFR-07     | Phase 4 | Complete |
-| HLTH-01     | Phase 5 | Pending  |
-| HLTH-02     | Phase 5 | Pending  |
-| HLTH-03     | Phase 5 | Pending  |
-| HLTH-04     | Phase 5 | Pending  |
-| HLTH-05     | Phase 5 | Pending  |
-| HLTH-06     | Phase 5 | Pending  |
+| HLTH-01     | Phase 5 | Complete |
+| HLTH-02     | Phase 5 | Complete |
+| HLTH-03     | Phase 5 | Complete |
+| HLTH-04     | Phase 5 | Complete |
+| HLTH-05     | Phase 5 | Complete |
+| HLTH-06     | Phase 5 | Complete |
 | GATE-01     | Phase 6 | Pending  |
 | GATE-02     | Phase 6 | Pending  |
 | GATE-03     | Phase 6 | Pending  |

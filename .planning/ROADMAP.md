@@ -205,11 +205,11 @@ HLTH-05, HLTH-06 **Success Criteria** (what must be TRUE):
 
 Plans:
 
-- [ ] 05-01-PLAN.md — 10 health check scripts + composite scoring engine (57
+- [x] 05-01-PLAN.md — 10 health check scripts + composite scoring engine (57
       metrics, 8 categories, 13 dimensions) (HLTH-01, HLTH-02)
-- [ ] 05-02-PLAN.md — Warning lifecycle system with JSONL persistence and state
+- [x] 05-02-PLAN.md — Warning lifecycle system with JSONL persistence and state
       transitions (HLTH-05)
-- [ ] 05-03-PLAN.md — /ecosystem-health dashboard skill + health log
+- [x] 05-03-PLAN.md — /ecosystem-health dashboard skill + health log
       persistence + mid-session alerts (HLTH-03, HLTH-04, HLTH-06)
 
 ### Phase 6: Gate Recalibration
@@ -298,11 +298,11 @@ with 5) -> 6 -> 7
 | 2. Backfill & Data Migration | 3/3            | Complete    | 2026-02-28 |
 | 3. Core Pipeline             | 4/4            | Complete    | 2026-02-28 |
 | 4. Enforcement Expansion     | 6/6            | Complete    | 2026-03-01 |
-| 5. Health Monitoring         | 0/3            | Not started | -          |
+| 5. Health Monitoring         | 3/3            | Complete    | 2026-03-01 |
 | 6. Gate Recalibration        | 0/TBD          | Not started | -          |
 | 7. Integration & Cutover     | 0/TBD          | Not started | -          |
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 5 planned — 3
-plans in 2 waves, covering HLTH-01 through HLTH-06)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 5 complete — 3
+plans executed, HLTH-01 through HLTH-06 verified)_

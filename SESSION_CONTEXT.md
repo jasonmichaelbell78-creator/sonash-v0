@@ -123,10 +123,10 @@ CONFIG):
 1. **Process PR review feedback** — PR created for
    `claude/maintenance22726-md8WL` (49 commits, 148 files). Process Qodo/Gemini
    review comments.
-2. **Phase 4: Enforcement Expansion** — Semgrep + ESLint + regex rule expansion
-   to hit 55-60% automated enforcement. Can parallelize with Phase 5.
-3. **Phase 5: Health Monitoring** — 57-metric composite scoring, interactive
-   dashboard, warning lifecycle. Can parallelize with Phase 4.
+2. **Phase 6: Gate Recalibration** — Cross-doc gate fixes, override analytics,
+   triage/escalation/archival automation. Depends on Phases 4+5 (both complete).
+3. **Phase 7: Integration & Cutover** — Wire into sessions, E2E smoke test,
+   v1-to-v2 swap, baseline score. Depends on Phase 6.
 4. **TDMS: 67 S0 critical items** — Address highest-severity debt items
 5. **Track B: Dev Dashboard MVP** — Resume at ~10% progress
 
