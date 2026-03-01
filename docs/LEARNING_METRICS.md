@@ -27,42 +27,42 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #394 - #440 (22 reviews) **Analysis Date:** 2026-03-01
+**Review Range:** #402 - #417 (9 reviews) **Analysis Date:** 2026-03-01
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 91.5% |
-| Patterns Learned          | 301   |
-| Patterns Automated        | 31    |
-| Patterns Failing          | 14    |
-| Critical Pattern Success  | 93.8% |
+| Learning Effectiveness    | 95.0% |
+| Patterns Learned          | 322   |
+| Patterns Automated        | 23    |
+| Patterns Failing          | 2     |
+| Critical Pattern Success  | 97.9% |
 | Automation Coverage       | 14.0% |
 | Total Documented Patterns | 363   |
 | Total Automated Patterns  | 51    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Atomic file writes"
-   - Recurred 9 times after documentation \(Reviews: 417, 418, 419, 439, 440\)
+1. **[Automation]** Automate "Pre\-commit ADM filter"
+   - Recurred 3 times after documentation \(Reviews: 404, 407, 416\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Atomic file writes"
-   - Recurred 9 times after documentation \(Reviews: 417, 418, 419, 439, 440\)
+2. **[Automation]** Automate "AI reviewer verification"
+   - Recurred 3 times after documentation \(Reviews: 403, 408, 416\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Automation]** Automate "Binary file detection"
-   - Recurred 7 times after documentation \(Reviews: 400, 402, 402, 408, 439\)
-   - Action: Add pattern to check\-pattern\-compliance.js
-
-4. **[Documentation]** Improve documentation for "Math.max empty array"
+3. **[Documentation]** Improve documentation for "Binary file detection"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Parallel agent review"
+4. **[Documentation]** Improve documentation for "Atomic file writes"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
+
+5. **[Training]** Create guide for "Symlink write guard"
+   - Critical pattern with 3 recurrences needs dedicated guide
+   - Action: Create docs/agent_docs/SYMLINK_WRITE_GUARD_GUIDE.md
 
 ---
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 301   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 31    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 17    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 14    | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 322   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 23    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 16    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 2     | Pattern recurred 3+ times - needs automation |
 
 ---
 
