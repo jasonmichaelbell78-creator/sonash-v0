@@ -52,7 +52,7 @@ export function generateFixTemplateStub(pattern: RecurrenceResult, templateNumbe
     "",
     `### Template ${templateNumber}: ${displayName}`,
     "",
-    `**Pattern:** ${pattern.pattern}`,
+    `**Pattern:** ${pattern.pattern.replaceAll("-", " ")}`,
     `**When to use:** [TODO: fill in]`,
     `**Fix:**`,
     "```",

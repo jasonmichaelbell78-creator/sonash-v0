@@ -203,7 +203,8 @@
     "dedup-debt.ts",
     "generate-fix-template-stubs.ts",
     "promote-patterns.ts",
-    "backfill-reviews.ts"
+    "backfill-reviews.ts",
+    "generate-claude-antipatterns.ts"
   ],
   "atomic-write-missing-tmp-guard": [
     "state-utils.js",

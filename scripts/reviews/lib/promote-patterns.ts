@@ -264,6 +264,15 @@ const CATEGORY_TO_SECTION: Record<string, string> = {
   General: "## General",
 };
 
+/** Find the insertion point after a section header (before next ## or ---). */
+function findInsertPoint(content: string, startIdx: number): number {
+  const nextSection = content.indexOf("\n## ", startIdx);
+  if (nextSection >= 0) return nextSection;
+  const hrSeparator = content.indexOf("\n---\n", startIdx);
+  if (hrSeparator >= 0) return hrSeparator;
+  return startIdx;
+}
+
 /**
  * Insert promoted patterns into CODE_PATTERNS.md content, grouped by category.
  * Returns the updated content.
@@ -277,27 +286,25 @@ function insertPromotedPatterns(content: string, patterns: RecurrenceResult[]): 
     byCategory.get(cat)!.push(p);
   }
 
+  const missingSections: string[] = [];
+
   for (const [catName, catPatterns] of byCategory) {
     const sectionHeader = CATEGORY_TO_SECTION[catName] || CATEGORY_TO_SECTION["General"];
     const sectionIdx = content.indexOf(sectionHeader);
-    if (sectionIdx === -1) continue;
-
-    // Find the next ## section after this one to insert before it
-    const startIdx = sectionIdx + sectionHeader.length;
-    const nextSection = content.indexOf("\n## ", startIdx);
-    const hrSeparator = content.indexOf("\n---\n", startIdx);
-    let insertPoint: number;
-    if (nextSection >= 0) {
-      insertPoint = nextSection;
-    } else if (hrSeparator >= 0) {
-      insertPoint = hrSeparator;
-    } else {
-      insertPoint = startIdx;
+    if (sectionIdx === -1) {
+      missingSections.push(sectionHeader);
+      continue;
     }
-    // startIdx fallback ensures we always have a valid insert point
 
+    const insertPoint = findInsertPoint(content, sectionIdx + sectionHeader.length);
     const entries = catPatterns.map((p) => buildCodePatternsEntry(p, catName)).join("");
     content = content.slice(0, insertPoint) + entries + content.slice(insertPoint);
+  }
+
+  if (missingSections.length > 0) {
+    throw new Error(
+      `[promote-patterns] CODE_PATTERNS.md is missing expected section(s): ${missingSections.join(", ")}`
+    );
   }
 
   return content;
@@ -379,6 +386,19 @@ function writePromotedPatterns(
   }
 }
 
+/** Save consolidation state to the latest review ID in the batch. */
+function updateConsolidationIfNeeded(projectRoot: string, reviews: ReviewRecordType[]): void {
+  let best: { id: string; n: number } | null = null;
+  for (const r of reviews) {
+    const n = parseRevNumber(r.id);
+    if (n === null) continue;
+    if (!best || n > best.n) best = { id: r.id, n };
+  }
+  if (best) {
+    saveConsolidationState(projectRoot, best.id);
+  }
+}
+
 /**
  * Full promotion pipeline orchestrator.
  *
@@ -456,15 +476,7 @@ export function promotePatterns(options: {
 
   // 6. Update consolidation state (unless dry run)
   if (!options.dryRun && reviews.length > 0) {
-    let best: { id: string; n: number } | null = null;
-    for (const r of reviews) {
-      const n = parseRevNumber(r.id);
-      if (n === null) continue;
-      if (!best || n > best.n) best = { id: r.id, n };
-    }
-    if (best) {
-      saveConsolidationState(projectRoot, best.id);
-    }
+    updateConsolidationIfNeeded(projectRoot, reviews);
   }
 
   return {

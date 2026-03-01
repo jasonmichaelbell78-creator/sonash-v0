@@ -176,6 +176,7 @@ function writeClaudeMdSafe(claudePath: string, content: string): void {
   try {
     fs.writeFileSync(tmpPath, content, "utf8");
     try {
+      if (fs.existsSync(claudePath)) fs.rmSync(claudePath);
       fs.renameSync(tmpPath, claudePath);
     } catch {
       // Cross-device fallback

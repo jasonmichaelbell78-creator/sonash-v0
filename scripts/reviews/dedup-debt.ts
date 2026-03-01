@@ -33,11 +33,14 @@ export interface DedupResult {
 // Review source detection
 // =========================================================
 
-const REVIEW_SOURCES = new Set(["review", "pr-review", "pr-review-366-r2", "pr-deferred"]);
+const REVIEW_SOURCES = new Set(["review", "pr-review", "pr-deferred"]);
 
 function isReviewSourced(item: DebtItem): boolean {
   if (!item.source) return false;
-  return REVIEW_SOURCES.has(item.source);
+  if (REVIEW_SOURCES.has(item.source)) return true;
+  // Treat session-tagged PR review sources as review-sourced (e.g., "pr-review-366-r2")
+  if (item.source.startsWith("pr-review-")) return true;
+  return false;
 }
 
 // =========================================================

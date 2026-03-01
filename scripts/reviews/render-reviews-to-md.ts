@@ -210,6 +210,20 @@ if (require.main === module) {
       process.exit(1);
     }
 
+    if (fs.existsSync(resolvedOut)) {
+      const st = fs.lstatSync(resolvedOut);
+      if (st.isSymbolicLink()) {
+        console.error("--output must not be a symlink");
+        process.exit(1);
+      }
+      const outReal = fs.realpathSync(resolvedOut);
+      const outRel = path.relative(projectRootReal, outReal);
+      if (/^\.\.(?:[\\/]|$)/.test(outRel)) {
+        console.error("--output must be within the project root (symlink escape detected)");
+        process.exit(1);
+      }
+    }
+
     fs.writeFileSync(resolvedOut, markdown, "utf8");
     console.log(`Wrote ${filtered.length} review(s) to ${outputPath}`);
   } else {

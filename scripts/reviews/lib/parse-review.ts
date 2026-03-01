@@ -73,7 +73,7 @@ function parseHeaderLine(
   const dateMatch = DATE_RE.exec(titleAndDate);
   const date = dateMatch ? dateMatch[1] : null;
   const title =
-    dateMatch?.index != null ? titleAndDate.slice(0, dateMatch.index).trim() : titleAndDate;
+    dateMatch?.index == null ? titleAndDate : titleAndDate.slice(0, dateMatch.index).trim();
 
   const cleanTitle = title.replace(/\s*--\s*$/, "").replace(/:\s*$/, "");
 
@@ -265,9 +265,17 @@ export function extractCount(raw: string, label: string): number | null {
   const boldMatch = boldPattern.exec(raw);
   if (boldMatch) return Number.parseInt(boldMatch[1], 10);
 
-  const colonPattern = new RegExp(String.raw`${escapedLabel}:\s*~?(\d+)`, "i");
+  const colonPattern = new RegExp(String.raw`(?:^|[^a-z])${escapedLabel}:\s*~?(\d+)`, "i");
   const colonMatch = colonPattern.exec(raw);
   if (colonMatch) return Number.parseInt(colonMatch[1], 10);
+
+  // Fallback: "Label N" (no colon), e.g. "Fixed 8" / "Rejected ~3"
+  const spacePattern = new RegExp(
+    String.raw`(?:^|[^a-z])${escapedLabel}\s+~?(\d+)(?:$|[^0-9])`,
+    "i"
+  );
+  const spaceMatch = spacePattern.exec(raw);
+  if (spaceMatch) return Number.parseInt(spaceMatch[1], 10);
 
   return null;
 }

@@ -15,8 +15,16 @@ const PROTECTED_BRANCHES = ["main", "master"];
 
 let input = "";
 process.stdin.setEncoding("utf8");
+process.stdin.on("error", () => {
+  // Transport errors should not block work — allow through
+  process.exit(0);
+});
 process.stdin.on("data", (chunk) => {
   input += chunk;
+  // Fail-open on unexpectedly large payloads (avoid memory blowups)
+  if (input.length > 1024 * 1024) {
+    process.exit(0);
+  }
 });
 process.stdin.on("end", () => {
   try {

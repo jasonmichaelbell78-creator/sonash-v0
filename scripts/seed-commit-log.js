@@ -296,7 +296,10 @@ function appendEntries(entries) {
   if (filtered.length === 0) return;
   const prefix = needsNewlinePrefix(COMMIT_LOG) ? "\n" : "";
   const content = prefix + filtered.map((e) => JSON.stringify(e)).join("\n") + "\n";
-  if (!isSafeToWrite(COMMIT_LOG)) return;
+  if (!isSafeToWrite(COMMIT_LOG)) {
+    console.error("Symlink guard blocked append to commit-log.jsonl (post-check)");
+    process.exit(1);
+  }
   fs.appendFileSync(COMMIT_LOG, content, "utf8");
 }
 

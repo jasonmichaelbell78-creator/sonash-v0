@@ -172,7 +172,7 @@ function disambiguateRecords(resolved: ParsedEntry[]): ReviewRecordType[] {
       const next = (dupCounters.get(baseId) ?? 0) + 1;
       dupCounters.set(baseId, next);
 
-      const suffix = String.fromCharCode("a".charCodeAt(0) + (next - 1));
+      const suffix = String.fromCodePoint("a".codePointAt(0)! + (next - 1));
       record.id = `${baseId}-${suffix}`;
       record.origin = {
         ...record.origin,
@@ -208,7 +208,7 @@ export function resolveOverlaps(byNumber: Map<number, ParsedEntry[]>): Resolutio
   const missingIds: number[] = [];
   if (present.length > 0) {
     const min = present[0];
-    const max = present[present.length - 1];
+    const max = present.at(-1)!;
     for (let n = min; n <= max; n++) {
       if (KNOWN_SKIPPED_IDS.has(n)) continue;
       if (!byNumber.has(n)) missingIds.push(n);
@@ -885,14 +885,48 @@ export async function runBackfill(): Promise<void> {
   if (!isSafeToWrite(reviewsPath)) {
     throw new Error(`Symlink guard blocked write to ${reviewsPath}`);
   }
-  fs.writeFileSync(reviewsPath, reviewLines, "utf8");
+  {
+    const tmpPath = `${reviewsPath}.tmp-${process.pid}-${Date.now()}`;
+    try {
+      fs.writeFileSync(tmpPath, reviewLines, "utf8");
+      try {
+        fs.rmSync(reviewsPath);
+      } catch {
+        /* may not exist */
+      }
+      fs.renameSync(tmpPath, reviewsPath);
+    } finally {
+      try {
+        if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+    }
+  }
 
   const retrosPath = path.join(outputDir, "retros.jsonl");
   const retroLines = retroResult.records.map((r) => JSON.stringify(r)).join("\n") + "\n";
   if (!isSafeToWrite(retrosPath)) {
     throw new Error(`Symlink guard blocked write to ${retrosPath}`);
   }
-  fs.writeFileSync(retrosPath, retroLines, "utf8");
+  {
+    const tmpPath = `${retrosPath}.tmp-${process.pid}-${Date.now()}`;
+    try {
+      fs.writeFileSync(tmpPath, retroLines, "utf8");
+      try {
+        fs.rmSync(retrosPath);
+      } catch {
+        /* may not exist */
+      }
+      fs.renameSync(tmpPath, retrosPath);
+    } finally {
+      try {
+        if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+    }
+  }
 
   console.log("\nValidating output...");
   const reviewValidationErrors = validateOutputFile(reviewsPath, ReviewRecord, "Review");
