@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.7
+**Document Version:** 1.8
 **Last Updated:** 2026-03-01
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -262,13 +262,22 @@ INTG-04, INTG-05, INTG-06, INTG-07, INTG-08, TEST-02, TEST-03, TEST-04, TEST-05
    performance) with all performance budgets met (<3s/gate, <10s pre-commit,
    <30s session-start)
 5. Composite health score baseline is established at B+ or above, with all
-   category scores documented **Plans**: TBD
+   category scores documented **Plans**: 6 plans
 
 Plans:
 
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
-- [ ] 07-03: TBD
+- [ ] 07-01-PLAN.md — Session lifecycle wiring: health:quick in session-start,
+      health:score in session-end (INTG-01, INTG-02)
+- [ ] 07-02-PLAN.md — Verify Gemini config, compaction safeguards, cross-doc
+      sync gaps (INTG-03, INTG-04, INTG-05)
+- [ ] 07-03-PLAN.md — v1-to-v2 script cutover with fallback preservation
+      (INTG-06)
+- [ ] 07-04-PLAN.md — E2E pipeline smoke test + cross-module integration test
+      (INTG-07, TEST-02)
+- [ ] 07-05-PLAN.md — Performance budget tests + test tier audit (TEST-03,
+      TEST-04, TEST-05)
+- [ ] 07-06-PLAN.md — Baseline health score establishment + final verification
+      (INTG-08)
 
 ## Coverage Validation
 
@@ -306,9 +315,9 @@ with 5) -> 6 -> 7
 | 4. Enforcement Expansion     | 6/6            | Complete    | 2026-03-01 |
 | 5. Health Monitoring         | 3/3            | Complete    | 2026-03-01 |
 | 6. Gate Recalibration        | 5/5            | Complete    | 2026-03-01 |
-| 7. Integration & Cutover     | 0/TBD          | Not started | -          |
+| 7. Integration & Cutover     | 0/6            | Not started | -          |
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 6 complete — 5
-plans executed, GATE-01 through GATE-09 verified)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 7 planned — 6
+plans in 3 waves covering 12 requirements)_
