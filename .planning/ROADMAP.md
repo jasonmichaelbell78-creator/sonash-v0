@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.3
-**Last Updated:** 2026-02-28
+**Document Version:** 1.4
+**Last Updated:** 2026-03-01
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -170,13 +170,18 @@ TRUE):
 4. Every pattern in CODE_PATTERNS.md has a tracked enforcement status across all
    7 mechanisms (regex, ESLint, Semgrep, cross-doc, hooks, AI, manual)
 5. Rules with false positive rates above threshold are auto-disabled and flagged
-   for review **Plans**: TBD
+   for review **Plans**: 4 plans
 
 Plans:
 
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
-- [ ] 04-03: TBD
+- [ ] 04-01-PLAN.md — Semgrep custom YAML rules (20+ rules across security,
+      correctness, style) + CI workflow update (ENFR-01)
+- [ ] 04-02-PLAN.md — ESLint AST rules (7 new rules for hooks, spread, state
+      patterns) + RuleTester tests (ENFR-02)
+- [ ] 04-03-PLAN.md — Regex rule expansion (10-15 new rules) + FP auto-disable
+      logic (ENFR-03, ENFR-07)
+- [ ] 04-04-PLAN.md — Enforcement manifest builder + verifier + staleness
+      resolution + coverage verification (ENFR-04, ENFR-05, ENFR-06)
 
 ### Phase 5: Health Monitoring
 
@@ -284,12 +289,12 @@ with 5) -> 6 -> 7
 | 1. Storage Foundation        | 3/3            | Complete    | 2026-02-28 |
 | 2. Backfill & Data Migration | 3/3            | Complete    | 2026-02-28 |
 | 3. Core Pipeline             | 4/4            | Complete    | 2026-02-28 |
-| 4. Enforcement Expansion     | 0/TBD          | Not started | -          |
+| 4. Enforcement Expansion     | 0/4            | Not started | -          |
 | 5. Health Monitoring         | 0/TBD          | Not started | -          |
 | 6. Gate Recalibration        | 0/TBD          | Not started | -          |
 | 7. Integration & Cutover     | 0/TBD          | Not started | -          |
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-02-28 (Phase 3 complete — 4/4
-plans executed, goal verified)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 4 planned — 4
+plans in 2 waves)_
