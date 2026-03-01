@@ -64,6 +64,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/verify-technical-debt`          | Verify and triage technical debt items                         |
 | `/add-debt`                       | Add items to MASTER_DEBT.jsonl                                 |
 | `/skill-creator`                  | Guide for creating effective skills                            |
+| `/skill-audit`                    | Interactive behavioral quality audit for individual skills     |
 | `/mcp-builder`                    | Guide for creating MCP servers                                 |
 | `/validate-claude-folder`         | Validate .claude folder consistency                            |
 | `/artifacts-builder`              | Build multi-component claude.ai artifacts                      |
