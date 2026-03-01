@@ -1,0 +1,18 @@
+{
+  "id": "retro-2025-0520-pr430",
+  "date": "2025-05-20",
+  "schema_version": 1,
+  "completeness": "stub",
+  "completeness_missing": [
+    "pr",
+    "session",
+    "top_wins",
+    "top_misses",
+    "process_changes",
+    "score",
+    "metrics"
+  ],
+  "origin": {
+    "type": "backfill"
+  }
+}

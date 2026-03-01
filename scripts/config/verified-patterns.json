@@ -36,7 +36,20 @@
     "transform-jsonl-schema.js",
     "run-consolidation.js",
     "safe-fs.js",
-    "reverify-resolved.js"
+    "reverify-resolved.js",
+    "dedup-debt.js",
+    "promote-patterns.js",
+    "render-reviews-to-md.js",
+    "seed-commit-log.js",
+    "backfill-reviews.test.js",
+    "write-deferred-items.test.js",
+    "write-invocation.test.js",
+    "write-retro-record.test.js",
+    "write-review-record.test.js",
+    "backfill-reviews.js",
+    "generate-fix-template-stubs.js",
+    "write-jsonl.js",
+    "promotion-pipeline.test.js"
   ],
   "git-without-separator": [
     "surface-lessons-learned.js",
@@ -164,7 +177,9 @@
     "run-consolidation.js",
     "sprint-complete.js",
     "track-session.js",
-    "verify-resolutions.js"
+    "verify-resolutions.js",
+    "write-review-record.test.ts",
+    "backfill-reviews.ts"
   ],
   "rename-no-fallback": [
     "archive-doc.js",
@@ -199,7 +214,19 @@
     "generate-results-index.js",
     "track-resolutions.js",
     "run-consolidation.js",
-    "safe-fs.js"
+    "safe-fs.js",
+    "dedup-debt.ts",
+    "generate-fix-template-stubs.ts",
+    "promote-patterns.ts",
+    "backfill-reviews.ts",
+    "generate-claude-antipatterns.ts",
+    "backfill-reviews.js",
+    "generate-claude-antipatterns.js",
+    "dedup-debt.js",
+    "promote-patterns.js",
+    "render-reviews-to-md.js",
+    "render-reviews-to-md.ts",
+    "generate-fix-template-stubs.js"
   ],
   "atomic-write-missing-tmp-guard": [
     "state-utils.js",
@@ -289,5 +316,6 @@
     "suggest-pattern-automation.js",
     "validate-schema.js"
   ],
-  "for-file-iteration": ["find-polluter.sh"]
+  "for-file-iteration": ["find-polluter.sh"],
+  "no-raw-fs-write": ["run-alerts.js", "seed-commit-log.js"]
 }

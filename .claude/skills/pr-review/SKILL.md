@@ -44,7 +44,8 @@ STEP 0: CONTEXT (Load tiered docs)  →  STEP 1: PARSE (Multi-pass + validate)
   →  STEP 1.5: SONARCLOUD ENRICHMENT  →  STEP 2: CATEGORIZE (Severity/Origin)
   →  STEP 3: PLAN (TodoWrite)  →  STEP 4: AGENTS (Parallel if 20+)
   →  STEP 5: FIX (Priority order)  →  STEP 6: DOCUMENT (Deferred/rejected)
-  →  STEP 6.5: TDMS  →  STEP 7: LEARNING  →  STEP 8: SUMMARY  →  STEP 9: COMMIT
+  →  STEP 6.5: TDMS  →  STEP 7: LEARNING  →  STEP 7.5: JSONL PIPELINE
+  →  STEP 8: SUMMARY  →  STEP 9: COMMIT
 ```
 
 ---
@@ -359,6 +360,36 @@ Finalize review number, complete learning entry, run
 
 ---
 
+## STEP 7.5: JSONL PIPELINE
+
+> This step writes structured data to the v2 JSONL pipeline. The JSONL record is
+> the source of truth; the markdown learning log entry (Step 7) is a
+> human-readable view that coexists during transition.
+
+### 7.5.1 Write Review Record
+
+```bash
+cd scripts/reviews && npx tsc && node dist/write-review-record.js --data '{"pr":PR_NUM,"title":"PR #N RX - Source","date":"YYYY-MM-DD","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","pr":PR_NUM,"round":ROUND,"tool":"write-review-record.ts"},"source":"SOURCE","total":TOTAL,"fixed":FIXED,"deferred":DEFERRED,"rejected":REJECTED,"patterns":["pattern1"],"learnings":["learning1"],"severity_breakdown":{"critical":N,"major":N,"minor":N,"trivial":N},"per_round_detail":null,"rejection_analysis":null,"ping_pong_chains":null}'
+```
+
+Fill in actual values from the review. The `id` will be auto-assigned.
+
+### 7.5.2 Create Deferred Items (if deferred > 0)
+
+```bash
+node dist/write-deferred-items.js --review-id REV_ID --date YYYY-MM-DD --items '[{"finding":"description","severity":"major"}]'
+```
+
+Create one item per deferred finding from Step 6.
+
+### 7.5.3 Track Invocation
+
+```bash
+node dist/write-invocation.js --data '{"skill":"pr-review","type":"skill","duration_ms":null,"success":true,"error":null,"context":{"pr":PR_NUM,"trigger":"user-invoked"}}'
+```
+
+---
+
 ## STEP 8: FINAL SUMMARY
 
 Statistics (total/fixed/deferred/rejected), files modified, agents invoked,
@@ -402,6 +433,7 @@ source. Separate commits for Critical fixes if needed.
 
 | Version | Date       | Description                                                                                         |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| 3.6     | 2026-02-28 | Add JSONL pipeline step (Step 7.5) for v2 data capture                                              |
 | 3.5     | 2026-02-26 | Add pre-checks #16 (ESLint CC extraction) and #17 (fix-one-audit-all). Source: PR #393/#394 retros. |
 | 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro.         |
 | 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                          |

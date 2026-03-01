@@ -104,6 +104,7 @@
     "docs:placement": "node scripts/check-doc-placement.js",
     "session:end": "node scripts/session-end-commit.js",
     "alerts:cleanup": "node scripts/cleanup-alert-sessions.js",
+    "commits:sync": "node scripts/seed-commit-log.js --sync",
     "patterns:promote": "node scripts/promote-patterns.js",
     "ecosystem-audit": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js",
     "ecosystem-audit:check": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --check",

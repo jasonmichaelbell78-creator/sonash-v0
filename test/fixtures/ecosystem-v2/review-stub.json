@@ -1,0 +1,24 @@
+{
+  "id": "rev-2025-0520-pr430",
+  "date": "2025-05-20",
+  "schema_version": 1,
+  "completeness": "stub",
+  "completeness_missing": [
+    "title",
+    "pr",
+    "source",
+    "total",
+    "fixed",
+    "deferred",
+    "rejected",
+    "patterns",
+    "learnings",
+    "severity_breakdown",
+    "per_round_detail",
+    "rejection_analysis",
+    "ping_pong_chains"
+  ],
+  "origin": {
+    "type": "backfill"
+  }
+}

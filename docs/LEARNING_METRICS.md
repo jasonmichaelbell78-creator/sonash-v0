@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-02-27
+**Last Updated:** 2026-03-01
 
 ---
 
@@ -27,40 +27,40 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #394 - #406 (13 reviews) **Analysis Date:** 2026-02-27
+**Review Range:** #394 - #440 (22 reviews) **Analysis Date:** 2026-03-01
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 93.1% |
-| Patterns Learned          | 308   |
-| Patterns Automated        | 27    |
-| Patterns Failing          | 5     |
-| Critical Pattern Success  | 95.7% |
-| Automation Coverage       | 13.6% |
-| Total Documented Patterns | 360   |
-| Total Automated Patterns  | 49    |
+| Learning Effectiveness    | 91.5% |
+| Patterns Learned          | 301   |
+| Patterns Automated        | 31    |
+| Patterns Failing          | 14    |
+| Critical Pattern Success  | 93.8% |
+| Automation Coverage       | 14.0% |
+| Total Documented Patterns | 363   |
+| Total Automated Patterns  | 51    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Binary file detection"
-   - Recurred 4 times after documentation \(Reviews: 395, 398, 400, 402\)
+1. **[Automation]** Automate "Atomic file writes"
+   - Recurred 9 times after documentation \(Reviews: 417, 418, 419, 439, 440\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Relative path logging"
-   - Recurred 4 times after documentation \(Reviews: 395, 398, 399, 402\)
+2. **[Automation]** Automate "Atomic file writes"
+   - Recurred 9 times after documentation \(Reviews: 417, 418, 419, 439, 440\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Automation]** Automate "Delimiter consistency"
-   - Recurred 3 times after documentation \(Reviews: 394, 396, 402\)
+3. **[Automation]** Automate "Binary file detection"
+   - Recurred 7 times after documentation \(Reviews: 400, 402, 402, 408, 439\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "Atomic file writes"
+4. **[Documentation]** Improve documentation for "Math.max empty array"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Multi\-line JSON reassembly"
+5. **[Documentation]** Improve documentation for "Parallel agent review"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 308   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 27    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 20    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 5     | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 301   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 31    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 17    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 14    | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -81,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-02-27 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-03-01 | Rewritten to focus on Claude's learning effectiveness |

@@ -1,0 +1,22 @@
+{
+  "id": "retro-2025-0312-pr389",
+  "date": "2025-03-12",
+  "schema_version": 1,
+  "completeness": "full",
+  "completeness_missing": [],
+  "origin": {
+    "type": "pr-retro",
+    "pr": 389,
+    "session": "session-142"
+  },
+  "pr": 389,
+  "session": "session-142",
+  "top_wins": [
+    "Caught critical auth vulnerability early",
+    "Good separation of concerns in refactor"
+  ],
+  "top_misses": ["Missed edge case in token refresh", "No tests for error path"],
+  "process_changes": ["Add auth integration tests to CI", "Run security-auditor on all auth PRs"],
+  "score": 7.5,
+  "metrics": { "total_findings": 8, "fix_rate": 0.625, "pattern_recurrence": 1 }
+}

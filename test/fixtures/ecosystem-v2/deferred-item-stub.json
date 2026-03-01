@@ -1,0 +1,15 @@
+{
+  "id": "defer-2025-0520-pr430-001",
+  "date": "2025-05-20",
+  "schema_version": 1,
+  "completeness": "stub",
+  "completeness_missing": ["reason", "severity", "resolved_date"],
+  "origin": {
+    "type": "backfill"
+  },
+  "review_id": "rev-2025-0520-pr430",
+  "finding": "Missing input validation on form submit handler",
+  "status": "open",
+  "defer_count": 1,
+  "promoted_to_debt": false
+}

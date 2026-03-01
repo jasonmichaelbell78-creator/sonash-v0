@@ -376,7 +376,7 @@ All skills reside in `.claude/skills/<skill-name>/SKILL.md`:
 ### Canonical Standards
 
 All skills MUST follow
-[SKILL_STANDARDS.md](.claude/skills/_shared/SKILL_STANDARDS.md):
+[SKILL_STANDARDS.md](../.claude/skills/_shared/SKILL_STANDARDS.md):
 
 - **Required sections**: YAML frontmatter (`name` + `description`), "When to
   Use", "When NOT to Use", "Version History"
@@ -387,13 +387,13 @@ All skills MUST follow
 - **Parallel execution**: Must document dependency constraints
 
 Audit skills additionally reference
-[AUDIT_TEMPLATE.md](.claude/skills/_shared/AUDIT_TEMPLATE.md) for shared
+[AUDIT_TEMPLATE.md](../.claude/skills/_shared/AUDIT_TEMPLATE.md) for shared
 evidence, verification, and TDMS intake boilerplate.
 
 ### Creating New Skills
 
 Use `/skill-creator` to scaffold a new skill with proper structure. Reference
-[SKILL_STANDARDS.md](.claude/skills/_shared/SKILL_STANDARDS.md) for the full
+[SKILL_STANDARDS.md](../.claude/skills/_shared/SKILL_STANDARDS.md) for the full
 quality checklist.
 
 ### Best Practices

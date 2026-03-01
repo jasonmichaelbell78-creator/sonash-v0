@@ -6,6 +6,11 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
+## Purpose
+
+Analysis of the consolidation-promotion-enforcement pipeline flow, pattern sync,
+and enforcement coverage.
+
 **Generated:** 2026-02-27 **Source files analyzed:** consolidation.json,
 run-consolidation.js, promote-patterns.js, check-pattern-compliance.js,
 CODE_PATTERNS.md, FIX_TEMPLATES.md, SECURITY_CHECKLIST.md, CLAUDE.md
@@ -469,3 +474,9 @@ check-pattern-compliance.js (43 regex + 22 ESLint rules)
 6. **Pattern tag granularity** -- the `patterns[]` field in reviews.jsonl uses
    coarse categories (qodo, security, ci) rather than specific pattern IDs,
    making data-driven promotion unreliable.
+
+## Version History
+
+| Version | Date       | Changes          |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-02-27 | Initial creation |

@@ -176,6 +176,15 @@ const BENCHMARKS = {
     noise_ratio: { good: 0, average: 5, poor: 15 },
     commit_failures_7d: { good: 0, average: 3, poor: 8 },
   },
+  reviews_sync: {
+    missing: { good: 0, average: 1, poor: 5 },
+  },
+  review_archive: {
+    issues: { good: 0, average: 2, poor: 5 },
+  },
+  crossdoc: {
+    issues: { good: 0, average: 1, poor: 3 },
+  },
 };
 
 // ============================================================================
@@ -3216,6 +3225,136 @@ function checkSonarCloud() {
 }
 
 // ============================================================================
+// NEW CHECKERS — Category D: Session Audit Parity (Limited mode)
+// ============================================================================
+
+/**
+ * D1: Reviews Sync — detects JSONL drift from markdown reviews
+ */
+function checkReviewsSync() {
+  checkNpmScript("reviews-sync", "Reviews Sync", ["reviews:sync"], (output, result) => {
+    const driftMatch = output.match(
+      /(\d+)\s+entr(?:y|ies)\s+in\s+markdown\s+but\s+not\s+in\s+JSONL/i
+    );
+    const missing = driftMatch ? Number.parseInt(driftMatch[1], 10) : result.success ? 0 : 1;
+
+    if (!result.success && !driftMatch) {
+      addAlert(
+        "reviews-sync",
+        "error",
+        "Reviews sync check failed (no parsable drift count)",
+        null,
+        "Run: npm run reviews:sync"
+      );
+    } else if (missing >= BENCHMARKS.reviews_sync.missing.poor) {
+      addAlert(
+        "reviews-sync",
+        "error",
+        `${missing} review entries missing from JSONL`,
+        null,
+        "Run: npm run reviews:sync -- --apply"
+      );
+    } else if (missing >= BENCHMARKS.reviews_sync.missing.average) {
+      addAlert(
+        "reviews-sync",
+        "warning",
+        `${missing} review entries missing from JSONL`,
+        null,
+        "Run: npm run reviews:sync -- --apply"
+      );
+    }
+
+    addContext("reviews-sync", { missing });
+  });
+}
+
+/**
+ * D2: Review Archive Health — heading format, gaps, duplicates
+ */
+function checkReviewArchive() {
+  checkNpmScript(
+    "review-archive",
+    "Review Archive Health",
+    ["reviews:check-archive"],
+    (output, result) => {
+      const issueMatch = output.match(/(\d+)\s+issue\(s\)\s+found/i);
+      const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
+
+      if (!result.success && !issueMatch) {
+        addAlert(
+          "review-archive",
+          "error",
+          "Review archive check failed (no parsable issue count)",
+          null,
+          "Run: npm run reviews:check-archive"
+        );
+      } else if (issues >= BENCHMARKS.review_archive.issues.poor) {
+        addAlert(
+          "review-archive",
+          "error",
+          `${issues} review archive issues`,
+          null,
+          "Run: npm run reviews:check-archive"
+        );
+      } else if (issues >= BENCHMARKS.review_archive.issues.average) {
+        addAlert(
+          "review-archive",
+          "warning",
+          `${issues} review archive issues`,
+          null,
+          "Run: npm run reviews:check-archive"
+        );
+      }
+
+      addContext("review-archive", { issues });
+    }
+  );
+}
+
+/**
+ * D3: Cross-Document Dependencies — validates cross-doc refs
+ */
+function checkCrossdocDeps() {
+  checkNpmScript(
+    "crossdoc",
+    "Cross-Document Dependencies",
+    ["crossdoc:check"],
+    (output, result) => {
+      const issueMatch = output.match(/(\d+)\s+issue\(s\)/i);
+      const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
+
+      if (!result.success && !issueMatch) {
+        addAlert(
+          "crossdoc",
+          "error",
+          "Crossdoc check failed (no parsable issue count)",
+          null,
+          "Run: npm run crossdoc:check"
+        );
+      } else if (issues >= BENCHMARKS.crossdoc.issues.poor) {
+        addAlert(
+          "crossdoc",
+          "error",
+          `${issues} cross-document dependency issues`,
+          null,
+          "Update dependent docs to match changes"
+        );
+      } else if (issues >= BENCHMARKS.crossdoc.issues.average) {
+        addAlert(
+          "crossdoc",
+          "warning",
+          `${issues} cross-document dependency issues`,
+          null,
+          "Update dependent docs to match changes"
+        );
+      }
+
+      addContext("crossdoc", { issues });
+    }
+  );
+}
+
+// ============================================================================
 // SUPPRESSION FILTER (W3)
 // ============================================================================
 
@@ -3365,6 +3504,10 @@ function computeHealthScore() {
     "backlog-health": 0.01,
     "github-actions": 0.02,
     sonarcloud: 0.02,
+    // Limited-mode operational checkers (low weight, contribute when measured)
+    "reviews-sync": 0.01,
+    "review-archive": 0.01,
+    crossdoc: 0.01,
   };
 
   const breakdown = {};
@@ -3443,7 +3586,7 @@ function buildSessionPlan() {
 function main() {
   console.error(`\n\u{1F50D} Running ${isFullMode ? "FULL" : "LIMITED"} alerts check...\n`);
 
-  // Always run (Limited mode — 12 categories)
+  // Always run (Limited mode — 16 categories)
   checkCodeHealth();
   checkSecurity();
   checkSessionContext();
@@ -3458,6 +3601,10 @@ function main() {
   checkSessionState();
   checkPatternHotspots();
   checkContextUsage();
+  // Session audit parity checkers (D1, D2, D3)
+  checkReviewsSync();
+  checkReviewArchive();
+  checkCrossdocDeps();
 
   // Full mode only (additional 17 categories)
   if (isFullMode) {
@@ -3498,6 +3645,9 @@ function main() {
   ensureCategory("session-state", "Session State");
   ensureCategory("pattern-hotspots", "Pattern Hotspots");
   ensureCategory("context-usage", "Context Usage");
+  ensureCategory("reviews-sync", "Reviews Sync");
+  ensureCategory("review-archive", "Review Archive Health");
+  ensureCategory("crossdoc", "Cross-Document Dependencies");
 
   if (isFullMode) {
     ensureCategory("docs", "Documentation Health");

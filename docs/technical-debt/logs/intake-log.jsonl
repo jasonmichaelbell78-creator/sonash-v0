@@ -45,3 +45,10 @@
 {"timestamp":"2026-02-26T00:28:42.109Z","action":"intake-manual","item_id":"DEBT-7582","file":"scripts/reviews-sync.js","severity":"S2","category":"process"}
 {"timestamp":"2026-02-26T00:28:49.975Z","action":"intake-manual","item_id":"DEBT-7587","file":"docs/agent_docs/CODE_PATTERNS.md","severity":"S2","category":"process"}
 {"timestamp":"2026-02-26T12:14:43.182Z","action":"intake-manual","item_id":"DEBT-7592","file":"scripts/debt/","severity":"S1","category":"code-quality"}
+{"timestamp":"2026-02-28T21:59:45.555Z","action":"intake-manual","item_id":"DEBT-11323","file":"components/journal/entry-detail-dialog.tsx","severity":"S1","category":"code-quality"}
+{"timestamp":"2026-02-28T21:59:50.506Z","action":"intake-manual","item_id":"DEBT-11324","file":"components/journal/entry-feed.tsx","severity":"S1","category":"code-quality"}
+{"timestamp":"2026-02-28T21:59:58.098Z","action":"intake-manual","item_id":"DEBT-11325","file":"scripts/check-external-links.js","severity":"S1","category":"security"}
+{"timestamp":"2026-02-28T22:00:06.494Z","action":"intake-manual","item_id":"DEBT-11326","file":"scripts/lib/sanitize-error.js","severity":"S2","category":"security"}
+{"timestamp":"2026-02-28T22:00:12.962Z","action":"intake-manual","item_id":"DEBT-11327","file":"app/admin/page.tsx","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-02-28T22:00:19.977Z","action":"intake-manual","item_id":"DEBT-11328","file":"scripts/check-session-gaps.js","severity":"S3","category":"code-quality"}
+{"timestamp":"2026-02-28T22:00:26.467Z","action":"intake-manual","item_id":"DEBT-11329","file":"scripts/hook-analytics.js","severity":"S3","category":"refactoring"}

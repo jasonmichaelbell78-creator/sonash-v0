@@ -34,6 +34,14 @@ if (/^\.\.(?:[\\/]|$)/.test(relHooksDir) || relHooksDir === "" || path.isAbsolut
 // Test definitions for each hook
 // Note: Some hooks read files from disk, so we test with paths that skip checks
 const HOOK_TESTS = {
+  // PreToolUse Bash hooks
+  "block-push-to-main.js": {
+    description: "Blocks direct pushes to main/master branches",
+    // Reads from stdin (PreToolUse), doesn't print "ok"
+    skipBasicExecution: true,
+    tests: [],
+  },
+
   // PostToolUse Write/Edit hooks
   "pattern-check.js": {
     description: "Pattern compliance checker",

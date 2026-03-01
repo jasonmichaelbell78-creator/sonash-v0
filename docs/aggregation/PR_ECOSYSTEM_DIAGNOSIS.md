@@ -6,6 +6,11 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
+## Purpose
+
+Comprehensive diagnosis of the PR review ecosystem across 7 layers, synthesized
+from 4 parallel mining agents.
+
 **Date:** 2026-02-27 **Analysis Window:** Reviews #1–#406 (2026-01-01 to
 2026-02-27, 58 days) **Review Count:** 406 reviews across 27 merged PRs
 (#367–#397) **Methodology:** 4-agent parallel data mining + manual synthesis.
@@ -1065,3 +1070,9 @@ Phase 2.6 (throughput tracking) ──► Phase 4.1 (dashboard)
    - `tests/` directory (test inventory)
    - `.github/workflows/` (12 workflows)
    - Git history (commit messages for retro implementation tracking)
+
+## Version History
+
+| Version | Date       | Changes          |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-02-27 | Initial creation |

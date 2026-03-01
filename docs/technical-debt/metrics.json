@@ -1,43 +1,43 @@
 {
-  "generated": "2026-02-28T07:04:06.240Z",
-  "generated_date": "2026-02-28",
+  "generated": "2026-03-01T00:56:01.502Z",
+  "generated_date": "2026-03-01",
   "summary": {
-    "total": 8354,
-    "open": 7376,
-    "resolved": 480,
+    "total": 8350,
+    "open": 7371,
+    "resolved": 481,
     "false_positives": 498,
     "resolution_rate_pct": 6
   },
   "by_status": {
-    "NEW": 2036,
+    "NEW": 2031,
     "VERIFIED": 5340,
     "IN_PROGRESS": 0,
-    "RESOLVED": 480,
+    "RESOLVED": 481,
     "FALSE_POSITIVE": 498
   },
   "by_severity": {
     "S0": 67,
-    "S1": 1290,
-    "S2": 3386,
-    "S3": 3611
+    "S1": 1294,
+    "S2": 3376,
+    "S3": 3613
   },
   "by_category": {
-    "code-quality": 4625,
-    "security": 720,
+    "code-quality": 4630,
+    "security": 722,
     "performance": 178,
     "documentation": 982,
-    "refactoring": 651,
-    "process": 712,
-    "engineering-productivity": 78,
+    "refactoring": 655,
+    "process": 713,
+    "engineering-productivity": 62,
     "enhancements": 154,
     "ai-optimization": 254
   },
   "by_source": {
-    "unknown": 756,
+    "unknown": 758,
     "sonarcloud": 2562,
-    "review": 638,
+    "review": 622,
     "audit": 2868,
-    "manual": 58,
+    "manual": 66,
     "intake": 64,
     "pr-review": 16,
     "pr-review-366-r2": 6,
@@ -49,11 +49,12 @@
     "sonarcloud-paste": 286,
     "context": 252,
     "session-180": 4,
-    "over-engineering-research": 2
+    "over-engineering-research": 2,
+    "qodo": 2
   },
   "alerts": {
     "s0_count": 39,
-    "s1_count": 1216,
+    "s1_count": 1220,
     "s0_items": [
       {
         "id": "DEBT-0852",
@@ -180,9 +181,9 @@
     ]
   },
   "health": {
-    "avg_age_days": 15,
-    "oldest_age_days": 29,
+    "avg_age_days": 16,
+    "oldest_age_days": 30,
     "oldest_item_id": "DEBT-0002",
-    "verification_queue_size": 2036
+    "verification_queue_size": 2031
   }
 }

@@ -1,0 +1,22 @@
+{
+  "id": "inv-2025-0312-session142-001",
+  "date": "2025-03-12",
+  "schema_version": 1,
+  "completeness": "full",
+  "completeness_missing": [],
+  "origin": {
+    "type": "pr-review",
+    "pr": 389,
+    "session": "session-142"
+  },
+  "skill": "code-reviewer",
+  "type": "agent",
+  "duration_ms": 12500,
+  "success": true,
+  "error": null,
+  "context": {
+    "pr": 389,
+    "session": "session-142",
+    "trigger": "post-task"
+  }
+}
