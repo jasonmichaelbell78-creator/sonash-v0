@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
       JSONL, fix data errors, establish clean baseline dataset
 - [x] **Phase 3: Core Pipeline** - Skills write JSONL-first, auto-deferred
       tracking, promotion automation, template generation
-- [ ] **Phase 4: Enforcement Expansion** - Semgrep + ESLint + regex rule
+- [x] **Phase 4: Enforcement Expansion** - Semgrep + ESLint + regex rule
       expansion to hit 55-60% automated enforcement
 - [ ] **Phase 5: Health Monitoring** - 57-metric composite scoring, interactive
       dashboard, warning lifecycle
@@ -293,12 +293,12 @@ with 5) -> 6 -> 7
 | 1. Storage Foundation        | 3/3            | Complete    | 2026-02-28 |
 | 2. Backfill & Data Migration | 3/3            | Complete    | 2026-02-28 |
 | 3. Core Pipeline             | 4/4            | Complete    | 2026-02-28 |
-| 4. Enforcement Expansion     | 4/6            | Gap closure | -          |
+| 4. Enforcement Expansion     | 6/6            | Complete    | 2026-03-01 |
 | 5. Health Monitoring         | 0/TBD          | Not started | -          |
 | 6. Gate Recalibration        | 0/TBD          | Not started | -          |
 | 7. Integration & Cutover     | 0/TBD          | Not started | -          |
 
 ---
 
-_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 4 gap closure --
-2 plans in 2 waves to fix inflated coverage)_
+_Roadmap created: 2026-02-28_ _Last updated: 2026-03-01 (Phase 4 complete — 6
+plans, 7/7 must-haves verified, 17.2% accurate coverage)_
