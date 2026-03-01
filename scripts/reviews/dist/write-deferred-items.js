@@ -107,7 +107,7 @@ function createDeferredItems(projectRoot, reviewId, items, date) {
     var _a, _b;
     if (items.length === 0)
         return [];
-    if (!/^rev-\d+(?:-[a-z0-9]+)?$/.test(reviewId)) {
+    if (!/^rev-\d+(?:-[a-z0-9]+)*$/.test(reviewId)) {
         throw new Error(`Invalid reviewId format: ${reviewId}`);
     }
     const filePath = path.resolve(projectRoot, "data/ecosystem-v2/deferred-items.jsonl");

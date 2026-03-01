@@ -180,6 +180,23 @@ function writeEntries(entries) {
 }
 
 /**
+ * Extract the last valid commit hash from JSONL lines (reverse search).
+ */
+function findLastHash(lines) {
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i].trim();
+    if (!line.startsWith("{")) continue;
+    try {
+      const entry = JSON.parse(line);
+      if (entry && typeof entry === "object" && entry.hash) return entry.hash;
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}
+
+/**
  * Get the latest hash from the existing commit log
  */
 function getLatestLogHash() {
@@ -202,17 +219,7 @@ function getLatestLogHash() {
       const text = alignedBuf.toString("utf8").trim();
       if (!text) return null;
       const lines = text.split("\n").slice(-200).filter(Boolean);
-      for (let i = lines.length - 1; i >= 0; i--) {
-        const line = lines[i].trim();
-        if (!line.startsWith("{")) continue;
-        try {
-          const entry = JSON.parse(line);
-          if (entry && typeof entry === "object" && entry.hash) return entry.hash;
-        } catch {
-          continue;
-        }
-      }
-      return null;
+      return findLastHash(lines);
     } finally {
       fs.closeSync(fd);
     }
@@ -335,19 +342,24 @@ function appendEntries(entries) {
     console.error("Symlink guard blocked append to commit-log.jsonl");
     process.exit(1);
   }
-  if (fs.existsSync(COMMIT_LOG)) {
-    try {
-      const st = fs.lstatSync(COMMIT_LOG);
-      if (st.isSymbolicLink() || !st.isFile()) {
-        console.error("Refusing to append: commit-log.jsonl is not a regular file");
-        process.exit(1);
-      }
-    } catch {
-      console.error("Refusing to append: could not stat commit-log.jsonl");
+  let fd;
+  try {
+    fd = fs.openSync(COMMIT_LOG, "a", 0o644);
+    const st = fs.fstatSync(fd);
+    if (!st.isFile()) {
+      console.error("Refusing to append: commit-log.jsonl is not a regular file");
       process.exit(1);
     }
+    fs.writeFileSync(fd, content, "utf8");
+  } finally {
+    if (fd != null) {
+      try {
+        fs.closeSync(fd);
+      } catch {
+        /* best-effort */
+      }
+    }
   }
-  fs.appendFileSync(COMMIT_LOG, content, "utf8");
 }
 
 /**

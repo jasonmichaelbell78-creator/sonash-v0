@@ -58,15 +58,20 @@ export function generateAntiPatternsTable(patterns: RecurrenceResult[], maxPatte
     return "| Pattern | Rule |\n| --- | --- |\n| (none detected) | No recurring patterns found above threshold |";
   }
 
-  const escapeCell = (s: string): string => s.replaceAll("|", "\\|").replaceAll(/\r?\n/g, " ");
+  const escapeCell = (s: string): string =>
+    String(s ?? "")
+      .replaceAll("|", String.raw`\|`)
+      .replaceAll(/\r?\n/g, " ");
 
   const rows = top.map((p) => {
     // Create a concise rule description from the pattern
+    const patternRaw = String(p.pattern ?? "");
+    const prCount = typeof p.distinctPRs?.size === "number" ? p.distinctPRs.size : 0;
     const name = escapeCell(
-      p.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase())
+      patternRaw.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase())
     );
     const rule = escapeCell(
-      `Recurring (${p.count}x, ${p.distinctPRs.size} PRs) -- review and add enforcement`
+      `Recurring (${p.count}x, ${prCount} PRs) -- review and add enforcement`
     );
     return `| ${name} | ${rule} |`;
   });

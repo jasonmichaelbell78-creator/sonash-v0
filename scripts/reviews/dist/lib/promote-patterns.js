@@ -213,8 +213,11 @@ function generateRuleSkeleton(result, usedIds = new Set()) {
 /**
  * Build a CODE_PATTERNS.md entry for a promoted pattern.
  */
+function sanitizeMdLine(s) {
+    return s.replaceAll(/\r?\n/g, " ").replaceAll(/[`#]/g, "").replaceAll(/\s+/g, " ").trim();
+}
 function buildCodePatternsEntry(result, category) {
-    const title = result.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase());
+    const title = sanitizeMdLine(result.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase()));
     const prRefs = result.distinctPRs.size > 0
         ? `PRs: #${Array.from(result.distinctPRs).join(", #")}`
         : `Reviews: ${result.reviewIds.join(", ")}`;

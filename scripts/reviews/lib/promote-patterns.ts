@@ -236,8 +236,14 @@ export function generateRuleSkeleton(
 /**
  * Build a CODE_PATTERNS.md entry for a promoted pattern.
  */
+function sanitizeMdLine(s: string): string {
+  return s.replaceAll(/\r?\n/g, " ").replaceAll(/[`#]/g, "").replaceAll(/\s+/g, " ").trim();
+}
+
 function buildCodePatternsEntry(result: RecurrenceResult, category: string): string {
-  const title = result.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase());
+  const title = sanitizeMdLine(
+    result.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase())
+  );
 
   const prRefs =
     result.distinctPRs.size > 0

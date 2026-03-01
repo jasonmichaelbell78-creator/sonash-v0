@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.80 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
+**Document Version:** 17.81 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
 
 ## Purpose
 
@@ -703,6 +703,59 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #439: PR #407 R14 — SonarCloud + Qodo (2026-03-01)
+
+_PR Review Ecosystem v2 Phases 1-3. Round 14 of ongoing review cycle._
+
+**Source:** SonarCloud (5), Qodo Compliance (3), Qodo PR Suggestions (10)
+**Total:** 18 **Fixed:** 12 **Rejected:** 6
+
+**Severity:** 1 CRITICAL (CC reduction), 4 MAJOR (TOCTOU, safeParse, ID
+collision, wx flag), 7 MINOR (sanitization, regex, line numbers, String.raw,
+exception handling)
+
+**Items Fixed:**
+
+1. **CC reduction: getLatestLogHash** (`seed-commit-log.js:185`) — CC 16→≤15 via
+   `findLastHash` helper extraction
+2. **TOCTOU race: appendEntries** (`seed-commit-log.js:325`) — fd-based append
+   with fstatSync verification replaces lstatSync+appendFileSync
+3. **Temp file symlink race** (`backfill-reviews.ts:927`) — `wx` flag for
+   exclusive create on tmpPath (reviews + retros)
+4. **RetroRecord.parse → safeParse** (`backfill-reviews.ts:470`) — Graceful
+   degradation instead of script crash on single malformed retro
+5. **Invocation ID collision** (`write-invocation.ts:44`) — Added pid + random
+   entropy to auto-generated IDs
+6. **Line number accuracy** (`backfill-reviews.ts:642`) — indexOf→index loop var
+7. **Harden table input** (`generate-claude-antipatterns.ts:61`) — Defensive
+   null coalescing + String.raw for escaped pipe
+8. **Sanitize markdown headings** (`promote-patterns.ts:239`) — Strip
+   newlines/backticks/hashes from pattern titles
+9. **Sanitize markdown render** (`render-reviews-to-md.ts:43`) — safeInline for
+   title, patterns, learnings
+10. **Relax reviewId regex** (`write-deferred-items.ts:82`) — `?` → `*` for
+    multi-segment IDs
+11. **Handle exception context** (`write-invocation.ts:83`) — Log error.message
+    instead of generic string
+12. **String.raw** (`generate-claude-antipatterns.ts:61`) — Use String.raw for
+    escaped pipe character
+
+**Rejected (with justification):**
+
+- SC: Top-level await ×2 — **Repeat-rejected from R12.** CJS modules (tsconfig
+  module=commonjs). Top-level await requires ESM.
+- Q: String-based numeric ID handling — Already handled downstream in
+  buildV1ReviewRecord (line 575-584) which converts via parseInt.
+- Q Compliance: Silent catches — By-design race condition guards per
+  CODE_PATTERNS.md.
+- Q Compliance: CLI input trust boundary — Local dev tool with Zod validation.
+- Q Compliance: Implicit code execution — By-design session hook behavior.
+
+**Patterns:** fd-based file operations (TOCTOU mitigation), safeParse for
+resilient batch processing, entropy in auto-IDs, markdown input sanitization
+
+---
 
 ### Review #438: PR #407 R12 — SonarCloud + Qodo (2026-03-01)
 

@@ -40,7 +40,9 @@ export function renderReviewRecord(record: ReviewRecordType): string {
   const lines: string[] = [];
 
   // Heading
-  const title = record.title ?? "(untitled)";
+  const safeInline = (s: string): string =>
+    s.replaceAll(/\r?\n/g, " ").replaceAll(/\s+/g, " ").trim();
+  const title = safeInline(record.title ?? "(untitled)");
   lines.push(`### Review ${record.id}: ${title}`, "");
 
   // Completeness note for non-full records
@@ -70,7 +72,7 @@ export function renderReviewRecord(record: ReviewRecordType): string {
   if (record.patterns != null && record.patterns.length > 0) {
     lines.push("**Patterns:**", "");
     for (const pattern of record.patterns) {
-      lines.push(`- ${pattern}`);
+      lines.push(`- ${safeInline(pattern)}`);
     }
     lines.push("");
   }
@@ -79,7 +81,7 @@ export function renderReviewRecord(record: ReviewRecordType): string {
   if (record.learnings != null && record.learnings.length > 0) {
     lines.push("**Learnings:**", "");
     for (const learning of record.learnings) {
-      lines.push(`- ${learning}`);
+      lines.push(`- ${safeInline(learning)}`);
     }
     lines.push("");
   }

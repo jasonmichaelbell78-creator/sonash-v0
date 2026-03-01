@@ -413,7 +413,12 @@ function buildRetroRecords(retros, reviewsByPR) {
             score: null,
             metrics,
         };
-        records.push(retro_1.RetroRecord.parse(record));
+        const parsed = retro_1.RetroRecord.safeParse(record);
+        if (!parsed.success) {
+            console.warn(`Warning: Retro validation failed for PR #${retro.pr} (${retro.sourceFile})`);
+            continue;
+        }
+        records.push(parsed.data);
     }
     return { records, missingReviewCount };
 }
@@ -555,13 +560,14 @@ function migrateV1Records(v1Path, existingIds) {
     let migrated = 0;
     let skipped = 0;
     const lines = content.split("\n").filter((l) => l.trim().length > 0);
-    for (const line of lines) {
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        const line = lines[lineIdx];
         let v1;
         try {
             v1 = JSON.parse(line);
         }
         catch {
-            console.warn(`Warning: Could not parse v1 record at line ${lines.indexOf(line) + 1}`);
+            console.warn(`Warning: Could not parse v1 record at line ${lineIdx + 1}`);
             continue;
         }
         const numericId = typeof v1.id === "number" ? v1.id : Number.NaN;
@@ -766,8 +772,12 @@ async function runBackfill() {
     }
     {
         const tmpPath = `${reviewsPath}.tmp-${process.pid}-${Date.now()}`;
+        let fd = null;
         try {
-            fs.writeFileSync(tmpPath, reviewLines, "utf8");
+            fd = fs.openSync(tmpPath, "wx", 0o644);
+            fs.writeFileSync(fd, reviewLines, "utf8");
+            fs.closeSync(fd);
+            fd = null;
             try {
                 fs.renameSync(tmpPath, reviewsPath);
             }
@@ -780,6 +790,12 @@ async function runBackfill() {
             }
         }
         finally {
+            if (fd !== null) {
+                try {
+                    fs.closeSync(fd);
+                }
+                catch { /* best-effort */ }
+            }
             try {
                 if (fs.existsSync(tmpPath))
                     fs.rmSync(tmpPath, { force: true });
@@ -796,8 +812,12 @@ async function runBackfill() {
     }
     {
         const tmpPath = `${retrosPath}.tmp-${process.pid}-${Date.now()}`;
+        let fd = null;
         try {
-            fs.writeFileSync(tmpPath, retroLines, "utf8");
+            fd = fs.openSync(tmpPath, "wx", 0o644);
+            fs.writeFileSync(fd, retroLines, "utf8");
+            fs.closeSync(fd);
+            fd = null;
             try {
                 fs.renameSync(tmpPath, retrosPath);
             }
@@ -810,6 +830,12 @@ async function runBackfill() {
             }
         }
         finally {
+            if (fd !== null) {
+                try {
+                    fs.closeSync(fd);
+                }
+                catch { /* best-effort */ }
+            }
             try {
                 if (fs.existsSync(tmpPath))
                     fs.rmSync(tmpPath, { force: true });

@@ -79,7 +79,7 @@ export function createDeferredItems(
 ): DeferredItemRecordType[] {
   if (items.length === 0) return [];
 
-  if (!/^rev-\d+(?:-[a-z0-9]+)?$/.test(reviewId)) {
+  if (!/^rev-\d+(?:-[a-z0-9]+)*$/.test(reviewId)) {
     throw new Error(`Invalid reviewId format: ${reviewId}`);
   }
 

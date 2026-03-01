@@ -77,7 +77,8 @@ function renderReviewRecord(record) {
     var _a, _b, _c, _d;
     const lines = [];
     // Heading
-    const title = (_a = record.title) !== null && _a !== void 0 ? _a : "(untitled)";
+    const safeInline = (s) => s.replaceAll(/\r?\n/g, " ").replaceAll(/\s+/g, " ").trim();
+    const title = safeInline((_a = record.title) !== null && _a !== void 0 ? _a : "(untitled)");
     lines.push(`### Review ${record.id}: ${title}`, "");
     // Completeness note for non-full records
     if (record.completeness !== "full") {
@@ -97,7 +98,7 @@ function renderReviewRecord(record) {
     if (record.patterns != null && record.patterns.length > 0) {
         lines.push("**Patterns:**", "");
         for (const pattern of record.patterns) {
-            lines.push(`- ${pattern}`);
+            lines.push(`- ${safeInline(pattern)}`);
         }
         lines.push("");
     }
@@ -105,7 +106,7 @@ function renderReviewRecord(record) {
     if (record.learnings != null && record.learnings.length > 0) {
         lines.push("**Learnings:**", "");
         for (const learning of record.learnings) {
-            lines.push(`- ${learning}`);
+            lines.push(`- ${safeInline(learning)}`);
         }
         lines.push("");
     }

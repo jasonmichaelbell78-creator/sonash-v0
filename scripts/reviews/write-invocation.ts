@@ -41,7 +41,7 @@ export function writeInvocation(
 ): InvocationRecordType {
   const recordData: Record<string, unknown> = {
     ...data,
-    id: data.id ?? `inv-${Date.now()}`,
+    id: data.id ?? `inv-${Date.now()}-${process.pid}-${Math.random().toString(16).slice(2, 10)}`,
     date: data.date ?? new Date().toISOString().slice(0, 10),
   };
 
@@ -81,7 +81,9 @@ function main(): void {
     const record = writeInvocation(projectRoot, data);
     console.log(`Tracked invocation ${record.id} (${record.skill})`);
   } catch (err: unknown) {
-    console.error("Validation error: invocation record failed schema validation");
+    console.error(
+      `Validation error: ${err instanceof Error ? err.message : "invocation record failed schema validation"}`
+    );
     process.exit(1);
   }
 }
