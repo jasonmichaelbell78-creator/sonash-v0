@@ -276,8 +276,8 @@ _Claude Code skills_
 | [Creation Log: Systematic Debugging Skill](.claude/skills/systematic-debugging/CREATION-LOG.md)                                     | Reference example of extracting, structuring, and bulletproo...   | ↓0 ↑0      | 2026-01-12    |
 | [Data Analysis Patterns for Market Research](.claude/skills/market-research-reports/references/data_analysis_patterns.md)           | Templates and frameworks for conducting rigorous market anal...   | ↓0 ↑0      | 2026-01-12    |
 | [decrypt-secrets](.claude/skills/decrypt-secrets/SKILL.md)                                                                          | Decrypt your encrypted MCP tokens at the start of a remote s...   | ↓0 ↑0      | 2026-02-24    |
-| [Deep Plan Reference](.claude/skills/deep-plan/REFERENCE.md)                                                                        | Question categories, example questions, output templates, an...   | ↓0 ↑0      | 2026-03-01    |
-| [deep-plan](.claude/skills/deep-plan/SKILL.md)                                                                                      | Structured discovery-first planning that produces high-quali...   | ↓0 ↑0      | 2026-02-25    |
+| [Deep Plan Reference](.claude/skills/deep-plan/REFERENCE.md)                                                                        | Question categories, example questions, output templates, an...   | ↓0 ↑0      | 2026-02-28    |
+| [deep-plan](.claude/skills/deep-plan/SKILL.md)                                                                                      | Structured discovery-first planning that produces high-quali...   | ↓0 ↑0      | 2026-02-28    |
 | [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md)                                              | Reject obviously invalid input at API boundary                    | ↓0 ↑0      | 2026-01-12    |
 | [developer-growth-analysis](.claude/skills/developer-growth-analysis/SKILL.md)                                                      | This skill provides personalized feedback on your recent cod...   | ↓0 ↑0      | 2026-02-24    |
 | [doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md)                                                                  | Deep diagnostic of the entire documentation ecosystem — docu...   | ↓0 ↑0      | 2026-02-24    |
@@ -520,7 +520,7 @@ _Uncategorized_
 | [PR Review Ecosystem v2](.planning/PROJECT.md)                    | A full v2 rebuild of the PR Review Ecosystem for SoNash — th... | ↓0 ↑0      | 2026-02-28    |
 | [Project State](.planning/STATE.md)                               | See: .planning/PROJECT.md (updated 2026-02-28)                  | ↓0 ↑0      | 2026-02-28    |
 | [Requirements: PR Review Ecosystem v2](.planning/REQUIREMENTS.md) | -                                                               | ↓0 ↑0      | 2026-02-28    |
-| [Roadmap: PR Review Ecosystem v2](.planning/ROADMAP.md)           | Rebuild the PR review ecosystem from D+ to B+ by replacing t... | ↓0 ↑0      | 2026-02-28    |
+| [Roadmap: PR Review Ecosystem v2](.planning/ROADMAP.md)           | Rebuild the PR review ecosystem from D+ to B+ by replacing t... | ↓1 ↑0      | 2026-02-28    |
 
 ### .planning > ecosystem-v2 (Tier 4)
 
@@ -654,7 +654,7 @@ _Reference_
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑8      | 2026-02-25    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-23    |
-| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-02-28    |
+| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑9      | 2026-02-28    |
 
 ### scripts (Tier 4)
 
@@ -746,8 +746,8 @@ Documents that link to other documents most frequently:
 | [Multi-AI Audit System](docs/audits/multi-ai/README.md)                                                   | 15             |
 | [Development Guide](DEVELOPMENT.md)                                                                       | 11             |
 | [Documentation Inventory](docs/README.md)                                                                 | 11             |
+| [Session Context](SESSION_CONTEXT.md)                                                                     | 9              |
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                        | 9              |
-| [Session Context](SESSION_CONTEXT.md)                                                                     | 8              |
 | [AI Context &amp; Rules for SoNash](claude.md)                                                            | 8              |
 | [Enhancement Audit Template \(Multi-AI Injectable\)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md) | 8              |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                          | 8              |
@@ -765,7 +765,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**231 orphaned documents:**
+**230 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
@@ -910,7 +910,6 @@ Documents with no inbound links (not referenced by any other document):
 - [pull request template](.github/pull_request_template.md)
 - [PR Review Ecosystem v2](.planning/PROJECT.md)
 - [Requirements: PR Review Ecosystem v2](.planning/REQUIREMENTS.md)
-- [Roadmap: PR Review Ecosystem v2](.planning/ROADMAP.md)
 - [Project State](.planning/STATE.md)
 - [Ecosystem v2 — Discovery Q&A Record](.planning/ecosystem-v2/DISCOVERY_QA.md)
 - [GSD Project Context: PR Review Ecosystem v2](.planning/ecosystem-v2/GSD_CONTEXT.md)

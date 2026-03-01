@@ -25,7 +25,40 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ---
 
+## 2026-03 Sessions
+
+### Session #197 (2026-03-01)
+
+**Focus**: PR Review Ecosystem v2 (phases 1-3 via GSD) + Skill Quality Framework
+
+- **Parallel instance A (GSD)**: Completed phases 1-3 of 7-phase PR Review
+  Ecosystem v2 project — Storage Foundation (Zod schemas, JSONL utilities, 42
+  tests, 7 contract tests), Backfill & Data Migration (parse-review parser,
+  backfill orchestrator, dedup pipeline), Core Pipeline (4 writer CLIs,
+  promotion pipeline, skill wiring, 3 security FIX_TEMPLATES)
+- **Parallel instance B (skill audit)**: 10-category interactive audit of
+  deep-plan skill (64 decisions). Updated SKILL_STANDARDS v2.0 and skill-creator
+  v2.0 with behavioral quality standards. Created skill-audit skill. Rewrote
+  deep-plan v2 from audit findings.
+- CI: Added CodeQL and dependency-review GitHub Actions workflows
+- 148 files changed, +29,760/-8,340 lines across 49 commits
+- TDMS: 8,354 items (480 resolved), 67 S0 critical
+
+---
+
 ## 2026-02 Sessions
+
+### Session #193 (2026-02-27)
+
+**Focus**: PR #396 Review + ESLint + Compliance
+
+- PR #396: R1 (38 items -> 24 fixed) + R2 (10 items -> 6 fixed)
+- safe-fs.js hardening: same-path rename guard, symlink guard,
+  directory-over-file
+- Path containment via path.relative() in categorize-and-assign.js
+- ESLint + Pattern Compliance Fix Plan completed: 27/27 items, 887 blockers->0
+- PR #396 merged to main
+- TDMS: 8,349 items (477 resolved)
 
 ### Session #192 (2026-02-27)
 
