@@ -11,8 +11,8 @@ import { describe, test } from "vitest";
 import { RuleTester } from "eslint";
 import { createRequire } from "node:module";
 
-const require = createRequire(import.meta.url);
-const plugin = require("../eslint-plugin-sonash/index.js");
+const requireCjs = createRequire(import.meta.url);
+const plugin = requireCjs("../eslint-plugin-sonash/index.js");
 
 const ruleTester = new RuleTester({
   languageOptions: {

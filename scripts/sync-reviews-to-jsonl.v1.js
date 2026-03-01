@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// v1 fallback available at: scripts/sync-reviews-to-jsonl.v1.js
 /* global __dirname */
 /**
  * sync-reviews-to-jsonl.js

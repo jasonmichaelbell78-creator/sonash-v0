@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// v1 fallback available at: scripts/run-consolidation.v1.js
 /* global __dirname */
 /**
  * run-consolidation.js (v2 — JSONL-based)
