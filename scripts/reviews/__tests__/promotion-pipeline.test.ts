@@ -475,14 +475,28 @@ describe("generateAntiPatternsTable", () => {
 });
 
 describe("updateClaudeMd", () => {
-  // We can't test actual file writing without modifying real CLAUDE.md,
-  // but we can test the content transformation by using dry-run mode.
-  // Since updateClaudeMd reads from file, we test the marker logic conceptually.
-
-  test("adds markers on first run if missing (via real CLAUDE.md dry-run)", () => {
-    // This test uses dry-run to verify the real CLAUDE.md gets markers added
+  test("adds markers on first run if missing (dry-run, fixture CLAUDE.md)", () => {
+    const tmpRoot = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-claude-md-"));
+    fs.writeFileSync(
+      path.join(tmpRoot, "CLAUDE.md"),
+      [
+        "# AI Context & Rules",
+        "",
+        "## 1. Stack Versions",
+        "",
+        "## 4. Critical Anti-Patterns",
+        "",
+        "| Pattern            | Rule                                                                         |",
+        "| ------------------ | ---------------------------------------------------------------------------- |",
+        "| Error sanitization | Use sanitize-error.js                                                        |",
+        "",
+        "## 5. Coding Standards",
+        "",
+      ].join("\n"),
+      "utf8"
+    );
     const result = antiPatternsModule.updateClaudeMd(
-      PROJECT_ROOT,
+      tmpRoot,
       [
         {
           pattern: "test-pattern",
@@ -491,22 +505,33 @@ describe("updateClaudeMd", () => {
           reviewIds: ["r1"],
         },
       ],
-      true // dry-run
+      true
     );
-
-    // Result should contain markers
     assert.ok(result.includes("<!-- AUTO-ANTIPATTERNS-START -->"));
     assert.ok(result.includes("<!-- AUTO-ANTIPATTERNS-END -->"));
-
-    // Content outside Section 4 table should be preserved
     assert.ok(result.includes("## 1. Stack Versions"));
     assert.ok(result.includes("## 5. Coding Standards"));
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
   });
 
-  test("replaces content between markers on subsequent runs", () => {
-    // First call adds markers, second call replaces
-    const firstResult = antiPatternsModule.updateClaudeMd(
-      PROJECT_ROOT,
+  test("replaces content between markers on subsequent runs (dry-run, fixture CLAUDE.md)", () => {
+    const tmpRoot = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-claude-md-"));
+    fs.writeFileSync(
+      path.join(tmpRoot, "CLAUDE.md"),
+      [
+        "## 4. Critical Anti-Patterns",
+        "",
+        "<!-- AUTO-ANTIPATTERNS-START -->",
+        "| Pattern | Rule |",
+        "| --- | --- |",
+        "| Old Pattern | old rule |",
+        "<!-- AUTO-ANTIPATTERNS-END -->",
+        "",
+      ].join("\n"),
+      "utf8"
+    );
+    const result = antiPatternsModule.updateClaudeMd(
+      tmpRoot,
       [
         {
           pattern: "first-pattern",
@@ -517,10 +542,10 @@ describe("updateClaudeMd", () => {
       ],
       true
     );
-
-    // Verify markers exist
-    assert.ok(firstResult.includes("<!-- AUTO-ANTIPATTERNS-START -->"));
-    assert.ok(firstResult.includes("<!-- AUTO-ANTIPATTERNS-END -->"));
+    assert.ok(result.includes("<!-- AUTO-ANTIPATTERNS-START -->"));
+    assert.ok(result.includes("<!-- AUTO-ANTIPATTERNS-END -->"));
+    assert.ok(!result.includes("Old Pattern"));
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
   });
 });
 

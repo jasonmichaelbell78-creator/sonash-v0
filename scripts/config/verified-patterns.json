@@ -48,7 +48,8 @@
     "write-review-record.test.js",
     "backfill-reviews.js",
     "generate-fix-template-stubs.js",
-    "write-jsonl.js"
+    "write-jsonl.js",
+    "promotion-pipeline.test.js"
   ],
   "git-without-separator": [
     "surface-lessons-learned.js",

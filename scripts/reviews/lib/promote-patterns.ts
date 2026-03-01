@@ -14,6 +14,16 @@ import * as path from "node:path";
 import { readValidatedJsonl } from "./read-jsonl";
 import { ReviewRecord, type ReviewRecordType } from "./schemas/review";
 
+/** Symlink guard: returns false if path is a symlink (blocks symlink-based write redirection). */
+function isSafeToWrite(filePath: string): boolean {
+  try {
+    if (!fs.existsSync(filePath)) return true;
+    return !fs.lstatSync(filePath).isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
 /** Parse the numeric prefix from a review ID like "rev-123-..." or legacy "123" */
 function parseRevNumber(id: string): number | null {
   const rev = /^rev-(\d+)(?:-|$)/.exec(id);
@@ -337,9 +347,10 @@ function loadConsolidationState(projectRoot: string): { lastProcessedId: string 
 function saveConsolidationState(projectRoot: string, lastProcessedId: string): void {
   const statePath = path.join(projectRoot, ".claude", "state", "consolidation.json");
   try {
-    // Symlink guard
-    if (fs.existsSync(statePath) && fs.lstatSync(statePath).isSymbolicLink()) {
-      console.warn("[promote-patterns] Warning: consolidation state path is a symlink, skipping");
+    if (!isSafeToWrite(statePath)) {
+      console.warn(
+        "[promote-patterns] Warning: consolidation state path is unsafe (symlink or unreadable), skipping"
+      );
       return;
     }
     let state: Record<string, unknown> = {};
@@ -355,6 +366,12 @@ function saveConsolidationState(projectRoot: string, lastProcessedId: string): v
     try {
       fs.renameSync(tmpPath, statePath);
     } catch {
+      if (!isSafeToWrite(statePath)) {
+        console.warn(
+          "[promote-patterns] Warning: consolidation state path became unsafe (symlink), skipping"
+        );
+        return;
+      }
       fs.copyFileSync(tmpPath, statePath);
       try {
         fs.unlinkSync(tmpPath);
@@ -389,7 +406,6 @@ function writePromotedPatterns(
   try {
     fs.writeFileSync(tmpPath, updatedContent, "utf8");
     try {
-      if (fs.existsSync(codePatternsPath)) fs.rmSync(codePatternsPath, { force: true });
       fs.renameSync(tmpPath, codePatternsPath);
     } catch {
       // Cross-device fallback
@@ -475,6 +491,9 @@ export function promotePatterns(options: {
         });
 
   if (recurring.length === 0) {
+    if (!options.dryRun && reviews.length > 0) {
+      updateConsolidationIfNeeded(projectRoot, reviews);
+    }
     return {
       promoted: [],
       skipped: [],

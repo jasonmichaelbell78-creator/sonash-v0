@@ -71,12 +71,12 @@ function findProjectRoot(startDir) {
  * @returns The validated record that was written
  */
 function writeRetroRecord(projectRoot, data) {
-    // Auto-assign ID if not provided
-    if (!data.id && typeof data.pr === "number") {
-        data.id = `retro-pr-${data.pr}`;
-    }
-    // Validate with Zod -- throws ZodError on failure
-    const validated = retro_1.RetroRecord.parse(data);
+    var _a;
+    const recordData = {
+        ...data,
+        id: (_a = data.id) !== null && _a !== void 0 ? _a : (typeof data.pr === "number" ? `retro-pr-${data.pr}` : undefined),
+    };
+    const validated = retro_1.RetroRecord.parse(recordData);
     // Resolve target file
     const filePath = path.resolve(projectRoot, "data/ecosystem-v2/retros.jsonl");
     // Write using appendRecord (handles locking, symlink guard, mkdir)

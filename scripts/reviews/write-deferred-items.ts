@@ -51,6 +51,10 @@ export function createDeferredItems(
 ): DeferredItemRecordType[] {
   if (items.length === 0) return [];
 
+  if (!/^rev-\d+(?:-[a-z0-9]+)?$/.test(reviewId)) {
+    throw new Error(`Invalid reviewId format: ${reviewId}`);
+  }
+
   const filePath = path.resolve(projectRoot, "data/ecosystem-v2/deferred-items.jsonl");
   const created: DeferredItemRecordType[] = [];
 

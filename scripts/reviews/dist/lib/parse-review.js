@@ -67,7 +67,8 @@ function parseHeaderLine(line) {
     return { reviewNumber, date, title: cleanTitle };
 }
 function processArchiveLine(line, state, filePath) {
-    if (line.trim().startsWith("```")) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
         state.inFence = !state.inFence;
         if (state.current)
             state.current.rawLines.push(line);

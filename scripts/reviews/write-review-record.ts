@@ -61,7 +61,7 @@ function parseRevNumber(line: string): number {
   try {
     const record = JSON.parse(line) as { id?: string };
     if (!record.id) return 0;
-    const match = /^rev-(\d+)$/.exec(record.id);
+    const match = /^rev-(\d+)(?:-|$)/.exec(record.id);
     if (!match) return 0;
     return Number.parseInt(match[1], 10);
   } catch {

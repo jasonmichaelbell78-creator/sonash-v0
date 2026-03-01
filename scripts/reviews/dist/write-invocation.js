@@ -72,16 +72,13 @@ function findProjectRoot(startDir) {
  * @returns The validated record that was written
  */
 function writeInvocation(projectRoot, data) {
-    // Auto-assign ID if not provided
-    if (!data.id) {
-        data.id = `inv-${Date.now()}`;
-    }
-    // Auto-assign date if not provided
-    if (!data.date) {
-        data.date = new Date().toISOString().slice(0, 10);
-    }
-    // Validate with Zod -- throws ZodError on failure
-    const validated = invocation_1.InvocationRecord.parse(data);
+    var _a, _b;
+    const recordData = {
+        ...data,
+        id: (_a = data.id) !== null && _a !== void 0 ? _a : `inv-${Date.now()}`,
+        date: (_b = data.date) !== null && _b !== void 0 ? _b : new Date().toISOString().slice(0, 10),
+    };
+    const validated = invocation_1.InvocationRecord.parse(recordData);
     // Resolve target file
     const filePath = path.resolve(projectRoot, "data/ecosystem-v2/invocations.jsonl");
     // Write using appendRecord (handles locking, symlink guard, mkdir)

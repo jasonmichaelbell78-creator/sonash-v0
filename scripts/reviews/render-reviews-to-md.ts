@@ -231,7 +231,6 @@ if (require.main === module) {
     const tmpPath = `${resolvedOut}.tmp-${process.pid}-${Date.now()}`;
     fs.writeFileSync(tmpPath, markdown, "utf8");
     try {
-      if (fs.existsSync(resolvedOut)) fs.rmSync(resolvedOut, { force: true });
       fs.renameSync(tmpPath, resolvedOut);
     } catch {
       // Cross-device fallback

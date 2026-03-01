@@ -205,8 +205,6 @@ function writeClaudeMdSafe(claudePath, content) {
     try {
         fs.writeFileSync(tmpPath, content, "utf8");
         try {
-            if (fs.existsSync(claudePath))
-                fs.rmSync(claudePath, { force: true });
             fs.renameSync(tmpPath, claudePath);
         }
         catch {

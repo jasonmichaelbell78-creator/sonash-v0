@@ -53,6 +53,17 @@ const fs = __importStar(require("node:fs"));
 const path = __importStar(require("node:path"));
 const read_jsonl_1 = require("./read-jsonl");
 const review_1 = require("./schemas/review");
+/** Symlink guard: returns false if path is a symlink (blocks symlink-based write redirection). */
+function isSafeToWrite(filePath) {
+    try {
+        if (!fs.existsSync(filePath))
+            return true;
+        return !fs.lstatSync(filePath).isSymbolicLink();
+    }
+    catch {
+        return false;
+    }
+}
 /** Parse the numeric prefix from a review ID like "rev-123-..." or legacy "123" */
 function parseRevNumber(id) {
     const rev = /^rev-(\d+)(?:-|$)/.exec(id);
@@ -303,9 +314,8 @@ function loadConsolidationState(projectRoot) {
 function saveConsolidationState(projectRoot, lastProcessedId) {
     const statePath = path.join(projectRoot, ".claude", "state", "consolidation.json");
     try {
-        // Symlink guard
-        if (fs.existsSync(statePath) && fs.lstatSync(statePath).isSymbolicLink()) {
-            console.warn("[promote-patterns] Warning: consolidation state path is a symlink, skipping");
+        if (!isSafeToWrite(statePath)) {
+            console.warn("[promote-patterns] Warning: consolidation state path is unsafe (symlink or unreadable), skipping");
             return;
         }
         let state = {};
@@ -323,6 +333,10 @@ function saveConsolidationState(projectRoot, lastProcessedId) {
             fs.renameSync(tmpPath, statePath);
         }
         catch {
+            if (!isSafeToWrite(statePath)) {
+                console.warn("[promote-patterns] Warning: consolidation state path became unsafe (symlink), skipping");
+                return;
+            }
             fs.copyFileSync(tmpPath, statePath);
             try {
                 fs.unlinkSync(tmpPath);
@@ -352,8 +366,6 @@ function writePromotedPatterns(codePatternsPath, codePatternsContent, newPattern
     try {
         fs.writeFileSync(tmpPath, updatedContent, "utf8");
         try {
-            if (fs.existsSync(codePatternsPath))
-                fs.rmSync(codePatternsPath, { force: true });
             fs.renameSync(tmpPath, codePatternsPath);
         }
         catch {
@@ -428,6 +440,9 @@ function promotePatterns(options) {
             return n === null ? true : n > lastProcessedNum;
         });
     if (recurring.length === 0) {
+        if (!options.dryRun && reviews.length > 0) {
+            updateConsolidationIfNeeded(projectRoot, reviews);
+        }
         return {
             promoted: [],
             skipped: [],

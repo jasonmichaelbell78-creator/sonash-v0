@@ -87,7 +87,8 @@ interface ArchiveParseState {
 }
 
 function processArchiveLine(line: string, state: ArchiveParseState, filePath: string): void {
-  if (line.trim().startsWith("```")) {
+  const trimmed = line.trim();
+  if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
     state.inFence = !state.inFence;
     if (state.current) state.current.rawLines.push(line);
     return;

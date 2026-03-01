@@ -184,22 +184,33 @@ function writeEntries(entries) {
 function getLatestLogHash() {
   try {
     if (!fs.existsSync(COMMIT_LOG)) return null;
-    const content = fs.readFileSync(COMMIT_LOG, "utf8").trim();
-    if (!content) return null;
-    // Only check tail to avoid loading entire file into split array
-    const lines = content.split("\n").slice(-200).filter(Boolean);
-    // Walk backwards to find last valid entry
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i].trim();
-      if (!line.startsWith("{")) continue;
-      try {
-        const entry = JSON.parse(line);
-        if (entry && typeof entry === "object" && entry.hash) return entry.hash;
-      } catch {
-        continue;
+    const fd = fs.openSync(COMMIT_LOG, "r");
+    try {
+      const stat = fs.fstatSync(fd);
+      if (stat.size === 0) return null;
+      // Read only the tail to avoid loading large logs into memory
+      const MAX_TAIL_BYTES = 256 * 1024;
+      const start = Math.max(0, stat.size - MAX_TAIL_BYTES);
+      const len = stat.size - start;
+      const buf = Buffer.alloc(len);
+      fs.readSync(fd, buf, 0, len, start);
+      const text = buf.toString("utf8").trim();
+      if (!text) return null;
+      const lines = text.split("\n").slice(-200).filter(Boolean);
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const line = lines[i].trim();
+        if (!line.startsWith("{")) continue;
+        try {
+          const entry = JSON.parse(line);
+          if (entry && typeof entry === "object" && entry.hash) return entry.hash;
+        } catch {
+          continue;
+        }
       }
+      return null;
+    } finally {
+      fs.closeSync(fd);
     }
-    return null;
   } catch {
     return null;
   }
@@ -303,36 +314,12 @@ function appendEntries(entries) {
     console.error("Symlink guard blocked append to commit-log.jsonl (post-check)");
     process.exit(1);
   }
-  // Atomic append: read existing, write combined to tmp, rename
-  const existing = (() => {
-    try {
-      return fs.readFileSync(COMMIT_LOG, "utf8");
-    } catch {
-      return "";
-    }
-  })();
-  const tmpPath = path.join(dir, `commit-log.jsonl.tmp-${process.pid}-${Date.now()}`);
-  fs.writeFileSync(tmpPath, existing + content, "utf8");
   // Re-verify target hasn't been swapped to symlink between guard check and write
   if (!isSafeToWrite(COMMIT_LOG)) {
-    try {
-      fs.unlinkSync(tmpPath);
-    } catch {
-      /* best-effort */
-    }
-    console.error("Symlink guard blocked rename to commit-log.jsonl (pre-rename check)");
+    console.error("Symlink guard blocked append to commit-log.jsonl (pre-write check)");
     process.exit(1);
   }
-  try {
-    fs.renameSync(tmpPath, COMMIT_LOG);
-  } catch {
-    fs.copyFileSync(tmpPath, COMMIT_LOG);
-    try {
-      fs.unlinkSync(tmpPath);
-    } catch {
-      /* best-effort */
-    }
-  }
+  fs.appendFileSync(COMMIT_LOG, content, "utf8");
 }
 
 /**

@@ -491,11 +491,15 @@ function computeV1MissingFields(v1) {
 }
 function buildV1ReviewRecord(v1) {
     var _a;
+    const idNumber = typeof v1.id === "number" ? v1.id : Number.parseInt(String(v1.id), 10);
+    if (!Number.isFinite(idNumber) || idNumber <= 0) {
+        throw new Error(`Invalid v1 record id: ${String(v1.id)}`);
+    }
     const v1Patterns = Array.isArray(v1.patterns) ? v1.patterns : [];
     const v1Learnings = Array.isArray(v1.learnings) ? v1.learnings : [];
     const hasSeverity = v1.critical > 0 || v1.major > 0 || v1.minor > 0 || v1.trivial > 0;
     return review_1.ReviewRecord.parse({
-        id: `rev-${v1.id}`,
+        id: `rev-${idNumber}`,
         date: v1.date,
         schema_version: 1,
         completeness: computeV1Completeness(v1),
@@ -545,7 +549,7 @@ function migrateV1Records(v1Path, existingIds) {
             v1 = JSON.parse(line);
         }
         catch {
-            console.warn(`Warning: Could not parse v1 record: ${line.slice(0, 80)}`);
+            console.warn(`Warning: Could not parse v1 record: ${line.slice(0, 40)}...`);
             continue;
         }
         if (existingIds.has(v1.id) || parse_review_1.KNOWN_SKIPPED_IDS.has(v1.id)) {
@@ -751,12 +755,13 @@ async function runBackfill() {
         try {
             fs.writeFileSync(tmpPath, reviewLines, "utf8");
             try {
-                if (fs.existsSync(reviewsPath))
-                    fs.rmSync(reviewsPath, { force: true });
                 fs.renameSync(tmpPath, reviewsPath);
             }
             catch {
-                // Fallback for platforms that don't allow overwrite via rename
+                // Fallback: re-check safety before non-atomic write (mitigate TOCTOU)
+                if (!isSafeToWrite(reviewsPath)) {
+                    throw new Error(`Symlink guard blocked write to ${reviewsPath} (post-check)`);
+                }
                 fs.copyFileSync(tmpPath, reviewsPath);
             }
         }
@@ -780,12 +785,13 @@ async function runBackfill() {
         try {
             fs.writeFileSync(tmpPath, retroLines, "utf8");
             try {
-                if (fs.existsSync(retrosPath))
-                    fs.rmSync(retrosPath, { force: true });
                 fs.renameSync(tmpPath, retrosPath);
             }
             catch {
-                // Fallback for platforms that don't allow overwrite via rename
+                // Fallback: re-check safety before non-atomic write (mitigate TOCTOU)
+                if (!isSafeToWrite(retrosPath)) {
+                    throw new Error(`Symlink guard blocked write to ${retrosPath} (post-check)`);
+                }
                 fs.copyFileSync(tmpPath, retrosPath);
             }
         }
@@ -821,7 +827,7 @@ async function runBackfill() {
         await runBackfill();
     }
     catch (err) {
-        console.error("Backfill failed:", err);
+        console.error("Backfill failed:", err instanceof Error ? err.message : String(err));
         process.exit(1);
     }
 })();

@@ -39,18 +39,13 @@ export function writeInvocation(
   projectRoot: string,
   data: Record<string, unknown>
 ): InvocationRecordType {
-  // Auto-assign ID if not provided
-  if (!data.id) {
-    data.id = `inv-${Date.now()}`;
-  }
+  const recordData: Record<string, unknown> = {
+    ...data,
+    id: data.id ?? `inv-${Date.now()}`,
+    date: data.date ?? new Date().toISOString().slice(0, 10),
+  };
 
-  // Auto-assign date if not provided
-  if (!data.date) {
-    data.date = new Date().toISOString().slice(0, 10);
-  }
-
-  // Validate with Zod -- throws ZodError on failure
-  const validated = InvocationRecord.parse(data);
+  const validated = InvocationRecord.parse(recordData);
 
   // Resolve target file
   const filePath = path.resolve(projectRoot, "data/ecosystem-v2/invocations.jsonl");

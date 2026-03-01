@@ -38,13 +38,12 @@ export function writeRetroRecord(
   projectRoot: string,
   data: Record<string, unknown>
 ): RetroRecordType {
-  // Auto-assign ID if not provided
-  if (!data.id && typeof data.pr === "number") {
-    data.id = `retro-pr-${data.pr}`;
-  }
+  const recordData: Record<string, unknown> = {
+    ...data,
+    id: data.id ?? (typeof data.pr === "number" ? `retro-pr-${data.pr}` : undefined),
+  };
 
-  // Validate with Zod -- throws ZodError on failure
-  const validated = RetroRecord.parse(data);
+  const validated = RetroRecord.parse(recordData);
 
   // Resolve target file
   const filePath = path.resolve(projectRoot, "data/ecosystem-v2/retros.jsonl");

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.77 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
+**Document Version:** 17.78 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
 
 ## Purpose
 
@@ -2382,5 +2382,49 @@ All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl
   collisions from delimiter-containing content
 - **Process**: Direct sequential fixes — 5 ESLint rules + 3 scripts + test
   updates. Context compaction mid-session recovered cleanly.
+
+---
+
+#### Review #418: PR #407 R10 — SonarCloud/Qodo/Dependency Review (2026-03-01)
+
+- **Source**: SonarCloud (1), Dependency Review (informational), Qodo Compliance
+  (3), Qodo PR Suggestions (20 across 2 rounds)
+- **PR**: PR #407 — PR Review Ecosystem v2 + Skill Quality Framework
+- **Items**: 24 unique (after dedup) → 21 fixed, 1 rejected, 2 deferred
+- **Fixed**: (1) backfill-reviews.ts — TOCTOU symlink re-check before
+  `copyFileSync` fallback in reviews + retros write blocks; (2)
+  backfill-reviews.ts — remove `rmSync` before `renameSync` (atomic write data
+  loss prevention); (3) backfill-reviews.ts — error sanitization (`err.message`
+  → `err instanceof Error ? err.message : String(err)`); (4) backfill-reviews.ts
+  — truncate log output from 80 to 40 chars; (5) backfill-reviews.ts — normalize
+  v1 IDs (defensive `idNumber` extraction); (6) promote-patterns.ts — add local
+  `isSafeToWrite` helper, TOCTOU re-check before `copyFileSync`; (7)
+  promote-patterns.ts — remove `rmSync` before `renameSync`; (8)
+  promote-patterns.ts — advance consolidation state on empty results; (9)
+  write-review-record.ts — suffixed ID regex (`/^rev-(\d+)$/` →
+  `/^rev-(\d+)(?:-|$)/`); (10) write-deferred-items.ts — reviewId format
+  validation; (11-12) write-retro-record.ts + write-invocation.ts — stop
+  mutating input objects (spread into new object); (13-15)
+  generate-claude-antipatterns.ts, render-reviews-to-md.ts,
+  generate-fix-template-stubs.ts — remove `rmSync` before `renameSync`; (16)
+  parse-review.ts — tilde code fence support (`~~~`); (17) promote-patterns.js —
+  async error handling wrapper; (18-19) seed-commit-log.js — tail-read
+  optimization (256KB via `fs.openSync`) + `appendFileSync` instead of
+  read-all-then-rewrite; (20-21) promotion-pipeline.test.ts — hermetic tests
+  using `mkdtempSync` fixtures
+- **Deferred**: (A) withLock atomic locking for write-review-record.ts —
+  architectural change requiring safe-fs.js integration; (B) withLock atomic
+  locking for write-deferred-items.ts — same architectural change
+- **Rejected**: Dependency Review license/scorecard warnings — transitive deps,
+  informational only
+- **Patterns**: Atomic writes should attempt `renameSync` first, fall back to
+  `copyFileSync` — never `rmSync` then `renameSync` (data loss risk);
+  `appendFileSync` is sufficient for JSONL append operations (no need to
+  read-all + tmp + rename); suffixed review IDs (`rev-N-suffix`) must be handled
+  by all ID parsing functions; input mutation before Zod validation creates side
+  effects — always spread into new object
+- **Process**: 3 parallel agents (security-fixes, id-and-logic-fixes,
+  backfill-error-handling) + direct fixes for seed-commit-log.js and hermetic
+  tests. Context compaction mid-session recovered cleanly.
 
 ---
