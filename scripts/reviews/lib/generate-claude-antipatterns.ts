@@ -93,21 +93,22 @@ export function updateClaudeMd(
 
   const newTable = generateAntiPatternsTable(patterns);
 
+  // Ensure markers exist (wrap on first run), then always replace between them.
+  if (content.indexOf(START_MARKER) === -1 && content.indexOf(END_MARKER) === -1) {
+    content = wrapExistingTableWithMarkers(content);
+  }
+
   const startIdx = content.indexOf(START_MARKER);
   const endIdx = content.indexOf(END_MARKER);
 
-  if (startIdx === -1 && endIdx === -1) {
-    // First run: wrap the existing table with markers
-    content = wrapExistingTableWithMarkers(content);
-  } else if (startIdx !== -1 && endIdx !== -1) {
-    if (endIdx < startIdx) throw new Error("Invalid AUTO-ANTIPATTERNS marker order");
-    // Markers exist -- replace content between them
-    const before = content.slice(0, startIdx + START_MARKER.length);
-    const after = content.slice(endIdx);
-    content = before + "\n" + newTable + "\n" + after;
-  } else {
+  if (startIdx === -1 || endIdx === -1) {
     throw new Error("Unmatched AUTO-ANTIPATTERNS markers in CLAUDE.md");
   }
+  if (endIdx < startIdx) throw new Error("Invalid AUTO-ANTIPATTERNS marker order");
+
+  const before = content.slice(0, startIdx + START_MARKER.length);
+  const after = content.slice(endIdx);
+  content = before + "\n" + newTable + "\n" + after;
 
   if (!dryRun) {
     writeClaudeMdSafe(claudePath, content);
@@ -170,8 +171,22 @@ function wrapExistingTableWithMarkers(content: string): string {
   );
 }
 
+/** Symlink guard: returns false if path is a symlink (blocks symlink-based write redirection). */
+function isSafeToWrite(filePath: string): boolean {
+  try {
+    if (fs.existsSync(filePath) && fs.lstatSync(filePath).isSymbolicLink()) return false;
+  } catch {
+    // If we can't stat, allow write (file may not exist yet)
+  }
+  return true;
+}
+
 /** Write CLAUDE.md with a warning on failure instead of throwing. */
 function writeClaudeMdSafe(claudePath: string, content: string): void {
+  if (!isSafeToWrite(claudePath)) {
+    console.warn("[generate-claude-antipatterns] Warning: CLAUDE.md is a symlink, skipping write");
+    return;
+  }
   const tmpPath = `${claudePath}.tmp-${process.pid}-${Date.now()}`;
   try {
     fs.writeFileSync(tmpPath, content, "utf8");
@@ -189,7 +204,7 @@ function writeClaudeMdSafe(claudePath: string, content: string): void {
     }
   } catch (err) {
     try {
-      fs.unlinkSync(tmpPath);
+      if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
     } catch {
       /* best-effort cleanup */
     }

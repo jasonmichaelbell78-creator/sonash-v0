@@ -172,7 +172,18 @@ function disambiguateRecords(resolved: ParsedEntry[]): ReviewRecordType[] {
       const next = (dupCounters.get(baseId) ?? 0) + 1;
       dupCounters.set(baseId, next);
 
-      const suffix = String.fromCodePoint("a".codePointAt(0)! + (next - 1));
+      // Base-26 alpha suffix: 1->a, 26->z, 27->aa, etc.
+      const toAlphaSuffix = (n: number): string => {
+        let x = n;
+        let out = "";
+        while (x > 0) {
+          x -= 1;
+          out = String.fromCharCode(97 + (x % 26)) + out;
+          x = Math.floor(x / 26);
+        }
+        return out;
+      };
+      const suffix = toAlphaSuffix(next);
       record.id = `${baseId}-${suffix}`;
       record.origin = {
         ...record.origin,
@@ -850,7 +861,8 @@ export async function runBackfill(): Promise<void> {
 
   console.log("Step 6: BKFL-05 consolidation counter check...");
   const consolidationPath = path.join(PROJECT_ROOT, ".claude/state/consolidation.json");
-  const maxReviewNumber = Math.max(...allRecords.map((r) => extractReviewNumber(r.id)));
+  const maxReviewNumber =
+    allRecords.length > 0 ? Math.max(...allRecords.map((r) => extractReviewNumber(r.id))) : 0;
   const consolidationResult = checkConsolidationCounter(consolidationPath, maxReviewNumber);
   if (consolidationResult.match) {
     console.log(`  BKFL-05: Consolidation counter: match (${consolidationResult.expected})`);
@@ -890,11 +902,11 @@ export async function runBackfill(): Promise<void> {
     try {
       fs.writeFileSync(tmpPath, reviewLines, "utf8");
       try {
-        fs.rmSync(reviewsPath);
+        fs.renameSync(tmpPath, reviewsPath);
       } catch {
-        /* may not exist */
+        // Fallback for platforms that don't allow overwrite via rename
+        fs.copyFileSync(tmpPath, reviewsPath);
       }
-      fs.renameSync(tmpPath, reviewsPath);
     } finally {
       try {
         if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { force: true });
@@ -914,11 +926,11 @@ export async function runBackfill(): Promise<void> {
     try {
       fs.writeFileSync(tmpPath, retroLines, "utf8");
       try {
-        fs.rmSync(retrosPath);
+        fs.renameSync(tmpPath, retrosPath);
       } catch {
-        /* may not exist */
+        // Fallback for platforms that don't allow overwrite via rename
+        fs.copyFileSync(tmpPath, retrosPath);
       }
-      fs.renameSync(tmpPath, retrosPath);
     } finally {
       try {
         if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { force: true });
@@ -947,7 +959,11 @@ export async function runBackfill(): Promise<void> {
 }
 
 // Run if executed directly
-void runBackfill().catch((err: unknown) => {
-  console.error("Backfill failed:", err);
-  process.exit(1);
-});
+(async () => {
+  try {
+    await runBackfill();
+  } catch (err: unknown) {
+    console.error("Backfill failed:", err);
+    process.exit(1);
+  }
+})();

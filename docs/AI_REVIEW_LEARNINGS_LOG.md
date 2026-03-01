@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.76 **Created:** 2026-01-02 **Last Updated:** 2026-02-28
+**Document Version:** 17.77 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
 
 ## Purpose
 
@@ -348,6 +348,19 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#5)</summary>
+
+- **Date:** 2026-03-01
+- **Reviews consolidated:** #407-#419
+- **Recurring patterns:**
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - qodo (5x)
+  - ci (3x)
+  - learnings (3x)
+  - sonarcloud (3x)
+
+</details>
 <details>
 <summary>Previous Consolidation (#4)</summary>
 
@@ -1758,6 +1771,32 @@ AST walker (Object.keys + recurse) > hand-enumerated types. (5) Lazy quantifiers
 **Verdict:** Inefficient but productive — 12 rounds, ~153 fixes, ~42% avoidable.
 Single highest-impact change: split large PRs. Second: create ESLint rule
 template with built-in ChainExpression/walker/CC patterns.
+
+---
+
+#### Review #416: PR #407 R7 — SonarCloud + Qodo + CI (2026-03-01)
+
+- **Source**: SonarCloud (2) + Qodo Compliance (5) + Qodo Code Suggestions (15)
+  - CI (1 batch)
+- **PR**: #407 — PR Review Ecosystem v2 (round 7)
+- **Items**: 23 total → 2 fixed, 12 already-fixed (stale Qodo), 9 rejected
+- **Fixed**: Math.max empty array guard in backfill-reviews.ts (returns
+  -Infinity on empty); first-run table update in generate-claude-antipatterns.ts
+  (wrapping markers but not replacing content on first run)
+- **Already fixed (stale)**: 12 Qodo suggestions reference pre-fix code — all
+  already addressed in commits up to bf4858f (R2-R6): unique temp files,
+  throw-on-write, atomic writes, findInsertPoint, regex false positive,
+  tail-reading, pr-deferred matching, unbounded suffix, isFile check
+- **Rejected**: SonarCloud top-level await (module:commonjs precludes it),
+  SonarCloud TODO (intentional template placeholders), CI 3001 ESLint warnings
+  (all pre-existing), file-based locking (over-engineering for CLI), backup
+  pattern (over-engineering), async CLI handling (main is sync), Qodo Compliance
+  items (theoretical for single-user CLI)
+- **Patterns**: Verify tsconfig module/target before accepting top-level await
+  suggestions; template placeholder TODOs are not real TODOs
+- **Learnings**: When 12/15 Qodo suggestions are stale, the reviewer is likely
+  analyzing an older commit; Stale Reviewer HEAD Check (pre-check #12) should
+  have caught this earlier
 
 ---
 
