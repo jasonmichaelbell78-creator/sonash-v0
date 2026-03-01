@@ -17,19 +17,19 @@ Integration & Cutover (next)
 
 ## Current Position
 
-Phase: 7 of 7 (Integration & Cutover) Plan: 2 of 6 in current phase Status: In
-progress Last activity: 2026-03-01 — Completed 07-01-PLAN.md (session lifecycle
-health integration)
+Phase: 7 of 7 (Integration & Cutover) Plan: 5 of 6 in current phase Status: In
+progress Last activity: 2026-03-01 — Completed 07-03-PLAN.md (v1/v2 script
+cutover)
 
-Progress: [████████..] ~86%
+Progress: [█████████.] ~93%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 26
-- Average duration: 9.7 min
-- Total execution time: 251 min
+- Total plans completed: 28
+- Average duration: 9.6 min
+- Total execution time: 269 min
 
 **By Phase:**
 
@@ -44,8 +44,8 @@ Progress: [████████..] ~86%
 
 **Recent Trend:**
 
-- Last 5 plans: 06-04 (25 min), 06-05 (31 min), 07-01 (3 min), 07-02 (5 min)
-- Trend: Phase 7 in progress. 2 of 6 plans executed.
+- Last 5 plans: 07-01 (3 min), 07-02 (5 min), 07-05 (7 min), 07-03 (11 min)
+- Trend: Phase 7 in progress. 5 of 6 plans executed (07-01, 02, 03, 04, 05).
 
 _Updated after each plan completion_
 
@@ -175,6 +175,22 @@ affecting current work:
 - 07-01: Score pattern matches "Composite:" not "Score:" (actual
   run-health-check.js output)
 - 07-02: Cross-doc checker staged-files-only design is correct by intent
+- 07-04: E2E threshold >300 not >400 (actual reviews.jsonl has 372 entries)
+- 07-04: Manifest uniqueness >90% threshold (8 versioned duplicates in real
+  data)
+- 07-04: Review patterns field allows null (retro-generated records)
+- 07-04: Health check --quick mode for E2E test timeout compliance
+- 07-05: ESLint CJS override added for tests/\*_/_.test.js (pre-existing issue
+  blocked all .js test commits)
+- 07-05: Health checkers (10 files) documented as known gaps -- exercised
+  indirectly via run-health-check integration tests
+- 07-03: v1/v2 cutover is gradual coexistence -- v2 handles new JSONL-first
+  data, v1 bridges legacy markdown
+- 07-03: promote-patterns.js already v2 wrapper -- no cutover needed
+- 07-03: check-pattern-compliance.js stays v1 -- pre-commit gate too risky to
+  swap
+- 07-03: run-consolidation.js has no full v2 replacement -- reads v2 JSONL but
+  stays v1
 
 ### Pending Todos
 
@@ -187,7 +203,7 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-01T22:09:00Z Stopped at: Completed 07-01-PLAN.md Resume
+Last session: 2026-03-01T22:26:00Z Stopped at: Completed 07-03-PLAN.md Resume
 file: None
 
 ### GSD Process Position
