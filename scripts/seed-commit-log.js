@@ -339,19 +339,30 @@ function appendEntries(entries) {
   if (filtered.length === 0) return;
   const prefix = needsNewlinePrefix(COMMIT_LOG) ? "\n" : "";
   const content = prefix + filtered.map((e) => JSON.stringify(e)).join("\n") + "\n";
-  if (!isSafeToWrite(COMMIT_LOG)) {
-    console.error("Symlink guard blocked append to commit-log.jsonl");
-    process.exit(1);
-  }
   let fd;
   try {
-    fd = fs.openSync(COMMIT_LOG, "a", 0o644);
-    const st = fs.fstatSync(fd);
-    if (!st.isFile()) {
-      console.error("Refusing to append: commit-log.jsonl is not a regular file");
-      process.exit(1);
+    if (fs.existsSync(COMMIT_LOG)) {
+      if (!isSafeToWrite(COMMIT_LOG)) {
+        console.error("Symlink guard blocked append to commit-log.jsonl");
+        process.exit(1);
+      }
+      fd = fs.openSync(COMMIT_LOG, "r+", 0o644);
+      const st = fs.fstatSync(fd);
+      if (!st.isFile()) {
+        console.error("Refusing to append: commit-log.jsonl is not a regular file");
+        process.exit(1);
+      }
+      // Seek to end for append
+      const size = st.size;
+      fs.writeSync(fd, content, size, "utf8");
+    } else {
+      if (!isSafeToWrite(COMMIT_LOG)) {
+        console.error("Symlink guard blocked create of commit-log.jsonl");
+        process.exit(1);
+      }
+      fd = fs.openSync(COMMIT_LOG, "wx", 0o644);
+      fs.writeFileSync(fd, content, "utf8");
     }
-    fs.writeFileSync(fd, content, "utf8");
   } finally {
     if (fd != null) {
       try {

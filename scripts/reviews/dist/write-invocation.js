@@ -75,7 +75,7 @@ function writeInvocation(projectRoot, data) {
     var _a, _b;
     const recordData = {
         ...data,
-        id: (_a = data.id) !== null && _a !== void 0 ? _a : `inv-${Date.now()}`,
+        id: (_a = data.id) !== null && _a !== void 0 ? _a : `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         date: (_b = data.date) !== null && _b !== void 0 ? _b : new Date().toISOString().slice(0, 10),
     };
     const validated = invocation_1.InvocationRecord.parse(recordData);

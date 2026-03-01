@@ -462,8 +462,9 @@ try {
     stdio: "ignore",
     timeout: 20000,
   });
-} catch {
+} catch (err) {
   // Non-fatal: commit log sync failure doesn't block session start
+  console.warn("Commit log sync failed:", err instanceof Error ? err.message : String(err));
 }
 
 // Archive health check: rotate reviews.jsonl when it exceeds 50 entries (OPT #74)

@@ -143,7 +143,9 @@ function writeFixTemplatesAtomic(fixTemplatesPath, existingContent, appendConten
             try {
                 fs.closeSync(fd);
             }
-            catch { /* best-effort */ }
+            catch {
+                /* best-effort */
+            }
         }
         try {
             fs.renameSync(tmpPath, fixTemplatesPath);
@@ -152,6 +154,13 @@ function writeFixTemplatesAtomic(fixTemplatesPath, existingContent, appendConten
             if (!isSafeToWrite(fixTemplatesPath)) {
                 console.warn("[generate-fix-template-stubs] Warning: FIX_TEMPLATES.md became unsafe (symlink), skipping write");
                 return;
+            }
+            if (fs.existsSync(fixTemplatesPath)) {
+                const st = fs.lstatSync(fixTemplatesPath);
+                if (st.isSymbolicLink() || !st.isFile()) {
+                    console.warn("[generate-fix-template-stubs] Warning: FIX_TEMPLATES.md destination is not a regular file, skipping write");
+                    return;
+                }
             }
             fs.copyFileSync(tmpPath, fixTemplatesPath);
         }

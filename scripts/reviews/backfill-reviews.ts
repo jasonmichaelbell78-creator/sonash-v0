@@ -306,12 +306,11 @@ function tryParseRetroHeading(line: string): { pr: number; date: string } | null
 }
 
 function isRetroSectionEnd(line: string): boolean {
-  // End the current retro when a new section begins (same or higher level).
-  // Retro headings are handled earlier via tryParseRetroHeading + continue,
-  // so this only fires for non-retro headings.
+  // End the current retro when a new section begins at the same or higher level.
+  // Allow "####" subheadings inside a retro (e.g., Wins/Misses subsections).
   if (tryParseRetroHeading(line)) return false;
+  if (line.startsWith("## ")) return true;
   if (line.startsWith("### ") && !line.startsWith("####")) return true;
-  if (line.startsWith("#### ")) return true;
   return false;
 }
 
@@ -704,7 +703,13 @@ export function migrateV1Records(
       continue;
     }
 
-    const numericId = typeof v1.id === "number" ? v1.id : Number.NaN;
+    const rawId = v1.id;
+    const numericId =
+      typeof rawId === "number"
+        ? rawId
+        : /^\d+$/.test(String(rawId).trim())
+          ? Number.parseInt(String(rawId).trim(), 10)
+          : Number.NaN;
     if (
       (Number.isFinite(numericId) && existingIds.has(numericId)) ||
       (Number.isFinite(numericId) && KNOWN_SKIPPED_IDS.has(numericId))
@@ -1001,7 +1006,13 @@ export async function runBackfill(): Promise<void> {
 }
 
 // Run if executed directly
-void runBackfill().catch((err: unknown) => {
-  console.error("Backfill failed:", err instanceof Error ? err.message : String(err));
-  process.exit(1);
-});
+async function main(): Promise<void> {
+  try {
+    await runBackfill();
+  } catch (err: unknown) {
+    console.error("Backfill failed:", err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
+}
+
+void main();

@@ -133,6 +133,15 @@ function writeFixTemplatesAtomic(
         );
         return;
       }
+      if (fs.existsSync(fixTemplatesPath)) {
+        const st = fs.lstatSync(fixTemplatesPath);
+        if (st.isSymbolicLink() || !st.isFile()) {
+          console.warn(
+            "[generate-fix-template-stubs] Warning: FIX_TEMPLATES.md destination is not a regular file, skipping write"
+          );
+          return;
+        }
+      }
       fs.copyFileSync(tmpPath, fixTemplatesPath);
     } finally {
       try {

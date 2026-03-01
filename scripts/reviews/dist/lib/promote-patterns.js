@@ -350,6 +350,24 @@ function saveConsolidationState(projectRoot, lastProcessedId) {
         console.warn("[promote-patterns] Warning: Could not save consolidation state");
     }
 }
+/** Rename tmpPath to destPath with cross-device fallback and symlink guard. */
+function renameSafe(tmpPath, destPath) {
+    try {
+        fs.renameSync(tmpPath, destPath);
+    }
+    catch {
+        if (!isSafeToWrite(destPath)) {
+            throw new Error(`Destination became unsafe (symlink): ${destPath}`);
+        }
+        if (fs.existsSync(destPath)) {
+            const st = fs.lstatSync(destPath);
+            if (!st.isFile()) {
+                throw new Error(`Destination is not a regular file: ${destPath}`);
+            }
+        }
+        fs.copyFileSync(tmpPath, destPath);
+    }
+}
 /**
  * Write promoted patterns to CODE_PATTERNS.md using atomic tmp-file rename.
  */
@@ -363,23 +381,14 @@ function writePromotedPatterns(codePatternsPath, codePatternsContent, newPattern
     }
     const tmpPath = `${codePatternsPath}.tmp-${process.pid}-${Date.now()}`;
     try {
-        fs.writeFileSync(tmpPath, updatedContent, "utf8");
+        const fd = fs.openSync(tmpPath, "wx", 0o644);
         try {
-            fs.renameSync(tmpPath, codePatternsPath);
+            fs.writeFileSync(fd, updatedContent, "utf8");
         }
-        catch {
-            // Cross-device fallback (re-check destination to prevent symlink race)
-            if (!isSafeToWrite(codePatternsPath)) {
-                throw new Error("[promote-patterns] Refusing to write CODE_PATTERNS.md because destination became unsafe (symlink).");
-            }
-            if (fs.existsSync(codePatternsPath)) {
-                const st = fs.lstatSync(codePatternsPath);
-                if (!st.isFile()) {
-                    throw new Error("[promote-patterns] Refusing to write CODE_PATTERNS.md because destination is not a regular file.");
-                }
-            }
-            fs.copyFileSync(tmpPath, codePatternsPath);
+        finally {
+            fs.closeSync(fd);
         }
+        renameSafe(tmpPath, codePatternsPath);
     }
     catch (err) {
         throw new Error(`[promote-patterns] Failed to write CODE_PATTERNS.md: ${err instanceof Error ? err.message : String(err)}`);

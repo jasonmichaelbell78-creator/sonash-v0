@@ -349,6 +349,19 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#8)</summary>
+
+- **Date:** 2026-03-01
+- **Reviews consolidated:** #442-#453
+- **Recurring patterns:**
+  - qodo (6x)
+  - compliance (4x)
+  - ci (3x)
+  - pattern-checker-rename-no-fallback-requires-all-4-elements (3x)
+  - sonarcloud (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#7)</summary>
 
 - **Date:** 2026-03-01
@@ -703,6 +716,39 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #440: PR #407 R16 — Qodo + SonarCloud (2026-03-01)
+
+_PR Review Ecosystem v2 Phases 1-3. Round 16 of ongoing review cycle._
+
+**Source:** Qodo Compliance (1), Qodo PR Suggestions (11), SonarCloud (3)
+**Total:** 14 **Fixed:** 11 **Rejected:** 3
+
+**Severity:** 1 CRITICAL (sanitizeMdLine regex SyntaxError), 1 CRITICAL
+(SonarCloud CC 16>15), 5 MAJOR (v1 ID dedup, retro truncation, wx flag, TOCTOU
+race, fallback guard), 4 MINOR (top-level await x2, ID collision, swallowed
+exception)
+
+**Patterns:** regex-character-class-escaping, cognitive-complexity-extraction,
+toctou-file-race, wx-exclusive-create, retro-parser-subheading,
+string-id-coercion
+
+**Learnings:**
+
+- Character classes in regex: `[` and `]` must be escaped as `\[` `\]` inside
+  `[]`
+- Extract rename-with-fallback helpers to reduce CC in atomic write functions
+- `r+` mode + post-open guard is safer than `a` mode for TOCTOU mitigation
+- v1 migration must coerce string IDs to numbers for dedup checks
+
+**Rejected items:**
+
+- fsync in writeAtomicSafe: Over-engineering for CLI backfill script
+- Validate JSON payload shape: Redundant with TypeScript typing + Zod validation
+- Sanitize markdown-bound strings: Pattern names are internal, not
+  user-controlled
+
+---
 
 ### Review #439: PR #407 R14 — SonarCloud + Qodo (2026-03-01)
 

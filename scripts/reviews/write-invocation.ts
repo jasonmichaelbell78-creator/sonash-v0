@@ -41,7 +41,7 @@ export function writeInvocation(
 ): InvocationRecordType {
   const recordData: Record<string, unknown> = {
     ...data,
-    id: data.id ?? `inv-${Date.now()}`,
+    id: data.id ?? `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     date: data.date ?? new Date().toISOString().slice(0, 10),
   };
 

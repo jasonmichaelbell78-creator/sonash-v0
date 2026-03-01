@@ -87,13 +87,17 @@ function writeAtomicSafe(filePath, content) {
             try {
                 fs.closeSync(fd);
             }
-            catch { /* best-effort */ }
+            catch {
+                /* best-effort */
+            }
         }
         try {
             if (fs.existsSync(tmpPath))
                 fs.rmSync(tmpPath, { force: true });
         }
-        catch { /* best-effort */ }
+        catch {
+            /* best-effort */
+        }
     }
 }
 // ---- Helpers ----------------------------------------------------------------
@@ -281,14 +285,13 @@ function tryParseRetroHeading(line) {
     };
 }
 function isRetroSectionEnd(line) {
-    // End the current retro when a new section begins (same or higher level).
-    // Retro headings are handled earlier via tryParseRetroHeading + continue,
-    // so this only fires for non-retro headings.
+    // End the current retro when a new section begins at the same or higher level.
+    // Allow "####" subheadings inside a retro (e.g., Wins/Misses subsections).
     if (tryParseRetroHeading(line))
         return false;
-    if (line.startsWith("### ") && !line.startsWith("####"))
+    if (line.startsWith("## "))
         return true;
-    if (line.startsWith("#### "))
+    if (line.startsWith("### ") && !line.startsWith("####"))
         return true;
     return false;
 }
@@ -417,10 +420,18 @@ function buildSingleRetroRecord(retro, reviewsByPR) {
     const raw = retro.rawContent;
     const topWins = extractRetroSection(raw, ["wins", "what went well", "went well"]);
     const topMisses = extractRetroSection(raw, [
-        "misses", "what could improve", "could improve", "issues", "pain points",
+        "misses",
+        "what could improve",
+        "could improve",
+        "issues",
+        "pain points",
     ]);
     const processChanges = extractRetroSection(raw, [
-        "process changes", "action items", "actions", "prevention", "recommendations",
+        "process changes",
+        "action items",
+        "actions",
+        "prevention",
+        "recommendations",
     ]);
     const { metrics, isMissing } = resolveRetroMetrics(retro, reviewsByPR);
     const { completeness, missing } = determineCompleteness(topWins, topMisses, processChanges, metrics !== null && metrics !== void 0 ? metrics : null);
@@ -606,7 +617,12 @@ function migrateV1Records(v1Path, existingIds) {
             console.warn(`Warning: Could not parse v1 record at line ${lineIdx + 1}`);
             continue;
         }
-        const numericId = typeof v1.id === "number" ? v1.id : Number.NaN;
+        const rawId = v1.id;
+        const numericId = typeof rawId === "number"
+            ? rawId
+            : /^\d+$/.test(String(rawId).trim())
+                ? Number.parseInt(String(rawId).trim(), 10)
+                : Number.NaN;
         if ((Number.isFinite(numericId) && existingIds.has(numericId)) ||
             (Number.isFinite(numericId) && parse_review_1.KNOWN_SKIPPED_IDS.has(numericId))) {
             skipped++;
@@ -824,7 +840,13 @@ async function runBackfill() {
     });
 }
 // Run if executed directly
-void runBackfill().catch((err) => {
-    console.error("Backfill failed:", err instanceof Error ? err.message : String(err));
-    process.exit(1);
-});
+async function main() {
+    try {
+        await runBackfill();
+    }
+    catch (err) {
+        console.error("Backfill failed:", err instanceof Error ? err.message : String(err));
+        process.exit(1);
+    }
+}
+void main();
