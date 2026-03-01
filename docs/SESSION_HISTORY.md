@@ -57,6 +57,13 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
   directory-over-file
 - Path containment via path.relative() in categorize-and-assign.js
 - ESLint + Pattern Compliance Fix Plan completed: 27/27 items, 887 blockers->0
+  **Focus**: PR #396 REVIEW + ESLINT + COMPLIANCE — MERGED
+
+- PR #396: R1 (38 items → 24 fixed) + R2 (10 items → 6 fixed)
+- safe-fs.js hardening: same-path rename guard, symlink guard,
+  directory-over-file
+- Path containment via path.relative() in categorize-and-assign.js
+- ESLint + Pattern Compliance Fix Plan completed: 27/27 items, 887 blockers→0
 - PR #396 merged to main
 - TDMS: 8,349 items (477 resolved)
 
