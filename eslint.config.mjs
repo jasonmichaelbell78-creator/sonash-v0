@@ -81,6 +81,27 @@ export default [
     files: [".husky/**/*.js"],
     rules: { complexity: ["error", 15] },
   },
+  // Internal tooling: disable eslint-plugin-security false positives
+  // These scripts process trusted local data (JSONL, JSON configs, local files),
+  // not user-controlled input. The security rules are designed for web-facing code
+  // and produce ~1900 false positives across these directories.
+  // Project-specific sonash/* rules remain active for meaningful checks.
+  {
+    files: [
+      "scripts/**/*.js",
+      "scripts/**/*.ts",
+      ".claude/hooks/**/*.js",
+      ".claude/hooks/**/*.ts",
+      ".claude/skills/*/scripts/**/*.js",
+    ],
+    rules: {
+      "security/detect-object-injection": "off",
+      "security/detect-non-literal-fs-filename": "off",
+      "security/detect-non-literal-require": "off",
+      "security/detect-non-literal-regexp": "off",
+      "security/detect-unsafe-regex": "off",
+    },
+  },
   // SoNash rules - file I/O security (scripts/hooks only)
   {
     files: [
