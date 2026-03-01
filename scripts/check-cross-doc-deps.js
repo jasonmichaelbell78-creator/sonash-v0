@@ -15,6 +15,7 @@
  *   node scripts/check-cross-doc-deps.js              # Check staged files
  *   node scripts/check-cross-doc-deps.js --verbose    # Show all checks
  *   node scripts/check-cross-doc-deps.js --dry-run    # Check without blocking
+ *   node scripts/check-cross-doc-deps.js --auto-fix   # Auto-fix trivial violations
  *
  * Reference: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
  *
@@ -22,14 +23,18 @@
  */
 
 const { execFileSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 const { loadConfigWithRegex } = require("./config/load-config");
 const { validateSkipReason } = require("./lib/validate-skip-reason");
+const { safeWriteFile } = require("./lib/security-helpers");
 
 // Parse arguments
 const args = process.argv.slice(2);
 const verbose = args.includes("--verbose");
 const dryRun = args.includes("--dry-run");
 const trivialMode = args.includes("--trivial");
+const autoFix = args.includes("--auto-fix");
 
 // TTY-aware colors (Review #157 - avoid raw escape codes in non-TTY output)
 const useColors = process.stdout.isTTY;
@@ -256,6 +261,64 @@ function isDependentStaged(stagedFiles, dependent) {
 }
 
 /**
+ * Attempt to auto-fix a trivial cross-doc dependency violation.
+ *
+ * Handles:
+ * - Docs that just need a "Last synced" timestamp: append/update sync comment
+ * - COMMAND_REFERENCE.md: log suggestion only (too complex to auto-generate)
+ * - ROADMAP.md dependents: log suggestion only (requires human judgment)
+ *
+ * @param {{ trigger: string, dependent: string, reason: string }} issue
+ * @returns {{ fixed: boolean, file: string, action: string }}
+ */
+function attemptAutoFix(issue) {
+  const dep = issue.dependent;
+
+  // ROADMAP.md dependents require human judgment -- never auto-fix
+  if (/ROADMAP\.md$/i.test(dep)) {
+    return { fixed: false, file: dep, action: "suggestion: update ROADMAP.md manually" };
+  }
+
+  // COMMAND_REFERENCE.md is too complex to auto-generate
+  if (/COMMAND_REFERENCE\.md$/i.test(dep)) {
+    return { fixed: false, file: dep, action: "suggestion: update COMMAND_REFERENCE.md manually" };
+  }
+
+  // For other doc files, append/update a "Last synced" comment
+  try {
+    // Resolve the dependent file path
+    const depPath = path.resolve(dep);
+    if (!fs.existsSync(depPath)) {
+      return { fixed: false, file: dep, action: "file not found" };
+    }
+
+    const content = fs.readFileSync(depPath, "utf-8");
+    const today = new Date().toISOString().slice(0, 10);
+    const syncComment = `<!-- Last synced: ${today} -->`;
+    const syncPattern = /<!-- Last synced: \d{4}-\d{2}-\d{2} -->/;
+
+    let newContent;
+    if (syncPattern.test(content)) {
+      // Update existing sync comment
+      newContent = content.replace(syncPattern, syncComment);
+    } else {
+      // Append sync comment at end of file
+      newContent = content.trimEnd() + "\n" + syncComment + "\n";
+    }
+
+    safeWriteFile(depPath, newContent, { allowOverwrite: true });
+
+    // Stage the fixed file
+    execFileSync("git", ["add", "--", dep], { timeout: 5000 });
+
+    return { fixed: true, file: dep, action: `added sync comment (${today})` };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { fixed: false, file: dep, action: `auto-fix failed: ${msg}` };
+  }
+}
+
+/**
  * Main check function
  */
 function checkDependencies() {
@@ -361,6 +424,23 @@ function checkDependencies() {
     });
   }
 
+  // Auto-fix mode: attempt to fix trivial violations before reporting
+  if (autoFix && issues.length > 0) {
+    const remaining = [];
+    for (const issue of issues) {
+      const result = attemptAutoFix(issue);
+      if (result.fixed) {
+        log(`   Auto-fixed: ${result.file} (${result.action})`, colors.green);
+      } else {
+        log(`   Cannot auto-fix: ${result.file} -- ${result.action}`, colors.yellow);
+        remaining.push(issue);
+      }
+    }
+    // Replace issues with only unfixed ones
+    issues.length = 0;
+    issues.push(...remaining);
+  }
+
   if (issues.length > 0) {
     log("\n❌ Missing dependent documents:", colors.red);
     log("", colors.reset);
@@ -403,36 +483,41 @@ function checkDependencies() {
   return 0;
 }
 
-// Run the check
-try {
-  // Allow override via environment variable
-  const skipChecks = (process.env.SKIP_CHECKS || "").split(",").map((s) => s.trim());
-  if (process.env.SKIP_CROSS_DOC_CHECK === "1" || skipChecks.includes("cross-doc")) {
-    const skipResult = validateSkipReason(process.env.SKIP_REASON, "SKIP_CROSS_DOC_CHECK=1");
-    if (!skipResult.valid) {
-      log(skipResult.error, colors.red);
-      process.exit(1);
-    }
-    const reason = skipResult.reason;
+// Export for testing (when required as a module, not run as CLI)
+module.exports = { attemptAutoFix, checkDiffPattern, matchesTrigger, isDependentStaged };
 
-    try {
-      execFileSync(
-        "node",
-        ["scripts/log-override.js", "--quick", "--check=cross-doc", `--reason=${reason}`],
-        { timeout: 3000, stdio: "pipe" }
-      );
-    } catch {
-      /* non-blocking */
+// Run the check (only when executed directly)
+if (require.main === module) {
+  try {
+    // Allow override via environment variable
+    const skipChecks = (process.env.SKIP_CHECKS || "").split(",").map((s) => s.trim());
+    if (process.env.SKIP_CROSS_DOC_CHECK === "1" || skipChecks.includes("cross-doc")) {
+      const skipResult = validateSkipReason(process.env.SKIP_REASON, "SKIP_CROSS_DOC_CHECK=1");
+      if (!skipResult.valid) {
+        log(skipResult.error, colors.red);
+        process.exit(1);
+      }
+      const reason = skipResult.reason;
+
+      try {
+        execFileSync(
+          "node",
+          ["scripts/log-override.js", "--quick", "--check=cross-doc", `--reason=${reason}`],
+          { timeout: 3000, stdio: "pipe" }
+        );
+      } catch {
+        /* non-blocking */
+      }
+      log("⚠️  Cross-document check skipped (SKIP_CROSS_DOC_CHECK=1)", colors.yellow);
+      process.exit(0);
     }
-    log("⚠️  Cross-document check skipped (SKIP_CROSS_DOC_CHECK=1)", colors.yellow);
-    process.exit(0);
+
+    const exitCode = checkDependencies();
+    process.exit(exitCode);
+  } catch (error) {
+    // Safe error message extraction (Review #158)
+    const message = error instanceof Error ? error.message : String(error);
+    log(`Error: ${message}`, colors.red);
+    process.exit(2);
   }
-
-  const exitCode = checkDependencies();
-  process.exit(exitCode);
-} catch (error) {
-  // Safe error message extraction (Review #158)
-  const message = error instanceof Error ? error.message : String(error);
-  log(`Error: ${message}`, colors.red);
-  process.exit(2);
 }
