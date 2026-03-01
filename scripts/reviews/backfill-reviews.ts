@@ -700,7 +700,14 @@ function validateOutputFile(
   const content = fs.readFileSync(filePath, "utf8");
   const outputLines = content.split("\n").filter((l) => l.trim().length > 0);
   for (const line of outputLines) {
-    const parsed = JSON.parse(line);
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(line);
+    } catch {
+      console.error(`  ${label} JSON parse error: ${line.slice(0, 80)}`);
+      errors++;
+      continue;
+    }
     const result = parser.safeParse(parsed);
     if (!result.success) {
       console.error(`  ${label} validation error: ${result.error?.message}`);

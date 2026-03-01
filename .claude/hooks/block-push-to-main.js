@@ -37,12 +37,15 @@ process.stdin.on("end", () => {
     //   git push -f origin master
     //   git push origin HEAD:main
     //   git push origin HEAD:refs/heads/main
+    const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
     for (const branch of PROTECTED_BRANCHES) {
+      const escaped = escapeRegex(branch);
       // Direct branch name as argument
-      const directPattern = new RegExp(`\\bgit\\s+push\\b[^|;&]*\\b${branch}\\b`);
+      const directPattern = new RegExp(`\\bgit\\s+push\\b[^|;&]*\\b${escaped}(?=\\s|$)`);
       // Refspec targeting protected branch (HEAD:main, feature:main, etc.)
       const refspecPattern = new RegExp(
-        `\\bgit\\s+push\\b[^|;&]*:\\s*(?:refs/heads/)?${branch}\\b`
+        `\\bgit\\s+push\\b[^|;&]*:\\s*(?:refs/heads/)?${escaped}(?=\\s|$)`
       );
 
       if (directPattern.test(normalized) || refspecPattern.test(normalized)) {

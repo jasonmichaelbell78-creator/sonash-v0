@@ -94,7 +94,10 @@ function groupByContentHash(reviewItems: DebtItem[]): {
 }
 
 /** Collapse hash groups, keeping the entry with the lowest DEBT-NNNN ID. */
-function collapseHashGroups(hashGroups: Map<string, DebtItem[]>): {
+function collapseHashGroups(
+  hashGroups: Map<string, DebtItem[]>,
+  logger: (msg: string) => void = console.log
+): {
   kept: DebtItem[];
   removed: DebtItem[];
 } {
@@ -105,7 +108,7 @@ function collapseHashGroups(hashGroups: Map<string, DebtItem[]>): {
     kept.push(group[0]);
     for (let i = 1; i < group.length; i++) {
       removed.push(group[i]);
-      console.log(
+      logger(
         `Dedup: keeping ${group[0].id}, removing ${group[i].id} (same content_hash: ${hash.slice(0, 12)})`
       );
     }
@@ -114,7 +117,10 @@ function collapseHashGroups(hashGroups: Map<string, DebtItem[]>): {
 }
 
 /** Flag title+source near-duplicates (does NOT remove them). */
-function flagTitleSourceDuplicates(items: DebtItem[]): DebtItem[] {
+function flagTitleSourceDuplicates(
+  items: DebtItem[],
+  logger: (msg: string) => void = console.log
+): DebtItem[] {
   const flagged: DebtItem[] = [];
   const titleSourceMap = new Map<string, DebtItem[]>();
 
@@ -134,7 +140,7 @@ function flagTitleSourceDuplicates(items: DebtItem[]): DebtItem[] {
       for (const item of group) {
         flagged.push(item);
       }
-      console.log(
+      logger(
         `Potential title-based duplicates (not removed): ${group.map((i) => i.id).join(", ")} -- "${group[0].title?.slice(0, 60)}"`
       );
     }
@@ -143,22 +149,30 @@ function flagTitleSourceDuplicates(items: DebtItem[]): DebtItem[] {
   return flagged;
 }
 
-export function dedupReviewSourced(items: DebtItem[]): DedupResult {
+export function dedupReviewSourced(
+  items: DebtItem[],
+  logger: (msg: string) => void = console.log
+): DedupResult {
   const { reviewItems, nonReviewItems } = partitionBySource(items);
   const { hashGroups, noHashItems } = groupByContentHash(reviewItems);
-  const { kept, removed } = collapseHashGroups(hashGroups);
+  const { kept, removed } = collapseHashGroups(hashGroups, logger);
 
   // Items without content_hash are always kept
   kept.push(...noHashItems);
 
   // Secondary pass: flag title+source near-duplicates (do NOT remove)
-  const flagged = flagTitleSourceDuplicates(kept);
+  const flagged = flagTitleSourceDuplicates(kept, logger);
 
   // Reassemble: non-review (untouched) + deduplicated review entries
   const allKept = [...nonReviewItems, ...kept];
 
   // Sort by DEBT-NNNN ID for consistent ordering
-  allKept.sort((a, b) => parseDebtId(a.id) - parseDebtId(b.id));
+  allKept.sort((a, b) => {
+    const ai = parseDebtId(a.id);
+    const bi = parseDebtId(b.id);
+    if (ai !== bi) return ai - bi;
+    return a.id.localeCompare(b.id);
+  });
 
   return { kept: allKept, removed, flagged };
 }
@@ -216,6 +230,7 @@ function main(): void {
   try {
     const output = result.kept.map((item) => JSON.stringify(item)).join("\n") + "\n";
     fs.writeFileSync(tmpPath, output, "utf8");
+    if (fs.existsSync(masterPath)) fs.unlinkSync(masterPath);
     fs.renameSync(tmpPath, masterPath);
   } catch (err) {
     console.error(

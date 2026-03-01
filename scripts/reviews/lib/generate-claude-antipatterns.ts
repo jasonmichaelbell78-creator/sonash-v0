@@ -96,14 +96,17 @@ export function updateClaudeMd(
   const startIdx = content.indexOf(START_MARKER);
   const endIdx = content.indexOf(END_MARKER);
 
-  if (startIdx !== -1 && endIdx !== -1) {
+  if (startIdx === -1 && endIdx === -1) {
+    // First run: wrap the existing table with markers
+    content = wrapExistingTableWithMarkers(content);
+  } else if (startIdx !== -1 && endIdx !== -1) {
+    if (endIdx < startIdx) throw new Error("Invalid AUTO-ANTIPATTERNS marker order");
     // Markers exist -- replace content between them
     const before = content.slice(0, startIdx + START_MARKER.length);
     const after = content.slice(endIdx);
     content = before + "\n" + newTable + "\n" + after;
   } else {
-    // First run: wrap the existing table with markers
-    content = wrapExistingTableWithMarkers(content);
+    throw new Error("Unmatched AUTO-ANTIPATTERNS markers in CLAUDE.md");
   }
 
   if (!dryRun) {

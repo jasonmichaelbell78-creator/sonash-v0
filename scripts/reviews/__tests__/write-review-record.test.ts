@@ -10,7 +10,7 @@ import { test, describe, beforeEach, afterEach } from "node:test";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 
 // Walk up from __dirname until we find package.json
 function findProjectRoot(startDir: string): string {
@@ -25,11 +25,19 @@ function findProjectRoot(startDir: string): string {
 
 const PROJECT_ROOT = findProjectRoot(__dirname);
 
+// SEC-008: Verify resolved path is within project root
+function assertWithinRoot(filePath: string, root: string): void {
+  const resolved = path.resolve(filePath);
+  if (!resolved.startsWith(root + path.sep) && resolved !== root) {
+    throw new Error(`Path traversal blocked: ${resolved} is outside ${root}`);
+  }
+}
+
 // Import compiled modules
+const distPath = path.resolve(PROJECT_ROOT, "scripts/reviews/dist/write-review-record.js");
+assertWithinRoot(distPath, PROJECT_ROOT);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { writeReviewRecord, getNextReviewId } = require(
-  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/write-review-record.js")
-) as {
+const { writeReviewRecord, getNextReviewId } = require(distPath) as {
   writeReviewRecord: (
     projectRoot: string,
     data: Record<string, unknown>
@@ -198,11 +206,12 @@ describe("CLI entry point", () => {
 
   test("exits 1 on validation failure via CLI", () => {
     const scriptPath = path.resolve(PROJECT_ROOT, "scripts/reviews/dist/write-review-record.js");
+    assertWithinRoot(scriptPath, PROJECT_ROOT);
     const badData = JSON.stringify({ title: "bad" });
 
     assert.throws(
       () => {
-        execSync(`node "${scriptPath}" --data '${badData}'`, {
+        execFileSync("node", [scriptPath, "--data", badData], {
           stdio: "pipe",
           encoding: "utf8",
         });

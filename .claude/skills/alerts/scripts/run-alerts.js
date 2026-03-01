@@ -3236,14 +3236,9 @@ function checkReviewsSync() {
     const driftMatch = output.match(
       /(\d+)\s+entr(?:y|ies)\s+in\s+markdown\s+but\s+not\s+in\s+JSONL/i
     );
-    const missing = driftMatch ? Number.parseInt(driftMatch[1], 10) : result.success ? 0 : null;
+    const missing = driftMatch ? Number.parseInt(driftMatch[1], 10) : result.success ? 0 : 1;
 
-    if (missing === null) {
-      addContext("reviews-sync", { no_data: true, label: "Reviews Sync" });
-      return;
-    }
-
-    if (missing > BENCHMARKS.reviews_sync.missing.poor) {
+    if (missing >= BENCHMARKS.reviews_sync.missing.poor) {
       addAlert(
         "reviews-sync",
         "error",
@@ -3251,7 +3246,7 @@ function checkReviewsSync() {
         null,
         "Run: npm run reviews:sync -- --apply"
       );
-    } else if (missing > BENCHMARKS.reviews_sync.missing.average) {
+    } else if (missing >= BENCHMARKS.reviews_sync.missing.average) {
       addAlert(
         "reviews-sync",
         "warning",
@@ -3277,7 +3272,15 @@ function checkReviewArchive() {
       const issueMatch = output.match(/(\d+)\s+issue\(s\)\s+found/i);
       const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
 
-      if (issues > BENCHMARKS.review_archive.issues.poor) {
+      if (!result.success && !issueMatch) {
+        addAlert(
+          "review-archive",
+          "error",
+          "Review archive check failed (no parsable issue count)",
+          null,
+          "Run: npm run reviews:check-archive"
+        );
+      } else if (issues > BENCHMARKS.review_archive.issues.poor) {
         addAlert(
           "review-archive",
           "warning",
@@ -3304,12 +3307,7 @@ function checkCrossdocDeps() {
     ["crossdoc:check"],
     (output, result) => {
       const issueMatch = output.match(/(\d+)\s+issue\(s\)/i);
-      const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : null;
-
-      if (issues === null) {
-        addContext("crossdoc", { no_data: true, label: "Cross-Document Dependencies" });
-        return;
-      }
+      const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
 
       if (issues > BENCHMARKS.crossdoc.issues.poor) {
         addAlert(

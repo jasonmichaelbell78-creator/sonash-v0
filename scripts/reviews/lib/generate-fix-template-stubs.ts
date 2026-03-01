@@ -111,9 +111,16 @@ export function appendFixTemplateStubs(
   let appendContent = "";
 
   for (const p of patterns) {
-    // Check if pattern already has a template (fuzzy match on name)
+    // Check if pattern already has a template (match in heading or **Pattern:** line)
     const normalizedName = p.pattern.toLowerCase().replaceAll("-", " ");
-    if (lowerContent.includes(normalizedName)) {
+    // Check "## Template N: <name>" headings and "**Pattern:** <name>" lines
+    const headingPattern = new RegExp(
+      `## template \\d+:.*${normalizedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+      "i"
+    );
+    const hasTemplateHeading = headingPattern.test(lowerContent);
+    const hasPatternLine = lowerContent.includes(`**pattern:** ${normalizedName}`);
+    if (hasTemplateHeading || hasPatternLine) {
       skipped.push(p.pattern);
       continue;
     }
@@ -126,9 +133,23 @@ export function appendFixTemplateStubs(
 
   if (!dryRun && appendContent) {
     try {
-      // Append to the end of the file
+      // Append to the end of the file (atomic: write .tmp then rename)
       const updatedContent = content.trimEnd() + "\n" + appendContent + "\n";
-      fs.writeFileSync(fixTemplatesPath, updatedContent, "utf8");
+      const tmpPath = fixTemplatesPath + ".tmp";
+      fs.writeFileSync(tmpPath, updatedContent, "utf8");
+      try {
+        // Remove destination first (renameSync fails on Windows if dest exists)
+        if (fs.existsSync(fixTemplatesPath)) fs.rmSync(fixTemplatesPath, { force: true });
+        fs.renameSync(tmpPath, fixTemplatesPath);
+      } catch {
+        // Cross-drive fallback: copy + unlink
+        fs.copyFileSync(tmpPath, fixTemplatesPath);
+        try {
+          fs.unlinkSync(tmpPath);
+        } catch {
+          /* best-effort */
+        }
+      }
     } catch (err) {
       console.warn(
         `[generate-fix-template-stubs] Warning: Could not write FIX_TEMPLATES.md: ${
@@ -184,8 +205,12 @@ export function main(args: string[]): void {
     // Show a preview of what would be generated
     if (result.generated.length > 0) {
       console.log("\n--- Preview (first stub) ---");
-      const preview = generateFixTemplateStub(recurring[0], 46);
-      console.log(preview);
+      const firstGeneratedName = result.generated[0];
+      const firstPattern = recurring.find((p) => p.pattern === firstGeneratedName);
+      if (firstPattern) {
+        const preview = generateFixTemplateStub(firstPattern, 46);
+        console.log(preview);
+      }
     }
   } else if (result.generated.length > 0) {
     console.log("\nFIX_TEMPLATES.md updated.");

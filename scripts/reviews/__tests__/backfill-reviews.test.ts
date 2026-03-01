@@ -292,8 +292,9 @@ describe("Completeness tier distribution", () => {
 
 describe("V1 migration merge", () => {
   test("v1 records not in archives are included", () => {
-    const tmpDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-test-"));
+    let tmpDir: string | undefined;
     try {
+      tmpDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-test-"));
       const v1Path = path.join(tmpDir, "reviews.jsonl");
       const v1Record = {
         id: 999,
@@ -322,13 +323,14 @@ describe("V1 migration merge", () => {
       assert.equal(result.records[0].id, "rev-999");
       assert.equal(result.records[0].origin.type, "migration");
     } finally {
-      fs.rmSync(tmpDir, { recursive: true });
+      if (tmpDir) fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 
   test("v1 records already in archives are skipped", () => {
-    const tmpDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-test-"));
+    let tmpDir: string | undefined;
     try {
+      tmpDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-test-"));
       const v1Path = path.join(tmpDir, "reviews.jsonl");
       const v1Record = {
         id: 1,
@@ -355,7 +357,7 @@ describe("V1 migration merge", () => {
       assert.equal(result.migrated, 0);
       assert.equal(result.skipped, 1);
     } finally {
-      fs.rmSync(tmpDir, { recursive: true });
+      if (tmpDir) fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 });
@@ -486,8 +488,9 @@ describe("Idempotency", () => {
 
 describe("BKFL-05: Consolidation counter", () => {
   test("reports mismatch when expected != actual", () => {
-    const tmpDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-test-"));
+    let tmpDir: string | undefined;
     try {
+      tmpDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-test-"));
       const consolPath = path.join(tmpDir, "consolidation.json");
       fs.writeFileSync(consolPath, JSON.stringify({ lastConsolidatedReview: 406 }));
 
@@ -496,20 +499,21 @@ describe("BKFL-05: Consolidation counter", () => {
       assert.equal(result.actual, 411);
       assert.equal(result.match, false);
     } finally {
-      fs.rmSync(tmpDir, { recursive: true });
+      if (tmpDir) fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 
   test("reports match when expected == actual", () => {
-    const tmpDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-test-"));
+    let tmpDir: string | undefined;
     try {
+      tmpDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-test-"));
       const consolPath = path.join(tmpDir, "consolidation.json");
       fs.writeFileSync(consolPath, JSON.stringify({ lastConsolidatedReview: 406 }));
 
       const result = checkConsolidationCounter(consolPath, 406);
       assert.equal(result.match, true);
     } finally {
-      fs.rmSync(tmpDir, { recursive: true });
+      if (tmpDir) fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 

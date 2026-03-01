@@ -301,7 +301,10 @@ describe("generateRuleSkeleton", () => {
 
     const skeleton = promoteModule.generateRuleSkeleton(result);
 
-    assert.equal(skeleton.id, "path-traversal");
+    assert.ok(
+      skeleton.id.startsWith("path-traversal"),
+      `id should start with 'path-traversal', got '${skeleton.id}'`
+    );
     assert.equal(skeleton.pattern, "TODO_REGEX");
     assert.equal(skeleton.message, "path-traversal");
     assert.ok(skeleton.fix.includes("5x recurrence"));
@@ -331,7 +334,10 @@ describe("generateRuleSkeleton", () => {
     };
 
     const skeleton = promoteModule.generateRuleSkeleton(result);
-    assert.equal(skeleton.id, "error-handling-missing-try-catch");
+    assert.ok(
+      skeleton.id.startsWith("error-handling-missing-try-catch"),
+      `id should start with slug, got '${skeleton.id}'`
+    );
   });
 
   test("truncates long pattern ids to 40 chars", () => {
@@ -343,7 +349,8 @@ describe("generateRuleSkeleton", () => {
     };
 
     const skeleton = promoteModule.generateRuleSkeleton(result);
-    assert.ok(skeleton.id.length <= 40);
+    // ID is base (up to 40 chars) + hash suffix (7 chars: "-" + 6 hex)
+    assert.ok(skeleton.id.length <= 47, `id length ${skeleton.id.length} should be <= 47`);
   });
 });
 
@@ -394,7 +401,7 @@ This pattern is already documented.
     }
 
     // Step 4: Generate rule skeletons
-    const skeletons = filtered.newPatterns.map(promoteModule.generateRuleSkeleton);
+    const skeletons = filtered.newPatterns.map((p) => promoteModule.generateRuleSkeleton(p));
     assert.equal(skeletons.length, 2);
     for (const s of skeletons) {
       assert.ok(s.id);

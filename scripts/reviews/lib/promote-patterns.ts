@@ -14,6 +14,12 @@ import * as path from "node:path";
 import { readValidatedJsonl } from "./read-jsonl";
 import { ReviewRecord, type ReviewRecordType } from "./schemas/review";
 
+/** Parse the numeric prefix from a review ID like "rev-123-..." */
+function parseRevNumber(id: string): number | null {
+  const m = id.match(/^rev-(\d+)(?:-|$)/);
+  return m ? Number.parseInt(m[1], 10) : null;
+}
+
 // Walk up from __dirname until we find package.json (works from both source and dist)
 function findProjectRoot(startDir: string): string {
   let dir = startDir;
@@ -150,7 +156,9 @@ export function filterAlreadyPromoted(
   for (const p of patterns) {
     // Normalize for comparison: lowercase, replace hyphens with spaces
     const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
-    if (lowerContent.includes(normalizedPattern)) {
+    const escaped = normalizedPattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const patternRegex = new RegExp(`\\b${escaped}\\b`, "i");
+    if (patternRegex.test(lowerContent)) {
       alreadyPromoted.push(p.pattern);
     } else {
       newPatterns.push(p);
@@ -171,7 +179,7 @@ export function categorizePattern(pattern: string): string {
   if (/security|injection|ssrf|xss|traversal|redos|sanitiz|escape|prototype|symlink/.test(p)) {
     return "Security";
   }
-  if (/typescript|eslint|type|nullable|error.handling|try.catch/.test(p)) {
+  if (/typescript|eslint|type|nullable|error[\s-]?handling|try[\s.-]?catch/.test(p)) {
     return "JavaScript/TypeScript";
   }
   if (/shell|bash|cross-platform|crlf/.test(p)) {
@@ -189,13 +197,23 @@ export function categorizePattern(pattern: string): string {
 /**
  * Generate an enforcement rule skeleton for check-pattern-compliance.js.
  */
-export function generateRuleSkeleton(result: RecurrenceResult): RuleSkeleton {
-  const rawId = result.pattern
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 40);
-  const id = rawId || "unnamed";
+export function generateRuleSkeleton(
+  result: RecurrenceResult,
+  usedIds: Set<string> = new Set()
+): RuleSkeleton {
+  const base =
+    result.pattern
+      .toLowerCase()
+      .replaceAll(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 40) || "unnamed";
+  let hash = 0;
+  for (let i = 0; i < result.pattern.length; i++)
+    hash = (hash * 31 + result.pattern.charCodeAt(i)) >>> 0;
+  const suffix = hash.toString(16).padStart(8, "0").slice(0, 6);
+  let id = `${base}-${suffix}`;
+  while (usedIds.has(id)) id = `${id}x`;
+  usedIds.add(id);
 
   return {
     id,
@@ -262,10 +280,12 @@ function insertPromotedPatterns(content: string, patterns: RecurrenceResult[]): 
     if (sectionIdx === -1) continue;
 
     // Find the next ## section after this one to insert before it
-    const afterSection = content.indexOf("\n## ", sectionIdx + sectionHeader.length);
+    const startIdx = sectionIdx + sectionHeader.length;
+    const nextSection = content.indexOf("\n## ", startIdx);
+    const hrSeparator = content.indexOf("\n---\n", startIdx);
     const insertPoint =
-      afterSection === -1 ? content.indexOf("\n---\n", sectionIdx + 100) : afterSection;
-    if (insertPoint === -1) continue;
+      nextSection !== -1 ? nextSection : hrSeparator !== -1 ? hrSeparator : startIdx;
+    // startIdx fallback ensures we always have a valid insert point
 
     const entries = catPatterns.map((p) => buildCodePatternsEntry(p, catName)).join("");
     content = content.slice(0, insertPoint) + entries + content.slice(insertPoint);
@@ -334,9 +354,20 @@ export function promotePatterns(options: {
 
   // 1. Read reviews
   const reviewsPath = path.join(projectRoot, "data", "ecosystem-v2", "reviews.jsonl");
-  const { valid: reviews } = readValidatedJsonl(reviewsPath, ReviewRecord, {
+  const { valid: allReviews } = readValidatedJsonl(reviewsPath, ReviewRecord, {
     quiet: true,
   });
+
+  // 1b. Filter by consolidation state to only process new records
+  const { lastProcessedId } = loadConsolidationState(projectRoot);
+  const lastProcessedNum = parseRevNumber(lastProcessedId);
+  const reviews =
+    lastProcessedNum === null
+      ? allReviews
+      : allReviews.filter((r) => {
+          const n = parseRevNumber(r.id);
+          return n === null ? true : n > lastProcessedNum;
+        });
 
   // 2. Detect recurrence
   const recurring = detectRecurrence(reviews, minOccurrences, minPRs);
@@ -353,20 +384,39 @@ export function promotePatterns(options: {
   // 3. Filter already-promoted
   const codePatternsPath = path.join(projectRoot, "docs", "agent_docs", "CODE_PATTERNS.md");
   let codePatternsContent = "";
+  let codePatternsReadable = true;
   try {
     codePatternsContent = fs.readFileSync(codePatternsPath, "utf8");
   } catch {
-    // File missing -- all patterns are new
+    codePatternsReadable = false;
   }
 
   const { newPatterns, alreadyPromoted } = filterAlreadyPromoted(recurring, codePatternsContent);
 
   // 4. Promote to CODE_PATTERNS.md (unless dry run)
   if (!options.dryRun && newPatterns.length > 0) {
+    if (!codePatternsReadable) {
+      throw new Error(
+        `[promote-patterns] CODE_PATTERNS.md not found. Refusing to create/overwrite.`
+      );
+    }
     const updatedContent = insertPromotedPatterns(codePatternsContent, newPatterns);
+    if (updatedContent === codePatternsContent) {
+      throw new Error("[promote-patterns] Promotion insertion produced no changes.");
+    }
+    const tmpPath = `${codePatternsPath}.tmp`;
     try {
-      fs.writeFileSync(codePatternsPath, updatedContent, "utf8");
+      fs.writeFileSync(tmpPath, updatedContent, "utf8");
+      // Remove destination first (renameSync fails on Windows if dest exists)
+      if (fs.existsSync(codePatternsPath)) fs.rmSync(codePatternsPath, { force: true });
+      fs.renameSync(tmpPath, codePatternsPath);
     } catch (err) {
+      // Clean up temp file on failure
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* ignore cleanup errors */
+      }
       console.warn(
         `[promote-patterns] Warning: Could not write CODE_PATTERNS.md: ${err instanceof Error ? err.message : String(err)}`
       );
@@ -374,7 +424,8 @@ export function promotePatterns(options: {
   }
 
   // 5. Generate rule skeletons
-  const ruleSkeletons = newPatterns.map(generateRuleSkeleton);
+  const usedIds = new Set<string>();
+  const ruleSkeletons = newPatterns.map((p) => generateRuleSkeleton(p, usedIds));
 
   // 6. Update consolidation state (unless dry run)
   if (!options.dryRun && reviews.length > 0) {
@@ -397,12 +448,14 @@ export function main(args: string[]): void {
   const dryRun = args.includes("--dry-run");
 
   const minOccIdx = args.indexOf("--min-occurrences");
-  const minOccurrences =
+  const minOccRaw =
     minOccIdx !== -1 && args[minOccIdx + 1] ? Number.parseInt(args[minOccIdx + 1], 10) : 3;
+  const minOccurrences = Number.isFinite(minOccRaw) ? minOccRaw : 3;
 
   const minPRsIdx = args.indexOf("--min-prs");
-  const minPRs =
+  const minPRsRaw =
     minPRsIdx !== -1 && args[minPRsIdx + 1] ? Number.parseInt(args[minPRsIdx + 1], 10) : 2;
+  const minPRs = Number.isFinite(minPRsRaw) ? minPRsRaw : 2;
 
   console.log("=== Promote Patterns Pipeline ===");
   console.log(`Config: minOccurrences=${minOccurrences}, minPRs=${minPRs}, dryRun=${dryRun}`);

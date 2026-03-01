@@ -72,9 +72,10 @@ function parseHeaderLine(
 
   const dateMatch = DATE_RE.exec(titleAndDate);
   const date = dateMatch ? dateMatch[1] : null;
-  const title = dateMatch
-    ? titleAndDate.slice(0, titleAndDate.lastIndexOf("(")).trim()
-    : titleAndDate;
+  const title =
+    dateMatch && dateMatch.index !== undefined
+      ? titleAndDate.slice(0, dateMatch.index).trim()
+      : titleAndDate;
 
   const cleanTitle = title.replace(/\s*--\s*$/, "").replace(/:\s*$/, "");
 
@@ -161,10 +162,11 @@ function deduplicateEntries(entries: ParsedEntry[]): ParsedEntry[] {
 // ─── Table-based parser ────────────────────────────────────────────────────────
 
 function parseTableCells(trimmed: string): string[] {
-  return trimmed
-    .split("|")
-    .map((c) => c.trim())
-    .filter(Boolean);
+  const cells = trimmed.split("|").map((c) => c.trim());
+  // Remove leading/trailing empty cells from pipe-delimited format
+  if (cells.length >= 2 && cells[0] === "") cells.shift();
+  if (cells.length >= 2 && cells[cells.length - 1] === "") cells.pop();
+  return cells;
 }
 
 function isSkippableRow(cells: string[]): boolean {
@@ -399,18 +401,24 @@ export function extractSeverity(
 function parseSeverityCount(text: string, label: string): number {
   const lowerText = text.toLowerCase();
   const lowerLabel = label.toLowerCase();
-  let idx = 0;
 
+  // Prioritize the more explicit "Label: N" format first.
+  let idx = 0;
   while (idx < lowerText.length) {
     const pos = lowerText.indexOf(lowerLabel, idx);
     if (pos === -1) break;
-
     const colonResult = tryLabelColonNumber(text, pos + lowerLabel.length);
     if (colonResult >= 0) return colonResult;
+    idx = pos + 1;
+  }
 
+  // Fall back to "N Label" format
+  idx = 0;
+  while (idx < lowerText.length) {
+    const pos = lowerText.indexOf(lowerLabel, idx);
+    if (pos === -1) break;
     const prefixResult = tryNumberBeforeLabel(text, pos - 1);
     if (prefixResult >= 0) return prefixResult;
-
     idx = pos + 1;
   }
 

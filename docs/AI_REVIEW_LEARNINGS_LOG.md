@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.75 **Created:** 2026-01-02 **Last Updated:** 2026-02-27
+**Document Version:** 17.76 **Created:** 2026-01-02 **Last Updated:** 2026-02-28
 
 ## Purpose
 
@@ -2084,6 +2084,48 @@ All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl.
 - **Process**: Standard sequential fixes — 3 script files + 1 workflow + 1
   generated index. Propagation check caught `escapeTableCell` and 4 other
   `.replace(/x/g)` call sites in same file.
+
+---
+
+#### Review #397: PR #407 R2 — Qodo/Gemini/CI (2026-02-28)
+
+- **Source**: Qodo Compliance (7), Qodo Suggestions (36), Gemini (1), CI (4
+  blockers)
+- **PR**: PR #407 — PR Review Ecosystem v2, Skill Quality Framework, Alerts
+- **Items**: 43 unique → 37 fixed, 2 deferred (trivial), 4 rejected
+- **Fixed**: (1) CI: execSync→execFileSync in test + path containment; (2) CI:
+  JSON.parse try/catch in backfill validation; (3) CI: renameSync Windows compat
+  (unlinkSync before rename); (4) parse-review: parseSeverityCount format
+  priority (separate loops for "Label: N" vs "N Label"); (5) parse-review:
+  .filter(Boolean) dropping empty cells → preserve cell positions; (6)
+  parse-review: title slicing with parentheses (dateMatch.index); (7)
+  promote-patterns: consolidation state cutoff applied; (8) promote-patterns:
+  state no-advance on failed insertion; (9) promote-patterns: word-boundary
+  regex in filterAlreadyPromoted; (10) promote-patterns: fix regex escaping in
+  categorizePattern; (11) promote-patterns: refuse write when CODE_PATTERNS.md
+  missing; (12) promote-patterns: fallback insertion chain improvement; (13)
+  promote-patterns: CLI arg NaN validation; (14) promote-patterns: deterministic
+  hash suffix for unique IDs; (15) promote-patterns: atomic writes for
+  CODE_PATTERNS.md; (16) run-alerts: >= thresholds; (17) run-alerts: script
+  failure → 1 not null; (18) run-alerts: checker failure error alert; (19)
+  block-push-to-main: lookahead regex + regex escape; (20)
+  generate-claude-antipatterns: unmatched marker detection + order validation;
+  (21) generate-fix-template-stubs: dry-run preview correct pattern; (22)
+  generate-fix-template-stubs: heading-aware dedup; (23)
+  generate-fix-template-stubs: atomic writes; (24) seed-commit-log: dedup in
+  --sync mode; (25) seed-commit-log: pre-filter JSON lines; (26) dedup-debt:
+  sort tie-break; (27) dedup-debt: logger injection; (28) 3x CJS entry point
+  require() guards; (29) test cleanup: tmpDir guard in finally blocks; (30) 6
+  test updates for changed behavior
+- **Rejected**: (A) Dependency Review CI — infra not code; (B) Audit trails —
+  dev tool; (C) write-review-record race — single-threaded; (D) Path logging —
+  dev tool
+- **Patterns**: `.map(fn)` passes (element, index, array) — never pass functions
+  with optional params directly to .map(); regex `try.catch` matches `try-catch`
+  via dot wildcard — be explicit about intended matches; test expectations must
+  be updated when behavior intentionally changes
+- **Process**: 4 parallel agents (CI blockers, parse-review, promote-patterns,
+  misc files). All 142 tests green. Pattern compliance clean.
 
 ---
 

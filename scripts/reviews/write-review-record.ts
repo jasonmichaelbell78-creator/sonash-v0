@@ -88,6 +88,7 @@ export function writeReviewRecord(
   const filePath = path.join(projectRoot, "data", "ecosystem-v2", "reviews.jsonl");
 
   // Auto-assign ID if not provided
+  // Note: ID assignment is not atomic, but this runs single-threaded
   if (!data.id) {
     data.id = getNextReviewId(projectRoot);
   }

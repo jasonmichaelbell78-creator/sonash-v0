@@ -188,6 +188,7 @@ function getLatestLogHash() {
     const lines = content.split("\n").filter(Boolean);
     // Walk backwards to find last valid entry
     for (let i = lines.length - 1; i >= 0; i--) {
+      if (!lines[i].startsWith("{")) continue;
       try {
         const entry = JSON.parse(lines[i]);
         if (entry.hash) return entry.hash;
@@ -234,7 +235,28 @@ function appendEntries(entries) {
     console.error("Symlink guard blocked append to commit-log.jsonl");
     process.exit(1);
   }
-  const content = entries.map((e) => JSON.stringify(e)).join("\n") + "\n";
+  // Dedup: skip entries whose hash already exists in the tail of the log
+  const existingHashes = new Set();
+  try {
+    const tail = fs.readFileSync(COMMIT_LOG, "utf8").split("\n").slice(-200);
+    for (const line of tail) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("{")) continue;
+      try {
+        const obj = JSON.parse(trimmed);
+        if (obj?.hash) existingHashes.add(obj.hash);
+      } catch {
+        /* ignore */
+      }
+    }
+  } catch {
+    /* file may not exist */
+  }
+  const filtered = entries.filter((e) => !existingHashes.has(e.hash));
+  if (filtered.length === 0) return;
+  // isSafeToWrite guard already checked at function entry (line 234)
+  if (!isSafeToWrite(COMMIT_LOG)) return;
+  const content = filtered.map((e) => JSON.stringify(e)).join("\n") + "\n";
   fs.appendFileSync(COMMIT_LOG, content, "utf8");
 }
 
