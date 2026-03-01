@@ -17,19 +17,19 @@ Enforcement Expansion (next)
 
 ## Current Position
 
-Phase: 4 of 7 (Enforcement Expansion) Plan: 3 of 4 in current phase Status: In
-progress Last activity: 2026-03-01 — Completed 04-03-PLAN.md (regex rule
-expansion + FP auto-disable)
+Phase: 4 of 7 (Enforcement Expansion) Plan: 4 of 4 in current phase Status:
+Phase complete Last activity: 2026-03-01 — Completed 04-04-PLAN.md (enforcement
+manifest)
 
-Progress: [######....] ~57%
+Progress: [########..] ~61%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 13
-- Average duration: 8.4 min
-- Total execution time: 109 min
+- Total plans completed: 14
+- Average duration: 8.6 min
+- Total execution time: 121 min
 
 **By Phase:**
 
@@ -38,14 +38,14 @@ Progress: [######....] ~57%
 | 01-storage-foundation      | 3     | 17 min | 5.7 min  |
 | 02-backfill-data-migration | 3     | 26 min | 8.7 min  |
 | 03-core-pipeline           | 4     | 28 min | 7.0 min  |
-| 04-enforcement-expansion   | 3     | 38 min | 12.7 min |
+| 04-enforcement-expansion   | 4     | 50 min | 12.5 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 03-03 (15 min), 03-04 (4 min), 04-01 (11 min), 04-02 (11 min),
-  04-03 (16 min)
-- Trend: Phase 4 regex expansion slower due to concurrent agent conflict + test
-  debugging
+- Last 5 plans: 03-04 (4 min), 04-01 (11 min), 04-02 (11 min), 04-03 (16 min),
+  04-04 (12 min)
+- Trend: Phase 4 complete; enforcement manifest capstone on par with phase
+  average
 
 _Updated after each plan completion_
 
@@ -132,6 +132,10 @@ affecting current work:
 - 04-03: no-string-concat-in-query uses testFn with dual detection
 - 04-03: FP_THRESHOLD default 25 matches existing >20 CONSIDER REMOVAL heuristic
 - 04-03: Test file exclusions needed for lodash fixtures and SQL test fixtures
+- 04-04: Fuzzy matching for rule-to-pattern mapping using slug containment and
+  word overlap
+- 04-04: All patterns default to manual: code-review (never truly unenforced)
+- 04-04: Used node:test instead of vitest for test file (project convention)
 
 ### Pending Todos
 
@@ -144,8 +148,8 @@ affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-01T16:12:00Z Stopped at: Completed 04-03-PLAN.md (regex
-rule expansion + FP auto-disable) -- Phase 4 in progress Resume file: None
+Last session: 2026-03-01T16:29:00Z Stopped at: Completed 04-04-PLAN.md
+(enforcement manifest) -- Phase 4 complete Resume file: None
 
 ### GSD Process Position
 
