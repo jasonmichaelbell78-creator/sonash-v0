@@ -52,7 +52,7 @@ function safeReadFile(filePath: string): string | null {
   try {
     return fs.readFileSync(filePath, "utf8");
   } catch {
-    console.warn(`Warning: Could not read ${filePath}`);
+    console.warn(`Warning: Could not read ${path.relative(PROJECT_ROOT, filePath)}`);
     return null;
   }
 }
@@ -160,7 +160,7 @@ function resolveSingleEntry(
 
 function disambiguateRecords(resolved: ParsedEntry[]): ReviewRecordType[] {
   const records: ReviewRecordType[] = [];
-  const seenIds = new Set<string>();
+  const dupCounters = new Map<string, number>();
 
   resolved.sort((a, b) => a.reviewNumber - b.reviewNumber);
 
@@ -169,7 +169,10 @@ function disambiguateRecords(resolved: ParsedEntry[]): ReviewRecordType[] {
 
     if (KNOWN_DUPLICATE_IDS.has(entry.reviewNumber)) {
       const baseId = `rev-${entry.reviewNumber}`;
-      const suffix = seenIds.has(baseId) ? "b" : "a";
+      const next = (dupCounters.get(baseId) ?? 0) + 1;
+      dupCounters.set(baseId, next);
+
+      const suffix = String.fromCharCode("a".charCodeAt(0) + (next - 1));
       record.id = `${baseId}-${suffix}`;
       record.origin = {
         ...record.origin,
@@ -177,7 +180,6 @@ function disambiguateRecords(resolved: ParsedEntry[]): ReviewRecordType[] {
       };
     }
 
-    seenIds.add(record.id.replace(/-[ab]$/, ""));
     records.push(record);
   }
 
@@ -188,7 +190,6 @@ export function resolveOverlaps(byNumber: Map<number, ParsedEntry[]>): Resolutio
   const resolved: ParsedEntry[] = [];
   let overlapsResolved = 0;
   let duplicatesDisambiguated = 0;
-  const missingIds: number[] = [];
 
   for (const [reviewNumber, entries] of byNumber) {
     const result = resolveSingleEntry(reviewNumber, entries);
@@ -200,6 +201,19 @@ export function resolveOverlaps(byNumber: Map<number, ParsedEntry[]>): Resolutio
   }
 
   const records = disambiguateRecords(resolved);
+
+  const present = [...byNumber.keys()]
+    .filter((n) => !KNOWN_SKIPPED_IDS.has(n))
+    .sort((a, b) => a - b);
+  const missingIds: number[] = [];
+  if (present.length > 0) {
+    const min = present[0];
+    const max = present[present.length - 1];
+    for (let n = min; n <= max; n++) {
+      if (KNOWN_SKIPPED_IDS.has(n)) continue;
+      if (!byNumber.has(n)) missingIds.push(n);
+    }
+  }
 
   return {
     records,
@@ -899,7 +913,7 @@ export async function runBackfill(): Promise<void> {
 }
 
 // Run if executed directly
-runBackfill().catch((err: unknown) => {
+void runBackfill().catch((err: unknown) => {
   console.error("Backfill failed:", err);
   process.exit(1);
 });

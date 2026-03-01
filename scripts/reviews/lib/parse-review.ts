@@ -73,7 +73,7 @@ function parseHeaderLine(
   const dateMatch = DATE_RE.exec(titleAndDate);
   const date = dateMatch ? dateMatch[1] : null;
   const title =
-    dateMatch?.index !== undefined ? titleAndDate.slice(0, dateMatch.index).trim() : titleAndDate;
+    dateMatch?.index != null ? titleAndDate.slice(0, dateMatch.index).trim() : titleAndDate;
 
   const cleanTitle = title.replace(/\s*--\s*$/, "").replace(/:\s*$/, "");
 
@@ -173,7 +173,8 @@ function parseTableCells(trimmed: string): string[] {
 }
 
 function isSkippableRow(cells: string[]): boolean {
-  return cells.length < 2 || cells[0].startsWith("---") || cells[0].startsWith("ID");
+  const first = (cells[0] ?? "").trim().toLowerCase();
+  return cells.length < 2 || first.startsWith("---") || first === "id";
 }
 
 function extractTableEntry(trimmed: string, filePath: string): ParsedEntry | null {
@@ -299,6 +300,12 @@ function extractInlinePatterns(line: string): string[] {
     .filter((s) => s.length > 0);
 }
 
+function collectInlinePatterns(line: string, items: string[]): void {
+  for (const part of extractInlinePatterns(line)) {
+    if (!items.includes(part)) items.push(part);
+  }
+}
+
 function extractSectionItems(
   raw: string,
   sectionHeaders: string[],
@@ -314,11 +321,7 @@ function extractSectionItems(
 
     if (isSectionHeader(lower, sectionHeaders)) {
       inSection = true;
-      if (includeInlinePatterns) {
-        for (const part of extractInlinePatterns(line)) {
-          if (!items.includes(part)) items.push(part);
-        }
-      }
+      if (includeInlinePatterns) collectInlinePatterns(line, items);
       continue;
     }
 

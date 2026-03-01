@@ -6,6 +6,11 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
+## Purpose
+
+Data quality analysis of review JSONL vs markdown sources, identifying
+completeness gaps and fidelity issues.
+
 **Generated:** 2026-02-27 **Source files:** `.claude/state/reviews.jsonl`,
 `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`
 
@@ -345,3 +350,9 @@ fails to extract structured data from the markdown format, defaulting most
 fields to zero/empty. The markdown log is by far the richer, more complete data
 source. The JSONL in its current state is not suitable for quantitative analysis
 of review outcomes.
+
+## Version History
+
+| Version | Date       | Changes          |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-02-27 | Initial creation |

@@ -6,6 +6,11 @@
 **Status:** DRAFT
 <!-- prettier-ignore-end -->
 
+## Purpose
+
+Brainstorming notes on what a skill-ecosystem-audit would cover and how to
+detect skill bloat.
+
 **Source:** Session #185, 2026-02-24 **Context:** Brainstorming after PR #388
 retro action items were applied
 
@@ -193,3 +198,9 @@ replaced with a one-line reference.
 The real question is whether this becomes an automated check (part of a
 skill-ecosystem-audit) or a periodic manual cleanup. Given the pattern of
 things-only-get-done-if-automated in this project, probably the former.
+
+## Version History
+
+| Version | Date       | Changes          |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-02-24 | Initial creation |

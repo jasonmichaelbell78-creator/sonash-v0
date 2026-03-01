@@ -64,9 +64,8 @@ export function createDeferredItems(
       try {
         const parsed = JSON.parse(line) as { id?: unknown };
         const id = typeof parsed.id === "string" ? parsed.id : "";
-        const m = new RegExp(
-          `^${reviewId.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)}-deferred-(\\d+)$`
-        ).exec(id);
+        const escapedId = reviewId.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+        const m = new RegExp("^" + escapedId + String.raw`-deferred-(\d+)$`).exec(id);
         if (m) {
           const n = Number.parseInt(m[1], 10);
           if (n > maxExisting) maxExisting = n;
@@ -141,7 +140,12 @@ function main(): void {
 
   let items: DeferredItemInput[];
   try {
-    items = JSON.parse(args[itemsIdx + 1]) as DeferredItemInput[];
+    const parsed: unknown = JSON.parse(args[itemsIdx + 1]);
+    if (!Array.isArray(parsed)) {
+      console.error("Error: --items must be a valid JSON array");
+      process.exit(1);
+    }
+    items = parsed as DeferredItemInput[];
   } catch {
     console.error("Error: --items must be valid JSON array");
     process.exit(1);

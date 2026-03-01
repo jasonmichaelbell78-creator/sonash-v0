@@ -1,5 +1,10 @@
 # Suggested Compliance Checker Rules
 
+## Purpose
+
+Candidate compliance checker rules extracted from review consolidation, pending
+manual curation.
+
 **Generated:** 2026-02-27 **Source:** Consolidation Reviews #1-#399 **Status:**
 Pending review - add to check-pattern-compliance.js as appropriate
 
@@ -452,3 +457,9 @@ Pending review - add to check-pattern-compliance.js as appropriate
   fileTypes: [".js", ".ts"],
 }
 ```
+
+## Version History
+
+| Version | Date       | Changes                                     |
+| ------- | ---------- | ------------------------------------------- |
+| 1.0     | 2026-02-27 | Generated from consolidation Reviews #1-399 |

@@ -126,31 +126,72 @@ function wrapExistingTableWithMarkers(content: string): string {
     throw new Error("Could not find the anti-patterns table in CLAUDE.md Section 4");
   }
 
-  // Find the end of the table (next blank line or section)
-  let tableEnd = tableIdx;
-  const lines = content.slice(tableIdx).split("\n");
-  let lineOffset = 0;
+  const tail = content.slice(tableIdx);
+  const lines = tail.split("\n");
+
+  let consumedLines = 0;
+  let sawSeparator = false;
+
   for (const line of lines) {
-    lineOffset += line.length + 1;
-    // Table rows start with |, so stop at first non-table line after header
-    if (lineOffset > 10 && !line.startsWith("|")) {
-      tableEnd = tableIdx + lineOffset - line.length - 1;
-      break;
+    if (consumedLines === 0) {
+      consumedLines++;
+      continue;
     }
+
+    if (line.startsWith("|")) {
+      if (/^\|\s*-+/.test(line)) sawSeparator = true;
+      consumedLines++;
+      continue;
+    }
+
+    if (sawSeparator) break;
+
+    consumedLines++;
+    break;
   }
 
-  const before = content.slice(0, tableIdx);
-  const existingTable = content.slice(tableIdx, tableEnd).trimEnd();
+  const existingTable = lines.slice(0, consumedLines).join("\n").trimEnd();
+  const tableEnd =
+    tableIdx + existingTable.length + (tail.startsWith(existingTable + "\n") ? 1 : 0);
+
+  const before = content.slice(0, tableIdx).trimEnd();
   const after = content.slice(tableEnd);
 
-  return before + START_MARKER + "\n" + existingTable + "\n" + END_MARKER + after;
+  return (
+    before +
+    "\n" +
+    START_MARKER +
+    "\n" +
+    existingTable +
+    "\n" +
+    END_MARKER +
+    "\n" +
+    after.trimStart()
+  );
 }
 
 /** Write CLAUDE.md with a warning on failure instead of throwing. */
 function writeClaudeMdSafe(claudePath: string, content: string): void {
+  const tmpPath = `${claudePath}.tmp-${process.pid}-${Date.now()}`;
   try {
-    fs.writeFileSync(claudePath, content, "utf8");
+    fs.writeFileSync(tmpPath, content, "utf8");
+    try {
+      fs.renameSync(tmpPath, claudePath);
+    } catch {
+      // Cross-device fallback
+      fs.copyFileSync(tmpPath, claudePath);
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* best-effort */
+      }
+    }
   } catch (err) {
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {
+      /* best-effort cleanup */
+    }
     console.warn(
       `[generate-claude-antipatterns] Warning: Could not write CLAUDE.md: ${
         err instanceof Error ? err.message : String(err)

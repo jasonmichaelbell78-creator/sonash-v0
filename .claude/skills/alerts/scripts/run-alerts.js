@@ -3238,7 +3238,15 @@ function checkReviewsSync() {
     );
     const missing = driftMatch ? Number.parseInt(driftMatch[1], 10) : result.success ? 0 : 1;
 
-    if (missing >= BENCHMARKS.reviews_sync.missing.poor) {
+    if (!result.success && !driftMatch) {
+      addAlert(
+        "reviews-sync",
+        "error",
+        "Reviews sync check failed (no parsable drift count)",
+        null,
+        "Run: npm run reviews:sync"
+      );
+    } else if (missing >= BENCHMARKS.reviews_sync.missing.poor) {
       addAlert(
         "reviews-sync",
         "error",
@@ -3315,7 +3323,15 @@ function checkCrossdocDeps() {
       const issueMatch = output.match(/(\d+)\s+issue\(s\)/i);
       const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
 
-      if (issues >= BENCHMARKS.crossdoc.issues.poor) {
+      if (!result.success && !issueMatch) {
+        addAlert(
+          "crossdoc",
+          "error",
+          "Crossdoc check failed (no parsable issue count)",
+          null,
+          "Run: npm run crossdoc:check"
+        );
+      } else if (issues >= BENCHMARKS.crossdoc.issues.poor) {
         addAlert(
           "crossdoc",
           "error",

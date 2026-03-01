@@ -206,10 +206,14 @@ function getLatestLogHash() {
  * Get commits after a specific hash
  */
 function getCommitsAfter(sinceHash) {
+  if (typeof sinceHash !== "string" || sinceHash.length === 0) {
+    console.warn("Warning: missing sinceHash, skipping incremental sync");
+    return [];
+  }
   // Validate sinceHash is a hex commit hash to prevent git arg injection
   if (!/^[\da-f]{7,40}$/i.test(sinceHash)) {
     console.warn(
-      `Warning: invalid sinceHash "${sinceHash.slice(0, 20)}", skipping incremental sync`
+      `Warning: invalid sinceHash "${sinceHash.substring(0, 20)}", skipping incremental sync`
     );
     return [];
   }
@@ -233,6 +237,50 @@ function getCommitsAfter(sinceHash) {
 }
 
 /**
+ * Read tail hashes from an existing log file for dedup.
+ */
+function readTailHashes(filePath) {
+  const hashes = new Set();
+  try {
+    const tail = fs.readFileSync(filePath, "utf8").split("\n").slice(-200);
+    for (const line of tail) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("{")) continue;
+      try {
+        const obj = JSON.parse(trimmed);
+        if (obj?.hash) hashes.add(obj.hash);
+      } catch {
+        /* ignore malformed lines */
+      }
+    }
+  } catch {
+    /* file may not exist */
+  }
+  return hashes;
+}
+
+/**
+ * Determine if a newline prefix is needed before appending.
+ */
+function needsNewlinePrefix(filePath) {
+  try {
+    if (!fs.existsSync(filePath)) return false;
+    const fd = fs.openSync(filePath, "r");
+    try {
+      const stat = fs.fstatSync(fd);
+      if (stat.size === 0) return false;
+      const buf = Buffer.alloc(1);
+      fs.readSync(fd, buf, 0, 1, stat.size - 1);
+      return buf[0] !== 0x0a;
+    } finally {
+      fs.closeSync(fd);
+    }
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Append entries to existing commit log (incremental sync)
  */
 function appendEntries(entries) {
@@ -243,46 +291,11 @@ function appendEntries(entries) {
     console.error("Symlink guard blocked append to commit-log.jsonl");
     process.exit(1);
   }
-  // Dedup: skip entries whose hash already exists in the tail of the log
-  const existingHashes = new Set();
-  try {
-    const tail = fs.readFileSync(COMMIT_LOG, "utf8").split("\n").slice(-200);
-    for (const line of tail) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("{")) continue;
-      try {
-        const obj = JSON.parse(trimmed);
-        if (obj?.hash) existingHashes.add(obj.hash);
-      } catch {
-        /* ignore */
-      }
-    }
-  } catch {
-    /* file may not exist */
-  }
+  const existingHashes = readTailHashes(COMMIT_LOG);
   const filtered = entries.filter((e) => !existingHashes.has(e.hash));
   if (filtered.length === 0) return;
-  // Ensure file ends with newline before appending to prevent JSONL corruption
-  let prefix = "";
-  try {
-    if (fs.existsSync(COMMIT_LOG)) {
-      const fd = fs.openSync(COMMIT_LOG, "r");
-      try {
-        const stat = fs.fstatSync(fd);
-        if (stat.size > 0) {
-          const buf = Buffer.alloc(1);
-          fs.readSync(fd, buf, 0, 1, stat.size - 1);
-          if (buf[0] !== 0x0a) prefix = "\n";
-        }
-      } finally {
-        fs.closeSync(fd);
-      }
-    }
-  } catch {
-    // Non-fatal; proceed without prefix
-  }
+  const prefix = needsNewlinePrefix(COMMIT_LOG) ? "\n" : "";
   const content = prefix + filtered.map((e) => JSON.stringify(e)).join("\n") + "\n";
-  // isSafeToWrite guard already checked at function entry; re-check before write
   if (!isSafeToWrite(COMMIT_LOG)) return;
   fs.appendFileSync(COMMIT_LOG, content, "utf8");
 }

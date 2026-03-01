@@ -37,7 +37,9 @@ function findProjectRoot(startDir: string): string {
  * @returns Markdown string for the template stub
  */
 export function generateFixTemplateStub(pattern: RecurrenceResult, templateNumber: number): string {
-  const name = pattern.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase());
+  const displayName = pattern.pattern
+    .replaceAll("-", " ")
+    .replaceAll(/\b\w/g, (ch) => ch.toUpperCase());
 
   const prList =
     pattern.distinctPRs.size > 0
@@ -48,9 +50,9 @@ export function generateFixTemplateStub(pattern: RecurrenceResult, templateNumbe
 
   return [
     "",
-    `### Template ${templateNumber}: ${name}`,
+    `### Template ${templateNumber}: ${displayName}`,
     "",
-    `**Pattern:** ${name}`,
+    `**Pattern:** ${pattern.pattern}`,
     `**When to use:** [TODO: fill in]`,
     `**Fix:**`,
     "```",
@@ -99,10 +101,9 @@ function writeFixTemplatesAtomic(
 ): void {
   try {
     const updatedContent = existingContent.trimEnd() + "\n" + appendContent + "\n";
-    const tmpPath = fixTemplatesPath + ".tmp";
+    const tmpPath = `${fixTemplatesPath}.tmp-${process.pid}-${Date.now()}`;
     fs.writeFileSync(tmpPath, updatedContent, "utf8");
     try {
-      if (fs.existsSync(fixTemplatesPath)) fs.rmSync(fixTemplatesPath, { force: true });
       fs.renameSync(tmpPath, fixTemplatesPath);
     } catch {
       fs.copyFileSync(tmpPath, fixTemplatesPath);

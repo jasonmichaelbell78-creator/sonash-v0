@@ -192,12 +192,24 @@ if (require.main === module) {
   // Output
   if (outputPath) {
     const resolvedOut = path.resolve(projectRoot, outputPath);
-    const rel = path.relative(projectRoot, resolvedOut);
-    if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+    const projectRootReal = fs.realpathSync(projectRoot);
+
+    const rel = path.relative(projectRootReal, resolvedOut);
+    if (/^\.\.(?:[\\/]|$)/.test(rel)) {
       console.error("--output must be within the project root");
       process.exit(1);
     }
-    fs.mkdirSync(path.dirname(resolvedOut), { recursive: true });
+
+    const outDir = path.dirname(resolvedOut);
+    fs.mkdirSync(outDir, { recursive: true });
+
+    const outDirReal = fs.realpathSync(outDir);
+    const dirRel = path.relative(projectRootReal, outDirReal);
+    if (/^\.\.(?:[\\/]|$)/.test(dirRel)) {
+      console.error("--output must be within the project root (symlink escape detected)");
+      process.exit(1);
+    }
+
     fs.writeFileSync(resolvedOut, markdown, "utf8");
     console.log(`Wrote ${filtered.length} review(s) to ${outputPath}`);
   } else {

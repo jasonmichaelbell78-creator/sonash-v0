@@ -203,5 +203,10 @@ npm run docs:check   # Documentation linting
 
 ---
 
-**END OF SESSION_CONTEXT.md** | **Version**: 6.3 (2026-03-01) |
+## Version History
+
+| Version | Date       | Changes              |
+| ------- | ---------- | -------------------- |
+| 6.3     | 2026-03-01 | Session #197 updates |
+
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)

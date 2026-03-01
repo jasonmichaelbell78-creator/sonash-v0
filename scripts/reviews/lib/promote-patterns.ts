@@ -159,8 +159,8 @@ export function filterAlreadyPromoted(
   for (const p of patterns) {
     // Normalize for comparison: lowercase, replace hyphens with spaces
     const normalizedPattern = p.pattern.toLowerCase().replaceAll("-", " ");
-    const escaped = normalizedPattern.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const patternRegex = new RegExp(`\\b${escaped}\\b`, "i");
+    const escaped = normalizedPattern.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+    const patternRegex = new RegExp(`(?:^|[^a-z0-9])${escaped}(?:$|[^a-z0-9])`, "i");
     if (patternRegex.test(lowerContent)) {
       alreadyPromoted.push(p.pattern);
     } else {
@@ -353,10 +353,9 @@ function writePromotedPatterns(
   if (updatedContent === codePatternsContent) {
     throw new Error("[promote-patterns] Promotion insertion produced no changes.");
   }
-  const tmpPath = `${codePatternsPath}.tmp`;
+  const tmpPath = `${codePatternsPath}.tmp-${process.pid}-${Date.now()}`;
   try {
     fs.writeFileSync(tmpPath, updatedContent, "utf8");
-    if (fs.existsSync(codePatternsPath)) fs.rmSync(codePatternsPath, { force: true });
     try {
       fs.renameSync(tmpPath, codePatternsPath);
     } catch {
@@ -457,8 +456,15 @@ export function promotePatterns(options: {
 
   // 6. Update consolidation state (unless dry run)
   if (!options.dryRun && reviews.length > 0) {
-    const lastId = reviews.at(-1)!.id;
-    saveConsolidationState(projectRoot, lastId);
+    let best: { id: string; n: number } | null = null;
+    for (const r of reviews) {
+      const n = parseRevNumber(r.id);
+      if (n === null) continue;
+      if (!best || n > best.n) best = { id: r.id, n };
+    }
+    if (best) {
+      saveConsolidationState(projectRoot, best.id);
+    }
   }
 
   return {

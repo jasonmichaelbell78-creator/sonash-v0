@@ -6,6 +6,11 @@
 
 # Master Issue List
 
+## Purpose
+
+Aggregated and deduplicated findings from cross-session audits, organized by
+severity and PR bucket.
+
 **Generated:** 2026-02-27 **Source:** Aggregated from single-session audits,
 CANON files, and backlogs **Total Items:** 0 (deduplicated from 0 raw findings)
 **NET NEW:** 0 (0 already in ROADMAP/Tech Debt)
@@ -75,4 +80,8 @@ CANON files, and backlogs **Total Items:** 0 (deduplicated from 0 raw findings)
 
 ---
 
-**Document Version:** 1.0 **Last Updated:** 2026-02-27
+## Version History
+
+| Version | Date       | Changes          |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-02-27 | Initial creation |

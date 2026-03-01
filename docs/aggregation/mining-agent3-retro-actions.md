@@ -6,6 +6,11 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
+## Purpose
+
+Analysis of PR retrospective coverage, action item implementation rates, and
+deferred item tracking gaps.
+
 **Generated:** 2026-02-27 **Source files:** `.claude/state/reviews.jsonl`,
 `.claude/skills/pr-retro/SKILL.md`, `docs/technical-debt/MASTER_DEBT.jsonl`,
 `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`
@@ -338,3 +343,9 @@ The pr-retro skill (SKILL.md) has explicit support:
 | Known churn patterns (active + archived) | 13                          |
 | Patterns resolved                        | 5 (38%)                     |
 | Retro implementation commits in git      | 27                          |
+
+## Version History
+
+| Version | Date       | Changes          |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-02-27 | Initial creation |

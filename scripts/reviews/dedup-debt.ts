@@ -229,7 +229,6 @@ function writeDebtOutput(masterPath: string, dedupedPath: string, result: DedupR
   try {
     const output = result.kept.map((item) => JSON.stringify(item)).join("\n") + "\n";
     fs.writeFileSync(tmpPath, output, "utf8");
-    if (fs.existsSync(masterPath)) fs.rmSync(masterPath, { force: true });
     try {
       fs.renameSync(tmpPath, masterPath);
     } catch {

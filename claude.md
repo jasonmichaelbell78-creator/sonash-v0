@@ -130,4 +130,11 @@ Evidence-Based).
 
 ---
 
-**Version**: 5.2 (2026-02-26) | [Full version history](docs/SESSION_HISTORY.md)
+## Version History
+
+| Version | Date       | Changes                              |
+| ------- | ---------- | ------------------------------------ |
+| 5.2     | 2026-02-26 | Agent triggers, reference docs table |
+| 5.1     | 2026-02-10 | Initial versioned release            |
+
+[Full version history](docs/SESSION_HISTORY.md)

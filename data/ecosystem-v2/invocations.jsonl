@@ -1,0 +1,1 @@
+{"id":"inv-1772335482779","date":"2026-03-01","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"write-invocation.ts"},"skill":"pr-review","type":"skill","duration_ms":null,"success":true,"error":null,"context":{"pr":407,"trigger":"user-invoked"}}

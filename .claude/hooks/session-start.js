@@ -459,7 +459,7 @@ try {
 try {
   execFileSync("node", ["scripts/seed-commit-log.js", "--sync"], {
     cwd: projectDir,
-    stdio: "pipe",
+    stdio: "ignore",
     timeout: 20000,
   });
 } catch {

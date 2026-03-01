@@ -6,6 +6,11 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
+## Purpose
+
+Analysis of hooks, gates, overrides, agent tracking, SonarCloud/Qodo/Gemini
+integration, and test coverage.
+
 **Date:** 2026-02-27 **Scope:** Session hooks, pre-commit/pre-push gates,
 override audit trail, agent invocation tracking, SonarCloud integration,
 Qodo/Gemini config, workflow test inventory, review-related skills inventory.
@@ -433,3 +438,9 @@ tests**. Only pattern-compliance and audit S0/S1 validation have test coverage.
 | 8   | **4 GitHub workflows** directly serve review pipeline (review-check, auto-label-review-tier, sonarcloud, pattern-compliance-audit) | Good CI integration                                     |
 | 9   | **Code-reviewer gate in pre-push** checks invocations.jsonl — only 6 overrides (4.6%)                                              | Well-calibrated, rarely bypassed                        |
 | 10  | **Session-start automatically syncs reviews** and rotates archives                                                                 | Automation prevents drift but adds session startup cost |
+
+## Version History
+
+| Version | Date       | Changes          |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-02-27 | Initial creation |
