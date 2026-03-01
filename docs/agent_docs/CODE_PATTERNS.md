@@ -626,6 +626,19 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 **Source:** Consolidation #2 (Reviews #1-#399)
 
+### Learnings
+
+🟡 **Rule:** Learnings — recurring pattern from 3 reviews (#407, #413, #416)
+
+**Source:** Consolidation #5 (Reviews #407-#419)
+
+### Premature Dedup New Set Before Duplicate Detection Defeats
+
+🟡 **Rule:** Premature Dedup New Set Before Duplicate Detection Defeats —
+recurring pattern from 7 reviews (#408, #409, #410, #411, #412, #414, #418)
+
+**Source:** Consolidation #5 (Reviews #407-#419)
+
 ## Enforcement
 
 These patterns are automatically enforced by:
@@ -647,6 +660,7 @@ helpers.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.7     | 2026-03-01 | **CONSOLIDATION #5:** Auto-added 2 patterns (learnings, premature-dedup-new-set-before-duplicate-detection-defeats). Source: Reviews #407-#419.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 3.6     | 2026-02-26 | Add 4 patterns: lazy quantifiers ReDoS, generic AST walker, per-access guard, fix-one-audit-all. Source: PR #394 retro.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 3.7     | 2026-02-27 | **CONSOLIDATION #2:** Auto-added 6 patterns (cross-platform, refactor, fail-closed, cc reduction, propagation, gemini). Source: Reviews #1-#399.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 3.5     | 2026-02-25 | Add path normalization before string checks pattern (🔴). Source: PR #392 retro (3 consecutive PRs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |

@@ -39,7 +39,16 @@
     "reverify-resolved.js",
     "dedup-debt.js",
     "promote-patterns.js",
-    "render-reviews-to-md.js"
+    "render-reviews-to-md.js",
+    "seed-commit-log.js",
+    "backfill-reviews.test.js",
+    "write-deferred-items.test.js",
+    "write-invocation.test.js",
+    "write-retro-record.test.js",
+    "write-review-record.test.js",
+    "backfill-reviews.js",
+    "generate-fix-template-stubs.js",
+    "write-jsonl.js"
   ],
   "git-without-separator": [
     "surface-lessons-learned.js",

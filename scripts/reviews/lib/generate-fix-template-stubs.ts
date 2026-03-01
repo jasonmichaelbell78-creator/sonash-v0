@@ -5,7 +5,7 @@
  * promoted by promote-patterns.ts that don't already have entries.
  *
  * Each stub includes: pattern name, description, occurrence count,
- * PR references, and TODO placeholders for the actual fix example.
+ * PR references, and placeholders for the actual fix example.
  */
 
 import * as fs from "node:fs";

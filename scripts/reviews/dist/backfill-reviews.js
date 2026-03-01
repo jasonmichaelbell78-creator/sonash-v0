@@ -718,9 +718,7 @@ async function runBackfill() {
     const allRecords = [...resolution.records, ...v1Result.records];
     console.log("Step 6: BKFL-05 consolidation counter check...");
     const consolidationPath = path.join(PROJECT_ROOT, ".claude/state/consolidation.json");
-    const reviewNums = allRecords
-        .map((r) => extractReviewNumber(r.id))
-        .filter((n) => n > 0);
+    const reviewNums = allRecords.map((r) => extractReviewNumber(r.id)).filter((n) => n > 0);
     const maxReviewNumber = reviewNums.length > 0 ? Math.max(...reviewNums) : 0;
     const consolidationResult = checkConsolidationCounter(consolidationPath, maxReviewNumber);
     if (consolidationResult.match) {
