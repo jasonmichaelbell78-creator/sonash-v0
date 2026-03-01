@@ -41,7 +41,7 @@ export function writeInvocation(
 ): InvocationRecordType {
   const recordData: Record<string, unknown> = {
     ...data,
-    id: data.id ?? `inv-${Date.now()}-${process.pid}-${Math.random().toString(16).slice(2, 10)}`,
+    id: data.id ?? `inv-${Date.now()}`,
     date: data.date ?? new Date().toISOString().slice(0, 10),
   };
 

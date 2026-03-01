@@ -214,7 +214,12 @@ function generateRuleSkeleton(result, usedIds = new Set()) {
  * Build a CODE_PATTERNS.md entry for a promoted pattern.
  */
 function sanitizeMdLine(s) {
-    return s.replaceAll(/\r?\n/g, " ").replaceAll(/[`#]/g, "").replaceAll(/\s+/g, " ").trim();
+    return s
+        .replaceAll(/\r?\n/g, " ")
+        .replaceAll(/[|<>[\]]/g, "")
+        .replaceAll(/[`#]/g, "")
+        .replaceAll(/\s+/g, " ")
+        .trim();
 }
 function buildCodePatternsEntry(result, category) {
     const title = sanitizeMdLine(result.pattern.replaceAll("-", " ").replaceAll(/\b\w/g, (ch) => ch.toUpperCase()));
@@ -366,6 +371,12 @@ function writePromotedPatterns(codePatternsPath, codePatternsContent, newPattern
             // Cross-device fallback (re-check destination to prevent symlink race)
             if (!isSafeToWrite(codePatternsPath)) {
                 throw new Error("[promote-patterns] Refusing to write CODE_PATTERNS.md because destination became unsafe (symlink).");
+            }
+            if (fs.existsSync(codePatternsPath)) {
+                const st = fs.lstatSync(codePatternsPath);
+                if (!st.isFile()) {
+                    throw new Error("[promote-patterns] Refusing to write CODE_PATTERNS.md because destination is not a regular file.");
+                }
             }
             fs.copyFileSync(tmpPath, codePatternsPath);
         }

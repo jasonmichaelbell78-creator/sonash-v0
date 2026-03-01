@@ -237,7 +237,12 @@ export function generateRuleSkeleton(
  * Build a CODE_PATTERNS.md entry for a promoted pattern.
  */
 function sanitizeMdLine(s: string): string {
-  return s.replaceAll(/\r?\n/g, " ").replaceAll(/[`#]/g, "").replaceAll(/\s+/g, " ").trim();
+  return s
+    .replaceAll(/\r?\n/g, " ")
+    .replaceAll(/[|<>[\]]/g, "")
+    .replaceAll(/[`#]/g, "")
+    .replaceAll(/\s+/g, " ")
+    .trim();
 }
 
 function buildCodePatternsEntry(result: RecurrenceResult, category: string): string {
@@ -414,6 +419,14 @@ function writePromotedPatterns(
         throw new Error(
           "[promote-patterns] Refusing to write CODE_PATTERNS.md because destination became unsafe (symlink)."
         );
+      }
+      if (fs.existsSync(codePatternsPath)) {
+        const st = fs.lstatSync(codePatternsPath);
+        if (!st.isFile()) {
+          throw new Error(
+            "[promote-patterns] Refusing to write CODE_PATTERNS.md because destination is not a regular file."
+          );
+        }
       }
       fs.copyFileSync(tmpPath, codePatternsPath);
     }

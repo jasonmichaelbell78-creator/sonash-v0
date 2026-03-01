@@ -188,7 +188,8 @@ function findLastHash(lines) {
     if (!line.startsWith("{")) continue;
     try {
       const entry = JSON.parse(line);
-      if (entry && typeof entry === "object" && entry.hash) return entry.hash;
+      const hash = entry && typeof entry === "object" ? entry.hash : null;
+      if (typeof hash === "string" && /^[\da-f]{7,40}$/i.test(hash)) return hash;
     } catch {
       continue;
     }

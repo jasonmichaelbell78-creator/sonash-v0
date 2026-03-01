@@ -56,6 +56,46 @@ const review_1 = require("./lib/schemas/review");
 const retro_1 = require("./lib/schemas/retro");
 // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
 const { isSafeToWrite } = require("../lib/safe-fs");
+// ---- Atomic write helper ----------------------------------------------------
+/**
+ * Write content to filePath atomically using tmp+rename with cross-device fallback.
+ * Includes symlink guard and exclusive-create for the temp file.
+ */
+function writeAtomicSafe(filePath, content) {
+    if (!isSafeToWrite(filePath)) {
+        throw new Error(`Symlink guard blocked write to ${filePath}`);
+    }
+    const tmpPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+    let fd = null;
+    try {
+        fd = fs.openSync(tmpPath, "wx", 0o644);
+        fs.writeFileSync(fd, content, "utf8");
+        fs.closeSync(fd);
+        fd = null;
+        try {
+            fs.renameSync(tmpPath, filePath);
+        }
+        catch {
+            if (!isSafeToWrite(filePath)) {
+                throw new Error(`Symlink guard blocked write to ${filePath} (post-check)`);
+            }
+            fs.copyFileSync(tmpPath, filePath);
+        }
+    }
+    finally {
+        if (fd !== null) {
+            try {
+                fs.closeSync(fd);
+            }
+            catch { /* best-effort */ }
+        }
+        try {
+            if (fs.existsSync(tmpPath))
+                fs.rmSync(tmpPath, { force: true });
+        }
+        catch { /* best-effort */ }
+    }
+}
 // ---- Helpers ----------------------------------------------------------------
 /**
  * Walk up from startDir until we find package.json (works from both source and dist).
@@ -365,60 +405,56 @@ function determineCompleteness(topWins, topMisses, processChanges, metrics) {
     }
     return { completeness, missing };
 }
+function resolveRetroMetrics(retro, reviewsByPR) {
+    var _a;
+    const associatedReview = reviewsByPR.get(retro.pr);
+    const metrics = associatedReview
+        ? computeMetricsFromReview(associatedReview)
+        : ((_a = computeMetricsFromContent(retro.rawContent)) !== null && _a !== void 0 ? _a : null);
+    return { metrics, isMissing: !associatedReview && !metrics };
+}
+function buildSingleRetroRecord(retro, reviewsByPR) {
+    const raw = retro.rawContent;
+    const topWins = extractRetroSection(raw, ["wins", "what went well", "went well"]);
+    const topMisses = extractRetroSection(raw, [
+        "misses", "what could improve", "could improve", "issues", "pain points",
+    ]);
+    const processChanges = extractRetroSection(raw, [
+        "process changes", "action items", "actions", "prevention", "recommendations",
+    ]);
+    const { metrics, isMissing } = resolveRetroMetrics(retro, reviewsByPR);
+    const { completeness, missing } = determineCompleteness(topWins, topMisses, processChanges, metrics !== null && metrics !== void 0 ? metrics : null);
+    const candidate = {
+        id: `retro-pr-${retro.pr}`,
+        date: retro.date,
+        schema_version: 1,
+        completeness,
+        completeness_missing: missing,
+        origin: { type: "pr-retro", pr: retro.pr, tool: "backfill-reviews.ts" },
+        pr: retro.pr,
+        session: retro.sourceFile,
+        top_wins: topWins.length > 0 ? topWins : null,
+        top_misses: topMisses.length > 0 ? topMisses : null,
+        process_changes: processChanges.length > 0 ? processChanges : null,
+        score: null,
+        metrics,
+    };
+    const parsed = retro_1.RetroRecord.safeParse(candidate);
+    if (!parsed.success) {
+        console.warn(`Warning: Retro validation failed for PR #${retro.pr} (${retro.sourceFile}): ${parsed.error.message}`);
+        return { record: null, isMissingMetrics: isMissing };
+    }
+    return { record: parsed.data, isMissingMetrics: isMissing };
+}
 function buildRetroRecords(retros, reviewsByPR) {
     const records = [];
     let missingReviewCount = 0;
     for (const retro of retros) {
-        const raw = retro.rawContent;
-        const topWins = extractRetroSection(raw, ["wins", "what went well", "went well"]);
-        const topMisses = extractRetroSection(raw, [
-            "misses",
-            "what could improve",
-            "could improve",
-            "issues",
-            "pain points",
-        ]);
-        const processChanges = extractRetroSection(raw, [
-            "process changes",
-            "action items",
-            "actions",
-            "prevention",
-            "recommendations",
-        ]);
-        const associatedReview = reviewsByPR.get(retro.pr);
-        let metrics = associatedReview ? computeMetricsFromReview(associatedReview) : null;
-        if (!metrics) {
-            metrics = computeMetricsFromContent(raw);
-            if (!metrics) {
-                missingReviewCount++;
-            }
-        }
-        const { completeness, missing } = determineCompleteness(topWins, topMisses, processChanges, metrics);
-        const record = {
-            id: `retro-pr-${retro.pr}`,
-            date: retro.date,
-            schema_version: 1,
-            completeness,
-            completeness_missing: missing,
-            origin: {
-                type: "pr-retro",
-                pr: retro.pr,
-                tool: "backfill-reviews.ts",
-            },
-            pr: retro.pr,
-            session: retro.sourceFile,
-            top_wins: topWins.length > 0 ? topWins : null,
-            top_misses: topMisses.length > 0 ? topMisses : null,
-            process_changes: processChanges.length > 0 ? processChanges : null,
-            score: null,
-            metrics,
-        };
-        const parsed = retro_1.RetroRecord.safeParse(record);
-        if (!parsed.success) {
-            console.warn(`Warning: Retro validation failed for PR #${retro.pr} (${retro.sourceFile})`);
-            continue;
-        }
-        records.push(parsed.data);
+        const { record, isMissingMetrics } = buildSingleRetroRecord(retro, reviewsByPR);
+        if (isMissingMetrics)
+            missingReviewCount++;
+        if (record)
+            records.push(record);
     }
     return { records, missingReviewCount };
 }
@@ -645,7 +681,7 @@ function buildReviewsByPR(records) {
     return reviewsByPR;
 }
 function extractReviewNumber(id) {
-    const revNumRe = /^rev-(\d+)/;
+    const revNumRe = /^rev-(\d+)(?:-|$)/;
     const match = revNumRe.exec(id);
     return match ? Number.parseInt(match[1], 10) : 0;
 }
@@ -767,84 +803,10 @@ async function runBackfill() {
     fs.mkdirSync(outputDir, { recursive: true });
     const reviewsPath = path.join(outputDir, "reviews.jsonl");
     const reviewLines = allRecords.map((r) => JSON.stringify(r)).join("\n") + "\n";
-    if (!isSafeToWrite(reviewsPath)) {
-        throw new Error(`Symlink guard blocked write to ${reviewsPath}`);
-    }
-    {
-        const tmpPath = `${reviewsPath}.tmp-${process.pid}-${Date.now()}`;
-        let fd = null;
-        try {
-            fd = fs.openSync(tmpPath, "wx", 0o644);
-            fs.writeFileSync(fd, reviewLines, "utf8");
-            fs.closeSync(fd);
-            fd = null;
-            try {
-                fs.renameSync(tmpPath, reviewsPath);
-            }
-            catch {
-                // Fallback: re-check safety before non-atomic write (mitigate TOCTOU)
-                if (!isSafeToWrite(reviewsPath)) {
-                    throw new Error(`Symlink guard blocked write to ${reviewsPath} (post-check)`);
-                }
-                fs.copyFileSync(tmpPath, reviewsPath);
-            }
-        }
-        finally {
-            if (fd !== null) {
-                try {
-                    fs.closeSync(fd);
-                }
-                catch { /* best-effort */ }
-            }
-            try {
-                if (fs.existsSync(tmpPath))
-                    fs.rmSync(tmpPath, { force: true });
-            }
-            catch {
-                /* best-effort */
-            }
-        }
-    }
+    writeAtomicSafe(reviewsPath, reviewLines);
     const retrosPath = path.join(outputDir, "retros.jsonl");
     const retroLines = retroResult.records.map((r) => JSON.stringify(r)).join("\n") + "\n";
-    if (!isSafeToWrite(retrosPath)) {
-        throw new Error(`Symlink guard blocked write to ${retrosPath}`);
-    }
-    {
-        const tmpPath = `${retrosPath}.tmp-${process.pid}-${Date.now()}`;
-        let fd = null;
-        try {
-            fd = fs.openSync(tmpPath, "wx", 0o644);
-            fs.writeFileSync(fd, retroLines, "utf8");
-            fs.closeSync(fd);
-            fd = null;
-            try {
-                fs.renameSync(tmpPath, retrosPath);
-            }
-            catch {
-                // Fallback: re-check safety before non-atomic write (mitigate TOCTOU)
-                if (!isSafeToWrite(retrosPath)) {
-                    throw new Error(`Symlink guard blocked write to ${retrosPath} (post-check)`);
-                }
-                fs.copyFileSync(tmpPath, retrosPath);
-            }
-        }
-        finally {
-            if (fd !== null) {
-                try {
-                    fs.closeSync(fd);
-                }
-                catch { /* best-effort */ }
-            }
-            try {
-                if (fs.existsSync(tmpPath))
-                    fs.rmSync(tmpPath, { force: true });
-            }
-            catch {
-                /* best-effort */
-            }
-        }
-    }
+    writeAtomicSafe(retrosPath, retroLines);
     console.log("\nValidating output...");
     const reviewValidationErrors = validateOutputFile(reviewsPath, review_1.ReviewRecord, "Review");
     const retroValidationErrors = validateOutputFile(retrosPath, retro_1.RetroRecord, "Retro");

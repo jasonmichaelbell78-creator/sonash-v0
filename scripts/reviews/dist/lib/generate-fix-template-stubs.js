@@ -135,7 +135,16 @@ function writeFixTemplatesAtomic(fixTemplatesPath, existingContent, appendConten
         }
         const updatedContent = existingContent.trimEnd() + "\n" + appendContent + "\n";
         const tmpPath = `${fixTemplatesPath}.tmp-${process.pid}-${Date.now()}`;
-        fs.writeFileSync(tmpPath, updatedContent, "utf8");
+        const fd = fs.openSync(tmpPath, "wx", 0o644);
+        try {
+            fs.writeFileSync(fd, updatedContent, "utf8");
+        }
+        finally {
+            try {
+                fs.closeSync(fd);
+            }
+            catch { /* best-effort */ }
+        }
         try {
             fs.renameSync(tmpPath, fixTemplatesPath);
         }

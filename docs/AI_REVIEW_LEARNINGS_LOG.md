@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.81 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
+**Document Version:** 17.82 **Created:** 2026-01-02 **Last Updated:** 2026-03-01
 
 ## Purpose
 
@@ -2570,6 +2570,43 @@ All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl
 - **Process**: Sequential fixes, propagation check found 1 additional file
   (generate-claude-antipatterns.ts) with same vulnerable local `isSafeToWrite`.
   SonarCloud top-level await rejected for CJS compatibility.
+
+#### Review #440: PR #407 R15 — Qodo Compliance/Suggestions + SonarCloud (2026-03-01)
+
+- **Source**: Qodo Compliance (3), Qodo Code Suggestions (10), SonarCloud (9)
+- **PR**: PR #407 — PR Review Ecosystem v2
+- **Items**: 22 total → 13 fixed, 9 rejected
+- **Fixed**: (1) write-invocation.ts: remove Math.random from auto-ID, use
+  `inv-{timestamp}` only — resolves S2245 PRNG + test mismatch; (2)
+  promote-patterns.ts sanitizeMdLine: strip `|<>[]` markdown-breaking chars; (3)
+  seed-commit-log.js: validate commit hash format with `/^[\da-f]{7,40}$/i`; (4)
+  backfill-reviews.ts: include Zod error message in retro validation warnings;
+  (5) backfill-reviews.ts extractReviewNumber: tighten regex to
+  `/^rev-(\d+)(?:-|$)/`; (6) promote-patterns.ts: verify dest is regular file
+  before cross-device fallback copy; (7) generate-fix-template-stubs.ts: use
+  `fs.openSync(wx)` for atomic temp file creation; (8) backfill-reviews.ts CC
+  reduction: extract resolveRetroMetrics + buildSingleRetroRecord (CC 16→~6);
+  (9) backfill-reviews.ts CC reduction: extract writeAtomicSafe helper,
+  deduplicate 60-line atomic write blocks (CC 21→~10)
+- **Rejected**: (A) Qodo Compliance: symlink/TOCTOU in backfill temp writes —
+  already uses isSafeToWrite + wx flag + atomic rename; (B) Qodo Compliance:
+  swallowed file errors in safeReadFile — intentional graceful degradation for
+  backfill pipeline; (C) Qodo Compliance: JSONL skip-on-invalid — correct
+  behavior for data migration; (D) safeInline null guard — already null-safe via
+  TS types + `??` fallback; (E) normalize stored counter type — TS types already
+  ensure number; (F) S5852 ReDoS in check-pattern-compliance.js git-log regex —
+  bounded local-file input, no backtracking risk; (G-H) S5852 ReDoS in
+  parse-review.ts (3 regexes) — simple bounded-input patterns; (I) top-level
+  await in promote-patterns.js — CJS wrapper, repeat-rejected; (J) top-level
+  await in backfill-reviews.ts — CJS module system incompatible
+- **Patterns**: Atomic write deduplication via helper extraction; regex
+  tightening for ID parsing; PRNG removal for deterministic IDs; markdown
+  sanitization expansion for generated docs
+- **Process**: Sequential fixes across 6 TS source files. TSC clean, lint 0
+  errors, 414 tests pass, patterns:check clean. CC reductions achieved via
+  helper extraction pattern.
+
+---
 
 #### Review #439: PR #407 R13 — Qodo Compliance/Suggestions + CI Fix (2026-03-01)
 

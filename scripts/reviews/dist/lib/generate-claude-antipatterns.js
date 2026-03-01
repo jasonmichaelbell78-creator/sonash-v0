@@ -90,7 +90,9 @@ function generateAntiPatternsTable(patterns, maxPatterns = 6) {
     if (top.length === 0) {
         return "| Pattern | Rule |\n| --- | --- |\n| (none detected) | No recurring patterns found above threshold |";
     }
-    const escapeCell = (s) => String(s !== null && s !== void 0 ? s : "").replaceAll("|", String.raw `\|`).replaceAll(/\r?\n/g, " ");
+    const escapeCell = (s) => String(s !== null && s !== void 0 ? s : "")
+        .replaceAll("|", String.raw `\|`)
+        .replaceAll(/\r?\n/g, " ");
     const rows = top.map((p) => {
         var _a, _b;
         // Create a concise rule description from the pattern
