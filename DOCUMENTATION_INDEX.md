@@ -523,7 +523,7 @@ _Uncategorized_
 
 | Document                                                              | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [PR Review Ecosystem v2](.planning/PROJECT.md)                        | The PR Review Ecosystem for SoNash — infrastructure that cap... | ↓0 ↑0      | 2026-02-28    |
+| [PR Review Ecosystem v2](.planning/PROJECT.md)                        | The PR Review Ecosystem for SoNash — infrastructure that cap... | ↓0 ↑0      | 2026-03-01    |
 | [Project Milestones: PR Review Ecosystem v2](.planning/MILESTONES.md) | -                                                               | ↓0 ↑0      | 2026-03-01    |
 | [Project State](.planning/STATE.md)                                   | See: .planning/PROJECT.md (updated 2026-03-01)                  | ↓0 ↑0      | 2026-03-01    |
 | [Roadmap: PR Review Ecosystem](.planning/ROADMAP.md)                  | - **v1.0 Ecosystem Rebuild** — Phases 1-7 (shipped 2026-03-0... | ↓0 ↑0      | 2026-03-01    |
