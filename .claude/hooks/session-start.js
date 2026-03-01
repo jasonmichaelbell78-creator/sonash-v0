@@ -564,6 +564,22 @@ try {
   warnings++;
 }
 
+// Step 13: Health quick check (non-blocking)
+try {
+  const healthOutput = execFileSync("node", ["scripts/health/run-health-check.js", "--quick"], {
+    cwd: projectDir,
+    encoding: "utf8",
+    stdio: "pipe",
+    timeout: 10000,
+  });
+  const scoreLine = healthOutput.split("\n").find((l) => l.includes("Composite:"));
+  if (scoreLine) {
+    console.log(`Health: ${scoreLine.trim()}`);
+  }
+} catch {
+  console.log("Health: skipped (non-fatal)");
+}
+
 console.log("");
 if (warnings === 0) {
   console.log("✅ SessionStart complete");
