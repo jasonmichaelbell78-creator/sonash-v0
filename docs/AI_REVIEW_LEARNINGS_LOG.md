@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.84 **Created:** 2026-01-02 **Last Updated:** 2026-03-02
+**Document Version:** 17.85 **Created:** 2026-01-02 **Last Updated:** 2026-03-02
 
 ## Purpose
 
@@ -755,14 +755,14 @@ accumulate.
 
 ## Active Reviews
 
-### Review #442: PR #411 R1-R7 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
+### Review #442: PR #411 R1-R8 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
 
 _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
-7 rounds._
+8 rounds._
 
-**Source:** Semgrep OSS (64), Gemini (2), Qodo (28), CI failures (5), CodeQL
-(11), SonarCloud issues (213), SonarCloud hotspots (38) **Total:** 362
-**Fixed:** 131 **Deferred:** 95 **Rejected:** 130 **Hidden:** 4
+**Source:** Semgrep OSS (64), Gemini (2), Qodo (38), CI failures (6), CodeQL
+(11), SonarCloud issues (253), SonarCloud hotspots (38), Semgrep CI (2)
+**Total:** 414 **Fixed:** 134 **Deferred:** 96 **Rejected:** 178 **Hidden:** 5
 
 **R1 (Semgrep + Gemini + Qodo):** 5 fixes, 48 rejected
 
@@ -866,9 +866,27 @@ _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
   anchors, alternation, or unicode flags, it CANNOT be converted to
   `.replaceAll()`. Must verify each instance individually.
 
+**R8 (Qodo + SonarCloud stale + Semgrep CI + ESLint CI):** 3 fixes, 1 deferred, 48 rejected
+
+- **Fix**: ESLint CI blocker — `__dirname` not defined in check-cross-doc-deps.js.
+  ESLint config treats `scripts/**/*.js` as ESM with `__dirname`/`__filename`
+  excluded from globals. File is CJS. Added `/* global __dirname */`.
+- **Fix**: Semgrep `no-unchecked-array-access` rule expanded — multi-statement
+  guard blocks (e.g., `if (arr.length === 0) { log(); return; }`) now recognized.
+  Previous patterns only matched single-return blocks.
+- **Fix**: nosemgrep comment for check-review-archive.js `sortedWeeks[0]` — guard
+  is on different variable (`weekMap.size`), Semgrep can't track variable derivation.
+- **Rejected**: 40 stale SonarCloud (same 40 as R7, not re-analyzed after push),
+  Qodo ESM tests (Node v24 auto-detects), Qodo Semgrep ignore (standard location)
+- **Pattern**: ESLint flat config can exclude specific globals per directory. When
+  CJS scripts exist alongside ESM scripts, ensure `/* global __dirname */` or a
+  separate override block for CJS files.
+- **Pattern**: Semgrep guard patterns must account for multi-statement blocks —
+  real code often has logging/cleanup before early returns.
+
 **Process notes:**
 
-- Batched protocol effective: 7 rounds, 7 commits, no push until done
+- Batched protocol effective: 8 rounds, 8 commits, no push until done
 - Semgrep OSS lacks type information — custom rules must target specific
   known-async function names, not generic patterns
 - First-time SonarCloud scan on this codebase produced many pre-existing

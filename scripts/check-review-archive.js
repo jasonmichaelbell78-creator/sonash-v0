@@ -361,6 +361,7 @@ function analyzeTemporalCoverage(reviewsInput) {
   const weeksWithReviews = sortedWeeks.length;
 
   // Generate all weeks between first and last
+  // nosemgrep: sonash.correctness.no-unchecked-array-access — guarded by weekMap.size === 0 check above
   const firstWeek = sortedWeeks[0];
   const lastWeek = sortedWeeks.at(-1);
 

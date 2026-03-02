@@ -6,11 +6,11 @@
   "mode": "batched",
   "protocol": "commit-per-batch-no-push",
   "naming": "fix: resolve N PR review items from SOURCE (PR #411 RX)",
-  "batches_completed": 7,
-  "total_items_processed": 362,
-  "total_items_fixed": 131,
-  "total_items_deferred": 95,
-  "total_items_rejected": 130,
+  "batches_completed": 8,
+  "total_items_processed": 414,
+  "total_items_fixed": 134,
+  "total_items_deferred": 96,
+  "total_items_rejected": 178,
   "learning_entry": "#442",
   "jsonl_record": "rev-427",
   "batches": [
@@ -133,9 +133,25 @@
       ],
       "deferred_summary": "17 CC repeat-deferred from R3/R6 (same files), 2 regex complexity repeat-deferred from R6 (check-pattern-compliance L1386 + test mirror L331), 1 nested ternary repeat from R6 (L205), 1 quick health timeout repeat from R5",
       "rejected_summary": "8 replaceAll in build-enforcement-manifest.ts (all use regex features: char classes, unicode flags, anchors), 3 replaceAll in run-consolidation.v1.js (regex char classes), 1 health-log FP repeat from R6, 1 test-coverage Math.max on Dates repeat from R6, 1 escalate-deferred.test.ts assertion needed for TS strict, 6 semgrep test fixtures repeat from R6, 5 Qodo repeat-rejected (composite fixed R5, path fixed R1, cwd ☑, NaN fixed R2, semgrep --error fixed R5)"
+    },
+    {
+      "round": "R8",
+      "source": "Qodo (10) + SonarCloud (40 stale) + Semgrep CI (2) + ESLint CI (1)",
+      "total": 52,
+      "fixed": 3,
+      "deferred": 1,
+      "rejected": 48,
+      "commit": "pending",
+      "fixes": [
+        "ESLint CI blocker: added /* global __dirname */ to check-cross-doc-deps.js (CJS file treated as ESM by config)",
+        "Semgrep rule: expanded guard patterns to handle multi-statement blocks with return (e.g., { log(); return; })",
+        "Semgrep FP: added nosemgrep comment for check-review-archive.js sortedWeeks[0] (guard on different variable weekMap.size)"
+      ],
+      "deferred_summary": "1 quick health timeout repeat from R5/R7",
+      "rejected_summary": "40 SonarCloud stale (identical to R7, not re-analyzed after push), 1 Qodo ESM health tests (Node v24 auto-detects ESM), 1 Qodo Semgrep ignore (standard .semgrep/.semgrepignore location), 5 Qodo repeat-rejected, 1 Qodo hidden"
     }
   ],
-  "status": "r7_committed_not_pushed",
+  "status": "r8_committed_not_pushed",
   "process": {
     "description": "Batched PR review protocol for large PRs",
     "steps": [
@@ -166,5 +182,5 @@
       "Semgrep no-unchecked-array-access: rule too strict, expanded in R4"
     ]
   },
-  "notes": "R1-R7 all committed. R7: 1 fix (Semgrep YAML), 21 deferred (all repeats from R3/R5/R6), 25 rejected (replaceAll on regex, FP repeats, Qodo repeats), 4 hidden Qodo items. Tests: 496 pass. Need: commit R7, update learnings, push."
+  "notes": "R1-R8 all committed. R8: 3 fixes (ESLint CI blocker, Semgrep rule expansion, nosemgrep FP). 48 rejected (40 stale SonarCloud, 8 Qodo). Tests: 496 pass. Need: update learnings with R8, push."
 }
