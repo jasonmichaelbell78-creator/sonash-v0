@@ -27,6 +27,17 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #195-196 (2026-03-01)
+
+**Focus**: PR Ecosystem Diagnosis + GitHub Automation + Gemini Config
+
+- PR Review Ecosystem Comprehensive Diagnosis: 4 parallel mining agents analyzed
+  all 35+ components across 7 layers, produced ~900-line
+  `docs/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md` (grade: D+)
+- Created `.gemini/config.yaml` + `styleguide.md` for Gemini Code Assist
+- GitHub automation: dependabot.yml, release.yml, auto-merge-dependabot.yml
+- TDMS: 8,354 items (480 resolved), 39 S0 critical
+
 ### Session #197 (2026-03-01)
 
 **Focus**: PR Review Ecosystem v2 (phases 1-3 via GSD) + Skill Quality Framework
