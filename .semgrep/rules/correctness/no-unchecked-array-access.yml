@@ -42,6 +42,13 @@ rules:
       - pattern-not: $X.split($Y)[0]
       # Safe: nullish coalescing provides fallback
       - pattern-not-inside: $ARR[0] ?? $X
+      # Safe: optional chaining on array access result
+      - pattern-not-inside: $ARR[0]?.$Y
+      - pattern-not-inside: $ARR[0]?.$Y()
+      # Safe: ternary guard on length
+      - pattern-not-inside: $ARR.length > 0 ? ... : ...
+      # Safe: short-circuit guard (arr.length < N || arr[0])
+      - pattern-not-inside: $ARR.length < $N || ...
     paths:
       include:
         - scripts/

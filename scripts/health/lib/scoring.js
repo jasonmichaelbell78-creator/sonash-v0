@@ -139,7 +139,7 @@ function compositeScore(categoryScores, weights) {
 
   for (const [cat, weight] of Object.entries(weights)) {
     const catScore = categoryScores[cat];
-    if (catScore && typeof catScore.score === "number") {
+    if (catScore && typeof catScore.score === "number" && !catScore.no_data) {
       weightedSum += catScore.score * weight;
       totalWeight += weight;
       breakdown[cat] = {

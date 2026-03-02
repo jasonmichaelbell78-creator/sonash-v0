@@ -356,8 +356,8 @@ function analyzeTemporalCoverage(reviewsInput) {
     return { noData: true, weeksWithReviews: 0, gaps: [], longestGap: null };
   }
 
-  // Sort weeks chronologically
-  const sortedWeeks = [...weekMap.keys()].sort();
+  // Sort weeks chronologically (string compare is correct for YYYY-WNN format)
+  const sortedWeeks = [...weekMap.keys()].sort((a, b) => a.localeCompare(b));
   const weeksWithReviews = sortedWeeks.length;
 
   // Generate all weeks between first and last
