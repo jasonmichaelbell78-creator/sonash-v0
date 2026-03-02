@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.83 **Created:** 2026-01-02 **Last Updated:** 2026-03-02
+**Document Version:** 17.84 **Created:** 2026-01-02 **Last Updated:** 2026-03-02
 
 ## Purpose
 
@@ -755,14 +755,14 @@ accumulate.
 
 ## Active Reviews
 
-### Review #442: PR #411 R1-R6 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
+### Review #442: PR #411 R1-R7 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
 
 _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
-6 rounds._
+7 rounds._
 
-**Source:** Semgrep OSS (64), Gemini (2), Qodo (18), CI failures (4), CodeQL
-(11), SonarCloud issues (173), SonarCloud hotspots (38) **Total:** 311
-**Fixed:** 130 **Deferred:** 74 **Rejected:** 105
+**Source:** Semgrep OSS (64), Gemini (2), Qodo (28), CI failures (5), CodeQL
+(11), SonarCloud issues (213), SonarCloud hotspots (38) **Total:** 362
+**Fixed:** 131 **Deferred:** 95 **Rejected:** 130 **Hidden:** 4
 
 **R1 (Semgrep + Gemini + Qodo):** 5 fixes, 48 rejected
 
@@ -846,9 +846,29 @@ _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
   highly parallelizable — 3 agents across 21 files in one pass. Group by fix
   type (parseInt, isNaN, .match→exec) rather than by file.
 
+**R7 (SonarCloud + Qodo + Semgrep CI):** 1 fix, 21 deferred, 25 rejected, 4 hidden
+
+- **Fix**: Semgrep YAML parse error — unquoted colon in ternary pattern
+  `$ARR.length > 0 ? ... : ...` broke YAML parser in CI. Quoted the pattern.
+- **Deferred**: 17 CC repeat-deferred from R3/R6, 2 regex complexity repeat from
+  R6, 1 nested ternary repeat from R6, 1 quick health timeout repeat from R5
+- **Rejected**: 11 replaceAll suggestions on `.replace()` calls that use actual
+  regex features (character classes, unicode flags, anchors — `.replaceAll()`
+  can't handle these). 6 semgrep test fixtures (intentional). 5 Qodo repeat-
+  rejected (composite fixed R5, path fixed R1, cwd ☑, NaN fixed R2, semgrep
+  --error fixed R5). 1 health-log FP repeat. 1 test-coverage Math.max on Dates
+  repeat. 1 escalate-deferred.test.ts `!` assertion needed for TS strict mode.
+- **Pattern**: YAML values containing colons (e.g., ternary `? ... : ...`) must
+  be quoted — YAML interprets the colon as a mapping separator. This applies to
+  Semgrep pattern definitions and any YAML config with inline code patterns.
+- **Pattern**: SonarCloud's `replaceAll` suggestion (S6354) does not account for
+  regex features in `.replace()` calls. When `.replace()` uses character classes,
+  anchors, alternation, or unicode flags, it CANNOT be converted to
+  `.replaceAll()`. Must verify each instance individually.
+
 **Process notes:**
 
-- Batched protocol effective: 6 rounds, 6 commits, no push until done
+- Batched protocol effective: 7 rounds, 7 commits, no push until done
 - Semgrep OSS lacks type information — custom rules must target specific
   known-async function names, not generic patterns
 - First-time SonarCloud scan on this codebase produced many pre-existing
