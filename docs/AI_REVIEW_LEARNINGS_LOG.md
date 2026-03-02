@@ -349,6 +349,18 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#1)</summary>
+
+- **Date:** 2026-03-02
+- **Reviews consolidated:** #402-#442
+- **Recurring patterns:**
+  - qodo (8x)
+  - sonarcloud (8x)
+  - ci (4x)
+  - learnings (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#10)</summary>
 
 - **Date:** 2026-03-02
@@ -754,6 +766,24 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #443: PR #412 R1 — Gemini + Qodo + CI (2026-03-02)
+
+_PR Ecosystem v2 changelog documentation. Docs-only PR._
+
+**Source:** Gemini Code Assist (6), Qodo (1), CI Prettier failure (1) **Total:**
+8 **Fixed:** 8 **Deferred:** 0 **Rejected:** 0
+
+- All items are documentation accuracy fixes in
+  `docs/PR_ECOSYSTEM_V2_CHANGELOG.md`
+- CI failure was pre-existing Prettier formatting on 11 unrelated files
+- 6 Gemini items: math corrections (3), clarifications (2), contradiction fix
+  (1)
+- 1 Qodo bug: incorrect path `.planning/phases/01-07/` → per-phase-slug paths
+- **Patterns**: Verify-Doc-Math-Before-Commit; Clarify-AI-Implementation-Time;
+  Consistent-Parenthetical-Evidence
+
+---
 
 ### Review #442: PR #411 R1-R8 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
 

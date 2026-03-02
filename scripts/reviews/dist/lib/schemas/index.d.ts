@@ -21,11 +21,11 @@ export declare const SCHEMA_MAP: {
         completeness_missing: import("zod").ZodDefault<import("zod").ZodArray<import("zod").ZodString>>;
         origin: import("zod").ZodObject<{
             type: import("zod").ZodEnum<{
+                manual: "manual";
                 "pr-review": "pr-review";
                 "pr-retro": "pr-retro";
                 backfill: "backfill";
                 migration: "migration";
-                manual: "manual";
             }>;
             pr: import("zod").ZodOptional<import("zod").ZodNumber>;
             round: import("zod").ZodOptional<import("zod").ZodNumber>;
@@ -63,11 +63,11 @@ export declare const SCHEMA_MAP: {
         completeness_missing: import("zod").ZodDefault<import("zod").ZodArray<import("zod").ZodString>>;
         origin: import("zod").ZodObject<{
             type: import("zod").ZodEnum<{
+                manual: "manual";
                 "pr-review": "pr-review";
                 "pr-retro": "pr-retro";
                 backfill: "backfill";
                 migration: "migration";
-                manual: "manual";
             }>;
             pr: import("zod").ZodOptional<import("zod").ZodNumber>;
             round: import("zod").ZodOptional<import("zod").ZodNumber>;
@@ -98,11 +98,11 @@ export declare const SCHEMA_MAP: {
         completeness_missing: import("zod").ZodDefault<import("zod").ZodArray<import("zod").ZodString>>;
         origin: import("zod").ZodObject<{
             type: import("zod").ZodEnum<{
+                manual: "manual";
                 "pr-review": "pr-review";
                 "pr-retro": "pr-retro";
                 backfill: "backfill";
                 migration: "migration";
-                manual: "manual";
             }>;
             pr: import("zod").ZodOptional<import("zod").ZodNumber>;
             round: import("zod").ZodOptional<import("zod").ZodNumber>;
@@ -140,11 +140,11 @@ export declare const SCHEMA_MAP: {
         completeness_missing: import("zod").ZodDefault<import("zod").ZodArray<import("zod").ZodString>>;
         origin: import("zod").ZodObject<{
             type: import("zod").ZodEnum<{
+                manual: "manual";
                 "pr-review": "pr-review";
                 "pr-retro": "pr-retro";
                 backfill: "backfill";
                 migration: "migration";
-                manual: "manual";
             }>;
             pr: import("zod").ZodOptional<import("zod").ZodNumber>;
             round: import("zod").ZodOptional<import("zod").ZodNumber>;
@@ -178,11 +178,11 @@ export declare const SCHEMA_MAP: {
         completeness_missing: import("zod").ZodDefault<import("zod").ZodArray<import("zod").ZodString>>;
         origin: import("zod").ZodObject<{
             type: import("zod").ZodEnum<{
+                manual: "manual";
                 "pr-review": "pr-review";
                 "pr-retro": "pr-retro";
                 backfill: "backfill";
                 migration: "migration";
-                manual: "manual";
             }>;
             pr: import("zod").ZodOptional<import("zod").ZodNumber>;
             round: import("zod").ZodOptional<import("zod").ZodNumber>;
@@ -193,14 +193,14 @@ export declare const SCHEMA_MAP: {
         message: import("zod").ZodString;
         severity: import("zod").ZodEnum<{
             error: "error";
-            info: "info";
             warning: "warning";
+            info: "info";
         }>;
         lifecycle: import("zod").ZodDefault<import("zod").ZodEnum<{
+            stale: "stale";
             resolved: "resolved";
             new: "new";
             acknowledged: "acknowledged";
-            stale: "stale";
         }>>;
         resolved_date: import("zod").ZodOptional<import("zod").ZodNullable<import("zod").ZodString>>;
         source_script: import("zod").ZodOptional<import("zod").ZodNullable<import("zod").ZodString>>;

@@ -15,11 +15,11 @@ export declare const WarningRecord: z.ZodObject<{
     completeness_missing: z.ZodDefault<z.ZodArray<z.ZodString>>;
     origin: z.ZodObject<{
         type: z.ZodEnum<{
+            manual: "manual";
             "pr-review": "pr-review";
             "pr-retro": "pr-retro";
             backfill: "backfill";
             migration: "migration";
-            manual: "manual";
         }>;
         pr: z.ZodOptional<z.ZodNumber>;
         round: z.ZodOptional<z.ZodNumber>;
@@ -30,14 +30,14 @@ export declare const WarningRecord: z.ZodObject<{
     message: z.ZodString;
     severity: z.ZodEnum<{
         error: "error";
-        info: "info";
         warning: "warning";
+        info: "info";
     }>;
     lifecycle: z.ZodDefault<z.ZodEnum<{
+        stale: "stale";
         resolved: "resolved";
         new: "new";
         acknowledged: "acknowledged";
-        stale: "stale";
     }>>;
     resolved_date: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     source_script: z.ZodOptional<z.ZodNullable<z.ZodString>>;

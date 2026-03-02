@@ -117,10 +117,9 @@ function parseCodePatterns(filePath) {
     ]);
     // First pass: extract Critical Patterns Quick Reference (### N. Name)
     const criticalPatternSection = "Critical Patterns";
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+    for (const line of lines) {
         // Detect ## category headings
-        const catMatch = line.match(/^## (.+)$/);
+        const catMatch = /^## (.+)$/.exec(line);
         if (catMatch) {
             const rawCat = catMatch[1]
                 .replace(/\u{1F534}/gu, "")
@@ -145,7 +144,7 @@ function parseCodePatterns(filePath) {
             continue;
         // Detect ### N. Name (critical patterns section)
         if (currentCategory === criticalPatternSection) {
-            const critMatch = line.match(/^### (\d+)\. (.+)$/);
+            const critMatch = /^### (\d+)\. (.+)$/.exec(line);
             if (critMatch) {
                 const name = critMatch[2].trim();
                 patterns.push({
@@ -158,7 +157,7 @@ function parseCodePatterns(filePath) {
             continue;
         }
         // Detect ### subsection headings (e.g., "### Cross Platform", "### Refactor")
-        const subMatch = line.match(/^### (.+)$/);
+        const subMatch = /^### (.+)$/.exec(line);
         if (subMatch) {
             const subName = subMatch[1].trim();
             patterns.push({
@@ -170,7 +169,7 @@ function parseCodePatterns(filePath) {
             continue;
         }
         // Detect table rows: | Priority | Pattern | Rule | Why |
-        const tableMatch = line.match(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|/);
+        const tableMatch = /^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|/.exec(line);
         if (tableMatch) {
             const priorityCell = tableMatch[1].trim();
             const patternName = tableMatch[2].trim();
@@ -319,10 +318,23 @@ function fuzzyMatch(ruleId, patternSlug) {
         return true;
     if (normalizedSlug.includes(normalizedRule))
         return true;
-    // Check significant words (3+ chars)
-    const slugWords = normalizedSlug.split(/(?=[A-Z])|[^a-z0-9]/i).filter((w) => w.length >= 3);
-    const matchCount = slugWords.filter((w) => normalizedRule.includes(w.toLowerCase())).length;
-    return slugWords.length > 0 && matchCount >= Math.ceil(slugWords.length * 0.6);
+    // Check significant words (3+ chars) -- split BEFORE normalization to preserve word boundaries
+    const slugWords = patternSlug
+        .toLowerCase()
+        .split(/[-_]+/)
+        .filter((w) => w.length >= 3);
+    const ruleWords = ruleId
+        .toLowerCase()
+        .split(/[-_]+/)
+        .filter((w) => w.length >= 3);
+    const slugMatchCount = slugWords.filter((w) => normalizedRule.includes(w)).length;
+    const ruleMatchCount = ruleWords.filter((w) => normalizedSlug.includes(w)).length;
+    // Match if 60% of either side's words appear in the other
+    if (slugWords.length > 0 && slugMatchCount >= Math.ceil(slugWords.length * 0.6))
+        return true;
+    if (ruleWords.length > 0 && ruleMatchCount >= Math.ceil(ruleWords.length * 0.6))
+        return true;
+    return false;
 }
 /**
  * Build mechanisms for a given pattern by checking all rule sources.
@@ -352,10 +364,10 @@ function buildMechanisms(pattern, sources) {
             break;
         }
     }
-    // Check Semgrep rules (by code-pattern-ref match against category or pattern name)
+    // Check Semgrep rules -- exact slug match only (no category-level or fuzzy matching)
     for (const [ref, ruleId] of sources.semgrepRules) {
         const refSlug = slugify(ref);
-        if (fuzzyMatch(refSlug, slug) || ref === pattern.category || ref === pattern.name) {
+        if (refSlug === slug) {
             mechanisms.semgrep = `active:${ruleId}`;
             break;
         }

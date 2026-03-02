@@ -302,13 +302,15 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ### Sanitize Markdown Headings
 
-🟡 **Rule:** Sanitize Markdown Headings — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Sanitize Markdown Headings — recurring pattern from 4 reviews
+(#467, #470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Sanitize Markdown Render
 
-🟡 **Rule:** Sanitize Markdown Render — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Sanitize Markdown Render — recurring pattern from 4 reviews (#467,
+#470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
@@ -420,7 +422,8 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ### Composite Key For Nullable Ids
 
-🟡 **Rule:** Composite Key For Nullable Ids — recurring pattern from 4 reviews (#468, #471, #474, #477)
+🟡 **Rule:** Composite Key For Nullable Ids — recurring pattern from 4 reviews
+(#468, #471, #474, #477)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
@@ -541,7 +544,8 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ### Temp File Symlink Race
 
-🟡 **Rule:** Temp File Symlink Race — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Temp File Symlink Race — recurring pattern from 4 reviews (#467,
+#470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
@@ -672,85 +676,99 @@ recurring pattern from 3 reviews (#445, #447, #453)
 
 ### Regex Character Class Escaping
 
-🟡 **Rule:** Regex Character Class Escaping — recurring pattern from 4 reviews (#466, #469, #472, #475)
+🟡 **Rule:** Regex Character Class Escaping — recurring pattern from 4 reviews
+(#466, #469, #472, #475)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Cognitive Complexity Extraction
 
-🟡 **Rule:** Cognitive Complexity Extraction — recurring pattern from 4 reviews (#466, #469, #472, #475)
+🟡 **Rule:** Cognitive Complexity Extraction — recurring pattern from 4 reviews
+(#466, #469, #472, #475)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Cc Reduction Getlatestloghash
 
-🟡 **Rule:** Cc Reduction Getlatestloghash — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Cc Reduction Getlatestloghash — recurring pattern from 4 reviews
+(#467, #470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Toctou Race Appendentries
 
-🟡 **Rule:** Toctou Race Appendentries — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Toctou Race Appendentries — recurring pattern from 4 reviews (#467,
+#470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Retrorecordparse Safeparse
 
-🟡 **Rule:** Retrorecordparse Safeparse — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Retrorecordparse Safeparse — recurring pattern from 4 reviews
+(#467, #470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Invocation Id Collision
 
-🟡 **Rule:** Invocation Id Collision — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Invocation Id Collision — recurring pattern from 4 reviews (#467,
+#470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Line Number Accuracy
 
-🟡 **Rule:** Line Number Accuracy — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Line Number Accuracy — recurring pattern from 4 reviews (#467,
+#470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Harden Table Input
 
-🟡 **Rule:** Harden Table Input — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Harden Table Input — recurring pattern from 4 reviews (#467, #470,
+#473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Relax Reviewid Regex
 
-🟡 **Rule:** Relax Reviewid Regex — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Relax Reviewid Regex — recurring pattern from 4 reviews (#467,
+#470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Handle Exception Context
 
-🟡 **Rule:** Handle Exception Context — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Handle Exception Context — recurring pattern from 4 reviews (#467,
+#470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Stringraw
 
-🟡 **Rule:** Stringraw — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Stringraw — recurring pattern from 4 reviews (#467, #470, #473,
+#476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Fd Based File Operations Toctou Mitigation
 
-🟡 **Rule:** Fd Based File Operations Toctou Mitigation — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Fd Based File Operations Toctou Mitigation — recurring pattern from
+4 reviews (#467, #470, #473, #476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Safeparse For
 
-🟡 **Rule:** Safeparse For — recurring pattern from 4 reviews (#467, #470, #473, #476)
+🟡 **Rule:** Safeparse For — recurring pattern from 4 reviews (#467, #470, #473,
+#476)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
 ### Rollback On Dual Write Failure
 
-🟡 **Rule:** Rollback On Dual Write Failure — recurring pattern from 4 reviews (#468, #471, #474, #477)
+🟡 **Rule:** Rollback On Dual Write Failure — recurring pattern from 4 reviews
+(#468, #471, #474, #477)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
@@ -775,7 +793,7 @@ helpers.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 3.9     | 2026-03-02   | **CONSOLIDATION #10:** Auto-added 18 patterns (sanitize-markdown-headings, sanitize-markdown-render, composite-key-for-nullable-ids, temp-file-symlink-race, regex-character-class-escaping, cognitive-complexity-extraction, cc-reduction-getlatestloghash, toctou-race-appendentries, retrorecordparse-safeparse, invocation-id-collision …(+8 more)). Source: Reviews #466-#477. |
+| 3.9     | 2026-03-02 | **CONSOLIDATION #10:** Auto-added 18 patterns (sanitize-markdown-headings, sanitize-markdown-render, composite-key-for-nullable-ids, temp-file-symlink-race, regex-character-class-escaping, cognitive-complexity-extraction, cc-reduction-getlatestloghash, toctou-race-appendentries, retrorecordparse-safeparse, invocation-id-collision …(+8 more)). Source: Reviews #466-#477.                                                                                                                                                                                                                                                                                                                                     |
 | 3.8     | 2026-03-01 | **CONSOLIDATION #8:** Auto-added 1 patterns (pattern-checker-rename-no-fallback-requires-all-4-elements). Source: Reviews #442-#453.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 3.7     | 2026-03-01 | **CONSOLIDATION #5:** Auto-added 2 patterns (learnings, premature-dedup-new-set-before-duplicate-detection-defeats). Source: Reviews #407-#419.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 3.6     | 2026-02-26 | Add 4 patterns: lazy quantifiers ReDoS, generic AST walker, per-access guard, fix-one-audit-all. Source: PR #394 retro.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |

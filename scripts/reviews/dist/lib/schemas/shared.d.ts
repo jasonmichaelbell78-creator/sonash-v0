@@ -17,11 +17,11 @@ export type CompletenessTierType = z.infer<typeof CompletenessTier>;
  */
 export declare const Origin: z.ZodObject<{
     type: z.ZodEnum<{
+        manual: "manual";
         "pr-review": "pr-review";
         "pr-retro": "pr-retro";
         backfill: "backfill";
         migration: "migration";
-        manual: "manual";
     }>;
     pr: z.ZodOptional<z.ZodNumber>;
     round: z.ZodOptional<z.ZodNumber>;
@@ -45,11 +45,11 @@ export declare const BaseRecord: z.ZodObject<{
     completeness_missing: z.ZodDefault<z.ZodArray<z.ZodString>>;
     origin: z.ZodObject<{
         type: z.ZodEnum<{
+            manual: "manual";
             "pr-review": "pr-review";
             "pr-retro": "pr-retro";
             backfill: "backfill";
             migration: "migration";
-            manual: "manual";
         }>;
         pr: z.ZodOptional<z.ZodNumber>;
         round: z.ZodOptional<z.ZodNumber>;
