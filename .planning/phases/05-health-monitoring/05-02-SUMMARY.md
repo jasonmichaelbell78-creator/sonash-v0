@@ -5,55 +5,51 @@
 <!-- prettier-ignore-end -->
 
 ---
-phase: 05-health-monitoring
-plan: 02
-subsystem: infra
-tags: [jsonl, lifecycle, warnings, zod, health-monitoring]
+
+phase: 05-health-monitoring plan: 02 subsystem: infra tags: [jsonl, lifecycle,
+warnings, zod, health-monitoring]
 
 # Dependency graph
+
 requires:
-  - phase: 01-storage-foundation
-    provides: JSONL read/write infrastructure (appendRecord, readValidatedJsonl)
-  - phase: 05-health-monitoring plan 01
-    provides: Health check framework and directory structure
-provides:
-  - Warning lifecycle library (create/acknowledge/resolve/stale/query/stats)
-  - Zod-validated warning persistence to warnings.jsonl
-  - 9 passing tests for warning lifecycle operations
-affects: [05-health-monitoring plan 03+, dashboard, alerting]
+
+- phase: 01-storage-foundation provides: JSONL read/write infrastructure
+  (appendRecord, readValidatedJsonl)
+- phase: 05-health-monitoring plan 01 provides: Health check framework and
+  directory structure provides:
+- Warning lifecycle library (create/acknowledge/resolve/stale/query/stats)
+- Zod-validated warning persistence to warnings.jsonl
+- 9 passing tests for warning lifecycle operations affects:
+  [05-health-monitoring plan 03+, dashboard, alerting]
 
 # Tech tracking
-tech-stack:
-  added: []
-  patterns:
-    [
-      ES module scripts with createRequire for CJS deps,
-      optional warningsPath for testability,
-    ]
 
-key-files:
-  created:
-    - scripts/health/lib/warning-lifecycle.js
-    - scripts/health/lib/warning-lifecycle.test.js
-  modified: []
+tech-stack: added: [] patterns: [ ES module scripts with createRequire for CJS
+deps, optional warningsPath for testability, ]
+
+key-files: created: - scripts/health/lib/warning-lifecycle.js -
+scripts/health/lib/warning-lifecycle.test.js modified: []
 
 key-decisions:
-  - "ES module format for scripts/health/ (matches codebase convention:
-    import.meta.url + createRequire)"
-  - "Optional warningsPath parameter on all functions for test isolation without
-    mocking"
-  - "Full file rewrite for transitions (read-modify-write) since warnings.jsonl
-    stays small (<1000 records)"
+
+- "ES module format for scripts/health/ (matches codebase convention:
+  import.meta.url + createRequire)"
+- "Optional warningsPath parameter on all functions for test isolation without
+  mocking"
+- "Full file rewrite for transitions (read-modify-write) since warnings.jsonl
+  stays small (<1000 records)"
 
 patterns-established:
-  - "Warning lifecycle: new -> acknowledged -> resolved, with auto-stale
-    detection"
-  - "Test isolation via temp directory + optional path parameter (no mocks
-    needed)"
+
+- "Warning lifecycle: new -> acknowledged -> resolved, with auto-stale
+  detection"
+- "Test isolation via temp directory + optional path parameter (no mocks
+  needed)"
 
 # Metrics
-duration: 9min
-completed: 2026-03-01
+
+duration: 9min completed: 2026-03-01
+
 ---
 
 # Phase 5 Plan 2: Warning Lifecycle Summary

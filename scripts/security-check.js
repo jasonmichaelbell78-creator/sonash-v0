@@ -137,6 +137,7 @@ const SKIP_PATTERNS = [
   /[\\/]backup[\\/]/,
   /[\\/]out[\\/]/,
   /\.d\.ts$/,
+  /tests[\\/]semgrep[\\/]/,
 ];
 
 /**

@@ -65,10 +65,7 @@ describe("attemptAutoFix", () => {
 
   it("updates existing sync comment instead of appending", () => {
     const docPath = path.join(tmpDir, "SESSION_CONTEXT.md");
-    fs.writeFileSync(
-      docPath,
-      "# Session Context\n\nContent.\n<!-- Last synced: 2025-01-01 -->\n"
-    );
+    fs.writeFileSync(docPath, "# Session Context\n\nContent.\n<!-- Last synced: 2025-01-01 -->\n");
 
     const result = attemptAutoFix({
       trigger: "ROADMAP.md",
@@ -124,10 +121,7 @@ describe("attemptAutoFix", () => {
 
 describe("matchesTrigger", () => {
   it("matches directory triggers", () => {
-    assert.equal(
-      matchesTrigger([".claude/hooks/pre-commit.js"], ".claude/hooks/"),
-      true
-    );
+    assert.equal(matchesTrigger([".claude/hooks/pre-commit.js"], ".claude/hooks/"), true);
   });
 
   it("does not match non-matching directory triggers", () => {
@@ -145,24 +139,15 @@ describe("matchesTrigger", () => {
 
 describe("isDependentStaged", () => {
   it("finds exact match", () => {
-    assert.equal(
-      isDependentStaged(["SESSION_CONTEXT.md"], "SESSION_CONTEXT.md"),
-      true
-    );
+    assert.equal(isDependentStaged(["SESSION_CONTEXT.md"], "SESSION_CONTEXT.md"), true);
   });
 
   it("finds bare name at end of path", () => {
-    assert.equal(
-      isDependentStaged(["docs/TRIGGERS.md"], "docs/TRIGGERS.md"),
-      true
-    );
+    assert.equal(isDependentStaged(["docs/TRIGGERS.md"], "docs/TRIGGERS.md"), true);
   });
 
   it("returns false for non-staged file", () => {
-    assert.equal(
-      isDependentStaged(["src/app.js"], "SESSION_CONTEXT.md"),
-      false
-    );
+    assert.equal(isDependentStaged(["src/app.js"], "SESSION_CONTEXT.md"), false);
   });
 });
 
@@ -173,8 +158,7 @@ describe("diffPattern filtering", () => {
       /Phase \d|Sprint|Status.*(COMPLETE|NOT STARTED)|Current Focus|\d+\/\d+/i;
 
     // Trivial diff -- should NOT match
-    const trivialDiff =
-      "+- Fixed a typo in the description\n-  Fixed a type in the description";
+    const trivialDiff = "+- Fixed a typo in the description\n-  Fixed a type in the description";
     assert.equal(roadmapDiffPattern.test(trivialDiff), false);
 
     // Substantive diff -- SHOULD match
@@ -183,17 +167,13 @@ describe("diffPattern filtering", () => {
   });
 
   it("hooks diffPattern only matches code logic changes", () => {
-    const hooksDiffPattern =
-      /function|module\.exports|require\(|addEventListener/;
+    const hooksDiffPattern = /function|module\.exports|require\(|addEventListener/;
 
     // Comment change -- should NOT match
     assert.equal(hooksDiffPattern.test("// Updated comment text"), false);
 
     // Code change -- SHOULD match
-    assert.equal(
-      hooksDiffPattern.test("+function handleNewEvent() {"),
-      true
-    );
+    assert.equal(hooksDiffPattern.test("+function handleNewEvent() {"), true);
     assert.equal(hooksDiffPattern.test("+module.exports = { foo }"), true);
   });
 
@@ -202,17 +182,13 @@ describe("diffPattern filtering", () => {
 
     // Routine append -- should NOT match
     assert.equal(
-      debtDiffPattern.test(
-        '+{"id":"td-99","severity":"S2","title":"Minor issue"}'
-      ),
+      debtDiffPattern.test('+{"id":"td-99","severity":"S2","title":"Minor issue"}'),
       false
     );
 
     // Critical change -- SHOULD match
     assert.equal(
-      debtDiffPattern.test(
-        '+{"id":"td-100","severity":"S0","title":"Security flaw"}'
-      ),
+      debtDiffPattern.test('+{"id":"td-100","severity":"S0","title":"Security flaw"}'),
       true
     );
     assert.equal(debtDiffPattern.test("+MASTER_DEBT.jsonl updated"), true);

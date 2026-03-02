@@ -14,9 +14,7 @@ import * as path from "node:path";
 const scriptPath = path.resolve(__dirname, "../../scripts/check-review-archive.js");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { analyzeTemporalCoverage, getISOWeek } = require(scriptPath) as {
-  analyzeTemporalCoverage: (
-    reviews?: Array<{ date?: string | null }>,
-  ) => {
+  analyzeTemporalCoverage: (reviews?: Array<{ date?: string | null }>) => {
     noData: boolean;
     weeksWithReviews: number;
     gaps: Array<{
