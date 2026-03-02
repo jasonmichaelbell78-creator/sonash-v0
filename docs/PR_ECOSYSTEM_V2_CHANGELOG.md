@@ -11,7 +11,8 @@ during the v2 overhaul (shipped 2026-03-01). Organized by domain with
 before/after comparisons, what each change solves, and where things live now.
 
 **Scope:** 7 phases, 30 execution plans, 59 requirements, 284 minutes of
-implementation, 60 architectural decisions.
+AI-assisted implementation (wall-clock across all phases), 60 architectural
+decisions.
 
 **Source documents:**
 
@@ -19,7 +20,7 @@ implementation, 60 architectural decisions.
 - Discovery: `.planning/ecosystem-v2/DISCOVERY_QA.md` (60 decisions)
 - Requirements: `.planning/milestones/v1.0-REQUIREMENTS.md` (59 req)
 - Milestone audit: `.planning/milestones/v1.0-MILESTONE-AUDIT.md`
-- Phase plans: `.planning/phases/01-07/`
+- Phase plans: `.planning/phases/<phase-slug>/` (7 directories, 30 plan files)
 
 ---
 
@@ -99,13 +100,13 @@ guessing.
 
 | Aspect            | Before                                                         | After                                                            |
 | ----------------- | -------------------------------------------------------------- | ---------------------------------------------------------------- |
-| JSONL coverage    | 45/406 reviews (7.8%) covering 12 days                         | 372 validated records from 13 archives (100% backfill) (BKFL-01) |
+| JSONL coverage    | 45/406 reviews (11.1%) covering 12 days                        | 372 validated records from 13 archives (100% backfill) (BKFL-01) |
 | Temporal range    | 2026-02-16 to 2026-02-27 only                                  | Reviews #1 through #406, full project history                    |
 | Archive integrity | 3 overlapping ranges with conflicting content, 7 coverage gaps | All overlaps resolved, gaps filled (BKFL-02)                     |
 
-**What it solves:** With only 7.8% of history in JSONL, any analytics or pattern
-detection was meaningless. The backfill means the full review history is now
-available for promotion analysis, trend tracking, and effectiveness metrics.
+**What it solves:** With only 11.1% of history in JSONL, any analytics or
+pattern detection was meaningless. The backfill means the full review history is
+now available for promotion analysis, trend tracking, and effectiveness metrics.
 
 ### 2.2 Data Corrections
 
@@ -186,13 +187,13 @@ automatically detects recurrence and generates enforcement rules.
 
 ### 4.1 Tiered Enforcement Overview
 
-| Mechanism                                   | Before                | After                                                              | Delta                   |
-| ------------------------------------------- | --------------------- | ------------------------------------------------------------------ | ----------------------- |
-| Regex rules (`check-pattern-compliance.js`) | 43 rules              | 64 rules                                                           | +21                     |
-| ESLint AST rules (custom plugin)            | 22 rules              | 32 rules                                                           | +10 (7 new + 3 refined) |
-| Semgrep custom rules                        | 0 local rules         | 20 rules                                                           | +20                     |
-| Total automated enforcement                 | ~65 rules             | ~116 rules                                                         | +51                     |
-| Enforcement coverage                        | 24% (65/275 patterns) | 17.2% automated, 100% tracked (116/360 patterns, all 7 mechanisms) | See note below          |
+| Mechanism                                   | Before                | After                                                                    | Delta                   |
+| ------------------------------------------- | --------------------- | ------------------------------------------------------------------------ | ----------------------- |
+| Regex rules (`check-pattern-compliance.js`) | 43 rules              | 64 rules                                                                 | +21                     |
+| ESLint AST rules (custom plugin)            | 22 rules              | 32 rules                                                                 | +10 (7 new + 3 refined) |
+| Semgrep custom rules                        | 0 local rules         | 20 rules                                                                 | +20                     |
+| Total automated enforcement                 | ~65 rules             | ~116 rules                                                               | +51                     |
+| Enforcement coverage                        | 24% (65/275 patterns) | 32.2% automated (116/360 patterns), 100% tracked across all 7 mechanisms | See note below          |
 
 > **Coverage note:** The absolute percentage dropped because v2 accurately
 > counts all 360 known patterns (vs 275 before) and honestly measures which are
@@ -344,12 +345,12 @@ trivial issues makes the gate trustworthy again.
 
 ### 6.4 DEBT Triage & Escalation
 
-| Aspect                   | Before                                               | After                                                               |
-| ------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------- |
-| Deferred item resolution | ~90% vanish — 123 items across 8 retros unresolvable | Auto-tracked with escalation pipeline (GATE-07)                     |
-| DEBT escalation          | Manual                                               | Auto-trigger: 2+ deferrals of same item promotes to S1 (GATE-08)    |
-| Temporal coverage        | No monitoring                                        | ISO week gap detection identifies periods without reviews (GATE-09) |
-| DEBT resolution rate     | 6.9% (558/638 stuck in VERIFIED status)              | Automated triage routes items by severity and age                   |
+| Aspect                   | Before                                                | After                                                               |
+| ------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------- |
+| Deferred item resolution | ~90% vanish — 123 items across 8 retros unresolvable  | Auto-tracked with escalation pipeline (GATE-07)                     |
+| DEBT escalation          | Manual                                                | Auto-trigger: 2+ deferrals of same item promotes to S1 (GATE-08)    |
+| Temporal coverage        | No monitoring                                         | ISO week gap detection identifies periods without reviews (GATE-09) |
+| DEBT resolution rate     | 12.5% (80/638 resolved; 558 stuck in VERIFIED status) | Automated triage routes items by severity and age                   |
 
 **What it solves:** The old system was write-only. Review findings got deferred,
 logged as DEBT, and then nothing happened. The escalation pipeline ensures
@@ -408,7 +409,7 @@ prominently.
 | Change                 | Details                                                                                                                                                                                                                                           |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Step 7.5 added**     | JSONL pipeline — writes review record, deferred items, invocation tracking via CLI writers                                                                                                                                                        |
-| **18 pre-push checks** | Accumulated from PR retros #366–#396. Includes: local pattern compliance, security sweep, CC check, filesystem guards, algorithm design, Qodo batch rejection, path normalization, regex DoS sweep, fix-one-audit-all, test-production regex sync |
+| **18 pre-push checks** | Accumulated from PR retros #366–#396. Includes: local pattern compliance, security sweep, CC check, filesystem guards, algorithm design, Qodo batch rejection, path normalization, regex DoS sweep, fix-one-audit-all, test/production regex sync |
 | **JSONL-first flow**   | Step 7 (learning capture) writes markdown as human-readable view; Step 7.5 writes JSONL as source of truth                                                                                                                                        |
 | **Version trajectory** | v1.0 (2026-01-15) → v2.0 (protocol) → v3.0 (pattern compliance) → v3.6 (JSONL pipeline)                                                                                                                                                           |
 
@@ -455,7 +456,7 @@ prominently.
 | Contract tests    | None                                                         | 7 contract tests verify data handoff across phase boundaries (TEST-01)                         |
 | E2E tests         | None                                                         | Pipeline smoke test: 7 tests, 959ms on real data (TEST-02)                                     |
 | Performance tests | None                                                         | `budget.perf.test.js` — 4 budgets: gate <3s, quick <1s, full <5s, consolidation <10s (TEST-04) |
-| Co-location       | Tests separate from code, often missing                      | Every script committed with its test (13 documented gaps) (TEST-05)                            |
+| Co-location       | Tests separate from code, often missing                      | Co-location policy adopted; 13 scripts still lack co-located tests (documented gaps) (TEST-05) |
 | Fixture quality   | N/A                                                          | Pipeline functions tested against all 3 completeness fixture types (TEST-06)                   |
 
 ### Test Tier Breakdown
@@ -486,7 +487,7 @@ prominently.
 | Metric                       | Before (v1)                     | After (v2)                                         |
 | ---------------------------- | ------------------------------- | -------------------------------------------------- |
 | Health grade                 | D+                              | D (63/100) overall, C+ (78.6) ecosystem-controlled |
-| JSONL records                | 45 (7.8% coverage)              | 372 (100% backfill)                                |
+| JSONL records                | 45 (11.1% coverage)             | 372 (100% backfill)                                |
 | JSONL field loss             | 85–100%                         | 0% (Zod validated)                                 |
 | JSONL files                  | 1 monolithic                    | 5 specialized                                      |
 | Enforcement rules            | ~65 (ESLint + regex)            | ~116 (ESLint + regex + Semgrep)                    |
@@ -495,7 +496,7 @@ prominently.
 | Deferred item tracking       | Count-only (90% vanish)         | Itemized with auto-escalation                      |
 | Test files                   | ~10 (zero for critical scripts) | 56 across 5 tiers                                  |
 | Cross-doc gate override rate | 48.9%                           | Recalibrated with diffPattern + auto-fix           |
-| DEBT resolution rate         | 6.9%                            | Automated triage pipeline                          |
+| DEBT resolution rate         | 12.5% (80/638)                  | Automated triage pipeline                          |
 | Health check scripts         | 0                               | 10                                                 |
 | Health metrics               | 0                               | 64 across 8 categories                             |
 | Pre-push checks              | ~5                              | 18 (accumulated from retros)                       |
@@ -520,7 +521,7 @@ prominently.
 
 ### Known Tech Debt from v2 (10 items)
 
-1. Coverage at 17.2% automated — mathematical ceiling 32.2%
+1. Automated enforcement at 32.2% (116/360) — ceiling for static analysis
 2. Health score D (63) vs B+ (87) target — SonarCloud items dominate
 3. 10 health checkers lack direct unit tests (covered by integration)
 4. `warnings.jsonl` doesn't exist yet (by design — created on first warning)
