@@ -128,3 +128,32 @@ function safeAccess(arr) {
     return arr[0];
   }
 }
+
+function safeAccessEarlyReturn(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  if (arr.length === 0) return null;
+  return arr[0];
+}
+
+function safeAccessEarlyReturnBlock(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  if (arr.length === 0) { return null; }
+  return arr[0];
+}
+
+function safeAccessLengthLessThan(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  if (arr.length < 2) return null;
+  return arr[0];
+}
+
+function safeAccessSplit(str) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  return str.split("T")[0];
+}
+
+function safeAccessNullish(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  const val = arr[0] ?? "default";
+  return val;
+}
