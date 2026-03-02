@@ -57,7 +57,7 @@ const DEFAULT_LOG_PATH = join(PROJECT_ROOT, "data", "ecosystem-v2", "ecosystem-h
  * @returns {string}
  */
 function resolveLogPath(opts) {
-  return opts && opts.logPath ? resolve(opts.logPath) : DEFAULT_LOG_PATH;
+  return opts?.logPath ? resolve(opts.logPath) : DEFAULT_LOG_PATH;
 }
 
 /**
@@ -105,19 +105,15 @@ function readAllEntries(filePath) {
  * @returns {object}
  */
 function computeDelta(currentScore, previous) {
-  const delta = {
-    previous_score: previous ? previous.score : null,
-    change: previous ? currentScore - previous.score : null,
-    trend: null,
-  };
-
-  if (delta.change !== null) {
-    if (Math.abs(delta.change) < 3) delta.trend = "stable";
-    else if (delta.change > 0) delta.trend = "improving";
-    else delta.trend = "degrading";
+  if (!previous) {
+    return { previous_score: null, change: null, trend: null };
   }
-
-  return delta;
+  const change = currentScore - previous.score;
+  let trend;
+  if (Math.abs(change) < 3) trend = "stable";
+  else if (change > 0) trend = "improving";
+  else trend = "degrading";
+  return { previous_score: previous.score, change, trend };
 }
 
 /**
@@ -182,7 +178,7 @@ export function appendHealthScore(result, mode, opts) {
  * @param {string} [opts.logPath] - Override default log path
  * @returns {Array} Last N entries (oldest first)
  */
-export function getLatestScores(n = 5, opts) {
+export function getLatestScores(opts, n = 5) {
   const filePath = resolveLogPath(opts);
   const entries = readAllEntries(filePath);
   return entries.slice(-n);

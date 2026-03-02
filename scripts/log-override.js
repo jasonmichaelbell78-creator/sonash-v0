@@ -368,12 +368,12 @@ function computeAnalytics(entries, days) {
     const d = new Date(e.timestamp);
     return d >= twoWeeksAgo && d < oneWeekAgo;
   }).length;
-  const changePct =
-    previousWeek > 0
-      ? Math.round(((currentWeek - previousWeek) / previousWeek) * 100)
-      : currentWeek > 0
-        ? 100
-        : 0;
+  let changePct;
+  if (previousWeek > 0) {
+    changePct = Math.round(((currentWeek - previousWeek) / previousWeek) * 100);
+  } else {
+    changePct = currentWeek > 0 ? 100 : 0;
+  }
 
   const trend = {
     current_week: currentWeek,

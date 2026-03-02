@@ -24,7 +24,7 @@ module.exports = {
     return {
       JSXOpeningElement(node) {
         // Only check for <Suspense> elements
-        if (!node.name || node.name.type !== "JSXIdentifier" || node.name.name !== "Suspense") {
+        if (node.name?.type !== "JSXIdentifier" || node.name.name !== "Suspense") {
           return;
         }
 
@@ -33,9 +33,7 @@ module.exports = {
         while (current) {
           if (
             current.type === "JSXElement" &&
-            current.openingElement &&
-            current.openingElement.name &&
-            current.openingElement.name.type === "JSXIdentifier" &&
+            current.openingElement?.name?.type === "JSXIdentifier" &&
             current.openingElement.name.name === "ErrorBoundary"
           ) {
             return; // Found ErrorBoundary ancestor

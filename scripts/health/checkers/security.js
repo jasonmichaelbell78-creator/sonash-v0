@@ -30,7 +30,9 @@ function checkSecurity() {
   try {
     const out = (auditResult.output || "").trim();
     const err = (auditResult.stderr || "").trim();
-    const rawJson = out.startsWith("{") ? out : err.startsWith("{") ? err : "{}";
+    let rawJson = "{}";
+    if (out.startsWith("{")) rawJson = out;
+    else if (err.startsWith("{")) rawJson = err;
     const audit = safeParse(rawJson, {});
 
     if (audit?.metadata?.vulnerabilities) {
@@ -54,7 +56,10 @@ function checkSecurity() {
   metrics.high_vulns = { value: highCount, ...highScore, benchmark: BENCHMARKS.high_vulns };
 
   // Audit status (100 if clean, 0 if failed to run)
-  const auditStatusVal = auditOk ? (criticalCount === 0 && highCount === 0 ? 100 : 60) : 0;
+  let auditStatusVal;
+  if (!auditOk) auditStatusVal = 0;
+  else if (criticalCount === 0 && highCount === 0) auditStatusVal = 100;
+  else auditStatusVal = 60;
   const auditStatusScore = scoreMetric(auditStatusVal, BENCHMARKS.audit_status, "higher-is-better");
   metrics.audit_status = {
     value: auditStatusVal,

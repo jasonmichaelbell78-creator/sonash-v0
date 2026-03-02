@@ -45,7 +45,7 @@ const DEFAULT_WARNINGS_PATH = join(PROJECT_ROOT, "data", "ecosystem-v2", "warnin
  * @returns {string}
  */
 function resolveWarningsPath(opts) {
-  return opts && opts.warningsPath ? resolve(opts.warningsPath) : DEFAULT_WARNINGS_PATH;
+  return opts?.warningsPath ? resolve(opts.warningsPath) : DEFAULT_WARNINGS_PATH;
 }
 
 /**
@@ -180,7 +180,7 @@ export function resolveWarning(warningId, opts) {
  * @param {string} [opts.warningsPath] - Override default warnings.jsonl path
  * @returns {Array} Array of records that were marked stale
  */
-export function markStale(thresholdDays = 30, opts) {
+export function markStale(opts, thresholdDays = 30) {
   const filePath = resolveWarningsPath(opts);
   const records = readAll(filePath);
 

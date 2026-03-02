@@ -31,7 +31,7 @@ module.exports = {
 
         // Second argument is the deps array
         const depsArg = node.arguments[1];
-        if (!depsArg || depsArg.type !== "ArrayExpression") return;
+        if (depsArg?.type !== "ArrayExpression") return;
 
         for (const element of depsArg.elements) {
           if (!element) continue;

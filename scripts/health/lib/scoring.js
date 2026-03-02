@@ -42,22 +42,20 @@ function scoreMetric(value, benchmark, direction = "lower-is-better") {
       const offset = value - benchmark.average;
       score = range > 0 ? Math.max(0, Math.round(60 - (offset / range) * 60)) : 0;
     }
-  } else {
+  } else if (value >= benchmark.good) {
     // higher-is-better
-    if (value >= benchmark.good) {
-      rating = "good";
-      score = 100;
-    } else if (value >= benchmark.average) {
-      rating = "average";
-      const range = benchmark.good - benchmark.average;
-      const offset = value - benchmark.average;
-      score = range > 0 ? Math.round(80 + (offset / range) * 20) : 80;
-    } else {
-      rating = "poor";
-      const range = benchmark.average - benchmark.poor;
-      const offset = value - benchmark.poor;
-      score = range > 0 ? Math.max(0, Math.round((offset / range) * 60)) : 0;
-    }
+    rating = "good";
+    score = 100;
+  } else if (value >= benchmark.average) {
+    rating = "average";
+    const range = benchmark.good - benchmark.average;
+    const offset = value - benchmark.average;
+    score = range > 0 ? Math.round(80 + (offset / range) * 20) : 80;
+  } else {
+    rating = "poor";
+    const range = benchmark.average - benchmark.poor;
+    const offset = value - benchmark.poor;
+    score = range > 0 ? Math.max(0, Math.round((offset / range) * 60)) : 0;
   }
 
   return { score: Math.max(0, Math.min(100, score)), rating };
@@ -105,8 +103,16 @@ function computeTrend(values, windowSize = 5) {
   const first = recent[0];
   const last = recent[recent.length - 1];
   const delta = last - first;
-  const deltaPercent =
-    first !== 0 ? Math.round((delta / first) * 100) : delta !== 0 ? (delta > 0 ? 100 : -100) : 0;
+  let deltaPercent;
+  if (first !== 0) {
+    deltaPercent = Math.round((delta / first) * 100);
+  } else if (delta > 0) {
+    deltaPercent = 100;
+  } else if (delta < 0) {
+    deltaPercent = -100;
+  } else {
+    deltaPercent = 0;
+  }
 
   let direction;
   if (Math.abs(deltaPercent) < 5) {

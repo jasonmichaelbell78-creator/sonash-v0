@@ -58,7 +58,7 @@ function checkSessionManagement() {
   try {
     const content = fs.readFileSync(sessionStatePath, "utf8");
     const state = safeParse(content);
-    if (state && state.lastBegin && !state.lastEnd) {
+    if (state?.lastBegin && !state.lastEnd) {
       const beginTime = new Date(state.lastBegin).getTime();
       if (!isNaN(beginTime)) {
         gapHours = Math.max(0, Math.floor((Date.now() - beginTime) / (1000 * 60 * 60)));

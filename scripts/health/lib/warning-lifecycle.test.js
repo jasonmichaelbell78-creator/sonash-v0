@@ -140,7 +140,7 @@ describe("warning-lifecycle", () => {
     record.date = oldDateStr;
     safeWriteFileSync(warningsPath, JSON.stringify(record) + "\n", "utf8");
 
-    const staleResults = markStale(30, { warningsPath });
+    const staleResults = markStale({ warningsPath }, 30);
 
     assert.equal(staleResults.length, 1);
     assert.equal(staleResults[0].lifecycle, "stale");

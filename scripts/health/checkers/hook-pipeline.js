@@ -117,12 +117,12 @@ function checkHookPipeline() {
   };
 
   // False positive ratio
-  const fpRatio =
-    warnings7d.length === 0
-      ? overrides7d.length > 0
-        ? 100
-        : 0
-      : Math.round((overrides7d.length / warnings7d.length) * 100);
+  let fpRatio;
+  if (warnings7d.length === 0) {
+    fpRatio = overrides7d.length > 0 ? 100 : 0;
+  } else {
+    fpRatio = Math.round((overrides7d.length / warnings7d.length) * 100);
+  }
   metrics.false_positive_pct = {
     value: fpRatio,
     ...scoreMetric(fpRatio, BENCHMARKS.false_positive_pct),

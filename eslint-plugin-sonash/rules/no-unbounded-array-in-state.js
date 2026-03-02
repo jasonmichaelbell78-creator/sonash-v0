@@ -8,6 +8,41 @@
 
 const { getCalleeName } = require("../lib/ast-utils");
 
+/**
+ * Get the return expression from a block statement.
+ */
+function getReturnExpression(block) {
+  for (const stmt of block.body) {
+    if (stmt.type === "ReturnStatement" && stmt.argument) {
+      return stmt.argument;
+    }
+  }
+  return null;
+}
+
+/**
+ * Check if expression is [...prev, item] without .slice().
+ */
+function isUnboundedSpread(expr) {
+  // Direct array spread: [...prev, newItem]
+  if (expr.type === "ArrayExpression") {
+    const hasSpread = expr.elements.some((el) => el?.type === "SpreadElement");
+    return hasSpread;
+  }
+
+  // .concat() call: prev.concat(newItem)
+  if (expr.type === "CallExpression" && getCalleeName(expr.callee) === "concat") {
+    return true;
+  }
+
+  // If it's [...prev, item].slice(-N), it's bounded — safe
+  if (expr.type === "CallExpression" && getCalleeName(expr.callee) === "slice") {
+    return false;
+  }
+
+  return false;
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -31,8 +66,7 @@ module.exports = {
       // Detect: const [items, setItems] = useState([])
       VariableDeclarator(node) {
         if (
-          !node.init ||
-          node.init.type !== "CallExpression" ||
+          node.init?.type !== "CallExpression" ||
           getCalleeName(node.init.callee) !== "useState"
         ) {
           return;
@@ -40,15 +74,13 @@ module.exports = {
 
         const initArg = node.init.arguments[0];
         // Only track if initialized with array literal
-        if (!initArg || initArg.type !== "ArrayExpression") return;
+        if (initArg?.type !== "ArrayExpression") return;
 
         // Get the setter name from destructuring: [items, setItems]
         if (
-          node.id &&
-          node.id.type === "ArrayPattern" &&
+          node.id?.type === "ArrayPattern" &&
           node.id.elements.length >= 2 &&
-          node.id.elements[1] &&
-          node.id.elements[1].type === "Identifier"
+          node.id.elements[1]?.type === "Identifier"
         ) {
           arrayStateSetters.set(node.id.elements[1].name, true);
         }
@@ -73,40 +105,5 @@ module.exports = {
         }
       },
     };
-
-    /**
-     * Get the return expression from a block statement.
-     */
-    function getReturnExpression(block) {
-      for (const stmt of block.body) {
-        if (stmt.type === "ReturnStatement" && stmt.argument) {
-          return stmt.argument;
-        }
-      }
-      return null;
-    }
-
-    /**
-     * Check if expression is [...prev, item] without .slice().
-     */
-    function isUnboundedSpread(expr) {
-      // Direct array spread: [...prev, newItem]
-      if (expr.type === "ArrayExpression") {
-        const hasSpread = expr.elements.some((el) => el && el.type === "SpreadElement");
-        return hasSpread;
-      }
-
-      // .concat() call: prev.concat(newItem)
-      if (expr.type === "CallExpression" && getCalleeName(expr.callee) === "concat") {
-        return true;
-      }
-
-      // If it's [...prev, item].slice(-N), it's bounded — safe
-      if (expr.type === "CallExpression" && getCalleeName(expr.callee) === "slice") {
-        return false;
-      }
-
-      return false;
-    }
   },
 };

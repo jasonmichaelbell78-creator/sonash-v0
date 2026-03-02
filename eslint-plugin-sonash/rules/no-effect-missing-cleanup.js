@@ -8,6 +8,15 @@
 
 const { getCalleeName } = require("../lib/ast-utils");
 
+/**
+ * Check if a function body has a return statement with an argument
+ * (i.e., returns a cleanup function).
+ */
+function hasCleanupReturn(body) {
+  if (!body?.type || body.type !== "BlockStatement") return false;
+  return body.body.some((stmt) => stmt.type === "ReturnStatement" && stmt.argument !== null);
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -57,15 +66,6 @@ module.exports = {
         return containsTimerCall(node.right);
       }
       return false;
-    }
-
-    /**
-     * Check if a function body has a return statement with an argument
-     * (i.e., returns a cleanup function).
-     */
-    function hasCleanupReturn(body) {
-      if (!body || body.type !== "BlockStatement") return false;
-      return body.body.some((stmt) => stmt.type === "ReturnStatement" && stmt.argument !== null);
     }
 
     return {

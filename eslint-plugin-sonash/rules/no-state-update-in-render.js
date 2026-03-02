@@ -8,6 +8,33 @@
 
 const { getCalleeName } = require("../lib/ast-utils");
 
+/**
+ * Check if node is inside a function that is a React component.
+ * Components are PascalCase functions that contain JSX.
+ */
+function getComponentAncestor(node) {
+  let current = node.parent;
+  while (current) {
+    if (
+      current.type === "FunctionDeclaration" &&
+      current.id &&
+      /^[A-Z]/.test(current.id.name)
+    ) {
+      return current;
+    }
+    if (
+      (current.type === "ArrowFunctionExpression" || current.type === "FunctionExpression") &&
+      current.parent?.type === "VariableDeclarator" &&
+      current.parent.id?.type === "Identifier" &&
+      /^[A-Z]/.test(current.parent.id.name)
+    ) {
+      return current;
+    }
+    current = current.parent;
+  }
+  return null;
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -26,35 +53,6 @@ module.exports = {
   create(context) {
     const setStatePattern = /^set[A-Z]/;
     const safeWrappers = new Set(["useEffect", "useLayoutEffect", "useCallback"]);
-
-    /**
-     * Check if node is inside a function that is a React component.
-     * Components are PascalCase functions that contain JSX.
-     */
-    function getComponentAncestor(node) {
-      let current = node.parent;
-      while (current) {
-        if (
-          current.type === "FunctionDeclaration" &&
-          current.id &&
-          /^[A-Z]/.test(current.id.name)
-        ) {
-          return current;
-        }
-        if (
-          (current.type === "ArrowFunctionExpression" || current.type === "FunctionExpression") &&
-          current.parent &&
-          current.parent.type === "VariableDeclarator" &&
-          current.parent.id &&
-          current.parent.id.type === "Identifier" &&
-          /^[A-Z]/.test(current.parent.id.name)
-        ) {
-          return current;
-        }
-        current = current.parent;
-      }
-      return null;
-    }
 
     /**
      * Check if node is inside a safe wrapper (useEffect callback, event handler, useCallback).
@@ -78,8 +76,7 @@ module.exports = {
           // Named handler: const handleClick = () => { setState(...) }
           if (
             current.parent.type === "VariableDeclarator" &&
-            current.parent.id &&
-            current.parent.id.type === "Identifier" &&
+            current.parent.id?.type === "Identifier" &&
             /^(handle|on)[A-Z]/.test(current.parent.id.name)
           ) {
             return true;
