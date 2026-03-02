@@ -104,7 +104,6 @@ function parseCodePatterns(filePath: string): PatternEntry[] {
   const criticalPatternSection = "Critical Patterns";
 
   for (const line of lines) {
-
     // Detect ## category headings
     const catMatch = /^## (.+)$/.exec(line);
     if (catMatch) {

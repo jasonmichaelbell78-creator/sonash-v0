@@ -809,8 +809,8 @@ _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
 - **Pattern**: Own Semgrep rules that only recognize 2 guard patterns will
   produce FPs on idiomatic code that uses early returns. Design rules to cover
   common guard idioms from the start.
-- **Rejected**: 3 Qodo repeat items (auto-fix path, health tests, FP threshold
-  — all fixed in R1/R2). 12 Semgrep FPs eliminated by rule expansion.
+- **Rejected**: 3 Qodo repeat items (auto-fix path, health tests, FP threshold —
+  all fixed in R1/R2). 12 Semgrep FPs eliminated by rule expansion.
 
 **R5 (Qodo + Semgrep + SonarCloud + CI):** 4 fixes, 1 deferred, 7 rejected
 
@@ -836,17 +836,18 @@ _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
 - **Fix**: for-of, .find(), .replaceAll(), Number.NaN (misc ES modernization)
 - **Deferred**: 17 CC issues (v1 legacy: sync-reviews CC=124, run-consolidation
   CC=48/24; health: run-health-check CC=39, composite CC=22, scoring CC=19; TS:
-  verify-enforcement CC=44, build-enforcement CC=27/17; misc: check-review-archive
-  CC=53, log-override CC=18, escalate-deferred CC=24), 2 regex complexity, 1
-  nested ternary
+  verify-enforcement CC=44, build-enforcement CC=27/17; misc:
+  check-review-archive CC=53, log-override CC=18, escalate-deferred CC=24), 2
+  regex complexity, 1 nested ternary
 - **Rejected**: 2 FP (health-log summarizeDimensions returns different values;
   test-coverage Math.max on Date objects not applicable), 1 stale (sort fixed
   R5), 6 intentional test fixtures, 6 repeat-deferred CC from R3
-- **Pattern**: Bulk SonarCloud mechanical fixes (ES2015/2021/2022 compliance) are
-  highly parallelizable — 3 agents across 21 files in one pass. Group by fix
+- **Pattern**: Bulk SonarCloud mechanical fixes (ES2015/2021/2022 compliance)
+  are highly parallelizable — 3 agents across 21 files in one pass. Group by fix
   type (parseInt, isNaN, .match→exec) rather than by file.
 
-**R7 (SonarCloud + Qodo + Semgrep CI):** 1 fix, 21 deferred, 25 rejected, 4 hidden
+**R7 (SonarCloud + Qodo + Semgrep CI):** 1 fix, 21 deferred, 25 rejected, 4
+hidden
 
 - **Fix**: Semgrep YAML parse error — unquoted colon in ternary pattern
   `$ARR.length > 0 ? ... : ...` broke YAML parser in CI. Quoted the pattern.
@@ -862,25 +863,29 @@ _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
   be quoted — YAML interprets the colon as a mapping separator. This applies to
   Semgrep pattern definitions and any YAML config with inline code patterns.
 - **Pattern**: SonarCloud's `replaceAll` suggestion (S6354) does not account for
-  regex features in `.replace()` calls. When `.replace()` uses character classes,
-  anchors, alternation, or unicode flags, it CANNOT be converted to
+  regex features in `.replace()` calls. When `.replace()` uses character
+  classes, anchors, alternation, or unicode flags, it CANNOT be converted to
   `.replaceAll()`. Must verify each instance individually.
 
-**R8 (Qodo + SonarCloud stale + Semgrep CI + ESLint CI):** 3 fixes, 1 deferred, 48 rejected
+**R8 (Qodo + SonarCloud stale + Semgrep CI + ESLint CI):** 3 fixes, 1 deferred,
+48 rejected
 
-- **Fix**: ESLint CI blocker — `__dirname` not defined in check-cross-doc-deps.js.
-  ESLint config treats `scripts/**/*.js` as ESM with `__dirname`/`__filename`
-  excluded from globals. File is CJS. Added `/* global __dirname */`.
+- **Fix**: ESLint CI blocker — `__dirname` not defined in
+  check-cross-doc-deps.js. ESLint config treats `scripts/**/*.js` as ESM with
+  `__dirname`/`__filename` excluded from globals. File is CJS. Added
+  `/* global __dirname */`.
 - **Fix**: Semgrep `no-unchecked-array-access` rule expanded — multi-statement
-  guard blocks (e.g., `if (arr.length === 0) { log(); return; }`) now recognized.
-  Previous patterns only matched single-return blocks.
-- **Fix**: nosemgrep comment for check-review-archive.js `sortedWeeks[0]` — guard
-  is on different variable (`weekMap.size`), Semgrep can't track variable derivation.
+  guard blocks (e.g., `if (arr.length === 0) { log(); return; }`) now
+  recognized. Previous patterns only matched single-return blocks.
+- **Fix**: nosemgrep comment for check-review-archive.js `sortedWeeks[0]` —
+  guard is on different variable (`weekMap.size`), Semgrep can't track variable
+  derivation.
 - **Rejected**: 40 stale SonarCloud (same 40 as R7, not re-analyzed after push),
-  Qodo ESM tests (Node v24 auto-detects), Qodo Semgrep ignore (standard location)
-- **Pattern**: ESLint flat config can exclude specific globals per directory. When
-  CJS scripts exist alongside ESM scripts, ensure `/* global __dirname */` or a
-  separate override block for CJS files.
+  Qodo ESM tests (Node v24 auto-detects), Qodo Semgrep ignore (standard
+  location)
+- **Pattern**: ESLint flat config can exclude specific globals per directory.
+  When CJS scripts exist alongside ESM scripts, ensure `/* global __dirname */`
+  or a separate override block for CJS files.
 - **Pattern**: Semgrep guard patterns must account for multi-statement blocks —
   real code often has logging/cleanup before early returns.
 

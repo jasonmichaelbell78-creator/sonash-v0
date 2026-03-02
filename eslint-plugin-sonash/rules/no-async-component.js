@@ -76,10 +76,7 @@ module.exports = {
       // Arrow functions: const MyComponent = async () => <div/>
       "VariableDeclarator > ArrowFunctionExpression"(node) {
         const parent = node.parent;
-        if (
-          parent?.type === "VariableDeclarator" &&
-          parent.id?.type === "Identifier"
-        ) {
+        if (parent?.type === "VariableDeclarator" && parent.id?.type === "Identifier") {
           checkAsyncComponent(node, parent.id.name);
         }
       },

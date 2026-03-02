@@ -15,11 +15,7 @@ const { getCalleeName } = require("../lib/ast-utils");
 function getComponentAncestor(node) {
   let current = node.parent;
   while (current) {
-    if (
-      current.type === "FunctionDeclaration" &&
-      current.id &&
-      /^[A-Z]/.test(current.id.name)
-    ) {
+    if (current.type === "FunctionDeclaration" && current.id && /^[A-Z]/.test(current.id.name)) {
       return current;
     }
     if (

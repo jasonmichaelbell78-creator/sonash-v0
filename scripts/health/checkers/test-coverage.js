@@ -75,7 +75,9 @@ function checkTestCoverage() {
   };
 
   // Staleness
-  const validDates = results.map((r) => new Date(r.timestamp)).filter((d) => !Number.isNaN(d.getTime()));
+  const validDates = results
+    .map((r) => new Date(r.timestamp))
+    .filter((d) => !Number.isNaN(d.getTime()));
   const latest =
     validDates.length > 0
       ? validDates.reduce((max, d) => (d > max ? d : max), validDates[0])

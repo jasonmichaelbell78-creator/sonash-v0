@@ -202,7 +202,11 @@ const JSON_OUTPUT = args.includes("--json");
 const FP_REPORT = args.includes("--fp-report");
 const INCLUDE_FP_DISABLED = args.includes("--include-fp-disabled");
 const FP_THRESHOLD_ARG = args.find((a) => a.startsWith("--fp-threshold="));
-const FP_THRESHOLD = FP_THRESHOLD_ARG ? (Number.isNaN(Number.parseInt(FP_THRESHOLD_ARG.split("=")[1], 10)) ? 25 : Number.parseInt(FP_THRESHOLD_ARG.split("=")[1], 10)) : 25;
+const FP_THRESHOLD = FP_THRESHOLD_ARG
+  ? Number.isNaN(Number.parseInt(FP_THRESHOLD_ARG.split("=")[1], 10))
+    ? 25
+    : Number.parseInt(FP_THRESHOLD_ARG.split("=")[1], 10)
+  : 25;
 const FILES = args.filter((a) => !a.startsWith("--"));
 
 /**
