@@ -10,6 +10,8 @@
  *   node scripts/log-override.js --check=patterns --reason="False positive in migration script"
  *   node scripts/log-override.js --list            # Show recent overrides
  *   node scripts/log-override.js --clear           # Clear override log
+ *   node scripts/log-override.js --analytics       # Show override analytics (last 30 days)
+ *   node scripts/log-override.js --analytics --days=7 --json  # JSON analytics for last 7 days
  *
  * Environment variable integration:
  *   SKIP_REASON="reason" SKIP_TRIGGERS=1 git push
@@ -69,6 +71,9 @@ function parseArgs() {
     list: false,
     clear: false,
     quick: false,
+    analytics: false,
+    days: 30,
+    json: false,
   };
 
   for (const arg of process.argv.slice(2)) {
@@ -78,6 +83,13 @@ function parseArgs() {
       args.clear = true;
     } else if (arg === "--quick") {
       args.quick = true;
+    } else if (arg === "--analytics") {
+      args.analytics = true;
+    } else if (arg === "--json") {
+      args.json = true;
+    } else if (arg.startsWith("--days=")) {
+      const val = Number.parseInt(arg.split("=").slice(1).join("="), 10);
+      if (!Number.isNaN(val) && val > 0) args.days = val;
     } else if (arg.startsWith("--check=")) {
       // Use slice(1).join("=") to handle values containing "="
       args.check = arg.split("=").slice(1).join("=");
@@ -245,6 +257,173 @@ function listOverrides() {
   }
 }
 
+// Read and parse all entries from override log
+function readEntries(logPath) {
+  const filePath = logPath || OVERRIDE_LOG;
+  if (!fs.existsSync(filePath)) return [];
+
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf-8");
+  } catch {
+    return [];
+  }
+
+  return content
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line) => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+}
+
+/**
+ * Compute analytics from override entries.
+ * Exported for testing.
+ *
+ * @param {Array<object>} entries - Override log entries
+ * @param {number} days - Number of days to include
+ * @returns {object} Analytics result
+ */
+function computeAnalytics(entries, days) {
+  const now = new Date();
+  const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
+  // Filter entries within the time window
+  const filtered = entries.filter((e) => {
+    if (!e.timestamp) return false;
+    return new Date(e.timestamp) >= cutoff;
+  });
+
+  // Period
+  const period = {
+    days,
+    from: cutoff.toISOString().slice(0, 10),
+    to: now.toISOString().slice(0, 10),
+  };
+
+  // Total
+  const total = filtered.length;
+
+  // By check (sorted descending)
+  const checkCounts = {};
+  for (const e of filtered) {
+    const check = e.check || "unknown";
+    checkCounts[check] = (checkCounts[check] || 0) + 1;
+  }
+  const byCheck = Object.fromEntries(Object.entries(checkCounts).sort((a, b) => b[1] - a[1]));
+
+  // By branch (top 10, sorted descending) - omit cwd field for privacy
+  const branchCounts = {};
+  for (const e of filtered) {
+    const branch = e.git_branch || "unknown";
+    branchCounts[branch] = (branchCounts[branch] || 0) + 1;
+  }
+  const byBranch = Object.fromEntries(
+    Object.entries(branchCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+  );
+
+  // No-reason count
+  const noReasonEntries = filtered.filter((e) => {
+    const reason = (e.reason || "").trim();
+    return (
+      !reason || reason === "No reason" || reason === "No reason provided" || reason.length < 10
+    );
+  });
+  const noReasonCount = noReasonEntries.length;
+  const noReasonPct = total > 0 ? Math.round((noReasonCount / total) * 1000) / 10 : 0;
+
+  // Patterns: same check overridden 3+ times on same branch
+  const patternMap = {};
+  for (const e of filtered) {
+    const key = `${e.git_branch || "unknown"}|||${e.check || "unknown"}`;
+    patternMap[key] = (patternMap[key] || 0) + 1;
+  }
+  const patterns = [];
+  for (const [key, count] of Object.entries(patternMap)) {
+    if (count >= 3) {
+      const [branch, check] = key.split("|||");
+      patterns.push({ branch, check, count });
+    }
+  }
+  patterns.sort((a, b) => b.count - a.count);
+
+  // Trend: last 7 days vs prior 7 days
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+  const currentWeek = entries.filter((e) => {
+    if (!e.timestamp) return false;
+    const d = new Date(e.timestamp);
+    return d >= oneWeekAgo && d <= now;
+  }).length;
+  const previousWeek = entries.filter((e) => {
+    if (!e.timestamp) return false;
+    const d = new Date(e.timestamp);
+    return d >= twoWeeksAgo && d < oneWeekAgo;
+  }).length;
+  let changePct;
+  if (previousWeek > 0) {
+    changePct = Math.round(((currentWeek - previousWeek) / previousWeek) * 100);
+  } else {
+    changePct = currentWeek > 0 ? 100 : 0;
+  }
+
+  const trend = {
+    current_week: currentWeek,
+    previous_week: previousWeek,
+    change_pct: changePct,
+  };
+
+  return {
+    period,
+    total,
+    byCheck,
+    byBranch,
+    noReasonCount,
+    noReasonPct,
+    patterns,
+    trend,
+  };
+}
+
+// Display analytics in human-readable format
+function showAnalytics(analytics) {
+  const { period, total, byCheck, noReasonCount, noReasonPct, patterns, trend } = analytics;
+
+  console.log(`\nOverride Analytics (last ${period.days} days)`);
+  console.log("==================================");
+  console.log(`Total overrides: ${total}`);
+  console.log(`No-reason rate: ${noReasonPct}% (${noReasonCount}/${total})`);
+
+  console.log("\nBy Check:");
+  for (const [check, count] of Object.entries(byCheck)) {
+    const pct = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+    console.log(`  ${check.padEnd(22)} ${String(count).padStart(3)}  (${pct}%)`);
+  }
+
+  if (patterns.length > 0) {
+    console.log("\nPatterns (3+ same check on same branch):");
+    for (const p of patterns) {
+      console.log(`  ${p.branch}  ${p.check}  ${p.count} overrides`);
+    }
+  } else {
+    console.log("\nPatterns: None detected");
+  }
+
+  const sign = trend.change_pct >= 0 ? "+" : "";
+  console.log(
+    `\nTrend: ${sign}${trend.change_pct}% vs previous week (${trend.current_week} vs ${trend.previous_week})`
+  );
+  console.log("");
+}
+
 // Clear override log
 function clearLog() {
   ensureLogDir();
@@ -275,12 +454,23 @@ function logSkip(check, reason) {
 
 // Export for use as a module
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { logSkip, logOverride };
+  module.exports = { logSkip, logOverride, computeAnalytics, readEntries };
 }
 
 // Main execution (only when run directly, not when required)
 function main() {
   const args = parseArgs();
+
+  if (args.analytics) {
+    const entries = readEntries();
+    const analytics = computeAnalytics(entries, args.days);
+    if (args.json) {
+      console.log(JSON.stringify(analytics, null, 2));
+    } else {
+      showAnalytics(analytics);
+    }
+    return;
+  }
 
   if (args.list) {
     listOverrides();
@@ -314,9 +504,12 @@ function main() {
     console.log('  SKIP_REASON="reason" SKIP_TRIGGERS=1 git push');
     console.log("");
     console.log("Other commands:");
-    console.log("  --list    Show recent overrides");
-    console.log("  --clear   Archive and clear override log");
-    console.log("  --quick   Silent mode for shell hooks (log and exit)");
+    console.log("  --list       Show recent overrides");
+    console.log("  --clear      Archive and clear override log");
+    console.log("  --quick      Silent mode for shell hooks (log and exit)");
+    console.log("  --analytics  Show override analytics (default: last 30 days)");
+    console.log("    --days=N   Override analytics time window (default: 30)");
+    console.log("    --json     Output analytics as JSON");
     process.exit(1);
   }
 

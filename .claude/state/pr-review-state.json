@@ -1,0 +1,186 @@
+{
+  "pr": 411,
+  "branch": "claude/maintenance22726-md8WL",
+  "session": 200,
+  "started": "2026-03-01",
+  "mode": "batched",
+  "protocol": "commit-per-batch-no-push",
+  "naming": "fix: resolve N PR review items from SOURCE (PR #411 RX)",
+  "batches_completed": 9,
+  "total_items_processed": 415,
+  "total_items_fixed": 135,
+  "total_items_deferred": 96,
+  "total_items_rejected": 178,
+  "learning_entry": "#442",
+  "jsonl_record": "rev-427",
+  "batches": [
+    {
+      "round": "R1",
+      "source": "Semgrep OSS + Gemini + Qodo",
+      "total": 53,
+      "fixed": 5,
+      "deferred": 0,
+      "rejected": 48,
+      "commit": "1ca3e703",
+      "fixes": [
+        "Rewrote no-floating-promise Semgrep rule (was matching all fn calls)",
+        "JSONL malformed line resilience in 3 files + 1 propagation",
+        "Path validation in cross-doc-deps auto-fix (validatePathInDir)",
+        "Health tests added to npm test glob (496 from 293)",
+        "Nullish coalescing on array access in computeTrend"
+      ]
+    },
+    {
+      "round": "R2",
+      "source": "CI failures + Qodo + CodeQL",
+      "total": 24,
+      "fixed": 3,
+      "deferred": 11,
+      "rejected": 2,
+      "commit": "719ab17f",
+      "fixes": [
+        "Prettier formatting on 8 plan/test files",
+        "Exclude tests/semgrep/ from security-check.js SKIP_PATTERNS",
+        "FP threshold NaN guard in check-pattern-compliance.js"
+      ]
+    },
+    {
+      "round": "R3",
+      "source": "Gemini + Qodo + SonarCloud (58 issues + 38 hotspots)",
+      "total": 89,
+      "fixed": 37,
+      "deferred": 42,
+      "rejected": 18,
+      "commit": "09a38243",
+      "fixes": [
+        "BLOCKER: computeDelta() restructured with early returns (S3516)",
+        "18x optional chaining (S6582) in ESLint rules + health scripts",
+        "6x inner functions to outer scope (S7721) in ESLint rules",
+        "6x nested ternary to if/else (S3358) in health checkers + scoring",
+        "2x default params reordered (S1788) in health-log + warning-lifecycle",
+        "1x if-in-else flattened (S6660) in scoring.js",
+        "1x nested ternary in log-override.js"
+      ],
+      "deferred_summary": "15 CC (v1 legacy + health checker branching), 22 regex DoS hotspots (internal scripts, trusted input), 16 PATH hotspots (FP on hardcoded execFileSync in tests), 4 useless-assignment in Semgrep test fixtures, 11 CodeQL pre-existing"
+    },
+    {
+      "round": "R4",
+      "source": "Semgrep OSS + CI failure + Qodo",
+      "total": 18,
+      "fixed": 3,
+      "deferred": 0,
+      "rejected": 15,
+      "commit": "acea73c5",
+      "fixes": [
+        "security-check.js SKIP_PATTERNS applied in --file mode (CI fix)",
+        "no-unchecked-array-access rule expanded with 8 guard patterns (eliminates 15 FPs)",
+        "5 new Semgrep test cases for guard patterns"
+      ],
+      "rejected_summary": "3 Qodo repeat-rejected (same as R1/R2), 12 Semgrep no-unchecked-array-access FPs (all had existing guards: early returns, split()[0], ?? fallbacks, ?.)"
+    },
+    {
+      "round": "R5",
+      "source": "Qodo + Semgrep OSS + SonarCloud + CI",
+      "total": 12,
+      "fixed": 4,
+      "deferred": 1,
+      "rejected": 7,
+      "commit": "a6c89c5a",
+      "fixes": [
+        "compositeScore() skips no_data categories (was weighting score=0, deflating grade)",
+        "semgrep.yml: removed --error, added if:always() to cloud scan (was blocking on 340 findings)",
+        "check-review-archive.js: localeCompare in sort() (SonarCloud)",
+        "Semgrep rule: 4 more guard pattern exclusions (optional chaining, ternary, short-circuit)"
+      ],
+      "deferred_summary": "Quick health timeout (design decision — quick mode uses cached outputs)",
+      "rejected_summary": "5 Qodo repeat-rejected (R1/R2), 8 stale Semgrep (pre-R4 push)"
+    },
+    {
+      "round": "R6",
+      "source": "SonarCloud (115 issues)",
+      "total": 115,
+      "fixed": 78,
+      "deferred": 20,
+      "rejected": 15,
+      "commit": "f9d9788e",
+      "fixes": [
+        "19x parseInt() → Number.parseInt() across health checkers + scripts",
+        "12x isNaN() → Number.isNaN() across health/debt/session/coverage/scoring",
+        "4x parseFloat() → Number.parseFloat() in ecosystem-integration + learning",
+        "24x .match() → RegExp.exec() across health checkers + TS + v1 scripts",
+        "1x .replaceAll() over .replace(/g) in health-log.js",
+        "5x .at(-N) over [length-N] in scoring/health-log/alerts/review-archive",
+        "2x Math.min/Math.max simplification in scoring.js sparkline",
+        "2x Array → Set for .has() in test + run-consolidation.v1.js",
+        "1x for-of over for-i in build-enforcement-manifest.ts",
+        "1x .find() over .filter()[0] in escalate-deferred.test.ts",
+        "1x Number.NaN in run-health-check.test.js"
+      ],
+      "deferred_summary": "17 CC issues (v1 legacy: sync-reviews CC=124, run-consolidation CC=48/24; health: run-health-check CC=39, composite CC=22, scoring CC=19, checkers CC=17-19; TS: build-enforcement CC=27/17, verify-enforcement CC=44; other: log-override CC=18, escalate-deferred CC=24, check-review-archive CC=53), 2 regex complexity (check-pattern-compliance + test mirror), 1 nested ternary",
+      "rejected_summary": "2 FP (health-log summarizeDimensions returns different values despite SonarCloud claim; test-coverage Math.max on Dates not applicable), 1 stale (check-review-archive sort already fixed R5), 6 test fixture FPs (tests/semgrep/ useless assignments + empty catch — intentional), 6 repeat-deferred CC from R3"
+    },
+    {
+      "round": "R7",
+      "source": "SonarCloud (40) + Qodo (10) + Semgrep CI (1)",
+      "total": 51,
+      "fixed": 1,
+      "deferred": 21,
+      "rejected": 25,
+      "hidden": 4,
+      "commit": "pending",
+      "fixes": [
+        "Semgrep YAML parse error: quoted ternary pattern in no-unchecked-array-access.yml (colon in '? ... : ...' broke YAML parser)"
+      ],
+      "deferred_summary": "17 CC repeat-deferred from R3/R6 (same files), 2 regex complexity repeat-deferred from R6 (check-pattern-compliance L1386 + test mirror L331), 1 nested ternary repeat from R6 (L205), 1 quick health timeout repeat from R5",
+      "rejected_summary": "8 replaceAll in build-enforcement-manifest.ts (all use regex features: char classes, unicode flags, anchors), 3 replaceAll in run-consolidation.v1.js (regex char classes), 1 health-log FP repeat from R6, 1 test-coverage Math.max on Dates repeat from R6, 1 escalate-deferred.test.ts assertion needed for TS strict, 6 semgrep test fixtures repeat from R6, 5 Qodo repeat-rejected (composite fixed R5, path fixed R1, cwd ☑, NaN fixed R2, semgrep --error fixed R5)"
+    },
+    {
+      "round": "R8",
+      "source": "Qodo (10) + SonarCloud (40 stale) + Semgrep CI (2) + ESLint CI (1)",
+      "total": 52,
+      "fixed": 3,
+      "deferred": 1,
+      "rejected": 48,
+      "commit": "pending",
+      "fixes": [
+        "ESLint CI blocker: added /* global __dirname */ to check-cross-doc-deps.js (CJS file treated as ESM by config)",
+        "Semgrep rule: expanded guard patterns to handle multi-statement blocks with return (e.g., { log(); return; })",
+        "Semgrep FP: added nosemgrep comment for check-review-archive.js sortedWeeks[0] (guard on different variable weekMap.size)"
+      ],
+      "deferred_summary": "1 quick health timeout repeat from R5/R7",
+      "rejected_summary": "40 SonarCloud stale (identical to R7, not re-analyzed after push), 1 Qodo ESM health tests (Node v24 auto-detects ESM), 1 Qodo Semgrep ignore (standard .semgrep/.semgrepignore location), 5 Qodo repeat-rejected, 1 Qodo hidden"
+    }
+  ],
+  "status": "r9_committed_not_pushed",
+  "process": {
+    "description": "Batched PR review protocol for large PRs",
+    "steps": [
+      "1. Read this file to recover state after compaction",
+      "2. User pastes next batch of review feedback OR fetch via API",
+      "3. Triage: identify fixes vs deferred vs rejected. Check against prior rounds for duplicates.",
+      "4. Fix items (use parallel agents for 10+ items across multiple files)",
+      "5. Run npm test to verify",
+      "6. Commit with: fix: resolve N PR review items from SOURCE (PR #411 RX)",
+      "7. Update this state file with round results",
+      "8. After final round: write learning entry (#442+), JSONL record, push all"
+    ],
+    "api_fetch_commands": {
+      "sonarcloud_issues": "curl -s -o sonar.json 'https://sonarcloud.io/api/issues/search?organization=jasonmichaelbell78-creator&projects=jasonmichaelbell78-creator_sonash-v0&pullRequest=411&ps=100&severities=BLOCKER,CRITICAL,MAJOR'",
+      "sonarcloud_hotspots": "curl -s -o sonar-hs.json 'https://sonarcloud.io/api/hotspots/search?organization=jasonmichaelbell78-creator&projectKey=jasonmichaelbell78-creator_sonash-v0&pullRequest=411&ps=100&status=TO_REVIEW'",
+      "semgrep_annotations": "gh api repos/jasonmichaelbell78-creator/sonash-v0/check-runs/CHECK_RUN_ID/annotations --paginate",
+      "codeql_alerts": "gh api repos/jasonmichaelbell78-creator/sonash-v0/code-scanning/alerts?per_page=100&state=open",
+      "pr_comments": "gh api repos/jasonmichaelbell78-creator/sonash-v0/pulls/411/comments?per_page=100"
+    },
+    "known_fps": [
+      "Semgrep no-floating-promise: rule rewritten in R1, old FPs should not recur",
+      "CodeQL 11 alerts: pre-existing initial scan, not PR-specific",
+      "SonarCloud PATH hotspots (S4036): FP on hardcoded execFileSync in tests",
+      "SonarCloud useless-assignment in tests/semgrep/: intentional test fixtures",
+      "SonarCloud duplication on v1 scripts: by design (legacy fallbacks)",
+      "Qodo path-validation + health-tests: fixed in R1, Qodo re-raises across rounds",
+      "Qodo FP-threshold-NaN: fixed in R2, Qodo re-raises in R4",
+      "Semgrep no-unchecked-array-access: rule too strict, expanded in R4"
+    ]
+  },
+  "notes": "R1-R9 all committed. R9: 1 fix (Prettier formatting on 6 files — CI blocker). Semgrep nosemgrep for sortedWeeks[0] is correctly placed but may show in SARIF regardless. Tests: 496 pass."
+}

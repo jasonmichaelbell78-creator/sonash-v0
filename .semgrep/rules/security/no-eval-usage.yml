@@ -1,0 +1,24 @@
+rules:
+  - id: sonash.security.no-eval-usage
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      eval() or Function() constructor detected. These execute arbitrary code
+      and enable injection attacks. Use safer alternatives like JSON.parse() for
+      data or explicit function references for dynamic dispatch.
+    metadata:
+      category: security
+      code-pattern-ref: "Shell interpolation"
+      confidence: HIGH
+      cwe: "CWE-95: Eval Injection"
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+      - pattern: Function(...)
+      - pattern: setTimeout($STR, ...)
+      - pattern: setInterval($STR, ...)
+    paths:
+      exclude:
+        - node_modules/
+        - tests/
+        - "*.test.*"

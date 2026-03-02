@@ -32,6 +32,8 @@ export default [
       "docs/archive/**",
       "eslint-plugin-sonash/**",
       "scripts/reviews/dist/**",
+      "tests/semgrep/**",
+      ".temp-test-*/**",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },
@@ -72,6 +74,17 @@ export default [
     },
     rules: {
       // Allow require() for dynamic imports (e.g., path.sep detection)
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  // Node.js test files using CommonJS (e2e, integration, performance tests)
+  {
+    files: ["tests/**/*.test.js"],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: globals.node,
+    },
+    rules: {
       "@typescript-eslint/no-require-imports": "off",
     },
   },

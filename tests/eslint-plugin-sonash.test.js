@@ -11,8 +11,8 @@ import { describe, test } from "vitest";
 import { RuleTester } from "eslint";
 import { createRequire } from "node:module";
 
-const require = createRequire(import.meta.url);
-const plugin = require("../eslint-plugin-sonash/index.js");
+const requireCjs = createRequire(import.meta.url);
+const plugin = requireCjs("../eslint-plugin-sonash/index.js");
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -717,6 +717,233 @@ describe("Phase 2: no-unescaped-regexp-input template literal escape (Item 10)",
         {
           code: "new RegExp(`${safe}-${unsafeVar}`)",
           errors: [{ messageId: "unescapedInput" }],
+        },
+      ],
+    });
+  });
+});
+
+// ═══════════════════════════════════════════════════
+// Phase 3 Rules (v4.0) — AST rules for hooks/React patterns
+// ═══════════════════════════════════════════════════
+
+describe("sonash/no-effect-missing-cleanup", () => {
+  test("detects useEffect with timer but no cleanup", () => {
+    ruleTester.run("no-effect-missing-cleanup", plugin.rules["no-effect-missing-cleanup"], {
+      valid: [
+        // useEffect with setInterval AND cleanup return
+        `useEffect(() => {
+          const id = setInterval(() => tick(), 1000);
+          return () => clearInterval(id);
+        }, [])`,
+        // useEffect without timers
+        `useEffect(() => {
+          console.log("mounted");
+        }, [])`,
+        // useEffect with setTimeout and cleanup
+        `useEffect(() => {
+          const t = setTimeout(run, 500);
+          return () => clearTimeout(t);
+        }, [])`,
+      ],
+      invalid: [
+        {
+          // setInterval but no return
+          code: `useEffect(() => {
+            setInterval(() => update(), 1000);
+          }, [])`,
+          errors: [{ messageId: "missingCleanup" }],
+        },
+        {
+          // setTimeout but no return
+          code: `useEffect(() => {
+            setTimeout(() => doSomething(), 500);
+          }, [])`,
+          errors: [{ messageId: "missingCleanup" }],
+        },
+      ],
+    });
+  });
+});
+
+describe("sonash/no-unsafe-spread", () => {
+  test("detects unsafe JSX spread attributes", () => {
+    jsxRuleTester.run("no-unsafe-spread", plugin.rules["no-unsafe-spread"], {
+      valid: [
+        // Spreading destructured rest props
+        "const el = <div {...rest}>content</div>",
+        // Spreading restProps
+        "const el = <Input {...restProps} />",
+        // Spreading object literal
+        'const el = <div {...{ className: "foo" }}>content</div>',
+      ],
+      invalid: [
+        {
+          // Spreading unknown variable into JSX
+          code: "const el = <div {...unknownObj}>content</div>",
+          errors: [{ messageId: "unsafeSpread" }],
+        },
+        {
+          // Spreading function parameter directly
+          code: "const el = <Input {...config} />",
+          errors: [{ messageId: "unsafeSpread" }],
+        },
+      ],
+    });
+  });
+});
+
+describe("sonash/no-state-update-in-render", () => {
+  test("detects setState in render body", () => {
+    jsxRuleTester.run("no-state-update-in-render", plugin.rules["no-state-update-in-render"], {
+      valid: [
+        // setState inside useEffect callback
+        `function MyComponent() {
+          useEffect(() => { setCount(1); }, []);
+          return <div />;
+        }`,
+        // setState inside onClick handler
+        `function MyComponent() {
+          return <button onClick={() => setCount(c => c + 1)}>click</button>;
+        }`,
+        // setState inside named handler
+        `function MyComponent() {
+          const handleClick = () => { setCount(1); };
+          return <div />;
+        }`,
+      ],
+      invalid: [
+        {
+          // setState at component top level
+          code: `function MyComponent() {
+            setCount(0);
+            return <div />;
+          }`,
+          errors: [{ messageId: "stateUpdateInRender" }],
+        },
+        {
+          // dispatch at component top level
+          code: `function MyComponent() {
+            dispatch({ type: "reset" });
+            return <div />;
+          }`,
+          errors: [{ messageId: "stateUpdateInRender" }],
+        },
+      ],
+    });
+  });
+});
+
+describe("sonash/no-async-component", () => {
+  test("detects async function components", () => {
+    jsxRuleTester.run("no-async-component", plugin.rules["no-async-component"], {
+      valid: [
+        // Normal function component
+        `function MyComponent() {
+          return <div>hello</div>;
+        }`,
+        // Async function that is NOT a component (lowercase)
+        `async function fetchData() {
+          return await getData();
+        }`,
+        // Non-async arrow component
+        `const Widget = () => <span>text</span>`,
+      ],
+      invalid: [
+        {
+          // Async function declaration returning JSX
+          code: `async function MyPage() {
+            return <div>page</div>;
+          }`,
+          errors: [{ messageId: "asyncComponent" }],
+        },
+        {
+          // Async arrow function returning JSX
+          code: `const MyPanel = async () => {
+            return <div>panel</div>;
+          }`,
+          errors: [{ messageId: "asyncComponent" }],
+        },
+      ],
+    });
+  });
+});
+
+describe("sonash/no-missing-error-boundary", () => {
+  test("detects Suspense without ErrorBoundary", () => {
+    jsxRuleTester.run("no-missing-error-boundary", plugin.rules["no-missing-error-boundary"], {
+      valid: [
+        // Suspense inside ErrorBoundary
+        `const el = <ErrorBoundary><Suspense fallback={<div />}><Child /></Suspense></ErrorBoundary>`,
+        // No Suspense at all
+        `const el = <div>content</div>`,
+      ],
+      invalid: [
+        {
+          // Standalone Suspense without ErrorBoundary
+          code: `const el = <Suspense fallback={<div />}><Child /></Suspense>`,
+          errors: [{ messageId: "missingSuspenseBoundary" }],
+        },
+        {
+          // Suspense inside div but no ErrorBoundary
+          code: `const el = <div><Suspense fallback={<span />}><Lazy /></Suspense></div>`,
+          errors: [{ messageId: "missingSuspenseBoundary" }],
+        },
+      ],
+    });
+  });
+});
+
+describe("sonash/no-unbounded-array-in-state", () => {
+  test("detects unbounded array growth in state", () => {
+    ruleTester.run("no-unbounded-array-in-state", plugin.rules["no-unbounded-array-in-state"], {
+      valid: [
+        // useState with array + setState using slice
+        `const [items, setItems] = useState([]);
+         setItems(prev => [...prev, newItem].slice(-100))`,
+        // useState with non-array init
+        `const [count, setCount] = useState(0);
+         setCount(prev => prev + 1)`,
+      ],
+      invalid: [
+        {
+          // Unbounded spread without slice
+          code: `const [items, setItems] = useState([]);
+                 setItems(prev => [...prev, newItem])`,
+          errors: [{ messageId: "unboundedArray" }],
+        },
+        {
+          // Unbounded concat without slice
+          code: `const [logs, setLogs] = useState([]);
+                 setLogs(prev => prev.concat(newLog))`,
+          errors: [{ messageId: "unboundedArray" }],
+        },
+      ],
+    });
+  });
+});
+
+describe("sonash/no-callback-in-effect-dep", () => {
+  test("detects inline functions in effect deps", () => {
+    ruleTester.run("no-callback-in-effect-dep", plugin.rules["no-callback-in-effect-dep"], {
+      valid: [
+        // useEffect with variable refs in deps
+        `useEffect(() => { fetchData(); }, [fetchData])`,
+        // useEffect with no deps
+        `useEffect(() => { doStuff(); })`,
+        // useEffect with empty deps
+        `useEffect(() => { init(); }, [])`,
+      ],
+      invalid: [
+        {
+          // Inline arrow in deps array
+          code: `useEffect(() => { run(); }, [() => getData()])`,
+          errors: [{ messageId: "callbackInDeps" }],
+        },
+        {
+          // Function expression in deps
+          code: `useEffect(() => { run(); }, [function() { return data; }])`,
+          errors: [{ messageId: "callbackInDeps" }],
         },
       ],
     });

@@ -1,0 +1,38 @@
+rules:
+  - id: sonash.security.taint-user-input-to-exec
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      User-controlled input flows to command execution (exec/execSync/spawn).
+      This enables command injection. Validate and escape all inputs using
+      escapeShellArg() or validateInput() before passing to shell commands.
+    metadata:
+      category: security
+      code-pattern-ref: "External input"
+      confidence: HIGH
+      cwe: "CWE-78: OS Command Injection"
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: req.body
+              - pattern: req.query
+              - pattern: req.params
+              - pattern: process.argv
+              - pattern: req.body.$FIELD
+              - pattern: req.query.$FIELD
+              - pattern: req.params.$FIELD
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: execSync($CMD, ...)
+              - pattern: exec($CMD, ...)
+              - pattern: spawn($CMD, ...)
+              - pattern: spawnSync($CMD, ...)
+              - pattern: execFileSync($CMD, ...)
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: escapeShellArg(...)
+              - pattern: validateInput(...)
+              - pattern: sanitize(...)

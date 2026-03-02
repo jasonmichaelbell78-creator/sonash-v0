@@ -1,0 +1,25 @@
+rules:
+  - id: sonash.security.no-dangerouslysetinnerhtml
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      dangerouslySetInnerHTML used in JSX. This bypasses React's XSS protections.
+      If absolutely necessary, sanitize HTML with DOMPurify.sanitize() first and
+      document the justification.
+    metadata:
+      category: security
+      code-pattern-ref: "Markdown injection"
+      confidence: HIGH
+      cwe: "CWE-79: Cross-site Scripting (XSS)"
+    patterns:
+      - pattern: |
+          <$TAG dangerouslySetInnerHTML={...} />
+      - pattern-not-inside: |
+          DOMPurify.sanitize(...)
+    paths:
+      include:
+        - app/
+        - components/
+      exclude:
+        - tests/
+        - "*.test.*"

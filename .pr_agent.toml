@@ -1,4 +1,5 @@
 # Qodo (PR-Agent) Configuration
+# Last audited: 2026-03-01 (Phase 6 GATE-05)
 # See: https://qodo-merge-docs.qodo.ai/tools/review/
 # Purpose: Reduce false positives and tailor reviews to project patterns
 
@@ -22,39 +23,39 @@ Project context:
 - Firebase Auth, Firestore, Cloud Functions backend
 - Pattern compliance enforced via scripts/check-pattern-compliance.js
 
-Known false positives to SKIP (documented in docs/audits/FALSE_POSITIVES.jsonl):
-- firebase-admin auth usage in server contexts (FP-001)
-- process.env in Server Components/API routes (FP-002)
-- dangerouslySetInnerHTML with sanitization (FP-003)
-- ESLint disables with explanatory comments (FP-004)
-- any-to-unknown type casting (FP-005)
-- Console statements in Cloud Functions (FP-007)
-- ESLint security rules already audited: detect-object-injection, detect-non-literal-fs-filename, detect-unsafe-regex (FP-011 to FP-015)
-- SKIP_REASON persistence to .claude/override-log.jsonl is BY DESIGN for audit accountability. The reason is operator-provided, validated, truncated to 200 chars, and the directory is gitignored. Do NOT flag "sensitive log persistence" or "potential secret logging" for override-log.jsonl writes (FP-016, PR #368 R3-R6 rejected 4x)
+Known false positives to SKIP:
+- firebase-admin auth usage in server contexts (FP-001) # Verified 2026-03-01 - still needed (no ESLint equivalent, server-only pattern)
+- process.env in Server Components/API routes (FP-002) # Verified 2026-03-01 - still needed (standard Next.js pattern, no ESLint equivalent)
+- dangerouslySetInnerHTML with sanitization (FP-003) # Verified 2026-03-01 - still needed (ESLint sonash/no-unsafe-innerhtml catches unsanitized only, Qodo would flag sanitized usage too)
+- ESLint disables with explanatory comments (FP-004) # Verified 2026-03-01 - still needed (meta-rule, no automated equivalent)
+- any-to-unknown type casting (FP-005) # Verified 2026-03-01 - still needed (intentional TS migration pattern)
+- Console statements in Cloud Functions (FP-007) # Verified 2026-03-01 - still needed (console.log is the logging API in Cloud Functions)
+- ESLint security rules already audited: detect-object-injection, detect-non-literal-fs-filename, detect-unsafe-regex (FP-011 to FP-015) # Verified 2026-03-01 - still needed (eslint-plugin-security rules are active, Qodo would duplicate)
+- SKIP_REASON persistence to .claude/override-log.jsonl is BY DESIGN for audit accountability. The reason is operator-provided, validated, truncated to 200 chars, and the directory is gitignored. Do NOT flag "sensitive log persistence" or "potential secret logging" for override-log.jsonl writes (FP-016, PR #368 R3-R6 rejected 4x) # Verified 2026-03-01 - still needed (seen in PR reviews 358-388 era)
 
 Focus ON:
-- Real security issues not caught by ESLint security plugin
+- Real security issues not caught by ESLint security plugin or eslint-plugin-sonash (32 custom rules)
 - Logic errors and edge cases
 - React 19 / Next.js 15 best practices
 - TypeScript type safety improvements
 - Performance issues in components
 
 Skip flagging:
-- Documentation TODOs (tracked in TECHNICAL_DEBT.md)
-- Bundle size warnings under thresholds
-- Test file patterns (password mocks, etc.)
+- Documentation TODOs (tracked in TECHNICAL_DEBT.md) # Verified 2026-03-01 - still relevant
+- Bundle size warnings under thresholds # Verified 2026-03-01 - still relevant
+- Test file patterns (password mocks, etc.) # Verified 2026-03-01 - still relevant (ESLint covers test quality via sonash/no-trivial-assertions)
 """
 
-# Files to ignore in review
+# Files to ignore in review (audited 2026-03-01)
 [pr_reviewer.ignore]
 files = [
     "*.md",                      # Documentation handled separately
     "docs/**",                   # Documentation folder
-    "*.jsonl",                   # Data files
-    ".claude/**",                # Claude configuration
-    "scripts/migrations/**",     # Historical migration scripts
-    "*.test.ts",                 # Test files reviewed by test-engineer
-    "*.test.tsx",
+    "*.jsonl",                   # Data files, not code
+    ".claude/**",                # Claude tooling configuration
+    "scripts/migrations/**",     # Historical one-off migration scripts
+    "*.test.ts",                 # Test files: ESLint covers quality (sonash/no-trivial-assertions, no-test-mock-firestore)
+    "*.test.tsx",                # Qodo flags mock passwords/fixtures as false positives
     "*.spec.ts",
     "*.spec.tsx",
 ]

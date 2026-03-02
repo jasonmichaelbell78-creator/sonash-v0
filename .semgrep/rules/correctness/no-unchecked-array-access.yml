@@ -1,0 +1,65 @@
+rules:
+  - id: sonash.correctness.no-unchecked-array-access
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      Array element accessed by index without a length or bounds check. This can
+      return undefined and cause downstream TypeError crashes. Check
+      array.length before accessing by index, or use array.at() with a
+      nullish check.
+    metadata:
+      category: correctness
+      code-pattern-ref: "Array.isArray guards"
+      confidence: LOW
+    patterns:
+      - pattern: $ARR[0]
+      # Guard: if (arr.length > 0) { arr[0] }
+      - pattern-not-inside: |
+          if ($ARR.length > 0) { ... }
+      - pattern-not-inside: |
+          if ($ARR && $ARR.length) { ... }
+      # Guard: if (arr.length >= N) { arr[0] }
+      - pattern-not-inside: |
+          if ($ARR.length >= $N) { ... }
+      # Guard: if (arr.length !== 0) { arr[0] }
+      - pattern-not-inside: |
+          if ($ARR.length !== 0) { ... }
+      # Guard: early return on empty — if (arr.length === 0) return; ... arr[0]
+      - pattern-not-inside: |
+          if ($ARR.length === 0) return ...;
+          ...
+      - pattern-not-inside: |
+          if ($ARR.length === 0) {
+            ...
+            return ...;
+          }
+          ...
+      # Guard: early return on too-small — if (arr.length < N) return; ... arr[0]
+      - pattern-not-inside: |
+          if ($ARR.length < $N) return ...;
+          ...
+      - pattern-not-inside: |
+          if ($ARR.length < $N) {
+            ...
+            return ...;
+          }
+          ...
+      # Safe: split() always returns ≥1 element
+      - pattern-not: $X.split($Y)[0]
+      # Safe: nullish coalescing provides fallback
+      - pattern-not-inside: $ARR[0] ?? $X
+      # Safe: optional chaining on array access result
+      - pattern-not-inside: $ARR[0]?.$Y
+      - pattern-not-inside: $ARR[0]?.$Y()
+      # Safe: ternary guard on length
+      - pattern-not-inside: "$ARR.length > 0 ? ... : ..."
+      # Safe: short-circuit guard (arr.length < N || arr[0])
+      - pattern-not-inside: $ARR.length < $N || ...
+    paths:
+      include:
+        - scripts/
+        - functions/
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

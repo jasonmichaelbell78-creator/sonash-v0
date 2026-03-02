@@ -1,0 +1,26 @@
+rules:
+  - id: sonash.style.no-console-in-components
+    languages: [javascript, typescript]
+    severity: INFO
+    message: >-
+      console.log/warn/error detected in component code. Use a proper logging
+      utility or remove debug logging before committing. Console statements in
+      production components pollute browser devtools and may leak sensitive data.
+    metadata:
+      category: style
+      code-pattern-ref: "Error user-facing messages"
+      confidence: HIGH
+    pattern-either:
+      - pattern: console.log(...)
+      - pattern: console.warn(...)
+      - pattern: console.error(...)
+      - pattern: console.debug(...)
+      - pattern: console.info(...)
+    paths:
+      include:
+        - app/
+        - components/
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

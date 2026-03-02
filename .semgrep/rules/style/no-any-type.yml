@@ -1,0 +1,23 @@
+rules:
+  - id: sonash.style.no-any-type
+    languages: [typescript]
+    severity: INFO
+    message: >-
+      TypeScript 'any' type annotation detected. Use specific types, 'unknown'
+      for truly unknown values, or generic type parameters. The 'any' type
+      disables type checking and defeats the purpose of TypeScript strict mode.
+    metadata:
+      category: style
+      code-pattern-ref: "Robust non-Error"
+      confidence: HIGH
+    pattern-either:
+      - pattern: "($X: any)"
+      - pattern: "function $FN(...): any { ... }"
+      - pattern: "const $X: any = ..."
+      - pattern: "let $X: any = ..."
+    paths:
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"
+        - "*.d.ts"

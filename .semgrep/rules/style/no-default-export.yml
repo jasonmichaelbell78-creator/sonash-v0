@@ -1,0 +1,29 @@
+rules:
+  - id: sonash.style.no-default-export
+    languages: [javascript, typescript]
+    severity: INFO
+    message: >-
+      Default export detected. Prefer named exports for better refactoring
+      support, auto-import accuracy, and consistent import naming across the
+      codebase. Exception: Next.js page/layout files require default exports.
+    metadata:
+      category: style
+      code-pattern-ref: "Node.js module prefix"
+      confidence: MEDIUM
+    pattern: |
+      export default $EXPR
+    paths:
+      include:
+        - lib/
+        - components/
+        - scripts/
+      exclude:
+        - app/
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"
+        - "page.*"
+        - "layout.*"
+        - "loading.*"
+        - "error.*"
+        - "not-found.*"

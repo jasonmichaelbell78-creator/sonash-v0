@@ -1,0 +1,25 @@
+rules:
+  - id: sonash.correctness.regex-without-lastindex-reset
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      Regex with /g flag used in a loop without resetting lastIndex. When a
+      global regex is reused, lastIndex persists between calls causing missed
+      matches or infinite loops. Add `regex.lastIndex = 0` before each exec()
+      call or use String.prototype.matchAll() instead.
+    metadata:
+      category: correctness
+      code-pattern-ref: "exec() Loops with /g Flag"
+      confidence: HIGH
+    patterns:
+      - pattern: |
+          while ($REGEX.exec($STR)) {
+            ...
+          }
+      - pattern-not-inside: |
+          $REGEX.lastIndex = 0;
+          ...
+    paths:
+      exclude:
+        - tests/
+        - "*.test.*"

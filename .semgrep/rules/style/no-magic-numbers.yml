@@ -1,0 +1,29 @@
+rules:
+  - id: sonash.style.no-magic-numbers
+    languages: [javascript, typescript]
+    severity: INFO
+    message: >-
+      Magic number detected. Extract numeric literals into named constants to
+      improve readability and maintainability. Constants like MAX_RETRIES = 3 or
+      TIMEOUT_MS = 5000 are self-documenting.
+    metadata:
+      category: style
+      code-pattern-ref: "Smart fallbacks"
+      confidence: LOW
+    patterns:
+      - pattern-either:
+          - pattern: setTimeout($FN, $NUM)
+          - pattern: setInterval($FN, $NUM)
+      - metavariable-comparison:
+          metavariable: $NUM
+          comparison: $NUM > 1000
+    paths:
+      include:
+        - app/
+        - components/
+        - lib/
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"
+        - "*.config.*"

@@ -1,0 +1,27 @@
+rules:
+  - id: sonash.correctness.no-race-condition-file-ops
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      TOCTOU race condition: existsSync() check followed by file operation.
+      The file can be deleted/moved between the check and the operation. Wrap
+      the file operation in try/catch instead of checking existence first.
+    metadata:
+      category: correctness
+      code-pattern-ref: "File Reads with try/catch"
+      confidence: HIGH
+      cwe: "CWE-367: Time-of-check Time-of-use Race Condition"
+    patterns:
+      - pattern: |
+          if (fs.existsSync($PATH)) {
+            ...
+            fs.readFileSync($PATH, ...);
+            ...
+          }
+      - pattern-not-inside: |
+          try { ... } catch (...) { ... }
+    paths:
+      exclude:
+        - tests/
+        - "*.test.*"
+        - "*.spec.*"

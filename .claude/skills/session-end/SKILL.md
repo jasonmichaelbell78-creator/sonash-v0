@@ -170,6 +170,27 @@ in sync. If no new reviews were added this session, the script exits cleanly.
 **Important:** This must run before the final commit (Step 9) so synced data is
 included. Session-begin will verify this was done and flag drift if skipped.
 
+> **v1/v2 Note (INTG-06):** This sync step uses the v1 script which bridges
+> legacy markdown reviews to JSONL. The v2 pipeline writes JSONL directly via
+> skills (pr-review, pr-retro). Both coexist: this step catches any
+> manually-written markdown reviews. Fallback: `npm run reviews:sync:v1`.
+
+## 7c. Health Score Snapshot
+
+Run a full ecosystem health check and persist the score for trend tracking:
+
+```bash
+node .claude/skills/ecosystem-health/scripts/run-ecosystem-health.js
+```
+
+This runs all 10 health checkers, computes the composite score, persists to
+`data/ecosystem-v2/ecosystem-health-log.jsonl`, and outputs a dashboard summary.
+If the score has degraded since last check, note it in the session summary (Step
+3b).
+
+**Do not skip this step** -- it provides the health trend data that
+session-start references.
+
 ## 8. TDMS Consolidation & Metrics
 
 Run the full consolidation pipeline to ensure dedup is current (~1.5s):
@@ -206,6 +227,7 @@ Session complete.
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-02-25 | Initial implementation |
+| Version | Date       | Description                              |
+| ------- | ---------- | ---------------------------------------- |
+| 1.1     | 2026-03-01 | Add health score snapshot step (INTG-02) |
+| 1.0     | 2026-02-25 | Initial implementation                   |

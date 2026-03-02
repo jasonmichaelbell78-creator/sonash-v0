@@ -137,6 +137,7 @@ const SKIP_PATTERNS = [
   /[\\/]backup[\\/]/,
   /[\\/]out[\\/]/,
   /\.d\.ts$/,
+  /tests[\\/]semgrep[\\/]/,
 ];
 
 /**
@@ -296,6 +297,10 @@ function getFilesToCheck(args) {
     }
 
     if (existsSync(absReal)) {
+      // Apply SKIP_PATTERNS to --file mode too (CI passes files individually)
+      if (SKIP_PATTERNS.some((p) => p.test(absReal))) {
+        return [];
+      }
       return [absReal];
     }
     console.error(`File not found: ${input}`);
