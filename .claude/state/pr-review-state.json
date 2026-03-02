@@ -1,0 +1,47 @@
+{
+  "pr": 411,
+  "branch": "claude/maintenance22726-md8WL",
+  "session": 200,
+  "started": "2026-03-01",
+  "completed": "2026-03-02",
+  "mode": "batched",
+  "protocol": "commit-per-batch-no-push",
+  "batches_completed": 3,
+  "total_items_processed": 166,
+  "total_items_fixed": 45,
+  "total_items_deferred": 53,
+  "total_items_rejected": 68,
+  "learning_entry": "#442",
+  "jsonl_record": "rev-427",
+  "batches": [
+    {
+      "round": "R1",
+      "source": "Semgrep OSS + Gemini + Qodo",
+      "total": 53,
+      "fixed": 5,
+      "deferred": 0,
+      "rejected": 48,
+      "commit": "1ca3e703"
+    },
+    {
+      "round": "R2",
+      "source": "CI failures + Qodo + CodeQL",
+      "total": 24,
+      "fixed": 3,
+      "deferred": 11,
+      "rejected": 2,
+      "commit": "719ab17f"
+    },
+    {
+      "round": "R3",
+      "source": "Gemini + Qodo + SonarCloud",
+      "total": 89,
+      "fixed": 37,
+      "deferred": 42,
+      "rejected": 18,
+      "commit": "09a38243"
+    }
+  ],
+  "status": "complete",
+  "notes": "All review sources processed. Ready to push."
+}

@@ -727,6 +727,61 @@ accumulate.
 
 ## Active Reviews
 
+### Review #442: PR #411 R1-R3 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
+
+_PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
+3 rounds._
+
+**Source:** Semgrep OSS (49), Gemini (2), Qodo (5), CI failures (3), CodeQL
+(11), SonarCloud issues (58), SonarCloud hotspots (38) **Total:** 166
+**Fixed:** 45 **Deferred:** 53 **Rejected:** 68
+
+**R1 (Semgrep + Gemini + Qodo):** 5 fixes, 48 rejected
+
+- **Pattern**: Semgrep OSS `$FN(...)` and `$OBJ.$METHOD(...)` patterns match ALL
+  function calls, not just async ones. Rewrote `no-floating-promise` rule to
+  target specific known-async functions (fetch, fs.promises.\*, .json())
+- **Pattern**: JSONL readers must use per-line try/catch — a single malformed
+  line should not lose all data. Applied to 3 files + 1 propagation fix.
+- **Fix**: validatePathInDir for cross-doc-deps auto-fix (path traversal guard)
+- **Fix**: Health tests added to npm test glob (293 → 496 tests)
+- **Fix**: Nullish coalescing on unchecked array access in computeTrend
+
+**R2 (CI + Qodo + CodeQL):** 3 fixes, 11 deferred, 2 rejected
+
+- **Fix**: Prettier formatting on 8 plan/test files (CI blocker)
+- **Fix**: Exclude tests/semgrep/ from security-check.js (test fixtures with
+  intentional eval/innerHTML triggered SEC-002)
+- **Fix**: FP threshold NaN guard — parseInt without isNaN check silently
+  disables gating
+- **Deferred**: 11 CodeQL alerts are from initial codebase scan, not PR-specific
+
+**R3 (SonarCloud):** 37 fixes, 42 deferred, 18 rejected
+
+- **BLOCKER**: computeDelta() restructured with early returns (S3516)
+- **Fix**: 18x optional chaining (S6582) in ESLint rules + health scripts
+- **Fix**: 6x inner functions moved to outer scope (S7721) in ESLint rules
+- **Fix**: 6x nested ternary extracted to if/else (S3358)
+- **Fix**: 2x default parameters reordered to be last (S1788)
+- **Fix**: 1x if-in-else flattened (S6660)
+- **Deferred**: 15 CC issues (v1 legacy scripts, inherent health checker
+  branching), 22 regex DoS hotspots (internal scripts, trusted input), 16 PATH
+  hotspots (FP on hardcoded execFileSync), 4 useless-assignment in Semgrep test
+  fixtures
+- **Rejected**: Gemini/Qodo duplicates of R1 fixes, SonarCloud duplication
+  findings on v1 legacy fallback scripts (97% dup is by design)
+
+**Process notes:**
+
+- Batched protocol effective: 3 rounds, 3 commits, no push until done
+- Semgrep OSS lacks type information — custom rules must target specific
+  known-async function names, not generic patterns
+- First-time SonarCloud scan on this codebase produced many pre-existing
+  findings; future PRs will have a cleaner baseline
+- Parallel agents (ESLint rules + health scripts) cut R3 fix time in half
+
+---
+
 ### Review #441: PR #407 R17 — SonarCloud + Qodo + CI (2026-03-01)
 
 _PR Review Ecosystem v2 Phases 1-3. Round 17 of ongoing review cycle._
