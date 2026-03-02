@@ -20,7 +20,7 @@
  * @returns {{ score: number, rating: 'good'|'average'|'poor' }}
  */
 function scoreMetric(value, benchmark, direction = "lower-is-better") {
-  if (typeof value !== "number" || isNaN(value)) {
+  if (typeof value !== "number" || Number.isNaN(value)) {
     return { score: 0, rating: "poor" };
   }
 
@@ -81,8 +81,8 @@ function computeGrade(score) {
  */
 function sparkline(values) {
   if (!values || values.length === 0) return "";
-  const min = values.reduce((a, b) => (b < a ? b : a), values[0] ?? 0);
-  const max = values.reduce((a, b) => (b > a ? b : a), values[0] ?? 0);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
   const range = max - min || 1;
   const chars = "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588";
   return values.map((v) => chars[Math.min(7, Math.floor(((v - min) / range) * 7))]).join("");
@@ -101,7 +101,7 @@ function computeTrend(values, windowSize = 5) {
   if (recent.length < 2) return null;
 
   const first = recent[0];
-  const last = recent[recent.length - 1];
+  const last = recent.at(-1);
   const delta = last - first;
   let deltaPercent;
   if (first !== 0) {

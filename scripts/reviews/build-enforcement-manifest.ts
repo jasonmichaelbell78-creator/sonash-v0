@@ -103,11 +103,10 @@ function parseCodePatterns(filePath: string): PatternEntry[] {
   // First pass: extract Critical Patterns Quick Reference (### N. Name)
   const criticalPatternSection = "Critical Patterns";
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  for (const line of lines) {
 
     // Detect ## category headings
-    const catMatch = line.match(/^## (.+)$/);
+    const catMatch = /^## (.+)$/.exec(line);
     if (catMatch) {
       const rawCat = catMatch[1]
         .replace(/\u{1F534}/gu, "")
@@ -132,7 +131,7 @@ function parseCodePatterns(filePath: string): PatternEntry[] {
 
     // Detect ### N. Name (critical patterns section)
     if (currentCategory === criticalPatternSection) {
-      const critMatch = line.match(/^### (\d+)\. (.+)$/);
+      const critMatch = /^### (\d+)\. (.+)$/.exec(line);
       if (critMatch) {
         const name = critMatch[2].trim();
         patterns.push({
@@ -146,7 +145,7 @@ function parseCodePatterns(filePath: string): PatternEntry[] {
     }
 
     // Detect ### subsection headings (e.g., "### Cross Platform", "### Refactor")
-    const subMatch = line.match(/^### (.+)$/);
+    const subMatch = /^### (.+)$/.exec(line);
     if (subMatch) {
       const subName = subMatch[1].trim();
       patterns.push({
@@ -159,8 +158,8 @@ function parseCodePatterns(filePath: string): PatternEntry[] {
     }
 
     // Detect table rows: | Priority | Pattern | Rule | Why |
-    const tableMatch = line.match(
-      /^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|/
+    const tableMatch = /^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|/.exec(
+      line
     );
     if (tableMatch) {
       const priorityCell = tableMatch[1].trim();

@@ -35,7 +35,7 @@ describe("scoring.js", () => {
   });
 
   it("returns score 0 and rating poor for NaN", () => {
-    const result = scoreMetric(NaN, { good: 0, average: 5, poor: 20 });
+    const result = scoreMetric(Number.NaN, { good: 0, average: 5, poor: 20 });
     assert.equal(result.score, 0);
     assert.equal(result.rating, "poor");
   });
@@ -60,7 +60,7 @@ describe("dimensions.js", () => {
   });
 
   it("each dimension has required fields", () => {
-    const validCategories = [
+    const validCategories = new Set([
       "Code Quality",
       "Security",
       "Technical Debt",
@@ -69,7 +69,7 @@ describe("dimensions.js", () => {
       "Infrastructure",
       "Documentation",
       "Process & Workflow",
-    ];
+    ]);
 
     for (const dim of DIMENSIONS) {
       assert.ok(dim.id, `dimension missing id`);
@@ -78,7 +78,7 @@ describe("dimensions.js", () => {
       assert.ok(dim.checkerField, `dimension ${dim.id} missing checkerField`);
       assert.ok(Array.isArray(dim.metricKeys), `dimension ${dim.id} missing metricKeys`);
       assert.ok(
-        validCategories.includes(dim.category),
+        validCategories.has(dim.category),
         `dimension ${dim.id} has invalid category: ${dim.category}`
       );
     }

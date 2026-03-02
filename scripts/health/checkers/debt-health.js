@@ -72,7 +72,7 @@ function checkDebtHealth() {
     const ages = openDebt
       .map((d) => {
         const created = new Date(d.created || d.date || "").getTime();
-        return isNaN(created) ? null : Math.floor((now - created) / (1000 * 60 * 60 * 24));
+        return Number.isNaN(created) ? null : Math.floor((now - created) / (1000 * 60 * 60 * 24));
       })
       .filter((a) => a !== null);
     avgAge = ages.length > 0 ? Math.round(ages.reduce((a, b) => a + b, 0) / ages.length) : 0;
@@ -100,7 +100,7 @@ function checkDebtHealth() {
     const entry = safeParse(line);
     if (!entry) continue;
     const ts = new Date(entry.timestamp || entry.date || "").getTime();
-    if (!isNaN(ts) && ts >= thirtyDaysAgo) intake30d++;
+    if (!Number.isNaN(ts) && ts >= thirtyDaysAgo) intake30d++;
   }
   metrics.intake_30d = {
     value: intake30d,
@@ -116,7 +116,7 @@ function checkDebtHealth() {
     const entry = safeParse(line);
     if (!entry) continue;
     const ts = new Date(entry.timestamp || entry.date || "").getTime();
-    if (!isNaN(ts) && ts >= thirtyDaysAgo) resolved30d++;
+    if (!Number.isNaN(ts) && ts >= thirtyDaysAgo) resolved30d++;
   }
   metrics.resolved_30d = {
     value: resolved30d,

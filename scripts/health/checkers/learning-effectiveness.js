@@ -38,11 +38,11 @@ function checkLearningEffectiveness() {
   const learnedMatch = content.match(/Patterns Learned\s*\|\s*(\d+)/);
   const criticalMatch = content.match(/Critical Pattern Success\s*\|\s*([\d.]+)%/);
 
-  const effectiveness = effectivenessMatch ? parseFloat(effectivenessMatch[1]) : null;
-  const failing = failingMatch ? parseInt(failingMatch[1], 10) : 0;
-  const automationCoverage = automationMatch ? parseFloat(automationMatch[1]) : null;
-  const learned = learnedMatch ? parseInt(learnedMatch[1], 10) : 0;
-  const criticalSuccess = criticalMatch ? parseFloat(criticalMatch[1]) : null;
+  const effectiveness = effectivenessMatch ? Number.parseFloat(effectivenessMatch[1]) : null;
+  const failing = failingMatch ? Number.parseInt(failingMatch[1], 10) : 0;
+  const automationCoverage = automationMatch ? Number.parseFloat(automationMatch[1]) : null;
+  const learned = learnedMatch ? Number.parseInt(learnedMatch[1], 10) : 0;
+  const criticalSuccess = criticalMatch ? Number.parseFloat(criticalMatch[1]) : null;
 
   if (effectiveness !== null) {
     metrics.effectiveness = {

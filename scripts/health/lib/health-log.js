@@ -145,7 +145,7 @@ export function appendHealthScore(result, mode, opts) {
 
   // Read previous entries for delta computation
   const entries = readAllEntries(filePath);
-  const previous = entries.length > 0 ? entries[entries.length - 1] : null;
+  const previous = entries.length > 0 ? entries.at(-1) : null;
 
   const delta = computeDelta(result.score, previous);
   const summary = summarizeDimensions(result.dimensionScores);
@@ -211,7 +211,7 @@ export function computeTrend(scores) {
 const _argv1 = process.argv[1] || "";
 if (
   _argv1 &&
-  (import.meta.url === `file:///${_argv1.replace(/\\/g, "/")}` ||
+  (import.meta.url === `file:///${_argv1.replaceAll("\\", "/")}` ||
     resolve(_argv1) === resolve(__filename))
 ) {
   const args = process.argv.slice(2);

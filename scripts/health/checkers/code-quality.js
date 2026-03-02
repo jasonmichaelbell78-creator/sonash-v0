@@ -35,8 +35,8 @@ function checkCodeQuality() {
   }
   const tsOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
   if (!tsResult.success && !tsOutput.includes("Missing script")) {
-    const m = tsOutput.match(/Found (\d+) error/i);
-    tsErrorCount = m ? parseInt(m[1], 10) : 1;
+    const m = /Found (\d+) error/i.exec(tsOutput);
+    tsErrorCount = m ? Number.parseInt(m[1], 10) : 1;
   }
   const tsScore = scoreMetric(tsErrorCount, BENCHMARKS.ts_errors);
   metrics.ts_errors = { value: tsErrorCount, ...tsScore, benchmark: BENCHMARKS.ts_errors };
@@ -47,10 +47,10 @@ function checkCodeQuality() {
   const lintResult = runCommandSafe("npm", ["run", "lint"], { timeout: 120000 });
   const lintOutput = `${lintResult.output || ""}\n${lintResult.stderr || ""}`;
   if (!lintResult.success) {
-    const errMatch = lintOutput.match(/(\d+) error/);
-    const warnMatch = lintOutput.match(/(\d+) warning/);
-    eslintErrors = errMatch ? parseInt(errMatch[1], 10) : 0;
-    eslintWarnings = warnMatch ? parseInt(warnMatch[1], 10) : 0;
+    const errMatch = /(\d+) error/.exec(lintOutput);
+    const warnMatch = /(\d+) warning/.exec(lintOutput);
+    eslintErrors = errMatch ? Number.parseInt(errMatch[1], 10) : 0;
+    eslintWarnings = warnMatch ? Number.parseInt(warnMatch[1], 10) : 0;
   }
   const errScore = scoreMetric(eslintErrors, BENCHMARKS.eslint_errors);
   metrics.eslint_errors = { value: eslintErrors, ...errScore, benchmark: BENCHMARKS.eslint_errors };
@@ -67,8 +67,8 @@ function checkCodeQuality() {
   const patResult = runCommandSafe("npm", ["run", "patterns:check"], { timeout: 60000 });
   const patOutput = `${patResult.output || ""}\n${patResult.stderr || ""}`;
   if (!patResult.success && patOutput.includes("violation")) {
-    const vm = patOutput.match(/(\d+)\s+violation/i);
-    violations = vm ? parseInt(vm[1], 10) : 1;
+    const vm = /(\d+)\s+violation/i.exec(patOutput);
+    violations = vm ? Number.parseInt(vm[1], 10) : 1;
   }
   const patScore = scoreMetric(violations, BENCHMARKS.pattern_violations);
   metrics.pattern_violations = {
@@ -83,8 +83,8 @@ function checkCodeQuality() {
   const circOutput = `${circResult.output || ""}\n${circResult.stderr || ""}`;
   const missingScript = /Missing script/i.test(circOutput);
   if (!missingScript && !circResult.success) {
-    const cm = circOutput.match(/(\d+)\s+circular/i);
-    circularCount = cm ? parseInt(cm[1], 10) : 1;
+    const cm = /(\d+)\s+circular/i.exec(circOutput);
+    circularCount = cm ? Number.parseInt(cm[1], 10) : 1;
   }
   const circScore = scoreMetric(circularCount, BENCHMARKS.circular_deps);
   metrics.circular_deps = {

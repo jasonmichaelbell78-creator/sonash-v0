@@ -49,8 +49,8 @@ function checkDocumentation() {
   const canonResult = runCommandSafe("npm", ["run", "validate:canon"], { timeout: 60000 });
   const canonOutput = `${canonResult.output || ""}\n${canonResult.stderr || ""}`;
   if (!canonResult.success) {
-    const m = canonOutput.match(/(\d+)\s+issue/i);
-    canonIssues = m ? parseInt(m[1], 10) : 1;
+    const m = /(\d+)\s+issue/i.exec(canonOutput);
+    canonIssues = m ? Number.parseInt(m[1], 10) : 1;
   }
   metrics.canon_issues = {
     value: canonIssues,
@@ -63,8 +63,8 @@ function checkDocumentation() {
   const crossdocResult = runCommandSafe("npm", ["run", "crossdoc:check"], { timeout: 60000 });
   const crossdocOutput = `${crossdocResult.output || ""}\n${crossdocResult.stderr || ""}`;
   if (!crossdocResult.success && crossdocOutput.includes("Missing")) {
-    const m = crossdocOutput.match(/(\d+)\s+(?:missing|issue)/i);
-    crossdocIssues = m ? parseInt(m[1], 10) : 1;
+    const m = /(\d+)\s+(?:missing|issue)/i.exec(crossdocOutput);
+    crossdocIssues = m ? Number.parseInt(m[1], 10) : 1;
   }
   metrics.crossdoc_issues = {
     value: crossdocIssues,
@@ -77,8 +77,8 @@ function checkDocumentation() {
   const placementResult = runCommandSafe("npm", ["run", "docs:placement"], { timeout: 60000 });
   const placementOutput = `${placementResult.output || ""}\n${placementResult.stderr || ""}`;
   if (!placementResult.success) {
-    const m = placementOutput.match(/(\d+)\s+misplaced/i);
-    misplaced = m ? parseInt(m[1], 10) : 0;
+    const m = /(\d+)\s+misplaced/i.exec(placementOutput);
+    misplaced = m ? Number.parseInt(m[1], 10) : 0;
   }
   metrics.misplaced_docs = {
     value: misplaced,
@@ -91,8 +91,8 @@ function checkDocumentation() {
   const linksResult = runCommandSafe("npm", ["run", "docs:external-links"], { timeout: 60000 });
   const linksOutput = `${linksResult.output || ""}\n${linksResult.stderr || ""}`;
   if (!linksResult.success) {
-    const m = linksOutput.match(/(\d+)\s+broken/i);
-    brokenLinks = m ? parseInt(m[1], 10) : 0;
+    const m = /(\d+)\s+broken/i.exec(linksOutput);
+    brokenLinks = m ? Number.parseInt(m[1], 10) : 0;
   }
   metrics.broken_links = {
     value: brokenLinks,

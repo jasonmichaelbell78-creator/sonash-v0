@@ -57,9 +57,9 @@ function checkPatternEnforcement() {
   let outdated = 0;
   const syncResult = runCommandSafe("npm", ["run", "patterns:sync"], { timeout: 30000 });
   const syncOutput = `${syncResult.output || ""}\n${syncResult.stderr || ""}`;
-  const outdatedMatch = syncOutput.match(/(\d+)\s+(?:outdated|out.of.sync|stale)/i);
+  const outdatedMatch = /(\d+)\s+(?:outdated|out.of.sync|stale)/i.exec(syncOutput);
   if (outdatedMatch) {
-    outdated = parseInt(outdatedMatch[1], 10);
+    outdated = Number.parseInt(outdatedMatch[1], 10);
   } else if (!syncResult.success && !/Missing script/i.test(syncOutput)) {
     outdated = 1;
   }
@@ -75,8 +75,8 @@ function checkPatternEnforcement() {
   const compResult = runCommandSafe("npm", ["run", "patterns:check"], { timeout: 60000 });
   const compOutput = `${compResult.output || ""}\n${compResult.stderr || ""}`;
   if (!compResult.success) {
-    const m = compOutput.match(/(\d+)\s+(?:violation|issue|error)/i);
-    syncIssues = m ? parseInt(m[1], 10) : 0;
+    const m = /(\d+)\s+(?:violation|issue|error)/i.exec(compOutput);
+    syncIssues = m ? Number.parseInt(m[1], 10) : 0;
   }
 
   metrics.sync_issues = {

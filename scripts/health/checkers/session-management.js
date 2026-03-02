@@ -38,7 +38,7 @@ function checkSessionManagement() {
   const logResult = runCommandSafe("git", ["log", "-1", "--format=%aI"], { timeout: 10000 });
   if (logResult.success && logResult.output) {
     const lastCommitDate = new Date(logResult.output.trim());
-    if (!isNaN(lastCommitDate.getTime())) {
+    if (!Number.isNaN(lastCommitDate.getTime())) {
       staleDays = Math.max(
         0,
         Math.floor((Date.now() - lastCommitDate.getTime()) / (1000 * 60 * 60 * 24))
@@ -60,7 +60,7 @@ function checkSessionManagement() {
     const state = safeParse(content);
     if (state?.lastBegin && !state.lastEnd) {
       const beginTime = new Date(state.lastBegin).getTime();
-      if (!isNaN(beginTime)) {
+      if (!Number.isNaN(beginTime)) {
         gapHours = Math.max(0, Math.floor((Date.now() - beginTime) / (1000 * 60 * 60)));
       }
     }

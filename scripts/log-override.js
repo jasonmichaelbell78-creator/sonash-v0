@@ -88,7 +88,7 @@ function parseArgs() {
     } else if (arg === "--json") {
       args.json = true;
     } else if (arg.startsWith("--days=")) {
-      const val = parseInt(arg.split("=").slice(1).join("="), 10);
+      const val = Number.parseInt(arg.split("=").slice(1).join("="), 10);
       if (!Number.isNaN(val) && val > 0) args.days = val;
     } else if (arg.startsWith("--check=")) {
       // Use slice(1).join("=") to handle values containing "="

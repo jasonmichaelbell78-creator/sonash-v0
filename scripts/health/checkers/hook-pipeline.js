@@ -45,11 +45,11 @@ function checkHookPipeline() {
 
   const warnings7d = allWarnings.filter((w) => {
     const t = new Date(w.timestamp).getTime();
-    return !isNaN(t) && t > cutoff7d;
+    return !Number.isNaN(t) && t > cutoff7d;
   });
   const warnings24h = allWarnings.filter((w) => {
     const t = new Date(w.timestamp).getTime();
-    return !isNaN(t) && t > cutoff24h;
+    return !Number.isNaN(t) && t > cutoff24h;
   });
 
   metrics.warnings_7d = {
@@ -86,11 +86,11 @@ function checkHookPipeline() {
 
   const overrides7d = allOverrides.filter((o) => {
     const t = new Date(o.timestamp).getTime();
-    return !isNaN(t) && t > cutoff7d;
+    return !Number.isNaN(t) && t > cutoff7d;
   });
   const overrides24h = allOverrides.filter((o) => {
     const t = new Date(o.timestamp).getTime();
-    return !isNaN(t) && t > cutoff24h;
+    return !Number.isNaN(t) && t > cutoff24h;
   });
 
   metrics.overrides_7d = {
@@ -135,7 +135,7 @@ function checkHookPipeline() {
   const allFailures = failureLines.map((l) => safeParse(l)).filter(Boolean);
   const failures7d = allFailures.filter((f) => {
     const t = new Date(f.timestamp).getTime();
-    return !isNaN(t) && t > cutoff7d;
+    return !Number.isNaN(t) && t > cutoff7d;
   });
 
   metrics.commit_failures_7d = {

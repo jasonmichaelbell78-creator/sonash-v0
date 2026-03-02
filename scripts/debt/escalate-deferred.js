@@ -63,7 +63,7 @@ function classifyCategory(finding) {
  * @returns {number|null}
  */
 function extractPrNumber(reviewId) {
-  const match = (reviewId || "").match(/^rev-(\d+)/);
+  const match = /^rev-(\d+)/.exec(reviewId || "");
   if (!match) return null;
   return Number.parseInt(match[1], 10);
 }

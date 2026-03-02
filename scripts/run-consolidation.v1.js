@@ -54,11 +54,11 @@ const THRESHOLD = 10;
 const MIN_PATTERN_OCCURRENCES = 3;
 
 // --- Args ---
-const args = process.argv.slice(2);
-const autoMode = args.includes("--auto");
-const applyChanges = args.includes("--apply") || autoMode;
-const verbose = args.includes("--verbose");
-const quiet = args.includes("--quiet") || autoMode;
+const args = new Set(process.argv.slice(2));
+const autoMode = args.has("--auto");
+const applyChanges = args.has("--apply") || autoMode;
+const verbose = args.has("--verbose");
+const quiet = args.has("--quiet") || autoMode;
 
 // --- Colors (TTY-aware) ---
 const useColors = process.stdout.isTTY;

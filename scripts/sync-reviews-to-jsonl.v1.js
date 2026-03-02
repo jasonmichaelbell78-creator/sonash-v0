@@ -224,7 +224,7 @@ function parseMarkdownReviews(content) {
     const raw = review._rawLines.join("\n");
 
     // Source
-    const sourceMatch = raw.match(/\*\*Source:\*\*\s*([^\n*]+)/);
+    const sourceMatch = /\*\*Source:\*\*\s*([^\n*]+)/.exec(raw);
     if (sourceMatch) {
       const src = sourceMatch[1].toLowerCase().trim();
       const parts = [];
@@ -236,19 +236,19 @@ function parseMarkdownReviews(content) {
     }
 
     // PR number
-    const prMatch = raw.match(/PR\s*#(\d+)/);
+    const prMatch = /PR\s*#(\d+)/.exec(raw);
     if (prMatch) review.pr = Number.parseInt(prMatch[1], 10);
 
     // Fixed count
-    const fixedMatch = raw.match(/Fixed:\s*(\d+)/i) || raw.match(/fixed\s*(\d+)/i);
+    const fixedMatch = /Fixed:\s*(\d+)/i.exec(raw) || /fixed\s*(\d+)/i.exec(raw);
     if (fixedMatch) review.fixed = Number.parseInt(fixedMatch[1], 10);
 
     // Deferred count
-    const deferredMatch = raw.match(/Deferred:\s*(\d+)/i) || raw.match(/deferred\s*(\d+)/i);
+    const deferredMatch = /Deferred:\s*(\d+)/i.exec(raw) || /deferred\s*(\d+)/i.exec(raw);
     if (deferredMatch) review.deferred = Number.parseInt(deferredMatch[1], 10);
 
     // Rejected count
-    const rejectedMatch = raw.match(/Rejected:\s*(\d+)/i) || raw.match(/rejected\s*(\d+)/i);
+    const rejectedMatch = /Rejected:\s*(\d+)/i.exec(raw) || /rejected\s*(\d+)/i.exec(raw);
     if (rejectedMatch) review.rejected = Number.parseInt(rejectedMatch[1], 10);
 
     // Severity breakdown — uses string-based parsing (no regex) via parseSeverityCount
@@ -265,7 +265,7 @@ function parseMarkdownReviews(content) {
     // If total found but no severity breakdown, derive from source counts
     // e.g., "SonarCloud (3) + Qodo Suggestions (6)" in Source line
     if (review.total > 0 && review.critical === 0 && review.major === 0 && review.minor === 0) {
-      const sourceBreakdown = raw.match(/\*\*Source:\*\*\s*([^\n]+)/);
+      const sourceBreakdown = /\*\*Source:\*\*\s*([^\n]+)/.exec(raw);
       if (sourceBreakdown) {
         const sourceCounts = [...sourceBreakdown[1].matchAll(/\((\d+)\)/g)];
         const sourceTotal = sourceCounts.reduce((sum, m) => sum + Number.parseInt(m[1], 10), 0);

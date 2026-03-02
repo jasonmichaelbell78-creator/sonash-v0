@@ -248,8 +248,8 @@ function checkScoreDegradation(opts) {
 
   if (entries.length < 2) return null;
 
-  const previous = entries[entries.length - 2];
-  const current = entries[entries.length - 1];
+  const previous = entries.at(-2);
+  const current = entries.at(-1);
 
   const drop = previous.score - current.score;
 

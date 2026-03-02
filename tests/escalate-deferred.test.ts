@@ -125,7 +125,7 @@ describe("escalateDeferred", () => {
 
     // Verify deferred item was updated in file
     const updatedContent = fs.readFileSync(filePath!, "utf8");
-    const updated = JSON.parse(updatedContent.split("\n").filter(Boolean)[0]);
+    const updated = JSON.parse(updatedContent.split("\n").find(Boolean)!);
     assert.equal(updated.status, "promoted");
     assert.equal(updated.promoted_to_debt, true);
   });

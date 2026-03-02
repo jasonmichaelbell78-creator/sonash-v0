@@ -92,8 +92,8 @@ function checkEcosystemIntegration() {
   const sonarResult = runCommandSafe("npm", ["run", "sonar:check"], { timeout: 30000 });
   const sonarOutput = `${sonarResult.output || ""}\n${sonarResult.stderr || ""}`;
   if (!sonarResult.success && !/Missing script/i.test(sonarOutput)) {
-    const m = sonarOutput.match(/(\d+)\s+(?:issue|condition|failed)/i);
-    sonarIssues = m ? parseInt(m[1], 10) : 1;
+    const m = /(\d+)\s+(?:issue|condition|failed)/i.exec(sonarOutput);
+    sonarIssues = m ? Number.parseInt(m[1], 10) : 1;
   }
 
   metrics.sonar_issues = {
@@ -126,8 +126,8 @@ function checkEcosystemIntegration() {
   const syncResult = runCommandSafe("npm", ["run", "reviews:sync-check"], { timeout: 30000 });
   const syncOutput = `${syncResult.output || ""}\n${syncResult.stderr || ""}`;
   if (!syncResult.success && !/Missing script/i.test(syncOutput)) {
-    const m = syncOutput.match(/(\d+)\s+missing/i);
-    reviewsMissing = m ? parseInt(m[1], 10) : 0;
+    const m = /(\d+)\s+missing/i.exec(syncOutput);
+    reviewsMissing = m ? Number.parseInt(m[1], 10) : 0;
   }
 
   metrics.reviews_missing = {
@@ -140,9 +140,9 @@ function checkEcosystemIntegration() {
   let churnPct = 0;
   const churnResult = runCommandSafe("npm", ["run", "review:churn"], { timeout: 30000 });
   const churnOutput = `${churnResult.output || ""}\n${churnResult.stderr || ""}`;
-  const churnMatch = churnOutput.match(/churn[:\s]+(\d+(?:\.\d+)?)\s*%/i);
+  const churnMatch = /churn[:\s]+(\d+(?:\.\d+)?)\s*%/i.exec(churnOutput);
   if (churnMatch) {
-    churnPct = parseFloat(churnMatch[1]);
+    churnPct = Number.parseFloat(churnMatch[1]);
   }
 
   metrics.churn_pct = {

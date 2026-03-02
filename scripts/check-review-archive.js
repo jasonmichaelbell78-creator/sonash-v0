@@ -362,7 +362,7 @@ function analyzeTemporalCoverage(reviewsInput) {
 
   // Generate all weeks between first and last
   const firstWeek = sortedWeeks[0];
-  const lastWeek = sortedWeeks[sortedWeeks.length - 1];
+  const lastWeek = sortedWeeks.at(-1);
 
   const allWeeks = [];
   let current = firstWeek;
