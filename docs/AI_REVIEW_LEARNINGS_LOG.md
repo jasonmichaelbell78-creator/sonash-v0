@@ -349,6 +349,34 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#10)</summary>
+
+- **Date:** 2026-03-02
+- **Reviews consolidated:** #466-#477
+- **Recurring patterns:**
+  - qodo (8x)
+  - sonarcloud (8x)
+  - cc-reduction-getlatestloghash (4x)
+  - cognitive-complexity-extraction (4x)
+  - composite-key-for-nullable-ids (4x)
+  - fd-based-file-operations-toctou-mitigation (4x)
+  - handle-exception-context (4x)
+  - harden-table-input (4x)
+  - invocation-id-collision (4x)
+  - line-number-accuracy (4x)
+  - regex-character-class-escaping (4x)
+  - relax-reviewid-regex (4x)
+  - retrorecordparse-safeparse (4x)
+  - rollback-on-dual-write-failure (4x)
+  - safeparse-for (4x)
+  - sanitize-markdown-headings (4x)
+  - sanitize-markdown-render (4x)
+  - stringraw (4x)
+  - temp-file-symlink-race (4x)
+  - toctou-race-appendentries (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#9)</summary>
 
 - **Date:** 2026-03-01
@@ -727,14 +755,14 @@ accumulate.
 
 ## Active Reviews
 
-### Review #442: PR #411 R1-R3 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
+### Review #442: PR #411 R1-R4 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
 
 _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
-3 rounds._
+4 rounds._
 
-**Source:** Semgrep OSS (49), Gemini (2), Qodo (5), CI failures (3), CodeQL
-(11), SonarCloud issues (58), SonarCloud hotspots (38) **Total:** 166
-**Fixed:** 45 **Deferred:** 53 **Rejected:** 68
+**Source:** Semgrep OSS (64), Gemini (2), Qodo (8), CI failures (4), CodeQL
+(11), SonarCloud issues (58), SonarCloud hotspots (38) **Total:** 184
+**Fixed:** 48 **Deferred:** 53 **Rejected:** 83
 
 **R1 (Semgrep + Gemini + Qodo):** 5 fixes, 48 rejected
 
@@ -771,9 +799,22 @@ _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across
 - **Rejected**: Gemini/Qodo duplicates of R1 fixes, SonarCloud duplication
   findings on v1 legacy fallback scripts (97% dup is by design)
 
+**R4 (Semgrep OSS + CI + Qodo):** 3 fixes, 15 rejected
+
+- **Fix**: security-check.js SKIP_PATTERNS not applied in `--file` mode — CI
+  passes files individually via `--file` flag, bypassing the directory walker
+  where SKIP_PATTERNS lives. Added skip check to `--file` path.
+- **Fix**: Expanded `no-unchecked-array-access` Semgrep rule with 8 additional
+  guard patterns (early returns, length < N, split()[0], nullish coalescing)
+- **Pattern**: Own Semgrep rules that only recognize 2 guard patterns will
+  produce FPs on idiomatic code that uses early returns. Design rules to cover
+  common guard idioms from the start.
+- **Rejected**: 3 Qodo repeat items (auto-fix path, health tests, FP threshold
+  — all fixed in R1/R2). 12 Semgrep FPs eliminated by rule expansion.
+
 **Process notes:**
 
-- Batched protocol effective: 3 rounds, 3 commits, no push until done
+- Batched protocol effective: 4 rounds, 4 commits, no push until done
 - Semgrep OSS lacks type information — custom rules must target specific
   known-async function names, not generic patterns
 - First-time SonarCloud scan on this codebase produced many pre-existing

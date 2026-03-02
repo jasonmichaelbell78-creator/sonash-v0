@@ -3,14 +3,14 @@
   "branch": "claude/maintenance22726-md8WL",
   "session": 200,
   "started": "2026-03-01",
-  "completed": "2026-03-02",
   "mode": "batched",
   "protocol": "commit-per-batch-no-push",
-  "batches_completed": 3,
-  "total_items_processed": 166,
-  "total_items_fixed": 45,
+  "naming": "fix: resolve N PR review items from SOURCE (PR #411 RX)",
+  "batches_completed": 4,
+  "total_items_processed": 184,
+  "total_items_fixed": 48,
   "total_items_deferred": 53,
-  "total_items_rejected": 68,
+  "total_items_rejected": 83,
   "learning_entry": "#442",
   "jsonl_record": "rev-427",
   "batches": [
@@ -21,7 +21,14 @@
       "fixed": 5,
       "deferred": 0,
       "rejected": 48,
-      "commit": "1ca3e703"
+      "commit": "1ca3e703",
+      "fixes": [
+        "Rewrote no-floating-promise Semgrep rule (was matching all fn calls)",
+        "JSONL malformed line resilience in 3 files + 1 propagation",
+        "Path validation in cross-doc-deps auto-fix (validatePathInDir)",
+        "Health tests added to npm test glob (496 from 293)",
+        "Nullish coalescing on array access in computeTrend"
+      ]
     },
     {
       "round": "R2",
@@ -30,18 +37,78 @@
       "fixed": 3,
       "deferred": 11,
       "rejected": 2,
-      "commit": "719ab17f"
+      "commit": "719ab17f",
+      "fixes": [
+        "Prettier formatting on 8 plan/test files",
+        "Exclude tests/semgrep/ from security-check.js SKIP_PATTERNS",
+        "FP threshold NaN guard in check-pattern-compliance.js"
+      ]
     },
     {
       "round": "R3",
-      "source": "Gemini + Qodo + SonarCloud",
+      "source": "Gemini + Qodo + SonarCloud (58 issues + 38 hotspots)",
       "total": 89,
       "fixed": 37,
       "deferred": 42,
       "rejected": 18,
-      "commit": "09a38243"
+      "commit": "09a38243",
+      "fixes": [
+        "BLOCKER: computeDelta() restructured with early returns (S3516)",
+        "18x optional chaining (S6582) in ESLint rules + health scripts",
+        "6x inner functions to outer scope (S7721) in ESLint rules",
+        "6x nested ternary to if/else (S3358) in health checkers + scoring",
+        "2x default params reordered (S1788) in health-log + warning-lifecycle",
+        "1x if-in-else flattened (S6660) in scoring.js",
+        "1x nested ternary in log-override.js"
+      ],
+      "deferred_summary": "15 CC (v1 legacy + health checker branching), 22 regex DoS hotspots (internal scripts, trusted input), 16 PATH hotspots (FP on hardcoded execFileSync in tests), 4 useless-assignment in Semgrep test fixtures, 11 CodeQL pre-existing"
+    },
+    {
+      "round": "R4",
+      "source": "Semgrep OSS + CI failure + Qodo",
+      "total": 18,
+      "fixed": 3,
+      "deferred": 0,
+      "rejected": 15,
+      "commit": "acea73c5",
+      "fixes": [
+        "security-check.js SKIP_PATTERNS applied in --file mode (CI fix)",
+        "no-unchecked-array-access rule expanded with 8 guard patterns (eliminates 15 FPs)",
+        "5 new Semgrep test cases for guard patterns"
+      ],
+      "rejected_summary": "3 Qodo repeat-rejected (same as R1/R2), 12 Semgrep no-unchecked-array-access FPs (all had existing guards: early returns, split()[0], ?? fallbacks, ?.)"
     }
   ],
-  "status": "complete",
-  "notes": "All review sources processed. Ready to push."
+  "status": "r4_committed_not_pushed",
+  "process": {
+    "description": "Batched PR review protocol for large PRs",
+    "steps": [
+      "1. Read this file to recover state after compaction",
+      "2. User pastes next batch of review feedback OR fetch via API",
+      "3. Triage: identify fixes vs deferred vs rejected. Check against prior rounds for duplicates.",
+      "4. Fix items (use parallel agents for 10+ items across multiple files)",
+      "5. Run npm test to verify",
+      "6. Commit with: fix: resolve N PR review items from SOURCE (PR #411 RX)",
+      "7. Update this state file with round results",
+      "8. After final round: write learning entry (#442+), JSONL record, push all"
+    ],
+    "api_fetch_commands": {
+      "sonarcloud_issues": "curl -s -o sonar.json 'https://sonarcloud.io/api/issues/search?organization=jasonmichaelbell78-creator&projects=jasonmichaelbell78-creator_sonash-v0&pullRequest=411&ps=100&severities=BLOCKER,CRITICAL,MAJOR'",
+      "sonarcloud_hotspots": "curl -s -o sonar-hs.json 'https://sonarcloud.io/api/hotspots/search?organization=jasonmichaelbell78-creator&projectKey=jasonmichaelbell78-creator_sonash-v0&pullRequest=411&ps=100&status=TO_REVIEW'",
+      "semgrep_annotations": "gh api repos/jasonmichaelbell78-creator/sonash-v0/check-runs/CHECK_RUN_ID/annotations --paginate",
+      "codeql_alerts": "gh api repos/jasonmichaelbell78-creator/sonash-v0/code-scanning/alerts?per_page=100&state=open",
+      "pr_comments": "gh api repos/jasonmichaelbell78-creator/sonash-v0/pulls/411/comments?per_page=100"
+    },
+    "known_fps": [
+      "Semgrep no-floating-promise: rule rewritten in R1, old FPs should not recur",
+      "CodeQL 11 alerts: pre-existing initial scan, not PR-specific",
+      "SonarCloud PATH hotspots (S4036): FP on hardcoded execFileSync in tests",
+      "SonarCloud useless-assignment in tests/semgrep/: intentional test fixtures",
+      "SonarCloud duplication on v1 scripts: by design (legacy fallbacks)",
+      "Qodo path-validation + health-tests: fixed in R1, Qodo re-raises across rounds",
+      "Qodo FP-threshold-NaN: fixed in R2, Qodo re-raises in R4",
+      "Semgrep no-unchecked-array-access: rule too strict, expanded in R4"
+    ]
+  },
+  "notes": "R4 committed (acea73c5), not yet pushed. 3 Qodo items repeat-rejected (same R1/R2 fixes). 15 Semgrep FPs resolved by expanding rule guard patterns. CI security-check --file mode now applies SKIP_PATTERNS."
 }
