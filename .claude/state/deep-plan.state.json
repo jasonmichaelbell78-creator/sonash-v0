@@ -1,10 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_5b_questions_presented",
+  "status": "phase_1_batch_5b_complete",
   "current_batch": "5B",
-  "total_batches_so_far": "4 + 4T + 5A + 5B(pending)",
-  "estimated_remaining_batches": "5B (awaiting answers), 5C (ecosystems 11-13 + CANON), Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
+  "total_batches_so_far": "4 + 4T + 5A + 5B",
+  "estimated_remaining_batches": "5C (ecosystems 11-13 + CANON self-assessment), Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
   "decisions": [
     {
       "id": 1,
@@ -323,9 +323,55 @@
       "user_override": true,
       "original_recommendation": "Target L2→L3 staged",
       "user_note": "Skill-audit skill (recently created) follows processes enacted in refined skill-creator and deep-plan skills. All skills will need ecosystem auditing."
+    },
+    {
+      "id": 38,
+      "decision": "Alerts: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced)",
+      "rationale": "Strong foundation with 10 health checkers, Zod via WarningRecord/BaseRecord, suppression system with expiration, mid-session degradation detection. 13/16 present. Delta is rollback/recovery, lifecycle completion, migration tooling, deprecation tiers.",
+      "effort": "M",
+      "staging": "Direct (L3→L4)",
+      "assessment_summary": "13/16 present, 2 partial, 1 absent. Rollback/recovery absent, lifecycle incomplete (no archival/pruning), versioning field unused, no deprecation policy."
+    },
+    {
+      "id": 39,
+      "decision": "Scripts: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced)",
+      "rationale": "250+ scripts with good infrastructure. Enforcement manifest (7 mechanisms), centralized config (12 files), production-grade error sanitization. Biggest lift is Zod expansion and test coverage (currently 8%).",
+      "effort": "L",
+      "staging": "Direct (L3→L4)",
+      "assessment_summary": "10/16 present, 5 partial, 1 absent. Zod only in reviews (58 root scripts untyped), 8% test coverage, no deprecation policy, lifecycle underdocumented, rollback incomplete."
+    },
+    {
+      "id": 40,
+      "decision": "Docs: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced)",
+      "rationale": "Impressively mature — closest to L4 already. 14/16 present, 5-domain 16-category audit, 3 dedicated skills, 9 pre-commit gates, multi-layer state management. Small delta: formalized enforcement manifest, test expansion, deprecation policy.",
+      "effort": "M",
+      "staging": "Direct (L3→L4)",
+      "assessment_summary": "14/16 present, 2 partial, 0 absent. Only 2 test files, enforcement rules scattered (no manifest doc), deprecation policy undocumented.",
+      "user_clarification": "Folder location/structure IS included in this ecosystem scope — covers docs/ tree organization, where docs for all purposes live. Cross-ecosystem doc locations (where OTHER ecosystems put their docs) is a CANON cross-cutting concern."
+    },
+    {
+      "id": 41,
+      "decision": "CI/CD: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced)",
+      "rationale": "18 GitHub Actions workflows, Zod validation in functions, 10-dimensional health scoring, 50+ enforcement patterns, coverage tracking. Delta: deprecation policy, formalized contracts, versioning strategy, automated deployment rollback.",
+      "effort": "M",
+      "staging": "Direct (L3→L4)",
+      "assessment_summary": "11/16 present, 4 partial, 1 absent. No deprecation policy, lifecycle hooks incomplete, versioning implicit, contracts informal, no automated deployment rollback."
+    },
+    {
+      "id": 42,
+      "decision": "Analytics: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L3 (Monitored)",
+      "rationale": "Foundational JSONL storage with rotation, learning effectiveness tracking, override audit trail, multi-ecosystem integration. Needs Zod schemas (has none), centralized config, naming standardization, expanded views, versioning strategy.",
+      "effort": "M",
+      "staging": "Direct (L2→L3)",
+      "assessment_summary": "8/16 present, 6 partial, 2 absent. No Zod schemas, hardcoded config constants, limited view generation (2 views), inconsistent naming, no versioning strategy, no deprecation policy."
     }
   ],
-  "total_decisions": 37,
+  "total_decisions": 42,
   "core_tenets": {
     "_organization": "Flat list, 4 categories. 17 total tenets. Locked in Batch 4T (Tenets Discovery).",
     "foundation": {
@@ -495,7 +541,9 @@
     "interactivity_is_paramount": "Interactivity of utmost importance across everything whenever possible. Skills should be interactive (deep-plan as exemplar), not monologue dumps. Extends beyond skills to all methods/tools where applicable.",
     "dual_environment_is_constraint": "System must work identically on Claude Code Desktop (Linux sandbox) and Windows CLI. Platform-agnostic by default. Node.js over bash. Formalized as tenet T7.",
     "tdms_must_be_l5": "TDMS feeds into everything, MASTER_DEBT has thousands of entries. Too critical to leave below L5. Acknowledged as massive XL effort.",
-    "skill_audit_leverage": "Skill-audit skill exists (.claude/skills/skill-audit/) — created Feb 28, 2026. Born from 64-decision audit of deep-plan skill. 10-category interactive framework (intent fidelity, workflow sequencing, I/O quality, decision points, integration surface, guard rails, prompt engineering, scope boundaries, institutional memory, UX). Used on deep-plan (64 decisions → v2 rewrite) and informed skill-creator v2 update. Codifies the behavioral quality standards from those refinements. This is the mechanism for all 65 skills' ecosystem auditing."
+    "skill_audit_leverage": "Skill-audit skill exists (.claude/skills/skill-audit/) — created Feb 28, 2026. Born from 64-decision audit of deep-plan skill. 10-category interactive framework (intent fidelity, workflow sequencing, I/O quality, decision points, integration surface, guard rails, prompt engineering, scope boundaries, institutional memory, UX). Used on deep-plan (64 decisions → v2 rewrite) and informed skill-creator v2 update. Codifies the behavioral quality standards from those refinements. This is the mechanism for all 65 skills' ecosystem auditing.",
+    "multi_pronged_audit_in_discovery": "Each ecosystem's individual deep-plan discovery phase should include multi-pronged audits (code, security, performance, documentation, process, etc.) — not just single-lens assessment. User has had great success with varied audits for finding gaps and improvements, not just problems. Comprehensive-ecosystem-audit orchestrator and 9+ audit domains already exist.",
+    "ai_behavior_canonization": "User raised: should AI behavioral patterns be canonized? Truncation tendencies, skill compliance, state persistence discipline, interactivity adherence, verbosity standards. Novel idea — could be CANON artifact (.canon/ai-behavior.jsonl?) or tenet. To be explored."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -522,51 +570,17 @@
     "Tenets should be CANON's first artifact (.canon/tenets.jsonl) — CANON defines itself before it defines others",
     "CROSS_PLATFORM_SETUP.md is stale — references removed sync script. Needs update when platform-agnostic tenet is implemented",
     "Cascade/override (D#5) and progressive disclosure are useful patterns but not tenets — keep as referenced patterns, not principles",
-    "17 tenets across 4 categories is the right granularity — specific enough to be actionable, broad enough to be stable"
+    "17 tenets across 4 categories is the right granularity — specific enough to be actionable, broad enough to be stable",
+    "Canonize AI behavior patterns — truncation, skill compliance, state persistence discipline, interactivity adherence, verbosity. Could be .canon/ai-behavior.jsonl or a new tenet category",
+    "Multi-pronged audits (code, security, performance, docs, process) should be part of each ecosystem's discovery phase — user has had great success with varied audits for gaps and improvements, not just problems",
+    "Docs ecosystem scope includes folder location/structure (docs/ tree organization). Cross-ecosystem doc locations are a CANON cross-cutting concern"
   ],
-  "batch_5b_pending_questions": {
-    "Q33_alerts": {
-      "current": "L3 (Monitored)",
-      "checklist": "13/16 present, 2 partial, 1 absent",
-      "recommendation": "L3→L4 (Enforced), Effort M",
-      "key_strengths": "10 health checkers, Zod via WarningRecord/BaseRecord, suppression with expiration, mid-session degradation detection",
-      "key_gaps": "Rollback/recovery absent, lifecycle incomplete (no archival/pruning), versioning field unused, no deprecation policy"
-    },
-    "Q34_scripts": {
-      "current": "L3 (Monitored)",
-      "checklist": "10/16 present, 5 partial, 1 absent",
-      "recommendation": "L3→L4 (Enforced), Effort L",
-      "key_strengths": "250+ scripts, enforcement manifest (7 mechanisms), centralized config (12 files), production-grade error sanitization, 10 health checkers",
-      "key_gaps": "Zod only in reviews (58 root scripts untyped), 8% test coverage (21/250+), no deprecation policy, lifecycle underdocumented, rollback incomplete"
-    },
-    "Q35_docs": {
-      "current": "L3 (Monitored)",
-      "checklist": "14/16 present, 2 partial, 0 absent",
-      "recommendation": "L3→L4 (Enforced), Effort M",
-      "key_strengths": "5-domain 16-category audit, multi-layer state management, 5-wave 13-agent doc-optimizer, 6-pass dedup pipeline, 3 dedicated skills, 9 pre-commit gates",
-      "key_gaps": "Only 2 test files, enforcement rules scattered (no manifest doc), deprecation policy undocumented"
-    },
-    "Q36_cicd": {
-      "current": "L3 (Monitored)",
-      "checklist": "11/16 present, 4 partial, 1 absent",
-      "recommendation": "L3→L4 (Enforced), Effort M",
-      "key_strengths": "18 GitHub Actions workflows, Zod validation in functions, 10-dimensional health scoring, 50+ enforcement patterns, coverage tracking (c8)",
-      "key_gaps": "No deprecation policy, lifecycle hooks incomplete, versioning implicit, contracts informal, no automated deployment rollback"
-    },
-    "Q37_analytics": {
-      "current": "L2 (Structured)",
-      "checklist": "8/16 present, 6 partial, 2 absent",
-      "recommendation": "L2→L3 (Monitored), Effort M",
-      "key_strengths": "JSONL storage with rotation, learning effectiveness tracking (95.3%), override audit trail, multi-ecosystem integration, 58 error handling instances",
-      "key_gaps": "No Zod schemas at all, hardcoded config constants, limited view generation (2 views), inconsistent naming, no versioning strategy, no deprecation policy"
-    }
-  },
   "branch_investigation": {
     "branch": "claude/system-standardization-discovery-s201",
     "status": "SAFE TO DELETE",
     "reason": "Squash-merged into main as PR #415 (commit 398904e). Zero diff between branch tip and main. All 6 branch commits are captured in the squash.",
     "investigated": "2026-03-03T13:35:00Z"
   },
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T COMPLETE (D28-D32, 17 tenets). Batch 5A COMPLETE (D33-D37, ecosystems 1-5). 37 total decisions. Batch 5B QUESTIONS PRESENTED (Q33-Q37) — AWAITING USER ANSWERS. Q33: Alerts L3→L4 M, Q34: Scripts L3→L4 L, Q35: Docs L3→L4 M, Q36: CI/CD L3→L4 M, Q37: Analytics L2→L3 M. User directive: skill-audit research important for Skills ecosystem plan. After 5B answers locked: proceed to 5C (ecosystems 11-13 + CANON self-assessment), then Batch 6 (Sequencing + Prioritization).",
-  "updated": "2026-03-03T15:45:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T COMPLETE (D28-D32, 17 tenets). Batch 5A COMPLETE (D33-D37, ecosystems 1-5). Batch 5B COMPLETE (D38-D42, ecosystems 6-10). 42 total decisions. 5B results: Alerts L3→L4 M, Scripts L3→L4 L, Docs L3→L4 M, CI/CD L3→L4 M, Analytics L2→L3 M. All approved without overrides. New ideas captured: canonize AI behavior patterns, multi-pronged audits in discovery phase, docs ecosystem scope includes folder structure. Next: Sub-batch 5C — ecosystems 11-13 + CANON self-assessment. Remaining ecosystems to assess: Planning (deep-plan/GSD), Testing, Archival/Rotation + CANON (Ecosystem Zero). Then Batch 6 (Sequencing + Prioritization).",
+  "updated": "2026-03-03T16:10:00Z"
 }
