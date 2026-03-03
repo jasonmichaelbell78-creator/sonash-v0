@@ -1,9 +1,9 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_5d_complete",
-  "current_batch": "5D COMPLETE — all 18 ecosystems assessed (54 decisions). Batch 6 next.",
-  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D(in progress)",
+  "status": "phase_1_batch_6_in_progress",
+  "current_batch": "Batch 6 — Sequencing + Prioritization. D56-D62 locked. Wave proposal drafting in progress.",
+  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6(in progress)",
   "estimated_remaining_batches": "5D Q&A, Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
   "total_ecosystems": 18,
   "decisions": [
@@ -552,9 +552,51 @@
         "machine": "deep-plan.state.json — structured JSON with same data + resume instructions, batch status, timestamps, implementation metadata"
       },
       "batch": "5D"
+    },
+    {
+      "id": 56,
+      "decision": "Wave structure model",
+      "choice": "Tiered waves (4-5 waves of 3-5 ecosystems each) with checkpoint validation between waves",
+      "rationale": "T10 (validate before scaling) + T13 (discoveries feed forward). Parallelism within waves, learning transfer between them."
+    },
+    {
+      "id": 57,
+      "decision": "Wave 1 composition",
+      "choice": "CANON solo — Wave 1 is exclusively CANON (L0→L5)",
+      "rationale": "Ecosystem Zero (T1) needs undivided attention. Self-dogfoods the framework. All subsequent waves depend on CANON contracts."
+    },
+    {
+      "id": 58,
+      "decision": "PR Review as CANON pilot",
+      "choice": "PR Review goes in Wave 2 as explicit CANON pilot (S effort, L4→L5)",
+      "rationale": "Smallest delta, proves CANON framework works on a real ecosystem before scaling. T10 validated. USER QUESTION: entire operation mapped in advance with stages scheduled — YES, wave assignments mapped now, each ecosystem deep-planned JIT per T13."
+    },
+    {
+      "id": 59,
+      "decision": "TDMS staging timeline",
+      "choice": "TDMS L2→L3 starts in Wave 2, L3→L4 in Wave 3-4, L5 in Wave 5. Staged across full timeline.",
+      "rationale": "Too critical to defer (user directive: feeds into everything), but XL scope requires staging across waves."
+    },
+    {
+      "id": 60,
+      "decision": "Enforcement infrastructure timing + Skills elevation",
+      "choice": "Hooks + Testing in Wave 2 for enforcement gates. Skills ELEVATED to Wave 2 (user directive: main tool, touches many systems).",
+      "rationale": "Enforcement infra early so all subsequent waves have formal gates. Skills elevated by user — it's a primary daily tool with cross-ecosystem dependencies."
+    },
+    {
+      "id": 61,
+      "decision": "App-layer ecosystem timing",
+      "choice": "Frontend/App + Firebase/Backend in the final wave (last)",
+      "rationale": "User insight: connection points between app and process layers are what matters. Standardize process ecosystems first so connections are well-defined."
+    },
+    {
+      "id": 62,
+      "decision": "Parallelism within waves",
+      "choice": "2-3 parallel max within waves, but ONLY for ecosystems that don't touch each other. Sequential for related ecosystems where lessons transfer. User wants to see concrete proposal before finalizing.",
+      "rationale": "Bounded parallelism. Independent ecosystems can overlap. Related ecosystems run sequential for T13 learning transfer. CONDITIONAL — awaiting concrete wave proposal."
     }
   ],
-  "total_decisions": 55,
+  "total_decisions": 62,
   "core_tenets": {
     "_organization": "Flat list, 4 categories. 17 total tenets. Locked in Batch 4T (Tenets Discovery).",
     "foundation": {
@@ -730,7 +772,10 @@
     "app_ecosystem_connections_are_key": "For app-layer ecosystems (Frontend/App, Firebase/Backend), planning approach differs from process ecosystems. What matters most are the CONNECTION POINTS between process ecosystems and app layer — testing, health monitoring, and contracts at those boundaries must be solid.",
     "planning_docs_must_evolve": "All planning docs (roadmap, sprints, grand plan, future roadmap) need updating as we move through plans — BOTH for additions of new work AND deletions of completed or deprecated items. Living documents, not static snapshots.",
     "formalize_adaptability": "Formalize the checklist adaptation approach. Rigidity when necessary but ability to adapt to different situations while maintaining order. No ad-hoc exemptions — adaptations are earned through formal justification.",
-    "audits_l5_pathway": "Audits ecosystem must have L5 pathway designed in from the start at L4, not bolted on later. Architecture for L5 readiness is part of the L4 work."
+    "audits_l5_pathway": "Audits ecosystem must have L5 pathway designed in from the start at L4, not bolted on later. Architecture for L5 readiness is part of the L4 work.",
+    "batch_6_skills_elevation": "Skills must be high in Wave 2 — it's a main tool and touches many systems (user override)",
+    "batch_6_parallel_bounded": "Parallel is OK but not too much — not ecosystems that could affect another or lose lessons learned",
+    "batch_6_wave_proposal_needed": "User wants to see concrete wave proposal with parallel groupings before committing to D62"
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -767,7 +812,10 @@
     "Operational sprint health monitoring items may overlap with ecosystem standardization health monitoring — need reconciliation during sequencing",
     "Planning docs (ROADMAP, sprints, grand plan, future roadmap) need continuous updates during plan execution — additions AND deletions of completed/deprecated items",
     "Audits L5 pathway should be architecturally designed during L4 work — versioned audit standards, automated regression detection, self-auditing capabilities",
-    "Checklist adaptation formalization: rigid framework + earned flexibility. Per-ecosystem mapping with required justification for any deviation from the 16-item standard"
+    "Checklist adaptation formalization: rigid framework + earned flexibility. Per-ecosystem mapping with required justification for any deviation from the 16-item standard",
+    "Wave structure allows both parallelism (within waves) and learning transfer (between waves) — hybrid approach",
+    "TDMS as cross-wave staged effort — each wave advances it one level",
+    "Skills elevation to Wave 2 creates a heavy wave — may need 2A/2B split or careful parallel tracks"
   ],
   "branch_investigation": {
     "branch": "claude/system-standardization-discovery-s201",
@@ -818,7 +866,11 @@
   "batch_5d_qa": {
     "status": "COMPLETE — all 5 decisions locked",
     "decisions_recorded": [
-      { "id": "D50", "topic": "Agents maturity", "result": "L2→L3 (accepted recommendation)" },
+      {
+        "id": "D50",
+        "topic": "Agents maturity",
+        "result": "L2→L3 (accepted recommendation)"
+      },
       {
         "id": "D51",
         "topic": "Audits maturity",
@@ -856,5 +908,18 @@
     "End-of-process audit: User confirmed audit will happen after plan is set, not before."
   ],
   "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T COMPLETE (D28-D32, 17 tenets locked). ALL 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C+5D, D33-D54). 54 TOTAL DECISIONS.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nBatch 5D (D50-D54): Agents (L2→L3, M). Audits (L3→L4 WITH L5 PATHWAY, M). Frontend/App (L2→L3 ADAPTED, M). Firebase/Backend (L1→L3 STAGED ADAPTED, M-L). Checklist adaptation FORMALIZED (rigid framework + earned flexibility).\n\nKEY BATCH 5D INSIGHTS:\n  - App-layer ecosystems (Frontend/App, Firebase/Backend) planning approach differs — CONNECTION POINTS between process and app layers are the priority\n  - Operational sprint has health monitoring overlap — needs reconciliation\n  - All planning docs must evolve with the plan — additions AND deletions\n  - Audits L5 pathway must be architecturally designed during L4 work\n  - Checklist adaptation formalized: rigidity + earned adaptability with justification\n\nDISCOVERY_RECORD BACKFILL COMPLETE: 559→1080 lines. Needs D50-D54 appended next.\n\n18 TOTAL ECOSYSTEMS. 54 DECISIONS. 17 TENETS. All assessments locked.\n\n3 user overrides: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n1 user elevation: Audits→L4 with L5 pathway.\n\nSession corrections still in effect: (1) Structured Q&A format. (2) Continuous DISCOVERY_RECORD updates. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nANSWERED (D55): Two-doc system formalized — DISCOVERY_RECORD.md (human) + deep-plan.state.json (machine). Simultaneous-update rule. Zero information asymmetry. Aligns with T2.\n\nNEXT: Batch 6 (Sequencing + Prioritization) — order the 18 ecosystem standardizations. Then possible Batch 7 (Edge Cases/Final). Then end-of-process completeness audit.",
-  "updated": "2026-03-03T18:45:00Z"
+  "updated": "2026-03-03T21:06:11.287Z",
+  "batch_6_progress": {
+    "status": "IN_PROGRESS — D56-D62 locked, wave proposal next",
+    "decisions_locked": ["D56", "D57", "D58", "D59", "D60", "D61", "D62"],
+    "user_questions_raised": [
+      "Q56: Are there parallel opportunities where systems don't touch each other? → YES, addressed in wave proposal",
+      "Q58: Would entire plan be mapped out in advance with stages at different times? → YES, wave assignments now, JIT deep-plans per T13",
+      "Q62: Need to see concrete parallel groupings before committing → PENDING, wave proposal being drafted"
+    ],
+    "key_user_directives": [
+      "Skills elevated to Wave 2",
+      "Parallel OK but bounded — no cross-contamination, preserve learning transfer"
+    ]
+  }
 }
