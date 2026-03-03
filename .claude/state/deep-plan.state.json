@@ -1,10 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_2_complete",
-  "current_batch": 2,
+  "status": "phase_1_batch_3_presented_awaiting_answers",
+  "current_batch": 3,
   "total_batches_so_far": 2,
-  "estimated_remaining_batches": "3-4 (Behavior/Rules, Migration/Upgrade, CANON Spec Details, Edge Cases)",
+  "estimated_remaining_batches": "3-4 (Batch 3: Behavior/Rules [PRESENTED], Batch 4: Migration/Upgrade, Batch 5: CANON Spec Details, Batch 6: Edge Cases)",
   "decisions": [
     {
       "id": 1,
@@ -111,6 +111,18 @@
     }
   ],
   "total_decisions": 13,
+  "batch_3_questions_presented": {
+    "status": "AWAITING_ANSWERS",
+    "questions": [
+      "Q14: Enforcement model severity levels (A=4-tier, B=3-tier, C=5-tier, D=other). Recommended: A",
+      "Q15: Gate placement (A=pre-commit, B=pre-push, C=tiered, D=PR-only). Recommended: C",
+      "Q16: Naming convention depth (A=files, B=files+exports+JSONL, C=full taxonomy, D=minimal). Recommended: B",
+      "Q17: Health checker interface (A=as-is, B=+trend+recommendations, C=simpler, D=+dependency health). Recommended: B",
+      "Q18: Dashboard generation (A=on-demand, B=auto, C=hybrid, D=CI/CD only). Recommended: C",
+      "Q19: Migration strategy (A=big bang, B=incremental, C=layered, D=pilot+rollout). Recommended: D",
+      "Q20: Dependency declaration (A=per-ecosystem, B=centralized, C=both, D=implicit). Recommended: C"
+    ]
+  },
   "core_tenets": {
     "jsonl_first": "JSONL is canonical and AI-consumed. MD is for human consumption, generated from JSONL info. Core tenet moving forward.",
     "canon_is_ecosystem_zero": "CANON is the meta-system above all others, lives at `.canon/` repo root",
@@ -158,7 +170,9 @@
     "jsonl_is_canon": "JSONL is canonical/AI-consumed, MD is human-readable generated from JSONL. Core tenet.",
     "room_for_growth_everywhere": "Nothing not-upgradeable. Ease upgrade process. Room for growth built in everywhere. Things change all the time.",
     "no_superseding_ecosystem": "Primary ownership = maintenance responsibility, not authority. No ecosystem supersedes another.",
-    "plan_as_you_go": "Each ecosystem gets its own deep-plan when sequenced. Don't pre-plan all 13 — they'd go stale."
+    "plan_as_you_go": "Each ecosystem gets its own deep-plan when sequenced. Don't pre-plan all 13 — they'd go stale.",
+    "ecosystem_plan_sequencing_matters": "Dependency-wise sequencing between ecosystem plans is important. Discoveries in one plan may feed into another.",
+    "mcp_memory_enabled": "enableAllProjectMcpServers flipped to true. Verify memory MCP tools available next session."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -176,8 +190,10 @@
     "Configuration as single source of truth vs hardcoded values",
     "Per-ecosystem required-vs-optional subsystem mapping needed",
     "L5 is north star not exit criteria — most target L3-L4 baseline",
-    "Upgrade-friendliness as design principle in every component"
+    "Upgrade-friendliness as design principle in every component",
+    "MCP memory as secondary state backup (verify next session)",
+    "Configure episodic memory for remote sessions (broader benefit beyond this plan)"
   ],
-  "resume_instructions": "Phase 0 APPROVED. Batch 1 COMPLETE (7 decisions). Batch 2 COMPLETE (6 decisions, total 13). Next: present Batch 3 — Behavior & Rules. Cover: enforcement model (blocking vs warning vs info), naming conventions depth, CI/CD integration strategy, gate placement (pre-commit vs pre-push vs PR), health checker standardization, dashboard/reporting generation. Estimated 3-4 batches remaining (Batch 3-6). User pushed back on only 2 remaining — correctly noted this scope deserves more rigor than single-ecosystem plans.",
-  "updated": "2026-03-03T12:40:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batch 1 COMPLETE (7 decisions). Batch 2 COMPLETE (6 decisions, total 13). Batch 3 PRESENTED (7 questions Q14-Q20) but NOT YET ANSWERED. MCP memory setting changed (enableAllProjectMcpServers=true) — verify tools available. Next: collect Batch 3 answers, save state, present Batch 4.",
+  "updated": "2026-03-03T13:00:00Z"
 }
