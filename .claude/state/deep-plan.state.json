@@ -1,10 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_5b_complete",
-  "current_batch": "5B",
-  "total_batches_so_far": "4 + 4T + 5A + 5B",
-  "estimated_remaining_batches": "5C (ecosystems 11-13 + CANON self-assessment), Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
+  "status": "phase_1_batch_5c_questions_presented",
+  "current_batch": "5C",
+  "total_batches_so_far": "4 + 4T + 5A + 5B + AI-behavior + 5C(pending)",
+  "estimated_remaining_batches": "5C (awaiting answers), Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
   "decisions": [
     {
       "id": 1,
@@ -658,12 +658,42 @@
     "AI behavioral violations should feed into alerts pipeline — alerts already has mid-session checks, degradation detection, suppression. Natural integration point.",
     "Decision preservation (AB-9) as a behavioral category — AI must not silently change, lose, or reinterpret agreed decisions. D28-D32 collision was a mild violation."
   ],
+  "batch_5c_pending_questions": {
+    "Q38_planning": {
+      "current": "L2 (Structured)",
+      "checklist": "6/16 present, 7 partial, 3 absent",
+      "recommendation": "L2→L3 (Monitored), Effort L",
+      "key_strengths": "Exceptional docs (8842 lines GSD agents), robust state persistence (45 decisions surviving compaction), sophisticated execution model (deviation rules, checkpoints)",
+      "key_gaps": "Zero testing (no tests for deep-plan or 11 GSD agents), no health checkers, no rollback/recovery, no deprecation policy, implicit contracts, hardcoded config"
+    },
+    "Q39_testing": {
+      "current": "L3 (Monitored)",
+      "checklist": "11/16 present, 5 partial, 0 absent",
+      "recommendation": "L3→L4 (Enforced), Effort M",
+      "key_strengths": "44 test files (8557 lines), 7 contract tests, Zod schemas validated, TESTING_PLAN.md (1074 lines), error knowledge base, c8 coverage, 3 skills, 27 feature protocols",
+      "key_gaps": "No compaction/recovery testing, deprecation policy not formalized, generated views not systematized, lifecycle hooks not explicitly tested"
+    },
+    "Q40_archival": {
+      "current": "L3 (Monitored)",
+      "checklist": "10/16 present, 4 partial, 2 absent",
+      "recommendation": "L3→L4 (Enforced), Effort M",
+      "key_strengths": "Atomic writes with backup, symlink guards, compaction-aware, multi-ecosystem reach (8 ecosystems), JSONL-native rotation, 3500 lines archival code",
+      "key_gaps": "No Zod schemas for archival, no enforcement manifest, hardcoded thresholds, no versioning strategy, deprecated files still referenced, no deprecation policy"
+    },
+    "Q41_canon": {
+      "current": "L0 (Nonexistent)",
+      "checklist": "0/16 present, 2 partial, 14 absent",
+      "recommendation": "L0→L5 (Canonized), Effort L",
+      "key_strengths": "45 design decisions locked, 17 tenets formalized, reference implementation available (PR Review L4), measurement checklist defined, architecture patterns documented",
+      "key_gaps": ".canon/ directory does not exist, zero built artifacts, all 16 checklist items need implementation from scratch. Design is complete — execution remains."
+    }
+  },
   "branch_investigation": {
     "branch": "claude/system-standardization-discovery-s201",
     "status": "SAFE TO DELETE",
     "reason": "Squash-merged into main as PR #415 (commit 398904e). Zero diff between branch tip and main. All 6 branch commits are captured in the squash.",
     "investigated": "2026-03-03T13:35:00Z"
   },
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 (27 decisions), 4T (D28-D32, 17 tenets), 5A (D33-D37, ecosystems 1-5), 5B (D38-D42, ecosystems 6-10) ALL COMPLETE. AI Behavior side-quest COMPLETE (D43-D45): CANON artifact (.canon/ai-behavior.jsonl), hybrid enforcement with alerts integration, 9 behavioral categories (AB-1 through AB-9). 45 total decisions. Next: Sub-batch 5C — remaining ecosystems (Planning, Testing, Archival/Rotation) + CANON self-assessment. Then Batch 6 (Sequencing + Prioritization).",
-  "updated": "2026-03-03T16:30:00Z"
+  "resume_instructions": "Batches 1-4 (27), 4T (D28-D32, 17 tenets), 5A (D33-D37, eco 1-5), 5B (D38-D42, eco 6-10), AI-behavior (D43-D45) ALL COMPLETE. 45 total decisions. Batch 5C QUESTIONS PRESENTED (Q38-Q41) — AWAITING USER ANSWERS. Q38: Planning L2→L3 L, Q39: Testing L3→L4 M, Q40: Archival L3→L4 M, Q41: CANON L0→L5 L. After 5C answers locked: ALL 13 ecosystems + CANON assessed. Proceed to Batch 6 (Sequencing + Prioritization).",
+  "updated": "2026-03-03T17:15:00Z"
 }
