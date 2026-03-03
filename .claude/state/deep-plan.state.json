@@ -1,9 +1,9 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_4_complete",
-  "current_batch": 4,
-  "total_batches_so_far": 4,
+  "status": "tenets_discovery_complete",
+  "current_batch": "4T (Tenets Discovery — inserted between Batch 4 and Batch 5)",
+  "total_batches_so_far": 5,
   "estimated_remaining_batches": "2-3 (Batch 5: Ecosystem Catalog + Maturity Assessments, Batch 6: Sequencing + Prioritization, possible Batch 7: Edge Cases/Final)",
   "decisions": [
     {
@@ -158,6 +158,8 @@
       "rationale": "Best of both worlds. CANON's own config/schemas/reports organized by function. Each ecosystem's data co-located in its own dir.",
       "structure": {
         ".canon/canon.json": "CANON meta (version, config)",
+        ".canon/tenets.jsonl": "Core tenets (first CANON artifact — CANON defines itself first)",
+        ".canon/tenets.md": "Generated human-readable tenet view",
         ".canon/ecosystems.jsonl": "Registry (one line per ecosystem)",
         ".canon/schemas/": "Zod schemas, JSON schemas",
         ".canon/config/": "Global defaults, override rules",
@@ -200,21 +202,205 @@
       "decision": "Generated view production method",
       "choice": "Standardized script interface: each view is a script with contract (reads JSONL → outputs MD). Standard CLI interface (--input, --output).",
       "rationale": "Standardized interface, not implementation. Scripts can be simple or complex — the contract is what's standardized. Follows Decision #10 pattern-level standardization."
+    },
+    {
+      "id": 28,
+      "decision": "Core tenets discovery phase — inserted before Batch 5",
+      "choice": "Pause schema batches. Discover, formalize, and lock all core tenets BEFORE continuing with ecosystem assessments.",
+      "rationale": "Core tenets guide everything downstream. Locking schemas before fully articulating the principles that shape them is backwards. Two tenets (automation over discipline, no forgettable processes) had already fallen through the cracks, proving the need."
+    },
+    {
+      "id": 29,
+      "decision": "Tenet candidate disposition — promote, merge, demote",
+      "choice": "Promote 6 candidates to formal tenets, merge 2 into existing tenets, demote 2 to implementation patterns.",
+      "rationale": "Tenets are 'why' principles that guide decisions. Patterns are 'how' implementations. Cascade/override (D#5) and progressive disclosure are patterns, not principles.",
+      "promoted": [
+        "source_of_truth_generated_views",
+        "single_ownership_many_consumers",
+        "contract_over_implementation",
+        "validate_before_scaling",
+        "crash_proof_state",
+        "declarative_over_imperative"
+      ],
+      "merged": {
+        "nothing_gets_lost": "Merged into renamed tenet 'capture_everything_surface_what_matters' (combines visibility + institutional memory)",
+        "discoveries_feed_forward": "Merged as sub-principle of 'plan_as_you_go' (knowledge compounds, learnings from ecosystem #3 inform #4)"
+      },
+      "demoted": {
+        "cascade_override": "Implementation pattern (Decision #5), not a guiding principle. Referenced by tenets but isn't one.",
+        "progressive_disclosure": "UX/design guideline for tooling. L0-L5 and tiered gates implement it, but it's not why they exist."
+      }
+    },
+    {
+      "id": 30,
+      "decision": "New tenets — 3 missing + 1 formalized",
+      "choice": "Add platform_agnostic_by_default, idempotent_operations, fail_loud_fail_early. Formalize automation_over_discipline (was discussed but never recorded).",
+      "rationale": "Platform-agnostic: dual-environment (Linux sandbox + Windows CLI) is a real constraint with existing breakage. Idempotency: prevents data corruption from re-runs (MASTER_DEBT race condition is a violation). Fail loud/early: complements visibility — errors must scream, not whisper. Automation over discipline: if it relies on human memory, it WILL fail.",
+      "dual_environment_impact": {
+        "affected_decisions": [
+          "D#15 enforcement gates",
+          "D#17 health checkers",
+          "D#21 directory structure",
+          "D#27 generated view scripts"
+        ],
+        "implications": "All CANON scripts Node.js (not bash). Forward-slash paths. LF line endings. No symlinks. No platform-specific env vars without cross-platform fallback.",
+        "existing_breakage": [
+          "CROSS_PLATFORM_SETUP.md references removed sync script",
+          "3 bash-only scripts have no Windows equivalent",
+          "Path separators differ across environments"
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "decision": "Tenet organization — flat with categories",
+      "choice": "Option A: Flat list with 4 categories (Foundation, Design, Operations, Process). No parent-child hierarchy.",
+      "rationale": "At 16 tenets, a flat list becomes a wall. Categories make it scannable. No hierarchy avoids 'is X a child of Y?' debates. Easy to add new tenets to a category."
+    },
+    {
+      "id": 32,
+      "decision": "Tenets as first CANON artifact",
+      "choice": "`.canon/tenets.jsonl` (source of truth) + `.canon/tenets.md` (generated view). First artifact CANON produces about itself.",
+      "rationale": "CANON defines itself first. Tenets depend on nothing else. Dog-foods JSONL-first pattern. Each line: {id, category, name, statement, evidence[], added, version}.",
+      "schema": {
+        "id": "T1-T16",
+        "category": "foundation|design|operations|process",
+        "name": "snake_case identifier",
+        "statement": "Full tenet statement",
+        "evidence": "Array of decision IDs that informed/embody this tenet",
+        "added": "ISO date",
+        "version": "0.1.0 (inherits CANON version)"
+      }
     }
   ],
-  "total_decisions": 27,
+  "total_decisions": 32,
   "core_tenets": {
-    "jsonl_first": "JSONL is canonical and AI-consumed. MD is for human consumption, generated from JSONL info. Core tenet moving forward.",
-    "canon_is_ecosystem_zero": "CANON is the meta-system above all others, lives at `.canon/` repo root",
-    "maturity_is_measurable": "Completeness checklist (16 items) → computed level, not subjective grades",
-    "room_for_growth": "Nothing ships as a dead end. Everything must be upgradeable. Ease the upgrade process. Things change all the time.",
-    "plan_as_you_go": "This deep plan produces catalog + sequence. Each ecosystem gets its own deep-plan when its turn arrives. No stale pre-plans.",
-    "interactivity_first": "Interactivity is of utmost importance across everything whenever possible. Primarily in skill structure but extends to other methods. Deep-plan skill is the exemplar — interactive batch questioning, user-driven decisions, no monologue dumps. All tools/skills should prefer interactive workflows over batch output."
+    "_organization": "Flat list, 4 categories. 16 total tenets. Locked in Batch 4T (Tenets Discovery).",
+    "foundation": {
+      "T1_canon_is_ecosystem_zero": {
+        "statement": "CANON is the meta-system above all others. It defines the rules, lives at `.canon/` repo root, and is the first ecosystem standardized.",
+        "evidence": ["D1", "D11", "D12"],
+        "category": "foundation"
+      },
+      "T2_source_of_truth_generated_views": {
+        "statement": "Every system has ONE authoritative source. Everything else is derived/generated. Never maintain two copies — maintain one and compute the other.",
+        "evidence": ["D2", "D4", "D20", "D24"],
+        "category": "foundation",
+        "note": "JSONL-first (T4) is an instance of this broader principle."
+      },
+      "T3_maturity_is_measurable": {
+        "statement": "Maturity is computed from a concrete checklist, never subjectively assigned. 16 items → L0-L5 levels. If you can't measure it, you can't improve it.",
+        "evidence": ["D3", "D8", "D9"],
+        "category": "foundation"
+      }
+    },
+    "design": {
+      "T4_jsonl_first": {
+        "statement": "JSONL is the canonical storage format — AI-consumed, appendable, line-diffable. MD is generated for human consumption. Instance of T2.",
+        "evidence": ["D2", "D22", "D25", "D26"],
+        "category": "design"
+      },
+      "T5_contract_over_implementation": {
+        "statement": "CANON defines the contract (what a health checker must output, what an enforcement manifest looks like). How each ecosystem implements it is their business.",
+        "evidence": ["D10", "D24", "D27"],
+        "category": "design"
+      },
+      "T6_room_for_growth": {
+        "statement": "Nothing ships as a dead end. Everything must be upgradeable. Ease the upgrade process. Schemas, APIs, structures — all must accommodate evolution without breaking.",
+        "evidence": ["D12", "D13", "D22"],
+        "category": "design"
+      },
+      "T7_platform_agnostic_by_default": {
+        "statement": "All CANON artifacts, scripts, and tooling MUST work identically on both Claude Code Desktop (Linux sandbox) and Windows CLI. Node.js over bash. Forward-slash paths. LF line endings. No platform-specific assumptions without a documented cross-platform fallback.",
+        "evidence": ["D15", "D17", "D21", "D27"],
+        "category": "design",
+        "dual_environment_context": {
+          "environments": [
+            "Claude Code Desktop (Linux sandbox)",
+            "Windows CLI (PowerShell/Git Bash)"
+          ],
+          "constraints": [
+            "Node.js for all scripts (not bash)",
+            "Forward-slash paths only",
+            "LF line endings only",
+            "No symlinks in .canon/",
+            "No platform-specific env var assumptions",
+            "Cross-platform hooks (already Node.js — formalize as requirement)"
+          ],
+          "known_violations": [
+            "3 bash-only scripts with no Windows equivalent",
+            "Removed sync script never replaced",
+            "CROSS_PLATFORM_SETUP.md references dead tooling"
+          ]
+        }
+      }
+    },
+    "operations": {
+      "T8_automation_over_discipline": {
+        "statement": "If a process relies on human memory, it WILL fail. Hooks, gates, scripts — not checklists and READMEs. Automate enforcement or accept non-compliance.",
+        "evidence": ["D14", "D15", "D18", "D26"],
+        "category": "operations",
+        "note": "Was discussed in Batch 3 but never formally recorded. Formalized in Batch 4T."
+      },
+      "T9_crash_proof_state": {
+        "statement": "State survives compaction, session boundaries, crashes, and network failures. Not optional — it's infrastructure. State files, not memory. Persistent, not ephemeral.",
+        "evidence": ["D9_checklist_item_8"],
+        "category": "operations",
+        "note": "The existence of deep-plan.state.json itself embodies this tenet."
+      },
+      "T10_validate_before_scaling": {
+        "statement": "Pilot on 1-2, prove it works, then roll out. Never mass-apply an unproven pattern. CANON validates itself before it standardizes others.",
+        "evidence": ["D6", "D13", "D19"],
+        "category": "operations"
+      },
+      "T11_fail_loud_fail_early": {
+        "statement": "When something is wrong, it screams immediately — not silently logs to a file nobody reads. Pre-commit catches before PR. Errors block, they don't whisper. The aggressive complement to visibility.",
+        "evidence": ["D14", "D15"],
+        "category": "operations"
+      },
+      "T12_idempotent_operations": {
+        "statement": "Every CANON script and operation produces the same result whether run once or five times. No data corruption from re-runs. No side effects from retries. Safe to re-run is safe to automate.",
+        "evidence": ["D18", "D27"],
+        "category": "operations",
+        "note": "The MASTER_DEBT 9-writer race condition is a direct violation of this tenet."
+      }
+    },
+    "process": {
+      "T13_plan_as_you_go": {
+        "statement": "Each ecosystem gets its own deep-plan when sequenced. No stale pre-plans. Discoveries feed forward — what you learn standardizing ecosystem #3 informs ecosystem #4. Knowledge compounds.",
+        "evidence": ["D6", "D8"],
+        "category": "process",
+        "sub_principle": "discoveries_feed_forward — merged here from candidate T16"
+      },
+      "T14_capture_everything_surface_what_matters": {
+        "statement": "Ideas, findings, tangential thoughts MUST be recorded — institutional memory. Then surface what's actionable through visibility tooling. Nothing gets lost AND nothing gets buried.",
+        "evidence": ["D14", "D17"],
+        "category": "process",
+        "note": "Renamed from 'visibility_is_key'. Merges visibility + institutional memory (candidate T14 'nothing gets lost')."
+      },
+      "T15_interactivity_first": {
+        "statement": "Interactive workflows over batch output. Batch questioning over monologue dumps. User-driven decisions, not AI-driven assumptions. Deep-plan is the exemplar — extends to all skills/tools.",
+        "evidence": ["deep-plan skill design"],
+        "category": "process"
+      },
+      "T16_single_ownership_many_consumers": {
+        "statement": "Every component has exactly one owner responsible for it. Others consume, never supersede. Primary ownership = maintenance responsibility, not authority hierarchy.",
+        "evidence": ["D11"],
+        "category": "process"
+      },
+      "T17_declarative_over_imperative": {
+        "statement": "Declare WHAT should be, let tools enforce HOW. Enforcement manifests, schemas, configs — all declarative. You describe the world you want; automation makes it so.",
+        "evidence": ["D9", "D14", "D26"],
+        "category": "process"
+      }
+    }
   },
   "artifacts": {
     "diagnosis": ".planning/system-wide-standardization/DIAGNOSIS.md",
     "decisions": null,
-    "plan": null
+    "plan": null,
+    "tenets_jsonl": ".canon/tenets.jsonl (to be created — first CANON artifact)",
+    "tenets_md": ".canon/tenets.md (to be generated from tenets.jsonl)"
   },
   "phase_0_outcomes": {
     "diagnosis_confirmed": true,
@@ -254,7 +440,8 @@
     "plan_as_you_go": "Each ecosystem gets its own deep-plan when sequenced. Don't pre-plan all 13 — they'd go stale.",
     "ecosystem_plan_sequencing_matters": "Dependency-wise sequencing between ecosystem plans is important. Discoveries in one plan may feed into another.",
     "mcp_memory_enabled": "enableAllProjectMcpServers flipped to true. Verify memory MCP tools available next session.",
-    "interactivity_is_paramount": "Interactivity of utmost importance across everything whenever possible. Skills should be interactive (deep-plan as exemplar), not monologue dumps. Extends beyond skills to all methods/tools where applicable."
+    "interactivity_is_paramount": "Interactivity of utmost importance across everything whenever possible. Skills should be interactive (deep-plan as exemplar), not monologue dumps. Extends beyond skills to all methods/tools where applicable.",
+    "dual_environment_is_constraint": "System must work identically on Claude Code Desktop (Linux sandbox) and Windows CLI. Platform-agnostic by default. Node.js over bash. Formalized as tenet T7."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -276,8 +463,19 @@
     "MCP memory as secondary state backup (verify next session)",
     "Configure episodic memory for remote sessions (broader benefit beyond this plan)",
     "Interactivity-first as a design tenet for all skills and tooling — batch questioning > monologue output",
-    "Health report dual format (JSON envelope + JSONL findings) could become a general pattern for all ecosystem outputs"
+    "Health report dual format (JSON envelope + JSONL findings) could become a general pattern for all ecosystem outputs",
+    "Core tenets discovery phase should precede schema/structure decisions — tenets guide everything downstream",
+    "Tenets should be CANON's first artifact (.canon/tenets.jsonl) — CANON defines itself before it defines others",
+    "CROSS_PLATFORM_SETUP.md is stale — references removed sync script. Needs update when platform-agnostic tenet is implemented",
+    "Cascade/override (D#5) and progressive disclosure are useful patterns but not tenets — keep as referenced patterns, not principles",
+    "17 tenets across 4 categories is the right granularity — specific enough to be actionable, broad enough to be stable"
   ],
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions total). New tenet added: interactivity-first. Next: present Batch 5 — Ecosystem Catalog + Maturity Assessments. This batch will use the 16-item checklist to assess each of the 13 ecosystems + CANON, compute maturity levels, and map cross-cutting subsystem coverage. This is the heaviest content batch. Consider splitting into sub-batches (e.g., 4-5 ecosystems per sub-batch) for interactivity. Estimated 2-3 batches remaining after Batch 5.",
-  "updated": "2026-03-03T13:30:00Z"
+  "branch_investigation": {
+    "branch": "claude/system-standardization-discovery-s201",
+    "status": "SAFE TO DELETE",
+    "reason": "Squash-merged into main as PR #415 (commit 398904e). Zero diff between branch tip and main. All 6 branch commits are captured in the squash.",
+    "investigated": "2026-03-03T13:35:00Z"
+  },
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T (Tenets Discovery) COMPLETE (5 new decisions: D28-D32, 32 total). 17 core tenets locked across 4 categories (Foundation: 3, Design: 4, Operations: 5, Process: 5). Includes platform-agnostic tenet (T7) for dual-environment constraint. Tenets to be stored as `.canon/tenets.jsonl` — first CANON artifact. Next: Batch 5 — Ecosystem Catalog + Maturity Assessments using the 16-item checklist against all 13 ecosystems + CANON. Consider sub-batches of 4-5 ecosystems for interactivity. Branch claude/system-standardization-discovery-s201 confirmed safe to delete (squash-merged as PR #415).",
+  "updated": "2026-03-03T13:40:00Z"
 }
