@@ -1,8 +1,8 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_5d_research_in_progress",
-  "current_batch": "5D (4 unassessed ecosystems)",
+  "status": "phase_1_batch_5d_qa_pending",
+  "current_batch": "5D Q&A (D50-D54 presented, awaiting user decisions)",
   "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D(in progress)",
   "estimated_remaining_batches": "5D Q&A, Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
   "total_ecosystems": 18,
@@ -720,9 +720,42 @@
     "qa_format_fix": "User flagged Q46-Q49 were bare questions lacking options, suggestions, recommendations. All Batch 5D questions will have full structured format."
   },
   "discovery_record_backfill": {
-    "status": "in_progress",
-    "description": "Agent backfilling DISCOVERY_RECORD.md with all D1-D49 decisions, T1-T17 tenets, user directives, and ideas. Data existed in state files but was never consolidated into the record. User flagged this gap as unacceptable.",
-    "gap_identified": "DISCOVERY_RECORD stopped at decision #22. Deep-plan D1-D49 (different numbering scheme) were only in deep-plan.state.json."
+    "status": "complete",
+    "description": "DISCOVERY_RECORD.md backfilled from 559→1080 lines with all D1-D49 decisions, T1-T17 tenets, ecosystem assessment summary table, 22 user directives, 30 captured ideas. Committed as 942e3e6.",
+    "gap_identified": "DISCOVERY_RECORD stopped at decision #22. Deep-plan D1-D49 (different numbering scheme) were only in deep-plan.state.json.",
+    "completed_at": "2026-03-03T18:10:00Z"
+  },
+  "batch_5d_qa": {
+    "status": "questions_presented_awaiting_user",
+    "questions": [
+      {
+        "id": "D50",
+        "topic": "Agents ecosystem maturity target",
+        "recommendation": "L2→L3, M effort, direct"
+      },
+      {
+        "id": "D51",
+        "topic": "Audits ecosystem maturity target",
+        "recommendation": "L3→L4, M effort, direct"
+      },
+      {
+        "id": "D52",
+        "topic": "Frontend/App maturity target",
+        "recommendation": "L2→L3, M effort, adapted checklist"
+      },
+      {
+        "id": "D53",
+        "topic": "Firebase/Backend maturity target",
+        "recommendation": "L1→L3, M-L effort, staged, adapted checklist"
+      },
+      {
+        "id": "D54",
+        "topic": "App-layer checklist adaptation approach",
+        "recommendation": "Per-ecosystem required-vs-optional mapping (Option A)"
+      }
+    ],
+    "research_agents_completed": true,
+    "all_4_ecosystems_researched": ["Agents", "Audits", "Frontend/App", "Firebase/Backend"]
   },
   "session_corrections": [
     "Question format quality: Q46-Q49 lacked options/pros/cons/recommendations. Fixed going forward.",
@@ -730,6 +763,6 @@
     "Ecosystem count: Revised from 14 to 18 total. 4 ecosystems from original DIAGNOSIS were never assessed.",
     "End-of-process audit: User confirmed audit will happen after plan is set, not before."
   ],
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T (Tenets Discovery) COMPLETE (D28-D32, 17 tenets locked). 14 of 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C, D33-D49). 49 total decisions.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Planning RENAMED to 'Roadmap & Execution' (USER INSIGHT). Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nBatch 5D IN PROGRESS: 4 unassessed ecosystems being researched — Agents, Audits, Frontend/App, Firebase/Backend. Research agents running. Q&A pending with FIXED question format (options, pros/cons, recommendations).\n\nDISCOVERY_RECORD BACKFILL IN PROGRESS: Agent writing D1-D49, T1-T17, directives, ideas into DISCOVERY_RECORD.md. User flagged this gap.\n\n18 TOTAL ECOSYSTEMS (was 14 — 4 from original DIAGNOSIS never assessed).\n\n3 user overrides total: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n\nSession corrections: (1) Question format must include options/pros/cons/recommendations. (2) DISCOVERY_RECORD must be continuously updated. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nNext: Batch 5D Q&A → Batch 6 (Sequencing + Prioritization) → possible Batch 7 (Edge Cases/Final).",
-  "updated": "2026-03-03T18:05:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T (Tenets Discovery) COMPLETE (D28-D32, 17 tenets locked). 14 of 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C, D33-D49). 49 total decisions.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Planning RENAMED to 'Roadmap & Execution' (USER INSIGHT). Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nDISCOVERY_RECORD BACKFILL COMPLETE: 559→1080 lines, all D1-D49, T1-T17, directives, ideas. Committed as 942e3e6.\n\nBatch 5D Q&A PRESENTED (D50-D54): All 4 research agents completed. Structured questions with options/pros/cons/recommendations presented to user. AWAITING USER DECISIONS:\n  - D50: Agents ecosystem → recommended L2→L3 (M, direct)\n  - D51: Audits ecosystem → recommended L3→L4 (M, direct)\n  - D52: Frontend/App → recommended L2→L3 (M, adapted checklist)\n  - D53: Firebase/Backend → recommended L1→L3 (M-L, staged, adapted checklist)\n  - D54: App-layer checklist adaptation → recommended per-ecosystem required-vs-optional mapping\n\n18 TOTAL ECOSYSTEMS (was 14 — 4 from original DIAGNOSIS never assessed).\n\n3 user overrides total: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n\nSession corrections: (1) Question format must include options/pros/cons/recommendations. (2) DISCOVERY_RECORD must be continuously updated. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nUNANSWERED: User asked about document consolidation approach (one doc vs two) — still pending.\n\nNext: User answers D50-D54 → record decisions → Batch 6 (Sequencing + Prioritization) → possible Batch 7 (Edge Cases/Final) → end-of-process audit.",
+  "updated": "2026-03-03T18:12:00Z"
 }
