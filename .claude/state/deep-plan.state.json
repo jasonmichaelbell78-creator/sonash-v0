@@ -369,9 +369,90 @@
       "effort": "M",
       "staging": "Direct (L2→L3)",
       "assessment_summary": "8/16 present, 6 partial, 2 absent. No Zod schemas, hardcoded config constants, limited view generation (2 views), inconsistent naming, no versioning strategy, no deprecation policy."
+    },
+    {
+      "id": 43,
+      "decision": "AI behavioral standards location in CANON",
+      "choice": "CANON artifact: `.canon/ai-behavior.jsonl` (source of truth) + `.canon/ai-behavior.md` (generated view)",
+      "rationale": "AI behavior is a meta-concern that cuts across every ecosystem — not a standalone ecosystem. Lives alongside tenets.jsonl as CANON's operational companion. Tenets = 'why we build this way', behavioral standards = 'how the AI should operate while building'. SKILL_STANDARDS.md covers in-skill behavior only; this covers everything."
+    },
+    {
+      "id": 44,
+      "decision": "AI behavior enforcement tier",
+      "choice": "Hybrid: Instruction + hook detection + audit + alerts integration",
+      "rationale": "Layer 1 (Instruction): Formalize in .canon/ai-behavior.jsonl, load critical standards into CLAUDE.md. Layer 2 (Hook detection): Extend hooks to detect symptoms — state file timestamps, output size heuristics, instruction compliance flags. Layer 3 (Audit): Periodic behavioral compliance audit with scoring and trend tracking. Layer 4 (Alerts): Behavioral findings surface through the alerts system — not just in audit reports — so violations are visible in real-time session health.",
+      "user_addition": "Behavioral findings must surface through the alerts system, not just periodic audits. Alerts already has the infrastructure (mid-session checks, degradation detection, suppression system). AI behavior violations should feed into that same pipeline.",
+      "enforcement_layers": {
+        "instruction": "Formalized standards in .canon/ai-behavior.jsonl loaded into CLAUDE.md",
+        "hook_detection": "Post-commit state timestamp checks, output size heuristics, instruction compliance flags via UserPromptSubmit",
+        "audit": "Periodic behavioral compliance audit (skill-audit-like) with scoring and cross-session trends via MCP memory",
+        "alerts_integration": "Behavioral violations feed into alerts pipeline — mid-session checks can flag truncation, missed saves, skill non-compliance as WARNING/ERROR level alerts"
+      }
+    },
+    {
+      "id": 45,
+      "decision": "AI behavioral categories to canonize",
+      "choice": "9 categories, prioritized P0-P3",
+      "rationale": "All 8 proposed categories accepted plus #9 (decision preservation). Priority reflects enforceability — P0 items are hook-enforceable today, P3 requires human judgment.",
+      "categories": [
+        {
+          "id": "AB-1",
+          "name": "State persistence",
+          "priority": "P0",
+          "enforceable": "YES — hook verifies file timestamps"
+        },
+        {
+          "id": "AB-2",
+          "name": "Instruction fidelity",
+          "priority": "P0",
+          "enforceable": "PARTIAL — hook checks artifact compliance"
+        },
+        {
+          "id": "AB-3",
+          "name": "Skill compliance",
+          "priority": "P1",
+          "enforceable": "YES — skill-audit already exists"
+        },
+        {
+          "id": "AB-4",
+          "name": "Truncation/completeness",
+          "priority": "P1",
+          "enforceable": "PARTIAL — output size heuristics"
+        },
+        {
+          "id": "AB-5",
+          "name": "Interactivity adherence",
+          "priority": "P2",
+          "enforceable": "PARTIAL — question count tracking"
+        },
+        {
+          "id": "AB-6",
+          "name": "Context management",
+          "priority": "P2",
+          "enforceable": "YES — handoff.json completeness check"
+        },
+        {
+          "id": "AB-7",
+          "name": "Verbosity calibration",
+          "priority": "P3",
+          "enforceable": "NO — requires human judgment"
+        },
+        {
+          "id": "AB-8",
+          "name": "Self-correction",
+          "priority": "P3",
+          "enforceable": "NO — inherently self-referential"
+        },
+        {
+          "id": "AB-9",
+          "name": "Decision preservation",
+          "priority": "P1",
+          "enforceable": "PARTIAL — state file diff analysis, decision record integrity checks"
+        }
+      ]
     }
   ],
-  "total_decisions": 42,
+  "total_decisions": 45,
   "core_tenets": {
     "_organization": "Flat list, 4 categories. 17 total tenets. Locked in Batch 4T (Tenets Discovery).",
     "foundation": {
@@ -543,7 +624,7 @@
     "tdms_must_be_l5": "TDMS feeds into everything, MASTER_DEBT has thousands of entries. Too critical to leave below L5. Acknowledged as massive XL effort.",
     "skill_audit_leverage": "Skill-audit skill exists (.claude/skills/skill-audit/) — created Feb 28, 2026. Born from 64-decision audit of deep-plan skill. 10-category interactive framework (intent fidelity, workflow sequencing, I/O quality, decision points, integration surface, guard rails, prompt engineering, scope boundaries, institutional memory, UX). Used on deep-plan (64 decisions → v2 rewrite) and informed skill-creator v2 update. Codifies the behavioral quality standards from those refinements. This is the mechanism for all 65 skills' ecosystem auditing.",
     "multi_pronged_audit_in_discovery": "Each ecosystem's individual deep-plan discovery phase should include multi-pronged audits (code, security, performance, documentation, process, etc.) — not just single-lens assessment. User has had great success with varied audits for finding gaps and improvements, not just problems. Comprehensive-ecosystem-audit orchestrator and 9+ audit domains already exist.",
-    "ai_behavior_canonization": "User raised: should AI behavioral patterns be canonized? Truncation tendencies, skill compliance, state persistence discipline, interactivity adherence, verbosity standards. Novel idea — could be CANON artifact (.canon/ai-behavior.jsonl?) or tenet. To be explored."
+    "ai_behavior_canonization": "DECIDED: AI behavioral standards live as CANON artifact (.canon/ai-behavior.jsonl). 9 categories (AB-1 through AB-9). Hybrid enforcement: instruction + hook detection + audit + alerts integration. Behavioral violations must surface through alerts system, not just periodic audits."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -573,7 +654,9 @@
     "17 tenets across 4 categories is the right granularity — specific enough to be actionable, broad enough to be stable",
     "Canonize AI behavior patterns — truncation, skill compliance, state persistence discipline, interactivity adherence, verbosity. Could be .canon/ai-behavior.jsonl or a new tenet category",
     "Multi-pronged audits (code, security, performance, docs, process) should be part of each ecosystem's discovery phase — user has had great success with varied audits for gaps and improvements, not just problems",
-    "Docs ecosystem scope includes folder location/structure (docs/ tree organization). Cross-ecosystem doc locations are a CANON cross-cutting concern"
+    "Docs ecosystem scope includes folder location/structure (docs/ tree organization). Cross-ecosystem doc locations are a CANON cross-cutting concern",
+    "AI behavioral violations should feed into alerts pipeline — alerts already has mid-session checks, degradation detection, suppression. Natural integration point.",
+    "Decision preservation (AB-9) as a behavioral category — AI must not silently change, lose, or reinterpret agreed decisions. D28-D32 collision was a mild violation."
   ],
   "branch_investigation": {
     "branch": "claude/system-standardization-discovery-s201",
@@ -581,6 +664,6 @@
     "reason": "Squash-merged into main as PR #415 (commit 398904e). Zero diff between branch tip and main. All 6 branch commits are captured in the squash.",
     "investigated": "2026-03-03T13:35:00Z"
   },
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T COMPLETE (D28-D32, 17 tenets). Batch 5A COMPLETE (D33-D37, ecosystems 1-5). Batch 5B COMPLETE (D38-D42, ecosystems 6-10). 42 total decisions. 5B results: Alerts L3→L4 M, Scripts L3→L4 L, Docs L3→L4 M, CI/CD L3→L4 M, Analytics L2→L3 M. All approved without overrides. New ideas captured: canonize AI behavior patterns, multi-pronged audits in discovery phase, docs ecosystem scope includes folder structure. Next: Sub-batch 5C — ecosystems 11-13 + CANON self-assessment. Remaining ecosystems to assess: Planning (deep-plan/GSD), Testing, Archival/Rotation + CANON (Ecosystem Zero). Then Batch 6 (Sequencing + Prioritization).",
-  "updated": "2026-03-03T16:10:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 (27 decisions), 4T (D28-D32, 17 tenets), 5A (D33-D37, ecosystems 1-5), 5B (D38-D42, ecosystems 6-10) ALL COMPLETE. AI Behavior side-quest COMPLETE (D43-D45): CANON artifact (.canon/ai-behavior.jsonl), hybrid enforcement with alerts integration, 9 behavioral categories (AB-1 through AB-9). 45 total decisions. Next: Sub-batch 5C — remaining ecosystems (Planning, Testing, Archival/Rotation) + CANON self-assessment. Then Batch 6 (Sequencing + Prioritization).",
+  "updated": "2026-03-03T16:30:00Z"
 }
