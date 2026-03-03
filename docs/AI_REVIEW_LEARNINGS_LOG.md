@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.85 **Created:** 2026-01-02 **Last Updated:** 2026-03-02
+**Document Version:** 17.86 **Created:** 2026-01-02 **Last Updated:** 2026-03-02
 
 ## Purpose
 
@@ -766,6 +766,33 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #444: PR #415 R1 — Qodo + Gemini + CI + SonarCloud + Semgrep + Dep Review (2026-03-02)
+
+_System-wide standardization discovery session — planning artifacts + PR creep
+guardrail._
+
+**Source:** Qodo (3), Gemini (1), CI ESLint failure (1), CI Security Check
+failure (1), SonarCloud hotspots (3), Semgrep (83), Dependency Review (58)
+**Total:** 8 unique **Fixed:** 4 **Deferred:** 0 **Rejected:** 4
+
+- **Root cause**: `.planning/reference/` directory (framework-repo clone +
+  agent transcripts) not excluded from any scanning tools
+- Fix: added `.planning/**` to ESLint ignores, security-check SKIP_PATTERNS,
+  and SonarCloud exclusions — single root fix resolves 5 of 8 items
+- Deleted 10 agent-research transcript files containing PII (local paths,
+  session/request IDs) + added .gitignore rules
+- PR creep warnings were invisible (hook redirects all output to log file,
+  warnings don't trigger failure path that dumps log). Fix: save fd 3 before
+  redirect, write warnings to `>&3`
+- SKIP_REASON example "reason" (6 chars) violated 10-char minimum. Fixed to
+  meaningful example text
+- **Rejected**: 83 Semgrep + 3 SonarCloud + 58 OpenSSF + 1 Gemini — all in
+  reference repo (not production code) or trivial (thresholds already variables)
+- **Patterns**: Exclude-Planning-From-All-Tools; Never-Commit-Raw-Transcripts;
+  Hook-FD-Save-For-Warnings
+
+---
 
 ### Review #443: PR #412 R1 — Gemini + Qodo + CI (2026-03-02)
 

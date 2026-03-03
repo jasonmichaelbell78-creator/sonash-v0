@@ -8,6 +8,7 @@
 # Cannot use bash process substitution >() since sh doesn't support it.
 # Simple redirect to log file; caller can read the log after.
 HOOK_OUTPUT_LOG="$(git rev-parse --show-toplevel 2>/dev/null || echo .)/.git/hook-output.log"
+exec 3>&2  # save original stderr for non-fatal warnings (PR creep, etc.)
 exec > "$HOOK_OUTPUT_LOG" 2>&1
 
 # Display log on failure so developers see what went wrong (Gemini review #379)
@@ -90,12 +91,12 @@ if [ -n "$BRANCH_NAME" ] && [ "$BRANCH_NAME" != "main" ] && [ "$BRANCH_NAME" != 
     if [ "$COMMIT_COUNT" -ge "$PR_CREEP_BLOCK" ] && ! is_skipped "pr-creep"; then
       echo "  🚫 PR CREEP GUARD: $COMMIT_COUNT commits on this branch (limit: $PR_CREEP_BLOCK)"
       echo "  Consider creating a PR before adding more commits."
-      echo "  Override: SKIP_CHECKS=\"pr-creep\" SKIP_REASON=\"reason\" git commit ..."
+      echo "  Override: SKIP_CHECKS=\"pr-creep\" SKIP_REASON=\"branch needs more work before PR\" git commit ..."
       exit 1
     elif [ "$COMMIT_COUNT" -ge "$PR_CREEP_STRONG" ]; then
-      echo "  ⚠️  PR CREEP WARNING: $COMMIT_COUNT commits on this branch — PR strongly recommended"
+      echo "  ⚠️  PR CREEP WARNING: $COMMIT_COUNT commits on this branch — PR strongly recommended" >&3
     elif [ "$COMMIT_COUNT" -ge "$PR_CREEP_WARN" ]; then
-      echo "  📋 Branch has $COMMIT_COUNT commits — consider creating a PR soon"
+      echo "  📋 Branch has $COMMIT_COUNT commits — consider creating a PR soon" >&3
     fi
   fi
 fi
