@@ -131,7 +131,8 @@
       "id": 17,
       "decision": "Health checker interface",
       "choice": "Current interface + trend data + recommendations (enhanced)",
-      "rationale": "Trend enables progress tracking over time. Recommendations make health checks actionable, not just diagnostic."
+      "rationale": "Trend enables progress tracking over time. Recommendations make health checks actionable, not just diagnostic.",
+      "amendment_4T": "Health checker implementations MUST be Node.js (T7 platform-agnostic). Added during tenets retroactive review."
     },
     {
       "id": 18,
@@ -201,7 +202,8 @@
       "id": 27,
       "decision": "Generated view production method",
       "choice": "Standardized script interface: each view is a script with contract (reads JSONL → outputs MD). Standard CLI interface (--input, --output).",
-      "rationale": "Standardized interface, not implementation. Scripts can be simple or complex — the contract is what's standardized. Follows Decision #10 pattern-level standardization."
+      "rationale": "Standardized interface, not implementation. Scripts can be simple or complex — the contract is what's standardized. Follows Decision #10 pattern-level standardization.",
+      "amendment_4T": "Scripts MUST be Node.js (T7 platform-agnostic) and idempotent — same input always produces same output with no side effects (T12). Added during tenets retroactive review."
     },
     {
       "id": 28,
