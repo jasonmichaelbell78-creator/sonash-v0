@@ -1,10 +1,11 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_5c_complete",
-  "current_batch": "5C",
-  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C",
-  "estimated_remaining_batches": "Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
+  "status": "phase_1_batch_5d_research_in_progress",
+  "current_batch": "5D (4 unassessed ecosystems)",
+  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D(in progress)",
+  "estimated_remaining_batches": "5D Q&A, Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
+  "total_ecosystems": 18,
   "decisions": [
     {
       "id": 1,
@@ -687,6 +688,48 @@
     "reason": "Squash-merged into main as PR #415 (commit 398904e). Zero diff between branch tip and main. All 6 branch commits are captured in the squash.",
     "investigated": "2026-03-03T13:35:00Z"
   },
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T (Tenets Discovery) COMPLETE (D28-D32, 17 tenets locked). ALL ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C, D33-D49). 49 total decisions.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Planning RENAMED to 'Roadmap & Execution' (USER INSIGHT — planning is a skill, roadmap is the system/hub). Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED — hub ecosystem, non-debt input pipelines missing). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT — bidirectional: self-protection + downstream propagation, semver-driven cascade).\n\nKey user directives from 5C: (1) Planning is a SKILL, Roadmap is a SYSTEM — rename + redefine boundary. (2) Non-debt input pipelines completely missing — T8 violation. (3) Roadmap & Execution needs HIGH implementation priority as hub. (4) CANON enforcement must be 'stout' — both internal gates and downstream cascade.\n\n3 user overrides total: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n\nNext: Batch 6 (Sequencing + Prioritization) — order the 13+1 ecosystem standardizations. Then possible Batch 7 (Edge Cases/Final).",
-  "updated": "2026-03-03T17:10:00Z"
+  "batch_5d_research": {
+    "description": "4 ecosystems from original DIAGNOSIS.md that were never assessed during Batches 5A-5C",
+    "ecosystems": [
+      {
+        "name": "Agents",
+        "original_diagnosis_number": 6,
+        "status": "research_in_progress",
+        "note": "35 agent definitions, invocation tracking via agent-invocations.jsonl"
+      },
+      {
+        "name": "Audits",
+        "original_diagnosis_number": 9,
+        "status": "research_in_progress",
+        "note": "22 quality + 7 ecosystem audit skills, results in history JSONL"
+      },
+      {
+        "name": "Frontend/App",
+        "original_diagnosis_number": 11,
+        "status": "research_in_progress",
+        "note": "Next.js 16, React 19, Tailwind 4 — 'part of but apart'"
+      },
+      {
+        "name": "Firebase/Backend",
+        "original_diagnosis_number": 12,
+        "status": "research_in_progress",
+        "note": "Cloud Functions, Firestore, Auth, Storage rules"
+      }
+    ],
+    "process": "Research agents running in parallel → structured Q&A with options/pros/cons/recommendations → user decisions → DISCOVERY_RECORD update",
+    "qa_format_fix": "User flagged Q46-Q49 were bare questions lacking options, suggestions, recommendations. All Batch 5D questions will have full structured format."
+  },
+  "discovery_record_backfill": {
+    "status": "in_progress",
+    "description": "Agent backfilling DISCOVERY_RECORD.md with all D1-D49 decisions, T1-T17 tenets, user directives, and ideas. Data existed in state files but was never consolidated into the record. User flagged this gap as unacceptable.",
+    "gap_identified": "DISCOVERY_RECORD stopped at decision #22. Deep-plan D1-D49 (different numbering scheme) were only in deep-plan.state.json."
+  },
+  "session_corrections": [
+    "Question format quality: Q46-Q49 lacked options/pros/cons/recommendations. Fixed going forward.",
+    "Decision record lag: DISCOVERY_RECORD not continuously updated. Backfill in progress, continuous updates mandated.",
+    "Ecosystem count: Revised from 14 to 18 total. 4 ecosystems from original DIAGNOSIS were never assessed.",
+    "End-of-process audit: User confirmed audit will happen after plan is set, not before."
+  ],
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T (Tenets Discovery) COMPLETE (D28-D32, 17 tenets locked). 14 of 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C, D33-D49). 49 total decisions.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Planning RENAMED to 'Roadmap & Execution' (USER INSIGHT). Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nBatch 5D IN PROGRESS: 4 unassessed ecosystems being researched — Agents, Audits, Frontend/App, Firebase/Backend. Research agents running. Q&A pending with FIXED question format (options, pros/cons, recommendations).\n\nDISCOVERY_RECORD BACKFILL IN PROGRESS: Agent writing D1-D49, T1-T17, directives, ideas into DISCOVERY_RECORD.md. User flagged this gap.\n\n18 TOTAL ECOSYSTEMS (was 14 — 4 from original DIAGNOSIS never assessed).\n\n3 user overrides total: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n\nSession corrections: (1) Question format must include options/pros/cons/recommendations. (2) DISCOVERY_RECORD must be continuously updated. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nNext: Batch 5D Q&A → Batch 6 (Sequencing + Prioritization) → possible Batch 7 (Edge Cases/Final).",
+  "updated": "2026-03-03T18:05:00Z"
 }
