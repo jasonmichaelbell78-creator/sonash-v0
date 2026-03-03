@@ -1,9 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_1_complete",
-  "current_batch": 1,
-  "total_batches_so_far": 1,
+  "status": "phase_1_batch_2_complete",
+  "current_batch": 2,
+  "total_batches_so_far": 2,
+  "estimated_remaining_batches": "3-4 (Behavior/Rules, Migration/Upgrade, CANON Spec Details, Edge Cases)",
   "decisions": [
     {
       "id": 1,
@@ -46,13 +47,76 @@
       "decision": "This deep-plan's deliverable",
       "choice": "Full ecosystem catalog + maturity assessments + sequenced plan + CANON spec",
       "rationale": "We have the research (500+ components). Comprehensive output avoids another discovery pass."
+    },
+    {
+      "id": 8,
+      "decision": "Maturity level definitions (L0-L5)",
+      "choice": "Approved scale: L0=Nonexistent, L1=Identified, L2=Structured, L3=Monitored, L4=Enforced, L5=Canonized",
+      "rationale": "Clear progression. L5 = all applicable subsystems canonized (not all 16 if some don't apply to ecosystem).",
+      "sub_decisions": {
+        "l5_for_everything": "L5 is the north star, not the exit criteria. Most ecosystems target L3-L4 baseline. L5 means all *applicable* subsystems canonized — per-ecosystem required-vs-optional mapping.",
+        "plan_structure": "Plan-as-you-go with sequenced placeholders. This deep plan produces catalog + sequence. Each ecosystem gets its own deep-plan when its turn comes. Pre-planning all 13 now would produce stale plans by ecosystem #8."
+      }
+    },
+    {
+      "id": 9,
+      "decision": "Completeness checklist items",
+      "choice": "16-item checklist (original 13 + 3 gap-fills: inter-ecosystem contracts, rollback/recovery, deprecation policy)",
+      "rationale": "User liked original 13, accepted 3 additions to close gaps.",
+      "checklist": [
+        "1. Zod schemas — for all data structures",
+        "2. JSONL storage — canonical data in JSONL format",
+        "3. Generated views — MD/JSON views computed from JSONL",
+        "4. Health monitoring — at least one health checker with metrics",
+        "5. Enforcement manifest — rules defining what's blocking vs warning",
+        "6. Testing — unit + integration tests for ecosystem scripts",
+        "7. Documentation — ecosystem-level docs",
+        "8. State persistence — survives compaction / session boundaries",
+        "9. Error handling — standardized error patterns",
+        "10. Naming compliance — follows CANON naming conventions",
+        "11. Configuration — uses central config (not hardcoded values)",
+        "12. Lifecycle hooks — creation, update, archival, deletion defined",
+        "13. Versioning — schema/data migration strategy",
+        "14. Inter-ecosystem contracts — interfaces between dependent ecosystems",
+        "15. Rollback/recovery — revert to prior state after bad migration",
+        "16. Deprecation policy — how old schemas/APIs/patterns are sunset"
+      ]
+    },
+    {
+      "id": 10,
+      "decision": "Subsystem standardization depth",
+      "choice": "Pattern-level: CANON defines interface + reference pattern (PR Review v2 as exemplar)",
+      "rationale": "Templates too rigid, interface-only too ambiguous. Reference patterns formalize what already exists."
+    },
+    {
+      "id": 11,
+      "decision": "Ecosystem boundary rules",
+      "choice": "Primary ownership + consumer references (no superseding ecosystem)",
+      "rationale": "Primary = maintenance responsibility, not authority hierarchy. Shared components have one owner, many consumers. CANON defines rules but doesn't own other ecosystems' components."
+    },
+    {
+      "id": 12,
+      "decision": "CANON spec scope in this plan",
+      "choice": "Working draft (structure + maturity model + subsystem interfaces + registry schema) with room for growth built in everywhere",
+      "rationale": "Enough to start building CANON. Ecosystem assessments separate. Room for growth is a core tenet — nothing ships as a dead end.",
+      "sub_decisions": {
+        "upgradeability": "Core tenet: nothing not-upgradeable. Ease the upgrade process. Everything must have room for growth. Things change all the time."
+      }
+    },
+    {
+      "id": 13,
+      "decision": "CANON versioning",
+      "choice": "Semver (start at 0.1.0, promote to 1.0.0 after 2-3 ecosystem validations)",
+      "rationale": "CANON is infrastructure others depend on. Breaking changes need explicit migration guidance."
     }
   ],
-  "total_decisions": 7,
+  "total_decisions": 13,
   "core_tenets": {
     "jsonl_first": "JSONL is canonical and AI-consumed. MD is for human consumption, generated from JSONL info. Core tenet moving forward.",
     "canon_is_ecosystem_zero": "CANON is the meta-system above all others, lives at `.canon/` repo root",
-    "maturity_is_measurable": "Completeness checklist → computed level, not subjective grades"
+    "maturity_is_measurable": "Completeness checklist (16 items) → computed level, not subjective grades",
+    "room_for_growth": "Nothing ships as a dead end. Everything must be upgradeable. Ease the upgrade process. Things change all the time.",
+    "plan_as_you_go": "This deep plan produces catalog + sequence. Each ecosystem gets its own deep-plan when its turn arrives. No stale pre-plans."
   },
   "artifacts": {
     "diagnosis": ".planning/system-wide-standardization/DIAGNOSIS.md",
@@ -91,7 +155,10 @@
     "standardization_is_key": "Duplicate subsystems must follow shared standards",
     "pr_creep_guard": "User has tendency toward 30-50 commit PRs. Wants guardrail mechanism SOON.",
     "lifecycle_management": "User agreed — helps future-proof. Added to cross-cutting subsystems.",
-    "jsonl_is_canon": "JSONL is canonical/AI-consumed, MD is human-readable generated from JSONL. Core tenet."
+    "jsonl_is_canon": "JSONL is canonical/AI-consumed, MD is human-readable generated from JSONL. Core tenet.",
+    "room_for_growth_everywhere": "Nothing not-upgradeable. Ease upgrade process. Room for growth built in everywhere. Things change all the time.",
+    "no_superseding_ecosystem": "Primary ownership = maintenance responsibility, not authority. No ecosystem supersedes another.",
+    "plan_as_you_go": "Each ecosystem gets its own deep-plan when sequenced. Don't pre-plan all 13 — they'd go stale."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -106,8 +173,11 @@
     "Session-end PR gate: flag if >15 commits not in a PR",
     "State saving rules need to be canonized",
     "13 cross-cutting subsystems",
-    "Configuration as single source of truth vs hardcoded values"
+    "Configuration as single source of truth vs hardcoded values",
+    "Per-ecosystem required-vs-optional subsystem mapping needed",
+    "L5 is north star not exit criteria — most target L3-L4 baseline",
+    "Upgrade-friendliness as design principle in every component"
   ],
-  "resume_instructions": "Phase 0 APPROVED. Batch 1 COMPLETE (7 decisions). Next: present Batch 2 — Scale, Scope & Maturity questions. Cover: maturity level definitions (L0-L5), completeness checklist items, subsystem standardization depth, ecosystem boundaries, scope of CANON spec in this plan.",
-  "updated": "2026-03-03T12:12:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batch 1 COMPLETE (7 decisions). Batch 2 COMPLETE (6 decisions, total 13). Next: present Batch 3 — Behavior & Rules. Cover: enforcement model (blocking vs warning vs info), naming conventions depth, CI/CD integration strategy, gate placement (pre-commit vs pre-push vs PR), health checker standardization, dashboard/reporting generation. Estimated 3-4 batches remaining (Batch 3-6). User pushed back on only 2 remaining — correctly noted this scope deserves more rigor than single-ecosystem plans.",
+  "updated": "2026-03-03T12:40:00Z"
 }
