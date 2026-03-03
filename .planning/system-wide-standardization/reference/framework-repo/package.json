@@ -1,0 +1,55 @@
+{
+  "name": "framework",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reusable dev workflow framework for app/website building",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test",
+    "test:coverage": "c8 node --test",
+    "test:coverage:report": "c8 report",
+    "deps:circular": "madge --circular --extensions js,ts,tsx,jsx .",
+    "deps:unused": "knip",
+    "docs:check": "node scripts/check-docs-light.js",
+    "docs:index": "node scripts/generate-documentation-index.js",
+    "patterns:check": "node scripts/reviews/check-pattern-compliance.js",
+    "patterns:check-all": "node scripts/reviews/check-pattern-compliance.js --all",
+    "security:check": "node scripts/reviews/security-check.js --all",
+    "tdms:metrics": "node scripts/debt/generate-metrics.js",
+    "tdms:views": "node scripts/debt/generate-views.js",
+    "tdms:validate": "node scripts/debt/validate-schema.js",
+    "skills:validate": "node scripts/validate-skills.js",
+    "hooks:test": "node -e \"if(!require('fs').existsSync('tests/hooks')){console.log('No hook tests yet (tests/hooks/ not created)');process.exit(0)}require('child_process').execSync('node --test tests/hooks/',{stdio:'inherit'})\"",
+    "config:validate": "node -e \"require('fs').readdirSync('scripts/config').filter(f=>f.endsWith('.json')).forEach(f=>{JSON.parse(require('fs').readFileSync('scripts/config/'+f,'utf8'));console.log('OK:',f)})\"",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "c8": "^10.1.3",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-security": "^3.0.1",
+    "glob": "^13.0.6",
+    "globals": "^17.0.0",
+    "husky": "^9.1.7",
+    "knip": "^5.79.0",
+    "lint-staged": "^16.2.7",
+    "madge": "^8.0.0",
+    "markdownlint-cli": "^0.47.0",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.49.0"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

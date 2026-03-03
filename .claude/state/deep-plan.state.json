@@ -1,0 +1,71 @@
+{
+  "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
+  "topic": "system-wide-standardization",
+  "status": "phase_0_diagnosis_approved",
+  "current_batch": 0,
+  "total_batches_so_far": 0,
+  "decisions": [],
+  "total_decisions": 0,
+  "artifacts": {
+    "diagnosis": ".planning/system-wide-standardization/DIAGNOSIS.md",
+    "decisions": null,
+    "plan": null
+  },
+  "phase_0_outcomes": {
+    "diagnosis_confirmed": true,
+    "user_approved_all_responses": true,
+    "ecosystem_count_revised": "13 ecosystems + CANON as Ecosystem Zero (meta-system)",
+    "cross_cutting_subsystems_revised": 13,
+    "cross_cutting_list": [
+      "Testing",
+      "Dashboards/Health",
+      "JSONL Storage",
+      "Schema Validation",
+      "State Management",
+      "Documentation",
+      "Enforcement/Gates",
+      "Analytics/Metrics",
+      "Archival/Rotation",
+      "Versioning/Migration",
+      "Error Handling/Logging",
+      "Naming Conventions",
+      "Lifecycle Management"
+    ],
+    "canon_definition": "Ecosystem Zero — meta-system that defines what an ecosystem IS. Sits above all others. Has its own files, schemas, standards, versioning, testing.",
+    "configuration_definition": "Single parameterization file (framework.config.json concept) — project-level settings vs hardcoded values across 70+ scripts",
+    "planning_as_system": "Planning (deep-plan, GSD, roadmapping, milestones) is a canonizable system — standardized in perpetuity",
+    "deep_plan_and_gsd_are_backbone": "User is a big fan of deep-plan + GSD — these are the backbone, build from there",
+    "batch_1_discovery_questions_ready": true,
+    "batch_1_NOT_YET_ANSWERED": "7 questions were presented but user paused to discuss diagnosis. Need to re-present in next session."
+  },
+  "user_directives": {
+    "roadmap_will_change": "ROADMAP.md will need additions, changes, removals after this process",
+    "grand_plan_reassessment": "TDMS Grand Plan needs reassessment — changing many files invalidates existing debt items",
+    "state_persistence_standard": "Constant state file saving is a standard here AND repo-wide going forward — to be canonized as rules",
+    "capture_all_ideas": "Stream-of-consciousness ideas MUST be captured even if not immediately actionable",
+    "canon_is_ecosystem_zero": "CANON is the meta-system/Ecosystem Zero — building block for all others",
+    "overlap_management": "Many points of overlap between ecosystems — must not let one supersede another",
+    "duplicate_subsystems": "Cross-cutting subsystems exist in multiple ecosystems and need mapping",
+    "standardization_is_key": "Duplicate subsystems must follow shared standards",
+    "pr_creep_guard": "User has tendency toward 30-50 commit PRs. Wants guardrail mechanism SOON. Recommended: commit counter hook warning at 10, blocking at 25 with override.",
+    "lifecycle_management": "User agreed — helps future-proof. Added to cross-cutting subsystems."
+  },
+  "ideas_captured": [
+    "ROADMAP entries will change significantly post-standardization",
+    "Grand Plan debt items may become invalid as files change",
+    "State persistence should use whatever resources are best",
+    "Future idea capture mechanism needed",
+    "Cross-ecosystem subsystem mapping is its own discovery task",
+    "Canon is Ecosystem Zero — all others derive from it",
+    "Planning standardization (deep-plan, GSD) as backbone — build from there, not too far down the line",
+    "PR creep guardrail: commit counter hook (warn 10, block 25, override available)",
+    "Branch scope declaration idea: S/M/L with commit brackets",
+    "Session-end PR gate: flag if >15 commits not in a PR",
+    "State saving rules need to be canonized",
+    "13 cross-cutting subsystems (added: versioning/migration, error handling, naming, lifecycle)",
+    "Configuration as single source of truth vs hardcoded values"
+  ],
+  "resume_instructions": "READ THESE FILES IN ORDER: (1) .planning/system-wide-standardization/DISCOVERY_RECORD.md (2) .planning/system-wide-standardization/DIAGNOSIS.md (3) This state file. Phase 0 diagnosis is APPROVED. Next: re-present Batch 1 discovery questions (7 questions on Architecture & Foundation — they were shown but user paused to discuss diagnosis first, never answered them). The 7 questions are in phase_0_discussion.batch_1_questions_7 below. Also: PR creep guardrail is wanted SOON — consider as early deliverable.",
+  "compaction_warning": "Session hit compaction boundary. All state saved. Resume next session.",
+  "updated": "2026-03-02T18:45:00Z"
+}

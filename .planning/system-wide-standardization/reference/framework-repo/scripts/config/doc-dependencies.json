@@ -1,0 +1,67 @@
+{
+  "rules": [
+    {
+      "trigger": "ROADMAP.md",
+      "dependents": ["SESSION_CONTEXT.md"],
+      "reason": "Session context reflects current roadmap focus",
+      "checkDiff": false
+    },
+    {
+      "trigger": "package.json",
+      "dependents": ["DEVELOPMENT.md"],
+      "reason": "All scripts should be documented",
+      "checkDiff": true,
+      "diffPattern": { "source": "\"scripts\"", "flags": "" }
+    },
+    {
+      "trigger": ".husky/",
+      "dependents": ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
+      "reason": "Hook documentation must be complete",
+      "checkDiff": false,
+      "gitFilter": "AD"
+    },
+    {
+      "trigger": ".claude/hooks/",
+      "dependents": ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
+      "reason": "Hook documentation must be complete",
+      "checkDiff": false,
+      "gitFilter": "AD",
+      "filePattern": "\\.js$"
+    },
+    {
+      "trigger": ".claude/commands/",
+      "dependents": [".claude/COMMAND_REFERENCE.md"],
+      "reason": "Skill/command registry must be complete",
+      "checkDiff": false,
+      "gitFilter": "AD"
+    },
+    {
+      "trigger": ".claude/skills/",
+      "dependents": [".claude/COMMAND_REFERENCE.md"],
+      "reason": "Skill/command registry must be complete",
+      "checkDiff": false,
+      "gitFilter": "AD"
+    },
+    {
+      "trigger": "docs/plans/",
+      "dependents": ["docs/PLAN_MAP.md", "docs/README.md"],
+      "reason": "New/updated plans must be referenced in navigation docs",
+      "checkDiff": false,
+      "gitFilter": "AD"
+    },
+    {
+      "trigger": "docs/technical-debt/",
+      "dependents": ["SESSION_CONTEXT.md"],
+      "reason": "Technical debt changes should be noted in session context",
+      "checkDiff": false,
+      "gitFilter": "AD"
+    },
+    {
+      "trigger": "docs/audits/canonical/",
+      "dependents": ["docs/PLAN_MAP.md"],
+      "reason": "Canonical audit changes affect TDMS migration status",
+      "checkDiff": false,
+      "gitFilter": "AD"
+    }
+  ]
+}

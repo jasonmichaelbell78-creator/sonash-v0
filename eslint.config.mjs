@@ -34,6 +34,7 @@ export default [
       "scripts/reviews/dist/**",
       "tests/semgrep/**",
       ".temp-test-*/**",
+      ".planning/**",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },

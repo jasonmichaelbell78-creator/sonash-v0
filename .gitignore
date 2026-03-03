@@ -124,3 +124,7 @@ nul
 .claude/hooks/.auto-save-state.json
 .claude/hooks/.commit-tracker-state.json
 .claude/hooks/.handoff-state.json
+
+# Raw agent research transcripts (contain PII: local paths, session IDs)
+.planning/**/agent-research/*.txt
+.planning/**/agent-research/*.json

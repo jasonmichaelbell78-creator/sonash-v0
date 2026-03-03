@@ -1,0 +1,145 @@
+{
+  "config": {
+    "excludeDirs": ["node_modules", ".git", ".next", "coverage", "dist", ".turbo"],
+    "excludeFiles": ["DOCUMENTATION_INDEX.md"],
+    "archiveDirs": ["docs/archive"],
+    "outputFile": "DOCUMENTATION_INDEX.md",
+    "maxDescriptionLength": 200
+  },
+  "tierDescriptions": {
+    "1": "Canonical Living",
+    "2": "Foundation",
+    "3": "Planning & Active",
+    "4": "Reference",
+    "5": "Guides"
+  },
+  "externalSchemes": ["http://", "https://", "mailto:", "tel:", "data:"],
+  "imageExtensions": [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"],
+  "categories": {
+    "root": {
+      "name": "Root Documents",
+      "tier": 1,
+      "description": "Essential project-level documentation"
+    },
+    "docs": {
+      "name": "Core Documentation",
+      "tier": 2,
+      "description": "Foundation technical reference"
+    },
+    "docs/templates": {
+      "name": "Templates",
+      "tier": 3,
+      "description": "Document and audit templates"
+    },
+    "docs/reviews": {
+      "name": "Reviews & Audits",
+      "tier": 3,
+      "description": "Audit plans and findings"
+    },
+    "docs/archive": {
+      "name": "Archive",
+      "tier": 5,
+      "description": "Historical and completed documentation"
+    },
+    "docs/archive/completed-plans": {
+      "name": "Completed Plans",
+      "tier": 5,
+      "description": "Archived completed plans"
+    },
+    "docs/agent_docs": {
+      "name": "Agent Documentation",
+      "tier": 3,
+      "description": "AI agent reference docs"
+    },
+    "docs/brainstorm": {
+      "name": "Brainstorm",
+      "tier": 4,
+      "description": "Draft and planning documents"
+    },
+    "docs/analysis": {
+      "name": "Analysis",
+      "tier": 4,
+      "description": "Code analysis and metrics"
+    },
+    "docs/audits/multi-ai": {
+      "name": "Multi-AI Audit System",
+      "tier": 3,
+      "description": "Multi-AI audit orchestration and coordination"
+    },
+    "docs/audits/multi-ai/templates": {
+      "name": "Audit Templates",
+      "tier": 3,
+      "description": "Multi-AI audit execution templates"
+    },
+    "docs/technical-debt": {
+      "name": "Technical Debt System",
+      "tier": 3,
+      "description": "TDMS tracking and management"
+    },
+    "docs/technical-debt/views": {
+      "name": "Technical Debt Views",
+      "tier": 4,
+      "description": "Auto-generated debt dashboards"
+    },
+    "docs/plans": {
+      "name": "Plans",
+      "tier": 3,
+      "description": "Active implementation plans"
+    },
+    "docs/decisions": {
+      "name": "Decisions",
+      "tier": 4,
+      "description": "Architecture decision records"
+    },
+    "docs/patterns": {
+      "name": "Patterns",
+      "tier": 4,
+      "description": "Documented design patterns"
+    },
+    "docs/audits/single-session/ai-optimization": {
+      "name": "AI Optimization Audit",
+      "tier": 3,
+      "description": "AI token and workflow optimization"
+    },
+    "docs/audits": {
+      "name": "Audit Reports",
+      "tier": 3,
+      "description": "Single-session and multi-AI audit outputs"
+    },
+    ".claude/commands": {
+      "name": "Slash Commands",
+      "tier": 3,
+      "description": "Claude Code custom commands"
+    },
+    ".claude/skills": {
+      "name": "Skills",
+      "tier": 3,
+      "description": "Claude Code skills"
+    }
+  },
+  "fileOverrides": {
+    "_comment": "Per-file tier overrides. Key = file path relative to project root (forward slashes). Overrides the directory-based tier only.",
+    "ARCHITECTURE.md": { "tier": 2 },
+    "DEVELOPMENT.md": { "tier": 2 },
+    "AI_WORKFLOW.md": { "tier": 4 },
+    "SESSION_CONTEXT.md": { "tier": 4 },
+    "claude.md": { "tier": 4 },
+    "docs/audits/AUDIT_TRACKER.md": { "tier": 3 },
+    "docs/TESTING_PLAN.md": { "tier": 3 },
+    "docs/AI_REVIEW_PROCESS.md": { "tier": 4 },
+    "docs/AI_REVIEW_LEARNINGS_LOG.md": { "tier": 4 },
+    "docs/PR_WORKFLOW_CHECKLIST.md": { "tier": 4 },
+    "docs/REVIEW_POLICY_ARCHITECTURE.md": { "tier": 4 },
+    "docs/REVIEW_POLICY_INDEX.md": { "tier": 4 },
+    "docs/REVIEW_POLICY_QUICK_REF.md": { "tier": 4 },
+    "docs/REVIEW_POLICY_VISUAL_GUIDE.md": { "tier": 4 },
+    "docs/DOCUMENT_DEPENDENCIES.md": { "tier": 4 },
+    "docs/TRIGGERS.md": { "tier": 4 },
+    "docs/SLASH_COMMANDS_REFERENCE.md": { "tier": 4 },
+    "docs/SESSION_DECISIONS.md": { "tier": 4 },
+    "docs/SESSION_HISTORY.md": { "tier": 4 },
+    "docs/INCIDENT_RESPONSE.md": { "tier": 4 },
+    "docs/README.md": { "tier": 4 },
+    "docs/MCP_SETUP.md": { "tier": 5 }
+  }
+}

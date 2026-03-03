@@ -1,0 +1,180 @@
+name: Auto-Label Review Tier
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  assign-tier:
+    runs-on: ubuntu-latest
+    name: Assign Review Tier Label
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Get changed files
+        id: changed-files
+        # Pinned to SHA for supply chain security (see CVE-2025-30066)
+        uses: tj-actions/changed-files@26a38635fc1173cc5820336ce97be6188d0de9f5 # v46.0.2
+        with:
+          files: |
+            **/*.ts
+            **/*.tsx
+            **/*.js
+            **/*.jsx
+            **/*.json
+            **/*.md
+            **/*.yml
+            **/*.yaml
+          separator: "\n"
+
+      - name: Run tier assignment script
+        id: assign-tier
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          echo "Changed files:"
+          printf '%s\n' "$CHANGED_FILES"
+
+          mapfile -t FILE_ARRAY <<< "$CHANGED_FILES"
+
+          RESULT=$(node scripts/reviews/assign-review-tier.js "${FILE_ARRAY[@]}") || EXIT_CODE=$?
+          EXIT_CODE=${EXIT_CODE:-0}
+
+          echo "Script output:"
+          echo "$RESULT"
+
+          TIER=$(echo "$RESULT" | node -e "process.stdin.setEncoding('utf-8'); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>console.log(JSON.parse(d).tier))")
+
+          if [ "$EXIT_CODE" -ne 0 ]; then
+            echo "::warning::Tier assignment script flagged violations (exit code $EXIT_CODE)"
+          fi
+
+          echo "tier=$TIER" >> "$GITHUB_OUTPUT"
+          echo "Assigned tier: $TIER"
+
+      - name: Remove existing tier labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = ['tier-0', 'tier-1', 'tier-2', 'tier-3', 'tier-4'];
+            const currentLabels = context.payload.pull_request.labels.map(l => l.name);
+
+            for (const label of labels) {
+              if (!currentLabels.includes(label)) continue;
+
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  name: label
+                });
+              } catch (e) {
+                const status = e?.status;
+                if (status !== 404 && status !== 422) throw e;
+              }
+            }
+
+      - name: Add tier label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tierRaw = '${{ steps.assign-tier.outputs.tier }}';
+            const tier = Number.parseInt(tierRaw, 10);
+
+            if (!Number.isFinite(tier) || tier < 0 || tier > 4) {
+              core.setFailed(`Invalid tier output: "${tierRaw}". Expected 0-4.`);
+              return;
+            }
+
+            const labelName = `tier-${tier}`;
+
+            const tierColors = {
+              'tier-0': '0E8A16',
+              'tier-1': '7057FF',
+              'tier-2': 'FBCA04',
+              'tier-3': 'F9A825',
+              'tier-4': 'D93F0B'
+            };
+
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName
+              });
+            } catch (e) {
+              if (e?.status !== 404) throw e;
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+                color: tierColors[labelName] || '0E8A16',
+                description: `Review tier ${tier} - auto-assigned by workflow`
+              });
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: [labelName]
+            });
+
+            const tierDescriptions = {
+              0: 'Tier 0 (Exempt): Auto-merge eligible. No human review required.',
+              1: 'Tier 1 (Light): AI review only. Human review optional.',
+              2: 'Tier 2 (Standard): AI + 1 human review required.',
+              3: 'Tier 3 (Heavy): AI + 2 human reviews + security checklist required.',
+              4: 'Tier 4 (Critical): RFC + Multi-AI + all codebase owners required.'
+            };
+
+            const tierInfo = tierDescriptions[tier] || 'Unknown tier';
+
+            const tierDetails = {
+              0: '- This PR is eligible for auto-merge after CI passes\n- Estimated merge time: 4 hours',
+              1: '- AI review will run automatically\n- Human review is optional\n- Estimated merge time: 1-2 days',
+              2: '- AI review will run automatically\n- 1 human approval required\n- Estimated merge time: 2 days',
+              3: '- Exhaustive AI review will run\n- 2 human approvals required (1 must be codebase owner)\n- Security checklist must be completed\n- Estimated merge time: 3-5 days',
+              4: '- RFC document required\n- Multi-AI review\n- All codebase owners must approve\n- Staging deployment + testing required\n- Estimated merge time: 1-2 weeks'
+            };
+
+            const comment = [
+              `## 🏷️ Review Tier Assigned: **Tier ${tier}**`,
+              '',
+              tierInfo,
+              '',
+              '**What this means:**',
+              tierDetails[tier] || '',
+              '',
+              '**Need tier adjustment?** Comment below with justification and tag a codeowner.'
+            ].join('\n');
+
+            if (context.payload.action === 'opened' || context.payload.action === 'reopened') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: comment
+              });
+            }
+
+      - name: Tier 4 informational warnings
+        if: ${{ steps.assign-tier.outputs.tier == '4' }}
+        run: |
+          echo "::warning::This PR modifies critical infrastructure files (Tier 4)"
+          echo "::warning::RFC document required before implementation review"
+          echo "::warning::All codebase owners must approve before merge"
