@@ -536,9 +536,25 @@
         "principles": "Rigidity where needed (core items like health monitoring, testing), adaptability where warranted (storage format, view generation), order always maintained (formal justification required for any deviation)"
       },
       "batch": "5D"
+    },
+    {
+      "id": 55,
+      "decision": "Discovery documentation approach: two-doc system",
+      "choice": "Two-doc system — DISCOVERY_RECORD.md (human-complete) + deep-plan.state.json (machine-complete). Both contain ALL decisions, tenets, directives, ideas, and assessments. Simultaneous-update rule: neither doc is allowed to lag the other.",
+      "rationale": "Minimum viable separation. Human-readable narrative for audit/review/reference. Machine-readable JSON for session recovery and future automation. Two files, zero information asymmetry. Prefigures CANON's source-of-truth + generated-views pattern (T2). User: 'its basically one of the tenets anyway.'",
+      "tenet_alignment": [
+        "T2 (source of truth + generated views)",
+        "T14 (capture everything, surface what matters)"
+      ],
+      "enforcement": "Simultaneous update — every decision, directive, idea, and tenet MUST exist in BOTH files at the same time. No lag allowed.",
+      "documents": {
+        "human": "DISCOVERY_RECORD.md — narrative record with all decisions, rationale, user context, tenets, directives, ideas, assessment tables, version history",
+        "machine": "deep-plan.state.json — structured JSON with same data + resume instructions, batch status, timestamps, implementation metadata"
+      },
+      "batch": "5D"
     }
   ],
-  "total_decisions": 54,
+  "total_decisions": 55,
   "core_tenets": {
     "_organization": "Flat list, 4 categories. 17 total tenets. Locked in Batch 4T (Tenets Discovery).",
     "foundation": {
@@ -839,6 +855,6 @@
     "Ecosystem count: Revised from 14 to 18 total. 4 ecosystems from original DIAGNOSIS were never assessed.",
     "End-of-process audit: User confirmed audit will happen after plan is set, not before."
   ],
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T COMPLETE (D28-D32, 17 tenets locked). ALL 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C+5D, D33-D54). 54 TOTAL DECISIONS.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nBatch 5D (D50-D54): Agents (L2→L3, M). Audits (L3→L4 WITH L5 PATHWAY, M). Frontend/App (L2→L3 ADAPTED, M). Firebase/Backend (L1→L3 STAGED ADAPTED, M-L). Checklist adaptation FORMALIZED (rigid framework + earned flexibility).\n\nKEY BATCH 5D INSIGHTS:\n  - App-layer ecosystems (Frontend/App, Firebase/Backend) planning approach differs — CONNECTION POINTS between process and app layers are the priority\n  - Operational sprint has health monitoring overlap — needs reconciliation\n  - All planning docs must evolve with the plan — additions AND deletions\n  - Audits L5 pathway must be architecturally designed during L4 work\n  - Checklist adaptation formalized: rigidity + earned adaptability with justification\n\nDISCOVERY_RECORD BACKFILL COMPLETE: 559→1080 lines. Needs D50-D54 appended next.\n\n18 TOTAL ECOSYSTEMS. 54 DECISIONS. 17 TENETS. All assessments locked.\n\n3 user overrides: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n1 user elevation: Audits→L4 with L5 pathway.\n\nSession corrections still in effect: (1) Structured Q&A format. (2) Continuous DISCOVERY_RECORD updates. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nUNANSWERED: User asked about document consolidation approach (one doc vs two) — still pending.\n\nNEXT: Batch 6 (Sequencing + Prioritization) — order the 18 ecosystem standardizations. Then possible Batch 7 (Edge Cases/Final). Then end-of-process completeness audit.",
-  "updated": "2026-03-03T18:40:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T COMPLETE (D28-D32, 17 tenets locked). ALL 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C+5D, D33-D54). 54 TOTAL DECISIONS.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nBatch 5D (D50-D54): Agents (L2→L3, M). Audits (L3→L4 WITH L5 PATHWAY, M). Frontend/App (L2→L3 ADAPTED, M). Firebase/Backend (L1→L3 STAGED ADAPTED, M-L). Checklist adaptation FORMALIZED (rigid framework + earned flexibility).\n\nKEY BATCH 5D INSIGHTS:\n  - App-layer ecosystems (Frontend/App, Firebase/Backend) planning approach differs — CONNECTION POINTS between process and app layers are the priority\n  - Operational sprint has health monitoring overlap — needs reconciliation\n  - All planning docs must evolve with the plan — additions AND deletions\n  - Audits L5 pathway must be architecturally designed during L4 work\n  - Checklist adaptation formalized: rigidity + earned adaptability with justification\n\nDISCOVERY_RECORD BACKFILL COMPLETE: 559→1080 lines. Needs D50-D54 appended next.\n\n18 TOTAL ECOSYSTEMS. 54 DECISIONS. 17 TENETS. All assessments locked.\n\n3 user overrides: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n1 user elevation: Audits→L4 with L5 pathway.\n\nSession corrections still in effect: (1) Structured Q&A format. (2) Continuous DISCOVERY_RECORD updates. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nANSWERED (D55): Two-doc system formalized — DISCOVERY_RECORD.md (human) + deep-plan.state.json (machine). Simultaneous-update rule. Zero information asymmetry. Aligns with T2.\n\nNEXT: Batch 6 (Sequencing + Prioritization) — order the 18 ecosystem standardizations. Then possible Batch 7 (Edge Cases/Final). Then end-of-process completeness audit.",
+  "updated": "2026-03-03T18:45:00Z"
 }

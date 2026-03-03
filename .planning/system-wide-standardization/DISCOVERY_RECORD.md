@@ -1211,6 +1211,27 @@ parallel agents. All questions structured with options/pros/cons/recommendations
     testing), adaptability where warranted (storage format, view generation),
     order always maintained (formal justification required for any deviation)
 
+**D#55: Discovery documentation approach: two-doc system**
+
+- **Choice:** Two-doc system — `DISCOVERY_RECORD.md` (human-complete) +
+  `deep-plan.state.json` (machine-complete). Both contain ALL decisions, tenets,
+  directives, ideas, and assessments. Simultaneous-update rule: neither doc is
+  allowed to lag the other.
+- **Rationale:** Minimum viable separation. Human-readable narrative for
+  audit/review/reference. Machine-readable JSON for session recovery and future
+  automation. Two files, zero information asymmetry. Prefigures CANON's
+  source-of-truth + generated-views pattern (T2).
+- **Tenet alignment:** T2 (source of truth + generated views), T14 (capture
+  everything, surface what matters)
+- **Enforcement:** Simultaneous update — every decision, directive, idea, and
+  tenet MUST exist in BOTH files at the same time. No lag allowed.
+- **Documents:**
+  - `DISCOVERY_RECORD.md` — narrative record with all decisions, rationale, user
+    context, tenets, directives, ideas, assessment tables, version history
+  - `deep-plan.state.json` — structured JSON with same data + resume
+    instructions, batch status, timestamps, implementation metadata
+- **User note:** "Its basically one of the tenets anyway."
+
 ---
 
 ## Core Tenets (T1-T17)
@@ -1548,6 +1569,7 @@ stream-of-consciousness items:
 
 | Version | Date       | Changes                                                                           |
 | ------- | ---------- | --------------------------------------------------------------------------------- |
+| 0.6     | 2026-03-03 | D55: Two-doc system formalized (simultaneous-update rule, T2 alignment)           |
 | 0.5     | 2026-03-03 | Batch 5D: D50-D54 (4 new ecosystems + checklist adaptation), 18 total ecosystems  |
 | 0.4     | 2026-03-03 | Deep-plan backfill: D1-D49, T1-T17, ecosystem assessments, user directives, ideas |
 | 0.3     | 2026-03-03 | Added dual-environment config, decisions #19-22, PR creep fix                     |
