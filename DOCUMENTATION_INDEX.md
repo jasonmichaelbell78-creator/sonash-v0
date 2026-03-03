@@ -728,7 +728,7 @@ _Uncategorized_
 | Document                                                                                                         | Description | References | Last Modified |
 | ---------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
 | [Diagnosis: System-Wide Standardization — Ecosystem Mapping](.planning/system-wide-standardization/DIAGNOSIS.md) | -           | ↓0 ↑0      | 2026-03-02    |
-| [System-Wide Standardization — Discovery Record](.planning/system-wide-standardization/DISCOVERY_RECORD.md)      | -           | ↓0 ↑0      | 2026-03-02    |
+| [System-Wide Standardization — Discovery Record](.planning/system-wide-standardization/DISCOVERY_RECORD.md)      | -           | ↓0 ↑0      | 2026-03-03    |
 
 ### .planning > system-wide-standardization > reference > framework-repo (Tier 4)
 
@@ -1349,7 +1349,7 @@ _Reference_
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑8      | 2026-02-28    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-28    |
-| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑9      | 2026-03-02    |
+| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑9      | 2026-03-03    |
 
 ### scripts (Tier 4)
 

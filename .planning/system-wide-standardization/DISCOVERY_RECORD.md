@@ -362,27 +362,30 @@ The developer operates from **two distinct environments**. All system
 infrastructure (hooks, scripts, skills, procedures) must work identically in
 both. This is a cross-cutting requirement that affects every ecosystem.
 
-### Environment A: Work — Claude Code Desktop
+### Environment A: Work — Claude Code Desktop (Linux Sandbox)
 
 | Attribute            | Value                                        |
 | -------------------- | -------------------------------------------- |
 | **Interface**        | Claude Code Desktop (web-based)              |
+| **Platform**         | Linux sandbox                                |
 | **Local branch**     | `master` (default)                           |
 | **Context risk**     | **Timeouts** — hard session kill, no hooks   |
 | **Compaction**       | Also possible (hooks DO fire)                |
 | **MCP secrets**      | Encrypted — need decrypt at session start    |
 | **Checkpoint needs** | Proactive manual `/checkpoint` at milestones |
 
-### Environment B: Home — Claude Code CLI
+### Environment B: Home — Claude Code CLI (Windows)
 
-| Attribute            | Value                                    |
-| -------------------- | ---------------------------------------- |
-| **Interface**        | Claude Code CLI (terminal)               |
-| **Local branch**     | TBD — confirm if `main` or `master`      |
-| **Context risk**     | **Compaction** — PreCompact hook fires   |
-| **Timeouts**         | Less common (CLI is more persistent)     |
-| **MCP secrets**      | TBD — may already be decrypted           |
-| **Checkpoint needs** | Standard (PreCompact handles most cases) |
+| Attribute            | Value                                        |
+| -------------------- | -------------------------------------------- |
+| **Interface**        | Claude Code CLI (terminal)                   |
+| **Platform**         | Windows                                      |
+| **Local branch**     | May differ from Work — detect dynamically    |
+| **Context risk**     | **Compaction** — PreCompact hook fires       |
+| **Timeouts**         | Less common (CLI is more persistent)         |
+| **MCP secrets**      | TBD — may already be decrypted               |
+| **Checkpoint needs** | Standard (PreCompact handles most cases)     |
+| **Shell**            | Windows shell — POSIX hooks run via Git Bash |
 
 ### Parity Requirements
 
@@ -396,6 +399,10 @@ both. This is a cross-cutting requirement that affects every ecosystem.
    or tool locations
 5. **Secret management**: Both environments need the decrypt-secrets flow for
    MCP tokens
+6. **Cross-platform**: Linux (Work) vs Windows (Home) — shell scripts must be
+   POSIX-compatible (Git Bash on Windows), avoid Linux-only tools/paths
+7. **Local branch names**: May differ between environments — reinforces dynamic
+   detection requirement (Decision #20)
 
 ### Known Differences to Test
 
