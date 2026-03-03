@@ -1,0 +1,935 @@
+#!/usr/bin/env node
+/**
+ * Sync technical debt from SonarCloud
+ *
+ * Usage: node scripts/debt/sync-sonarcloud.js [options]
+ *
+ * Options:
+ *   --project <key>     SonarCloud project key (default: from env or sonar-project.properties)
+ *   --org <name>        SonarCloud organization (default: from env)
+ *   --severity <list>   Filter by severity (comma-separated: BLOCKER,CRITICAL,MAJOR,MINOR,INFO)
+ *   --type <list>       Filter by type (comma-separated: BUG,VULNERABILITY,CODE_SMELL)
+ *   --status <list>     Filter by status (default: OPEN,CONFIRMED,REOPENED)
+ *   --resolve           Detect and mark RESOLVED items no longer in SonarCloud
+ *   --full              Sync new items AND resolve old items in one pass
+ *   --dry-run           Preview changes without writing
+ *   --force             Skip confirmation prompt
+ *
+ * Environment variables:
+ *   SONAR_TOKEN         SonarCloud API token (required)
+ *   SONAR_ORG           SonarCloud organization
+ *   SONAR_PROJECT       SonarCloud project key
+ *
+ * Example:
+ *   node scripts/debt/sync-sonarcloud.js --dry-run
+ *   node scripts/debt/sync-sonarcloud.js --severity BLOCKER,CRITICAL --force
+ */
+
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { execFileSync } = require('node:child_process');
+const readline = require('node:readline');
+const os = require('node:os');
+const generateContentHash = require('../lib/generate-content-hash');
+const { safeAppendFileSync, writeMasterDebtSync, appendMasterDebtSync } = require('../lib/safe-fs');
+
+// Try to load dotenv if available
+try {
+  require('dotenv').config({ path: path.join(__dirname, '../../.env.local') });
+} catch {
+  // dotenv not available, use environment variables directly
+}
+
+const DEBT_DIR = path.join(__dirname, '../../docs/technical-debt');
+const MASTER_FILE = path.join(DEBT_DIR, 'MASTER_DEBT.jsonl');
+const LOG_DIR = path.join(DEBT_DIR, 'logs');
+const LOG_FILE = path.join(LOG_DIR, 'intake-log.jsonl');
+const RESOLUTION_LOG = path.join(LOG_DIR, 'resolution-log.jsonl');
+
+const SONARCLOUD_API = 'https://sonarcloud.io/api';
+
+// Get pseudonymous operator identifier for audit logs.
+// In CI: "ci". Otherwise: SHA-256 hash prefix of local username (12 chars).
+// Set LOG_OPERATOR_PII=true to log raw username instead.
+function getOperatorId() {
+  let raw;
+  try {
+    raw = os.userInfo().username || process.env.USER || process.env.USERNAME || 'unknown';
+  } catch {
+    raw = process.env.USER || process.env.USERNAME || 'unknown';
+  }
+  if (process.env.CI) return 'ci';
+  if (process.env.LOG_OPERATOR_PII === 'true') return raw;
+  return crypto.createHash('sha256').update(raw).digest('hex').slice(0, 12);
+}
+
+// Read defaults from sonar-project.properties if available
+function readSonarProperties() {
+  const propsFile = path.join(__dirname, '../../sonar-project.properties');
+  const result = { org: null, project: null };
+  try {
+    const content = fs.readFileSync(propsFile, 'utf8');
+    // First pass: collect all key=value pairs (order-independent)
+    const props = {};
+    for (const line of content.split('\n')) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('#') || !trimmed.includes('=')) continue;
+      const [key, ...rest] = trimmed.split('=');
+      props[key.trim()] = rest.join('=').trim();
+    }
+    // Extract org and derive project from projectKey
+    result.org = props['sonar.organization'] || null;
+    const projectKey = props['sonar.projectKey'];
+    if (projectKey && result.org && projectKey.startsWith(result.org + '_')) {
+      // projectKey format: "org_project" -- extract project suffix
+      result.project = projectKey.substring(result.org.length + 1);
+    } else if (projectKey) {
+      result.project = projectKey;
+    }
+  } catch {
+    // sonar-project.properties not found or unreadable, use other defaults
+  }
+  return result;
+}
+
+// Severity mapping from SonarCloud to TDMS
+const SEVERITY_MAP = {
+  BLOCKER: 'S0',
+  CRITICAL: 'S0',
+  MAJOR: 'S1',
+  MINOR: 'S2',
+  INFO: 'S3',
+};
+
+// Type mapping from SonarCloud to TDMS
+const TYPE_MAP = {
+  BUG: 'bug',
+  VULNERABILITY: 'vulnerability',
+  CODE_SMELL: 'code-smell',
+  SECURITY_HOTSPOT: 'hotspot',
+};
+
+// Category mapping based on SonarCloud tags/rules
+function mapCategory(issue) {
+  const rule = issue.rule || '';
+  const tags = issue.tags || [];
+
+  if (tags.includes('security') || rule.includes('security')) return 'security';
+  if (tags.includes('performance') || rule.includes('performance')) return 'performance';
+  if (tags.includes('documentation')) return 'documentation';
+  return 'code-quality';
+}
+
+// Parse command line arguments
+function parseArgs(args) {
+  const parsed = {};
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--dry-run') {
+      parsed.dryRun = true;
+    } else if (arg === '--force') {
+      parsed.force = true;
+    } else if (arg === '--resolve') {
+      parsed.resolve = true;
+    } else if (arg === '--full') {
+      parsed.full = true;
+    } else if (arg.startsWith('--')) {
+      const key = arg.substring(2);
+      const value = args[i + 1];
+      if (value && !value.startsWith('--')) {
+        parsed[key] = args[++i];
+      }
+    }
+  }
+  return parsed;
+}
+
+// Normalize file path from SonarCloud format
+function normalizeFilePath(component) {
+  if (!component) return '';
+  // SonarCloud uses format: org:project:path/to/file
+  const parts = component.split(':');
+  return parts[parts.length - 1] || '';
+}
+
+// Get next DEBT ID
+function getNextDebtId(existingItems) {
+  let maxId = 0;
+  for (const item of existingItems) {
+    if (item.id) {
+      const match = item.id.match(/DEBT-(\d+)/);
+      if (match) {
+        const num = Number.parseInt(match[1], 10);
+        if (num > maxId) maxId = num;
+      }
+    }
+  }
+  return maxId + 1;
+}
+
+// Load existing items from MASTER_DEBT.jsonl with safe parsing
+function loadMasterDebt() {
+  if (!fs.existsSync(MASTER_FILE)) {
+    return [];
+  }
+
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, 'utf8');
+  } catch (err) {
+    console.error(
+      // eslint-disable-next-line framework/no-unsafe-error-access -- safe: instanceof check is inline
+      `Warning: Could not read ${MASTER_FILE}: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    return [];
+  }
+  const lines = content.split('\n').filter((line) => line.trim());
+
+  const items = [];
+  const badLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      items.push(JSON.parse(lines[i]));
+    } catch (err) {
+      badLines.push({
+        line: i + 1,
+        message: err instanceof Error ? err.message : String(err), // eslint-disable-line framework/no-unsafe-error-access -- safe: instanceof guard is in conditional expression
+      });
+    }
+  }
+
+  if (badLines.length > 0) {
+    console.error(`Warning: ${badLines.length} invalid JSON line(s) in ${MASTER_FILE}`);
+    for (const b of badLines.slice(0, 5)) {
+      console.error(`   Line ${b.line}: ${b.message}`);
+    }
+    if (badLines.length > 5) {
+      console.error(`   ... and ${badLines.length - 5} more`);
+    }
+  }
+
+  return items;
+}
+
+// Log intake activity with actor context
+function logIntake(activity) {
+  if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+  }
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    actor: process.env.USER || process.env.USERNAME || 'system',
+    actor_type: 'cli-script',
+    outcome: activity.error ? 'failure' : 'success',
+    ...activity,
+  };
+  safeAppendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
+}
+
+// Prompt for confirmation
+async function confirm(message) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(`${message} (y/N): `, (answer) => {
+      rl.close();
+      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+    });
+  });
+}
+
+// Build authorization headers for SonarCloud API.
+// Token is sourced from SONAR_TOKEN env var at runtime, never hardcoded.
+function buildAuthHeaders(token) {
+  if (typeof token !== 'string' || token.trim() === '') {
+    throw new Error('Missing SonarCloud token');
+  }
+  return { Authorization: `Basic ${Buffer.from(token + ':').toString('base64')}` }; // NOSONAR -- token from env var, not hardcoded
+}
+
+// Fetch a single page of issues from SonarCloud API
+async function fetchIssuePage(token, url) {
+  const response = await fetch(url, {
+    headers: buildAuthHeaders(token),
+  });
+
+  if (!response.ok) {
+    // Discard raw response body entirely -- it may contain sensitive API details
+    try {
+      if (response.body && typeof response.body.cancel === 'function') {
+        await response.body.cancel();
+      } else {
+        await response.text();
+      }
+    } catch {
+      /* ignore body discard failure */
+    }
+    throw new Error(`SonarCloud API error: HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+// Fetch issues from SonarCloud API (with pagination)
+async function fetchSonarCloudIssues(options) {
+  const { token, org, project, severities, types, statuses } = options;
+
+  console.log(`  Fetching from SonarCloud API...`);
+  console.log(`     Project: ${org}_${project}`);
+
+  const allIssues = [];
+  const pageSize = 500;
+  let page = 1;
+  let total = null;
+
+  while (total === null || allIssues.length < total) {
+    const params = new URLSearchParams({
+      componentKeys: `${org}_${project}`,
+      ps: String(pageSize),
+      p: String(page),
+      resolved: 'false',
+    });
+
+    if (severities) params.append('severities', severities);
+    if (types) params.append('types', types);
+    if (statuses) params.append('statuses', statuses);
+
+    const url = `${SONARCLOUD_API}/issues/search?${params}`;
+    const data = await fetchIssuePage(token, url);
+    total = data.total;
+
+    allIssues.push(...(data.issues || []));
+
+    if (!data.issues || data.issues.length === 0) break;
+
+    if (page === 1) {
+      console.log(`     Total issues: ${total}`);
+    }
+    page++;
+
+    // Safety limit to prevent infinite loops (SonarCloud max is 10,000)
+    if (page > 20) {
+      console.warn(`     Pagination limit reached (${allIssues.length} of ${total} fetched)`);
+      break;
+    }
+  }
+
+  console.log(`     Fetched ${allIssues.length} issues total`);
+
+  return allIssues;
+}
+
+// Hotspot severity mapping (SonarCloud uses "vulnerabilityProbability")
+const HOTSPOT_SEVERITY_MAP = {
+  HIGH: 'S0',
+  MEDIUM: 'S1',
+  LOW: 'S2',
+};
+
+// Fetch a single page of hotspots from SonarCloud API
+async function fetchHotspotPage(token, url) {
+  const response = await fetch(url, {
+    headers: buildAuthHeaders(token),
+  });
+
+  if (!response.ok) {
+    // Discard raw response body entirely -- it may contain sensitive API details
+    try {
+      if (response.body && typeof response.body.cancel === 'function') {
+        await response.body.cancel();
+      } else {
+        await response.text();
+      }
+    } catch {
+      /* ignore body discard failure */
+    }
+    throw new Error(`SonarCloud Hotspots API error: HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+// Fetch security hotspots from SonarCloud (separate API endpoint)
+async function fetchSonarCloudHotspots(options) {
+  const { token, org, project } = options;
+
+  console.log(`  Fetching security hotspots...`);
+  console.log(`     Project: ${org}_${project}`);
+
+  const allHotspots = [];
+  const pageSize = 500;
+  let page = 1;
+  let totalPages = null;
+
+  while (totalPages === null || page <= totalPages) {
+    const params = new URLSearchParams({
+      projectKey: `${org}_${project}`,
+      ps: String(pageSize),
+      p: String(page),
+      status: 'TO_REVIEW',
+    });
+
+    const url = `${SONARCLOUD_API}/hotspots/search?${params}`;
+    const data = await fetchHotspotPage(token, url);
+    const paging = data.paging || {};
+    const total = paging.total ?? 0;
+    totalPages = Math.ceil(total / pageSize);
+
+    allHotspots.push(...(data.hotspots || []));
+
+    if (!data.hotspots || data.hotspots.length === 0) break;
+
+    if (page === 1) {
+      console.log(`     Total hotspots: ${total}`);
+    }
+    page++;
+
+    if (page > 20) {
+      console.warn(`     Pagination limit reached (${allHotspots.length} of ${total} fetched)`);
+      break;
+    }
+  }
+
+  console.log(`     Fetched ${allHotspots.length} hotspots total`);
+
+  return allHotspots;
+}
+
+// Convert a SonarCloud hotspot to the same format as convertIssue output
+function convertHotspot(hotspot) {
+  if (!hotspot || typeof hotspot !== 'object') {
+    throw new Error('Invalid hotspot object from SonarCloud');
+  }
+
+  const key = sanitizeString(hotspot.key, 100);
+  if (!key) {
+    throw new Error("Hotspot missing required 'key' field");
+  }
+
+  const severity = HOTSPOT_SEVERITY_MAP[hotspot.vulnerabilityProbability] || 'S1';
+  const rule = hotspot.ruleKey || hotspot.securityCategory || 'unknown';
+  const component = hotspot.component || '';
+  const filePath = normalizeFilePath(component);
+
+  return {
+    source_id: `sonarcloud:${key}`,
+    source_file: 'sonarcloud-sync',
+    category: 'security',
+    severity,
+    type: 'hotspot',
+    file: sanitizeString(filePath, 500),
+    line: Number.isFinite(hotspot.line) ? hotspot.line : 0,
+    title: sanitizeString(hotspot.message, 500) || 'Security Hotspot',
+    description: sanitizeString(
+      `Rule: ${rule}. ${hotspot.message || ''}. Category: ${hotspot.securityCategory || 'unknown'}`,
+      1000,
+    ),
+    recommendation: '',
+    effort: 'E0',
+    status: 'NEW',
+    roadmap_ref: null,
+    created: new Date().toISOString().split('T')[0],
+    verified_by: null,
+    resolution: null,
+    rule: sanitizeString(rule, 100),
+    sonar_key: key,
+  };
+}
+
+// Sanitize string for safe storage (prevent injection, limit length)
+function sanitizeString(str, maxLength = 500) {
+  if (typeof str !== 'string') return '';
+  // Validate maxLength is a safe positive number
+  const safeMaxLength = Number.isFinite(maxLength) ? Math.max(0, Math.floor(maxLength)) : 500;
+  // Remove control characters (ASCII 0-31) and DEL (0x7F) using character class
+  return (
+    str
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\u0000-\u001f\u007f]/g, '')
+      .substring(0, safeMaxLength)
+      .trim()
+  );
+}
+
+// Convert SonarCloud issue to TDMS format with input validation
+function convertIssue(issue) {
+  // Validate issue has required fields
+  if (!issue || typeof issue !== 'object') {
+    throw new Error('Invalid issue object from SonarCloud');
+  }
+
+  const key = sanitizeString(issue.key, 100);
+  if (!key) {
+    throw new Error("Issue missing required 'key' field");
+  }
+
+  const item = {
+    source_id: `sonarcloud:${key}`,
+    source_file: 'sonarcloud-sync',
+    category: mapCategory(issue),
+    severity: SEVERITY_MAP[issue.severity] || 'S2',
+    type: TYPE_MAP[issue.type] || 'code-smell',
+    file: sanitizeString(normalizeFilePath(issue.component), 500),
+    line: Number.isFinite(issue.line) ? issue.line : 0,
+    title: sanitizeString(issue.message, 500) || 'Untitled',
+    description: sanitizeString(`Rule: ${issue.rule || 'unknown'}. ${issue.message || ''}`, 1000),
+    recommendation: '',
+    effort: 'E0', // SonarCloud provides effort, could map this
+    status: 'NEW',
+    roadmap_ref: null,
+    created: new Date().toISOString().split('T')[0],
+    verified_by: null,
+    resolution: null,
+    rule: sanitizeString(issue.rule, 100),
+    sonar_key: key,
+  };
+
+  // Post-intake severity correction
+  // SonarCloud BLOCKER for cognitive complexity -> S1, not S0
+  if (item.severity === 'S0') {
+    const title = (item.title || '').toLowerCase();
+    if (
+      title.includes('cognitive complexity') ||
+      title.includes('refactor this function to reduce')
+    ) {
+      item.severity = 'S1';
+    }
+  }
+
+  return item;
+}
+
+// Log resolution activity (non-fatal - logging failure should not crash script)
+function logResolution(activity) {
+  try {
+    if (!fs.existsSync(LOG_DIR)) {
+      fs.mkdirSync(LOG_DIR, { recursive: true });
+    }
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      actor: process.env.USER || process.env.USERNAME || 'system',
+      actor_type: 'cli-script',
+      outcome: activity.error ? 'failure' : 'success',
+      ...activity,
+    };
+    safeAppendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + '\n');
+  } catch (err) {
+    console.warn(
+      // eslint-disable-next-line framework/no-unsafe-error-access -- safe: instanceof check is inline
+      `  Failed to write resolution log: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+}
+
+// Resolve items no longer present in SonarCloud
+// eslint-disable-next-line complexity -- resolveStaleItems has inherent branching (complexity 19), refactoring would reduce readability
+async function resolveStaleItems(options) {
+  const { token, org, project, dryRun, force } = options;
+
+  console.log('Resolve: Checking for stale SonarCloud items...\n');
+
+  // Fetch all open issues from SonarCloud
+  let activeIssues;
+  try {
+    activeIssues = await fetchSonarCloudIssues({
+      token,
+      org,
+      project,
+      statuses: 'OPEN,CONFIRMED,REOPENED',
+    });
+  } catch (err) {
+    console.error(
+      // eslint-disable-next-line framework/no-unsafe-error-access -- safe: instanceof check is inline
+      `Error fetching from SonarCloud: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    return { resolved: 0 };
+  }
+
+  const activeKeys = new Set(activeIssues.map((issue) => issue.key));
+
+  // Also fetch active hotspot keys so they don't get falsely resolved
+  try {
+    const hotspots = await fetchSonarCloudHotspots({ token, org, project });
+    for (const h of hotspots) {
+      if (h.key) activeKeys.add(h.key);
+    }
+  } catch (err) {
+    console.warn(
+      // eslint-disable-next-line framework/no-unsafe-error-access -- safe: instanceof check is inline
+      `  Hotspot fetch failed during resolve (non-fatal): ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+
+  console.log(`  Active SonarCloud keys (issues + hotspots): ${activeKeys.size}`);
+
+  // Load existing items
+  const existingItems = loadMasterDebt();
+  const sonarItems = existingItems.filter(
+    (item) => item.source_file === 'sonarcloud-sync' && item.status === 'NEW' && item.sonar_key,
+  );
+
+  console.log(`  Tracked SonarCloud items (NEW status): ${sonarItems.length}`);
+
+  // Find items whose sonar_key is no longer active
+  const staleItems = sonarItems.filter((item) => !activeKeys.has(item.sonar_key));
+
+  console.log(`\nResolution Results:\n`);
+  console.log(`  Still active in SonarCloud: ${sonarItems.length - staleItems.length}`);
+  console.log(`  No longer in SonarCloud:   ${staleItems.length}`);
+
+  if (staleItems.length === 0) {
+    console.log('\nNo stale items found. Nothing to resolve.');
+    logResolution({
+      action: 'resolve-sonarcloud-stale',
+      project: `${org}_${project}`,
+      items_checked: sonarItems.length,
+      items_resolved: 0,
+      operator: getOperatorId(),
+    });
+    return { resolved: 0 };
+  }
+
+  // Show sample of stale items
+  console.log('\n  Stale items (will be marked RESOLVED):');
+  for (const item of staleItems.slice(0, 5)) {
+    const title = typeof item.title === 'string' ? item.title : '(no title)';
+    const preview = title.length > 50 ? `${title.slice(0, 50)}...` : title;
+    console.log(`    - ${item.id}: ${preview}`);
+  }
+  if (staleItems.length > 5) {
+    console.log(`    ... and ${staleItems.length - 5} more items`);
+  }
+
+  if (dryRun) {
+    console.log('\nDRY RUN: No changes written.');
+    return { resolved: 0 };
+  }
+
+  if (!force) {
+    const confirmed = await confirm(`\nMark ${staleItems.length} items as RESOLVED?`);
+    if (!confirmed) {
+      console.log('Cancelled.');
+      return { resolved: 0 };
+    }
+  }
+
+  // Update items in MASTER_DEBT.jsonl
+  const staleIds = new Set(staleItems.map((item) => item.id));
+  const today = new Date().toISOString().split('T')[0];
+  let resolvedCount = 0;
+
+  for (const item of existingItems) {
+    if (staleIds.has(item.id)) {
+      item.status = 'RESOLVED';
+      item.resolution = 'Fixed in SonarCloud (no longer reported)';
+      item.resolved_date = today;
+      resolvedCount++;
+    }
+  }
+
+  console.log('\nUpdating MASTER_DEBT.jsonl and deduped.jsonl...');
+  writeMasterDebtSync(existingItems);
+
+  // Log resolutions
+  logResolution({
+    action: 'resolve-sonarcloud-stale',
+    project: `${org}_${project}`,
+    items_checked: sonarItems.length,
+    items_resolved: resolvedCount,
+    first_id: staleItems[0]?.id,
+    last_id: staleItems[staleItems.length - 1]?.id,
+    operator: getOperatorId(),
+  });
+
+  console.log(`\nResolved ${resolvedCount} stale items.`);
+  return { resolved: resolvedCount };
+}
+
+// Resolve configuration from CLI args, env vars, and sonar-project.properties
+function resolveConfig(parsed) {
+  const sonarProps = readSonarProperties();
+  const token = process.env.SONAR_TOKEN;
+  const org = parsed.org || process.env.SONAR_ORG || sonarProps.org;
+
+  if (!token) {
+    console.error('Error: SONAR_TOKEN environment variable is required');
+    console.error('  Set it in .env.local or export SONAR_TOKEN=your_token');
+    process.exit(1);
+  }
+
+  if (!org) {
+    console.error('Error: SonarCloud organization is required');
+    console.error('  Use --org flag or set SONAR_ORG environment variable');
+    process.exit(1);
+  }
+
+  const projectInput =
+    parsed.project || process.env.SONAR_PROJECT || sonarProps.project || 'my-project';
+  const project = projectInput.startsWith(`${org}_`)
+    ? projectInput.slice(org.length + 1)
+    : projectInput;
+
+  return { token, org, project };
+}
+
+// Regenerate views (shared helper)
+function regenerateViews(label = '') {
+  console.log(`Regenerating views${label}...`);
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, 'generate-views.js')], {
+      stdio: 'inherit',
+    });
+  } catch {
+    console.warn('  Failed to regenerate views. Run manually: node scripts/debt/generate-views.js');
+  }
+}
+
+// Deduplicate fetched issues against existing items, assign IDs.
+// `issues` = raw SonarCloud issues (need convertIssue).
+// `preConverted` = already-converted items (e.g., hotspots) -- skip convertIssue.
+function deduplicateAndAssignIds(issues, existingItems, preConverted = []) {
+  const existingSonarKeys = new Set(
+    existingItems.filter((item) => item.sonar_key).map((item) => item.sonar_key),
+  );
+  const existingHashes = new Set(existingItems.map((item) => item.content_hash));
+
+  const newItems = [];
+  const alreadyTracked = [];
+  const contentDuplicates = [];
+  let nextId = getNextDebtId(existingItems);
+
+  // Merge raw issues (converted) and pre-converted items into a single pass
+  const convertedIssues = [];
+  for (const issue of issues) {
+    try {
+      const converted = convertIssue(issue);
+      const key = issue && typeof issue.key === 'string' ? issue.key : '';
+      if (!key || !converted.sonar_key) continue;
+      convertedIssues.push({ converted, key });
+    } catch {
+      // Skip malformed issues -- a single bad issue should not crash the sync
+    }
+  }
+  const allConverted = [
+    ...convertedIssues,
+    ...preConverted
+      .filter((item) => item && typeof item.sonar_key === 'string' && item.sonar_key.trim() !== '')
+      .map((item) => ({ converted: item, key: item.sonar_key })),
+  ];
+
+  for (const { converted, key } of allConverted) {
+    if (existingSonarKeys.has(key)) {
+      alreadyTracked.push(key);
+      continue;
+    }
+
+    converted.content_hash = generateContentHash(converted);
+
+    if (existingHashes.has(converted.content_hash)) {
+      contentDuplicates.push((converted.title || '').substring(0, 40));
+      continue;
+    }
+
+    converted.id = `DEBT-${String(nextId).padStart(4, '0')}`;
+    nextId++;
+    newItems.push(converted);
+    existingHashes.add(converted.content_hash);
+  }
+
+  return { newItems, alreadyTracked, contentDuplicates };
+}
+
+// Write new items to both MASTER_DEBT.jsonl and deduped.jsonl via central writer
+function writeNewItems(newItems) {
+  const DEDUPED_FILE = path.join(DEBT_DIR, 'raw/deduped.jsonl');
+  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+
+  console.log('\nAppending new items to MASTER_DEBT.jsonl and deduped.jsonl...');
+  try {
+    appendMasterDebtSync(newItems);
+  } catch (error) {
+    const msg =
+      error instanceof Error
+        ? error instanceof Error
+          ? error.message // eslint-disable-line framework/no-unsafe-error-access -- safe: instanceof guard is in conditional expression
+          : String(error)
+        : String(error);
+    console.error(`Failed to append to MASTER_DEBT.jsonl: ${msg}`);
+    process.exit(1);
+  }
+}
+
+// Main function
+// eslint-disable-next-line complexity -- main has inherent branching (complexity 27), refactoring would reduce readability
+async function main() {
+  const args = process.argv.slice(2);
+
+  if (args.includes('--help')) {
+    console.log(`
+Usage: node scripts/debt/sync-sonarcloud.js [options]
+
+Options:
+  --project <key>     SonarCloud project key (default: from env or sonar-project.properties)
+  --org <name>        SonarCloud organization
+  --severity <list>   Filter by severity (BLOCKER,CRITICAL,MAJOR,MINOR,INFO)
+  --type <list>       Filter by type (BUG,VULNERABILITY,CODE_SMELL)
+  --status <list>     Filter by status (default: OPEN,CONFIRMED,REOPENED)
+  --resolve           Detect and mark RESOLVED items no longer in SonarCloud
+  --full              Sync new items AND resolve old items in one pass
+  --dry-run           Preview changes without writing
+  --force             Skip confirmation prompt
+
+Environment variables:
+  SONAR_TOKEN         SonarCloud API token (required)
+  SONAR_ORG           SonarCloud organization
+  SONAR_PROJECT       SonarCloud project key
+`);
+    process.exit(0);
+  }
+
+  const parsed = parseArgs(args);
+  const { token, org, project } = resolveConfig(parsed);
+
+  const resolveOnly = parsed.resolve && !parsed.full;
+  const doResolve = parsed.resolve || parsed.full;
+
+  // Handle resolve-only mode
+  if (resolveOnly) {
+    const result = await resolveStaleItems({
+      token,
+      org,
+      project,
+      dryRun: parsed.dryRun,
+      force: parsed.force,
+    });
+    if (result.resolved > 0 && !parsed.dryRun) regenerateViews();
+    process.exit(0);
+  }
+
+  console.log('Sync: Fetching from SonarCloud...\n');
+
+  let issues;
+  try {
+    issues = await fetchSonarCloudIssues({
+      token,
+      org,
+      project,
+      severities: parsed.severity,
+      types: parsed.type,
+      statuses: parsed.status || 'OPEN,CONFIRMED,REOPENED',
+    });
+  } catch (err) {
+    console.error(
+      // eslint-disable-next-line framework/no-unsafe-error-access -- safe: instanceof check is inline
+      `Error fetching from SonarCloud: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    process.exit(1);
+  }
+
+  // Fetch security hotspots (separate API endpoint)
+  let convertedHotspots = [];
+  try {
+    const hotspots = await fetchSonarCloudHotspots({ token, org, project });
+    convertedHotspots = hotspots.map(convertHotspot);
+  } catch (err) {
+    console.warn(
+      // eslint-disable-next-line framework/no-unsafe-error-access -- safe: instanceof check is inline
+      `  Hotspot fetch failed (non-fatal): ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+
+  const totalFetched = issues.length + convertedHotspots.length;
+
+  if (totalFetched === 0) {
+    console.log('  No issues found matching criteria. Nothing to sync.');
+    process.exit(0);
+  }
+
+  const existingItems = loadMasterDebt();
+  const { newItems, alreadyTracked, contentDuplicates } = deduplicateAndAssignIds(
+    issues,
+    existingItems,
+    convertedHotspots,
+  );
+
+  // Report results
+  console.log('\nSync Results:\n');
+  console.log(`  SonarCloud issues fetched: ${issues.length}`);
+  if (convertedHotspots.length > 0) {
+    console.log(`  Security hotspots fetched: ${convertedHotspots.length}`);
+  }
+  console.log(`  Already tracked (by key):  ${alreadyTracked.length}`);
+  console.log(`  Content duplicates:        ${contentDuplicates.length}`);
+  console.log(`  New items to add:          ${newItems.length}`);
+
+  if (newItems.length === 0) {
+    console.log('\nNo new items to add. MASTER_DEBT.jsonl unchanged.');
+    process.exit(0);
+  }
+
+  // Show sample of new items
+  console.log('\n  Sample of new items:');
+  for (const item of newItems.slice(0, 5)) {
+    console.log(`    - ${item.id}: ${item.severity} ${item.title.substring(0, 50)}...`);
+  }
+  if (newItems.length > 5) {
+    console.log(`    ... and ${newItems.length - 5} more items`);
+  }
+
+  if (parsed.dryRun) {
+    console.log('\nDRY RUN: No changes written.');
+    process.exit(0);
+  }
+
+  if (!parsed.force) {
+    const confirmed = await confirm(`\nAdd ${newItems.length} new items to MASTER_DEBT.jsonl?`);
+    if (!confirmed) {
+      console.log('Cancelled.');
+      process.exit(0);
+    }
+  }
+
+  writeNewItems(newItems);
+
+  logIntake({
+    action: 'sync-sonarcloud',
+    project: `${org}_${project}`,
+    items_fetched: issues.length,
+    items_added: newItems.length,
+    already_tracked: alreadyTracked.length,
+    content_duplicates: contentDuplicates.length,
+    first_id: newItems[0]?.id,
+    last_id: newItems[newItems.length - 1]?.id,
+  });
+
+  regenerateViews();
+
+  console.log('\nSync complete!');
+  console.log(
+    `  Added ${newItems.length} new items (${newItems[0]?.id} - ${newItems[newItems.length - 1]?.id})`,
+  );
+  console.log(`  New MASTER_DEBT.jsonl total: ${existingItems.length + newItems.length} items`);
+
+  // Handle --full mode: also resolve stale items
+  if (doResolve) {
+    console.log('\n' + '='.repeat(60));
+    const result = await resolveStaleItems({
+      token,
+      org,
+      project,
+      dryRun: parsed.dryRun,
+      force: parsed.force,
+    });
+    if (result.resolved > 0 && !parsed.dryRun) regenerateViews(' (post-resolve)');
+  }
+}
+
+main().catch((err) => {
+  console.error('Fatal error:', err.message);
+  process.exit(1);
+});

@@ -1,0 +1,107 @@
+name: Backlog Enforcement
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backlog-health:
+    name: Check Backlog Health
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Check technical debt health
+        id: backlog
+        run: |
+          # Check if TDMS is configured
+          if [ ! -f "docs/technical-debt/MASTER_DEBT.jsonl" ]; then
+            echo "ℹ️ No technical debt tracking file found"
+            echo "total=0" >> $GITHUB_OUTPUT
+            echo "exit_code=0" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Validate debt schema
+          set +e
+          output=$(node scripts/debt/validate-schema.js 2>&1)
+          exit_code=$?
+          set -e
+
+          echo "$output"
+
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+
+          exit $exit_code
+
+  security-patterns:
+    name: Check Security Patterns
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Get changed files
+        id: changed
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            changed=$(git diff --name-only "origin/$BASE_REF"...HEAD | grep -E '\.(js|ts|tsx)$' || true)
+            echo "check_all=false" >> "$GITHUB_OUTPUT"
+          else
+            changed=""
+            echo "check_all=true" >> "$GITHUB_OUTPUT"
+          fi
+          {
+            echo "files<<EOF"
+            echo "$changed"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run security pattern check
+        env:
+          CHECK_ALL: ${{ steps.changed.outputs.check_all }}
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          if [ "$CHECK_ALL" = "true" ]; then
+            node scripts/reviews/security-check.js --all --blocking
+          elif [ -n "$CHANGED_FILES" ]; then
+            echo "$CHANGED_FILES" | while read -r file; do
+              if [ -f "$file" ]; then
+                node scripts/reviews/security-check.js --file "$file" --blocking
+              fi
+            done
+          else
+            echo "No JS/TS files changed"
+          fi

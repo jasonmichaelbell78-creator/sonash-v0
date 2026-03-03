@@ -1,0 +1,39 @@
+# Gemini Code Assist Configuration for Framework
+# Created: 2026-03-01
+# Docs: https://developers.google.com/gemini-code-assist/docs/customize-gemini-behavior-github
+
+have_fun: false
+
+# Files/dirs Gemini should skip entirely during review
+ignore_patterns:
+  # Data files — pipeline output, not hand-edited
+  - 'docs/technical-debt/**/*.jsonl'
+  - 'docs/technical-debt/raw/**'
+  - 'docs/technical-debt/views/**'
+  # Generated output (not scripts/config — those are source-of-truth configs)
+  # State files — machine-managed
+  - '.claude/state/**'
+  - '.claude/override-log.jsonl'
+  - '.claude/skills/**'
+  - '.claude/agents/**'
+  # Lock files
+  - 'package-lock.json'
+
+# Persistent memory — learns from PR feedback over time
+memory_config:
+  disabled: false
+
+# Code review settings
+code_review:
+  disable: false
+  # MEDIUM filters out trivial/stylistic noise while keeping real issues
+  comment_severity_threshold: MEDIUM
+  # Unlimited comments — we prefer complete feedback
+  max_review_comments: -1
+
+  pull_request_opened:
+    summary: true
+    code_review: true
+    help: false
+    # Skip draft PRs — review only when ready
+    include_drafts: false

@@ -1,0 +1,351 @@
+#!/usr/bin/env node
+/* global require, process, console */
+/* eslint-disable @typescript-eslint/no-require-imports */
+/**
+ * commit-tracker.js - PostToolUse hook (Bash) for automatic commit logging
+ *
+ * LAYER A of compaction-resilient state persistence.
+ *
+ * Fires on every Bash tool call but does a fast regex bail-out on non-commit
+ * commands (~1ms). When a git commit is detected, appends structured data to
+ * .claude/state/commit-log.jsonl — an append-only log that survives compaction
+ * and enables session gap detection.
+ *
+ * Detection method:
+ *   1. Fast regex check on bash command string (bail if no git commit keyword)
+ *   2. Compare current HEAD against last tracked HEAD (handles failed commits)
+ *   3. If HEAD changed, capture commit metadata and append to log
+ */
+
+const fs = require('node:fs');
+const path = require('node:path');
+const { isSafeToWrite } = require('./lib/symlink-guard');
+const { gitExec, projectDir } = require('./lib/git-utils.js');
+const { sanitizeInput } = require('./lib/sanitize-input');
+
+// Security check - bidirectional containment
+const safeBaseDir = path.resolve(process.cwd());
+const baseForCheck = process.platform === 'win32' ? safeBaseDir.toLowerCase() : safeBaseDir;
+const projectForCheck = process.platform === 'win32' ? projectDir.toLowerCase() : projectDir;
+
+const projectInsideCwd =
+  projectForCheck === baseForCheck || projectForCheck.startsWith(baseForCheck + path.sep);
+const cwdInsideProject =
+  baseForCheck === projectForCheck || baseForCheck.startsWith(projectForCheck + path.sep);
+
+if (!projectInsideCwd && !cwdInsideProject) {
+  console.log('ok');
+  process.exit(0);
+}
+
+// State files
+const TRACKER_STATE = path.join(projectDir, '.claude', 'hooks', '.commit-tracker-state.json');
+const COMMIT_LOG = path.join(projectDir, '.claude', 'state', 'commit-log.jsonl');
+
+// Regex for commands that create commits
+const COMMIT_COMMAND_REGEX = /\bgit\s+(commit|cherry-pick|merge|revert)\b/;
+
+/**
+ * Fast path: extract bash command from hook arguments and check if it's a
+ * commit-related command. Returns empty string if not a commit command.
+ */
+function extractCommand() {
+  const arg = process.argv[2] || '';
+  if (!arg) return '';
+
+  try {
+    const parsed = JSON.parse(arg);
+    return typeof parsed.command === 'string' ? parsed.command : '';
+  } catch {
+    // Not JSON — treat as raw string
+    return typeof arg === 'string' ? arg : '';
+  }
+}
+
+/**
+ * Load last tracked HEAD hash
+ */
+function loadLastHead() {
+  try {
+    const data = JSON.parse(fs.readFileSync(TRACKER_STATE, 'utf8'));
+    return typeof data.lastHead === 'string' ? data.lastHead : '';
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Save current HEAD hash for next comparison
+ */
+function saveLastHead(head) {
+  try {
+    const dir = path.dirname(TRACKER_STATE);
+    fs.mkdirSync(dir, { recursive: true });
+    const tmpPath = `${TRACKER_STATE}.tmp`;
+    if (!isSafeToWrite(tmpPath)) {
+      console.warn('commit-tracker: refusing to write — symlink detected on tracker state');
+      return;
+    }
+    fs.writeFileSync(
+      tmpPath,
+      JSON.stringify({ lastHead: head, updatedAt: new Date().toISOString() }),
+    );
+    if (!isSafeToWrite(TRACKER_STATE)) {
+      console.warn('commit-tracker: refusing to rename — symlink detected on tracker state');
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* cleanup */
+      }
+      return;
+    }
+    try {
+      fs.rmSync(TRACKER_STATE, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
+    fs.renameSync(tmpPath, TRACKER_STATE);
+  } catch (err) {
+    // Non-critical — worst case we re-log the same commit next time
+    console.warn(
+      // eslint-disable-next-line framework/no-unsafe-error-access -- safe: instanceof check is inline
+      `commit-tracker: failed to save HEAD state: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    try {
+      fs.rmSync(`${TRACKER_STATE}.tmp`, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
+  }
+}
+
+/**
+ * Get session counter from SESSION_CONTEXT.md
+ */
+function getSessionCounter() {
+  try {
+    const contextPath = path.join(projectDir, 'SESSION_CONTEXT.md');
+    const content = fs.readFileSync(contextPath, 'utf8');
+    // Resilient: optional bold markers, flexible spacing, "Count"/"Counter"
+    const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
+    return match ? parseInt(match[1], 10) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Append a commit entry to the JSONL log
+ */
+function appendCommitLog(entry) {
+  try {
+    const dir = path.dirname(COMMIT_LOG);
+    fs.mkdirSync(dir, { recursive: true });
+    if (!isSafeToWrite(COMMIT_LOG)) {
+      console.warn('commit-tracker: refusing to write — symlink detected on commit log');
+      return false;
+    }
+    fs.appendFileSync(COMMIT_LOG, JSON.stringify(entry) + '\n');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Main
+ */
+function main() {
+  // FAST PATH: Check if command is commit-related (~1ms for non-commit commands)
+  const command = extractCommand();
+  if (!COMMIT_COMMAND_REGEX.test(command)) {
+    console.log('ok');
+    process.exit(0);
+  }
+
+  // A commit command was run — check if HEAD actually changed
+  const currentHead = gitExec(['rev-parse', 'HEAD']);
+  if (!currentHead) {
+    // Not in a git repo or git not available
+    console.log('ok');
+    process.exit(0);
+  }
+
+  const lastHead = loadLastHead();
+  if (currentHead === lastHead) {
+    // Commit failed (pre-commit hooks rejected, etc.) or already tracked
+    console.log('ok');
+    process.exit(0);
+  }
+
+  // NEW COMMIT DETECTED — capture metadata
+  // Use NUL delimiter (%x00) to avoid corruption from special chars in commit messages
+  const commitLine = gitExec([
+    'log',
+    '--format=%H%x00%h%x00%s%x00%an%x00%ad%x00%D',
+    '--date=iso-strict',
+    '-1',
+  ]);
+  const parts = commitLine.split('\0');
+
+  // Parse branch from %D decoration (e.g. "HEAD -> branch-name, origin/branch-name")
+  const decoration = (parts.length >= 6 ? parts[5] : '') || '';
+  const branchMatch = decoration.match(/HEAD -> ([^,]+)/);
+  // Fall back to rev-parse only in detached HEAD (no "HEAD -> ..." in decoration)
+  const branch = branchMatch
+    ? branchMatch[1].trim()
+    : gitExec(['rev-parse', '--abbrev-ref', 'HEAD']);
+
+  // Files changed in the commit
+  const filesChanged = gitExec(['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD'])
+    .split('\n')
+    .filter((f) => f.length > 0);
+  const sessionCounter = getSessionCounter();
+
+  const entry = {
+    timestamp: new Date().toISOString(),
+    hash: parts[0] || currentHead,
+    shortHash: parts[1] || currentHead.slice(0, 7),
+    message: parts[2] || '',
+    author: parts[3] || '',
+    authorDate: parts[4] || '',
+    branch: branch,
+    filesChanged: filesChanged.length,
+    filesList: filesChanged.slice(0, 30), // Cap at 30 files
+    session: sessionCounter,
+  };
+
+  if (appendCommitLog(entry)) {
+    saveLastHead(currentHead);
+    console.error(
+      `  Commit tracked: ${sanitizeInput(entry.shortHash)} ${sanitizeInput(entry.message.slice(0, 60))}`,
+    );
+
+    // Rotate commit log to prevent unbounded growth
+    try {
+      const { rotateJsonl } = require('./lib/rotate-state.js');
+      const result = rotateJsonl(COMMIT_LOG, 500, 300);
+      if (result.rotated) {
+        console.error(`  Commit log rotated: ${result.before} → ${result.after} entries`);
+      }
+    } catch {
+      // Non-critical — rotation failure doesn't block commit tracking
+    }
+  }
+
+  // --- Commit failure reporting ---
+  // If the commit command failed, surface pre-commit hook output
+  reportCommitFailure();
+
+  console.log('ok');
+  process.exit(0);
+}
+
+/**
+ * Report commit failures by reading .git/hook-output.log.
+ * Surfaces pre-commit hook output that would otherwise be invisible.
+ * Secret values are redacted before output.
+ */
+// eslint-disable-next-line complexity -- reportCommitFailure has inherent branching (complexity 17), refactoring would reduce readability
+function reportCommitFailure() {
+  try {
+    const arg = process.argv[2] || '';
+    if (!arg) return;
+
+    let exitCode = 0;
+    try {
+      const parsed = JSON.parse(arg);
+      const rawExitCode =
+        parsed.exit_code ?? (parsed.tool_output && parsed.tool_output.exit_code) ?? 0;
+      exitCode = Number(rawExitCode);
+      if (!Number.isFinite(exitCode)) exitCode = 0;
+    } catch {
+      return;
+    }
+
+    const gitDir = (() => {
+      const envGitDir = process.env.GIT_DIR;
+      if (typeof envGitDir === 'string' && envGitDir.length > 0) {
+        return path.isAbsolute(envGitDir) ? envGitDir : path.resolve(process.cwd(), envGitDir);
+      }
+      const dotGitPath = path.join(process.cwd(), '.git');
+      try {
+        // eslint-disable-next-line framework/no-stat-without-lstat -- path is constructed internally, not from user input
+        const st = fs.statSync(dotGitPath);
+        if (st.isFile()) {
+          const txt = fs.readFileSync(dotGitPath, 'utf8').trim();
+          const m = txt.match(/^gitdir:\s*(.+)\s*$/i);
+          if (m && m[1]) {
+            const resolved = m[1].trim();
+            return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
+          }
+        }
+      } catch {
+        // best-effort — fall through to default
+      }
+      return dotGitPath;
+    })();
+    const logFile = path.join(gitDir, 'hook-output.log');
+
+    // Read hook output log if it exists and is fresh (<60s old)
+    let content;
+    try {
+      // eslint-disable-next-line framework/no-stat-without-lstat -- path is constructed internally, not from user input
+      const stats = fs.statSync(logFile);
+      if (stats.size === 0 || Date.now() - stats.mtimeMs > 60000) return;
+      content = fs.readFileSync(logFile, 'utf8').trim();
+      if (!content) return;
+    } catch {
+      return;
+    }
+
+    // If exit code says success AND log has no failure evidence, skip
+    const hookPassed = /All pre-commit checks passed/.test(content);
+    if (exitCode === 0 && hookPassed) return;
+    if (exitCode === 0 && !content.includes('\u274C')) return;
+
+    // Sanitize and output hook failure — redact secrets before display
+    const sanitized = content
+      .split('\n')
+      .map((line) => {
+        let result = line;
+        for (const keyword of ['token', 'key', 'secret', 'password', 'credential']) {
+          for (const sep of ['=', ':']) {
+            const idx = result.toLowerCase().indexOf(keyword + sep);
+            if (idx === -1) continue;
+            const afterSep = idx + keyword.length + sep.length;
+            let valueStart = afterSep;
+            while (valueStart < result.length && result[valueStart] === ' ') valueStart++;
+            if (valueStart >= result.length) continue;
+            let valueEnd;
+            const quote = result[valueStart];
+            if (quote === '"' || quote === "'") {
+              const endQuote = result.indexOf(quote, valueStart + 1);
+              valueEnd = endQuote === -1 ? result.length : endQuote + 1;
+            } else {
+              valueEnd = valueStart;
+              while (valueEnd < result.length && result[valueEnd] !== ' ') valueEnd++;
+            }
+            if (valueEnd > valueStart) {
+              result = result.slice(0, valueStart) + '[REDACTED]' + result.slice(valueEnd);
+            }
+          }
+        }
+        result = result.replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, 'ghp_***REDACTED***');
+        result = result.replaceAll(/ghs_[A-Za-z0-9_]{36,}/g, 'ghs_***REDACTED***');
+        result = result.replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, 'sk-***REDACTED***');
+        result = result.replaceAll(/AKIA[A-Z0-9]{12,}/g, 'AKIA***REDACTED***');
+        return result;
+      })
+      .join('\n');
+
+    console.error('Pre-commit hook failed. Output from .git/hook-output.log:');
+    console.error('---');
+    console.error(sanitized);
+    console.error('---');
+  } catch {
+    // Best-effort — never block on failure reporting
+  }
+}
+
+main();

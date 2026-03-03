@@ -1,0 +1,354 @@
+{
+  "generatedAt": "2026-02-26T12:51:11.204Z",
+  "skillCount": 59,
+  "skills": [
+    {
+      "name": "_shared",
+      "source": ".claude/skills"
+    },
+    {
+      "name": "add-debt",
+      "source": ".claude/skills",
+      "displayName": "add-debt",
+      "description": "description: >-"
+    },
+    {
+      "name": "alerts",
+      "source": ".claude/skills",
+      "displayName": "alerts",
+      "description": "description: |"
+    },
+    {
+      "name": "artifacts-builder",
+      "source": ".claude/skills",
+      "displayName": "artifacts-builder",
+      "description": "Suite of tools for creating elaborate, multi-component claude.ai HTML"
+    },
+    {
+      "name": "audit-aggregator",
+      "source": ".claude/skills",
+      "description": "Aggregate and deduplicate findings from multiple audit reports",
+      "displayName": "audit-aggregator"
+    },
+    {
+      "name": "audit-ai-optimization",
+      "source": ".claude/skills",
+      "description": "Run a single-session AI optimization audit on the codebase",
+      "displayName": "audit-ai-optimization"
+    },
+    {
+      "name": "audit-code",
+      "source": ".claude/skills",
+      "description": "Run a single-session code review audit on the codebase",
+      "displayName": "audit-code"
+    },
+    {
+      "name": "audit-comprehensive",
+      "source": ".claude/skills",
+      "description": "Run all 9 domain audits in staged waves and aggregate results",
+      "displayName": "audit-comprehensive"
+    },
+    {
+      "name": "audit-documentation",
+      "source": ".claude/skills",
+      "displayName": "audit-documentation",
+      "description": "Run a multi-stage parallel documentation audit with 18 specialized agents"
+    },
+    {
+      "name": "audit-engineering-productivity",
+      "source": ".claude/skills",
+      "description": "Run a single-session engineering productivity audit on the codebase",
+      "displayName": "audit-engineering-productivity"
+    },
+    {
+      "name": "audit-enhancements",
+      "source": ".claude/skills",
+      "displayName": "audit-enhancements",
+      "description": "Run a comprehensive enhancement audit across the entire project - code,"
+    },
+    {
+      "name": "audit-health",
+      "source": ".claude/skills",
+      "displayName": "audit-health",
+      "description": "Meta-check for audit system health — runs diagnostics on domain audits and"
+    },
+    {
+      "name": "audit-performance",
+      "source": ".claude/skills",
+      "description": "Run a single-session performance audit on the codebase",
+      "displayName": "audit-performance"
+    },
+    {
+      "name": "audit-process",
+      "source": ".claude/skills",
+      "displayName": "audit-process",
+      "description": "Run a comprehensive multi-stage automation audit with parallel agents"
+    },
+    {
+      "name": "audit-refactoring",
+      "source": ".claude/skills",
+      "description": "Run a single-session refactoring audit on the codebase",
+      "displayName": "audit-refactoring"
+    },
+    {
+      "name": "audit-security",
+      "source": ".claude/skills",
+      "description": "Run a single-session security audit on the codebase",
+      "displayName": "audit-security"
+    },
+    {
+      "name": "checkpoint",
+      "source": ".claude/skills",
+      "displayName": "checkpoint",
+      "description": "description: |"
+    },
+    {
+      "name": "code-reviewer",
+      "source": ".claude/skills",
+      "displayName": "code-reviewer",
+      "version": "\"2.0\"",
+      "description": "version: \"2.0\""
+    },
+    {
+      "name": "comprehensive-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "comprehensive-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
+      "name": "content-research-writer",
+      "source": ".claude/skills",
+      "displayName": "content-research-writer",
+      "description": "Assists in writing high-quality content by conducting research, adding"
+    },
+    {
+      "name": "create-audit",
+      "source": ".claude/skills",
+      "displayName": "create-audit",
+      "description": "Interactive wizard to scaffold a new audit type with skill, template, and"
+    },
+    {
+      "name": "decrypt-secrets",
+      "source": ".claude/skills",
+      "description": "Decrypt MCP tokens for remote sessions",
+      "displayName": "decrypt-secrets"
+    },
+    {
+      "name": "deep-plan",
+      "source": ".claude/skills",
+      "displayName": "deep-plan",
+      "description": "Structured discovery-first planning for complex tasks. Ask exhaustive"
+    },
+    {
+      "name": "developer-growth-analysis",
+      "source": ".claude/skills",
+      "displayName": "developer-growth-analysis",
+      "description": "Analyzes your recent Claude Code chat history to identify coding patterns,"
+    },
+    {
+      "name": "doc-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "doc-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
+      "name": "doc-optimizer",
+      "source": ".claude/skills",
+      "displayName": "doc-optimizer",
+      "description": "Scan all docs, auto-fix formatting/headers/links, report issues as JSONL, and"
+    },
+    {
+      "name": "docs-maintain",
+      "source": ".claude/skills",
+      "displayName": "docs-maintain",
+      "description": "description: |"
+    },
+    {
+      "name": "excel-analysis",
+      "source": ".claude/skills",
+      "displayName": "Excel Analysis",
+      "description": "Analyze Excel spreadsheets, create pivot tables, generate charts, and perform"
+    },
+    {
+      "name": "find-skills",
+      "source": ".claude/skills",
+      "displayName": "find-skills",
+      "description": "Helps users discover and install agent skills when they ask questions like"
+    },
+    {
+      "name": "frontend-design",
+      "source": ".claude/skills",
+      "displayName": "frontend-design",
+      "description": "Create distinctive, production-grade frontend interfaces with high design"
+    },
+    {
+      "name": "gh-fix-ci",
+      "source": ".claude/skills",
+      "displayName": "gh-fix-ci",
+      "description": "Inspect GitHub PR checks with gh, pull failing GitHub Actions logs, summarize"
+    },
+    {
+      "name": "hook-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "hook-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
+      "name": "market-research-reports",
+      "source": ".claude/skills",
+      "displayName": "market-research-reports",
+      "description": "\"Generate comprehensive market research reports (50+ pages) in the style of"
+    },
+    {
+      "name": "mcp-builder",
+      "source": ".claude/skills",
+      "displayName": "mcp-builder",
+      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that"
+    },
+    {
+      "name": "multi-ai-audit",
+      "source": ".claude/skills",
+      "displayName": "multi-ai-audit",
+      "description": "Interactive orchestrator for multi-AI consensus audits with any-format input"
+    },
+    {
+      "name": "pr-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "pr-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
+      "name": "pr-retro",
+      "source": ".claude/skills",
+      "displayName": "pr-retro",
+      "description": "PR Review Retrospective -- actionable analysis of a PR's review cycle"
+    },
+    {
+      "name": "pr-review",
+      "source": ".claude/skills",
+      "description": "PR Code Review Processor",
+      "displayName": "pr-review"
+    },
+    {
+      "name": "pre-commit-fixer",
+      "source": ".claude/skills",
+      "displayName": "pre-commit-fixer",
+      "description": "description: |"
+    },
+    {
+      "name": "quick-fix",
+      "source": ".claude/skills",
+      "displayName": "quick-fix",
+      "description": "Auto-suggest fixes for common pre-commit and pattern compliance issues"
+    },
+    {
+      "name": "script-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "script-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
+      "name": "session-begin",
+      "source": ".claude/skills",
+      "description": "Complete verification steps before starting any work session",
+      "displayName": "session-begin"
+    },
+    {
+      "name": "session-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "session-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
+      "name": "session-end",
+      "source": ".claude/skills",
+      "description": "Complete verification steps before ending the session",
+      "displayName": "session-end"
+    },
+    {
+      "name": "skill-creator",
+      "source": ".claude/skills",
+      "displayName": "skill-creator",
+      "description": "Guide for creating effective skills. This skill should be used when users want"
+    },
+    {
+      "name": "skill-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "skill-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
+      "name": "sprint",
+      "source": ".claude/skills",
+      "displayName": "sprint",
+      "description": "description: >-"
+    },
+    {
+      "name": "system-test",
+      "source": ".claude/skills",
+      "displayName": "system-test",
+      "version": "\"4.0\"",
+      "description": "23-domain interactive system/repo test plan with per-finding review,"
+    },
+    {
+      "name": "systematic-debugging",
+      "source": ".claude/skills",
+      "displayName": "systematic-debugging",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before"
+    },
+    {
+      "name": "task-next",
+      "source": ".claude/skills",
+      "description": "Show dependency-resolved next tasks from ROADMAP.md active sprint",
+      "displayName": "task-next"
+    },
+    {
+      "name": "tdms-ecosystem-audit",
+      "source": ".claude/skills",
+      "displayName": "tdms-ecosystem-audit",
+      "description": "description: |"
+    },
+    {
+      "name": "test-suite",
+      "source": ".claude/skills",
+      "displayName": "test-suite",
+      "description": "Multi-phase UI testing orchestration using Playwright MCP or Chrome"
+    },
+    {
+      "name": "ui-design-system",
+      "source": ".claude/skills",
+      "displayName": "ui-design-system",
+      "description": "UI design system toolkit for Senior UI Designer including design token"
+    },
+    {
+      "name": "using-superpowers",
+      "source": ".claude/skills",
+      "displayName": "using-superpowers",
+      "description": "Use when starting any conversation - establishes how to find and use skills,"
+    },
+    {
+      "name": "ux-researcher-designer",
+      "source": ".claude/skills",
+      "displayName": "ux-researcher-designer",
+      "description": "UX research and design toolkit for Senior UX Designer/Researcher including"
+    },
+    {
+      "name": "validate-claude-folder",
+      "source": ".claude/skills",
+      "description": "Validate .claude folder configuration consistency",
+      "displayName": "validate-claude-folder"
+    },
+    {
+      "name": "verify-technical-debt",
+      "source": ".claude/skills",
+      "displayName": "verify-technical-debt",
+      "description": "Verify and triage technical debt items - classify, then place into ROADMAP"
+    },
+    {
+      "name": "webapp-testing",
+      "source": ".claude/skills",
+      "displayName": "webapp-testing",
+      "description": "Toolkit for interacting with and testing local web applications using"
+    }
+  ]
+}

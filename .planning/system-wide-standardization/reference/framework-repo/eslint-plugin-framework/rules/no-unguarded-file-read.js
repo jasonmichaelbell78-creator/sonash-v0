@@ -1,0 +1,98 @@
+/**
+ * @fileoverview Detects file read operations not wrapped in try/catch.
+ * Race conditions between existsSync() and readFileSync() can cause crashes.
+ * Wrapping in try/catch is the safe pattern.
+ */
+
+'use strict';
+
+const { getCalleeName } = require('../lib/ast-utils');
+
+const FILE_READ_METHODS = new Set([
+  'readFileSync',
+  'readFile',
+  'loadConfig',
+  'loadConfigWithRegex',
+]);
+
+/**
+ * Check if a CallExpression matches a target file-read function.
+ * Handles both bare calls (readFileSync()) and member calls (fs.readFileSync()).
+ */
+function isFileReadCall(node) {
+  return FILE_READ_METHODS.has(getCalleeName(node.callee));
+}
+
+/**
+ * Walk up the AST to check if any ancestor is a TryStatement.
+ */
+function isInsideTryCatch(node) {
+  let current = node.parent;
+  while (current) {
+    if (current.type === 'TryStatement') {
+      return true;
+    }
+    current = current.parent;
+  }
+  return false;
+}
+
+/** @type {import('eslint').Rule.RuleModule} */
+module.exports = {
+  meta: {
+    type: 'suggestion',
+    docs: {
+      description: 'Require file read operations to be wrapped in try/catch blocks',
+      recommended: true,
+    },
+    schema: [],
+    messages: {
+      unguardedFileRead:
+        'File read operation should be wrapped in try/catch to handle race conditions and permission errors',
+    },
+    hasSuggestions: true,
+  },
+
+  create(context) {
+    return {
+      CallExpression(node) {
+        if (!isFileReadCall(node)) {
+          return;
+        }
+
+        if (!isInsideTryCatch(node)) {
+          context.report({
+            node,
+            messageId: 'unguardedFileRead',
+            suggest: [
+              {
+                desc: 'Wrap in try/catch block',
+                fix(fixer) {
+                  const sourceCode = context.sourceCode ?? context.getSourceCode();
+                  // Only auto-fix ExpressionStatements — wrapping VariableDeclarations
+                  // would change variable scope and break bindings
+                  let target = node.parent;
+                  if (target.type === 'ExpressionStatement') {
+                    // already at statement level
+                  } else {
+                    // Cannot safely auto-fix (scope change or complex expression)
+                    return null;
+                  }
+
+                  const text = sourceCode.getText(target);
+                  const indent = target.loc ? ' '.repeat(target.loc.start.column) : '';
+                  const inner = indent + '  ';
+
+                  return fixer.replaceText(
+                    target,
+                    `try {\n${inner}${text}\n${indent}} catch (_err) {\n${inner}// Handle file read error\n${inner}throw _err;\n${indent}}`,
+                  );
+                },
+              },
+            ],
+          });
+        }
+      },
+    };
+  },
+};

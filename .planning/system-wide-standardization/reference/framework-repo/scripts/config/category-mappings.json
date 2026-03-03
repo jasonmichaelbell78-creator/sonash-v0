@@ -1,0 +1,22 @@
+{
+  "defaultCategory": "code-quality",
+  "aliases": {
+    "code": "code-quality",
+    "code-quality": "code-quality",
+    "security": "security",
+    "Security": "security",
+    "performance": "performance",
+    "perf": "performance",
+    "documentation": "documentation",
+    "docs": "documentation",
+    "process": "process",
+    "refactoring": "refactoring",
+    "engineering-productivity": "engineering-productivity",
+    "enhancements": "enhancements",
+    "ai-optimization": "ai-optimization",
+    "Hygiene/Duplication": "code-quality",
+    "Types/Correctness": "code-quality",
+    "Testing": "code-quality",
+    "Next/React Boundaries": "code-quality"
+  }
+}

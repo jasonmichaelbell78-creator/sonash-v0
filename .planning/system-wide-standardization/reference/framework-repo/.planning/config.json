@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "project_name": "Framework",
+  "milestone": "v1.0",
+  "milestone_name": "Framework Migration v1.0",
+  "created": "2026-03-01",
+  "planning_source": "docs/planning/PLAN.md",
+  "decisions_source": "docs/planning/DECISIONS.md",
+  "diagnosis_source": "docs/planning/DIAGNOSIS.md"
+}

@@ -1,0 +1,102 @@
+# Qodo (PR-Agent) Configuration
+# See: https://qodo-merge-docs.qodo.ai/tools/review/
+# Purpose: Reduce false positives and tailor reviews to project patterns
+
+[config]
+publish_output = true
+verbosity_level = 2
+
+[pr_reviewer]
+require_score_review = true
+require_tests_review = true
+require_estimate_effort_to_review = false
+
+extra_instructions = """
+Project context:
+- Reusable development workflow framework (scripts, ESLint rules, hooks, skills)
+- Node.js CLI tools and automation scripts
+- Custom ESLint plugin with 23 rules for security, correctness, and style
+- Pattern compliance enforced via scripts/reviews/check-pattern-compliance.js
+- Technical Debt Management System (TDMS) with JSONL-based tracking
+
+Known false positives to SKIP:
+- ESLint disables with explanatory comments (FP-004)
+- ESLint security rules already audited: detect-object-injection, detect-non-literal-fs-filename, detect-unsafe-regex (FP-011 to FP-015)
+- SKIP_REASON persistence to .claude/override-log.jsonl is BY DESIGN for audit accountability. The reason is operator-provided, validated, truncated to 200 chars, and the directory is gitignored. Do NOT flag "sensitive log persistence" or "potential secret logging" for override-log.jsonl writes (FP-016)
+
+Focus ON:
+- Real security issues not caught by ESLint security plugin
+- Logic errors and edge cases in scripts
+- TOCTOU race conditions in file operations
+- Regex complexity and ReDoS risk
+- Proper use of atomic writes (tmp+rename pattern)
+
+Skip flagging:
+- Console.log usage in CLI scripts (tracked as known pattern)
+- Bundle size warnings
+- Test file patterns (password mocks, etc.)
+"""
+
+# Files to ignore in review
+[pr_reviewer.ignore]
+files = [
+    "*.md",                      # Documentation handled separately
+    "docs/**",                   # Documentation folder
+    "*.jsonl",                   # Data files
+    ".claude/state/**",          # Machine-managed state files
+    ".claude/skills/**",         # Skill definitions (reviewed separately)
+    ".claude/agents/**",         # Agent definitions (reviewed separately)
+    ".claude/settings.json",     # Hook registrations (reviewed separately)
+    "*.test.js",                 # Test files
+    "*.test.mjs",
+    "*.spec.js",
+    "*.spec.mjs",
+]
+
+[pr_code_suggestions]
+num_code_suggestions = 4
+demand_code_suggestions_self_review = true
+summarize = true
+
+extra_instructions = """
+When suggesting improvements:
+- Prefer existing project patterns from scripts/lib/
+- Follow atomic write patterns (tmp+rename, never direct writes)
+- Suggest security-helpers.js usage for path validation
+- Avoid suggesting changes to intentionally simple code
+- Reference CLAUDE.md for anti-patterns and standards
+
+Do NOT suggest the following patterns — they have been evaluated and either
+implemented or intentionally declined in this project:
+1. BIDIRECTIONAL CONTAINMENT REMOVAL: The cwdInsideProject check in hook
+   security validation is BY DESIGN for Claude Code's execution model where
+   cwd can be inside project dir. Do not suggest removing it.
+2. EXCLUSIVE WRITE FLAG (wx): Do not suggest { flag: "wx" } on writeFileSync
+   for atomic write patterns. This project uses tmp+rm+rename atomic writes
+   where a stale .tmp from a crash must be overwritable. wx would cause
+   permanent failure after any crash.
+3. AUDIT TRAIL LOGGING: Generic "add audit trail" suggestions for hook scripts
+   are already tracked. Do not re-suggest unless there's a specific
+   security-critical path that's missing.
+4. SECURE LOGGING / SECRET EXPOSURE: Generic "code snippets in logs could
+   expose secrets" is already tracked. Hook stderr output is local
+   dev-only, not centrally collected.
+5. ENV PATH TRUST: CLAUDE_PROJECT_DIR is validated via bidirectional
+   containment. Do not suggest additional validation unless there's a
+   specific bypass scenario.
+"""
+
+[pr_description]
+publish_labels = true
+publish_description_as_comment = false
+use_bullet_points = true
+
+[github_action]
+auto_review = true
+auto_describe = true
+auto_improve = false
+
+[custom_labels]
+"security" = ["auth", "token", "credential", "password", "inject", "sanitize"]
+"performance" = ["cache", "optimize", "complexity", "batch"]
+"breaking" = ["BREAKING", "migration", "schema"]
