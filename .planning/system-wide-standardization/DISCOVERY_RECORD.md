@@ -1123,6 +1123,94 @@ sub-decisions, amendments, user overrides, or schemas.
 - **User directive:** "There has got to be a stout system for canon changes both
   within the canon itself and downstream as well."
 
+### Batch 5D: Unassessed Ecosystems (D50-D54)
+
+_4 ecosystems from original DIAGNOSIS.md that were never assessed during Batches
+5A-5C. Total ecosystem count revised from 14 to 18. Research completed via
+parallel agents. All questions structured with options/pros/cons/recommendations
+(format fix applied)._
+
+**D#50: Agents: Current and target maturity**
+
+- **Choice:** Current L2 (Structured) → Target L3 (Monitored)
+- **Rationale:** 35 agent definitions with structured patterns, invocation JSONL
+  tracking, but lacking formal health monitoring, Zod schemas, enforcement
+  manifests. L3 adds monitoring without overcomplicating a functional system.
+- **Effort:** M
+- **Staging:** Direct (L2→L3)
+- **Assessment summary:** Agent definitions exist with consistent patterns.
+  Invocation tracking via JSONL. Missing: formal schemas, health checkers,
+  enforcement gates, generated views.
+
+**D#51: Audits: Current and target maturity**
+
+- **Choice:** Current L3 (Monitored) → Target L4 (Enforced), with L5 pathway
+  built in
+- **Rationale:** 22 quality + 7 ecosystem audit skills, results in JSONL
+  history, health scoring. Strong foundation. L4 adds enforcement gates.
+- **Effort:** M
+- **Staging:** Direct (L3→L4) with L5 pathway architecture
+- **Assessment summary:** Mature ecosystem with JSONL storage, health scoring,
+  templates. Missing: formal enforcement manifests, some schema validation,
+  lifecycle hooks. L5 pathway = versioned audit standards, automated regression
+  detection.
+- **User directive:** "L4 with a pathway to L5 built in somewhere for the near
+  future"
+
+**D#52: Frontend/App: Current and target maturity + planning approach**
+
+- **Choice:** Current L2 (Structured) → Target L3 (Monitored). Adapted checklist
+  (app-layer). Planning approach differs from process ecosystems.
+- **Rationale:** Next.js 16, React 19, Tailwind 4 — 'part of but apart.' Has its
+  own conventions but lacks CANON integration. Key insight: what matters most
+  are the CONNECTIONS between process ecosystems and the app layer — points of
+  contact, testing, and health monitoring at those boundaries.
+- **Effort:** M
+- **Staging:** Direct (L2→L3) with adapted checklist
+- **Assessment summary:** Well-structured app layer with modern stack. Missing:
+  CANON-aware health monitoring, formalized connection points to process
+  ecosystems, schema validation at API boundaries.
+- **User insight:** "These last two ecosystems planning approach is going to be
+  different. What will be important are the connections between process
+  ecosystems and app ecosystems — those points of contact, testing, and health
+  need to be solid."
+- **User note:** Operational sprint already has health monitoring items — needs
+  reconciliation during sequencing.
+
+**D#53: Firebase/Backend: Current and target maturity**
+
+- **Choice:** Current L1 (Identified) → Target L3 (Monitored). Adapted checklist
+  (app-layer). Staged approach given larger gap.
+- **Rationale:** Cloud Functions, Firestore, Auth, Storage rules — functional
+  but largely informal. Biggest maturity gap of the 18 ecosystems. Same
+  app-layer planning approach as Frontend/App — connection points matter most.
+- **Effort:** M-L
+- **Staging:** Staged (L1→L2→L3)
+- **Assessment summary:** Firebase services functional but lack formalization.
+  No schemas, no health monitoring, no enforcement. Firestore rules exist but
+  aren't canonized. Cloud Functions lack lifecycle management.
+
+**D#54: App-layer checklist adaptation: formalization approach**
+
+- **Choice:** Formalized per-ecosystem required-vs-optional mapping. Rigid
+  framework with built-in adaptability for different ecosystem types.
+- **Rationale:** The 16-item CANON checklist doesn't apply uniformly — app-layer
+  ecosystems (Frontend/App, Firebase/Backend) use Firestore not JSONL, have
+  different view patterns, etc. Solution: formal mapping document per ecosystem
+  declaring which items are required/optional/adapted, with justification. Order
+  preserved; flexibility earned, not assumed.
+- **User directive:** "Formalize it. We want rigidity when necessary but the
+  ability to adapt to different situations while still maintaining order."
+- **Implementation:**
+  - Per-ecosystem checklist mapping document in `.canon/`
+  - Required fields: checklist_item, status (required|optional|adapted),
+    justification, adaptation_details
+  - Enforcement: Mapping must exist before ecosystem plan begins — no ad-hoc
+    exemptions
+  - Principles: Rigidity where needed (core items like health monitoring,
+    testing), adaptability where warranted (storage format, view generation),
+    order always maintained (formal justification required for any deviation)
+
 ---
 
 ## Core Tenets (T1-T17)
@@ -1295,6 +1383,14 @@ with categories (D#31). Stored as `.canon/tenets.jsonl` (source of truth) +
 | Testing (D47)                | L3 (Monitored)   | L4 (Enforced)  | M      | Direct (L3→L4)      | Lacks formalized enforcement manifest and schema validation.                                              |
 | Archival/Rotation (D48)      | L3 (Monitored)   | L4 (Enforced)  | M      | Direct (L3→L4)      | Lacks formal enforcement and schema validation.                                                           |
 | CANON — Ecosystem Zero (D49) | L0 (Nonexistent) | L5 (Canonized) | L      | Direct (L0→L5)      | Everything — CANON does not exist yet. STOUT enforcement required (bidirectional).                        |
+| Agents (D50)                 | L2 (Structured)  | L3 (Monitored) | M      | Direct (L2→L3)      | Missing: formal schemas, health checkers, enforcement gates, generated views.                             |
+| Audits (D51)                 | L3 (Monitored)   | L4 (Enforced)  | M      | Direct (L3→L4) + L5 | Strong foundation. L5 pathway must be designed in. Versioned standards, regression detection.             |
+| Frontend/App (D52)           | L2 (Structured)  | L3 (Monitored) | M      | Direct (L2→L3)      | Adapted checklist. Connection points to process ecosystems are priority. Health monitoring overlap.       |
+| Firebase/Backend (D53)       | L1 (Identified)  | L3 (Monitored) | M-L    | Staged (L1→L2→L3)   | Adapted checklist. Biggest maturity gap. Functional but entirely informal. Connection points priority.    |
+
+**Checklist Adaptation (D54):** App-layer ecosystems use formalized
+per-ecosystem required-vs-optional mapping. Mapping must exist before ecosystem
+plan begins.
 
 ---
 
@@ -1360,6 +1456,22 @@ All directives captured from the user during the deep-plan discovery process:
   migration-scripted. (2) Downstream propagation — all 13 ecosystems notified,
   migrated, held to new standards. Semver drives blast radius. User directive:
   'stout system.'
+- **app_ecosystem_connections_are_key:** For app-layer ecosystems (Frontend/App,
+  Firebase/Backend), planning approach differs from process ecosystems. What
+  matters most are the CONNECTION POINTS between process ecosystems and app
+  layer — testing, health monitoring, and contracts at those boundaries must be
+  solid.
+- **planning_docs_must_evolve:** All planning docs (roadmap, sprints, grand
+  plan, future roadmap) need updating as we move through plans — BOTH for
+  additions of new work AND deletions of completed or deprecated items. Living
+  documents, not static snapshots.
+- **formalize_adaptability:** Formalize the checklist adaptation approach.
+  Rigidity when necessary but ability to adapt to different situations while
+  maintaining order. No ad-hoc exemptions — adaptations are earned through
+  formal justification.
+- **audits_l5_pathway:** Audits ecosystem must have L5 pathway designed in from
+  the start at L4, not bolted on later. Architecture for L5 readiness is part of
+  the L4 work.
 
 ---
 
@@ -1415,6 +1527,20 @@ stream-of-consciousness items:
     copying is T8 violation
 30. audit-aggregator produces report but nobody places findings into sprints
     unless human does it — another missing pipeline
+31. App-layer ecosystem planning is fundamentally different from process
+    ecosystem planning — connection points between layers are the priority, not
+    internal structure
+32. Operational sprint health monitoring items may overlap with ecosystem
+    standardization health monitoring — needs reconciliation during sequencing
+33. Planning docs (ROADMAP, sprints, grand plan, future roadmap) need continuous
+    updates during plan execution — additions AND deletions of
+    completed/deprecated items
+34. Audits L5 pathway should be architecturally designed during L4 work —
+    versioned audit standards, automated regression detection, self-auditing
+    capabilities
+35. Checklist adaptation formalization: rigid framework + earned flexibility.
+    Per-ecosystem mapping with required justification for any deviation from the
+    16-item standard
 
 ---
 
@@ -1422,6 +1548,7 @@ stream-of-consciousness items:
 
 | Version | Date       | Changes                                                                           |
 | ------- | ---------- | --------------------------------------------------------------------------------- |
+| 0.5     | 2026-03-03 | Batch 5D: D50-D54 (4 new ecosystems + checklist adaptation), 18 total ecosystems  |
 | 0.4     | 2026-03-03 | Deep-plan backfill: D1-D49, T1-T17, ecosystem assessments, user directives, ideas |
 | 0.3     | 2026-03-03 | Added dual-environment config, decisions #19-22, PR creep fix                     |
 | 0.2     | 2026-03-02 | Added two-repo foundation, framework analysis, ecosystem hierarchy                |

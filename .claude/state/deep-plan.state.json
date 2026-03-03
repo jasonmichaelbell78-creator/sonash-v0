@@ -1,8 +1,8 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_5d_qa_pending",
-  "current_batch": "5D Q&A (D50-D54 presented, awaiting user decisions)",
+  "status": "phase_1_batch_5d_complete",
+  "current_batch": "5D COMPLETE — all 18 ecosystems assessed (54 decisions). Batch 6 next.",
   "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D(in progress)",
   "estimated_remaining_batches": "5D Q&A, Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
   "total_ecosystems": 18,
@@ -474,9 +474,71 @@
       },
       "user_directive": "There has got to be a stout system for canon changes both within the canon itself and downstream as well.",
       "batch": "5C"
+    },
+    {
+      "id": 50,
+      "decision": "Agents: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L3 (Monitored)",
+      "rationale": "35 agent definitions with structured patterns, invocation JSONL tracking, but lacking formal health monitoring, Zod schemas, enforcement manifests. L3 adds monitoring without overcomplicating a functional system.",
+      "effort": "M",
+      "staging": "Direct (L2→L3)",
+      "assessment_summary": "Agent definitions exist with consistent patterns. Invocation tracking via JSONL. Missing: formal schemas, health checkers, enforcement gates, generated views.",
+      "batch": "5D"
+    },
+    {
+      "id": 51,
+      "decision": "Audits: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced), with L5 pathway built in",
+      "rationale": "22 quality + 7 ecosystem audit skills, results in JSONL history, health scoring. Strong foundation. L4 adds enforcement gates. USER DIRECTIVE: pathway to L5 must be designed in from the start — not a future bolt-on.",
+      "effort": "M",
+      "staging": "Direct (L3→L4) with L5 pathway architecture",
+      "assessment_summary": "Mature ecosystem with JSONL storage, health scoring, templates. Missing: formal enforcement manifests, some schema validation, lifecycle hooks. L5 pathway = versioned audit standards, automated regression detection.",
+      "user_directive": "L4 with a pathway to L5 built in somewhere for the near future",
+      "batch": "5D"
+    },
+    {
+      "id": 52,
+      "decision": "Frontend/App: Current and target maturity + planning approach",
+      "choice": "Current L2 (Structured) → Target L3 (Monitored). Adapted checklist (app-layer). Planning approach differs from process ecosystems — focus on connection points between process ecosystems and app layer.",
+      "rationale": "Next.js 16, React 19, Tailwind 4 — 'part of but apart.' Has its own conventions but lacks CANON integration. Key insight: what matters most are the CONNECTIONS between process ecosystems and the app layer — points of contact, testing, and health monitoring at those boundaries. USER NOTE: Operational sprint already has health monitoring items that may overlap.",
+      "effort": "M",
+      "staging": "Direct (L2→L3) with adapted checklist",
+      "assessment_summary": "Well-structured app layer with modern stack. Missing: CANON-aware health monitoring, formalized connection points to process ecosystems, schema validation at API boundaries.",
+      "user_insight": "These last two ecosystems planning approach is going to be different. What will be important are the connections between process ecosystems and app ecosystems — those points of contact, testing, and health need to be solid.",
+      "user_note": "Operational sprint had a number of health monitoring stuff in it",
+      "batch": "5D"
+    },
+    {
+      "id": 53,
+      "decision": "Firebase/Backend: Current and target maturity",
+      "choice": "Current L1 (Identified) → Target L3 (Monitored). Adapted checklist (app-layer). Staged approach given larger gap.",
+      "rationale": "Cloud Functions, Firestore, Auth, Storage rules — functional but largely informal. Biggest maturity gap of the 18 ecosystems. Same app-layer planning approach as Frontend/App — connection points matter most.",
+      "effort": "M-L",
+      "staging": "Staged (L1→L2→L3)",
+      "assessment_summary": "Firebase services functional but lack formalization. No schemas, no health monitoring, no enforcement. Firestore rules exist but aren't canonized. Cloud Functions lack lifecycle management.",
+      "batch": "5D"
+    },
+    {
+      "id": 54,
+      "decision": "App-layer checklist adaptation: formalization approach",
+      "choice": "Formalized per-ecosystem required-vs-optional mapping. Rigid framework with built-in adaptability for different ecosystem types.",
+      "rationale": "USER DIRECTIVE: 'Formalize it. Rigidity when necessary but ability to adapt to different situations while still maintaining order.' The 16-item CANON checklist doesn't apply uniformly — app-layer ecosystems (Frontend/App, Firebase/Backend) use Firestore not JSONL, have different view patterns, etc. Solution: formal mapping document per ecosystem declaring which items are required/optional/adapted, with justification. Order preserved; flexibility earned, not assumed.",
+      "user_directive": "Formalize it. We want rigidity when necessary but the ability to adapt to different situations while still maintaining order.",
+      "implementation": {
+        "approach": "Per-ecosystem checklist mapping document in .canon/",
+        "required_fields": [
+          "checklist_item",
+          "status (required|optional|adapted)",
+          "justification",
+          "adaptation_details"
+        ],
+        "enforcement": "Mapping must exist before ecosystem plan begins — no ad-hoc exemptions",
+        "principles": "Rigidity where needed (core items like health monitoring, testing), adaptability where warranted (storage format, view generation), order always maintained (formal justification required for any deviation)"
+      },
+      "batch": "5D"
     }
   ],
-  "total_decisions": 49,
+  "total_decisions": 54,
   "core_tenets": {
     "_organization": "Flat list, 4 categories. 17 total tenets. Locked in Batch 4T (Tenets Discovery).",
     "foundation": {
@@ -648,7 +710,11 @@
     "tdms_must_be_l5": "TDMS feeds into everything, MASTER_DEBT has thousands of entries. Too critical to leave below L5. Acknowledged as massive XL effort.",
     "skill_audit_leverage": "Skill-audit skill exists (.claude/skills/skill-audit/) — created Feb 28, 2026. Born from 64-decision audit of deep-plan skill. 10-category interactive framework (intent fidelity, workflow sequencing, I/O quality, decision points, integration surface, guard rails, prompt engineering, scope boundaries, institutional memory, UX). Used on deep-plan (64 decisions → v2 rewrite) and informed skill-creator v2 update. Codifies the behavioral quality standards from those refinements. This is the mechanism for all 65 skills' ecosystem auditing.",
     "planning_is_skill_roadmap_is_system": "Planning is a SKILL (deep-plan, GSD discovery). The SYSTEM is the Roadmap & Execution ecosystem — where work items land, get prioritized, get executed. Multiple avenues feed in. Non-debt input pipelines are the critical missing piece. Must be high in implementation order as a hub ecosystem.",
-    "canon_enforcement_must_be_stout": "CANON enforcement must be bidirectional and robust: (1) CANON self-protection — changes gated, validated, migration-scripted. (2) Downstream propagation — all 13 ecosystems notified, migrated, held to new standards. Semver drives blast radius. User directive: 'stout system.'"
+    "canon_enforcement_must_be_stout": "CANON enforcement must be bidirectional and robust: (1) CANON self-protection — changes gated, validated, migration-scripted. (2) Downstream propagation — all 13 ecosystems notified, migrated, held to new standards. Semver drives blast radius. User directive: 'stout system.'",
+    "app_ecosystem_connections_are_key": "For app-layer ecosystems (Frontend/App, Firebase/Backend), planning approach differs from process ecosystems. What matters most are the CONNECTION POINTS between process ecosystems and app layer — testing, health monitoring, and contracts at those boundaries must be solid.",
+    "planning_docs_must_evolve": "All planning docs (roadmap, sprints, grand plan, future roadmap) need updating as we move through plans — BOTH for additions of new work AND deletions of completed or deprecated items. Living documents, not static snapshots.",
+    "formalize_adaptability": "Formalize the checklist adaptation approach. Rigidity when necessary but ability to adapt to different situations while maintaining order. No ad-hoc exemptions — adaptations are earned through formal justification.",
+    "audits_l5_pathway": "Audits ecosystem must have L5 pathway designed in from the start at L4, not bolted on later. Architecture for L5 readiness is part of the L4 work."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -680,7 +746,12 @@
     "Roadmap & Execution needs high implementation priority — if we standardize 13 ecosystems, each generates work items needing automated intake",
     "CANON enforcement cascade: version broadcast → health checker detection → migration automation → fail-loud escalation → staggered rollout. Both self-protection and downstream propagation.",
     "deep-plan decisions should auto-generate ROADMAP sprint items — manual copying is T8 violation",
-    "audit-aggregator produces report but nobody places findings into sprints unless human does it — another missing pipeline"
+    "audit-aggregator produces report but nobody places findings into sprints unless human does it — another missing pipeline",
+    "App-layer ecosystem planning is fundamentally different from process ecosystem planning — connection points between layers are the priority, not internal structure",
+    "Operational sprint health monitoring items may overlap with ecosystem standardization health monitoring — need reconciliation during sequencing",
+    "Planning docs (ROADMAP, sprints, grand plan, future roadmap) need continuous updates during plan execution — additions AND deletions of completed/deprecated items",
+    "Audits L5 pathway should be architecturally designed during L4 work — versioned audit standards, automated regression detection, self-auditing capabilities",
+    "Checklist adaptation formalization: rigid framework + earned flexibility. Per-ecosystem mapping with required justification for any deviation from the 16-item standard"
   ],
   "branch_investigation": {
     "branch": "claude/system-standardization-discovery-s201",
@@ -689,35 +760,38 @@
     "investigated": "2026-03-03T13:35:00Z"
   },
   "batch_5d_research": {
-    "description": "4 ecosystems from original DIAGNOSIS.md that were never assessed during Batches 5A-5C",
+    "description": "4 ecosystems from original DIAGNOSIS.md assessed in Batch 5D",
+    "status": "COMPLETE — research done, Q&A done, decisions locked (D50-D54)",
     "ecosystems": [
       {
         "name": "Agents",
         "original_diagnosis_number": 6,
-        "status": "research_in_progress",
+        "status": "assessed_D50",
+        "result": "L2→L3, M effort",
         "note": "35 agent definitions, invocation tracking via agent-invocations.jsonl"
       },
       {
         "name": "Audits",
         "original_diagnosis_number": 9,
-        "status": "research_in_progress",
+        "status": "assessed_D51",
+        "result": "L3→L4 with L5 pathway, M effort",
         "note": "22 quality + 7 ecosystem audit skills, results in history JSONL"
       },
       {
         "name": "Frontend/App",
         "original_diagnosis_number": 11,
-        "status": "research_in_progress",
-        "note": "Next.js 16, React 19, Tailwind 4 — 'part of but apart'"
+        "status": "assessed_D52",
+        "result": "L2→L3 adapted, M effort",
+        "note": "Next.js 16, React 19, Tailwind 4 — connection points to process ecosystems are priority"
       },
       {
         "name": "Firebase/Backend",
         "original_diagnosis_number": 12,
-        "status": "research_in_progress",
-        "note": "Cloud Functions, Firestore, Auth, Storage rules"
+        "status": "assessed_D53",
+        "result": "L1→L3 staged adapted, M-L effort",
+        "note": "Cloud Functions, Firestore, Auth, Storage rules — biggest maturity gap"
       }
-    ],
-    "process": "Research agents running in parallel → structured Q&A with options/pros/cons/recommendations → user decisions → DISCOVERY_RECORD update",
-    "qa_format_fix": "User flagged Q46-Q49 were bare questions lacking options, suggestions, recommendations. All Batch 5D questions will have full structured format."
+    ]
   },
   "discovery_record_backfill": {
     "status": "complete",
@@ -726,36 +800,38 @@
     "completed_at": "2026-03-03T18:10:00Z"
   },
   "batch_5d_qa": {
-    "status": "questions_presented_awaiting_user",
-    "questions": [
-      {
-        "id": "D50",
-        "topic": "Agents ecosystem maturity target",
-        "recommendation": "L2→L3, M effort, direct"
-      },
+    "status": "COMPLETE — all 5 decisions locked",
+    "decisions_recorded": [
+      { "id": "D50", "topic": "Agents maturity", "result": "L2→L3 (accepted recommendation)" },
       {
         "id": "D51",
-        "topic": "Audits ecosystem maturity target",
-        "recommendation": "L3→L4, M effort, direct"
+        "topic": "Audits maturity",
+        "result": "L3→L4 with L5 pathway built in (user elevated)"
       },
       {
         "id": "D52",
-        "topic": "Frontend/App maturity target",
-        "recommendation": "L2→L3, M effort, adapted checklist"
+        "topic": "Frontend/App maturity",
+        "result": "L2→L3 adapted (user insight: connection points priority)"
       },
       {
         "id": "D53",
-        "topic": "Firebase/Backend maturity target",
-        "recommendation": "L1→L3, M-L effort, staged, adapted checklist"
+        "topic": "Firebase/Backend maturity",
+        "result": "L1→L3 staged adapted (accepted recommendation)"
       },
       {
         "id": "D54",
-        "topic": "App-layer checklist adaptation approach",
-        "recommendation": "Per-ecosystem required-vs-optional mapping (Option A)"
+        "topic": "Checklist adaptation",
+        "result": "Formalized per-ecosystem mapping (user directive: rigidity + adaptability)"
       }
     ],
-    "research_agents_completed": true,
-    "all_4_ecosystems_researched": ["Agents", "Audits", "Frontend/App", "Firebase/Backend"]
+    "user_insights_captured": [
+      "App-layer planning differs from process ecosystems — connections between layers are priority",
+      "Operational sprint has health monitoring overlap — needs reconciliation",
+      "Planning docs must evolve — additions AND deletions as plans execute",
+      "Audits L5 pathway must be designed in during L4, not bolted on",
+      "Formalize adaptability: rigidity when necessary, flexibility earned through justification"
+    ],
+    "completed_at": "2026-03-03T18:40:00Z"
   },
   "session_corrections": [
     "Question format quality: Q46-Q49 lacked options/pros/cons/recommendations. Fixed going forward.",
@@ -763,6 +839,6 @@
     "Ecosystem count: Revised from 14 to 18 total. 4 ecosystems from original DIAGNOSIS were never assessed.",
     "End-of-process audit: User confirmed audit will happen after plan is set, not before."
   ],
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T (Tenets Discovery) COMPLETE (D28-D32, 17 tenets locked). 14 of 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C, D33-D49). 49 total decisions.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Planning RENAMED to 'Roadmap & Execution' (USER INSIGHT). Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nDISCOVERY_RECORD BACKFILL COMPLETE: 559→1080 lines, all D1-D49, T1-T17, directives, ideas. Committed as 942e3e6.\n\nBatch 5D Q&A PRESENTED (D50-D54): All 4 research agents completed. Structured questions with options/pros/cons/recommendations presented to user. AWAITING USER DECISIONS:\n  - D50: Agents ecosystem → recommended L2→L3 (M, direct)\n  - D51: Audits ecosystem → recommended L3→L4 (M, direct)\n  - D52: Frontend/App → recommended L2→L3 (M, adapted checklist)\n  - D53: Firebase/Backend → recommended L1→L3 (M-L, staged, adapted checklist)\n  - D54: App-layer checklist adaptation → recommended per-ecosystem required-vs-optional mapping\n\n18 TOTAL ECOSYSTEMS (was 14 — 4 from original DIAGNOSIS never assessed).\n\n3 user overrides total: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n\nSession corrections: (1) Question format must include options/pros/cons/recommendations. (2) DISCOVERY_RECORD must be continuously updated. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nUNANSWERED: User asked about document consolidation approach (one doc vs two) — still pending.\n\nNext: User answers D50-D54 → record decisions → Batch 6 (Sequencing + Prioritization) → possible Batch 7 (Edge Cases/Final) → end-of-process audit.",
-  "updated": "2026-03-03T18:12:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T COMPLETE (D28-D32, 17 tenets locked). ALL 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C+5D, D33-D54). 54 TOTAL DECISIONS.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nBatch 5D (D50-D54): Agents (L2→L3, M). Audits (L3→L4 WITH L5 PATHWAY, M). Frontend/App (L2→L3 ADAPTED, M). Firebase/Backend (L1→L3 STAGED ADAPTED, M-L). Checklist adaptation FORMALIZED (rigid framework + earned flexibility).\n\nKEY BATCH 5D INSIGHTS:\n  - App-layer ecosystems (Frontend/App, Firebase/Backend) planning approach differs — CONNECTION POINTS between process and app layers are the priority\n  - Operational sprint has health monitoring overlap — needs reconciliation\n  - All planning docs must evolve with the plan — additions AND deletions\n  - Audits L5 pathway must be architecturally designed during L4 work\n  - Checklist adaptation formalized: rigidity + earned adaptability with justification\n\nDISCOVERY_RECORD BACKFILL COMPLETE: 559→1080 lines. Needs D50-D54 appended next.\n\n18 TOTAL ECOSYSTEMS. 54 DECISIONS. 17 TENETS. All assessments locked.\n\n3 user overrides: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n1 user elevation: Audits→L4 with L5 pathway.\n\nSession corrections still in effect: (1) Structured Q&A format. (2) Continuous DISCOVERY_RECORD updates. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nUNANSWERED: User asked about document consolidation approach (one doc vs two) — still pending.\n\nNEXT: Batch 6 (Sequencing + Prioritization) — order the 18 ecosystem standardizations. Then possible Batch 7 (Edge Cases/Final). Then end-of-process completeness audit.",
+  "updated": "2026-03-03T18:40:00Z"
 }
