@@ -1,7 +1,7 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_0_diagnosis_discussion",
+  "status": "phase_0_diagnosis_approved",
   "current_batch": 0,
   "total_batches_so_far": 0,
   "decisions": [],
@@ -11,37 +11,35 @@
     "decisions": null,
     "plan": null
   },
-  "phase_0_discussion": {
-    "user_questions_pending": [
-      "Q1: Should CANON be an ecosystem? It's definitely a system. Gaps in cross-cutting subsystems?",
-      "Q2: Expand on Configuration — meaning and necessity",
-      "Q3: Planning — this planning or project-wide planning standardization in perpetuity?"
+  "phase_0_outcomes": {
+    "diagnosis_confirmed": true,
+    "user_approved_all_responses": true,
+    "ecosystem_count_revised": "13 ecosystems + CANON as Ecosystem Zero (meta-system)",
+    "cross_cutting_subsystems_revised": 13,
+    "cross_cutting_list": [
+      "Testing", "Dashboards/Health", "JSONL Storage", "Schema Validation",
+      "State Management", "Documentation", "Enforcement/Gates", "Analytics/Metrics",
+      "Archival/Rotation", "Versioning/Migration", "Error Handling/Logging",
+      "Naming Conventions", "Lifecycle Management"
     ],
-    "diagnosis_confirmed": false,
-    "batch_1_questions_presented": true,
-    "batch_1_questions_NOT_YET_ANSWERED": "User asked to pause — wants to discuss diagnosis responses first",
-    "hierarchy_concept_presented": "CANON → Process → App → Cross-Cutting",
-    "cross_cutting_subsystems_9": ["Testing", "Dashboards/Health", "JSONL Storage", "Schema Validation", "State Management", "Documentation", "Enforcement/Gates", "Analytics/Metrics", "Archival/Rotation"],
-    "gaps_identified": ["CANON itself", "Cross-cutting subsystems", "Configuration", "Planning/GSD"],
-    "batch_1_questions_7": [
-      "Q1: CANON scope — what does it standardize?",
-      "Q2: Ecosystem boundaries — flat or hierarchical?",
-      "Q3: Cross-cutting subsystem handling — shared, per-ecosystem, or hybrid?",
-      "Q4: Where does this planning live?",
-      "Q5: Grand Plan reassessment — when?",
-      "Q6: Framework repo relationship — how tight?",
-      "Q7: Idea capture mechanism — how?"
-    ]
+    "canon_definition": "Ecosystem Zero — meta-system that defines what an ecosystem IS. Sits above all others. Has its own files, schemas, standards, versioning, testing.",
+    "configuration_definition": "Single parameterization file (framework.config.json concept) — project-level settings vs hardcoded values across 70+ scripts",
+    "planning_as_system": "Planning (deep-plan, GSD, roadmapping, milestones) is a canonizable system — standardized in perpetuity",
+    "deep_plan_and_gsd_are_backbone": "User is a big fan of deep-plan + GSD — these are the backbone, build from there",
+    "batch_1_discovery_questions_ready": true,
+    "batch_1_NOT_YET_ANSWERED": "7 questions were presented but user paused to discuss diagnosis. Need to re-present in next session."
   },
   "user_directives": {
     "roadmap_will_change": "ROADMAP.md will need additions, changes, removals after this process",
     "grand_plan_reassessment": "TDMS Grand Plan needs reassessment — changing many files invalidates existing debt items",
-    "state_persistence_standard": "Constant state file saving is a standard here AND repo-wide going forward",
+    "state_persistence_standard": "Constant state file saving is a standard here AND repo-wide going forward — to be canonized as rules",
     "capture_all_ideas": "Stream-of-consciousness ideas MUST be captured even if not immediately actionable",
-    "canon_is_foundation": "CANON is the building block for all ecosystems, not an ecosystem itself",
+    "canon_is_ecosystem_zero": "CANON is the meta-system/Ecosystem Zero — building block for all others",
     "overlap_management": "Many points of overlap between ecosystems — must not let one supersede another",
     "duplicate_subsystems": "Cross-cutting subsystems exist in multiple ecosystems and need mapping",
-    "standardization_is_key": "Duplicate subsystems must follow shared standards"
+    "standardization_is_key": "Duplicate subsystems must follow shared standards",
+    "pr_creep_guard": "User has tendency toward 30-50 commit PRs. Wants guardrail mechanism SOON. Recommended: commit counter hook warning at 10, blocking at 25 with override.",
+    "lifecycle_management": "User agreed — helps future-proof. Added to cross-cutting subsystems."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -49,11 +47,16 @@
     "State persistence should use whatever resources are best",
     "Future idea capture mechanism needed",
     "Cross-ecosystem subsystem mapping is its own discovery task",
-    "Canon is the constitutional layer — all others derive from it",
-    "Is CANON an ecosystem or a system? Depends on definition — needs decision",
-    "Planning standardization (deep-plan, GSD, etc.) may need its own canon treatment"
+    "Canon is Ecosystem Zero — all others derive from it",
+    "Planning standardization (deep-plan, GSD) as backbone — build from there, not too far down the line",
+    "PR creep guardrail: commit counter hook (warn 10, block 25, override available)",
+    "Branch scope declaration idea: S/M/L with commit brackets",
+    "Session-end PR gate: flag if >15 commits not in a PR",
+    "State saving rules need to be canonized",
+    "13 cross-cutting subsystems (added: versioning/migration, error handling, naming, lifecycle)",
+    "Configuration as single source of truth vs hardcoded values"
   ],
-  "compaction_warning": "User reported 12% until compaction during Phase 0 discussion",
-  "resume_instructions": "Read DISCOVERY_RECORD.md and DIAGNOSIS.md for full context. User has 3 pending questions about diagnosis. Batch 1 discovery questions were presented but user paused to discuss diagnosis first. Resume at Phase 0 discussion.",
-  "updated": "2026-03-02T18:35:00Z"
+  "resume_instructions": "READ THESE FILES IN ORDER: (1) .planning/system-wide-standardization/DISCOVERY_RECORD.md (2) .planning/system-wide-standardization/DIAGNOSIS.md (3) This state file. Phase 0 diagnosis is APPROVED. Next: re-present Batch 1 discovery questions (7 questions on Architecture & Foundation — they were shown but user paused to discuss diagnosis first, never answered them). The 7 questions are in phase_0_discussion.batch_1_questions_7 below. Also: PR creep guardrail is wanted SOON — consider as early deliverable.",
+  "compaction_warning": "Session hit compaction boundary. All state saved. Resume next session.",
+  "updated": "2026-03-02T18:45:00Z"
 }

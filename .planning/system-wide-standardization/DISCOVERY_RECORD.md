@@ -336,6 +336,13 @@ framework repo decisions/plans as crucial reference material.
 | 9 | 2026-03-02 | Dedicated docs folder for this initiative | Massive documentation expected |
 | 10 | 2026-03-02 | Framework repo = READ-ONLY reference for now | No simultaneous sync |
 | 11 | 2026-03-02 | First deep-plan = ecosystem mapping + ingestion | Roadmap for the roadmap |
+| 12 | 2026-03-02 | CANON = Ecosystem Zero (meta-system above all others) | Defines what an ecosystem IS |
+| 13 | 2026-03-02 | 13 cross-cutting subsystems (was 9, added versioning, error handling, naming, lifecycle) | CANON standardizes all of these |
+| 14 | 2026-03-02 | Configuration = single parameterization file concept | Replace hardcoded values across 70+ scripts |
+| 15 | 2026-03-02 | Planning (deep-plan, GSD) = canonizable system, backbone for everything | Standardized in perpetuity |
+| 16 | 2026-03-02 | State saving rules to be canonized | Guard against compaction |
+| 17 | 2026-03-02 | PR creep guardrail needed SOON | Commit counter hook: warn 10, block 25 |
+| 18 | 2026-03-02 | Lifecycle management added to cross-cutting subsystems | Future-proofing |
 
 ---
 
