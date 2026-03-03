@@ -1,10 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "tenets_discovery_complete",
-  "current_batch": "4T (Tenets Discovery — inserted between Batch 4 and Batch 5)",
-  "total_batches_so_far": 5,
-  "estimated_remaining_batches": "2-3 (Batch 5: Ecosystem Catalog + Maturity Assessments, Batch 6: Sequencing + Prioritization, possible Batch 7: Edge Cases/Final)",
+  "status": "phase_1_batch_5a_complete",
+  "current_batch": "5A",
+  "total_batches_so_far": "4 + 4T + 5A",
+  "estimated_remaining_batches": "5B (ecosystems 6-10), 5C (ecosystems 11-13 + CANON), Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
   "decisions": [
     {
       "id": 1,
@@ -273,11 +273,61 @@
         "added": "ISO date",
         "version": "0.1.0 (inherits CANON version)"
       }
+    },
+    {
+      "id": 33,
+      "decision": "PR Review: Current and target maturity",
+      "choice": "Current L4 (Enforced) → Target L5 (Canonized)",
+      "rationale": "Reference implementation. 10/16 present, 4 partial, 2 absent. First ecosystem to reach L5 — validates CANON framework itself before applying to others.",
+      "effort": "S",
+      "staging": "Direct (L4→L5)",
+      "assessment_summary": "Strongest ecosystem. 56 test files, 10 health checkers, multi-mechanism enforcement. Gaps are post-v2 items (rollback, deprecation policy) and formalization (naming validation pending CANON, contracts pending format definition)."
+    },
+    {
+      "id": 34,
+      "decision": "TDMS: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L5 (Canonized)",
+      "rationale": "USER OVERRIDE: TDMS feeds into everything, MASTER_DEBT has thousands of entries, too critical to leave below L5. Acknowledged as massive effort across 37 scripts.",
+      "effort": "XL (L2→L5 across 37 scripts with thousands of data entries)",
+      "staging": "Staged: L2→L3 (Zod+monitoring) → L4 (enforcement) → L5 (canonized). Each stage is L effort.",
+      "assessment_summary": "3/16 present, 8 partial, 5 absent. No Zod schemas, no enforcement manifest, no versioning. 37 scripts with inconsistent patterns. Massive scope but critical system.",
+      "user_override": true,
+      "original_recommendation": "Target L3→L4 staged"
+    },
+    {
+      "id": 35,
+      "decision": "Sessions: Current and target maturity",
+      "choice": "Current L1 (Identified) → Target L3 (Monitored)",
+      "rationale": "Cross-cutting infrastructure — every ecosystem depends on session state being reliable. Schemas + JSONL + monitoring gives reliability layer. Full enforcement (L4) too aggressive for infrastructure that needs graceful degradation.",
+      "effort": "M",
+      "staging": "Direct (L1→L3)",
+      "assessment_summary": "2/16 present, 8 partial, 6 absent. State persistence works, lifecycle defined, but nothing else formalized. Runs on convention."
+    },
+    {
+      "id": 36,
+      "decision": "Hooks: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced)",
+      "rationale": "Infrastructure that other ecosystems depend on. Strong operational automation, good monitoring. Delta is mainly Zod schemas + formalized contracts + versioning.",
+      "effort": "M",
+      "staging": "Direct (L3→L4)",
+      "assessment_summary": "5/16 present, 6 partial, 5 absent. Strong enforcement (IS the enforcement system for the repo), good monitoring via ecosystem audit. Gaps in formalization."
+    },
+    {
+      "id": 37,
+      "decision": "Skills: Current and target maturity",
+      "choice": "Current L1 (Identified) → Target L3 (Monitored)",
+      "rationale": "USER OVERRIDE from L2→L3 staged to direct L3. Large undertaking across 65 skills. Skill-audit skill exists and was recently used on skill-creator and deep-plan with great results — that process should be leveraged during ecosystem standardization.",
+      "effort": "L (65 skills, each needs ecosystem audit + standardization)",
+      "staging": "Direct (L1→L3). Skill-audit skill drives per-skill assessment.",
+      "assessment_summary": "0/16 present, 8 partial, 8 absent. 65 skills, structurally validated but zero data tracking, zero formalized contracts, zero lifecycle management.",
+      "user_override": true,
+      "original_recommendation": "Target L2→L3 staged",
+      "user_note": "Skill-audit skill (recently created) follows processes enacted in refined skill-creator and deep-plan skills. All skills will need ecosystem auditing."
     }
   ],
-  "total_decisions": 32,
+  "total_decisions": 37,
   "core_tenets": {
-    "_organization": "Flat list, 4 categories. 16 total tenets. Locked in Batch 4T (Tenets Discovery).",
+    "_organization": "Flat list, 4 categories. 17 total tenets. Locked in Batch 4T (Tenets Discovery).",
     "foundation": {
       "T1_canon_is_ecosystem_zero": {
         "statement": "CANON is the meta-system above all others. It defines the rules, lives at `.canon/` repo root, and is the first ecosystem standardized.",
@@ -443,7 +493,9 @@
     "ecosystem_plan_sequencing_matters": "Dependency-wise sequencing between ecosystem plans is important. Discoveries in one plan may feed into another.",
     "mcp_memory_enabled": "enableAllProjectMcpServers flipped to true. Verify memory MCP tools available next session.",
     "interactivity_is_paramount": "Interactivity of utmost importance across everything whenever possible. Skills should be interactive (deep-plan as exemplar), not monologue dumps. Extends beyond skills to all methods/tools where applicable.",
-    "dual_environment_is_constraint": "System must work identically on Claude Code Desktop (Linux sandbox) and Windows CLI. Platform-agnostic by default. Node.js over bash. Formalized as tenet T7."
+    "dual_environment_is_constraint": "System must work identically on Claude Code Desktop (Linux sandbox) and Windows CLI. Platform-agnostic by default. Node.js over bash. Formalized as tenet T7.",
+    "tdms_must_be_l5": "TDMS feeds into everything, MASTER_DEBT has thousands of entries. Too critical to leave below L5. Acknowledged as massive XL effort.",
+    "skill_audit_leverage": "Skill-audit skill exists (.claude/skills/skill-audit/) — created Feb 28, 2026. Born from 64-decision audit of deep-plan skill. 10-category interactive framework (intent fidelity, workflow sequencing, I/O quality, decision points, integration surface, guard rails, prompt engineering, scope boundaries, institutional memory, UX). Used on deep-plan (64 decisions → v2 rewrite) and informed skill-creator v2 update. Codifies the behavioral quality standards from those refinements. This is the mechanism for all 65 skills' ecosystem auditing."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -478,6 +530,6 @@
     "reason": "Squash-merged into main as PR #415 (commit 398904e). Zero diff between branch tip and main. All 6 branch commits are captured in the squash.",
     "investigated": "2026-03-03T13:35:00Z"
   },
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T (Tenets Discovery) COMPLETE (5 new decisions: D28-D32, 32 total). 17 core tenets locked across 4 categories (Foundation: 3, Design: 4, Operations: 5, Process: 5). Includes platform-agnostic tenet (T7) for dual-environment constraint. Tenets to be stored as `.canon/tenets.jsonl` — first CANON artifact. Next: Batch 5 — Ecosystem Catalog + Maturity Assessments using the 16-item checklist against all 13 ecosystems + CANON. Consider sub-batches of 4-5 ecosystems for interactivity. Branch claude/system-standardization-discovery-s201 confirmed safe to delete (squash-merged as PR #415).",
-  "updated": "2026-03-03T13:40:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T (Tenets Discovery) COMPLETE (D28-D32, 17 tenets locked). Batch 5A COMPLETE (D33-D37, ecosystems 1-5 assessed). 37 total decisions. Sub-batch 5A: PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L). Two user overrides: TDMS pushed to L5 (critical system), Skills pushed to direct L3 (leverage skill-audit skill). Skill-audit skill researched and documented (.claude/skills/skill-audit/, Feb 28 2026, 10-category framework born from 64-decision deep-plan audit). Next: Sub-batch 5B — ecosystems 6-10 (Alerts, Scripts, Docs, CI/CD, Analytics). Then 5C — ecosystems 11-13 + CANON self-assessment. Then Batch 6 (Sequencing + Prioritization).",
+  "updated": "2026-03-03T15:05:00Z"
 }
