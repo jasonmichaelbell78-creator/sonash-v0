@@ -1,10 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_3_complete",
-  "current_batch": 3,
-  "total_batches_so_far": 3,
-  "estimated_remaining_batches": "2-3 (Batch 4: CANON Spec Details + Catalog Schema, Batch 5: Sequencing & Rollout Details, Batch 6: Edge Cases if needed)",
+  "status": "phase_1_batch_4_complete",
+  "current_batch": 4,
+  "total_batches_so_far": 4,
+  "estimated_remaining_batches": "2-3 (Batch 5: Ecosystem Catalog + Maturity Assessments, Batch 6: Sequencing + Prioritization, possible Batch 7: Edge Cases/Final)",
   "decisions": [
     {
       "id": 1,
@@ -111,68 +111,105 @@
     },
     {
       "id": 14,
-      "decision": "Enforcement model severity levels",
-      "choice": "4-tier: error (blocking), warning (non-blocking), info (non-blocking), silent (logged only)",
-      "rationale": "User approved 4-tier. Key addition: info-level MUST surface visibly (alerts/dashboard), not be silently swallowed. Visibility is a core tenet.",
-      "sub_decisions": {
-        "info_visibility": "Info-level findings must surface in alerts or dashboards. Even minor behind-the-scenes issues need visibility.",
-        "no_manual_processes": "Manual processes that can be missed must be avoided. Enforcement invoked through skills, pre-commits, hooks — automated paths only.",
-        "reminder_philosophy": "User doesn't want to miss anything because they couldn't remember or weren't reminded. System must proactively surface what needs attention."
-      }
+      "decision": "Enforcement severity levels",
+      "choice": "4-tier: error (blocking), warning (non-blocking + logged), info (displayed only), silent (suppressed)",
+      "rationale": "Granular enough without being complex. Silent tier handles known-accepted items."
     },
     {
       "id": 15,
-      "decision": "Gate placement",
-      "choice": "Tiered: fast checks pre-commit, medium checks pre-push, heavy checks in PR/CI",
-      "rationale": "Balances developer flow with thoroughness. Fast feedback loop for common issues, comprehensive checks before merge."
+      "decision": "Enforcement gate placement",
+      "choice": "Tiered: pre-commit (fast checks), pre-push (full validation), PR (comprehensive)",
+      "rationale": "Fast feedback for quick checks, thorough validation before sharing. Each gate has appropriate scope."
     },
     {
       "id": 16,
       "decision": "Naming convention depth",
-      "choice": "Files + exports + JSONL fields covered by naming conventions",
-      "rationale": "Covers the practical surface area without over-specifying. Files, code exports, and data field names follow CANON conventions."
+      "choice": "Files + exports + JSONL fields (3-layer naming standard)",
+      "rationale": "Covers the surfaces that matter most. Full taxonomy is overkill, files-only misses the data layer."
     },
     {
       "id": 17,
       "decision": "Health checker interface",
-      "choice": "Current interface + trend data + actionable recommendations",
-      "rationale": "Trends show direction (improving/degrading), recommendations tell you what to do next. Aligns with visibility-first philosophy."
+      "choice": "Current interface + trend data + recommendations (enhanced)",
+      "rationale": "Trend enables progress tracking over time. Recommendations make health checks actionable, not just diagnostic."
     },
     {
       "id": 18,
-      "decision": "Dashboard generation",
-      "choice": "Hybrid: auto-generate on data change + on-demand refresh",
-      "rationale": "User confirmed: scripts invoked automatically at multiple points (hooks, skills, CI). Hybrid ensures dashboards stay current without manual intervention.",
-      "sub_decisions": {
-        "automatic_invocation": "Dashboard generation scripts triggered automatically via multiple paths: session hooks, pre-push, skill invocations, CI pipeline. Not reliant on manual invocation."
-      }
+      "decision": "Dashboard generation trigger",
+      "choice": "Hybrid: auto-generate on data change + on-demand for full rebuild",
+      "rationale": "Stale dashboards are useless, but full rebuild on every change is wasteful. Incremental auto + manual full."
     },
     {
       "id": 19,
-      "decision": "Migration strategy",
-      "choice": "Pilot + rollout: validate on 1-2 ecosystems, then systematic rollout",
-      "rationale": "User agreed but emphasized: rollout plan needs careful planning with extensive testing. Must not miss anything during migration.",
-      "sub_decisions": {
-        "rollout_rigor": "Rollout plan must be planned thoroughly so nothing is missed. Extensive testing at each stage. Each ecosystem migration gets validation before proceeding to next."
-      }
+      "decision": "Migration strategy for existing ecosystems",
+      "choice": "Pilot + rollout: validate with 2-3 near-compliant ecosystems, then roll out to rest",
+      "rationale": "Validates CANON itself before forcing it on complex ecosystems. Early pilots surface spec issues cheaply."
     },
     {
       "id": 20,
-      "decision": "Dependency declaration",
-      "choice": "Both: per-ecosystem declares its own deps + centralized graph computed from declarations",
-      "rationale": "Per-ecosystem is source of truth (consistent with Decision #4), centralized view is generated/computed."
+      "decision": "Dependency declaration method",
+      "choice": "Both: per-ecosystem declares own deps + central registry aggregates all",
+      "rationale": "Per-ecosystem is source of truth (consistent with Decision #4). Central view is generated/computed for cross-cutting analysis."
+    },
+    {
+      "id": 21,
+      "decision": ".canon/ directory structure",
+      "choice": "Hybrid: CANON infrastructure in categorized dirs + per-ecosystem dirs for assessment/detail data",
+      "rationale": "Best of both worlds. CANON's own config/schemas/reports organized by function. Each ecosystem's data co-located in its own dir.",
+      "structure": {
+        ".canon/canon.json": "CANON meta (version, config)",
+        ".canon/ecosystems.jsonl": "Registry (one line per ecosystem)",
+        ".canon/schemas/": "Zod schemas, JSON schemas",
+        ".canon/config/": "Global defaults, override rules",
+        ".canon/reports/": "Generated dashboards/matrix views",
+        ".canon/ecosystems/{id}/": "Per-ecosystem detail + assessment data"
+      }
+    },
+    {
+      "id": 22,
+      "decision": "Ecosystem registry JSONL field depth",
+      "choice": "Extensible core: required core fields + optional fields with defaults. Schema validates required, accepts extra.",
+      "rationale": "Registry line is summary/index. Detail files have full picture. Room for growth — new fields without breaking existing data."
+    },
+    {
+      "id": 23,
+      "decision": "Maturity assessment storage",
+      "choice": "Per-ecosystem files: `.canon/ecosystems/{id}/assessment.jsonl` — co-located with ecosystem data",
+      "rationale": "Keeps ecosystem data co-located (consistent with Decision #4). Each ecosystem owns its assessment. Matrix/summary views generated."
+    },
+    {
+      "id": 24,
+      "decision": "Subsystem interface contract format",
+      "choice": "Zod as source of truth → JSON Schema auto-generated for external tooling. JSONL tracks implementation status.",
+      "rationale": "Follows established pattern: source of truth (Zod) → generated views (JSON Schema). Plus JSONL tracks adoption per ecosystem."
+    },
+    {
+      "id": 25,
+      "decision": "Health report output format",
+      "choice": "JSON summary envelope (score, trend, metadata) + JSONL findings stream (one finding per line)",
+      "rationale": "Summary is single object for dashboards. Individual findings are JSONL (appendable, processable). Best of both."
+    },
+    {
+      "id": 26,
+      "decision": "Enforcement manifest schema",
+      "choice": "Single JSONL file per ecosystem, each rule has `tier` + `severity` fields",
+      "rationale": "Single file easier to maintain/query. Tier (pre-commit/pre-push/PR) + severity (error/warning/info/silent from #14) per rule. Tools filter by tier at runtime."
+    },
+    {
+      "id": 27,
+      "decision": "Generated view production method",
+      "choice": "Standardized script interface: each view is a script with contract (reads JSONL → outputs MD). Standard CLI interface (--input, --output).",
+      "rationale": "Standardized interface, not implementation. Scripts can be simple or complex — the contract is what's standardized. Follows Decision #10 pattern-level standardization."
     }
   ],
-  "total_decisions": 20,
+  "total_decisions": 27,
   "core_tenets": {
     "jsonl_first": "JSONL is canonical and AI-consumed. MD is for human consumption, generated from JSONL info. Core tenet moving forward.",
     "canon_is_ecosystem_zero": "CANON is the meta-system above all others, lives at `.canon/` repo root",
     "maturity_is_measurable": "Completeness checklist (16 items) → computed level, not subjective grades",
     "room_for_growth": "Nothing ships as a dead end. Everything must be upgradeable. Ease the upgrade process. Things change all the time.",
     "plan_as_you_go": "This deep plan produces catalog + sequence. Each ecosystem gets its own deep-plan when its turn arrives. No stale pre-plans.",
-    "visibility_is_key": "Even minor behind-the-scenes issues must surface somewhere visible. No silent failures, no hidden state. Alerts, dashboards, and notifications are mandatory surfacing mechanisms.",
-    "no_manual_forgettable_processes": "If a process can be forgotten or missed, it must be automated. Skills, pre-commits, hooks, CI — not human memory. User must be reminded/prompted, never left to remember on their own.",
-    "automation_over_discipline": "Prefer automated enforcement (hooks, skills, gates) over relying on humans to remember to do things. The system should catch what humans miss."
+    "interactivity_first": "Interactivity is of utmost importance across everything whenever possible. Primarily in skill structure but extends to other methods. Deep-plan skill is the exemplar — interactive batch questioning, user-driven decisions, no monologue dumps. All tools/skills should prefer interactive workflows over batch output."
   },
   "artifacts": {
     "diagnosis": ".planning/system-wide-standardization/DIAGNOSIS.md",
@@ -216,10 +253,8 @@
     "no_superseding_ecosystem": "Primary ownership = maintenance responsibility, not authority. No ecosystem supersedes another.",
     "plan_as_you_go": "Each ecosystem gets its own deep-plan when sequenced. Don't pre-plan all 13 — they'd go stale.",
     "ecosystem_plan_sequencing_matters": "Dependency-wise sequencing between ecosystem plans is important. Discoveries in one plan may feed into another.",
-    "mcp_memory_enabled": "enableAllProjectMcpServers flipped to true. MCP memory + sonarcloud servers confirmed available.",
-    "visibility_is_non_negotiable": "Even info-level findings must surface somewhere visible. No silent anything. Behind-the-scenes issues need dashboards/alerts.",
-    "no_forgettable_manual_steps": "Don't rely on user memory. Automate via skills, hooks, pre-commits. User wants to be reminded/prompted, not left to remember.",
-    "migration_rollout_rigor": "Pilot+rollout strategy must be planned thoroughly with extensive testing. Must not miss anything during ecosystem migrations."
+    "mcp_memory_enabled": "enableAllProjectMcpServers flipped to true. Verify memory MCP tools available next session.",
+    "interactivity_is_paramount": "Interactivity of utmost importance across everything whenever possible. Skills should be interactive (deep-plan as exemplar), not monologue dumps. Extends beyond skills to all methods/tools where applicable."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -240,10 +275,9 @@
     "Upgrade-friendliness as design principle in every component",
     "MCP memory as secondary state backup (verify next session)",
     "Configure episodic memory for remote sessions (broader benefit beyond this plan)",
-    "Dashboard scripts should have multiple automatic invocation points (hooks, skills, CI)",
-    "Info-level enforcement findings need a visible aggregation point (alerts skill? dedicated dashboard?)",
-    "Migration rollout plan itself should be a deliverable of this deep plan — not ad hoc"
+    "Interactivity-first as a design tenet for all skills and tooling — batch questioning > monologue output",
+    "Health report dual format (JSON envelope + JSONL findings) could become a general pattern for all ecosystem outputs"
   ],
-  "resume_instructions": "Phase 0 APPROVED. Batch 1 COMPLETE (7 decisions). Batch 2 COMPLETE (6 decisions). Batch 3 COMPLETE (7 decisions, total 20). MCP memory + sonarcloud servers confirmed available. 3 new core tenets added: visibility-is-key, no-manual-forgettable-processes, automation-over-discipline. Next: present Batch 4 — CANON Spec Details + Catalog Schema. Cover: CANON directory structure, ecosystem JSONL schema fields, maturity assessment JSONL format, subsystem interface contracts schema, health report output format, enforcement manifest schema, generated view templates. Estimated 2-3 batches remaining.",
-  "updated": "2026-03-03T13:10:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions total). New tenet added: interactivity-first. Next: present Batch 5 — Ecosystem Catalog + Maturity Assessments. This batch will use the 16-item checklist to assess each of the 13 ecosystems + CANON, compute maturity levels, and map cross-cutting subsystem coverage. This is the heaviest content batch. Consider splitting into sub-batches (e.g., 4-5 ecosystems per sub-batch) for interactivity. Estimated 2-3 batches remaining after Batch 5.",
+  "updated": "2026-03-03T13:30:00Z"
 }
