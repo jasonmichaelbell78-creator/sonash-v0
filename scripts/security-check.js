@@ -138,7 +138,7 @@ const SKIP_PATTERNS = [
   /[\\/]out[\\/]/,
   /\.d\.ts$/,
   /tests[\\/]semgrep[\\/]/,
-  /\.planning[\\/]/,
+  /\.planning[\\/].*[\\/]reference[\\/]/, // skip copied framework files, scan .planning/ docs
 ];
 
 /**

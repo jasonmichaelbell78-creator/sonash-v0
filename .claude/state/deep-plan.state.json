@@ -17,10 +17,19 @@
     "ecosystem_count_revised": "13 ecosystems + CANON as Ecosystem Zero (meta-system)",
     "cross_cutting_subsystems_revised": 13,
     "cross_cutting_list": [
-      "Testing", "Dashboards/Health", "JSONL Storage", "Schema Validation",
-      "State Management", "Documentation", "Enforcement/Gates", "Analytics/Metrics",
-      "Archival/Rotation", "Versioning/Migration", "Error Handling/Logging",
-      "Naming Conventions", "Lifecycle Management"
+      "Testing",
+      "Dashboards/Health",
+      "JSONL Storage",
+      "Schema Validation",
+      "State Management",
+      "Documentation",
+      "Enforcement/Gates",
+      "Analytics/Metrics",
+      "Archival/Rotation",
+      "Versioning/Migration",
+      "Error Handling/Logging",
+      "Naming Conventions",
+      "Lifecycle Management"
     ],
     "canon_definition": "Ecosystem Zero — meta-system that defines what an ecosystem IS. Sits above all others. Has its own files, schemas, standards, versioning, testing.",
     "configuration_definition": "Single parameterization file (framework.config.json concept) — project-level settings vs hardcoded values across 70+ scripts",

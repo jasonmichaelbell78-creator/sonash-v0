@@ -776,10 +776,10 @@ guardrail._
 failure (1), SonarCloud hotspots (3), Semgrep (83), Dependency Review (58)
 **Total:** 8 unique **Fixed:** 4 **Deferred:** 0 **Rejected:** 4
 
-- **Root cause**: `.planning/reference/` directory (framework-repo clone +
-  agent transcripts) not excluded from any scanning tools
-- Fix: added `.planning/**` to ESLint ignores, security-check SKIP_PATTERNS,
-  and SonarCloud exclusions — single root fix resolves 5 of 8 items
+- **Root cause**: `.planning/reference/` directory (framework-repo clone + agent
+  transcripts) not excluded from any scanning tools
+- Fix: added `.planning/**` to ESLint ignores, security-check SKIP_PATTERNS, and
+  SonarCloud exclusions — single root fix resolves 5 of 8 items
 - Deleted 10 agent-research transcript files containing PII (local paths,
   session/request IDs) + added .gitignore rules
 - PR creep warnings were invisible (hook redirects all output to log file,

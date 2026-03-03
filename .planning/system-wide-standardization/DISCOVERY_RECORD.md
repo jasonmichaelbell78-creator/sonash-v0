@@ -1,9 +1,9 @@
 # System-Wide Standardization — Discovery Record
 
-**Created:** 2026-03-02 (Session #201)
-**Status:** DISCOVERY PHASE — Capturing findings, decisions, and vision
-**Branch:** `claude/ecosystem-review-s201`
-**Context:** Post PR Ecosystem v2 review surfaced need for system-wide standardization
+**Created:** 2026-03-02 (Session #201) **Status:** DISCOVERY PHASE — Capturing
+findings, decisions, and vision **Branch:** `claude/ecosystem-review-s201`
+**Context:** Post PR Ecosystem v2 review surfaced need for system-wide
+standardization
 
 ---
 
@@ -19,8 +19,8 @@ undertaking.
 
 ## Vision Statement
 
-**Establish a standardized system-wide framework** where every ecosystem
-(PR review, TDMS, sessions, hooks, skills, docs, scripts) follows the same
+**Establish a standardized system-wide framework** where every ecosystem (PR
+review, TDMS, sessions, hooks, skills, docs, scripts) follows the same
 architectural patterns: Zod-validated JSONL-first storage, completeness tiers,
 health monitoring, automated enforcement, and unified analytics. The PR
 ecosystem v2 becomes the reference implementation, not a one-off.
@@ -45,22 +45,23 @@ Looking for:
 - Planned but undesigned features
 - Process/procedure gaps
 
-**User quote:** "looking more like v2" — this gap review itself may be a v2-scale
-effort.
+**User quote:** "looking more like v2" — this gap review itself may be a
+v2-scale effort.
 
 ### Q2: Manual Steps (~42 found)
 
-**Finding:** 42 manual invocation points across skills, hooks, and scripts.
-Key areas: 18 conditional pre-push audits, 7 JSONL write steps, 5 suppression
-steps, 12 session lifecycle steps. Some "manual" steps are actually auto-run
-by session-start hook — skill docs out of sync with reality.
+**Finding:** 42 manual invocation points across skills, hooks, and scripts. Key
+areas: 18 conditional pre-push audits, 7 JSONL write steps, 5 suppression steps,
+12 session lifecycle steps. Some "manual" steps are actually auto-run by
+session-start hook — skill docs out of sync with reality.
 
 **Decision:** User accepts manual steps as long as there is **a prompt of some
 nature** — a direct invocation isn't always necessary. The critical requirement:
-**nothing should get lost or unused because the user doesn't remember to do it.**
-Every manual step needs at minimum a surface/reminder mechanism.
+**nothing should get lost or unused because the user doesn't remember to do
+it.** Every manual step needs at minimum a surface/reminder mechanism.
 
 **Action items:**
+
 - Audit skill docs against actual automation (fix discrepancies)
 - Ensure every manual step has a prompt/reminder surface
 - Automate top candidates: session counter, TDMS entries, suppression sync
@@ -77,6 +78,7 @@ pattern clustering, no fuzzy matching, no pattern lifecycle tracking.
 research task, not immediate implementation.
 
 **Gaps to research:**
+
 - Cross-archive temporal trend analysis
 - PR-level pattern clustering (which PR types cause which patterns?)
 - Fuzzy matching for pattern variants
@@ -94,6 +96,7 @@ with PR ecosystem analytics as the reference, then expand as the base for all
 ecosystems.
 
 **Questions raised:**
+
 - What is the `ecosystem:audit:all` placeholder for? There IS already a
   `/comprehensive-ecosystem-audit` skill — the npm script is dead weight.
 - Should each ecosystem have its own analytics surface, or one unified system?
@@ -103,8 +106,8 @@ ecosystems.
 
 ### Q5: Full Pipeline Testing
 
-**Finding:** v2 shipped with 56 test files and 7 E2E smoke tests, but no
-live end-to-end walkthrough of every skill and script has been done.
+**Finding:** v2 shipped with 56 test files and 7 E2E smoke tests, but no live
+end-to-end walkthrough of every skill and script has been done.
 
 **Decision:** Design this as a **skill** — even if temporary — with compaction
 guardrails. A `/pipeline-walkthrough` or `/ecosystem-validation` skill that
@@ -112,6 +115,7 @@ systematically tests every pipeline end-to-end, tracks progress through
 compaction, and produces a verification report.
 
 **Design requirements:**
+
 - Compaction-safe (state persisted to files, not just conversation)
 - Resumable (can pick up where left off)
 - Covers every skill, script, hook, and CI workflow
@@ -120,14 +124,14 @@ compaction, and produces a verification report.
 
 ### Q6: Semgrep.yml Warning — RESOLVED
 
-All semgrep issues from PR #411 R5-R8 resolved. 20 custom rules clean.
-No action needed.
+All semgrep issues from PR #411 R5-R8 resolved. 20 custom rules clean. No action
+needed.
 
 ### Q7: Skip Documentation — RESOLVED
 
 All skips documented via override-log.jsonl with mandatory SKIP_REASON.
-Session-end includes override audit. Hook analytics detects patterns.
-No action needed.
+Session-end includes override audit. Hook analytics detects patterns. No action
+needed.
 
 ### Q8: Ecosystem-Health Naming
 
@@ -147,9 +151,9 @@ standardization vision.
 
 ### Q9: Health Skill Details + Alerts Overlap
 
-**Finding:** 10 checkers, 8 scoring categories, 64 metrics. Separate from
-alerts system. Both read similar sources but serve different purposes (health =
-trend tracking, alerts = interactive triage). Not redundant but could be unified.
+**Finding:** 10 checkers, 8 scoring categories, 64 metrics. Separate from alerts
+system. Both read similar sources but serve different purposes (health = trend
+tracking, alerts = interactive triage). Not redundant but could be unified.
 
 **Decision:** More evidence for canonized system-wide analytics. Need
 **unification** — fix specific to PR ecosystem while persistently planning for
@@ -160,7 +164,8 @@ this document — an ongoing living record of architectural decisions that span
 ecosystems.
 
 **User acknowledgment:** "yes, I know I'm scope-deviating but this just brings
-up so much more" — scope deviation is the POINT of discovery. Capture everything.
+up so much more" — scope deviation is the POINT of discovery. Capture
+everything.
 
 ### Q10: MASTER_DEBT.jsonl Field Alignment
 
@@ -168,8 +173,8 @@ up so much more" — scope deviation is the POINT of discovery. Capture everythi
 completeness tiers, no schema_version. Completely separate from v2 standards.
 
 **Decision:** This belongs to the **TDMS ecosystem overhaul**, not the PR
-ecosystem. The TDMS ecosystem needs its own v2-style overhaul applying the
-same patterns (Zod schemas, completeness tiers, atomic writes, health monitoring).
+ecosystem. The TDMS ecosystem needs its own v2-style overhaul applying the same
+patterns (Zod schemas, completeness tiers, atomic writes, health monitoring).
 
 **Scope:** TDMS overhaul is a separate milestone but follows the same playbook.
 
@@ -228,15 +233,15 @@ Every ecosystem should follow these patterns (established by PR ecosystem v2):
 
 ### Ecosystems Needing This Treatment
 
-| Ecosystem | Current State | Standardization Needed |
-|-----------|---------------|----------------------|
-| PR Review | v2 COMPLETE (reference impl) | Tech debt cleanup only |
-| TDMS | Legacy JSONL, no Zod, no completeness | Full overhaul |
-| Sessions | Partial automation, manual counter | Moderate overhaul |
-| Hooks | Well-automated, no Zod schemas | Schema standardization |
-| Skills | Validated via hooks, no JSONL tracking | Design needed |
-| Docs | Cross-doc deps, no health scoring | Integration needed |
-| Scripts | Pattern compliance, no ecosystem health | Integration needed |
+| Ecosystem | Current State                           | Standardization Needed |
+| --------- | --------------------------------------- | ---------------------- |
+| PR Review | v2 COMPLETE (reference impl)            | Tech debt cleanup only |
+| TDMS      | Legacy JSONL, no Zod, no completeness   | Full overhaul          |
+| Sessions  | Partial automation, manual counter      | Moderate overhaul      |
+| Hooks     | Well-automated, no Zod schemas          | Schema standardization |
+| Skills    | Validated via hooks, no JSONL tracking  | Design needed          |
+| Docs      | Cross-doc deps, no health scoring       | Integration needed     |
+| Scripts   | Pattern compliance, no ecosystem health | Integration needed     |
 
 ### Scope Assessment
 
@@ -244,6 +249,7 @@ Every ecosystem should follow these patterns (established by PR ecosystem v2):
 master deep plan which probably feeds into GSD."
 
 **Proposed approach:**
+
 1. This document = Ideas/Discovery phase
 2. Per-ecosystem deep plans for each overhaul
 3. Master deep plan for system-wide standardization framework
@@ -256,14 +262,14 @@ master deep plan which probably feeds into GSD."
 
 ### Orphaned/Unwired Products Found
 
-| Product | Location | Status |
-|---------|----------|--------|
-| `render-reviews-to-md.js` | scripts/reviews/dist/ | Built, tested, orphaned |
-| `ecosystem:audit:all` npm script | package.json | Dead placeholder |
-| `lighthouse` npm script | package.json | Defined, never runs |
-| `docs:lint` npm script | package.json | Defined, results not surfaced |
-| `docs:external-links` npm script | package.json | Link checker, not integrated |
-| `learning:dashboard` npm script | package.json | Rarely invoked |
+| Product                          | Location              | Status                        |
+| -------------------------------- | --------------------- | ----------------------------- |
+| `render-reviews-to-md.js`        | scripts/reviews/dist/ | Built, tested, orphaned       |
+| `ecosystem:audit:all` npm script | package.json          | Dead placeholder              |
+| `lighthouse` npm script          | package.json          | Defined, never runs           |
+| `docs:lint` npm script           | package.json          | Defined, results not surfaced |
+| `docs:external-links` npm script | package.json          | Link checker, not integrated  |
+| `learning:dashboard` npm script  | package.json          | Rarely invoked                |
 
 ### Gap Review Still Needed
 
@@ -290,9 +296,9 @@ GSD until much further along. Naming and folder placement will be decided as
 part of a canon ecosystem standard.
 
 **Documentation strategy:** A dedicated docs folder within this planning area.
-This process will generate enormous documentation — start organized from day one.
-Copies of source documents (framework repo decisions, ecosystem v2 plans, etc.)
-should live in a dedicated reference location.
+This process will generate enormous documentation — start organized from day
+one. Copies of source documents (framework repo decisions, ecosystem v2 plans,
+etc.) should live in a dedicated reference location.
 
 **First deep-plan scope:** Ecosystem Mapping + Sequencing. Includes ingestion of
 framework repo decisions/plans as crucial reference material.
@@ -323,38 +329,40 @@ framework repo decisions/plans as crucial reference material.
 
 ## Decision Log
 
-| # | Date | Decision | Rationale |
-|---|------|----------|-----------|
-| 1 | 2026-03-02 | PR ecosystem v2 patterns become system-wide standard | Proven architecture, 59/59 requirements met |
-| 2 | 2026-03-02 | `/ecosystem-health` name stays (it IS system-wide) | 10 checkers cover all ecosystems, not just PR |
-| 3 | 2026-03-02 | MASTER_DEBT.jsonl overhaul scoped to TDMS ecosystem | Different operational domain, same playbook |
-| 4 | 2026-03-02 | Manual steps OK if prompted/surfaced | User preference: reminders > forced automation |
-| 5 | 2026-03-02 | Pipeline testing becomes a skill | Compaction-safe, resumable, scoped or system-wide |
-| 6 | 2026-03-02 | System-wide standardization = GSD milestone(s) | Too large for single plan; needs master plan |
-| 7 | 2026-03-02 | Persistent decision record for cross-cutting decisions | Prevents context loss across sessions/compactions |
-| 8 | 2026-03-02 | Keep out of GSD until much further along | Canon/naming not yet decided |
-| 9 | 2026-03-02 | Dedicated docs folder for this initiative | Massive documentation expected |
-| 10 | 2026-03-02 | Framework repo = READ-ONLY reference for now | No simultaneous sync |
-| 11 | 2026-03-02 | First deep-plan = ecosystem mapping + ingestion | Roadmap for the roadmap |
-| 12 | 2026-03-02 | CANON = Ecosystem Zero (meta-system above all others) | Defines what an ecosystem IS |
-| 13 | 2026-03-02 | 13 cross-cutting subsystems (was 9, added versioning, error handling, naming, lifecycle) | CANON standardizes all of these |
-| 14 | 2026-03-02 | Configuration = single parameterization file concept | Replace hardcoded values across 70+ scripts |
-| 15 | 2026-03-02 | Planning (deep-plan, GSD) = canonizable system, backbone for everything | Standardized in perpetuity |
-| 16 | 2026-03-02 | State saving rules to be canonized | Guard against compaction |
-| 17 | 2026-03-02 | PR creep guardrail needed SOON | Commit counter hook: warn 10, block 25 |
-| 18 | 2026-03-02 | Lifecycle management added to cross-cutting subsystems | Future-proofing |
+| #   | Date       | Decision                                                                                 | Rationale                                         |
+| --- | ---------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 1   | 2026-03-02 | PR ecosystem v2 patterns become system-wide standard                                     | Proven architecture, 59/59 requirements met       |
+| 2   | 2026-03-02 | `/ecosystem-health` name stays (it IS system-wide)                                       | 10 checkers cover all ecosystems, not just PR     |
+| 3   | 2026-03-02 | MASTER_DEBT.jsonl overhaul scoped to TDMS ecosystem                                      | Different operational domain, same playbook       |
+| 4   | 2026-03-02 | Manual steps OK if prompted/surfaced                                                     | User preference: reminders > forced automation    |
+| 5   | 2026-03-02 | Pipeline testing becomes a skill                                                         | Compaction-safe, resumable, scoped or system-wide |
+| 6   | 2026-03-02 | System-wide standardization = GSD milestone(s)                                           | Too large for single plan; needs master plan      |
+| 7   | 2026-03-02 | Persistent decision record for cross-cutting decisions                                   | Prevents context loss across sessions/compactions |
+| 8   | 2026-03-02 | Keep out of GSD until much further along                                                 | Canon/naming not yet decided                      |
+| 9   | 2026-03-02 | Dedicated docs folder for this initiative                                                | Massive documentation expected                    |
+| 10  | 2026-03-02 | Framework repo = READ-ONLY reference for now                                             | No simultaneous sync                              |
+| 11  | 2026-03-02 | First deep-plan = ecosystem mapping + ingestion                                          | Roadmap for the roadmap                           |
+| 12  | 2026-03-02 | CANON = Ecosystem Zero (meta-system above all others)                                    | Defines what an ecosystem IS                      |
+| 13  | 2026-03-02 | 13 cross-cutting subsystems (was 9, added versioning, error handling, naming, lifecycle) | CANON standardizes all of these                   |
+| 14  | 2026-03-02 | Configuration = single parameterization file concept                                     | Replace hardcoded values across 70+ scripts       |
+| 15  | 2026-03-02 | Planning (deep-plan, GSD) = canonizable system, backbone for everything                  | Standardized in perpetuity                        |
+| 16  | 2026-03-02 | State saving rules to be canonized                                                       | Guard against compaction                          |
+| 17  | 2026-03-02 | PR creep guardrail needed SOON                                                           | Commit counter hook: warn 10, block 25            |
+| 18  | 2026-03-02 | Lifecycle management added to cross-cutting subsystems                                   | Future-proofing                                   |
 
 ---
 
 ## Raw Research Agent Summaries
 
 ### Q1 Agent — JSONL vs MD Generation
+
 - TDMS: Fully automated JSONL→MD via generate-views.js (4 view files)
 - Reviews: render-reviews-to-md.js exists but orphaned (not in any pipeline)
 - Consolidation: Produces markdown (CODE_PATTERNS.md) from JSONL source
 - Archives: Still manual markdown, not auto-generated
 
 ### Q2 Agent — Manual Steps Audit
+
 - 42 manual invocation points identified
 - Tier A: 30 steps within skill protocols
 - Tier B: 3 post-skill consolidation steps
@@ -363,39 +371,51 @@ framework repo decisions/plans as crucial reference material.
 - Top automation candidates: session counter, TDMS entries, suppression sync
 
 ### Q3 Agent — Review Mining Capabilities
-- 4 active mining tools (promote-patterns, learning-effectiveness, lessons-surface, consolidation)
+
+- 4 active mining tools (promote-patterns, learning-effectiveness,
+  lessons-surface, consolidation)
 - 150 total review entries (43 active + 107 archived)
-- 8 gaps identified: cross-archive trends, PR clustering, fuzzy matching, lifecycle tracking, session-level mining, historical comparison, variant tracking, consolidated dashboard
+- 8 gaps identified: cross-archive trends, PR clustering, fuzzy matching,
+  lifecycle tracking, session-level mining, historical comparison, variant
+  tracking, consolidated dashboard
 - Rich data available but underutilized
 
 ### Q4 Agent — Analytics Surfacing Map
+
 - 51+ npm scripts across 7 categories
-- 7 analytics surfaces: session hooks, pre-commit, pre-push, CI, weekly, manual, audit skills
+- 7 analytics surfaces: session hooks, pre-commit, pre-push, CI, weekly, manual,
+  audit skills
 - 24 state files in .claude/state/
 - 6 dead/minimal scripts found
 - Complete invocation decision tree documented
 - All analytics accounted for
 
 ### Q6 Agent — Semgrep Investigation
-- All issues resolved (R5: --error removal, R7: YAML quoting, R8: guard patterns)
+
+- All issues resolved (R5: --error removal, R7: YAML quoting, R8: guard
+  patterns)
 - 20 custom rules across correctness/security/style
 - Test fixtures in tests/semgrep/ with annotation format
 - No outstanding warnings
 
 ### Q8 Agent — Ecosystem-Health Naming Scope
+
 - 10 health checkers cover ALL ecosystems (not just PR)
 - 8 scoring categories, 13 dashboard dimensions
 - Would need ~20 file changes to rename (but shouldn't rename)
 - Planning docs confirm "full ecosystem health" was intentional scope
 
 ### Q9+12+13 Agent — Health/Sprint/Consolidation
+
 - Health: 10 checkers, composite scoring, separate from alerts
 - Sprint: Untouched during v2, already JSONL-first, compatible
 - Consolidation: Fully v2-compatible, JSONL-first, atomic state
 
 ### Q10+14 Agent — DEBT Schema + Tech Debt Inventory
+
 - MASTER_DEBT.jsonl: Legacy schema, no Zod, no completeness tiers
-- 10 tech debt items from v2 overhaul (architectural trade-offs, testing gaps, measurement gaps)
+- 10 tech debt items from v2 overhaul (architectural trade-offs, testing gaps,
+  measurement gaps)
 - None are blockers; all are documented trade-offs or deferred improvements
 
 ---
@@ -403,6 +423,7 @@ framework repo decisions/plans as crucial reference material.
 ## Two-Repo Foundation
 
 ### Source 1: sonash-v0 (this repo)
+
 - PR Ecosystem v2 = reference implementation (proven patterns)
 - All planning artifacts: `.planning/ecosystem-v2/`, diagnosis, discovery QA,
   phase plans, milestone audit, PR_ECOSYSTEM_V2_CHANGELOG.md
@@ -410,6 +431,7 @@ framework repo decisions/plans as crucial reference material.
 - 51+ analytics scripts, 10 health checkers, 24 state files
 
 ### Source 2: framework repo
+
 - GitHub: `jasonmichaelbell78-creator/framework`
 - Purpose: Reusable dev workflow framework extracted from sonash-v0
 - Current state: C+ readiness (62/100), ~55% migrated, GSD Phase 1 not started
@@ -419,13 +441,16 @@ framework repo decisions/plans as crucial reference material.
 - Key: This is a META-FRAMEWORK for development workflows, not an app template
 
 ### Relationship Between Repos
+
 - sonash-v0 = PROVING GROUND (where patterns are discovered and battle-tested)
-- framework = EXTRACTION TARGET (where proven patterns become reusable standards)
+- framework = EXTRACTION TARGET (where proven patterns become reusable
+  standards)
 - System-wide standardization flows BOTH ways:
   - sonash discoveries → framework standards (upstream)
   - framework standards → sonash implementation (downstream)
 
 ### User Vision (Session #201)
+
 - Everything in both repos is a resource for the system framework project
 - Need clear hierarchy: EVERYTHING fits within ecosystems (existing or new)
 - The app itself is its own ecosystem ("part of but apart")
@@ -437,6 +462,7 @@ framework repo decisions/plans as crucial reference material.
 ### Ecosystem Hierarchy (Draft)
 
 **Process Layer Ecosystems:**
+
 - PR Review (v2 complete in sonash, reference implementation)
 - TDMS (legacy schema, needs overhaul)
 - Sessions (partial automation)
@@ -448,11 +474,13 @@ framework repo decisions/plans as crucial reference material.
 - Analytics/Health (partially unified)
 
 **App Layer Ecosystems:**
+
 - Application (Next.js app code — "part of but apart")
 - Firebase/Backend (Cloud Functions, Firestore, Auth)
 - UI/Frontend (components, design system)
 
 **Meta Layer:**
+
 - Framework Standards (CANON, config, schemas)
 - Quality Gates (pre-commit, pre-push, CI)
 - Agent Orchestration (agents, teams, skills)
@@ -461,7 +489,7 @@ framework repo decisions/plans as crucial reference material.
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 0.2 | 2026-03-02 | Added two-repo foundation, framework analysis, ecosystem hierarchy |
-| 0.1 | 2026-03-02 | Initial discovery record from Session #201 |
+| Version | Date       | Changes                                                            |
+| ------- | ---------- | ------------------------------------------------------------------ |
+| 0.2     | 2026-03-02 | Added two-repo foundation, framework analysis, ecosystem hierarchy |
+| 0.1     | 2026-03-02 | Initial discovery record from Session #201                         |
