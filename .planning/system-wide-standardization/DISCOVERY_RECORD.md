@@ -349,6 +349,61 @@ framework repo decisions/plans as crucial reference material.
 | 16  | 2026-03-02 | State saving rules to be canonized                                                       | Guard against compaction                          |
 | 17  | 2026-03-02 | PR creep guardrail needed SOON                                                           | Commit counter hook: warn 10, block 25            |
 | 18  | 2026-03-02 | Lifecycle management added to cross-cutting subsystems                                   | Future-proofing                                   |
+| 19  | 2026-03-03 | Dual-environment parity is a system requirement                                          | Work (Desktop) + Home (CLI) must both work        |
+| 20  | 2026-03-03 | PR creep guardrail must detect default branch dynamically (main/master/remote)           | Bug: hardcoded `main` silently failed on `master` |
+| 21  | 2026-03-03 | All hooks/scripts must be environment-agnostic (no hardcoded branch names, paths, tools) | Dual-env parity; proven by PR creep bug           |
+| 22  | 2026-03-03 | Desktop sessions need proactive `/checkpoint` at milestones (no PreCompact on timeout)   | Timeout kills session without hook trigger        |
+
+---
+
+## Dual-Environment Configuration (Decision #19, Session #202)
+
+The developer operates from **two distinct environments**. All system
+infrastructure (hooks, scripts, skills, procedures) must work identically in
+both. This is a cross-cutting requirement that affects every ecosystem.
+
+### Environment A: Work — Claude Code Desktop
+
+| Attribute            | Value                                        |
+| -------------------- | -------------------------------------------- |
+| **Interface**        | Claude Code Desktop (web-based)              |
+| **Local branch**     | `master` (default)                           |
+| **Context risk**     | **Timeouts** — hard session kill, no hooks   |
+| **Compaction**       | Also possible (hooks DO fire)                |
+| **MCP secrets**      | Encrypted — need decrypt at session start    |
+| **Checkpoint needs** | Proactive manual `/checkpoint` at milestones |
+
+### Environment B: Home — Claude Code CLI
+
+| Attribute            | Value                                    |
+| -------------------- | ---------------------------------------- |
+| **Interface**        | Claude Code CLI (terminal)               |
+| **Local branch**     | TBD — confirm if `main` or `master`      |
+| **Context risk**     | **Compaction** — PreCompact hook fires   |
+| **Timeouts**         | Less common (CLI is more persistent)     |
+| **MCP secrets**      | TBD — may already be decrypted           |
+| **Checkpoint needs** | Standard (PreCompact handles most cases) |
+
+### Parity Requirements
+
+1. **Branch detection**: Never hardcode `main` or `master` — always detect
+   dynamically (proven by PR creep guardrail bug, Decision #20)
+2. **Hook compatibility**: All hooks must work under both Desktop and CLI
+   execution models
+3. **Timeout resilience**: Desktop needs proactive state saves that CLI gets
+   automatically via PreCompact
+4. **Path independence**: No assumptions about absolute paths, home directories,
+   or tool locations
+5. **Secret management**: Both environments need the decrypt-secrets flow for
+   MCP tokens
+
+### Known Differences to Test
+
+- [ ] Pre-commit hook `main` vs `master` — FIXED (Session #202)
+- [ ] Pre-push hook — check for same hardcoded branch assumptions
+- [ ] SessionStart hooks — verify both environments trigger correctly
+- [ ] `/checkpoint` behavior — confirm it works on Desktop
+- [ ] MCP token state — document which env has persistent vs encrypted tokens
 
 ---
 
@@ -491,5 +546,6 @@ framework repo decisions/plans as crucial reference material.
 
 | Version | Date       | Changes                                                            |
 | ------- | ---------- | ------------------------------------------------------------------ |
+| 0.3     | 2026-03-03 | Added dual-environment config, decisions #19-22, PR creep fix      |
 | 0.2     | 2026-03-02 | Added two-repo foundation, framework analysis, ecosystem hierarchy |
 | 0.1     | 2026-03-02 | Initial discovery record from Session #201                         |
