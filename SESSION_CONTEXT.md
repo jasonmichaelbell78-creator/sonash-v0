@@ -29,14 +29,15 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-02 **Branch**: `claude/ecosystem-review-s201`
-**Working On**: System-wide standardization discovery. 14-question ecosystem
-review complete. Discovery record saved. About to invoke /deep-plan for
-ecosystem mapping.
+**Last Checkpoint**: 2026-03-02 **Branch**:
+`claude/system-standardization-discovery-s201`
+**Working On**: Session #201 complete. Deep-plan Phase 0 approved, Phase 1
+Batch 1 ready to present next session.
 
-**Next Step**: /deep-plan for ecosystem mapping + framework repo ingestion
+**Next Step**: Resume deep-plan Phase 1 discovery questions (7 Architecture &
+Foundation questions). Also: PR creep guardrail just implemented.
 
-**Uncommitted Work**: Discovery record + SESSION_CONTEXT updates
+**Uncommitted Work**: PR creep hook + session-end updates
 
 ---
 
@@ -99,7 +100,7 @@ ecosystem mapping.
 | M1.5 - Quick Wins                 | Paused   | ~20%                |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%                |
 
-**Current Branch**: `claude/maintenance22726-md8WL`
+**Current Branch**: `claude/system-standardization-discovery-s201`
 
 **Test Status**: All tests passing (496/497, 1 skipped)
 
@@ -109,11 +110,10 @@ ecosystem mapping.
 
 ### Immediate Priority (Next Session)
 
-1. **Merge PR #411** — All 9 review rounds processed, CI should be green after
-   R9
-2. **TDMS: 67 S0 critical items** — Address highest-severity debt items
-3. **/gsd:new-milestone** — Plan v1.1 or v2.0 for next ecosystem work
-4. **Track B: Dev Dashboard MVP** — Resume at ~10% progress
+1. **Resume deep-plan Phase 1** — 7 Architecture & Foundation discovery questions
+2. **Complete discovery batches** — ~4-5 batches total, then DECISIONS.md + PLAN.md
+3. **PR creep guardrail** — Just implemented, verify in next session
+4. **TDMS: 67 S0 critical items** — After standardization planning complete
 
 **See**:
 [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for
