@@ -1,11 +1,59 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_0_diagnosis_approved",
-  "current_batch": 0,
-  "total_batches_so_far": 0,
-  "decisions": [],
-  "total_decisions": 0,
+  "status": "phase_1_batch_1_complete",
+  "current_batch": 1,
+  "total_batches_so_far": 1,
+  "decisions": [
+    {
+      "id": 1,
+      "decision": "CANON file location",
+      "choice": "`.canon/` at repo root — new top-level directory",
+      "rationale": "Meta-system deserves top-level visibility, not buried under .planning/ or docs/"
+    },
+    {
+      "id": 2,
+      "decision": "Ecosystem definition format",
+      "choice": "Registry JSONL (`.canon/ecosystems.jsonl`) + per-ecosystem detail files",
+      "rationale": "JSONL = canonical/AI-consumed, MD = human views generated from JSONL. Core tenet of the system moving forward."
+    },
+    {
+      "id": 3,
+      "decision": "Maturity model",
+      "choice": "Hybrid: completeness tier checklist drives computed level (L0-L5)",
+      "rationale": "Makes 'what's missing' obvious and progress measurable. Concrete capabilities compute to a level."
+    },
+    {
+      "id": 4,
+      "decision": "Cross-cutting subsystem mapping",
+      "choice": "Per-ecosystem files are source of truth + generated matrix view",
+      "rationale": "Follows JSONL-first → generated-views pattern. Each ecosystem knows its own subsystems, matrix is computed."
+    },
+    {
+      "id": 5,
+      "decision": "Configuration parameterization",
+      "choice": "Global defaults + per-ecosystem cascade/override (CSS-like)",
+      "rationale": "Avoids 70+ hardcoded values while letting ecosystems specialize where needed."
+    },
+    {
+      "id": 6,
+      "decision": "Sequencing strategy",
+      "choice": "Dependency graph (CANON first) with maturity as tiebreaker (highest first)",
+      "rationale": "Build momentum: early wins validate the framework before tackling hard stuff. CANON → near-compliant → major overhauls."
+    },
+    {
+      "id": 7,
+      "decision": "This deep-plan's deliverable",
+      "choice": "Full ecosystem catalog + maturity assessments + sequenced plan + CANON spec",
+      "rationale": "We have the research (500+ components). Comprehensive output avoids another discovery pass."
+    }
+  ],
+  "total_decisions": 7,
+  "core_tenets": {
+    "jsonl_first": "JSONL is canonical and AI-consumed. MD is for human consumption, generated from JSONL info. Core tenet moving forward.",
+    "canon_is_ecosystem_zero": "CANON is the meta-system above all others, lives at `.canon/` repo root",
+    "maturity_is_measurable": "Completeness checklist → computed level, not subjective grades"
+  },
   "artifacts": {
     "diagnosis": ".planning/system-wide-standardization/DIAGNOSIS.md",
     "decisions": null,
@@ -30,13 +78,7 @@
       "Error Handling/Logging",
       "Naming Conventions",
       "Lifecycle Management"
-    ],
-    "canon_definition": "Ecosystem Zero — meta-system that defines what an ecosystem IS. Sits above all others. Has its own files, schemas, standards, versioning, testing.",
-    "configuration_definition": "Single parameterization file (framework.config.json concept) — project-level settings vs hardcoded values across 70+ scripts",
-    "planning_as_system": "Planning (deep-plan, GSD, roadmapping, milestones) is a canonizable system — standardized in perpetuity",
-    "deep_plan_and_gsd_are_backbone": "User is a big fan of deep-plan + GSD — these are the backbone, build from there",
-    "batch_1_discovery_questions_ready": true,
-    "batch_1_NOT_YET_ANSWERED": "7 questions were presented but user paused to discuss diagnosis. Need to re-present in next session."
+    ]
   },
   "user_directives": {
     "roadmap_will_change": "ROADMAP.md will need additions, changes, removals after this process",
@@ -47,8 +89,9 @@
     "overlap_management": "Many points of overlap between ecosystems — must not let one supersede another",
     "duplicate_subsystems": "Cross-cutting subsystems exist in multiple ecosystems and need mapping",
     "standardization_is_key": "Duplicate subsystems must follow shared standards",
-    "pr_creep_guard": "User has tendency toward 30-50 commit PRs. Wants guardrail mechanism SOON. Recommended: commit counter hook warning at 10, blocking at 25 with override.",
-    "lifecycle_management": "User agreed — helps future-proof. Added to cross-cutting subsystems."
+    "pr_creep_guard": "User has tendency toward 30-50 commit PRs. Wants guardrail mechanism SOON.",
+    "lifecycle_management": "User agreed — helps future-proof. Added to cross-cutting subsystems.",
+    "jsonl_is_canon": "JSONL is canonical/AI-consumed, MD is human-readable generated from JSONL. Core tenet."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -57,15 +100,14 @@
     "Future idea capture mechanism needed",
     "Cross-ecosystem subsystem mapping is its own discovery task",
     "Canon is Ecosystem Zero — all others derive from it",
-    "Planning standardization (deep-plan, GSD) as backbone — build from there, not too far down the line",
+    "Planning standardization (deep-plan, GSD) as backbone — build from there",
     "PR creep guardrail: commit counter hook (warn 10, block 25, override available)",
     "Branch scope declaration idea: S/M/L with commit brackets",
     "Session-end PR gate: flag if >15 commits not in a PR",
     "State saving rules need to be canonized",
-    "13 cross-cutting subsystems (added: versioning/migration, error handling, naming, lifecycle)",
+    "13 cross-cutting subsystems",
     "Configuration as single source of truth vs hardcoded values"
   ],
-  "resume_instructions": "READ THESE FILES IN ORDER: (1) .planning/system-wide-standardization/DISCOVERY_RECORD.md (2) .planning/system-wide-standardization/DIAGNOSIS.md (3) This state file. Phase 0 diagnosis is APPROVED. Next: re-present Batch 1 discovery questions (7 questions on Architecture & Foundation — they were shown but user paused to discuss diagnosis first, never answered them). The 7 questions are in phase_0_discussion.batch_1_questions_7 below. Also: PR creep guardrail is wanted SOON — consider as early deliverable.",
-  "compaction_warning": "Session hit compaction boundary. All state saved. Resume next session.",
-  "updated": "2026-03-02T18:45:00Z"
+  "resume_instructions": "Phase 0 APPROVED. Batch 1 COMPLETE (7 decisions). Next: present Batch 2 — Scale, Scope & Maturity questions. Cover: maturity level definitions (L0-L5), completeness checklist items, subsystem standardization depth, ecosystem boundaries, scope of CANON spec in this plan.",
+  "updated": "2026-03-03T12:12:00Z"
 }
