@@ -811,9 +811,9 @@
     },
     {
       "id": 81,
-      "decision": "End-of-process audit — 16-domain comprehensive framework",
-      "choice": "16 audit domains across 3 tiers. Reusable for all ecosystem plan audits + end-of-overhaul audit. Includes gap analysis and re-research with fresh eyes.",
-      "rationale": "USER DIRECTIVE: 'even more still' + 'gap analysis and re-research component with fresh eyes' + 'overkill i know but it's my tokens.' User wants thoroughness. Framework is reusable for all 18 ecosystem audits.",
+      "decision": "Comprehensive audit framework — 26 domains, 4 tiers",
+      "choice": "26 audit domains across 4 tiers. Tier 1: Core (5 mechanical checks). Tier 2: Analytical (7 deep analysis). Tier 3: Implementation (10 build-time checks with phase-level + full-scope split). Tier 4: Ecosystem Completion (4 exit checks). Reusable across all audit contexts.",
+      "rationale": "USER DIRECTIVE: thorough audits at all levels. Gap analysis + re-research with fresh eyes. Implementation audits are the missing layer — auditing the BUILD itself, not just the plan or final state. Phase-level audits catch drift early; full-scope confirms everything at the end.",
       "user_directive": true,
       "audit_framework": {
         "tier_1_core": [
@@ -832,29 +832,62 @@
           "11. Knowledge Base Readiness — is the knowledge base (D75) actually ready for ecosystem #1?",
           "12. Rollback Viability — what's the plan if checkpoint #1 reveals CANON is flawed?"
         ],
-        "tier_3_ecosystem_reusable": [
-          "13. Completeness Scorecard — 16-item checklist results per ecosystem",
+        "tier_3_implementation": {
+          "description": "Audits the BUILD itself. Two levels: phase-level (lightweight, frequent) and full-scope (comprehensive, once per ecosystem).",
+          "phase_level_domains": [
+            "I1. Plan Adherence — implementation following the deep-plan? Deviations documented?",
+            "I2. Changelog Discipline — every cross-ecosystem change logged per T18?",
+            "I3. Code Quality — code-reviewer pass, CLAUDE.md patterns, security checklist",
+            "I4. Born-Compliant — new artifacts (skills, hooks, scripts, docs) comply with previously standardized ecosystems?",
+            "I6. Learning Capture — learnings captured DURING build per D76? Insights in changelog?",
+            "I7. Scope Containment — staying within ecosystem boundary? No creep into later ecosystems?",
+            "I8. Test Coverage — new patterns tested? Health checkers pass? Enforcement gates enforcing?",
+            "I10. Documentation Sync — docs updated as implementation proceeds?"
+          ],
+          "full_scope_only_domains": [
+            "I5. Regression Detection — health checkers for ALL completed ecosystems, not just current",
+            "I9. User Directive Satisfaction — ecosystem-specific user directives honored?"
+          ],
+          "phase_audit_count": "7 of 10 domains (I1-I4, I6-I8, I10)",
+          "full_scope_count": "All 10 domains (I1-I10)"
+        },
+        "tier_4_ecosystem_completion": [
+          "13. Completeness Scorecard — 16-item CANON checklist: completed vs formally deferred with justification",
           "14. Integration Verification — new contracts work with previously standardized ecosystems",
           "15. Changelog Accuracy — changelog vs git diff cross-reference",
           "16. Learning Harvest — what feeds into next ecosystem, what triggers CANON patch"
         ]
       },
-      "reusability": "Tier 1+2 for this deep-plan's end-of-process audit. Tier 1+3 for each ecosystem's end-of-standardization audit. Tier 1+2+3 for the full overhaul completion audit at checkpoint #21.",
+      "application_matrix": {
+        "after_decisions_md": "Tier 1 (domains 1-3) + Tier 2 (domains 6, 8)",
+        "after_plan_md": "Tier 1 (full) + Tier 2 (full)",
+        "implementation_phase_boundary": "Tier 3 phase-level (7 of 10 domains)",
+        "ecosystem_completion": "Tier 1 (full) + Tier 3 full-scope (all 10) + Tier 4 (full)",
+        "overhaul_checkpoint_21": "Tier 1 + Tier 2 + Tier 3 (summary) + Tier 4 (full)"
+      },
+      "implementation_audit_flow": "Phase 1 build → Phase 1 audit (7 domains) → Phase 2 build → Phase 2 audit (7 domains) → ... → Final phase → Full-scope audit (14 domains: I1-I10 + Tier 4)",
       "batch": "7b"
     },
     {
       "id": 82,
       "decision": "Audit process — interactive",
-      "choice": "Interactive, conversational audit. AI produces analysis, presents in batches, user reacts, iterate until satisfied. Operates as we've been operating throughout this deep-plan. Not a batch script dump.",
+      "choice": "Interactive, conversational audit at all levels. AI produces analysis, presents in batches, user reacts, iterate until satisfied. Operates as we've been operating throughout this deep-plan. Not a batch script dump. Applies to phase audits (lighter touch) and full-scope audits (deeper discussion).",
       "rationale": "USER DIRECTIVE: 'interactive as all skill functions should be even if it isn't an actual skill. operate as we've been operating.' Aligns with T15 (interactivity-first).",
       "user_directive": true,
       "batch": "7b"
     },
     {
       "id": 83,
-      "decision": "Audit triggers — twice (after DECISIONS.md and after PLAN.md)",
-      "choice": "Option B: First audit after Phase 2 (DECISIONS.md) checks domains 1-3 + 6 + 8. Second audit after Phase 3 (PLAN.md) checks domains 4-5 + 7 + 9-12. End-of-ecosystem audits use Tier 1+3.",
-      "rationale": "Two passes catch different types of issues. Decision audit informs plan writing. Plan audit catches execution gaps.",
+      "decision": "Audit triggers — multi-level",
+      "choice": "Plan audits: twice (after DECISIONS.md and after PLAN.md). Implementation audits: at every phase boundary (lightweight) + full-scope at ecosystem completion. Overhaul audit: at checkpoint #21.",
+      "rationale": "Smaller phase audits catch drift before it compounds. Full-scope confirms everything. Two plan audits catch decision issues before they become plan issues.",
+      "triggers": {
+        "after_decisions_md": "Tier 1 partial + Tier 2 domains 6, 8",
+        "after_plan_md": "Tier 1 full + Tier 2 full",
+        "implementation_phase_boundary": "Tier 3 phase-level (7 of 10)",
+        "ecosystem_completion": "Tier 1 + Tier 3 full-scope + Tier 4",
+        "overhaul_completion": "Tier 1 + 2 + 3 summary + 4"
+      },
       "batch": "7b"
     }
   ],
