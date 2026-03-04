@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.88 **Created:** 2026-01-02 **Last Updated:** 2026-03-04
+**Document Version:** 17.89 **Created:** 2026-01-02 **Last Updated:** 2026-03-04
 
 ## Purpose
 
@@ -779,6 +779,33 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #447: PR #415 R4 — SonarCloud + Qodo (2026-03-04)
+
+_System-wide standardization — security hotspot elimination + code smell fixes._
+
+**Source:** SonarCloud (6), Qodo (2) **Total:** 8 unique **Fixed:** 5
+**Rejected:** 3
+
+- **S5852 DRY RUN regex:** Replaced `/\n+--- DRY RUN.*$/s` with
+  `lastIndexOf`/`slice` string parsing — eliminates regex engine entirely for
+  this operation (two-strikes rule applied)
+- **replaceAll consistency:** `replace(/ +$/gm, "")` → `replaceAll(/ +$/gm, "")`
+  in validate-jsonl-md-sync.js for ES2021 consistency
+- **Unescaped table cell:** `cat` variable in generate-discovery-record.js not
+  wrapped in `escapeCell()` — could produce malformed MD tables
+- **CRLF in escapeCell:** Added `\r` stripping before `\n` → space conversion
+  for cross-platform safety
+- **`.at(-1)` preference:** `tenets[tenets.length - 1]` → `tenets.at(-1)` in
+  generate-discovery-record.js
+- **Rejected:** S5852 on `/ +$/gm` (space-only quantifier, no backtracking —
+  SonarCloud FP, 3rd consecutive round); S4036 PATH hijacking on hardcoded
+  `execFileSync("node")` (FP, 3rd consecutive round); `String.raw` for `"\\\\"`
+  — used selectively on `\\|` only where it improves readability
+- **Patterns**: String-Parsing-Over-Regex (two-strikes);
+  EscapeCell-All-Table-Values; CR-Strip-Before-LF-Normalize
+
+---
 
 ### Review #446: PR #415 R3 — SonarCloud + Qodo + Gemini (2026-03-04)
 

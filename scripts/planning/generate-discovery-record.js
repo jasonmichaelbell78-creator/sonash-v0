@@ -67,7 +67,7 @@ lines.push(
   "",
   "---",
   "",
-  `## Core Tenets (${tenets[0]?.id || "T1"}-${tenets[tenets.length - 1]?.id || "?"})`,
+  `## Core Tenets (${tenets[0]?.id || "T1"}-${tenets.at(-1)?.id || "?"})`,
   "",
   "| ID | Name | Category | Statement |",
   "|-----|------|----------|-----------|"
@@ -78,7 +78,7 @@ for (const t of tenets) {
   const name = t.key || t.name || "";
   const cat = t.category || "";
   const stmt = t.statement;
-  lines.push(`| ${id} | ${escapeCell(name)} | ${cat} | ${escapeCell(stmt)} |`);
+  lines.push(`| ${id} | ${escapeCell(name)} | ${escapeCell(cat)} | ${escapeCell(stmt)} |`);
 }
 lines.push("");
 

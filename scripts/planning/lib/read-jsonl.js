@@ -54,5 +54,9 @@ export function readJsonl(planningDir, filename) {
  */
 export function escapeCell(str) {
   if (str == null) return "";
-  return String(str).replaceAll("\\", "\\\\").replaceAll("|", "\\|").replaceAll("\n", " ");
+  return String(str)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("|", String.raw`\|`)
+    .replaceAll("\r", "")
+    .replaceAll("\n", " ");
 }
