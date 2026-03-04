@@ -92,11 +92,19 @@ const edgeCases = decisions.filter((d) => d.id >= 68 && d.id <= 76);
 // Process: D77-D83
 const processDecisions = decisions.filter((d) => d.id >= 77 && d.id <= 83);
 
+// Audit fixes: D84+
+const auditFixes = decisions.filter((d) => d.id >= 84);
+
 // Coverage validation - warn about any orphaned decisions
 const coveredIds = new Set(
-  [...architecture, ...assessments, ...sequencing, ...edgeCases, ...processDecisions].map(
-    (d) => d.id
-  )
+  [
+    ...architecture,
+    ...assessments,
+    ...sequencing,
+    ...edgeCases,
+    ...processDecisions,
+    ...auditFixes,
+  ].map((d) => d.id)
 );
 const uncovered = decisions.filter((d) => !coveredIds.has(d.id));
 if (uncovered.length > 0) {
@@ -323,6 +331,27 @@ L.push("  → Batch gate: update coordination.json, run generation scripts, git 
 L.push("  → Safety: commit every batch, tagged commits at checkpoints, MCP at milestones");
 L.push("```");
 L.push("");
+
+// ============================================================
+// SECTION 6b: AUDIT FIXES & PROTOCOLS (D84+)
+// ============================================================
+
+if (auditFixes.length > 0) {
+  L.push("---");
+  L.push("");
+  L.push("## 6b. Audit Fixes & Protocols");
+  L.push("");
+  L.push(
+    "Decisions arising from Phase 1b audit. Supersession protocols, amendment rules, hardcoded count elimination, artifact hierarchy."
+  );
+  L.push("");
+  L.push("| # | Decision | Choice |");
+  L.push("|---|----------|--------|");
+  for (const d of auditFixes) {
+    L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
+  }
+  L.push("");
+}
 
 // ============================================================
 // SECTION 7: AUDIT FRAMEWORK

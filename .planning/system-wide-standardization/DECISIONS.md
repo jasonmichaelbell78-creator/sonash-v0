@@ -4,7 +4,7 @@
 > not manually edit.** Update JSONL → run script → MD regenerated.
 
 **Generated:** 2026-03-04  
-**Decisions:** 83 | **Tenets:** 18 | **Directives:** 40 | **Ideas:** 45
+**Decisions:** 92 | **Tenets:** 18 | **Directives:** 41 | **Ideas:** 45
 
 ---
 
@@ -99,7 +99,9 @@ Was discussed in Batch 3 but never formally recorded. Formalized in Batch 4T._
 State survives compaction, session boundaries, crashes, and network failures.
 Not optional — it's infrastructure. State files, not memory. Persistent, not
 ephemeral. _Note: The existence of deep-plan.state.json itself embodies this
-tenet._
+tenet. D78 (safety and redundancy for planning artifacts) directly implements
+crash-proof state: git commits at every batch, tagged checkpoints, MCP memory
+summaries._
 
 **T10. validate_before_scaling**  
 Pilot on 1-2, prove it works, then roll out. Never mass-apply an unproven
@@ -173,7 +175,7 @@ CANON structure, schemas, formats, enforcement model, naming conventions.
 | D10 | Subsystem standardization depth                       | Pattern-level: CANON defines interface + reference pattern (PR Review v2 as exemplar)                                                                   |
 | D11 | Ecosystem boundary rules                              | Primary ownership + consumer references (no superseding ecosystem)                                                                                      |
 | D12 | CANON spec scope in this plan                         | Working draft (structure + maturity model + subsystem interfaces + registry schema) with room for growth built in everywhere                            |
-| D13 | CANON versioning                                      | Semver (start at 0.1.0, promote to 1.0.0 after 2-3 ecosystem validations)                                                                               |
+| D13 | CANON versioning                                      | Semver (start at 0.1.0, promote to 1.0.0 after checkpoint #1 — 4 ecosystem validations)                                                                 |
 | D14 | Enforcement severity levels                           | 4-tier: error (blocking), warning (non-blocking + logged), info (displayed only), silent (suppressed)                                                   |
 | D15 | Enforcement gate placement                            | Tiered: pre-commit (fast checks), pre-push (full validation), PR (comprehensive)                                                                        |
 | D16 | Naming convention depth                               | Files + exports + JSONL fields (3-layer naming standard)                                                                                                |
@@ -282,13 +284,13 @@ implementation tracks. Research ecosystem N+1 while implementing ecosystem N.
 
 | #   | Decision                                                           | Choice                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D55 | Discovery documentation approach: two-doc system                   | Two-doc system — DISCOVERY_RECORD.md (human-complete) + deep-plan.state.json (machine-complete). Both contain ALL decisions, tenets, directives, ideas, and assessments. Simultaneous-update rule: neither doc is allowed to lag the other.                                                                                                                                                                                                         |
-| D56 | Wave structure model                                               | Tiered waves (4-5 waves of 3-5 ecosystems each) with checkpoint validation between waves                                                                                                                                                                                                                                                                                                                                                            |
-| D57 | Wave 1 composition                                                 | CANON solo — Wave 1 is exclusively CANON (L0→L5)                                                                                                                                                                                                                                                                                                                                                                                                    |
-| D58 | PR Review as CANON pilot                                           | PR Review goes in Wave 2 as explicit CANON pilot (S effort, L4→L5)                                                                                                                                                                                                                                                                                                                                                                                  |
-| D59 | TDMS staging timeline                                              | TDMS L2→L3 starts in Wave 2, L3→L4 in Wave 3-4, L5 in Wave 5. Staged across full timeline.                                                                                                                                                                                                                                                                                                                                                          |
-| D60 | Enforcement infrastructure timing + Skills elevation               | Hooks + Testing in Wave 2 for enforcement gates. Skills ELEVATED to Wave 2 (user directive: main tool, touches many systems).                                                                                                                                                                                                                                                                                                                       |
-| D61 | App-layer ecosystem timing                                         | Frontend/App + Firebase/Backend in the final wave (last)                                                                                                                                                                                                                                                                                                                                                                                            |
+| D55 | Discovery documentation approach: two-doc system                   | Two-doc system — DISCOVERY_RECORD.md (human-complete) + deep-plan.state.json (machine-complete). Both contain ALL decisions, tenets, directives, ideas, and assessments. Simultaneous-update rule: neither doc is allowed to lag the other. `[superseded:DD77, D79]`                                                                                                                                                                                |
+| D56 | Wave structure model                                               | Tiered waves (4-5 waves of 3-5 ecosystems each) with checkpoint validation between waves `[superseded:DD63]`                                                                                                                                                                                                                                                                                                                                        |
+| D57 | Wave 1 composition                                                 | CANON solo — Wave 1 is exclusively CANON (L0→L5) `[superseded:DD67]`                                                                                                                                                                                                                                                                                                                                                                                |
+| D58 | PR Review as CANON pilot                                           | PR Review goes in Wave 2 as explicit CANON pilot (S effort, L4→L5) `[superseded:DD67]`                                                                                                                                                                                                                                                                                                                                                              |
+| D59 | TDMS staging timeline                                              | TDMS L2→L3 starts in Wave 2, L3→L4 in Wave 3-4, L5 in Wave 5. Staged across full timeline. `[superseded:DD67]`                                                                                                                                                                                                                                                                                                                                      |
+| D60 | Enforcement infrastructure timing + Skills elevation               | Hooks + Testing in Wave 2 for enforcement gates. Skills ELEVATED to Wave 2 (user directive: main tool, touches many systems). `[superseded:DD67]`                                                                                                                                                                                                                                                                                                   |
+| D61 | App-layer ecosystem timing                                         | Frontend/App + Firebase/Backend in the final wave (last) `[superseded:DD67]`                                                                                                                                                                                                                                                                                                                                                                        |
 | D62 | Parallelism within waves — SUPERSEDED by D63                       | SUPERSEDED. Originally: 2-3 parallel max within waves. Replaced by sequential-first approach (D63) after deep research revealed cross-ecosystem cascade makes true parallelism unreliable. `[superseded:DD63]`                                                                                                                                                                                                                                      |
 | D63 | Sequential-first execution model (replaces wave-based parallelism) | Sequential implementation with research overlap. One ecosystem at a time. Research/deep-plan ecosystem N+1 while implementing ecosystem N. No parallel implementation tracks.                                                                                                                                                                                                                                                                       |
 | D64 | T18 — Changelog-Driven Traceability (new tenet)                    | Every ecosystem change that affects another system MUST be logged in a standardized JSONL changelog (.canon/changelog.jsonl). Cross-ecosystem impact tracked at every step. Tenet of at least this system overhaul, may be promoted to permanent. `[USER]`                                                                                                                                                                                          |
@@ -303,7 +305,7 @@ implementation tracks. Research ecosystem N+1 while implementing ecosystem N.
 | D73 | TDMS Grand Plan reassessment timing                                | Option B: Full reassessment at TDMS L2->L3 (#8) with lightweight pre-checks before each ecosystem (#1-#7). Added as explicit task in the plan.                                                                                                                                                                                                                                                                                                      |
 | D74 | Cross-ecosystem contracts — when defined                           | Option B: Per-ecosystem. CANON (#1) defines the contract FORMAT (structure, location, required fields). Each ecosystem defines its actual contracts during its own deep-plan, with already-standardized ecosystems as partners.                                                                                                                                                                                                                     |
 | D75 | Framework repo and knowledge base integration                      | Option B: Per-ecosystem consultation. Each ecosystem's Phase 0 includes checking framework repo for relevant decisions/patterns. EXPANDED: All prior research forms a knowledge base — framework repo (68 decisions, 42 gaps), current standards and practices, PR Review v2 patterns, prior research agents' findings, all decision logs from this deep-plan. This knowledge base is the starting point for every ecosystem deep-plan. `[INSIGHT]` |
-| D76 | CANON versioning and learning capture during overhaul              | Option B (version at checkpoints) with critical amendment: learning capture happens DURING ecosystem builds, not just between them. Any option that delays learning capture to checkpoint boundaries is a non-starter. Version bumps at checkpoints (0.1.0 -> 0.2.0 -> 0.3.0 -> 0.4.0 -> 1.0.0). Patch escape valve for urgent CANON updates. `[USER]`                                                                                              |
+| D76 | CANON versioning and learning capture during overhaul              | Option B (version at checkpoints) with critical amendment: learning capture happens DURING ecosystem builds, not just between them. Any option that delays learning capture to checkpoint boundaries is a non-starter. Version bumps at checkpoints (0.1.0 -> 1.0.0 at checkpoint #1 -> 1.1.0 -> 1.2.0 -> 1.3.0). Patch escape valve for urgent CANON updates. `[USER]`                                                                             |
 
 ---
 
@@ -330,6 +332,25 @@ User says something
   → Batch gate: update coordination.json, run generation scripts, git commit
   → Safety: commit every batch, tagged commits at checkpoints, MCP at milestones
 ```
+
+---
+
+## 6b. Audit Fixes & Protocols
+
+Decisions arising from Phase 1b audit. Supersession protocols, amendment rules,
+hardcoded count elimination, artifact hierarchy.
+
+| #   | Decision                                                      | Choice                                                                                                                                                                                                                                                                                                                                                  |
+| --- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D84 | Decision supersession protocol — mandatory markers            | When any decision is superseded (fully or partially), the superseding decision MUST add superseded_by, status, and supersession_note fields to the original. This is enforced at batch gate time.                                                                                                                                                       |
+| D85 | Decision amendment protocol + JSONL→MD sync enforcement       | Two-tier change model: (1) Amendments for corrections (stale counts, typos, factual updates) — add amended_in field + changelog entry, edit in-place. (2) Supersession for replacements — use D84 protocol. JSONL→MD sync enforced via pre-commit hook.                                                                                                 |
+| D86 | Migration path mechanics — deferred to PLAN.md                | Migration script conventions, data transformation tooling, migration testing, and rollback behavior will be defined during PLAN.md phase when concrete schema changes are known. D49's 'breaking changes ship WITH migration scripts' principle stands; PLAN.md must specify the mechanics.                                                             |
+| D87 | Effort size calibration — session-count ranges                | S=1-2 sessions, M=3-5 sessions, L=6-10 sessions, XL=11-20 sessions. XL-partial (staged) ecosystems like TDMS use per-stage sizing. These are planning estimates, not commitments.                                                                                                                                                                       |
+| D88 | Tenet alignment soft reminder at batch gate + backfill script | Batch gate warns (non-blocking) when new decisions have no tenet reference anywhere in their fields. backfill-tenet-evidence.js runs at every batch gate to maintain bidirectional tenet↔decision links. Gaps accepted for procedural decisions.                                                                                                        |
+| D89 | Dependency graph for 21-step sequence — deferred to PLAN.md   | Formal dependency map deferred to PLAN.md phase. D67 rationale text contains implicit dependencies but formalizing them requires task-level decomposition that only PLAN.md can provide.                                                                                                                                                                |
+| D90 | No hardcoded counts of growing collections — repo-wide        | Never hardcode a count of any collection that grows over time (ecosystems, tenets, decisions, skills, scripts, etc.) unless a maintenance procedure ensures the count stays accurate. Use dynamic references ('current ecosystems'), approximate markers ('70+'), or computed values instead. Applies repo-wide — not just planning artifacts. `[USER]` |
+| D92 | Ecosystem tagging on planning artifacts                       | Optional 'ecosystems' array field on decisions, directives, and ideas. Universal items use ['*'] or omit the field. Tenets remain universal (apply everywhere by definition). Backfill during PLAN.md phase when ecosystem scopes are concrete.                                                                                                         |
+| D91 | Planning artifact hierarchy and precedence                    | Formal hierarchy: tenets (highest authority) > directives (user mandates) > decisions (locked choices) > changelog (traceability) > ideas (institutional memory, no authority) > coordination.json (transient state). Reading order for new sessions: coordination → tenets → directives → decisions → changelog → ideas.                               |
 
 ---
 
@@ -598,6 +619,13 @@ generation scripts, MD gets regenerated. Scripts must not filter, truncate, or
 transform JSONL data in ways that cause information loss in the generated
 output.
 
+**41. no_hardcoded_growing_counts**  
+Never hardcode a count of any collection that grows over time (ecosystems,
+tenets, decisions, skills, scripts, etc.) anywhere in the repo unless a
+maintenance procedure ensures the count stays accurate. Use dynamic references,
+approximate markers (70+), or computed values. Applies repo-wide to all file
+types.
+
 ---
 
 ## 9. Captured Ideas
@@ -690,6 +718,6 @@ decisions — they're institutional memory for later reference.
 ---
 
 _Generated by `scripts/planning/generate-decisions.js` —
-2026-03-04T11:57:03.494Z_  
+2026-03-04T13:27:35.174Z_  
 _Source: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl_  
 _Update: append to JSONL → run script → MD regenerated_

@@ -404,24 +404,22 @@ else
   fi
 fi
 
-# 12. JSONL→MD sync validation (BLOCKING - D84/D85)
+# 12. JSONL→MD sync validation (WARNING - D84/D85)
+# Warns when planning JSONL changed but no MD files are staged.
+# Full content comparison deferred to batch gate (formatter rewrites MD after generation).
 # Override with: SKIP_CHECKS="jsonl-sync" SKIP_REASON="reason" git commit ...
 if is_skipped jsonl-sync; then
   node scripts/log-override.js --quick --check=jsonl-sync --reason="$SKIP_REASON" 2>/dev/null || true
 else
   if printf '%s\n' "$STAGED_FILES" | grep -qE '\.planning/.*\.jsonl$'; then
-    echo "  ▶ Validating JSONL→MD sync (planning JSONL changed)..."
-    if ! node scripts/planning/validate-jsonl-md-sync.js > /dev/null 2>&1; then
-      echo "  ❌ JSONL→MD sync validation failed"
-      node scripts/planning/validate-jsonl-md-sync.js 2>&1 | tail -10
-      echo ""
-      echo "  Regenerate MD views before committing. Run:"
+    if ! printf '%s\n' "$STAGED_FILES" | grep -qE '\.planning/.*\.(md|MD)$'; then
+      echo "  ⚠️ Planning JSONL changed but no MD files staged — did you forget to regenerate?"
       echo "    node scripts/planning/generate-discovery-record.js"
       echo "    node scripts/planning/generate-decisions.js"
-      echo "  Override: SKIP_CHECKS=\"jsonl-sync\" SKIP_REASON=\"reason\" git commit ..."
-      exit 1
+      node scripts/append-hook-warning.js --hook=pre-commit --type=jsonl-sync --severity=warning --message="Planning JSONL changed without MD regeneration" --action="Run generation scripts" 2>/dev/null || true
+    else
+      echo "  ✅ Planning JSONL + MD both staged"
     fi
-    echo "  ✅ JSONL→MD sync passed"
   fi
 fi
 
