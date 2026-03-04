@@ -31,26 +31,28 @@ const DRY_RUN = process.argv.includes("--dry-run");
 function readJsonl(filename) {
   const filepath = join(PLANNING_DIR, filename);
   try {
-    return readFileSync(filepath, "utf-8")
+    const lines = readFileSync(filepath, "utf-8")
       .split("\n")
-      .filter((line) => line.trim() && !line.startsWith("//"))
-      .map((line) => JSON.parse(line));
+      .filter((line) => line.trim() && !line.startsWith("//"));
+    const results = [];
+    for (let i = 0; i < lines.length; i++) {
+      try {
+        results.push(JSON.parse(lines[i]));
+      } catch (err) {
+        console.warn(`WARNING: ${filename} line ${i + 1}: parse error — ${err.message}`);
+      }
+    }
+    return results;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`Error reading ${filename}: ${message}`);
-    return [];
+    console.error(`FATAL: Cannot read ${filename}: ${message}`);
+    process.exit(1);
   }
 }
 
 function esc(str) {
   if (!str) return "";
   return String(str).replace(/\|/g, "\\|").replace(/\n/g, " ");
-}
-
-function trunc(str, max) {
-  if (!str) return "";
-  const s = String(str);
-  return s.length > max ? s.slice(0, max - 3) + "..." : s;
 }
 
 function tag(d) {
@@ -74,11 +76,11 @@ const ideas = readJsonl("ideas.jsonl");
 const d67 = decisions.find((d) => d.id === 67);
 const d81 = decisions.find((d) => d.id === 81);
 
-// Architecture: D1-D27 (CANON structure, schemas, formats)
-const architecture = decisions.filter((d) => d.id >= 1 && d.id <= 27);
+// Architecture: D1-D32 (includes CANON structure + tenet discovery)
+const architecture = decisions.filter((d) => d.id >= 1 && d.id <= 32);
 
-// Assessments: D33-D54
-const assessments = decisions.filter((d) => d.id >= 33 && d.id <= 54 && d.assessment_summary);
+// Assessments: D33-D54 (ALL of them, not just ones with assessment_summary)
+const assessments = decisions.filter((d) => d.id >= 33 && d.id <= 54);
 
 // Sequencing: D55-D67
 const sequencing = decisions.filter((d) => d.id >= 55 && d.id <= 67);
@@ -88,6 +90,19 @@ const edgeCases = decisions.filter((d) => d.id >= 68 && d.id <= 76);
 
 // Process: D77-D83
 const processDecisions = decisions.filter((d) => d.id >= 77 && d.id <= 83);
+
+// Coverage validation - warn about any orphaned decisions
+const coveredIds = new Set(
+  [...architecture, ...assessments, ...sequencing, ...edgeCases, ...processDecisions].map(
+    (d) => d.id
+  )
+);
+const uncovered = decisions.filter((d) => !coveredIds.has(d.id));
+if (uncovered.length > 0) {
+  console.warn(
+    `WARNING: ${uncovered.length} decisions not in any section: ${uncovered.map((d) => "D" + d.id).join(", ")}`
+  );
+}
 
 // --- Build MD ---
 
@@ -120,7 +135,7 @@ if (d67 && d67.sequence) {
   L.push("|---|-----------|--------|--------|---------------|");
   for (const s of d67.sequence) {
     L.push(
-      `| **${s.pos}** | ${esc(s.ecosystem)} | ${s.target} | ${s.effort} | ${esc(trunc(s.rationale, 70))} |`
+      `| **${s.pos}** | ${esc(s.ecosystem)} | ${s.target} | ${s.effort} | ${esc(s.rationale)} |`
     );
   }
   L.push("");
@@ -143,7 +158,7 @@ L.push("");
 L.push('The "why" behind every decision. Reference these when making implementation choices.');
 L.push("");
 
-const tenetCategories = ["foundation", "design", "operations", "process"];
+const tenetCategories = [...new Set(tenets.map((t) => t.category).filter(Boolean))];
 for (const cat of tenetCategories) {
   const catTenets = tenets.filter((t) => t.category === cat);
   if (catTenets.length === 0) continue;
@@ -152,7 +167,8 @@ for (const cat of tenetCategories) {
   L.push("");
   for (const t of catTenets) {
     const id = t.id || t.key?.split("_")[0];
-    L.push(`**${id}. ${t.key}**  `);
+    const displayName = t.key?.replace(/^T\d+_/, "") || t.name || "";
+    L.push(`**${id}. ${displayName}**  `);
     L.push(`${t.statement}`);
     if (t.note) L.push(`  *Note: ${t.note}*`);
     L.push("");
@@ -165,14 +181,14 @@ for (const cat of tenetCategories) {
 
 L.push("---");
 L.push("");
-L.push("## 3. Architecture & Standards (D1-D27)");
+L.push(`## 3. Architecture & Standards (D1-D${architecture[architecture.length - 1]?.id || "?"})`);
 L.push("");
 L.push("CANON structure, schemas, formats, enforcement model, naming conventions.");
 L.push("");
 L.push("| # | Decision | Choice |");
 L.push("|---|----------|--------|");
 for (const d of architecture) {
-  L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(trunc(d.choice, 100))}${tag(d)} |`);
+  L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
 L.push("");
 
@@ -205,18 +221,28 @@ L.push("---");
 L.push("");
 L.push("## 4. Ecosystem Assessments");
 L.push("");
+
+// Split assessments into maturity assessments and other decisions in this range
+const maturityAssessments = assessments.filter((d) => {
+  const match = d.choice?.match(/Current (L\d).*?Target (L\d)/);
+  return match;
+});
+const otherAssessmentDecisions = assessments.filter((d) => {
+  const match = d.choice?.match(/Current (L\d).*?Target (L\d)/);
+  return !match;
+});
+
 L.push("| Ecosystem | Current | Target | Effort | Staging | D# |");
 L.push("|-----------|---------|--------|--------|---------|----|");
 
-for (const d of assessments) {
-  const match = d.choice?.match(/Current (L\d).*?Target (L\d)/);
-  if (!match) continue;
+for (const d of maturityAssessments) {
+  const match = d.choice.match(/Current (L\d).*?Target (L\d)/);
   const name = d.decision
     .replace(/:.*/, "")
     .replace(/ Current and target maturity/, "")
     .replace(/ Current and target maturity.*/, "");
   const effort = d.effort || "?";
-  const staging = trunc(d.staging || "Direct", 35);
+  const staging = d.staging || "Direct";
   const flags = d.user_override ? " **[OVERRIDE]**" : d.priority_elevated ? " **[ELEVATED]**" : "";
   L.push(
     `| ${esc(name)}${flags} | ${match[1]} | ${match[2]} | ${esc(effort)} | ${esc(staging)} | D${d.id} |`
@@ -224,8 +250,19 @@ for (const d of assessments) {
 }
 L.push("");
 
+if (otherAssessmentDecisions.length > 0) {
+  L.push("### Other Assessment-Phase Decisions");
+  L.push("");
+  L.push("| # | Decision | Choice |");
+  L.push("|---|----------|--------|");
+  for (const d of otherAssessmentDecisions) {
+    L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
+  }
+  L.push("");
+}
+
 // User overrides callout
-const overrides = assessments.filter((d) => d.user_override || d.user_directive);
+const overrides = maturityAssessments.filter((d) => d.user_override || d.user_directive);
 if (overrides.length > 0) {
   L.push("**User Overrides:**");
   for (const d of overrides) {
@@ -253,7 +290,7 @@ L.push("");
 L.push("| # | Decision | Choice |");
 L.push("|---|----------|--------|");
 for (const d of [...sequencing, ...edgeCases]) {
-  L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(trunc(d.choice, 100))}${tag(d)} |`);
+  L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
 L.push("");
 
@@ -270,7 +307,7 @@ L.push("");
 L.push("| # | Decision | Choice |");
 L.push("|---|----------|--------|");
 for (const d of processDecisions) {
-  L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(trunc(d.choice, 100))}${tag(d)} |`);
+  L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
 L.push("");
 

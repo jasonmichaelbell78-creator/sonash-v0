@@ -33,14 +33,22 @@ const DRY_RUN = process.argv.includes("--dry-run");
 function readJsonl(filename) {
   const filepath = join(PLANNING_DIR, filename);
   try {
-    return readFileSync(filepath, "utf-8")
+    const rawLines = readFileSync(filepath, "utf-8")
       .split("\n")
-      .filter((line) => line.trim() && !line.startsWith("//"))
-      .map((line) => JSON.parse(line));
+      .filter((line) => line.trim() && !line.startsWith("//"));
+    const results = [];
+    for (let i = 0; i < rawLines.length; i++) {
+      try {
+        results.push(JSON.parse(rawLines[i]));
+      } catch (err) {
+        console.warn(`WARNING: ${filename} line ${i + 1}: parse error — ${err.message}`);
+      }
+    }
+    return results;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`Error reading ${filename}: ${message}`);
-    return [];
+    console.error(`FATAL: Cannot read ${filename}: ${message}`);
+    process.exit(1);
   }
 }
 
@@ -56,12 +64,6 @@ function readCoordination() {
 function escapeCell(str) {
   if (!str) return "";
   return String(str).replace(/\|/g, "\\|").replace(/\n/g, " ");
-}
-
-function truncate(str, max) {
-  if (!str) return "";
-  const s = String(str);
-  return s.length > max ? s.slice(0, max - 3) + "..." : s;
 }
 
 // --- Load Data ---
@@ -93,7 +95,7 @@ lines.push("");
 
 // --- Tenets Section ---
 
-lines.push("## Core Tenets (T1-T" + tenets.length + ")");
+lines.push(`## Core Tenets (${tenets[0]?.id || "T1"}-${tenets[tenets.length - 1]?.id || "?"})`);
 lines.push("");
 lines.push("| ID | Name | Category | Statement |");
 lines.push("|-----|------|----------|-----------|");
@@ -102,14 +104,14 @@ for (const t of tenets) {
   const id = t.id || t.key?.split("_")[0] || "?";
   const name = t.key || t.name || "";
   const cat = t.category || "";
-  const stmt = truncate(t.statement, 120);
+  const stmt = t.statement;
   lines.push(`| ${id} | ${escapeCell(name)} | ${cat} | ${escapeCell(stmt)} |`);
 }
 lines.push("");
 
 // --- Decisions Section ---
 
-lines.push("## All Decisions (D1-D" + decisions.length + ")");
+lines.push(`## All Decisions (D1-D${Math.max(...decisions.map((d) => d.id))})`);
 lines.push("");
 
 // Render ungrouped table for simplicity and completeness
@@ -117,8 +119,8 @@ lines.push("| # | Decision | Choice | Rationale |");
 lines.push("|---|----------|--------|-----------|");
 
 for (const d of decisions) {
-  const choice = truncate(d.choice, 100);
-  const rationale = truncate(d.rationale, 100);
+  const choice = d.choice;
+  const rationale = d.rationale;
   const superseded = d.superseded_by ? ` *(superseded by D${d.superseded_by})*` : "";
   const userDir = d.user_directive ? " **[USER]**" : "";
   const userOvr = d.user_override ? " **[OVERRIDE]**" : "";
@@ -138,7 +140,7 @@ if (d67 && d67.sequence) {
   lines.push("|---|-----------|--------|--------|-----------|");
   for (const s of d67.sequence) {
     lines.push(
-      `| ${s.pos} | ${escapeCell(s.ecosystem)} | ${s.target} | ${s.effort} | ${escapeCell(truncate(s.rationale, 80))} |`
+      `| ${s.pos} | ${escapeCell(s.ecosystem)} | ${s.target} | ${s.effort} | ${escapeCell(s.rationale)} |`
     );
   }
   lines.push("");
@@ -172,7 +174,7 @@ for (const d of assessmentDecisions) {
     const effort = d.effort || "?";
     const staging = d.staging || "Direct";
     lines.push(
-      `| ${escapeCell(ecosystem)} | ${match[1]} | ${match[2]} | ${effort} | ${escapeCell(truncate(staging, 40))} | D${d.id} |`
+      `| ${escapeCell(ecosystem)} | ${match[1]} | ${match[2]} | ${effort} | ${escapeCell(staging)} | D${d.id} |`
     );
   }
 }
@@ -218,10 +220,12 @@ if (d81 && d81.audit_framework) {
   const t3 = af.tier_3_implementation || {};
   lines.push(`*${t3.description || ""}*`);
   lines.push("");
-  lines.push("**Phase-Level (7 domains):**");
+  const phaseLevelCount = (t3.phase_level_domains || []).length;
+  lines.push(`**Phase-Level (${phaseLevelCount} domains):**`);
   for (const item of t3.phase_level_domains || []) lines.push(`- ${item}`);
   lines.push("");
-  lines.push("**Full-Scope Only (2 additional):**");
+  const fullScopeCount = (t3.full_scope_only_domains || []).length;
+  lines.push(`**Full-Scope Only (${fullScopeCount} additional):**`);
   for (const item of t3.full_scope_only_domains || []) lines.push(`- ${item}`);
   lines.push("");
 
