@@ -190,7 +190,7 @@ for (const cat of tenetCategories) {
 
 L.push("---");
 L.push("");
-L.push(`## 3. Architecture & Standards (D1-D${architecture[architecture.length - 1]?.id || "?"})`);
+L.push(`## 3. Architecture & Standards (D1-D${architecture[architecture.length - 1]?.id ?? "?"})`);
 L.push("");
 L.push("CANON structure, schemas, formats, enforcement model, naming conventions.");
 L.push("");

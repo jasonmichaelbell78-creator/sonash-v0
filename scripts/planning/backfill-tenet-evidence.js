@@ -30,10 +30,16 @@ const TENETS_PATH = resolve(BASE_DIR, "tenets.jsonl");
 
 function parseJsonl(filePath) {
   const content = readFileSync(filePath, "utf-8");
-  return content
-    .split("\n")
-    .filter((line) => line.trim() !== "")
-    .map((line) => JSON.parse(line));
+  const results = [];
+  for (const line of content.split("\n")) {
+    if (line.trim() === "") continue;
+    try {
+      results.push(JSON.parse(line));
+    } catch (err) {
+      console.warn(`Warning: skipping corrupt JSONL line in ${filePath}: ${err.message}`);
+    }
+  }
+  return results;
 }
 
 function serializeJsonl(records) {
