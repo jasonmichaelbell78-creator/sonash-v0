@@ -1,9 +1,9 @@
 # System-Wide Standardization — Implementation Plan
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-03-04
-**Status:** DRAFT
+**Status:** DRAFT — Amended (21 review decisions incorporated)
 <!-- prettier-ignore-end -->
 
 > **Deep-Plan Phase 3 Artifact** **Generated:** 2026-03-04 **Decisions:** See
@@ -85,6 +85,95 @@ Learnings captured DURING ecosystem builds via:
 
 - `.canon/changelog.jsonl` entries (continuous)
 - CANON version bumps at checkpoints (batched formalization)
+
+### Rollback Protocol (D68, T12, T9)
+
+Every ecosystem step has a defined rollback path. Git-revert-based rollback is
+the mechanism (not branch-based). Protocol:
+
+1. **Pre-migration snapshot:** Before each ecosystem's implementation begins,
+   tag the repo: `git tag pre-<ecosystem-id>-snapshot` (e.g.,
+   `pre-skills-snapshot`)
+2. **Rollback trigger:** If an ecosystem step leaves the repo in a worse state
+   than before (health checkers regressing, tests failing, cross-ecosystem
+   breakage), rollback is available
+3. **Rollback execution:** `git revert` the commits from the ecosystem step back
+   to the tagged snapshot
+4. **Post-rollback:** Log the rollback in `.canon/changelog.jsonl` with reason,
+   create TDMS item for the root cause, then re-attempt with amended approach
+
+Rollback is a safety net, not a substitute for validation. Each ecosystem
+deep-plan should identify step-level rollback boundaries within their
+implementation.
+
+### Schema Versioning Strategy (D24, T12, D22)
+
+All `.canon/schemas/*.schema.ts` files include a `SCHEMA_VERSION` export.
+Protocol:
+
+1. **Additive changes** (new optional fields): patch version bump, no migration
+   needed (D22 extensible-core)
+2. **Breaking changes** (renamed fields, removed fields, type changes): minor
+   version bump, migration script REQUIRED before merge
+3. **Structural changes** (new required fields, schema splits): major version
+   bump, migration script + cross-ecosystem impact assessment required
+4. **Pre-commit validation:** Schema files must have valid `SCHEMA_VERSION`
+   export; JSONL data files must validate against their declared schema version
+
+Schema version tracking is a Step 1 (CANON) deliverable. Individual ecosystem
+deep-plans inherit this infrastructure.
+
+### Migration Validation Protocol (T10, T11, T12)
+
+When any step migrates data from one format to another (e.g., markdown → JSONL,
+unstructured → schema-validated), the following protocol applies:
+
+1. **Pre-migration:** Tag snapshot (see Rollback Protocol above)
+2. **Migration execution:** Transform data, validate output against target
+   schema
+3. **Post-migration validation:** Every migrated record checked for:
+   - Schema compliance (Zod validation passes)
+   - Data completeness (no fields lost in transformation)
+   - Cross-reference integrity (all IDs/references still resolve)
+4. **Finding disposition — user's choice at each finding:**
+   - **Fix in-place:** Resolve the finding before proceeding (recommended for
+     anything blocking downstream work)
+   - **Log to TDMS:** Create debt item with source `canon-migration` and
+     ecosystem reference for later resolution
+   - User decides per-finding — not auto-routed by severity
+5. **Archive originals:** After validated migration, move source files to
+   `.archive/<ecosystem-id>/<datestamp>/` (preserves history, removes from
+   active tree). Git history provides additional safety net.
+6. **Cross-reference map:** When migration changes IDs or anchors, create/update
+   `.canon/.xref.json` mapping old references to new locations. Validation step
+   checks all docs for stale references.
+
+### Per-Phase Regression Check (T10, T11)
+
+At the end of each ecosystem step (before exit criteria sign-off):
+
+1. Run the full existing test suite — zero regressions allowed
+2. Run health checkers for ALL previously-completed ecosystems — no degradation
+3. If regressions found: fix before proceeding (these are blockers, not
+   deferrable)
+
+This is separate from checkpoint validation. Checkpoints validate strategic
+progress; regression checks validate that nothing broke.
+
+### Born-Compliant Timing (D26)
+
+Born-compliant gates (new artifacts must meet the ecosystem's standard) activate
+AFTER the ecosystem step is marked complete, not during implementation. During
+implementation, the ecosystem is in transition — enforcing standards on
+in-progress work creates circular dependencies. Each ecosystem's deep-plan
+should note the activation point for its born-compliant gate.
+
+### Checkpoint Concrete Metrics (D69, D67)
+
+Each checkpoint (4 total) has quantitative pass/fail criteria defined in its
+section below. Checkpoints are NOT subjective assessments — they are measurable
+gates. If metrics aren't met, the checkpoint fails and iteration is required
+before proceeding. See individual checkpoint sections for specific metrics.
 
 ---
 
@@ -435,15 +524,22 @@ ecosystem to reach L5 — validates CANON before applying it broadly.
 - Validate that CANON tooling (schemas, health checkers, enforcement) works
   end-to-end on a real ecosystem
 
-### Checkpoint #1 Validation
+### Checkpoint #1 Validation — Concrete Metrics
 
-After PR Review reaches L5:
+After PR Review reaches L5, the following must ALL pass:
 
-1. Does the maturity assessment model capture reality accurately?
-2. Do enforcement manifests work as designed?
-3. Are health checkers producing useful output?
-4. Is the changelog capturing cross-ecosystem impacts?
-5. Any CANON spec issues to patch before rolling out further?
+1. **Schema validation:** All `.canon/schemas/*.schema.ts` compile with zero
+   errors, all JSONL files validate against declared schemas (0 failures)
+2. **Health checker coverage:** PR Review health checker produces JSON
+   envelope + JSONL findings per D25, with score ≥ 90%
+3. **Enforcement manifest:** PR Review enforcement manifest has rules covering
+   all applicable checklist items, each with tier + severity per D26
+4. **Changelog completeness:** `.canon/changelog.jsonl` has entries for every
+   cross-ecosystem impact from Steps 1-4 (auditable against git log)
+5. **Self-assessment accuracy:** CANON's own 16-item checklist assessment
+   matches independently-verifiable evidence (no "present" claims without proof)
+6. **Regression check:** Full test suite passes, all Step 1 health checkers
+   still passing
 
 **If checkpoint fails:** Iterate on CANON (Step 1) before proceeding. D68
 skip-and-return does NOT apply here — CANON must work.
@@ -592,16 +688,26 @@ layer.
 - `.claude/hooks/session-start.sh`
 - `scripts/check-session-gaps.js`
 
-### Checkpoint #2 Validation
+### Checkpoint #2 Validation — Concrete Metrics
 
 After Sessions reaches L3, core infrastructure is complete: CANON (L5), Skills
 (L3), Hooks (L4), PR Review (L5), Docs (L3), Testing (L4), Sessions (L3). Ready
 for data-heavy ecosystems.
 
-Validate: Are all 7 ecosystems still healthy? Run health checkers for all
-completed ecosystems. Address any regressions.
+All of the following must pass:
 
-Promote CANON to v0.3.0 (D76).
+1. **Ecosystem health:** All 7 completed ecosystem health checkers pass with
+   scores at or above their exit criteria thresholds
+2. **No regressions:** Full test suite passes; no ecosystem has degraded from
+   its exit-criteria state
+3. **Registry accuracy:** `.canon/ecosystems.jsonl` has 7 entries with correct
+   `status: "completed"` and accurate `current_level` values
+4. **Contract integrity:** All inter-ecosystem contracts declared in Steps 1-7
+   have both sides implemented (no dangling contract references)
+5. **Changelog audit:** `.canon/changelog.jsonl` entries for Steps 1-7 are
+   complete and cross-referenceable against git history
+
+If regressions found: fix before proceeding. Promote CANON to v0.3.0 (D76).
 
 ### Exit criteria
 
@@ -921,11 +1027,21 @@ formalization.
 - `scripts/cleanup-alert-sessions.js`
 - JSONL rotation patterns throughout
 
-### Checkpoint #3 Validation
+### Checkpoint #3 Validation — Concrete Metrics
 
 After Archival/Rotation reaches L4, all process-layer ecosystems are
-standardized. Run health checkers for all 15 completed ecosystems. Address
-regressions.
+standardized. All of the following must pass:
+
+1. **Ecosystem health:** All 15 completed ecosystem health checkers pass
+2. **No regressions:** Full test suite passes; no ecosystem degraded
+3. **Registry accuracy:** `.canon/ecosystems.jsonl` has 15 entries at
+   `status: "completed"` with correct levels
+4. **Enforcement coverage:** All ecosystems at L4+ have active enforcement
+   manifests with rules firing in pre-commit/pre-push
+5. **TDMS integration:** All migration findings from Steps 1-15 either resolved
+   or tracked in MASTER_DEBT with source `canon-migration`
+6. **Archival compliance:** All migrated source files archived per Migration
+   Validation Protocol
 
 Promote CANON to v0.4.0 (D76). Ready for app-layer.
 
@@ -1147,16 +1263,26 @@ canonized.
 - Migration strategy: schema versioning for MASTER_DEBT evolution
 - Deprecation policy for old TDMS patterns
 
-### Checkpoint #4 Validation — Overhaul Complete
+### Checkpoint #4 Validation — Overhaul Complete — Concrete Metrics
 
 Run comprehensive audit (D83): Tier 1 + Tier 2 + Tier 3 (summary) + Tier 4
-(full) across ALL 18 ecosystems.
+(full) across ALL 18 ecosystems. All of the following must pass:
 
-1. All ecosystems at or above target maturity?
-2. All health checkers passing?
-3. Changelog complete and accurate (git diff cross-reference)?
-4. All inter-ecosystem contracts in place?
-5. Knowledge harvested: what feeds into ongoing maintenance?
+1. **Maturity targets met:** All 18 ecosystems at or above their target maturity
+   level as defined in DECISIONS.md assessment table
+2. **Health universal green:** All 18 ecosystem health checkers passing
+3. **Changelog completeness:** `.canon/changelog.jsonl` covers all 21 steps,
+   cross-referenceable against git log (no undocumented cross-ecosystem impacts)
+4. **Contract completeness:** All inter-ecosystem contracts have both sides
+   implemented; no orphaned or dangling contracts
+5. **TDMS clean:** All `canon-migration` source items in MASTER_DEBT either
+   resolved or explicitly accepted as ongoing debt with justification
+6. **Schema integrity:** All JSONL files across all ecosystems validate against
+   their declared schema versions
+7. **Archive integrity:** All migrated source files properly archived; no stale
+   pre-migration files in active tree
+8. **Knowledge capture:** Learnings from all 21 steps captured in changelog;
+   maintenance patterns documented for ongoing operations
 
 Promote CANON to v1.0.0 (D76).
 
@@ -1259,11 +1385,18 @@ flowchart TD
 - [x] Audit checkpoints (4 checkpoints + per-step audits)
 - [x] Effort estimate (per-step + total)
 - [x] Parallelization guidance (research overlap only)
+- [x] Rollback protocol (git-revert + pre-migration tags) — v1.1
+- [x] Schema versioning strategy (additive/breaking/structural) — v1.1
+- [x] Migration validation protocol (fix-or-defer, archive, xref) — v1.1
+- [x] Per-phase regression checks — v1.1
+- [x] Born-compliant timing clarification — v1.1
+- [x] Concrete checkpoint metrics (quantitative gates) — v1.1
 
 ---
 
 ## Version History
 
-| Version | Date       | Description          |
-| ------- | ---------- | -------------------- |
-| 1.0     | 2026-03-04 | Initial plan created |
+| Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                 |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0     | 2026-03-04 | Initial plan created                                                                                                                                                                                                                                                                                                                                        |
+| 1.1     | 2026-03-04 | Amended: 21 review decisions incorporated — rollback protocol (git-revert + tags), schema versioning strategy, migration validation protocol (fix-or-defer at user discretion, archive to `.archive/`, xref mapping), per-phase regression checks, born-compliant timing clarification, concrete checkpoint metrics (4 checkpoints with quantitative gates) |
