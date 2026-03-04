@@ -1,10 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_6_in_progress",
-  "current_batch": "Batch 6 — Sequencing + Prioritization. D56-D62 locked. Wave proposal drafting in progress.",
-  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6(in progress)",
-  "estimated_remaining_batches": "5D Q&A, Batch 6 (Sequencing + Prioritization), possible Batch 7 (Edge Cases/Final)",
+  "status": "phase_1_batch_6_complete",
+  "current_batch": "Batch 6 COMPLETE — D56-D67 locked. Sequential sequence finalized. 18 ecosystems, 21 steps.",
+  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6",
+  "estimated_remaining_batches": "Batch 7 (Edge Cases/Final), end-of-process completeness audit",
   "total_ecosystems": 18,
   "decisions": [
     {
@@ -591,14 +591,94 @@
     },
     {
       "id": 62,
-      "decision": "Parallelism within waves",
-      "choice": "2-3 parallel max within waves, but ONLY for ecosystems that don't touch each other. Sequential for related ecosystems where lessons transfer. User wants to see concrete proposal before finalizing.",
-      "rationale": "Bounded parallelism. Independent ecosystems can overlap. Related ecosystems run sequential for T13 learning transfer. CONDITIONAL — awaiting concrete wave proposal."
+      "decision": "Parallelism within waves — SUPERSEDED by D63",
+      "choice": "SUPERSEDED. Originally: 2-3 parallel max within waves. Replaced by sequential-first approach (D63) after deep research revealed cross-ecosystem cascade makes true parallelism unreliable.",
+      "rationale": "Deep research across 13 agents + user analysis revealed: every ecosystem overhaul creates/modifies skills, hooks, scripts, and docs. The 'independent tracks' assumption breaks down when considering outputs of standardization, not just inputs. Superseded by D63.",
+      "superseded_by": "D63"
+    },
+    {
+      "id": 63,
+      "decision": "Sequential-first execution model (replaces wave-based parallelism)",
+      "choice": "Sequential implementation with research overlap. One ecosystem at a time. Research/deep-plan ecosystem N+1 while implementing ecosystem N. No parallel implementation tracks.",
+      "rationale": "USER INSIGHT + deep research synthesis: (1) Every ecosystem overhaul creates/modifies skills, hooks, scripts, docs — so parallel implementation causes cross-contamination. (2) Learning transfer (T13) is the whole point — parallel prevents it. (3) Changelog tracking (T18) is clean and linear when sequential. (4) User's attention is focused, not fragmented. (5) Each ecosystem benefits from ALL previous ones. Research overlap preserves productivity without sacrificing learning.",
+      "supersedes": "D56 (wave structure), D62 (parallelism within waves)",
+      "research_overlap": "Research/deep-plan for ecosystem N+1 runs in parallel with implementation of ecosystem N. This is the ONLY parallelism approved.",
+      "user_approved": true
+    },
+    {
+      "id": 64,
+      "decision": "T18 — Changelog-Driven Traceability (new tenet)",
+      "choice": "Every ecosystem change that affects another system MUST be logged in a standardized JSONL changelog (.canon/changelog.jsonl). Cross-ecosystem impact tracked at every step. Tenet of at least this system overhaul, may be promoted to permanent.",
+      "rationale": "USER DIRECTIVE: 'changelogs need to be standardized and it needs to be a tenet of at least this system overhaul.' Overlap between ecosystems is inevitable — change one thing, have to change another. Changelog becomes the connective tissue. Aligns with T14 (capture everything) but specific to cross-ecosystem traceability.",
+      "tenet": "T18_changelog_driven_traceability",
+      "user_directive": true,
+      "schema_sketch": {
+        "fields": ["seq", "ecosystem", "change", "affects", "type", "timestamp"],
+        "location": ".canon/changelog.jsonl",
+        "format": "JSONL — one line per cross-ecosystem change"
+      }
+    },
+    {
+      "id": 65,
+      "decision": "Docs elevated to position #5 in sequence",
+      "choice": "Docs ecosystem standardized at position #5 (after CANON, Skills, Hooks, PR Review pilot). Establishes folder structure, file placement standards, document dependency maps, master lists BEFORE any further ecosystems are standardized.",
+      "rationale": "USER DIRECTIVE: 'I think I want docs at number five.' Too much content in docs (100+ files) to defer. Every subsequent ecosystem produces docs — if doc standards aren't established early, 13+ ecosystems produce non-compliant docs that need rework. Docs at #5 means ecosystems #6-#18 create born-compliant documentation. Docs verification pass at #20 confirms consistency.",
+      "user_directive": true,
+      "scope_at_position_5": [
+        "Folder structure and file placement standards",
+        "Document dependency maps (which docs reference which)",
+        "Master lists and index sync patterns",
+        "Staleness monitoring and health checks",
+        "Documentation templates for all subsequent ecosystems",
+        "Generation pipeline standards (JSONL → MD)"
+      ],
+      "verification_pass": "Position #20 — lightweight meta-check after all ecosystems complete"
+    },
+    {
+      "id": 66,
+      "decision": "CI/CD restored to sequence at position #10",
+      "choice": "CI/CD (L1→L3, M staged) restored to the sequence at position #10, between Scripts (#9) and Alerts (#11).",
+      "rationale": "Was accidentally dropped from the initial sequential proposal. CI/CD (D41: GitHub Actions workflows, build/deploy pipelines, integration checks) benefits from Hooks (#3) and Testing (#6) being standardized, and from Scripts (#9) establishing script standards."
+    },
+    {
+      "id": 67,
+      "decision": "Final locked sequence — 18 ecosystems, 21 steps",
+      "choice": "Sequential execution order locked. 18 unique ecosystems. TDMS staged at #8, #16, #21. Docs at #5 + verification at #20. Research overlap is the only approved parallelism.",
+      "rationale": "Synthesizes all Batch 6 decisions (D56-D66) plus deep research from 13 agents covering all 18 ecosystems. Maximizes T13 learning transfer, enables T18 changelog tracking, gets tools (Skills, Hooks) and standards (Docs) online early.",
+      "sequence": [
+        {"pos": 1, "ecosystem": "CANON", "target": "L0->L5", "effort": "L", "rationale": "Foundation. Tenets, schemas, changelog mechanism (T18)."},
+        {"pos": 2, "ecosystem": "Skills", "target": "L1->L3", "effort": "L", "rationale": "Daily tool. Skill-audit canonized. Born-compliant skills for all future work."},
+        {"pos": 3, "ecosystem": "Hooks", "target": "L3->L4", "effort": "M", "rationale": "Enforcement infra. Skill validation gates formalized."},
+        {"pos": 4, "ecosystem": "PR Review", "target": "L4->L5", "effort": "S", "rationale": "CANON pilot. CHECKPOINT: Does framework work?"},
+        {"pos": 5, "ecosystem": "Docs", "target": "L2->L3", "effort": "M", "rationale": "Folder structure, placement standards, dependency maps, master lists. Born-compliant docs for all future ecosystems."},
+        {"pos": 6, "ecosystem": "Testing", "target": "L3->L4", "effort": "M", "rationale": "Test infrastructure. Complements hooks. Proper test patterns for all subsequent work."},
+        {"pos": 7, "ecosystem": "Sessions", "target": "L1->L3", "effort": "M", "rationale": "State management. Cross-cutting infra. Now with skills, hooks, testing, docs to enforce it."},
+        {"pos": 8, "ecosystem": "TDMS (L2->L3)", "target": "L2->L3", "effort": "XL-partial", "rationale": "Critical system, first stage. 37 scripts get Zod schemas + monitoring."},
+        {"pos": 9, "ecosystem": "Scripts", "target": "L2->L3", "effort": "L", "rationale": "Script infrastructure standards. Informed by TDMS learnings."},
+        {"pos": 10, "ecosystem": "CI/CD", "target": "L1->L3", "effort": "M", "rationale": "Build/deploy pipelines. Benefits from hooks and testing being standard."},
+        {"pos": 11, "ecosystem": "Alerts", "target": "L2->L4", "effort": "M", "rationale": "Monitoring layer. Benefits from all infra being standardized."},
+        {"pos": 12, "ecosystem": "Analytics", "target": "L1->L3", "effort": "M", "rationale": "Aggregation layer. Builds on alerts + health checker patterns."},
+        {"pos": 13, "ecosystem": "Agents", "target": "L2->L3", "effort": "M", "rationale": "Agent definitions. Benefits from Skills and Hooks."},
+        {"pos": 14, "ecosystem": "Audits", "target": "L3->L4+L5path", "effort": "M", "rationale": "All audits are skills. L4 with L5 pathway. Benefits from Skills standardization."},
+        {"pos": 15, "ecosystem": "Archival/Rotation", "target": "L3->L4", "effort": "M", "rationale": "Lifecycle patterns. Benefits from JSONL and schema standards."},
+        {"pos": 16, "ecosystem": "TDMS (L3->L4)", "target": "L3->L4", "effort": "XL-partial", "rationale": "Second stage. Enforcement manifest, testing."},
+        {"pos": 17, "ecosystem": "Roadmap & Execution", "target": "L2->L3", "effort": "L", "rationale": "Hub ecosystem. All input pipelines now standardized. Automated intake."},
+        {"pos": 18, "ecosystem": "Frontend/App", "target": "L2->L3", "effort": "M", "rationale": "App-layer. All process-side connections defined."},
+        {"pos": 19, "ecosystem": "Firebase/Backend", "target": "L1->L3", "effort": "M-L", "rationale": "App-layer. Connection point contracts."},
+        {"pos": 20, "ecosystem": "Docs (verification pass)", "target": "verification", "effort": "S", "rationale": "Meta-check: all 18 ecosystems docs consistent? Staleness audit."},
+        {"pos": 21, "ecosystem": "TDMS (L4->L5)", "target": "L4->L5", "effort": "XL-final", "rationale": "Final canonization of the critical system."}
+      ],
+      "checkpoints": [
+        {"after": 4, "gate": "Does CANON framework work? PR Review pilot validates end-to-end."},
+        {"after": 7, "gate": "Core infrastructure complete. Skills, Hooks, Docs, Testing, Sessions all standardized. Ready for data-heavy ecosystems."},
+        {"after": 15, "gate": "All process-layer ecosystems standardized. Ready for app-layer."},
+        {"after": 21, "gate": "Full system overhaul complete. End-of-process audit."}
+      ]
     }
   ],
-  "total_decisions": 62,
+  "total_decisions": 67,
   "core_tenets": {
-    "_organization": "Flat list, 4 categories. 17 total tenets. Locked in Batch 4T (Tenets Discovery).",
+    "_organization": "Flat list, 4 categories. 18 total tenets (T18 added during Batch 6). Locked in Batch 4T + Batch 6.",
     "foundation": {
       "T1_canon_is_ecosystem_zero": {
         "statement": "CANON is the meta-system above all others. It defines the rules, lives at `.canon/` repo root, and is the first ecosystem standardized.",
@@ -715,6 +795,14 @@
         "statement": "Declare WHAT should be, let tools enforce HOW. Enforcement manifests, schemas, configs — all declarative. You describe the world you want; automation makes it so.",
         "evidence": ["D9", "D14", "D26"],
         "category": "process"
+      },
+      "T18_changelog_driven_traceability": {
+        "statement": "Every ecosystem change that affects another system MUST be logged in a standardized JSONL changelog. Cross-ecosystem impact is tracked at every step — not reconstructed after the fact. Changelogs are the connective tissue between ecosystems.",
+        "evidence": ["D62", "batch_6_discussion"],
+        "category": "operations",
+        "note": "Added during Batch 6 wave proposal discussion. User directive: changelogs need to be standardized and a tenet of at least this system overhaul. Aligns with T14 (capture everything) but specific to cross-ecosystem traceability.",
+        "added": "2026-03-04",
+        "scope": "system_overhaul_minimum — may be promoted to permanent tenet after validation"
       }
     }
   },
@@ -775,7 +863,12 @@
     "audits_l5_pathway": "Audits ecosystem must have L5 pathway designed in from the start at L4, not bolted on later. Architecture for L5 readiness is part of the L4 work.",
     "batch_6_skills_elevation": "Skills must be high in Wave 2 — it's a main tool and touches many systems (user override)",
     "batch_6_parallel_bounded": "Parallel is OK but not too much — not ecosystems that could affect another or lose lessons learned",
-    "batch_6_wave_proposal_needed": "User wants to see concrete wave proposal with parallel groupings before committing to D62"
+    "batch_6_wave_proposal_needed": "User wants to see concrete wave proposal with parallel groupings before committing to D62",
+    "changelog_is_tenet": "Changelogs must be standardized JSONL and a tenet of at least this system overhaul. Cross-ecosystem impact tracking at every step. Formalized as T18.",
+    "research_parallelization": "User likes research overlap as productivity bridge — research ecosystem N+1 while implementing ecosystem N. Approved approach.",
+    "docs_at_position_5": "User wants Docs at #5 in the sequence — not buried at #16. Folder structure, file placement standards, document dependencies, master lists need to be established early. Too much content to defer.",
+    "sequential_over_parallel": "User questioning whether parallel tracks are truly right or just time-saving. Learning transfer and cross-ecosystem overlap make sequential the better philosophy.",
+    "every_change_has_ripple": "User insight: overlap is inevitable everywhere. Change one thing here, have to change another thing there. Changelog becomes invaluable for tracking this."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -907,19 +1000,33 @@
     "Ecosystem count: Revised from 14 to 18 total. 4 ecosystems from original DIAGNOSIS were never assessed.",
     "End-of-process audit: User confirmed audit will happen after plan is set, not before."
   ],
-  "resume_instructions": "Phase 0 APPROVED. Batches 1-4 COMPLETE (27 decisions). Batch 4T COMPLETE (D28-D32, 17 tenets locked). ALL 18 ECOSYSTEM ASSESSMENTS COMPLETE (Batches 5A+5B+5C+5D, D33-D54). 54 TOTAL DECISIONS.\n\nBatch 5A (D33-D37): PR Review (L4→L5, S), TDMS (L2→L5 USER OVERRIDE, XL staged), Sessions (L1→L3, M), Hooks (L3→L4, M), Skills (L1→L3 USER OVERRIDE, L).\n\nBatch 5B (D38-D43): Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged).\n\nBatch 5C (D44-D49): Roadmap & Execution (L2→L3, L, PRIORITY ELEVATED). Testing (L3→L4, M). Archival/Rotation (L3→L4, M). CANON Ecosystem Zero (L0→L5, L, STOUT ENFORCEMENT).\n\nBatch 5D (D50-D54): Agents (L2→L3, M). Audits (L3→L4 WITH L5 PATHWAY, M). Frontend/App (L2→L3 ADAPTED, M). Firebase/Backend (L1→L3 STAGED ADAPTED, M-L). Checklist adaptation FORMALIZED (rigid framework + earned flexibility).\n\nKEY BATCH 5D INSIGHTS:\n  - App-layer ecosystems (Frontend/App, Firebase/Backend) planning approach differs — CONNECTION POINTS between process and app layers are the priority\n  - Operational sprint has health monitoring overlap — needs reconciliation\n  - All planning docs must evolve with the plan — additions AND deletions\n  - Audits L5 pathway must be architecturally designed during L4 work\n  - Checklist adaptation formalized: rigidity + earned adaptability with justification\n\nDISCOVERY_RECORD BACKFILL COMPLETE: 559→1080 lines. Needs D50-D54 appended next.\n\n18 TOTAL ECOSYSTEMS. 54 DECISIONS. 17 TENETS. All assessments locked.\n\n3 user overrides: TDMS→L5, Skills→direct L3, Roadmap & Execution→priority elevated.\n1 user elevation: Audits→L4 with L5 pathway.\n\nSession corrections still in effect: (1) Structured Q&A format. (2) Continuous DISCOVERY_RECORD updates. (3) State saves at every opportunity. (4) End-of-process audit after plan is set.\n\nANSWERED (D55): Two-doc system formalized — DISCOVERY_RECORD.md (human) + deep-plan.state.json (machine). Simultaneous-update rule. Zero information asymmetry. Aligns with T2.\n\nNEXT: Batch 6 (Sequencing + Prioritization) — order the 18 ecosystem standardizations. Then possible Batch 7 (Edge Cases/Final). Then end-of-process completeness audit.",
-  "updated": "2026-03-03T21:06:11.287Z",
+  "resume_instructions": "67 TOTAL DECISIONS. 18 TENETS. ALL BATCHES 1-6 COMPLETE.\n\nBATCH 6 COMPLETE (D56-D67): Sequential execution sequence LOCKED.\n\nKEY BATCH 6 EVOLUTION:\n  - Started with wave-based parallel approach (D56-D62)\n  - Deep research: 13 agents mapped all 18 ecosystems at file-level dependency maps\n  - User challenged fundamental assumptions: parallel tracks sacrifice learning for speed\n  - D62 SUPERSEDED by D63: Sequential-first with research overlap\n  - D64: T18 changelog-driven traceability added as new tenet (user directive)\n  - D65: Docs elevated to position #5 (user directive)\n  - D66: CI/CD restored at position #10 (was accidentally dropped)\n  - D67: Final 21-step sequence locked\n\nFINAL SEQUENCE (21 steps, 18 ecosystems):\n  #1 CANON (L0->L5, L) — Foundation\n  #2 Skills (L1->L3, L) — Daily tool, skill-audit canonized\n  #3 Hooks (L3->L4, M) — Enforcement infra\n  #4 PR Review (L4->L5, S) — CANON pilot, CHECKPOINT\n  #5 Docs (L2->L3, M) — Folder structure, placement standards, dependency maps\n  #6 Testing (L3->L4, M) — Test infrastructure\n  #7 Sessions (L1->L3, M) — State management\n  #8 TDMS L2->L3 (XL-partial) — First stage, Zod schemas + monitoring\n  #9 Scripts (L2->L3, L) — Script standards, informed by TDMS\n  #10 CI/CD (L1->L3, M) — Build/deploy pipelines\n  #11 Alerts (L2->L4, M) — Monitoring layer\n  #12 Analytics (L1->L3, M) — Aggregation layer\n  #13 Agents (L2->L3, M) — Agent definitions\n  #14 Audits (L3->L4+L5path, M) — All audits are skills\n  #15 Archival/Rotation (L3->L4, M) — Lifecycle patterns\n  #16 TDMS L3->L4 (XL-partial) — Second stage, enforcement\n  #17 Roadmap & Execution (L2->L3, L) — Hub ecosystem, automated intake\n  #18 Frontend/App (L2->L3, M) — App-layer connections\n  #19 Firebase/Backend (L1->L3, M-L) — App-layer connections\n  #20 Docs verification pass (S) — Consistency meta-check\n  #21 TDMS L4->L5 (XL-final) — Final canonization\n\nCHECKPOINTS: After #4 (framework validation), #7 (core infra complete), #15 (process layer complete), #21 (full overhaul complete).\n\nEXECUTION MODEL: Sequential implementation + parallel research overlap (research N+1 while implementing N). No parallel implementation tracks.\n\nDISCOVERY_RECORD needs update with D55-D67 + T18.\n\nNEXT: Batch 7 (Edge Cases/Final) — any remaining questions, then end-of-process completeness audit.",
+  "updated": "2026-03-04T00:30:00.000Z",
   "batch_6_progress": {
-    "status": "IN_PROGRESS — D56-D62 locked, wave proposal next",
-    "decisions_locked": ["D56", "D57", "D58", "D59", "D60", "D61", "D62"],
-    "user_questions_raised": [
-      "Q56: Are there parallel opportunities where systems don't touch each other? → YES, addressed in wave proposal",
-      "Q58: Would entire plan be mapped out in advance with stages at different times? → YES, wave assignments now, JIT deep-plans per T13",
-      "Q62: Need to see concrete parallel groupings before committing → PENDING, wave proposal being drafted"
+    "status": "COMPLETE — D56-D67 locked. Sequential sequence finalized.",
+    "decisions_locked": ["D56", "D57", "D58", "D59", "D60", "D61", "D62-superseded", "D63", "D64", "D65", "D66", "D67"],
+    "evolution": [
+      "D56-D62: Initial wave-based parallel approach proposed",
+      "Deep research: 13 agents mapped all 18 ecosystems at file-level",
+      "User pushback: parallel tracks may just be time-saving, not quality-serving",
+      "D63: Wave model REPLACED with sequential-first + research overlap",
+      "D64: T18 changelog-driven traceability added as new tenet",
+      "D65: Docs elevated to position #5 (user directive)",
+      "D66: CI/CD restored to sequence at position #10 (was accidentally dropped)",
+      "D67: Final 21-step sequence locked (18 ecosystems, TDMS staged x3, Docs verification pass)"
     ],
     "key_user_directives": [
-      "Skills elevated to Wave 2",
-      "Parallel OK but bounded — no cross-contamination, preserve learning transfer"
+      "Skills at #2 — daily tool, touches everything",
+      "Sequential over parallel — learning transfer matters more than speed",
+      "Changelogs standardized as tenet T18",
+      "Docs at #5 — too much content to defer, born-compliant docs for all future ecosystems",
+      "Research overlap is the only approved parallelism"
+    ],
+    "user_questions_resolved": [
+      "Q62: Concrete parallel groupings → RESOLVED: replaced with sequential model (D63)",
+      "Q63: Are parallel tracks truly right? → NO, sequential-first with research overlap",
+      "Q64: Where does docs maintenance burden go? → Position #5, not CANON",
+      "Q65: Missing 18th ecosystem? → CI/CD restored at position #10"
     ]
   }
 }
