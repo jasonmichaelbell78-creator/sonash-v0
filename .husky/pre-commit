@@ -404,5 +404,26 @@ else
   fi
 fi
 
+# 12. JSONL→MD sync validation (BLOCKING - D84/D85)
+# Override with: SKIP_CHECKS="jsonl-sync" SKIP_REASON="reason" git commit ...
+if is_skipped jsonl-sync; then
+  node scripts/log-override.js --quick --check=jsonl-sync --reason="$SKIP_REASON" 2>/dev/null || true
+else
+  if printf '%s\n' "$STAGED_FILES" | grep -qE '\.planning/.*\.jsonl$'; then
+    echo "  ▶ Validating JSONL→MD sync (planning JSONL changed)..."
+    if ! node scripts/planning/validate-jsonl-md-sync.js > /dev/null 2>&1; then
+      echo "  ❌ JSONL→MD sync validation failed"
+      node scripts/planning/validate-jsonl-md-sync.js 2>&1 | tail -10
+      echo ""
+      echo "  Regenerate MD views before committing. Run:"
+      echo "    node scripts/planning/generate-discovery-record.js"
+      echo "    node scripts/planning/generate-decisions.js"
+      echo "  Override: SKIP_CHECKS=\"jsonl-sync\" SKIP_REASON=\"reason\" git commit ..."
+      exit 1
+    fi
+    echo "  ✅ JSONL→MD sync passed"
+  fi
+fi
+
 echo ""
 echo "✅ All pre-commit checks passed - commit allowed"
