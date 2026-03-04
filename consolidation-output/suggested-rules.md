@@ -1,13 +1,14 @@
 # Suggested Compliance Checker Rules
 
-**Generated:** 2026-03-02 **Source:** Consolidation Reviews #402-#442
+**Generated:** 2026-03-04 **Source:** Consolidation Reviews #402-#444
 **Status:** Pending review - add to check-pattern-compliance.js as appropriate
 
 ---
 
 ## qodo
 
-- **Mentions:** 8 (Reviews: #408, #416, #417, #438, #439, #440, #441, #442)
+- **Mentions:** 10 (Reviews: #408, #416, #417, #438, #439, #440, #441, #442,
+  #443, #444)
 - **Suggested ID:** `qodo`
 - **Template:**
 
@@ -17,14 +18,15 @@
   pattern: /TODO_REGEX/g,
   message: "qodo",
   fix: "TODO: describe the correct pattern",
-  review: "#408, #416, #417, #438, #439, #440, #441, #442",
+  review: "#408, #416, #417, #438, #439, #440, #441, #442, #443, #444",
   fileTypes: [".js", ".ts"],
 }
 ```
 
 ## sonarcloud
 
-- **Mentions:** 8 (Reviews: #408, #416, #417, #438, #439, #440, #441, #442)
+- **Mentions:** 9 (Reviews: #408, #416, #417, #438, #439, #440, #441, #442,
+  #444)
 - **Suggested ID:** `sonarcloud`
 - **Template:**
 
@@ -34,14 +36,14 @@
   pattern: /TODO_REGEX/g,
   message: "sonarcloud",
   fix: "TODO: describe the correct pattern",
-  review: "#408, #416, #417, #438, #439, #440, #441, #442",
+  review: "#408, #416, #417, #438, #439, #440, #441, #442, #444",
   fileTypes: [".js", ".ts"],
 }
 ```
 
 ## ci
 
-- **Mentions:** 4 (Reviews: #416, #417, #441, #442)
+- **Mentions:** 6 (Reviews: #416, #417, #441, #442, #443, #444)
 - **Suggested ID:** `ci`
 - **Template:**
 
@@ -51,7 +53,7 @@
   pattern: /TODO_REGEX/g,
   message: "ci",
   fix: "TODO: describe the correct pattern",
-  review: "#416, #417, #441, #442",
+  review: "#416, #417, #441, #442, #443, #444",
   fileTypes: [".js", ".ts"],
 }
 ```
@@ -69,6 +71,23 @@
   message: "learnings",
   fix: "TODO: describe the correct pattern",
   review: "#407, #408, #416, #417",
+  fileTypes: [".js", ".ts"],
+}
+```
+
+## gemini
+
+- **Mentions:** 3 (Reviews: #442, #443, #444)
+- **Suggested ID:** `gemini`
+- **Template:**
+
+```javascript
+{
+  id: "gemini",
+  pattern: /TODO_REGEX/g,
+  message: "gemini",
+  fix: "TODO: describe the correct pattern",
+  review: "#442, #443, #444",
   fileTypes: [".js", ".ts"],
 }
 ```

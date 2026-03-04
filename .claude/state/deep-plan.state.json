@@ -1,15 +1,1162 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_0_diagnosis_approved",
-  "current_batch": 0,
-  "total_batches_so_far": 0,
-  "decisions": [],
-  "total_decisions": 0,
+  "status": "phase_4_awaiting_walkthrough",
+  "current_batch": "Gap analysis complete. 30 action items in GAP-ANALYSIS.md (14 must-fix, 8 should-fix, 8 nice-to-fix). NEXT SESSION: Walk through each finding one-by-one per deep-plan Phase 4 procedure. User will disposition each item. Then amend PLAN.md accordingly.",
+  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6 + 7 + 7b(Phase1b) + Phase2 + Phase3 + GapAnalysis",
+  "estimated_remaining_batches": "Phase 4 (walkthrough of 30 items → plan amendments → approval), Handoff",
+  "phase_4_resume_instructions": "1. Read GAP-ANALYSIS.md (.planning/system-wide-standardization/GAP-ANALYSIS.md). 2. Read PLAN.md (.planning/system-wide-standardization/PLAN.md). 3. Read DECISIONS.md (.planning/system-wide-standardization/DECISIONS.md). 4. Present items one-by-one starting with C1 (contradictions first, then G1-G11 gaps, then R1-R20 risks). 5. For each item: present finding, ask user disposition (accept/reject/modify/defer). 6. After all dispositions collected, amend PLAN.md with accepted changes. 7. Present final PLAN.md for Phase 4 approval.",
+  "total_ecosystems": 18,
+  "decisions": [
+    {
+      "id": 1,
+      "decision": "CANON file location",
+      "choice": "`.canon/` at repo root — new top-level directory",
+      "rationale": "Meta-system deserves top-level visibility, not buried under .planning/ or docs/"
+    },
+    {
+      "id": 2,
+      "decision": "Ecosystem definition format",
+      "choice": "Registry JSONL (`.canon/ecosystems.jsonl`) + per-ecosystem detail files",
+      "rationale": "JSONL = canonical/AI-consumed, MD = human views generated from JSONL. Core tenet of the system moving forward."
+    },
+    {
+      "id": 3,
+      "decision": "Maturity model",
+      "choice": "Hybrid: completeness tier checklist drives computed level (L0-L5)",
+      "rationale": "Makes 'what's missing' obvious and progress measurable. Concrete capabilities compute to a level."
+    },
+    {
+      "id": 4,
+      "decision": "Cross-cutting subsystem mapping",
+      "choice": "Per-ecosystem files are source of truth + generated matrix view",
+      "rationale": "Follows JSONL-first → generated-views pattern. Each ecosystem knows its own subsystems, matrix is computed."
+    },
+    {
+      "id": 5,
+      "decision": "Configuration parameterization",
+      "choice": "Global defaults + per-ecosystem cascade/override (CSS-like)",
+      "rationale": "Avoids 70+ hardcoded values while letting ecosystems specialize where needed."
+    },
+    {
+      "id": 6,
+      "decision": "Sequencing strategy",
+      "choice": "Dependency graph (CANON first) with maturity as tiebreaker (highest first)",
+      "rationale": "Build momentum: early wins validate the framework before tackling hard stuff. CANON → near-compliant → major overhauls."
+    },
+    {
+      "id": 7,
+      "decision": "This deep-plan's deliverable",
+      "choice": "Full ecosystem catalog + maturity assessments + sequenced plan + CANON spec",
+      "rationale": "We have the research (500+ components). Comprehensive output avoids another discovery pass."
+    },
+    {
+      "id": 8,
+      "decision": "Maturity level definitions (L0-L5)",
+      "choice": "Approved scale: L0=Nonexistent, L1=Identified, L2=Structured, L3=Monitored, L4=Enforced, L5=Canonized",
+      "rationale": "Clear progression. L5 = all applicable subsystems canonized (not all 16 if some don't apply to ecosystem).",
+      "sub_decisions": {
+        "l5_for_everything": "L5 is the north star, not the exit criteria. Most ecosystems target L3-L4 baseline. L5 means all *applicable* subsystems canonized — per-ecosystem required-vs-optional mapping.",
+        "plan_structure": "Plan-as-you-go with sequenced placeholders. This deep plan produces catalog + sequence. Each ecosystem gets its own deep-plan when its turn comes. Pre-planning all 13 now would produce stale plans by ecosystem #8."
+      }
+    },
+    {
+      "id": 9,
+      "decision": "Completeness checklist items",
+      "choice": "16-item checklist (original 13 + 3 gap-fills: inter-ecosystem contracts, rollback/recovery, deprecation policy)",
+      "rationale": "User liked original 13, accepted 3 additions to close gaps.",
+      "checklist": [
+        "1. Zod schemas — for all data structures",
+        "2. JSONL storage — canonical data in JSONL format",
+        "3. Generated views — MD/JSON views computed from JSONL",
+        "4. Health monitoring — at least one health checker with metrics",
+        "5. Enforcement manifest — rules defining what's blocking vs warning",
+        "6. Testing — unit + integration tests for ecosystem scripts",
+        "7. Documentation — ecosystem-level docs",
+        "8. State persistence — survives compaction / session boundaries",
+        "9. Error handling — standardized error patterns",
+        "10. Naming compliance — follows CANON naming conventions",
+        "11. Configuration — uses central config (not hardcoded values)",
+        "12. Lifecycle hooks — creation, update, archival, deletion defined",
+        "13. Versioning — schema/data migration strategy",
+        "14. Inter-ecosystem contracts — interfaces between dependent ecosystems",
+        "15. Rollback/recovery — revert to prior state after bad migration",
+        "16. Deprecation policy — how old schemas/APIs/patterns are sunset"
+      ]
+    },
+    {
+      "id": 10,
+      "decision": "Subsystem standardization depth",
+      "choice": "Pattern-level: CANON defines interface + reference pattern (PR Review v2 as exemplar)",
+      "rationale": "Templates too rigid, interface-only too ambiguous. Reference patterns formalize what already exists."
+    },
+    {
+      "id": 11,
+      "decision": "Ecosystem boundary rules",
+      "choice": "Primary ownership + consumer references (no superseding ecosystem)",
+      "rationale": "Primary = maintenance responsibility, not authority hierarchy. Shared components have one owner, many consumers. CANON defines rules but doesn't own other ecosystems' components."
+    },
+    {
+      "id": 12,
+      "decision": "CANON spec scope in this plan",
+      "choice": "Working draft (structure + maturity model + subsystem interfaces + registry schema) with room for growth built in everywhere",
+      "rationale": "Enough to start building CANON. Ecosystem assessments separate. Room for growth is a core tenet — nothing ships as a dead end.",
+      "sub_decisions": {
+        "upgradeability": "Core tenet: nothing not-upgradeable. Ease the upgrade process. Everything must have room for growth. Things change all the time."
+      }
+    },
+    {
+      "id": 13,
+      "decision": "CANON versioning",
+      "choice": "Semver (start at 0.1.0, promote to 1.0.0 after 2-3 ecosystem validations)",
+      "rationale": "CANON is infrastructure others depend on. Breaking changes need explicit migration guidance."
+    },
+    {
+      "id": 14,
+      "decision": "Enforcement severity levels",
+      "choice": "4-tier: error (blocking), warning (non-blocking + logged), info (displayed only), silent (suppressed)",
+      "rationale": "Granular enough without being complex. Silent tier handles known-accepted items."
+    },
+    {
+      "id": 15,
+      "decision": "Enforcement gate placement",
+      "choice": "Tiered: pre-commit (fast checks), pre-push (full validation), PR (comprehensive)",
+      "rationale": "Fast feedback for quick checks, thorough validation before sharing. Each gate has appropriate scope."
+    },
+    {
+      "id": 16,
+      "decision": "Naming convention depth",
+      "choice": "Files + exports + JSONL fields (3-layer naming standard)",
+      "rationale": "Covers the surfaces that matter most. Full taxonomy is overkill, files-only misses the data layer."
+    },
+    {
+      "id": 17,
+      "decision": "Health checker interface",
+      "choice": "Current interface + trend data + recommendations (enhanced)",
+      "rationale": "Trend enables progress tracking over time. Recommendations make health checks actionable, not just diagnostic.",
+      "amendment_4T": "Health checker implementations MUST be Node.js (T7 platform-agnostic). Added during tenets retroactive review."
+    },
+    {
+      "id": 18,
+      "decision": "Dashboard generation trigger",
+      "choice": "Hybrid: auto-generate on data change + on-demand for full rebuild",
+      "rationale": "Stale dashboards are useless, but full rebuild on every change is wasteful. Incremental auto + manual full."
+    },
+    {
+      "id": 19,
+      "decision": "Migration strategy for existing ecosystems",
+      "choice": "Pilot + rollout: validate with 2-3 near-compliant ecosystems, then roll out to rest",
+      "rationale": "Validates CANON itself before forcing it on complex ecosystems. Early pilots surface spec issues cheaply."
+    },
+    {
+      "id": 20,
+      "decision": "Dependency declaration method",
+      "choice": "Both: per-ecosystem declares own deps + central registry aggregates all",
+      "rationale": "Per-ecosystem is source of truth (consistent with Decision #4). Central view is generated/computed for cross-cutting analysis."
+    },
+    {
+      "id": 21,
+      "decision": ".canon/ directory structure",
+      "choice": "Hybrid: CANON infrastructure in categorized dirs + per-ecosystem dirs for assessment/detail data",
+      "rationale": "Best of both worlds. CANON's own config/schemas/reports organized by function. Each ecosystem's data co-located in its own dir.",
+      "structure": {
+        ".canon/canon.json": "CANON meta (version, config)",
+        ".canon/tenets.jsonl": "Core tenets (first CANON artifact — CANON defines itself first)",
+        ".canon/tenets.md": "Generated human-readable tenet view",
+        ".canon/ecosystems.jsonl": "Registry (one line per ecosystem)",
+        ".canon/schemas/": "Zod schemas, JSON schemas",
+        ".canon/config/": "Global defaults, override rules",
+        ".canon/reports/": "Generated dashboards/matrix views",
+        ".canon/ecosystems/{id}/": "Per-ecosystem detail + assessment data"
+      }
+    },
+    {
+      "id": 22,
+      "decision": "Ecosystem registry JSONL field depth",
+      "choice": "Extensible core: required core fields + optional fields with defaults. Schema validates required, accepts extra.",
+      "rationale": "Registry line is summary/index. Detail files have full picture. Room for growth — new fields without breaking existing data."
+    },
+    {
+      "id": 23,
+      "decision": "Maturity assessment storage",
+      "choice": "Per-ecosystem files: `.canon/ecosystems/{id}/assessment.jsonl` — co-located with ecosystem data",
+      "rationale": "Keeps ecosystem data co-located (consistent with Decision #4). Each ecosystem owns its assessment. Matrix/summary views generated."
+    },
+    {
+      "id": 24,
+      "decision": "Subsystem interface contract format",
+      "choice": "Zod as source of truth → JSON Schema auto-generated for external tooling. JSONL tracks implementation status.",
+      "rationale": "Follows established pattern: source of truth (Zod) → generated views (JSON Schema). Plus JSONL tracks adoption per ecosystem."
+    },
+    {
+      "id": 25,
+      "decision": "Health report output format",
+      "choice": "JSON summary envelope (score, trend, metadata) + JSONL findings stream (one finding per line)",
+      "rationale": "Summary is single object for dashboards. Individual findings are JSONL (appendable, processable). Best of both."
+    },
+    {
+      "id": 26,
+      "decision": "Enforcement manifest schema",
+      "choice": "Single JSONL file per ecosystem, each rule has `tier` + `severity` fields",
+      "rationale": "Single file easier to maintain/query. Tier (pre-commit/pre-push/PR) + severity (error/warning/info/silent from #14) per rule. Tools filter by tier at runtime."
+    },
+    {
+      "id": 27,
+      "decision": "Generated view production method",
+      "choice": "Standardized script interface: each view is a script with contract (reads JSONL → outputs MD). Standard CLI interface (--input, --output).",
+      "rationale": "Standardized interface, not implementation. Scripts can be simple or complex — the contract is what's standardized. Follows Decision #10 pattern-level standardization.",
+      "amendment_4T": "Scripts MUST be Node.js (T7 platform-agnostic) and idempotent — same input always produces same output with no side effects (T12). Added during tenets retroactive review."
+    },
+    {
+      "id": 28,
+      "decision": "Core tenets discovery phase — inserted before Batch 5",
+      "choice": "Pause schema batches. Discover, formalize, and lock all core tenets BEFORE continuing with ecosystem assessments.",
+      "rationale": "Core tenets guide everything downstream. Locking schemas before fully articulating the principles that shape them is backwards. Two tenets (automation over discipline, no forgettable processes) had already fallen through the cracks, proving the need."
+    },
+    {
+      "id": 29,
+      "decision": "Tenet candidate disposition — promote, merge, demote",
+      "choice": "Promote 6 candidates to formal tenets, merge 2 into existing tenets, demote 2 to implementation patterns.",
+      "rationale": "Tenets are 'why' principles that guide decisions. Patterns are 'how' implementations. Cascade/override (D#5) and progressive disclosure are patterns, not principles.",
+      "promoted": [
+        "source_of_truth_generated_views",
+        "single_ownership_many_consumers",
+        "contract_over_implementation",
+        "validate_before_scaling",
+        "crash_proof_state",
+        "declarative_over_imperative"
+      ],
+      "merged": {
+        "nothing_gets_lost": "Merged into renamed tenet 'capture_everything_surface_what_matters' (combines visibility + institutional memory)",
+        "discoveries_feed_forward": "Merged as sub-principle of 'plan_as_you_go' (knowledge compounds, learnings from ecosystem #3 inform #4)"
+      },
+      "demoted": {
+        "cascade_override": "Implementation pattern (Decision #5), not a guiding principle. Referenced by tenets but isn't one.",
+        "progressive_disclosure": "UX/design guideline for tooling. L0-L5 and tiered gates implement it, but it's not why they exist."
+      }
+    },
+    {
+      "id": 30,
+      "decision": "New tenets — 3 missing + 1 formalized",
+      "choice": "Add platform_agnostic_by_default, idempotent_operations, fail_loud_fail_early. Formalize automation_over_discipline (was discussed but never recorded).",
+      "rationale": "Platform-agnostic: dual-environment (Linux sandbox + Windows CLI) is a real constraint with existing breakage. Idempotency: prevents data corruption from re-runs (MASTER_DEBT race condition is a violation). Fail loud/early: complements visibility — errors must scream, not whisper. Automation over discipline: if it relies on human memory, it WILL fail.",
+      "dual_environment_impact": {
+        "affected_decisions": [
+          "D#15 enforcement gates",
+          "D#17 health checkers",
+          "D#21 directory structure",
+          "D#27 generated view scripts"
+        ],
+        "implications": "All CANON scripts Node.js (not bash). Forward-slash paths. LF line endings. No symlinks. No platform-specific env vars without cross-platform fallback.",
+        "existing_breakage": [
+          "CROSS_PLATFORM_SETUP.md references removed sync script",
+          "3 bash-only scripts have no Windows equivalent",
+          "Path separators differ across environments"
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "decision": "Tenet organization — flat with categories",
+      "choice": "Option A: Flat list with 4 categories (Foundation, Design, Operations, Process). No parent-child hierarchy.",
+      "rationale": "At 16 tenets, a flat list becomes a wall. Categories make it scannable. No hierarchy avoids 'is X a child of Y?' debates. Easy to add new tenets to a category."
+    },
+    {
+      "id": 32,
+      "decision": "Tenets as first CANON artifact",
+      "choice": "`.canon/tenets.jsonl` (source of truth) + `.canon/tenets.md` (generated view). First artifact CANON produces about itself.",
+      "rationale": "CANON defines itself first. Tenets depend on nothing else. Dog-foods JSONL-first pattern. Each line: {id, category, name, statement, evidence[], added, version}.",
+      "schema": {
+        "id": "T1-T16",
+        "category": "foundation|design|operations|process",
+        "name": "snake_case identifier",
+        "statement": "Full tenet statement",
+        "evidence": "Array of decision IDs that informed/embody this tenet",
+        "added": "ISO date",
+        "version": "0.1.0 (inherits CANON version)"
+      }
+    },
+    {
+      "id": 33,
+      "decision": "PR Review: Current and target maturity",
+      "choice": "Current L4 (Enforced) → Target L5 (Canonized)",
+      "rationale": "Reference implementation. 10/16 present, 4 partial, 2 absent. First ecosystem to reach L5 — validates CANON framework itself before applying to others.",
+      "effort": "S",
+      "staging": "Direct (L4→L5)",
+      "assessment_summary": "Strongest ecosystem. 56 test files, 10 health checkers, multi-mechanism enforcement. Gaps are post-v2 items (rollback, deprecation policy) and formalization (naming validation pending CANON, contracts pending format definition)."
+    },
+    {
+      "id": 34,
+      "decision": "TDMS: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L5 (Canonized)",
+      "rationale": "USER OVERRIDE: TDMS feeds into everything, MASTER_DEBT has thousands of entries, too critical to leave below L5. Acknowledged as massive effort across 37 scripts.",
+      "effort": "XL (L2→L5 across 37 scripts with thousands of data entries)",
+      "staging": "Staged: L2→L3 (Zod+monitoring) → L4 (enforcement) → L5 (canonized). Each stage is L effort.",
+      "assessment_summary": "3/16 present, 8 partial, 5 absent. No Zod schemas, no enforcement manifest, no versioning. 37 scripts with inconsistent patterns. Massive scope but critical system.",
+      "user_override": true,
+      "original_recommendation": "Target L3→L4 staged"
+    },
+    {
+      "id": 35,
+      "decision": "Sessions: Current and target maturity",
+      "choice": "Current L1 (Identified) → Target L3 (Monitored)",
+      "rationale": "Cross-cutting infrastructure — every ecosystem depends on session state being reliable. Schemas + JSONL + monitoring gives reliability layer. Full enforcement (L4) too aggressive for infrastructure that needs graceful degradation.",
+      "effort": "M",
+      "staging": "Direct (L1→L3)",
+      "assessment_summary": "2/16 present, 8 partial, 6 absent. State persistence works, lifecycle defined, but nothing else formalized. Runs on convention."
+    },
+    {
+      "id": 36,
+      "decision": "Hooks: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced)",
+      "rationale": "Infrastructure that other ecosystems depend on. Strong operational automation, good monitoring. Delta is mainly Zod schemas + formalized contracts + versioning.",
+      "effort": "M",
+      "staging": "Direct (L3→L4)",
+      "assessment_summary": "5/16 present, 6 partial, 5 absent. Strong enforcement (IS the enforcement system for the repo), good monitoring via ecosystem audit. Gaps in formalization."
+    },
+    {
+      "id": 37,
+      "decision": "Skills: Current and target maturity",
+      "choice": "Current L1 (Identified) → Target L3 (Monitored)",
+      "rationale": "USER OVERRIDE from L2→L3 staged to direct L3. Large undertaking across 65 skills. Skill-audit skill exists and was recently used on skill-creator and deep-plan with great results — that process should be leveraged during ecosystem standardization.",
+      "effort": "L (65 skills, each needs ecosystem audit + standardization)",
+      "staging": "Direct (L1→L3). Skill-audit skill drives per-skill assessment.",
+      "assessment_summary": "0/16 present, 8 partial, 8 absent. 65 skills, structurally validated but zero data tracking, zero formalized contracts, zero lifecycle management.",
+      "user_override": true,
+      "original_recommendation": "Target L2→L3 staged",
+      "user_note": "Skill-audit skill (recently created) follows processes enacted in refined skill-creator and deep-plan skills. All skills will need ecosystem auditing."
+    },
+    {
+      "id": 38,
+      "decision": "Alerts: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L4 (Enforced)",
+      "rationale": "Mid-session alerting is a critical operational layer. Has 36 alert categories, scoring, benchmarks, trend tracking. Needs Zod schemas, enforcement manifest, versioning, and inter-ecosystem contracts formalized.",
+      "effort": "M",
+      "staging": "Staged: L2→L3 (schemas + monitoring) → L4 (enforcement manifest + gates)",
+      "assessment_summary": "4/16 present, 7 partial, 5 absent. Strong operational tooling but no schema validation, no enforcement manifest, no versioning strategy.",
+      "batch": "5B"
+    },
+    {
+      "id": 39,
+      "decision": "Scripts: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L3 (Monitored)",
+      "rationale": "300+ scripts across the repo. Script ecosystem audit exists but infrastructure lacks formal schemas, consistent error handling, and monitoring. L3 establishes baseline.",
+      "effort": "L (300+ scripts to audit and standardize)",
+      "staging": "Direct (L2→L3)",
+      "assessment_summary": "3/16 present, 7 partial, 6 absent. Large volume, inconsistent patterns, some scripts unreachable. Ecosystem audit skill exists.",
+      "batch": "5B"
+    },
+    {
+      "id": 40,
+      "decision": "Docs: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L3 (Monitored)",
+      "rationale": "Documentation ecosystem has generation pipelines, index sync, templates. Needs monitoring for staleness, schema validation for doc metadata, and formalized contracts with other ecosystems.",
+      "effort": "M",
+      "staging": "Direct (L2→L3)",
+      "assessment_summary": "3/16 present, 8 partial, 5 absent. Generation exists but sync checking is fragile. Doc-ecosystem-audit skill exists.",
+      "batch": "5B"
+    },
+    {
+      "id": 41,
+      "decision": "CI/CD: Current and target maturity",
+      "choice": "Current L1 (Identified) → Target L3 (Monitored)",
+      "rationale": "GitHub Actions workflows exist but lack formal ecosystem treatment. Pre-commit/pre-push hooks are in Hooks ecosystem. CI/CD covers the pipeline beyond local gates — build, deploy, integration checks.",
+      "effort": "M",
+      "staging": "Staged: L1→L2 (structure + schemas) → L3 (monitoring + health)",
+      "assessment_summary": "1/16 present, 6 partial, 9 absent. Workflows exist but minimal formalization. Strong dependency on Hooks ecosystem.",
+      "batch": "5B"
+    },
+    {
+      "id": 42,
+      "decision": "Analytics: Current and target maturity",
+      "choice": "Current L1 (Identified) → Target L3 (Monitored)",
+      "rationale": "Metrics, trend data, benchmarks scattered across health checkers and audit outputs. No unified analytics layer. L3 establishes schemas, monitoring, and consolidation.",
+      "effort": "M",
+      "staging": "Staged: L1→L2 (identify + structure all metric sources) → L3 (monitoring + dashboards)",
+      "assessment_summary": "1/16 present, 5 partial, 10 absent. Metric data exists in health checkers and audits but no unified system. Cross-cuts many ecosystems.",
+      "batch": "5B"
+    },
+    {
+      "id": 43,
+      "decision": "Batch 5B assessment complete — ecosystems 6-10",
+      "choice": "5 ecosystems assessed: Alerts (L2→L4, M staged), Scripts (L2→L3, L), Docs (L2→L3, M), CI/CD (L1→L3, M staged), Analytics (L1→L3, M staged)",
+      "rationale": "Middle-tier ecosystems. None at L0, none targeting L5. All need schema formalization and monitoring as baseline.",
+      "batch": "5B"
+    },
+    {
+      "id": 44,
+      "decision": "Batch 5C begins — ecosystems 11-13 + CANON self-assessment",
+      "choice": "Assessing: Planning/Roadmap, Testing, Archival/Rotation, and CANON (Ecosystem Zero)",
+      "rationale": "Final ecosystem assessment batch. Includes CANON self-assessment which is unique — CANON assessing itself.",
+      "batch": "5C"
+    },
+    {
+      "id": 45,
+      "decision": "Planning ecosystem renamed to Roadmap & Execution",
+      "choice": "Rename 'Planning' → 'Roadmap & Execution'. Planning-as-skill stays in Skills ecosystem. Roadmap system, input pipelines, sprint execution = this ecosystem.",
+      "rationale": "USER INSIGHT: Planning is a skill (deep-plan, GSD discovery). The SYSTEM is the roadmap — where work items land, get prioritized, get executed. Critical distinction. The ecosystem is the hub, not the skill. Multiple avenues must feed into it automatically (T8 automation over discipline).",
+      "user_insight": true,
+      "boundary_definition": {
+        "in_scope": [
+          "ROADMAP.md artifact and its structure/maintenance",
+          "All input pipelines (debt, audits, deep-plan decisions, feature requests, architecture decisions)",
+          "Sprint planning and execution lifecycle",
+          "task-next dependency resolution",
+          "GSD execution handoff",
+          "Feedback loops (sprint outcomes → planning)"
+        ],
+        "out_of_scope_but_feeds_in": [
+          "deep-plan skill (assessed in Skills ecosystem, feeds decisions INTO roadmap)",
+          "GSD discovery/planning agents (skill work, feeds INTO roadmap)",
+          "TDMS/MASTER_DEBT (assessed in TDMS ecosystem, feeds debt INTO roadmap)",
+          "Audit findings (assessed in respective audit ecosystems, feed INTO roadmap)"
+        ]
+      },
+      "gap_identified": "Non-debt input pipelines are MISSING. TDMS is the only semi-automated route. Audit findings, deep-plan decisions, feature planning, architecture decisions all require manual ROADMAP editing. T8 violation."
+    },
+    {
+      "id": 46,
+      "decision": "Roadmap & Execution: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L3 (Monitored)",
+      "rationale": "L3 is correct target — establishes monitoring + input pipeline contracts. Hub ecosystem that everything feeds into. Non-debt input pipelines are the critical gap. Priority elevated due to hub nature — if we standardize 13 ecosystems, each generates work items that need automated intake.",
+      "effort": "L (input pipeline contracts + sprint automation + ROADMAP schema)",
+      "staging": "Direct (L2→L3). Focus on input pipeline automation.",
+      "assessment_summary": "ROADMAP.md exists with sprint structure. GSD agents (11) operational. Sprint skill (6 phases) functional. task-next works. But: non-debt input pipelines missing, no schema validation on ROADMAP structure, no monitoring of pipeline health.",
+      "priority_elevated": true,
+      "priority_reason": "Hub ecosystem — every other ecosystem generates work items that need automated intake. Must be high in implementation order.",
+      "batch": "5C"
+    },
+    {
+      "id": 47,
+      "decision": "Testing: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced)",
+      "rationale": "Testing infrastructure has good coverage (500+ test files), pre-commit enforcement, CI integration. Delta to L4 is formalized enforcement manifest, Zod schemas for test config, and inter-ecosystem test contracts.",
+      "effort": "M",
+      "staging": "Direct (L3→L4)",
+      "assessment_summary": "6/16 present, 6 partial, 4 absent. Strong operational testing but lacks formalized enforcement manifest and schema validation.",
+      "batch": "5C"
+    },
+    {
+      "id": 48,
+      "decision": "Archival/Rotation: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced)",
+      "rationale": "Archival patterns exist (JSONL rotation, review archival, state cleanup). Monitoring via health checkers. Delta to L4 is enforcement gates, Zod schemas for archive format, and lifecycle hook formalization.",
+      "effort": "M",
+      "staging": "Direct (L3→L4)",
+      "assessment_summary": "5/16 present, 6 partial, 5 absent. Rotation works operationally but lacks formal enforcement and schema validation.",
+      "batch": "5C"
+    },
+    {
+      "id": 49,
+      "decision": "CANON (Ecosystem Zero): Self-assessment and enforcement model",
+      "choice": "Current L0 (Nonexistent) → Target L5 (Canonized). STOUT enforcement system required — both internal (CANON self-protection) and downstream (cascade propagation to all 13 dependent ecosystems).",
+      "rationale": "USER DIRECTIVE: L5+++ with emphasis on 'stout system.' CANON is the meta-system — everything builds from it. Enforcement must be bidirectional: (1) CANON changes are gated and validated, (2) downstream ecosystems are notified, migrated, and held to new standards. T1 (CANON is Ecosystem Zero), T8 (automation over discipline), T11 (fail loud fail early) all converge here.",
+      "effort": "L (foundational but well-scoped — CANON defines itself first, D12/D32)",
+      "staging": "Direct (L0→L5). First ecosystem standardized (D6). Self-dogfooding validates the framework.",
+      "enforcement_model": {
+        "internal_self_protection": {
+          "pre_commit": "Schema validation on .canon/ files, tenet changes require version bump, no orphaned references",
+          "pre_push": "Migration script required for breaking changes, all tenet references valid across codebase",
+          "review_gate": "CANON changes get elevated review (not any PR)",
+          "integrity_checks": "tenets.jsonl ↔ tenets.md sync, ecosystems.jsonl ↔ per-ecosystem dirs sync"
+        },
+        "downstream_propagation": {
+          "version_broadcast": "CANON version bump → health checkers in all 13 ecosystems detect skew",
+          "contract_enforcement": "Schema change → dependent enforcement manifests fail validation until updated",
+          "migration_automation": "Breaking changes ship WITH migration scripts (T12 idempotent)",
+          "staggered_rollout": "D19 pilot pattern — validate on 2-3 ecosystems before mass rollout",
+          "fail_loud_cascade": "T11 — ecosystem >48h behind CANON version → alerts escalate to blocking"
+        },
+        "semver_blast_radius": {
+          "patch": "Clarifications only, informational, <1h auto rollout",
+          "minor": "New checklist items/rules, maturity may shift, 24-48h auto PRs",
+          "major": "Breaking schema changes, all 13 must migrate, 1-2 weeks staggered"
+        }
+      },
+      "user_directive": "There has got to be a stout system for canon changes both within the canon itself and downstream as well.",
+      "batch": "5C"
+    },
+    {
+      "id": 50,
+      "decision": "Agents: Current and target maturity",
+      "choice": "Current L2 (Structured) → Target L3 (Monitored)",
+      "rationale": "35 agent definitions with structured patterns, invocation JSONL tracking, but lacking formal health monitoring, Zod schemas, enforcement manifests. L3 adds monitoring without overcomplicating a functional system.",
+      "effort": "M",
+      "staging": "Direct (L2→L3)",
+      "assessment_summary": "Agent definitions exist with consistent patterns. Invocation tracking via JSONL. Missing: formal schemas, health checkers, enforcement gates, generated views.",
+      "batch": "5D"
+    },
+    {
+      "id": 51,
+      "decision": "Audits: Current and target maturity",
+      "choice": "Current L3 (Monitored) → Target L4 (Enforced), with L5 pathway built in",
+      "rationale": "22 quality + 7 ecosystem audit skills, results in JSONL history, health scoring. Strong foundation. L4 adds enforcement gates. USER DIRECTIVE: pathway to L5 must be designed in from the start — not a future bolt-on.",
+      "effort": "M",
+      "staging": "Direct (L3→L4) with L5 pathway architecture",
+      "assessment_summary": "Mature ecosystem with JSONL storage, health scoring, templates. Missing: formal enforcement manifests, some schema validation, lifecycle hooks. L5 pathway = versioned audit standards, automated regression detection.",
+      "user_directive": "L4 with a pathway to L5 built in somewhere for the near future",
+      "batch": "5D"
+    },
+    {
+      "id": 52,
+      "decision": "Frontend/App: Current and target maturity + planning approach",
+      "choice": "Current L2 (Structured) → Target L3 (Monitored). Adapted checklist (app-layer). Planning approach differs from process ecosystems — focus on connection points between process ecosystems and app layer.",
+      "rationale": "Next.js 16, React 19, Tailwind 4 — 'part of but apart.' Has its own conventions but lacks CANON integration. Key insight: what matters most are the CONNECTIONS between process ecosystems and the app layer — points of contact, testing, and health monitoring at those boundaries. USER NOTE: Operational sprint already has health monitoring items that may overlap.",
+      "effort": "M",
+      "staging": "Direct (L2→L3) with adapted checklist",
+      "assessment_summary": "Well-structured app layer with modern stack. Missing: CANON-aware health monitoring, formalized connection points to process ecosystems, schema validation at API boundaries.",
+      "user_insight": "These last two ecosystems planning approach is going to be different. What will be important are the connections between process ecosystems and app ecosystems — those points of contact, testing, and health need to be solid.",
+      "user_note": "Operational sprint had a number of health monitoring stuff in it",
+      "batch": "5D"
+    },
+    {
+      "id": 53,
+      "decision": "Firebase/Backend: Current and target maturity",
+      "choice": "Current L1 (Identified) → Target L3 (Monitored). Adapted checklist (app-layer). Staged approach given larger gap.",
+      "rationale": "Cloud Functions, Firestore, Auth, Storage rules — functional but largely informal. Biggest maturity gap of the 18 ecosystems. Same app-layer planning approach as Frontend/App — connection points matter most.",
+      "effort": "M-L",
+      "staging": "Staged (L1→L2→L3)",
+      "assessment_summary": "Firebase services functional but lack formalization. No schemas, no health monitoring, no enforcement. Firestore rules exist but aren't canonized. Cloud Functions lack lifecycle management.",
+      "batch": "5D"
+    },
+    {
+      "id": 54,
+      "decision": "App-layer checklist adaptation: formalization approach",
+      "choice": "Formalized per-ecosystem required-vs-optional mapping. Rigid framework with built-in adaptability for different ecosystem types.",
+      "rationale": "USER DIRECTIVE: 'Formalize it. Rigidity when necessary but ability to adapt to different situations while still maintaining order.' The 16-item CANON checklist doesn't apply uniformly — app-layer ecosystems (Frontend/App, Firebase/Backend) use Firestore not JSONL, have different view patterns, etc. Solution: formal mapping document per ecosystem declaring which items are required/optional/adapted, with justification. Order preserved; flexibility earned, not assumed.",
+      "user_directive": "Formalize it. We want rigidity when necessary but the ability to adapt to different situations while still maintaining order.",
+      "implementation": {
+        "approach": "Per-ecosystem checklist mapping document in .canon/",
+        "required_fields": [
+          "checklist_item",
+          "status (required|optional|adapted)",
+          "justification",
+          "adaptation_details"
+        ],
+        "enforcement": "Mapping must exist before ecosystem plan begins — no ad-hoc exemptions",
+        "principles": "Rigidity where needed (core items like health monitoring, testing), adaptability where warranted (storage format, view generation), order always maintained (formal justification required for any deviation)"
+      },
+      "batch": "5D"
+    },
+    {
+      "id": 55,
+      "decision": "Discovery documentation approach: two-doc system",
+      "choice": "Two-doc system — DISCOVERY_RECORD.md (human-complete) + deep-plan.state.json (machine-complete). Both contain ALL decisions, tenets, directives, ideas, and assessments. Simultaneous-update rule: neither doc is allowed to lag the other.",
+      "rationale": "Minimum viable separation. Human-readable narrative for audit/review/reference. Machine-readable JSON for session recovery and future automation. Two files, zero information asymmetry. Prefigures CANON's source-of-truth + generated-views pattern (T2). User: 'its basically one of the tenets anyway.'",
+      "tenet_alignment": [
+        "T2 (source of truth + generated views)",
+        "T14 (capture everything, surface what matters)"
+      ],
+      "enforcement": "Simultaneous update — every decision, directive, idea, and tenet MUST exist in BOTH files at the same time. No lag allowed.",
+      "documents": {
+        "human": "DISCOVERY_RECORD.md — narrative record with all decisions, rationale, user context, tenets, directives, ideas, assessment tables, version history",
+        "machine": "deep-plan.state.json — structured JSON with same data + resume instructions, batch status, timestamps, implementation metadata"
+      },
+      "batch": "5D"
+    },
+    {
+      "id": 56,
+      "decision": "Wave structure model",
+      "choice": "Tiered waves (4-5 waves of 3-5 ecosystems each) with checkpoint validation between waves",
+      "rationale": "T10 (validate before scaling) + T13 (discoveries feed forward). Parallelism within waves, learning transfer between them."
+    },
+    {
+      "id": 57,
+      "decision": "Wave 1 composition",
+      "choice": "CANON solo — Wave 1 is exclusively CANON (L0→L5)",
+      "rationale": "Ecosystem Zero (T1) needs undivided attention. Self-dogfoods the framework. All subsequent waves depend on CANON contracts."
+    },
+    {
+      "id": 58,
+      "decision": "PR Review as CANON pilot",
+      "choice": "PR Review goes in Wave 2 as explicit CANON pilot (S effort, L4→L5)",
+      "rationale": "Smallest delta, proves CANON framework works on a real ecosystem before scaling. T10 validated. USER QUESTION: entire operation mapped in advance with stages scheduled — YES, wave assignments mapped now, each ecosystem deep-planned JIT per T13."
+    },
+    {
+      "id": 59,
+      "decision": "TDMS staging timeline",
+      "choice": "TDMS L2→L3 starts in Wave 2, L3→L4 in Wave 3-4, L5 in Wave 5. Staged across full timeline.",
+      "rationale": "Too critical to defer (user directive: feeds into everything), but XL scope requires staging across waves."
+    },
+    {
+      "id": 60,
+      "decision": "Enforcement infrastructure timing + Skills elevation",
+      "choice": "Hooks + Testing in Wave 2 for enforcement gates. Skills ELEVATED to Wave 2 (user directive: main tool, touches many systems).",
+      "rationale": "Enforcement infra early so all subsequent waves have formal gates. Skills elevated by user — it's a primary daily tool with cross-ecosystem dependencies."
+    },
+    {
+      "id": 61,
+      "decision": "App-layer ecosystem timing",
+      "choice": "Frontend/App + Firebase/Backend in the final wave (last)",
+      "rationale": "User insight: connection points between app and process layers are what matters. Standardize process ecosystems first so connections are well-defined."
+    },
+    {
+      "id": 62,
+      "decision": "Parallelism within waves — SUPERSEDED by D63",
+      "choice": "SUPERSEDED. Originally: 2-3 parallel max within waves. Replaced by sequential-first approach (D63) after deep research revealed cross-ecosystem cascade makes true parallelism unreliable.",
+      "rationale": "Deep research across 13 agents + user analysis revealed: every ecosystem overhaul creates/modifies skills, hooks, scripts, and docs. The 'independent tracks' assumption breaks down when considering outputs of standardization, not just inputs. Superseded by D63.",
+      "superseded_by": "D63"
+    },
+    {
+      "id": 63,
+      "decision": "Sequential-first execution model (replaces wave-based parallelism)",
+      "choice": "Sequential implementation with research overlap. One ecosystem at a time. Research/deep-plan ecosystem N+1 while implementing ecosystem N. No parallel implementation tracks.",
+      "rationale": "USER INSIGHT + deep research synthesis: (1) Every ecosystem overhaul creates/modifies skills, hooks, scripts, docs — so parallel implementation causes cross-contamination. (2) Learning transfer (T13) is the whole point — parallel prevents it. (3) Changelog tracking (T18) is clean and linear when sequential. (4) User's attention is focused, not fragmented. (5) Each ecosystem benefits from ALL previous ones. Research overlap preserves productivity without sacrificing learning.",
+      "supersedes": "D56 (wave structure), D62 (parallelism within waves)",
+      "research_overlap": "Research/deep-plan for ecosystem N+1 runs in parallel with implementation of ecosystem N. This is the ONLY parallelism approved.",
+      "user_approved": true
+    },
+    {
+      "id": 64,
+      "decision": "T18 — Changelog-Driven Traceability (new tenet)",
+      "choice": "Every ecosystem change that affects another system MUST be logged in a standardized JSONL changelog (.canon/changelog.jsonl). Cross-ecosystem impact tracked at every step. Tenet of at least this system overhaul, may be promoted to permanent.",
+      "rationale": "USER DIRECTIVE: 'changelogs need to be standardized and it needs to be a tenet of at least this system overhaul.' Overlap between ecosystems is inevitable — change one thing, have to change another. Changelog becomes the connective tissue. Aligns with T14 (capture everything) but specific to cross-ecosystem traceability.",
+      "tenet": "T18_changelog_driven_traceability",
+      "user_directive": true,
+      "schema_sketch": {
+        "fields": ["seq", "ecosystem", "change", "affects", "type", "timestamp"],
+        "location": ".canon/changelog.jsonl",
+        "format": "JSONL — one line per cross-ecosystem change"
+      }
+    },
+    {
+      "id": 65,
+      "decision": "Docs elevated to position #5 in sequence",
+      "choice": "Docs ecosystem standardized at position #5 (after CANON, Skills, Hooks, PR Review pilot). Establishes folder structure, file placement standards, document dependency maps, master lists BEFORE any further ecosystems are standardized.",
+      "rationale": "USER DIRECTIVE: 'I think I want docs at number five.' Too much content in docs (100+ files) to defer. Every subsequent ecosystem produces docs — if doc standards aren't established early, 13+ ecosystems produce non-compliant docs that need rework. Docs at #5 means ecosystems #6-#18 create born-compliant documentation. Docs verification pass at #20 confirms consistency.",
+      "user_directive": true,
+      "scope_at_position_5": [
+        "Folder structure and file placement standards",
+        "Document dependency maps (which docs reference which)",
+        "Master lists and index sync patterns",
+        "Staleness monitoring and health checks",
+        "Documentation templates for all subsequent ecosystems",
+        "Generation pipeline standards (JSONL → MD)"
+      ],
+      "verification_pass": "Position #20 — lightweight meta-check after all ecosystems complete"
+    },
+    {
+      "id": 66,
+      "decision": "CI/CD restored to sequence at position #10",
+      "choice": "CI/CD (L1→L3, M staged) restored to the sequence at position #10, between Scripts (#9) and Alerts (#11).",
+      "rationale": "Was accidentally dropped from the initial sequential proposal. CI/CD (D41: GitHub Actions workflows, build/deploy pipelines, integration checks) benefits from Hooks (#3) and Testing (#6) being standardized, and from Scripts (#9) establishing script standards."
+    },
+    {
+      "id": 67,
+      "decision": "Final locked sequence — 18 ecosystems, 21 steps",
+      "choice": "Sequential execution order locked. 18 unique ecosystems. TDMS staged at #8, #16, #21. Docs at #5 + verification at #20. Research overlap is the only approved parallelism.",
+      "rationale": "Synthesizes all Batch 6 decisions (D56-D66) plus deep research from 13 agents covering all 18 ecosystems. Maximizes T13 learning transfer, enables T18 changelog tracking, gets tools (Skills, Hooks) and standards (Docs) online early.",
+      "sequence": [
+        {
+          "pos": 1,
+          "ecosystem": "CANON",
+          "target": "L0->L5",
+          "effort": "L",
+          "rationale": "Foundation. Tenets, schemas, changelog mechanism (T18)."
+        },
+        {
+          "pos": 2,
+          "ecosystem": "Skills",
+          "target": "L1->L3",
+          "effort": "L",
+          "rationale": "Daily tool. Skill-audit canonized. Born-compliant skills for all future work."
+        },
+        {
+          "pos": 3,
+          "ecosystem": "Hooks",
+          "target": "L3->L4",
+          "effort": "M",
+          "rationale": "Enforcement infra. Skill validation gates formalized."
+        },
+        {
+          "pos": 4,
+          "ecosystem": "PR Review",
+          "target": "L4->L5",
+          "effort": "S",
+          "rationale": "CANON pilot. CHECKPOINT: Does framework work?"
+        },
+        {
+          "pos": 5,
+          "ecosystem": "Docs",
+          "target": "L2->L3",
+          "effort": "M",
+          "rationale": "Folder structure, placement standards, dependency maps, master lists. Born-compliant docs for all future ecosystems."
+        },
+        {
+          "pos": 6,
+          "ecosystem": "Testing",
+          "target": "L3->L4",
+          "effort": "M",
+          "rationale": "Test infrastructure. Complements hooks. Proper test patterns for all subsequent work."
+        },
+        {
+          "pos": 7,
+          "ecosystem": "Sessions",
+          "target": "L1->L3",
+          "effort": "M",
+          "rationale": "State management. Cross-cutting infra. Now with skills, hooks, testing, docs to enforce it."
+        },
+        {
+          "pos": 8,
+          "ecosystem": "TDMS (L2->L3)",
+          "target": "L2->L3",
+          "effort": "XL-partial",
+          "rationale": "Critical system, first stage. 37 scripts get Zod schemas + monitoring."
+        },
+        {
+          "pos": 9,
+          "ecosystem": "Scripts",
+          "target": "L2->L3",
+          "effort": "L",
+          "rationale": "Script infrastructure standards. Informed by TDMS learnings."
+        },
+        {
+          "pos": 10,
+          "ecosystem": "CI/CD",
+          "target": "L1->L3",
+          "effort": "M",
+          "rationale": "Build/deploy pipelines. Benefits from hooks and testing being standard."
+        },
+        {
+          "pos": 11,
+          "ecosystem": "Alerts",
+          "target": "L2->L4",
+          "effort": "M",
+          "rationale": "Monitoring layer. Benefits from all infra being standardized."
+        },
+        {
+          "pos": 12,
+          "ecosystem": "Analytics",
+          "target": "L1->L3",
+          "effort": "M",
+          "rationale": "Aggregation layer. Builds on alerts + health checker patterns."
+        },
+        {
+          "pos": 13,
+          "ecosystem": "Agents",
+          "target": "L2->L3",
+          "effort": "M",
+          "rationale": "Agent definitions. Benefits from Skills and Hooks."
+        },
+        {
+          "pos": 14,
+          "ecosystem": "Audits",
+          "target": "L3->L4+L5path",
+          "effort": "M",
+          "rationale": "All audits are skills. L4 with L5 pathway. Benefits from Skills standardization."
+        },
+        {
+          "pos": 15,
+          "ecosystem": "Archival/Rotation",
+          "target": "L3->L4",
+          "effort": "M",
+          "rationale": "Lifecycle patterns. Benefits from JSONL and schema standards."
+        },
+        {
+          "pos": 16,
+          "ecosystem": "TDMS (L3->L4)",
+          "target": "L3->L4",
+          "effort": "XL-partial",
+          "rationale": "Second stage. Enforcement manifest, testing."
+        },
+        {
+          "pos": 17,
+          "ecosystem": "Roadmap & Execution",
+          "target": "L2->L3",
+          "effort": "L",
+          "rationale": "Hub ecosystem. All input pipelines now standardized. Automated intake."
+        },
+        {
+          "pos": 18,
+          "ecosystem": "Frontend/App",
+          "target": "L2->L3",
+          "effort": "M",
+          "rationale": "App-layer. All process-side connections defined."
+        },
+        {
+          "pos": 19,
+          "ecosystem": "Firebase/Backend",
+          "target": "L1->L3",
+          "effort": "M-L",
+          "rationale": "App-layer. Connection point contracts."
+        },
+        {
+          "pos": 20,
+          "ecosystem": "Docs (verification pass)",
+          "target": "verification",
+          "effort": "S",
+          "rationale": "Meta-check: all 18 ecosystems docs consistent? Staleness audit."
+        },
+        {
+          "pos": 21,
+          "ecosystem": "TDMS (L4->L5)",
+          "target": "L4->L5",
+          "effort": "XL-final",
+          "rationale": "Final canonization of the critical system."
+        }
+      ],
+      "checkpoints": [
+        { "after": 4, "gate": "Does CANON framework work? PR Review pilot validates end-to-end." },
+        {
+          "after": 7,
+          "gate": "Core infrastructure complete. Skills, Hooks, Docs, Testing, Sessions all standardized. Ready for data-heavy ecosystems."
+        },
+        { "after": 15, "gate": "All process-layer ecosystems standardized. Ready for app-layer." },
+        { "after": 21, "gate": "Full system overhaul complete. End-of-process audit." }
+      ]
+    },
+    {
+      "id": 68,
+      "decision": "Failure & stall handling",
+      "choice": "Option B: Skip & Return. If ecosystem N stalls, move to N+1, mark N as 'deferred with context.' Changelog documents what downstream ecosystems will miss and what may need revisiting when N completes.",
+      "rationale": "Sequential model shouldn't become a bottleneck. T18 changelog captures the gap naturally. Stalls happen.",
+      "batch": "7"
+    },
+    {
+      "id": 69,
+      "decision": "Exit criteria per ecosystem",
+      "choice": "Option B+C: All checklist items addressed (completed or formally deferred with justification per D54) PLUS brief user review. Scorecard + deferral justifications presented for approval before proceeding.",
+      "rationale": "Combines measurability (checklist) with interactivity (T15). Formal deferral prevents silent skipping. User stays in the loop without heavy overhead.",
+      "batch": "7"
+    },
+    {
+      "id": 70,
+      "decision": "ROADMAP integration",
+      "choice": "Option D: Hybrid — Track-CANON for the overhaul's 21-step sequence as big picture, individual ecosystem work items in their natural tracks, cross-references. AMENDMENT: Each time items are added to ROADMAP (in groupings), run a dedupe against MASTER_DEBT to prevent duplication.",
+      "rationale": "Best visibility. Track-CANON shows the big picture, existing tracks show the work. Tests Roadmap & Execution ecosystem before standardizing it at #17. Dedupe prevents ROADMAP additions from creating duplicate MASTER_DEBT entries.",
+      "user_amendment": "run a dedupe from the roadmap and master debt each time items are added in groupings",
+      "batch": "7"
+    },
+    {
+      "id": 71,
+      "decision": "Ongoing project work during overhaul",
+      "choice": "Option B: Interleaved. Standardization and project work in same sessions as needed. Soft guideline: if 3+ sessions pass with no standardization progress, ecosystem health dashboard flags it.",
+      "rationale": "Natural workflow. Deep-plan state files handle pause/resume. T8 automation over discipline — system nudges, not willpower.",
+      "batch": "7"
+    },
+    {
+      "id": 72,
+      "decision": "Changelog schema formalization",
+      "choice": "Option C: Extensible core. Required: {timestamp, ecosystem, change, affects}. Optional: {type, seq_position, decision_ref, files_changed, severity}. Schema lives in .canon/schemas/changelog.schema.json (Zod source of truth per D24). Mirrors D22 pattern.",
+      "rationale": "Same extensible-core pattern used for ecosystem registry. Avoids schema bloat for simple changes, allows rich context for complex ones.",
+      "batch": "7"
+    },
+    {
+      "id": 73,
+      "decision": "TDMS Grand Plan reassessment timing",
+      "choice": "Option B: Full reassessment at TDMS L2->L3 (#8) with lightweight pre-checks before each ecosystem (#1-#7). Added as explicit task in the plan.",
+      "rationale": "Informed reassessment — changelog shows exactly what changed across ecosystems #1-#7. Pre-checks catch obvious invalidations early.",
+      "explicit_task": true,
+      "task_description": "Before each ecosystem #1-#7: scan changelog for MASTER_DEBT items referencing files about to be modified, flag for review. At #8: full Grand Plan reassessment.",
+      "batch": "7"
+    },
+    {
+      "id": 74,
+      "decision": "Cross-ecosystem contracts — when defined",
+      "choice": "Option B: Per-ecosystem. CANON (#1) defines the contract FORMAT (structure, location, required fields). Each ecosystem defines its actual contracts during its own deep-plan, with already-standardized ecosystems as partners.",
+      "rationale": "Contracts grow organically and are concrete. Ecosystem #14 has 13 potential contract partners. Changelog shows how they interact.",
+      "batch": "7"
+    },
+    {
+      "id": 75,
+      "decision": "Framework repo and knowledge base integration",
+      "choice": "Option B: Per-ecosystem consultation. Each ecosystem's Phase 0 includes checking framework repo for relevant decisions/patterns. EXPANDED: All prior research forms a knowledge base — framework repo (68 decisions, 42 gaps), current standards and practices, PR Review v2 patterns, prior research agents' findings, all decision logs from this deep-plan. This knowledge base is the starting point for every ecosystem deep-plan.",
+      "rationale": "USER INSIGHT: current standards, PR review patterns, prior research, and decision logs all form a database to pull from when designing any ecosystem. Excellent starting point for each deep-plan Phase 0.",
+      "user_insight": true,
+      "knowledge_base_sources": [
+        "Framework repo: 68 decisions, 42 gaps, 10-phase plan",
+        "Current standards and practices (CLAUDE.md, CODE_PATTERNS.md, SKILL_STANDARDS.md)",
+        "PR Review v2 as reference implementation (5 Zod schemas, 10 health checkers, enforcement manifest)",
+        "13 deep-research agent findings from Batch 6 (all 18 ecosystems mapped)",
+        "This deep-plan: 76+ decisions, 18 tenets, 22+ user directives",
+        "DISCOVERY_RECORD.md narrative"
+      ],
+      "batch": "7"
+    },
+    {
+      "id": 76,
+      "decision": "CANON versioning and learning capture during overhaul",
+      "choice": "Option B (version at checkpoints) with critical amendment: learning capture happens DURING ecosystem builds, not just between them. Any option that delays learning capture to checkpoint boundaries is a non-starter. Version bumps at checkpoints (0.1.0 -> 0.2.0 -> 0.3.0 -> 0.4.0 -> 1.0.0). Patch escape valve for urgent CANON updates.",
+      "rationale": "USER DIRECTIVE: 'learnings need to not only be caught ecosystem to ecosystem but during ecosystem builds. any option that doesn't allow for that is a non-starter.' Versioning cadence is secondary — the learning capture mechanism is primary. Changelog (T18) is the continuous capture mechanism. CANON versions are the batched formalization.",
+      "user_directive": true,
+      "learning_capture_mechanism": {
+        "during_ecosystem": "Changelog JSONL captures every cross-ecosystem impact in real time. Learnings logged as they happen.",
+        "between_ecosystems": "T13 plan-as-you-go — next ecosystem's deep-plan reads changelog + previous ecosystem's outcomes",
+        "at_checkpoints": "CANON version bump formalizes accumulated learnings into updated schemas, tenets, or checklist items",
+        "emergency": "Patch version for urgent CANON updates that can't wait for checkpoint"
+      },
+      "batch": "7"
+    },
+    {
+      "id": 77,
+      "decision": "Decision artifact architecture",
+      "choice": "Option B with path to C: Decompose state.json into purpose-specific JSONL files (decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl, changelog.jsonl) + coordination.json. MD views generated from JSONL. When CANON is built (#1), tenets.jsonl migrates to .canon/ and planning artifacts become first CANON test case.",
+      "rationale": "Follows T4 (JSONL-first) and T2 (source of truth + generated views). Each artifact independently queryable. Smaller files = less compaction risk. Current state.json at ~1000 lines is becoming unwieldy.",
+      "artifact_structure": {
+        "location": ".planning/system-wide-standardization/",
+        "files": [
+          "decisions.jsonl — one line per decision (D1-D76+)",
+          "tenets.jsonl — one line per tenet (T1-T18+), later migrates to .canon/",
+          "directives.jsonl — one line per user directive",
+          "ideas.jsonl — one line per captured idea",
+          "changelog.jsonl — T18 cross-ecosystem impact log",
+          "coordination.json — batch status, resume instructions, phase tracking",
+          "DISCOVERY_RECORD.md — GENERATED from JSONL files",
+          "DIAGNOSIS.md — Phase 0 output (exists)",
+          "DECISIONS.md — Phase 2 output (to be created)",
+          "PLAN.md — Phase 3 output (to be created)"
+        ]
+      },
+      "batch": "7b"
+    },
+    {
+      "id": 78,
+      "decision": "Safety and redundancy for planning artifacts",
+      "choice": "Option B+C: Git commits at every batch (primary). Tagged commits at 4 checkpoints (canon-checkpoint-1 through canon-checkpoint-4). MCP episodic memory summary at each checkpoint for cross-session discovery.",
+      "rationale": "Multiple independent copies. Tagged commits are hard to lose. MCP memory enables cross-session search. JSONL files are source of truth — everything else is backup.",
+      "batch": "7b"
+    },
+    {
+      "id": 79,
+      "decision": "Format optimization — JSONL source + generated MD views",
+      "choice": "Option A: JSONL files are canonical source (AI-optimized). MD files are generated views (human-optimized). Generation is SCRIPTED — Node.js script reads JSONL → produces DISCOVERY_RECORD.md. Script runs after every batch as a gate. Script becomes template for all future ecosystem view generators.",
+      "rationale": "T2 applied to our own planning process. Eliminates the dual-maintenance problem. DISCOVERY_RECORD.md is currently behind (needs D55-D76) — under this system, it can never fall behind because it's generated.",
+      "process_tree": {
+        "step_1": "User says something → AI classifies as decision/directive/idea/tenet/correction/question",
+        "step_2": "Immediate JSONL append to the right file (real-time during conversation)",
+        "step_3": "Batch gate (end of Q&A batch): update coordination.json, run generate-discovery.js, git commit",
+        "step_4": "Safety: git commit every batch, tagged commits at checkpoints, MCP at milestones"
+      },
+      "script": "scripts/planning/generate-discovery-record.js — reads all JSONL → produces DISCOVERY_RECORD.md. Template for all future view generators.",
+      "user_question_answered": "Yes, generation is scripted. The gate is: end of Q&A batch triggers generation + commit.",
+      "batch": "7b"
+    },
+    {
+      "id": 80,
+      "decision": "Standard for future deep-plans — always full suite",
+      "choice": "REVISED to always full suite. All ecosystem deep-plans use the complete JSONL artifact structure. No lightweight tier. Consistency across 18 ecosystems is worth more than saving files for smaller ones.",
+      "rationale": "USER DIRECTIVE: lean heavy-handed. Deep-plan floor is ~15 questions, most ecosystems will exceed that. Full suite means every ecosystem's artifacts are queryable in the same way, feeding the knowledge base (D75).",
+      "user_directive": true,
+      "batch": "7b"
+    },
+    {
+      "id": 81,
+      "decision": "Comprehensive audit framework — 26 domains, 4 tiers",
+      "choice": "26 audit domains across 4 tiers. Tier 1: Core (5 mechanical checks). Tier 2: Analytical (7 deep analysis). Tier 3: Implementation (10 build-time checks with phase-level + full-scope split). Tier 4: Ecosystem Completion (4 exit checks). Reusable across all audit contexts.",
+      "rationale": "USER DIRECTIVE: thorough audits at all levels. Gap analysis + re-research with fresh eyes. Implementation audits are the missing layer — auditing the BUILD itself, not just the plan or final state. Phase-level audits catch drift early; full-scope confirms everything at the end.",
+      "user_directive": true,
+      "audit_framework": {
+        "tier_1_core": [
+          "1. Decision Coverage — every ecosystem assessed, no unresolved questions",
+          "2. Tenet Alignment — decisions traceable to tenets, no orphans",
+          "3. Directive Compliance — all user directives addressed",
+          "4. Sequence Integrity — no dependency gaps, checkpoints defined",
+          "5. Artifact Completeness — all JSONL, MD, state files exist"
+        ],
+        "tier_2_analytical": [
+          "6. Gap Analysis — plan vs original diagnosis, emerged vs planned, decision-to-delivery gaps",
+          "7. Re-Research with Fresh Eyes — agents re-examine codebase through lens of completed plan, compare against original findings",
+          "8. Contradiction Detection — systematic scan for conflicting decisions",
+          "9. Risk Assessment — per-ecosystem completion risks, dependencies, scope explosion potential",
+          "10. Cross-Ecosystem Impact Projection — pre-populate expected downstream effects per ecosystem",
+          "11. Knowledge Base Readiness — is the knowledge base (D75) actually ready for ecosystem #1?",
+          "12. Rollback Viability — what's the plan if checkpoint #1 reveals CANON is flawed?"
+        ],
+        "tier_3_implementation": {
+          "description": "Audits the BUILD itself. Two levels: phase-level (lightweight, frequent) and full-scope (comprehensive, once per ecosystem).",
+          "phase_level_domains": [
+            "I1. Plan Adherence — implementation following the deep-plan? Deviations documented?",
+            "I2. Changelog Discipline — every cross-ecosystem change logged per T18?",
+            "I3. Code Quality — code-reviewer pass, CLAUDE.md patterns, security checklist",
+            "I4. Born-Compliant — new artifacts (skills, hooks, scripts, docs) comply with previously standardized ecosystems?",
+            "I6. Learning Capture — learnings captured DURING build per D76? Insights in changelog?",
+            "I7. Scope Containment — staying within ecosystem boundary? No creep into later ecosystems?",
+            "I8. Test Coverage — new patterns tested? Health checkers pass? Enforcement gates enforcing?",
+            "I10. Documentation Sync — docs updated as implementation proceeds?"
+          ],
+          "full_scope_only_domains": [
+            "I5. Regression Detection — health checkers for ALL completed ecosystems, not just current",
+            "I9. User Directive Satisfaction — ecosystem-specific user directives honored?"
+          ],
+          "phase_audit_count": "7 of 10 domains (I1-I4, I6-I8, I10)",
+          "full_scope_count": "All 10 domains (I1-I10)"
+        },
+        "tier_4_ecosystem_completion": [
+          "13. Completeness Scorecard — 16-item CANON checklist: completed vs formally deferred with justification",
+          "14. Integration Verification — new contracts work with previously standardized ecosystems",
+          "15. Changelog Accuracy — changelog vs git diff cross-reference",
+          "16. Learning Harvest — what feeds into next ecosystem, what triggers CANON patch"
+        ]
+      },
+      "application_matrix": {
+        "after_decisions_md": "Tier 1 (domains 1-3) + Tier 2 (domains 6, 8)",
+        "after_plan_md": "Tier 1 (full) + Tier 2 (full)",
+        "implementation_phase_boundary": "Tier 3 phase-level (7 of 10 domains)",
+        "ecosystem_completion": "Tier 1 (full) + Tier 3 full-scope (all 10) + Tier 4 (full)",
+        "overhaul_checkpoint_21": "Tier 1 + Tier 2 + Tier 3 (summary) + Tier 4 (full)"
+      },
+      "implementation_audit_flow": "Phase 1 build → Phase 1 audit (7 domains) → Phase 2 build → Phase 2 audit (7 domains) → ... → Final phase → Full-scope audit (14 domains: I1-I10 + Tier 4)",
+      "batch": "7b"
+    },
+    {
+      "id": 82,
+      "decision": "Audit process — interactive",
+      "choice": "Interactive, conversational audit at all levels. AI produces analysis, presents in batches, user reacts, iterate until satisfied. Operates as we've been operating throughout this deep-plan. Not a batch script dump. Applies to phase audits (lighter touch) and full-scope audits (deeper discussion).",
+      "rationale": "USER DIRECTIVE: 'interactive as all skill functions should be even if it isn't an actual skill. operate as we've been operating.' Aligns with T15 (interactivity-first).",
+      "user_directive": true,
+      "batch": "7b"
+    },
+    {
+      "id": 83,
+      "decision": "Audit triggers — multi-level",
+      "choice": "Plan audits: twice (after DECISIONS.md and after PLAN.md). Implementation audits: at every phase boundary (lightweight) + full-scope at ecosystem completion. Overhaul audit: at checkpoint #21.",
+      "rationale": "Smaller phase audits catch drift before it compounds. Full-scope confirms everything. Two plan audits catch decision issues before they become plan issues.",
+      "triggers": {
+        "after_decisions_md": "Tier 1 partial + Tier 2 domains 6, 8",
+        "after_plan_md": "Tier 1 full + Tier 2 full",
+        "implementation_phase_boundary": "Tier 3 phase-level (7 of 10)",
+        "ecosystem_completion": "Tier 1 + Tier 3 full-scope + Tier 4",
+        "overhaul_completion": "Tier 1 + 2 + 3 summary + 4"
+      },
+      "batch": "7b"
+    }
+  ],
+  "total_decisions": 83,
+  "core_tenets": {
+    "_organization": "Flat list, 4 categories. 18 total tenets (T18 added during Batch 6). Locked in Batch 4T + Batch 6.",
+    "foundation": {
+      "T1_canon_is_ecosystem_zero": {
+        "statement": "CANON is the meta-system above all others. It defines the rules, lives at `.canon/` repo root, and is the first ecosystem standardized.",
+        "evidence": ["D1", "D11", "D12"],
+        "category": "foundation"
+      },
+      "T2_source_of_truth_generated_views": {
+        "statement": "Every system has ONE authoritative source. Everything else is derived/generated. Never maintain two copies — maintain one and compute the other.",
+        "evidence": ["D2", "D4", "D20", "D24"],
+        "category": "foundation",
+        "note": "JSONL-first (T4) is an instance of this broader principle."
+      },
+      "T3_maturity_is_measurable": {
+        "statement": "Maturity is computed from a concrete checklist, never subjectively assigned. 16 items → L0-L5 levels. If you can't measure it, you can't improve it.",
+        "evidence": ["D3", "D8", "D9"],
+        "category": "foundation"
+      }
+    },
+    "design": {
+      "T4_jsonl_first": {
+        "statement": "JSONL is the canonical storage format — AI-consumed, appendable, line-diffable. MD is generated for human consumption. Instance of T2.",
+        "evidence": ["D2", "D22", "D25", "D26"],
+        "category": "design"
+      },
+      "T5_contract_over_implementation": {
+        "statement": "CANON defines the contract (what a health checker must output, what an enforcement manifest looks like). How each ecosystem implements it is their business.",
+        "evidence": ["D10", "D24", "D27"],
+        "category": "design"
+      },
+      "T6_room_for_growth": {
+        "statement": "Nothing ships as a dead end. Everything must be upgradeable. Ease the upgrade process. Schemas, APIs, structures — all must accommodate evolution without breaking.",
+        "evidence": ["D12", "D13", "D22"],
+        "category": "design"
+      },
+      "T7_platform_agnostic_by_default": {
+        "statement": "All CANON artifacts, scripts, and tooling MUST work identically on both Claude Code Desktop (Linux sandbox) and Windows CLI. Node.js over bash. Forward-slash paths. LF line endings. No platform-specific assumptions without a documented cross-platform fallback.",
+        "evidence": ["D15", "D17", "D21", "D27"],
+        "category": "design",
+        "dual_environment_context": {
+          "environments": [
+            "Claude Code Desktop (Linux sandbox)",
+            "Windows CLI (PowerShell/Git Bash)"
+          ],
+          "constraints": [
+            "Node.js for all scripts (not bash)",
+            "Forward-slash paths only",
+            "LF line endings only",
+            "No symlinks in .canon/",
+            "No platform-specific env var assumptions",
+            "Cross-platform hooks (already Node.js — formalize as requirement)"
+          ],
+          "known_violations": [
+            "3 bash-only scripts with no Windows equivalent",
+            "Removed sync script never replaced",
+            "CROSS_PLATFORM_SETUP.md references dead tooling"
+          ]
+        }
+      }
+    },
+    "operations": {
+      "T8_automation_over_discipline": {
+        "statement": "If a process relies on human memory, it WILL fail. Hooks, gates, scripts — not checklists and READMEs. Automate enforcement or accept non-compliance.",
+        "evidence": ["D14", "D15", "D18", "D26"],
+        "category": "operations",
+        "note": "Was discussed in Batch 3 but never formally recorded. Formalized in Batch 4T."
+      },
+      "T9_crash_proof_state": {
+        "statement": "State survives compaction, session boundaries, crashes, and network failures. Not optional — it's infrastructure. State files, not memory. Persistent, not ephemeral.",
+        "evidence": ["D9_checklist_item_8"],
+        "category": "operations",
+        "note": "The existence of deep-plan.state.json itself embodies this tenet."
+      },
+      "T10_validate_before_scaling": {
+        "statement": "Pilot on 1-2, prove it works, then roll out. Never mass-apply an unproven pattern. CANON validates itself before it standardizes others.",
+        "evidence": ["D6", "D13", "D19"],
+        "category": "operations"
+      },
+      "T11_fail_loud_fail_early": {
+        "statement": "When something is wrong, it screams immediately — not silently logs to a file nobody reads. Pre-commit catches before PR. Errors block, they don't whisper. The aggressive complement to visibility.",
+        "evidence": ["D14", "D15"],
+        "category": "operations"
+      },
+      "T12_idempotent_operations": {
+        "statement": "Every CANON script and operation produces the same result whether run once or five times. No data corruption from re-runs. No side effects from retries. Safe to re-run is safe to automate.",
+        "evidence": ["D18", "D27"],
+        "category": "operations",
+        "note": "The MASTER_DEBT 9-writer race condition is a direct violation of this tenet."
+      }
+    },
+    "process": {
+      "T13_plan_as_you_go": {
+        "statement": "Each ecosystem gets its own deep-plan when sequenced. No stale pre-plans. Discoveries feed forward — what you learn standardizing ecosystem #3 informs ecosystem #4. Knowledge compounds.",
+        "evidence": ["D6", "D8"],
+        "category": "process",
+        "sub_principle": "discoveries_feed_forward — merged here from candidate T16"
+      },
+      "T14_capture_everything_surface_what_matters": {
+        "statement": "Ideas, findings, tangential thoughts MUST be recorded — institutional memory. Then surface what's actionable through visibility tooling. Nothing gets lost AND nothing gets buried.",
+        "evidence": ["D14", "D17"],
+        "category": "process",
+        "note": "Renamed from 'visibility_is_key'. Merges visibility + institutional memory (candidate T14 'nothing gets lost')."
+      },
+      "T15_interactivity_first": {
+        "statement": "Interactive workflows over batch output. Batch questioning over monologue dumps. User-driven decisions, not AI-driven assumptions. Deep-plan is the exemplar — extends to all skills/tools.",
+        "evidence": ["deep-plan skill design"],
+        "category": "process"
+      },
+      "T16_single_ownership_many_consumers": {
+        "statement": "Every component has exactly one owner responsible for it. Others consume, never supersede. Primary ownership = maintenance responsibility, not authority hierarchy.",
+        "evidence": ["D11"],
+        "category": "process"
+      },
+      "T17_declarative_over_imperative": {
+        "statement": "Declare WHAT should be, let tools enforce HOW. Enforcement manifests, schemas, configs — all declarative. You describe the world you want; automation makes it so.",
+        "evidence": ["D9", "D14", "D26"],
+        "category": "process"
+      },
+      "T18_changelog_driven_traceability": {
+        "statement": "Every ecosystem change that affects another system MUST be logged in a standardized JSONL changelog. Cross-ecosystem impact is tracked at every step — not reconstructed after the fact. Changelogs are the connective tissue between ecosystems.",
+        "evidence": ["D62", "batch_6_discussion"],
+        "category": "operations",
+        "note": "Added during Batch 6 wave proposal discussion. User directive: changelogs need to be standardized and a tenet of at least this system overhaul. Aligns with T14 (capture everything) but specific to cross-ecosystem traceability.",
+        "added": "2026-03-04",
+        "scope": "system_overhaul_minimum — may be promoted to permanent tenet after validation"
+      }
+    }
+  },
   "artifacts": {
     "diagnosis": ".planning/system-wide-standardization/DIAGNOSIS.md",
     "decisions": null,
-    "plan": null
+    "plan": ".planning/system-wide-standardization/PLAN.md",
+    "tenets_jsonl": ".canon/tenets.jsonl (to be created — first CANON artifact)",
+    "tenets_md": ".canon/tenets.md (to be generated from tenets.jsonl)"
   },
   "phase_0_outcomes": {
     "diagnosis_confirmed": true,
@@ -30,13 +1177,7 @@
       "Error Handling/Logging",
       "Naming Conventions",
       "Lifecycle Management"
-    ],
-    "canon_definition": "Ecosystem Zero — meta-system that defines what an ecosystem IS. Sits above all others. Has its own files, schemas, standards, versioning, testing.",
-    "configuration_definition": "Single parameterization file (framework.config.json concept) — project-level settings vs hardcoded values across 70+ scripts",
-    "planning_as_system": "Planning (deep-plan, GSD, roadmapping, milestones) is a canonizable system — standardized in perpetuity",
-    "deep_plan_and_gsd_are_backbone": "User is a big fan of deep-plan + GSD — these are the backbone, build from there",
-    "batch_1_discovery_questions_ready": true,
-    "batch_1_NOT_YET_ANSWERED": "7 questions were presented but user paused to discuss diagnosis. Need to re-present in next session."
+    ]
   },
   "user_directives": {
     "roadmap_will_change": "ROADMAP.md will need additions, changes, removals after this process",
@@ -47,8 +1188,36 @@
     "overlap_management": "Many points of overlap between ecosystems — must not let one supersede another",
     "duplicate_subsystems": "Cross-cutting subsystems exist in multiple ecosystems and need mapping",
     "standardization_is_key": "Duplicate subsystems must follow shared standards",
-    "pr_creep_guard": "User has tendency toward 30-50 commit PRs. Wants guardrail mechanism SOON. Recommended: commit counter hook warning at 10, blocking at 25 with override.",
-    "lifecycle_management": "User agreed — helps future-proof. Added to cross-cutting subsystems."
+    "pr_creep_guard": "User has tendency toward 30-50 commit PRs. Wants guardrail mechanism SOON.",
+    "lifecycle_management": "User agreed — helps future-proof. Added to cross-cutting subsystems.",
+    "jsonl_is_canon": "JSONL is canonical/AI-consumed, MD is human-readable generated from JSONL. Core tenet.",
+    "room_for_growth_everywhere": "Nothing not-upgradeable. Ease upgrade process. Room for growth built in everywhere. Things change all the time.",
+    "no_superseding_ecosystem": "Primary ownership = maintenance responsibility, not authority. No ecosystem supersedes another.",
+    "plan_as_you_go": "Each ecosystem gets its own deep-plan when sequenced. Don't pre-plan all 13 — they'd go stale.",
+    "ecosystem_plan_sequencing_matters": "Dependency-wise sequencing between ecosystem plans is important. Discoveries in one plan may feed into another.",
+    "mcp_memory_enabled": "enableAllProjectMcpServers flipped to true. Verify memory MCP tools available next session.",
+    "interactivity_is_paramount": "Interactivity of utmost importance across everything whenever possible. Skills should be interactive (deep-plan as exemplar), not monologue dumps. Extends beyond skills to all methods/tools where applicable.",
+    "dual_environment_is_constraint": "System must work identically on Claude Code Desktop (Linux sandbox) and Windows CLI. Platform-agnostic by default. Node.js over bash. Formalized as tenet T7.",
+    "tdms_must_be_l5": "TDMS feeds into everything, MASTER_DEBT has thousands of entries. Too critical to leave below L5. Acknowledged as massive XL effort.",
+    "skill_audit_leverage": "Skill-audit skill exists (.claude/skills/skill-audit/) — created Feb 28, 2026. Born from 64-decision audit of deep-plan skill. 10-category interactive framework (intent fidelity, workflow sequencing, I/O quality, decision points, integration surface, guard rails, prompt engineering, scope boundaries, institutional memory, UX). Used on deep-plan (64 decisions → v2 rewrite) and informed skill-creator v2 update. Codifies the behavioral quality standards from those refinements. This is the mechanism for all 65 skills' ecosystem auditing.",
+    "planning_is_skill_roadmap_is_system": "Planning is a SKILL (deep-plan, GSD discovery). The SYSTEM is the Roadmap & Execution ecosystem — where work items land, get prioritized, get executed. Multiple avenues feed in. Non-debt input pipelines are the critical missing piece. Must be high in implementation order as a hub ecosystem.",
+    "canon_enforcement_must_be_stout": "CANON enforcement must be bidirectional and robust: (1) CANON self-protection — changes gated, validated, migration-scripted. (2) Downstream propagation — all 13 ecosystems notified, migrated, held to new standards. Semver drives blast radius. User directive: 'stout system.'",
+    "app_ecosystem_connections_are_key": "For app-layer ecosystems (Frontend/App, Firebase/Backend), planning approach differs from process ecosystems. What matters most are the CONNECTION POINTS between process ecosystems and app layer — testing, health monitoring, and contracts at those boundaries must be solid.",
+    "planning_docs_must_evolve": "All planning docs (roadmap, sprints, grand plan, future roadmap) need updating as we move through plans — BOTH for additions of new work AND deletions of completed or deprecated items. Living documents, not static snapshots.",
+    "formalize_adaptability": "Formalize the checklist adaptation approach. Rigidity when necessary but ability to adapt to different situations while maintaining order. No ad-hoc exemptions — adaptations are earned through formal justification.",
+    "audits_l5_pathway": "Audits ecosystem must have L5 pathway designed in from the start at L4, not bolted on later. Architecture for L5 readiness is part of the L4 work.",
+    "batch_6_skills_elevation": "Skills must be high in Wave 2 — it's a main tool and touches many systems (user override)",
+    "batch_6_parallel_bounded": "Parallel is OK but not too much — not ecosystems that could affect another or lose lessons learned",
+    "batch_6_wave_proposal_needed": "User wants to see concrete wave proposal with parallel groupings before committing to D62",
+    "changelog_is_tenet": "Changelogs must be standardized JSONL and a tenet of at least this system overhaul. Cross-ecosystem impact tracking at every step. Formalized as T18.",
+    "research_parallelization": "User likes research overlap as productivity bridge — research ecosystem N+1 while implementing ecosystem N. Approved approach.",
+    "docs_at_position_5": "User wants Docs at #5 in the sequence — not buried at #16. Folder structure, file placement standards, document dependencies, master lists need to be established early. Too much content to defer.",
+    "sequential_over_parallel": "User questioning whether parallel tracks are truly right or just time-saving. Learning transfer and cross-ecosystem overlap make sequential the better philosophy.",
+    "every_change_has_ripple": "User insight: overlap is inevitable everywhere. Change one thing here, have to change another thing there. Changelog becomes invaluable for tracking this.",
+    "roadmap_dedupe_on_add": "Each time items are added to ROADMAP (in groupings), run a dedupe against MASTER_DEBT to prevent duplication.",
+    "knowledge_base_for_ecosystem_plans": "All prior research forms a knowledge base for every ecosystem deep-plan Phase 0: framework repo, current standards, PR Review v2 patterns, 13 research agent findings, 76+ decisions, 18 tenets, user directives. Excellent starting point.",
+    "learning_capture_during_not_after": "Learnings must be captured DURING ecosystem builds, not just between them. Any approach that delays learning capture to checkpoint boundaries is a non-starter. Changelog (T18) is the continuous mechanism. CANON versions are batched formalization.",
+    "grand_plan_reassessment_is_task": "TDMS Grand Plan reassessment is an explicit task at position #8 with lightweight pre-checks before each ecosystem #1-#7."
   },
   "ideas_captured": [
     "ROADMAP entries will change significantly post-standardization",
@@ -57,15 +1226,176 @@
     "Future idea capture mechanism needed",
     "Cross-ecosystem subsystem mapping is its own discovery task",
     "Canon is Ecosystem Zero — all others derive from it",
-    "Planning standardization (deep-plan, GSD) as backbone — build from there, not too far down the line",
+    "Planning standardization (deep-plan, GSD) as backbone — build from there",
     "PR creep guardrail: commit counter hook (warn 10, block 25, override available)",
     "Branch scope declaration idea: S/M/L with commit brackets",
     "Session-end PR gate: flag if >15 commits not in a PR",
     "State saving rules need to be canonized",
-    "13 cross-cutting subsystems (added: versioning/migration, error handling, naming, lifecycle)",
-    "Configuration as single source of truth vs hardcoded values"
+    "13 cross-cutting subsystems",
+    "Configuration as single source of truth vs hardcoded values",
+    "Per-ecosystem required-vs-optional subsystem mapping needed",
+    "L5 is north star not exit criteria — most target L3-L4 baseline",
+    "Upgrade-friendliness as design principle in every component",
+    "MCP memory as secondary state backup (verify next session)",
+    "Configure episodic memory for remote sessions (broader benefit beyond this plan)",
+    "Interactivity-first as a design tenet for all skills and tooling — batch questioning > monologue output",
+    "Health report dual format (JSON envelope + JSONL findings) could become a general pattern for all ecosystem outputs",
+    "Core tenets discovery phase should precede schema/structure decisions — tenets guide everything downstream",
+    "Tenets should be CANON's first artifact (.canon/tenets.jsonl) — CANON defines itself before it defines others",
+    "CROSS_PLATFORM_SETUP.md is stale — references removed sync script. Needs update when platform-agnostic tenet is implemented",
+    "Cascade/override (D#5) and progressive disclosure are useful patterns but not tenets — keep as referenced patterns, not principles",
+    "17 tenets across 4 categories is the right granularity — specific enough to be actionable, broad enough to be stable",
+    "Roadmap & Execution ecosystem is the HUB — all other ecosystems feed work items into it. Non-debt pipelines (audit findings → roadmap, deep-plan decisions → roadmap, feature planning → roadmap) are completely missing. T8 violation.",
+    "Roadmap & Execution needs high implementation priority — if we standardize 13 ecosystems, each generates work items needing automated intake",
+    "CANON enforcement cascade: version broadcast → health checker detection → migration automation → fail-loud escalation → staggered rollout. Both self-protection and downstream propagation.",
+    "deep-plan decisions should auto-generate ROADMAP sprint items — manual copying is T8 violation",
+    "audit-aggregator produces report but nobody places findings into sprints unless human does it — another missing pipeline",
+    "App-layer ecosystem planning is fundamentally different from process ecosystem planning — connection points between layers are the priority, not internal structure",
+    "Operational sprint health monitoring items may overlap with ecosystem standardization health monitoring — need reconciliation during sequencing",
+    "Planning docs (ROADMAP, sprints, grand plan, future roadmap) need continuous updates during plan execution — additions AND deletions of completed/deprecated items",
+    "Audits L5 pathway should be architecturally designed during L4 work — versioned audit standards, automated regression detection, self-auditing capabilities",
+    "Checklist adaptation formalization: rigid framework + earned flexibility. Per-ecosystem mapping with required justification for any deviation from the 16-item standard",
+    "Wave structure allows both parallelism (within waves) and learning transfer (between waves) — hybrid approach",
+    "TDMS as cross-wave staged effort — each wave advances it one level",
+    "Skills elevation to Wave 2 creates a heavy wave — may need 2A/2B split or careful parallel tracks",
+    "Track-CANON in ROADMAP.md as the overhaul's big-picture sequence, with individual items in natural tracks",
+    "ROADMAP additions should trigger dedupe against MASTER_DEBT to prevent duplicate entries",
+    "Knowledge base concept: all prior research (framework repo, PR Review v2, research agents, decision logs, standards) form a reusable database for every ecosystem deep-plan Phase 0",
+    "3+ sessions without standardization progress should trigger ecosystem health dashboard flag (T8 automation over discipline)",
+    "Grand Plan pre-checks before each ecosystem: scan changelog for MASTER_DEBT items referencing files about to be modified",
+    "Changelog extensible-core schema mirrors D22 ecosystem registry pattern — required fields + optional context",
+    "CANON version trajectory: 0.1.0 → 0.2.0 (checkpoint #4) → 0.3.0 (checkpoint #7) → 0.4.0 (checkpoint #15) → 1.0.0 (checkpoint #21)"
   ],
-  "resume_instructions": "READ THESE FILES IN ORDER: (1) .planning/system-wide-standardization/DISCOVERY_RECORD.md (2) .planning/system-wide-standardization/DIAGNOSIS.md (3) This state file. Phase 0 diagnosis is APPROVED. Next: re-present Batch 1 discovery questions (7 questions on Architecture & Foundation — they were shown but user paused to discuss diagnosis first, never answered them). The 7 questions are in phase_0_discussion.batch_1_questions_7 below. Also: PR creep guardrail is wanted SOON — consider as early deliverable.",
-  "compaction_warning": "Session hit compaction boundary. All state saved. Resume next session.",
-  "updated": "2026-03-02T18:45:00Z"
+  "branch_investigation": {
+    "branch": "claude/system-standardization-discovery-s201",
+    "status": "SAFE TO DELETE",
+    "reason": "Squash-merged into main as PR #415 (commit 398904e). Zero diff between branch tip and main. All 6 branch commits are captured in the squash.",
+    "investigated": "2026-03-03T13:35:00Z"
+  },
+  "batch_5d_research": {
+    "description": "4 ecosystems from original DIAGNOSIS.md assessed in Batch 5D",
+    "status": "COMPLETE — research done, Q&A done, decisions locked (D50-D54)",
+    "ecosystems": [
+      {
+        "name": "Agents",
+        "original_diagnosis_number": 6,
+        "status": "assessed_D50",
+        "result": "L2→L3, M effort",
+        "note": "35 agent definitions, invocation tracking via agent-invocations.jsonl"
+      },
+      {
+        "name": "Audits",
+        "original_diagnosis_number": 9,
+        "status": "assessed_D51",
+        "result": "L3→L4 with L5 pathway, M effort",
+        "note": "22 quality + 7 ecosystem audit skills, results in history JSONL"
+      },
+      {
+        "name": "Frontend/App",
+        "original_diagnosis_number": 11,
+        "status": "assessed_D52",
+        "result": "L2→L3 adapted, M effort",
+        "note": "Next.js 16, React 19, Tailwind 4 — connection points to process ecosystems are priority"
+      },
+      {
+        "name": "Firebase/Backend",
+        "original_diagnosis_number": 12,
+        "status": "assessed_D53",
+        "result": "L1→L3 staged adapted, M-L effort",
+        "note": "Cloud Functions, Firestore, Auth, Storage rules — biggest maturity gap"
+      }
+    ]
+  },
+  "discovery_record_backfill": {
+    "status": "complete",
+    "description": "DISCOVERY_RECORD.md backfilled from 559→1080 lines with all D1-D49 decisions, T1-T17 tenets, ecosystem assessment summary table, 22 user directives, 30 captured ideas. Committed as 942e3e6.",
+    "gap_identified": "DISCOVERY_RECORD stopped at decision #22. Deep-plan D1-D49 (different numbering scheme) were only in deep-plan.state.json.",
+    "completed_at": "2026-03-03T18:10:00Z"
+  },
+  "batch_5d_qa": {
+    "status": "COMPLETE — all 5 decisions locked",
+    "decisions_recorded": [
+      {
+        "id": "D50",
+        "topic": "Agents maturity",
+        "result": "L2→L3 (accepted recommendation)"
+      },
+      {
+        "id": "D51",
+        "topic": "Audits maturity",
+        "result": "L3→L4 with L5 pathway built in (user elevated)"
+      },
+      {
+        "id": "D52",
+        "topic": "Frontend/App maturity",
+        "result": "L2→L3 adapted (user insight: connection points priority)"
+      },
+      {
+        "id": "D53",
+        "topic": "Firebase/Backend maturity",
+        "result": "L1→L3 staged adapted (accepted recommendation)"
+      },
+      {
+        "id": "D54",
+        "topic": "Checklist adaptation",
+        "result": "Formalized per-ecosystem mapping (user directive: rigidity + adaptability)"
+      }
+    ],
+    "user_insights_captured": [
+      "App-layer planning differs from process ecosystems — connections between layers are priority",
+      "Operational sprint has health monitoring overlap — needs reconciliation",
+      "Planning docs must evolve — additions AND deletions as plans execute",
+      "Audits L5 pathway must be designed in during L4, not bolted on",
+      "Formalize adaptability: rigidity when necessary, flexibility earned through justification"
+    ],
+    "completed_at": "2026-03-03T18:40:00Z"
+  },
+  "session_corrections": [
+    "Question format quality: Q46-Q49 lacked options/pros/cons/recommendations. Fixed going forward.",
+    "Decision record lag: DISCOVERY_RECORD not continuously updated. Backfill in progress, continuous updates mandated.",
+    "Ecosystem count: Revised from 14 to 18 total. 4 ecosystems from original DIAGNOSIS were never assessed.",
+    "End-of-process audit: User confirmed audit will happen after plan is set, not before."
+  ],
+  "resume_instructions": "83 TOTAL DECISIONS. 18 TENETS. ALL DISCOVERY COMPLETE (Batches 1-7 + Phase 1b).\n\nBATCH 6 COMPLETE (D56-D67): Sequential execution sequence LOCKED.\n\nKEY BATCH 6 EVOLUTION:\n  - Started with wave-based parallel approach (D56-D62)\n  - Deep research: 13 agents mapped all 18 ecosystems at file-level dependency maps\n  - User challenged fundamental assumptions: parallel tracks sacrifice learning for speed\n  - D62 SUPERSEDED by D63: Sequential-first with research overlap\n  - D64: T18 changelog-driven traceability added as new tenet (user directive)\n  - D65: Docs elevated to position #5 (user directive)\n  - D66: CI/CD restored at position #10 (was accidentally dropped)\n  - D67: Final 21-step sequence locked\n\nFINAL SEQUENCE (21 steps, 18 ecosystems):\n  #1 CANON (L0->L5, L) — Foundation\n  #2 Skills (L1->L3, L) — Daily tool, skill-audit canonized\n  #3 Hooks (L3->L4, M) — Enforcement infra\n  #4 PR Review (L4->L5, S) — CANON pilot, CHECKPOINT\n  #5 Docs (L2->L3, M) — Folder structure, placement standards, dependency maps\n  #6 Testing (L3->L4, M) — Test infrastructure\n  #7 Sessions (L1->L3, M) — State management\n  #8 TDMS L2->L3 (XL-partial) — First stage, Zod schemas + monitoring\n  #9 Scripts (L2->L3, L) — Script standards, informed by TDMS\n  #10 CI/CD (L1->L3, M) — Build/deploy pipelines\n  #11 Alerts (L2->L4, M) — Monitoring layer\n  #12 Analytics (L1->L3, M) — Aggregation layer\n  #13 Agents (L2->L3, M) — Agent definitions\n  #14 Audits (L3->L4+L5path, M) — All audits are skills\n  #15 Archival/Rotation (L3->L4, M) — Lifecycle patterns\n  #16 TDMS L3->L4 (XL-partial) — Second stage, enforcement\n  #17 Roadmap & Execution (L2->L3, L) — Hub ecosystem, automated intake\n  #18 Frontend/App (L2->L3, M) — App-layer connections\n  #19 Firebase/Backend (L1->L3, M-L) — App-layer connections\n  #20 Docs verification pass (S) — Consistency meta-check\n  #21 TDMS L4->L5 (XL-final) — Final canonization\n\nCHECKPOINTS: After #4 (framework validation), #7 (core infra complete), #15 (process layer complete), #21 (full overhaul complete).\n\nEXECUTION MODEL: Sequential implementation + parallel research overlap (research N+1 while implementing N). No parallel implementation tracks.\n\nDISCOVERY_RECORD needs update with D55-D67 + T18.\n\nBATCH 7 COMPLETE (D68-D76): Edge cases resolved.\n  D68: Skip & Return on stalls (changelog documents gaps)\n  D69: Checklist addressed + user review as exit criteria\n  D70: Track-CANON in ROADMAP + dedupe on add\n  D71: Interleaved work + 3-session nudge\n  D72: Extensible-core changelog schema (mirrors D22)\n  D73: Grand Plan reassessment at #8 + pre-checks #1-#7 (explicit task)\n  D74: Contracts defined per-ecosystem, CANON defines format\n  D75: Knowledge base from all prior research for every Phase 0\n  D76: Learning capture DURING builds (non-negotiable) + checkpoint versioning\n\nPHASE 1b COMPLETE (D77-D83): Back-of-house process + audit framework.\n  D77: Decomposed JSONL suite (decisions/tenets/directives/ideas/changelog.jsonl + coordination.json)\n  D78: Git + tagged checkpoints + MCP memory for safety\n  D79: JSONL source + scripted MD generation (generate-discovery-record.js)\n  D80: Always full suite for all ecosystem deep-plans (no lightweight tier)\n  D81: 16-domain audit framework across 3 tiers (core + analytical + ecosystem-reusable)\n  D82: Interactive audit process (T15)\n  D83: Audit twice — after DECISIONS.md and after PLAN.md\n\nNEXT: Phase 2 (DECISIONS.md compilation + Audit 1: domains 1-3, 6, 8). Then Phase 3 (PLAN.md + Audit 2). Then Phase 4 (approval). Then Handoff.\n\nDISCOVERY_RECORD needs full regeneration with D1-D83 + T1-T18. Ideally via the new generate-discovery-record.js script (D79).\n\nNOTE: D77 calls for decomposing state.json into JSONL suite. This migration should happen BEFORE Phase 2 so DECISIONS.md is generated from the new JSONL source, not manually compiled from the old state.json.",
+  "updated": "2026-03-04T01:30:00.000Z",
+  "batch_6_progress": {
+    "status": "COMPLETE — D56-D67 locked. Sequential sequence finalized.",
+    "decisions_locked": [
+      "D56",
+      "D57",
+      "D58",
+      "D59",
+      "D60",
+      "D61",
+      "D62-superseded",
+      "D63",
+      "D64",
+      "D65",
+      "D66",
+      "D67"
+    ],
+    "evolution": [
+      "D56-D62: Initial wave-based parallel approach proposed",
+      "Deep research: 13 agents mapped all 18 ecosystems at file-level",
+      "User pushback: parallel tracks may just be time-saving, not quality-serving",
+      "D63: Wave model REPLACED with sequential-first + research overlap",
+      "D64: T18 changelog-driven traceability added as new tenet",
+      "D65: Docs elevated to position #5 (user directive)",
+      "D66: CI/CD restored to sequence at position #10 (was accidentally dropped)",
+      "D67: Final 21-step sequence locked (18 ecosystems, TDMS staged x3, Docs verification pass)"
+    ],
+    "key_user_directives": [
+      "Skills at #2 — daily tool, touches everything",
+      "Sequential over parallel — learning transfer matters more than speed",
+      "Changelogs standardized as tenet T18",
+      "Docs at #5 — too much content to defer, born-compliant docs for all future ecosystems",
+      "Research overlap is the only approved parallelism"
+    ],
+    "user_questions_resolved": [
+      "Q62: Concrete parallel groupings → RESOLVED: replaced with sequential model (D63)",
+      "Q63: Are parallel tracks truly right? → NO, sequential-first with research overlap",
+      "Q64: Where does docs maintenance burden go? → Position #5, not CANON",
+      "Q65: Missing 18th ecosystem? → CI/CD restored at position #10"
+    ]
+  }
 }

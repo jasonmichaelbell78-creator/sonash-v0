@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.86 **Created:** 2026-01-02 **Last Updated:** 2026-03-02
+**Document Version:** 17.89 **Created:** 2026-01-02 **Last Updated:** 2026-03-04
 
 ## Purpose
 
@@ -348,6 +348,19 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#1)</summary>
+
+- **Date:** 2026-03-04
+- **Reviews consolidated:** #402-#444
+- **Recurring patterns:**
+  - qodo (10x)
+  - sonarcloud (9x)
+  - ci (6x)
+  - learnings (4x)
+  - gemini (3x)
+
+</details>
 <details>
 <summary>Previous Consolidation (#1)</summary>
 
@@ -766,6 +779,102 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #447: PR #415 R4 — SonarCloud + Qodo (2026-03-04)
+
+_System-wide standardization — security hotspot elimination + code smell fixes._
+
+**Source:** SonarCloud (6), Qodo (2) **Total:** 8 unique **Fixed:** 5
+**Rejected:** 3
+
+- **S5852 DRY RUN regex:** Replaced `/\n+--- DRY RUN.*$/s` with
+  `lastIndexOf`/`slice` string parsing — eliminates regex engine entirely for
+  this operation (two-strikes rule applied)
+- **replaceAll consistency:** `replace(/ +$/gm, "")` → `replaceAll(/ +$/gm, "")`
+  in validate-jsonl-md-sync.js for ES2021 consistency
+- **Unescaped table cell:** `cat` variable in generate-discovery-record.js not
+  wrapped in `escapeCell()` — could produce malformed MD tables
+- **CRLF in escapeCell:** Added `\r` stripping before `\n` → space conversion
+  for cross-platform safety
+- **`.at(-1)` preference:** `tenets[tenets.length - 1]` → `tenets.at(-1)` in
+  generate-discovery-record.js
+- **Rejected:** S5852 on `/ +$/gm` (space-only quantifier, no backtracking —
+  SonarCloud FP, 3rd consecutive round); S4036 PATH hijacking on hardcoded
+  `execFileSync("node")` (FP, 3rd consecutive round); `String.raw` for `"\\\\"`
+  — used selectively on `\\|` only where it improves readability
+- **Patterns**: String-Parsing-Over-Regex (two-strikes);
+  EscapeCell-All-Table-Values; CR-Strip-Before-LF-Normalize
+
+---
+
+### Review #446: PR #415 R3 — SonarCloud + Qodo + Gemini (2026-03-04)
+
+_System-wide standardization — duplication reduction + code quality round._
+
+**Source:** SonarCloud (81), Qodo (4), Gemini (4) **Total:** 12 unique
+**Fixed:** 10 **Deferred:** 0 **Rejected:** 2
+
+- **Duplication elimination:** Extracted shared `readJsonl()` and `escapeCell()`
+  into `scripts/planning/lib/read-jsonl.js`; both generators now import from
+  shared module instead of duplicating ~50 lines each. Shared module includes
+  CRLF-safe `line.trim()` and `str == null` null check.
+- **Validator rewrite:** `validate-jsonl-md-sync.js` completely rewritten to use
+  `--dry-run` mode — runs generators with stdout capture and compares against
+  disk. Eliminates backup/restore pattern (Qodo #2 symlink risk), removes need
+  for `copyFileSync`/`unlinkSync`.
+- **Regex fix:** `replaceAll()` with non-global regex (`/m` without `g`) caused
+  runtime error in validator normalize function → added `g` flag.
+- **Stale counts:** Updated decision count 83→92 in ROADMAP.md (2 places) and
+  coordination.json (3 places: total_decisions, total_directives,
+  resume_instructions).
+- **CRLF safety:** `backfill-tenet-evidence.js` JSON.parse now uses trimmed line
+  to handle Windows CRLF line endings.
+- **Rejected:** S4036 PATH binary hijacking (hardcoded `execFileSync("node")`
+  with internal script paths — not user-controlled); S5852 regex DoS on
+  `/ +$/gm` (space-only quantifier, no backtracking risk — SonarCloud FP)
+- **Patterns**: Shared-Module-Over-Duplication; DryRun-Stdout-Comparison;
+  ReplaceAll-Requires-Global-Regex
+
+---
+
+### Review #445: PR #415 R2 — SonarCloud + CodeQL + CI + Qodo + Gemini (2026-03-04)
+
+_System-wide standardization — security hotspot + code quality remediation
+round._
+
+**Source:** SonarCloud (174), CodeQL (3), CI Security Check (2), Qodo (5),
+Gemini (5) **Total:** 17 unique **Fixed:** 15 **Deferred:** 1 **Rejected:** 1
+
+- **CI Blockers (3):** `execSync` with shell interpolation (SEC-001, SEC-010) →
+  replaced with `execFileSync` + args array; CodeQL incomplete string escaping
+  (2 files) → added backslash escaping before pipe escaping in
+  `esc()`/`escapeCell()`
+- **Security Hotspots (2):** S4721 command injection resolved by execFileSync;
+  S5852 regex DoS on `/\s+$/gm` → narrowed to `/ +$/gm` (space-only, no
+  backtracking risk)
+- **Logic inversions (2):** `validate-jsonl-md-sync.js` reported "stale" when
+  content matched (flipped `!==` to `===`); `backfill-tenet-evidence.js` wrote
+  files during `--dry-run` (flipped `!dryRun` to `dryRun`)
+- **Code quality (150+):** Merged ~40 groups of consecutive `Array#push()`
+  calls; replaced `replace(/g)` with `replaceAll()`; `&&` guards → optional
+  chaining (8 instances); nested ternary → if/else; `.at(-1)` over `[length-1]`;
+  trim-before-startsWith for JSONL comment filtering (3 files)
+- **Hook visibility:** JSONL sync warning in pre-commit wrote to stdout
+  (invisible during successful commits) → redirected to `>&3` (terminal)
+- **Dynamic import cleanup:** `await import("node:fs")` for `unlinkSync`
+  replaced with static import (was only needed because `unlinkSync` wasn't in
+  import list)
+- **Bug fix:** Audit framework output used `t3Count` (total) instead of
+  `t3FullScopeCount` for "Full-scope" label
+- **Deferred:** Backslash double-escaping in GFM tables — may over-escape in
+  rare cases but required by CodeQL; monitor for rendering issues
+- **Rejected:** SonarCloud duplication gate (5.7% vs 3% threshold) — planning
+  artifact repetition is inherent to generated Markdown views
+- **Patterns**: execFileSync-Over-execSync; Backslash-First-In-Escape-Chains;
+  Space-Only-Trailing-Trim; Logic-Inversion-Detection;
+  Static-Import-Over-Dynamic
+
+---
 
 ### Review #444: PR #415 R1 — Qodo + Gemini + CI + SonarCloud + Semgrep + Dep Review (2026-03-02)
 
