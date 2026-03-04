@@ -351,6 +351,19 @@ accumulate.
 <details>
 <summary>Previous Consolidation (#1)</summary>
 
+- **Date:** 2026-03-04
+- **Reviews consolidated:** #402-#444
+- **Recurring patterns:**
+  - qodo (10x)
+  - sonarcloud (9x)
+  - ci (6x)
+  - learnings (4x)
+  - gemini (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#1)</summary>
+
 - **Date:** 2026-03-02
 - **Reviews consolidated:** #402-#442
 - **Recurring patterns:**
