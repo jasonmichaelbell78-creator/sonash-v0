@@ -1,10 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1_batch_7_complete",
-  "current_batch": "Batch 7 COMPLETE — D68-D76 locked. Edge cases and final questions resolved. 76 total decisions.",
-  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6 + 7",
-  "estimated_remaining_batches": "Phase 1b (user discovery), then Phase 2 (DECISIONS.md), Phase 3 (PLAN), Phase 4 (approval), Handoff",
+  "status": "phase_1b_complete",
+  "current_batch": "Phase 1b COMPLETE — D77-D83 locked. Back-of-house process + audit framework defined. 83 total decisions.",
+  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6 + 7 + 7b(Phase1b)",
+  "estimated_remaining_batches": "Phase 2 (DECISIONS.md + Audit 1), Phase 3 (PLAN.md + Audit 2), Phase 4 (approval), Handoff",
   "total_ecosystems": 18,
   "decisions": [
     {
@@ -756,9 +756,109 @@
         "emergency": "Patch version for urgent CANON updates that can't wait for checkpoint"
       },
       "batch": "7"
+    },
+    {
+      "id": 77,
+      "decision": "Decision artifact architecture",
+      "choice": "Option B with path to C: Decompose state.json into purpose-specific JSONL files (decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl, changelog.jsonl) + coordination.json. MD views generated from JSONL. When CANON is built (#1), tenets.jsonl migrates to .canon/ and planning artifacts become first CANON test case.",
+      "rationale": "Follows T4 (JSONL-first) and T2 (source of truth + generated views). Each artifact independently queryable. Smaller files = less compaction risk. Current state.json at ~1000 lines is becoming unwieldy.",
+      "artifact_structure": {
+        "location": ".planning/system-wide-standardization/",
+        "files": [
+          "decisions.jsonl — one line per decision (D1-D76+)",
+          "tenets.jsonl — one line per tenet (T1-T18+), later migrates to .canon/",
+          "directives.jsonl — one line per user directive",
+          "ideas.jsonl — one line per captured idea",
+          "changelog.jsonl — T18 cross-ecosystem impact log",
+          "coordination.json — batch status, resume instructions, phase tracking",
+          "DISCOVERY_RECORD.md — GENERATED from JSONL files",
+          "DIAGNOSIS.md — Phase 0 output (exists)",
+          "DECISIONS.md — Phase 2 output (to be created)",
+          "PLAN.md — Phase 3 output (to be created)"
+        ]
+      },
+      "batch": "7b"
+    },
+    {
+      "id": 78,
+      "decision": "Safety and redundancy for planning artifacts",
+      "choice": "Option B+C: Git commits at every batch (primary). Tagged commits at 4 checkpoints (canon-checkpoint-1 through canon-checkpoint-4). MCP episodic memory summary at each checkpoint for cross-session discovery.",
+      "rationale": "Multiple independent copies. Tagged commits are hard to lose. MCP memory enables cross-session search. JSONL files are source of truth — everything else is backup.",
+      "batch": "7b"
+    },
+    {
+      "id": 79,
+      "decision": "Format optimization — JSONL source + generated MD views",
+      "choice": "Option A: JSONL files are canonical source (AI-optimized). MD files are generated views (human-optimized). Generation is SCRIPTED — Node.js script reads JSONL → produces DISCOVERY_RECORD.md. Script runs after every batch as a gate. Script becomes template for all future ecosystem view generators.",
+      "rationale": "T2 applied to our own planning process. Eliminates the dual-maintenance problem. DISCOVERY_RECORD.md is currently behind (needs D55-D76) — under this system, it can never fall behind because it's generated.",
+      "process_tree": {
+        "step_1": "User says something → AI classifies as decision/directive/idea/tenet/correction/question",
+        "step_2": "Immediate JSONL append to the right file (real-time during conversation)",
+        "step_3": "Batch gate (end of Q&A batch): update coordination.json, run generate-discovery.js, git commit",
+        "step_4": "Safety: git commit every batch, tagged commits at checkpoints, MCP at milestones"
+      },
+      "script": "scripts/planning/generate-discovery-record.js — reads all JSONL → produces DISCOVERY_RECORD.md. Template for all future view generators.",
+      "user_question_answered": "Yes, generation is scripted. The gate is: end of Q&A batch triggers generation + commit.",
+      "batch": "7b"
+    },
+    {
+      "id": 80,
+      "decision": "Standard for future deep-plans — always full suite",
+      "choice": "REVISED to always full suite. All ecosystem deep-plans use the complete JSONL artifact structure. No lightweight tier. Consistency across 18 ecosystems is worth more than saving files for smaller ones.",
+      "rationale": "USER DIRECTIVE: lean heavy-handed. Deep-plan floor is ~15 questions, most ecosystems will exceed that. Full suite means every ecosystem's artifacts are queryable in the same way, feeding the knowledge base (D75).",
+      "user_directive": true,
+      "batch": "7b"
+    },
+    {
+      "id": 81,
+      "decision": "End-of-process audit — 16-domain comprehensive framework",
+      "choice": "16 audit domains across 3 tiers. Reusable for all ecosystem plan audits + end-of-overhaul audit. Includes gap analysis and re-research with fresh eyes.",
+      "rationale": "USER DIRECTIVE: 'even more still' + 'gap analysis and re-research component with fresh eyes' + 'overkill i know but it's my tokens.' User wants thoroughness. Framework is reusable for all 18 ecosystem audits.",
+      "user_directive": true,
+      "audit_framework": {
+        "tier_1_core": [
+          "1. Decision Coverage — every ecosystem assessed, no unresolved questions",
+          "2. Tenet Alignment — decisions traceable to tenets, no orphans",
+          "3. Directive Compliance — all user directives addressed",
+          "4. Sequence Integrity — no dependency gaps, checkpoints defined",
+          "5. Artifact Completeness — all JSONL, MD, state files exist"
+        ],
+        "tier_2_analytical": [
+          "6. Gap Analysis — plan vs original diagnosis, emerged vs planned, decision-to-delivery gaps",
+          "7. Re-Research with Fresh Eyes — agents re-examine codebase through lens of completed plan, compare against original findings",
+          "8. Contradiction Detection — systematic scan for conflicting decisions",
+          "9. Risk Assessment — per-ecosystem completion risks, dependencies, scope explosion potential",
+          "10. Cross-Ecosystem Impact Projection — pre-populate expected downstream effects per ecosystem",
+          "11. Knowledge Base Readiness — is the knowledge base (D75) actually ready for ecosystem #1?",
+          "12. Rollback Viability — what's the plan if checkpoint #1 reveals CANON is flawed?"
+        ],
+        "tier_3_ecosystem_reusable": [
+          "13. Completeness Scorecard — 16-item checklist results per ecosystem",
+          "14. Integration Verification — new contracts work with previously standardized ecosystems",
+          "15. Changelog Accuracy — changelog vs git diff cross-reference",
+          "16. Learning Harvest — what feeds into next ecosystem, what triggers CANON patch"
+        ]
+      },
+      "reusability": "Tier 1+2 for this deep-plan's end-of-process audit. Tier 1+3 for each ecosystem's end-of-standardization audit. Tier 1+2+3 for the full overhaul completion audit at checkpoint #21.",
+      "batch": "7b"
+    },
+    {
+      "id": 82,
+      "decision": "Audit process — interactive",
+      "choice": "Interactive, conversational audit. AI produces analysis, presents in batches, user reacts, iterate until satisfied. Operates as we've been operating throughout this deep-plan. Not a batch script dump.",
+      "rationale": "USER DIRECTIVE: 'interactive as all skill functions should be even if it isn't an actual skill. operate as we've been operating.' Aligns with T15 (interactivity-first).",
+      "user_directive": true,
+      "batch": "7b"
+    },
+    {
+      "id": 83,
+      "decision": "Audit triggers — twice (after DECISIONS.md and after PLAN.md)",
+      "choice": "Option B: First audit after Phase 2 (DECISIONS.md) checks domains 1-3 + 6 + 8. Second audit after Phase 3 (PLAN.md) checks domains 4-5 + 7 + 9-12. End-of-ecosystem audits use Tier 1+3.",
+      "rationale": "Two passes catch different types of issues. Decision audit informs plan writing. Plan audit catches execution gaps.",
+      "batch": "7b"
     }
   ],
-  "total_decisions": 76,
+  "total_decisions": 83,
   "core_tenets": {
     "_organization": "Flat list, 4 categories. 18 total tenets (T18 added during Batch 6). Locked in Batch 4T + Batch 6.",
     "foundation": {
@@ -1093,8 +1193,8 @@
     "Ecosystem count: Revised from 14 to 18 total. 4 ecosystems from original DIAGNOSIS were never assessed.",
     "End-of-process audit: User confirmed audit will happen after plan is set, not before."
   ],
-  "resume_instructions": "76 TOTAL DECISIONS. 18 TENETS. ALL BATCHES 1-7 COMPLETE. DISCOVERY PHASE COMPLETE.\n\nBATCH 6 COMPLETE (D56-D67): Sequential execution sequence LOCKED.\n\nKEY BATCH 6 EVOLUTION:\n  - Started with wave-based parallel approach (D56-D62)\n  - Deep research: 13 agents mapped all 18 ecosystems at file-level dependency maps\n  - User challenged fundamental assumptions: parallel tracks sacrifice learning for speed\n  - D62 SUPERSEDED by D63: Sequential-first with research overlap\n  - D64: T18 changelog-driven traceability added as new tenet (user directive)\n  - D65: Docs elevated to position #5 (user directive)\n  - D66: CI/CD restored at position #10 (was accidentally dropped)\n  - D67: Final 21-step sequence locked\n\nFINAL SEQUENCE (21 steps, 18 ecosystems):\n  #1 CANON (L0->L5, L) — Foundation\n  #2 Skills (L1->L3, L) — Daily tool, skill-audit canonized\n  #3 Hooks (L3->L4, M) — Enforcement infra\n  #4 PR Review (L4->L5, S) — CANON pilot, CHECKPOINT\n  #5 Docs (L2->L3, M) — Folder structure, placement standards, dependency maps\n  #6 Testing (L3->L4, M) — Test infrastructure\n  #7 Sessions (L1->L3, M) — State management\n  #8 TDMS L2->L3 (XL-partial) — First stage, Zod schemas + monitoring\n  #9 Scripts (L2->L3, L) — Script standards, informed by TDMS\n  #10 CI/CD (L1->L3, M) — Build/deploy pipelines\n  #11 Alerts (L2->L4, M) — Monitoring layer\n  #12 Analytics (L1->L3, M) — Aggregation layer\n  #13 Agents (L2->L3, M) — Agent definitions\n  #14 Audits (L3->L4+L5path, M) — All audits are skills\n  #15 Archival/Rotation (L3->L4, M) — Lifecycle patterns\n  #16 TDMS L3->L4 (XL-partial) — Second stage, enforcement\n  #17 Roadmap & Execution (L2->L3, L) — Hub ecosystem, automated intake\n  #18 Frontend/App (L2->L3, M) — App-layer connections\n  #19 Firebase/Backend (L1->L3, M-L) — App-layer connections\n  #20 Docs verification pass (S) — Consistency meta-check\n  #21 TDMS L4->L5 (XL-final) — Final canonization\n\nCHECKPOINTS: After #4 (framework validation), #7 (core infra complete), #15 (process layer complete), #21 (full overhaul complete).\n\nEXECUTION MODEL: Sequential implementation + parallel research overlap (research N+1 while implementing N). No parallel implementation tracks.\n\nDISCOVERY_RECORD needs update with D55-D67 + T18.\n\nBATCH 7 COMPLETE (D68-D76): Edge cases resolved.\n  D68: Skip & Return on stalls (changelog documents gaps)\n  D69: Checklist addressed + user review as exit criteria\n  D70: Track-CANON in ROADMAP + dedupe on add\n  D71: Interleaved work + 3-session nudge\n  D72: Extensible-core changelog schema (mirrors D22)\n  D73: Grand Plan reassessment at #8 + pre-checks #1-#7 (explicit task)\n  D74: Contracts defined per-ecosystem, CANON defines format\n  D75: Knowledge base from all prior research for every Phase 0\n  D76: Learning capture DURING builds (non-negotiable) + checkpoint versioning\n\nNEXT: Phase 1b (user discovery — optional), then Phase 2 (DECISIONS.md), Phase 3 (PLAN.md), Phase 4 (approval), Handoff.\n\nDISCOVERY_RECORD needs update with D55-D76 + T18.",
-  "updated": "2026-03-04T01:00:00.000Z",
+  "resume_instructions": "83 TOTAL DECISIONS. 18 TENETS. ALL DISCOVERY COMPLETE (Batches 1-7 + Phase 1b).\n\nBATCH 6 COMPLETE (D56-D67): Sequential execution sequence LOCKED.\n\nKEY BATCH 6 EVOLUTION:\n  - Started with wave-based parallel approach (D56-D62)\n  - Deep research: 13 agents mapped all 18 ecosystems at file-level dependency maps\n  - User challenged fundamental assumptions: parallel tracks sacrifice learning for speed\n  - D62 SUPERSEDED by D63: Sequential-first with research overlap\n  - D64: T18 changelog-driven traceability added as new tenet (user directive)\n  - D65: Docs elevated to position #5 (user directive)\n  - D66: CI/CD restored at position #10 (was accidentally dropped)\n  - D67: Final 21-step sequence locked\n\nFINAL SEQUENCE (21 steps, 18 ecosystems):\n  #1 CANON (L0->L5, L) — Foundation\n  #2 Skills (L1->L3, L) — Daily tool, skill-audit canonized\n  #3 Hooks (L3->L4, M) — Enforcement infra\n  #4 PR Review (L4->L5, S) — CANON pilot, CHECKPOINT\n  #5 Docs (L2->L3, M) — Folder structure, placement standards, dependency maps\n  #6 Testing (L3->L4, M) — Test infrastructure\n  #7 Sessions (L1->L3, M) — State management\n  #8 TDMS L2->L3 (XL-partial) — First stage, Zod schemas + monitoring\n  #9 Scripts (L2->L3, L) — Script standards, informed by TDMS\n  #10 CI/CD (L1->L3, M) — Build/deploy pipelines\n  #11 Alerts (L2->L4, M) — Monitoring layer\n  #12 Analytics (L1->L3, M) — Aggregation layer\n  #13 Agents (L2->L3, M) — Agent definitions\n  #14 Audits (L3->L4+L5path, M) — All audits are skills\n  #15 Archival/Rotation (L3->L4, M) — Lifecycle patterns\n  #16 TDMS L3->L4 (XL-partial) — Second stage, enforcement\n  #17 Roadmap & Execution (L2->L3, L) — Hub ecosystem, automated intake\n  #18 Frontend/App (L2->L3, M) — App-layer connections\n  #19 Firebase/Backend (L1->L3, M-L) — App-layer connections\n  #20 Docs verification pass (S) — Consistency meta-check\n  #21 TDMS L4->L5 (XL-final) — Final canonization\n\nCHECKPOINTS: After #4 (framework validation), #7 (core infra complete), #15 (process layer complete), #21 (full overhaul complete).\n\nEXECUTION MODEL: Sequential implementation + parallel research overlap (research N+1 while implementing N). No parallel implementation tracks.\n\nDISCOVERY_RECORD needs update with D55-D67 + T18.\n\nBATCH 7 COMPLETE (D68-D76): Edge cases resolved.\n  D68: Skip & Return on stalls (changelog documents gaps)\n  D69: Checklist addressed + user review as exit criteria\n  D70: Track-CANON in ROADMAP + dedupe on add\n  D71: Interleaved work + 3-session nudge\n  D72: Extensible-core changelog schema (mirrors D22)\n  D73: Grand Plan reassessment at #8 + pre-checks #1-#7 (explicit task)\n  D74: Contracts defined per-ecosystem, CANON defines format\n  D75: Knowledge base from all prior research for every Phase 0\n  D76: Learning capture DURING builds (non-negotiable) + checkpoint versioning\n\nPHASE 1b COMPLETE (D77-D83): Back-of-house process + audit framework.\n  D77: Decomposed JSONL suite (decisions/tenets/directives/ideas/changelog.jsonl + coordination.json)\n  D78: Git + tagged checkpoints + MCP memory for safety\n  D79: JSONL source + scripted MD generation (generate-discovery-record.js)\n  D80: Always full suite for all ecosystem deep-plans (no lightweight tier)\n  D81: 16-domain audit framework across 3 tiers (core + analytical + ecosystem-reusable)\n  D82: Interactive audit process (T15)\n  D83: Audit twice — after DECISIONS.md and after PLAN.md\n\nNEXT: Phase 2 (DECISIONS.md compilation + Audit 1: domains 1-3, 6, 8). Then Phase 3 (PLAN.md + Audit 2). Then Phase 4 (approval). Then Handoff.\n\nDISCOVERY_RECORD needs full regeneration with D1-D83 + T1-T18. Ideally via the new generate-discovery-record.js script (D79).\n\nNOTE: D77 calls for decomposing state.json into JSONL suite. This migration should happen BEFORE Phase 2 so DECISIONS.md is generated from the new JSONL source, not manually compiled from the old state.json.",
+  "updated": "2026-03-04T01:30:00.000Z",
   "batch_6_progress": {
     "status": "COMPLETE — D56-D67 locked. Sequential sequence finalized.",
     "decisions_locked": ["D56", "D57", "D58", "D59", "D60", "D61", "D62-superseded", "D63", "D64", "D65", "D66", "D67"],
