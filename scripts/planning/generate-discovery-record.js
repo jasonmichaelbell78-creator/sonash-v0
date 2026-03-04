@@ -33,15 +33,16 @@ const DRY_RUN = process.argv.includes("--dry-run");
 function readJsonl(filename) {
   const filepath = join(PLANNING_DIR, filename);
   try {
-    const rawLines = readFileSync(filepath, "utf-8")
+    const entries = readFileSync(filepath, "utf-8")
       .split("\n")
-      .filter((line) => line.trim() && !line.startsWith("//"));
+      .map((line, i) => ({ line, lineNum: i + 1 }))
+      .filter(({ line }) => line.trim() && !line.startsWith("//"));
     const results = [];
-    for (let i = 0; i < rawLines.length; i++) {
+    for (const { line, lineNum } of entries) {
       try {
-        results.push(JSON.parse(rawLines[i]));
+        results.push(JSON.parse(line));
       } catch (err) {
-        console.warn(`WARNING: ${filename} line ${i + 1}: parse error — ${err.message}`);
+        console.warn(`WARNING: ${filename} line ${lineNum}: parse error — ${err.message}`);
       }
     }
     return results;
@@ -111,7 +112,9 @@ lines.push("");
 
 // --- Decisions Section ---
 
-lines.push(`## All Decisions (D1-D${Math.max(...decisions.map((d) => d.id))})`);
+const maxDecisionId =
+  decisions.length > 0 ? decisions.reduce((max, d) => Math.max(max, d.id), 0) : "?";
+lines.push(`## All Decisions (D1-D${maxDecisionId})`);
 lines.push("");
 
 // Render ungrouped table for simplicity and completeness

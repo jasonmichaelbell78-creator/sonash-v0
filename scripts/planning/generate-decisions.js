@@ -31,15 +31,16 @@ const DRY_RUN = process.argv.includes("--dry-run");
 function readJsonl(filename) {
   const filepath = join(PLANNING_DIR, filename);
   try {
-    const lines = readFileSync(filepath, "utf-8")
+    const entries = readFileSync(filepath, "utf-8")
       .split("\n")
-      .filter((line) => line.trim() && !line.startsWith("//"));
+      .map((line, i) => ({ line, lineNum: i + 1 }))
+      .filter(({ line }) => line.trim() && !line.startsWith("//"));
     const results = [];
-    for (let i = 0; i < lines.length; i++) {
+    for (const { line, lineNum } of entries) {
       try {
-        results.push(JSON.parse(lines[i]));
+        results.push(JSON.parse(line));
       } catch (err) {
-        console.warn(`WARNING: ${filename} line ${i + 1}: parse error — ${err.message}`);
+        console.warn(`WARNING: ${filename} line ${lineNum}: parse error — ${err.message}`);
       }
     }
     return results;
@@ -331,38 +332,47 @@ L.push("---");
 L.push("");
 L.push("## 7. Audit Framework (D81-D83)");
 L.push("");
-L.push("26 domains across 4 tiers. Interactive process (T15). Multi-level triggers.");
-L.push("");
-
 if (d81 && d81.audit_framework) {
   const af = d81.audit_framework;
+  const t1Count = (af.tier_1_core || []).length;
+  const t2Count = (af.tier_2_analytical || []).length;
+  const t3Data = af.tier_3_implementation || {};
+  const t3PhaseLevelCount = (t3Data.phase_level_domains || []).length;
+  const t3FullScopeCount = (t3Data.full_scope_only_domains || []).length;
+  const t3Count = t3PhaseLevelCount + t3FullScopeCount;
+  const t4Count = (af.tier_4_ecosystem_completion || []).length;
+  const totalDomains = t1Count + t2Count + t3Count + t4Count;
 
-  L.push("### Tier 1: Core (5 domains)");
+  L.push(
+    `${totalDomains} domains across 4 tiers. Interactive process (T15). Multi-level triggers.`
+  );
+  L.push("");
+
+  L.push(`### Tier 1: Core (${t1Count} domains)`);
   L.push("*Mechanical checks — did we cover everything?*");
   L.push("");
   for (const item of af.tier_1_core || []) L.push(`- ${item}`);
   L.push("");
 
-  L.push("### Tier 2: Analytical (7 domains)");
+  L.push(`### Tier 2: Analytical (${t2Count} domains)`);
   L.push("*Deep analysis — gap analysis, re-research, risk assessment*");
   L.push("");
   for (const item of af.tier_2_analytical || []) L.push(`- ${item}`);
   L.push("");
 
-  L.push("### Tier 3: Implementation (10 domains)");
-  const t3 = af.tier_3_implementation || {};
+  L.push(`### Tier 3: Implementation (${t3Count} domains)`);
   L.push(
-    "*Build-time checks. Phase-level (7) = lightweight + frequent. Full-scope (10) = comprehensive at completion.*"
+    `*Build-time checks. Phase-level (${t3PhaseLevelCount}) = lightweight + frequent. Full-scope (${t3Count}) = comprehensive at completion.*`
   );
   L.push("");
-  L.push("**Phase-level (run at every phase boundary):**");
-  for (const item of t3.phase_level_domains || []) L.push(`- ${item}`);
+  L.push(`**Phase-level (run at every phase boundary):**`);
+  for (const item of t3Data.phase_level_domains || []) L.push(`- ${item}`);
   L.push("");
-  L.push("**Full-scope only (run at ecosystem completion):**");
-  for (const item of t3.full_scope_only_domains || []) L.push(`- ${item}`);
+  L.push(`**Full-scope only (run at ecosystem completion):**`);
+  for (const item of t3Data.full_scope_only_domains || []) L.push(`- ${item}`);
   L.push("");
 
-  L.push("### Tier 4: Ecosystem Completion (4 domains)");
+  L.push(`### Tier 4: Ecosystem Completion (${t4Count} domains)`);
   L.push("*Exit checks — did we hit the target?*");
   L.push("");
   for (const item of af.tier_4_ecosystem_completion || []) L.push(`- ${item}`);
