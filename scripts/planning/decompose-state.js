@@ -13,10 +13,15 @@
  *   .planning/system-wide-standardization/coordination.json
  */
 
-const { readFileSync, writeFileSync, mkdirSync } = require("fs");
-const { join } = require("path");
+import { readFileSync } from "node:fs";
+import { join, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { safeWriteFileSync } from "../lib/safe-fs.js";
 
-const ROOT = join(__dirname, "..", "..");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const ROOT = resolve(__dirname, "..", "..");
 const STATE_FILE = join(ROOT, ".claude", "state", "deep-plan.state.json");
 const OUTPUT_DIR = join(ROOT, ".planning", "system-wide-standardization");
 
@@ -26,7 +31,7 @@ const state = JSON.parse(readFileSync(STATE_FILE, "utf-8"));
 // --- decisions.jsonl ---
 const decisions = state.decisions || [];
 const decisionsLines = decisions.map((d) => JSON.stringify(d)).join("\n");
-writeFileSync(join(OUTPUT_DIR, "decisions.jsonl"), decisionsLines + "\n", "utf-8");
+safeWriteFileSync(join(OUTPUT_DIR, "decisions.jsonl"), decisionsLines + "\n", "utf-8");
 console.log(`decisions.jsonl: ${decisions.length} entries`);
 
 // --- tenets.jsonl ---
@@ -44,7 +49,7 @@ for (const [category, items] of Object.entries(tenets)) {
     );
   }
 }
-writeFileSync(join(OUTPUT_DIR, "tenets.jsonl"), tenetsLines.join("\n") + "\n", "utf-8");
+safeWriteFileSync(join(OUTPUT_DIR, "tenets.jsonl"), tenetsLines.join("\n") + "\n", "utf-8");
 console.log(`tenets.jsonl: ${tenetsLines.length} entries`);
 
 // --- directives.jsonl ---
@@ -52,11 +57,7 @@ const directives = state.user_directives || {};
 const directivesLines = Object.entries(directives).map(([key, value], i) =>
   JSON.stringify({ id: i + 1, key, directive: value })
 );
-writeFileSync(
-  join(OUTPUT_DIR, "directives.jsonl"),
-  directivesLines.join("\n") + "\n",
-  "utf-8"
-);
+safeWriteFileSync(join(OUTPUT_DIR, "directives.jsonl"), directivesLines.join("\n") + "\n", "utf-8");
 console.log(`directives.jsonl: ${directivesLines.length} entries`);
 
 // --- ideas.jsonl ---
@@ -64,7 +65,7 @@ const ideas = state.ideas_captured || [];
 const ideasLines = ideas.map((idea, i) =>
   JSON.stringify({ id: i + 1, idea, captured_during: "deep-plan-discovery" })
 );
-writeFileSync(join(OUTPUT_DIR, "ideas.jsonl"), ideasLines.join("\n") + "\n", "utf-8");
+safeWriteFileSync(join(OUTPUT_DIR, "ideas.jsonl"), ideasLines.join("\n") + "\n", "utf-8");
 console.log(`ideas.jsonl: ${ideasLines.length} entries`);
 
 // --- coordination.json ---
@@ -100,7 +101,7 @@ const coordination = {
     "JSONL files are now the canonical source. deep-plan.state.json is retained " +
     "as backup but no longer the primary source of truth.",
 };
-writeFileSync(
+safeWriteFileSync(
   join(OUTPUT_DIR, "coordination.json"),
   JSON.stringify(coordination, null, 2) + "\n",
   "utf-8"
@@ -108,7 +109,7 @@ writeFileSync(
 console.log("coordination.json: written");
 
 // --- changelog.jsonl (empty placeholder) ---
-writeFileSync(
+safeWriteFileSync(
   join(OUTPUT_DIR, "changelog.jsonl"),
   "// T18: Cross-ecosystem impact changelog. One JSONL entry per change.\n",
   "utf-8"

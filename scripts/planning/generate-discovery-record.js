@@ -14,10 +14,15 @@
  * This script is the TEMPLATE for all future ecosystem view generators.
  */
 
-const { readFileSync, writeFileSync } = require("fs");
-const { join } = require("path");
+import { readFileSync } from "node:fs";
+import { join, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { safeWriteFileSync } from "../lib/safe-fs.js";
 
-const ROOT = join(__dirname, "..", "..");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const ROOT = resolve(__dirname, "..", "..");
 const PLANNING_DIR = join(ROOT, ".planning", "system-wide-standardization");
 const OUTPUT_FILE = join(PLANNING_DIR, "DISCOVERY_RECORD.md");
 
@@ -33,7 +38,8 @@ function readJsonl(filename) {
       .filter((line) => line.trim() && !line.startsWith("//"))
       .map((line) => JSON.parse(line));
   } catch (err) {
-    console.error(`Error reading ${filename}: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`Error reading ${filename}: ${message}`);
     return [];
   }
 }
@@ -77,7 +83,9 @@ lines.push("> Per D79/T2: JSONL is source of truth. This MD is the generated hum
 lines.push("> **Do not manually edit** — changes will be overwritten on next generation.");
 lines.push("");
 lines.push(`**Generated:** ${new Date().toISOString().split("T")[0]}`);
-lines.push(`**Decisions:** ${decisions.length} | **Tenets:** ${tenets.length} | **Directives:** ${directives.length} | **Ideas:** ${ideas.length}`);
+lines.push(
+  `**Decisions:** ${decisions.length} | **Tenets:** ${tenets.length} | **Directives:** ${directives.length} | **Ideas:** ${ideas.length}`
+);
 lines.push(`**Status:** ${coord.status || "unknown"}`);
 lines.push("");
 lines.push("---");
@@ -103,14 +111,6 @@ lines.push("");
 
 lines.push("## All Decisions (D1-D" + decisions.length + ")");
 lines.push("");
-
-// Group by batch
-const batches = new Map();
-for (const d of decisions) {
-  const batch = d.batch || (d.id <= 13 ? "1-4" : d.id <= 27 ? "1-4" : "unknown");
-  if (!batches.has(batch)) batches.set(batch, []);
-  batches.get(batch).push(d);
-}
 
 // Render ungrouped table for simplicity and completeness
 lines.push("| # | Decision | Choice | Rationale |");
@@ -168,7 +168,7 @@ const assessmentDecisions = decisions.filter(
 for (const d of assessmentDecisions) {
   const match = d.choice?.match(/Current (L\d).*?Target (L\d)/);
   if (match) {
-    const ecosystem = d.decision.replace(/:.*/,"").replace(/ Current and target maturity/, "");
+    const ecosystem = d.decision.replace(/:.*/, "").replace(/ Current and target maturity/, "");
     const effort = d.effort || "?";
     const staging = d.staging || "Direct";
     lines.push(
@@ -244,8 +244,10 @@ if (DRY_RUN) {
   console.log(output);
   console.log("\n--- DRY RUN: not written to file ---");
 } else {
-  writeFileSync(OUTPUT_FILE, output, "utf-8");
+  safeWriteFileSync(OUTPUT_FILE, output, "utf-8");
   console.log(`Generated: ${OUTPUT_FILE}`);
-  console.log(`  ${decisions.length} decisions, ${tenets.length} tenets, ${directives.length} directives, ${ideas.length} ideas`);
+  console.log(
+    `  ${decisions.length} decisions, ${tenets.length} tenets, ${directives.length} directives, ${ideas.length} ideas`
+  );
   console.log(`  ${output.split("\n").length} lines`);
 }
