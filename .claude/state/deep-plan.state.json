@@ -1,10 +1,11 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_4_gap_analysis_complete",
-  "current_batch": "Gap analysis complete — 3 contradictions, 11 gaps, 20 risks, 30 action items. GAP-ANALYSIS.md written. Awaiting user review for Phase 4 approval.",
+  "status": "phase_4_awaiting_walkthrough",
+  "current_batch": "Gap analysis complete. 30 action items in GAP-ANALYSIS.md (14 must-fix, 8 should-fix, 8 nice-to-fix). NEXT SESSION: Walk through each finding one-by-one per deep-plan Phase 4 procedure. User will disposition each item. Then amend PLAN.md accordingly.",
   "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6 + 7 + 7b(Phase1b) + Phase2 + Phase3 + GapAnalysis",
-  "estimated_remaining_batches": "Phase 4 (approval — user review of gap analysis + plan amendments), Handoff",
+  "estimated_remaining_batches": "Phase 4 (walkthrough of 30 items → plan amendments → approval), Handoff",
+  "phase_4_resume_instructions": "1. Read GAP-ANALYSIS.md (.planning/system-wide-standardization/GAP-ANALYSIS.md). 2. Read PLAN.md (.planning/system-wide-standardization/PLAN.md). 3. Read DECISIONS.md (.planning/system-wide-standardization/DECISIONS.md). 4. Present items one-by-one starting with C1 (contradictions first, then G1-G11 gaps, then R1-R20 risks). 5. For each item: present finding, ask user disposition (accept/reject/modify/defer). 6. After all dispositions collected, amend PLAN.md with accepted changes. 7. Present final PLAN.md for Phase 4 approval.",
   "total_ecosystems": 18,
   "decisions": [
     {
