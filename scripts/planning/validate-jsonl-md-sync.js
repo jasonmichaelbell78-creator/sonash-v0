@@ -13,7 +13,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { readFileSync, copyFileSync, existsSync } from "node:fs";
+import { readFileSync, copyFileSync, existsSync, unlinkSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -92,7 +92,6 @@ for (const gen of GENERATORS) {
     // Clean up backup
     try {
       if (existsSync(backupPath)) {
-        const { unlinkSync } = await import("node:fs");
         unlinkSync(backupPath);
       }
     } catch {

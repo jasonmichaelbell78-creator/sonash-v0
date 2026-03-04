@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.86 **Created:** 2026-01-02 **Last Updated:** 2026-03-02
+**Document Version:** 17.87 **Created:** 2026-01-02 **Last Updated:** 2026-03-04
 
 ## Purpose
 
@@ -779,6 +779,45 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #445: PR #415 R2 — SonarCloud + CodeQL + CI + Qodo + Gemini (2026-03-04)
+
+_System-wide standardization — security hotspot + code quality remediation
+round._
+
+**Source:** SonarCloud (174), CodeQL (3), CI Security Check (2), Qodo (5),
+Gemini (5) **Total:** 17 unique **Fixed:** 15 **Deferred:** 1 **Rejected:** 1
+
+- **CI Blockers (3):** `execSync` with shell interpolation (SEC-001, SEC-010) →
+  replaced with `execFileSync` + args array; CodeQL incomplete string escaping
+  (2 files) → added backslash escaping before pipe escaping in
+  `esc()`/`escapeCell()`
+- **Security Hotspots (2):** S4721 command injection resolved by execFileSync;
+  S5852 regex DoS on `/\s+$/gm` → narrowed to `/ +$/gm` (space-only, no
+  backtracking risk)
+- **Logic inversions (2):** `validate-jsonl-md-sync.js` reported "stale" when
+  content matched (flipped `!==` to `===`); `backfill-tenet-evidence.js` wrote
+  files during `--dry-run` (flipped `!dryRun` to `dryRun`)
+- **Code quality (150+):** Merged ~40 groups of consecutive `Array#push()`
+  calls; replaced `replace(/g)` with `replaceAll()`; `&&` guards → optional
+  chaining (8 instances); nested ternary → if/else; `.at(-1)` over `[length-1]`;
+  trim-before-startsWith for JSONL comment filtering (3 files)
+- **Hook visibility:** JSONL sync warning in pre-commit wrote to stdout
+  (invisible during successful commits) → redirected to `>&3` (terminal)
+- **Dynamic import cleanup:** `await import("node:fs")` for `unlinkSync`
+  replaced with static import (was only needed because `unlinkSync` wasn't in
+  import list)
+- **Bug fix:** Audit framework output used `t3Count` (total) instead of
+  `t3FullScopeCount` for "Full-scope" label
+- **Deferred:** Backslash double-escaping in GFM tables — may over-escape in
+  rare cases but required by CodeQL; monitor for rendering issues
+- **Rejected:** SonarCloud duplication gate (5.7% vs 3% threshold) — planning
+  artifact repetition is inherent to generated Markdown views
+- **Patterns**: execFileSync-Over-execSync; Backslash-First-In-Escape-Chains;
+  Space-Only-Trailing-Trim; Logic-Inversion-Detection;
+  Static-Import-Over-Dynamic
+
+---
 
 ### Review #444: PR #415 R1 — Qodo + Gemini + CI + SonarCloud + Semgrep + Dep Review (2026-03-02)
 
