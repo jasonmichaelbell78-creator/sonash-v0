@@ -33,11 +33,11 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 95.3% |
-| Patterns Learned          | 340   |
-| Patterns Automated        | 23    |
-| Patterns Failing          | 2     |
-| Critical Pattern Success  | 98.3% |
+| Learning Effectiveness    | 89.8% |
+| Patterns Learned          | 312   |
+| Patterns Automated        | 30    |
+| Patterns Failing          | 5     |
+| Critical Pattern Success  | 93.9% |
 | Automation Coverage       | 16.8% |
 | Total Documented Patterns | 381   |
 | Total Automated Patterns  | 64    |
@@ -45,24 +45,24 @@ This is a **Tier 2 metrics document** - reference during:
 ### Top Recommended Actions
 
 1. **[Automation]** Automate "Pre\-commit ADM filter"
-   - Recurred 3 times after documentation \(Reviews: 404, 407, 416\)
+   - Recurred 4 times after documentation \(Reviews: 402, 404, 407, 416\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
 2. **[Automation]** Automate "AI reviewer verification"
-   - Recurred 3 times after documentation \(Reviews: 403, 408, 416\)
+   - Recurred 4 times after documentation \(Reviews: 402, 403, 408, 416\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Documentation]** Improve documentation for "Binary file detection"
+3. **[Automation]** Automate "Atomic file writes"
+   - Recurred 3 times after documentation \(Reviews: 402, 416, 417\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+4. **[Documentation]** Improve documentation for "Binary file detection"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-4. **[Documentation]** Improve documentation for "Atomic file writes"
+5. **[Documentation]** Improve documentation for "Markdown char escaping"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
-
-5. **[Training]** Create guide for "Symlink write guard"
-   - Critical pattern with 3 recurrences needs dedicated guide
-   - Action: Create docs/agent_docs/SYMLINK_WRITE_GUARD_GUIDE.md
 
 ---
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 340   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 23    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 16    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 2     | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 312   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 30    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 34    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 5     | Pattern recurred 3+ times - needs automation |
 
 ---
 
