@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.25
-**Last Updated:** 2026-02-23
+**Document Version:** 3.26
+**Last Updated:** 2026-03-04
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -84,32 +84,33 @@ recovery practices.
 
 ## 4. 📊 Milestones Overview
 
-| Milestone                           | Status      | Progress         | Phase       | Priority   | Items |
-| ----------------------------------- | ----------- | ---------------- | ----------- | ---------- | ----- |
-| **M0 - Baseline**                   | ✅ Complete | 100%             | Foundation  | Foundation | -     |
-| **M1 - Foundation**                 | ✅ Complete | 100%             | Foundation  | P0         | -     |
-| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -     |
-| **🧹 GRAND PLAN: Debt Elimination** | 🔄 ACTIVE   | ~6% (237/4,082)  | Parallel    | **P0**     | 4,082 |
-| **🚀 Operational Visibility**       | 🔄 ACTIVE   | ~25%             | Foundation  | **P0**     | ~105  |
-| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19   |
-| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15   |
-| **M2 - Architecture**               | ⏸️ Optional | 0%               | Parallel    | P2         | ~72   |
-| ↳ M2.1 Code Quality                 |             |                  | Parallel    | P2         | ~25   |
-| ↳ M2.2 Monitoring                   |             |                  | Parallel    | P2         | ~25   |
-| ↳ M2.3 Infrastructure               |             |                  | Parallel    | P2         | ~22   |
-| **M3 - Meetings**                   | 📋 Planned  | 0%               | Core        | P1         | 6     |
-| **M4 - Expansion**                  | 📋 Planned  | 0%               | Core        | P1         | ~8    |
-| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%               | Core        | **P0**     | 13    |
-| **M5 - Offline + Steps**            | 📋 Planned  | 0%               | Enhancement | P1         | 23    |
-| **M6 - Journaling + Safety**        | 📋 Planned  | 0%               | Enhancement | P1         | 26    |
-| **M7 - Fellowship Suite**           | 📋 Planned  | 0%               | Enhancement | P1         | ~55   |
-| ↳ M7.1 Sponsor & Sharing            |             |                  | Enhancement | P1         | ~15   |
-| ↳ M7.2 Exports & Reports            |             |                  | Enhancement | P1         | ~14   |
-| ↳ M7.3 Nashville & Knowledge        |             |                  | Enhancement | P1         | ~21   |
-| ↳ M7.4 Personalization              |             |                  | Enhancement | P2         | ~17   |
-| **M8 - Speakers**                   | 📋 Planned  | 0%               | Advanced    | P2         | 3     |
-| **M9 - Native App**                 | 📋 Planned  | 0%               | Advanced    | P2         | 15    |
-| **M10 - Monetization + Future**     | 🔬 Research | 0%               | Future      | P2         | ~15   |
+| Milestone                           | Status      | Progress         | Phase       | Priority   | Items        |
+| ----------------------------------- | ----------- | ---------------- | ----------- | ---------- | ------------ |
+| **M0 - Baseline**                   | ✅ Complete | 100%             | Foundation  | Foundation | -            |
+| **M1 - Foundation**                 | ✅ Complete | 100%             | Foundation  | P0         | -            |
+| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -            |
+| **🔧 System-Wide Standardization**  | 🚧 BLOCKER  | Phase 1b done    | Meta        | **P0**     | 83 decisions |
+| **🧹 GRAND PLAN: Debt Elimination** | ⏸️ BLOCKED  | ~6% (237/4,082)  | Parallel    | **P0**     | 4,082        |
+| **🚀 Operational Visibility**       | ⏸️ BLOCKED  | ~25%             | Foundation  | **P0**     | ~105         |
+| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19          |
+| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15          |
+| **M2 - Architecture**               | ⏸️ Optional | 0%               | Parallel    | P2         | ~72          |
+| ↳ M2.1 Code Quality                 |             |                  | Parallel    | P2         | ~25          |
+| ↳ M2.2 Monitoring                   |             |                  | Parallel    | P2         | ~25          |
+| ↳ M2.3 Infrastructure               |             |                  | Parallel    | P2         | ~22          |
+| **M3 - Meetings**                   | 📋 Planned  | 0%               | Core        | P1         | 6            |
+| **M4 - Expansion**                  | 📋 Planned  | 0%               | Core        | P1         | ~8           |
+| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%               | Core        | **P0**     | 13           |
+| **M5 - Offline + Steps**            | 📋 Planned  | 0%               | Enhancement | P1         | 23           |
+| **M6 - Journaling + Safety**        | 📋 Planned  | 0%               | Enhancement | P1         | 26           |
+| **M7 - Fellowship Suite**           | 📋 Planned  | 0%               | Enhancement | P1         | ~55          |
+| ↳ M7.1 Sponsor & Sharing            |             |                  | Enhancement | P1         | ~15          |
+| ↳ M7.2 Exports & Reports            |             |                  | Enhancement | P1         | ~14          |
+| ↳ M7.3 Nashville & Knowledge        |             |                  | Enhancement | P1         | ~21          |
+| ↳ M7.4 Personalization              |             |                  | Enhancement | P2         | ~17          |
+| **M8 - Speakers**                   | 📋 Planned  | 0%               | Advanced    | P2         | 3            |
+| **M9 - Native App**                 | 📋 Planned  | 0%               | Advanced    | P2         | 15           |
+| **M10 - Monetization + Future**     | 🔬 Research | 0%               | Future      | P2         | ~15          |
 
 ### Timing System (Session #128)
 
@@ -145,7 +146,11 @@ flowchart TD
         DOC[Integrated Improvement Plan]
     end
 
-    subgraph Active["🚀 ACTIVE SPRINT"]
+    subgraph Blocker["🚧 BLOCKER"]
+        SWS[System-Wide Standardization\nEcosystem Overhaul]
+    end
+
+    subgraph Blocked["⏸️ BLOCKED (pending overhaul)"]
         OVS[Operational Visibility\nAdmin + Dev Dashboard]
     end
 
@@ -900,14 +905,15 @@ MASTER_DEBT.jsonl.
 
 ### Blockers
 
-| Blocker                  | Status      | Resolution                         |
-| ------------------------ | ----------- | ---------------------------------- |
-| **SonarCloud Cleanup**   | ✅ Partial  | PR 1+2 done; PR 3-5 deferred to M2 |
-| Sentry not initialized   | ✅ Resolved | A1 complete                        |
-| Sentry env vars missing  | ✅ Resolved | Firebase config verified           |
-| Dashboard stats failing  | ✅ Resolved | A5 complete                        |
-| /dev route doesn't exist | 🔄 Ready    | B1 task (Track B) - can proceed    |
-| Track A testing complete | ✅ Complete | All jobs A10-A14 passing           |
+| Blocker                  | Status      | Resolution                                                                                                                                                                                   |
+| ------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SonarCloud Cleanup**   | ✅ Partial  | PR 1+2 done; PR 3-5 deferred to M2                                                                                                                                                           |
+| Sentry not initialized   | ✅ Resolved | A1 complete                                                                                                                                                                                  |
+| Sentry env vars missing  | ✅ Resolved | Firebase config verified                                                                                                                                                                     |
+| Dashboard stats failing  | ✅ Resolved | A5 complete                                                                                                                                                                                  |
+| /dev route doesn't exist | 🔄 Ready    | B1 task (Track B) - can proceed                                                                                                                                                              |
+| Track A testing complete | ✅ Complete | All jobs A10-A14 passing                                                                                                                                                                     |
+| **Ecosystem Overhaul**   | 🚧 ACTIVE   | System-Wide Standardization deep-plan in progress (Phase 1b complete, 83 decisions). All sprint work blocked until PLAN.md is finalized and approved. Branch: `claude/system-overhaul-FVCAS` |
 
 ### Quick Reference: Environment Variables Needed
 

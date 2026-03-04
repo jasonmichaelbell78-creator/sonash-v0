@@ -88,19 +88,20 @@ Foundation questions). Also: PR creep guardrail just implemented.
 
 ## Quick Status
 
-| Item                              | Status   | Progress            |
-| --------------------------------- | -------- | ------------------- |
-| **PR Review Ecosystem v2**        | SHIPPED  | v1.0 tagged/pushed  |
-| **Skill Quality Framework**       | COMPLETE | All 4 deliverables  |
-| **Operational Visibility Sprint** | Active   | ~75%                |
-| **PR #411 Review (9 rounds)**     | COMPLETE | 135 fixed/415 total |
-| **GRAND PLAN: Debt Elimination**  | Active   | ~6% (481/8350)      |
-| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases        |
-| Track B: Dev Dashboard MVP        | Paused   | ~10%                |
-| M1.5 - Quick Wins                 | Paused   | ~20%                |
-| M1.6 - Admin Panel + UX           | Paused   | ~75%                |
+| Item                              | Status   | Progress                    |
+| --------------------------------- | -------- | --------------------------- |
+| **PR Review Ecosystem v2**        | SHIPPED  | v1.0 tagged/pushed          |
+| **Skill Quality Framework**       | COMPLETE | All 4 deliverables          |
+| **System-Wide Standardization**   | BLOCKER  | Phase 1b done, 83 decisions |
+| **Operational Visibility Sprint** | BLOCKED  | ~75% (paused for overhaul)  |
+| **PR #411 Review (9 rounds)**     | COMPLETE | 135 fixed/415 total         |
+| **GRAND PLAN: Debt Elimination**  | BLOCKED  | ~6% (paused for overhaul)   |
+| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                |
+| Track B: Dev Dashboard MVP        | Paused   | ~10%                        |
+| M1.5 - Quick Wins                 | Paused   | ~20%                        |
+| M1.6 - Admin Panel + UX           | Paused   | ~75%                        |
 
-**Current Branch**: `claude/system-standardization-discovery-s201`
+**Current Branch**: `claude/system-overhaul-FVCAS`
 
 **Test Status**: All tests passing (496/497, 1 skipped)
 
@@ -110,12 +111,10 @@ Foundation questions). Also: PR creep guardrail just implemented.
 
 ### Immediate Priority (Next Session)
 
-1. **Resume deep-plan Phase 1** — 7 Architecture & Foundation discovery
-   questions
-2. **Complete discovery batches** — ~4-5 batches total, then DECISIONS.md +
-   PLAN.md
-3. **PR creep guardrail** — Just implemented, verify in next session
-4. **TDMS: 67 S0 critical items** — After standardization planning complete
+1. **Deep-plan Phase 3** — Generate PLAN.md from 83 locked decisions
+2. **Deep-plan Phase 4** — User approval of PLAN.md
+3. **Handoff** — Begin ecosystem overhaul execution
+4. **All other work BLOCKED** until overhaul plan is approved
 
 **See**:
 [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for
