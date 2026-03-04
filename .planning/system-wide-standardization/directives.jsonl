@@ -1,0 +1,38 @@
+{"id":1,"key":"roadmap_will_change","directive":"ROADMAP.md will need additions, changes, removals after this process"}
+{"id":2,"key":"grand_plan_reassessment","directive":"TDMS Grand Plan needs reassessment — changing many files invalidates existing debt items"}
+{"id":3,"key":"state_persistence_standard","directive":"Constant state file saving is a standard here AND repo-wide going forward — to be canonized as rules"}
+{"id":4,"key":"capture_all_ideas","directive":"Stream-of-consciousness ideas MUST be captured even if not immediately actionable"}
+{"id":5,"key":"canon_is_ecosystem_zero","directive":"CANON is the meta-system/Ecosystem Zero — building block for all others"}
+{"id":6,"key":"overlap_management","directive":"Many points of overlap between ecosystems — must not let one supersede another"}
+{"id":7,"key":"duplicate_subsystems","directive":"Cross-cutting subsystems exist in multiple ecosystems and need mapping"}
+{"id":8,"key":"standardization_is_key","directive":"Duplicate subsystems must follow shared standards"}
+{"id":9,"key":"pr_creep_guard","directive":"User has tendency toward 30-50 commit PRs. Wants guardrail mechanism SOON."}
+{"id":10,"key":"lifecycle_management","directive":"User agreed — helps future-proof. Added to cross-cutting subsystems."}
+{"id":11,"key":"jsonl_is_canon","directive":"JSONL is canonical/AI-consumed, MD is human-readable generated from JSONL. Core tenet."}
+{"id":12,"key":"room_for_growth_everywhere","directive":"Nothing not-upgradeable. Ease upgrade process. Room for growth built in everywhere. Things change all the time."}
+{"id":13,"key":"no_superseding_ecosystem","directive":"Primary ownership = maintenance responsibility, not authority. No ecosystem supersedes another."}
+{"id":14,"key":"plan_as_you_go","directive":"Each ecosystem gets its own deep-plan when sequenced. Don't pre-plan all 13 — they'd go stale."}
+{"id":15,"key":"ecosystem_plan_sequencing_matters","directive":"Dependency-wise sequencing between ecosystem plans is important. Discoveries in one plan may feed into another."}
+{"id":16,"key":"mcp_memory_enabled","directive":"enableAllProjectMcpServers flipped to true. Verify memory MCP tools available next session."}
+{"id":17,"key":"interactivity_is_paramount","directive":"Interactivity of utmost importance across everything whenever possible. Skills should be interactive (deep-plan as exemplar), not monologue dumps. Extends beyond skills to all methods/tools where applicable."}
+{"id":18,"key":"dual_environment_is_constraint","directive":"System must work identically on Claude Code Desktop (Linux sandbox) and Windows CLI. Platform-agnostic by default. Node.js over bash. Formalized as tenet T7."}
+{"id":19,"key":"tdms_must_be_l5","directive":"TDMS feeds into everything, MASTER_DEBT has thousands of entries. Too critical to leave below L5. Acknowledged as massive XL effort."}
+{"id":20,"key":"skill_audit_leverage","directive":"Skill-audit skill exists (.claude/skills/skill-audit/) — created Feb 28, 2026. Born from 64-decision audit of deep-plan skill. 10-category interactive framework (intent fidelity, workflow sequencing, I/O quality, decision points, integration surface, guard rails, prompt engineering, scope boundaries, institutional memory, UX). Used on deep-plan (64 decisions → v2 rewrite) and informed skill-creator v2 update. Codifies the behavioral quality standards from those refinements. This is the mechanism for all 65 skills' ecosystem auditing."}
+{"id":21,"key":"planning_is_skill_roadmap_is_system","directive":"Planning is a SKILL (deep-plan, GSD discovery). The SYSTEM is the Roadmap & Execution ecosystem — where work items land, get prioritized, get executed. Multiple avenues feed in. Non-debt input pipelines are the critical missing piece. Must be high in implementation order as a hub ecosystem."}
+{"id":22,"key":"canon_enforcement_must_be_stout","directive":"CANON enforcement must be bidirectional and robust: (1) CANON self-protection — changes gated, validated, migration-scripted. (2) Downstream propagation — all 13 ecosystems notified, migrated, held to new standards. Semver drives blast radius. User directive: 'stout system.'"}
+{"id":23,"key":"app_ecosystem_connections_are_key","directive":"For app-layer ecosystems (Frontend/App, Firebase/Backend), planning approach differs from process ecosystems. What matters most are the CONNECTION POINTS between process ecosystems and app layer — testing, health monitoring, and contracts at those boundaries must be solid."}
+{"id":24,"key":"planning_docs_must_evolve","directive":"All planning docs (roadmap, sprints, grand plan, future roadmap) need updating as we move through plans — BOTH for additions of new work AND deletions of completed or deprecated items. Living documents, not static snapshots."}
+{"id":25,"key":"formalize_adaptability","directive":"Formalize the checklist adaptation approach. Rigidity when necessary but ability to adapt to different situations while maintaining order. No ad-hoc exemptions — adaptations are earned through formal justification."}
+{"id":26,"key":"audits_l5_pathway","directive":"Audits ecosystem must have L5 pathway designed in from the start at L4, not bolted on later. Architecture for L5 readiness is part of the L4 work."}
+{"id":27,"key":"batch_6_skills_elevation","directive":"Skills must be high in Wave 2 — it's a main tool and touches many systems (user override)"}
+{"id":28,"key":"batch_6_parallel_bounded","directive":"Parallel is OK but not too much — not ecosystems that could affect another or lose lessons learned"}
+{"id":29,"key":"batch_6_wave_proposal_needed","directive":"User wants to see concrete wave proposal with parallel groupings before committing to D62"}
+{"id":30,"key":"changelog_is_tenet","directive":"Changelogs must be standardized JSONL and a tenet of at least this system overhaul. Cross-ecosystem impact tracking at every step. Formalized as T18."}
+{"id":31,"key":"research_parallelization","directive":"User likes research overlap as productivity bridge — research ecosystem N+1 while implementing ecosystem N. Approved approach."}
+{"id":32,"key":"docs_at_position_5","directive":"User wants Docs at #5 in the sequence — not buried at #16. Folder structure, file placement standards, document dependencies, master lists need to be established early. Too much content to defer."}
+{"id":33,"key":"sequential_over_parallel","directive":"User questioning whether parallel tracks are truly right or just time-saving. Learning transfer and cross-ecosystem overlap make sequential the better philosophy."}
+{"id":34,"key":"every_change_has_ripple","directive":"User insight: overlap is inevitable everywhere. Change one thing here, have to change another thing there. Changelog becomes invaluable for tracking this."}
+{"id":35,"key":"roadmap_dedupe_on_add","directive":"Each time items are added to ROADMAP (in groupings), run a dedupe against MASTER_DEBT to prevent duplication."}
+{"id":36,"key":"knowledge_base_for_ecosystem_plans","directive":"All prior research forms a knowledge base for every ecosystem deep-plan Phase 0: framework repo, current standards, PR Review v2 patterns, 13 research agent findings, 76+ decisions, 18 tenets, user directives. Excellent starting point."}
+{"id":37,"key":"learning_capture_during_not_after","directive":"Learnings must be captured DURING ecosystem builds, not just between them. Any approach that delays learning capture to checkpoint boundaries is a non-starter. Changelog (T18) is the continuous mechanism. CANON versions are batched formalization."}
+{"id":38,"key":"grand_plan_reassessment_is_task","directive":"TDMS Grand Plan reassessment is an explicit task at position #8 with lightweight pre-checks before each ecosystem #1-#7."}
