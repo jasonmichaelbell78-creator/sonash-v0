@@ -1,10 +1,10 @@
 {
   "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
   "topic": "system-wide-standardization",
-  "status": "phase_1b_complete",
-  "current_batch": "Phase 1b COMPLETE — D77-D83 locked. Back-of-house process + audit framework defined. 83 total decisions.",
-  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6 + 7 + 7b(Phase1b)",
-  "estimated_remaining_batches": "Phase 2 (DECISIONS.md + Audit 1), Phase 3 (PLAN.md + Audit 2), Phase 4 (approval), Handoff",
+  "status": "phase_3_complete",
+  "current_batch": "Phase 3 COMPLETE — PLAN.md written. 21 steps, 18 ecosystems, 4 checkpoints, ~80-130 session estimate.",
+  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6 + 7 + 7b(Phase1b) + Phase2 + Phase3",
+  "estimated_remaining_batches": "Phase 4 (approval), Handoff",
   "total_ecosystems": 18,
   "decisions": [
     {
@@ -646,33 +646,162 @@
       "choice": "Sequential execution order locked. 18 unique ecosystems. TDMS staged at #8, #16, #21. Docs at #5 + verification at #20. Research overlap is the only approved parallelism.",
       "rationale": "Synthesizes all Batch 6 decisions (D56-D66) plus deep research from 13 agents covering all 18 ecosystems. Maximizes T13 learning transfer, enables T18 changelog tracking, gets tools (Skills, Hooks) and standards (Docs) online early.",
       "sequence": [
-        {"pos": 1, "ecosystem": "CANON", "target": "L0->L5", "effort": "L", "rationale": "Foundation. Tenets, schemas, changelog mechanism (T18)."},
-        {"pos": 2, "ecosystem": "Skills", "target": "L1->L3", "effort": "L", "rationale": "Daily tool. Skill-audit canonized. Born-compliant skills for all future work."},
-        {"pos": 3, "ecosystem": "Hooks", "target": "L3->L4", "effort": "M", "rationale": "Enforcement infra. Skill validation gates formalized."},
-        {"pos": 4, "ecosystem": "PR Review", "target": "L4->L5", "effort": "S", "rationale": "CANON pilot. CHECKPOINT: Does framework work?"},
-        {"pos": 5, "ecosystem": "Docs", "target": "L2->L3", "effort": "M", "rationale": "Folder structure, placement standards, dependency maps, master lists. Born-compliant docs for all future ecosystems."},
-        {"pos": 6, "ecosystem": "Testing", "target": "L3->L4", "effort": "M", "rationale": "Test infrastructure. Complements hooks. Proper test patterns for all subsequent work."},
-        {"pos": 7, "ecosystem": "Sessions", "target": "L1->L3", "effort": "M", "rationale": "State management. Cross-cutting infra. Now with skills, hooks, testing, docs to enforce it."},
-        {"pos": 8, "ecosystem": "TDMS (L2->L3)", "target": "L2->L3", "effort": "XL-partial", "rationale": "Critical system, first stage. 37 scripts get Zod schemas + monitoring."},
-        {"pos": 9, "ecosystem": "Scripts", "target": "L2->L3", "effort": "L", "rationale": "Script infrastructure standards. Informed by TDMS learnings."},
-        {"pos": 10, "ecosystem": "CI/CD", "target": "L1->L3", "effort": "M", "rationale": "Build/deploy pipelines. Benefits from hooks and testing being standard."},
-        {"pos": 11, "ecosystem": "Alerts", "target": "L2->L4", "effort": "M", "rationale": "Monitoring layer. Benefits from all infra being standardized."},
-        {"pos": 12, "ecosystem": "Analytics", "target": "L1->L3", "effort": "M", "rationale": "Aggregation layer. Builds on alerts + health checker patterns."},
-        {"pos": 13, "ecosystem": "Agents", "target": "L2->L3", "effort": "M", "rationale": "Agent definitions. Benefits from Skills and Hooks."},
-        {"pos": 14, "ecosystem": "Audits", "target": "L3->L4+L5path", "effort": "M", "rationale": "All audits are skills. L4 with L5 pathway. Benefits from Skills standardization."},
-        {"pos": 15, "ecosystem": "Archival/Rotation", "target": "L3->L4", "effort": "M", "rationale": "Lifecycle patterns. Benefits from JSONL and schema standards."},
-        {"pos": 16, "ecosystem": "TDMS (L3->L4)", "target": "L3->L4", "effort": "XL-partial", "rationale": "Second stage. Enforcement manifest, testing."},
-        {"pos": 17, "ecosystem": "Roadmap & Execution", "target": "L2->L3", "effort": "L", "rationale": "Hub ecosystem. All input pipelines now standardized. Automated intake."},
-        {"pos": 18, "ecosystem": "Frontend/App", "target": "L2->L3", "effort": "M", "rationale": "App-layer. All process-side connections defined."},
-        {"pos": 19, "ecosystem": "Firebase/Backend", "target": "L1->L3", "effort": "M-L", "rationale": "App-layer. Connection point contracts."},
-        {"pos": 20, "ecosystem": "Docs (verification pass)", "target": "verification", "effort": "S", "rationale": "Meta-check: all 18 ecosystems docs consistent? Staleness audit."},
-        {"pos": 21, "ecosystem": "TDMS (L4->L5)", "target": "L4->L5", "effort": "XL-final", "rationale": "Final canonization of the critical system."}
+        {
+          "pos": 1,
+          "ecosystem": "CANON",
+          "target": "L0->L5",
+          "effort": "L",
+          "rationale": "Foundation. Tenets, schemas, changelog mechanism (T18)."
+        },
+        {
+          "pos": 2,
+          "ecosystem": "Skills",
+          "target": "L1->L3",
+          "effort": "L",
+          "rationale": "Daily tool. Skill-audit canonized. Born-compliant skills for all future work."
+        },
+        {
+          "pos": 3,
+          "ecosystem": "Hooks",
+          "target": "L3->L4",
+          "effort": "M",
+          "rationale": "Enforcement infra. Skill validation gates formalized."
+        },
+        {
+          "pos": 4,
+          "ecosystem": "PR Review",
+          "target": "L4->L5",
+          "effort": "S",
+          "rationale": "CANON pilot. CHECKPOINT: Does framework work?"
+        },
+        {
+          "pos": 5,
+          "ecosystem": "Docs",
+          "target": "L2->L3",
+          "effort": "M",
+          "rationale": "Folder structure, placement standards, dependency maps, master lists. Born-compliant docs for all future ecosystems."
+        },
+        {
+          "pos": 6,
+          "ecosystem": "Testing",
+          "target": "L3->L4",
+          "effort": "M",
+          "rationale": "Test infrastructure. Complements hooks. Proper test patterns for all subsequent work."
+        },
+        {
+          "pos": 7,
+          "ecosystem": "Sessions",
+          "target": "L1->L3",
+          "effort": "M",
+          "rationale": "State management. Cross-cutting infra. Now with skills, hooks, testing, docs to enforce it."
+        },
+        {
+          "pos": 8,
+          "ecosystem": "TDMS (L2->L3)",
+          "target": "L2->L3",
+          "effort": "XL-partial",
+          "rationale": "Critical system, first stage. 37 scripts get Zod schemas + monitoring."
+        },
+        {
+          "pos": 9,
+          "ecosystem": "Scripts",
+          "target": "L2->L3",
+          "effort": "L",
+          "rationale": "Script infrastructure standards. Informed by TDMS learnings."
+        },
+        {
+          "pos": 10,
+          "ecosystem": "CI/CD",
+          "target": "L1->L3",
+          "effort": "M",
+          "rationale": "Build/deploy pipelines. Benefits from hooks and testing being standard."
+        },
+        {
+          "pos": 11,
+          "ecosystem": "Alerts",
+          "target": "L2->L4",
+          "effort": "M",
+          "rationale": "Monitoring layer. Benefits from all infra being standardized."
+        },
+        {
+          "pos": 12,
+          "ecosystem": "Analytics",
+          "target": "L1->L3",
+          "effort": "M",
+          "rationale": "Aggregation layer. Builds on alerts + health checker patterns."
+        },
+        {
+          "pos": 13,
+          "ecosystem": "Agents",
+          "target": "L2->L3",
+          "effort": "M",
+          "rationale": "Agent definitions. Benefits from Skills and Hooks."
+        },
+        {
+          "pos": 14,
+          "ecosystem": "Audits",
+          "target": "L3->L4+L5path",
+          "effort": "M",
+          "rationale": "All audits are skills. L4 with L5 pathway. Benefits from Skills standardization."
+        },
+        {
+          "pos": 15,
+          "ecosystem": "Archival/Rotation",
+          "target": "L3->L4",
+          "effort": "M",
+          "rationale": "Lifecycle patterns. Benefits from JSONL and schema standards."
+        },
+        {
+          "pos": 16,
+          "ecosystem": "TDMS (L3->L4)",
+          "target": "L3->L4",
+          "effort": "XL-partial",
+          "rationale": "Second stage. Enforcement manifest, testing."
+        },
+        {
+          "pos": 17,
+          "ecosystem": "Roadmap & Execution",
+          "target": "L2->L3",
+          "effort": "L",
+          "rationale": "Hub ecosystem. All input pipelines now standardized. Automated intake."
+        },
+        {
+          "pos": 18,
+          "ecosystem": "Frontend/App",
+          "target": "L2->L3",
+          "effort": "M",
+          "rationale": "App-layer. All process-side connections defined."
+        },
+        {
+          "pos": 19,
+          "ecosystem": "Firebase/Backend",
+          "target": "L1->L3",
+          "effort": "M-L",
+          "rationale": "App-layer. Connection point contracts."
+        },
+        {
+          "pos": 20,
+          "ecosystem": "Docs (verification pass)",
+          "target": "verification",
+          "effort": "S",
+          "rationale": "Meta-check: all 18 ecosystems docs consistent? Staleness audit."
+        },
+        {
+          "pos": 21,
+          "ecosystem": "TDMS (L4->L5)",
+          "target": "L4->L5",
+          "effort": "XL-final",
+          "rationale": "Final canonization of the critical system."
+        }
       ],
       "checkpoints": [
-        {"after": 4, "gate": "Does CANON framework work? PR Review pilot validates end-to-end."},
-        {"after": 7, "gate": "Core infrastructure complete. Skills, Hooks, Docs, Testing, Sessions all standardized. Ready for data-heavy ecosystems."},
-        {"after": 15, "gate": "All process-layer ecosystems standardized. Ready for app-layer."},
-        {"after": 21, "gate": "Full system overhaul complete. End-of-process audit."}
+        { "after": 4, "gate": "Does CANON framework work? PR Review pilot validates end-to-end." },
+        {
+          "after": 7,
+          "gate": "Core infrastructure complete. Skills, Hooks, Docs, Testing, Sessions all standardized. Ready for data-heavy ecosystems."
+        },
+        { "after": 15, "gate": "All process-layer ecosystems standardized. Ready for app-layer." },
+        { "after": 21, "gate": "Full system overhaul complete. End-of-process audit." }
       ]
     },
     {
@@ -1024,7 +1153,7 @@
   "artifacts": {
     "diagnosis": ".planning/system-wide-standardization/DIAGNOSIS.md",
     "decisions": null,
-    "plan": null,
+    "plan": ".planning/system-wide-standardization/PLAN.md",
     "tenets_jsonl": ".canon/tenets.jsonl (to be created — first CANON artifact)",
     "tenets_md": ".canon/tenets.md (to be generated from tenets.jsonl)"
   },
@@ -1230,7 +1359,20 @@
   "updated": "2026-03-04T01:30:00.000Z",
   "batch_6_progress": {
     "status": "COMPLETE — D56-D67 locked. Sequential sequence finalized.",
-    "decisions_locked": ["D56", "D57", "D58", "D59", "D60", "D61", "D62-superseded", "D63", "D64", "D65", "D66", "D67"],
+    "decisions_locked": [
+      "D56",
+      "D57",
+      "D58",
+      "D59",
+      "D60",
+      "D61",
+      "D62-superseded",
+      "D63",
+      "D64",
+      "D65",
+      "D66",
+      "D67"
+    ],
     "evolution": [
       "D56-D62: Initial wave-based parallel approach proposed",
       "Deep research: 13 agents mapped all 18 ecosystems at file-level",
