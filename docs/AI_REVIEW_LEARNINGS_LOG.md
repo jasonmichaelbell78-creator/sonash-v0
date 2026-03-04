@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.87 **Created:** 2026-01-02 **Last Updated:** 2026-03-04
+**Document Version:** 17.88 **Created:** 2026-01-02 **Last Updated:** 2026-03-04
 
 ## Purpose
 
@@ -779,6 +779,36 @@ accumulate.
 ---
 
 ## Active Reviews
+
+### Review #446: PR #415 R3 — SonarCloud + Qodo + Gemini (2026-03-04)
+
+_System-wide standardization — duplication reduction + code quality round._
+
+**Source:** SonarCloud (81), Qodo (4), Gemini (4) **Total:** 12 unique
+**Fixed:** 10 **Deferred:** 0 **Rejected:** 2
+
+- **Duplication elimination:** Extracted shared `readJsonl()` and `escapeCell()`
+  into `scripts/planning/lib/read-jsonl.js`; both generators now import from
+  shared module instead of duplicating ~50 lines each. Shared module includes
+  CRLF-safe `line.trim()` and `str == null` null check.
+- **Validator rewrite:** `validate-jsonl-md-sync.js` completely rewritten to use
+  `--dry-run` mode — runs generators with stdout capture and compares against
+  disk. Eliminates backup/restore pattern (Qodo #2 symlink risk), removes need
+  for `copyFileSync`/`unlinkSync`.
+- **Regex fix:** `replaceAll()` with non-global regex (`/m` without `g`) caused
+  runtime error in validator normalize function → added `g` flag.
+- **Stale counts:** Updated decision count 83→92 in ROADMAP.md (2 places) and
+  coordination.json (3 places: total_decisions, total_directives,
+  resume_instructions).
+- **CRLF safety:** `backfill-tenet-evidence.js` JSON.parse now uses trimmed line
+  to handle Windows CRLF line endings.
+- **Rejected:** S4036 PATH binary hijacking (hardcoded `execFileSync("node")`
+  with internal script paths — not user-controlled); S5852 regex DoS on
+  `/ +$/gm` (space-only quantifier, no backtracking risk — SonarCloud FP)
+- **Patterns**: Shared-Module-Over-Duplication; DryRun-Stdout-Comparison;
+  ReplaceAll-Requires-Global-Regex
+
+---
 
 ### Review #445: PR #415 R2 — SonarCloud + CodeQL + CI + Qodo + Gemini (2026-03-04)
 

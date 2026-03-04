@@ -13,10 +13,10 @@
  *   node scripts/planning/generate-decisions.js [--dry-run]
  */
 
-import { readFileSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
+import { readJsonl, escapeCell } from "./lib/read-jsonl.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,35 +28,8 @@ const DRY_RUN = process.argv.includes("--dry-run");
 
 // --- Helpers ---
 
-function readJsonl(filename) {
-  const filepath = join(PLANNING_DIR, filename);
-  try {
-    const entries = readFileSync(filepath, "utf-8")
-      .split("\n")
-      .map((line, i) => ({ line, lineNum: i + 1 }))
-      .filter(({ line }) => {
-        const trimmed = line.trim();
-        return trimmed && !trimmed.startsWith("//");
-      });
-    const results = [];
-    for (const { line, lineNum } of entries) {
-      try {
-        results.push(JSON.parse(line));
-      } catch (err) {
-        console.warn(`WARNING: ${filename} line ${lineNum}: parse error — ${err.message}`);
-      }
-    }
-    return results;
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(`FATAL: Cannot read ${filename}: ${message}`);
-    process.exit(1);
-  }
-}
-
 function esc(str) {
-  if (!str) return "";
-  return String(str).replaceAll("\\", "\\\\").replaceAll("|", "\\|").replaceAll("\n", " ");
+  return escapeCell(str);
 }
 
 function tag(d) {
@@ -70,10 +43,10 @@ function tag(d) {
 
 // --- Load ---
 
-const decisions = readJsonl("decisions.jsonl");
-const tenets = readJsonl("tenets.jsonl");
-const directives = readJsonl("directives.jsonl");
-const ideas = readJsonl("ideas.jsonl");
+const decisions = readJsonl(PLANNING_DIR, "decisions.jsonl");
+const tenets = readJsonl(PLANNING_DIR, "tenets.jsonl");
+const directives = readJsonl(PLANNING_DIR, "directives.jsonl");
+const ideas = readJsonl(PLANNING_DIR, "ideas.jsonl");
 
 // --- Classify decisions by section ---
 
@@ -120,21 +93,26 @@ if (uncovered.length > 0) {
 
 const L = [];
 
-L.push("# System-Wide Standardization — Implementation Reference", "");
-L.push("> **Auto-generated** from JSONL source files by `generate-decisions.js`.");
-L.push("> **Do not manually edit.** Update JSONL → run script → MD regenerated.", "");
-L.push(`**Generated:** ${new Date().toISOString().split("T")[0]}  `);
+// ============================================================
+// HEADER + SECTION 1: QUICK REFERENCE — The Sequence
+// ============================================================
+
 L.push(
-  `**Decisions:** ${decisions.length} | **Tenets:** ${tenets.length} | **Directives:** ${directives.length} | **Ideas:** ${ideas.length}`
+  "# System-Wide Standardization — Implementation Reference",
+  "",
+  "> **Auto-generated** from JSONL source files by `generate-decisions.js`.",
+  "> **Do not manually edit.** Update JSONL → run script → MD regenerated.",
+  "",
+  `**Generated:** ${new Date().toISOString().split("T")[0]}  `,
+  `**Decisions:** ${decisions.length} | **Tenets:** ${tenets.length} | **Directives:** ${directives.length} | **Ideas:** ${ideas.length}`,
+  "",
+  "---",
+  "",
+  "## 1. Implementation Sequence",
+  "",
+  "21 steps, 18 ecosystems. Sequential with research overlap. TDMS staged x3.",
+  ""
 );
-L.push("", "---", "");
-
-// ============================================================
-// SECTION 1: QUICK REFERENCE — The Sequence
-// ============================================================
-
-L.push("## 1. Implementation Sequence", "");
-L.push("21 steps, 18 ecosystems. Sequential with research overlap. TDMS staged x3.", "");
 
 if (d67?.sequence) {
   L.push(
@@ -146,9 +124,7 @@ if (d67?.sequence) {
       `| **${s.pos}** | ${esc(s.ecosystem)} | ${s.target} | ${s.effort} | ${esc(s.rationale)} |`
     );
   }
-  L.push("");
-
-  L.push("**Checkpoints:**");
+  L.push("", "**Checkpoints:**");
   for (const cp of d67.checkpoints || []) {
     L.push(`- After **#${cp.after}**: ${cp.gate}`);
   }
@@ -159,21 +135,25 @@ if (d67?.sequence) {
 // SECTION 2: CORE TENETS
 // ============================================================
 
-L.push("---", "", "## 2. Core Tenets", "");
-L.push('The "why" behind every decision. Reference these when making implementation choices.', "");
+L.push(
+  "---",
+  "",
+  "## 2. Core Tenets",
+  "",
+  'The "why" behind every decision. Reference these when making implementation choices.',
+  ""
+);
 
 const tenetCategories = [...new Set(tenets.map((t) => t.category).filter(Boolean))];
 for (const cat of tenetCategories) {
   const catTenets = tenets.filter((t) => t.category === cat);
   if (catTenets.length === 0) continue;
 
-  L.push(`### ${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
-  L.push("");
+  L.push(`### ${cat.charAt(0).toUpperCase() + cat.slice(1)}`, "");
   for (const t of catTenets) {
     const id = t.id || t.key?.split("_")[0];
     const displayName = t.key?.replace(/^T\d+_/, "") || t.name || "";
-    L.push(`**${id}. ${displayName}**  `);
-    L.push(`${t.statement}`);
+    L.push(`**${id}. ${displayName}**  `, `${t.statement}`);
     if (t.note) L.push(`  *Note: ${t.note}*`);
     L.push("");
   }
@@ -183,10 +163,16 @@ for (const cat of tenetCategories) {
 // SECTION 3: ARCHITECTURE & STANDARDS (D1-D27)
 // ============================================================
 
-L.push("---", "");
-L.push(`## 3. Architecture & Standards (D1-D${architecture.at(-1)?.id ?? "?"})`);
-L.push("", "CANON structure, schemas, formats, enforcement model, naming conventions.", "");
-L.push("| # | Decision | Choice |", "|---|----------|--------|");
+L.push(
+  "---",
+  "",
+  `## 3. Architecture & Standards (D1-D${architecture.at(-1)?.id ?? "?"})`,
+  "",
+  "CANON structure, schemas, formats, enforcement model, naming conventions.",
+  "",
+  "| # | Decision | Choice |",
+  "|---|----------|--------|"
+);
 for (const d of architecture) {
   L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
@@ -250,8 +236,12 @@ for (const d of maturityAssessments) {
 L.push("");
 
 if (otherAssessmentDecisions.length > 0) {
-  L.push("### Other Assessment-Phase Decisions", "");
-  L.push("| # | Decision | Choice |", "|---|----------|--------|");
+  L.push(
+    "### Other Assessment-Phase Decisions",
+    "",
+    "| # | Decision | Choice |",
+    "|---|----------|--------|"
+  );
   for (const d of otherAssessmentDecisions) {
     L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
   }
@@ -274,48 +264,66 @@ if (overrides.length > 0) {
 // SECTION 5: SEQUENCING & EXECUTION (D55-D76)
 // ============================================================
 
-L.push("---", "", "## 5. Sequencing & Execution", "");
-L.push("### Model (D63)");
-L.push("Sequential implementation + parallel research overlap. No parallel implementation tracks.");
-L.push("Research ecosystem N+1 while implementing ecosystem N.", "");
-L.push("### Key Sequencing Decisions", "");
-L.push("| # | Decision | Choice |", "|---|----------|--------|");
+L.push(
+  "---",
+  "",
+  "## 5. Sequencing & Execution",
+  "",
+  "### Model (D63)",
+  "Sequential implementation + parallel research overlap. No parallel implementation tracks.",
+  "Research ecosystem N+1 while implementing ecosystem N.",
+  "",
+  "### Key Sequencing Decisions",
+  "",
+  "| # | Decision | Choice |",
+  "|---|----------|--------|"
+);
 for (const d of [...sequencing, ...edgeCases]) {
   L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
-L.push("");
-
-// ============================================================
-// SECTION 6: PROCESS & ARTIFACTS (D77-D83)
-// ============================================================
-
-L.push("---", "", "## 6. Process & Artifacts", "");
-L.push("How we work. Artifact standards, safety, generation, audits.", "");
-L.push("| # | Decision | Choice |", "|---|----------|--------|");
+L.push(
+  "",
+  "---",
+  "",
+  "## 6. Process & Artifacts",
+  "",
+  "How we work. Artifact standards, safety, generation, audits.",
+  "",
+  "| # | Decision | Choice |",
+  "|---|----------|--------|"
+);
 for (const d of processDecisions) {
   L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
-L.push("");
-
-// Process tree from D79
-L.push("### Decision Capture Process (D79)", "", "```");
-L.push("User says something");
-L.push("  → AI classifies: decision / directive / idea / tenet / correction");
-L.push("  → Immediate JSONL append to the right file");
-L.push("  → Batch gate: update coordination.json, run generation scripts, git commit");
-L.push("  → Safety: commit every batch, tagged commits at checkpoints, MCP at milestones");
-L.push("```", "");
+L.push(
+  "",
+  "### Decision Capture Process (D79)",
+  "",
+  "```",
+  "User says something",
+  "  → AI classifies: decision / directive / idea / tenet / correction",
+  "  → Immediate JSONL append to the right file",
+  "  → Batch gate: update coordination.json, run generation scripts, git commit",
+  "  → Safety: commit every batch, tagged commits at checkpoints, MCP at milestones",
+  "```",
+  ""
+);
 
 // ============================================================
 // SECTION 6b: AUDIT FIXES & PROTOCOLS (D84+)
 // ============================================================
 
 if (auditFixes.length > 0) {
-  L.push("---", "", "## 6b. Audit Fixes & Protocols", "");
   L.push(
-    "Decisions arising from Phase 1b audit. Supersession protocols, amendment rules, hardcoded count elimination, artifact hierarchy."
+    "---",
+    "",
+    "## 6b. Audit Fixes & Protocols",
+    "",
+    "Decisions arising from Phase 1b audit. Supersession protocols, amendment rules, hardcoded count elimination, artifact hierarchy.",
+    "",
+    "| # | Decision | Choice |",
+    "|---|----------|--------|"
   );
-  L.push("", "| # | Decision | Choice |", "|---|----------|--------|");
   for (const d of auditFixes) {
     L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
   }
@@ -339,42 +347,38 @@ if (d81?.audit_framework) {
   const totalDomains = t1Count + t2Count + t3Count + t4Count;
 
   L.push(
-    `${totalDomains} domains across 4 tiers. Interactive process (T15). Multi-level triggers.`
+    `${totalDomains} domains across 4 tiers. Interactive process (T15). Multi-level triggers.`,
+    "",
+    `### Tier 1: Core (${t1Count} domains)`,
+    "*Mechanical checks — did we cover everything?*",
+    ""
   );
-  L.push("");
-
-  L.push(`### Tier 1: Core (${t1Count} domains)`);
-  L.push("*Mechanical checks — did we cover everything?*");
-  L.push("");
   for (const item of af.tier_1_core || []) L.push(`- ${item}`);
-  L.push("");
-
-  L.push(`### Tier 2: Analytical (${t2Count} domains)`);
-  L.push("*Deep analysis — gap analysis, re-research, risk assessment*");
-  L.push("");
-  for (const item of af.tier_2_analytical || []) L.push(`- ${item}`);
-  L.push("");
-
-  L.push(`### Tier 3: Implementation (${t3Count} domains)`);
   L.push(
-    `*Build-time checks. Phase-level (${t3PhaseLevelCount}) = lightweight + frequent. Full-scope (${t3FullScopeCount}) = comprehensive at completion.*`
+    "",
+    `### Tier 2: Analytical (${t2Count} domains)`,
+    "*Deep analysis — gap analysis, re-research, risk assessment*",
+    ""
   );
-  L.push("");
-  L.push(`**Phase-level (run at every phase boundary):**`);
+  for (const item of af.tier_2_analytical || []) L.push(`- ${item}`);
+  L.push(
+    "",
+    `### Tier 3: Implementation (${t3Count} domains)`,
+    `*Build-time checks. Phase-level (${t3PhaseLevelCount}) = lightweight + frequent. Full-scope (${t3FullScopeCount}) = comprehensive at completion.*`,
+    "",
+    `**Phase-level (run at every phase boundary):**`
+  );
   for (const item of t3Data.phase_level_domains || []) L.push(`- ${item}`);
-  L.push("");
-  L.push(`**Full-scope only (run at ecosystem completion):**`);
+  L.push("", `**Full-scope only (run at ecosystem completion):**`);
   for (const item of t3Data.full_scope_only_domains || []) L.push(`- ${item}`);
-  L.push("");
-
-  L.push(`### Tier 4: Ecosystem Completion (${t4Count} domains)`);
-  L.push("*Exit checks — did we hit the target?*");
-  L.push("");
+  L.push(
+    "",
+    `### Tier 4: Ecosystem Completion (${t4Count} domains)`,
+    "*Exit checks — did we hit the target?*",
+    ""
+  );
   for (const item of af.tier_4_ecosystem_completion || []) L.push(`- ${item}`);
-  L.push("");
-
-  L.push("### When to Use", "");
-  L.push("| Context | Tiers |", "|---------|-------|");
+  L.push("", "### When to Use", "", "| Context | Tiers |", "|---------|-------|");
   if (d81.application_matrix) {
     for (const [ctx, tiers] of Object.entries(d81.application_matrix)) {
       L.push(`| ${esc(ctx.replaceAll("_", " "))} | ${esc(tiers)} |`);
@@ -387,36 +391,49 @@ if (d81?.audit_framework) {
 // SECTION 8: USER DIRECTIVES
 // ============================================================
 
-L.push("---", "", "## 8. User Directives", "");
-L.push("Non-negotiable constraints. These override defaults and recommendations.", "");
+L.push(
+  "---",
+  "",
+  "## 8. User Directives",
+  "",
+  "Non-negotiable constraints. These override defaults and recommendations.",
+  ""
+);
 
 for (const d of directives) {
-  L.push(`**${d.id}. ${d.key}**  `);
-  L.push(`${d.directive}`);
-  L.push("");
+  L.push(`**${d.id}. ${d.key}**  `, `${d.directive}`, "");
 }
 
 // ============================================================
 // SECTION 9: CAPTURED IDEAS
 // ============================================================
 
-L.push("---", "", "## 9. Captured Ideas", "");
-L.push("Future considerations, potential work items, things to watch for.");
-L.push("These are NOT decisions — they're institutional memory for later reference.", "");
+L.push(
+  "---",
+  "",
+  "## 9. Captured Ideas",
+  "",
+  "Future considerations, potential work items, things to watch for.",
+  "These are NOT decisions — they're institutional memory for later reference.",
+  ""
+);
 
 for (const idea of ideas) {
   L.push(`${idea.id}. ${idea.idea}`);
 }
-L.push("");
-
 // ============================================================
 // FOOTER
 // ============================================================
 
-L.push("---", "");
-L.push(`*Generated by \`scripts/planning/generate-decisions.js\` — ${new Date().toISOString()}*  `);
-L.push("*Source: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl*  ");
-L.push("*Update: append to JSONL → run script → MD regenerated*", "");
+L.push(
+  "",
+  "---",
+  "",
+  `*Generated by \`scripts/planning/generate-decisions.js\` — ${new Date().toISOString()}*  `,
+  "*Source: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl*  ",
+  "*Update: append to JSONL → run script → MD regenerated*",
+  ""
+);
 
 const output = L.join("\n");
 

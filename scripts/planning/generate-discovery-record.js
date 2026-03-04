@@ -18,6 +18,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
+import { readJsonl, escapeCell } from "./lib/read-jsonl.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,32 +31,6 @@ const DRY_RUN = process.argv.includes("--dry-run");
 
 // --- Helpers ---
 
-function readJsonl(filename) {
-  const filepath = join(PLANNING_DIR, filename);
-  try {
-    const entries = readFileSync(filepath, "utf-8")
-      .split("\n")
-      .map((line, i) => ({ line, lineNum: i + 1 }))
-      .filter(({ line }) => {
-        const trimmed = line.trim();
-        return trimmed && !trimmed.startsWith("//");
-      });
-    const results = [];
-    for (const { line, lineNum } of entries) {
-      try {
-        results.push(JSON.parse(line));
-      } catch (err) {
-        console.warn(`WARNING: ${filename} line ${lineNum}: parse error — ${err.message}`);
-      }
-    }
-    return results;
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(`FATAL: Cannot read ${filename}: ${message}`);
-    process.exit(1);
-  }
-}
-
 function readCoordination() {
   const filepath = join(PLANNING_DIR, "coordination.json");
   try {
@@ -65,38 +40,38 @@ function readCoordination() {
   }
 }
 
-function escapeCell(str) {
-  if (!str) return "";
-  return String(str).replaceAll("\\", "\\\\").replaceAll("|", "\\|").replaceAll("\n", " ");
-}
-
 // --- Load Data ---
 
-const decisions = readJsonl("decisions.jsonl");
-const tenets = readJsonl("tenets.jsonl");
-const directives = readJsonl("directives.jsonl");
-const ideas = readJsonl("ideas.jsonl");
+const decisions = readJsonl(PLANNING_DIR, "decisions.jsonl");
+const tenets = readJsonl(PLANNING_DIR, "tenets.jsonl");
+const directives = readJsonl(PLANNING_DIR, "directives.jsonl");
+const ideas = readJsonl(PLANNING_DIR, "ideas.jsonl");
 const coord = readCoordination();
 
 // --- Generate MD ---
 
 const lines = [];
 
-lines.push("# Discovery Record: System-Wide Standardization", "");
-lines.push("> **Auto-generated** from JSONL source files by `generate-discovery-record.js`.");
-lines.push("> Per D79/T2: JSONL is source of truth. This MD is the generated human view.");
-lines.push("> **Do not manually edit** — changes will be overwritten on next generation.", "");
-lines.push(`**Generated:** ${new Date().toISOString().split("T")[0]}`);
+// --- Header + Tenets Section ---
+
 lines.push(
-  `**Decisions:** ${decisions.length} | **Tenets:** ${tenets.length} | **Directives:** ${directives.length} | **Ideas:** ${ideas.length}`
+  "# Discovery Record: System-Wide Standardization",
+  "",
+  "> **Auto-generated** from JSONL source files by `generate-discovery-record.js`.",
+  "> Per D79/T2: JSONL is source of truth. This MD is the generated human view.",
+  "> **Do not manually edit** — changes will be overwritten on next generation.",
+  "",
+  `**Generated:** ${new Date().toISOString().split("T")[0]}`,
+  `**Decisions:** ${decisions.length} | **Tenets:** ${tenets.length} | **Directives:** ${directives.length} | **Ideas:** ${ideas.length}`,
+  `**Status:** ${coord.status || "unknown"}`,
+  "",
+  "---",
+  "",
+  `## Core Tenets (${tenets[0]?.id || "T1"}-${tenets[tenets.length - 1]?.id || "?"})`,
+  "",
+  "| ID | Name | Category | Statement |",
+  "|-----|------|----------|-----------|"
 );
-lines.push(`**Status:** ${coord.status || "unknown"}`);
-lines.push("", "---", "");
-
-// --- Tenets Section ---
-
-lines.push(`## Core Tenets (${tenets[0]?.id || "T1"}-${tenets[tenets.length - 1]?.id || "?"})`);
-lines.push("", "| ID | Name | Category | Statement |", "|-----|------|----------|-----------|");
 
 for (const t of tenets) {
   const id = t.id || t.key?.split("_")[0] || "?";
@@ -111,10 +86,12 @@ lines.push("");
 
 const maxDecisionId =
   decisions.length > 0 ? decisions.reduce((max, d) => Math.max(max, d.id), 0) : "?";
-lines.push(`## All Decisions (D1-D${maxDecisionId})`);
-
-// Render ungrouped table for simplicity and completeness
-lines.push("", "| # | Decision | Choice | Rationale |", "|---|----------|--------|-----------|");
+lines.push(
+  `## All Decisions (D1-D${maxDecisionId})`,
+  "",
+  "| # | Decision | Choice | Rationale |",
+  "|---|----------|--------|-----------|"
+);
 
 for (const d of decisions) {
   const choice = d.choice;
@@ -132,8 +109,9 @@ lines.push("");
 
 const d67 = decisions.find((d) => d.id === 67);
 if (d67?.sequence) {
-  lines.push("## Implementation Sequence (21 Steps)", "");
   lines.push(
+    "## Implementation Sequence (21 Steps)",
+    "",
     "| # | Ecosystem | Target | Effort | Rationale |",
     "|---|-----------|--------|--------|-----------|"
   );
@@ -155,8 +133,9 @@ if (d67?.sequence) {
 
 // --- Ecosystem Assessments ---
 
-lines.push("## Ecosystem Assessments", "");
 lines.push(
+  "## Ecosystem Assessments",
+  "",
   "| Ecosystem | Current | Target | Effort | Staging | Decision |",
   "|-----------|---------|--------|--------|---------|----------|"
 );
@@ -175,20 +154,17 @@ for (const d of assessmentDecisions) {
     );
   }
 }
-lines.push("");
-
 // --- Directives Section ---
 
-lines.push("## User Directives (" + directives.length + ")", "");
+lines.push("", "## User Directives (" + directives.length + ")", "");
 
 for (const d of directives) {
   lines.push(`${d.id}. **${d.key}**: ${d.directive}`);
 }
-lines.push("");
 
 // --- Ideas Section ---
 
-lines.push("## Captured Ideas (" + ideas.length + ")", "");
+lines.push("", "## Captured Ideas (" + ideas.length + ")", "");
 
 for (const idea of ideas) {
   lines.push(`${idea.id}. ${idea.idea}`);
@@ -204,16 +180,11 @@ if (d81?.audit_framework) {
   const af = d81.audit_framework;
   lines.push("### Tier 1: Core");
   for (const item of af.tier_1_core || []) lines.push(`- ${item}`);
-  lines.push("");
-
-  lines.push("### Tier 2: Analytical");
+  lines.push("", "### Tier 2: Analytical");
   for (const item of af.tier_2_analytical || []) lines.push(`- ${item}`);
-  lines.push("");
-
-  lines.push("### Tier 3: Implementation");
+  lines.push("", "### Tier 3: Implementation");
   const t3 = af.tier_3_implementation || {};
-  lines.push(`*${t3.description || ""}*`);
-  lines.push("");
+  lines.push(`*${t3.description || ""}*`, "");
   const phaseLevelCount = (t3.phase_level_domains || []).length;
   lines.push(`**Phase-Level (${phaseLevelCount} domains):**`);
   for (const item of t3.phase_level_domains || []) lines.push(`- ${item}`);
@@ -221,18 +192,20 @@ if (d81?.audit_framework) {
   const fullScopeCount = (t3.full_scope_only_domains || []).length;
   lines.push(`**Full-Scope Only (${fullScopeCount} additional):**`);
   for (const item of t3.full_scope_only_domains || []) lines.push(`- ${item}`);
-  lines.push("");
-
-  lines.push("### Tier 4: Ecosystem Completion");
+  lines.push("", "### Tier 4: Ecosystem Completion");
   for (const item of af.tier_4_ecosystem_completion || []) lines.push(`- ${item}`);
   lines.push("");
 }
 
 // --- Footer ---
 
-lines.push("---", "");
-lines.push("*Generated by `scripts/planning/generate-discovery-record.js` from JSONL sources.*");
-lines.push("*Source files: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl*", "");
+lines.push(
+  "---",
+  "",
+  "*Generated by `scripts/planning/generate-discovery-record.js` from JSONL sources.*",
+  "*Source files: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl*",
+  ""
+);
 
 const output = lines.join("\n");
 

@@ -89,7 +89,7 @@ recovery practices.
 | **M0 - Baseline**                   | ✅ Complete | 100%             | Foundation  | Foundation | -            |
 | **M1 - Foundation**                 | ✅ Complete | 100%             | Foundation  | P0         | -            |
 | **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -            |
-| **🔧 System-Wide Standardization**  | 🚧 BLOCKER  | Phase 1b done    | Meta        | **P0**     | 83 decisions |
+| **🔧 System-Wide Standardization**  | 🚧 BLOCKER  | Phase 1b done    | Meta        | **P0**     | 92 decisions |
 | **🧹 GRAND PLAN: Debt Elimination** | ⏸️ BLOCKED  | ~6% (237/4,082)  | Parallel    | **P0**     | 4,082        |
 | **🚀 Operational Visibility**       | ⏸️ BLOCKED  | ~25%             | Foundation  | **P0**     | ~105         |
 | **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19          |
@@ -913,7 +913,7 @@ MASTER_DEBT.jsonl.
 | Dashboard stats failing  | ✅ Resolved | A5 complete                                                                                                                                                                                  |
 | /dev route doesn't exist | 🔄 Ready    | B1 task (Track B) - can proceed                                                                                                                                                              |
 | Track A testing complete | ✅ Complete | All jobs A10-A14 passing                                                                                                                                                                     |
-| **Ecosystem Overhaul**   | 🚧 ACTIVE   | System-Wide Standardization deep-plan in progress (Phase 1b complete, 83 decisions). All sprint work blocked until PLAN.md is finalized and approved. Branch: `claude/system-overhaul-FVCAS` |
+| **Ecosystem Overhaul**   | 🚧 ACTIVE   | System-Wide Standardization deep-plan in progress (Phase 1b complete, 92 decisions). All sprint work blocked until PLAN.md is finalized and approved. Branch: `claude/system-overhaul-FVCAS` |
 
 ### Quick Reference: Environment Variables Needed
 

@@ -35,7 +35,7 @@ function parseJsonl(filePath) {
     const trimmed = line.trim();
     if (trimmed === "" || trimmed.startsWith("//")) continue;
     try {
-      results.push(JSON.parse(line));
+      results.push(JSON.parse(trimmed));
     } catch (err) {
       console.warn(`Warning: skipping corrupt JSONL line in ${filePath}: ${err.message}`);
     }
