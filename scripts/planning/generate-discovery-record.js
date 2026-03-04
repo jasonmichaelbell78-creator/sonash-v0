@@ -36,7 +36,10 @@ function readJsonl(filename) {
     const entries = readFileSync(filepath, "utf-8")
       .split("\n")
       .map((line, i) => ({ line, lineNum: i + 1 }))
-      .filter(({ line }) => line.trim() && !line.startsWith("//"));
+      .filter(({ line }) => {
+        const trimmed = line.trim();
+        return trimmed && !trimmed.startsWith("//");
+      });
     const results = [];
     for (const { line, lineNum } of entries) {
       try {
@@ -64,7 +67,7 @@ function readCoordination() {
 
 function escapeCell(str) {
   if (!str) return "";
-  return String(str).replace(/\|/g, "\\|").replace(/\n/g, " ");
+  return String(str).replaceAll("\\", "\\\\").replaceAll("|", "\\|").replaceAll("\n", " ");
 }
 
 // --- Load Data ---
@@ -79,27 +82,21 @@ const coord = readCoordination();
 
 const lines = [];
 
-lines.push("# Discovery Record: System-Wide Standardization");
-lines.push("");
+lines.push("# Discovery Record: System-Wide Standardization", "");
 lines.push("> **Auto-generated** from JSONL source files by `generate-discovery-record.js`.");
 lines.push("> Per D79/T2: JSONL is source of truth. This MD is the generated human view.");
-lines.push("> **Do not manually edit** — changes will be overwritten on next generation.");
-lines.push("");
+lines.push("> **Do not manually edit** — changes will be overwritten on next generation.", "");
 lines.push(`**Generated:** ${new Date().toISOString().split("T")[0]}`);
 lines.push(
   `**Decisions:** ${decisions.length} | **Tenets:** ${tenets.length} | **Directives:** ${directives.length} | **Ideas:** ${ideas.length}`
 );
 lines.push(`**Status:** ${coord.status || "unknown"}`);
-lines.push("");
-lines.push("---");
-lines.push("");
+lines.push("", "---", "");
 
 // --- Tenets Section ---
 
 lines.push(`## Core Tenets (${tenets[0]?.id || "T1"}-${tenets[tenets.length - 1]?.id || "?"})`);
-lines.push("");
-lines.push("| ID | Name | Category | Statement |");
-lines.push("|-----|------|----------|-----------|");
+lines.push("", "| ID | Name | Category | Statement |", "|-----|------|----------|-----------|");
 
 for (const t of tenets) {
   const id = t.id || t.key?.split("_")[0] || "?";
@@ -115,11 +112,9 @@ lines.push("");
 const maxDecisionId =
   decisions.length > 0 ? decisions.reduce((max, d) => Math.max(max, d.id), 0) : "?";
 lines.push(`## All Decisions (D1-D${maxDecisionId})`);
-lines.push("");
 
 // Render ungrouped table for simplicity and completeness
-lines.push("| # | Decision | Choice | Rationale |");
-lines.push("|---|----------|--------|-----------|");
+lines.push("", "| # | Decision | Choice | Rationale |", "|---|----------|--------|-----------|");
 
 for (const d of decisions) {
   const choice = d.choice;
@@ -136,11 +131,12 @@ lines.push("");
 // --- Sequence Section ---
 
 const d67 = decisions.find((d) => d.id === 67);
-if (d67 && d67.sequence) {
-  lines.push("## Implementation Sequence (21 Steps)");
-  lines.push("");
-  lines.push("| # | Ecosystem | Target | Effort | Rationale |");
-  lines.push("|---|-----------|--------|--------|-----------|");
+if (d67?.sequence) {
+  lines.push("## Implementation Sequence (21 Steps)", "");
+  lines.push(
+    "| # | Ecosystem | Target | Effort | Rationale |",
+    "|---|-----------|--------|--------|-----------|"
+  );
   for (const s of d67.sequence) {
     lines.push(
       `| ${s.pos} | ${escapeCell(s.ecosystem)} | ${s.target} | ${s.effort} | ${escapeCell(s.rationale)} |`
@@ -149,8 +145,7 @@ if (d67 && d67.sequence) {
   lines.push("");
 
   if (d67.checkpoints) {
-    lines.push("### Checkpoints");
-    lines.push("");
+    lines.push("### Checkpoints", "");
     for (const cp of d67.checkpoints) {
       lines.push(`- **After #${cp.after}:** ${cp.gate}`);
     }
@@ -160,15 +155,14 @@ if (d67 && d67.sequence) {
 
 // --- Ecosystem Assessments ---
 
-lines.push("## Ecosystem Assessments");
-lines.push("");
-lines.push("| Ecosystem | Current | Target | Effort | Staging | Decision |");
-lines.push("|-----------|---------|--------|--------|---------|----------|");
+lines.push("## Ecosystem Assessments", "");
+lines.push(
+  "| Ecosystem | Current | Target | Effort | Staging | Decision |",
+  "|-----------|---------|--------|--------|---------|----------|"
+);
 
 const assessmentDecisions = decisions.filter(
-  (d) =>
-    d.assessment_summary ||
-    (d.choice && d.choice.includes("Current L") && d.choice.includes("Target L"))
+  (d) => d.assessment_summary || (d.choice?.includes("Current L") && d.choice?.includes("Target L"))
 );
 for (const d of assessmentDecisions) {
   const match = d.choice?.match(/Current (L\d).*?Target (L\d)/);
@@ -185,8 +179,7 @@ lines.push("");
 
 // --- Directives Section ---
 
-lines.push("## User Directives (" + directives.length + ")");
-lines.push("");
+lines.push("## User Directives (" + directives.length + ")", "");
 
 for (const d of directives) {
   lines.push(`${d.id}. **${d.key}**: ${d.directive}`);
@@ -195,8 +188,7 @@ lines.push("");
 
 // --- Ideas Section ---
 
-lines.push("## Captured Ideas (" + ideas.length + ")");
-lines.push("");
+lines.push("## Captured Ideas (" + ideas.length + ")", "");
 
 for (const idea of ideas) {
   lines.push(`${idea.id}. ${idea.idea}`);
@@ -206,9 +198,8 @@ lines.push("");
 // --- Audit Framework ---
 
 const d81 = decisions.find((d) => d.id === 81);
-if (d81 && d81.audit_framework) {
-  lines.push("## Audit Framework (26 Domains, 4 Tiers)");
-  lines.push("");
+if (d81?.audit_framework) {
+  lines.push("## Audit Framework (26 Domains, 4 Tiers)", "");
 
   const af = d81.audit_framework;
   lines.push("### Tier 1: Core");
@@ -239,11 +230,9 @@ if (d81 && d81.audit_framework) {
 
 // --- Footer ---
 
-lines.push("---");
-lines.push("");
+lines.push("---", "");
 lines.push("*Generated by `scripts/planning/generate-discovery-record.js` from JSONL sources.*");
-lines.push("*Source files: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl*");
-lines.push("");
+lines.push("*Source files: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl*", "");
 
 const output = lines.join("\n");
 

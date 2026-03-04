@@ -32,7 +32,8 @@ function parseJsonl(filePath) {
   const content = readFileSync(filePath, "utf-8");
   const results = [];
   for (const line of content.split("\n")) {
-    if (line.trim() === "") continue;
+    const trimmed = line.trim();
+    if (trimmed === "" || trimmed.startsWith("//")) continue;
     try {
       results.push(JSON.parse(line));
     } catch (err) {
@@ -141,10 +142,10 @@ if (report.length === 0) {
     console.log(`  ${tenetId}: +${added.length} (${added.join(", ")})`);
   }
 
-  if (!dryRun) {
+  if (dryRun) {
+    console.log("\nNo files were modified (dry-run mode).");
+  } else {
     safeWriteFileSync(TENETS_PATH, serializeJsonl(tenets));
     console.log(`\nWrote updated tenets to ${TENETS_PATH}`);
-  } else {
-    console.log("\nNo files were modified (dry-run mode).");
   }
 }

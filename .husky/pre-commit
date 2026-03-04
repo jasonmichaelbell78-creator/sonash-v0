@@ -413,9 +413,9 @@ if is_skipped jsonl-sync; then
 else
   if printf '%s\n' "$STAGED_FILES" | grep -qE '\.planning/.*\.jsonl$'; then
     if ! printf '%s\n' "$STAGED_FILES" | grep -qE '\.planning/.*\.(md|MD)$'; then
-      echo "  ⚠️ Planning JSONL changed but no MD files staged — did you forget to regenerate?"
-      echo "    node scripts/planning/generate-discovery-record.js"
-      echo "    node scripts/planning/generate-decisions.js"
+      echo "  ⚠️ Planning JSONL changed but no MD files staged — did you forget to regenerate?" >&3
+      echo "    node scripts/planning/generate-discovery-record.js" >&3
+      echo "    node scripts/planning/generate-decisions.js" >&3
       node scripts/append-hook-warning.js --hook=pre-commit --type=jsonl-sync --severity=warning --message="Planning JSONL changed without MD regeneration" --action="Run generation scripts" 2>/dev/null || true
     else
       echo "  ✅ Planning JSONL + MD both staged"

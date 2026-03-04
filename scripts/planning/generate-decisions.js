@@ -34,7 +34,10 @@ function readJsonl(filename) {
     const entries = readFileSync(filepath, "utf-8")
       .split("\n")
       .map((line, i) => ({ line, lineNum: i + 1 }))
-      .filter(({ line }) => line.trim() && !line.startsWith("//"));
+      .filter(({ line }) => {
+        const trimmed = line.trim();
+        return trimmed && !trimmed.startsWith("//");
+      });
     const results = [];
     for (const { line, lineNum } of entries) {
       try {
@@ -53,7 +56,7 @@ function readJsonl(filename) {
 
 function esc(str) {
   if (!str) return "";
-  return String(str).replace(/\|/g, "\\|").replace(/\n/g, " ");
+  return String(str).replaceAll("\\", "\\\\").replaceAll("|", "\\|").replaceAll("\n", " ");
 }
 
 function tag(d) {
@@ -117,31 +120,27 @@ if (uncovered.length > 0) {
 
 const L = [];
 
-L.push("# System-Wide Standardization — Implementation Reference");
-L.push("");
+L.push("# System-Wide Standardization — Implementation Reference", "");
 L.push("> **Auto-generated** from JSONL source files by `generate-decisions.js`.");
-L.push("> **Do not manually edit.** Update JSONL → run script → MD regenerated.");
-L.push("");
+L.push("> **Do not manually edit.** Update JSONL → run script → MD regenerated.", "");
 L.push(`**Generated:** ${new Date().toISOString().split("T")[0]}  `);
 L.push(
   `**Decisions:** ${decisions.length} | **Tenets:** ${tenets.length} | **Directives:** ${directives.length} | **Ideas:** ${ideas.length}`
 );
-L.push("");
-L.push("---");
-L.push("");
+L.push("", "---", "");
 
 // ============================================================
 // SECTION 1: QUICK REFERENCE — The Sequence
 // ============================================================
 
-L.push("## 1. Implementation Sequence");
-L.push("");
-L.push("21 steps, 18 ecosystems. Sequential with research overlap. TDMS staged x3.");
-L.push("");
+L.push("## 1. Implementation Sequence", "");
+L.push("21 steps, 18 ecosystems. Sequential with research overlap. TDMS staged x3.", "");
 
-if (d67 && d67.sequence) {
-  L.push("| # | Ecosystem | Target | Effort | Key Rationale |");
-  L.push("|---|-----------|--------|--------|---------------|");
+if (d67?.sequence) {
+  L.push(
+    "| # | Ecosystem | Target | Effort | Key Rationale |",
+    "|---|-----------|--------|--------|---------------|"
+  );
   for (const s of d67.sequence) {
     L.push(
       `| **${s.pos}** | ${esc(s.ecosystem)} | ${s.target} | ${s.effort} | ${esc(s.rationale)} |`
@@ -160,12 +159,8 @@ if (d67 && d67.sequence) {
 // SECTION 2: CORE TENETS
 // ============================================================
 
-L.push("---");
-L.push("");
-L.push("## 2. Core Tenets");
-L.push("");
-L.push('The "why" behind every decision. Reference these when making implementation choices.');
-L.push("");
+L.push("---", "", "## 2. Core Tenets", "");
+L.push('The "why" behind every decision. Reference these when making implementation choices.', "");
 
 const tenetCategories = [...new Set(tenets.map((t) => t.category).filter(Boolean))];
 for (const cat of tenetCategories) {
@@ -188,14 +183,10 @@ for (const cat of tenetCategories) {
 // SECTION 3: ARCHITECTURE & STANDARDS (D1-D27)
 // ============================================================
 
-L.push("---");
-L.push("");
-L.push(`## 3. Architecture & Standards (D1-D${architecture[architecture.length - 1]?.id ?? "?"})`);
-L.push("");
-L.push("CANON structure, schemas, formats, enforcement model, naming conventions.");
-L.push("");
-L.push("| # | Decision | Choice |");
-L.push("|---|----------|--------|");
+L.push("---", "");
+L.push(`## 3. Architecture & Standards (D1-D${architecture.at(-1)?.id ?? "?"})`);
+L.push("", "CANON structure, schemas, formats, enforcement model, naming conventions.", "");
+L.push("| # | Decision | Choice |", "|---|----------|--------|");
 for (const d of architecture) {
   L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
@@ -203,9 +194,8 @@ L.push("");
 
 // Key details worth expanding
 const d9 = decisions.find((d) => d.id === 9);
-if (d9 && d9.checklist) {
-  L.push("### 16-Item Completeness Checklist (D9)");
-  L.push("");
+if (d9?.checklist) {
+  L.push("### 16-Item Completeness Checklist (D9)", "");
   for (const item of d9.checklist) {
     L.push(`- ${item}`);
   }
@@ -213,9 +203,8 @@ if (d9 && d9.checklist) {
 }
 
 const d21 = decisions.find((d) => d.id === 21);
-if (d21 && d21.structure) {
-  L.push("### .canon/ Directory Structure (D21)");
-  L.push("");
+if (d21?.structure) {
+  L.push("### .canon/ Directory Structure (D21)", "");
   for (const [path, desc] of Object.entries(d21.structure)) {
     L.push(`- \`${path}\` — ${desc}`);
   }
@@ -226,10 +215,7 @@ if (d21 && d21.structure) {
 // SECTION 4: ECOSYSTEM ASSESSMENTS
 // ============================================================
 
-L.push("---");
-L.push("");
-L.push("## 4. Ecosystem Assessments");
-L.push("");
+L.push("---", "", "## 4. Ecosystem Assessments", "");
 
 // Split assessments into maturity assessments and other decisions in this range
 const maturityAssessments = assessments.filter((d) => {
@@ -241,8 +227,10 @@ const otherAssessmentDecisions = assessments.filter((d) => {
   return !match;
 });
 
-L.push("| Ecosystem | Current | Target | Effort | Staging | D# |");
-L.push("|-----------|---------|--------|--------|---------|----|");
+L.push(
+  "| Ecosystem | Current | Target | Effort | Staging | D# |",
+  "|-----------|---------|--------|--------|---------|----|"
+);
 
 for (const d of maturityAssessments) {
   const match = d.choice.match(/Current (L\d).*?Target (L\d)/);
@@ -252,7 +240,9 @@ for (const d of maturityAssessments) {
     .replace(/ Current and target maturity.*/, "");
   const effort = d.effort || "?";
   const staging = d.staging || "Direct";
-  const flags = d.user_override ? " **[OVERRIDE]**" : d.priority_elevated ? " **[ELEVATED]**" : "";
+  let flags = "";
+  if (d.user_override) flags = " **[OVERRIDE]**";
+  else if (d.priority_elevated) flags = " **[ELEVATED]**";
   L.push(
     `| ${esc(name)}${flags} | ${match[1]} | ${match[2]} | ${esc(effort)} | ${esc(staging)} | D${d.id} |`
   );
@@ -260,10 +250,8 @@ for (const d of maturityAssessments) {
 L.push("");
 
 if (otherAssessmentDecisions.length > 0) {
-  L.push("### Other Assessment-Phase Decisions");
-  L.push("");
-  L.push("| # | Decision | Choice |");
-  L.push("|---|----------|--------|");
+  L.push("### Other Assessment-Phase Decisions", "");
+  L.push("| # | Decision | Choice |", "|---|----------|--------|");
   for (const d of otherAssessmentDecisions) {
     L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
   }
@@ -286,18 +274,12 @@ if (overrides.length > 0) {
 // SECTION 5: SEQUENCING & EXECUTION (D55-D76)
 // ============================================================
 
-L.push("---");
-L.push("");
-L.push("## 5. Sequencing & Execution");
-L.push("");
+L.push("---", "", "## 5. Sequencing & Execution", "");
 L.push("### Model (D63)");
 L.push("Sequential implementation + parallel research overlap. No parallel implementation tracks.");
-L.push("Research ecosystem N+1 while implementing ecosystem N.");
-L.push("");
-L.push("### Key Sequencing Decisions");
-L.push("");
-L.push("| # | Decision | Choice |");
-L.push("|---|----------|--------|");
+L.push("Research ecosystem N+1 while implementing ecosystem N.", "");
+L.push("### Key Sequencing Decisions", "");
+L.push("| # | Decision | Choice |", "|---|----------|--------|");
 for (const d of [...sequencing, ...edgeCases]) {
   L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
@@ -307,46 +289,33 @@ L.push("");
 // SECTION 6: PROCESS & ARTIFACTS (D77-D83)
 // ============================================================
 
-L.push("---");
-L.push("");
-L.push("## 6. Process & Artifacts");
-L.push("");
-L.push("How we work. Artifact standards, safety, generation, audits.");
-L.push("");
-L.push("| # | Decision | Choice |");
-L.push("|---|----------|--------|");
+L.push("---", "", "## 6. Process & Artifacts", "");
+L.push("How we work. Artifact standards, safety, generation, audits.", "");
+L.push("| # | Decision | Choice |", "|---|----------|--------|");
 for (const d of processDecisions) {
   L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
 }
 L.push("");
 
 // Process tree from D79
-L.push("### Decision Capture Process (D79)");
-L.push("");
-L.push("```");
+L.push("### Decision Capture Process (D79)", "", "```");
 L.push("User says something");
 L.push("  → AI classifies: decision / directive / idea / tenet / correction");
 L.push("  → Immediate JSONL append to the right file");
 L.push("  → Batch gate: update coordination.json, run generation scripts, git commit");
 L.push("  → Safety: commit every batch, tagged commits at checkpoints, MCP at milestones");
-L.push("```");
-L.push("");
+L.push("```", "");
 
 // ============================================================
 // SECTION 6b: AUDIT FIXES & PROTOCOLS (D84+)
 // ============================================================
 
 if (auditFixes.length > 0) {
-  L.push("---");
-  L.push("");
-  L.push("## 6b. Audit Fixes & Protocols");
-  L.push("");
+  L.push("---", "", "## 6b. Audit Fixes & Protocols", "");
   L.push(
     "Decisions arising from Phase 1b audit. Supersession protocols, amendment rules, hardcoded count elimination, artifact hierarchy."
   );
-  L.push("");
-  L.push("| # | Decision | Choice |");
-  L.push("|---|----------|--------|");
+  L.push("", "| # | Decision | Choice |", "|---|----------|--------|");
   for (const d of auditFixes) {
     L.push(`| D${d.id} | ${esc(d.decision)} | ${esc(d.choice)}${tag(d)} |`);
   }
@@ -357,11 +326,8 @@ if (auditFixes.length > 0) {
 // SECTION 7: AUDIT FRAMEWORK
 // ============================================================
 
-L.push("---");
-L.push("");
-L.push("## 7. Audit Framework (D81-D83)");
-L.push("");
-if (d81 && d81.audit_framework) {
+L.push("---", "", "## 7. Audit Framework (D81-D83)", "");
+if (d81?.audit_framework) {
   const af = d81.audit_framework;
   const t1Count = (af.tier_1_core || []).length;
   const t2Count = (af.tier_2_analytical || []).length;
@@ -391,7 +357,7 @@ if (d81 && d81.audit_framework) {
 
   L.push(`### Tier 3: Implementation (${t3Count} domains)`);
   L.push(
-    `*Build-time checks. Phase-level (${t3PhaseLevelCount}) = lightweight + frequent. Full-scope (${t3Count}) = comprehensive at completion.*`
+    `*Build-time checks. Phase-level (${t3PhaseLevelCount}) = lightweight + frequent. Full-scope (${t3FullScopeCount}) = comprehensive at completion.*`
   );
   L.push("");
   L.push(`**Phase-level (run at every phase boundary):**`);
@@ -407,13 +373,11 @@ if (d81 && d81.audit_framework) {
   for (const item of af.tier_4_ecosystem_completion || []) L.push(`- ${item}`);
   L.push("");
 
-  L.push("### When to Use");
-  L.push("");
-  L.push("| Context | Tiers |");
-  L.push("|---------|-------|");
+  L.push("### When to Use", "");
+  L.push("| Context | Tiers |", "|---------|-------|");
   if (d81.application_matrix) {
     for (const [ctx, tiers] of Object.entries(d81.application_matrix)) {
-      L.push(`| ${esc(ctx.replace(/_/g, " "))} | ${esc(tiers)} |`);
+      L.push(`| ${esc(ctx.replaceAll("_", " "))} | ${esc(tiers)} |`);
     }
   }
   L.push("");
@@ -423,12 +387,8 @@ if (d81 && d81.audit_framework) {
 // SECTION 8: USER DIRECTIVES
 // ============================================================
 
-L.push("---");
-L.push("");
-L.push("## 8. User Directives");
-L.push("");
-L.push("Non-negotiable constraints. These override defaults and recommendations.");
-L.push("");
+L.push("---", "", "## 8. User Directives", "");
+L.push("Non-negotiable constraints. These override defaults and recommendations.", "");
 
 for (const d of directives) {
   L.push(`**${d.id}. ${d.key}**  `);
@@ -440,13 +400,9 @@ for (const d of directives) {
 // SECTION 9: CAPTURED IDEAS
 // ============================================================
 
-L.push("---");
-L.push("");
-L.push("## 9. Captured Ideas");
-L.push("");
+L.push("---", "", "## 9. Captured Ideas", "");
 L.push("Future considerations, potential work items, things to watch for.");
-L.push("These are NOT decisions — they're institutional memory for later reference.");
-L.push("");
+L.push("These are NOT decisions — they're institutional memory for later reference.", "");
 
 for (const idea of ideas) {
   L.push(`${idea.id}. ${idea.idea}`);
@@ -457,12 +413,10 @@ L.push("");
 // FOOTER
 // ============================================================
 
-L.push("---");
-L.push("");
+L.push("---", "");
 L.push(`*Generated by \`scripts/planning/generate-decisions.js\` — ${new Date().toISOString()}*  `);
 L.push("*Source: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl*  ");
-L.push("*Update: append to JSONL → run script → MD regenerated*");
-L.push("");
+L.push("*Update: append to JSONL → run script → MD regenerated*", "");
 
 const output = L.join("\n");
 
