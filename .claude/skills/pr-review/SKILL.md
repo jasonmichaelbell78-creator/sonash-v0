@@ -14,39 +14,19 @@ documented.
 - PR Code Review Processor
 - User explicitly invokes `/pr-review`
 
-## Scope Selection (Interactive)
+## When NOT to Use
 
-On invocation, ask the user:
-
-> **Review mode?**
->
-> 1. **Single PR** — Process one PR's review feedback (standard protocol)
-> 2. **Batch PRs** — Process multiple PRs sequentially with shared context
->    (retro patterns, cross-PR dedup, aggregate summary)
-
-For **Batch mode**: ask for the PR list (e.g., "#395, #396, #397" or
-"#395-#400"). Run each PR through the full protocol, but carry forward rejection
-precedents and pattern context between PRs to avoid re-investigating
-already-rejected items. Produce a batch summary at the end with cross-PR metrics
-and shared patterns.
+- When the task doesn't match this skill's scope -- check related skills
+- When a more specialized skill exists for the specific task
 
 ## Scope
 
 - **Formal PR gate reviews** with standardized 8-step protocol
 - Processing external review feedback (CodeRabbit, Qodo, SonarCloud)
 - Ensuring every issue is fixed or tracked to TDMS before merge
-- **Batch processing** of multiple PRs with cross-PR dedup and aggregate metrics
 
-### Out of Scope
-
-| Task                                  | Use Instead                             |
-| ------------------------------------- | --------------------------------------- |
-| Ad-hoc development review             | `code-reviewer` agent                   |
-| Pre-merge self-review                 | `code-reviewer` agent                   |
-| Quick code quality check during dev   | `code-reviewer` agent                   |
-| Post-retro action item implementation | Direct implementation (no review skill) |
-| Security-only audit                   | `security-auditor` agent                |
-| Test-only review                      | `test-engineer` agent                   |
+> **Not for ad-hoc development reviews.** Use `code-reviewer` for post-task
+> quality checks, quick reviews during development, or pre-merge self-review.
 
 ## Core Principles
 
@@ -100,13 +80,11 @@ If PR introduces security-adjacent code, grep for unguarded write paths:
 grep -rn 'writeFileSync\|renameSync\|appendFileSync' .claude/hooks/ scripts/ --include="*.js" | grep -v 'isSafeToWrite'
 ```
 
-### 4. Cyclomatic Complexity
+### 4. Cognitive Complexity
 
-Pre-push hook now **enforces cyclomatic complexity ≤15 as error** on all JS/TS
-files in the push diff (added Session #205). Pre-commit warns; pre-push blocks.
-Note: this is ESLint's `complexity` rule (cyclomatic), NOT SonarCloud S3776
-(cognitive complexity) — different metrics. After extracting helpers, re-check
-the ENTIRE file. Override: `SKIP_CC=1 SKIP_REASON="reason"`.
+Pre-push hook now **enforces CC ≤15 as error** on all JS/TS files in the push
+diff (added Session #205). Pre-commit warns; pre-push blocks. After extracting
+helpers, re-check the ENTIRE file. Override: `SKIP_CC=1 SKIP_REASON="reason"`.
 
 ### 5. Filesystem Guard Pre-Check
 
@@ -416,32 +394,6 @@ node dist/write-invocation.js --data '{"skill":"pr-review","type":"skill","durat
 
 ---
 
-## STEP 7.9: COMPLETENESS VERIFICATION
-
-Before proceeding to summary, verify every action item was actually executed —
-not just implemented in code, but **confirmed working**:
-
-1. **New scripts**: Run with sample input, verify output is sane (no rates >1.0,
-   no nulls in required fields, no crash on empty input)
-2. **New hook checks**: Test the happy path (should pass) AND sad path (should
-   block/warn) on a real file
-3. **New pattern rules**: Run `node scripts/check-pattern-compliance.js --all`
-   and verify the rule fires on known violations. If pre-existing violations
-   exist, either fix them or add to verified-patterns allowlist with
-   justification
-4. **New config entries**: Verify syntax is valid for the target tool (TOML,
-   properties, YAML)
-5. **New test fixtures**: Run the test runner (`semgrep --test`, `npm test`,
-   etc.) and confirm zero crashes
-6. **Terminology check**: Verify terms used in code match the glossary/intent
-   (e.g., "cognitive complexity" vs "cyclomatic complexity" are different
-   things)
-
-If any verification fails, fix it before proceeding. Do not mark the action item
-as done until the verification passes.
-
----
-
 ## STEP 8: FINAL SUMMARY
 
 Statistics (total/fixed/deferred/rejected), files modified, agents invoked,
@@ -485,7 +437,6 @@ source. Separate commits for Critical fixes if needed.
 
 | Version | Date       | Description                                                                                         |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------- |
-| 3.7     | 2026-03-05 | Add interactive single/batch mode, out-of-scope table, completeness verification step (Step 7.9)    |
 | 3.6     | 2026-02-28 | Add JSONL pipeline step (Step 7.5) for v2 data capture                                              |
 | 3.5     | 2026-02-26 | Add pre-checks #16 (ESLint CC extraction) and #17 (fix-one-audit-all). Source: PR #393/#394 retros. |
 | 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro.         |

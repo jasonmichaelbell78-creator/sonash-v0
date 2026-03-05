@@ -46,9 +46,7 @@ function parseReviews() {
     }
     return records;
   } catch (err) {
-    console.error(
-      `Error reading ${REVIEWS_PATH}: ${err instanceof Error ? err.message : String(err)}`
-    );
+    console.error(`Error reading ${REVIEWS_PATH}: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(2);
   }
 }
@@ -72,60 +70,35 @@ function computeMetrics(records) {
   for (const r of records) {
     const pr = r.pr ?? "unknown";
     const source = r.source ?? "unknown";
+    const total = r.total ?? 0;
+    const fixed = r.fixed ?? 0;
+    const deferred = r.deferred ?? 0;
+    const rejected = r.rejected ?? 0;
 
-    // Only aggregate fields that are actually present in this record.
-    // reviews.jsonl contains two record types: review records (with `total` but
-    // often no `fixed`) and retro records (with `fixed`/`rejected` but often no
-    // `total`). Naively treating null as 0 for all fields produces impossible
-    // metrics like fix rates >1.0.
-    const total = r.total != null ? r.total : 0;
-    const fixed = r.fixed != null ? r.fixed : 0;
-    const deferred = r.deferred != null ? r.deferred : 0;
-    const rejected = r.rejected != null ? r.rejected : 0;
-
-    // Only count total from records that actually have a total field
-    if (r.total != null) {
-      totalFindings += total;
-    }
-    // Only count fixed/deferred/rejected from records that have those fields
-    if (r.fixed != null) {
-      totalFixed += fixed;
-    }
-    if (r.deferred != null) {
-      totalDeferred += deferred;
-    }
-    if (r.rejected != null) {
-      totalRejected += rejected;
-    }
+    totalFindings += total;
+    totalFixed += fixed;
+    totalDeferred += deferred;
+    totalRejected += rejected;
 
     if (!perSource[source]) {
       perSource[source] = { total: 0, fixed: 0, deferred: 0, rejected: 0 };
     }
-    if (r.total != null) perSource[source].total += total;
-    if (r.fixed != null) perSource[source].fixed += fixed;
-    if (r.deferred != null) perSource[source].deferred += deferred;
-    if (r.rejected != null) perSource[source].rejected += rejected;
+    perSource[source].total += total;
+    perSource[source].fixed += fixed;
+    perSource[source].deferred += deferred;
+    perSource[source].rejected += rejected;
 
     if (!perPR[pr]) {
       perPR[pr] = { total: 0, fixed: 0, deferred: 0, rejected: 0, rounds: 0 };
     }
-    if (r.total != null) perPR[pr].total += total;
-    if (r.fixed != null) perPR[pr].fixed += fixed;
-    if (r.deferred != null) perPR[pr].deferred += deferred;
-    if (r.rejected != null) perPR[pr].rejected += rejected;
+    perPR[pr].total += total;
+    perPR[pr].fixed += fixed;
+    perPR[pr].deferred += deferred;
+    perPR[pr].rejected += rejected;
     perPR[pr].rounds++;
   }
 
   const fixRate = totalFindings > 0 ? (totalFixed / totalFindings).toFixed(2) : "N/A";
-
-  // Sanity assertions — catch data integrity issues early
-  for (const [pr, p] of Object.entries(perPR)) {
-    if (p.total > 0 && p.fixed > p.total) {
-      console.warn(
-        `  ⚠️ PR #${pr}: fix count (${p.fixed}) > total (${p.total}) — possible data mismatch between review and retro records`
-      );
-    }
-  }
 
   return { totalFindings, totalFixed, totalDeferred, totalRejected, fixRate, perSource, perPR };
 }
@@ -150,9 +123,7 @@ function printMetrics(metrics) {
     for (const src of sources) {
       const s = metrics.perSource[src];
       const rate = s.total > 0 ? (s.fixed / s.total).toFixed(2) : "N/A";
-      console.log(
-        `    ${src || "(unknown)"}: ${s.total} total, ${s.fixed} fixed, ${s.deferred} deferred, ${s.rejected} rejected (${rate})`
-      );
+      console.log(`    ${src || "(unknown)"}: ${s.total} total, ${s.fixed} fixed, ${s.deferred} deferred, ${s.rejected} rejected (${rate})`);
     }
   }
 
@@ -162,9 +133,7 @@ function printMetrics(metrics) {
     for (const pr of prs) {
       const p = metrics.perPR[pr];
       const rate = p.total > 0 ? (p.fixed / p.total).toFixed(2) : "N/A";
-      console.log(
-        `    PR #${pr}: ${p.total} total, ${p.fixed} fixed, ${p.deferred} deferred, ${p.rejected} rejected (rate: ${rate}, ${p.rounds} review records)`
-      );
+      console.log(`    PR #${pr}: ${p.total} total, ${p.fixed} fixed, ${p.deferred} deferred, ${p.rejected} rejected (rate: ${rate}, ${p.rounds} review records)`);
     }
   }
 
@@ -184,9 +153,7 @@ if (prArg) {
   }
   filtered = filterByPR(allRecords, prNum);
 } else if (rangeArg) {
-  const rangeVal = rangeArg.includes("=")
-    ? rangeArg.split("=")[1]
-    : args[args.indexOf(rangeArg) + 1];
+  const rangeVal = rangeArg.includes("=") ? rangeArg.split("=")[1] : args[args.indexOf(rangeArg) + 1];
   const parts = rangeVal.split("-");
   if (parts.length !== 2) {
     console.error("Error: --range requires format N-M (e.g., --range 378-416)");
@@ -202,9 +169,7 @@ if (prArg) {
 } else if (allFlag) {
   filtered = allRecords;
 } else {
-  console.log(
-    "Usage: node scripts/compute-changelog-metrics.js --pr N | --range N-M | --all [--json]"
-  );
+  console.log("Usage: node scripts/compute-changelog-metrics.js --pr N | --range N-M | --all [--json]");
   process.exit(0);
 }
 

@@ -69,7 +69,6 @@ function chainedPromise() {
 // =============================================================================
 
 const pattern = /test/g;
-const input = "test string with test values";
 
 // ruleid: sonash.correctness.regex-without-lastindex-reset
 while (pattern.exec(input)) {
