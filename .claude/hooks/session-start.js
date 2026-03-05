@@ -474,8 +474,12 @@ try {
   if (archiveOutput.trim()) {
     console.log(archiveOutput.trim());
   }
-} catch {
-  // Non-fatal: archive-reviews.js exits 0 when no archival needed
+} catch (archiveErr) {
+  // Non-fatal: log failures but don't block session start
+  const archiveMsg = archiveErr instanceof Error ? archiveErr.message : String(archiveErr);
+  if (archiveMsg && !archiveMsg.includes("exit code 0")) {
+    console.log("   ⚠️ Auto-archive: " + archiveMsg.split("\n")[0]);
+  }
 }
 
 // Sync commit log from git history (fills gaps when commit-tracker hook misses)
