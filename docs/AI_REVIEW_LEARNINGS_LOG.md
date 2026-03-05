@@ -349,6 +349,75 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#2)</summary>
+
+- **Date:** 2026-03-05
+- **Reviews consolidated:** #448-#458
+- **Recurring patterns:**
+  - add-planning-exclusions-to-all-scanning-tools-before-committ (6x)
+  - add-security-checklist-to-ecosystem-audit-checker-template (6x)
+  - auto-compute-changelog-metrics (6x)
+  - avoidable- (6x)
+  - avoidable-rounds (6x)
+  - batch-related-fixes (6x)
+  - batched-protocol-effectiveness (6x)
+  - batched-protocol-is-effective (6x)
+  - blocking-implement-cc-pre-push-check (6x)
+  - cc-pre-push-check (6x)
+  - cc-progressive-reduction (6x)
+  - composite-key-for-nullable-ids (6x)
+  - critical-implement-cc-pre-push-check (6x)
+  - critical-suppress-qodo-cjs-compliance-noise (6x)
+  - custom-semgrep-rule-maturation (6x)
+  - design-validators-with-dry-runcomparison-pattern-from-the-st (6x)
+  - ecosystem-audit-template (6x)
+  - efficiency (6x)
+  - enforce-propagation-grep-on-truthy-filters (6x)
+  - escapecell-propagation (6x)
+  - first-scan-volume (6x)
+  - fixtemplates (6x)
+  - geministyleguidemd (6x)
+  - no-new-fixtemplates-needed (6x)
+  - no-new-templates-needed (6x)
+  - note (6x)
+  - pattern-13-fix-one-audit-all (6x)
+  - pattern-checker (6x)
+  - planning-artifact-template (6x)
+  - pre-push-hook (6x)
+  - propagation-miss (6x)
+  - qodo-repeat-rejection-noise (6x)
+  - qodo-suppression (6x)
+  - qodopr-agenttoml (6x)
+  - regex-sweep-after-any-s5852-fix (6x)
+  - review-data (6x)
+  - rollback-on-dual-write-failure (6x)
+  - run-propagation-audit-before-pushing-review-fixes (6x)
+  - run-sonarcloud-locally-before-pushing (6x)
+  - score (6x)
+  - semgrep-rule-template (6x)
+  - semgrep-rule-test-harness (6x)
+  - single-highest-impact-change (6x)
+  - sonarcloud-config (6x)
+  - sonarcloud-repeat-fps (6x)
+  - sonarcloud-s6354-suppression (6x)
+  - suppress-internal-tooling-security-noise (6x)
+  - suppress-sonarcloud-s5852s4036-false-positives (6x)
+  - tool-exclusions-needed-upfront (6x)
+  - trend (6x)
+  - when-adding-escapesanitization-functions (6x)
+  - ci (5x)
+  - ci-1 (5x)
+  - qodo (5x)
+  - log-malformed-jsonl-lines (3x)
+  - qodo-10 (3x)
+  - rejected-4 (3x)
+  - semgrep-1 (3x)
+  - sonarcloud (3x)
+  - sonarcloud-8 (3x)
+  - validate-cli-args-before-parse (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#13)</summary>
 
 - **Date:** 2026-03-04
