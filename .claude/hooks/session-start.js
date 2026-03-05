@@ -463,6 +463,21 @@ try {
   // Non-fatal: session-begin will retry
 }
 
+// Auto-archive: move old reviews from active log to archive files when threshold exceeded
+try {
+  const archiveOutput = execFileSync("node", ["scripts/archive-reviews.js", "--auto"], {
+    cwd: projectDir,
+    encoding: "utf8",
+    stdio: "pipe",
+    timeout: 15000,
+  });
+  if (archiveOutput.trim()) {
+    console.log(archiveOutput.trim());
+  }
+} catch {
+  // Non-fatal: archive-reviews.js exits 0 when no archival needed
+}
+
 // Sync commit log from git history (fills gaps when commit-tracker hook misses)
 try {
   execFileSync("node", ["scripts/seed-commit-log.js", "--sync"], {

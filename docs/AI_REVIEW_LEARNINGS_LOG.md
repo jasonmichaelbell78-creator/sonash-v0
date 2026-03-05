@@ -758,106 +758,62 @@ accumulate.
 
 ## 📁 Archive Reference
 
-**Reviews #1-393** have been archived in thirteen files:
+**Reviews #1-457** have been archived in nine files (repaired 2026-03-05:
+deduplicated, non-overlapping ranges):
 
 ### Archive 1: Reviews #1-40
 
 - **Archive location:**
   [docs/archive/REVIEWS_1-40.md](./archive/REVIEWS_1-40.md)
-- **Coverage:** 2026-01-01 to 2026-01-03
-- **Status:** Fully consolidated into claude.md v2.7
+- **Status:** 40 reviews archived.
 
-### Archive 2: Reviews #42-60
-
-- **Archive location:**
-  [docs/archive/REVIEWS_42-60.md](./archive/REVIEWS_42-60.md)
-- **Coverage:** 2026-01-03 to 2026-01-05
-- **Status:** Reviews #42-60 archived (audit trail preserved).
-- **Consolidation note:** See CODE_PATTERNS.md for consolidated patterns (latest
-  as of 2026-01-07: v1.2).
-
-### Archive 3: Reviews #61-100
+### Archive 2: Reviews #42-138
 
 - **Archive location:**
-  [docs/archive/REVIEWS_61-100.md](./archive/REVIEWS_61-100.md)
-- **Coverage:** 2026-01-05 to 2026-01-08
-- **Status:** Reviews #61-100 archived (audit trail preserved).
-- **Consolidation note:** See CODE_PATTERNS.md for consolidated patterns (latest
-  as of 2026-01-12: v1.7).
+  [docs/archive/REVIEWS_42-138.md](./archive/REVIEWS_42-138.md)
+- **Status:** 40 reviews archived.
 
-### Archive 4: Reviews #101-136
+### Archive 3: Reviews #139-195
 
 - **Archive location:**
-  [docs/archive/REVIEWS_101-136.md](./archive/REVIEWS_101-136.md)
-- **Coverage:** 2026-01-08 to 2026-01-13
-- **Status:** Reviews #101-136 archived (audit trail preserved).
-- **Consolidation note:** See CODE_PATTERNS.md for consolidated patterns (latest
-  as of 2026-01-18: v2.0 - CONSOLIDATION #13).
+  [docs/archive/REVIEWS_139-195.md](./archive/REVIEWS_139-195.md)
+- **Status:** 40 reviews archived.
 
-### Archive 5: Reviews #137-179
+### Archive 4: Reviews #196-259
 
 - **Archive location:**
-  [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md)
-- **Coverage:** 2026-01-13 to 2026-01-18
-- **Status:** Reviews #137-179 archived (audit trail preserved).
-- **Consolidation note:** See CODE_PATTERNS.md for consolidated patterns (latest
-  as of 2026-01-20: v2.0 - CONSOLIDATION #13).
+  [docs/archive/REVIEWS_196-259.md](./archive/REVIEWS_196-259.md)
+- **Status:** 40 reviews archived.
 
-### Archive 6: Reviews #180-201
+### Archive 5: Reviews #260-299
 
 - **Archive location:**
-  [docs/archive/REVIEWS_180-201.md](./archive/REVIEWS_180-201.md)
-- **Coverage:** 2026-01-18 to 2026-01-24
-- **Status:** Reviews #180-201 archived (Consolidation #14: 2026-01-24).
+  [docs/archive/REVIEWS_260-299.md](./archive/REVIEWS_260-299.md)
+- **Status:** 40 reviews archived.
 
-### Archive 7: Reviews #202-212
-
-- **Archive location:**
-  [docs/archive/REVIEWS_202-212.md](./archive/REVIEWS_202-212.md)
-- **Coverage:** 2026-01-24 to 2026-02-02
-- **Status:** Reviews #202-212 archived (Consolidation #15: 2026-02-02).
-
-### Archive 8: Reviews #213-284
+### Archive 6: Reviews #300-341
 
 - **Archive location:**
-  [docs/archive/REVIEWS_213-284.md](./archive/REVIEWS_213-284.md)
-- **Coverage:** 2026-02-02 to 2026-02-07
-- **Status:** Reviews #213-284 archived (Consolidation #17-#21).
+  [docs/archive/REVIEWS_300-341.md](./archive/REVIEWS_300-341.md)
+- **Status:** 40 reviews archived.
 
-### Archive 9: Reviews #285-346
-
-- **Archive location:**
-  [docs/archive/REVIEWS_285-346.md](./archive/REVIEWS_285-346.md)
-- **Coverage:** Archived on 2026-02-20
-- **Status:** Reviews #285-346 archived.
-
-### Archive 10: Reviews #347-369
+### Archive 7: Reviews #342-383
 
 - **Archive location:**
-  [docs/archive/REVIEWS_347-369.md](./archive/REVIEWS_347-369.md)
-- **Coverage:** Archived on 2026-02-22
-- **Status:** Reviews #347-369 archived.
+  [docs/archive/REVIEWS_342-383.md](./archive/REVIEWS_342-383.md)
+- **Status:** 40 reviews + 11 retrospectives archived.
 
-### Archive 11: Reviews #354-357
-
-- **Archive location:**
-  [docs/archive/REVIEWS_354-357.md](./archive/REVIEWS_354-357.md)
-- **Coverage:** Archived on 2026-02-23
-- **Status:** Reviews #354-357 archived.
-
-### Archive 12: Reviews #358-388
+### Archive 8: Reviews #384-423
 
 - **Archive location:**
-  [docs/archive/REVIEWS_358-388.md](./archive/REVIEWS_358-388.md)
-- **Coverage:** Archived on 2026-02-27
-- **Status:** Reviews #358-388 archived.
+  [docs/archive/REVIEWS_384-423.md](./archive/REVIEWS_384-423.md)
+- **Status:** 40 reviews + 9 retrospectives archived.
 
-### Archive 13: Reviews #385-393
+### Archive 9: Reviews #424-457
 
 - **Archive location:**
-  [docs/archive/REVIEWS_385-393.md](./archive/REVIEWS_385-393.md)
-- **Coverage:** Archived on 2026-02-27
-- **Status:** Reviews #385-393 archived. Access archives only for historical
+  [docs/archive/REVIEWS_424-457.md](./archive/REVIEWS_424-457.md)
+- **Status:** 20 reviews archived. Access archives only for historical
   investigation of specific patterns.
 
 ---
