@@ -35,10 +35,12 @@ const jsonFlag = args.includes("--json");
 function parseReviews() {
   try {
     const content = readFileSync(REVIEWS_PATH, "utf-8").replace(/^\uFEFF/, "");
-    const lines = content.trim().split("\n").filter(Boolean);
+    const lines = content.trim().split("\n");
     const records = [];
     let skipped = 0;
-    for (const line of lines) {
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line) continue;
       try {
         records.push(JSON.parse(line));
       } catch {
@@ -88,7 +90,7 @@ function computeMetrics(records) {
     const deferred = toFiniteNumber(r.deferred);
     const rejected = toFiniteNumber(r.rejected);
     // Derive total from outcomes when null (many historical records have total=null)
-    const total = r.total != null ? toFiniteNumber(r.total) : fixed + deferred + rejected;
+    const total = r.total == null ? fixed + deferred + rejected : toFiniteNumber(r.total);
 
     totalFindings += total;
     totalFixed += fixed;

@@ -349,7 +349,7 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
-<summary>Previous Consolidation (#1)</summary>
+<summary>Previous Consolidation (#13)</summary>
 
 - **Date:** 2026-03-04
 - **Reviews consolidated:** #402-#449
@@ -364,7 +364,7 @@ accumulate.
 
 </details>
 <details>
-<summary>Previous Consolidation (#2)</summary>
+<summary>Previous Consolidation (#12)</summary>
 
 - **Date:** 2026-03-04
 - **Reviews consolidated:** #402-#444
@@ -377,7 +377,7 @@ accumulate.
 
 </details>
 <details>
-<summary>Previous Consolidation (#1)</summary>
+<summary>Previous Consolidation (#11)</summary>
 
 - **Date:** 2026-03-02
 - **Reviews consolidated:** #402-#442
@@ -957,6 +957,32 @@ _System Overhaul Review. 22 items from 4 sources._
   terminology rename (project convention)
 - **Patterns:** Log-Malformed-JSONL-Lines; Validate-CLI-Args-Before-Parse;
   Guard-Head-Truncation-Bypass
+
+---
+
+### Review #450: PR #417 R3 — Qodo + SonarCloud + Semgrep + Gemini (2026-03-05)
+
+_System Overhaul Review R3. 16 raw items from 6 sources, 11 unique after dedup.
+Most Qodo bugs were stale re-raises of issues already fixed in R2._
+
+**Source:** SonarCloud (1), Qodo bugs (6), Qodo suggestions (3), Qodo compliance
+(1), Semgrep (1), Qodo reviewer guide (3), Gemini (1, summary only) **Total:** 4
+**Fixed:** 4 **Deferred:** 0 **Rejected:** 7
+
+- **Sonar resourceKey comma syntax:** SonarCloud `resourceKey` doesn't support
+  comma-separated file lists — split fp6/fp7/fp8 into individual entries
+  (fp6a/fp6b, fp7a/fp7b/fp7c, fp8a/fp8b)
+- **SonarCloud S1121 negated condition:** Flipped `r.total != null ? A : B` to
+  `r.total == null ? B : A` for readability
+- **CRLF-safe JSONL parsing:** Trim each line individually before JSON.parse to
+  handle `\r\n` line endings
+- **Doc consolidation numbering:** Renamed duplicate "#1"/"#2" consolidation
+  headers to #11/#12/#13 continuing the global sequence
+- **REJECTED (7):** Qodo Bugs #1-5 (stale, all fixed in R2), Semgrep array
+  access (false positive — bounds check at L196), sonarjs/cognitive-complexity
+  (requires plugin install not available via --no-eslintrc)
+- **Pattern:** SonarCloud `resourceKey` only accepts single path patterns, not
+  comma-separated lists. Always use one entry per file.
 
 ---
 
