@@ -194,7 +194,7 @@ function safeAccessLengthGte(arr) {
 
 function safeAccessExistenceCheck(arr) {
   // ok: sonash.correctness.no-unchecked-array-access
-  if (arr && arr.length) {
+  if (arr?.length) {
     return arr[0];
   }
 }
@@ -215,7 +215,7 @@ function returnPromise() {
 
 function assignedPromise() {
   // ok: sonash.correctness.no-floating-promise
-  const result = fetch("/api/data");
+  const _result = fetch("/api/data");
 }
 
 async function tryCatchPromise() {

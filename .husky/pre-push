@@ -230,8 +230,16 @@ if [ "${SKIP_CC:-}" = "1" ]; then
 else
   echo "  ▶ Checking cognitive complexity (push diff)..."
   set +e
-  cc_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|mjs|ts|tsx)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)' | head -50)
+  cc_all_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|mjs|ts|tsx)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)')
+  cc_total=$(printf '%s\n' "$cc_all_files" | sed '/^$/d' | wc -l | tr -d ' ')
+  cc_files=$(printf '%s\n' "$cc_all_files" | head -50)
   set -e
+
+  if [ "$cc_total" -gt 50 ]; then
+    echo "  ❌ Cognitive complexity check: too many JS/TS files changed ($cc_total > 50)."
+    echo "  Split the push or override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
+    exit 1
+  fi
 
   if [ -n "${cc_files:-}" ]; then
     set +e

@@ -37,26 +37,35 @@ function parseReviews() {
     const content = readFileSync(REVIEWS_PATH, "utf-8").replace(/^\uFEFF/, "");
     const lines = content.trim().split("\n").filter(Boolean);
     const records = [];
+    let skipped = 0;
     for (const line of lines) {
       try {
         records.push(JSON.parse(line));
       } catch {
-        // Skip malformed lines
+        skipped++;
       }
+    }
+    if (skipped > 0) {
+      console.error(`Warning: Skipped ${skipped} malformed JSONL line(s) in ${REVIEWS_PATH}`);
     }
     return records;
   } catch (err) {
-    console.error(`Error reading ${REVIEWS_PATH}: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(
+      `Error reading ${REVIEWS_PATH}: ${err instanceof Error ? err.message : String(err)}`
+    );
     process.exit(2);
   }
 }
 
 function filterByPR(records, prNum) {
-  return records.filter((r) => r.pr === prNum);
+  return records.filter((r) => Number(r.pr) === prNum);
 }
 
 function filterByRange(records, start, end) {
-  return records.filter((r) => r.pr >= start && r.pr <= end);
+  return records.filter((r) => {
+    const pr = Number(r.pr);
+    return Number.isFinite(pr) && pr >= start && pr <= end;
+  });
 }
 
 function computeMetrics(records) {
@@ -123,17 +132,30 @@ function printMetrics(metrics) {
     for (const src of sources) {
       const s = metrics.perSource[src];
       const rate = s.total > 0 ? (s.fixed / s.total).toFixed(2) : "N/A";
-      console.log(`    ${src || "(unknown)"}: ${s.total} total, ${s.fixed} fixed, ${s.deferred} deferred, ${s.rejected} rejected (${rate})`);
+      console.log(
+        `    ${src || "(unknown)"}: ${s.total} total, ${s.fixed} fixed, ${s.deferred} deferred, ${s.rejected} rejected (${rate})`
+      );
     }
   }
 
-  const prs = Object.keys(metrics.perPR).sort((a, b) => Number(a) - Number(b));
+  const prs = Object.keys(metrics.perPR).sort((a, b) => {
+    const na = Number(a);
+    const nb = Number(b);
+    const aNum = Number.isFinite(na);
+    const bNum = Number.isFinite(nb);
+    if (aNum && bNum) return na - nb;
+    if (aNum) return -1;
+    if (bNum) return 1;
+    return a.localeCompare(b);
+  });
   if (prs.length > 0) {
     console.log("\n  Per-PR Breakdown:");
     for (const pr of prs) {
       const p = metrics.perPR[pr];
       const rate = p.total > 0 ? (p.fixed / p.total).toFixed(2) : "N/A";
-      console.log(`    PR #${pr}: ${p.total} total, ${p.fixed} fixed, ${p.deferred} deferred, ${p.rejected} rejected (rate: ${rate}, ${p.rounds} review records)`);
+      console.log(
+        `    PR #${pr}: ${p.total} total, ${p.fixed} fixed, ${p.deferred} deferred, ${p.rejected} rejected (rate: ${rate}, ${p.rounds} review records)`
+      );
     }
   }
 
@@ -146,30 +168,46 @@ let filtered;
 
 if (prArg) {
   const prVal = prArg.includes("=") ? prArg.split("=")[1] : args[args.indexOf(prArg) + 1];
-  const prNum = parseInt(prVal, 10);
-  if (isNaN(prNum)) {
+  if (!prVal) {
+    console.error("Error: --pr requires a number");
+    process.exit(2);
+  }
+  const prNum = Number.parseInt(prVal, 10);
+  if (Number.isNaN(prNum)) {
     console.error("Error: --pr requires a number");
     process.exit(2);
   }
   filtered = filterByPR(allRecords, prNum);
 } else if (rangeArg) {
-  const rangeVal = rangeArg.includes("=") ? rangeArg.split("=")[1] : args[args.indexOf(rangeArg) + 1];
+  const rangeVal = rangeArg.includes("=")
+    ? rangeArg.split("=")[1]
+    : args[args.indexOf(rangeArg) + 1];
+  if (!rangeVal) {
+    console.error("Error: --range requires format N-M (e.g., --range 378-416)");
+    process.exit(2);
+  }
   const parts = rangeVal.split("-");
   if (parts.length !== 2) {
     console.error("Error: --range requires format N-M (e.g., --range 378-416)");
     process.exit(2);
   }
-  const start = parseInt(parts[0], 10);
-  const end = parseInt(parts[1], 10);
-  if (isNaN(start) || isNaN(end)) {
+  const start = Number.parseInt(parts[0], 10);
+  const end = Number.parseInt(parts[1], 10);
+  if (Number.isNaN(start) || Number.isNaN(end)) {
     console.error("Error: --range values must be numbers");
+    process.exit(2);
+  }
+  if (end < start) {
+    console.error("Error: --range end must be >= start");
     process.exit(2);
   }
   filtered = filterByRange(allRecords, start, end);
 } else if (allFlag) {
   filtered = allRecords;
 } else {
-  console.log("Usage: node scripts/compute-changelog-metrics.js --pr N | --range N-M | --all [--json]");
+  console.log(
+    "Usage: node scripts/compute-changelog-metrics.js --pr N | --range N-M | --all [--json]"
+  );
   process.exit(0);
 }
 

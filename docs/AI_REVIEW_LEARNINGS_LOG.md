@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.89 **Created:** 2026-01-02 **Last Updated:** 2026-03-04
+**Document Version:** 17.90 **Created:** 2026-01-02 **Last Updated:** 2026-03-05
 
 ## Purpose
 
@@ -364,7 +364,7 @@ accumulate.
 
 </details>
 <details>
-<summary>Previous Consolidation (#1)</summary>
+<summary>Previous Consolidation (#2)</summary>
 
 - **Date:** 2026-03-04
 - **Reviews consolidated:** #402-#444
@@ -933,6 +933,30 @@ _PR Ecosystem v2 changelog documentation. Docs-only PR._
 - 1 Qodo bug: incorrect path `.planning/phases/01-07/` → per-phase-slug paths
 - **Patterns**: Verify-Doc-Math-Before-Commit; Clarify-AI-Implementation-Time;
   Consistent-Parenthetical-Evidence
+
+---
+
+### Review #448: PR #417 R1 — SonarCloud + Qodo + Semgrep + CI (2026-03-05)
+
+_System Overhaul Review. 22 items from 4 sources._
+
+**Source:** SonarCloud (8), Qodo suggestions (10), Qodo compliance (2), Semgrep
+(1), CI/Prettier (1) **Total:** 22 **Fixed:** 18 **Deferred:** 0 **Rejected:** 4
+
+- **SonarCloud (8):** 6x `Number.parseInt`/`Number.isNaN` in
+  compute-changelog-metrics.js (MINOR), optional chain + useless assignment in
+  test-correctness.ts (MAJOR)
+- **Qodo (10):** Numeric comparison normalization, deterministic PR sorting,
+  range validation, CLI guard checks, swallowed parse errors (RED compliance),
+  head-50 bypass in pre-push, duplicate consolidation heading, schema
+  consistency
+- **Semgrep (1):** Array bounds check warning (addressed via Qodo numeric fix)
+- **CI (1):** Prettier formatting on 6 files
+- **Rejected (4):** `--no-eslintrc` removal (intentional isolation), file path
+  spaces (controlled codebase), FD3 guard (managed by hook framework),
+  terminology rename (project convention)
+- **Patterns:** Log-Malformed-JSONL-Lines; Validate-CLI-Args-Before-Parse;
+  Guard-Head-Truncation-Bypass
 
 ---
 

@@ -379,8 +379,9 @@ if (rel.startsWith("..")) {
 
 - [ ] **Dry-run mode from start** — Design validators and migration scripts with
       `--dry-run` mode from the beginning. This allows safe testing before
-      destructive operations. Retrofitting dry-run is harder than building it in.
-      Pattern: `if (dryRun) { console.log(\`Would: ${action}\`); } else { execute(); }`
+      destructive operations. Retrofitting dry-run is harder than building it
+      in. Pattern: `if (dryRun) { console.log(\`Would: ${action}\`); } else {
+      execute(); }`
 
 ### Data Safety
 
