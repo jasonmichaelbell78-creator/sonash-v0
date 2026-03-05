@@ -1,6 +1,6 @@
 # Code Review Patterns Reference
 
-**Document Version:** 3.9 **Source:** Distilled from 347 AI code reviews **Last
+**Document Version:** 4.0 **Source:** Distilled from 347 AI code reviews **Last
 Updated:** 2026-02-26
 
 ---
@@ -314,6 +314,34 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
+### Suppress Internal Tooling Security Noise
+
+🟡 **Rule:** Suppress Internal Tooling Security Noise — recurring pattern from 6
+reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Add Security Checklist To Ecosystem Audit Checker Template
+
+🟡 **Rule:** Add Security Checklist To Ecosystem Audit Checker Template —
+recurring pattern from 6 reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### When Adding Escapesanitization Functions
+
+🟡 **Rule:** When Adding Escapesanitization Functions — recurring pattern from 6
+reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Escapecell Propagation
+
+🟡 **Rule:** Escapecell Propagation — recurring pattern from 6 reviews (#448,
+#449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
 ## GitHub Actions
 
 | Priority | Pattern              | Rule                                                       | Why                                                |
@@ -473,6 +501,48 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | TDMS DEBT entry consistency   | Use `null` (not `""`) for empty optional fields; always include `source`   | Schema inconsistency causes TDMS pipeline failures (4x across PRs)       |
 
 ---
+
+### Efficiency
+
+🟡 **Rule:** Efficiency — recurring pattern from 6 reviews (#448, #449, #450,
+#452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Pre Push Hook
+
+🟡 **Rule:** Pre Push Hook — recurring pattern from 6 reviews (#448, #449, #450,
+#452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Blocking Implement Cc Pre Push Check
+
+🟡 **Rule:** Blocking Implement Cc Pre Push Check — recurring pattern from 6
+reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Cc Pre Push Check
+
+🟡 **Rule:** Cc Pre Push Check — recurring pattern from 6 reviews (#448, #449,
+#450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Critical Implement Cc Pre Push Check
+
+🟡 **Rule:** Critical Implement Cc Pre Push Check — recurring pattern from 6
+reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Ci 1
+
+🟡 **Rule:** Ci 1 — recurring pattern from 5 reviews (#451, #453, #454, #456,
+#457)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
 
 ## Git
 
@@ -772,6 +842,296 @@ recurring pattern from 3 reviews (#445, #447, #453)
 
 **Source:** Consolidation #10 (Reviews #466-#477)
 
+### Geministyleguidemd
+
+🟡 **Rule:** Geministyleguidemd — recurring pattern from 6 reviews (#448, #449,
+#450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Qodopr Agenttoml
+
+🟡 **Rule:** Qodopr Agenttoml — recurring pattern from 6 reviews (#448, #449,
+#450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### No New Fixtemplates Needed
+
+🟡 **Rule:** No New Fixtemplates Needed — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Single Highest Impact Change
+
+🟡 **Rule:** Single Highest Impact Change — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Trend
+
+🟡 **Rule:** Trend — recurring pattern from 6 reviews (#448, #449, #450, #452,
+#455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Score
+
+🟡 **Rule:** Score — recurring pattern from 6 reviews (#448, #449, #450, #452,
+#455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### No New Templates Needed
+
+🟡 **Rule:** No New Templates Needed — recurring pattern from 6 reviews (#448,
+#449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Review Data
+
+🟡 **Rule:** Review Data — recurring pattern from 6 reviews (#448, #449, #450,
+#452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Enforce Propagation Grep On Truthy Filters
+
+🟡 **Rule:** Enforce Propagation Grep On Truthy Filters — recurring pattern from
+6 reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Ecosystem Audit Template
+
+🟡 **Rule:** Ecosystem Audit Template — recurring pattern from 6 reviews (#448,
+#449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Cc Progressive Reduction
+
+🟡 **Rule:** Cc Progressive Reduction — recurring pattern from 6 reviews (#448,
+#449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Propagation Miss
+
+🟡 **Rule:** Propagation Miss — recurring pattern from 6 reviews (#448, #449,
+#450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Qodo Repeat Rejection Noise
+
+🟡 **Rule:** Qodo Repeat Rejection Noise — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Fixtemplates
+
+🟡 **Rule:** Fixtemplates — recurring pattern from 6 reviews (#448, #449, #450,
+#452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Regex Sweep After Any S5852 Fix
+
+🟡 **Rule:** Regex Sweep After Any S5852 Fix — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Pattern 13 Fix One Audit All
+
+🟡 **Rule:** Pattern 13 Fix One Audit All — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Qodo Suppression
+
+🟡 **Rule:** Qodo Suppression — recurring pattern from 6 reviews (#448, #449,
+#450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Critical Suppress Qodo Cjs Compliance Noise
+
+🟡 **Rule:** Critical Suppress Qodo Cjs Compliance Noise — recurring pattern
+from 6 reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Run Propagation Audit Before Pushing Review Fixes
+
+🟡 **Rule:** Run Propagation Audit Before Pushing Review Fixes — recurring
+pattern from 6 reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Batch Related Fixes
+
+🟡 **Rule:** Batch Related Fixes — recurring pattern from 6 reviews (#448, #449,
+#450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### First Scan Volume
+
+🟡 **Rule:** First Scan Volume — recurring pattern from 6 reviews (#448, #449,
+#450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Custom Semgrep Rule Maturation
+
+🟡 **Rule:** Custom Semgrep Rule Maturation — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Batched Protocol Effectiveness
+
+🟡 **Rule:** Batched Protocol Effectiveness — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Semgrep Rule Template
+
+🟡 **Rule:** Semgrep Rule Template — recurring pattern from 6 reviews (#448,
+#449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Sonarcloud S6354 Suppression
+
+🟡 **Rule:** Sonarcloud S6354 Suppression — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Semgrep Rule Test Harness
+
+🟡 **Rule:** Semgrep Rule Test Harness — recurring pattern from 6 reviews (#448,
+#449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Run Sonarcloud Locally Before Pushing
+
+🟡 **Rule:** Run Sonarcloud Locally Before Pushing — recurring pattern from 6
+reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Batched Protocol Is Effective
+
+🟡 **Rule:** Batched Protocol Is Effective — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Auto Compute Changelog Metrics
+
+🟡 **Rule:** Auto Compute Changelog Metrics — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Tool Exclusions Needed Upfront
+
+🟡 **Rule:** Tool Exclusions Needed Upfront — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Sonarcloud Repeat Fps
+
+🟡 **Rule:** Sonarcloud Repeat Fps — recurring pattern from 6 reviews (#448,
+#449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Sonarcloud Config
+
+🟡 **Rule:** Sonarcloud Config — recurring pattern from 6 reviews (#448, #449,
+#450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Planning Artifact Template
+
+🟡 **Rule:** Planning Artifact Template — recurring pattern from 6 reviews
+(#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Add Planning Exclusions To All Scanning Tools Before Committ
+
+🟡 **Rule:** Add Planning Exclusions To All Scanning Tools Before Committ —
+recurring pattern from 6 reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Suppress Sonarcloud S5852s4036 False Positives
+
+🟡 **Rule:** Suppress Sonarcloud S5852s4036 False Positives — recurring pattern
+from 6 reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Design Validators With Dry Runcomparison Pattern From The St
+
+🟡 **Rule:** Design Validators With Dry Runcomparison Pattern From The St —
+recurring pattern from 6 reviews (#448, #449, #450, #452, #455, #458)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Sonarcloud 8
+
+🟡 **Rule:** Sonarcloud 8 — recurring pattern from 3 reviews (#451, #453, #456)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Qodo 10
+
+🟡 **Rule:** Qodo 10 — recurring pattern from 3 reviews (#451, #453, #456)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Semgrep 1
+
+🟡 **Rule:** Semgrep 1 — recurring pattern from 3 reviews (#451, #453, #456)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Rejected 4
+
+🟡 **Rule:** Rejected 4 — recurring pattern from 3 reviews (#451, #453, #456)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Log Malformed Jsonl Lines
+
+🟡 **Rule:** Log Malformed Jsonl Lines — recurring pattern from 3 reviews (#451,
+#453, #456)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
+### Validate Cli Args Before Parse
+
+🟡 **Rule:** Validate Cli Args Before Parse — recurring pattern from 3 reviews
+(#451, #453, #456)
+
+**Source:** Consolidation #2 (Reviews #448-#458)
+
 ## Enforcement
 
 These patterns are automatically enforced by:
@@ -793,6 +1153,7 @@ helpers.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.0     | 2026-03-05 | **CONSOLIDATION #2:** Auto-added 52 patterns (suppress-internal-tooling-security-noise, add-security-checklist-to-ecosystem-audit-checker-template, when-adding-escapesanitization-functions, escapecell-propagation, efficiency, pre-push-hook, blocking-implement-cc-pre-push-check, cc-pre-push-check, critical-implement-cc-pre-push-check, ci-1 …(+42 more)). Source: Reviews #448-#458.                                                                                                                                                                                                                                                                                                                           |
 | 3.9     | 2026-03-02 | **CONSOLIDATION #10:** Auto-added 18 patterns (sanitize-markdown-headings, sanitize-markdown-render, composite-key-for-nullable-ids, temp-file-symlink-race, regex-character-class-escaping, cognitive-complexity-extraction, cc-reduction-getlatestloghash, toctou-race-appendentries, retrorecordparse-safeparse, invocation-id-collision …(+8 more)). Source: Reviews #466-#477.                                                                                                                                                                                                                                                                                                                                     |
 | 3.8     | 2026-03-01 | **CONSOLIDATION #8:** Auto-added 1 patterns (pattern-checker-rename-no-fallback-requires-all-4-elements). Source: Reviews #442-#453.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 3.7     | 2026-03-01 | **CONSOLIDATION #5:** Auto-added 2 patterns (learnings, premature-dedup-new-set-before-duplicate-detection-defeats). Source: Reviews #407-#419.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |

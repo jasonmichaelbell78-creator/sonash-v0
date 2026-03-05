@@ -108,6 +108,18 @@ cycles:
 - **JSON.parse output type handling** — Do NOT suggest adding Date, RegExp, Map,
   Set, or BigInt handling for `JSON.parse` output. `JSON.parse` can only produce
   string, number, boolean, null, array, and plain object.
+- **NEXT*PUBLIC*\* environment variables** — These are NOT credentials or
+  secrets. Next.js intentionally exposes NEXT*PUBLIC* prefixed env vars to the
+  browser. Do NOT flag them as "exposed secrets" or "sensitive data in client
+  code".
+- **CJS/ESM module format** — Do NOT suggest converting CJS files to ESM or vice
+  versa. Files under `scripts/` and `.claude/hooks/` use their intentional
+  module format. Don't suggest `import` in `.js` files that use `require()`, or
+  `require()` in files that use `import`.
+- **scripts/ internal tooling** — Do NOT suggest production-grade security
+  hardening (structured logging, secret rotation, RBAC, rate limiting) for
+  offline CLI dev tools under `scripts/`. These are internal automation scripts,
+  not production services.
 
 ## Code Standards
 

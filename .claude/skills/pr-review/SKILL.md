@@ -82,8 +82,9 @@ grep -rn 'writeFileSync\|renameSync\|appendFileSync' .claude/hooks/ scripts/ --i
 
 ### 4. Cognitive Complexity
 
-Pre-commit hook auto-blocks CC >15 on staged files. After extracting helpers,
-re-check the ENTIRE file.
+Pre-push hook now **enforces CC ≤15 as error** on all JS/TS files in the push
+diff (added Session #205). Pre-commit warns; pre-push blocks. After extracting
+helpers, re-check the ENTIRE file. Override: `SKIP_CC=1 SKIP_REASON="reason"`.
 
 ### 5. Filesystem Guard Pre-Check
 
@@ -174,6 +175,9 @@ grep -c 'if\|&&\|||\|case\|?\|catch' eslint-plugin-sonash/rules/<rule>.js
 ```
 
 ### 17. Fix-One-Audit-All Propagation Check
+
+**Pre-commit now runs propagation warning** (non-blocking) for staged files
+(added Session #205). The pre-push hook already blocks on propagation misses.
 
 **Trigger:** PR fixes a bug or adds handling for a pattern (ChainExpression,
 path normalization, guard pattern, etc.) in one file. Before committing, grep

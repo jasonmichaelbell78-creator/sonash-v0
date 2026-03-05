@@ -217,8 +217,9 @@ const FILES = args.filter((a) => !a.startsWith("--"));
 const GLOBAL_EXCLUDE = [
   // Documentation files that contain pattern examples (not violations)
   /^docs\/AI_REVIEW_LEARNINGS_LOG\.md$/,
-  // This file contains pattern definitions as strings (meta-detection false positives)
+  // These files contain pattern definitions as strings (meta-detection false positives)
   /^scripts\/check-pattern-compliance\.js$/,
+  /^scripts\/check-propagation\.js$/,
   // Pattern test suite contains anti-pattern examples as test fixtures (not violations)
   /^tests\/pattern-compliance\.test\.js$/,
   // Semgrep test fixtures contain intentionally bad code for static analysis detection
@@ -1546,6 +1547,43 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)(?:app|components|pages|lib)\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
+  // rmSync before renameSync creates data loss race condition (PR #407 retro)
+  // Anti-pattern: rmSync(dest); renameSync(tmp, dest) — if crash between rm and rename, data is lost
+  {
+    id: "rmsync-before-renamesync",
+    severity: "high",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!/\brmSync\s*\(/.test(line)) continue;
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        // Look ahead up to 10 lines for renameSync
+        const fwdEnd = Math.min(lines.length, i + 11);
+        for (let j = i + 1; j < fwdEnd; j++) {
+          if (/\brenameSync\s*\(/.test(lines[j])) {
+            matches.push({
+              line: i + 1,
+              match: `${trimmed.slice(0, 80)} → ${lines[j].trim().slice(0, 80)}`,
+            });
+            break;
+          }
+        }
+      }
+      return matches;
+    },
+    message:
+      "rmSync before renameSync creates data loss race condition — if crash between rm and rename, data is lost",
+    fix: "Use rename-only pattern: renameSync(tmp, dest) (atomic on same filesystem). Or try { renameSync } catch { copyFileSync + unlinkSync } for cross-device. See FIX_TEMPLATE #36.",
+    review: "PR #407 retro — 5 rounds of rmSync churn",
+    fileTypes: [".js", ".mjs", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["rmsync-before-renamesync"] || [],
+  },
+
   {
     id: "no-array-index-as-key",
     severity: "medium",

@@ -49,6 +49,42 @@ const KNOWN_PATTERN_RULES = [
     description: "path.resolve() without path containment guard",
     recommended: "Add validatePathInDir() or startsWith(allowedDir) check after path.resolve()",
   },
+  {
+    name: "writeFileSync-without-symlink-guard",
+    searchPattern: String.raw`(^|[^[:alnum:]_$])writeFileSync[[:space:]]*\(`,
+    excludeFilePattern:
+      /(^|[^A-Za-z0-9_$])(?:isSafeToWrite|isSymbolicLink|lstatSync|guardSymlink|refuseSymlink)\s*\(/,
+    description:
+      "writeFileSync without symlink check — use isSafeToWrite() or lstatSync + isSymbolicLink() guard",
+    recommended:
+      "Add isSafeToWrite(filePath) guard before writeFileSync, or use safe-fs.js helpers",
+  },
+  {
+    name: "rmSync-usage",
+    searchPattern: String.raw`(^|[^[:alnum:]_$])rmSync[[:space:]]*\(`,
+    excludeFilePattern: null,
+    description:
+      "rmSync creates race condition risk with renameSync — prefer rename-only atomic patterns",
+    recommended:
+      "Use rename-only pattern or try { renameSync } catch { copyFileSync + unlinkSync } for cross-device",
+  },
+  {
+    name: "escapeCell-inconsistency",
+    searchPattern: String.raw`(^|[^[:alnum:]_$])writeFileSync[[:space:]]*\([^)]*\.md`,
+    excludeFilePattern: /(^|[^A-Za-z0-9_$])escapeCell\s*\(/,
+    description:
+      "Markdown table write without escapeCell — pipe chars in data corrupt table formatting",
+    recommended: "Use escapeCell() for all dynamic content inserted into markdown table cells",
+  },
+  {
+    name: "truthy-filter-unsafe",
+    searchPattern: String.raw`\.filter[[:space:]]*\([[:space:]]*Boolean[[:space:]]*\)`,
+    excludeFilePattern: null,
+    description:
+      ".filter(Boolean) treats 0 and '' as falsy — unsafe for nullable numbers or empty strings",
+    recommended:
+      "Use .filter(x => x != null) or .filter(x => x !== undefined) for type-safe filtering",
+  },
 ];
 
 /** Normalize path separators for cross-platform comparison */

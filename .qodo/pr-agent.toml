@@ -53,6 +53,24 @@ When reviewing files in scripts/ or .claude/hooks/:
    processes JSON.parse output. JSON.parse can only produce string, number,
    boolean, null, array, and plain object — these other types are impossible.
    (Rejected in PR #379, 5 consecutive rounds R3-R7 with same rationale)
+
+9. Do NOT flag "top-level await" or suggest converting to async IIFE in
+   CJS files under scripts/ or .claude/hooks/. These files use ESM imports
+   (import from) and are executed directly with Node.js, not bundled.
+   Top-level await is valid in ESM modules.
+   (Rejected in PRs #397, #407, #411 — repeat-rejected across 3+ PRs)
+
+10. Do NOT re-raise items that were already rejected in a prior round of
+    the SAME PR review. If an item has the same rule ID and same file as
+    a previously rejected item, skip it. Repeat-rejected items add churn
+    without value.
+    (Pattern observed across all large PRs #378-#416)
+
+11. Do NOT flag data quality, formatting, or content issues in generated
+    TDMS output files under data/ecosystem-v2/*.jsonl, docs/technical-debt/
+    views/, or docs/technical-debt/raw/. These are pipeline-generated
+    artifacts, not hand-edited source files.
+    (Rejected ~50 times across PRs #378-#416)
 """
 
 [pr_code_suggestions]

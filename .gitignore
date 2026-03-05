@@ -85,6 +85,9 @@ serviceAccountKey.json
 .claude/hooks/.context-tracking-state.json
 .claude/hooks/.session-state.json
 .claude/hooks/.agent-trigger-state.json
+.claude/hooks/.session-agents.json
+.claude/hooks/.alerts-cooldown.json
+.claude/hooks/.directive-dedup.json
 .claude/hooks/.fetch-cache.json
 .claude/state/reviews.jsonl
 .claude/state/health-score-log.jsonl

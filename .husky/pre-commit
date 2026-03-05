@@ -245,6 +245,22 @@ else
   fi
 fi
 
+# 3b. Propagation check WARNING (non-blocking early heads-up)
+# Pattern 13 (Fix-One-Audit-All): warn if staged files have pattern gaps
+# that exist in sibling files. Pre-push already blocks; this is a heads-up.
+echo "  ▶ Running propagation check (staged, warning only)..."
+set +e
+prop_staged_output=$(node scripts/check-propagation.js --staged 2>&1)
+prop_staged_exit=$?
+set -e
+if [ "$prop_staged_exit" -ne 0 ] || echo "$prop_staged_output" | grep -q "⚠️"; then
+  _prop_fd="2"
+  if { : >&3; } 2>/dev/null; then _prop_fd="3"; fi
+  echo "  ⚠️ Propagation check: pattern gaps detected in staged area (not blocking)" >&${_prop_fd}
+  printf '%s\n' "$prop_staged_output" | grep "⚠️" | head -5 >&${_prop_fd}
+  node scripts/append-hook-warning.js --hook=pre-commit --type=propagation --severity=info --message="Propagation pattern gaps in staged files" --action="Review sibling files for same pattern" 2>/dev/null || true
+fi
+
 # 4. Audit file S0/S1 validation (BLOCKING - Session #98)
 # Validates that S0/S1 findings have proper verification_steps
 # Override with: SKIP_CHECKS="audit" SKIP_REASON="reason" git commit ...

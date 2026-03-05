@@ -8,9 +8,9 @@
 
 ## Purpose
 
-Core rules and constraints loaded on every AI turn. Kept minimal (~120 lines) to
+Core rules and constraints loaded on every AI turn. Kept minimal (~135 lines) to
 reduce token waste. Situational guidance lives in on-demand reference docs (see
-Section 7).
+Section 8).
 
 ---
 
@@ -42,7 +42,24 @@ Section 7).
 - Add new queries to service files, not inline in components
 - Use types from `types/` or `functions/src/schemas.ts`
 
-## 4. Critical Anti-Patterns
+## 4. Behavioral Guardrails
+
+> [!CAUTION] These are non-negotiable. Violating these wastes the user's time.
+
+1. **Ask on first confusion, not fourth.** If you don't understand an
+   instruction or format, ask immediately. Do NOT guess-and-retry multiple
+   times.
+2. **Never implement without explicit approval.** Present the plan, wait for
+   "go", then execute. No matter how obvious the fix seems.
+3. **When told to follow a skill's format, read the skill first.** Do not
+   improvise a format from memory. Read the actual SKILL.md, match it exactly.
+4. **"Stop and ask" is a hard stop.** If the user says this, stop all action
+   immediately and ask for clarification before proceeding.
+5. **One correction = full stop.** If corrected on approach or format, do not
+   make a small adjustment and retry. Stop, ask what's wrong, confirm the
+   correct approach, then proceed.
+
+## 5. Critical Anti-Patterns
 
 > **SELF-AUDIT**: Scan before writing shell scripts, workflows, or security
 > code.
@@ -72,7 +89,7 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 - Google OAuth requires COOP/COEP headers in `firebase.json`
 - Meeting widget `setInterval`: define `useCallback` before effect
 
-## 5. Coding Standards
+## 6. Coding Standards
 
 - **TypeScript**: Strict mode, no `any`
 - **Components**: Functional + Hooks
@@ -80,7 +97,7 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 - **State**: `useState` local, Context global, Firestore server
 - **Validation**: Zod runtime matching TS interfaces
 
-## 6. Agent/Skill Triggers
+## 7. Agent/Skill Triggers
 
 > [!CAUTION] Agents are REQUIRED when triggers match - not optional suggestions.
 
@@ -112,7 +129,7 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 **Detailed orchestration guidance** (parallelization, teams, capacity):
 [docs/agent_docs/AGENT_ORCHESTRATION.md](docs/agent_docs/AGENT_ORCHESTRATION.md)
 
-## 7. Reference Docs
+## 8. Reference Docs
 
 | Document                                                                           | Purpose                                    |
 | ---------------------------------------------------------------------------------- | ------------------------------------------ |
@@ -132,9 +149,10 @@ Evidence-Based).
 
 ## Version History
 
-| Version | Date       | Changes                              |
-| ------- | ---------- | ------------------------------------ |
-| 5.2     | 2026-02-26 | Agent triggers, reference docs table |
-| 5.1     | 2026-02-10 | Initial versioned release            |
+| Version | Date       | Changes                               |
+| ------- | ---------- | ------------------------------------- |
+| 5.3     | 2026-03-05 | Add behavioral guardrails (Section 4) |
+| 5.2     | 2026-02-26 | Agent triggers, reference docs table  |
+| 5.1     | 2026-02-10 | Initial versioned release             |
 
 [Full version history](docs/SESSION_HISTORY.md)

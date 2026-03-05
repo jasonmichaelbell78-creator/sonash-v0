@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.89 **Created:** 2026-01-02 **Last Updated:** 2026-03-04
+**Document Version:** 17.90 **Created:** 2026-01-02 **Last Updated:** 2026-03-05
 
 ## Purpose
 
@@ -349,7 +349,91 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
-<summary>Previous Consolidation (#1)</summary>
+<summary>Previous Consolidation (#2)</summary>
+
+- **Date:** 2026-03-05
+- **Reviews consolidated:** #448-#458
+- **Recurring patterns:**
+  - add-planning-exclusions-to-all-scanning-tools-before-committ (6x)
+  - add-security-checklist-to-ecosystem-audit-checker-template (6x)
+  - auto-compute-changelog-metrics (6x)
+  - avoidable- (6x)
+  - avoidable-rounds (6x)
+  - batch-related-fixes (6x)
+  - batched-protocol-effectiveness (6x)
+  - batched-protocol-is-effective (6x)
+  - blocking-implement-cc-pre-push-check (6x)
+  - cc-pre-push-check (6x)
+  - cc-progressive-reduction (6x)
+  - composite-key-for-nullable-ids (6x)
+  - critical-implement-cc-pre-push-check (6x)
+  - critical-suppress-qodo-cjs-compliance-noise (6x)
+  - custom-semgrep-rule-maturation (6x)
+  - design-validators-with-dry-runcomparison-pattern-from-the-st (6x)
+  - ecosystem-audit-template (6x)
+  - efficiency (6x)
+  - enforce-propagation-grep-on-truthy-filters (6x)
+  - escapecell-propagation (6x)
+  - first-scan-volume (6x)
+  - fixtemplates (6x)
+  - geministyleguidemd (6x)
+  - no-new-fixtemplates-needed (6x)
+  - no-new-templates-needed (6x)
+  - note (6x)
+  - pattern-13-fix-one-audit-all (6x)
+  - pattern-checker (6x)
+  - planning-artifact-template (6x)
+  - pre-push-hook (6x)
+  - propagation-miss (6x)
+  - qodo-repeat-rejection-noise (6x)
+  - qodo-suppression (6x)
+  - qodopr-agenttoml (6x)
+  - regex-sweep-after-any-s5852-fix (6x)
+  - review-data (6x)
+  - rollback-on-dual-write-failure (6x)
+  - run-propagation-audit-before-pushing-review-fixes (6x)
+  - run-sonarcloud-locally-before-pushing (6x)
+  - score (6x)
+  - semgrep-rule-template (6x)
+  - semgrep-rule-test-harness (6x)
+  - single-highest-impact-change (6x)
+  - sonarcloud-config (6x)
+  - sonarcloud-repeat-fps (6x)
+  - sonarcloud-s6354-suppression (6x)
+  - suppress-internal-tooling-security-noise (6x)
+  - suppress-sonarcloud-s5852s4036-false-positives (6x)
+  - tool-exclusions-needed-upfront (6x)
+  - trend (6x)
+  - when-adding-escapesanitization-functions (6x)
+  - ci (5x)
+  - ci-1 (5x)
+  - qodo (5x)
+  - log-malformed-jsonl-lines (3x)
+  - qodo-10 (3x)
+  - rejected-4 (3x)
+  - semgrep-1 (3x)
+  - sonarcloud (3x)
+  - sonarcloud-8 (3x)
+  - validate-cli-args-before-parse (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#13)</summary>
+
+- **Date:** 2026-03-04
+- **Reviews consolidated:** #402-#449
+- **Recurring patterns:**
+  - qodo (13x)
+  - sonarcloud (12x)
+  - ci (7x)
+  - gemini (5x)
+  - learnings (4x)
+  - composite-key-for-nullable-ids (3x)
+  - rollback-on-dual-write-failure (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#12)</summary>
 
 - **Date:** 2026-03-04
 - **Reviews consolidated:** #402-#444
@@ -362,7 +446,7 @@ accumulate.
 
 </details>
 <details>
-<summary>Previous Consolidation (#1)</summary>
+<summary>Previous Consolidation (#11)</summary>
 
 - **Date:** 2026-03-02
 - **Reviews consolidated:** #402-#442
@@ -918,6 +1002,115 @@ _PR Ecosystem v2 changelog documentation. Docs-only PR._
 - 1 Qodo bug: incorrect path `.planning/phases/01-07/` → per-phase-slug paths
 - **Patterns**: Verify-Doc-Math-Before-Commit; Clarify-AI-Implementation-Time;
   Consistent-Parenthetical-Evidence
+
+---
+
+### Review #448: PR #417 R1 — SonarCloud + Qodo + Semgrep + CI (2026-03-05)
+
+_System Overhaul Review. 22 items from 4 sources._
+
+**Source:** SonarCloud (8), Qodo suggestions (10), Qodo compliance (2), Semgrep
+(1), CI/Prettier (1) **Total:** 22 **Fixed:** 18 **Deferred:** 0 **Rejected:** 4
+
+- **SonarCloud (8):** 6x `Number.parseInt`/`Number.isNaN` in
+  compute-changelog-metrics.js (MINOR), optional chain + useless assignment in
+  test-correctness.ts (MAJOR)
+- **Qodo (10):** Numeric comparison normalization, deterministic PR sorting,
+  range validation, CLI guard checks, swallowed parse errors (RED compliance),
+  head-50 bypass in pre-push, duplicate consolidation heading, schema
+  consistency
+- **Semgrep (1):** Array bounds check warning (addressed via Qodo numeric fix)
+- **CI (1):** Prettier formatting on 6 files
+- **Rejected (4):** `--no-eslintrc` removal (intentional isolation), file path
+  spaces (controlled codebase), FD3 guard (managed by hook framework),
+  terminology rename (project convention)
+- **Patterns:** Log-Malformed-JSONL-Lines; Validate-CLI-Args-Before-Parse;
+  Guard-Head-Truncation-Bypass
+
+---
+
+### Review #451: PR #417 R4 — Qodo + Gemini (2026-03-05)
+
+_System Overhaul Review R4. ~25 raw items across R1-R4 suggestions, 10 unique
+after dedup against R1-R3. Most were already processed or repeat-rejected._
+
+**Source:** Qodo suggestions (8), Gemini (2) **Total:** 10 **Fixed:** 4
+**Deferred:** 0 **Rejected:** 6
+
+- **Review #450 Total fix:** Corrected Total:4 → Total:11 (deduped count)
+- **FD3 guard:** Added fallback from >&3 to >&2 in pre-commit propagation check
+  to prevent "bad file descriptor" errors
+- **Prototype pollution:** Changed perSource/perPR to Object.create(null) +
+  String() coercion on keys from JSONL data
+- **fixRate type:** Return number|null instead of string for --json output
+  (separates data from presentation)
+- **REJECTED (6):** POSIX regex (3rd raise — correct for `git grep -E`), TS in
+  CC check (2nd raise — can't parse with --no-eslintrc),
+  sonarjs/cognitive-complexity (user decision), CLI flag ambiguity, negative
+  metrics guard, NUL paths
+- **Pattern:** Qodo Suggestions re-raise rejected items across rounds. Always
+  check prior rejections before re-investigating.
+
+---
+
+### Review #450: PR #417 R3 — Qodo + SonarCloud + Semgrep + Gemini (2026-03-05)
+
+_System Overhaul Review R3. 16 raw items from 6 sources, 11 unique after dedup.
+Most Qodo bugs were stale re-raises of issues already fixed in R2._
+
+**Source:** SonarCloud (1), Qodo bugs (6), Qodo suggestions (3), Qodo compliance
+(1), Semgrep (1), Qodo reviewer guide (3), Gemini (1, summary only) **Total:**
+11 **Fixed:** 4 **Deferred:** 0 **Rejected:** 7
+
+- **Sonar resourceKey comma syntax:** SonarCloud `resourceKey` doesn't support
+  comma-separated file lists — split fp6/fp7/fp8 into individual entries
+  (fp6a/fp6b, fp7a/fp7b/fp7c, fp8a/fp8b)
+- **SonarCloud S1121 negated condition:** Flipped `r.total != null ? A : B` to
+  `r.total == null ? B : A` for readability
+- **CRLF-safe JSONL parsing:** Trim each line individually before JSON.parse to
+  handle `\r\n` line endings
+- **Doc consolidation numbering:** Renamed duplicate "#1"/"#2" consolidation
+  headers to #11/#12/#13 continuing the global sequence
+- **REJECTED (7):** Qodo Bugs #1-5 (stale, all fixed in R2), Semgrep array
+  access (false positive — bounds check at L196), sonarjs/cognitive-complexity
+  (requires plugin install not available via --no-eslintrc)
+- **Pattern:** SonarCloud `resourceKey` only accepts single path patterns, not
+  comma-separated lists. Always use one entry per file.
+
+---
+
+### Review #449: PR #417 R2 — Qodo + Gemini + Semgrep + CI (2026-03-05)
+
+_System Overhaul Review R2. 19 items from 5 sources, 13 unique after dedup._
+
+**Source:** Qodo bugs (6), Qodo suggestions (7), Qodo compliance (2), Gemini
+(2), Semgrep (1), CI/Prettier (1) **Total:** 13 **Fixed:** 10 **Deferred:** 0
+**Rejected:** 3
+
+- **Qodo Bug #1:** Propagation not blocking — added `--blocking` flag to
+  pre-push call
+- **Qodo Bug #2:** CC can't parse TS — scoped CC check to `.js`/`.mjs` only
+  (TS/TSX parsed by project ESLint, not bare `--no-eslintrc`)
+- **Qodo Bug #3:** Metrics null totals — derive total from
+  fixed+deferred+rejected when null + `toFiniteNumber` coercion for all numeric
+  fields
+- **Qodo Bug #4:** CC skipped on no-upstream — fallback to origin/main or
+  origin/master when @{u} unavailable
+- **Qodo Bug #5:** Committed runtime state files — gitignored + git rm --cached
+  for .session-agents.json, .alerts-cooldown.json, .directive-dedup.json
+- **Qodo Bug #6:** Sonar ignores too broad — narrowed S5852/S4036/S6354 to
+  specific script files instead of `scripts/**/*.js`
+- **Qodo Suggestion:** POSIX char classes — REJECTED (correct for `git grep -E`,
+  reviewer incorrectly assumed JS regex context)
+- **Qodo Suggestion:** void \_result in test fixture — fixed
+- **Qodo Suggestion:** numeric coercion — merged with bug #3
+- **CI (1):** Prettier formatting on check-propagation.js,
+  check-pattern-compliance.js
+- **Rejected (3):** POSIX char class replacement (patterns are POSIX ERE for
+  `git grep -E`), NUL-delimited paths (R1 repeat), invocation ID format
+  (auto-generated)
+- **Patterns:** Validate-Regex-Context-Before-Fix; Derive-Null-Totals;
+  Gitignore-Runtime-State; Narrow-Sonar-Suppressions
 
 ---
 
@@ -2545,5 +2738,1107 @@ template with built-in ChainExpression/walker/CC patterns.
   duplicate entries) — fix intake pipeline, not data file.
 - **Patterns**: Composite-Key-For-Nullable-IDs; Rollback-On-Dual-Write-Failure;
   Check-All-ID-Sets-On-Collision-Resolution
+
+---
+
+### PR #378 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                        |
+| -------------- | -------------------------------------------- |
+| Rounds         | 2 (R1-R2, 2026-02-18 through 2026-02-19)     |
+| Total items    | 17                                           |
+| Fixed          | 9                                            |
+| Deferred       | 1                                            |
+| Rejected       | 7                                            |
+| Review sources | Gemini Code Assist, Qodo                     |
+| PR scope       | Comprehensive system-test audit (23 domains) |
+| Files changed  | ~1,243 (+309,484/-60,753)                    |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source      | Items  | Fixed | Deferred | Rejected | Key Patterns                                    |
+| --------- | ---------- | ----------- | ------ | ----- | -------- | -------- | ----------------------------------------------- |
+| R1        | 2026-02-18 | Gemini/Qodo | 11     | 7     | 0        | 4        | Exit code coercion, TOCTOU race, absolute paths |
+| R2        | 2026-02-19 | Gemini/Qodo | 6      | 2     | 1        | 3        | GIT_DIR resolution, broken table row            |
+| **Total** |            |             | **17** | **9** | **1**    | **7**    |                                                 |
+
+#### Ping-Pong Chains
+
+None found. R1 and R2 addressed distinct items with no fix-creates-issue chains.
+
+#### Rejection Analysis
+
+| Category                  | Count | Accuracy | Notes                                                |
+| ------------------------- | ----- | -------- | ---------------------------------------------------- |
+| Public key false positive | 2     | 0%       | `NEXT_PUBLIC_*` keys flagged as credentials (Gemini) |
+| Swallowed exception       | 2     | 0%       | Internal tooling scripts, not production code (Qodo) |
+| TOCTOU over-flag          | 2     | 0%       | Internal scripts with controlled file access         |
+| Untrusted exec            | 1     | 0%       | `execFileSync("npm")` in trusted repo context        |
+
+**False positive rate:** 41% (7/17). Gemini and Qodo both flagged internal
+tooling scripts with production-grade security expectations. These patterns
+should be suppressed for `scripts/` directory.
+
+#### Recurring Patterns
+
+| Pattern                         | Occurrences                  | Automation Candidate?                | Effort |
+| ------------------------------- | ---------------------------- | ------------------------------------ | ------ |
+| Public key false positive       | PRs #378, #379 (Review #356) | Yes — suppress in Gemini/Qodo config | 10 min |
+| Internal tooling security noise | PRs #374, #378, #379         | Yes — path-based suppression         | 15 min |
+
+#### Previous Retro Action Item Audit
+
+**Last retro:** PR #374 (2026-02-18)
+
+| Action Item                                      | Implemented? | Impact of Gap |
+| ------------------------------------------------ | ------------ | ------------- |
+| Path containment: use path.sep boundary          | Yes          | N/A           |
+| Verify full lifecycle matrix for guard functions | Partially    | 0 rounds      |
+| Add CC complexity lint rule to pre-commit        | Not yet      | 0 rounds here |
+
+#### Cross-PR Systemic Analysis
+
+PR #378 is a clean cycle (2 rounds, 53% fix rate) despite massive scope (1,243
+files). This suggests large-but-mechanical PRs (audit template fill) generate
+fewer review issues than smaller algorithmic PRs (#374 had 40 items in 5 rounds
+for a fraction of the code).
+
+**Persistent pattern:** Gemini/Qodo security noise on internal scripts continues
+from PRs #374, #379. Suppression configs not yet updated.
+
+#### Skills/Templates to Update
+
+- **`.gemini/styleguide.md`**: Add `NEXT_PUBLIC_*` key suppression, internal
+  scripts exception
+- **`.qodo/pr-agent.toml`**: Mirror same suppressions
+- **No new FIX_TEMPLATES needed** — patterns were false positives, not code
+  issues
+
+#### Process Improvements
+
+1. **Suppress internal tooling security noise** — Add path-based exclusion for
+   `scripts/` in both Gemini and Qodo configs. Evidence: 5/7 rejections were
+   security false positives on scripts.
+
+#### Verdict
+
+- **Efficiency:** Good — 2 rounds for 1,243 files is well below average
+- **Avoidable rounds:** 0. Both rounds addressed legitimate new items
+- **Avoidable %:** 0%
+- **Single highest-impact change:** Suppress Gemini/Qodo security noise for
+  `scripts/` directory (would eliminate ~5 rejected items per PR)
+- **Trend:** Improvement from PR #374 (5 rounds → 2 rounds), but different PR
+  types make comparison limited
+- **Score:** 8.5/10 — Clean cycle, only improvement needed is reviewer config
+  tuning
+
+---
+
+### PR #381 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                           |
+| -------------- | ----------------------------------------------- |
+| Rounds         | 2 (R1-R2, 2026-02-20)                           |
+| Total items    | 15 (11 actionable + 4 rejected repeats)         |
+| Fixed          | 11                                              |
+| Deferred       | 0                                               |
+| Rejected       | 4                                               |
+| Review sources | Qodo Compliance, Qodo Code, Gemini Code Assist  |
+| PR scope       | Fix tool-use IDs, PR ecosystem audit, debt plan |
+| Files changed  | ~1,208 (+300,129/-60,983)                       |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source      | Items  | Fixed  | Deferred | Rejected | Key Patterns                                                 |
+| --------- | ---------- | ----------- | ------ | ------ | -------- | -------- | ------------------------------------------------------------ |
+| R1        | 2026-02-20 | Qodo+Gemini | 6      | 6      | 0        | 0        | Empty catch logging, truthy filter (r.id), regex broadening  |
+| R2        | 2026-02-20 | Qodo        | 9      | 5      | 0        | 4        | Truthy filter propagation (r.pr), dedup metrics, err.message |
+| **Total** |            |             | **15** | **11** | **0**    | **4**    |                                                              |
+
+#### Ping-Pong Chains
+
+##### Chain 1: Truthy Filter Propagation (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                         | Files Affected           | Root Cause               |
+| ----- | --------------------------------------------------------------------- | ------------------------ | ------------------------ |
+| R1    | Fixed `r.id` truthy filter to `typeof` check (id:0 safety)            | sync-reviews-to-jsonl.js | Initial fix              |
+| R2    | Same class of bug at `r.pr_number \|\| r.pr` lines 152, 274 not fixed | sync-reviews-to-jsonl.js | Propagation miss from R1 |
+
+**Avoidable rounds:** 1 (R2 propagation items). After fixing `r.id` truthy
+filter, should have grepped for all similar `||` truthy patterns in the same
+file.
+
+**Prevention:** Pattern 13 (Fix-One-Audit-All): after fixing truthy filter in
+one location, grep file for all `||` falsy-unsafe patterns.
+
+#### Rejection Analysis
+
+| Category                | Count | Accuracy | Notes                                   |
+| ----------------------- | ----- | -------- | --------------------------------------- |
+| Repeat compliance items | 4     | 0%       | Same items rejected in R1, re-raised R2 |
+
+**False positive rate:** 27% (4/15). All rejections were Qodo re-raising items
+already addressed or deliberately rejected in R1.
+
+#### Recurring Patterns
+
+| Pattern                     | Occurrences                | Automation Candidate? | Effort |
+| --------------------------- | -------------------------- | --------------------- | ------ |
+| Truthy filter propagation   | PRs #381 R1→R2, #374, #388 | Yes — ESLint rule     | 30 min |
+| Qodo repeat-rejection noise | PRs #378, #381, #394       | Yes — suppression     | 10 min |
+
+#### Previous Retro Action Item Audit
+
+**Last retro:** PR #379 (2026-02-20) — referenced in this PR's branch
+
+| Action Item                         | Implemented?  | Impact of Gap |
+| ----------------------------------- | ------------- | ------------- |
+| Algorithm design pre-check template | Yes (bc607c6) | N/A           |
+| CC complexity lint rule             | Not yet       | 0 rounds      |
+| Propagation check on all fixes      | Partially     | 1 round (R2)  |
+
+#### Cross-PR Systemic Analysis
+
+The truthy-filter propagation miss (R1→R2) is an instance of Pattern 13
+(Fix-One-Audit-All), previously seen in PRs #388 and #394. The pattern keeps
+recurring because the propagation grep is manual and easily forgotten.
+
+**Review #361 missing from archives** — entry was lost during consolidation.
+Data quality gap.
+
+#### Skills/Templates to Update
+
+- **No new templates needed** — Pattern 13 already covers this
+- **Review data:** Retroactive Review #361 entry may need recreation
+
+#### Process Improvements
+
+1. **Enforce propagation grep on truthy filters** — When fixing any `x || y`
+   falsy-unsafe pattern, grep the file for all similar patterns. Evidence: R2
+   had 2 propagation misses from R1's fix.
+
+#### Verdict
+
+- **Efficiency:** Good — 2 rounds, same day
+- **Avoidable rounds:** ~0.5 (R2 partially avoidable — propagation items)
+- **Avoidable %:** ~25%
+- **Single highest-impact change:** Run propagation grep after every
+  truthy-filter fix
+- **Trend:** Consistent with PR #378 (2 rounds). Propagation miss pattern
+  persists.
+- **Score:** 7.5/10 — Clean cycle but propagation miss is a known recurring gap
+
+---
+
+### PR #389 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                  |
+| -------------- | ------------------------------------------------------ |
+| Rounds         | 2 (R1-R2, 2026-02-25)                                  |
+| Total items    | 53 (22 R1 + 31 R2)                                     |
+| Fixed          | 49                                                     |
+| Deferred       | 0                                                      |
+| Rejected       | 4 (2 per round)                                        |
+| Review sources | Qodo Compliance, Qodo Code, Gemini                     |
+| PR scope       | Cherry-pick commits: ecosystem audits, PR #388 reviews |
+| Files changed  | ~1,048 (+252,221/-62,293)                              |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source      | Items  | Fixed  | Deferred | Rejected | Key Patterns                                                      |
+| --------- | ---------- | ----------- | ------ | ------ | -------- | -------- | ----------------------------------------------------------------- |
+| R1        | 2026-02-25 | Qodo+Gemini | 22     | 20     | 0        | 2        | Path traversal guards (6 CRITICAL), symlink skip, full-path dedup |
+| R2        | 2026-02-25 | Qodo        | 31     | 29     | 0        | 2        | Path traversal (7 CRITICAL), unique finding IDs (10), DoS limits  |
+| **Total** |            |             | **53** | **49** | **0**    | **4**    |                                                                   |
+
+#### Ping-Pong Chains
+
+##### Chain 1: Path Traversal Guards (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                                           | Files Affected       | Root Cause               |
+| ----- | --------------------------------------------------------------------------------------- | -------------------- | ------------------------ |
+| R1    | Added path traversal containment guards to 4 ecosystem audit checkers                   | 4 checker files      | Initial security fix     |
+| R2    | Same class of guard needed in 3 more checkers (index-registry, cross-ref, registration) | 3 more checker files | Propagation miss from R1 |
+
+**Avoidable rounds:** ~0.5 (R2 security items were propagation misses from R1,
+but R2 also had genuinely new items like finding IDs).
+
+**Prevention:** Pattern 13 (Fix-One-Audit-All): After adding path traversal
+guards to any checker, grep ALL checkers for unguarded path operations.
+
+##### Chain 2: Unique Finding IDs (R2 only — 10 items)
+
+Not a ping-pong, but a propagation pattern: R2 flagged 10 checkers missing
+unique finding IDs. All fixed in one batch.
+
+#### Rejection Analysis
+
+| Category                   | Count | Accuracy | Notes                                            |
+| -------------------------- | ----- | -------- | ------------------------------------------------ |
+| Silent catch (intentional) | 2     | 0%       | safeReadFile catch is by design                  |
+| Local-only output          | 2     | 0%       | Finding snippets are local audit output, no risk |
+
+**False positive rate:** 8% (4/53). Very low — reviewers were largely accurate
+this round.
+
+#### Recurring Patterns
+
+| Pattern                          | Occurrences           | Automation Candidate? | Effort |
+| -------------------------------- | --------------------- | --------------------- | ------ |
+| Path traversal guard propagation | PRs #374, #388, #389  | Yes — semgrep rule    | 1 hr   |
+| Unique finding ID gaps           | PR #389 (10 checkers) | Yes — template        | 15 min |
+
+#### Previous Retro Action Item Audit
+
+**Last retro:** PR #388 Final (2026-02-24)
+
+| Action Item                                      | Implemented? | Impact of Gap |
+| ------------------------------------------------ | ------------ | ------------- |
+| Propagation check on all security fixes          | Partially    | ~0.5 rounds   |
+| Stale reviewer comment detection                 | Not yet      | 0 rounds      |
+| Path normalization across all string comparisons | Yes          | N/A           |
+
+#### Cross-PR Systemic Analysis
+
+Path traversal guard propagation continues from PRs #374 and #388. The
+Fix-One-Audit-All pattern (Pattern 13) is consistently the #1 source of
+avoidable rounds. 13 CRITICAL security items across 2 rounds suggests ecosystem
+audit checkers were written without security hardening — a systemic gap now
+addressed.
+
+#### Skills/Templates to Update
+
+- **No new templates needed** — existing Pattern 13 covers propagation
+- **Ecosystem audit template**: Should include path traversal guards by default
+
+#### Process Improvements
+
+1. **Add security checklist to ecosystem audit checker template** — All new
+   checkers should include: path containment guard, symlink check, DoS depth
+   limit. Evidence: 13 CRITICAL items in this PR.
+
+#### Verdict
+
+- **Efficiency:** Good — 2 rounds, 92% fix rate, same day
+- **Avoidable rounds:** ~0.5 (propagation items in R2)
+- **Avoidable %:** ~25%
+- **Single highest-impact change:** Add security hardening to ecosystem audit
+  checker template
+- **Trend:** Consistent with PRs #378, #381 (2-round cycles). Propagation
+  remains the recurring gap.
+- **Score:** 8.0/10 — High volume handled efficiently, but path traversal
+  propagation miss is Pattern 13 again
+
+---
+
+### PR #397 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                              |
+| -------------- | ------------------------------------------------------------------ |
+| Rounds         | 7 (R1-R7, 2026-02-27 through 2026-02-27)                           |
+| Total items    | ~82 (22 + 20 + 17 + 8 + 4 + 7 + 6)                                 |
+| Fixed          | ~68                                                                |
+| Deferred       | ~11                                                                |
+| Rejected       | ~13 (incl. 4+ repeat-rejected)                                     |
+| Review sources | SonarCloud, Qodo Compliance, Qodo Code, Gemini                     |
+| PR scope       | Maintenance: deep-plan automation, retro features, pipeline repair |
+| Files changed  | ~740 (+178,164/-11,826)                                            |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                 | Items   | Fixed  | Deferred | Rejected | Key Patterns                                                       |
+| --------- | ---------- | ---------------------- | ------- | ------ | -------- | -------- | ------------------------------------------------------------------ |
+| R1        | 2026-02-27 | SonarCloud+Qodo+Gemini | 22      | 22     | 0        | 0        | Data loss bug, symlink guard, CC reductions (6 functions)          |
+| R2        | 2026-02-27 | SonarCloud+Qodo        | 20      | 8      | 8        | 4        | acquireLock CC, NaN-safe timestamps, PID-alive check               |
+| R3        | 2026-02-27 | Qodo                   | 17      | 9      | 3        | 5        | Retro dedup data loss, dual-append rollback, collision resolution  |
+| R4        | 2026-02-27 | SonarCloud+Qodo        | 8       | 8      | 0        | 0        | S5852 regex→string parsing, nested ternary, rollback hardening     |
+| R5        | 2026-02-27 | SonarCloud+Qodo        | 4       | 2      | 0        | 2        | S5852 second regex replacement, proactive sweep                    |
+| R6        | 2026-02-27 | SonarCloud+Qodo        | 7       | 7      | 0        | 0        | Symlink guard releaseLock, indexOf→includes, safety caps           |
+| R7        | 2026-02-27 | SonarCloud+Qodo        | 6       | 6      | 0        | 0        | CC extraction, abort-on-parse-failure, hostname check, Unicode fix |
+| **Total** |            |                        | **~84** | **62** | **11**   | **11**   |                                                                    |
+
+#### Ping-Pong Chains
+
+##### Chain 1: acquireLock / safe-fs.js Hardening (R1→R2→R6→R7 = 4 rounds)
+
+| Round | What Happened                                                                                 | Files Affected | Root Cause                    |
+| ----- | --------------------------------------------------------------------------------------------- | -------------- | ----------------------------- |
+| R1    | Added symlink guard + replaced busy-wait with Atomics.wait()                                  | safe-fs.js     | Initial security fix          |
+| R2    | CC still 22 — extracted 3 helpers (guardLockSymlink, isLockHolderAlive, tryBreakExistingLock) | safe-fs.js     | Incomplete CC reduction       |
+| R6    | Missing symlink guard in releaseLock (only acquireLock had it)                                | safe-fs.js     | Propagation miss (Pattern 13) |
+| R7    | Hostname check + ensureDebtDirs/snapshotFile/rollbackFile extraction                          | safe-fs.js     | Further hardening             |
+
+**Avoidable rounds:** 2 (R6 propagation miss, R2 CC should have been fully
+extracted in R1).
+
+##### Chain 2: S5852 Regex → String Parsing (R4→R5 = 2 rounds)
+
+| Round | What Happened                                            | Files Affected           | Root Cause         |
+| ----- | -------------------------------------------------------- | ------------------------ | ------------------ |
+| R4    | Replaced one backtracking regex with string parsing      | sync-reviews-to-jsonl.js | SonarCloud flagged |
+| R5    | Same class of regex in another function in the same file | sync-reviews-to-jsonl.js | Propagation miss   |
+
+**Avoidable rounds:** 1 (R5). Should have swept all regexes in R4.
+
+##### Chain 3: CC Progressive Reduction (R1→R2→R7 = 3 rounds)
+
+CC reductions appeared in 3 separate rounds across different files. R1 addressed
+6 functions but missed some, R2 caught acquireLock, R7 caught
+intake-pr-deferred.
+
+**Avoidable rounds:** 1 (R7 CC was a quality gate blocker that could have been
+caught by local CC check).
+
+#### Rejection Analysis
+
+| Category                | Count | Accuracy | Notes                                               |
+| ----------------------- | ----- | -------- | --------------------------------------------------- |
+| Repeat compliance items | 4+    | 0%       | Qodo re-raised already-rejected items across rounds |
+| Double-guard redundant  | 2     | 0%       | atomicWriteViaTmp already calls isSafeToWrite       |
+| Duplicate normalization | 1     | 0%       | PATTERN_SKIP already checked post-normalization     |
+| Other                   | 4     | Mixed    | Mixed accuracy                                      |
+
+**False positive rate:** ~13% (11/84).
+
+#### Recurring Patterns
+
+| Pattern                   | Occurrences                | Automation Candidate?    | Effort |
+| ------------------------- | -------------------------- | ------------------------ | ------ |
+| CC progressive reduction  | PRs #374, #384, #394, #397 | Yes — pre-push CC check  | 30 min |
+| S5852 regex propagation   | PR #397 R4→R5              | Yes — regex sweep script | 20 min |
+| Symlink guard propagation | PRs #368, #374, #397       | Yes — semgrep rule       | 1 hr   |
+
+#### Previous Retro Action Item Audit
+
+**Last retro:** PR #396 (2026-02-27)
+
+| Action Item                     | Implemented? | Impact of Gap      |
+| ------------------------------- | ------------ | ------------------ |
+| CC lint rule in pre-commit      | Not yet      | ~1 round (R7 CC)   |
+| Propagation grep on all fixes   | Partially    | ~2 rounds (R5, R6) |
+| Suppress Qodo repeat-rejections | Not yet      | Noise in R2, R3    |
+
+#### Cross-PR Systemic Analysis
+
+PR #397 exhibits the three most persistent systemic issues across the project:
+
+1. **CC progressive reduction** (Pattern 8) — 4th PR with multi-round CC churn.
+   Pre-push CC check is the #1 most-recommended-never-implemented action item.
+2. **Propagation miss** (Pattern 13) — Symlink guard in acquireLock but not
+   releaseLock (R6), regex in one function but not another (R5).
+3. **Qodo repeat-rejection noise** — Same compliance items re-raised after
+   rejection.
+
+**CC pre-push check has now been recommended in 4+ retros without
+implementation.** This is a blocking repeat offender.
+
+#### Skills/Templates to Update
+
+- **FIX_TEMPLATES**: No new templates — existing #42 (CC extraction) and #34
+  (algorithm hardening) apply
+- **Pre-push hook**: Add CC threshold check (recommended 4+ times, never
+  implemented)
+
+#### Process Improvements
+
+1. **BLOCKING: Implement CC pre-push check** — This is the 4th retro
+   recommending it. Would have saved ~1 round per PR across PRs #374, #384,
+   #394, #397.
+2. **Regex sweep after any S5852 fix** — After replacing one backtracking regex,
+   sweep the entire file.
+
+#### Verdict
+
+- **Efficiency:** Moderate — 7 rounds is high, but same-day completion and 74%
+  fix rate are decent
+- **Avoidable rounds:** ~3 (R5 regex propagation, R6 symlink propagation, R7 CC)
+- **Avoidable %:** ~43%
+- **Single highest-impact change:** CC pre-push check (BLOCKING — 4th
+  recommendation)
+- **Trend:** Regression from PRs #378/#381/#389 (2 rounds each). 7 rounds driven
+  by safe-fs.js hardening depth.
+- **Score:** 6.0/10 — Too many avoidable rounds from known patterns. CC check
+  debt is compounding.
+
+---
+
+### PR #398 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                 |
+| -------------- | ----------------------------------------------------- |
+| Rounds         | 2 (R1-R2, 2026-02-27)                                 |
+| Total items    | 29 (12 R1 + 17 R2)                                    |
+| Fixed          | 23                                                    |
+| Deferred       | 1                                                     |
+| Rejected       | 5                                                     |
+| Review sources | Qodo Compliance, Qodo Code, SonarCloud, Gemini        |
+| PR scope       | Ecosystem diagnosis, Gemini config, GitHub automation |
+| Files changed  | ~722 (+174,485/-11,473)                               |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source          | Items  | Fixed  | Deferred | Rejected | Key Patterns                                                 |
+| --------- | ---------- | --------------- | ------ | ------ | -------- | -------- | ------------------------------------------------------------ |
+| R1        | 2026-02-27 | Qodo+Gemini     | 12     | 9      | 1        | 2        | YAML syntax, SHA pinning, escapeLinkText, doc headers        |
+| R2        | 2026-02-27 | Qodo+SonarCloud | 17     | 14     | 0        | 3        | Dedup logic fix, unsafe shell loop, escapeLinkText extension |
+| **Total** |            |                 | **29** | **23** | **1**    | **5**    |                                                              |
+
+#### Ping-Pong Chains
+
+##### Chain 1: escapeLinkText / Duplicate Detection (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                   | Files Affected                  | Root Cause              |
+| ----- | --------------------------------------------------------------- | ------------------------------- | ----------------------- |
+| R1    | Added escapeLinkText for `&amp;` in markdown links              | generate-documentation-index.js | Initial fix             |
+| R2    | escapeLinkText needed newline, backslash, backtick escaping too | generate-documentation-index.js | Incomplete initial impl |
+
+| Round | What Happened                                                  | Files Affected          | Root Cause        |
+| ----- | -------------------------------------------------------------- | ----------------------- | ----------------- |
+| R1    | Fixed known-duplicate ID logic for within-file duplicates      | check-review-archive.js | Initial fix       |
+| R2    | Premature Set() dedup was still masking within-file duplicates | check-review-archive.js | Incomplete R1 fix |
+
+**Avoidable rounds:** ~0.5 (R2 items were deeper issues exposed by R1 fixes, not
+pure propagation misses).
+
+#### Rejection Analysis
+
+| Category             | Count | Accuracy | Notes                                   |
+| -------------------- | ----- | -------- | --------------------------------------- |
+| Generated TDMS files | 3     | 0%       | Pipeline output, not hand-authored code |
+| Other                | 2     | 0%       | Intentional design choices              |
+
+**False positive rate:** 17% (5/29). Low — mostly generated file noise.
+
+#### Recurring Patterns
+
+| Pattern                        | Occurrences    | Automation Candidate? | Effort |
+| ------------------------------ | -------------- | --------------------- | ------ |
+| Incomplete escape function     | PR #398        | No — one-off          | N/A    |
+| Generated file false positives | PRs #378, #398 | Yes — path exclusion  | 10 min |
+
+#### Previous Retro Action Item Audit
+
+**Last retro:** PR #397 (same session)
+
+| Action Item                  | Implemented? | Impact of Gap |
+| ---------------------------- | ------------ | ------------- |
+| CC pre-push check (BLOCKING) | Not yet      | 0 rounds      |
+| Regex sweep after S5852      | N/A          | N/A           |
+
+#### Cross-PR Systemic Analysis
+
+Clean cycle. The escapeLinkText deepening (R1→R2) is a minor instance of Pattern
+8 (incremental hardening) but at a much smaller scale than previous occurrences.
+The unsafe shell loop catch (`for branch in $MERGED` → while-read) is a good CI
+security improvement.
+
+#### Skills/Templates to Update
+
+- None needed — clean cycle with no systemic issues
+
+#### Process Improvements
+
+1. **When adding escape/sanitization functions**, enumerate ALL characters
+   needing escaping upfront rather than incrementally. Evidence: escapeLinkText
+   needed 2 rounds.
+
+#### Verdict
+
+- **Efficiency:** Good — 2 rounds, 79% fix rate, same day
+- **Avoidable rounds:** ~0.5
+- **Avoidable %:** ~25%
+- **Single highest-impact change:** Complete escape character enumeration
+  upfront
+- **Trend:** Return to 2-round norm after PR #397's 7-round anomaly
+- **Score:** 8.0/10 — Clean cycle, minor incremental hardening
+
+---
+
+### PR #407 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                  |
+| -------------- | ------------------------------------------------------ |
+| Rounds         | 17 (R1-R17, 2026-02-28 through 2026-03-01)             |
+| Total items    | ~436                                                   |
+| Fixed          | ~335                                                   |
+| Deferred       | ~5                                                     |
+| Rejected       | ~96                                                    |
+| Review sources | SonarCloud, Qodo Compliance, Qodo Code, Gemini, CI     |
+| PR scope       | PR Review Ecosystem v2 Phases 1-3 (maintenance branch) |
+| Files changed  | 356 files (+67,689/-5,870)                             |
+
+**This is the longest review cycle in project history (17 rounds, ~436 items).**
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source             | Items    | Fixed    | Rejected | Key Patterns                                                        |
+| --------- | ---------- | ------------------ | -------- | -------- | -------- | ------------------------------------------------------------------- |
+| R1        | 2026-02-28 | SonarCloud         | 115      | 115      | 0        | CC reductions (12 functions), TypeScript modernization              |
+| R2        | 2026-02-28 | Qodo+Gemini+CI     | 43       | 40       | 3        | execSync injection, atomic writes, regex, deterministic IDs         |
+| R3        | 2026-02-28 | SonarCloud+Qodo    | 33       | 33       | 0        | CC refactors, RegExp→literals, optional chain                       |
+| R4        | 2026-03-01 | Qodo+Gemini+CI     | 30       | 27       | 3        | Git arg injection, path traversal, regex escape                     |
+| R5        | 2026-03-01 | SonarCloud+Qodo+CI | 25       | 22       | 3        | rmSync data loss, CC reduction, symlink escape                      |
+| R6        | 2026-03-01 | SonarCloud+Qodo+CI | 14       | 14       | 0        | rmSync before renameSync, fromCodePoint, symlink escape             |
+| R7        | 2026-03-01 | SonarCloud+Qodo+CI | 23       | 2        | 9        | Math.max empty array, first-run table update (12 pre-existing)      |
+| R8        | 2026-03-01 | CI+Qodo+SonarCloud | 18       | 18       | 0        | rmSync/renameSync Windows, TOCTOU race, isSafeToWrite fail-closed   |
+| R9        | 2026-03-01 | CI                 | 5        | 5        | 0        | Pattern compliance, verified-patterns entries                       |
+| R10       | 2026-03-01 | SonarCloud+Qodo    | 21       | 21       | 0        | TOCTOU symlink re-check, atomic write safety, hermetic tests        |
+| R11       | 2026-03-01 | Qodo+SonarCloud    | 11       | 11       | 0        | Canonical safe-fs import, rmSync data loss prevention               |
+| R12       | 2026-03-01 | SonarCloud+Qodo    | 15       | 4        | 11       | CC extraction, nested ternary, write hardening                      |
+| R13       | 2026-03-01 | Qodo+SonarCloud+CI | 13       | 13       | 0        | TOCTOU guards, fence marker tracking, CI blocker                    |
+| R14       | 2026-03-01 | SonarCloud+Qodo    | 18       | 12       | 6        | fd-based append, wx flag, safeParse, ID entropy                     |
+| R15       | 2026-03-01 | Qodo+SonarCloud    | 22       | 13       | 9        | Math.random PRNG, CC extraction, writeAtomicSafe helper             |
+| R16       | 2026-03-01 | Qodo+SonarCloud    | 14       | 11       | 3        | CC extraction, v1 ID dedup, TOCTOU race, wx flag                    |
+| R17       | 2026-03-01 | SonarCloud+Qodo+CI | 16       | 3        | 2        | PRNG replacement, renameSafe cleanup, nested ternary (11 pre-exist) |
+| **Total** |            |                    | **~436** | **~335** | **~96**  |                                                                     |
+
+#### Ping-Pong Chains
+
+##### Chain 1: rmSync Before renameSync — Data Loss vs Windows Compatibility (R5→R6→R8→R9→R11 = 5 rounds)
+
+| Round | What Happened                                                    | Files Affected                    | Root Cause                |
+| ----- | ---------------------------------------------------------------- | --------------------------------- | ------------------------- |
+| R5    | Removed rmSync before renameSync in 3 atomic write functions     | backfill, promote, dedup          | Data loss risk identified |
+| R6    | CI blocker: generate-claude-antipatterns still had rmSync needed | generate-claude-antipatterns.ts   | Propagation miss          |
+| R8    | CI blocker: backfill-reviews.ts still needs rmSync for Windows   | backfill-reviews.ts               | Platform compatibility    |
+| R9    | Pattern compliance flagged remaining instances                   | verified-patterns.jsonl           | False positive management |
+| R11   | dedup-debt.ts and seed-commit-log.js still had rmSync            | dedup-debt.ts, seed-commit-log.js | Propagation miss (again)  |
+
+**Avoidable rounds:** 3 (R6, R9, R11). If R5 had audited ALL atomic write
+functions in one pass, these wouldn't exist.
+
+##### Chain 2: Cognitive Complexity Progressive Reduction (R1→R3→R5→R6→R12→R14→R15→R16 = 8 rounds)
+
+CC extraction appeared in 8 of 17 rounds across different files. Each round
+SonarCloud flagged functions that were still above CC 15 after prior extractions
+or that were newly exposed by refactoring.
+
+**Avoidable rounds:** ~3. A local CC pre-check would have caught functions >15
+before pushing.
+
+##### Chain 3: Symlink Guard Propagation (R5→R6→R8→R10→R11→R13 = 6 rounds)
+
+| Round | What Happened                                             | Files Affected                      |
+| ----- | --------------------------------------------------------- | ----------------------------------- |
+| R5    | Added symlink escape protection to render-reviews-to-md   | render-reviews-to-md.ts             |
+| R6    | Same guard needed in seed-commit-log                      | seed-commit-log.js                  |
+| R8    | isSafeToWrite fail-closed in generate-claude-antipatterns | generate-claude-antipatterns.ts     |
+| R10   | TOCTOU symlink re-checks before copyFileSync fallbacks    | multiple files                      |
+| R11   | Replace local isSafeToWrite with canonical safe-fs import | promote, fix-template, antipatterns |
+| R13   | TOCTOU in guardAgainstSymlinks itself                     | dedup-debt.ts                       |
+
+**Avoidable rounds:** ~3. Pattern 13 (Fix-One-Audit-All) would have consolidated
+these.
+
+##### Chain 4: TOCTOU Race Conditions (R8→R10→R13→R14→R16 = 5 rounds)
+
+TOCTOU mitigations appeared across 5 rounds as reviewers found deeper race
+conditions each time.
+
+**Avoidable rounds:** ~2. Systematic TOCTOU audit upfront would have reduced
+this.
+
+##### Chain 5: Math.random / ID Entropy (R14→R15→R17 = 3 rounds)
+
+| Round | What Happened                                     | Files Affected      |
+| ----- | ------------------------------------------------- | ------------------- |
+| R14   | Added pid + random entropy to invocation IDs      | write-invocation.ts |
+| R15   | SonarCloud S2245 flagged Math.random in same file | write-invocation.ts |
+| R17   | Replaced Math.random with pid + counter           | write-invocation.ts |
+
+**Avoidable rounds:** 2. Should have used non-PRNG ID from the start.
+
+#### Rejection Analysis
+
+| Category                       | Count | Accuracy | Notes                                         |
+| ------------------------------ | ----- | -------- | --------------------------------------------- |
+| Top-level await in CJS         | 6+    | 0%       | tsconfig module=commonjs, ESM required        |
+| Qodo compliance repeats        | 20+   | 0%       | Same items re-raised after rejection          |
+| Pre-existing / already-fixed   | 25+   | 0%       | Items fixed in prior rounds, reviewer stale   |
+| Over-engineering (fsync, etc.) | 10+   | Mixed    | CLI tooling doesn't need production hardening |
+| Hypothetical data scenarios    | 10+   | 0%       | Patterns that can't occur in practice         |
+
+**False positive rate:** ~22% (96/436). Top-level await and compliance repeats
+are the dominant noise sources.
+
+#### Recurring Patterns
+
+| Pattern                        | Rounds Affected  | Automation Candidate? | Effort |
+| ------------------------------ | ---------------- | --------------------- | ------ |
+| CC progressive reduction       | 8 of 17 rounds   | Yes — CC pre-push     | 30 min |
+| Symlink guard propagation      | 6 of 17 rounds   | Yes — semgrep rule    | 1 hr   |
+| rmSync/renameSync audit        | 5 of 17 rounds   | Yes — pattern checker | 15 min |
+| TOCTOU race mitigation         | 5 of 17 rounds   | Partial — fd pattern  | 2 hrs  |
+| Qodo repeat-rejection noise    | 10+ of 17 rounds | Yes — suppression     | 10 min |
+| Top-level await false positive | 4+ rounds        | Yes — Qodo config     | 5 min  |
+
+#### Previous Retro Action Item Audit
+
+**Last retro:** PR #398 (same session batch)
+
+| Action Item                                | Implemented? | Impact of Gap        |
+| ------------------------------------------ | ------------ | -------------------- |
+| CC pre-push check (BLOCKING — 4th rec)     | Not yet      | ~3 rounds (CC churn) |
+| Suppress Qodo repeat-rejections            | Not yet      | ~10 rounds of noise  |
+| Propagation grep on all fixes (Pattern 13) | Not done     | ~8 rounds of churn   |
+
+**All 3 top action items from previous retros remain unimplemented. This PR is
+the consequence.**
+
+#### Cross-PR Systemic Analysis
+
+PR #407 is a case study in compound technical debt from unimplemented process
+improvements:
+
+1. **CC pre-push check** — Recommended in PRs #369, #374, #384, #394, #397.
+   Never implemented. Cost: ~3 rounds in this PR alone, ~15 rounds cumulative
+   across all PRs.
+2. **Pattern 13 (Fix-One-Audit-All)** — Documented since PR #388. Symlink
+   guards, rmSync patterns, and TOCTOU fixes each spanned 5-6 rounds because the
+   propagation grep was never done.
+3. **Qodo suppression** — Top-level await and compliance repeat noise consumed
+   ~10 rounds of review capacity.
+
+**The 17-round cycle was ~50% avoidable.** If the top 3 process improvements had
+been implemented, this PR would have been ~8-9 rounds.
+
+#### Skills/Templates to Update
+
+- **`.qodo/pr-agent.toml`**: Suppress top-level await suggestions for CJS files
+- **`.gemini/styleguide.md`**: Add CJS/ESM module distinction
+- **Pattern checker**: Add rmSync-before-renameSync audit rule
+- **Pre-push hook**: CC threshold check (5th recommendation — CRITICAL)
+
+#### Process Improvements
+
+1. **CRITICAL: Implement CC pre-push check** — 5th retro recommending this.
+   Would save ~3 rounds per PR.
+2. **CRITICAL: Suppress Qodo CJS compliance noise** — Add top-level await and
+   repeat-rejection suppression.
+3. **Run propagation audit before pushing review fixes** — After fixing any
+   security/safety pattern, grep ALL files for the same gap before committing.
+4. **Batch related fixes** — rmSync, symlink, and TOCTOU fixes should be done as
+   a single audit pass, not incrementally across rounds.
+
+#### Verdict
+
+- **Efficiency:** Poor — 17 rounds is excessive, driven by known unaddressed
+  process gaps
+- **Avoidable rounds:** ~8-9 (CC: 3, propagation: 3, PRNG: 2, noise: partially)
+- **Avoidable %:** ~50%
+- **Single highest-impact change:** CC pre-push check (5th recommendation — now
+  CRITICAL)
+- **Trend:** Major regression. 17 rounds vs 2-round norm. PR scope (356 files,
+  ecosystem v2) amplified every unaddressed process gap.
+- **Score:** 4.5/10 — Longest cycle in project history. All major churn sources
+  were previously identified and never addressed. The review pipeline worked,
+  but the process debt is unsustainable.
+
+---
+
+### PR #411 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                               |
+| -------------- | ------------------------------------------------------------------- |
+| Rounds         | 8 (R1-R8, batched protocol, 2026-03-02)                             |
+| Total items    | 414                                                                 |
+| Fixed          | 134                                                                 |
+| Deferred       | 96                                                                  |
+| Rejected       | 178                                                                 |
+| Hidden         | 5                                                                   |
+| Review sources | Semgrep OSS, Gemini, Qodo, CI, CodeQL, SonarCloud                   |
+| PR scope       | PR Review Ecosystem v2 Phases 4-7, Milestone Audit, v1.0 Completion |
+| Files changed  | ~356 (+67,689/-5,870)                                               |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                  | Items   | Fixed   | Deferred | Rejected | Key Patterns                                                 |
+| --------- | ---------- | ----------------------- | ------- | ------- | -------- | -------- | ------------------------------------------------------------ |
+| R1        | 2026-03-02 | Semgrep+Gemini+Qodo     | 53      | 5       | 0        | 48       | Semgrep FP rules, JSONL per-line try/catch, path guard       |
+| R2        | 2026-03-02 | CI+Qodo+CodeQL          | 16      | 3       | 11       | 2        | Prettier CI, security-check exclusion, NaN guard             |
+| R3        | 2026-03-02 | SonarCloud              | 97      | 37      | 42       | 18       | Optional chaining (18), inner functions (6), ternary (6)     |
+| R4        | 2026-03-02 | Semgrep+CI+Qodo         | 18      | 3       | 0        | 15       | security-check --file mode, Semgrep rule expansion           |
+| R5        | 2026-03-02 | Qodo+Semgrep+SonarCloud | 12      | 4       | 1        | 7        | compositeScore no_data weighting, semgrep.yml --error        |
+| R6        | 2026-03-02 | SonarCloud              | 115     | 78      | 20       | 15       | ES2015/2022 compliance (parseInt, isNaN, .match→exec, .at()) |
+| R7        | 2026-03-02 | SonarCloud+Qodo+Semgrep | 51      | 1       | 21       | 25       | YAML colon quoting, replaceAll vs regex features             |
+| R8        | 2026-03-02 | Qodo+SonarCloud+Semgrep | 52      | 3       | 1        | 48       | \_\_dirname ESM/CJS, Semgrep multi-statement guards          |
+| **Total** |            |                         | **414** | **134** | **96**   | **178**  |                                                              |
+
+#### Ping-Pong Chains
+
+##### Chain 1: Semgrep Rule False Positives (R1→R4→R5→R8 = 4 rounds)
+
+| Round | What Happened                                                | Root Cause                   |
+| ----- | ------------------------------------------------------------ | ---------------------------- |
+| R1    | `no-floating-promise` matched ALL function calls             | Overly broad Semgrep pattern |
+| R4    | `no-unchecked-array-access` only recognized 2 guard patterns | Insufficient guard coverage  |
+| R5    | 4 more guard patterns needed                                 | Incremental discovery        |
+| R8    | Multi-statement guard blocks not recognized                  | Semgrep pattern limitation   |
+
+**Avoidable rounds:** 2 (R5, R8). Comprehensive guard pattern enumeration in R4
+would have covered these.
+
+##### Chain 2: SonarCloud First-Scan Churn (R3→R6→R7 = 3 rounds)
+
+First-time SonarCloud scan on new code produced ~210 items across 3 rounds. R6
+was 115 items alone (ES modernization). Most items were mechanical and
+non-controversial, but the volume drove 3 rounds.
+
+**Avoidable rounds:** ~1. Could have run SonarCloud locally before pushing.
+
+#### Rejection Analysis
+
+| Category                         | Count | Accuracy | Notes                                         |
+| -------------------------------- | ----- | -------- | --------------------------------------------- |
+| Semgrep rule FPs (pre-expansion) | 60+   | 0%       | Overly broad patterns, fixed by rule rewrites |
+| SonarCloud stale (post-push)     | 40+   | 0%       | Same items re-raised before re-analysis       |
+| Qodo repeat-rejected             | 20+   | 0%       | Items fixed in prior rounds                   |
+| replaceAll on regex .replace()   | 11    | 0%       | SonarCloud doesn't check for regex features   |
+| Test fixtures (intentional)      | 12    | 0%       | Semgrep flagging intentional test code        |
+| Deferred CC (v1 legacy scripts)  | 17+   | Correct  | Acknowledged but deferred — legacy code       |
+
+**False positive rate:** 43% (178/414). Dominated by Semgrep rule expansion
+churn and SonarCloud stale issues.
+
+#### Recurring Patterns
+
+| Pattern                           | Occurrences    | Automation Candidate? | Effort |
+| --------------------------------- | -------------- | --------------------- | ------ |
+| Semgrep guard pattern expansion   | 4 rounds in PR | Yes — test harness    | 2 hrs  |
+| SonarCloud ES modernization       | Bulk in R3+R6  | Yes — eslint-plugin   | 1 hr   |
+| replaceAll false positive (S6354) | 11 in R7       | Yes — Qodo suppress   | 5 min  |
+| YAML colon quoting                | R7             | Yes — YAML linter     | 10 min |
+
+#### Previous Retro Action Item Audit
+
+**Last retro:** PR #407 (same session)
+
+| Action Item                            | Implemented? | Impact of Gap       |
+| -------------------------------------- | ------------ | ------------------- |
+| CC pre-push check (CRITICAL — 5th rec) | Not yet      | 0 rounds (deferred) |
+| Suppress Qodo CJS compliance noise     | Not yet      | ~2 rounds noise     |
+| Propagation audit before pushing       | Partially    | ~1 round (Semgrep)  |
+
+#### Cross-PR Systemic Analysis
+
+PR #411 demonstrates a different churn pattern than PR #407. Where PR #407 was
+dominated by propagation misses and CC reduction, PR #411 is dominated by:
+
+1. **First-scan volume** — First SonarCloud scan on new code produces hundreds
+   of findings regardless of code quality.
+2. **Custom Semgrep rule maturation** — New rules start too broad and need
+   iterative tightening across 4+ rounds.
+3. **Batched protocol effectiveness** — 8 rounds processed as a batch (no push
+   until done) kept CI/CD impact minimal.
+
+The batched review protocol (introduced this session) significantly improved
+throughput: 414 items across 8 rounds in a single session vs PR #407's 436 items
+across 17 rounds over 2 days.
+
+#### Skills/Templates to Update
+
+- **Semgrep rule template**: Start with comprehensive guard patterns, not
+  minimal
+- **SonarCloud S6354 suppression**: Add replaceAll false positive suppression
+  for regex .replace()
+
+#### Process Improvements
+
+1. **Semgrep rule test harness** — Test new rules against representative
+   codebase samples before deploying. Evidence: 4 rounds of Semgrep rule
+   expansion.
+2. **Run SonarCloud locally before pushing** — Prevents first-scan volume
+   surprises.
+3. **Batched protocol is effective** — Continue using it for large PRs.
+
+#### Verdict
+
+- **Efficiency:** Moderate — 8 rounds is high but batched protocol kept it
+  manageable
+- **Avoidable rounds:** ~3 (Semgrep expansion 2, SonarCloud pre-scan 1)
+- **Avoidable %:** ~38%
+- **Single highest-impact change:** Semgrep rule test harness (would prevent
+  iterative rule tightening)
+- **Trend:** Different pattern than PR #407 — volume-driven (first scan) vs
+  propagation-driven. Batched protocol is a clear improvement.
+- **Score:** 6.5/10 — High volume managed through batched protocol, but Semgrep
+  rule iteration is a new process gap
+
+---
+
+### PR #414 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                  |
+| -------------- | ------------------------------------------------------ |
+| Rounds         | 1 (R1 only, labeled as PR #412 R1 within squash merge) |
+| Total items    | 8                                                      |
+| Fixed          | 8                                                      |
+| Deferred       | 0                                                      |
+| Rejected       | 0                                                      |
+| Review sources | Gemini, Qodo, CI                                       |
+| PR scope       | PR Ecosystem v2 changelog documentation                |
+| Files changed  | 24 (+28,620/-28,182)                                   |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source         | Items | Fixed | Deferred | Rejected | Key Patterns                                  |
+| --------- | ---------- | -------------- | ----- | ----- | -------- | -------- | --------------------------------------------- |
+| R1        | 2026-03-04 | Gemini+Qodo+CI | 8     | 8     | 0        | 0        | JSONL coverage calc (3), enforcement coverage |
+| **Total** |            |                | **8** | **8** | **0**    | **0**    |                                               |
+
+#### Ping-Pong Chains
+
+None found. Single round with all items fixed.
+
+#### Rejection Analysis
+
+No rejections. 100% fix rate.
+
+#### Recurring Patterns
+
+| Pattern               | Occurrences | Automation Candidate? | Effort |
+| --------------------- | ----------- | --------------------- | ------ |
+| Incorrect metric calc | 3 instances | Yes — auto-compute    | 20 min |
+
+#### Previous Retro Action Item Audit
+
+No new impact from unimplemented action items.
+
+#### Cross-PR Systemic Analysis
+
+Cleanest review cycle since PR #378. Documentation-only PRs generate fewer
+review issues, but the 3 metric calculation errors suggest changelog metrics
+should be auto-computed from source data rather than manually calculated.
+
+#### Skills/Templates to Update
+
+None needed.
+
+#### Process Improvements
+
+1. **Auto-compute changelog metrics** — Coverage percentages should be derived
+   from JSONL data, not manually calculated. Evidence: 3/8 items were wrong
+   percentages.
+
+#### Verdict
+
+- **Efficiency:** Excellent — single round, 100% fix rate
+- **Avoidable rounds:** 0
+- **Avoidable %:** 0%
+- **Single highest-impact change:** Auto-compute metrics for changelogs
+- **Trend:** Return to clean single-round cycle for docs-focused PRs
+- **Score:** 9.5/10 — Near-perfect cycle, only gap was manual metric errors
+
+---
+
+### PR #415 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                      |
+| -------------- | ---------------------------------------------------------- |
+| Rounds         | 4 (R1-R4, 2026-03-02 through 2026-03-04)                   |
+| Total items    | 45 unique (out of ~300+ raw including tool FPs)            |
+| Fixed          | 34                                                         |
+| Deferred       | 1                                                          |
+| Rejected       | 10                                                         |
+| Review sources | SonarCloud, Qodo, Gemini, CI, CodeQL, Semgrep, Dep Review  |
+| PR scope       | System-wide standardization discovery + PR creep guardrail |
+| Files changed  | 336 (+103,623/-14)                                         |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                        | Items  | Fixed  | Deferred | Rejected | Key Patterns                                                    |
+| --------- | ---------- | ----------------------------- | ------ | ------ | -------- | -------- | --------------------------------------------------------------- |
+| R1        | 2026-03-02 | Qodo+Gemini+CI+SC+Semgrep+Dep | 8      | 4      | 0        | 4        | .planning exclusion (single root fix), raw transcripts, hook fd |
+| R2        | 2026-03-04 | SonarCloud+CodeQL+CI+Qodo+Gem | 17     | 15     | 1        | 1        | execSync→execFileSync, logic inversions, 150+ code quality      |
+| R3        | 2026-03-04 | SonarCloud+Qodo+Gemini        | 12     | 10     | 0        | 2        | Shared module extraction, validator rewrite, CRLF safety        |
+| R4        | 2026-03-04 | SonarCloud+Qodo               | 8      | 5      | 0        | 3        | S5852 string parsing, escapeCell propagation, .at(-1)           |
+| **Total** |            |                               | **45** | **34** | **1**    | **10**   |                                                                 |
+
+#### Ping-Pong Chains
+
+##### Chain 1: escapeCell Completeness (R2→R3→R4 = 3 rounds)
+
+| Round | What Happened                                                 | Files Affected               | Root Cause          |
+| ----- | ------------------------------------------------------------- | ---------------------------- | ------------------- |
+| R2    | Added `esc()` / `escapeCell()` with backslash + pipe escaping | 2 generator scripts          | CodeQL flagged      |
+| R3    | Duplicated escapeCell in 2 files → extracted to shared module | lib/read-jsonl.js            | Duplication removal |
+| R4    | Missing escapeCell call on `cat` variable + CRLF stripping    | generate-discovery-record.js | Propagation miss    |
+
+**Avoidable rounds:** 1 (R4 — should have audited all table cell outputs in R2).
+
+##### Chain 2: S5852 Regex False Positive (R2→R3→R4 = 3 rounds rejected)
+
+SonarCloud flagged `/ +$/gm` (space-only trailing trim) as regex DoS in 3
+consecutive rounds. Correctly rejected each time — space-only quantifier has no
+backtracking risk. Should be suppressed.
+
+**Avoidable rounds:** 0 (rejections, not fixes — but noise consumed attention).
+
+##### Chain 3: Validator Rewrite (R2→R3 = 2 rounds)
+
+| Round | What Happened                                                             | Files Affected            | Root Cause                            |
+| ----- | ------------------------------------------------------------------------- | ------------------------- | ------------------------------------- |
+| R2    | Logic inversions in validator (stale when matched, writes during dry-run) | validate-jsonl-md-sync.js | Bugs in initial impl                  |
+| R3    | Complete rewrite to --dry-run stdout comparison approach                  | validate-jsonl-md-sync.js | R2 fixes revealed deeper design issue |
+
+**Avoidable rounds:** 1 (if validator design used dry-run from the start).
+
+#### Rejection Analysis
+
+| Category                    | Count | Accuracy | Notes                                                  |
+| --------------------------- | ----- | -------- | ------------------------------------------------------ |
+| Reference repo scanning     | 4     | 0%       | .planning/ not excluded from tools (fixed R1)          |
+| S5852 space-only regex FP   | 3     | 0%       | No backtracking risk — SonarCloud FP                   |
+| S4036 PATH hijacking FP     | 2     | 0%       | Hardcoded `execFileSync("node")` — not user-controlled |
+| SonarCloud duplication gate | 1     | 0%       | Planning artifacts have inherent repetition            |
+
+**False positive rate:** 22% (10/45). S5852 and S4036 are repeat FPs needing
+suppression.
+
+#### Recurring Patterns
+
+| Pattern                       | Occurrences          | Automation Candidate? | Effort |
+| ----------------------------- | -------------------- | --------------------- | ------ |
+| escapeCell propagation        | PRs #398, #415       | Yes — lint rule       | 20 min |
+| S5852 space-only FP           | 3 consecutive rounds | Yes — SC suppress     | 5 min  |
+| S4036 PATH FP on execFileSync | 3 consecutive rounds | Yes — SC suppress     | 5 min  |
+| .planning directory exclusion | PR #415 R1 (5 items) | Done — R1 fixed it    | Done   |
+
+#### Previous Retro Action Item Audit
+
+**Last retro:** PR #414 (same session)
+
+| Action Item                            | Implemented? | Impact of Gap |
+| -------------------------------------- | ------------ | ------------- |
+| CC pre-push check (CRITICAL — 5th rec) | Not yet      | 0 rounds      |
+| Auto-compute changelog metrics         | N/A          | N/A           |
+| Suppress Qodo CJS compliance noise     | N/A          | 0 rounds      |
+
+#### Cross-PR Systemic Analysis
+
+PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
+
+1. **Tool exclusions needed upfront** — .planning/ directory must be excluded
+   from ESLint, security-check, SonarCloud, and Semgrep before committing.
+   Single root fix resolved 5/8 R1 items.
+2. **escapeCell propagation** — Same pattern as PR #398's escapeLinkText.
+   Escape/sanitization functions need comprehensive initial implementation.
+3. **SonarCloud repeat FPs** (S5852, S4036) are now 3+ round persistent noise.
+   Suppression configs are overdue.
+
+#### Skills/Templates to Update
+
+- **SonarCloud config**: Suppress S5852 on space-only regex, S4036 on hardcoded
+  execFileSync
+- **Planning artifact template**: Include tool exclusion checklist
+
+#### Process Improvements
+
+1. **Add .planning/ exclusions to all scanning tools BEFORE committing** —
+   Evidence: 5/8 R1 items were from unsuppressed reference repo.
+2. **Suppress SonarCloud S5852/S4036 false positives** — 3+ rounds of noise per
+   PR.
+3. **Design validators with dry-run/comparison pattern from the start** —
+   Evidence: R2→R3 rewrite.
+
+#### Verdict
+
+- **Efficiency:** Good — 4 rounds, 76% fix rate, but heavy raw volume masked by
+  tool FPs
+- **Avoidable rounds:** ~2 (escapeCell propagation, validator design)
+- **Avoidable %:** ~50%
+- **Single highest-impact change:** Suppress SonarCloud S5852/S4036 false
+  positives (would eliminate 5+ rejections per PR)
+- **Trend:** Clean for a large planning PR. R1 tool exclusion fix was an
+  efficient single-root-cause resolution.
+- **Score:** 7.5/10 — Good cycle marred by known SonarCloud FPs and escapeCell
+  propagation
+
+---
+
+### PR #416 Retrospective (2026-03-04)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                              |
+| -------------- | ------------------------------------------------------------------ |
+| Rounds         | 0 formal review rounds                                             |
+| Total items    | 0 (PR #415 review fixes were folded into this squash merge)        |
+| Review sources | N/A — planning artifacts only                                      |
+| PR scope       | System-wide standardization deep-plan (PLAN.md v1.1, 92 decisions) |
+| Files changed  | 39 (+9,788/-3,734)                                                 |
+
+#### Analysis
+
+PR #416 was a planning-artifact-only PR containing:
+
+- Deep-plan phases 1-4 (discovery, decisions, plan, walkthrough)
+- PLAN.md v1.1 with 21 review decisions incorporated
+- 5 planning scripts (ESM)
+- PR creep guardrail fixes (dynamic branch detection, remote-first priority)
+
+The PR #415 review fixes (R2-R4) were processed on the same branch and included
+in the PR #416 squash merge, but those review items are attributed to PR #415's
+retro above.
+
+No standalone review rounds were generated for this PR. The PR creep guardrail
+fix was prompted by code review (not formal tool review), and the
+SonarCloud/CodeQL items referenced in the squash were from PR #415.
+
+#### Verdict
+
+- **Efficiency:** N/A — no review cycle to evaluate
+- **Score:** N/A — planning-only PR with no formal review activity
+- **Note:** Planning PRs that don't generate review rounds are ideal — they
+  indicate proper tool exclusions (.planning/) are working as intended per PR
+  #415 R1 fix.
+
+---
+
+### Consolidated Retrospective: PRs #378-#416 (2026-03-04)
+
+**Scope:** 10 PRs, 49 review rounds, ~220 findings across SonarCloud, Qodo,
+Gemini, and CI.
+
+**Key Metrics:**
+
+- 55% avoidable review rounds (27/49)
+- Top churn causes: CC violations (6x), Pattern 13 propagation misses (5x),
+  SonarCloud FP re-raises (4x), rmSync race conditions (3x)
+
+**Action Items Implemented (this session):**
+
+1. CC pre-push check — enforces CC ≤15 as error (recommended 6x since PR #369)
+2. Pattern 13 (Fix-One-Audit-All) propagation warning in pre-commit
+3. 4 new propagation rules in check-propagation.js
+4. rmSync-before-renameSync pattern checker rule
+5. SonarCloud FP suppressions: S5852, S4036, S6354
+6. Qodo suppressions: CJS top-level-await, repeat-rejected, TDMS output
+7. Gemini suppressions: NEXT_PUBLIC, CJS/ESM, scripts/ tooling
+8. Semgrep guard pattern test fixtures expanded
+9. Review ID collisions fixed (17 duplicates → #441-#457)
+10. Auto-compute metrics script (compute-changelog-metrics.js)
+11. 13-item security checklist in audit template
+12. Validator dry-run design principle in SECURITY_CHECKLIST.md
+
+**Expected Impact:** ~15 fewer avoidable rounds per 10-PR batch.
 
 ---
