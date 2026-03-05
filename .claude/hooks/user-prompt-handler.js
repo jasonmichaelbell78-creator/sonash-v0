@@ -485,8 +485,60 @@ function runPlanSuggestion() {
   }
 }
 
+// === 5. BEHAVIORAL GUARDRAILS (always-on) ===
+function runGuardrails() {
+  stdoutParts.push(
+    'GUARDRAILS: (1) Ask on first confusion, not fourth (2) Never implement without explicit approval—present plan, wait for "go" (3) Read SKILL.md before following any skill format (4) "Stop and ask" = hard stop (5) One correction = full stop—ask what\'s wrong before retrying'
+  );
+}
+
+// === 6. FRUSTRATION/CORRECTION DETECTION ===
+function runFrustrationDetection() {
+  // Detect ALL CAPS (3+ words all caps, single-char words like "I" count)
+  const CAPS_PATTERN = /(?:^|\s)(?:[A-Z]+\s+){2,}[A-Z]+/;
+  const CORRECTION_PHRASES = [
+    /\bstop\b/i,
+    /\bwait\b/i,
+    /\bdid you just\b/i,
+    /\bwithout my\b/i,
+    /\bwithout me\b/i,
+    /\bwithout asking\b/i,
+    /\bi didn'?t (?:say|ask|tell|approve)/i,
+    /\bdon'?t do\b/i,
+    /\bdo not\b/i,
+    /\bnot what i\b/i,
+    /\bwrong\b/i,
+    /\bundo\b/i,
+    /\brevert\b/i,
+  ];
+  // Negative patterns — don't trigger on positive caps
+  const POSITIVE_CAPS = [
+    /^(?:YES|YEAH|YEP|ABSOLUTELY|PERFECT|GREAT|LOVE|AMAZING|AWESOME|NICE|GOOD|OK|OKAY|LGTM|ACK)\b/i,
+  ];
+
+  const hasCaps = CAPS_PATTERN.test(userPrompt);
+  const hasCorrection = CORRECTION_PHRASES.some((p) => p.test(userPrompt));
+  const hasRepeatedPunct = /[!?]{3,}/.test(userPrompt);
+  const isPositive = POSITIVE_CAPS.some((p) => p.test(userPrompt.trim()));
+
+  // Repeated punctuation alone needs a negative sentiment word to trigger
+  const hasNegativeSentiment = /\bnot\b|\bno\b|\bwhy\b|\bhate\b|\bwrong\b|\bstop\b|\bwait\b/i.test(
+    userPrompt
+  );
+  const shouldTrigger =
+    (hasCaps && !isPositive) || hasCorrection || (hasRepeatedPunct && hasNegativeSentiment);
+
+  if (shouldTrigger) {
+    stdoutParts.push(
+      "HARD STOP: User may be correcting you. Do NOT take any action. Ask what they want before proceeding."
+    );
+  }
+}
+
 // === MAIN ===
 function main() {
+  runGuardrails();
+  runFrustrationDetection();
   runAlerts();
   runAnalyze();
   runSessionEnd();
