@@ -232,17 +232,17 @@ if [ "${SKIP_CC:-}" = "1" ]; then
   node scripts/log-override.js --quick --check=cc --reason="$SKIP_REASON" 2>/dev/null || true
 else
   echo "  ▶ Checking cyclomatic complexity (push diff)..."
-  set +e
-  cc_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|mjs|ts|tsx)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)' | head -50)
-  cc_diff_exit=$?
-  set -e
-
-  # Fallback to main if no upstream is set (new branches)
-  if [ "$cc_diff_exit" -ne 0 ] || [ -z "${cc_files:-}" ]; then
-    set +e
-    cc_files=$(git diff --name-only --diff-filter=ACMR main...HEAD 2>/dev/null | grep -E '\.(js|mjs|ts|tsx)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)' | head -50)
-    set -e
+  # Detect upstream; fall back to default branch for new branches
+  if git rev-parse --abbrev-ref '@{u}' >/dev/null 2>&1; then
+    cc_base="@{u}"
+  else
+    cc_base=$(git remote show origin 2>/dev/null | sed -n 's/.*HEAD branch: //p')
+    cc_base="${cc_base:-main}"
+    echo "  ℹ️ No upstream set; using ${cc_base}...HEAD for complexity diff"
   fi
+  set +e
+  cc_files=$(git diff --name-only --diff-filter=ACMR "${cc_base}...HEAD" 2>/dev/null | grep -E '\.(js|mjs|ts|tsx)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)' | head -50)
+  set -e
 
   if [ -n "${cc_files:-}" ]; then
     set +e

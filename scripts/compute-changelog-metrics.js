@@ -73,46 +73,38 @@ function computeMetrics(records) {
     const pr = r.pr ?? "unknown";
     const source = r.source ?? "unknown";
 
-    // Only aggregate fields that are actually present in this record.
+    // Only aggregate fields that are actually present AND numeric in this record.
     // reviews.jsonl contains two record types: review records (with `total` but
     // often no `fixed`) and retro records (with `fixed`/`rejected` but often no
     // `total`). Naively treating null as 0 for all fields produces impossible
     // metrics like fix rates >1.0.
-    const total = r.total != null ? r.total : 0;
-    const fixed = r.fixed != null ? r.fixed : 0;
-    const deferred = r.deferred != null ? r.deferred : 0;
-    const rejected = r.rejected != null ? r.rejected : 0;
-
-    // Only count total from records that actually have a total field
-    if (r.total != null) {
-      totalFindings += total;
-    }
-    // Only count fixed/deferred/rejected from records that have those fields
-    if (r.fixed != null) {
-      totalFixed += fixed;
-    }
-    if (r.deferred != null) {
-      totalDeferred += deferred;
-    }
-    if (r.rejected != null) {
-      totalRejected += rejected;
-    }
-
     if (!perSource[source]) {
       perSource[source] = { total: 0, fixed: 0, deferred: 0, rejected: 0 };
     }
-    if (r.total != null) perSource[source].total += total;
-    if (r.fixed != null) perSource[source].fixed += fixed;
-    if (r.deferred != null) perSource[source].deferred += deferred;
-    if (r.rejected != null) perSource[source].rejected += rejected;
-
     if (!perPR[pr]) {
       perPR[pr] = { total: 0, fixed: 0, deferred: 0, rejected: 0, rounds: 0 };
     }
-    if (r.total != null) perPR[pr].total += total;
-    if (r.fixed != null) perPR[pr].fixed += fixed;
-    if (r.deferred != null) perPR[pr].deferred += deferred;
-    if (r.rejected != null) perPR[pr].rejected += rejected;
+
+    if (typeof r.total === "number") {
+      totalFindings += r.total;
+      perSource[source].total += r.total;
+      perPR[pr].total += r.total;
+    }
+    if (typeof r.fixed === "number") {
+      totalFixed += r.fixed;
+      perSource[source].fixed += r.fixed;
+      perPR[pr].fixed += r.fixed;
+    }
+    if (typeof r.deferred === "number") {
+      totalDeferred += r.deferred;
+      perSource[source].deferred += r.deferred;
+      perPR[pr].deferred += r.deferred;
+    }
+    if (typeof r.rejected === "number") {
+      totalRejected += r.rejected;
+      perSource[source].rejected += r.rejected;
+      perPR[pr].rejected += r.rejected;
+    }
     perPR[pr].rounds++;
   }
 
@@ -120,9 +112,10 @@ function computeMetrics(records) {
 
   // Sanity assertions — catch data integrity issues early
   for (const [pr, p] of Object.entries(perPR)) {
-    if (p.total > 0 && p.fixed > p.total) {
+    const resolved = p.fixed + p.deferred + p.rejected;
+    if (p.total > 0 && resolved > p.total) {
       console.warn(
-        `  ⚠️ PR #${pr}: fix count (${p.fixed}) > total (${p.total}) — possible data mismatch between review and retro records`
+        `  ⚠️ PR #${pr}: resolved count (${resolved}) > total (${p.total}) — possible data mismatch between review and retro records`
       );
     }
   }
