@@ -69,6 +69,11 @@ function filterByRange(records, start, end) {
 }
 
 function computeMetrics(records) {
+  const toFiniteNumber = (value, fallback = 0) => {
+    const n = typeof value === "number" ? value : Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  };
+
   let totalFindings = 0;
   let totalFixed = 0;
   let totalDeferred = 0;
@@ -79,10 +84,11 @@ function computeMetrics(records) {
   for (const r of records) {
     const pr = r.pr ?? "unknown";
     const source = r.source ?? "unknown";
-    const total = r.total ?? 0;
-    const fixed = r.fixed ?? 0;
-    const deferred = r.deferred ?? 0;
-    const rejected = r.rejected ?? 0;
+    const fixed = toFiniteNumber(r.fixed);
+    const deferred = toFiniteNumber(r.deferred);
+    const rejected = toFiniteNumber(r.rejected);
+    // Derive total from outcomes when null (many historical records have total=null)
+    const total = r.total != null ? toFiniteNumber(r.total) : fixed + deferred + rejected;
 
     totalFindings += total;
     totalFixed += fixed;

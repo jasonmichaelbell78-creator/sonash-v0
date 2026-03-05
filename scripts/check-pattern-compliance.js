@@ -217,8 +217,9 @@ const FILES = args.filter((a) => !a.startsWith("--"));
 const GLOBAL_EXCLUDE = [
   // Documentation files that contain pattern examples (not violations)
   /^docs\/AI_REVIEW_LEARNINGS_LOG\.md$/,
-  // This file contains pattern definitions as strings (meta-detection false positives)
+  // These files contain pattern definitions as strings (meta-detection false positives)
   /^scripts\/check-pattern-compliance\.js$/,
+  /^scripts\/check-propagation\.js$/,
   // Pattern test suite contains anti-pattern examples as test fixtures (not violations)
   /^tests\/pattern-compliance\.test\.js$/,
   // Semgrep test fixtures contain intentionally bad code for static analysis detection
@@ -1573,7 +1574,8 @@ const ANTI_PATTERNS = [
       }
       return matches;
     },
-    message: "rmSync before renameSync creates data loss race condition — if crash between rm and rename, data is lost",
+    message:
+      "rmSync before renameSync creates data loss race condition — if crash between rm and rename, data is lost",
     fix: "Use rename-only pattern: renameSync(tmp, dest) (atomic on same filesystem). Or try { renameSync } catch { copyFileSync + unlinkSync } for cross-device. See FIX_TEMPLATE #36.",
     review: "PR #407 retro — 5 rounds of rmSync churn",
     fileTypes: [".js", ".mjs", ".ts"],

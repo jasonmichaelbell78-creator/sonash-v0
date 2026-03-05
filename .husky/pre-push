@@ -121,7 +121,7 @@ fi
 # Detects functions modified in some files but not propagated to duplicate copies.
 echo "  ▶ Running propagation check..."
 set +e
-prop_output=$(node scripts/check-propagation.js 2>&1)
+prop_output=$(node scripts/check-propagation.js --blocking 2>&1)
 prop_exit=$?
 set -e
 if [ "$prop_exit" -ne 0 ]; then
@@ -229,14 +229,28 @@ if [ "${SKIP_CC:-}" = "1" ]; then
   node scripts/log-override.js --quick --check=cc --reason="$SKIP_REASON" 2>/dev/null || true
 else
   echo "  ▶ Checking cognitive complexity (push diff)..."
+
+  # Determine diff base: upstream if available, otherwise main/master
+  if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+    cc_base="@{u}"
+  elif git rev-parse --verify origin/main >/dev/null 2>&1; then
+    cc_base="origin/main"
+  elif git rev-parse --verify origin/master >/dev/null 2>&1; then
+    cc_base="origin/master"
+  else
+    echo "  ⚠️ CC check: no upstream or main/master found, skipping"
+    cc_base=""
+  fi
+
+  if [ -n "$cc_base" ]; then
   set +e
-  cc_all_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|mjs|ts|tsx)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)')
+  cc_all_files=$(git diff --name-only --diff-filter=ACMR "$cc_base"...HEAD 2>/dev/null | grep -E '\.(js|mjs)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)')
   cc_total=$(printf '%s\n' "$cc_all_files" | sed '/^$/d' | wc -l | tr -d ' ')
   cc_files=$(printf '%s\n' "$cc_all_files" | head -50)
   set -e
 
   if [ "$cc_total" -gt 50 ]; then
-    echo "  ❌ Cognitive complexity check: too many JS/TS files changed ($cc_total > 50)."
+    echo "  ❌ Cognitive complexity check: too many JS files changed ($cc_total > 50)."
     echo "  Split the push or override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
     exit 1
   fi
@@ -256,8 +270,9 @@ else
     fi
     echo "  ✅ Cognitive complexity passed (CC ≤15)"
   else
-    echo "  ⏭️ No JS/TS files in push diff"
+    echo "  ⏭️ No JS files in push diff"
   fi
+  fi # end cc_base check
 fi
 
 # Add cc to backward compat mapping (supports SKIP_CHECKS="cc")

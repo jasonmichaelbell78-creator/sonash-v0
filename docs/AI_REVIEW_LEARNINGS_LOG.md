@@ -960,6 +960,41 @@ _System Overhaul Review. 22 items from 4 sources._
 
 ---
 
+### Review #449: PR #417 R2 — Qodo + Gemini + Semgrep + CI (2026-03-05)
+
+_System Overhaul Review R2. 19 items from 5 sources, 13 unique after dedup._
+
+**Source:** Qodo bugs (6), Qodo suggestions (7), Qodo compliance (2), Gemini
+(2), Semgrep (1), CI/Prettier (1) **Total:** 13 **Fixed:** 10 **Deferred:** 0
+**Rejected:** 3
+
+- **Qodo Bug #1:** Propagation not blocking — added `--blocking` flag to
+  pre-push call
+- **Qodo Bug #2:** CC can't parse TS — scoped CC check to `.js`/`.mjs` only
+  (TS/TSX parsed by project ESLint, not bare `--no-eslintrc`)
+- **Qodo Bug #3:** Metrics null totals — derive total from
+  fixed+deferred+rejected when null + `toFiniteNumber` coercion for all numeric
+  fields
+- **Qodo Bug #4:** CC skipped on no-upstream — fallback to origin/main or
+  origin/master when @{u} unavailable
+- **Qodo Bug #5:** Committed runtime state files — gitignored + git rm --cached
+  for .session-agents.json, .alerts-cooldown.json, .directive-dedup.json
+- **Qodo Bug #6:** Sonar ignores too broad — narrowed S5852/S4036/S6354 to
+  specific script files instead of `scripts/**/*.js`
+- **Qodo Suggestion:** POSIX char classes — REJECTED (correct for `git grep -E`,
+  reviewer incorrectly assumed JS regex context)
+- **Qodo Suggestion:** void \_result in test fixture — fixed
+- **Qodo Suggestion:** numeric coercion — merged with bug #3
+- **CI (1):** Prettier formatting on check-propagation.js,
+  check-pattern-compliance.js
+- **Rejected (3):** POSIX char class replacement (patterns are POSIX ERE for
+  `git grep -E`), NUL-delimited paths (R1 repeat), invocation ID format
+  (auto-generated)
+- **Patterns:** Validate-Regex-Context-Before-Fix; Derive-Null-Totals;
+  Gitignore-Runtime-State; Narrow-Sonar-Suppressions
+
+---
+
 ### Review #442: PR #411 R1-R8 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
 
 _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across

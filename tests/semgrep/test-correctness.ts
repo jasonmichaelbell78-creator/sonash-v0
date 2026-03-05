@@ -216,6 +216,7 @@ function returnPromise() {
 function assignedPromise() {
   // ok: sonash.correctness.no-floating-promise
   const _result = fetch("/api/data");
+  void _result;
 }
 
 async function tryCatchPromise() {
