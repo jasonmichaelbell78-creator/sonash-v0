@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-03-04 **Active Documents:** 498 **Archived Documents:** 106
+**Generated:** 2026-03-05 **Active Documents:** 498 **Archived Documents:** 106
 
 ---
 
@@ -203,7 +203,7 @@ _AI agent reference docs_
 | [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓6 ↑2      | 2026-03-02    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md)          | Detailed guidance for preventing loss of important decisions... | ↓2 ↑0      | 2026-02-28    |
 | [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)                | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-28    |
-| [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)                      | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-03-01    |
+| [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)                      | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-03-05    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)                        | This document defines the policy for creating, using, and ov... | ↓2 ↑4      | 2026-02-28    |
 | [Skill Ecosystem Audit — Conversation Notes](docs/agent_docs/SKILL_ECOSYSTEM_AUDIT_IDEAS.md) | Brainstorming notes on what a skill-ecosystem-audit would co... | ↓0 ↑0      | 2026-02-28    |
 
@@ -271,7 +271,7 @@ _Planning & Active_
 | Document                                                                                               | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-02-28    |
-| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-03-04    |
+| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-03-05    |
 | [Lighthouse Integration Plan](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)                                     | -                                                               | ↓2 ↑2      | 2026-02-28    |
 | [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-02-28    |
 | [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                 | -                                                               | ↓2 ↑3      | 2026-02-28    |
@@ -372,7 +372,7 @@ _Claude Code skills_
 | [PR Review Skill — Archive](.claude/skills/pr-review/ARCHIVE.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-28    |
 | [pr-ecosystem-audit](.claude/skills/pr-ecosystem-audit/SKILL.md)                                                                    | Deep diagnostic of the entire PR review ecosystem — from ski...   | ↓0 ↑0      | 2026-02-28    |
 | [pr-retro](.claude/skills/pr-retro/SKILL.md)                                                                                        | Analyze the review cycle for a completed PR and produce a \*\*... | ↓0 ↑1      | 2026-02-28    |
-| [pr-review](.claude/skills/pr-review/SKILL.md)                                                                                      | You are about to process AI code review feedback. This is a ...   | ↓0 ↑5      | 2026-02-28    |
+| [pr-review](.claude/skills/pr-review/SKILL.md)                                                                                      | You are about to process AI code review feedback. This is a ...   | ↓0 ↑5      | 2026-03-05    |
 | [pre-commit-fixer](.claude/skills/pre-commit-fixer/SKILL.md)                                                                        | Eliminate the context-heavy fix-commit-retry loop that happe...   | ↓0 ↑0      | 2026-02-28    |
 | [Pressure Test 1: Emergency Production Fix](.claude/skills/systematic-debugging/test-pressure-1.md)                                 | -                                                                 | ↓0 ↑0      | 2026-02-28    |
 | [Pressure Test 2: Sunk Cost + Exhaustion](.claude/skills/systematic-debugging/test-pressure-2.md)                                   | -                                                                 | ↓0 ↑0      | 2026-02-28    |
@@ -384,7 +384,7 @@ _Claude Code skills_
 | [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | -                                                                 | ↓0 ↑0      | 2026-02-28    |
 | [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-02-28    |
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-03-01    |
-| [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-02-28    |
+| [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
 | [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑0      | 2026-02-28    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-02-28    |
 | [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                                                        | <!-- prettier-ignore-start -->                                    | ↓4 ↑0      | 2026-02-28    |
@@ -556,7 +556,7 @@ _Uncategorized_
 
 | Document                                                | Description                                                     | References | Last Modified |
 | ------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [SoNash Code Review Style Guide](.gemini/styleguide.md) | This guide defines coding standards and review expectations ... | ↓0 ↑0      | 2026-02-28    |
+| [SoNash Code Review Style Guide](.gemini/styleguide.md) | This guide defines coding standards and review expectations ... | ↓0 ↑0      | 2026-03-05    |
 
 ### .github (Tier 4)
 
@@ -1304,7 +1304,7 @@ _Uncategorized_
 
 | Document                                                                      | Description | References | Last Modified |
 | ----------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-03-04    |
+| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-03-05    |
 
 ### Core Documentation (Tier 4)
 
@@ -1313,7 +1313,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-28    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-04    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-05    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-02-28    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-28    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-28    |
@@ -1352,7 +1352,7 @@ _Reference_
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑8      | 2026-02-28    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-28    |
-| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑9      | 2026-03-04    |
+| [Session Context](SESSION_CONTEXT.md)      | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑9      | 2026-03-05    |
 
 ### scripts (Tier 4)
 
@@ -2452,7 +2452,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-03-04 | Auto-generated from codebase scan |
+| Auto    | 2026-03-05 | Auto-generated from codebase scan |
 
 ---
 
