@@ -157,3 +157,77 @@ function safeAccessNullish(arr) {
   const val = arr[0] ?? "default";
   return val;
 }
+
+function safeAccessOptionalChain(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  return arr[0]?.name;
+}
+
+function safeAccessOptionalChainMethod(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  return arr[0]?.toString();
+}
+
+function safeAccessTernary(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  return arr.length > 0 ? arr[0] : null;
+}
+
+function safeAccessShortCircuit(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  return arr.length < 1 || arr[0];
+}
+
+function safeAccessLengthNotEquals(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  if (arr.length !== 0) {
+    return arr[0];
+  }
+}
+
+function safeAccessLengthGte(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  if (arr.length >= 1) {
+    return arr[0];
+  }
+}
+
+function safeAccessExistenceCheck(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  if (arr && arr.length) {
+    return arr[0];
+  }
+}
+
+// =============================================================================
+// sonash.correctness.no-floating-promise (additional guard pattern tests)
+// =============================================================================
+
+function voidPromise() {
+  // ok: sonash.correctness.no-floating-promise
+  void fetch("/api/data");
+}
+
+function returnPromise() {
+  // ok: sonash.correctness.no-floating-promise
+  return fetch("/api/data");
+}
+
+function assignedPromise() {
+  // ok: sonash.correctness.no-floating-promise
+  const result = fetch("/api/data");
+}
+
+async function tryCatchPromise() {
+  try {
+    // ok: sonash.correctness.no-floating-promise
+    await fetch("/api/data");
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+function thenCatchPromise() {
+  // ok: sonash.correctness.no-floating-promise
+  fetch("/api/data").then(handle).catch(handleError);
+}

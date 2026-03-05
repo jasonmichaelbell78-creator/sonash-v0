@@ -3634,3 +3634,33 @@ SonarCloud/CodeQL items referenced in the squash were from PR #415.
   #415 R1 fix.
 
 ---
+
+### Consolidated Retrospective: PRs #378-#416 (2026-03-04)
+
+**Scope:** 10 PRs, 49 review rounds, ~220 findings across SonarCloud, Qodo,
+Gemini, and CI.
+
+**Key Metrics:**
+
+- 55% avoidable review rounds (27/49)
+- Top churn causes: CC violations (6x), Pattern 13 propagation misses (5x),
+  SonarCloud FP re-raises (4x), rmSync race conditions (3x)
+
+**Action Items Implemented (this session):**
+
+1. CC pre-push check — enforces CC ≤15 as error (recommended 6x since PR #369)
+2. Pattern 13 (Fix-One-Audit-All) propagation warning in pre-commit
+3. 4 new propagation rules in check-propagation.js
+4. rmSync-before-renameSync pattern checker rule
+5. SonarCloud FP suppressions: S5852, S4036, S6354
+6. Qodo suppressions: CJS top-level-await, repeat-rejected, TDMS output
+7. Gemini suppressions: NEXT_PUBLIC, CJS/ESM, scripts/ tooling
+8. Semgrep guard pattern test fixtures expanded
+9. Review ID collisions fixed (17 duplicates → #441-#457)
+10. Auto-compute metrics script (compute-changelog-metrics.js)
+11. 13-item security checklist in audit template
+12. Validator dry-run design principle in SECURITY_CHECKLIST.md
+
+**Expected Impact:** ~15 fewer avoidable rounds per 10-PR batch.
+
+---

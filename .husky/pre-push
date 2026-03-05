@@ -220,6 +220,46 @@ if ! npx tsc --noEmit > /dev/null 2>&1; then
 fi
 echo "  ✅ Type check passed"
 
+# 5b. Cognitive Complexity check (blocking — CC >15 is error)
+# Recommended 6x since PR #369, ~15 avoidable review rounds caused by CC violations.
+# Pre-commit warns; pre-push blocks. Enforces CC ≤15 on push diff files.
+if [ "${SKIP_CC:-}" = "1" ]; then
+  require_skip_reason "SKIP_CC=1"
+  echo "  ⚠️ CC check skipped (SKIP_CC=1)"
+  node scripts/log-override.js --quick --check=cc --reason="$SKIP_REASON" 2>/dev/null || true
+else
+  echo "  ▶ Checking cognitive complexity (push diff)..."
+  set +e
+  cc_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|mjs|ts|tsx)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)' | head -50)
+  set -e
+
+  if [ -n "${cc_files:-}" ]; then
+    set +e
+    cc_output=$(printf '%s\n' "$cc_files" | xargs -r npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 2>&1)
+    cc_exit=$?
+    set -e
+    if [ "$cc_exit" -ne 0 ]; then
+      echo "  ❌ Cognitive complexity violations (CC >15) in pushed files:"
+      printf '%s\n' "$cc_output" | grep -E "complexity" | head -10
+      echo ""
+      echo "  Extract helper functions to reduce complexity before pushing."
+      echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
+      exit 1
+    fi
+    echo "  ✅ Cognitive complexity passed (CC ≤15)"
+  else
+    echo "  ⏭️ No JS/TS files in push diff"
+  fi
+fi
+
+# Add cc to backward compat mapping (supports SKIP_CHECKS="cc")
+# Already handled by SKIP_CC above; SKIP_CHECKS integration:
+for _sk_push in CC:cc; do
+  _var_push="SKIP_${_sk_push%%:*}"; _name_push="${_sk_push#*:}"
+  eval "_val_push=\${$_var_push:-}"
+  [ "$_val_push" = "1" ] && true  # Already handled above
+done
+
 # 6. Security audit (non-blocking warning, ~3-8s)
 # Checks for high/critical vulnerabilities in dependencies
 echo "  ▶ Running security audit..."

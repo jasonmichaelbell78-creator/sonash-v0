@@ -467,7 +467,7 @@ catch/assignment pattern + CI doc lint + path traversal + import bug).
 
 ---
 
-#### Review #366: PR #384 R1 — SonarCloud + Qodo + CI (2026-02-22)
+#### Review #454: PR #384 R1 — SonarCloud + Qodo + CI (2026-02-22)
 
 **Source**: SonarCloud (17 issues) + Qodo (10 suggestions) + CI failure (1)
 **PR**: #384 (comprehensive 9-domain audit + TDMS intake + debt placement)
@@ -494,7 +494,7 @@ catch/assignment pattern + CI doc lint + path traversal + import bug).
 
 ---
 
-#### Review #367: PR #389 R1 — Qodo + Gemini (2026-02-25)
+#### Review #455: PR #389 R1 — Qodo + Gemini (2026-02-25)
 
 **Source**: Qodo (23 suggestions + 4 compliance) + Gemini (1 bug) **PR**: #389
 (ecosystem audit expansion + skill bloat reduction) **Items**: 25 total — 22
@@ -529,7 +529,7 @@ negative lookbehind already applied). Tests: 293 pass, 0 fail.
 
 ---
 
-#### Review #368: PR #389 R2 — Qodo + Gemini + Compliance (2026-02-25)
+#### Review #456: PR #389 R2 — Qodo + Gemini + Compliance (2026-02-25)
 
 **Source**: Qodo (32 suggestions + 3 compliance) + Gemini (0 new) **PR**: #389
 (ecosystem audit expansion + skill bloat reduction) **Items**: 40 parsed — 31
@@ -557,11 +557,11 @@ fixed, 0 deferred, 3 rejected, 6 stale (R1-fixed)
 
 **Resolution**: 31 items fixed across 17 files. Tests: 293 pass, 0 fail. 3
 rejected (safeRequire error surfacing, silent catches — all intentional). 6
-stale items already addressed in Review #367.
+stale items already addressed in Review #455.
 
 ---
 
-#### Review #369: PR #394 R1 — SonarCloud + Qodo + Gemini + CI (2026-02-26)
+#### Review #457: PR #394 R1 — SonarCloud + Qodo + Gemini + CI (2026-02-26)
 
 **Source**: SonarCloud (35 code smells + 1 security hotspot) + Qodo (18
 suggestions + 6 compliance) + Gemini (1 inline) + CI (2 blockers) **PR**: #394
@@ -579,7 +579,7 @@ suggestions + 6 compliance) + Gemini (1 inline) + CI (2 blockers) **PR**: #394
 - **isInsideTryBlock must check range, not just ancestor type**: Returning true
   for any `TryStatement` ancestor counts `catch`/`finally` blocks as guarded.
   Must verify `node.range` falls within `current.block.range`. This is the third
-  time this pattern has appeared (Reviews #374, #375, now #369).
+  time this pattern has appeared (Reviews #374, #375, now #457).
 - **hasRenameSyncNearby ordering matters**: Checking for `renameSync` anywhere
   in a block creates false negatives — a pre-existing rename before the write
   masks a non-atomic write. Fix: only search statements after the writeFileSync.
@@ -605,7 +605,7 @@ structural — ESLint rules share similar AST patterns by design.
 
 ---
 
-#### Review #367: PR #384 R2 — CI Pattern Compliance + Qodo Suggestions (2026-02-22)
+#### Review #441: PR #384 R2 — CI Pattern Compliance + Qodo Suggestions (2026-02-22)
 
 **Source**: CI failure (112 blocking pattern violations) + Qodo compliance (4
 items) + Qodo code suggestions (20 items) + SonarCloud (3 items) **PR**: #384
@@ -639,7 +639,7 @@ total — 125 fixed, 7 rejected, 7 deferred
 
 ---
 
-#### Review #368: SonarCloud + Qodo + CI R3 — CC Reduction, Nested Ternaries, Atomic Writes (2026-02-22)
+#### Review #442: SonarCloud + Qodo + CI R3 — CC Reduction, Nested Ternaries, Atomic Writes (2026-02-22)
 
 **Source**: SonarCloud (10 items) + CI Security Pattern Check (1 failure) + Qodo
 compliance (1 item) + Qodo code suggestions (6 items) **PR**: #384 R3 **Items**:
@@ -663,7 +663,7 @@ complex) **Rejected:** CI SEC-002/001/010/003 on `pattern-compliance.test.js`
 
 ---
 
-#### Review #369: CI + SonarCloud + Qodo R4 — Security Excludes, CC Extract, EXDEV Guard (2026-02-22)
+#### Review #443: CI + SonarCloud + Qodo R4 — Security Excludes, CC Extract, EXDEV Guard (2026-02-22)
 
 **Source**: CI failure (SEC-001/SEC-010 blocking) + SonarCloud (2 items) + Qodo
 code suggestions (7 items) **PR**: #384 R4 **Items**: 12 total — 11 fixed, 0
@@ -2811,7 +2811,7 @@ bug that makes the check always pass.
 - **Rejected**: Structured logging for CLI script — `console.log` is correct
   pattern for pre-push hooks.
 
-#### Review #378: PR #392 R3 (2026-02-25)
+#### Review #447: PR #392 R3 (2026-02-25)
 
 - **Source**: Qodo PR Suggestions (5)
 - **Total Items**: 5 (3 fixed, 2 deferred pipeline-generated)
@@ -2822,7 +2822,7 @@ bug that makes the check always pass.
 - **Pattern**: Security/lint checkers should fail-open (return true = flag it)
   not fail-closed (return false = skip it) on read errors.
 
-#### Review #375: PR #389 R1 (2026-02-24)
+#### Review #444: PR #389 R1 (2026-02-24)
 
 - **Source**: SonarCloud (1), Qodo Compliance (3), CI Pattern Check (35
   blocking), Gemini Code Assist (18)
@@ -2848,7 +2848,7 @@ bug that makes the check always pass.
   - **Hardcoded finding IDs**: `id: "SIA-400"` in loop produces duplicates.
     Fixed with counter suffix.
 
-#### Review #375: PR #388 R4 (2026-02-23)
+#### Review #445: PR #388 R4 (2026-02-23)
 
 - **Source**: CI (pattern compliance blocker), Qodo PR Suggestions
 - **PR**: Ecosystem audit skills (hook, session, TDMS) — continued
@@ -2866,7 +2866,7 @@ bug that makes the check always pass.
   with variable, backward brace scanning direction (R3 got it wrong, R4
   corrected), null vs falsy distinction for safeReadFile returns
 
-#### Review #376: PR #388 R5 (2026-02-24)
+#### Review #446: PR #388 R5 (2026-02-24)
 
 - **Source**: SonarCloud (5), CI Pattern Compliance (12 blocking), Gemini Code
   Assist (3), Qodo Compliance (4), Qodo PR Suggestions (4)
@@ -2889,7 +2889,7 @@ bug that makes the check always pass.
   swallowing is a recurring Qodo compliance finding (see also PR #388 R3
   DEBT-7567)
 
-#### Review #377: PR #388 R6 (2026-02-24)
+#### Review #448: PR #388 R6 (2026-02-24)
 
 - **Source**: Qodo Compliance (5), Qodo PR Suggestions (6), CI Pattern
   Compliance (3 blocking), SonarCloud (1)
@@ -2910,7 +2910,7 @@ bug that makes the check always pass.
   dedup removed 1685 entries (31% of file was duplicated). Pre-push shell script
   pattern compliance is now enforced in CI.
 
-#### Review #378: PR #388 R7 (2026-02-24)
+#### Review #449: PR #388 R7 (2026-02-24)
 
 - **Source**: Qodo PR Suggestions (2), Gemini Code Assist (3), SonarCloud QG
   (2), CI Checks (2)

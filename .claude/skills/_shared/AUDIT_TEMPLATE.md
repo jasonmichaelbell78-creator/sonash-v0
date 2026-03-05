@@ -187,6 +187,31 @@ only.
 
 ---
 
+## Script Security Pre-Check (13-Point Checklist)
+
+Before auditing or writing scripts that handle file I/O, git, or shell commands,
+verify these items (derived from PR #389 CRITICAL findings):
+
+1. **Path containment** — All resolved paths checked against allowed root
+   directory
+2. **Symlink guard** — `lstatSync` + `isSymbolicLink()` before writes, or use
+   `isSafeToWrite()` helper
+3. **Path traversal prevention** — Use `/^\.\.(?:[\\/]|$)/.test(rel)` not
+   `startsWith('..')`
+4. **DoS depth limit** — Recursive operations capped (e.g., `MAX_DEPTH = 10`)
+5. **DoS size limit** — File reads bounded (e.g., `MAX_FILE_SIZE = 2MB`)
+6. **DoS entry limit** — Directory scans capped (e.g., `MAX_ENTRIES = 1000`)
+7. **Atomic writes** — Write to tmp, then rename; no direct overwrite
+8. **No rmSync before rename** — rmSync→renameSync creates data loss race
+   condition; use rename-only
+9. **Temp cleanup** — Temp files cleaned in `finally` block or EXIT trap
+10. **BOM handling** — `.replace(/\uFEFF/g, '')` on UTF-8 file reads
+11. **Array.isArray guard** — Before iterating parsed JSON arrays
+12. **JSONL per-line try/catch** — Single corrupt line must not crash script
+13. **exec() /g flag** — Global flag required when using `exec()` in loops
+
+---
+
 ## Agent Return Protocol
 
 **CRITICAL**: All agents spawned by audit skills MUST return ONLY:

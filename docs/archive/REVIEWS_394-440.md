@@ -307,7 +307,7 @@ All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl
 
 ---
 
-#### Review #397: PR #398 R2 (2026-02-27)
+#### Review #450: PR #398 R2 (2026-02-27)
 
 - **Source**: Qodo Compliance (2), SonarCloud (5), Qodo PR Suggestions (10)
 - **PR**: PR #398 — maintenance session: TDMS intake, doc index, review archive,
@@ -343,7 +343,7 @@ All TDMS fixes applied to both MASTER_DEBT.jsonl and raw/deduped.jsonl
 
 ---
 
-#### Review #397: PR #395 R2 (2026-02-26)
+#### Review #451: PR #395 R2 (2026-02-26)
 
 - **Source**: Qodo PR Suggestions (8)
 - **PR**: PR #395 — retro action items, secret redaction hardening
