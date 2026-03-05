@@ -485,8 +485,14 @@ function runPlanSuggestion() {
   }
 }
 
-// === 5. BEHAVIORAL GUARDRAILS (always-on) ===
+// === 5. BEHAVIORAL GUARDRAILS (always-on, ~63 tokens per turn) ===
 function runGuardrails() {
+  // Skip trivial acknowledgments to avoid noise on "ok", "yes", "thanks"
+  if (
+    userPrompt.length < 10 &&
+    /^(?:ok|okay|yes|yeah|yep|no|nope|thanks?|thx|ty|sure|go|lgtm|ack)\b/i.test(userPrompt.trim())
+  )
+    return;
   stdoutParts.push(
     'GUARDRAILS: (1) Ask on first confusion, not fourth (2) Never implement without explicit approval—present plan, wait for "go" (3) Read SKILL.md before following any skill format (4) "Stop and ask" = hard stop (5) One correction = full stop—ask what\'s wrong before retrying'
   );
@@ -494,24 +500,28 @@ function runGuardrails() {
 
 // === 6. FRUSTRATION/CORRECTION DETECTION ===
 function runFrustrationDetection() {
-  // Detect ALL CAPS (3+ words all caps, single-char words like "I" count)
-  const CAPS_PATTERN = /(?:^|\s)(?:[A-Z]+\s+){2,}[A-Z]+/;
+  // Detect ALL CAPS: prompt must START with 3+ consecutive caps words (min 2 chars each).
+  // Mid-sentence caps clusters (like "Fix README UI API") are technical, not frustration.
+  const CAPS_PATTERN = /^\s*(?:[A-Z]{2,}\s+){2,}[A-Z]{2,}/;
+  // Correction phrases — require sentence context, not bare words.
+  // "stop" and "wait" only match at sentence start followed by period/punctuation (commanding agent)
+  // not followed by technical nouns (server, process, loop, etc.)
   const CORRECTION_PHRASES = [
-    /\bstop\b/i,
-    /\bwait\b/i,
+    /^\s*stop\b(?!\s+(?:the|a|this|that|it|loop|server|process|running|execution|polling))/i,
+    /^\s*wait\b(?!\s+(?:for|until|on))/i,
     /\bdid you just\b/i,
     /\bwithout my\b/i,
     /\bwithout me\b/i,
     /\bwithout asking\b/i,
     /\bi didn'?t (?:say|ask|tell|approve)/i,
     /\bdon'?t do\b/i,
-    /\bdo not\b/i,
+    /\bthat'?s wrong\b/i,
+    /\byou'?re wrong\b/i,
     /\bnot what i\b/i,
-    /\bwrong\b/i,
     /\bundo\b/i,
     /\brevert\b/i,
   ];
-  // Negative patterns — don't trigger on positive caps
+  // Positive first-word exclusions — don't trigger HARD STOP on enthusiasm
   const POSITIVE_CAPS = [
     /^(?:YES|YEAH|YEP|ABSOLUTELY|PERFECT|GREAT|LOVE|AMAZING|AWESOME|NICE|GOOD|OK|OKAY|LGTM|ACK)\b/i,
   ];
@@ -522,9 +532,8 @@ function runFrustrationDetection() {
   const isPositive = POSITIVE_CAPS.some((p) => p.test(userPrompt.trim()));
 
   // Repeated punctuation alone needs a negative sentiment word to trigger
-  const hasNegativeSentiment = /\bnot\b|\bno\b|\bwhy\b|\bhate\b|\bwrong\b|\bstop\b|\bwait\b/i.test(
-    userPrompt
-  );
+  const hasNegativeSentiment = /\bnot\b|\bno\b|\bwhy\b|\bhate\b|\bwrong\b/i.test(userPrompt);
+  // isPositive only suppresses the caps path (not correction path — by design)
   const shouldTrigger =
     (hasCaps && !isPositive) || hasCorrection || (hasRepeatedPunct && hasNegativeSentiment);
 
