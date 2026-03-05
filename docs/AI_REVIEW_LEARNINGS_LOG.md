@@ -1029,14 +1029,38 @@ _System Overhaul Review. 22 items from 4 sources._
 
 ---
 
+### Review #451: PR #417 R4 — Qodo + Gemini (2026-03-05)
+
+_System Overhaul Review R4. ~25 raw items across R1-R4 suggestions, 10 unique
+after dedup against R1-R3. Most were already processed or repeat-rejected._
+
+**Source:** Qodo suggestions (8), Gemini (2) **Total:** 10 **Fixed:** 4
+**Deferred:** 0 **Rejected:** 6
+
+- **Review #450 Total fix:** Corrected Total:4 → Total:11 (deduped count)
+- **FD3 guard:** Added fallback from >&3 to >&2 in pre-commit propagation check
+  to prevent "bad file descriptor" errors
+- **Prototype pollution:** Changed perSource/perPR to Object.create(null) +
+  String() coercion on keys from JSONL data
+- **fixRate type:** Return number|null instead of string for --json output
+  (separates data from presentation)
+- **REJECTED (6):** POSIX regex (3rd raise — correct for `git grep -E`), TS in
+  CC check (2nd raise — can't parse with --no-eslintrc),
+  sonarjs/cognitive-complexity (user decision), CLI flag ambiguity, negative
+  metrics guard, NUL paths
+- **Pattern:** Qodo Suggestions re-raise rejected items across rounds. Always
+  check prior rejections before re-investigating.
+
+---
+
 ### Review #450: PR #417 R3 — Qodo + SonarCloud + Semgrep + Gemini (2026-03-05)
 
 _System Overhaul Review R3. 16 raw items from 6 sources, 11 unique after dedup.
 Most Qodo bugs were stale re-raises of issues already fixed in R2._
 
 **Source:** SonarCloud (1), Qodo bugs (6), Qodo suggestions (3), Qodo compliance
-(1), Semgrep (1), Qodo reviewer guide (3), Gemini (1, summary only) **Total:** 4
-**Fixed:** 4 **Deferred:** 0 **Rejected:** 7
+(1), Semgrep (1), Qodo reviewer guide (3), Gemini (1, summary only) **Total:**
+11 **Fixed:** 4 **Deferred:** 0 **Rejected:** 7
 
 - **Sonar resourceKey comma syntax:** SonarCloud `resourceKey` doesn't support
   comma-separated file lists — split fp6/fp7/fp8 into individual entries

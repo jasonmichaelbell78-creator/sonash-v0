@@ -254,8 +254,10 @@ prop_staged_output=$(node scripts/check-propagation.js --staged 2>&1)
 prop_staged_exit=$?
 set -e
 if [ "$prop_staged_exit" -ne 0 ] || echo "$prop_staged_output" | grep -q "⚠️"; then
-  echo "  ⚠️ Propagation check: pattern gaps detected in staged area (not blocking)" >&3
-  printf '%s\n' "$prop_staged_output" | grep "⚠️" | head -5 >&3
+  _prop_fd="2"
+  if { : >&3; } 2>/dev/null; then _prop_fd="3"; fi
+  echo "  ⚠️ Propagation check: pattern gaps detected in staged area (not blocking)" >&${_prop_fd}
+  printf '%s\n' "$prop_staged_output" | grep "⚠️" | head -5 >&${_prop_fd}
   node scripts/append-hook-warning.js --hook=pre-commit --type=propagation --severity=info --message="Propagation pattern gaps in staged files" --action="Review sibling files for same pattern" 2>/dev/null || true
 fi
 

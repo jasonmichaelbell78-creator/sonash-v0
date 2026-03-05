@@ -80,12 +80,12 @@ function computeMetrics(records) {
   let totalFixed = 0;
   let totalDeferred = 0;
   let totalRejected = 0;
-  const perSource = {};
-  const perPR = {};
+  const perSource = Object.create(null);
+  const perPR = Object.create(null);
 
   for (const r of records) {
-    const pr = r.pr ?? "unknown";
-    const source = r.source ?? "unknown";
+    const pr = String(r.pr ?? "unknown");
+    const source = String(r.source ?? "unknown");
     const fixed = toFiniteNumber(r.fixed);
     const deferred = toFiniteNumber(r.deferred);
     const rejected = toFiniteNumber(r.rejected);
@@ -115,7 +115,7 @@ function computeMetrics(records) {
     perPR[pr].rounds++;
   }
 
-  const fixRate = totalFindings > 0 ? (totalFixed / totalFindings).toFixed(2) : "N/A";
+  const fixRate = totalFindings > 0 ? totalFixed / totalFindings : null;
 
   return { totalFindings, totalFixed, totalDeferred, totalRejected, fixRate, perSource, perPR };
 }
@@ -126,13 +126,14 @@ function printMetrics(metrics) {
     return;
   }
 
+  const displayRate = metrics.fixRate != null ? metrics.fixRate.toFixed(2) : "N/A";
   console.log("\n📊 Review Metrics Summary");
   console.log("═".repeat(50));
   console.log(`  Total findings:  ${metrics.totalFindings}`);
   console.log(`  Fixed:           ${metrics.totalFixed}`);
   console.log(`  Deferred:        ${metrics.totalDeferred}`);
   console.log(`  Rejected:        ${metrics.totalRejected}`);
-  console.log(`  Fix rate:        ${metrics.fixRate}`);
+  console.log(`  Fix rate:        ${displayRate}`);
 
   const sources = Object.keys(metrics.perSource);
   if (sources.length > 0) {
