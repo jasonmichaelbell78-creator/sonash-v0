@@ -542,8 +542,7 @@ function saveBaseline() {
     if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) return;
     const data = JSON.stringify(baseline, null, 2);
     fs.writeFileSync(tmpPath, data, "utf-8"); // atomic: write .tmp then renameSync below
-    if (fs.existsSync(BASELINE_PATH)) fs.rmSync(BASELINE_PATH, { force: true });
-    fs.renameSync(tmpPath, BASELINE_PATH);
+    fs.renameSync(tmpPath, BASELINE_PATH); // renameSync overwrites dest atomically on same FS
   } catch (err) {
     console.error(`  [warn] Failed to save baseline: ${safeErrorMsg(err)}`);
   }
