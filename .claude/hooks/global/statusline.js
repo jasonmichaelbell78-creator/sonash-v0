@@ -2,8 +2,9 @@
 /* global process, require */
 /* eslint-disable @typescript-eslint/no-require-imports, no-empty */
 // Claude Code Statusline - GSD Edition
-// Shows: model | current task | directory | context usage
+// Shows: model | branch | current task | directory | context usage
 
+const { execFileSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
@@ -104,14 +105,39 @@ process.stdin.on("end", () => {
       }
     }
 
+    // Git branch
+    let branch = "";
+    try {
+      branch = execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+        cwd: dir,
+        encoding: "utf8",
+        timeout: 1000,
+        windowsHide: true,
+        stdio: ["pipe", "pipe", "ignore"],
+      }).trim();
+    } catch (_e) {}
+
     // Output
     const dirname = path.basename(dir);
+    // Sanitize dynamic values: strip control chars, CSI/OSC escapes, cap length
+    // eslint-disable-next-line no-control-regex -- Intentional control char sanitization
+    const sanitize = (s) =>
+      s
+        .replace(/[\x00-\x1f\x7f-\x9f]/g, "")
+        .replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, "")
+        .replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, "")
+        .slice(0, 80);
+    const safeBranch = sanitize(branch);
+    const safeDirname = sanitize(dirname);
+    const branchPart = safeBranch ? ` │ \x1b[36m${safeBranch}\x1b[0m` : "";
     if (task) {
       process.stdout.write(
-        `${gsdUpdate}\x1b[2m${model}\x1b[0m │ \x1b[1m${task}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}`
+        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} │ \x1b[1m${task}\x1b[0m │ \x1b[2m${safeDirname}\x1b[0m${ctx}`
       );
     } else {
-      process.stdout.write(`${gsdUpdate}\x1b[2m${model}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}`);
+      process.stdout.write(
+        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} │ \x1b[2m${safeDirname}\x1b[0m${ctx}`
+      );
     }
   } catch (_e) {
     // Silent fail - don't break statusline on parse errors

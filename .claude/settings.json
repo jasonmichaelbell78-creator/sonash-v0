@@ -3,7 +3,11 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "enableAllProjectMcpServers": true,
-  "disabledMcpjsonServers": ["rube", "serena", "nextjs-devtools", "filesystem"],
+  "disabledMcpjsonServers": [],
+  "statusLine": {
+    "type": "command",
+    "command": "node .claude/hooks/global/statusline.js"
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -156,16 +160,6 @@
         ]
       }
     ],
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/global/statusline.js",
-            "continueOnError": true
-          }
-        ]
-      }
-    ]
+    "Notification": []
   }
 }
