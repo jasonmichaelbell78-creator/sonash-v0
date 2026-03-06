@@ -8,8 +8,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-01
+**Document Version:** 2.0
+**Last Updated:** 2026-03-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -57,7 +57,7 @@ Phase 1: Preparation    → Read skill, read standards, initialize state
 Phase 2: Category Audit → 10 categories, interactive, decisions saved per category
 Phase 3: Crosscheck     → Verify skill-creator covers findings
 Phase 4: Implementation → Apply decisions (update skill or create new version)
-Phase 5: Validation     → Run skills:validate, confirm changes
+Phase 5: Self-Audit     → Verify decisions implemented, process followed, then confirm
 ```
 
 ---
@@ -188,17 +188,82 @@ Apply all decisions to the target skill:
 
 ---
 
-## Phase 5: Validation
+## Phase 5: Self-Audit (MUST — before completing)
 
-1. Verify structural quality (frontmatter, sections, line count)
-2. Verify behavioral quality against SKILL_STANDARDS checklist
-3. Present completion summary:
+After implementation, audit the audit itself. This verifies that the skill-audit
+process was followed correctly AND that all decisions were actually implemented.
+
+### 5.1 Re-read All Modified Files
+
+MUST re-read every file that was modified or created during Phase 4. Do NOT rely
+on memory of what was written — read the actual file content.
+
+### 5.2 Decision Implementation Verification
+
+For EVERY accepted decision across all 10 categories, verify:
+
+| Check                    | Pass Criteria                                                           |
+| ------------------------ | ----------------------------------------------------------------------- |
+| **Implemented?**         | The change exists in the target file at a specific line/section         |
+| **Accurate?**            | The implementation matches the decision intent (not just superficially) |
+| **Complete?**            | No partial implementations — the full decision was applied              |
+| **MUST/SHOULD applied?** | Instructions use correct hierarchy per SKILL_STANDARDS                  |
+
+Present results as a decision-by-decision table:
+
+```
+| # | Decision | Status | Where |
+|---|----------|--------|-------|
+| Cat1-A | [description] | PASS/PARTIAL/MISSING | [file:line] |
+```
+
+### 5.3 Process Compliance Verification
+
+Verify the skill-audit process itself was followed:
+
+- [ ] All 10 categories were presented one at a time (not batched)
+- [ ] Every category followed the per-category procedure (pros, cons, gaps,
+      suggestions with recommendations)
+- [ ] State file was updated after every category
+- [ ] Every con and gap had at least one suggestion
+- [ ] Every suggestion had a recommendation with rationale
+- [ ] Cross-cutting user requirements were captured and tracked
+- [ ] Phase 3 crosscheck was performed against skill-creator
+
+### 5.4 Structural Validation
+
+- [ ] Run `npm run skills:validate` — must pass
+- [ ] SKILL.md under 300 lines (or justified if in warning zone 300-499)
+- [ ] Companion files created for extracted content
+- [ ] Cross-references resolve (no broken links)
+- [ ] SKILL_STANDARDS behavioral quality checklist passes
+
+### 5.5 Present Self-Audit Report
+
+```
+SELF-AUDIT REPORT: [skill-name]
+================================
+Decision verification:  [N/M PASS | K PARTIAL | J MISSING]
+Process compliance:     [N/M checks passed]
+Structural validation:  [PASS/FAIL]
+skills:validate:        [PASS/FAIL]
+
+[List each PARTIAL or MISSING with resolution]
+```
+
+If any PARTIAL or MISSING: fix them before presenting completion summary.
+
+### 5.6 Completion Summary
+
+Only after self-audit passes with no PARTIAL or MISSING items:
 
 ```
 Skill Audit Complete: [skill-name]
-Categories: 10 | Decisions: [N]
+Categories: 10 | Decisions: [N] ([M] accepted, [K] rejected)
+Overall Score: [N/100] → estimated post-fix: [N/100]
 Files modified: [list]
 Skill-creator gaps found: [N]
+Cross-cutting user requirements: [N]
 ```
 
 ---
@@ -229,6 +294,7 @@ This skill runs long (10+ interactive categories). MUST persist state:
 
 ## Version History
 
-| Version | Date       | Description                                              |
-| ------- | ---------- | -------------------------------------------------------- |
-| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan |
+| Version | Date       | Description                                                                                                               |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 2.0     | 2026-03-06 | Add Phase 5 self-audit: decision verification, process compliance, structural validation. Source: pr-retro audit session. |
+| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan                                                                  |

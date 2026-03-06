@@ -36,7 +36,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/doc-optimizer`                  | Scan docs, auto-fix formatting/headers/links                     |
 | `/docs-maintain`                  | Check doc sync and auto-update artifacts                         |
 | `/pr-review`                      | PR code review processor                                         |
-| `/pr-retro`                       | PR review retrospective analysis                                 |
+| `/pr-retro`                       | PR review retrospective with interactive findings walkthrough    |
 | `/session-begin`                  | Session startup verification checklist                           |
 | `/session-end`                    | Session end verification checklist                               |
 | `/alerts`                         | Intelligent health dashboard with scoring                        |
