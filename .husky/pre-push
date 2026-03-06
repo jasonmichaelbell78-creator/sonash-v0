@@ -250,7 +250,7 @@ else
   set -e
 
   if [ "$cc_total" -gt 50 ]; then
-    echo "  ❌ Cognitive complexity check: too many JS files changed ($cc_total > 50)."
+    echo "  ❌ Cyclomatic complexity check: too many JS files changed ($cc_total > 50)."
     echo "  Split the push or override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
     exit 1
   fi
@@ -261,27 +261,20 @@ else
     cc_exit=$?
     set -e
     if [ "$cc_exit" -ne 0 ]; then
-      echo "  ❌ Cognitive complexity violations (CC >15) in pushed files:"
+      echo "  ❌ Cyclomatic complexity violations (CC >15) in pushed files:"
       printf '%s\n' "$cc_output" | grep -E "complexity" | head -10
       echo ""
       echo "  Extract helper functions to reduce complexity before pushing."
       echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
       exit 1
     fi
-    echo "  ✅ Cognitive complexity passed (CC ≤15)"
+    echo "  ✅ Cyclomatic complexity passed (CC ≤15)"
   else
     echo "  ⏭️ No JS files in push diff"
   fi
   fi # end cc_base check
 fi
 
-# Add cc to backward compat mapping (supports SKIP_CHECKS="cc")
-# Already handled by SKIP_CC above; SKIP_CHECKS integration:
-for _sk_push in CC:cc; do
-  _var_push="SKIP_${_sk_push%%:*}"; _name_push="${_sk_push#*:}"
-  eval "_val_push=\${$_var_push:-}"
-  [ "$_val_push" = "1" ] && true  # Already handled above
-done
 
 # 6. Security audit (non-blocking warning, ~3-8s)
 # Checks for high/critical vulnerabilities in dependencies
