@@ -1070,6 +1070,36 @@ _System Overhaul Review R2. 19 items from 5 sources, 13 unique after dedup._
 
 ---
 
+### Review #443: PR #419 R1 — SonarCloud + Qodo + Semgrep + Gemini + CI (2026-03-06)
+
+_Archive repair cherry-pick: security hardening, Windows compat, and code
+quality fixes._
+
+**Source:** SonarCloud (5), Qodo Bugs (2), Qodo Compliance (3), Qodo Suggestions
+(4), Semgrep (2), Gemini (4), CI (1) **Total:** 20 **Fixed:** 17 **Deferred:** 0
+**Rejected:** 3
+
+**Patterns:**
+
+- **Windows rename safety**: `fs.renameSync()` can fail to overwrite existing
+  files on Windows. Always wrap in try/catch with rmSync fallback.
+- **Preflight safety checks**: Before destructive operations (delete + write),
+  verify ALL write destinations are safe FIRST to prevent partial failures.
+- **Symlink guards on reads**: Not just writes — `copyFileSync` and
+  `readFileSync` also need symlink checks to prevent local file leakage.
+- **ESLint config bypass**: `--no-config-lookup` drops ignore lists AND
+  languageOptions. Must replicate ignores via grep and restore parser-options.
+- **Argument injection**: Always use `--` before file lists passed via xargs to
+  prevent filenames starting with `-` from being interpreted as options.
+
+**Rejected:**
+
+- Shell:true command injection (hardcoded bin names only, not user input)
+- Silent JSONL parse failures (intentional skip of malformed lines)
+- Error echo in session-start.js (pre-existing, first-line truncated)
+
+---
+
 ### Review #442: PR #411 R1-R8 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
 
 _PR Review Ecosystem v2 Phases 4-7 + Milestone Completion. Batched review across

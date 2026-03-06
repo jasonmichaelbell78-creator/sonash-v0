@@ -35,6 +35,11 @@ export default [
       "tests/semgrep/**",
       ".temp-test-*/**",
       ".planning/**",
+      ".claude/get-shit-done/**",
+      ".claude/commands/gsd/**",
+      ".claude/agents/gsd-*",
+      ".claude/hooks/gsd-*",
+      ".claude/gsd-file-manifest.json",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },

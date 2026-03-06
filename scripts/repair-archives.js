@@ -37,6 +37,8 @@ try {
 }
 
 function parseReviewsFromFile(filePath) {
+  // Symlink guard: skip symlinks to prevent local file leakage
+  if (fs.existsSync(filePath) && fs.lstatSync(filePath).isSymbolicLink()) return [];
   const content = fs.readFileSync(filePath, "utf8");
   const lines = content.split("\n");
   const entries = [];
@@ -46,7 +48,7 @@ function parseReviewsFromFile(filePath) {
     if (reviewMatch) {
       entries.push({
         type: "review",
-        id: parseInt(reviewMatch[1], 10),
+        id: Number.parseInt(reviewMatch[1], 10),
         startLine: i,
         headerLine: lines[i],
       });
@@ -56,7 +58,7 @@ function parseReviewsFromFile(filePath) {
     if (retroMatch) {
       entries.push({
         type: "retrospective",
-        id: parseInt(retroMatch[1], 10),
+        id: Number.parseInt(retroMatch[1], 10),
         startLine: i,
         headerLine: lines[i],
       });
@@ -136,17 +138,22 @@ function collectArchiveReviews(archiveFiles) {
   let totalDupes = 0;
 
   for (const f of archiveFiles) {
-    const entries = parseReviewsFromFile(path.join(ARCHIVE_DIR, f));
-    for (const entry of entries) {
-      const key = `${entry.type}-${entry.id}`;
-      if (reviewMap.has(key)) {
-        totalDupes++;
-        if (entry.content.length > reviewMap.get(key).content.length) {
+    try {
+      const entries = parseReviewsFromFile(path.join(ARCHIVE_DIR, f));
+      for (const entry of entries) {
+        const key = `${entry.type}-${entry.id}`;
+        if (reviewMap.has(key)) {
+          totalDupes++;
+          if (entry.content.length > reviewMap.get(key).content.length) {
+            reviewMap.set(key, entry);
+          }
+        } else {
           reviewMap.set(key, entry);
         }
-      } else {
-        reviewMap.set(key, entry);
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`  [warn] Skipping unreadable archive file ${f}: ${msg.split("\n")[0]}`);
     }
   }
 
@@ -179,16 +186,17 @@ function backfillFromJsonl(reviewMap, activeIds) {
     for (const line of lines) {
       try {
         const j = JSON.parse(line);
-        if (!j.id || typeof j.id !== "number") continue;
-        const key = `review-${j.id}`;
+        const id = Number(j.id);
+        if (!Number.isFinite(id) || !Number.isInteger(id) || id <= 0) continue;
+        const key = `review-${id}`;
         if (!reviewMap.has(key) && !activeIds.has(key)) {
           reviewMap.set(key, {
             type: "review",
-            id: j.id,
-            content: generateMarkdownFromJsonl(j),
+            id,
+            content: generateMarkdownFromJsonl({ ...j, id }),
             fromJsonl: true,
           });
-          backfilledIds.add(j.id);
+          backfilledIds.add(id);
         }
       } catch {
         // skip malformed lines
@@ -211,10 +219,26 @@ function groupReviewsIntoRanges(reviewMap) {
     .sort((a, b) => a.id - b.id);
 
   const groups = [];
+
+  if (reviews.length === 0) {
+    if (retros.length === 0) return groups;
+    // No reviews but retros exist — keep them in a single file
+    const rangeStart = retros[0].id;
+    const rangeEnd = retros.at(-1).id;
+    groups.push({
+      entries: [...retros],
+      rangeStart,
+      rangeEnd,
+      filename: `REVIEWS_${rangeStart}-${rangeEnd}.md`,
+    });
+    return groups;
+  }
+
   for (let i = 0; i < reviews.length; i += GROUP_SIZE) {
     const group = reviews.slice(i, i + GROUP_SIZE);
+    if (group.length === 0) continue;
     const rangeStart = group[0].id;
-    const rangeEnd = group[group.length - 1].id;
+    const rangeEnd = group.at(-1).id;
     const groupRetros = retros.filter((r) => r.id >= rangeStart && r.id <= rangeEnd);
 
     groups.push({
@@ -231,7 +255,7 @@ function groupReviewsIntoRanges(reviewMap) {
   );
   for (const retro of retros) {
     if (assignedRetroIds.has(retro.id)) continue;
-    let bestGroup = groups[groups.length - 1];
+    let bestGroup = groups.at(-1);
     let bestDist = Infinity;
     for (const g of groups) {
       const dist = Math.min(Math.abs(retro.id - g.rangeStart), Math.abs(retro.id - g.rangeEnd));
@@ -252,27 +276,38 @@ function groupReviewsIntoRanges(reviewMap) {
 function applyRepair(archiveFiles, groups, toDelete, today) {
   console.log("\nApplying repair...");
 
+  // Preflight: verify all write destinations are safe before any destructive ops
+  const plannedWrites = groups.map((g) => path.join(ARCHIVE_DIR, g.filename));
+  const unsafe = plannedWrites.filter((p) => !isSafeToWrite(p));
+  if (unsafe.length > 0) {
+    console.error("  Refusing to apply repair: unsafe write destinations detected:");
+    for (const p of unsafe) console.error(`   - ${p}`);
+    console.error("  No files were deleted or overwritten.");
+    process.exitCode = 1;
+    return;
+  }
+
   const backupDir = path.join(ARCHIVE_DIR, ".backup-" + today);
   if (!fs.existsSync(backupDir)) {
     fs.mkdirSync(backupDir, { recursive: true });
   }
   for (const f of archiveFiles) {
-    fs.copyFileSync(path.join(ARCHIVE_DIR, f), path.join(backupDir, f));
+    const srcPath = path.join(ARCHIVE_DIR, f);
+    if (fs.lstatSync(srcPath).isSymbolicLink()) continue;
+    fs.copyFileSync(srcPath, path.join(backupDir, f));
   }
   console.log(`  Backed up ${archiveFiles.length} files to ${path.basename(backupDir)}/`);
 
   for (const f of toDelete) {
-    fs.unlinkSync(path.join(ARCHIVE_DIR, f));
+    const delPath = path.join(ARCHIVE_DIR, f);
+    if (fs.lstatSync(delPath).isSymbolicLink()) continue;
+    fs.unlinkSync(delPath);
   }
   console.log(`  Deleted ${toDelete.length} old files`);
 
   for (const g of groups) {
     const content = buildArchiveFileContent(g.entries, g.rangeStart, g.rangeEnd, today);
     const filePath = path.join(ARCHIVE_DIR, g.filename);
-    if (!isSafeToWrite(filePath)) {
-      console.error(`  Refusing to write ${g.filename}: symlink detected`);
-      continue;
-    }
     fs.writeFileSync(filePath, content, "utf8");
   }
   console.log(`  Wrote ${groups.length} archive files`);
@@ -303,7 +338,7 @@ function main() {
   if (backfilledIds.size > 0) {
     const sorted = [...backfilledIds].sort((a, b) => a - b);
     console.log(
-      `Backfilled ${backfilledIds.size} reviews from JSONL: ${sorted[0]}-${sorted[sorted.length - 1]}`
+      `Backfilled ${backfilledIds.size} reviews from JSONL: ${sorted[0]}-${sorted.at(-1)}`
     );
   }
 

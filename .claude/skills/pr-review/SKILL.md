@@ -450,15 +450,15 @@ source. Separate commits for Critical fixes if needed.
 
 ## Version History
 
-| Version | Date       | Description                                                                                         |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| Version | Date       | Description                                                                                                    |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
 | 3.7     | 2026-03-05 | Out-of-scope table, completeness gate (Step 7.9), cyclomatic terminology fix. Source: PR #417 revert recovery. |
-| 3.6     | 2026-02-28 | Add JSONL pipeline step (Step 7.5) for v2 data capture                                              |
-| 3.5     | 2026-02-26 | Add pre-checks #16 (ESLint CC extraction) and #17 (fix-one-audit-all). Source: PR #393/#394 retros. |
-| 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro.         |
-| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                          |
-| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks                             |
-| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388.                       |
-| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.                           |
-| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                                                   |
-| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.                              |
+| 3.6     | 2026-02-28 | Add JSONL pipeline step (Step 7.5) for v2 data capture                                                         |
+| 3.5     | 2026-02-26 | Add pre-checks #16 (ESLint CC extraction) and #17 (fix-one-audit-all). Source: PR #393/#394 retros.            |
+| 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro.                    |
+| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                                     |
+| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks                                        |
+| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388.                                  |
+| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.                                      |
+| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                                                              |
+| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.                                         |
