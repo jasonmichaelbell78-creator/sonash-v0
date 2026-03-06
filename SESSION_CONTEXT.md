@@ -29,17 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-06 03:10 **Branch**:
-`fix/archive-repair-cherry-pick` **Working On**: Session #207 — Full alerts run,
-health improvements, archive repair. Health A (92/100).
+**Last Checkpoint**: 2026-03-06 21:45 **Branch**: `main` **Working On**: Session
+#208 — Skill audit of alerts. Phase 3 complete, Phase 4 implementation next.
 
-**Uncommitted Work**: session-end artifacts
+**Uncommitted Work**: Skill audit state files, crosscheck findings
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 208 (since Jan 1, 2026)
+**Current Session Count**: 209 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,6 +47,20 @@ health improvements, archive repair. Health A (92/100).
 ---
 
 ## Recent Session Summaries
+
+**Session #208** (SKILL AUDIT: ALERTS — PHASES 1-3 COMPLETE):
+
+- `/skill-audit alerts` — full 10-category audit + operational dependency check
+- 58 SKILL.md decisions accepted (1 rejected), score 53/100 -> est. 80 post-fix
+- Operational dependency check: 8 script fixes (OD-A critical findProjectRoot
+  bug)
+- Data source investigation: 4 real bugs found (DS-1 absolute path rejection in
+  post-read-handler, DS-4 saveWarnedFiles dead code, DS-5 no commit-failures
+  writer, DS-6 session-activity logger never called)
+- Defined operational dependency checker (A-G checks, G=MUST for ALL skills)
+- Crosscheck: 5 skill-creator gaps, 4 skill-audit gaps, 0 contract mismatches
+- Phase 4 implementation ready: 83 total items across 9 files
+- State files: `.claude/state/task-skill-audit-alerts*.json`
 
 **Session #207** (ALERTS FULL + HEALTH IMPROVEMENTS):
 
@@ -94,7 +107,7 @@ health improvements, archive repair. Health A (92/100).
 | M1.5 - Quick Wins                 | Paused   | ~20%                                |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%                                |
 
-**Current Branch**: `fix/archive-repair-cherry-pick`
+**Current Branch**: `main`
 
 **Test Status**: All tests passing (497/498, 1 skipped)
 
@@ -104,11 +117,14 @@ health improvements, archive repair. Health A (92/100).
 
 ### Immediate Priority (Next Session)
 
-1. **Merge archive-repair PR** — Push and merge health improvement fixes
-2. **Step 1: CANON (Ecosystem Zero)** — Begin execution with /deep-plan
-   per-ecosystem
-3. **S0 Critical Items** — 39 S0 items need triage (down from 67)
-4. **All other work BLOCKED** until overhaul execution begins
+1. **Skill Audit: alerts Phase 4 Implementation** — 83 items across 9 files.
+   Read `.claude/state/task-skill-audit-alerts-fixes.json` for complete fix
+   list. Read `.claude/state/task-skill-audit-alerts.state.json` for all
+   decisions. Priority order: OD-A (critical findProjectRoot), then SKILL.md
+   rewrite, then remaining script fixes, data source fixes, skill-creator/audit
+   updates.
+2. **Skill Audit: alerts Phase 5 Self-Audit** — after implementation
+3. **Skill Audit: alerts Phase 6 Learning Loop** — closure
 
 **See**:
 [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for
