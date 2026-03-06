@@ -276,13 +276,10 @@ function groupReviewsIntoRanges(reviewMap) {
 }
 
 /**
- * Apply the repair: backup old files, delete obsolete, write new archives.
+ * Preflight: verify all write/delete/backup destinations are safe.
+ * Returns false and sets exitCode if any path is unsafe.
  */
-function applyRepair(archiveFiles, groups, toDelete, today) {
-  console.log("\nApplying repair...");
-
-  // Preflight: verify all write/delete destinations are safe before any destructive ops
-  const backupDir = path.join(ARCHIVE_DIR, ".backup-" + today);
+function preflightSafetyCheck(archiveFiles, groups, toDelete, backupDir) {
   const plannedWrites = groups.map((g) => path.join(ARCHIVE_DIR, g.filename));
   const plannedBackups = archiveFiles.map((f) => path.join(backupDir, f));
   const plannedDeletes = toDelete.map((f) => path.join(ARCHIVE_DIR, f));
@@ -294,17 +291,21 @@ function applyRepair(archiveFiles, groups, toDelete, today) {
     for (const p of unsafe) console.error(`   - ${p}`);
     console.error("  No files were deleted or overwritten.");
     process.exitCode = 1;
-    return;
+    return false;
   }
+  return true;
+}
 
-  if (!fs.existsSync(backupDir)) {
-    fs.mkdirSync(backupDir, { recursive: true });
-  }
+/**
+ * Back up archive files into the backup directory.
+ */
+function backupFiles(archiveFiles, backupDir) {
   for (const f of archiveFiles) {
     const srcPath = path.join(ARCHIVE_DIR, f);
     try {
       if (!fs.existsSync(srcPath)) continue;
-      if (fs.lstatSync(srcPath).isSymbolicLink()) continue;
+      const st = fs.lstatSync(srcPath);
+      if (st.isSymbolicLink() || !st.isFile()) continue;
       fs.copyFileSync(srcPath, path.join(backupDir, f));
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -312,12 +313,18 @@ function applyRepair(archiveFiles, groups, toDelete, today) {
     }
   }
   console.log(`  Backed up ${archiveFiles.length} files to ${path.basename(backupDir)}/`);
+}
 
+/**
+ * Delete obsolete archive files.
+ */
+function deleteObsoleteFiles(toDelete) {
   for (const f of toDelete) {
     const delPath = path.join(ARCHIVE_DIR, f);
     try {
       if (!fs.existsSync(delPath)) continue;
-      if (fs.lstatSync(delPath).isSymbolicLink()) continue;
+      const st = fs.lstatSync(delPath);
+      if (st.isSymbolicLink() || !st.isFile()) continue;
       fs.unlinkSync(delPath);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -325,11 +332,36 @@ function applyRepair(archiveFiles, groups, toDelete, today) {
     }
   }
   console.log(`  Deleted ${toDelete.length} old files`);
+}
+
+/**
+ * Apply the repair: backup old files, delete obsolete, write new archives.
+ */
+function applyRepair(archiveFiles, groups, toDelete, today) {
+  console.log("\nApplying repair...");
+
+  const backupDir = path.join(ARCHIVE_DIR, ".backup-" + today);
+
+  if (!preflightSafetyCheck(archiveFiles, groups, toDelete, backupDir)) return;
+
+  // Guard against symlinked backup directory
+  if (fs.existsSync(backupDir) && fs.lstatSync(backupDir).isSymbolicLink()) {
+    console.error(`  Refusing to apply repair: backup dir is a symlink: ${backupDir}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  if (!fs.existsSync(backupDir)) {
+    fs.mkdirSync(backupDir, { recursive: true });
+  }
+
+  backupFiles(archiveFiles, backupDir);
+  deleteObsoleteFiles(toDelete);
 
   for (const g of groups) {
     const content = buildArchiveFileContent(g.entries, g.rangeStart, g.rangeEnd, today);
     const filePath = path.join(ARCHIVE_DIR, g.filename);
-    if (!isSafeToWrite(filePath)) continue; // belt-and-suspenders (preflight already checked)
+    if (!isSafeToWrite(filePath)) continue;
     fs.writeFileSync(filePath, content, "utf8");
   }
   console.log(`  Wrote ${groups.length} archive files`);

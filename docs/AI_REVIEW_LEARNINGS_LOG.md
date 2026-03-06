@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.91 **Created:** 2026-01-02 **Last Updated:** 2026-03-06
+**Document Version:** 17.92 **Created:** 2026-01-02 **Last Updated:** 2026-03-06
 
 ## Purpose
 
@@ -1079,6 +1079,32 @@ _System Overhaul Review R2. 19 items from 5 sources, 13 unique after dedup._
   (auto-generated)
 - **Patterns:** Validate-Regex-Context-Before-Fix; Derive-Null-Totals;
   Gitignore-Runtime-State; Narrow-Sonar-Suppressions
+
+---
+
+### Review #454: PR #419 R3 — SonarCloud + Qodo + CI (2026-03-06)
+
+_R3 fixes: CC extraction via 3 helpers, symlink dir guard, isFile check, knip
+false positive._
+
+**Source:** SonarCloud (1), Qodo Compliance (4), Qodo Suggestions (5), CI (1)
+**Total:** 10 **Fixed:** 4 **Deferred:** 0 **Rejected:** 6
+
+- **SonarCloud CC 27→<15:** Extracted `preflightSafetyCheck`, `backupFiles`,
+  `deleteObsoleteFiles` helpers from `applyRepair`
+- **Symlink dir guard:** Added lstatSync check on backup directory before
+  creating/writing to prevent symlink redirect attacks
+- **isFile() check:** Added `st.isFile()` guard in backup/delete loops to skip
+  non-regular files (directories)
+- **CI knip unused dep:** Added `@modelcontextprotocol/server-memory` to
+  `knip.json` ignoreDependencies (used by `.mcp.json`, not code imports)
+- **Rejected (6):** 4x Qodo Compliance repeat-rejected (shell injection,
+  swallowed JSONL parse, audit trails, secure logging — same justification as
+  R1/R2); atomic baseline writes (ping-pong — reverses R2 copyFileSync fix);
+  EINVAL retry (over-engineering for hardcoded bin names)
+
+**Patterns:** Extract-Multiple-Helpers-For-High-CC;
+Guard-Symlinked-Directories-Not-Just-Files; Knip-Ignore-MCP-Deps
 
 ---
 
