@@ -377,7 +377,7 @@ _Claude Code skills_
 | [PR Retro Skill -- Archive](.claude/skills/pr-retro/ARCHIVE.md)                                                                     | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-02-24    |
 | [PR Review Skill — Archive](.claude/skills/pr-review/ARCHIVE.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [pr-ecosystem-audit](.claude/skills/pr-ecosystem-audit/SKILL.md)                                                                    | Deep diagnostic of the entire PR review ecosystem — from ski...   | ↓0 ↑0      | 2026-02-24    |
-| [pr-retro](.claude/skills/pr-retro/SKILL.md)                                                                                        | Analyze the review cycle for completed PRs and produce an \*\*... | ↓0 ↑1      | 2026-02-28    |
+| [pr-retro](.claude/skills/pr-retro/SKILL.md)                                                                                        | Analyze the review cycle for completed PRs and produce an \*\*... | ↓0 ↑1      | 2026-03-06    |
 | [pr-review](.claude/skills/pr-review/SKILL.md)                                                                                      | You are about to process AI code review feedback. This is a ...   | ↓0 ↑5      | 2026-03-06    |
 | [pre-commit-fixer](.claude/skills/pre-commit-fixer/SKILL.md)                                                                        | Eliminate the context-heavy fix-commit-retry loop that happe...   | ↓0 ↑0      | 2026-02-24    |
 | [Pressure Test 1: Emergency Production Fix](.claude/skills/systematic-debugging/test-pressure-1.md)                                 | -                                                                 | ↓0 ↑0      | 2026-01-12    |
@@ -394,7 +394,7 @@ _Claude Code skills_
 | [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑0      | 2026-02-28    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-02-24    |
 | [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                                                        | <!-- prettier-ignore-start -->                                    | ↓4 ↑0      | 2026-02-28    |
-| [skill-audit](.claude/skills/skill-audit/SKILL.md)                                                                                  | Interactive, category-by-category behavioral quality audit f...   | ↓0 ↑0      | 2026-02-28    |
+| [skill-audit](.claude/skills/skill-audit/SKILL.md)                                                                                  | Interactive, category-by-category behavioral quality audit f...   | ↓0 ↑0      | 2026-03-06    |
 | [skill-creator](.claude/skills/skill-creator/SKILL.md)                                                                              | This skill provides guidance for creating effective skills t...   | ↓0 ↑2      | 2026-02-28    |
 | [skill-ecosystem-audit](.claude/skills/skill-ecosystem-audit/SKILL.md)                                                              | Deep diagnostic of the entire skill ecosystem — SKILL.md fil...   | ↓0 ↑0      | 2026-02-24    |
 | [sonarcloud](.claude/skills/sonarcloud/SKILL.md)                                                                                    | Unified orchestrator for all SonarCloud operations against t...   | ↓0 ↑2      | 2026-02-24    |
@@ -504,7 +504,7 @@ _Uncategorized_
 
 | Document                                                              | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-03-01    |
+| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-03-06    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                        | Documents all Claude Code hooks configured in `.claude/setti... | ↓2 ↑4      | 2026-02-25    |
 | [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)   | > **DEPRECATION NOTICE (2026-02-23):** The `scripts/sync-cla... | ↓3 ↑0      | 2026-02-25    |
 | [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)          | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-25    |

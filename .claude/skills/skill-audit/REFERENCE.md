@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-01
+**Document Version:** 2.0
+**Last Updated:** 2026-03-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -366,32 +366,153 @@ Sum individual category scores for an overall quality score out of 100.
 
 ---
 
+## Phase 2 Completion Summary Template
+
+Present after all 10 categories are complete and before Phase 3:
+
+```
+========================================
+PHASE 2 COMPLETE: All 10 categories audited
+========================================
+
+Total decisions: N (M accepted, K rejected)
+Overall score: N/100 ([rating])
+
+Scores by category:
+  Cat 1  Intent Fidelity:      N/10
+  Cat 2  Workflow Sequencing:   N/10
+  [... all 10 ...]
+
+Top 3 concerns:
+  1. [Lowest-scoring category] (N/10) — [brief description]
+  2. [Second-lowest] (N/10) — [brief description]
+  3. [Third-lowest] (N/10) — [brief description]
+
+Cross-cutting user requirements: N
+  [List each]
+
+Proceed to implementation with these N decisions? [Y/modify/n]
+```
+
+---
+
+## Phase Transition Markers
+
+Use this format before each phase to maintain orientation during long audits:
+
+```
+========================================
+PHASE N: [NAME]
+========================================
+```
+
+---
+
+## Self-Audit Report Format
+
+### Decision Verification Table
+
+For audits with <=20 decisions, show full table:
+
+```
+| # | Decision | Status | Where |
+|---|----------|--------|-------|
+| Cat1-A | [description] | PASS/PARTIAL/MISSING | [file:line] |
+```
+
+For audits with >20 decisions, group by category:
+
+```
+Cat 1 (Intent Fidelity): 3/3 PASS
+Cat 2 (Workflow Sequencing): 4/4 PASS
+Cat 6 (Guard Rails): 3/4 — 1 PARTIAL:
+  | Cat6-B | Pause protocol | PARTIAL | SKILL.md:178 — missing resume example |
+```
+
+### Self-Audit Report
+
+```
+SELF-AUDIT REPORT: [skill-name]
+================================
+Decision verification:  [N/M PASS | K PARTIAL | J MISSING]
+Process compliance:     [N/M checks passed]
+Structural validation:  [PASS/FAIL]
+skills:validate:        [PASS/FAIL]
+
+[List each PARTIAL or MISSING with resolution]
+```
+
+### Completion Summary (only after report passes clean)
+
+```
+Skill Audit Complete: [skill-name]
+Categories: 10 | Decisions: [N] ([M] accepted, [K] rejected)
+Overall Score: [N/100] → post-fix: [N/100]
+[If repeat: Previous: [N] → Current: [M] | Improved: [list] | Regressed: [list]]
+Files modified: [list] | Skill-creator gaps: [N]
+```
+
+---
+
+## Process Compliance Checklist
+
+Verify the skill-audit process itself was followed:
+
+- [ ] All 10 categories presented one at a time (not batched)
+- [ ] Every category followed per-category procedure (pros, cons, gaps,
+      suggestions with recommendations)
+- [ ] Opportunities section included where genuinely applicable
+- [ ] State file updated after every category
+- [ ] Every con and gap had at least one suggestion
+- [ ] Every suggestion had a recommendation with rationale
+- [ ] Cross-cutting user requirements captured and tracked
+- [ ] Mid-audit check presented after Category 5
+- [ ] "Anything I missed?" prompt after Category 10
+- [ ] Phase 3 crosscheck performed against skill-creator
+- [ ] Implementation approval gate presented before Phase 4
+- [ ] Phase transition markers used between phases
+
+---
+
 ## State File Schema
+
+Path: `.claude/state/task-skill-audit-{skill-name}.state.json`
 
 ```json
 {
   "task": "Skill Audit: [skill-name]",
   "target_skill": "[skill-name]",
-  "status": "auditing_category_N | crosscheck | implementation | complete",
-  "current_category": N,
+  "status": "preparation | auditing_category_N | retroactive_opportunities | phase2_complete_transition | crosscheck | implementation_approval | implementation | self_audit | complete",
+  "current_category": 0,
   "decisions": {
-    "cat1_intent_fidelity": "N decisions: [summary]",
-    "cat2_workflow_sequencing": "N decisions: [summary]",
-    ...
+    "cat1_intent_fidelity": "N decisions: A-accepted (description — rationale for rejection if rejected), B-rejected (description — rationale), OPP-1A-accepted (description)",
+    "...": "..."
   },
   "scores": {
-    "cat1": N,
-    "cat2": N,
-    ...
+    "cat1": 0,
+    "...": "..."
   },
-  "total_decisions": N,
-  "overall_score": N,
-  "cross_cutting_principles": ["..."],
-  "files_modified": ["..."],
-  "skill_creator_gaps": N,
+  "total_decisions": 0,
+  "accepted_decisions": 0,
+  "rejected_decisions": 0,
+  "overall_score": null,
+  "estimated_post_fix_score": null,
+  "cross_cutting_principles": ["USER-REQ-N: description"],
+  "process_compliance_notes": ["any process deviations noted during audit"],
+  "process_feedback": null,
+  "files_modified": ["path (description of changes)"],
+  "skill_creator_gaps": null,
+  "skill_creator_gap_details": ["gap description"],
   "updated": "ISO timestamp"
 }
 ```
+
+**Decision format:** Include rejection rationale inline:
+`"D-rejected (don't reorder — crosscheck before implementation lets us batch fixes)"`.
+This preserves institutional memory about WHY decisions were rejected.
+
+**Confidence tagging:** Append to accepted decisions when applicable:
+`"A-accepted [high] (description)"`, `"B-accepted [low] (description)"`.
 
 ---
 

@@ -1,14 +1,14 @@
 ---
 name: skill-audit
 description: >-
-  Interactive behavioral quality audit for individual skills. This skill should
-  be used when evaluating a skill against 10 quality categories to identify
-  gaps, improve attention management, and produce actionable decisions. Produces
-  a decision record and updated skill files.
+  Interactive behavioral quality audit for individual skills. Evaluates against
+  10 quality categories to surface attention management issues and produce
+  actionable decisions. Includes self-audit verification that all decisions were
+  actually implemented. Produces a decision record and updated skill files.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.0
+**Document Version:** 3.0
 **Last Updated:** 2026-03-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -28,11 +28,13 @@ gap through guided decisions with the user.
    recommendation and explain WHY. Do not present options without a
    recommendation.
 3. **Save decisions incrementally** — persist to state file after each category
-   to survive compaction. This is non-negotiable for long-running audits.
-4. **Crosscheck skill-creator** — before using `/skill-creator` to implement
-   changes, verify the creator skill itself covers the gaps found in this audit.
-5. **Address the skill, not just the word** — when a skill's behavior doesn't
-   match its intent, fix the behavioral instructions, not the naming.
+   and each phase boundary. Non-negotiable for long-running audits.
+4. **Crosscheck skill-creator** — before implementing, verify the creator skill
+   itself covers the gaps found in this audit.
+5. **Address the skill, not just the word** — when behavior doesn't match
+   intent, fix the behavioral instructions, not the naming.
+6. **Self-audit before completion** — Phase 5 is MUST. Never skip verification.
+   Re-read all modified files and verify every decision was implemented.
 
 ## When to Use
 
@@ -48,236 +50,223 @@ gap through guided decisions with the user.
 - Creating a new skill from scratch — use `/skill-creator`
 - Quick structural validation — use `npm run skills:validate`
 
+## Routing Guide
+
+- "Evaluate this skill's quality" → `/skill-audit`
+- "Create a new skill" → `/skill-creator`
+- "Update an existing skill" → `/skill-creator` (or `/skill-audit` first)
+- "Check all skills for issues" → `/skill-ecosystem-audit`
+- "Quick structural check" → `npm run skills:validate`
+
 ---
 
 ## Process Overview
 
 ```
-Phase 1: Preparation    → Read skill, read standards, initialize state
+Phase 1: Preparation    → Validate target, read skill + standards, initialize state
 Phase 2: Category Audit → 10 categories, interactive, decisions saved per category
-Phase 3: Crosscheck     → Verify skill-creator covers findings
-Phase 4: Implementation → Apply decisions (update skill or create new version)
-Phase 5: Self-Audit     → Verify decisions implemented, process followed, then confirm
+Phase 3: Crosscheck     → Verify skill-creator + ecosystem impact with solutions
+Phase 4: Implementation → Apply decisions (priority order, batch related changes)
+Phase 5: Self-Audit     → Verify decisions implemented, process followed
+Phase 6: Learning Loop  → Process feedback, invocation tracking, closure
 ```
 
 ---
 
-## Phase 1: Preparation
+## Phase 1: Preparation (MUST)
 
-1. Read the target skill's SKILL.md and any companion files
-2. Read SKILL_STANDARDS.md for current quality checklist
-3. Run a preliminary scan: count lines, check structure, identify neighbors
-4. Initialize state file at `.claude/state/task-skill-audit.state.json`
-5. Present warm-up summary to user:
+1. **Validate target** (MUST) — if SKILL.md doesn't exist, report error and
+   suggest `/skill-creator`. Note companion file count in warm-up.
+2. Read target skill's SKILL.md and companion files (MUST)
+3. Read SKILL_STANDARDS.md for quality checklist (MUST)
+4. **Check previous audit** (SHOULD) — look for existing state file. If found,
+   include previous scores and top findings in warm-up.
+5. **Audit health self-check** (MUST) — verify REFERENCE.md has all 10
+   categories, state file path is writable, SKILL_STANDARDS.md is readable.
+6. Initialize state file (MUST) — path:
+   `.claude/state/task-skill-audit-{skill-name}.state.json`
+7. Present warm-up summary (MUST):
 
 ```
 Skill Audit: [skill-name]
-Lines: [N] | Neighbors: [list] | Last Updated: [date]
-Categories: 10 | Estimated time: [depends on skill complexity]
+Lines: [N] | Companions: [N] | Neighbors: [list] | Last Updated: [date]
+Categories: 10 | Estimated decisions: [N]
+[If repeat: Previous: [date], score [N/100]. Top findings: [list]]
 ```
 
-**State file MUST include:** task name, target skill, status, current category,
-all decisions so far, files modified, and timestamp. Update after every
-category.
+**Done when:** Warm-up presented, state initialized, user confirms proceed.
 
 ---
 
-## Phase 2: Category Audit (Interactive)
+## Phase 2: Category Audit (Interactive, MUST)
 
 > Read `.claude/skills/skill-audit/REFERENCE.md` for the 10 category
-> definitions, question banks, and scoring rubrics.
+> definitions, question banks, scoring rubrics, and presentation format.
 
-### Interactive Flow (MUST follow)
+### Interactive Flow (MUST)
 
-Present ONE category at a time. Wait for user response before proceeding to the
-next category. Do NOT batch multiple categories together.
+Present ONE category at a time. Wait for user response. Do NOT batch.
 
-### Per-Category Procedure (MUST follow for each category)
+- **Mid-category recovery:** If compaction occurs mid-category, re-read state
+  file and restart the current category (partial progress not persisted).
+- **Cross-category revision:** If a later category conflicts with an earlier
+  decision, present the conflict to the user and update state with revision.
 
-1. **Present the category** — name, purpose, what it evaluates
-2. **Assess current state** — how the skill performs in this category
-3. **List ALL pros** — what's working well (be specific, cite lines/sections)
-4. **List ALL cons** — what's not working (be specific)
-5. **List ALL issues & gaps** — what's missing entirely
-6. **Present suggestions** — labeled A, B, C, etc. Two modes:
-   - **Multiple options:** When there are genuinely different approaches,
-     present each as a distinct option with pros/cons. State which you recommend
-     and WHY.
-   - **Single fix:** When only one sensible fix exists for a con or gap, present
-     it as a recommendation with rationale. Do NOT fabricate artificial
-     alternatives.
-7. **Cover EVERY con and gap** — each con and gap MUST have at least one
-   suggestion. If a con/gap wasn't covered by a multi-option suggestion, add a
-   standalone recommendation for it. Nothing gets skipped.
-8. **Collect user decisions** — user may: accept all recommendations, accept
-   with modifications, reject specific items, or ask for alternatives
-9. **Save to state file** — persist ALL decisions before moving to next category
-10. **Show progress** — "Category 3 of 10 complete. 18 decisions so far."
+### Per-Category Procedure (MUST)
 
-### Category Presentation Format (MUST follow)
+1. Present the category — name, purpose, what it evaluates
+2. Assess current state — cite specific skill sections/lines
+3. List ALL pros — what's working well
+4. List ALL cons — what's not working
+5. List ALL issues & gaps — what's missing entirely
+6. Present suggestions — labeled A, B, C. Recommend with rationale. Two modes:
+   multiple options (with pros/cons) or single fix (one recommendation).
+7. Cover EVERY con and gap — each MUST have at least one suggestion
+8. Present opportunities (MAY) — value-add ideas beyond fixing problems. Only
+   when genuinely useful. Each gets recommendation + rationale.
+9. Collect decisions — accept/modify/reject/alternatives. **Delegation:** if
+   user says "you decide," accept all recommendations; record
+   `delegated-accept`.
+10. Tag confidence (SHOULD) — `high`/`medium`/`low`. Low-confidence gets extra
+    confirmation during Phase 4.
+11. Save to state file — persist ALL decisions before next category
+12. Show progress — "Category 3 of 10 complete. 18 decisions so far."
 
-```
-## Category N: [Name] (N of 10)
+> If >8 suggestions per category, split into sub-batches by theme,
+> severity-first.
 
-**Purpose:** [What this category evaluates]
+### Mid-Audit Check (MUST — after Category 5)
 
-**Score:** [N/10]
+"Mid-audit status: Score [N/50], [M] decisions across 5 categories. Top concern:
+[lowest-scoring category]."
 
-### Current State
-[Specific assessment citing skill sections/lines]
+**Scope explosion guard:** If 3+ categories below 4/10: "Multiple categories
+show fundamental issues. Continue auditing, or pivot to `/skill-creator`?"
 
-### Pros
-- [What's working well — cite specific sections]
+### After Category 10 (MUST)
 
-### Cons
-- [What's not working — be specific about the problem]
+"Are there quality concerns the 10 categories didn't surface?" Add user findings
+as additional decisions.
 
-### Issues & Gaps
-- [What's missing entirely]
+### Phase 2 Completion (MUST)
 
-### Suggestions
+> See REFERENCE.md for the completion summary template.
 
-**A. [Title]** (Recommended: [Yes/No])
-[Description of change]
-Rationale: [Why this matters]
+Present aggregate summary: all decisions by category, overall score, top
+findings. Then: "Proceed to implementation with these N decisions? [Y/modify/n]"
 
-**B. [Title]** (Recommended: [Yes/No])
-[Description of change]
-Rationale: [Why this matters]
-
-[Additional suggestions for ALL remaining cons/gaps not covered above]
-```
-
-### Anti-Patterns (MUST avoid)
-
-- Presenting options without recommendations
-- Skipping cons or gaps because they seem minor
-- Asking the user to choose without explaining trade-offs
-- Forgetting to save state between categories
-- Presenting more than 8 suggestions per category (split into sub-batches)
+**Update state file.**
 
 ---
 
-## Phase 3: Crosscheck
+## Phase 3: Crosscheck + Ecosystem Impact (MUST)
 
-After all 10 categories are complete:
+1. Review skill-creator — does it guide creators to avoid the gaps found?
+2. Present crosscheck summary: gap count + recommendations
+3. **Ecosystem impact** (MUST) — identify downstream skills/files affected. For
+   each impact, offer actionable solutions (not just notifications). User may
+   address downstream impacts within this audit or defer.
 
-1. Count total decisions across all categories
-2. Review the skill-creator skill against your findings — does it guide creators
-   to avoid the gaps you found?
-3. If skill-creator has gaps, flag them for the user and recommend updates
-4. Present crosscheck summary:
-
-```
-Crosscheck: skill-creator vs audit findings
-Gaps found: [N]
-[List of gaps with recommendations]
-```
+**Update state file.**
 
 ---
 
-## Phase 4: Implementation
+## Phase 4: Implementation (MUST)
 
-Apply all decisions to the target skill:
+1. **Priority order** (MUST) — highest-impact decisions first
+2. **Batch related changes** (SHOULD) — group edits to the same file
+3. **Flag conflicts** (MUST) — if two decisions conflict, ask user first
+4. **Low-confidence confirm** (MUST) — decisions tagged `low` get extra
+   confirmation before applying
+5. **Rewrite threshold** — if >70% of lines need changing, recommend
+   `/skill-creator` instead of piecemeal edits
+6. Update SKILL.md — keep under 300 lines (MUST)
+7. Extract to REFERENCE.md if needed (SHOULD)
+8. Update companion files as needed (SHOULD)
+9. Apply skill-creator updates if crosscheck found gaps (SHOULD)
+10. Run `npm run skills:validate` (MUST)
 
-1. Update SKILL.md (keep under 300 lines per SKILL_STANDARDS)
-2. Extract detailed content to REFERENCE.md if needed
-3. Update companion files as needed
-4. If skill-creator needs updates, apply those too
-5. Run `npm run skills:validate`
+**For multi-file skills:** Audit root SKILL.md, note sub-command coverage gaps.
+Do not run separate audits per sub-command.
+
+**Done when:** All accepted decisions applied, `skills:validate` passes.
+**Update state file.**
 
 ---
 
 ## Phase 5: Self-Audit (MUST — before completing)
 
-After implementation, audit the audit itself. This verifies that the skill-audit
-process was followed correctly AND that all decisions were actually implemented.
+> Read REFERENCE.md for detailed self-audit criteria and report format.
 
-### 5.1 Re-read All Modified Files
+### 5.1 Re-read All Modified Files (MUST)
 
-MUST re-read every file that was modified or created during Phase 4. Do NOT rely
-on memory of what was written — read the actual file content.
+Re-read every file modified or created in Phase 4. Do NOT rely on memory.
 
-### 5.2 Decision Implementation Verification
+### 5.2 Decision Implementation Verification (MUST)
 
-For EVERY accepted decision across all 10 categories, verify:
+For EVERY accepted decision, verify: implemented, accurate, complete, correct
+MUST/SHOULD. Present as decision-by-decision table. **If >20 decisions:** group
+by category, expand only PARTIAL/MISSING items; PASS items get one-line summary.
 
-| Check                    | Pass Criteria                                                           |
-| ------------------------ | ----------------------------------------------------------------------- |
-| **Implemented?**         | The change exists in the target file at a specific line/section         |
-| **Accurate?**            | The implementation matches the decision intent (not just superficially) |
-| **Complete?**            | No partial implementations — the full decision was applied              |
-| **MUST/SHOULD applied?** | Instructions use correct hierarchy per SKILL_STANDARDS                  |
+### 5.3 Process Compliance Verification (MUST)
 
-Present results as a decision-by-decision table:
+Verify the skill-audit process was followed. See REFERENCE.md checklist.
 
-```
-| # | Decision | Status | Where |
-|---|----------|--------|-------|
-| Cat1-A | [description] | PASS/PARTIAL/MISSING | [file:line] |
-```
+### 5.4 Structural Validation (MUST)
 
-### 5.3 Process Compliance Verification
+Run `npm run skills:validate`, check line count, verify cross-references.
 
-Verify the skill-audit process itself was followed:
+### 5.5 Self-Audit Report → Completion Summary (MUST)
 
-- [ ] All 10 categories were presented one at a time (not batched)
-- [ ] Every category followed the per-category procedure (pros, cons, gaps,
-      suggestions with recommendations)
-- [ ] State file was updated after every category
-- [ ] Every con and gap had at least one suggestion
-- [ ] Every suggestion had a recommendation with rationale
-- [ ] Cross-cutting user requirements were captured and tracked
-- [ ] Phase 3 crosscheck was performed against skill-creator
+Report is ALWAYS shown first. Completion Summary ONLY after report passes clean.
+They are sequential, not alternatives. Fix any PARTIAL/MISSING before summary.
 
-### 5.4 Structural Validation
+**Update state file to `status: complete`.**
 
-- [ ] Run `npm run skills:validate` — must pass
-- [ ] SKILL.md under 300 lines (or justified if in warning zone 300-499)
-- [ ] Companion files created for extracted content
-- [ ] Cross-references resolve (no broken links)
-- [ ] SKILL_STANDARDS behavioral quality checklist passes
+---
 
-### 5.5 Present Self-Audit Report
+## Phase 6: Learning Loop + Closure (MUST)
 
-```
-SELF-AUDIT REPORT: [skill-name]
-================================
-Decision verification:  [N/M PASS | K PARTIAL | J MISSING]
-Process compliance:     [N/M checks passed]
-Structural validation:  [PASS/FAIL]
-skills:validate:        [PASS/FAIL]
+**Learning loop:** "Was this audit useful? Any patterns the process should learn
+for next time?" Capture in state file `process_feedback` field.
 
-[List each PARTIAL or MISSING with resolution]
+**Invocation tracking** (MUST):
+
+```bash
+cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"skill-audit","type":"skill","success":true,"context":{"target":"SKILL_NAME"}}'
 ```
 
-If any PARTIAL or MISSING: fix them before presenting completion summary.
-
-### 5.6 Completion Summary
-
-Only after self-audit passes with no PARTIAL or MISSING items:
+**Closure summary:**
 
 ```
 Skill Audit Complete: [skill-name]
 Categories: 10 | Decisions: [N] ([M] accepted, [K] rejected)
-Overall Score: [N/100] → estimated post-fix: [N/100]
-Files modified: [list]
-Skill-creator gaps found: [N]
-Cross-cutting user requirements: [N]
+Overall Score: [N/100] → post-fix: [N/100]
+[If repeat: Previous: [N] → Current: [M] | Improved: [list] | Regressed: [list]]
+Files modified: [list] | Skill-creator gaps: [N]
 ```
+
+---
+
+## Guard Rails
+
+- **Target doesn't exist:** Report error, suggest `/skill-creator`
+- **Scope explosion:** 3+ categories below 4/10 at midpoint → offer pivot
+- **Pause/resume:** User says "pause" → save state, print progress, exit.
+  Resume: `/skill-audit <name>` reads state, skips completed categories.
+- **Multi-file skills:** Audit root SKILL.md only; note sub-command gaps
+- **Phase entry gates:** Phase 2 requires warm-up + state init. Phase 3 requires
+  all 10 categories. Phase 4 requires crosscheck + user approval.
 
 ---
 
 ## Compaction Resilience
 
-This skill runs long (10+ interactive categories). MUST persist state:
-
-- **State file:** `.claude/state/task-skill-audit.state.json`
-- **Update frequency:** After every category completion
-- **Recovery:** On resume, read state file to determine current category and
-  skip completed categories
-- **State schema:** task, target_skill, status, current_category, decisions (per
-  category), files_modified, cross_cutting_principles, timestamp
+- **State file:** `.claude/state/task-skill-audit-{skill-name}.state.json`
+- **Update frequency:** After every category AND every phase boundary
+- **Recovery:** On resume, read state file, skip completed categories/phases
+- **Retention:** File retained after completion as audit decision record
+- **State schema:** See REFERENCE.md for full schema
 
 ---
 
@@ -286,15 +275,16 @@ This skill runs long (10+ interactive categories). MUST persist state:
 - **Neighbors:** `/skill-creator` (create/update), `/skill-ecosystem-audit`
   (ecosystem-wide), `npm run skills:validate` (structural)
 - **Input:** Target skill name or path
-- **Output:** Updated skill files, decision record in state file
-- **Handoff:** After audit, use `/skill-creator` to implement changes if the
-  skill needs a major rewrite
+- **Output:** Updated skill files + decision record in state file (the state
+  file IS the persistent decision record)
+- **Handoff:** Use `/skill-creator` for major rewrites after audit
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                                                                                               |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
-| 2.0     | 2026-03-06 | Add Phase 5 self-audit: decision verification, process compliance, structural validation. Source: pr-retro audit session. |
-| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan                                                                  |
+| Version | Date       | Description                                                   |
+| ------- | ---------- | ------------------------------------------------------------- |
+| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence. |
+| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.       |
+| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan      |

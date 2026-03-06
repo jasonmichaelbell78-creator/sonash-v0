@@ -143,9 +143,16 @@ Analyze each concrete example to identify reusable resources:
 
 - **Integration surface**: What skills does this neighbor? What's the handoff?
 - **Guard rails**: What are the common failure modes? How should the skill
-  handle them?
+  handle them? Design specific responses: scope explosion detection (when to
+  bail out), graceful pause/resume (save state + exit cleanly), input validation
+  (what if the target doesn't exist or is malformed?).
 - **Compaction resilience**: If the skill runs long, what state needs to persist
-  to survive context compaction?
+  to survive context compaction? Define the state file path, update frequency,
+  recovery procedure, and what happens to the file after completion.
+- **Interactive design** (if skill involves multi-step user interaction): Plan
+  the decision collection format (accept/modify/reject), delegation handling
+  (what if user says "you decide"?), approval gates before irreversible actions,
+  and revision mechanisms (can earlier decisions be changed with new context?).
 
 ### Step 3: Initializing the Skill
 
@@ -192,8 +199,13 @@ accomplish X, do Y" not "You should do X."
 - [ ] MUST/SHOULD/MAY applied to all instructions
 - [ ] Error handling for the skill's domain
 - [ ] Integration guidance (what comes before/after this skill)
-- [ ] If multi-step: progress indicators, warm-up, closure signal
+- [ ] If multi-step: progress indicators, warm-up, closure signal. Examples:
+  - Phase marker: `======== PHASE 3: CROSSCHECK ========`
+  - Progress: "Category 3 of 10 complete. 18 decisions so far."
+  - Closure: artifact list + next steps
 - [ ] If long-running: compaction resilience (state persistence)
+- [ ] If skill produces artifacts or makes changes: self-verification phase that
+      re-reads output and confirms decisions were implemented
 - [ ] Project conventions referenced (CLAUDE.md), not duplicated
 - [ ] Critical rules repeated at point-of-use
 
@@ -257,3 +269,4 @@ After testing the skill on real tasks, capture what worked and what didn't.
 | ------- | ---------- | ---------------------------------------------------- |
 | 1.0     | 2026-02-25 | Initial implementation                               |
 | 2.0     | 2026-02-28 | Add attention management, behavioral quality, guards |
+| 2.1     | 2026-03-06 | Add interactive design, verification phase, UX       |
