@@ -120,13 +120,14 @@ process.stdin.on("end", () => {
     // Output
     const dirname = path.basename(dir);
     // Sanitize dynamic values: strip control chars, CSI/OSC escapes, cap length
-    // eslint-disable-next-line no-control-regex -- Intentional control char sanitization
+    /* eslint-disable no-control-regex -- Intentional control char sanitization */
     const sanitize = (s) =>
       s
         .replace(/[\x00-\x1f\x7f-\x9f]/g, "")
         .replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, "")
         .replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, "")
         .slice(0, 80);
+    /* eslint-enable no-control-regex */
     const safeBranch = sanitize(branch);
     const safeDirname = sanitize(dirname);
     const branchPart = safeBranch ? ` │ \x1b[36m${safeBranch}\x1b[0m` : "";

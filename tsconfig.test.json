@@ -7,6 +7,10 @@
     "outDir": "dist-tests",
     "module": "commonjs",
     "moduleResolution": "node",
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./*"]
+    },
     "jsx": "react-jsx",
     "types": ["node"],
     "target": "ES2019",
