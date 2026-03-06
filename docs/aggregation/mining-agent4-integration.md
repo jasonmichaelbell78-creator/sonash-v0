@@ -56,7 +56,7 @@ rotate-state, git-utils)
 | `PostToolUse` (Bash)            | commit-tracker.js                                                                                                             | 1      |
 | `PostToolUse` (Task)            | track-agent-invocation.js                                                                                                     | 1      |
 | `UserPromptSubmit`              | user-prompt-handler.js                                                                                                        | 1      |
-| `Notification`                  | global/statusline.js                                                                                                          | 1      |
+| `statusLine` (top-level)        | global/statusline.js                                                                                                          | 1      |
 | **Total registered hooks**      |                                                                                                                               | **16** |
 
 ### 1.3 Session-Start Review Automation

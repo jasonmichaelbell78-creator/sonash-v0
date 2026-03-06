@@ -119,19 +119,24 @@ process.stdin.on("end", () => {
 
     // Output
     const dirname = path.basename(dir);
-    // Sanitize branch name: strip control chars and ANSI escapes to prevent terminal injection
+    // Sanitize dynamic values: strip control chars, CSI/OSC escapes, cap length
     // eslint-disable-next-line no-control-regex -- Intentional control char sanitization
-    const safeBranch = branch
-      .replace(/[\x00-\x1f\x7f-\x9f]/g, "")
-      .replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "");
+    const sanitize = (s) =>
+      s
+        .replace(/[\x00-\x1f\x7f-\x9f]/g, "")
+        .replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, "")
+        .replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, "")
+        .slice(0, 80);
+    const safeBranch = sanitize(branch);
+    const safeDirname = sanitize(dirname);
     const branchPart = safeBranch ? ` │ \x1b[36m${safeBranch}\x1b[0m` : "";
     if (task) {
       process.stdout.write(
-        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} │ \x1b[1m${task}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}`
+        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} │ \x1b[1m${task}\x1b[0m │ \x1b[2m${safeDirname}\x1b[0m${ctx}`
       );
     } else {
       process.stdout.write(
-        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} │ \x1b[2m${dirname}\x1b[0m${ctx}`
+        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} │ \x1b[2m${safeDirname}\x1b[0m${ctx}`
       );
     }
   } catch (_e) {
