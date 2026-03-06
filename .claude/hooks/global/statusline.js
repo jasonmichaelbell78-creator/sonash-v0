@@ -2,8 +2,9 @@
 /* global process, require */
 /* eslint-disable @typescript-eslint/no-require-imports, no-empty */
 // Claude Code Statusline - GSD Edition
-// Shows: model | current task | directory | context usage
+// Shows: model | branch | current task | directory | context usage
 
+const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
@@ -104,14 +105,26 @@ process.stdin.on("end", () => {
       }
     }
 
+    // Git branch
+    let branch = "";
+    try {
+      branch = execSync("git rev-parse --abbrev-ref HEAD 2>/dev/null", {
+        cwd: dir,
+        encoding: "utf8",
+        timeout: 1000,
+        windowsHide: true,
+      }).trim();
+    } catch (_e) {}
+
     // Output
     const dirname = path.basename(dir);
+    const branchPart = branch ? ` │ \x1b[36m${branch}\x1b[0m` : "";
     if (task) {
       process.stdout.write(
-        `${gsdUpdate}\x1b[2m${model}\x1b[0m │ \x1b[1m${task}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}`
+        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} │ \x1b[1m${task}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}`
       );
     } else {
-      process.stdout.write(`${gsdUpdate}\x1b[2m${model}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}`);
+      process.stdout.write(`${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} │ \x1b[2m${dirname}\x1b[0m${ctx}`);
     }
   } catch (_e) {
     // Silent fail - don't break statusline on parse errors
