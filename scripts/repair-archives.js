@@ -133,6 +133,19 @@ function buildArchiveFileContent(entries, rangeStart, rangeEnd, today) {
  * Collect and deduplicate all reviews from archive files.
  * Keeps the longest version of each review when duplicates exist.
  */
+function deduplicateEntry(reviewMap, entry) {
+  const key = `${entry.type}-${entry.id}`;
+  const existing = reviewMap.get(key);
+  if (existing) {
+    if (entry.content.length > existing.content.length) {
+      reviewMap.set(key, entry);
+    }
+    return true;
+  }
+  reviewMap.set(key, entry);
+  return false;
+}
+
 function collectArchiveReviews(archiveFiles) {
   const reviewMap = new Map();
   let totalDupes = 0;
@@ -141,15 +154,7 @@ function collectArchiveReviews(archiveFiles) {
     try {
       const entries = parseReviewsFromFile(path.join(ARCHIVE_DIR, f));
       for (const entry of entries) {
-        const key = `${entry.type}-${entry.id}`;
-        if (reviewMap.has(key)) {
-          totalDupes++;
-          if (entry.content.length > reviewMap.get(key).content.length) {
-            reviewMap.set(key, entry);
-          }
-        } else {
-          reviewMap.set(key, entry);
-        }
+        if (deduplicateEntry(reviewMap, entry)) totalDupes++;
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -276,38 +281,55 @@ function groupReviewsIntoRanges(reviewMap) {
 function applyRepair(archiveFiles, groups, toDelete, today) {
   console.log("\nApplying repair...");
 
-  // Preflight: verify all write destinations are safe before any destructive ops
+  // Preflight: verify all write/delete destinations are safe before any destructive ops
+  const backupDir = path.join(ARCHIVE_DIR, ".backup-" + today);
   const plannedWrites = groups.map((g) => path.join(ARCHIVE_DIR, g.filename));
-  const unsafe = plannedWrites.filter((p) => !isSafeToWrite(p));
+  const plannedBackups = archiveFiles.map((f) => path.join(backupDir, f));
+  const plannedDeletes = toDelete.map((f) => path.join(ARCHIVE_DIR, f));
+  const unsafe = [...plannedWrites, ...plannedBackups, ...plannedDeletes].filter(
+    (p) => !isSafeToWrite(p)
+  );
   if (unsafe.length > 0) {
-    console.error("  Refusing to apply repair: unsafe write destinations detected:");
+    console.error("  Refusing to apply repair: unsafe paths detected:");
     for (const p of unsafe) console.error(`   - ${p}`);
     console.error("  No files were deleted or overwritten.");
     process.exitCode = 1;
     return;
   }
 
-  const backupDir = path.join(ARCHIVE_DIR, ".backup-" + today);
   if (!fs.existsSync(backupDir)) {
     fs.mkdirSync(backupDir, { recursive: true });
   }
   for (const f of archiveFiles) {
     const srcPath = path.join(ARCHIVE_DIR, f);
-    if (fs.lstatSync(srcPath).isSymbolicLink()) continue;
-    fs.copyFileSync(srcPath, path.join(backupDir, f));
+    try {
+      if (!fs.existsSync(srcPath)) continue;
+      if (fs.lstatSync(srcPath).isSymbolicLink()) continue;
+      fs.copyFileSync(srcPath, path.join(backupDir, f));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`  [warn] Failed to back up ${f}: ${msg.split("\n")[0]}`);
+    }
   }
   console.log(`  Backed up ${archiveFiles.length} files to ${path.basename(backupDir)}/`);
 
   for (const f of toDelete) {
     const delPath = path.join(ARCHIVE_DIR, f);
-    if (fs.lstatSync(delPath).isSymbolicLink()) continue;
-    fs.unlinkSync(delPath);
+    try {
+      if (!fs.existsSync(delPath)) continue;
+      if (fs.lstatSync(delPath).isSymbolicLink()) continue;
+      fs.unlinkSync(delPath);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`  [warn] Failed to delete ${f}: ${msg.split("\n")[0]}`);
+    }
   }
   console.log(`  Deleted ${toDelete.length} old files`);
 
   for (const g of groups) {
     const content = buildArchiveFileContent(g.entries, g.rangeStart, g.rangeEnd, today);
     const filePath = path.join(ARCHIVE_DIR, g.filename);
+    if (!isSafeToWrite(filePath)) continue; // belt-and-suspenders (preflight already checked)
     fs.writeFileSync(filePath, content, "utf8");
   }
   console.log(`  Wrote ${groups.length} archive files`);

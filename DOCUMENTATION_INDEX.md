@@ -377,7 +377,7 @@ _Claude Code skills_
 | [PR Review Skill — Archive](.claude/skills/pr-review/ARCHIVE.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [pr-ecosystem-audit](.claude/skills/pr-ecosystem-audit/SKILL.md)                                                                    | Deep diagnostic of the entire PR review ecosystem — from ski...   | ↓0 ↑0      | 2026-02-24    |
 | [pr-retro](.claude/skills/pr-retro/SKILL.md)                                                                                        | Analyze the review cycle for a completed PR and produce a \*\*... | ↓0 ↑1      | 2026-02-28    |
-| [pr-review](.claude/skills/pr-review/SKILL.md)                                                                                      | You are about to process AI code review feedback. This is a ...   | ↓0 ↑5      | 2026-03-05    |
+| [pr-review](.claude/skills/pr-review/SKILL.md)                                                                                      | You are about to process AI code review feedback. This is a ...   | ↓0 ↑5      | 2026-03-06    |
 | [pre-commit-fixer](.claude/skills/pre-commit-fixer/SKILL.md)                                                                        | Eliminate the context-heavy fix-commit-retry loop that happe...   | ↓0 ↑0      | 2026-02-24    |
 | [Pressure Test 1: Emergency Production Fix](.claude/skills/systematic-debugging/test-pressure-1.md)                                 | -                                                                 | ↓0 ↑0      | 2026-01-12    |
 | [Pressure Test 2: Sunk Cost + Exhaustion](.claude/skills/systematic-debugging/test-pressure-2.md)                                   | -                                                                 | ↓0 ↑0      | 2026-01-12    |
@@ -1480,7 +1480,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-23    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-05    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-06    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-02-24    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-23    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-07    |

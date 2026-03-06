@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.90 **Created:** 2026-01-02 **Last Updated:** 2026-03-05
+**Document Version:** 17.91 **Created:** 2026-01-02 **Last Updated:** 2026-03-06
 
 ## Purpose
 
@@ -348,6 +348,18 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#1)</summary>
+
+- **Date:** 2026-03-06
+- **Reviews consolidated:** #438-#451
+- **Recurring patterns:**
+  - qodo (14x)
+  - sonarcloud (12x)
+  - gemini (8x)
+  - ci (7x)
+
+</details>
 <details>
 <summary>Previous Consolidation (#2)</summary>
 
@@ -1097,6 +1109,35 @@ quality fixes._
 - Shell:true command injection (hardcoded bin names only, not user input)
 - Silent JSONL parse failures (intentional skip of malformed lines)
 - Error echo in session-start.js (pre-existing, first-line truncated)
+
+---
+
+### Review #452: PR #419 R2 — SonarCloud + Qodo (2026-03-06)
+
+_R2 fixes: CC extraction, copyFileSync fallback, preflight hardening, try/catch
+resilience, NaN guard._
+
+**Source:** SonarCloud (1), Qodo Compliance (4), Qodo Suggestions (5) **Total:**
+10 **Fixed:** 5 **Deferred:** 0 **Rejected:** 5
+
+- **SonarCloud CC (1):** Extracted `deduplicateEntry` helper from
+  `collectArchiveReviews` to reduce Cognitive Complexity from 16 to <15
+- **Qodo Suggestion — copyFileSync fallback:** Replaced unlinkSync+renameSync
+  with copyFileSync fallback for safer baseline save (no data loss window)
+- **Qodo Suggestion — try/catch in applyRepair:** Added try/catch in
+  backup/delete loops to prevent partial failure crashes
+- **Qodo Security — preflight all paths:** Expanded isSafeToWrite preflight to
+  cover backup and delete paths, not just writes
+- **Qodo Suggestion — NaN guard:** Added Number.isFinite filter before
+  Math.max() on consolidation number matches
+- **Rejected (5):** Qodo Compliance S4036 PATH hijacking (repeat-rejected —
+  hardcoded execFileSync), shell:true injection (repeat-rejected — bin
+  whitelist), audit trail (one-time script, console logging sufficient), silent
+  JSONL parse (repeat-rejected — intentional), swallowed catch (repeat-rejected
+  — graceful degradation)
+
+**Patterns:** Extract-Helper-For-CC; CopyFileSync-Fallback-Over-Unlink-Rename;
+Preflight-All-Destructive-Paths
 
 ---
 

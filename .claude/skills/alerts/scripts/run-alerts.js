@@ -542,17 +542,23 @@ function saveBaseline() {
     if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) return;
     const data = JSON.stringify(baseline, null, 2);
     fs.writeFileSync(tmpPath, data, "utf-8"); // atomic: write .tmp then renameSync below
+    let wrote = false;
     try {
       fs.renameSync(tmpPath, BASELINE_PATH);
+      wrote = true;
     } catch {
-      // Windows can fail to overwrite existing dest; remove dest then retry
-      // eslint-disable-next-line sonash/no-non-atomic-write -- intentional fallback: rename already failed
-      try {
-        fs.unlinkSync(BASELINE_PATH);
-      } catch {
-        /* dest may not exist */
+      // Windows can fail to overwrite existing dest; fall back to copy
+      // eslint-disable-next-line sonash/no-non-atomic-write -- fallback: rename failed
+      fs.copyFileSync(tmpPath, BASELINE_PATH);
+      wrote = true;
+    } finally {
+      if (wrote) {
+        try {
+          fs.unlinkSync(tmpPath);
+        } catch {
+          /* best-effort cleanup */
+        }
       }
-      fs.renameSync(tmpPath, BASELINE_PATH);
     }
   } catch (err) {
     console.error(`  [warn] Failed to save baseline: ${safeErrorMsg(err)}`);

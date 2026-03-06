@@ -660,10 +660,10 @@ function main() {
       const consolidationMatches = [
         ...logContent.matchAll(/(?:Previous )?Consolidation \(?#(\d+)\)?/g),
       ];
-      const mdNumber =
-        consolidationMatches.length > 0
-          ? Math.max(...consolidationMatches.map((m) => Number.parseInt(m[1], 10)))
-          : null;
+      const mdNumbers = consolidationMatches
+        .map((m) => Number.parseInt(m[1], 10))
+        .filter((n) => Number.isFinite(n));
+      const mdNumber = mdNumbers.length > 0 ? Math.max(...mdNumbers) : null;
       if (mdNumber !== null && existsSync(consolidationStatePath)) {
         try {
           const cState = JSON.parse(readFileSync(consolidationStatePath, "utf8"));
