@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 6.8 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 6.9 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-05 (Session #206)
+2026-03-06 (Session #207)
 
 ## Purpose
 
@@ -29,10 +29,9 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-05 14:18 **Branch**:
-`claude/system-overhaul-review-5CATy` **Working On**: Session #206 — PR #417
-R1-R3 review feedback processed. 3 rounds, 27 fixes applied. Session-end in
-progress.
+**Last Checkpoint**: 2026-03-06 03:10 **Branch**:
+`fix/archive-repair-cherry-pick` **Working On**: Session #207 — Full alerts run,
+health improvements, archive repair. Health A (92/100).
 
 **Uncommitted Work**: session-end artifacts
 
@@ -40,7 +39,7 @@ progress.
 
 ## Session Tracking
 
-**Current Session Count**: 206 (since Jan 1, 2026)
+**Current Session Count**: 207 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -50,29 +49,31 @@ progress.
 
 ## Recent Session Summaries
 
+**Session #207** (ALERTS FULL + HEALTH IMPROVEMENTS):
+
+- GSD updated v1.6.3 → v1.22.4
+- `/alerts --full` run: 36 categories, processed all alerts interactively
+- Fixed Windows EINVAL spawning npm/npx/gh in alerts checker (shell: true)
+- Fixed TypeScript check, test script Windows glob compat, tsconfig.test.json
+- Fixed review archive health: consolidation counter regex, 40 gap IDs, dedup
+- Updated fast-xml-parser override (3 CVEs), npm audit fix
+- Hardened statusline sanitization (CSI/OSC strip, length cap)
+- Archived 17 review entries, synced 16 to reviews.jsonl
+- Health: C (79) → A (92) | Tests: 497 pass, 0 fail
+- TDMS: 8,350 items (481 resolved)
+
 **Session #206** (PR #417 REVIEW — R1-R3 COMPLETE):
 
 - Processed 3 rounds of PR review feedback on system-overhaul branch
-- R1: 16 items (SonarCloud, Qodo, Semgrep, CI) → 13 fixed, 3 rejected
-- R2: 19 items (Qodo, Gemini, Semgrep, CI) → 10 fixed, 3 rejected
-- R3: 16 items (Qodo, SonarCloud, Semgrep, Gemini) → 4 fixed, 7 rejected (5
-  stale)
-- Key fixes: Sonar resourceKey syntax, propagation --blocking, CC upstream
-  fallback, TS exclusion from CC check, toFiniteNumber coercion, CRLF-safe
-  parsing, .gitignore
+- R1: 16 items → 13 fixed | R2: 19 items → 10 fixed | R3: 16 items → 4 fixed
 - Reviews #448-#450 logged
 - TDMS: 8,350 items (481 resolved)
 
 **Session #205** (RETRO ACTION ITEMS — ALL IMPLEMENTED):
 
 - Implemented ALL PR #378-#416 retro action items (7 phases, 19 files, +506/-24)
-- CC pre-push check enforcing CC ≤15 as error (recommended 6x since PR #369)
+- CC pre-push check enforcing CC ≤15 as error
 - Tests: 496 pass, 0 fail | Health: 64/100 (D, +1)
-
-**Session #204** (BATCH RETROSPECTIVES — 10 PRs):
-
-- Batch retrospectives for PRs #378-#416 (10 PRs, 49 review rounds)
-- Identified 55% avoidable rounds (27/49), top churn causes documented
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -93,9 +94,9 @@ progress.
 | M1.5 - Quick Wins                 | Paused   | ~20%                                |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%                                |
 
-**Current Branch**: `claude/system-overhaul-review-5CATy`
+**Current Branch**: `fix/archive-repair-cherry-pick`
 
-**Test Status**: All tests passing (496/497, 1 skipped)
+**Test Status**: All tests passing (497/498, 1 skipped)
 
 ---
 
@@ -103,10 +104,10 @@ progress.
 
 ### Immediate Priority (Next Session)
 
-1. **Merge PR #417** — R3 fixes pushed, await CI pass then merge
+1. **Merge archive-repair PR** — Push and merge health improvement fixes
 2. **Step 1: CANON (Ecosystem Zero)** — Begin execution with /deep-plan
    per-ecosystem
-3. **S0 Critical Items** — 67 S0 items need triage
+3. **S0 Critical Items** — 39 S0 items need triage (down from 67)
 4. **All other work BLOCKED** until overhaul execution begins
 
 **See**:
@@ -117,9 +118,9 @@ archived v1.0 milestone
 
 ## Pending PR Reviews
 
-**Status**: PR #417 R3 pushed. Awaiting CI pass before merge.
+**Status**: Archive-repair PR ready. No pending review feedback.
 
-**Last Processed**: 2026-03-05 (Session #206: R1-R3 review feedback)
+**Last Processed**: 2026-03-06 (Session #207: alerts + health improvements)
 
 ---
 
@@ -164,7 +165,7 @@ unblocked.
 
 ```bash
 npm run dev          # Start dev server
-npm test             # Run tests (496/497 passing)
+npm test             # Run tests (497/498 passing)
 npm run lint         # Check code style
 npm run build        # Production build
 npm run patterns:check  # Anti-pattern detection
@@ -186,6 +187,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                           |
 | ------- | ---------- | ------------------------------------------------- |
+| 6.9     | 2026-03-06 | Session #207 — Alerts full + health C→A (92/100)  |
 | 6.8     | 2026-03-05 | Session #206 — PR #417 R1-R3 review complete      |
 | 6.7     | 2026-03-05 | Session #205 — All retro action items implemented |
 | 6.6     | 2026-03-04 | Session #202 — Deep-plan complete, PLAN.md v1.1   |

@@ -30,7 +30,8 @@
     "vaul",
     "lint-staged",
     "@firebase/rules-unit-testing",
-    "msw"
+    "msw",
+    "@modelcontextprotocol/server-memory"
   ],
   "ignoreBinaries": ["printf", "report", "vitest"],
   "next": {

@@ -1,6 +1,6 @@
 {
-  "generated": "2026-03-05T14:21:20.464Z",
-  "generated_date": "2026-03-05",
+  "generated": "2026-03-06T03:13:39.726Z",
+  "generated_date": "2026-03-06",
   "summary": {
     "total": 8350,
     "open": 7371,
@@ -181,8 +181,8 @@
     ]
   },
   "health": {
-    "avg_age_days": 20,
-    "oldest_age_days": 34,
+    "avg_age_days": 21,
+    "oldest_age_days": 35,
     "oldest_item_id": "DEBT-0002",
     "verification_queue_size": 2031
   }

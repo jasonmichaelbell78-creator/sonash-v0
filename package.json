@@ -7,9 +7,9 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "test": "npm run test:build && cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\" \"scripts/health/**/*.test.js\"",
+    "test": "npm run test:build && cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test 'dist-tests/tests/**/*.test.js' 'scripts/health/**/*.test.js'",
     "test:build": "tsc -p tsconfig.test.json && tsc-alias -p tsconfig.test.json",
-    "test:coverage": "npm run test:build && c8 --reporter=text --reporter=html cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\"",
+    "test:coverage": "npm run test:build && c8 --reporter=text --reporter=html cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test dist-tests/tests/",
     "test:coverage:report": "c8 report",
     "docs:update-readme": "node scripts/update-readme-status.js",
     "docs:check": "node scripts/check-docs-light.js",
@@ -149,7 +149,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
-    "zod": "^4.2.1"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -176,7 +176,7 @@
     "lighthouse": "^13.0.1",
     "lint-staged": "^16.2.7",
     "madge": "^8.0.0",
-    "markdownlint-cli": "^0.47.0",
+    "markdownlint-cli": "^0.48.0",
     "msw": "^2.12.8",
     "postcss": "^8.5",
     "postcss-load-config": "^6.0.1",
@@ -192,6 +192,6 @@
     "unified": "^11.0.5"
   },
   "overrides": {
-    "fast-xml-parser": "5.3.4"
+    "fast-xml-parser": "5.4.2"
   }
 }

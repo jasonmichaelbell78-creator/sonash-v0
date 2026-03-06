@@ -14,19 +14,21 @@ documented.
 - PR Code Review Processor
 - User explicitly invokes `/pr-review`
 
-## When NOT to Use
+## Out of Scope
 
-- When the task doesn't match this skill's scope -- check related skills
-- When a more specialized skill exists for the specific task
+| Task                          | Use Instead              |
+| ----------------------------- | ------------------------ |
+| Ad-hoc development review     | `code-reviewer` agent    |
+| Pre-merge self-review         | `code-reviewer` agent    |
+| Quick quality check           | `code-reviewer` agent    |
+| Security-specific audit       | `security-auditor` agent |
+| Performance-specific analysis | `performance-engineer`   |
 
 ## Scope
 
 - **Formal PR gate reviews** with standardized 8-step protocol
 - Processing external review feedback (CodeRabbit, Qodo, SonarCloud)
 - Ensuring every issue is fixed or tracked to TDMS before merge
-
-> **Not for ad-hoc development reviews.** Use `code-reviewer` for post-task
-> quality checks, quick reviews during development, or pre-merge self-review.
 
 ## Core Principles
 
@@ -80,7 +82,7 @@ If PR introduces security-adjacent code, grep for unguarded write paths:
 grep -rn 'writeFileSync\|renameSync\|appendFileSync' .claude/hooks/ scripts/ --include="*.js" | grep -v 'isSafeToWrite'
 ```
 
-### 4. Cognitive Complexity
+### 4. Cyclomatic Complexity
 
 Pre-push hook now **enforces CC ≤15 as error** on all JS/TS files in the push
 diff (added Session #205). Pre-commit warns; pre-push blocks. After extracting
@@ -394,6 +396,19 @@ node dist/write-invocation.js --data '{"skill":"pr-review","type":"skill","durat
 
 ---
 
+## STEP 7.9: COMPLETENESS VERIFICATION (Gate)
+
+Before proceeding to summary, verify all items are accounted for:
+
+1. **Count check**: fixed + deferred + rejected = total parsed items
+2. **No orphans**: every item from Step 1 has a disposition in Steps 5-6
+3. **TDMS sync**: every deferred item has a DEBT-XXXX ID
+4. **Learning entry**: Step 7 learning log entry is complete (not `#TBD`)
+
+If any check fails, go back and fix before continuing.
+
+---
+
 ## STEP 8: FINAL SUMMARY
 
 Statistics (total/fixed/deferred/rejected), files modified, agents invoked,
@@ -435,14 +450,15 @@ source. Separate commits for Critical fixes if needed.
 
 ## Version History
 
-| Version | Date       | Description                                                                                         |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------- |
-| 3.6     | 2026-02-28 | Add JSONL pipeline step (Step 7.5) for v2 data capture                                              |
-| 3.5     | 2026-02-26 | Add pre-checks #16 (ESLint CC extraction) and #17 (fix-one-audit-all). Source: PR #393/#394 retros. |
-| 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro.         |
-| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                          |
-| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks                             |
-| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388.                       |
-| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.                           |
-| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                                                   |
-| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.                              |
+| Version | Date       | Description                                                                                                    |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
+| 3.7     | 2026-03-05 | Out-of-scope table, completeness gate (Step 7.9), cyclomatic terminology fix. Source: PR #417 revert recovery. |
+| 3.6     | 2026-02-28 | Add JSONL pipeline step (Step 7.5) for v2 data capture                                                         |
+| 3.5     | 2026-02-26 | Add pre-checks #16 (ESLint CC extraction) and #17 (fix-one-audit-all). Source: PR #393/#394 retros.            |
+| 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro.                    |
+| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                                     |
+| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks                                        |
+| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388.                                  |
+| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.                                      |
+| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                                                              |
+| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.                                         |

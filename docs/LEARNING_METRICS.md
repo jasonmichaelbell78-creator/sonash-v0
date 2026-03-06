@@ -35,26 +35,29 @@ This is a **Tier 2 metrics document** - reference during:
 | ------------------------- | ----- |
 | Learning Effectiveness    | 91.0% |
 | Patterns Learned          | 364   |
-| Patterns Automated        | 30    |
-| Patterns Failing          | 5     |
+| Patterns Automated        | 32    |
+| Patterns Failing          | 2     |
 | Critical Pattern Success  | 95.8% |
-| Automation Coverage       | 15.0% |
+| Automation Coverage       | 15.5% |
 | Total Documented Patterns | 433   |
-| Total Automated Patterns  | 65    |
+| Total Automated Patterns  | 67    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Pre\-commit ADM filter"
+1. ~~**[Automation]** Automate "Pre\-commit ADM filter"~~ — Already automated as
+   `git-diff-no-filter` in check\-pattern\-compliance.js
    - Recurred 4 times after documentation \(Reviews: 402, 404, 407, 416\)
-   - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "AI reviewer verification"
+2. **[Process]** "AI reviewer verification" — behavioral pattern, not
+   automatable via code scan
    - Recurred 4 times after documentation \(Reviews: 402, 403, 408, 416\)
-   - Action: Add pattern to check\-pattern\-compliance.js
+   - Action: Reinforced in pr\-review SKILL.md Step 1 \(validate critical
+     claims\)
 
-3. **[Automation]** Automate "Atomic file writes"
+3. ~~**[Automation]** Automate "Atomic file writes"~~ — Already automated as
+   `no-raw-fs-write` + `atomic-write-missing-tmp-guard` +
+   `write-without-symlink-guard`
    - Recurred 3 times after documentation \(Reviews: 402, 416, 417\)
-   - Action: Add pattern to check\-pattern\-compliance.js
 
 4. **[Documentation]** Improve documentation for "Binary file detection"
    - Recurred 2 times \- documentation may be unclear
@@ -71,9 +74,9 @@ This is a **Tier 2 metrics document** - reference during:
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
 | ✅ LEARNED   | 364   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 30    | Pattern recurred but now enforced by tooling |
+| 🔧 AUTOMATED | 32    | Pattern recurred but now enforced by tooling |
 | 🟡 WEAK      | 34    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 5     | Pattern recurred 3+ times - needs automation |
+| 🔴 FAILED    | 2     | Pattern recurred 3+ times - needs automation |
 
 ---
 

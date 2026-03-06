@@ -60,10 +60,14 @@ const fixMode = args.includes("--fix");
 // weren't individually documented. Verified via git log -S "#### Review #N".
 // Last verified: Session #170 (2026-02-18)
 const KNOWN_SKIPPED_IDS = new Set([
-  41, 64, 65, 66, 67, 68, 69, 70, 71, 80, 83, 84, 85, 86, 90, 91, 117, 118, 119, 120, 157, 158, 159,
-  160, 166, 167, 168, 169, 170, 172, 173, 174, 175, 176, 177, 178, 185, 203, 205, 206, 207, 208,
-  209, 210, 220, 228, 229, 230, 231, 232, 233, 234, 240, 241, 242, 243, 244, 245, 246, 247, 248,
-  323, 335, 349,
+  41, 64, 65, 66, 67, 68, 69, 70, 71, 80, 83, 84, 85, 86, 90, 91,
+  // #92-#97, #101-#116, #121-#136: Historical gaps — review IDs never assigned during early sessions
+  92,
+  93, 94, 95, 96, 97, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115,
+  116, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 117, 118,
+  119, 120, 157, 158, 159, 160, 166, 167, 168, 169, 170, 172, 173, 174, 175, 176, 177, 178, 185,
+  203, 205, 206, 207, 208, 209, 210, 220, 228, 229, 230, 231, 232, 233, 234, 240, 241, 242, 243,
+  244, 245, 246, 247, 248, 323, 335, 349, 375,
 ]);
 
 // Known-duplicate review IDs: IDs that legitimately exist in multiple archive files
@@ -653,11 +657,16 @@ function main() {
 
       // Check 3: Consolidation section latest # vs state file
       const consolidationStatePath = join(ROOT, ".claude", "state", "consolidation.json");
-      const consolidationMatch = logContent.match(/Previous Consolidation \(#(\d+)\)/);
-      if (consolidationMatch && existsSync(consolidationStatePath)) {
+      const consolidationMatches = [
+        ...logContent.matchAll(/(?:Previous )?Consolidation \(?#(\d+)\)?/g),
+      ];
+      const mdNumbers = consolidationMatches
+        .map((m) => Number.parseInt(m[1], 10))
+        .filter((n) => Number.isFinite(n));
+      const mdNumber = mdNumbers.length > 0 ? Math.max(...mdNumbers) : null;
+      if (mdNumber !== null && existsSync(consolidationStatePath)) {
         try {
           const cState = JSON.parse(readFileSync(consolidationStatePath, "utf8"));
-          const mdNumber = Number.parseInt(consolidationMatch[1], 10);
           const stateNumber = cState.consolidationNumber || 0;
           if (mdNumber === stateNumber) {
             ok(`Consolidation number: #${stateNumber} (matches state file)`);

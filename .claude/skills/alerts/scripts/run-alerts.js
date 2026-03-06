@@ -299,22 +299,13 @@ function runCommandSafe(bin, args = [], options = {}) {
       env: options.env,
       stdio: ["pipe", "pipe", "pipe"],
     };
-    // Windows: npm/npx/gh are often .cmd batch files; prefer .cmd to avoid shell: true,
-    // but fall back to bare name if .cmd not found (e.g. different installation type).
+    // Windows: npm/npx/gh are .cmd batch files — use shell: true to avoid EINVAL
     const isWin = process.platform === "win32";
     const isWinCmd = bin === "npm" || bin === "npx" || bin === "gh";
-    const resolvedBin = isWin && isWinCmd ? `${bin}.cmd` : bin;
-    let output;
-    try {
-      output = execFileSync(resolvedBin, args, safeOptions);
-    } catch (e) {
-      const errCode = e?.code ?? e?.cause?.code;
-      if (isWin && isWinCmd && errCode === "ENOENT") {
-        output = execFileSync(bin, args, safeOptions);
-      } else {
-        throw e;
-      }
+    if (isWin && isWinCmd) {
+      safeOptions.shell = true;
     }
+    const output = execFileSync(bin, args, safeOptions);
     return { success: true, output: String(output ?? "").trim(), stderr: "", code: 0 };
   } catch (error) {
     const stdoutStr = error?.stdout == null ? "" : String(error.stdout);
@@ -551,8 +542,24 @@ function saveBaseline() {
     if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) return;
     const data = JSON.stringify(baseline, null, 2);
     fs.writeFileSync(tmpPath, data, "utf-8"); // atomic: write .tmp then renameSync below
-    if (fs.existsSync(BASELINE_PATH)) fs.rmSync(BASELINE_PATH, { force: true });
-    fs.renameSync(tmpPath, BASELINE_PATH);
+    let wrote = false;
+    try {
+      fs.renameSync(tmpPath, BASELINE_PATH);
+      wrote = true;
+    } catch {
+      // Windows can fail to overwrite existing dest; fall back to copy
+      // eslint-disable-next-line sonash/no-non-atomic-write -- fallback: rename failed
+      fs.copyFileSync(tmpPath, BASELINE_PATH);
+      wrote = true;
+    } finally {
+      if (wrote) {
+        try {
+          fs.unlinkSync(tmpPath);
+        } catch {
+          /* best-effort cleanup */
+        }
+      }
+    }
   } catch (err) {
     console.error(`  [warn] Failed to save baseline: ${safeErrorMsg(err)}`);
   }
@@ -612,11 +619,17 @@ function checkCodeHealth() {
   let eslintWarnCount = 0;
   let eslintErrCount = 0;
 
-  // TypeScript errors
+  // TypeScript errors — try npm script first, then local tsc binary, then npx fallback
   let tsResult = runCommandSafe("npm", ["run", "type-check"], { timeout: 120000 });
   const tsCombinedOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
   if (tsCombinedOutput.includes("Missing script")) {
-    tsResult = runCommandSafe("npx", ["tsc", "--noEmit"], { timeout: 120000 });
+    // Prefer local tsc binary via node (avoids shell/.cmd issues on Windows)
+    const localTscJs = path.join(ROOT_DIR, "node_modules", "typescript", "lib", "tsc.js");
+    if (fs.existsSync(localTscJs)) {
+      tsResult = runCommandSafe("node", [localTscJs, "--noEmit"], { timeout: 120000 });
+    } else {
+      tsResult = runCommandSafe("npx", ["tsc", "--noEmit"], { timeout: 120000 });
+    }
   }
 
   const tsFullOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
