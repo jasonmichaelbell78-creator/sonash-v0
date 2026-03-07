@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * SessionStart Hook for SoNash (Node.js version)
  *
@@ -420,7 +420,7 @@ if (needsTestBuild) {
 
 // Pattern compliance check (v1 — pre-commit gate, v2 partial overlap via verify-enforcement-manifest)
 try {
-  execSync(`"${process.execPath}" scripts/check-pattern-compliance.js`, { stdio: "pipe" });
+  execFileSync(process.execPath, ["scripts/check-pattern-compliance.js"], { stdio: "pipe" });
   console.log("🔍 Patterns: ✓ compliant");
 } catch (error) {
   const exitCode = error.status || 1;
@@ -434,7 +434,7 @@ try {
 
 // Auto-consolidation (v1 — no full v2 replacement yet, reads from v2 JSONL data)
 try {
-  const output = execSync(`"${process.execPath}" scripts/run-consolidation.js --auto`, {
+  const output = execFileSync(process.execPath, ["scripts/run-consolidation.js", "--auto"], {
     encoding: "utf8",
   });
   if (output.trim()) {
@@ -588,7 +588,7 @@ try {
     console.log("📊 TDMS: ⚠️ metrics not found — npm run debt:metrics");
     warnings++;
   }
-} catch (error) {
+} catch {
   console.log(`📊 TDMS: ❌ metrics read failed`);
   warnings++;
 }

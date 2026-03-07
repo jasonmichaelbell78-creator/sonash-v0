@@ -122,7 +122,10 @@ fi
 
 # Initialize fnm so node/npm/npx are available in this shell context
 if command -v fnm > /dev/null 2>&1; then
-  eval "$(fnm env --shell bash 2>/dev/null)" || true
+  if ! eval "$(fnm env --shell bash 2>/dev/null)"; then
+    echo "  ❌ fnm detected but failed to initialize; cannot reliably run Node-based checks" >&2
+    exit 1
+  fi
 fi
 
 echo "🔍 Running pre-commit checks..."
@@ -130,7 +133,7 @@ echo "🔍 Running pre-commit checks..."
 # --- Wave 0: Secrets scan (fast, ~1s) ---
 echo "  ▶ Scanning for secrets (gitleaks)..."
 if command -v gitleaks > /dev/null 2>&1; then
-  if ! gitleaks protect --staged -c .gitleaks.toml --no-banner 2>/dev/null; then
+  if ! gitleaks protect --staged -c .gitleaks.toml --no-banner; then
     echo "  ❌ Secrets detected in staged files"
     echo ""
     echo "  Remove secrets before committing. Run: gitleaks detect --source ."

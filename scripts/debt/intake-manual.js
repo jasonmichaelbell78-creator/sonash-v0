@@ -32,7 +32,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 const { sanitizeError } = require("../lib/security-helpers.js");
 const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
@@ -353,7 +353,7 @@ Example:
 
   console.log("🔄 Regenerating views...");
   try {
-    execSync(`"${process.execPath}" scripts/debt/generate-views.js`, { stdio: "inherit" });
+    execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
   } catch {
     console.warn(
       "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"

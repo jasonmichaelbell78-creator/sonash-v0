@@ -256,35 +256,6 @@ function safeReadLines(filePath) {
 }
 
 /**
- * Run a command and capture output
- * @deprecated Use runCommandSafe() for new code — avoids shell injection risks
- */
-function runCommand(cmd, options = {}) {
-  try {
-    const output = execSync(cmd, {
-      cwd: ROOT_DIR,
-      encoding: "utf8",
-      timeout: options.timeout || 60000,
-      stdio: ["pipe", "pipe", "pipe"],
-      ...options,
-    });
-    return { success: true, output: output.trim(), code: 0 };
-  } catch (error) {
-    return {
-      success: false,
-      output: error.stdout?.trim() || "",
-      stderr: error.stderr?.trim() || "",
-      code:
-        typeof error?.status === "number"
-          ? error.status
-          : typeof error?.code === "number"
-            ? error.code
-            : 1,
-    };
-  }
-}
-
-/**
  * Run a command safely using execFileSync (no shell injection)
  * @param {string} bin - Executable name or path
  * @param {string[]} args - Array of arguments
@@ -550,7 +521,7 @@ function saveBaseline() {
       wrote = true;
     } catch {
       // Windows can fail to overwrite existing dest; fall back to copy
-      // eslint-disable-next-line sonash/no-non-atomic-write -- fallback: rename failed
+      // Fallback: rename failed, use copy instead
       fs.copyFileSync(tmpPath, BASELINE_PATH);
       wrote = true;
     } finally {
@@ -1963,7 +1934,7 @@ function checkVelocity() {
   }
 
   const completed = recent.map((e) => e.items_completed || 0);
-  const avg = completed.reduce((a, b) => a + b, 0) / completed.length;
+  const avg = completed.length > 0 ? completed.reduce((a, b) => a + b, 0) / completed.length : 0;
 
   addAlert(
     "velocity",
@@ -1987,8 +1958,10 @@ function checkVelocity() {
   if (completed.length >= 3) {
     const firstHalf = completed.slice(0, Math.floor(completed.length / 2));
     const secondHalf = completed.slice(Math.floor(completed.length / 2));
-    const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
-    const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+    const firstAvg =
+      firstHalf.length > 0 ? firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length : 0;
+    const secondAvg =
+      secondHalf.length > 0 ? secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length : 0;
     if (firstAvg > 0) {
       const change = (secondAvg - firstAvg) / firstAvg;
       if (Math.abs(change) > BENCHMARKS.velocity.acceleration_threshold) {
@@ -2316,7 +2289,7 @@ function checkHookHealth() {
 
       // Extract check results from output
       const checkPatterns = [
-        { name: "gitleaks", pass: /No secrets detected/i, fail: /Secrets detected/i },
+        { name: "gitleaks", pass: /No secrets detected/i, fail: /^\s*Secrets detected\b/im },
         { name: "ESLint", pass: /ESLint passed/i, fail: /ESLint has errors/i },
         { name: "lint-staged", pass: /Lint-staged passed/i, fail: /Lint-staged failed/i },
         {
@@ -2403,7 +2376,7 @@ function checkHookHealth() {
   const warningsCount7d = warnings7d.length;
   const failureRate7d = warningsCount7d;
 
-  const errorsCount7d = warnings7d.filter((w) => {
+  const _errorsCount7d = warnings7d.filter((w) => {
     const sev = String(w.severity || "").toLowerCase();
     return sev === "error";
   }).length;

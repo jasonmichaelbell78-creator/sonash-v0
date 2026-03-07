@@ -22,7 +22,7 @@ paths = [
 # Known false positives
 regexTarget = "match"
 regexes = [
-  # Firebase public API keys (safe to be in client-side code)
+  # Firebase public API keys (safe to be in client-side code, intentionally public)
   '''AIzaSy[A-Za-z0-9_-]{33}''',
   # Test JWT tokens used in unit tests
   '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0''',

@@ -37,7 +37,10 @@ require_skip_reason() {
 
 # Initialize fnm so node/npm/npx are available in this shell context
 if command -v fnm > /dev/null 2>&1; then
-  eval "$(fnm env --shell bash 2>/dev/null)" || true
+  if ! eval "$(fnm env --shell bash 2>/dev/null)"; then
+    echo "  ❌ fnm detected but failed to initialize; cannot reliably run Node-based checks" >&2
+    exit 1
+  fi
 fi
 
 echo "🚀 Running pre-push checks..."
