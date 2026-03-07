@@ -1,0 +1,31 @@
+# Gitleaks configuration for SoNash
+# Extends default rules, adds allowlist for known false positives
+
+[extend]
+# Use default gitleaks rules as base
+
+[allowlist]
+description = "SoNash allowlist"
+
+# Paths that are gitignored or contain build artifacts / test fixtures
+paths = [
+  '''\.next/''',
+  '''dist-tests/''',
+  '''dist/''',
+  '''out/''',
+  '''node_modules/''',
+  '''functions/lib/''',
+  '''\.planning/system-wide-standardization/reference/''',
+  '''tests/semgrep/''',
+]
+
+# Known false positives
+regexTarget = "match"
+regexes = [
+  # Firebase public API keys (safe to be in client-side code)
+  '''AIzaSy[A-Za-z0-9_-]{33}''',
+  # Test JWT tokens used in unit tests
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0''',
+  # curl example in documentation
+  '''curl.*\$SONAR_TOKEN''',
+]

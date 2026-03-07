@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicolo-ribaudo/oxc/refs/heads/nicolo/json-schema/npm/oxlint/configuration_schema.json",
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-unassigned-vars": "warn",
+    "unicorn/no-new-array": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "dist-tests",
+    ".next",
+    "functions/lib",
+    ".planning/system-wide-standardization/reference",
+    "tests/semgrep"
+  ]
+}

@@ -136,9 +136,9 @@ Source: `.claude/settings.json` → `hooks`
 
 Source: `.husky/`
 
-| Hook       | Steps                                                                                                           |
-| ---------- | --------------------------------------------------------------------------------------------------------------- |
-| pre-commit | ESLint, lint-staged, pattern compliance, cross-doc deps, doc index, doc headers, S0/S1 audit, schema validation |
+| Hook       | Steps                                                                                                                                                      |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pre-commit | gitleaks secrets scan, ESLint, lint-staged (oxlint + prettier), pattern compliance, cross-doc deps, doc index, doc headers, S0/S1 audit, schema validation |
 
 ## Environment Variables
 

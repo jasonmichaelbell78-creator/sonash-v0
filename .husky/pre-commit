@@ -122,6 +122,21 @@ fi
 
 echo "🔍 Running pre-commit checks..."
 
+# --- Wave 0: Secrets scan (fast, ~1s) ---
+echo "  ▶ Scanning for secrets (gitleaks)..."
+if command -v gitleaks > /dev/null 2>&1; then
+  if ! gitleaks protect --staged -c .gitleaks.toml --no-banner 2>/dev/null; then
+    echo "  ❌ Secrets detected in staged files"
+    echo ""
+    echo "  Remove secrets before committing. Run: gitleaks detect --source ."
+    echo "  If false positive, add to .gitleaks.toml allowlist."
+    exit 1
+  fi
+  echo "  ✅ No secrets detected"
+else
+  echo "  ⏭️ gitleaks not installed (install: winget install Gitleaks.Gitleaks)"
+fi
+
 # --- Wave 1: ESLint + Tests in parallel ---
 # These are the two slowest checks (~15s each). Run concurrently for ~50% time savings.
 # Pattern compliance runs sequentially after (it's fast, ~0.1s).

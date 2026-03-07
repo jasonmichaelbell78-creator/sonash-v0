@@ -9,7 +9,7 @@
 
 ---
 
-**Total Items:** 8358
+**Total Items:** 8370
 
 ## Quick Stats
 
@@ -17,8 +17,8 @@
 | ------------- | ----- |
 | S0 (Critical) | 67    |
 | S1 (High)     | 1298  |
-| S2 (Medium)   | 3380  |
-| S3 (Low)      | 3613  |
+| S2 (Medium)   | 3384  |
+| S3 (Low)      | 3621  |
 
 | Category                 | Count |
 | ------------------------ | ----- |
@@ -26,7 +26,7 @@
 | documentation            | 982   |
 | security                 | 722   |
 | process                  | 713   |
-| refactoring              | 655   |
+| refactoring              | 667   |
 | ai-optimization          | 254   |
 | performance              | 178   |
 | enhancements             | 154   |
@@ -35,9 +35,9 @@
 | Status         | Count |
 | -------------- | ----- |
 | VERIFIED       | 5340  |
-| RESOLVED       | 481   |
+| RESOLVED       | 483   |
 | FALSE_POSITIVE | 498   |
-| NEW            | 2039  |
+| NEW            | 2049  |
 
 ## Views
 

@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2039
+**Items Needing Verification:** 2049
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -642,6 +642,10 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-11338 | Alerts blind spot: no checker for Node.js version compati...    | S2       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
 | DEBT-11341 | Alerts blind spot: no checker for stale build artifacts (...    | S2       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
 | DEBT-11342 | Alerts blind spot: no checker for Node.js version compati...    | S2       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
+| DEBT-11343 | Upgrade lucide-react 0.454→0.577 (major, icon API/name ch...    | S2       | package.json                                                                     | 139       |
+| DEBT-11344 | Upgrade recharts 2.15→3.8 (major rewrite, breaking API)         | S2       | package.json                                                                     | 148       |
+| DEBT-11345 | Upgrade react-resizable-panels 2.1→4.7 (major breaking ch...    | S2       | package.json                                                                     | 147       |
+| DEBT-11346 | Upgrade tailwind-merge 2.6→3.5 (API changes for TW v4)          | S2       | package.json                                                                     | 150       |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |
@@ -1316,7 +1320,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-7532  | Hook log file .git/hook-output.log grows unboundedly            | S3       | .husky/pre-commit                                                                | 0         |
 | DEBT-7533  | require_skip_reason() function duplicated verbatim in pre...    | S3       | .husky/pre-commit                                                                | 0         |
 | DEBT-7534  | 96-101 npm scripts with no grouping, no help, no discover...    | S3       | package.json                                                                     | 0         |
-| DEBT-7535  | next dev without --turbopack flag                               | S3       | package.json                                                                     | 0         |
 | DEBT-7536  | 3-step test compilation adds 10-20s overhead — full Vites...    | S3       | package.json                                                                     | 0         |
 | DEBT-7537  | No type-check npm script alias — DEVELOPMENT.md reference...    | S3       | package.json                                                                     | 0         |
 | DEBT-7538  | nul Windows artifact file committed to repo                     | S3       | nul                                                                              | 0         |
@@ -2022,7 +2025,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-11271 | Hook log file .git/hook-output.log grows unboundedly            | S3       | .husky/pre-commit                                                                | 0         |
 | DEBT-11272 | require_skip_reason() function duplicated verbatim in pre...    | S3       | .husky/pre-commit                                                                | 0         |
 | DEBT-11273 | 96-101 npm scripts with no grouping, no help, no discover...    | S3       | package.json                                                                     | 0         |
-| DEBT-11274 | next dev without --turbopack flag                               | S3       | package.json                                                                     | 0         |
 | DEBT-11275 | 3-step test compilation adds 10-20s overhead — full Vites...    | S3       | package.json                                                                     | 0         |
 | DEBT-11276 | No type-check npm script alias — DEVELOPMENT.md reference...    | S3       | package.json                                                                     | 0         |
 | DEBT-11277 | nul Windows artifact file committed to repo                     | S3       | nul                                                                              | 0         |
@@ -2049,6 +2051,14 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-11332 | Consider ajv schema validation for TDMS instead of hand-w...    | S3       | scripts/debt/validate-schema.js                                                  | 0         |
 | DEBT-11333 | Improve template literal cross-boundary pattern detection...    | S3       | eslint-plugin-sonash/rules/no-unbounded-regex.js                                 | 0         |
 | DEBT-11334 | Extend no-math-max-spread to catch filtered/mapped spread...    | S3       | eslint-plugin-sonash/rules/no-math-max-spread.js                                 | 0         |
+| DEBT-11347 | Upgrade eslint 9.x→10.x (config format changes)                 | S3       | package.json                                                                     | 169       |
+| DEBT-11348 | Upgrade @eslint/js 9.x→10.x (paired with eslint major)          | S3       | package.json                                                                     | 156       |
+| DEBT-11349 | Upgrade eslint-plugin-security 3.x→4.x (rule changes)           | S3       | package.json                                                                     | 170       |
+| DEBT-11350 | Upgrade c8 10.x→11.x (coverage tool major)                      | S3       | package.json                                                                     | 165       |
+| DEBT-11351 | Upgrade react-day-picker 9.8→9.14 (minor, currently pinned)     | S3       | package.json                                                                     | 143       |
+| DEBT-11352 | Upgrade cmdk 1.0.4→1.1.1 (minor, currently pinned)              | S3       | package.json                                                                     | 133       |
+| DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)     | S3       | package.json                                                                     | 142       |
+| DEBT-11354 | Migrate test runner from node --test + c8 to vitest             | S3       | package.json                                                                     | 11        |
 | DEBT-2457  | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | All 57 files with AI Instructions sections                                       | 0         |
 | DEBT-2459  | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...    | S0       | .claude/hooks/auto-save-context.js                                               | 0         |
 | DEBT-2468  | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...    | S0       | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                               | 0         |

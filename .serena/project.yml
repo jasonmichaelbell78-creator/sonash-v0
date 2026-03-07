@@ -17,7 +17,7 @@
 # The first language is the default language and the respective language server will be used as a fallback.
 # Note that when using the JetBrains backend, language servers are not used and this list is correspondingly ignored.
 languages:
-  - typescript
+- typescript
 
 # the encoding used by text files in the project
 # For a list of possible encodings, see https://docs.python.org/3.11/library/codecs.html#standard-encodings
@@ -117,3 +117,7 @@ symbol_info_budget:
 # Note: the backend is fixed at startup. If a project with a different backend
 # is activated post-init, an error will be returned.
 language_backend:
+
+# list of regex patterns which, when matched, mark a memory entry as read‑only.
+# Extends the list from the global configuration, merging the two lists.
+read_only_memory_patterns: []

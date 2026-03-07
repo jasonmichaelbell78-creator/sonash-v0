@@ -1384,7 +1384,7 @@
 | DEBT-11339 | Pattern propagation backlog: 4 patterns across 50+ files ...  | scripts/check-propagation.js                                                                                                                       | 0    | code-quality             | E2        |
 | DEBT-11340 | Cyclomatic complexity violations in run-alerts.js: 10 fun...  | .claude/skills/alerts/scripts/run-alerts.js                                                                                                        | 0    | code-quality             | E2        |
 
-## S2 - Medium (3380)
+## S2 - Medium (3384)
 
 | ID         | Title                                                          | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4768,8 +4768,12 @@
 | DEBT-11338 | Alerts blind spot: no checker for Node.js version compati...   | .claude/skills/alerts/scripts/run-alerts.js                                                                                                                                 | 0         | engineering-productivity | E1        |
 | DEBT-11341 | Alerts blind spot: no checker for stale build artifacts (...   | .claude/skills/alerts/scripts/run-alerts.js                                                                                                                                 | 0         | engineering-productivity | E1        |
 | DEBT-11342 | Alerts blind spot: no checker for Node.js version compati...   | .claude/skills/alerts/scripts/run-alerts.js                                                                                                                                 | 0         | engineering-productivity | E1        |
+| DEBT-11343 | Upgrade lucide-react 0.454→0.577 (major, icon API/name ch...   | package.json                                                                                                                                                                | 139       | refactoring              | E2        |
+| DEBT-11344 | Upgrade recharts 2.15→3.8 (major rewrite, breaking API)        | package.json                                                                                                                                                                | 148       | refactoring              | E3        |
+| DEBT-11345 | Upgrade react-resizable-panels 2.1→4.7 (major breaking ch...   | package.json                                                                                                                                                                | 147       | refactoring              | E2        |
+| DEBT-11346 | Upgrade tailwind-merge 2.6→3.5 (API changes for TW v4)         | package.json                                                                                                                                                                | 150       | refactoring              | E1        |
 
-## S3 - Low (3613)
+## S3 - Low (3621)
 
 | ID         | Title                                                           | File                                                                                             | Line      | Category                 | Effort    |
 | ---------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------- | ------------------------ | --------- |
@@ -8386,3 +8390,11 @@
 | DEBT-11332 | Consider ajv schema validation for TDMS instead of hand-w...    | scripts/debt/validate-schema.js                                                                  | 0         | refactoring              | E1        |
 | DEBT-11333 | Improve template literal cross-boundary pattern detection...    | eslint-plugin-sonash/rules/no-unbounded-regex.js                                                 | 0         | code-quality             | E2        |
 | DEBT-11334 | Extend no-math-max-spread to catch filtered/mapped spread...    | eslint-plugin-sonash/rules/no-math-max-spread.js                                                 | 0         | code-quality             | E2        |
+| DEBT-11347 | Upgrade eslint 9.x→10.x (config format changes)                 | package.json                                                                                     | 169       | refactoring              | E1        |
+| DEBT-11348 | Upgrade @eslint/js 9.x→10.x (paired with eslint major)          | package.json                                                                                     | 156       | refactoring              | E0        |
+| DEBT-11349 | Upgrade eslint-plugin-security 3.x→4.x (rule changes)           | package.json                                                                                     | 170       | refactoring              | E1        |
+| DEBT-11350 | Upgrade c8 10.x→11.x (coverage tool major)                      | package.json                                                                                     | 165       | refactoring              | E0        |
+| DEBT-11351 | Upgrade react-day-picker 9.8→9.14 (minor, currently pinned)     | package.json                                                                                     | 143       | refactoring              | E0        |
+| DEBT-11352 | Upgrade cmdk 1.0.4→1.1.1 (minor, currently pinned)              | package.json                                                                                     | 133       | refactoring              | E0        |
+| DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)     | package.json                                                                                     | 142       | refactoring              | E0        |
+| DEBT-11354 | Migrate test runner from node --test + c8 to vitest             | package.json                                                                                     | 11        | refactoring              | E3        |
