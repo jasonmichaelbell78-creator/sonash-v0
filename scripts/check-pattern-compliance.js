@@ -2178,13 +2178,22 @@ function main() {
   const { warnings, blocks } = applyGraduation(allViolations);
 
   // DS-4: Persist warned files so alerts checker can read them
+  // Schema: { [file]: count } — alerts checker expects numeric counts (>=3 = hotspot)
   if (warnings.length > 0) {
-    const now = new Date().toISOString();
-    const warnedObj = {};
-    for (const w of warnings) {
-      if (w.file) warnedObj[w.file] = now;
+    let existing = {};
+    try {
+      existing = JSON.parse(readFileSync(WARNED_FILES_PATH, "utf-8"));
+    } catch {
+      // No existing file or invalid JSON — start fresh
     }
-    saveWarnedFiles(warnedObj);
+    // Migrate any legacy timestamp values to count=1
+    for (const [key, val] of Object.entries(existing)) {
+      if (typeof val !== "number") existing[key] = 1;
+    }
+    for (const w of warnings) {
+      if (w.file) existing[w.file] = (existing[w.file] || 0) + 1;
+    }
+    saveWarnedFiles(existing);
   }
 
   outputResultsAndExit(allViolations, files, warnings, blocks);

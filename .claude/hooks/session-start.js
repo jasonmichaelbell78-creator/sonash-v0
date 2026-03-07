@@ -465,7 +465,7 @@ try {
 
 // Auto-archive: move old reviews from active log to archive files when threshold exceeded
 try {
-  const archiveOutput = execFileSync("node", ["scripts/archive-reviews.js", "--auto"], {
+  const archiveOutput = execFileSync(process.execPath, ["scripts/archive-reviews.js", "--auto"], {
     cwd: projectDir,
     encoding: "utf8",
     stdio: "pipe",
@@ -484,7 +484,7 @@ try {
 
 // Sync commit log from git history (fills gaps when commit-tracker hook misses)
 try {
-  execFileSync("node", ["scripts/seed-commit-log.js", "--sync"], {
+  execFileSync(process.execPath, ["scripts/seed-commit-log.js", "--sync"], {
     cwd: projectDir,
     stdio: "ignore",
     timeout: 20000,
@@ -593,12 +593,16 @@ try {
 
 // Step 13: Health quick check (non-blocking)
 try {
-  const healthOutput = execFileSync("node", ["scripts/health/run-health-check.js", "--quick"], {
-    cwd: projectDir,
-    encoding: "utf8",
-    stdio: "pipe",
-    timeout: 10000,
-  });
+  const healthOutput = execFileSync(
+    process.execPath,
+    ["scripts/health/run-health-check.js", "--quick"],
+    {
+      cwd: projectDir,
+      encoding: "utf8",
+      stdio: "pipe",
+      timeout: 10000,
+    }
+  );
   const scoreLine = healthOutput.split("\n").find((l) => l.includes("Composite:"));
   if (scoreLine) {
     console.log(`Health: ${scoreLine.trim()}`);
@@ -609,14 +613,18 @@ try {
 
 // DS-6: Log session start to session-activity.jsonl
 try {
-  execFileSync("node", ["scripts/log-session-activity.js", "--event=session_start"], {
+  execFileSync(process.execPath, ["scripts/log-session-activity.js", "--event=session_start"], {
     cwd: projectDir,
     encoding: "utf8",
     stdio: "pipe",
     timeout: 5000,
   });
-} catch {
-  // Non-critical — activity logging failure doesn't block session start
+} catch (error) {
+  // Non-critical — log for debuggability but don't block session start
+  console.error(
+    "session-start: activity logging failed:",
+    error instanceof Error ? error.message : String(error)
+  );
 }
 
 console.log("");

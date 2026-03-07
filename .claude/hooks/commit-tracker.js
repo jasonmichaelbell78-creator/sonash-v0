@@ -169,11 +169,16 @@ function logCommitFailure(command) {
         /(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*)\S+/gi,
         "[REDACTED]"
       ),
+      failedCheck: "pre-commit",
       session: getSessionCounter(),
     };
     fs.appendFileSync(commitFailuresLog, JSON.stringify(entry) + "\n");
-  } catch {
-    // Non-critical — failure logging itself should not break the hook
+  } catch (error) {
+    // Non-critical — log for debuggability but don't break the hook
+    console.error(
+      "commit-tracker: failed to log commit failure:",
+      error instanceof Error ? error.message : String(error)
+    );
   }
 }
 

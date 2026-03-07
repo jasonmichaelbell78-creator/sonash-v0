@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T02:22:40.984Z",
+  "generatedAt": "2026-03-07T03:58:35.013Z",
   "skillCount": 61,
   "skills": [
     {
@@ -10,7 +10,7 @@
       "name": "add-debt",
       "source": ".claude/skills",
       "displayName": "add-debt",
-      "description": "description: >-"
+      "description": "Add technical debt items to MASTER_DEBT.jsonl. Supports two workflows:"
     },
     {
       "name": "alerts",
@@ -137,7 +137,7 @@
       "name": "deep-plan",
       "source": ".claude/skills",
       "displayName": "deep-plan",
-      "description": "description: >-"
+      "description": "Structured discovery-first planning for complex tasks. Ask exhaustive"
     },
     {
       "name": "developer-growth-analysis",
@@ -226,13 +226,13 @@
       "name": "pr-retro",
       "source": ".claude/skills",
       "displayName": "pr-retro",
-      "description": "description: >-"
+      "description": "PR Review Retrospective -- actionable analysis of a PR's review cycle with"
     },
     {
       "name": "pr-review",
       "source": ".claude/skills",
       "displayName": "pr-review",
-      "description": "description: >-"
+      "description": "Process external PR code review feedback (CodeRabbit, Qodo, SonarCloud,"
     },
     {
       "name": "pre-commit-fixer",
@@ -267,14 +267,14 @@
     {
       "name": "session-end",
       "source": ".claude/skills",
-      "description": "Complete verification steps before ending the session",
-      "displayName": "session-end"
+      "displayName": "session-end",
+      "description": "Session closure pipeline — context preservation, compliance review, metrics"
     },
     {
       "name": "skill-audit",
       "source": ".claude/skills",
       "displayName": "skill-audit",
-      "description": "description: >-"
+      "description": "Interactive behavioral quality audit for individual skills. Evaluates against"
     },
     {
       "name": "skill-creator",
@@ -298,7 +298,7 @@
       "name": "sprint",
       "source": ".claude/skills",
       "displayName": "sprint",
-      "description": "description: >-"
+      "description": "TDMS Sprint workflow automation. Dashboard, team-based parallel execution,"
     },
     {
       "name": "system-test",

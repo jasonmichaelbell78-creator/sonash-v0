@@ -37,15 +37,16 @@ try {
   isSafeToWrite = () => false;
 }
 
-// Find project root (where CLAUDE.md is)
+// Find project root (where claude.md is)
 // Review #214: Use platform-agnostic root detection
-// OD-A: Use CLAUDE.md as root marker — package.json can exist in subdirs like .claude/
+// OD-A: Use claude.md as root marker — package.json can exist in subdirs like .claude/
+// Review #458 R2: Use lowercase (git-tracked filename) for case-sensitive FS compatibility
 function findProjectRoot() {
   let dir = __dirname;
   const fsRoot = path.parse(dir).root;
 
   while (dir && dir !== fsRoot) {
-    if (fs.existsSync(path.join(dir, "CLAUDE.md"))) {
+    if (fs.existsSync(path.join(dir, "claude.md"))) {
       return dir;
     }
     const next = path.dirname(dir);

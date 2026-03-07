@@ -181,7 +181,7 @@ _Foundation technical reference_
 | [Mining Agent 4: Integration & Automation](docs/aggregation/mining-agent4-integration.md)             | Analysis of hooks, gates, overrides, agent tracking, SonarCl... | ↓0 ↑0      | 2026-03-05    |
 | [Mining Report: Review Data Quality](docs/aggregation/mining-agent1-data-quality.md)                  | Data quality analysis of review JSONL vs markdown sources, i... | ↓0 ↑0      | 2026-02-28    |
 | [PR Review Ecosystem Diagnosis](docs/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md)                           | Comprehensive diagnosis of the PR review ecosystem across 7 ... | ↓0 ↑0      | 2026-02-28    |
-| [PR Review Ecosystem v2 — Comprehensive Changelog](docs/PR_ECOSYSTEM_V2_CHANGELOG.md)                 | A detailed breakdown of every aspect of the PR review ecosys... | ↓0 ↑0      | 2026-03-02    |
+| [PR Review Ecosystem v2 — Comprehensive Changelog](docs/PR_ECOSYSTEM_V2_CHANGELOG.md)                 | A detailed breakdown of every aspect of the PR review ecosys... | ↓0 ↑0      | 2026-03-06    |
 | [reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide](docs/RECAPTCHA_REMOVAL_GUIDE.md)     | Complete removal and fresh implementation guide for Firebase... | ↓1 ↑2      | 2026-02-14    |
 | [Security & Privacy Guide](docs/SECURITY.md)                                                          | -                                                               | ↓12 ↑4     | 2026-01-15    |
 | [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)                   | Step-by-step guide to integrate Sentry error tracking into t... | ↓1 ↑0      | 2026-02-23    |
