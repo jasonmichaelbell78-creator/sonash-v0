@@ -2149,6 +2149,16 @@ function main() {
   // - medium: always warns
   const { warnings, blocks } = applyGraduation(allViolations);
 
+  // DS-4: Persist warned files so alerts checker can read them
+  if (warnings.length > 0) {
+    const now = new Date().toISOString();
+    const warnedObj = {};
+    for (const w of warnings) {
+      if (w.file) warnedObj[w.file] = now;
+    }
+    saveWarnedFiles(warnedObj);
+  }
+
   if (JSON_OUTPUT) {
     // Count by severity for summary
     const severityCounts = { critical: 0, high: 0, medium: 0 };

@@ -607,6 +607,18 @@ try {
   console.log("Health: skipped (non-fatal)");
 }
 
+// DS-6: Log session start to session-activity.jsonl
+try {
+  execFileSync("node", ["scripts/log-session-activity.js", "--event=session_start"], {
+    cwd: projectDir,
+    encoding: "utf8",
+    stdio: "pipe",
+    timeout: 5000,
+  });
+} catch {
+  // Non-critical — activity logging failure doesn't block session start
+}
+
 console.log("");
 if (warnings === 0) {
   console.log("✅ SessionStart complete");

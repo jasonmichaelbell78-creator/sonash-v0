@@ -65,7 +65,8 @@ gap through guided decisions with the user.
 ```
 Phase 1: Preparation    → Validate target, read skill + standards, initialize state
 Phase 2: Category Audit → 10 categories, interactive, decisions saved per category
-Phase 3: Crosscheck     → Verify skill-creator + ecosystem impact with solutions
+Phase 2.5: Operational Deps → Scripts, hooks, data files, npm scripts, state files
+Phase 3: Crosscheck     → Verify skill-creator + ecosystem impact + adjacent contracts
 Phase 4: Implementation → Apply decisions (priority order, batch related changes)
 Phase 5: Self-Audit     → Verify decisions implemented, process followed
 Phase 6: Learning Loop  → Process feedback, invocation tracking, closure
@@ -159,11 +160,35 @@ findings. Then: "Proceed to implementation with these N decisions? [Y/modify/n]"
 
 ---
 
+## Phase 2.5: Operational Dependency Check (SA-1, MUST)
+
+Run these checks for every skill with scripts, hooks, or data file dependencies:
+
+| Check          | Level            | What to verify                                                |
+| -------------- | ---------------- | ------------------------------------------------------------- |
+| A. Scripts     | MUST             | All invoked scripts exist, run without error, paths resolve   |
+| B. Hooks       | SHOULD           | All hooks that feed data are configured and write output      |
+| C. Data files  | MUST             | Every file read has a writer, every file written has a reader |
+| D. npm scripts | SHOULD           | All `npm run` commands exist in package.json                  |
+| E. Docs        | SHOULD           | All referenced docs/anchors still exist                       |
+| F. Functions   | MAY (MUST if >3) | Internal functions produce output, handle missing input       |
+| G. State files | MUST             | Schema matches read/write usage, path writable                |
+
+**MUST investigate root causes** (SA-3) — don't just note "file missing." Trace
+the writer, identify WHY it's missing (dead code? never wired? wrong path?).
+
+Present findings with severity and fix recommendations. User decides per
+finding.
+
+---
+
 ## Phase 3: Crosscheck + Ecosystem Impact (MUST)
 
 1. Review skill-creator — does it guide creators to avoid the gaps found?
 2. Present crosscheck summary: gap count + recommendations
-3. **Ecosystem impact** (MUST) — identify downstream skills/files affected. For
+3. **Adjacent skill contracts** (SA-4, MUST) — referenced skills exist,
+   interfaces match assumptions, handoff protocol consistent on both sides
+4. **Ecosystem impact** (MUST) — identify downstream skills/files affected. For
    each impact, offer actionable solutions (not just notifications). User may
    address downstream impacts within this audit or defer.
 
@@ -283,8 +308,9 @@ Files modified: [list] | Skill-creator gaps: [N]
 
 ## Version History
 
-| Version | Date       | Description                                                   |
-| ------- | ---------- | ------------------------------------------------------------- |
-| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence. |
-| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.       |
-| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan      |
+| Version | Date       | Description                                                          |
+| ------- | ---------- | -------------------------------------------------------------------- |
+| 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts |
+| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.        |
+| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.              |
+| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan             |

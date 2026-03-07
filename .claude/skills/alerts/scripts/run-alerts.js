@@ -37,14 +37,15 @@ try {
   isSafeToWrite = () => false;
 }
 
-// Find project root (where package.json is)
+// Find project root (where CLAUDE.md is)
 // Review #214: Use platform-agnostic root detection
+// OD-A: Use CLAUDE.md as root marker — package.json can exist in subdirs like .claude/
 function findProjectRoot() {
   let dir = __dirname;
   const fsRoot = path.parse(dir).root;
 
   while (dir && dir !== fsRoot) {
-    if (fs.existsSync(path.join(dir, "package.json"))) {
+    if (fs.existsSync(path.join(dir, "CLAUDE.md"))) {
       return dir;
     }
     const next = path.dirname(dir);
@@ -1031,8 +1032,12 @@ function checkDebtMetrics() {
   let metrics;
   try {
     metrics = safeParse(fs.readFileSync(metricsPath, "utf8"));
-    if (!metrics) return;
+    if (!metrics) {
+      ensureCategory("debt-metrics", "Debt Metrics");
+      return;
+    }
   } catch {
+    ensureCategory("debt-metrics", "Debt Metrics");
     return;
   }
 
@@ -1123,7 +1128,7 @@ function checkDebtMetrics() {
     "info",
     `Debt summary: ${total} total, ${open} open, ${resRate}% resolved`,
     null,
-    null
+    "Review MASTER_DEBT.jsonl for resolution opportunities"
   );
 
   // Rate against benchmarks
@@ -1195,6 +1200,7 @@ function checkLearningEffectiveness() {
   try {
     content = fs.readFileSync(metricsPath, "utf8");
   } catch {
+    ensureCategory("learning", "Learning Effectiveness");
     return;
   }
 
@@ -1678,10 +1684,14 @@ function checkTestResults() {
       .sort()
       .reverse();
   } catch {
+    ensureCategory("test-results", "Test Results");
     return;
   }
 
-  if (files.length === 0) return;
+  if (files.length === 0) {
+    ensureCategory("test-results", "Test Results");
+    return;
+  }
 
   const latestFile = files[0];
   const lines = safeReadLines(path.join(resultsDir, latestFile));
@@ -1802,7 +1812,10 @@ function checkReviewQuality() {
     .map((l) => safeParse(l))
     .filter(Boolean);
 
-  if (recent.length === 0) return;
+  if (recent.length === 0) {
+    ensureCategory("review-quality", "Review Quality");
+    return;
+  }
 
   // Check for high-churn PRs
   for (const entry of recent) {
@@ -1933,14 +1946,20 @@ function checkVelocity() {
 
   const logPath = path.join(ROOT_DIR, ".claude", "state", "velocity-log.jsonl");
   const lines = safeReadLines(logPath);
-  if (lines.length === 0) return;
+  if (lines.length === 0) {
+    ensureCategory("velocity", "Velocity");
+    return;
+  }
 
   const recent = lines
     .slice(-5)
     .map((l) => safeParse(l))
     .filter(Boolean);
 
-  if (recent.length === 0) return;
+  if (recent.length === 0) {
+    ensureCategory("velocity", "Velocity");
+    return;
+  }
 
   const completed = recent.map((e) => e.items_completed || 0);
   const avg = completed.reduce((a, b) => a + b, 0) / completed.length;
@@ -2001,7 +2020,10 @@ function checkSessionActivity() {
 
   const activityPath = path.join(ROOT_DIR, ".claude", "session-activity.jsonl");
   const lines = safeReadLines(activityPath);
-  if (lines.length === 0) return;
+  if (lines.length === 0) {
+    ensureCategory("session-activity", "Session Activity");
+    return;
+  }
 
   let lastStartIdx = -1;
   const entries = [];
@@ -2059,11 +2081,17 @@ function checkCommitActivity() {
 
   const logPath = path.join(ROOT_DIR, ".claude", "state", "commit-log.jsonl");
   const lines = safeReadLines(logPath);
-  if (lines.length === 0) return;
+  if (lines.length === 0) {
+    ensureCategory("commit-activity", "Commit Activity");
+    return;
+  }
 
   const entries = lines.map((l) => safeParse(l)).filter(Boolean);
 
-  if (entries.length === 0) return;
+  if (entries.length === 0) {
+    ensureCategory("commit-activity", "Commit Activity");
+    return;
+  }
 
   const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
   const recentCommits = entries.filter((e) => new Date(e.timestamp).getTime() > oneDayAgo);
@@ -2710,7 +2738,7 @@ function checkPatternHotspots() {
       "info",
       `${hotspots.length} file(s) with multiple violations`,
       null,
-      null
+      "Run: npm run patterns:check"
     );
   }
 
@@ -3521,6 +3549,14 @@ function computeHealthScore() {
     "reviews-sync": 0.01,
     "review-archive": 0.01,
     crossdoc: 0.01,
+    // OD-B: Previously unmeasured categories (checkers exist but had no weight)
+    "hook-warnings": 0.01,
+    roadmap: 0.01,
+    consolidation: 0.01,
+    "roadmap-health": 0.01,
+    "debt-resolution": 0.01,
+    "session-activity": 0.01,
+    "commit-activity": 0.01,
   };
 
   const breakdown = {};
@@ -3557,7 +3593,9 @@ function computeHealthScore() {
             ? "D"
             : "F";
 
-  results.healthScore = { grade, score: finalScore, breakdown };
+  const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
+  const measuredPct = totalWeight > 0 ? Math.round((measuredWeight / totalWeight) * 100) : 0;
+  results.healthScore = { grade, score: finalScore, measuredPct, breakdown };
 }
 
 // ============================================================================

@@ -78,8 +78,20 @@ if (filePath) {
   }
   if (filePath) {
     filePath = filePath.replace(/\\/g, "/");
+    // DS-1: Convert absolute paths to project-relative instead of rejecting.
+    // Claude Code passes absolute paths via $ARGUMENTS.
     if (path.isAbsolute(filePath) || /^[A-Za-z]:/.test(filePath)) {
-      filePath = "";
+      const normalized = path.resolve(filePath);
+      const projNormalized = path.resolve(projectDir);
+      if (
+        normalized.startsWith(projNormalized + path.sep) ||
+        normalized.startsWith(projNormalized + "/")
+      ) {
+        filePath = path.relative(projectDir, normalized).replace(/\\/g, "/");
+      } else {
+        // Outside project — reject
+        filePath = "";
+      }
     }
   }
   if (filePath) {

@@ -154,6 +154,27 @@ function appendCommitLog(entry) {
 }
 
 /**
+ * DS-5: Log commit failure to commit-failures.jsonl
+ */
+const COMMIT_FAILURES_LOG = path.join(projectDir, ".claude", "state", "commit-failures.jsonl");
+
+function logCommitFailure(command) {
+  try {
+    const dir = path.dirname(COMMIT_FAILURES_LOG);
+    fs.mkdirSync(dir, { recursive: true });
+    if (!isSafeToWrite(COMMIT_FAILURES_LOG)) return;
+    const entry = {
+      timestamp: new Date().toISOString(),
+      command: sanitizeInput((command || "").slice(0, 200)),
+      session: getSessionCounter(),
+    };
+    fs.appendFileSync(COMMIT_FAILURES_LOG, JSON.stringify(entry) + "\n");
+  } catch {
+    // Non-critical — failure logging itself should not break the hook
+  }
+}
+
+/**
  * Main
  */
 function main() {
@@ -175,6 +196,8 @@ function main() {
   const lastHead = loadLastHead();
   if (currentHead === lastHead) {
     // Commit failed (pre-commit hooks rejected, etc.) or already tracked
+    // DS-5: Log commit failures so alerts checker can track them
+    logCommitFailure(command);
     console.log("ok");
     process.exit(0);
   }
