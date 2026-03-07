@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-02-26T12:51:11.204Z",
-  "skillCount": 59,
+  "generatedAt": "2026-03-07T02:22:40.984Z",
+  "skillCount": 61,
   "skills": [
     {
       "name": "_shared",
@@ -137,7 +137,7 @@
       "name": "deep-plan",
       "source": ".claude/skills",
       "displayName": "deep-plan",
-      "description": "Structured discovery-first planning for complex tasks. Ask exhaustive"
+      "description": "description: >-"
     },
     {
       "name": "developer-growth-analysis",
@@ -162,6 +162,11 @@
       "source": ".claude/skills",
       "displayName": "docs-maintain",
       "description": "description: |"
+    },
+    {
+      "name": "ecosystem-health",
+      "source": ".claude/skills",
+      "description": "<!-- prettier-ignore-start -->"
     },
     {
       "name": "excel-analysis",
@@ -221,13 +226,13 @@
       "name": "pr-retro",
       "source": ".claude/skills",
       "displayName": "pr-retro",
-      "description": "PR Review Retrospective -- actionable analysis of a PR's review cycle"
+      "description": "description: >-"
     },
     {
       "name": "pr-review",
       "source": ".claude/skills",
-      "description": "PR Code Review Processor",
-      "displayName": "pr-review"
+      "displayName": "pr-review",
+      "description": "description: >-"
     },
     {
       "name": "pre-commit-fixer",
@@ -264,6 +269,12 @@
       "source": ".claude/skills",
       "description": "Complete verification steps before ending the session",
       "displayName": "session-end"
+    },
+    {
+      "name": "skill-audit",
+      "source": ".claude/skills",
+      "displayName": "skill-audit",
+      "description": "description: >-"
     },
     {
       "name": "skill-creator",

@@ -164,21 +164,25 @@ findings. Then: "Proceed to implementation with these N decisions? [Y/modify/n]"
 
 Run these checks for every skill with scripts, hooks, or data file dependencies:
 
-| Check          | Level            | What to verify                                                |
-| -------------- | ---------------- | ------------------------------------------------------------- |
-| A. Scripts     | MUST             | All invoked scripts exist, run without error, paths resolve   |
-| B. Hooks       | SHOULD           | All hooks that feed data are configured and write output      |
-| C. Data files  | MUST             | Every file read has a writer, every file written has a reader |
-| D. npm scripts | SHOULD           | All `npm run` commands exist in package.json                  |
-| E. Docs        | SHOULD           | All referenced docs/anchors still exist                       |
-| F. Functions   | MAY (MUST if >3) | Internal functions produce output, handle missing input       |
-| G. State files | MUST             | Schema matches read/write usage, path writable                |
+| Check          | Level            | What to verify                                                            |
+| -------------- | ---------------- | ------------------------------------------------------------------------- |
+| A. Scripts     | MUST             | All invoked scripts exist, **run without error**, produce expected output |
+| B. Hooks       | SHOULD           | All hooks that feed data are configured and write output                  |
+| C. Data files  | MUST             | Every file read has a writer, every file written has a reader             |
+| D. npm scripts | SHOULD           | All `npm run` commands exist in package.json                              |
+| E. Docs        | SHOULD           | All referenced docs/anchors still exist                                   |
+| F. Functions   | MAY (MUST if >3) | Internal functions produce output, handle missing input                   |
+| G. State files | MUST             | Schema matches read/write usage, path writable                            |
 
 **MUST investigate root causes** (SA-3) — don't just note "file missing." Trace
 the writer, identify WHY it's missing (dead code? never wired? wrong path?).
 
+**MUST functionally validate scripts** (SA-5) — existence is the floor, not the
+ceiling. Run each script in dry-run/check mode and verify it produces expected
+output. A script that exists but fails silently is worse than a missing script.
+
 Present findings with severity and fix recommendations. User decides per
-finding.
+finding. **Pause for user confirmation before proceeding to Phase 3.**
 
 ---
 

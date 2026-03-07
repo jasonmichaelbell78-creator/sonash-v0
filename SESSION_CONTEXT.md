@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 6.9 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 7.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-06 (Session #207)
+2026-03-07 (Session #209)
 
 ## Purpose
 
@@ -29,16 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-06 21:45 **Branch**: `main` **Working On**: Session
-#208 — Skill audit of alerts. Phase 3 complete, Phase 4 implementation next.
+**Last Checkpoint**: 2026-03-07 02:50 **Branch**: `skills-update` **Working
+On**: Session #209 — skill-audit session-end complete. Session-end closing.
 
-**Uncommitted Work**: Skill audit state files, crosscheck findings
+**Uncommitted Work**: Session-end artifacts (context, metrics, state)
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 209 (since Jan 1, 2026)
+**Current Session Count**: 210 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,45 +48,37 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Recent Session Summaries
 
-**Session #208** (SKILL AUDIT: ALERTS — PHASES 1-3 COMPLETE):
+**Session #209** (SKILL AUDIT: SESSION-END — FULL REWRITE):
 
-- `/skill-audit alerts` — full 10-category audit + operational dependency check
-- 58 SKILL.md decisions accepted (1 rejected), score 53/100 -> est. 80 post-fix
-- Operational dependency check: 8 script fixes (OD-A critical findProjectRoot
-  bug)
-- Data source investigation: 4 real bugs found (DS-1 absolute path rejection in
-  post-read-handler, DS-4 saveWarnedFiles dead code, DS-5 no commit-failures
-  writer, DS-6 session-activity logger never called)
-- Defined operational dependency checker (A-G checks, G=MUST for ALL skills)
-- Crosscheck: 5 skill-creator gaps, 4 skill-audit gaps, 0 contract mismatches
-- Phase 4 implementation ready: 83 total items across 9 files
+- `/skill-audit session-end` — full 10-category audit, 37 decisions (34
+  accepted, 3 rejected), score 48/100 -> est. 75 post-fix
+- Full rewrite of session-end SKILL.md: 4-phase structure, Critical Rules,
+  MUST/SHOULD/MAY hierarchy, artifact manifest, pre-commit review gate,
+  --no-push option, learning loop, integration section
+- Updated skill-audit: SA-PROCESS-1 (functional script validation in Phase 2.5),
+  SA-PROCESS-2 (pause gate after Phase 2.5)
+- Updated checkpoint SKILL.md: routing note referencing session-end
+- Updated CLAUDE.md: trigger text from "audit checklist" to "closure pipeline"
+- Skill-creator gaps found: 2 (input specification, artifact manifests)
+- User feedback: Phase 2.5 should functionally validate scripts, not just check
+  existence. "Existence is the floor, not the ceiling."
+- TDMS: 8,354 items (481 resolved)
+
+**Session #208** (SKILL AUDIT: ALERTS — FULL IMPLEMENTATION):
+
+- `/skill-audit alerts` Phase 4: implemented 83 fixes across 10 files
+- Phase 5: evidence-based self-audit (grep + diff verification)
+- Phase 6: learning loop complete
+- Score 53/100 -> 80 post-fix
 - State files: `.claude/state/task-skill-audit-alerts*.json`
 
 **Session #207** (ALERTS FULL + HEALTH IMPROVEMENTS):
 
-- GSD updated v1.6.3 → v1.22.4
+- GSD updated v1.6.3 -> v1.22.4
 - `/alerts --full` run: 36 categories, processed all alerts interactively
 - Fixed Windows EINVAL spawning npm/npx/gh in alerts checker (shell: true)
-- Fixed TypeScript check, test script Windows glob compat, tsconfig.test.json
-- Fixed review archive health: consolidation counter regex, 40 gap IDs, dedup
-- Updated fast-xml-parser override (3 CVEs), npm audit fix
-- Hardened statusline sanitization (CSI/OSC strip, length cap)
-- Archived 17 review entries, synced 16 to reviews.jsonl
-- Health: C (79) → A (92) | Tests: 497 pass, 0 fail
+- Health: C (79) -> A (92) | Tests: 497 pass, 0 fail
 - TDMS: 8,350 items (481 resolved)
-
-**Session #206** (PR #417 REVIEW — R1-R3 COMPLETE):
-
-- Processed 3 rounds of PR review feedback on system-overhaul branch
-- R1: 16 items → 13 fixed | R2: 19 items → 10 fixed | R3: 16 items → 4 fixed
-- Reviews #448-#450 logged
-- TDMS: 8,350 items (481 resolved)
-
-**Session #205** (RETRO ACTION ITEMS — ALL IMPLEMENTED):
-
-- Implemented ALL PR #378-#416 retro action items (7 phases, 19 files, +506/-24)
-- CC pre-push check enforcing CC ≤15 as error
-- Tests: 496 pass, 0 fail | Health: 64/100 (D, +1)
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -107,7 +99,7 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 | M1.5 - Quick Wins                 | Paused   | ~20%                                |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%                                |
 
-**Current Branch**: `main`
+**Current Branch**: `skills-update`
 
 **Test Status**: All tests passing (497/498, 1 skipped)
 
@@ -117,14 +109,12 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ### Immediate Priority (Next Session)
 
-1. **Skill Audit: alerts Phase 4 Implementation** — 83 items across 9 files.
-   Read `.claude/state/task-skill-audit-alerts-fixes.json` for complete fix
-   list. Read `.claude/state/task-skill-audit-alerts.state.json` for all
-   decisions. Priority order: OD-A (critical findProjectRoot), then SKILL.md
-   rewrite, then remaining script fixes, data source fixes, skill-creator/audit
-   updates.
-2. **Skill Audit: alerts Phase 5 Self-Audit** — after implementation
-3. **Skill Audit: alerts Phase 6 Learning Loop** — closure
+1. **Merge skills-update PR** — session-end rewrite + skill-audit improvements +
+   checkpoint routing + CLAUDE.md trigger update
+2. **Continue skill quality audits** — next targets: session-begin, checkpoint,
+   or other high-frequency skills
+3. **Address skill-creator gaps** — add input specification guidance and
+   artifact manifest guidance (2 gaps found in session-end audit)
 
 **See**:
 [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for
@@ -201,14 +191,15 @@ npm run docs:check   # Documentation linting
 
 ## Version History
 
-| Version | Date       | Changes                                           |
-| ------- | ---------- | ------------------------------------------------- |
-| 6.9     | 2026-03-06 | Session #207 — Alerts full + health C→A (92/100)  |
-| 6.8     | 2026-03-05 | Session #206 — PR #417 R1-R3 review complete      |
-| 6.7     | 2026-03-05 | Session #205 — All retro action items implemented |
-| 6.6     | 2026-03-04 | Session #202 — Deep-plan complete, PLAN.md v1.1   |
-| 6.5     | 2026-03-02 | Session #200 — PR #411 review R1-R9 complete      |
-| 6.4     | 2026-03-01 | Session #199 — v1.0 milestone shipped/archived    |
-| 6.3     | 2026-03-01 | Session #197 updates                              |
+| Version | Date       | Changes                                             |
+| ------- | ---------- | --------------------------------------------------- |
+| 7.0     | 2026-03-07 | Session #209 — skill-audit session-end full rewrite |
+| 6.9     | 2026-03-06 | Session #207 — Alerts full + health C->A (92/100)   |
+| 6.8     | 2026-03-05 | Session #206 — PR #417 R1-R3 review complete        |
+| 6.7     | 2026-03-05 | Session #205 — All retro action items implemented   |
+| 6.6     | 2026-03-04 | Session #202 — Deep-plan complete, PLAN.md v1.1     |
+| 6.5     | 2026-03-02 | Session #200 — PR #411 review R1-R9 complete        |
+| 6.4     | 2026-03-01 | Session #199 — v1.0 milestone shipped/archived      |
+| 6.3     | 2026-03-01 | Session #197 updates                                |
 
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)
