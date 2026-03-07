@@ -20,8 +20,9 @@ Save current state so you can recover after compaction or session failure.
 
 ## When NOT to Use
 
-- When the task doesn't match this skill's scope -- check related skills
-- When a more specialized skill exists for the specific task
+- **Full session closure** — use `/session-end` instead (runs metrics pipeline,
+  compliance checks, and commits)
+- When the task doesn't match this skill's scope
 
 ## Usage
 

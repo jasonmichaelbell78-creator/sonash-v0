@@ -1,62 +1,71 @@
 ---
 name: pr-retro
-description:
-  PR Review Retrospective -- actionable analysis of a PR's review cycle
+description: >-
+  PR Review Retrospective -- actionable analysis of a PR's review cycle with
+  interactive findings walkthrough, plus dashboard for missing retros
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.3
-**Last Updated:** 2026-02-28
+**Document Version:** 4.0
+**Last Updated:** 2026-03-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 # PR Review Retrospective
 
-Analyze the review cycle for a completed PR and produce a **comprehensive,
-actionable retrospective**.
+Analyze the review cycle for completed PRs and produce an **actionable
+retrospective covering all review rounds** through an interactive
+finding-by-finding walkthrough.
 
 **Invocation:**
 
-- `/pr-retro` (no args) → **Missing Retros Dashboard**
+- `/pr-retro` (no args) → **Missing Retros Dashboard** with PR selection
 - `/pr-retro <PR#>` → Single-PR retrospective
+- `/pr-retro <PR#> --resume` → Resume interrupted retro from state file
 
-**When to use:** When the user decides the review cycle is done, or wants to
-discover which PRs are missing retros.
+## Routing Guide
 
----
+- "Review this PR's code" → `/code-reviewer`
+- "Process review feedback on active PR" → `/pr-review`
+- "How healthy is our review process?" → `/pr-ecosystem-audit`
+- "What went well/wrong in a completed PR's review cycle?" → `/pr-retro`
 
 ## When to Use
 
 - User explicitly invokes `/pr-retro`
+- Review cycle is complete and PR is merged
 
 ## When NOT to Use
 
-- When a more specialized skill exists for the specific task
+- Processing active review feedback → use `/pr-review`
+- Reviewing code quality → use `/code-reviewer`
+- Auditing review ecosystem health → use `/pr-ecosystem-audit`
 
-## CRITICAL RULES
+---
 
-1. **ALWAYS produce the FULL retro** -- every mandatory section, every round.
-2. **ALWAYS display the complete retro to the user** in conversation output.
-3. **Every observation must have a recommended action** with estimated effort.
-4. **Reference actual round data** -- specific rounds, files, items.
-5. **Check previous retro action items** -- verify implemented vs documented.
-6. **Cross-PR systemic analysis is mandatory** -- check last 3-5 retros.
+## CRITICAL RULES (MUST follow)
+
+1. **MUST produce the FULL retro** — every mandatory section, every round.
+2. **MUST present findings interactively** — one at a time with options.
+3. **MUST save state after every finding decision** — compaction resilience.
+4. **MUST include a verify command** for every accepted action item.
+5. **MUST run final verification** before saving — verify commands, sections.
+6. **MUST display closure summary** listing all artifacts produced.
+7. Every observation MUST have a recommended action with estimated effort.
+8. Cross-PR systemic analysis is MUST for every retro.
+9. Follow CLAUDE.md Section 5 anti-patterns and Section 6 coding standards.
 
 ---
 
 ## STEP 0: DETECT MODE
 
-If **no PR# argument** is provided, run **Dashboard Mode** (below) instead of
-the single-PR retro (Steps 1-5).
-
-If a PR# is provided, skip to Step 1.
+- No PR# argument → **Dashboard Mode** (below)
+- PR# provided → **Step 1** (single-PR retro)
+- `--resume` flag → Read state file, skip to current finding
 
 ---
 
 ## DASHBOARD MODE: Missing Retros
-
-When invoked as `/pr-retro` with no arguments, show a dashboard of merged PRs
-that are missing retrospectives.
 
 ### D1. Get Merged PRs
 
@@ -66,54 +75,47 @@ gh pr list --state merged --limit 100 --json number,title,mergedAt,author
 
 ### D2. Get Existing Retros
 
-Grep `docs/AI_REVIEW_LEARNINGS_LOG.md` and `docs/archive/REVIEWS_*.md` for retro
-headers using a relaxed pattern:
-
-```
-/^###\s+PR\s+#(\d+)\s+Retrospective/
-```
-
-Collect all PR numbers that already have retros.
+Search `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`, AND
+`docs/reviews/retros.jsonl` for existing retro entries.
 
 ### D3. Filter Out Non-Candidates
 
-A PR needs a retro only if it had review activity. Skip PRs that:
+Skip PRs that:
 
-- Are **below the retro baseline** — PR number < 395. All PRs before #395 have
-  been retroed or explicitly excluded as of 2026-02-27.
-- Have **zero review entries** in `docs/AI_REVIEW_LEARNINGS_LOG.md`,
-  `docs/archive/REVIEWS_*.md`, or `docs/reviews/reviews.jsonl`
-- Are **automated/bot PRs** (author login contains `[bot]`, or title starts with
+- Are below the retro baseline (PR# < 395)
+- Have zero review entries in any source (markdown, JSONL, archive)
+- Are automated/bot PRs (author contains `[bot]`, title starts with
   `chore(deps)`, `build(deps)`, or `Bump `)
 
-### D4. Compute Missing Set
+### D4. Compute Missing Set + Round Counts
 
-Diff merged PRs against existing retros and non-candidates → missing retros.
+For each missing PR, count review rounds from all sources.
 
 ### D5. Display Dashboard
 
-Show a markdown table sorted by merge date (newest first):
+| PR# | Title | Merged | Author | Rounds |
+| --- | ----- | ------ | ------ | ------ |
 
-```
-| PR# | Title | Merged | Author |
-|-----|-------|--------|--------|
-| #NNN | ... | YYYY-MM-DD | ... |
-```
+**Action item summary:** "Across all retros: N action items total, M
+implemented, K unverified." (Source: retros.jsonl)
 
-If no PRs are missing retros, say: "All reviewed PRs have retros. Nice work!"
+### D6. PR Selection Prompt
 
-End with: **Run `/pr-retro <PR#>` to create a retro for any of these.**
+"Which PRs would you like to retro? Enter numbers, 'all', or 'none'. [default:
+all missing]"
 
-**Dashboard mode ends here — do NOT continue to Steps 1-5.**
+If multiple selected, run as batch retro (see REFERENCE.md: Batch Retro Scope).
+
+**Dashboard mode ends here — do NOT continue to Steps 1-7.**
 
 ---
 
-## STEP 1: GATHER REVIEW DATA
+## STEP 1: GATHER REVIEW DATA (MUST)
 
 ### 1.1 Find All Review Rounds
 
-Search `docs/AI_REVIEW_LEARNINGS_LOG.md` and `docs/archive/REVIEWS_*.md`. Read
-EVERY entry in full -- item-level detail is required for churn analysis.
+Search `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`, and
+`docs/reviews/reviews.jsonl`. Read EVERY entry in full.
 
 ### 1.2 Extract Per-Round Data
 
@@ -121,217 +123,229 @@ For each round: number, date, source, total items (by severity), fixed/deferred/
 rejected counts, pattern categories, files modified, new issues from prior
 fixes.
 
-### 1.3 Check Git History & TDMS
+### 1.3 Check Git History & TDMS (SHOULD)
 
 ```bash
 git log --oneline --grep="PR #${PR_NUM}" --grep="R[0-9]" --all-match
 grep "pr-review" docs/technical-debt/MASTER_DEBT.jsonl | grep "${PR_NUM}"
 ```
 
-### 1.4 Check Previous Retros (MANDATORY)
+### 1.4 Check Previous Retros (MUST)
 
-Read last 3-5 retros. For each action item: was it implemented? If not, how many
-avoidable rounds did the gap cause?
+Read last 3-5 retros. For each action item: run its stored verify command (if
+available). If no verify command, check documentation. Flag unimplemented items.
 
----
+### 1.5 Present Intermediate Summary
 
-## STEP 2: ANALYZE CHURN
-
-1. **Ping-pong detection** -- same file in consecutive rounds? Fix for X created
-   Y? Build detailed chain tables.
-2. **Scope creep** -- items in non-PR files? Pre-existing vs This-PR origin?
-3. **Recurring patterns** -- patterns in 3+ rounds = automation candidates
-4. **Rejection analysis** -- group by reason, check false-positive rate by
-   source
+"Data gathered: N rounds from M sources. X total items found."
 
 ---
 
-## STEP 3: PRODUCE ACTIONABLE OUTPUT (MANDATORY FORMAT)
+## STEP 1.5: WARM-UP SUMMARY (MUST)
 
-Every section is MANDATORY. Scale depth to match review cycle complexity.
+Present before proceeding to analysis:
 
-**Required sections:**
+```
+PR #NNN Retro: Ready
+Rounds found: N (sources: markdown, JSONL, git)
+Total review items: N | Patterns detected: N
+Previous retro action items: N checked (M verified, K failed)
+Estimated findings: ~N | Scope: [short/medium/long]
 
-1. **Review Cycle Summary** -- table with rounds, items, fixed, deferred, etc.
-2. **Per-Round Breakdown** -- ALL rounds with date, source, items, patterns
-3. **Ping-Pong Chains** -- detailed chain tables or "none found"
-4. **Rejection Analysis** -- categories, counts, accuracy calculation
-5. **Recurring Patterns** -- automation candidates with effort estimates
-6. **Previous Retro Action Item Audit** -- implemented? impact of gaps?
-7. **Cross-PR Systemic Analysis** -- persistent patterns across PRs
-8. **Skills/Templates to Update** -- FIX_TEMPLATES, pr-review, CODE_PATTERNS
-9. **Process Improvements** -- specific changes with evidence from this PR
-10. **Verdict** -- efficiency assessment, avoidable %, single highest-impact
-    change, trend comparison
-
----
-
-## STEP 4: SAVE TO LOG
-
-> Step 4.1 is the source of truth. Step 4.2 is the legacy view maintained during
-> transition. Both must be written.
-
-### 4.1 Write JSONL Record (source of truth)
-
-```bash
-cd scripts/reviews && npx tsc && node dist/write-retro-record.js --data '{"pr":PR_NUM,"date":"YYYY-MM-DD","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-retro","pr":PR_NUM,"tool":"write-retro-record.ts"},"session":null,"top_wins":["win1"],"top_misses":["miss1"],"process_changes":["change1"],"score":8.0,"metrics":{"total_findings":N,"fix_rate":0.8,"pattern_recurrence":N}}'
+Proceed to analysis? [Y/n]
 ```
 
-### 4.2 Append to Legacy Log (dual-write during transition)
+Save state. If user declines, exit gracefully.
 
-Append the **complete retrospective** to `docs/AI_REVIEW_LEARNINGS_LOG.md`. Then
-display the full retro to the user.
+---
 
-### 4.3 Sync
+## STEP 2: ANALYZE CHURN (MUST)
 
-Run `npm run reviews:sync -- --apply` to sync to JSONL.
+1. **Ping-pong detection** — same file in consecutive rounds? Fix for X created
+   Y? Build chain tables.
+2. **Scope creep** — items in non-PR files? Pre-existing vs this-PR origin?
+3. **Recurring patterns** — patterns in 3+ rounds = automation candidates.
+   Reference REFERENCE.md known churn patterns.
+4. **Rejection analysis** — group by reason, check false-positive rate by source
 
-### 4.4 Track Invocation
+Present intermediate summary: "Analysis complete: N findings identified across M
+categories. Ready for interactive walkthrough."
+
+---
+
+## STEP 3: INTERACTIVE FINDINGS WALKTHROUGH (MUST)
+
+> Read `.claude/skills/pr-retro/REFERENCE.md` for the finding presentation
+> template, evidence markers, and visual format.
+
+### Per-Finding Procedure (MUST follow)
+
+1. Present finding using REFERENCE.md template (one at a time)
+2. Mark evidence as `[Observed]` or `[Inferred]`
+3. Include verify command for each recommended action
+4. Include `Integration:` field for downstream file updates
+5. Collect user decision: accept, modify, reject, or defer
+6. Show progress: `[N/M findings complete | K action items]`
+7. **Save state after each decision** — non-negotiable
+
+### Finding Batching (>15 findings)
+
+If total findings exceed 15: group Low-severity findings into a summary batch.
+"These N low-severity findings are informational. Accept all as-is, or expand to
+review individually? [accept all / expand]" High and Medium findings MUST get
+individual treatment.
+
+### After All Findings
+
+Prompt: "Are there patterns or issues from this review cycle that the analysis
+didn't surface?" Add user-provided findings with user-assigned severity.
+
+---
+
+## STEP 3.5: VALIDATE COMPLETENESS (MUST)
+
+After all findings are walked through, compile the full retro markdown and
+display it to the user for review before saving.
+
+Verify ALL mandatory retro sections are covered by findings: Review Cycle
+Summary, Per-Round Breakdown, Ping-Pong Chains, Rejection Analysis, Recurring
+Patterns, Previous Retro Audit, Cross-PR Systemic Analysis, Skills/Templates to
+Update, Process Improvements, Verdict.
+
+Flag any missing sections. Generate stub findings for gaps.
+
+---
+
+## STEP 4: SAVE TO LOG (MUST)
+
+### 4.1 Build Compilation (MUST)
+
+Validate: `cd scripts/reviews && npx tsc 2>&1 | tail -5` If build fails, warn
+user and fall back to manual JSONL append.
+
+### 4.2 Write JSONL Record (MUST — source of truth)
+
+> See REFERENCE.md for field schema and CLI invocation.
+
+Include `process_feedback` field (populated in Step 8).
+
+### 4.3 Write Markdown (MUST — human view)
+
+Append the complete retrospective to `docs/AI_REVIEW_LEARNINGS_LOG.md`. JSONL is
+canonical; markdown is the permanent human-readable view.
+
+### 4.4 Sync + Track (MUST)
 
 ```bash
-node dist/write-invocation.js --data '{"skill":"pr-retro","type":"skill","duration_ms":null,"success":true,"error":null,"context":{"pr":PR_NUM,"trigger":"user-invoked"}}'
+npm run reviews:sync -- --apply
+node dist/write-invocation.js --data '...'
 ```
 
 ---
 
-## STEP 5: SYNC REVIEWER SUPPRESSIONS (MANDATORY)
+## STEP 5: SYNC REVIEWER SUPPRESSIONS (SHOULD)
 
-After producing the retro, sync any rejected items to reviewer configs:
+If any review items were rejected 2+ times with the same rationale:
 
-### 5.0 Gemini Styleguide Sync
+1. Check `.gemini/styleguide.md` "Do NOT Flag" — add if missing
+2. Mirror to `.qodo/pr-agent.toml` if not already there
 
-If any review items were **rejected 2+ times with the same rationale** (in this
-PR or across PRs):
-
-1. Check if the pattern is already in `.gemini/styleguide.md` under "Do NOT
-   Flag"
-2. If not, append it with:
-   - The suppressed pattern description
-   - Which PRs it was rejected in
-   - Why it's a false positive
-3. Mirror the same suppression to `.qodo/pr-agent.toml` if not already there
-
-This prevents both Gemini and Qodo from re-raising the same rejected finding.
+Skip if no rejections in this retro.
 
 ---
 
-## STEP 6: ENFORCE ACTION ITEM TRACKING (MANDATORY)
+## STEP 6: ACTION ITEM TRACKING (MUST)
 
-### 6.1 Create TDMS Entries
+### 6.1 Approval Gate (MUST)
 
-Every action item not immediately implemented MUST get a DEBT entry via
-`/add-debt` with severity S2 (or S1 if cross-PR systemic), category
-`engineering-productivity`, source `review:pr-retro-<PR#>`.
+Present all proposed action items as a batch before creating TDMS entries:
 
-### 6.2 Flag Repeat Offenders
+| #   | Action | Severity | Category | Effort | Verify Command |
+| --- | ------ | -------- | -------- | ------ | -------------- |
+
+User MAY: accept all, modify severity, reject individual items.
+
+### 6.2 Create TDMS Entries
+
+Every approved action item MUST get a DEBT entry via `/add-debt` with severity
+S2 (or S1 if cross-PR systemic), category `engineering-productivity`, source
+`review:pr-retro-<PR#>`. Store verify command in entry.
+
+### 6.3 Flag Repeat Offenders
 
 Same action item in 2+ retros without implementation: escalate to S1, bold
-warning **"BLOCKING -- recommended N times, never implemented"**, present as
-blocking issue.
+**"BLOCKING — recommended N times, never implemented"**.
 
-### 6.3 Verify Previous Tracking
+---
 
-```bash
-grep "pr-retro" docs/technical-debt/MASTER_DEBT.jsonl
+## STEP 7: FINAL VERIFICATION (MUST)
+
+> Read `.claude/skills/pr-retro/REFERENCE.md` for full verification criteria and
+> report format.
+
+Audits BOTH the retro output AND the skill process itself:
+
+1. **Process compliance** — was every finding presented interactively? Were all
+   decisions logged to state file? Were verify commands real and runnable?
+2. **Section completeness** — are all 9 mandatory retro sections covered?
+3. **Action item verification** — run stored verify commands against codebase.
+   Flag `[NOT IMPLEMENTED]` items for user resolution (implement now / defer /
+   reject).
+4. **Data integrity** — JSONL parseable, markdown appended, sync succeeded
+5. **Cross-PR consistency** (batch only) — individual records, no duplicates
+
+Present verification report to user. Resolve any failures interactively before
+proceeding to Step 8.
+
+---
+
+## STEP 8: LEARNING LOOP + CLOSURE (MUST)
+
+### Learning Loop
+
+"Retro on the retro: Was this analysis useful? Any patterns the skill should
+learn for next time?" Capture response in `process_feedback` JSONL field.
+
+### Closure Summary
+
+```
+PR #NNN Retro Complete
+Findings reviewed: N | Action items: M (K with TDMS entries)
+Artifacts saved:
+  - retros.jsonl: 1 record
+  - AI_REVIEW_LEARNINGS_LOG.md: retro appended
+  - .qodo/pr-agent.toml: N suppressions
+  - .gemini/styleguide.md: N suppressions
+Verification: M commands stored | K passed | J flagged
+Next: Run /pr-retro to check for more missing retros
 ```
 
-Create retroactive DEBT entries for untracked action items.
+---
+
+## COMPACTION RESILIENCE (MUST for interactive sessions)
+
+> See REFERENCE.md for state file schema.
+
+- **State file:** `.claude/state/task-pr-retro.state.json`
+- **Update:** After PR selection, each finding decision, action item approval
+- **Resume:** `/pr-retro <PR#> --resume` reads state, skips completed findings
+- **Graceful exit:** User can say "pause" at any finding prompt — saves state,
+  prints progress summary, exits cleanly
 
 ---
 
-## KNOWN CHURN PATTERNS (Reference)
+## GUARD RAILS
 
-Patterns 1-5 (CC, symlink, JSONL noise, pattern checker, propagation) are
-archived. See [ARCHIVE.md](ARCHIVE.md).
-
-### Pattern 6: Filesystem Guard Lifecycle (realpathSync Edge Cases)
-
-- **PRs:** #374 (4 rounds), #370 (3 rounds)
-- **Fix:** Verify full lifecycle matrix before committing guard functions
-- **Templates:** FIX_TEMPLATES #31, pr-review Step 0.5
-
-### Pattern 7: Path Containment Direction Flip-Flop
-
-- **PRs:** #374 (4 rounds R1-R4)
-- **Fix:** Answer decision matrix (directions, separator, case, depth) before
-  coding
-- **Templates:** FIX_TEMPLATES #33, #9
-
-### Pattern 8: Incremental Algorithm Hardening (**BLOCKING**)
-
-- **PRs:** #379 (7 rounds, 4 avoidable ~57%), #394 (12 rounds — CC extraction
-  appeared in 5 rounds; `isInsideTryBlock` parent traversal appeared in PRs
-  #374, #375, #388, #394)
-- **Fix:** Use FIX_TEMPLATE #42 (visitChild CC extraction) IMMEDIATELY when any
-  ESLint rule `create()` has CC >10. Do not wait for SonarCloud to flag it.
-- **Templates:** FIX_TEMPLATES #34, #42
-- **Status:** BLOCKING — 4th occurrence across PRs. Apply template proactively.
-
-### Pattern 9: Dual-File JSONL Sync Fragility
-
-- **PRs:** #383 (2 rounds), Sessions #134, #138
-- **Fix:** Atomic dual-JSONL write pattern with rollback
-- **Templates:** FIX_TEMPLATES #36
-
-### Pattern 10: Stale Reviewer Comments (Ghost Feedback)
-
-- **PRs:** #388 R7 (3 items)
-- **Fix:** Compare reviewer's commit against HEAD before investigating. If
-  stale, reject all items as batch.
-
-### Pattern 11: Cross-Platform Path Normalization
-
-- **PRs:** #388 (R5-R6), #391 (R1-R3), #392 (R3-R4)
-- **Fix:** After fixing any path handling, grep the same file for ALL
-  string-based path comparisons (includes, endsWith, has, startsWith) and verify
-  each uses POSIX-normalized paths.
-- **Templates:** FIX_TEMPLATES #40, pr-review Step 0.5 #14
-
-### Pattern 12: ChainExpression Propagation
-
-- **PRs:** #394 (R4→R5→R6 — ChainExpression support added to one AST utility,
-  then discovered missing in 2 more across subsequent rounds)
-- **Fix:** After adding ChainExpression support to one AST utility, audit ALL
-  AST utilities for the same gap:
-  ```bash
-  grep -rn 'node\.type\|callee\.type' eslint-plugin-sonash/ --include="*.js" | grep -v 'unwrapNode\|ChainExpression'
-  ```
-- **Templates:** FIX_TEMPLATES #43
-
-### Pattern 13: Fix-One-Audit-All (Generalized)
-
-- **PRs:** #388 (path normalization 3×), #394 (ChainExpression 3×, CC extraction
-  5×)
-- **Fix:** After fixing ANY pattern in one location, grep the codebase for all
-  other instances of the same pattern gap and fix them in the same round. This
-  is the generalized version of Patterns 5, 11, and 12.
-- **Process:** Before committing a fix, run a propagation grep:
-  1. Identify the pattern you just fixed (e.g., missing unwrapNode call)
-  2. Grep for all files that have the same unpatched pattern
-  3. Fix all instances in the same commit
-- **Templates:** N/A (process pattern, not code template)
+- **No review data:** After Step 1, if zero rounds found → "PR #X has no
+  recorded review activity. Skip? [Y/n]"
+- **Data conflicts:** If markdown and JSONL disagree on round count → flag with
+  both values, ask user which source is authoritative
+- **Large retros (>15 findings):** Low-severity findings batched (Step 3)
+- **Save-and-resume:** "pause" at any prompt saves state and exits
 
 ---
 
-## COMPLIANCE MECHANISMS
-
-### Self-Validation Checklist
-
-Before saving, verify ALL mandatory sections present:
-
-- [ ] Review Cycle Summary + Per-Round Breakdown (all rounds)
-- [ ] Ping-Pong Chains (tables or "none found")
-- [ ] Rejection Analysis with accuracy calculation
-- [ ] Recurring Patterns with automation candidates
-- [ ] Previous Retro Audit + Cross-PR Systemic Analysis
-- [ ] Skills/Templates to Update + Process Improvements
-- [ ] Verdict with 4 required points
-- [ ] TDMS entries for action items >5 min
-- [ ] Gemini/Qodo suppressions synced for rejected items (Step 5.0)
-- [ ] Full retro displayed to user
-- [ ] `npm run reviews:sync -- --apply`
-
-### Cross-Skill Integration
+## CROSS-SKILL INTEGRATION
 
 | Finding Type             | Action             | Target                        |
 | ------------------------ | ------------------ | ----------------------------- |
@@ -342,26 +356,19 @@ Before saving, verify ALL mandatory sections present:
 | Recurring noise (Gemini) | Add to Do NOT Flag | `.gemini/styleguide.md`       |
 | Systemic issue           | Create DEBT        | TDMS via `/add-debt`          |
 
-### Session Integration Points
-
-- `/session-end` -- verify TDMS entries for action items
-- `/session-begin` -- check open retro DEBT items
-- `/pr-review` Step 0.5 -- check for recommended pre-push checks
+**Session integration:** `/session-end` verifies TDMS entries. `/session-begin`
+checks open retro DEBT items. `/pr-review` checks pre-push recommendations.
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                                                                                                      |
-| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                              |
-| 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items. Update cross-skill integration table. Renumber Steps 5→6.               |
-| 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter. All earlier PRs retroed or excluded.                                      |
-| 3.0     | 2026-02-26 | Upgrade Pattern 8 to BLOCKING. Add Patterns 12-13 (ChainExpression propagation, fix-one-audit-all). Source: PR #393/#394 retros. |
-| 2.9     | 2026-02-26 | Add dashboard mode: `/pr-retro` (no args) shows missing retros.                                                                  |
-| 2.8     | 2026-02-25 | Add Pattern 11 (cross-platform path normalization). Source: PR #392 retro.                                                       |
-| 2.7     | 2026-02-24 | Trim to <500 lines: archive patterns 1-5 to ARCHIVE.md                                                                           |
-| 2.6     | 2026-02-24 | Add Pattern 10 (stale reviewer comments). Source: PR #388.                                                                       |
-| 2.5     | 2026-02-22 | Add Pattern 9 (dual-file JSONL sync). Source: PR #383.                                                                           |
-| 2.4     | 2026-02-19 | Add Pattern 8 (algorithm hardening). Source: PR #379.                                                                            |
-| 2.3     | 2026-02-18 | Add Patterns 6-7. Source: PR #374.                                                                                               |
+| Version | Date       | Description                                                                                                                                    |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch retros, verification protocol, compaction resilience, routing. Source: skill-audit 37 decisions. |
+| 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                                            |
+| 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items                                                                                        |
+| 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter                                                                                          |
+| 3.0     | 2026-02-26 | Add Patterns 12-13. Source: PR #393/#394 retros.                                                                                               |
+
+> Older version history archived in [ARCHIVE.md](ARCHIVE.md).

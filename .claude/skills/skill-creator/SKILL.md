@@ -142,10 +142,23 @@ Analyze each concrete example to identify reusable resources:
 **Also plan for:**
 
 - **Integration surface**: What skills does this neighbor? What's the handoff?
+- **Operational dependencies** (SC-1): What hooks feed data to this skill? What
+  npm scripts does it invoke? What data files does it read/write? Verify every
+  data file has both a writer and a reader (SC-5) — orphaned writers/readers are
+  bugs.
 - **Guard rails**: What are the common failure modes? How should the skill
-  handle them?
-- **Compaction resilience**: If the skill runs long, what state needs to persist
-  to survive context compaction?
+  handle them? Design specific responses: scope explosion detection (when to
+  bail out), graceful pause/resume (save state + exit cleanly), input validation
+  (what if the target doesn't exist or is malformed?).
+- **Compaction resilience** (MUST for ALL skills, SC-2): Define what state needs
+  to persist to survive context compaction. Define the state file path, update
+  frequency, recovery procedure, and what happens to the file after completion.
+  This is not conditional on "runs long" — any skill can be interrupted.
+- **Interactive design** (if skill involves multi-step user interaction): Plan
+  the decision collection format (accept/modify/reject), delegation handling
+  (what if user says "you decide"?), approval gates before irreversible actions,
+  and revision mechanisms (can earlier decisions be changed with new context?).
+  MUST recommend with rationale at every decision point (SC-4).
 
 ### Step 3: Initializing the Skill
 
@@ -189,11 +202,19 @@ accomplish X, do Y" not "You should do X."
 
 - [ ] Purpose (2-3 sentences)
 - [ ] When to Use / When NOT to Use (with named alternatives)
+- [ ] What This Skill Does NOT Do (SC-3: for commonly-confused scope)
 - [ ] MUST/SHOULD/MAY applied to all instructions
 - [ ] Error handling for the skill's domain
 - [ ] Integration guidance (what comes before/after this skill)
-- [ ] If multi-step: progress indicators, warm-up, closure signal
+- [ ] Effort estimate for users: expected duration or item count range
+- [ ] Self-description accuracy: step counts, claims match actual behavior
+- [ ] If multi-step: progress indicators, warm-up, closure signal. Examples:
+  - Phase marker: `======== PHASE 3: CROSSCHECK ========`
+  - Progress: "Category 3 of 10 complete. 18 decisions so far."
+  - Closure: artifact list + next steps
 - [ ] If long-running: compaction resilience (state persistence)
+- [ ] If skill produces artifacts or makes changes: self-verification phase that
+      re-reads output and confirms decisions were implemented
 - [ ] Project conventions referenced (CLAUDE.md), not duplicated
 - [ ] Critical rules repeated at point-of-use
 
@@ -253,7 +274,9 @@ After testing the skill on real tasks, capture what worked and what didn't.
 
 ## Version History
 
-| Version | Date       | Description                                          |
-| ------- | ---------- | ---------------------------------------------------- |
-| 1.0     | 2026-02-25 | Initial implementation                               |
-| 2.0     | 2026-02-28 | Add attention management, behavioral quality, guards |
+| Version | Date       | Description                                                        |
+| ------- | ---------- | ------------------------------------------------------------------ |
+| 1.0     | 2026-02-25 | Initial implementation                                             |
+| 2.0     | 2026-02-28 | Add attention management, behavioral quality, guards               |
+| 2.2     | 2026-03-07 | SC-1..5: operational deps, compaction MUST, scope, recommendations |
+| 2.1     | 2026-03-06 | Add interactive design, verification phase, UX                     |

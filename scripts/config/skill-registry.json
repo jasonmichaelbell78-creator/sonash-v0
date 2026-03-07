@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-02-26T12:51:11.204Z",
-  "skillCount": 59,
+  "generatedAt": "2026-03-07T03:58:35.013Z",
+  "skillCount": 61,
   "skills": [
     {
       "name": "_shared",
@@ -10,7 +10,7 @@
       "name": "add-debt",
       "source": ".claude/skills",
       "displayName": "add-debt",
-      "description": "description: >-"
+      "description": "Add technical debt items to MASTER_DEBT.jsonl. Supports two workflows:"
     },
     {
       "name": "alerts",
@@ -164,6 +164,11 @@
       "description": "description: |"
     },
     {
+      "name": "ecosystem-health",
+      "source": ".claude/skills",
+      "description": "<!-- prettier-ignore-start -->"
+    },
+    {
       "name": "excel-analysis",
       "source": ".claude/skills",
       "displayName": "Excel Analysis",
@@ -221,13 +226,13 @@
       "name": "pr-retro",
       "source": ".claude/skills",
       "displayName": "pr-retro",
-      "description": "PR Review Retrospective -- actionable analysis of a PR's review cycle"
+      "description": "PR Review Retrospective -- actionable analysis of a PR's review cycle with"
     },
     {
       "name": "pr-review",
       "source": ".claude/skills",
-      "description": "PR Code Review Processor",
-      "displayName": "pr-review"
+      "displayName": "pr-review",
+      "description": "Process external PR code review feedback (CodeRabbit, Qodo, SonarCloud,"
     },
     {
       "name": "pre-commit-fixer",
@@ -262,8 +267,14 @@
     {
       "name": "session-end",
       "source": ".claude/skills",
-      "description": "Complete verification steps before ending the session",
-      "displayName": "session-end"
+      "displayName": "session-end",
+      "description": "Session closure pipeline — context preservation, compliance review, metrics"
+    },
+    {
+      "name": "skill-audit",
+      "source": ".claude/skills",
+      "displayName": "skill-audit",
+      "description": "Interactive behavioral quality audit for individual skills. Evaluates against"
     },
     {
       "name": "skill-creator",
@@ -287,7 +298,7 @@
       "name": "sprint",
       "source": ".claude/skills",
       "displayName": "sprint",
-      "description": "description: >-"
+      "description": "TDMS Sprint workflow automation. Dashboard, team-based parallel execution,"
     },
     {
       "name": "system-test",

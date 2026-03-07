@@ -1,0 +1,443 @@
+{
+  "description": "Complete fix list for alerts skill audit — all SKILL.md and script fixes",
+  "skill_md_fixes": {
+    "cat1": [
+      {
+        "id": "Cat1-A",
+        "description": "Clarify 'intelligent' in overview — add: Intelligence = trend detection, cross-category grouping, suppression learning, and self-audit of checker coverage"
+      },
+      {
+        "id": "Cat1-B",
+        "description": "Move trigger phrases from frontmatter description into When to Use as bullet points"
+      },
+      {
+        "id": "Cat1-C",
+        "description": "Add note: Health = project/codebase health, not infrastructure/server health"
+      },
+      {
+        "id": "Cat1-OPP1A",
+        "description": "Add What This Skill Does NOT Do — not infra monitoring, uptime, CI status"
+      }
+    ],
+    "cat2": [
+      {
+        "id": "Cat2-A",
+        "description": "Add warm-up before Phase 1 — mode, expected runtime, what to expect"
+      },
+      { "id": "Cat2-B", "description": "Add phase transition markers between all 7 phases" },
+      { "id": "Cat2-C", "description": "Keep Self-Audit at Phase 6 (no change)" },
+      {
+        "id": "Cat2-D",
+        "description": "Add graceful skip for zero alerts — show dashboard, skip Phases 3-5, go to Phase 6"
+      },
+      {
+        "id": "Cat2-E",
+        "description": "Add mid-workflow escape hatch — after every 10 alerts offer skip to summary, remaining default to Defer"
+      },
+      {
+        "id": "Cat2-F",
+        "description": "Add compaction resilience — persist decisions to session JSONL after each decision, read on resume"
+      }
+    ],
+    "cat3": [
+      {
+        "id": "Cat3-A",
+        "description": "Add alert object schema: {severity, category, message, details, trend, suggested_action}"
+      },
+      {
+        "id": "Cat3-B",
+        "description": "Add done-when gates: Phase 3 done when every alert decided, Phase 5 done when all fixes executed, Phase 7 done when files written and closure presented"
+      },
+      {
+        "id": "Cat3-C",
+        "description": "Add checker failure handling: no_data or error → surface as INFO alert in Checker Health category, Phase 6 MUST flag no_data as blind spots"
+      },
+      { "id": "Cat3-D", "description": "Add completion artifact summary at Phase 7 end" },
+      {
+        "id": "Cat3-E",
+        "description": "Specify dashboard format: cross-reference Benchmarks section, sort categories by score ascending (worst first)"
+      },
+      {
+        "id": "Cat3-F",
+        "description": "Define session JSONL record format: {timestamp, alert_id, category, severity, message, decision, reason}"
+      }
+    ],
+    "cat4": [
+      {
+        "id": "Cat4-A",
+        "description": "Add recommendation per alert: ERROR→Fix Now, WARNING declining→Fix Now, WARNING stable→Defer, INFO→Acknowledge"
+      },
+      {
+        "id": "Cat4-B",
+        "description": "Add delegation protocol: 'you decide' → apply all recommendations, record as delegated-accept, show summary"
+      },
+      {
+        "id": "Cat4-C",
+        "description": "Cross-reference session JSONL format from Phase 3 to Output section"
+      },
+      {
+        "id": "Cat4-D",
+        "description": "Add decision revision gate at Phase 4: Review all decisions, Revise any? before executing deferred"
+      },
+      {
+        "id": "Cat4-E",
+        "description": "Add alert grouping: 3+ same category+severity → group, show first example, Apply same to all?"
+      }
+    ],
+    "cat5": [
+      {
+        "id": "Cat5-A",
+        "description": "Expand Integration section: neighbors (audit-health, ecosystem-health, session-begin), input, output artifacts, downstream skill routing"
+      },
+      {
+        "id": "Cat5-B",
+        "description": "Add routing guide: quick health→/alerts, meta-audit→/audit-health, ecosystem→/ecosystem-health, deep code→/audit-code"
+      },
+      {
+        "id": "Cat5-C",
+        "description": "Document top script dependencies (npm scripts, data source files, hooks that feed data)"
+      },
+      {
+        "id": "Cat5-D",
+        "description": "Add invocation tracking at Phase 7 (value depends on review pipeline reading it)"
+      },
+      {
+        "id": "Cat5-E",
+        "description": "Add skill-routing in suggested actions: map alert actions to specific skills"
+      },
+      {
+        "id": "Cat5-OPP5A",
+        "description": "Context-aware mode: --limited from session-begin, ask mode if standalone"
+      }
+    ],
+    "cat6": [
+      {
+        "id": "Cat6-A",
+        "description": "Add script failure handling: non-zero exit without JSON → report error, suggest diagnostics, don't proceed to Phase 2"
+      },
+      {
+        "id": "Cat6-B",
+        "description": "Add partial output recovery: JSON parse fails → show raw output first 20 lines, ask debug or skip"
+      },
+      {
+        "id": "Cat6-C",
+        "description": "Add suppression ratio guard: >50% suppressed → WARNING in Phase 6"
+      },
+      {
+        "id": "Cat6-D",
+        "description": "Add scope escalation guard: fix >5min or >3 files → pause, ask continue or create task"
+      },
+      {
+        "id": "Cat6-E",
+        "description": "Add script timeout guidance: limited ~15-30s, full ~30-60s, kill after 120s"
+      },
+      {
+        "id": "Cat6-F",
+        "description": "Add baseline staleness check: >7 days old → note in dashboard, offer reset"
+      }
+    ],
+    "cat7": [
+      {
+        "id": "Cat7-A",
+        "description": "Add MUST/SHOULD/MAY to all instructions throughout SKILL.md"
+      },
+      {
+        "id": "Cat7-B",
+        "description": "Add Critical Rules section front-loaded after frontmatter: 1. Run script first 2. Present every alert 3. Recommend per alert 4. Log every decision 5. Never present score without running checkers"
+      },
+      {
+        "id": "Cat7-C",
+        "description": "Move scoring formula to Phase 2 with cross-reference: Start at 100, -30/error, -10/warning, grades A-F"
+      },
+      {
+        "id": "Cat7-D",
+        "description": "Expand Phase 3 with context card format example showing severity badge, trend, benchmark, suggested action, options"
+      }
+    ],
+    "cat8": [
+      {
+        "id": "Cat8-A",
+        "description": "Replace generic When NOT to Use with named alternatives: domain audits, /audit-health, /ecosystem-health, skills:validate"
+      },
+      { "id": "Cat8-B", "description": "Add routing guide after When NOT to Use" },
+      {
+        "id": "Cat8-C",
+        "description": "Add duplicate-run detection: check session JSONL timestamp, show previous results, offer re-run"
+      },
+      {
+        "id": "Cat8-D",
+        "description": "Add inline-fix vs skill-handoff guidance: <2min fix inline, >2min defer and suggest skill"
+      }
+    ],
+    "cat9": [
+      {
+        "id": "Cat9-A",
+        "description": "Add CLAUDE.md reference for inline fixes: follow project conventions in Section 6"
+      },
+      {
+        "id": "Cat9-B",
+        "description": "Add learning loop: feedback about checker quality → alerts-history.jsonl as feedback record, consumed by Phase 6"
+      },
+      {
+        "id": "Cat9-C",
+        "description": "Preserve trend data: extract summary stats to .claude/state/alerts-history.jsonl before cleanup, never cleaned up"
+      },
+      {
+        "id": "Cat9-D",
+        "description": "Surface cross-session trends in Phase 2 dashboard from alerts-history.jsonl: last 5 sessions sparkline"
+      },
+      {
+        "id": "Cat9-E",
+        "description": "Persist suppression rationale: reason field MUST be in suppression record, shown during Phase 6 stale review"
+      }
+    ],
+    "cat10": [
+      { "id": "Cat10-A", "description": "Add warm-up (point-of-use of Cat2-A)" },
+      {
+        "id": "Cat10-B",
+        "description": "Add progress indicators in Phase 3: Alert N of M (X fixed, Y deferred, Z ignored)"
+      },
+      {
+        "id": "Cat10-C",
+        "description": "Dashboard table format: Category | Score | Rating | Alerts | Trend, sort worst first"
+      },
+      {
+        "id": "Cat10-D",
+        "description": "Closure summary format: Health before→after, fixed/deferred/ignored/suppressed counts, session log path"
+      },
+      {
+        "id": "Cat10-E",
+        "description": "Visual formatting guidance per phase: Phase 2=table, Phase 3=card, Phase 4=summary block, Phase 7=closure block, --- between phases"
+      },
+      { "id": "Cat10-OPP10A", "description": "REJECTED: No emoji per project convention" }
+    ]
+  },
+  "script_fixes": {
+    "critical": [
+      {
+        "id": "OD-A",
+        "description": "Fix findProjectRoot() in run-alerts.js — .claude/package.json breaks root detection. Fix: require CLAUDE.md as root marker. Affects ALL 32 fs.readFileSync paths.",
+        "file": "run-alerts.js",
+        "line": "42-56"
+      }
+    ],
+    "high": [
+      {
+        "id": "OD-B",
+        "description": "Add missing weights for 7 categories in computeHealthScore(): hook-warnings, roadmap, consolidation, roadmap-health, debt-resolution, session-activity, commit-activity",
+        "file": "run-alerts.js",
+        "line": "3490-3524"
+      },
+      {
+        "id": "OD-C",
+        "description": "Add consistent no_data handling to all checkers that silently return: checkDebtMetrics(1036), checkLearningEffectiveness(1198), checkTestResults(1681), checkReviewQuality, checkConsolidation, checkVelocity, checkSessionActivity, checkCommitActivity",
+        "file": "run-alerts.js",
+        "lines": "various"
+      },
+      {
+        "id": "OD-H",
+        "description": "Add measuredPct to healthScore output so coverage is visible: { grade, score, measuredPct, breakdown }",
+        "file": "run-alerts.js",
+        "line": "3560"
+      }
+    ],
+    "medium": [
+      {
+        "id": "OD-D",
+        "description": "Add addContext call to checkReviewQuality with benchmarks/ratings/totals",
+        "file": "run-alerts.js",
+        "line": "1790+"
+      },
+      {
+        "id": "OD-E",
+        "description": "Add action field to 3 info alerts missing it: checkDebtMetrics(1126), checkPatternHotspots(2713), checkLearningEffectiveness info",
+        "file": "run-alerts.js",
+        "lines": "various"
+      },
+      {
+        "id": "OD-F",
+        "description": "Add type-check npm script to package.json: tsc --noEmit",
+        "file": "package.json"
+      }
+    ],
+    "data_source_investigation": {
+      "status": "COMPLETE",
+      "findings": [
+        {
+          "id": "DS-1",
+          "file": ".context-tracking-state.json",
+          "expected_path": ".claude/hooks/.context-tracking-state.json",
+          "root_cause": "post-read-handler.js line 81-83 rejects absolute paths (blanks filePath), but Claude Code passes absolute paths via $ARGUMENTS. Line 125 then returns early on empty filePath, skipping all context tracking.",
+          "fix": "Accept absolute paths in post-read-handler.js — normalize to relative for storage but don't reject. Change lines 81-83 to convert absolute paths to project-relative instead of blanking.",
+          "severity": "high",
+          "writer": ".claude/hooks/post-read-handler.js:135",
+          "reader": "run-alerts.js checkContextTracking (if it existed), session-end summary"
+        },
+        {
+          "id": "DS-2",
+          "file": ".session-agents.json",
+          "expected_path": ".claude/hooks/.session-agents.json",
+          "root_cause": "NOT A BUG. File only created when Agent/Task tool is invoked. Hook matcher is ^(task|Task|TASK)$. This session had no agent invocations, so file correctly doesn't exist.",
+          "fix": "No fix needed — document that this file is session-scoped and only exists when agents are used.",
+          "severity": "info"
+        },
+        {
+          "id": "DS-3",
+          "file": "agent-invocations.jsonl",
+          "expected_path": ".claude/state/agent-invocations.jsonl",
+          "root_cause": "Same as DS-2 — written by track-agent-invocation.js:201 only when Agent/Task tool fires. No agents invoked = no file.",
+          "fix": "No fix needed — document that this is append-only and only populated when agents run.",
+          "severity": "info"
+        },
+        {
+          "id": "DS-4",
+          "file": "warned-files.json",
+          "expected_path": ".claude/state/warned-files.json",
+          "root_cause": "DEAD CODE. saveWarnedFiles() defined at scripts/check-pattern-compliance.js:140 but NEVER CALLED anywhere in the file. Function exists but nothing invokes it.",
+          "fix": "Add saveWarnedFiles() call at the end of the compliance check — after collecting warned files, actually persist them.",
+          "severity": "high",
+          "writer": "scripts/check-pattern-compliance.js:140 (dead)",
+          "reader": "run-alerts.js checkPatternCompliance"
+        },
+        {
+          "id": "DS-5",
+          "file": "commit-failures.jsonl",
+          "expected_path": ".claude/state/commit-failures.jsonl",
+          "root_cause": "NO WRITER EXISTS. run-alerts.js:2238 reads this file, hook-analytics.js:215 reads it, but no script or hook anywhere writes to it. The pre-commit hook doesn't log failures to JSONL.",
+          "fix": "Add commit failure logging to the pre-commit hook pipeline (block-push-to-main.js or a new commit-tracker hook) that appends failed commit details to commit-failures.jsonl.",
+          "severity": "high",
+          "writer": "NONE — no writer exists",
+          "reader": "run-alerts.js:2238 checkCommitHealth, hook-analytics.js:215"
+        },
+        {
+          "id": "DS-6",
+          "file": "session-activity.jsonl",
+          "expected_path": ".claude/session-activity.jsonl",
+          "root_cause": "NEVER CALLED AUTOMATICALLY. scripts/log-session-activity.js exists and works, npm scripts session:log and session:summary exist, but nothing in hooks or session-begin/end actually calls them. The script is standalone CLI-only.",
+          "fix": "Add session:log calls to session-start hook (--event=session_start) and session-end skill (--event=session_end). Optionally add to post-write hook for file_write events.",
+          "severity": "high",
+          "writer": "scripts/log-session-activity.js (exists but never called automatically)",
+          "reader": "run-alerts.js:2002 checkSessionActivity"
+        },
+        {
+          "id": "DS-7",
+          "file": "velocity-log.jsonl",
+          "expected_path": ".claude/state/velocity-log.jsonl",
+          "root_cause": "WORKS CORRECTLY. Written by session-end skill. File exists with data.",
+          "fix": "No fix needed.",
+          "severity": "info"
+        }
+      ],
+      "summary": "3 no-fix-needed (expected behavior), 4 real bugs: DS-1 (absolute path rejection kills context tracking), DS-4 (dead code never persists warned files), DS-5 (no writer for commit-failures), DS-6 (session-activity logger never called automatically)"
+    }
+  },
+  "operational_dependency_checker_definition": {
+    "status": "AGREED",
+    "checks": [
+      {
+        "id": "OD-CHECK-A",
+        "name": "Scripts",
+        "level": "MUST",
+        "description": "All scripts the skill invokes — exist, run without error, paths resolve correctly"
+      },
+      {
+        "id": "OD-CHECK-B",
+        "name": "Hooks",
+        "level": "SHOULD",
+        "description": "All hooks that feed data to the skill — configured, actually write output, no path mismatches"
+      },
+      {
+        "id": "OD-CHECK-C",
+        "name": "Data files",
+        "level": "MUST",
+        "description": "Every data file read has a writer, every file written has a reader (USER-REQ-3)"
+      },
+      {
+        "id": "OD-CHECK-D",
+        "name": "npm scripts",
+        "level": "SHOULD",
+        "description": "All npm run commands referenced in SKILL.md or scripts — exist in package.json, underlying script reachable"
+      },
+      {
+        "id": "OD-CHECK-E",
+        "name": "Docs",
+        "level": "SHOULD",
+        "description": "All documentation referenced in SKILL.md or companions — file exists, section/anchor still present"
+      },
+      {
+        "id": "OD-CHECK-F",
+        "name": "Function health",
+        "level": "MAY (MUST if >3 functions)",
+        "description": "Internal functions produce output or set no_data, handle missing input gracefully, no silent return paths"
+      },
+      {
+        "id": "OD-CHECK-G",
+        "name": "State files",
+        "level": "MUST (for ALL skills)",
+        "description": "State file schema matches read/write usage, path writable, no orphaned fields. Compaction resilience is project-wide requirement."
+      }
+    ],
+    "phase_3_only": [
+      {
+        "id": "OD-CHECK-H",
+        "name": "Adjacent skill contracts",
+        "description": "Referenced skills exist, interfaces match assumptions, handoff protocol consistent on both sides — checked in Phase 3 crosscheck"
+      }
+    ]
+  },
+  "crosscheck_fixes": {
+    "skill_creator": [
+      {
+        "id": "SC-1",
+        "description": "Add operational dependencies guidance to Step 2 planning — hooks, data pipelines, npm scripts, writer/reader verification"
+      },
+      {
+        "id": "SC-2",
+        "description": "Update Step 2: compaction resilience is MUST for ALL skills, not conditional on 'runs long'"
+      },
+      {
+        "id": "SC-3",
+        "description": "Add 'What This Skill Does NOT Do' to content checklist for commonly-confused scope"
+      },
+      {
+        "id": "SC-4",
+        "description": "Add to content checklist: if interactive, recommend with rationale at every decision point"
+      },
+      {
+        "id": "SC-5",
+        "description": "Add to Step 2 or Step 5: verify writer/reader pairs for all data files"
+      }
+    ],
+    "skill_audit": [
+      {
+        "id": "SA-1",
+        "description": "Add Phase 2.5 Operational Dependency Check between Category Audit and Crosscheck — checks A-G"
+      },
+      {
+        "id": "SA-2",
+        "description": "Covered by SA-1 — data pipeline verification lives in new phase"
+      },
+      {
+        "id": "SA-3",
+        "description": "Add to operational dependency phase: MUST investigate root causes, not just note missing files"
+      },
+      {
+        "id": "SA-4",
+        "description": "Add OD-CHECK-H (adjacent skill contract verification) explicitly to Phase 3"
+      }
+    ],
+    "adjacent_skills": "0 contract mismatches — audit-health, ecosystem-health, audit-code, session-begin all exist and interfaces match",
+    "ecosystem_impact": [
+      "alerts SKILL.md — full rewrite (51 decisions)",
+      "run-alerts.js — OD-A through OD-H (8 fixes)",
+      "post-read-handler.js — DS-1 absolute path fix",
+      "check-pattern-compliance.js — DS-4 wire saveWarnedFiles()",
+      "hooks — DS-5 add commit failure logging",
+      "session-start.js + session-end — DS-6 wire log-session-activity.js",
+      "skill-creator SKILL.md — SC-1,SC-2,SC-3,SC-5 (4 gaps)",
+      "skill-audit SKILL.md + REFERENCE.md — SA-1,SA-3,SA-4 (3 gaps)",
+      "package.json — OD-F add type-check script"
+    ]
+  },
+  "updated": "2026-03-06T21:45:00Z"
+}

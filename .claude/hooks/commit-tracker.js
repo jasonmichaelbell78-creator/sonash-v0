@@ -154,6 +154,35 @@ function appendCommitLog(entry) {
 }
 
 /**
+ * DS-5: Log commit failure to commit-failures.jsonl
+ * Path computed lazily to avoid evaluation-order issues with projectDir.
+ */
+function logCommitFailure(command) {
+  try {
+    const commitFailuresLog = path.join(projectDir, ".claude", "state", "commit-failures.jsonl");
+    const dir = path.dirname(commitFailuresLog);
+    fs.mkdirSync(dir, { recursive: true });
+    if (!isSafeToWrite(commitFailuresLog)) return;
+    const entry = {
+      timestamp: new Date().toISOString(),
+      command: sanitizeInput((command || "").slice(0, 200)).replace(
+        /(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*)\S+/gi,
+        "[REDACTED]"
+      ),
+      failedCheck: "pre-commit",
+      session: getSessionCounter(),
+    };
+    fs.appendFileSync(commitFailuresLog, JSON.stringify(entry) + "\n");
+  } catch (error) {
+    // Non-critical — log for debuggability but don't break the hook
+    console.error(
+      "commit-tracker: failed to log commit failure:",
+      error instanceof Error ? error.message : String(error)
+    );
+  }
+}
+
+/**
  * Main
  */
 function main() {
@@ -174,7 +203,11 @@ function main() {
 
   const lastHead = loadLastHead();
   if (currentHead === lastHead) {
-    // Commit failed (pre-commit hooks rejected, etc.) or already tracked
+    // HEAD unchanged — commit likely failed (pre-commit hooks rejected, etc.)
+    // Note: also triggers on --amend with no changes, detached HEAD re-runs,
+    // or hook re-invocations. These are low-frequency and acceptable noise.
+    // DS-5: Log commit failures so alerts checker can track them
+    logCommitFailure(command);
     console.log("ok");
     process.exit(0);
   }

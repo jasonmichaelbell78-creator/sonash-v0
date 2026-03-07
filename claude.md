@@ -124,7 +124,8 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 | Security changes    | `security-auditor` agent      | Task  |
 | PR ready for merge  | `/test-suite --smoke`         | Skill |
 
-**Session End**: Run `/session-end` for full audit checklist.
+**Session End**: Run `/session-end` for session closure pipeline (context,
+metrics, commit).
 
 **Detailed orchestration guidance** (parallelization, teams, capacity):
 [docs/agent_docs/AGENT_ORCHESTRATION.md](docs/agent_docs/AGENT_ORCHESTRATION.md)

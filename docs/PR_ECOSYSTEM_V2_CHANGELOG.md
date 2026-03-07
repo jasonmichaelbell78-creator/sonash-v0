@@ -591,5 +591,13 @@ prominently.
 
 ---
 
+## Version History
+
+| Version | Date       | Changes          |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-03-02 | Initial creation |
+
+---
+
 _Document created: 2026-03-02_ _Source: Analysis of PR Review Ecosystem v2
 overhaul (shipped 2026-03-01 in PR #411)_

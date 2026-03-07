@@ -105,7 +105,8 @@ function scanSkillsDir(dir, source) {
                 trimmed === ">" ||
                 trimmed === ">-" ||
                 /^name:\s*/i.test(trimmed) ||
-                /^description:\s*$/i.test(trimmed)
+                /^description:\s*$/i.test(trimmed) ||
+                /^description:\s*>-?\s*$/i.test(trimmed)
               ) {
                 continue;
               }

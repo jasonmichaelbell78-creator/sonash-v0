@@ -20,6 +20,8 @@ Code review toolkit tailored for the SoNash codebase.
 
 ## When NOT to Use
 
+- Processing formal PR gate review feedback (CodeRabbit, Qodo, SonarCloud) — use
+  `/pr-review` instead
 - When the task doesn't match this skill's scope -- check related skills
 - When a more specialized skill exists for the specific task
 

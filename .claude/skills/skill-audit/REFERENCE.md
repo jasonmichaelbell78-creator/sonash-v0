@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-01
+**Document Version:** 2.0
+**Last Updated:** 2026-03-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -366,32 +366,239 @@ Sum individual category scores for an overall quality score out of 100.
 
 ---
 
+## Phase 2 Completion Summary Template
+
+Present after all 10 categories are complete and before Phase 3:
+
+```
+========================================
+PHASE 2 COMPLETE: All 10 categories audited
+========================================
+
+Total decisions: N (M accepted, K rejected)
+Overall score: N/100 ([rating])
+
+Scores by category:
+  Cat 1  Intent Fidelity:      N/10
+  Cat 2  Workflow Sequencing:   N/10
+  [... all 10 ...]
+
+Top 3 concerns:
+  1. [Lowest-scoring category] (N/10) — [brief description]
+  2. [Second-lowest] (N/10) — [brief description]
+  3. [Third-lowest] (N/10) — [brief description]
+
+Cross-cutting user requirements: N
+  [List each]
+
+Proceed to implementation with these N decisions? [Y/modify/n]
+```
+
+---
+
+## Phase Transition Markers
+
+Use this format before each phase to maintain orientation during long audits:
+
+```
+========================================
+PHASE N: [NAME]
+========================================
+```
+
+---
+
+## Self-Audit Report Format
+
+### Evidence-Based Verification (MUST — all three layers)
+
+**IMPORTANT:** A decision logged as "accepted" is NOT verified until objective
+evidence proves it was implemented. Self-reporting "PASS" without evidence is
+the primary failure mode of self-audits. Each verification layer catches
+different failure types.
+
+#### Layer 1: Grep-Based Proof (MUST for every decision)
+
+For each accepted decision, identify a keyword or pattern that MUST exist in the
+output file if the decision was implemented. Run grep. Cite the result.
+
+**Format per decision:**
+
+```
+Cat1-A: "multi-sentence description in frontmatter"
+  Grep: grep -n "through a structured" SKILL.md → line 5 ✓
+  Status: PASS
+
+Cat5-A: "add compaction resilience with state file"
+  Grep: grep -n "state.*file\|compaction" SKILL.md → lines 246-248 ✓
+  Status: PASS
+
+Cat6-C: "pause/resume protocol with --resume flag"
+  Grep: grep -n "\-\-resume" SKILL.md → (no match)
+  Status: MISSING — decision accepted but not implemented
+```
+
+**Rules:**
+
+- If grep returns no match, the decision is MISSING — not PASS
+- If grep matches but the content is incomplete, the decision is PARTIAL
+- Grep MUST target the output file, not the state file or conversation memory
+- For decisions affecting multiple files, grep each file
+
+#### Layer 2: Independent Agent Verification (MUST for >15 decisions)
+
+Dispatch a `code-reviewer` agent with:
+
+- The full decision list from the state file
+- The list of modified files
+- Instruction: "For each accepted decision, verify it was implemented in the
+  modified files. Report any decisions that are MISSING or only PARTIALLY
+  implemented. Do not trust the auditor's self-assessment."
+
+The agent returns a list of discrepancies. Any discrepancy overrides the
+self-assessment — the agent's finding takes priority.
+
+For <=15 decisions, this layer is SHOULD (recommended but not required).
+
+#### Layer 3: Diff-Based Mapping (MUST)
+
+Generate `git diff` (or compare old vs new content) for all modified files. For
+each accepted decision, identify the specific diff hunk that implements it.
+
+**Format:**
+
+```
+Cat2-A: "renumber steps sequentially"
+  Diff: -## STEP 0.5: PRE-PUSH CHECKS → +## Step 1: Context & Parse
+  Hunk: SKILL.md lines 62-100 (old) → lines 72-100 (new) ✓
+
+Cat4-D: "add delegation protocol"
+  Diff: +**Delegation:** User says "you decide" → accept recommendations...
+  Hunk: SKILL.md new lines 176-177 ✓
+
+Cat9-D: "add skill feedback prompt after commit"
+  Diff: (no corresponding hunk found)
+  Status: MISSING
+```
+
+**Rules:**
+
+- Decisions with no corresponding diff hunk are MISSING
+- New content that doesn't map to any decision should be flagged for review
+- This catches "I thought I wrote it but didn't" failures
+
+### Decision Verification Table
+
+For audits with <=20 decisions, show full table with grep evidence:
+
+```
+| # | Decision | Grep Evidence | Diff Hunk | Status |
+|---|----------|---------------|-----------|--------|
+| Cat1-A | [description] | grep result → line N | SKILL.md:N-M | PASS |
+```
+
+For audits with >20 decisions, group by category. PASS items show grep evidence
+inline. Expand PARTIAL/MISSING with all three layers:
+
+```
+Cat 1 (Intent Fidelity): 3/3 PASS
+  Cat1-A: grep "structured.*protocol" → line 5 ✓
+  Cat1-B: grep "8-step" → line 5 ✓
+  Cat1-C: grep "Process external" → line 12 ✓
+Cat 6 (Guard Rails): 3/4 — 1 MISSING:
+  | Cat6-B | Pause protocol | grep "--resume" → no match | no diff hunk | MISSING |
+  Resolution: [what was done to fix it]
+```
+
+### Self-Audit Report
+
+```
+SELF-AUDIT REPORT: [skill-name]
+================================
+Verification method:    Evidence-based (grep + agent + diff)
+Decision verification:  [N/M PASS | K PARTIAL | J MISSING]
+Agent discrepancies:    [N found | "none" | "skipped (<=15 decisions)"]
+Process compliance:     [N/M checks passed]
+Structural validation:  [PASS/FAIL]
+skills:validate:        [PASS/FAIL]
+
+[List each PARTIAL or MISSING with resolution]
+[List each agent discrepancy with resolution]
+```
+
+### Completion Summary (only after report passes clean)
+
+```
+Skill Audit Complete: [skill-name]
+Categories: 10 | Decisions: [N] ([M] accepted, [K] rejected)
+Overall Score: [N/100] → post-fix: [N/100]
+[If repeat: Previous: [N] → Current: [M] | Improved: [list] | Regressed: [list]]
+Files modified: [list] | Skill-creator gaps: [N]
+```
+
+---
+
+## Process Compliance Checklist
+
+Verify the skill-audit process itself was followed:
+
+- [ ] All 10 categories presented one at a time (not batched)
+- [ ] Every category followed per-category procedure (pros, cons, gaps,
+      suggestions with recommendations)
+- [ ] Opportunities section included where genuinely applicable; MUST explicitly
+      state "No opportunities identified" when a category has none (do not
+      silently omit the section)
+- [ ] State file updated after every category
+- [ ] Every con and gap had at least one suggestion
+- [ ] Every suggestion had a recommendation with rationale
+- [ ] Cross-cutting user requirements captured and tracked
+- [ ] Mid-audit check presented after Category 5
+- [ ] "Anything I missed?" prompt after Category 10
+- [ ] Phase 3 crosscheck performed against skill-creator
+- [ ] Implementation approval gate presented before Phase 4
+- [ ] Phase transition markers used between phases
+
+---
+
 ## State File Schema
+
+Path: `.claude/state/task-skill-audit-{skill-name}.state.json`
 
 ```json
 {
   "task": "Skill Audit: [skill-name]",
   "target_skill": "[skill-name]",
-  "status": "auditing_category_N | crosscheck | implementation | complete",
-  "current_category": N,
+  "status": "preparation | auditing_category_N | retroactive_opportunities | phase2_complete_transition | crosscheck | implementation_approval | implementation | self_audit | complete",
+  "current_category": 0,
   "decisions": {
-    "cat1_intent_fidelity": "N decisions: [summary]",
-    "cat2_workflow_sequencing": "N decisions: [summary]",
-    ...
+    "cat1_intent_fidelity": "N decisions: A-accepted (description — rationale for rejection if rejected), B-rejected (description — rationale), OPP-1A-accepted (description)",
+    "...": "..."
   },
   "scores": {
-    "cat1": N,
-    "cat2": N,
-    ...
+    "cat1": 0,
+    "...": "..."
   },
-  "total_decisions": N,
-  "overall_score": N,
-  "cross_cutting_principles": ["..."],
-  "files_modified": ["..."],
-  "skill_creator_gaps": N,
+  "total_decisions": 0,
+  "accepted_decisions": 0,
+  "rejected_decisions": 0,
+  "overall_score": null,
+  "estimated_post_fix_score": null,
+  "cross_cutting_principles": ["USER-REQ-N: description"],
+  "process_compliance_notes": ["any process deviations noted during audit"],
+  "process_feedback": null,
+  "files_modified": ["path (description of changes)"],
+  "skill_creator_gaps": null,
+  "skill_creator_gap_details": ["gap description"],
   "updated": "ISO timestamp"
 }
 ```
+
+**Decision format:** Include rejection rationale inline:
+`"D-rejected (don't reorder — crosscheck before implementation lets us batch fixes)"`.
+This preserves institutional memory about WHY decisions were rejected.
+
+**Confidence tagging:** Append to accepted decisions when applicable:
+`"A-accepted [high] (description)"`, `"B-accepted [low] (description)"`.
 
 ---
 
