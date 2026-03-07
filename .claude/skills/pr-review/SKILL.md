@@ -1,464 +1,271 @@
 ---
 name: pr-review
-description: PR Code Review Processor
+description: >-
+  Process external PR code review feedback (CodeRabbit, Qodo, SonarCloud,
+  Gemini) through a structured 8-step protocol. Parses all items, categorizes by
+  severity and origin, fixes in priority order, tracks deferred items to TDMS,
+  and captures learnings. This skill processes review feedback — it does not
+  generate reviews.
 ---
 
 # PR Code Review Processor
 
-You are about to process AI code review feedback. This is a **standardized,
-thorough review protocol** that ensures every issue is caught, addressed, and
-documented.
+Process external code review feedback into fixes, deferrals, and learnings.
+Every item is either fixed or tracked — no silent dismissals.
+
+## Critical Rules (MUST follow)
+
+1. **NEVER silently ignore** — every item gets a disposition: fixed, deferred
+   (with DEBT ID via `/add-debt`), or rejected (with specific justification).
+2. **NEVER skip trivial items** — fix everything, including typos and style.
+3. **ALWAYS create learning entry FIRST** — before fixing any items.
+4. **ALWAYS read files before editing** — no blind edits.
+5. **ALWAYS verify fixes** — re-read modified files after applying changes.
+6. **NEVER dismiss as "pre-existing"** — fix (<5 min) or track with DEBT ID.
+7. **Propagation is MANDATORY** — after fixing a pattern-based issue, grep the
+   entire codebase for the same pattern and fix ALL instances in one commit.
 
 ## When to Use
 
-- PR Code Review Processor
+- Processing formal PR gate review feedback (CodeRabbit, Qodo, SonarCloud, etc.)
 - User explicitly invokes `/pr-review`
+- Multi-round review cycles on open PRs
 
-## Out of Scope
+## When NOT to Use
 
-| Task                          | Use Instead              |
-| ----------------------------- | ------------------------ |
-| Ad-hoc development review     | `code-reviewer` agent    |
-| Pre-merge self-review         | `code-reviewer` agent    |
-| Quick quality check           | `code-reviewer` agent    |
-| Security-specific audit       | `security-auditor` agent |
-| Performance-specific analysis | `performance-engineer`   |
+- Ad-hoc development review or self-review — use `code-reviewer` agent
+- Generating reviews (this skill processes feedback, doesn't generate it)
+- Security-specific audit — use `security-auditor` agent
+- PR retrospective analysis — use `/pr-retro`
+- PR ecosystem health — use `/pr-ecosystem-audit`
+- SonarCloud issue management — use `/sonarcloud`
 
-## Scope
+## Parameters
 
-- **Formal PR gate reviews** with standardized 8-step protocol
-- Processing external review feedback (CodeRabbit, Qodo, SonarCloud)
-- Ensuring every issue is fixed or tracked to TDMS before merge
+- `--pr <number>` — PR number (SHOULD provide; used for state file + JSONL)
+- `--round <N>` — Review round (R1, R2, R3+). Enables repeat-item detection.
+- `--resume` — Resume interrupted review from state file.
 
-## Core Principles
+---
 
-1. **Fix Everything** - Including trivial items
-2. **Learning First** - Create log entry before fixes
-3. **Multi-Pass Verification** - Never miss an issue
-4. **Parallel Agent Execution** - For 20+ items, spawn specialized agents
-5. **Fix-or-Track** - Every issue is either fixed or logged to TDMS with a DEBT
-   ID. No silent dismissals.
-
-## Protocol Overview
+## Process Overview
 
 ```
-STEP 0: CONTEXT (Load tiered docs)  →  STEP 1: PARSE (Multi-pass + validate)
-  →  STEP 1.5: SONARCLOUD ENRICHMENT  →  STEP 2: CATEGORIZE (Severity/Origin)
-  →  STEP 3: PLAN (TodoWrite)  →  STEP 4: AGENTS (Parallel if 20+)
-  →  STEP 5: FIX (Priority order)  →  STEP 6: DOCUMENT (Deferred/rejected)
-  →  STEP 6.5: TDMS  →  STEP 7: LEARNING  →  STEP 7.5: JSONL PIPELINE
-  →  STEP 8: SUMMARY  →  STEP 9: COMMIT
+Step 1: CONTEXT & PARSE  →  Step 2: CATEGORIZE & TRIAGE  →  Step 3: PLAN
+  →  Step 4: FIX  →  Step 5: DOCUMENT & TRACK  →  Step 6: LEARNING & JSONL
+  →  Step 7: VERIFY  →  Step 8: SUMMARY & COMMIT
+```
+
+**Artifacts:** Fixed source files, learning log entry, JSONL review record, TDMS
+debt items (if deferred), state file.
+
+## Warm-Up (MUST — before Step 1)
+
+```
+PR Review: #{pr} Round {round}
+Source: [CodeRabbit/Qodo/SonarCloud/Mixed]
+[If R2+: Previous round fixed N, deferred M, rejected K]
+Ready to receive review feedback. Paste it below.
 ```
 
 ---
 
-## INPUT: Copy/Paste Feedback
+## Step 1: Context & Parse (MUST)
 
-Copy/paste from CodeRabbit, Qodo, SonarCloud, or CI logs provides the most
-specific and thorough feedback.
+> Read `reference/PRE_CHECKS.md` for 18 mandatory pre-push checks. Run ALL
+> applicable checks before first CI push.
 
----
+**Context (SHOULD):** Load `CLAUDE.md`, `CODE_PATTERNS.md`, `FIX_TEMPLATES.md`.
+For R2+: load previous round's state file, check learning log for prior
+rejections, auto-detect repeat items (same rule ID + file = repeat-rejected).
 
-## STEP 0.5: PRE-PUSH CHECKS (Mandatory Before First CI Push)
+**Parse (MUST):**
 
-Run ALL applicable checks before the first push. Each prevents known multi-round
-churn patterns. See [ARCHIVE.md](ARCHIVE.md) for full evidence.
+1. Identify source (CodeRabbit, Qodo, SonarCloud, Mixed)
+2. **Multi-pass extraction (MUST for >200 lines):** Pass 1: scan for item
+   headers/markers. Pass 2: extract details, code snippets, line refs. Pass 3:
+   cross-reference for missed items, validate completeness.
+3. Announce: "Identified **N total items** from [source]"
+4. Validate critical claims via `git log --all --grep` / `git log --follow`
+5. Stale HEAD check — if reviewer is 2+ commits behind, batch-reject
 
-### 1. New File Pre-Review
+**Input validation:** If zero items parsed, warn and ask user to verify content.
 
-New files >500 lines: run `code-reviewer` agent FIRST, fix issues, THEN push.
+**SonarCloud enrichment:** Auto-fetch code snippets when `javascript:S####` rule
+IDs detected. See
+[reference/SONARCLOUD_ENRICHMENT.md](reference/SONARCLOUD_ENRICHMENT.md).
 
-### 2. Local Pattern Compliance
+**Effort estimate (MUST):** "**N items** (C critical, M major, m minor, T
+trivial). Estimated effort: [small <=5 | medium 6-15 | large 16-30 | XL 30+]."
 
-```bash
-npm run patterns:check -- --staged
-```
+**Fast path (<=5 items):** Skip Steps 3-4, proceed directly to fixing.
 
-### 3. Security Pattern Sweep
-
-If PR introduces security-adjacent code, grep for unguarded write paths:
-
-```bash
-grep -rn 'writeFileSync\|renameSync\|appendFileSync' .claude/hooks/ scripts/ --include="*.js" | grep -v 'isSafeToWrite'
-```
-
-### 4. Cyclomatic Complexity
-
-Pre-push hook now **enforces CC ≤15 as error** on all JS/TS files in the push
-diff (added Session #205). Pre-commit warns; pre-push blocks. After extracting
-helpers, re-check the ENTIRE file. Override: `SKIP_CC=1 SKIP_REASON="reason"`.
-
-### 5. Filesystem Guard Pre-Check
-
-If PR modifies guard functions, verify against full lifecycle matrix (file
-exists, doesn't exist, parent doesn't exist, fresh checkout, symlink). See
-FIX_TEMPLATES #31, #33.
-
-### 6. Shared Utility Caller Audit
-
-If PR modifies shared utility functions, grep ALL callers and verify
-compatibility.
-
-### 7. Algorithm Design Pre-Check
-
-**Trigger:** Non-trivial algorithm or heuristic/analysis function. Design the
-full algorithm before committing: define invariants, enumerate edge cases,
-handle all input types, add depth/size caps. For heuristics, define a test
-matrix of inputs->outputs covering true positives, true negatives, and edge
-cases.
-
-### 8. Mapping/Enumeration Completeness
-
-When modifying mapping logic (severity, priority, etc.): list ALL possible input
-values and verify each maps correctly. Use case-insensitive matching and `\b`
-word boundaries where needed.
-
-### 9. Dual-File JSONL Write Check
-
-If PR modifies scripts that write to MASTER_DEBT.jsonl, verify ALL write paths
-also update `raw/deduped.jsonl`.
-
-### 10. Same-File Regex DoS Sweep
-
-After fixing a flagged regex, grep the same file for ALL other vulnerable
-regexes. Two-strikes rule: if SonarCloud flags same regex twice, replace with
-string parsing.
-
-### 11. Large PR Scope Pre-Check
-
-20+ files? Consider splitting. Grep for shared patterns across all files and fix
-in one pass.
-
-### 12. Stale Reviewer HEAD Check
-
-Before investigating reviewer items, compare reviewer's commit against HEAD. If
-stale (2+ behind), reject ALL items from that reviewer as a batch.
-
-### 13. Qodo Compliance Batch Rejection
-
-Qodo Compliance re-raises the same items across rounds even when already
-rejected. When processing R2+ rounds:
-
-1. Check learning log for prior rejections in the same PR
-2. If an item matches a previously rejected item (same rule ID + same file),
-   mark as **repeat-rejected** without re-investigating
-3. Add a single batch note: "N items repeat-rejected (same justification as RX)"
-4. Known repeat offenders: S4036 (PATH binary hijacking on hardcoded
-   `execFileSync`), swallowed exceptions in graceful degradation chains
-
-### 14. Cross-Platform Path Normalization
-
-**Trigger:** PR modifies path-handling code (includes, endsWith, has, startsWith
-on file paths). Verify ALL string-based path comparisons in modified files use
-POSIX-normalized paths. After fixing one path comparison, grep the same file for
-all others:
-
-```bash
-grep -n 'includes\|endsWith\|\.has(\|startsWith' <modified-file> | grep -iv 'toPosixPath\|normalize'
-```
-
-### 15. Logic Fix Test Matrix
-
-**Trigger:** PR fixes logic bugs in pattern-matching, filtering, or detection
-code. Before committing, define a test matrix of inputs→outputs covering: (1)
-target present + changed, (2) target present + unchanged, (3) target removed +
-changed, (4) no target + changed. Validate each case mentally or with examples.
-
-### 16. ESLint Rule CC: Extract Helpers Proactively
-
-**Trigger:** PR adds or modifies ESLint rules. If any `create()` function or
-helper has CC >10, extract into helper functions NOW (not after SonarCloud flags
-it). Use the visitChild/visitAstChild pattern from `ast-utils.js` (see
-FIX_TEMPLATE #42). Target CC ≤10 (not ≤15) to leave margin for future additions.
-
-```bash
-# Quick CC estimate — count branching keywords in a function
-grep -c 'if\|&&\|||\|case\|?\|catch' eslint-plugin-sonash/rules/<rule>.js
-```
-
-### 17. Fix-One-Audit-All Propagation Check
-
-**Pre-commit now runs propagation warning** (non-blocking) for staged files
-(added Session #205). The pre-push hook already blocks on propagation misses.
-
-**Trigger:** PR fixes a bug or adds handling for a pattern (ChainExpression,
-path normalization, guard pattern, etc.) in one file. Before committing, grep
-the codebase for ALL other instances of the same pattern gap:
-
-```bash
-# Example: after adding ChainExpression unwrap to one rule
-grep -rn 'node\.type\|callee\.type\|expression\.type' eslint-plugin-sonash/rules/ --include="*.js" | grep -v 'unwrapNode\|ChainExpression'
-
-# Example: after fixing path normalization in one file
-grep -rn 'includes\|endsWith\|\.has(\|startsWith' scripts/ --include="*.js" | grep -iv 'toPosixPath\|normalize'
-```
-
-If any other files have the same gap, fix them in the same commit to prevent
-review ping-pong. See pr-retro Pattern 13 (Fix-One-Audit-All).
-
-### 18. Test-Production Regex Sync
-
-**Trigger:** PR modifies a regex in a checker or compliance script. After
-updating the production regex, verify that corresponding test files use the
-matching pattern. Regex changes that break tests cause avoidable review rounds.
-
-```bash
-# After modifying a regex in a checker script, find the corresponding test
-grep -rn 'pattern_you_changed' tests/ --include="*.test.*"
-```
-
-Source: PR #396 retro (Chain 1: test regex not updated with production regex,
-~0.5 avoidable rounds).
+**Done when:** All items parsed, count announced, effort estimated.
 
 ---
 
-## STEP 0: CONTEXT LOADING
+## Step 2: Categorize & Triage (MUST)
 
-### 0.1 Episodic Memory Search
+**Severity (MUST):** CRITICAL (security/data loss) | MAJOR (bugs/perf) | MINOR
+(style/tests) | TRIVIAL (typos). Fix ALL levels.
 
-Search episodic memory for relevant past reviews.
+**Origin (MUST):**
 
-### 0.2 Tiered Document Loading
+| Origin                    | Action                                       |
+| ------------------------- | -------------------------------------------- |
+| **This-PR**               | MUST fix                                     |
+| **Pre-existing, fixable** | Fix now (< 5 min)                            |
+| **Pre-existing, complex** | Track via `/add-debt` with DEBT-XXXX ID      |
+| **Architectural**         | Present to user with impact + recommendation |
 
-| Tier | When          | Documents                                                              |
-| ---- | ------------- | ---------------------------------------------------------------------- |
-| 1    | Always        | `claude.md` (root)                                                     |
-| 2    | Quick Lookup  | `docs/agent_docs/CODE_PATTERNS.md`, `docs/agent_docs/FIX_TEMPLATES.md` |
-| 3    | Investigating | `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/AI_REVIEW_PROCESS.md`         |
-| 4    | Rarely        | `docs/archive/REVIEWS_*.md`                                            |
+**Triage summary (non-blocking):** Show breakdown, auto-proceed. User MAY
+interrupt. For architectural items: state finding, impact, recommendation, wait.
 
----
+**Re-triage:** If an item proves more complex during fixing, re-classify and
+notify: "Re-triaged [item] from MINOR to MAJOR — [reason]."
 
-## STEP 1: INITIAL INTAKE & PARSING
-
-1. **Identify source** (CodeRabbit, Qodo, SonarCloud, Mixed)
-2. **Extract ALL suggestions** - For >200 lines: 3-pass extraction
-3. **Announce count**: "I identified **N total suggestions**"
-4. **Validate critical claims** - Before accepting "data loss" claims, verify
-   via `git log --all --grep` and `git log --follow`
-5. **Stale HEAD check** - Verify reviewer analyzed current HEAD, not stale
-   commit
+**Done when:** All items categorized, triage summary shown.
 
 ---
 
-## STEP 1.5: SONARCLOUD ENRICHMENT (Automatic)
+## Step 3: Plan & Agents (SHOULD — skip for <=5 items)
 
-When SonarCloud issues detected, auto-fetch code snippets. Triggers on
-`javascript:S####` rule IDs or SonarCloud labels.
+Track ALL issues. Learning log entry (`#TBD` stub) is ALWAYS the FIRST task.
 
-> **Details:** See
-> [reference/SONARCLOUD_ENRICHMENT.md](reference/SONARCLOUD_ENRICHMENT.md)
+For 20+ items across 3+ concerns, dispatch specialized agents:
+`security-auditor`, `test-engineer`, `performance-engineer`, `code-reviewer`.
+See
+[reference/PARALLEL_AGENT_STRATEGY.md](reference/PARALLEL_AGENT_STRATEGY.md).
 
----
-
-## STEP 2: CATEGORIZATION (ALWAYS)
-
-**Severity:** CRITICAL (security/data loss) | MAJOR (bugs/perf) | MINOR
-(style/tests) | TRIVIAL (typos) -- Fix ALL levels, no skipping.
-
-**Origin (MANDATORY):**
-
-| Origin                    | Action                                  |
-| ------------------------- | --------------------------------------- |
-| **This-PR**               | Must fix                                |
-| **Pre-existing, fixable** | Fix now (< 5 min)                       |
-| **Pre-existing, complex** | Track via `/add-debt` with DEBT-XXXX ID |
-| **Architectural**         | Flag to user -- do NOT silently dismiss |
+**Done when:** Task list created, agents dispatched (if applicable).
 
 ---
 
-## STEP 3: CREATE TODO LIST
+## Step 4: Fix (MUST — in priority order)
 
-Use **TodoWrite** for ALL issues. Learning log entry (`#TBD` stub) is ALWAYS the
-FIRST todo item.
+**Fix order:** CRITICAL (separate commit) > MAJOR (batch related) > MINOR (batch
+by file) > TRIVIAL (batch all).
 
----
+**Per fix:** Check FIX_TEMPLATES first. Read file, understand context, apply.
 
-## STEP 4: INVOKE SPECIALIZED AGENTS
-
-**Parallel** for 20+ items across 3+ files/concerns. **Sequential** otherwise.
-
-| Issue Type   | Agent                                       |
-| ------------ | ------------------------------------------- |
-| Security     | `security-auditor`                          |
-| Tests        | `test-engineer`                             |
-| Performance  | `performance-engineer`                      |
-| Docs         | `technical-writer`                          |
-| Architecture | `backend-architect` or `frontend-developer` |
-| Code quality | `code-reviewer`                             |
-
-**CRITICAL RETURN PROTOCOL:** Agents return ONLY:
-`COMPLETE: [agent-id] fixed N items in [file-list]`
-
-> **Details:** See
-> [reference/PARALLEL_AGENT_STRATEGY.md](reference/PARALLEL_AGENT_STRATEGY.md)
-
----
-
-## STEP 5: ADDRESS ISSUES (In Priority Order)
-
-### 5.1 Fix Order
-
-CRITICAL (separate commit) -> MAJOR (batch related) -> MINOR (batch by file) ->
-TRIVIAL (batch all).
-
-### 5.2 For Each Fix
-
-- Check FIX_TEMPLATES first for copy-paste fixes
-- Read file, understand context, apply fix
-- **PROPAGATION CHECK (MANDATORY)** - grep entire codebase for same pattern, fix
-  ALL instances before committing
-- Verify fix doesn't introduce new issues
-- Two-strikes regex rule (see FIX_TEMPLATES #21)
-
-### 5.3 Verification Passes
-
-1. Re-read each modified file
-2. `npm run lint`
-3. `npm run test`
-4. `npm run patterns:check`
-5. Cross-reference original suggestions
-
-### 5.4 Propagation Check
-
-When fixing pattern-based issues, search ALL instances before committing:
+**Propagation (MUST — NEVER skip):** After every pattern-based fix, grep the
+entire codebase for same pattern and fix ALL instances before committing:
 
 ```bash
 grep -rn "PATTERN" scripts/ .claude/hooks/ --include="*.js"
 ```
 
-**Search patterns:** Missing symlink guards, try/catch, atomic writes, statSync
-vs lstatSync, env var validation, POSIX compliance, realpathSync guards, path
-containment, shared util changes, dual-file JSONL.
+**Verify (MUST):** Re-read modified files, `npm run lint`, `npm run test`,
+`npm run patterns:check`, cross-reference original items.
 
-### 5.5 Input Validation Completeness
+**Mid-review checkpoint (20+ items):** After critical+major batch: "Completed
+C+M fixes. N remaining. Continue?" Progress: every 5 fixes show "N of M (X%)."
 
-When adding validation for user-controlled values, implement the FULL chain:
-type check, trim, empty check, format, length limit, encoding safety.
-
----
-
-## STEP 6: DOCUMENT DECISIONS
-
-Every non-fixed item MUST have a DEBT ID or explicit user sign-off. Use strict
-templates for Deferred (with DEBT-XXXX), Architectural (raise to user), and
-Rejected (specific justification) items.
+**Done when:** All fixable items addressed, verification passes.
 
 ---
 
-## STEP 6.5: TDMS INTEGRATION
+## Step 5: Document & Track (MUST)
 
-Use `/add-debt` for deferred items. Severity mapping: CRITICAL->S0, MAJOR->S1,
-MINOR->S2, TRIVIAL->S3.
+Every non-fixed item MUST have a disposition:
 
-> **Details:** See
-> [reference/TDMS_INTEGRATION.md](reference/TDMS_INTEGRATION.md)
+- **Deferred:** DEBT ID via `/add-debt` + justification
+- **Rejected:** Specific technical justification (not "seems fine")
+- **Architectural:** User-approved disposition
+
+**TDMS (MUST for deferred):** Use `/add-debt`. Map: CRITICAL>S0, MAJOR>S1,
+MINOR>S2, TRIVIAL>S3. See
+[reference/TDMS_INTEGRATION.md](reference/TDMS_INTEGRATION.md).
+
+**Approval gate (MUST):** Present deferred items for approval: "Deferring N
+items to TDMS: [list]. Approve? [Y/modify]"
+
+**Delegation:** User says "you decide" → accept recommendations, record as
+`delegated-accept`. **Contradictions:** Defer to user except safety items.
+
+**Done when:** All items have dispositions, deferred items approved.
 
 ---
 
-## STEP 7: LEARNING CAPTURE (MANDATORY)
+## Step 6: Learning & JSONL (MUST)
 
-Finalize review number, complete learning entry, run
-`npm run reviews:sync -- --apply`.
+Validate learning log path exists. Finalize review number, complete learning
+entry, run `npm run reviews:sync -- --apply`. See
+[reference/LEARNING_CAPTURE.md](reference/LEARNING_CAPTURE.md).
 
-> **Details:** See
-> [reference/LEARNING_CAPTURE.md](reference/LEARNING_CAPTURE.md)
-
----
-
-## STEP 7.5: JSONL PIPELINE
-
-> This step writes structured data to the v2 JSONL pipeline. The JSONL record is
-> the source of truth; the markdown learning log entry (Step 7) is a
-> human-readable view that coexists during transition.
-
-### 7.5.1 Write Review Record
+**JSONL (MUST):** The JSONL record is the source of truth; markdown log is a
+companion during transition (end state: JSONL only, markdown deprecated).
 
 ```bash
-cd scripts/reviews && npx tsc && node dist/write-review-record.js --data '{"pr":PR_NUM,"title":"PR #N RX - Source","date":"YYYY-MM-DD","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","pr":PR_NUM,"round":ROUND,"tool":"write-review-record.ts"},"source":"SOURCE","total":TOTAL,"fixed":FIXED,"deferred":DEFERRED,"rejected":REJECTED,"patterns":["pattern1"],"learnings":["learning1"],"severity_breakdown":{"critical":N,"major":N,"minor":N,"trivial":N},"per_round_detail":null,"rejection_analysis":null,"ping_pong_chains":null}'
+cd scripts/reviews && npx tsc && node dist/write-review-record.js --data '{...}'
 ```
 
-Fill in actual values from the review. The `id` will be auto-assigned.
+See LEARNING_CAPTURE.md for full schema, deferred-items, and invocation
+tracking.
 
-### 7.5.2 Create Deferred Items (if deferred > 0)
+**Done when:** Learning entry + JSONL record created.
 
-```bash
-node dist/write-deferred-items.js --review-id REV_ID --date YYYY-MM-DD --items '[{"finding":"description","severity":"major"}]'
+---
+
+## Step 7: Verify (MUST — gate before summary)
+
+1. **Count check:** fixed + deferred + rejected = total parsed items
+2. **No orphans:** every item from Step 1 has a disposition
+3. **TDMS sync:** every deferred item has a DEBT-XXXX ID
+4. **Learning entry:** complete (not `#TBD`)
+
+If any check fails, fix before continuing. **Done when:** All 4 checks pass.
+
+---
+
+## Step 8: Summary & Commit (MUST)
+
+```
+PR Review Complete: #{pr} R{round}
+Items: {total} ({fixed} fixed, {deferred} deferred, {rejected} rejected)
+Severity: {critical}C / {major}M / {minor}m / {trivial}T
+Files modified: [list] | Learning: #{N} | TDMS: [DEBT IDs or "none"]
+
+Key Decisions:
+- [Deferred] DEBT-XXXX: [reason]
+- [Rejected] [item]: [justification]
 ```
 
-Create one item per deferred finding from Step 6.
+**Commit (MUST):** Prefix `fix:` or `docs:`. Body: reference review source.
+Separate commits for Critical fixes.
 
-### 7.5.3 Track Invocation
+**Handoff:** "Run `/pr-retro --pr {N}` to analyze review cycle efficiency."
 
-```bash
-node dist/write-invocation.js --data '{"skill":"pr-review","type":"skill","duration_ms":null,"success":true,"error":null,"context":{"pr":PR_NUM,"trigger":"user-invoked"}}'
-```
+**Feedback (MAY):** "Was this review process effective? Patterns to capture?"
 
----
-
-## STEP 7.9: COMPLETENESS VERIFICATION (Gate)
-
-Before proceeding to summary, verify all items are accounted for:
-
-1. **Count check**: fixed + deferred + rejected = total parsed items
-2. **No orphans**: every item from Step 1 has a disposition in Steps 5-6
-3. **TDMS sync**: every deferred item has a DEBT-XXXX ID
-4. **Learning entry**: Step 7 learning log entry is complete (not `#TBD`)
-
-If any check fails, go back and fix before continuing.
+**Done when:** Summary shown, committed, handoff offered.
 
 ---
 
-## STEP 8: FINAL SUMMARY
+## Guard Rails
 
-Statistics (total/fixed/deferred/rejected), files modified, agents invoked,
-learning entry number, TDMS items, verification checklist, commit message.
+- **50+ items:** Suggest splitting into severity batches
+- **Zero items:** Warn, ask user to verify pasted content
+- **Pause/resume:** Save state + exit. Resume: `/pr-review --resume --pr N`
+- **Contradictions:** Defer to user (except safety items)
 
----
+## Compaction Resilience
 
-## STEP 9: COMMIT
+State file: `.claude/state/task-pr-review-{pr}-r{round}.state.json`. Updated
+after each step. On `--resume`, read state and skip completed steps. Retained
+after completion as review record.
 
-Prefix: `fix:` for bugs, `docs:` for documentation. Body: reference review
-source. Separate commits for Critical fixes if needed.
+## Integration
 
----
-
-## IMPORTANT RULES
-
-1. **NEVER skip trivial items** - Fix everything
-2. **ALWAYS create learning entry FIRST**
-3. **ALWAYS read files before editing**
-4. **ALWAYS verify fixes** - Multiple passes
-5. **USE PARALLEL AGENTS for 20+ items**
-6. **NEVER silently ignore** - Document all decisions
-7. **NEVER dismiss as "pre-existing"** - Fix or track with DEBT ID
-
-**Commands:** `npm run lint`, `npm run test`, `npm run patterns:check`
-
-**Files to Update:** All review files + `docs/AI_REVIEW_LEARNINGS_LOG.md`
-
----
-
-## Update Dependencies
-
-| Document                           | What to Update            |
-| ---------------------------------- | ------------------------- |
-| `docs/SLASH_COMMANDS_REFERENCE.md` | `/pr-review` section      |
-| `docs/AI_REVIEW_PROCESS.md`        | Related workflow sections |
+**Upstream:** Manual invocation only (user pastes feedback). **Downstream:**
+`/pr-retro`, `/add-debt`, `/sonarcloud`. **Neighbors:** `code-reviewer`
+(generates reviews), `/pr-retro` (cycle analysis), `/pr-ecosystem-audit`.
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                                                                                    |
-| ------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
-| 3.7     | 2026-03-05 | Out-of-scope table, completeness gate (Step 7.9), cyclomatic terminology fix. Source: PR #417 revert recovery. |
-| 3.6     | 2026-02-28 | Add JSONL pipeline step (Step 7.5) for v2 data capture                                                         |
-| 3.5     | 2026-02-26 | Add pre-checks #16 (ESLint CC extraction) and #17 (fix-one-audit-all). Source: PR #393/#394 retros.            |
-| 3.4     | 2026-02-25 | Add pre-checks #14 (path normalization) and #15 (logic test matrix). Source: PR #392 retro.                    |
-| 3.3     | 2026-02-25 | Add Qodo Compliance batch rejection pre-check. Source: PR #390/#391 retro.                                     |
-| 3.2     | 2026-02-24 | Trim to <500 lines: archive evidence to ARCHIVE.md, condense pre-checks                                        |
-| 3.1     | 2026-02-24 | Add Stale Reviewer HEAD Check, expand heuristic test matrix. Source: PR #388.                                  |
-| 3.0     | 2026-02-23 | Add Local Pattern Compliance Check — mandatory pre-push. Source: PR #384.                                      |
-| 2.9     | 2026-02-22 | Add dual-file JSONL write check. Source: PR #383.                                                              |
-| 2.8     | 2026-02-20 | Add mapping/enumeration + regex DoS sweep pre-checks. Source: PR #382.                                         |
+| Version | Date       | Description                                                                                                                                |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 4.0     | 2026-03-07 | Full rewrite from skill-audit (49 decisions). 8 sequential steps, pre-checks extracted, MUST/SHOULD/MAY, compaction, guard rails, routing. |
+| 3.7     | 2026-03-05 | Out-of-scope table, completeness gate                                                                                                      |

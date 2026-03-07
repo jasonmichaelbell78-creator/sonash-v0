@@ -206,6 +206,8 @@ accomplish X, do Y" not "You should do X."
 - [ ] MUST/SHOULD/MAY applied to all instructions
 - [ ] Error handling for the skill's domain
 - [ ] Integration guidance (what comes before/after this skill)
+- [ ] Effort estimate for users: expected duration or item count range
+- [ ] Self-description accuracy: step counts, claims match actual behavior
 - [ ] If multi-step: progress indicators, warm-up, closure signal. Examples:
   - Phase marker: `======== PHASE 3: CROSSCHECK ========`
   - Progress: "Category 3 of 10 complete. 18 decisions so far."

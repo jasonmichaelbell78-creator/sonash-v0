@@ -410,23 +410,104 @@ PHASE N: [NAME]
 
 ## Self-Audit Report Format
 
+### Evidence-Based Verification (MUST — all three layers)
+
+**IMPORTANT:** A decision logged as "accepted" is NOT verified until objective
+evidence proves it was implemented. Self-reporting "PASS" without evidence is
+the primary failure mode of self-audits. Each verification layer catches
+different failure types.
+
+#### Layer 1: Grep-Based Proof (MUST for every decision)
+
+For each accepted decision, identify a keyword or pattern that MUST exist in the
+output file if the decision was implemented. Run grep. Cite the result.
+
+**Format per decision:**
+
+```
+Cat1-A: "multi-sentence description in frontmatter"
+  Grep: grep -n "through a structured" SKILL.md → line 5 ✓
+  Status: PASS
+
+Cat5-A: "add compaction resilience with state file"
+  Grep: grep -n "state.*file\|compaction" SKILL.md → lines 246-248 ✓
+  Status: PASS
+
+Cat6-C: "pause/resume protocol with --resume flag"
+  Grep: grep -n "\-\-resume" SKILL.md → (no match)
+  Status: MISSING — decision accepted but not implemented
+```
+
+**Rules:**
+
+- If grep returns no match, the decision is MISSING — not PASS
+- If grep matches but the content is incomplete, the decision is PARTIAL
+- Grep MUST target the output file, not the state file or conversation memory
+- For decisions affecting multiple files, grep each file
+
+#### Layer 2: Independent Agent Verification (MUST for >15 decisions)
+
+Dispatch a `code-reviewer` agent with:
+
+- The full decision list from the state file
+- The list of modified files
+- Instruction: "For each accepted decision, verify it was implemented in the
+  modified files. Report any decisions that are MISSING or only PARTIALLY
+  implemented. Do not trust the auditor's self-assessment."
+
+The agent returns a list of discrepancies. Any discrepancy overrides the
+self-assessment — the agent's finding takes priority.
+
+For <=15 decisions, this layer is SHOULD (recommended but not required).
+
+#### Layer 3: Diff-Based Mapping (MUST)
+
+Generate `git diff` (or compare old vs new content) for all modified files. For
+each accepted decision, identify the specific diff hunk that implements it.
+
+**Format:**
+
+```
+Cat2-A: "renumber steps sequentially"
+  Diff: -## STEP 0.5: PRE-PUSH CHECKS → +## Step 1: Context & Parse
+  Hunk: SKILL.md lines 62-100 (old) → lines 72-100 (new) ✓
+
+Cat4-D: "add delegation protocol"
+  Diff: +**Delegation:** User says "you decide" → accept recommendations...
+  Hunk: SKILL.md new lines 176-177 ✓
+
+Cat9-D: "add skill feedback prompt after commit"
+  Diff: (no corresponding hunk found)
+  Status: MISSING
+```
+
+**Rules:**
+
+- Decisions with no corresponding diff hunk are MISSING
+- New content that doesn't map to any decision should be flagged for review
+- This catches "I thought I wrote it but didn't" failures
+
 ### Decision Verification Table
 
-For audits with <=20 decisions, show full table:
+For audits with <=20 decisions, show full table with grep evidence:
 
 ```
-| # | Decision | Status | Where |
-|---|----------|--------|-------|
-| Cat1-A | [description] | PASS/PARTIAL/MISSING | [file:line] |
+| # | Decision | Grep Evidence | Diff Hunk | Status |
+|---|----------|---------------|-----------|--------|
+| Cat1-A | [description] | grep result → line N | SKILL.md:N-M | PASS |
 ```
 
-For audits with >20 decisions, group by category:
+For audits with >20 decisions, group by category. PASS items show grep evidence
+inline. Expand PARTIAL/MISSING with all three layers:
 
 ```
 Cat 1 (Intent Fidelity): 3/3 PASS
-Cat 2 (Workflow Sequencing): 4/4 PASS
-Cat 6 (Guard Rails): 3/4 — 1 PARTIAL:
-  | Cat6-B | Pause protocol | PARTIAL | SKILL.md:178 — missing resume example |
+  Cat1-A: grep "structured.*protocol" → line 5 ✓
+  Cat1-B: grep "8-step" → line 5 ✓
+  Cat1-C: grep "Process external" → line 12 ✓
+Cat 6 (Guard Rails): 3/4 — 1 MISSING:
+  | Cat6-B | Pause protocol | grep "--resume" → no match | no diff hunk | MISSING |
+  Resolution: [what was done to fix it]
 ```
 
 ### Self-Audit Report
@@ -434,12 +515,15 @@ Cat 6 (Guard Rails): 3/4 — 1 PARTIAL:
 ```
 SELF-AUDIT REPORT: [skill-name]
 ================================
+Verification method:    Evidence-based (grep + agent + diff)
 Decision verification:  [N/M PASS | K PARTIAL | J MISSING]
+Agent discrepancies:    [N found | "none" | "skipped (<=15 decisions)"]
 Process compliance:     [N/M checks passed]
 Structural validation:  [PASS/FAIL]
 skills:validate:        [PASS/FAIL]
 
 [List each PARTIAL or MISSING with resolution]
+[List each agent discrepancy with resolution]
 ```
 
 ### Completion Summary (only after report passes clean)
@@ -461,7 +545,9 @@ Verify the skill-audit process itself was followed:
 - [ ] All 10 categories presented one at a time (not batched)
 - [ ] Every category followed per-category procedure (pros, cons, gaps,
       suggestions with recommendations)
-- [ ] Opportunities section included where genuinely applicable
+- [ ] Opportunities section included where genuinely applicable; MUST explicitly
+      state "No opportunities identified" when a category has none (do not
+      silently omit the section)
 - [ ] State file updated after every category
 - [ ] Every con and gap had at least one suggestion
 - [ ] Every suggestion had a recommendation with rationale

@@ -227,11 +227,27 @@ Do not run separate audits per sub-command.
 
 Re-read every file modified or created in Phase 4. Do NOT rely on memory.
 
-### 5.2 Decision Implementation Verification (MUST)
+### 5.2 Evidence-Based Decision Verification (MUST)
 
-For EVERY accepted decision, verify: implemented, accurate, complete, correct
-MUST/SHOULD. Present as decision-by-decision table. **If >20 decisions:** group
-by category, expand only PARTIAL/MISSING items; PASS items get one-line summary.
+> Logging a decision as "PASS" does NOT mean it was implemented. Each decision
+> MUST be verified with objective evidence. See REFERENCE.md for the three
+> required verification methods and evidence format.
+
+Three verification layers, ALL required:
+
+1. **Grep-based proof (MUST):** For each decision, grep the output file for a
+   keyword or pattern that proves implementation. Cite the grep result. If grep
+   finds nothing, the decision is MISSING — not PASS.
+2. **Independent agent verification (MUST for >15 decisions):** Dispatch a
+   `code-reviewer` agent with the decision list and modified files. Agent
+   independently checks each decision and reports discrepancies.
+3. **Diff-based mapping (MUST):** Generate `git diff` of all modified files. Map
+   each decision to the specific diff hunk that implements it. Decisions with no
+   corresponding diff hunk are MISSING.
+
+Present results as decision-by-decision table. **If >20 decisions:** group by
+category, expand only PARTIAL/MISSING items; PASS items get one-line summary
+with grep evidence.
 
 ### 5.3 Process Compliance Verification (MUST)
 
@@ -308,9 +324,10 @@ Files modified: [list] | Skill-creator gaps: [N]
 
 ## Version History
 
-| Version | Date       | Description                                                          |
-| ------- | ---------- | -------------------------------------------------------------------- |
-| 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts |
-| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.        |
-| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.              |
-| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan             |
+| Version | Date       | Description                                                             |
+| ------- | ---------- | ----------------------------------------------------------------------- |
+| 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping |
+| 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts    |
+| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.           |
+| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.                 |
+| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan                |

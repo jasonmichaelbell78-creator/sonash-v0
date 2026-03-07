@@ -11,6 +11,15 @@ skill for historical context.
 
 ---
 
+## Update Dependencies
+
+| Document                           | What to Update            |
+| ---------------------------------- | ------------------------- |
+| `docs/SLASH_COMMANDS_REFERENCE.md` | `/pr-review` section      |
+| `docs/AI_REVIEW_PROCESS.md`        | Related workflow sections |
+
+---
+
 ## Archived Pre-Check Evidence & Details
 
 ### Local Pattern Compliance Check (PR #384 Retro)
