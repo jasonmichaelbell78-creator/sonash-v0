@@ -7,7 +7,10 @@ set -e
 
 # Initialize fnm so node/npm/npx are available in this shell context
 if command -v fnm > /dev/null 2>&1; then
-  eval "$(fnm env --shell bash 2>/dev/null)" || true
+  if ! eval "$(fnm env --shell bash 2>/dev/null)"; then
+    echo "find-polluter.sh: fnm detected but failed to initialize" >&2
+    exit 1
+  fi
 fi
 
 if [ $# -ne 2 ]; then

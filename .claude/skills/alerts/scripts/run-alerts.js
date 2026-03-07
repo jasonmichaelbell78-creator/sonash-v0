@@ -522,6 +522,7 @@ function saveBaseline() {
     } catch {
       // Windows can fail to overwrite existing dest; fall back to copy
       // Fallback: rename failed, use copy instead
+      // eslint-disable-next-line sonash/no-non-atomic-write -- fallback: rename failed (Windows overwrite quirks)
       fs.copyFileSync(tmpPath, BASELINE_PATH);
       wrote = true;
     } finally {

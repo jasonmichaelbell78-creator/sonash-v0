@@ -20,10 +20,12 @@ paths = [
 ]
 
 # Known false positives
-regexTarget = "match"
+# regexTarget = "line" matches against the full source line (not just the secret value),
+# allowing context-aware allowlisting — e.g. only allow API keys near "firebase" or "apiKey".
+regexTarget = "line"
 regexes = [
-  # Firebase public API keys (safe to be in client-side code, intentionally public)
-  '''AIzaSy[A-Za-z0-9_-]{33}''',
+  # Firebase public API keys — only allow when clearly labeled as Firebase (client-exposed by design)
+  '''(?i)(firebase|apikey).*AIzaSy[A-Za-z0-9_-]{33}''',
   # Test JWT tokens used in unit tests
   '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0''',
   # curl example in documentation

@@ -13,6 +13,7 @@ if ! command -v fnm >/dev/null 2>&1; then
 fi
 
 eval "$(fnm env --shell bash 2>/dev/null)"
+fnm use --silent-if-unchanged >/dev/null 2>&1 || true
 
 if ! command -v node >/dev/null 2>&1; then
   echo "ensure-fnm.sh: node is not available after fnm initialization" >&2

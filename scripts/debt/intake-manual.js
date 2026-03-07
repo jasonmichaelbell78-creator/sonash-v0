@@ -353,7 +353,9 @@ Example:
 
   console.log("🔄 Regenerating views...");
   try {
-    execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
+    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
+      stdio: "inherit",
+    });
   } catch {
     console.warn(
       "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
