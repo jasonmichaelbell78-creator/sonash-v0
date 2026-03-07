@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console, __dirname */
+/* global require, process, console */
 /* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename, security/detect-object-injection */
 /**
  * post-read-handler.js - Consolidated PostToolUse (Read) hook
@@ -81,15 +81,20 @@ if (filePath) {
     // DS-1: Convert absolute paths to project-relative instead of rejecting.
     // Claude Code passes absolute paths via $ARGUMENTS.
     if (path.isAbsolute(filePath) || /^[A-Za-z]:/.test(filePath)) {
-      const normalized = path.resolve(filePath);
-      const projNormalized = path.resolve(projectDir);
-      if (
-        normalized.startsWith(projNormalized + path.sep) ||
-        normalized.startsWith(projNormalized + "/")
-      ) {
-        filePath = path.relative(projectDir, normalized).replace(/\\/g, "/");
+      // Use realpathSync for canonicalization (resolves symlinks, case on Windows)
+      let canonicalized;
+      try {
+        canonicalized = fs.realpathSync(path.resolve(filePath));
+      } catch {
+        // File doesn't exist yet or inaccessible — fall back to resolve
+        canonicalized = path.resolve(filePath);
+      }
+      const rel = path.relative(projectDir, canonicalized);
+      const isOutside = rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel);
+      if (!isOutside) {
+        filePath = rel.replace(/\\/g, "/");
       } else {
-        // Outside project — reject
+        // Outside project or is project root — reject
         filePath = "";
       }
     }

@@ -2103,14 +2103,10 @@ function generateFpReport() {
 /**
  * Main function
  */
-function main() {
-  // Handle --fp-report mode
-  if (FP_REPORT) {
-    generateFpReport();
-    process.exit(0);
-  }
-
-  // Expire stale warned-files entries older than 30 days (OPT #75)
+/**
+ * Expire stale warned-files entries older than 30 days (OPT #75).
+ */
+function expireStaleWarnings() {
   try {
     const { expireByAge } = require("../.claude/hooks/lib/rotate-state.js");
     const result = expireByAge(WARNED_FILES_PATH, 30);
@@ -2122,45 +2118,13 @@ function main() {
   } catch {
     // Non-critical — expiry failure doesn't block pattern checking
   }
+}
 
-  const files = getFilesToCheck();
-
-  if (files.length === 0) {
-    if (!JSON_OUTPUT) {
-      console.log("No files to check. Use --all to scan entire repo or specify files.");
-    }
-    process.exit(0);
-  }
-
-  if (VERBOSE && !JSON_OUTPUT) {
-    console.log(`Checking ${files.length} file(s)...`);
-  }
-
-  const allViolations = [];
-
-  for (const file of files) {
-    const violations = checkFile(file);
-    allViolations.push(...violations);
-  }
-
-  // Apply severity-based blocking:
-  // - critical: blocks in ALL modes (including --staged/pre-commit)
-  // - high: blocks in --all/CI, warns in --staged
-  // - medium: always warns
-  const { warnings, blocks } = applyGraduation(allViolations);
-
-  // DS-4: Persist warned files so alerts checker can read them
-  if (warnings.length > 0) {
-    const now = new Date().toISOString();
-    const warnedObj = {};
-    for (const w of warnings) {
-      if (w.file) warnedObj[w.file] = now;
-    }
-    saveWarnedFiles(warnedObj);
-  }
-
+/**
+ * Output results in JSON or text format and exit.
+ */
+function outputResultsAndExit(allViolations, files, warnings, blocks) {
   if (JSON_OUTPUT) {
-    // Count by severity for summary
     const severityCounts = { critical: 0, high: 0, medium: 0 };
     for (const v of allViolations) {
       const sev = v.severity || "medium";
@@ -2183,10 +2147,47 @@ function main() {
   } else {
     formatTextOutput(allViolations, files.length, warnings.length, blocks.length);
   }
-
-  // Exit 1 only if there are blocks (graduated violations)
-  // Warnings alone don't block (first occurrence = informational)
   process.exit(blocks.length > 0 ? 1 : 0);
+}
+
+function main() {
+  if (FP_REPORT) {
+    generateFpReport();
+    process.exit(0);
+  }
+
+  expireStaleWarnings();
+
+  const files = getFilesToCheck();
+  if (files.length === 0) {
+    if (!JSON_OUTPUT) {
+      console.log("No files to check. Use --all to scan entire repo or specify files.");
+    }
+    process.exit(0);
+  }
+
+  if (VERBOSE && !JSON_OUTPUT) {
+    console.log(`Checking ${files.length} file(s)...`);
+  }
+
+  const allViolations = [];
+  for (const file of files) {
+    allViolations.push(...checkFile(file));
+  }
+
+  const { warnings, blocks } = applyGraduation(allViolations);
+
+  // DS-4: Persist warned files so alerts checker can read them
+  if (warnings.length > 0) {
+    const now = new Date().toISOString();
+    const warnedObj = {};
+    for (const w of warnings) {
+      if (w.file) warnedObj[w.file] = now;
+    }
+    saveWarnedFiles(warnedObj);
+  }
+
+  outputResultsAndExit(allViolations, files, warnings, blocks);
 }
 
 try {
