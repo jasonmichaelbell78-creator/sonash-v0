@@ -35,6 +35,11 @@ require_skip_reason() {
   fi
 }
 
+# Initialize fnm so node/npm/npx are available in this shell context
+if command -v fnm > /dev/null 2>&1; then
+  eval "$(fnm env --shell bash 2>/dev/null)" || true
+fi
+
 echo "🚀 Running pre-push checks..."
 
 # 1. Tests already run in pre-commit (Quick Win - Session #113)

@@ -65,7 +65,7 @@
   },
   "functions": {
     "source": "functions",
-    "runtime": "nodejs24",
+    "runtime": "nodejs20",
     "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"],
     "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log"]
   },

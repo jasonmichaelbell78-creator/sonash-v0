@@ -46,10 +46,14 @@ project.
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- Node.js 22+ (root) / 20+ (Cloud Functions) — auto-switched via `.nvmrc`
+- [fnm](https://github.com/Schniz/fnm) (Fast Node Manager):
+  `winget install Schniz.fnm`
+- npm 10+ (bundled with Node 22)
 - Firebase CLI: `npm install -g firebase-tools`
 - Firebase project with Firestore, Auth, and Cloud Functions enabled
+- Optional: [gitleaks](https://github.com/gitleaks/gitleaks) for secret
+  scanning: `winget install Gitleaks.Gitleaks`
 
 ### Installation
 

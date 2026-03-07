@@ -14,7 +14,7 @@ const ROOT = path.resolve(__dirname, "..", "..");
 describe("Performance budgets", { timeout: 60000 }, () => {
   it("gate check (check-pattern-compliance) completes in <3s", () => {
     const start = Date.now();
-    execFileSync("node", ["scripts/check-pattern-compliance.js"], {
+    execFileSync(process.execPath, ["scripts/check-pattern-compliance.js"], {
       cwd: ROOT,
       encoding: "utf8",
       stdio: "pipe",
@@ -25,7 +25,7 @@ describe("Performance budgets", { timeout: 60000 }, () => {
 
   it("health:quick completes in <1s", () => {
     const start = Date.now();
-    execFileSync("node", ["scripts/health/run-health-check.js", "--quick"], {
+    execFileSync(process.execPath, ["scripts/health/run-health-check.js", "--quick"], {
       cwd: ROOT,
       encoding: "utf8",
       stdio: "pipe",
@@ -36,7 +36,7 @@ describe("Performance budgets", { timeout: 60000 }, () => {
 
   it("health:full completes in <5s", () => {
     const start = Date.now();
-    execFileSync("node", ["scripts/health/run-health-check.js"], {
+    execFileSync(process.execPath, ["scripts/health/run-health-check.js"], {
       cwd: ROOT,
       encoding: "utf8",
       stdio: "pipe",
@@ -47,7 +47,7 @@ describe("Performance budgets", { timeout: 60000 }, () => {
 
   it("consolidation (--auto) completes in <10s", () => {
     const start = Date.now();
-    execFileSync("node", ["scripts/run-consolidation.js", "--auto"], {
+    execFileSync(process.execPath, ["scripts/run-consolidation.js", "--auto"], {
       cwd: ROOT,
       encoding: "utf8",
       stdio: "pipe",

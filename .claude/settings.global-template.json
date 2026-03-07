@@ -10,7 +10,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/global/gsd-check-update.js\""
+            "command": "bash -c 'eval \"$(fnm env --shell bash 2>/dev/null)\"; node \"$CLAUDE_PROJECT_DIR/.claude/hooks/global/gsd-check-update.js\"'"
           }
         ]
       }
@@ -18,7 +18,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/global/statusline.js\""
+    "command": "bash -c 'eval \"$(fnm env --shell bash 2>/dev/null)\"; node \"$CLAUDE_PROJECT_DIR/.claude/hooks/global/statusline.js\"'"
   },
   "enabledPlugins": {
     "_comment": "Claude Code Workflows",

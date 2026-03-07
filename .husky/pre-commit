@@ -120,6 +120,11 @@ if [ -n "$BRANCH_NAME" ] && [ "$BRANCH_NAME" != "main" ] && [ "$BRANCH_NAME" != 
   fi
 fi
 
+# Initialize fnm so node/npm/npx are available in this shell context
+if command -v fnm > /dev/null 2>&1; then
+  eval "$(fnm env --shell bash 2>/dev/null)" || true
+fi
+
 echo "🔍 Running pre-commit checks..."
 
 # --- Wave 0: Secrets scan (fast, ~1s) ---

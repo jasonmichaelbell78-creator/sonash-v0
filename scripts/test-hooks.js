@@ -444,7 +444,7 @@ function log(message, color = "reset") {
 // Validate syntax of a hook file
 function validateSyntax(hookPath) {
   try {
-    execFileSync("node", ["--check", hookPath], { stdio: "pipe" });
+    execFileSync(process.execPath, ["--check", hookPath], { stdio: "pipe" });
     return { valid: true };
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);

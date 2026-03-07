@@ -60,7 +60,7 @@ for (const gen of GENERATORS) {
 
   // Run generator in --dry-run mode (outputs to stdout, no file writes)
   try {
-    const freshMd = execFileSync("node", [join(ROOT, gen.script), "--dry-run"], {
+    const freshMd = execFileSync(process.execPath, [join(ROOT, gen.script), "--dry-run"], {
       encoding: "utf-8",
       cwd: ROOT,
       stdio: ["pipe", "pipe", "pipe"],

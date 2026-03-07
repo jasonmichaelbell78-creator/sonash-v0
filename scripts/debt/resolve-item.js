@@ -203,7 +203,9 @@ function applyFalsePositive(items, item, itemIndex, parsed, now, masterBackup) {
   // Sync deduped.jsonl to prevent generate-views.js overwrite regression (Session #179)
   try {
     const { execFileSync } = require("node:child_process");
-    execFileSync("node", [path.join(__dirname, "sync-deduped.js"), "--apply"], { stdio: "pipe" });
+    execFileSync(process.execPath, [path.join(__dirname, "sync-deduped.js"), "--apply"], {
+      stdio: "pipe",
+    });
   } catch {
     // sync-deduped.js may not exist yet or may fail — non-critical
   }
@@ -235,7 +237,9 @@ function applyResolved(items, item, parsed, now, masterBackup) {
   // Sync deduped.jsonl to prevent generate-views.js overwrite regression (Session #179)
   try {
     const { execFileSync } = require("node:child_process");
-    execFileSync("node", [path.join(__dirname, "sync-deduped.js"), "--apply"], { stdio: "pipe" });
+    execFileSync(process.execPath, [path.join(__dirname, "sync-deduped.js"), "--apply"], {
+      stdio: "pipe",
+    });
   } catch {
     // sync-deduped.js may not exist yet or may fail — non-critical
   }

@@ -295,7 +295,7 @@ Example:
   // Regenerate views
   console.log("🔄 Regenerating views...");
   try {
-    execSync("node scripts/debt/generate-views.js", { stdio: "inherit" });
+    execSync(`"${process.execPath}" scripts/debt/generate-views.js`, { stdio: "inherit" });
   } catch {
     console.warn(
       "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"

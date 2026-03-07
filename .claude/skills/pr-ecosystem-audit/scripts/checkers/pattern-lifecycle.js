@@ -156,7 +156,7 @@ function checkPatternDiscoveryAutomation(
 /** Run pattern compliance script and count violations from output. */
 function countEnforcementIssues(rootDir) {
   try {
-    execFileSync("node", [path.join(rootDir, "scripts", "check-pattern-compliance.js")], {
+    execFileSync(process.execPath, [path.join(rootDir, "scripts", "check-pattern-compliance.js")], {
       cwd: rootDir,
       encoding: "utf8",
       timeout: 30000,

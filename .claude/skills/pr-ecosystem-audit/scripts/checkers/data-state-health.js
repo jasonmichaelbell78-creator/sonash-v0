@@ -56,12 +56,16 @@ function run(ctx) {
  */
 function runSyncCheck(rootDir) {
   try {
-    execFileSync("node", [path.join(rootDir, "scripts", "sync-reviews-to-jsonl.js"), "--check"], {
-      cwd: rootDir,
-      encoding: "utf8",
-      timeout: 30000,
-      stdio: ["pipe", "pipe", "pipe"],
-    });
+    execFileSync(
+      process.execPath,
+      [path.join(rootDir, "scripts", "sync-reviews-to-jsonl.js"), "--check"],
+      {
+        cwd: rootDir,
+        encoding: "utf8",
+        timeout: 30000,
+        stdio: ["pipe", "pipe", "pipe"],
+      }
+    );
     return 0;
   } catch (err) {
     const stderr = err.stderr ? String(err.stderr).trim() : "";

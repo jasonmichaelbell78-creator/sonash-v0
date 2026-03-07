@@ -420,7 +420,7 @@ if (needsTestBuild) {
 
 // Pattern compliance check (v1 — pre-commit gate, v2 partial overlap via verify-enforcement-manifest)
 try {
-  execSync("node scripts/check-pattern-compliance.js", { stdio: "pipe" });
+  execSync(`"${process.execPath}" scripts/check-pattern-compliance.js`, { stdio: "pipe" });
   console.log("🔍 Patterns: ✓ compliant");
 } catch (error) {
   const exitCode = error.status || 1;
@@ -434,7 +434,9 @@ try {
 
 // Auto-consolidation (v1 — no full v2 replacement yet, reads from v2 JSONL data)
 try {
-  const output = execSync("node scripts/run-consolidation.js --auto", { encoding: "utf8" });
+  const output = execSync(`"${process.execPath}" scripts/run-consolidation.js --auto`, {
+    encoding: "utf8",
+  });
   if (output.trim()) {
     console.log(output.trim());
   } else {

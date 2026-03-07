@@ -117,7 +117,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "oxlint",
+      "oxlint -c .oxlintrc.json",
       "prettier --write"
     ],
     "*.{json,css,md}": "prettier --write"

@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Initialize fnm so node/npm/npx are available in this shell context
+if command -v fnm > /dev/null 2>&1; then
+  eval "$(fnm env --shell bash 2>/dev/null)" || true
+fi
+
 echo "📦 Bundling React app to single HTML artifact..."
 
 # Check if we're in a project directory

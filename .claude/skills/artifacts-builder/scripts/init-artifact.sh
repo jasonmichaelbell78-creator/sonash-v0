@@ -3,6 +3,11 @@
 # Exit on error
 set -e
 
+# Initialize fnm so node/npm/npx are available in this shell context
+if command -v fnm > /dev/null 2>&1; then
+  eval "$(fnm env --shell bash 2>/dev/null)" || true
+fi
+
 # Detect Node version
 NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
 

@@ -9,8 +9,8 @@
     },
     "playwright": {
       "_comment": "Browser automation for testing and screenshots",
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+      "command": "bash",
+      "args": [".claude/hooks/ensure-fnm.sh", "npx", "-y", "@playwright/mcp@latest"]
     }
   }
 }

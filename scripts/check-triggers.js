@@ -399,10 +399,14 @@ function main() {
     let logDestination = "none";
     try {
       const { execFileSync } = require("node:child_process");
-      execFileSync("node", ["scripts/log-override.js", "--check=triggers", "--reason", reason], {
-        encoding: "utf-8",
-        stdio: "inherit",
-      });
+      execFileSync(
+        process.execPath,
+        ["scripts/log-override.js", "--check=triggers", "--reason", reason],
+        {
+          encoding: "utf-8",
+          stdio: "inherit",
+        }
+      );
       logDestination = "script";
     } catch (error_) {
       // Inline fallback: write structured audit entry directly

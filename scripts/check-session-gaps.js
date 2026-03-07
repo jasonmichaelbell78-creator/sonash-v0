@@ -209,12 +209,16 @@ function main() {
     // No commit log yet — auto-seed from git history so future runs use the file
     console.log("commit-log.jsonl missing — auto-seeding from git history...");
     try {
-      execFileSync("node", [path.join(projectDir, "scripts", "seed-commit-log.js"), "50"], {
-        cwd: projectDir,
-        encoding: "utf8",
-        timeout: 15000,
-        stdio: "inherit",
-      });
+      execFileSync(
+        process.execPath,
+        [path.join(projectDir, "scripts", "seed-commit-log.js"), "50"],
+        {
+          cwd: projectDir,
+          encoding: "utf8",
+          timeout: 15000,
+          stdio: "inherit",
+        }
+      );
       // Re-read after seeding
       commits = readCommitLog();
       source = "commit-log.jsonl (auto-seeded)";
