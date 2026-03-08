@@ -299,10 +299,17 @@ function checkWorkflowScriptAlignment(rootDir, findings) {
 
 // ── Category 18: Bot Configuration Freshness ────────────────────────────────
 
-/** Known bot config file patterns. */
+/**
+ * Known bot config file patterns.
+ * requiresLocalConfig: true = bot needs a repo-level config file to function
+ *   (flag as missing if not found)
+ * requiresLocalConfig: false = bot is configured via GitHub App / Marketplace settings
+ *   (only check health if config file exists, don't flag as missing)
+ */
 const BOT_CONFIG_PATTERNS = [
   {
     name: "Qodo",
+    requiresLocalConfig: false, // Configured via GitHub App settings
     patterns: [
       ".qodo",
       ".qodo.yml",
@@ -316,13 +323,19 @@ const BOT_CONFIG_PATTERNS = [
   },
   {
     name: "Gemini",
+    requiresLocalConfig: false, // Configured via GitHub App settings
     patterns: [".gemini", ".gemini.yml", ".gemini.yaml", "gemini.yml", "gemini.yaml"],
   },
   {
     name: "Renovate",
+    requiresLocalConfig: true, // Requires repo-level config
     patterns: [".renovaterc", ".renovaterc.json", "renovate.json", "renovate.json5"],
   },
-  { name: "Dependabot", patterns: [".github/dependabot.yml", ".github/dependabot.yaml"] },
+  {
+    name: "Dependabot",
+    requiresLocalConfig: true, // Requires repo-level config
+    patterns: [".github/dependabot.yml", ".github/dependabot.yaml"],
+  },
 ];
 
 function checkBotConfigFreshness(rootDir, findings) {
@@ -359,13 +372,13 @@ function checkBotConfigFreshness(rootDir, findings) {
       } else {
         staleConfigs.push({ bot: bot.name, path: configPath, issues: healthIssues });
       }
-    } else {
+    } else if (bot.requiresLocalConfig) {
       missingBots.push(bot.name);
     }
   }
 
-  // Score: existence (50%) + health (50%)
-  const totalBots = BOT_CONFIG_PATTERNS.length;
+  // Score: existence (50%) + health (50%) — only count bots that require local config
+  const totalBots = BOT_CONFIG_PATTERNS.filter((b) => b.requiresLocalConfig).length + configsFound;
   const existencePct = Math.round((configsFound / totalBots) * 100);
   const healthPct = configsFound > 0 ? Math.round((configsHealthy / configsFound) * 100) : 0;
   const configScore = Math.round(existencePct * 0.5 + healthPct * 0.5);
@@ -503,7 +516,10 @@ function checkCiCacheEffectiveness(rootDir, findings) {
           const nextLine = raw.trim();
 
           // Stop if indentation returns to the step level (new step / new top-level key)
-          if (indent <= usesIndent && (nextLine.startsWith("- ") || nextLine.includes(":"))) break;
+          // But don't stop for "with:" which is a sibling of "uses:" that we need to parse
+          if (indent <= usesIndent && nextLine.startsWith("- ")) break;
+          if (indent < usesIndent && nextLine.includes(":")) break;
+          if (indent === usesIndent && nextLine.includes(":") && nextLine !== "with:") break;
 
           if (nextLine === "with:") {
             inWithBlock = true;

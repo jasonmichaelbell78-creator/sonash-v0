@@ -206,9 +206,10 @@ skip to Phase 7 (Trend Report): "Clean audit — no findings. Score: {grade}
 
 Sort all findings by `impactScore` descending (highest impact first).
 
-### Finding Presentation
+### Finding Presentation (Deep-Plan Q&A Format — MUST)
 
-For each finding, present a context card with progress:
+For each finding, present a context card with progress header, then use the
+deep-plan Q&A format:
 
 ```
 ━━━ Finding {n}/{total} ({pct}% complete — {fixed} fixed, {deferred} deferred, {skipped} skipped) ━━━
@@ -220,6 +221,13 @@ Evidence:
   {details}
 ```
 
+Then present the finding using structured Q&A format:
+
+- **Description:** What the finding means, with context and investigation (read
+  the actual code before presenting — verify the finding is real)
+- **Options:** Numbered list with pros/cons for each option
+- **Recommendation:** Which option and why
+
 If `patchable: true`, also show patch preview inline (SHOULD).
 
 ### Decision Collection (Conversational Q&A — MUST)
@@ -227,7 +235,8 @@ If `patchable: true`, also show patch preview inline (SHOULD).
 Present findings and collect decisions via conversation. NEVER use
 AskUserQuestion.
 
-**ERROR findings** — options: Fix Now, Defer (creates DEBT entry)
+**ERROR findings** — options: Fix Now, Defer (creates DEBT entry), or Skip with
+documented false-positive justification
 
 **WARNING findings** — options: Fix Now, Defer, Skip
 
@@ -300,7 +309,8 @@ Verify this audit's own process was followed correctly:
 - [ ] Dashboard was displayed before walkthrough (Critical Rule 3)
 - [ ] Conversational Q&A used, not AskUserQuestion (Critical Rule 4)
 - [ ] Progress saved after every decision (Critical Rule 5)
-- [ ] All ERROR findings addressed (fixed or deferred, not skipped)
+- [ ] All ERROR findings addressed (fixed, deferred, or skipped with documented
+      false-positive justification)
 - [ ] TDMS entries created for all deferred findings
 
 Present: "Process self-audit: N/N checks passed." Fix any failures before

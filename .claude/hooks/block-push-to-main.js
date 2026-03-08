@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process */
+/* global require, process, console */
 /**
  * block-push-to-main.js - PreToolUse hook (Bash)
  *
@@ -66,6 +66,7 @@ process.stdin.on("end", () => {
       }
     }
 
+    console.log("ok");
     process.exit(0);
   } catch {
     // Parse errors should not block work — allow through
