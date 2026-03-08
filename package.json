@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "lint": "eslint .",
+    "lint:fast": "oxlint -c .oxlintrc.json .",
     "type-check": "tsc --noEmit",
     "start": "next start",
-    "test": "npm run test:build && cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test 'dist-tests/tests/**/*.test.js' 'scripts/health/**/*.test.js'",
+    "test": "npm run test:build && cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\" \"scripts/health/**/*.test.js\"",
     "test:build": "tsc -p tsconfig.test.json && tsc-alias -p tsconfig.test.json",
-    "test:coverage": "npm run test:build && c8 --reporter=text --reporter=html cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test dist-tests/tests/",
+    "test:coverage": "npm run test:build && c8 --reporter=text --reporter=html cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\" \"scripts/health/**/*.test.js\"",
     "test:coverage:report": "c8 report",
     "docs:update-readme": "node scripts/update-readme-status.js",
     "docs:check": "node scripts/check-docs-light.js",
@@ -89,6 +90,7 @@
     "agents:check-strict": "node scripts/check-agent-compliance.js --strict",
     "aggregate:audit-findings": "node scripts/aggregate-audit-findings.js && prettier --write docs/aggregation/*.md",
     "security:check": "node scripts/security-check.js",
+    "security:secrets": "gitleaks detect --source . -c .gitleaks.toml",
     "security:check-all": "node scripts/security-check.js --all",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -114,7 +116,11 @@
     "ecosystem-audit:summary": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --summary"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
+    "*.{js,jsx,ts,tsx}": [
+      "oxlint -c .oxlintrc.json",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": "prettier --write"
   },
   "dependencies": {
     "@dataconnect/generated": "file:src/dataconnect-generated",
@@ -179,6 +185,7 @@
     "madge": "^8.0.0",
     "markdownlint-cli": "^0.48.0",
     "msw": "^2.12.8",
+    "oxlint": "^1.51.0",
     "postcss": "^8.5",
     "postcss-load-config": "^6.0.1",
     "prettier": "^3.7.4",

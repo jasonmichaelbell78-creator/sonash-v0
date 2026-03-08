@@ -3,13 +3,13 @@ name: deep-plan
 description: >-
   Structured discovery-first planning for complex tasks. Ask exhaustive
   categorized questions, build a standalone decision record, then produce a
-  detailed implementation plan with audit checkpoints for user approval before
-  any code is written.
+  step-by-step implementation plan with audit checkpoints for user approval
+  before any code is written.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.0
-**Last Updated:** 2026-03-01
+**Document Version:** 3.0
+**Last Updated:** 2026-03-07
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -48,52 +48,86 @@ plans by front-loading decision-making through exhaustive questioning.
 - Tasks with 3-4 decisions — use regular plan mode (EnterPlanMode)
 - Tasks where the user has already specified every decision
 - Multi-phase project roadmaps — use `/gsd:new-project` or `/gsd:new-milestone`
-- Brainstorming without a concrete implementation target — use brainstorming
-  skill first, then `/deep-plan` to plan the chosen approach
+- Brainstorming without a concrete implementation target — use a brainstorming
+  approach first, then `/deep-plan` to plan the chosen approach
+
+## Routing Guide
+
+| Situation              | Use                | Why                                     |
+| ---------------------- | ------------------ | --------------------------------------- |
+| 5+ ambiguous decisions | `/deep-plan`       | Exhaustive discovery prevents bad plans |
+| 3-4 clear decisions    | EnterPlanMode      | Lighter-weight, faster                  |
+| Multi-phase roadmap    | `/gsd:new-project` | Project-level planning with milestones  |
+
+> See `.claude/skills/deep-plan/REFERENCE.md` for the full routing table.
+
+## Input
+
+**Argument:** Topic or task description, passed as `/deep-plan <topic>` or
+provided in conversation context.
+
+**Output location:** Artifacts are written to `.planning/<topic-slug>/`
+(DIAGNOSIS.md, DECISIONS.md, PLAN.md). User MAY specify a different location.
 
 ---
 
 ## Process Overview
 
 ```
-PHASE 0:  Context Gathering → Explore codebase, ROADMAP check, DIAGNOSIS.md
-PHASE 1:  Discovery         → Exhaustive questions (floor ~15, no ceiling)
-PHASE 1b: User Discovery    → Optional: user questions/concerns, revisit answers
-PHASE 2:  Decision Record   → Standalone DECISIONS.md
-PHASE 3:  Plan              → Steps with "Done when:" + audit checkpoints
-PHASE 4:  Approval          → Show inline, free-form feedback, explicit gate
-HANDOFF:  Execution Routing  → Decision tree: subagent / GSD / manual
+WARM-UP:   Orientation     → Topic, process overview, effort estimate
+PHASE 0:   Context         → Explore codebase, ROADMAP check, DIAGNOSIS.md
+PHASE 1:   Discovery       → Exhaustive questions (floor ~15, no ceiling)
+PHASE 1b:  User Discovery  → Optional: user questions/concerns, revisit answers
+PHASE 2:   Decision Record → Standalone DECISIONS.md
+PHASE 3:   Plan            → Steps with "Done when:" + audit checkpoints
+PHASE 3.5: Self-Audit      → Verify decisions→plan coverage
+PHASE 4:   Approval        → Show inline, free-form feedback, explicit gate
+HANDOFF:   Routing         → Decision tree: subagent / GSD / manual
 ```
+
+Use phase transition markers: `========== PHASE N: [NAME] ==========`
 
 ---
 
-## Phase 0: Context Gathering
+## Warm-Up (MUST)
+
+Present before any work begins: topic name, process overview (explore → ask
+questions → decision record → plan), and effort estimate (S: 20min, M: 40min, L:
+60min+).
+
+---
+
+## Phase 0: Context Gathering (MUST)
 
 **Purpose:** Understand before asking. Explore the codebase so questions
 reference actual patterns, not generic placeholders.
 
-1. Read ROADMAP.md — verify task aligns with project direction
-2. Explore relevant codebase areas (use Explore agent for broad searches)
-3. Identify existing patterns, conventions, and neighboring systems
-4. Produce `DIAGNOSIS.md` at the plan output location:
+1. Check CLAUDE.md for documented project conventions (MUST)
+2. Read ROADMAP.md — verify task aligns with project direction (MUST)
+3. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
+4. Identify existing patterns, conventions, and neighboring systems (MUST)
+5. Produce `DIAGNOSIS.md` at the plan output location (MUST):
    - ROADMAP alignment check (aligned / misaligned / new direction)
    - Relevant existing systems and their patterns
-   - Reframe check: is the task what it appears to be, or does context suggest a
-     different framing?
-5. Present DIAGNOSIS.md to user for review before proceeding
+   - Reframe check: is the task what it appears to be?
+6. Present DIAGNOSIS.md to user for review (MUST)
+
+**If misaligned with ROADMAP:** Present the conflict to the user. Options: (1)
+proceed with acknowledgment, (2) reframe to align, (3) abort. Do NOT silently
+proceed with a misaligned task.
 
 **Phase gate:** User confirms diagnosis or reframes the task. If reframed,
 update DIAGNOSIS.md and re-present. Do NOT proceed to Discovery until confirmed.
 
 ---
 
-## Phase 1: Discovery
+## Phase 1: Discovery (MUST)
 
 **Purpose:** Eliminate assumptions. Every ambiguous design decision MUST be
 surfaced and resolved with the user.
 
 > Read `.claude/skills/deep-plan/REFERENCE.md` for the 8 question categories
-> with example questions for each.
+> with example questions and phase ordering guidance.
 
 ### Discovery Rules (MUST follow)
 
@@ -107,83 +141,71 @@ surfaced and resolved with the user.
 4. **Reference existing patterns** — cite actual codebase conventions, not
    generic options. "TDMS uses S0-S3 severity. Mirror this with I0-I3?"
 5. **Batch related questions** — group 5-8 related questions per batch. No rigid
-   cap; use judgment based on question complexity.
+   cap; use judgment based on question complexity. If a batch exceeds 10
+   questions, split by sub-theme — present the most critical sub-theme first.
 6. **Inter-batch synthesis** — after each batch of answers, synthesize what was
    learned before asking the next batch. This prevents redundant questions.
 7. **State inferences explicitly** — when an answer makes other questions
    obvious, state "Based on your answer to Q3, I'm inferring X for Q7" rather
    than silently skipping.
-8. **Save decisions after every batch** — persist to
+8. **Save decisions after every batch** (MUST) — persist to
    `.claude/state/deep-plan.state.json` with task name, current batch number,
    all decisions so far, and timestamp.
 9. **Show progress** — "Batch 2 of ~3 complete. 12 decisions captured so far."
+
+### Mid-Discovery Check (MUST — after batch 2)
+
+"Discovery progress: N questions asked, M decisions captured. Estimated ~K more
+questions. Continue, or scope-reduce?"
+
+### Discovery Completion Signal (MUST)
+
+"Discovery complete: N questions asked, M decisions captured. Compiling decision
+record."
 
 ### Discovery Anti-Patterns (MUST avoid)
 
 - Asking questions answerable by reading the codebase (Phase 0 should handle)
 - Asking the same question in different ways
-- Asking questions whose answers don't affect the plan
 - Not offering recommended defaults
 - Treating "your call" as ambiguity — it's delegation, decide and state why
-- Silently skipping questions without stating what was inferred
 
 ---
 
-## Phase 1b: User Discovery (Optional)
+## Phase 1b: User Discovery (MAY)
 
-After completing discovery, offer a welcoming prompt:
-
-"Before I compile the decision record — do you have any questions, concerns, or
-things you'd like to revisit from what we've discussed? This is also a good time
-to reconsider any earlier answers in light of later decisions."
-
-Skip if the user has indicated urgency or if all answers were confident.
+"Before I compile the decision record — any questions, concerns, or answers
+you'd like to revisit?" Skip if user indicated urgency.
 
 ---
 
-## Phase 2: Decision Record
+## Phase 2: Decision Record (MUST)
 
 Compile a **standalone DECISIONS.md** at the plan output location. This is the
 single source of truth referenced throughout implementation.
 
-### Format
+> See `.claude/skills/deep-plan/REFERENCE.md` for the DECISIONS.md template.
 
-```markdown
-# Decision Record: [Feature Name]
+### Rules (MUST follow)
 
-| #   | Decision    | Choice        | Rationale                     |
-| --- | ----------- | ------------- | ----------------------------- |
-| 1   | Name        | `system-name` | Mirrors existing X convention |
-| 2   | Data format | JSONL         | Project canonical standard    |
-```
+- One row per decision, numbered. Choice MUST be specific (never "TBD").
+- Rationale column captures WHY. Include rejected alternatives when relevant.
+- Write to file AND display inline in conversation.
 
-### Rules
-
-- One row per decision point, numbered sequentially
-- Choice column MUST be specific and actionable (never "TBD" or "maybe")
-- Rationale column captures WHY (institutional memory)
-- Include both what was chosen AND what was rejected when relevant
-- Write to file AND display inline in conversation
+**Transition:** "Decision record compiled. Proceeding to plan generation."
 
 ---
 
-## Phase 3: Plan
+## Phase 3: Plan (MUST)
 
 Write a structured plan. Reference DECISIONS.md rather than duplicating the
 decision table.
 
-### Step Structure (MUST follow for each step)
+> See `.claude/skills/deep-plan/REFERENCE.md` for the step structure template.
+> Each step MUST have: title, implementation details, "Done when:" criteria, and
+> optional "Depends on:" / "Triggers:" fields.
 
-```markdown
-## Step N: [Title]
-
-[Implementation details — specific files, code snippets for non-obvious logic]
-
-**Done when:** [Concrete, verifiable completion criteria] **Depends on:** Step M
-(if applicable) **Triggers:** /skill-name or downstream action (if applicable)
-```
-
-### Plan Rules
+### Plan Rules (MUST follow)
 
 1. **Be specific about files** — exact paths, not "somewhere in scripts/"
 2. **Include code snippets** — for schemas, configs, and non-obvious logic
@@ -196,73 +218,74 @@ decision table.
 7. **Include effort estimate** — rough T-shirt size (S/M/L/XL) for user planning
 8. **Reference DECISIONS.md** — "Per Decision #4, using JSONL format"
 
-### Plan Quality Checklist
+---
 
-Before presenting, verify the plan has:
+## Phase 3.5: Plan Self-Audit (MUST)
 
-- [ ] Summary (2-3 sentences)
-- [ ] Reference to DECISIONS.md
-- [ ] Files to create/modify with exact paths
-- [ ] Steps with "Done when:" criteria
-- [ ] Dependency markers between steps
-- [ ] At least one audit checkpoint
-- [ ] Effort estimate
-- [ ] Parallelization guidance where applicable
+Before presenting the plan, verify decisions→plan fidelity:
+
+1. **Decision coverage** (MUST) — every DECISIONS.md entry maps to a plan step
+2. **Quality checklist** (MUST) — see checklist in REFERENCE.md
+3. **Artifact consistency** (MUST) — DIAGNOSIS.md findings addressed by plan
+4. **Signal** (MUST) — "Self-audit: N/N decisions covered, checklist PASS"
+
+Fix any issues before proceeding to Phase 4.
 
 ---
 
-## Phase 4: Approval
+## Phase 4: Approval (MUST)
 
-1. Write plan to file for persistence
-2. **Display plan inline in conversation** (MUST — this is the primary output)
-3. Ask: "Ready to proceed, or changes needed?" Accept free-form feedback — not
-   just accept/reject
+1. Write plan to file for persistence (MUST)
+2. **Display plan inline in conversation** (MUST — primary output)
+3. Present: "Plan compiled. Presenting for review."
+4. Ask: "Ready to proceed, or changes needed?" Accept free-form feedback
 
-### Approval Outcomes
-
-- **Approved as-is** — proceed to Handoff
-- **Approved with additions** — note additions, proceed
-- **Changes requested** — revise plan, re-present
-- **Scope reduction** — remove steps, re-present
-- **Rejected** — stop, discuss alternative approaches
+Outcomes: approved as-is, approved with additions, changes requested (revise),
+scope reduction (remove steps), or rejected (discuss alternatives).
 
 ---
 
-## Handoff: Execution Routing
+## Handoff: Execution Routing (MUST)
 
-After approval, route to the right execution approach. This is a decision tree,
-not a full execution phase — deep-plan's job is done after routing.
+After approval, route to the right execution approach. Deep-plan's job is done
+after routing.
 
-| Plan Complexity      | Route           | Action                               |
-| -------------------- | --------------- | ------------------------------------ |
-| 3+ independent steps | Subagent-driven | Use `/dispatching-parallel-agents`   |
-| Multi-phase project  | GSD             | Use `/gsd:plan-phase` for each phase |
-| Sequential/simple    | Manual          | Execute steps in order               |
+| Plan Complexity      | Route           | Action                                        |
+| -------------------- | --------------- | --------------------------------------------- |
+| 3+ independent steps | Subagent-driven | Use Agent tool to dispatch parallel subagents |
+| Multi-phase project  | GSD             | Use `/gsd:plan-phase` for each phase          |
+| Sequential/simple    | Manual          | Execute steps in order                        |
 
-After routing, present completion message:
+**Artifact consumers:** DECISIONS.md is referenced during execution by any
+approach. PLAN.md is consumed by GSD via `/gsd:plan-phase`. DIAGNOSIS.md is
+reference-only.
 
+**Invocation tracking** (MUST):
+
+```bash
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"deep-plan","type":"skill","success":true,"context":{"topic":"TOPIC","decisions":N}}'
 ```
-Deep Plan Complete: [Feature Name]
-Artifacts: DIAGNOSIS.md, DECISIONS.md, PLAN.md
-Execution: [routed to X]
-```
 
-Prompt: "After implementation, consider running a brief retro: what worked, what
-didn't, what should deep-plan do differently next time?"
+**Completion message:** List artifacts (DIAGNOSIS.md, DECISIONS.md, PLAN.md),
+location, and execution route.
+
+**Post-execution retro** (SHOULD): After implementation, executor runs a brief
+retro: (1) Plan got right? (2) Plan missed? (3) Deep-plan do differently?
+Capture in state file `process_feedback` field.
 
 ---
 
 ## Compaction Resilience
 
-Deep-plan sessions run long. MUST persist state incrementally:
-
-- **State file:** `.claude/state/deep-plan.state.json`
-- **Update after:** every batch (Phase 1), decision record (Phase 2), plan
-  completion (Phase 3)
-- **Recovery:** On resume, read state file, skip completed phases, continue from
-  current phase
-- **Artifacts as checkpoints:** DIAGNOSIS.md, DECISIONS.md, PLAN.md each serve
-  as durable checkpoints — if state file is lost, artifacts remain
+- **State file:** `.claude/state/deep-plan.state.json` — update after every
+  batch, decision record, and plan completion
+- **Recovery:** On resume, read state file, skip completed phases
+- **Topic validation:** If state file topic differs from current invocation, ask
+  user: "Start fresh or resume [old-topic]?"
+- **Resume:** Re-invoke `/deep-plan <same-topic>` to trigger recovery
+- **Artifacts as checkpoints:** DIAGNOSIS.md, DECISIONS.md, PLAN.md persist even
+  if state file is lost
+- **Cleanup:** `rm .claude/state/deep-plan.state.json`
 
 ---
 
@@ -284,7 +307,10 @@ Deep-plan sessions run long. MUST persist state incrementally:
 
 | Version | Date       | Description                                            |
 | ------- | ---------- | ------------------------------------------------------ |
-| 1.0     | 2026-02-25 | Initial implementation                                 |
+| 3.0     | 2026-03-07 | Skill audit (29 decisions): self-audit phase, warm-up  |
+|         |            | routing guide, input/output spec, MUST/SHOULD/MAY,     |
+|         |            | invocation tracking, phase markers, mid-discovery      |
 | 2.0     | 2026-03-01 | Rewrite from 64-decision audit: Phase 0, no caps,      |
 |         |            | standalone DECISIONS.md, audit checkpoints, handoff    |
 |         |            | routing, compaction resilience, guard rails, REFERENCE |
+| 1.0     | 2026-02-25 | Initial implementation                                 |

@@ -75,12 +75,11 @@ testing opportunities:
 
 **Gaps:**
 
-1. **No .nvmrc or .node-version file** - Developers might use wrong Node version
-   locally vs CI (Node 22 in CI, but functions need 20)
-2. **Node version mismatch not caught locally**:
-   - Root uses Node 22 but Firebase Cloud Functions runs on Node 24
-   - Functions require Node 20 but might run on 22
-   - No preinstall script validates version match
+1. ~~**No .nvmrc or .node-version file**~~ RESOLVED (Session #211): Added
+   `.nvmrc` (22) at root and `functions/.nvmrc` (20). Migrated from nvm-windows
+   to fnm with auto-switching.
+2. ~~**Node version mismatch not caught locally**~~ RESOLVED (Session #211): fnm
+   auto-switches Node version on `cd` using `.nvmrc` files.
 3. **Missing firebase-tools dependency check** - `deploy-firebase.yml` installs
    globally (`npm install -g firebase-tools`) but no local dependency validation
 4. **No environment variable validation script** - `.env.local.example` exists

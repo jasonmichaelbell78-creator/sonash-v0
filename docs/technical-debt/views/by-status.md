@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2039)
+## NEW (2049)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -639,6 +639,10 @@
 | DEBT-11338 | Alerts blind spot: no checker for Node.js version compati...    | S2       | engineering-productivity |
 | DEBT-11341 | Alerts blind spot: no checker for stale build artifacts (...    | S2       | engineering-productivity |
 | DEBT-11342 | Alerts blind spot: no checker for Node.js version compati...    | S2       | engineering-productivity |
+| DEBT-11343 | Upgrade lucide-react 0.454→0.577 (major, icon API/name ch...    | S2       | refactoring              |
+| DEBT-11344 | Upgrade recharts 2.15→3.8 (major rewrite, breaking API)         | S2       | refactoring              |
+| DEBT-11345 | Upgrade react-resizable-panels 2.1→4.7 (major breaking ch...    | S2       | refactoring              |
+| DEBT-11346 | Upgrade tailwind-merge 2.6→3.5 (API changes for TW v4)          | S2       | refactoring              |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |
@@ -1313,7 +1317,6 @@
 | DEBT-7532  | Hook log file .git/hook-output.log grows unboundedly            | S3       | process                  |
 | DEBT-7533  | require_skip_reason() function duplicated verbatim in pre...    | S3       | process                  |
 | DEBT-7534  | 96-101 npm scripts with no grouping, no help, no discover...    | S3       | engineering-productivity |
-| DEBT-7535  | next dev without --turbopack flag                               | S3       | engineering-productivity |
 | DEBT-7536  | 3-step test compilation adds 10-20s overhead — full Vites...    | S3       | engineering-productivity |
 | DEBT-7537  | No type-check npm script alias — DEVELOPMENT.md reference...    | S3       | engineering-productivity |
 | DEBT-7538  | nul Windows artifact file committed to repo                     | S3       | engineering-productivity |
@@ -2019,7 +2022,6 @@
 | DEBT-11271 | Hook log file .git/hook-output.log grows unboundedly            | S3       | process                  |
 | DEBT-11272 | require_skip_reason() function duplicated verbatim in pre...    | S3       | process                  |
 | DEBT-11273 | 96-101 npm scripts with no grouping, no help, no discover...    | S3       | engineering-productivity |
-| DEBT-11274 | next dev without --turbopack flag                               | S3       | engineering-productivity |
 | DEBT-11275 | 3-step test compilation adds 10-20s overhead — full Vites...    | S3       | engineering-productivity |
 | DEBT-11276 | No type-check npm script alias — DEVELOPMENT.md reference...    | S3       | engineering-productivity |
 | DEBT-11277 | nul Windows artifact file committed to repo                     | S3       | engineering-productivity |
@@ -2046,6 +2048,14 @@
 | DEBT-11332 | Consider ajv schema validation for TDMS instead of hand-w...    | S3       | refactoring              |
 | DEBT-11333 | Improve template literal cross-boundary pattern detection...    | S3       | code-quality             |
 | DEBT-11334 | Extend no-math-max-spread to catch filtered/mapped spread...    | S3       | code-quality             |
+| DEBT-11347 | Upgrade eslint 9.x→10.x (config format changes)                 | S3       | refactoring              |
+| DEBT-11348 | Upgrade @eslint/js 9.x→10.x (paired with eslint major)          | S3       | refactoring              |
+| DEBT-11349 | Upgrade eslint-plugin-security 3.x→4.x (rule changes)           | S3       | refactoring              |
+| DEBT-11350 | Upgrade c8 10.x→11.x (coverage tool major)                      | S3       | refactoring              |
+| DEBT-11351 | Upgrade react-day-picker 9.8→9.14 (minor, currently pinned)     | S3       | refactoring              |
+| DEBT-11352 | Upgrade cmdk 1.0.4→1.1.1 (minor, currently pinned)              | S3       | refactoring              |
+| DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)     | S3       | refactoring              |
+| DEBT-11354 | Migrate test runner from node --test + c8 to vitest             | S3       | refactoring              |
 | DEBT-2457  | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...    | S0       | code-quality             |
 | DEBT-2459  | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...    | S0       | code-quality             |
 | DEBT-2468  | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...    | S0       | code-quality             |
@@ -7402,7 +7412,7 @@
 
 _No items_
 
-## RESOLVED (481)
+## RESOLVED (483)
 
 | ID         | Title                                                         | Severity | Category                 |
 | ---------- | ------------------------------------------------------------- | -------- | ------------------------ |
@@ -7796,6 +7806,7 @@ _No items_
 | DEBT-3888  | Recent security events display (from existing `logSecurit...  | S3       | security                 |
 | DEBT-7459  | Add validation that completed ROADMAP items have been arc...  | S3       | process                  |
 | DEBT-7460  | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...  | S3       | process                  |
+| DEBT-7535  | next dev without --turbopack flag                             | S3       | engineering-productivity |
 | DEBT-8258  | Create `/test-suite` skill with 5-phase pipeline ✅           | S3       | process                  |
 | DEBT-8274  | Add learning entry reminder to pre-commit hook                | S3       | process                  |
 | DEBT-8286  | Export `redactSensitiveUrl` from `lib/utils/error-export....  | S3       | code-quality             |
@@ -7859,6 +7870,7 @@ _No items_
 | DEBT-10931 | Shell script hooks may be redundant with Node.js versions     | S3       | ai-optimization          |
 | DEBT-11198 | Add validation that completed ROADMAP items have been arc...  | S3       | process                  |
 | DEBT-11199 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...  | S3       | process                  |
+| DEBT-11274 | next dev without --turbopack flag                             | S3       | engineering-productivity |
 | DEBT-0849  | Legacy journalEntries collection allows direct client wri...  | S0       | security                 |
 | DEBT-0851  | Multiple CI quality gates configured as non-blocking (con...  | S0       | code-quality             |
 | DEBT-0854  | Legacy journalEntries collection allows direct client wri...  | S0       | security                 |

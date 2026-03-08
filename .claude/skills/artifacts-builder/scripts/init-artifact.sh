@@ -3,6 +3,20 @@
 # Exit on error
 set -e
 
+# Initialize fnm so node/npm/npx are available in this shell context
+if command -v fnm > /dev/null 2>&1; then
+  if ! eval "$(fnm env --shell bash 2>/dev/null)"; then
+    echo "init-artifact.sh: fnm detected but failed to initialize" >&2
+    exit 1
+  fi
+  fnm use --silent-if-unchanged >/dev/null 2>&1 || true
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "init-artifact.sh: node is not available after fnm initialization" >&2
+  exit 1
+fi
+
 # Detect Node version
 NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
 

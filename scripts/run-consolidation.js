@@ -785,7 +785,7 @@ function main() {
         // Post-consolidation: learning effectiveness analysis
         log("\n📊 Running learning effectiveness analysis...", c.blue);
         try {
-          execFileSync("node", ["scripts/analyze-learning-effectiveness.js", "--auto"], {
+          execFileSync(process.execPath, ["scripts/analyze-learning-effectiveness.js", "--auto"], {
             stdio: "inherit",
             cwd: ROOT_DIR,
           });

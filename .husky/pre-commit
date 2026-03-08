@@ -120,7 +120,39 @@ if [ -n "$BRANCH_NAME" ] && [ "$BRANCH_NAME" != "main" ] && [ "$BRANCH_NAME" != 
   fi
 fi
 
+# Initialize fnm so node/npm/npx are available in this shell context
+if command -v fnm > /dev/null 2>&1; then
+  FNM_ENV="$(fnm env --shell bash 2>/dev/null || true)"
+  if [ -z "$FNM_ENV" ]; then
+    echo "  ❌ fnm detected but failed to initialize; cannot reliably run Node-based checks" >&2
+    exit 1
+  fi
+  eval "$FNM_ENV"
+fi
+
 echo "🔍 Running pre-commit checks..."
+
+# --- Wave 0: Secrets scan (fast, ~1s) ---
+echo "  ▶ Scanning for secrets (gitleaks)..."
+if command -v gitleaks > /dev/null 2>&1; then
+  gitleaks_exit=0
+  gitleaks protect --staged -c .gitleaks.toml --no-banner || gitleaks_exit=$?
+  if [ "$gitleaks_exit" -eq 1 ]; then
+    echo "  ❌ Secrets detected in staged files"
+    echo ""
+    echo "  Remove secrets before committing. Run: gitleaks detect --source ."
+    echo "  If false positive, add to .gitleaks.toml allowlist."
+    exit 1
+  elif [ "$gitleaks_exit" -ne 0 ]; then
+    echo "  ❌ gitleaks encountered an error (exit $gitleaks_exit) — scan could not be completed" >&2
+    echo "  Fix gitleaks/config before committing. Override: SKIP_CHECKS=\"gitleaks\" SKIP_REASON=\"reason\" git commit ..." >&2
+    exit "$gitleaks_exit"
+  else
+    echo "  ✅ No secrets detected"
+  fi
+else
+  echo "  ⏭️ gitleaks not installed (install: winget install Gitleaks.Gitleaks)"
+fi
 
 # --- Wave 1: ESLint + Tests in parallel ---
 # These are the two slowest checks (~15s each). Run concurrently for ~50% time savings.

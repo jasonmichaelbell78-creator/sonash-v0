@@ -2,8 +2,10 @@
 	"servers": {
 		"io.github.upstash/context7": {
 			"type": "stdio",
-			"command": "npx",
+			"command": "bash",
 			"args": [
+				".claude/hooks/ensure-fnm.sh",
+				"npx",
 				"@upstash/context7-mcp@1.0.31"
 			],
 			"env": {
@@ -14,8 +16,10 @@
 		},
 		"puppeteer": {
 			"type": "stdio",
-			"command": "npx",
+			"command": "bash",
 			"args": [
+				".claude/hooks/ensure-fnm.sh",
+				"npx",
 				"-y",
 				"@modelcontextprotocol/server-puppeteer"
 			],
@@ -23,8 +27,10 @@
 		},
 		"playwright": {
 			"type": "stdio",
-			"command": "npx",
+			"command": "bash",
 			"args": [
+				".claude/hooks/ensure-fnm.sh",
+				"npx",
 				"-y",
 				"@playwright/mcp-server"
 			],

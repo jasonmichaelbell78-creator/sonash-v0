@@ -1,6 +1,20 @@
 #!/bin/bash
 set -e
 
+# Initialize fnm so node/npm/npx are available in this shell context
+if command -v fnm > /dev/null 2>&1; then
+  if ! eval "$(fnm env --shell bash 2>/dev/null)"; then
+    echo "bundle-artifact.sh: fnm detected but failed to initialize" >&2
+    exit 1
+  fi
+  fnm use --silent-if-unchanged >/dev/null 2>&1 || true
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "bundle-artifact.sh: node is not available (install Node or fnm)" >&2
+  exit 1
+fi
+
 echo "📦 Bundling React app to single HTML artifact..."
 
 # Check if we're in a project directory

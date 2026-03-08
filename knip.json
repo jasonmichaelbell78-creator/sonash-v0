@@ -33,7 +33,7 @@
     "msw",
     "@modelcontextprotocol/server-memory"
   ],
-  "ignoreBinaries": ["printf", "report", "vitest"],
+  "ignoreBinaries": ["printf", "report", "vitest", "oxlint", "gitleaks"],
   "next": {
     "entry": [
       "app/**/{page,layout,loading,error,not-found,template,default,route}.tsx",

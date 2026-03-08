@@ -13,16 +13,20 @@ const ROOT = path.resolve(__dirname, "..", "..");
  */
 describe("Health pipeline integration", { timeout: 30000 }, () => {
   it("health:quick produces composite score output", () => {
-    const output = execFileSync("node", ["scripts/health/run-health-check.js", "--quick"], {
-      cwd: ROOT,
-      encoding: "utf8",
-      stdio: "pipe",
-    });
+    const output = execFileSync(
+      process.execPath,
+      ["scripts/health/run-health-check.js", "--quick"],
+      {
+        cwd: ROOT,
+        encoding: "utf8",
+        stdio: "pipe",
+      }
+    );
     assert.ok(output.includes("Composite:"), 'Output should contain "Composite:" score line');
   });
 
   it("health:full produces composite score and category results", () => {
-    const output = execFileSync("node", ["scripts/health/run-health-check.js"], {
+    const output = execFileSync(process.execPath, ["scripts/health/run-health-check.js"], {
       cwd: ROOT,
       encoding: "utf8",
       stdio: "pipe",
@@ -34,7 +38,7 @@ describe("Health pipeline integration", { timeout: 30000 }, () => {
 
   it("gate check exits cleanly on compliant codebase", () => {
     // Should not throw (exit 0) on the current codebase
-    const output = execFileSync("node", ["scripts/check-pattern-compliance.js"], {
+    const output = execFileSync(process.execPath, ["scripts/check-pattern-compliance.js"], {
       cwd: ROOT,
       encoding: "utf8",
       stdio: "pipe",

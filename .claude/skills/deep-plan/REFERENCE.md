@@ -16,6 +16,10 @@ for the deep-plan skill.
 Generate questions from these categories, selecting only categories relevant to
 the task. Not every task needs every category — use judgment.
 
+**Phase ordering:** Present categories 1-3 (identity, architecture, scale) in
+early batches. Categories 4-5 (behavior, integration) mid-priority. Categories
+6-8 (edge cases, UX, domain) in later batches.
+
 ### 1. Naming & Identity
 
 - What should this be called? (skill name, system name, ID prefix)
@@ -200,6 +204,21 @@ checkpoint at step 9.
 
 ---
 
+## Plan Quality Checklist
+
+Verify before presenting plan (Phase 3.5):
+
+- [ ] Summary (2-3 sentences)
+- [ ] Reference to DECISIONS.md
+- [ ] Files to create/modify with exact paths
+- [ ] Steps with "Done when:" criteria
+- [ ] Dependency markers between steps
+- [ ] At least one audit checkpoint
+- [ ] Effort estimate
+- [ ] Parallelization guidance where applicable
+
+---
+
 ## Routing Guidance
 
 | Situation                  | Use                                    | Why                                                   |
@@ -208,4 +227,4 @@ checkpoint at step 9.
 | 3-4 clear decisions        | EnterPlanMode                          | Lighter-weight, faster                                |
 | Multi-phase roadmap        | `/gsd:new-project`                     | Project-level planning with milestones                |
 | Brainstorming needed first | Brainstorming skill, then `/deep-plan` | Separate ideation from planning                       |
-| Just needs execution       | `/dispatching-parallel-agents`         | Skip planning, go straight to doing                   |
+| Just needs execution       | Agent tool (parallel subagents)        | Skip planning, go straight to doing                   |

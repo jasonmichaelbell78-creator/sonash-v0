@@ -7025,7 +7025,7 @@
 | DEBT-10556 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                                                   | 24   |
 | DEBT-10557 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 
-## refactoring (655)
+## refactoring (667)
 
 | ID         | Title                                                        | Severity | File                                                                             | Line |
 | ---------- | ------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------- | ---- |
@@ -7179,6 +7179,10 @@
 | DEBT-11299 | Replace regex-based extractStateFileRefs with AST parser ... | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js        | 240  |
 | DEBT-11300 | Replace regex-based isInsideTryCatch with AST parser (babel) | S2       | .claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js           | 119  |
 | DEBT-11301 | Replace regex-based isInsideTryCatch with AST parser         | S2       | .claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js | 119  |
+| DEBT-11343 | Upgrade lucide-react 0.454→0.577 (major, icon API/name ch... | S2       | package.json                                                                     | 139  |
+| DEBT-11344 | Upgrade recharts 2.15→3.8 (major rewrite, breaking API)      | S2       | package.json                                                                     | 148  |
+| DEBT-11345 | Upgrade react-resizable-panels 2.1→4.7 (major breaking ch... | S2       | package.json                                                                     | 147  |
+| DEBT-11346 | Upgrade tailwind-merge 2.6→3.5 (API changes for TW v4)       | S2       | package.json                                                                     | 150  |
 | DEBT-0817  | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx                               | 12   |
 | DEBT-0818  | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                                                    | 86   |
 | DEBT-3523  | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                                                | 188  |
@@ -7684,6 +7688,14 @@
 | DEBT-11327 | Mobile detection regex duplicated 4x across admin and dev... | S3       | app/admin/page.tsx                                                               | 36   |
 | DEBT-11329 | Ad-hoc path sanitization duplicates existing sanitizeDisp... | S3       | scripts/hook-analytics.js                                                        | 100  |
 | DEBT-11332 | Consider ajv schema validation for TDMS instead of hand-w... | S3       | scripts/debt/validate-schema.js                                                  | 0    |
+| DEBT-11347 | Upgrade eslint 9.x→10.x (config format changes)              | S3       | package.json                                                                     | 169  |
+| DEBT-11348 | Upgrade @eslint/js 9.x→10.x (paired with eslint major)       | S3       | package.json                                                                     | 156  |
+| DEBT-11349 | Upgrade eslint-plugin-security 3.x→4.x (rule changes)        | S3       | package.json                                                                     | 170  |
+| DEBT-11350 | Upgrade c8 10.x→11.x (coverage tool major)                   | S3       | package.json                                                                     | 165  |
+| DEBT-11351 | Upgrade react-day-picker 9.8→9.14 (minor, currently pinned)  | S3       | package.json                                                                     | 143  |
+| DEBT-11352 | Upgrade cmdk 1.0.4→1.1.1 (minor, currently pinned)           | S3       | package.json                                                                     | 133  |
+| DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)  | S3       | package.json                                                                     | 142  |
+| DEBT-11354 | Migrate test runner from node --test + c8 to vitest          | S3       | package.json                                                                     | 11   |
 
 ## security (722)
 

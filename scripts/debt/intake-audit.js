@@ -908,7 +908,10 @@ async function main() {
   console.log("🔄 Regenerating views...");
   let viewsRan = false;
   try {
-    execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
+    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
+      cwd: __dirname,
+      stdio: "inherit",
+    });
     viewsRan = true;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

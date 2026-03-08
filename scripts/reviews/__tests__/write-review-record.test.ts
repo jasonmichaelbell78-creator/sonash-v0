@@ -211,7 +211,7 @@ describe("CLI entry point", () => {
 
     assert.throws(
       () => {
-        execFileSync("node", [scriptPath, "--data", badData], {
+        execFileSync(process.execPath, [scriptPath, "--data", badData], {
           stdio: "pipe",
           encoding: "utf8",
         });

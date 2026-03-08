@@ -2951,3 +2951,169 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
   propagation
 
 ---
+
+#### Review #346: Qodo R6 — diminishing returns, JSONL data normalization (2026-03-08)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
+skill-audits **Suggestions:** 10 total (Critical: 0, Major: 1, Minor: 7,
+Trivial: 2)
+
+**Patterns Identified:**
+
+1. Diminishing returns in multi-round reviews: R6 had 8/10 items rejected —
+   mostly repeats of `_errorsCount7d` (3rd time), `err.message` (2nd time), and
+   eval hardening beyond defense-in-depth. Signal-to-noise ratio drops sharply
+   after R4-R5 for this PR.
+
+2. JSONL data normalization: Empty string `""` vs `null` for absent fields
+   creates inconsistency for downstream consumers. Standardize on `null`.
+
+**Resolution:**
+
+- Fixed: 2 items (rev-436 completeness, `""` → `null` x7 entries x2 files)
+- Deferred: 0 items
+- Rejected: 8 items (3 repeats, 5 pre-existing/over-engineering)
+
+**Key Learnings:**
+
+- After 5+ rounds, most new items are repeat FPs or diminishing-value hardening
+- Consider merging PR after R5 when fix rate drops below 30%
+- JSONL empty fields should use `null` not `""` for consistency
+- Suggested code with syntax errors should be rejected regardless of intent
+
+---
+
+#### Review #345: Qodo R5 — eval input validation, maxBuffer, TDMS provenance (2026-03-08)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
+skill-audits **Suggestions:** 10 total (Critical: 0, Major: 2, Minor: 6,
+Trivial: 2)
+
+**Patterns Identified:**
+
+1. Eval input validation: Even after capturing fnm env output into a variable,
+   the content should be screened for shell metacharacters (backticks, `$(`,
+   semicolons) before eval — defense-in-depth against compromised binaries.
+   - Root cause: R4 added capture-before-eval but not content validation.
+   - Prevention: Any eval of external command output should validate content.
+
+2. TDMS provenance gap: Manual debt entries created by `/add-debt` were missing
+   the top-level `"source"` field that downstream tooling expects for filtering.
+   - Root cause: `/add-debt` skill doesn't inject `"source"` field
+     automatically.
+   - Prevention: Check field parity with existing entries when appending JSONL.
+
+**Resolution:**
+
+- Fixed: 5 items (+ propagation to 12 TDMS entries across 2 files)
+- Deferred: 0 items
+- Rejected: 5 items (with justification)
+
+**Key Learnings:**
+
+- Defense-in-depth for eval: validate content even when the source is trusted
+- JSONL entries need field parity auditing — missing fields cause silent
+  downstream issues
+- Repeat rejections across rounds indicate reviewer FP patterns (e.g.,
+  `_errorsCount7d`, lookbehind compat) — consider `.qodo/pr-agent.toml` tuning
+- `maxBuffer` should be set on any execFileSync with `stdio: "pipe"` to prevent
+  silent truncation
+
+---
+
+#### Review #344: Qodo R4 — fnm eval safety, gitleaks regex, cwd determinism (2026-03-07)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
+skill-audits **Suggestions:** 13 total (Critical: 0, Major: 3, Minor: 8,
+Trivial: 2)
+
+**Patterns Identified:**
+
+1. fnm env eval without validation: `ensure-fnm.sh` ran `eval "$(fnm env ...)"`
+   without checking exit status or empty output, silently swallowing init
+   failures.
+   - Root cause: R3 fixed standalone scripts but missed the central wrapper.
+   - Prevention: Always capture command substitution output, validate non-empty,
+     then eval.
+
+2. Gitleaks regex false-positive: The fail regex `/(leaks found)/i` also matched
+   success messages like "no leaks found", causing false alerts.
+   - Root cause: Overly broad word-boundary regex without negative lookbehind.
+   - Prevention: Use negative lookbehind `(?<!no\s)` for patterns that have
+     negation variants.
+
+3. Deterministic cwd for execFileSync: Two `execFileSync` calls in
+   session-start.js used relative script paths without explicit `cwd`, while
+   sibling calls already set `cwd: projectDir`.
+   - Root cause: Inconsistency during incremental additions to the hook.
+   - Prevention: When adding execFileSync with relative paths, always include
+     `cwd`.
+
+**Resolution:**
+
+- Fixed: 11 items
+- Deferred: 0 items
+- Rejected: 2 items (with justification)
+
+**Key Learnings:**
+
+- Capture `$(command)` into a variable before `eval` — enables empty-output and
+  exit-status validation
+- Regex patterns for pass/fail detection need careful asymmetry — success
+  strings often embed failure keywords with negation ("no leaks found")
+- test:coverage script must be kept in sync with test script when adding new
+  test suites
+- Archive JSONL files accumulate duplicates when scripts append without
+  deduplication — periodic cleanup needed
+
+---
+
+#### Review #343: Qodo R3 — fnm ripple effects, gitleaks hardening, cross-platform globs (2026-03-07)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
+skill-audits **Suggestions:** 14 total (Critical: 2, Major: 3, Minor: 8,
+Trivial: 1)
+
+**Patterns Identified:**
+
+1. fnm env without fnm use: Multiple shell scripts called
+   `eval "$(fnm env ...)"` but not `fnm use`, meaning fnm's environment was set
+   up but the project-specific Node version wasn't activated.
+   - Root cause: fnm migration (PR #421) focused on ensure-fnm.sh wrapper but
+     missed standalone scripts.
+   - Prevention: Grep for `fnm env` after any fnm-related change; always pair
+     with `fnm use`.
+
+2. Cross-platform npm script quoting: Single quotes in npm scripts work on bash
+   but not on Windows cmd.exe, where they're treated as literal characters.
+   Node's `--test` glob could silently match zero files.
+   - Root cause: Package.json test scripts written with Unix-first assumptions.
+   - Prevention: Always use escaped double quotes (`\"..\"`) in package.json
+     scripts for cross-platform compat.
+
+3. Security gate bypass on tool errors: Gitleaks pre-commit check warned but
+   didn't block when the scanner itself errored (exit code > 1), allowing
+   commits to bypass the secret scan.
+   - Root cause: Defensive "don't break the developer" approach didn't account
+     for security gate semantics.
+   - Prevention: Security scanners should fail-closed; non-security tools can
+     fail-open.
+
+**Resolution:**
+
+- Fixed: 10 items
+- Deferred: 0 items
+- Rejected: 4 items (with justification)
+
+**Key Learnings:**
+
+- `$ARGUMENTS` in Claude Code hooks is runtime-set JSON, not untrusted input —
+  safe to use unquoted in shell
+- `eval "$(fnm env)"` is the standard documented pattern for fnm/nvm/rbenv — not
+  a security issue
+- When rejecting security scanner FPs, validate the actual data flow (who sets
+  the variable, can it be influenced)
+- Global template hooks should guard `fnm` with `command -v` since fnm may not
+  be installed everywhere
+
+---

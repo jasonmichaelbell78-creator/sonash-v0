@@ -170,7 +170,7 @@ function validateHooks() {
       }
       const hookPath = path.join(hooksDir, file);
       try {
-        execFileSync("node", ["--check", hookPath], { stdio: "pipe" });
+        execFileSync(process.execPath, ["--check", hookPath], { stdio: "pipe" });
         results.push({ file, valid: true });
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);

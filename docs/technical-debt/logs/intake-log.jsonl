@@ -52,3 +52,15 @@
 {"timestamp":"2026-02-28T22:00:12.962Z","action":"intake-manual","item_id":"DEBT-11327","file":"app/admin/page.tsx","severity":"S3","category":"refactoring"}
 {"timestamp":"2026-02-28T22:00:19.977Z","action":"intake-manual","item_id":"DEBT-11328","file":"scripts/check-session-gaps.js","severity":"S3","category":"code-quality"}
 {"timestamp":"2026-02-28T22:00:26.467Z","action":"intake-manual","item_id":"DEBT-11329","file":"scripts/hook-analytics.js","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-07T13:56:56.642Z","action":"intake-manual","item_id":"DEBT-11343","file":"package.json","severity":"S2","category":"refactoring"}
+{"timestamp":"2026-03-07T13:56:59.830Z","action":"intake-manual","item_id":"DEBT-11344","file":"package.json","severity":"S2","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:00.593Z","action":"intake-manual","item_id":"DEBT-11345","file":"package.json","severity":"S2","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:02.895Z","action":"intake-manual","item_id":"DEBT-11346","file":"package.json","severity":"S2","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:04.964Z","action":"intake-manual","item_id":"DEBT-11347","file":"package.json","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:06.749Z","action":"intake-manual","item_id":"DEBT-11348","file":"package.json","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:07.389Z","action":"intake-manual","item_id":"DEBT-11349","file":"package.json","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:09.814Z","action":"intake-manual","item_id":"DEBT-11350","file":"package.json","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:10.647Z","action":"intake-manual","item_id":"DEBT-11351","file":"package.json","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:12.139Z","action":"intake-manual","item_id":"DEBT-11352","file":"package.json","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-07T13:57:13.494Z","action":"intake-manual","item_id":"DEBT-11353","file":"package.json","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-07T14:29:58.068Z","action":"intake-manual","item_id":"DEBT-11354","file":"package.json","severity":"S3","category":"refactoring"}
