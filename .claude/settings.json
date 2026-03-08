@@ -154,7 +154,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/user-prompt-handler.js $ARGUMENTS",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/user-prompt-handler.js",
             "statusMessage": "Processing user prompt..."
           }
         ]

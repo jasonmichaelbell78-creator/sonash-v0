@@ -11,16 +11,19 @@ const ROOT_DIR = path.resolve(__dirname, "../..");
 const CLAUDE_DIR = path.join(ROOT_DIR, ".claude");
 const HOOKS_DIR = path.join(CLAUDE_DIR, "hooks");
 
-const rawArg = (process.argv[2] || "").trim();
-let userPrompt = rawArg;
-if (rawArg.startsWith("{")) {
-  try {
-    const parsed = JSON.parse(rawArg);
-    userPrompt = parsed.prompt || parsed.request || parsed.message || parsed.content || "";
-  } catch {
-    userPrompt = rawArg;
+// Claude Code passes hook data via stdin as JSON: { prompt: "...", session_id: "...", ... }
+// Fallback to argv for manual testing (e.g. node user-prompt-handler.js "test prompt")
+let userPrompt = "";
+try {
+  const stdinData = fs.readFileSync(0, "utf-8").trim();
+  if (stdinData) {
+    const parsed = JSON.parse(stdinData);
+    userPrompt = (parsed.prompt || "").trim();
   }
+} catch {
+  /* stdin not available or not JSON */
 }
+if (!userPrompt) userPrompt = (process.argv[2] || "").trim();
 if (!userPrompt || typeof userPrompt !== "string") {
   console.log("ok");
   process.exit(0);
