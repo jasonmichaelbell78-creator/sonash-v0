@@ -106,8 +106,13 @@ Categories: 10 | Estimated decisions: [N]
 
 ### Interactive Flow (MUST)
 
-Present ONE category at a time. Wait for user response. Do NOT batch.
+Present ONE category at a time. Wait for user response. Do NOT batch. Even if a
+rewrite is confirmed at mid-audit, MUST continue one-category-at-a-time
+interactive flow. The rewrite conclusion does not change the process.
 
+- **Correction protocol:** If user corrects presentation format, re-present the
+  category in the EXACT original format (full pros, cons, gaps, suggestions with
+  rationale). Never summarize, truncate, or use table-only format.
 - **Mid-category recovery:** If compaction occurs mid-category, re-read state
   file and restart the current category (partial progress not persisted).
 - **Cross-category revision:** If a later category conflicts with an earlier
@@ -212,8 +217,8 @@ finding. **Pause for user confirmation before proceeding to Phase 3.**
 3. **Flag conflicts** (MUST) — if two decisions conflict, ask user first
 4. **Low-confidence confirm** (MUST) — decisions tagged `low` get extra
    confirmation before applying
-5. **Rewrite threshold** — if >70% of lines need changing, recommend
-   `/skill-creator` instead of piecemeal edits
+5. **Correction protocol** (MUST) — if user corrects presentation format,
+   re-present in the EXACT original format. Never summarize or truncate.
 6. Update SKILL.md — keep under 300 lines (MUST)
 7. Extract to REFERENCE.md if needed (SHOULD)
 8. Update companion files as needed (SHOULD)

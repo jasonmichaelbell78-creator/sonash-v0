@@ -150,10 +150,19 @@ Every component has exactly one owner responsible for it. Others consume, never
 supersede. Primary ownership = maintenance responsibility, not authority
 hierarchy.
 
-**T17. declarative_over_imperative**  
-Declare WHAT should be, let tools enforce HOW. Enforcement manifests, schemas,
-configs — all declarative. You describe the world you want; automation makes it
-so.
+**T17. declarative_over_imperative** Declare WHAT should be, let tools enforce
+HOW. Enforcement manifests, schemas, configs — all declarative. You describe the
+world you want; automation makes it so.
+
+**T19. extensive_discovery_first** Every skill MUST front-load extensive
+discovery before producing output. Multi-agent codebase exploration + deep-plan
+Q&A with findings is the standard pattern. Discovery is not optional polish —
+it's the mechanism that makes output useful. Shallow discovery produces shallow
+skills. _Note: Added during create-audit skill audit (Session #211). User
+directive: extensive discovery/findings/Q&A needs to be a core tenet of all
+skills. Extends T15 (interactivity first) with the specific requirement that
+discovery must be multi-pass, multi-agent, and exhaustive before any output is
+generated._
 
 ---
 

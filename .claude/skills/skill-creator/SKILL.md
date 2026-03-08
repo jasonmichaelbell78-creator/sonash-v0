@@ -139,6 +139,9 @@ hook, script, CLAUDE.md entry, or agent — present the reframe before proceedin
 7. **State inferences explicitly** — "Based on Q3, inferring X for Q7"
 8. **Save decisions after every batch** (MUST) — persist to state file
 9. **Show progress** — "Batch 2 of ~3. N decisions captured."
+10. **Multi-agent exploration** (SHOULD for Complex) — dispatch Explore agents
+    to scan the codebase for relevant patterns before presenting questions.
+    Findings inform defaults and recommendations.
 
 **Delegation:** If user says "you decide," accept recommended defaults. Document
 each delegated decision with rationale.
@@ -283,6 +286,9 @@ behavioral quality that structural validation cannot catch.
     actions
 11. Skills without invocation tracking — all skills SHOULD log invocations via
     `write-invocation.js` in their closure phase for usage analysis
+12. Interactive skills without correction protocol — if user corrects
+    presentation format, MUST re-present in exact original format, never
+    summarize or truncate
 
 ## Compaction Resilience
 
