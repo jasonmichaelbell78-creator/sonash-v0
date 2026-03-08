@@ -182,7 +182,7 @@ Show first example in full, then: "Apply same decision to all N similar alerts?"
 **Delegation protocol:** If user says "you decide" or similar, apply all
 recommendations automatically, record each as `delegated-accept`, show summary.
 
-AskUserQuestion options by severity:
+Present options via conversational Q&A (NEVER use AskUserQuestion):
 
 - **ERROR:** Fix Now | Defer | Suppress (permanent, requires reason)
 - **WARNING:** Fix Now | Defer | Ignore (session) | Suppress
@@ -242,7 +242,7 @@ be surfaced as an INFO alert in the self-audit. These represent blind spots.
 
 **Suppression ratio guard:** If >50% of alerts are suppressed, emit WARNING.
 
-Present findings with AskUserQuestion: Acknowledge / Create tasks / Suppress.
+Present findings via conversational Q&A: Acknowledge / Create tasks / Suppress.
 
 **Done-when gate:** Phase 6 is done when all self-audit findings are presented
 and decided.

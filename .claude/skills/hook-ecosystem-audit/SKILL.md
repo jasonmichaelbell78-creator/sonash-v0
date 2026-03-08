@@ -1,6 +1,6 @@
 ---
 name: hook-ecosystem-audit
-description: |
+description: >-
   Comprehensive diagnostic of the hook ecosystem — 19 categories across 6
   domains with composite health scoring, trend tracking, patch suggestions, and
   interactive finding-by-finding walkthrough. Covers Claude Code hooks,
@@ -8,8 +8,8 @@ description: |
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
-**Last Updated:** 2026-02-24
+**Document Version:** 2.0
+**Last Updated:** 2026-03-08
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -23,195 +23,195 @@ suggestions.
 
 **Invocation:** `/hook-ecosystem-audit`
 
-**When to use:** When you want to understand the overall health of the hook
-system, identify configuration drift, security gaps, or pipeline issues.
-Complementary with `/pr-ecosystem-audit` (PR audit owns workflow state; hook
-audit owns hook internals).
+## Critical Rules (MUST follow)
+
+1. **CHECK for saved progress first** (MUST) — resume from
+   `.claude/tmp/hook-audit-progress.json` if it exists and is < 2 hours old.
+   Never re-present findings that were already decided.
+2. **ALWAYS run the script first** (MUST) — never generate findings without
+   data. If no saved progress, run the audit script before anything else.
+3. **ALWAYS display the dashboard** (MUST) — show to user before walkthrough.
+4. **Use conversational Q&A for decisions** (MUST) — present findings in
+   batches, collect decisions via conversation. NEVER use AskUserQuestion.
+5. **SAVE progress after every decision** (MUST) — write updated state to
+   progress file immediately.
+6. **Show patch suggestions inline** (SHOULD) — with each patchable finding.
+7. **Create TDMS entries** (MUST) — for deferred findings via `/add-debt`.
+8. **Save decisions** (MUST) — to session log for audit trail.
 
 ---
 
 ## When to Use
 
-- |
 - User explicitly invokes `/hook-ecosystem-audit`
+- After adding, removing, or modifying hooks in `.claude/hooks/`
+- After changes to `.husky/pre-commit` or `.claude/settings.json`
+- After hook test failures are observed
 
 ## When NOT to Use
 
-- When the task doesn't match this skill's scope -- check related skills
-- When a more specialized skill exists for the specific task
+- Auditing PR workflow state — use `/pr-ecosystem-audit`
+- Auditing session lifecycle — use `/session-ecosystem-audit`
+- Auditing all ecosystems at once — use `/comprehensive-ecosystem-audit`
+- Quick hook structural check — use `npm run hooks:test`
+- Creating or modifying a hook — direct editing (no skill needed)
 
-## CRITICAL RULES (Read First)
+## Routing Guide
 
-1. **CHECK for saved progress first** — resume from
-   `.claude/tmp/hook-audit-progress.json` if it exists and is < 2 hours old.
-   Never re-present findings that were already decided.
-2. **ALWAYS run the script first** (if no saved progress) — never generate
-   findings without data
-3. **ALWAYS display the dashboard to the user** before starting the walkthrough
-4. **Present findings one at a time** using AskUserQuestion for decisions
-5. **SAVE progress after every decision** — write updated state to progress file
-   immediately
-6. **Show patch suggestions inline** with each patchable finding
-7. **Create TDMS entries** for deferred findings via `/add-debt`
-8. **Save decisions** to session log for audit trail
+| Concern                           | Audit                            |
+| --------------------------------- | -------------------------------- |
+| Hook internals, pre-commit, CI/CD | `/hook-ecosystem-audit`          |
+| PR review workflow                | `/pr-ecosystem-audit`            |
+| Session lifecycle                 | `/session-ecosystem-audit`       |
+| Technical debt management         | `/tdms-ecosystem-audit`          |
+| Skill quality                     | `/skill-ecosystem-audit`         |
+| Documentation                     | `/doc-ecosystem-audit`           |
+| Script infrastructure             | `/script-ecosystem-audit`        |
+| All of the above                  | `/comprehensive-ecosystem-audit` |
+
+---
+
+## Process Overview
+
+```
+WARM-UP    Orientation    → Effort estimate, process overview
+PHASE 1    Run & Parse    → Hook tests + audit script + session log
+PHASE 2    Dashboard      → Composite grade, domain breakdown
+PHASE 3    Walkthrough    → Interactive finding-by-finding decisions
+PHASE 4    Summary        → Decision aggregate + TDMS batch summary
+PHASE 5    Process Audit  → Verify audit process was followed correctly
+PHASE 6    Verification   → Re-run audit to confirm fixes worked
+PHASE 7    Trend Report   → Cross-run comparison (if history exists)
+PHASE 8    Closure        → Retro, invocation tracking, artifact list
+```
+
+---
+
+## Warm-Up (MUST)
+
+Present before any work:
+
+```
+Hook Ecosystem Audit
+Phases: Run script → Dashboard → Interactive walkthrough → Summary → Verification
+Estimated time: 15-30 min (depends on finding count)
+```
+
+**Done when:** User confirms proceed.
 
 ---
 
 ## Compaction Guard
 
 Audits are long-running interactive workflows vulnerable to context compaction.
-To survive compaction, save progress after every decision and check for existing
-progress on startup.
 
 ### State File
 
 Path: `.claude/tmp/hook-audit-progress.json`
 
-Schema:
+> See `REFERENCE.md` for full schema.
 
-```json
-{
-  "auditTimestamp": "ISO timestamp of audit run",
-  "score": 85,
-  "grade": "B",
-  "totalFindings": 142,
-  "currentFindingIndex": 8,
-  "decisions": [
-    {
-      "findingIndex": 1,
-      "category": "behavioral_accuracy",
-      "message": "gsd-check-update.js: continueOnError hook file not found",
-      "decision": "skip",
-      "note": "Global hooks are external"
-    }
-  ],
-  "fixesApplied": ["added continueOnError to check-mcp-servers.js"],
-  "findingsData": []
-}
-```
-
-### On Skill Start (Before Phase 1)
+### On Skill Start (Before Phase 1) (MUST)
 
 1. Check if `.claude/tmp/hook-audit-progress.json` exists and is < 2 hours old
 2. If yes: **resume from saved position**
    - Display the dashboard from saved data (skip re-running the audit script)
    - Show: "Resuming audit from finding {n}/{total} ({n-1} already reviewed)"
-   - List prior decisions briefly: "{n} fixed, {n} skipped, {n} deferred"
+   - List prior decisions: "{n} fixed, {n} skipped, {n} deferred"
    - Continue the walkthrough from `currentFindingIndex`
 3. If no (or stale): proceed to Phase 1 normally
 
-### After Each Decision (During Phase 3)
+### After Each Decision (During Phase 3) (MUST)
 
-After each AskUserQuestion response, immediately save progress:
+After each decision, immediately save progress:
 
 1. Update `currentFindingIndex` to the next finding
 2. Append the decision to the `decisions` array
 3. If "Fix Now" was chosen, append to `fixesApplied`
 4. Write the updated JSON to `.claude/tmp/hook-audit-progress.json`
 
-This ensures that if compaction occurs mid-walkthrough, the next invocation
-resumes exactly where it left off — no repeated questions, no lost decisions.
+### On Audit Completion
 
-### On Audit Completion (Phase 4)
-
-After the summary is presented, delete the progress file (audit is complete).
+After the closure summary, delete the progress file.
 
 ---
 
 ## Dependency Constraints
 
-This skill runs as a single-threaded sequential workflow (run script, display
-dashboard, walk through findings one-by-one). It does not spawn parallel agents
-internally. When invoked as part of `/comprehensive-ecosystem-audit`, it runs as
-one of 4 independent parallel agents in Stage 1 -- no ordering required relative
-to the session, TDMS, or PR audit agents.
+This skill runs as a single-threaded sequential workflow. It does not spawn
+parallel agents internally. When invoked as part of
+`/comprehensive-ecosystem-audit`, it runs as one of 4 independent parallel
+agents in Stage 1 — no ordering required.
+
+**Orchestrator return protocol** (MUST when invoked by
+`/comprehensive-ecosystem-audit`): Save JSON to
+`.claude/tmp/ecosystem-hook-result.json` and return ONLY:
+`COMPLETE: hook grade {grade} score {score} errors {N} warnings {N} info {N}`
+
+**Batch mode:** The audit script supports `--batch --summary` flags for
+non-interactive orchestrated runs.
 
 ---
 
-## Phase 1: Run & Parse
+## Phase 1: Run & Parse (MUST)
 
-1. Run the hook test suite first to get live pass/fail data:
+1. Run the hook test suite (MUST):
 
-```bash
-npm run hooks:test
-```
+   ```bash
+   npm run hooks:test
+   ```
 
-2. Run the audit script:
+   If tests fail, proceed with audit anyway but note test failures as additional
+   context. The audit script reads source files, not test results.
 
-```bash
-node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js
-```
+2. Run the audit script (MUST — never generate findings without data):
+
+   ```bash
+   node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js
+   ```
 
 3. Parse the v2 JSON output from stdout (progress goes to stderr).
 
-4. Create a session decision log file:
+4. Create a session decision log file (MUST):
    - Path: `.claude/tmp/hook-audit-session-{YYYY-MM-DD-HHMM}.jsonl`
-   - Create `.claude/tmp/` directory if it doesn't exist
+   - Schema per line:
+     `{"findingIndex","category","severity","message","decision","note","timestamp"}`
 
-5. Save initial progress state to `.claude/tmp/hook-audit-progress.json` with
-   `currentFindingIndex: 0`, the full findings data, score, and grade.
+5. Save initial progress state to `.claude/tmp/hook-audit-progress.json`.
 
----
-
-## Phase 2: Dashboard Overview (compact)
-
-Present a compact header with composite grade and domain breakdown:
-
-```
-Hook Ecosystem Health: {grade} ({score}/100)  |  Trend: {sparkline} ({delta})
-{errors} errors · {warnings} warnings · {info} info  |  {patches} patch suggestions
-
-┌─────────────────────────────────┬───────┬──────────┬──────────────┐
-│ Category                        │ Score │ Rating   │ Trend        │
-├─────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D1: Hook Configuration Health   │       │          │              │
-│   Settings-File Alignment       │  {s}  │ {rating} │ {trend}      │
-│   Event Coverage & Matchers     │  {s}  │ {rating} │ {trend}      │
-│   Global-Local Consistency      │  {s}  │ {rating} │ {trend}      │
-├─────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D2: Code Quality & Security     │       │          │              │
-│   Error Handling & Sanitization │  {s}  │ {rating} │ {trend}      │
-│   Security Patterns             │  {s}  │ {rating} │ {trend}      │
-│   Code Hygiene                  │  {s}  │ {rating} │ {trend}      │
-│   Regex Safety                  │  {s}  │ {rating} │ {trend}      │
-├─────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D3: Pre-commit Pipeline         │       │          │              │
-│   Stage Ordering & Completeness │  {s}  │ {rating} │ {trend}      │
-│   Bypass & Override Controls    │  {s}  │ {rating} │ {trend}      │
-│   Gate Effectiveness            │  {s}  │ {rating} │ {trend}      │
-├─────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D4: Functional Correctness      │       │          │              │
-│   Test Coverage                 │  {s}  │ {rating} │ {trend}      │
-│   Output Protocol Compliance    │  {s}  │ {rating} │ {trend}      │
-│   Behavioral Accuracy           │  {s}  │ {rating} │ {trend}      │
-├─────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D5: State & Integration         │       │          │              │
-│   State File Health             │  {s}  │ {rating} │ {trend}      │
-│   Cross-Hook Dependencies       │  {s}  │ {rating} │ {trend}      │
-│   Compaction Resilience         │  {s}  │ {rating} │ {trend}      │
-├─────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D6: CI/CD Pipeline Health       │       │          │              │
-│   Workflow↔Script Alignment     │  {s}  │ {rating} │ {trend}      │
-│   Bot Configuration Freshness   │  {s}  │ {rating} │ {trend}      │
-│   CI Cache Effectiveness        │  {s}  │ {rating} │ {trend}      │
-└─────────────────────────────────┴───────┴──────────┴──────────────┘
-```
-
-Rating badges: good = "Good", average = "Avg", poor = "Poor"
-
-Then say: **"Found N findings to review. Walking through each one
-(impact-weighted)..."**
+**Done when:** Script output parsed, session log created, progress state saved.
 
 ---
 
-## Phase 3: Finding-by-Finding Walkthrough
+## Phase 2: Dashboard Overview (MUST)
+
+Present the dashboard to user (MUST — Critical Rule 3).
+
+> See `REFERENCE.md` for the full dashboard template.
+
+Present compact header with composite grade and domain breakdown table. Then:
+
+**Zero findings:** If no findings, display dashboard with all-green scores and
+skip to Phase 7 (Trend Report): "Clean audit — no findings. Score: {grade}
+({score}/100)."
+
+**With findings:** "Found N findings to review. Walking through each one
+(impact-weighted)..."
+
+**Done when:** Dashboard displayed to user.
+
+---
+
+## Phase 3: Finding-by-Finding Walkthrough (MUST)
 
 Sort all findings by `impactScore` descending (highest impact first).
 
-For each finding, present a context card:
+### Finding Presentation
+
+For each finding, present a context card with progress:
 
 ```
-━━━ Finding {n}/{total} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━ Finding {n}/{total} ({pct}% complete — {fixed} fixed, {deferred} deferred, {skipped} skipped) ━━━
 {SEVERITY}  |  {domainLabel}: {categoryLabel}  |  Impact: {impactScore}/100
 
 {message}
@@ -220,270 +220,175 @@ Evidence:
   {details}
 ```
 
-If the finding has `patchable: true`, also show:
+If `patchable: true`, also show patch preview inline (SHOULD).
 
-```
-Patch Available:
-  Target: {patch.target}
-  Action: {patch.description}
-  Preview:
-    {patch.preview or patch.content}
-```
+### Decision Collection (Conversational Q&A — MUST)
 
-Then use `AskUserQuestion` with options based on severity:
+Present findings and collect decisions via conversation. NEVER use
+AskUserQuestion.
 
-**ERROR findings:**
+**ERROR findings** — options: Fix Now, Defer (creates DEBT entry)
 
-- Fix Now — execute the fix/patch immediately
-- Defer — add to deferred list, create DEBT entry
-- Suppress — suppress this finding type permanently
+**WARNING findings** — options: Fix Now, Defer, Skip
 
-**WARNING findings:**
+**INFO findings** — options: Acknowledge, Defer
 
-- Fix Now
-- Defer
-- Skip — acknowledge but don't track
+**To revise a previous decision**, note it during any later finding and it will
+be captured in the session log.
 
-**INFO findings:**
+### Batch Shortcuts (SHOULD)
 
-- Acknowledge
-- Defer for later
+After 3+ INFO findings: offer "N more INFO findings remaining. Review each, or
+acknowledge all?"
+
+After 3+ WARNING findings with no patches: offer similar batch option.
+
+ERRORs are ALWAYS presented individually.
+
+### Scope Explosion Guard (MUST)
+
+If total findings > 30: "30+ findings detected. Options: review all, errors-only
+(with summary of rest), or top-20 by impact?"
+
+### Delegation Protocol (MUST)
+
+If user says "you decide" or similar: accept all available patches, defer
+findings without patches, log each as `delegated-accept`. Show summary of
+delegated decisions.
 
 ### Handling Decisions
 
-**Fix Now:**
+**Fix Now:** Apply patch if available, else provide guidance. Log to session
+file. Create TDMS entries one-by-one during walkthrough (MUST — prevents loss on
+compaction).
 
-1. If patch is available, apply it (edit file, run command, etc.)
-2. If no patch, provide guidance for manual fix
-3. Log decision to session file
+**Defer:** Create DEBT entry via `/add-debt` with severity S1 (errors) or S2
+(warnings), category `engineering-productivity`, source_id
+`review:hook-ecosystem-audit-{date}`. Log to session file.
 
-**Defer:**
+**Skip:** Acknowledge without tracking. Log to session file.
 
-1. Create DEBT entry via `/add-debt` with:
-   - severity: S1 (errors) or S2 (warnings)
-   - category: engineering-productivity
-   - source_id: "review:hook-ecosystem-audit-{date}"
-2. Log decision to session file
+### Post-Walkthrough Contradiction Check (SHOULD)
 
-**Suppress:**
+After all decisions, scan for contradictions (e.g., fixing a hook that a skipped
+finding depends on). Present any conflicts for resolution.
 
-1. Add to suppression list (not yet implemented — log for future)
-2. Log decision to session file
+**MUST save progress after every decision** (Critical Rule 5).
 
----
-
-## Phase 4: Summary & Actions
-
-After all findings are reviewed, present the summary:
-
-```
-━━━ Audit Summary ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Composite: {grade} ({score}/100)  |  {trend}
-
-Decisions:
-  Fixed:      {count} findings
-  Deferred:   {count} findings → {count} DEBT entries created
-  Skipped:    {count} findings
-  Suppressed: {count} findings
-
-Patches Applied: {count}/{total patchable}
-
-Top 3 Impact Areas:
-  1. {category} — {brief description}
-  2. {category} — {brief description}
-  3. {category} — {brief description}
-
-Next Steps:
-  - {actionable recommendation based on worst categories}
-  - {actionable recommendation}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+**Done when:** All findings reviewed (or batch-acknowledged).
 
 ---
 
-## Phase 5: Trend Report (if previous runs exist)
+## Phase 4: Summary & Actions (MUST)
 
-If the state file has previous entries, show improvement/regression:
+> See `REFERENCE.md` for the full summary template.
 
-```
-━━━ Trend Report ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Present the summary including decisions breakdown, patches applied, top 3 impact
+areas, next steps, and TDMS batch summary listing all DEBT entries created.
 
-Composite Trend: {sparkline}  {direction} ({delta})
+Write summary to `.claude/tmp/hook-audit-report-{YYYY-MM-DD}.md` (MUST).
 
-Improving:
-  {category}: {before} → {after} (+{delta})
-
-Declining:
-  {category}: {before} → {after} ({delta})
-
-Stable:
-  {category}: {score} (no change)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+**Done when:** Summary displayed and persisted to file.
 
 ---
 
-## Phase 6: Self-Audit (Verification)
+## Phase 5: Process Self-Audit (MUST)
 
-After all findings are reviewed and fixes committed, re-run the audit to verify
-improvements:
+Verify this audit's own process was followed correctly:
 
-1. Run the hook test suite again:
+- [ ] Script was run before generating findings (Critical Rule 2)
+- [ ] Dashboard was displayed before walkthrough (Critical Rule 3)
+- [ ] Conversational Q&A used, not AskUserQuestion (Critical Rule 4)
+- [ ] Progress saved after every decision (Critical Rule 5)
+- [ ] All ERROR findings addressed (fixed or deferred, not skipped)
+- [ ] TDMS entries created for all deferred findings
 
-```bash
-npm run hooks:test
-```
+Present: "Process self-audit: N/N checks passed." Fix any failures before
+proceeding.
 
-2. Re-run the audit script:
-
-```bash
-node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js
-```
-
-3. Compare the new score against the Phase 2 score:
-
-```
-━━━ Self-Audit Verification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Before: {previous_grade} ({previous_score}/100)
-After:  {new_grade} ({new_score}/100)
-Delta:  {+/-delta} points
-
-Improved Categories:
-  {category}: {before} → {after} (+{delta})
-
-Remaining Issues:
-  {count} findings still open (deferred/skipped)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-4. If the score improved, commit the audit state for trend tracking.
-5. If the score did not improve, investigate why — fixes may have introduced new
-   findings.
+**Done when:** All process checks pass.
 
 ---
 
-## Category Reference
+## Phase 6: Verification Re-run (SHOULD)
 
-### Domain 1: Hook Configuration Health (18% weight)
+Re-run the audit to verify fixes improved the score:
 
-| Category                  | What It Checks                                                  |
-| ------------------------- | --------------------------------------------------------------- |
-| Settings-File Alignment   | Every settings.json hook entry has a matching .js file and v.v. |
-| Event Coverage & Matchers | All event types have handlers, matchers are valid regex         |
-| Global-Local Consistency  | Global hooks don't conflict with project hooks                  |
+1. Run `npm run hooks:test`
+2. Run the audit script again
+3. Compare new vs Phase 2 score
 
-### Domain 2: Code Quality & Security (23% weight)
+> See `REFERENCE.md` for the verification template.
 
-| Category                      | What It Checks                                                 |
-| ----------------------------- | -------------------------------------------------------------- |
-| Error Handling & Sanitization | try/catch coverage, sanitize-error.js usage, graceful failures |
-| Security Patterns             | Symlink guard, path traversal checks, input validation         |
-| Code Hygiene                  | Dead code, unused imports, TODO/FIXME markers                  |
-| Regex Safety                  | S5852 compliance, /g flag on exec() loops, complexity          |
+If score improved, append to trend history. If score did not improve,
+investigate — fixes may have introduced new findings.
 
-### Domain 3: Pre-commit Pipeline (18% weight)
-
-| Category                      | What It Checks                                         |
-| ----------------------------- | ------------------------------------------------------ |
-| Stage Ordering & Completeness | All 11+ stages present, correct order, parallel safety |
-| Bypass & Override Controls    | SKIP_CHECKS inventory, SKIP_REASON validation          |
-| Gate Effectiveness            | Blocking gates reachable, non-blocking use warnings    |
-
-### Domain 4: Functional Correctness (18% weight)
-
-| Category                   | What It Checks                                                |
-| -------------------------- | ------------------------------------------------------------- |
-| Test Coverage              | test-hooks.js coverage vs total hooks, gap identification     |
-| Output Protocol Compliance | "ok"/block/warn output format, exit codes correct             |
-| Behavioral Accuracy        | Blocking hooks block, warnings warn, matchers match correctly |
-
-### Domain 5: State & Integration (13% weight)
-
-| Category                | What It Checks                                          |
-| ----------------------- | ------------------------------------------------------- |
-| State File Health       | JSONL validity, rotation working, size managed          |
-| Cross-Hook Dependencies | Write-before-read ordering, no circular deps            |
-| Compaction Resilience   | Layer A-D coverage, pre-compaction save, recovery chain |
-
-### Domain 6: CI/CD Pipeline Health (10% weight)
-
-| Category                    | What It Checks                                                       |
-| --------------------------- | -------------------------------------------------------------------- |
-| Workflow↔Script Alignment   | GitHub Actions `run:` steps reference valid npm scripts/commands     |
-| Bot Configuration Freshness | Qodo, Gemini review bot configs exist and reference current patterns |
-| CI Cache Effectiveness      | Cache keys reference current lock files, no stale patterns           |
+**Done when:** Verification score compared and recorded.
 
 ---
 
-## Benchmarks
+## Phase 7: Trend Report (SHOULD — skip if no history)
 
-Internal benchmarks are defined in `scripts/lib/benchmarks.js`. Each category
-scores 0-100 with ratings: good (90+), average (70-89), poor (<70). The
-composite grade uses weighted average across all 19 categories with domain
-weights: D1=18%, D2=23%, D3=18%, D4=18%, D5=13%, D6=10%.
+Trend history: `.claude/state/hook-ecosystem-audit-history.jsonl` (one JSONL
+entry per run, written by the audit script automatically).
+
+If no previous entries exist: "First audit run — no trend data available." Skip
+to Phase 8.
+
+> See `REFERENCE.md` for the trend report template.
+
+**Done when:** Trend displayed (or skipped with note).
 
 ---
 
-## Checker Development Guide
+## Phase 8: Closure (MUST)
 
-### Adding a New Category
+1. **Retro prompt** (MUST): "Was this audit useful? Any patterns the process
+   should learn for next time?" Capture in trend history entry
+   `process_feedback` field.
 
-1. Choose the appropriate domain checker in `scripts/checkers/`
-2. Add a new check function following the pattern of existing categories
-3. Add benchmarks to `scripts/lib/benchmarks.js`
-4. Add weight to `CATEGORY_WEIGHTS` in benchmarks.js (adjust existing weights)
-5. Add labels to the orchestrator's `CATEGORY_LABELS` and `CATEGORY_DOMAIN_MAP`
-6. Test: `node scripts/run-hook-ecosystem-audit.js --summary`
+2. **Invocation tracking** (MUST):
 
-### Data Sources
+   ```bash
+   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"hook-ecosystem-audit","type":"skill","success":true,"context":{"score":SCORE,"grade":"GRADE"}}'
+   ```
 
-| Source              | Path                        | Content                       |
-| ------------------- | --------------------------- | ----------------------------- |
-| Hook settings       | `.claude/settings.json`     | Hook registrations & matchers |
-| Hook source code    | `.claude/hooks/*.js`        | 18 hook implementations       |
-| Hook libraries      | `.claude/hooks/lib/*.js`    | 6 shared utilities            |
-| Global hooks        | `.claude/hooks/global/*.js` | 2 global hooks                |
-| Pre-commit pipeline | `.husky/pre-commit`         | 11+ stage POSIX sh script     |
-| Hook test suite     | `scripts/test-hooks.js`     | Hook functional tests         |
-| State files         | `.claude/state/*.jsonl`     | Hook state and logs           |
+3. **Closure signal** (MUST):
 
-### Hook System Architecture
+   ```
+   Audit complete. Artifacts:
+     - Report: .claude/tmp/hook-audit-report-{date}.md
+     - Decision log: .claude/tmp/hook-audit-session-{date}.jsonl
+     - Trend entry: .claude/state/hook-ecosystem-audit-history.jsonl
+   ```
 
-```
-settings.json (hook registry)
-  ├── SessionStart
-  │   ├── session-start.js
-  │   ├── check-mcp-servers.js
-  │   ├── check-remote-session-context.js
-  │   ├── stop-serena-dashboard.js
-  │   ├── global/gsd-check-update.js
-  │   └── compact-restore.js (matcher: "compact")
-  ├── PreCompact
-  │   └── pre-compaction-save.js
-  ├── PostToolUse
-  │   ├── post-write-validator.js (matcher: write/edit/multiedit)
-  │   ├── post-read-handler.js (matcher: read)
-  │   ├── decision-save-prompt.js (matcher: askuserquestion)
-  │   ├── commit-tracker.js (matcher: bash)
-  │   ├── commit-failure-reporter.js (matcher: bash)
-  │   └── track-agent-invocation.js (matcher: task)
-  ├── UserPromptSubmit
-  │   ├── user-prompt-handler.js
-  │   ├── analyze-user-request.js
-  │   ├── plan-mode-suggestion.js
-  │   └── session-end-reminder.js
-  └── Notification
-      └── global/statusline.js
-```
+4. **Cleanup** (SHOULD): Delete `.claude/tmp/hook-audit-progress.json`. On
+   session-end, delete any `.claude/tmp/hook-audit-*` files older than 2 hours.
+
+**Done when:** Retro captured, invocation tracked, closure signal shown.
+
+---
+
+## Guard Rails
+
+- **Zero findings:** Skip walkthrough, go to Trend Report (Phase 7)
+- **Scope explosion:** >30 findings → offer filtered review
+- **Disengagement:** If user says "pause" or "stop": save progress, show resume
+  instructions (`/hook-ecosystem-audit` auto-resumes), list decisions, exit
+- **Script failure:** If audit script crashes or returns malformed JSON, report
+  error and suggest `npm run hooks:test` for basic diagnostics
+- **Contradiction:** Post-walkthrough scan for conflicting decisions
+
+> See `REFERENCE.md` for category reference, benchmarks, data sources,
+> architecture diagram, and checker development guide.
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                   |
-| ------- | ---------- | --------------------------------------------- |
-| 1.0     | 2026-02-23 | Initial implementation                        |
-| 1.1     | 2026-02-24 | Add compaction guard for progress persistence |
-| 1.2     | 2026-02-24 | Add D6: CI/CD Pipeline Health (3 categories)  |
+| Version | Date       | Description                                             |
+| ------- | ---------- | ------------------------------------------------------- |
+| 2.0     | 2026-03-08 | Skill audit rewrite: 34 decisions, REFERENCE extraction |
+| 1.2     | 2026-02-24 | Add D6: CI/CD Pipeline Health (3 categories)            |
+| 1.1     | 2026-02-24 | Add compaction guard for progress persistence           |
+| 1.0     | 2026-02-23 | Initial implementation                                  |

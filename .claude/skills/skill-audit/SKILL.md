@@ -121,17 +121,22 @@ Present ONE category at a time. Wait for user response. Do NOT batch.
 4. List ALL cons — what's not working
 5. List ALL issues & gaps — what's missing entirely
 6. Present suggestions — labeled A, B, C. Recommend with rationale. Two modes:
-   multiple options (with pros/cons) or single fix (one recommendation).
+   multiple options (with pros/cons per option) or single fix (one
+   recommendation). Use multi-option mode when genuine alternatives exist.
 7. Cover EVERY con and gap — each MUST have at least one suggestion
 8. Present opportunities (MAY) — value-add ideas beyond fixing problems. Only
    when genuinely useful. Each gets recommendation + rationale.
-9. Collect decisions — accept/modify/reject/alternatives. **Delegation:** if
-   user says "you decide," accept all recommendations; record
-   `delegated-accept`.
-10. Tag confidence (SHOULD) — `high`/`medium`/`low`. Low-confidence gets extra
+9. Collect decisions — accept/modify/reject/alternatives via conversational Q&A.
+   NEVER use AskUserQuestion — present findings and collect decisions through
+   normal conversation. **Delegation:** if user says "you decide," accept all
+   recommendations; record `delegated-accept`.
+10. **AskUserQuestion check** (MUST) — if the audited skill uses
+    AskUserQuestion, flag it as a finding. Skills MUST use conversational Q&A
+    (deep-plan style) instead of AskUserQuestion for all interactive decisions.
+11. Tag confidence (SHOULD) — `high`/`medium`/`low`. Low-confidence gets extra
     confirmation during Phase 4.
-11. Save to state file — persist ALL decisions before next category
-12. Show progress — "Category 3 of 10 complete. 18 decisions so far."
+12. Save to state file — persist ALL decisions before next category
+13. Show progress — "Category 3 of 10 complete. 18 decisions so far."
 
 > If >8 suggestions per category, split into sub-batches by theme,
 > severity-first.

@@ -269,6 +269,12 @@ behavioral quality that structural validation cannot catch.
 3. Duplicating CLAUDE.md conventions into skill files
 4. All instructions at same volume (no MUST/SHOULD/MAY distinction)
 5. No skip conditions on optional steps
+6. Using AskUserQuestion for interactive decisions — use conversational Q&A
+   (deep-plan style: present in batches, collect decisions via conversation)
+7. Audit-type skills without separate self-audit AND verification phases —
+   self-audit checks process quality, verification re-runs to confirm fixes
+8. Presenting suggestions without multi-option format when genuine alternatives
+   exist — each option needs description, pros/cons, and a recommendation
 
 ## Compaction Resilience
 
