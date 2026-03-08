@@ -2952,6 +2952,37 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #346: Qodo R6 — diminishing returns, JSONL data normalization (2026-03-08)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
+skill-audits **Suggestions:** 10 total (Critical: 0, Major: 1, Minor: 7,
+Trivial: 2)
+
+**Patterns Identified:**
+
+1. Diminishing returns in multi-round reviews: R6 had 8/10 items rejected —
+   mostly repeats of `_errorsCount7d` (3rd time), `err.message` (2nd time), and
+   eval hardening beyond defense-in-depth. Signal-to-noise ratio drops sharply
+   after R4-R5 for this PR.
+
+2. JSONL data normalization: Empty string `""` vs `null` for absent fields
+   creates inconsistency for downstream consumers. Standardize on `null`.
+
+**Resolution:**
+
+- Fixed: 2 items (rev-436 completeness, `""` → `null` x7 entries x2 files)
+- Deferred: 0 items
+- Rejected: 8 items (3 repeats, 5 pre-existing/over-engineering)
+
+**Key Learnings:**
+
+- After 5+ rounds, most new items are repeat FPs or diminishing-value hardening
+- Consider merging PR after R5 when fix rate drops below 30%
+- JSONL empty fields should use `null` not `""` for consistency
+- Suggested code with syntax errors should be rejected regardless of intent
+
+---
+
 #### Review #345: Qodo R5 — eval input validation, maxBuffer, TDMS provenance (2026-03-08)
 
 **Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
