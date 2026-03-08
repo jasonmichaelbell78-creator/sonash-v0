@@ -277,8 +277,15 @@ They are sequential, not alternatives. Fix any PARTIAL/MISSING before summary.
 
 ## Phase 6: Learning Loop + Closure (MUST)
 
-**Learning loop:** "Was this audit useful? Any patterns the process should learn
-for next time?" Capture in state file `process_feedback` field.
+**Auto-learnings** (MUST): Generate 2-3 data-driven insights from audit results
+(lowest-scoring category, most common gap type, recurring patterns across repeat
+audits). Save to state file `learnings` field.
+
+**Optional user feedback** (SHOULD): "Any additional observations?" Accept empty
+/ "none" to proceed. If provided, save to `process_feedback` field.
+
+**On next startup** (MUST): If previous audit state exists for the same skill,
+surface auto-learnings and user feedback from the previous run.
 
 **Invocation tracking** (MUST):
 

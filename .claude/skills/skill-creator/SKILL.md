@@ -275,6 +275,14 @@ behavioral quality that structural validation cannot catch.
    self-audit checks process quality, verification re-runs to confirm fixes
 8. Presenting suggestions without multi-option format when genuine alternatives
    exist — each option needs description, pros/cons, and a recommendation
+9. Script-dependent skills without failure handling — if a skill runs external
+   scripts, MUST handle non-zero exit, malformed output, and timeouts
+10. Interactive skills with large item sets without batch management — if a
+    skill could present >20 interactive items, MUST include delegation protocol
+    ("you decide"), severity-based filtering ("skip remaining INFO"), and batch
+    actions
+11. Skills without invocation tracking — all skills SHOULD log invocations via
+    `write-invocation.js` in their closure phase for usage analysis
 
 ## Compaction Resilience
 

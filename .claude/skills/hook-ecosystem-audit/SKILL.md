@@ -353,17 +353,19 @@ to Phase 8.
 
 ## Phase 8: Closure (MUST)
 
-1. **Retro prompt** (MUST): "Was this audit useful? Any patterns the process
-   should learn for next time?" Capture in trend history entry
-   `process_feedback` field.
+1. **Auto-learnings** (MUST): Generate 2-3 data-driven insights from audit
+   results (top regressing category, most-fixed category, recurring issues).
+   Save to history entry `learnings` field.
+2. **Optional user feedback** (SHOULD): "Any additional observations?" Accept
+   empty / "none" to proceed. If provided, save to `process_feedback` field.
 
-2. **Invocation tracking** (MUST):
+3. **Invocation tracking** (MUST):
 
    ```bash
    cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"hook-ecosystem-audit","type":"skill","success":true,"context":{"score":SCORE,"grade":"GRADE"}}'
    ```
 
-3. **Closure signal** (MUST):
+4. **Closure signal** (MUST):
 
    ```
    Audit complete. Artifacts:
@@ -372,10 +374,14 @@ to Phase 8.
      - Trend entry: .claude/state/hook-ecosystem-audit-history.jsonl
    ```
 
-4. **Cleanup** (SHOULD): Delete `.claude/tmp/hook-audit-progress.json`. On
+5. **Cleanup** (SHOULD): Delete `.claude/tmp/hook-audit-progress.json`. On
    session-end, delete any `.claude/tmp/hook-audit-*` files older than 2 hours.
 
-**Done when:** Retro captured, invocation tracked, closure signal shown.
+**On next startup** (MUST): If history JSONL has entries, surface previous
+auto-learnings and user feedback: "Previous run noted: [learnings]. User
+feedback: [if any]."
+
+**Done when:** Learnings generated, invocation tracked, closure signal shown.
 
 ---
 

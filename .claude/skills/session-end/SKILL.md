@@ -319,11 +319,15 @@ If any script fails during execution:
 
 ## Learning Loop (MUST — after Step 10)
 
-"Was this session-end smooth? Any steps that should be added, removed, or
-reordered?"
+**Auto-learnings** (MUST): Generate 2-3 data-driven insights from the session
+closure (steps skipped, steps that failed, duration patterns). Save to
+auto-memory (`memory/session-end-learnings.md`).
 
-If the user provides feedback, persist to auto-memory
-(`memory/session-end-learnings.md`) so future invocations benefit.
+**Optional user feedback** (SHOULD): "Any steps to add, remove, or reorder?"
+Accept empty / "none" to proceed. If provided, persist to auto-memory.
+
+**On next startup** (MUST): Surface previous auto-learnings and user feedback so
+future invocations benefit from accumulated experience.
 
 ---
 

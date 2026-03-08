@@ -372,9 +372,15 @@ to `.claude/state/alerts-baseline.json`.
 
 ## Learning Loop
 
-Feedback about checker quality is recorded in
-`.claude/state/alerts-history.jsonl` as feedback records, consumed by Phase 6
-self-audit to detect recurring blind spots and declining coverage.
+**Auto-learnings** (MUST): Generate 2-3 data-driven insights from the alert run
+(top regressing checker, most common alert type, recurring blind spots). Save to
+`.claude/state/alerts-history.jsonl` as `learnings` field.
+
+**Optional user feedback** (SHOULD): "Any additional observations about checker
+quality?" Accept empty / "none" to proceed. If provided, save as `feedback`
+field. Both are consumed by Phase 6 self-audit to detect recurring blind spots.
+
+**On next startup** (MUST): Surface previous auto-learnings and user feedback.
 
 ---
 
