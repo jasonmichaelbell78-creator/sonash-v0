@@ -20,6 +20,12 @@ if [ -z "$FNM_ENV" ]; then
   echo "ensure-fnm.sh: fnm produced empty env output" >&2
   exit 1
 fi
+case "$FNM_ENV" in
+  *'`'*|*'$('*|*';'*)
+    echo "ensure-fnm.sh: unsafe fnm env output detected" >&2
+    exit 1
+    ;;
+esac
 eval "$FNM_ENV"
 fnm use --silent-if-unchanged >/dev/null 2>&1 || true
 

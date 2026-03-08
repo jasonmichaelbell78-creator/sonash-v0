@@ -423,6 +423,7 @@ try {
   execFileSync(process.execPath, ["scripts/check-pattern-compliance.js"], {
     cwd: process.env.CLAUDE_PROJECT_DIR || process.cwd(),
     stdio: "pipe",
+    maxBuffer: 10 * 1024 * 1024,
   });
   console.log("🔍 Patterns: ✓ compliant");
 } catch (error) {

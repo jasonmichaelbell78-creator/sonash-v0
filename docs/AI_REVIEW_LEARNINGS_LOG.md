@@ -2952,6 +2952,44 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #345: Qodo R5 — eval input validation, maxBuffer, TDMS provenance (2026-03-08)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
+skill-audits **Suggestions:** 10 total (Critical: 0, Major: 2, Minor: 6,
+Trivial: 2)
+
+**Patterns Identified:**
+
+1. Eval input validation: Even after capturing fnm env output into a variable,
+   the content should be screened for shell metacharacters (backticks, `$(`,
+   semicolons) before eval — defense-in-depth against compromised binaries.
+   - Root cause: R4 added capture-before-eval but not content validation.
+   - Prevention: Any eval of external command output should validate content.
+
+2. TDMS provenance gap: Manual debt entries created by `/add-debt` were missing
+   the top-level `"source"` field that downstream tooling expects for filtering.
+   - Root cause: `/add-debt` skill doesn't inject `"source"` field
+     automatically.
+   - Prevention: Check field parity with existing entries when appending JSONL.
+
+**Resolution:**
+
+- Fixed: 5 items (+ propagation to 12 TDMS entries across 2 files)
+- Deferred: 0 items
+- Rejected: 5 items (with justification)
+
+**Key Learnings:**
+
+- Defense-in-depth for eval: validate content even when the source is trusted
+- JSONL entries need field parity auditing — missing fields cause silent
+  downstream issues
+- Repeat rejections across rounds indicate reviewer FP patterns (e.g.,
+  `_errorsCount7d`, lookbehind compat) — consider `.qodo/pr-agent.toml` tuning
+- `maxBuffer` should be set on any execFileSync with `stdio: "pipe"` to prevent
+  silent truncation
+
+---
+
 #### Review #344: Qodo R4 — fnm eval safety, gitleaks regex, cwd determinism (2026-03-07)
 
 **Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
