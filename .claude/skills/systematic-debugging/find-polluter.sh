@@ -14,6 +14,11 @@ if command -v fnm > /dev/null 2>&1; then
   fnm use --silent-if-unchanged >/dev/null 2>&1 || true
 fi
 
+if ! command -v node >/dev/null 2>&1; then
+  echo "find-polluter.sh: node is not available (install Node or fnm)" >&2
+  exit 1
+fi
+
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <file_to_check> <test_pattern>"
   echo "Example: $0 '.git' 'src/**/*.test.ts'"

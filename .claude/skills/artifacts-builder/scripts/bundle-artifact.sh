@@ -10,6 +10,11 @@ if command -v fnm > /dev/null 2>&1; then
   fnm use --silent-if-unchanged >/dev/null 2>&1 || true
 fi
 
+if ! command -v node >/dev/null 2>&1; then
+  echo "bundle-artifact.sh: node is not available (install Node or fnm)" >&2
+  exit 1
+fi
+
 echo "📦 Bundling React app to single HTML artifact..."
 
 # Check if we're in a project directory

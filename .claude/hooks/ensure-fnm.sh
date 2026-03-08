@@ -12,7 +12,15 @@ if ! command -v fnm >/dev/null 2>&1; then
   exit 1
 fi
 
-eval "$(fnm env --shell bash 2>/dev/null)"
+FNM_ENV="$(fnm env --shell bash 2>/dev/null)" || {
+  echo "ensure-fnm.sh: fnm detected but failed to initialize" >&2
+  exit 1
+}
+if [ -z "$FNM_ENV" ]; then
+  echo "ensure-fnm.sh: fnm produced empty env output" >&2
+  exit 1
+fi
+eval "$FNM_ENV"
 fnm use --silent-if-unchanged >/dev/null 2>&1 || true
 
 if ! command -v node >/dev/null 2>&1; then

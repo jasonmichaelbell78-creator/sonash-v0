@@ -2293,7 +2293,7 @@ function checkHookHealth() {
         {
           name: "gitleaks",
           pass: /\b(no secrets detected|no leaks found|found 0 leaks)\b/i,
-          fail: /\b(secrets detected|leaks found|found \d+\s+leaks)\b/i,
+          fail: /(?:\bsecrets detected\b|(?<!no\s)\bleaks found\b|\bfound\s+(?!0\b)\d+\s+leaks\b)/i,
         },
         { name: "ESLint", pass: /ESLint passed/i, fail: /ESLint has errors/i },
         { name: "lint-staged", pass: /Lint-staged passed/i, fail: /Lint-staged failed/i },

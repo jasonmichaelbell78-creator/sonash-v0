@@ -2952,6 +2952,53 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #344: Qodo R4 — fnm eval safety, gitleaks regex, cwd determinism (2026-03-07)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
+skill-audits **Suggestions:** 13 total (Critical: 0, Major: 3, Minor: 8,
+Trivial: 2)
+
+**Patterns Identified:**
+
+1. fnm env eval without validation: `ensure-fnm.sh` ran `eval "$(fnm env ...)"`
+   without checking exit status or empty output, silently swallowing init
+   failures.
+   - Root cause: R3 fixed standalone scripts but missed the central wrapper.
+   - Prevention: Always capture command substitution output, validate non-empty,
+     then eval.
+
+2. Gitleaks regex false-positive: The fail regex `/(leaks found)/i` also matched
+   success messages like "no leaks found", causing false alerts.
+   - Root cause: Overly broad word-boundary regex without negative lookbehind.
+   - Prevention: Use negative lookbehind `(?<!no\s)` for patterns that have
+     negation variants.
+
+3. Deterministic cwd for execFileSync: Two `execFileSync` calls in
+   session-start.js used relative script paths without explicit `cwd`, while
+   sibling calls already set `cwd: projectDir`.
+   - Root cause: Inconsistency during incremental additions to the hook.
+   - Prevention: When adding execFileSync with relative paths, always include
+     `cwd`.
+
+**Resolution:**
+
+- Fixed: 11 items
+- Deferred: 0 items
+- Rejected: 2 items (with justification)
+
+**Key Learnings:**
+
+- Capture `$(command)` into a variable before `eval` — enables empty-output and
+  exit-status validation
+- Regex patterns for pass/fail detection need careful asymmetry — success
+  strings often embed failure keywords with negation ("no leaks found")
+- test:coverage script must be kept in sync with test script when adding new
+  test suites
+- Archive JSONL files accumulate duplicates when scripts append without
+  deduplication — periodic cleanup needed
+
+---
+
 #### Review #343: Qodo R3 — fnm ripple effects, gitleaks hardening, cross-platform globs (2026-03-07)
 
 **Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
