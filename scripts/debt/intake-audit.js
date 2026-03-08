@@ -909,6 +909,7 @@ async function main() {
   let viewsRan = false;
   try {
     execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
+      cwd: __dirname,
       stdio: "inherit",
     });
     viewsRan = true;

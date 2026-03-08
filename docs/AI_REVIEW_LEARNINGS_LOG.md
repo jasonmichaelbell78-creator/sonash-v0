@@ -2951,3 +2951,53 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
   propagation
 
 ---
+
+#### Review #343: Qodo R3 — fnm ripple effects, gitleaks hardening, cross-platform globs (2026-03-07)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421
+skill-audits **Suggestions:** 14 total (Critical: 2, Major: 3, Minor: 8,
+Trivial: 1)
+
+**Patterns Identified:**
+
+1. fnm env without fnm use: Multiple shell scripts called
+   `eval "$(fnm env ...)"` but not `fnm use`, meaning fnm's environment was set
+   up but the project-specific Node version wasn't activated.
+   - Root cause: fnm migration (PR #421) focused on ensure-fnm.sh wrapper but
+     missed standalone scripts.
+   - Prevention: Grep for `fnm env` after any fnm-related change; always pair
+     with `fnm use`.
+
+2. Cross-platform npm script quoting: Single quotes in npm scripts work on bash
+   but not on Windows cmd.exe, where they're treated as literal characters.
+   Node's `--test` glob could silently match zero files.
+   - Root cause: Package.json test scripts written with Unix-first assumptions.
+   - Prevention: Always use escaped double quotes (`\"..\"`) in package.json
+     scripts for cross-platform compat.
+
+3. Security gate bypass on tool errors: Gitleaks pre-commit check warned but
+   didn't block when the scanner itself errored (exit code > 1), allowing
+   commits to bypass the secret scan.
+   - Root cause: Defensive "don't break the developer" approach didn't account
+     for security gate semantics.
+   - Prevention: Security scanners should fail-closed; non-security tools can
+     fail-open.
+
+**Resolution:**
+
+- Fixed: 10 items
+- Deferred: 0 items
+- Rejected: 4 items (with justification)
+
+**Key Learnings:**
+
+- `$ARGUMENTS` in Claude Code hooks is runtime-set JSON, not untrusted input —
+  safe to use unquoted in shell
+- `eval "$(fnm env)"` is the standard documented pattern for fnm/nvm/rbenv — not
+  a security issue
+- When rejecting security scanner FPs, validate the actual data flow (who sets
+  the variable, can it be influenced)
+- Global template hooks should guard `fnm` with `command -v` since fnm may not
+  be installed everywhere
+
+---

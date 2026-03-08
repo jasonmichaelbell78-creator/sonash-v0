@@ -2290,7 +2290,11 @@ function checkHookHealth() {
 
       // Extract check results from output
       const checkPatterns = [
-        { name: "gitleaks", pass: /No secrets detected/i, fail: /^\s*Secrets detected\b/im },
+        {
+          name: "gitleaks",
+          pass: /\b(no secrets detected|no leaks found|found 0 leaks)\b/i,
+          fail: /\b(secrets detected|leaks found|found \d+\s+leaks)\b/i,
+        },
         { name: "ESLint", pass: /ESLint passed/i, fail: /ESLint has errors/i },
         { name: "lint-staged", pass: /Lint-staged passed/i, fail: /Lint-staged failed/i },
         {

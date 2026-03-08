@@ -11,6 +11,7 @@ if command -v fnm > /dev/null 2>&1; then
     echo "find-polluter.sh: fnm detected but failed to initialize" >&2
     exit 1
   fi
+  fnm use --silent-if-unchanged >/dev/null 2>&1 || true
 fi
 
 if [ $# -ne 2 ]; then

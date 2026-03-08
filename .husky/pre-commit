@@ -144,7 +144,9 @@ if command -v gitleaks > /dev/null 2>&1; then
     echo "  If false positive, add to .gitleaks.toml allowlist."
     exit 1
   elif [ "$gitleaks_exit" -ne 0 ]; then
-    echo "  ⚠️ gitleaks encountered an error (exit $gitleaks_exit) — check config or binary"
+    echo "  ❌ gitleaks encountered an error (exit $gitleaks_exit) — scan could not be completed" >&2
+    echo "  Fix gitleaks/config before committing. Override: SKIP_CHECKS=\"gitleaks\" SKIP_REASON=\"reason\" git commit ..." >&2
+    exit "$gitleaks_exit"
   else
     echo "  ✅ No secrets detected"
   fi

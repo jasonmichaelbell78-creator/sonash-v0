@@ -7,6 +7,7 @@ if command -v fnm > /dev/null 2>&1; then
     echo "bundle-artifact.sh: fnm detected but failed to initialize" >&2
     exit 1
   fi
+  fnm use --silent-if-unchanged >/dev/null 2>&1 || true
 fi
 
 echo "📦 Bundling React app to single HTML artifact..."

@@ -25,7 +25,7 @@ paths = [
 regexTarget = "line"
 regexes = [
   # Firebase public API keys — only allow when clearly labeled as Firebase (client-exposed by design)
-  '''(?i)(firebase|apikey).*AIzaSy[A-Za-z0-9_-]{33}''',
+  '''(?i)\b(firebaseConfig|NEXT_PUBLIC_FIREBASE_API_KEY|firebase)\b.*AIzaSy[A-Za-z0-9_-]{33}''',
   # Test JWT tokens used in unit tests
   '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0''',
   # curl example in documentation

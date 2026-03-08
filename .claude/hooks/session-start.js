@@ -588,8 +588,9 @@ try {
     console.log("📊 TDMS: ⚠️ metrics not found — npm run debt:metrics");
     warnings++;
   }
-} catch {
-  console.log(`📊 TDMS: ❌ metrics read failed`);
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.log(`📊 TDMS: ❌ metrics read failed: ${msg}`);
   warnings++;
 }
 
