@@ -101,6 +101,9 @@ Follow these steps in order, skipping only when clearly inapplicable.
 
 Skip only when the skill's usage patterns are already clearly understood.
 
+Check ROADMAP.md to verify the skill aligns with project direction. If
+misaligned, discuss with the user before proceeding.
+
 To create an effective skill, understand concrete examples of how it will be
 used. This understanding comes from user examples or generated examples
 validated with user feedback.
@@ -110,7 +113,8 @@ validated with user feedback.
 - Reference existing codebase patterns and conventions (not ask in a vacuum)
 - Offer a recommended default for each question
 - Explain why the decision matters (not just "what do you want?")
-- Cover: triggers, scope, failure modes, adjacent skills, output format
+- Cover: triggers, scope, failure modes, adjacent skills, output format, output
+  location/paths
 
 **Discovery questions SHOULD:**
 
@@ -153,7 +157,9 @@ Analyze each concrete example to identify reusable resources:
 - **Compaction resilience** (MUST for ALL skills, SC-2): Define what state needs
   to persist to survive context compaction. Define the state file path, update
   frequency, recovery procedure, and what happens to the file after completion.
-  This is not conditional on "runs long" — any skill can be interrupted.
+  Include user-facing resume instructions (how to re-invoke to trigger
+  recovery). This is not conditional on "runs long" — any skill can be
+  interrupted.
 - **Interactive design** (if skill involves multi-step user interaction): Plan
   the decision collection format (accept/modify/reject), delegation handling
   (what if user says "you decide"?), approval gates before irreversible actions,
@@ -201,6 +207,7 @@ accomplish X, do Y" not "You should do X."
 **Content checklist:**
 
 - [ ] Purpose (2-3 sentences)
+- [ ] Input specification (arguments, parameters, invocation format)
 - [ ] When to Use / When NOT to Use (with named alternatives)
 - [ ] What This Skill Does NOT Do (SC-3: for commonly-confused scope)
 - [ ] MUST/SHOULD/MAY applied to all instructions

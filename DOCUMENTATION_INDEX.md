@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-03-07 **Active Documents:** 505 **Archived Documents:** 102
+**Generated:** 2026-03-08 **Active Documents:** 505 **Archived Documents:** 102
 
 ---
 
@@ -195,7 +195,7 @@ _Foundation_
 | Document                                      | Description                                                  | References | Last Modified |
 | --------------------------------------------- | ------------------------------------------------------------ | ---------- | ------------- |
 | [Architecture Documentation](ARCHITECTURE.md) | -                                                            | ↓10 ↑6     | 2026-02-11    |
-| [Development Guide](DEVELOPMENT.md)           | Unified dev dashboard for monitoring session activity, error | ↓10 ↑11    | 2026-02-17    |
+| [Development Guide](DEVELOPMENT.md)           | Unified dev dashboard for monitoring session activity, error | ↓10 ↑11    | 2026-03-07    |
 
 ### Agent Documentation (Tier 3)
 
@@ -506,7 +506,7 @@ _Uncategorized_
 | [security-auditor](.claude/agents/security-auditor.md)                             | -                                               | ↓0 ↑0      | 2026-01-12    |
 | [security-engineer](.claude/agents/security-engineer.md)                           | terraform {                                     | ↓0 ↑0      | 2026-01-12    |
 | [technical-writer](.claude/agents/technical-writer.md)                             | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [test-engineer](.claude/agents/test-engineer.md)                                   | -                                               | ↓0 ↑0      | 2026-01-12    |
+| [test-engineer](.claude/agents/test-engineer.md)                                   | -                                               | ↓0 ↑0      | 2026-03-07    |
 | [ui-ux-designer](.claude/agents/ui-ux-designer.md)                                 | -                                               | ↓0 ↑0      | 2026-01-12    |
 
 ### .claude > agents > global (Tier 4)
@@ -2500,7 +2500,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-03-07 | Auto-generated from codebase scan |
+| Auto    | 2026-03-08 | Auto-generated from codebase scan |
 
 ---
 
