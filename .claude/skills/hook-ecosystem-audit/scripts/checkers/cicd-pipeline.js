@@ -472,6 +472,61 @@ function checkBotConfigHealth(rootDir, botName, content) {
   return issues;
 }
 
+/** Check if a YAML line is a step/block boundary relative to usesIndent. */
+function isStepBoundary(trimmed, indent, usesIndent) {
+  if (indent <= usesIndent && trimmed.startsWith("- ")) return true;
+  if (indent < usesIndent && trimmed.includes(":")) return true;
+  return indent === usesIndent && trimmed.includes(":") && trimmed !== "with:";
+}
+
+/** Extract cache value from a "cache: value" line. */
+function parseCacheValue(trimmed) {
+  const raw = trimmed
+    .slice("cache:".length)
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  const valid = ["npm", "yarn", "pnpm"];
+  return { value: raw, effective: valid.includes(raw) };
+}
+
+/**
+ * Parse a setup-node action step to find its cache parameter.
+ * Returns { effective: bool, line: number, issue?: string } or null if no cache found.
+ */
+function parseSetupNodeCache(lines, usesLineIndex) {
+  const usesIndent = lines[usesLineIndex].match(/^\s*/)?.[0].length ?? 0;
+  let inWithBlock = false;
+  let withIndent = 0;
+
+  for (let j = usesLineIndex + 1; j < Math.min(usesLineIndex + 25, lines.length); j++) {
+    const indent = lines[j].match(/^\s*/)?.[0].length ?? 0;
+    const trimmed = lines[j].trim();
+
+    if (isStepBoundary(trimmed, indent, usesIndent)) return null;
+
+    if (trimmed === "with:") {
+      inWithBlock = true;
+      withIndent = indent;
+      continue;
+    }
+    if (!inWithBlock || indent <= withIndent) {
+      if (indent <= withIndent) inWithBlock = false;
+      continue;
+    }
+
+    if (trimmed.startsWith("cache:")) {
+      const { value, effective } = parseCacheValue(trimmed);
+      if (effective) return { effective: true, line: j + 1 };
+      return {
+        effective: false,
+        line: j + 1,
+        issue: `setup-node cache value is unusual: ${value || "(empty)"}`,
+      };
+    }
+  }
+  return null;
+}
+
 // ── Category 19: CI Cache Effectiveness ─────────────────────────────────────
 
 function checkCiCacheEffectiveness(rootDir, findings) {
@@ -505,53 +560,17 @@ function checkCiCacheEffectiveness(rootDir, findings) {
 
       // Detect setup-node with cache
       if (line.startsWith("uses:") && line.includes("actions/setup-node")) {
-        const usesIndent = lines[i].match(/^\s*/)?.[0].length ?? 0;
-
-        let inWithBlock = false;
-        let withIndent = 0;
-
-        for (let j = i + 1; j < Math.min(i + 25, lines.length); j++) {
-          const raw = lines[j];
-          const indent = raw.match(/^\s*/)?.[0].length ?? 0;
-          const nextLine = raw.trim();
-
-          // Stop if indentation returns to the step level (new step / new top-level key)
-          // But don't stop for "with:" which is a sibling of "uses:" that we need to parse
-          if (indent <= usesIndent && nextLine.startsWith("- ")) break;
-          if (indent < usesIndent && nextLine.includes(":")) break;
-          if (indent === usesIndent && nextLine.includes(":") && nextLine !== "with:") break;
-
-          if (nextLine === "with:") {
-            inWithBlock = true;
-            withIndent = indent;
-            continue;
-          }
-
-          if (!inWithBlock) continue;
-
-          // If indentation returns to (or above) `with:` level, we're out of `with:`
-          if (indent <= withIndent) {
-            inWithBlock = false;
-            continue;
-          }
-
-          if (nextLine.startsWith("cache:")) {
-            const cacheValue = nextLine
-              .slice("cache:".length)
-              .trim()
-              .replace(/^["']|["']$/g, "");
-            if (cacheValue === "npm" || cacheValue === "yarn" || cacheValue === "pnpm") {
-              totalCacheSteps++;
-              effectiveCacheSteps++;
-            } else {
-              totalCacheSteps++;
-              cacheIssues.push({
-                workflow: workflow.name,
-                line: j + 1,
-                issues: [`setup-node cache value is unusual: ${cacheValue || "(empty)"}`],
-              });
-            }
-            break;
+        const cacheResult = parseSetupNodeCache(lines, i);
+        if (cacheResult) {
+          totalCacheSteps++;
+          if (cacheResult.effective) {
+            effectiveCacheSteps++;
+          } else {
+            cacheIssues.push({
+              workflow: workflow.name,
+              line: cacheResult.line,
+              issues: [cacheResult.issue],
+            });
           }
         }
       }
