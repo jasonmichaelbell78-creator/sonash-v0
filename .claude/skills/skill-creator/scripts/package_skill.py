@@ -15,6 +15,15 @@ import zipfile
 from pathlib import Path
 from quick_validate import validate_skill
 
+# Files/patterns that should never be packaged into distributable skills
+SENSITIVE_PATTERNS = {
+    ".env", ".env.local", ".env.production", ".env.encrypted",
+    ".key", ".pem", ".p12", ".pfx", ".jks",
+    "credentials.json", "service-account.json",
+    ".secret", ".token",
+}
+SENSITIVE_EXTENSIONS = {".key", ".pem", ".p12", ".pfx", ".jks"}
+
 
 def package_skill(skill_path, output_dir=None):
     """
@@ -61,15 +70,25 @@ def package_skill(skill_path, output_dir=None):
 
     try:
         with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            skipped = []
             for file_path in skill_path.rglob('*'):
                 if not file_path.is_file():
                     continue
                 # Avoid archiving the output zip into itself
                 if file_path.resolve() == zip_filename.resolve():
                     continue
+                # Skip sensitive files (secrets, keys, credentials)
+                fname = file_path.name.lower()
+                if fname in SENSITIVE_PATTERNS or file_path.suffix.lower() in SENSITIVE_EXTENSIONS:
+                    skipped.append(file_path.relative_to(skill_path.parent))
+                    continue
                 arcname = file_path.relative_to(skill_path.parent)
                 zipf.write(file_path, arcname)
                 print(f"  Added: {arcname}")
+            if skipped:
+                print(f"\n[WARN] Skipped {len(skipped)} sensitive file(s):")
+                for s in skipped:
+                    print(f"  - {s}")
 
         print(f"\n[OK] Packaged skill to: {zip_filename}")
         return zip_filename

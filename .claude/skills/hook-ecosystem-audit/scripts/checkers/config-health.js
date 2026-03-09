@@ -458,13 +458,19 @@ function checkGlobalLocalConsistency(rootDir, hooksSection, findings) {
   const globalReferenced = extractGlobalReferencedJsFiles(hooksSection);
 
   // Also check the global ~/.claude/settings.json — global hooks are often registered there
+  // Use CLAUDE_GLOBAL_SETTINGS_PATH env var to override path (deterministic testing)
+  // Set CLAUDE_CHECK_GLOBAL_SETTINGS=0 to skip entirely
   let globalSettingsReferenced = new Set();
   let globalSettingsGlobalReferenced = new Set();
   try {
-    const homeDir = process.env.HOME || process.env.USERPROFILE;
-    if (homeDir) {
-      const globalSettingsPath = path.join(homeDir, ".claude", "settings.json");
-      if (fs.existsSync(globalSettingsPath)) {
+    const shouldCheckGlobal = process.env.CLAUDE_CHECK_GLOBAL_SETTINGS !== "0";
+    if (shouldCheckGlobal) {
+      const overridePath = process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
+      const homeDir = process.env.HOME || process.env.USERPROFILE;
+      const globalSettingsPath =
+        overridePath || (homeDir ? path.join(homeDir, ".claude", "settings.json") : null);
+
+      if (globalSettingsPath && fs.existsSync(globalSettingsPath)) {
         const globalSettingsRaw = fs.readFileSync(globalSettingsPath, "utf8");
         const globalSettings = JSON.parse(globalSettingsRaw);
         const globalHooksSection = globalSettings.hooks || {};

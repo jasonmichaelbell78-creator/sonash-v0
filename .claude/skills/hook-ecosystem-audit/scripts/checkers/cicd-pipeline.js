@@ -474,9 +474,11 @@ function checkBotConfigHealth(rootDir, botName, content) {
 
 /** Check if a YAML line is a step/block boundary relative to usesIndent. */
 function isStepBoundary(trimmed, indent, usesIndent) {
+  const isYamlKey = /^[A-Za-z0-9_-]+:/.test(trimmed);
+
   if (indent <= usesIndent && trimmed.startsWith("- ")) return true;
-  if (indent < usesIndent && trimmed.includes(":")) return true;
-  return indent === usesIndent && trimmed.includes(":") && trimmed !== "with:";
+  if (indent < usesIndent && isYamlKey) return true;
+  return indent === usesIndent && isYamlKey && trimmed !== "with:";
 }
 
 /** Extract cache value from a "cache: value" line. */
@@ -561,18 +563,23 @@ function checkCiCacheEffectiveness(rootDir, findings) {
 
       // Detect setup-node with cache
       if (line.startsWith("uses:") && line.includes("actions/setup-node")) {
+        totalCacheSteps++;
+
         const cacheResult = parseSetupNodeCache(lines, i);
-        if (cacheResult) {
-          totalCacheSteps++;
-          if (cacheResult.effective) {
-            effectiveCacheSteps++;
-          } else {
-            cacheIssues.push({
-              workflow: workflow.name,
-              line: cacheResult.line,
-              issues: [cacheResult.issue],
-            });
-          }
+        if (cacheResult?.effective) {
+          effectiveCacheSteps++;
+        } else if (cacheResult) {
+          cacheIssues.push({
+            workflow: workflow.name,
+            line: cacheResult.line,
+            issues: [cacheResult.issue],
+          });
+        } else {
+          cacheIssues.push({
+            workflow: workflow.name,
+            line: i + 1,
+            issues: ["setup-node is missing a cache: setting"],
+          });
         }
       }
     }

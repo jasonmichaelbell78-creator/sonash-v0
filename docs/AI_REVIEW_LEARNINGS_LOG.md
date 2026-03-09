@@ -834,6 +834,51 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review #459: PR #423 R2 — Qodo + Gemini (2026-03-09)
+
+_Skill audits wave 2 continued — scoring, testing, security, hook resilience._
+
+**Source:** Qodo (Compliance + Code Suggestions), Gemini **Total:** 13 unique
+(after dedup) **Fixed:** 7 **Deferred:** 0 **Rejected:** 6
+
+- **Secret packaging denylist:** `package_skill.py` now skips `.env`, `.key`,
+  `.pem`, `credentials.json` etc. during zip creation — prevents accidental
+  credential distribution
+- **YAML boundary detection:** `isStepBoundary` used `includes(":")` which
+  matched colons anywhere in line — replaced with `/^[A-Za-z0-9_-]+:/` regex
+- **Cache counting bug:** `actions/setup-node` without `cache:` wasn't counted
+  in `totalCacheSteps` — inflated effectiveness score. Now always increments
+  counter and reports missing cache as an issue
+- **Restore continueOnError:** 5 SessionStart hooks had `continueOnError: true`
+  removed, making non-critical checks (MCP, remote branches, Serena) blocking.
+  Restored to prevent brittle session startup
+- **FP-1/FP-4 test assertions:** Two regression tests had no assertions (always
+  passed). Added `assertEqual` checks so they actually verify the false positive
+  is resolved
+- **Global settings deterministic testing:** Added `CLAUDE_GLOBAL_SETTINGS_PATH`
+  and `CLAUDE_CHECK_GLOBAL_SETTINGS` env vars to config-health.js for CI/test
+  reproducibility
+
+**Rejected:**
+
+- Sensitive local file access: intentional feature, already guarded in R1
+- Swallowed exceptions: optional feature, catch comment sufficient
+- Unstructured test logging: standard practice for test files
+- Stdin schema validation: upstream (Claude Code) guarantees structure
+- Prompt field fallback: `request`/`message`/`content` never existed in protocol
+- chmod removed: factually incorrect — we restored it in R1
+
+**Patterns:**
+
+- Tests without assertions are worse than no tests — they provide false
+  confidence. Always add `assertEqual`/`assert` or use `test.skip`
+- Scoring denominators: always increment counter for the item being evaluated,
+  not only when sub-analysis succeeds
+- `continueOnError: true` is essential for non-critical startup hooks — without
+  it, a MCP check failure blocks the entire session
+
+---
+
 ### Review #458: PR #423 R1 — Qodo + Semgrep + CI (2026-03-09)
 
 _Skill audits wave 2 — hook/checker/MCP portability fixes._

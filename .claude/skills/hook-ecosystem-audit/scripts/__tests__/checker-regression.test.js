@@ -674,12 +674,14 @@ test("FP-1: regex_safety does not flag disjoint character class patterns as cata
   const capsPatternFindings = regexFindings.filter(
     (f) => (f.details || "").includes("508") && (f.message || "").includes("user-prompt-handler")
   );
-  // If the checker still flags this, it's a known false positive (suppressed).
-  // This test documents the expectation; when the checker is improved to
-  // recognize disjoint classes, this finding should disappear.
-  if (capsPatternFindings.length > 0) {
-    console.log("    (note: HEA-231 still flagged — suppressed via hook-audit-suppressions.json)");
-  }
+  // Disjoint character classes should not be flagged as catastrophic backtracking.
+  // If still flagged, it's suppressed via hook-audit-suppressions.json — but the
+  // checker itself should eventually stop flagging it.
+  assertEqual(
+    capsPatternFindings.length,
+    0,
+    "Disjoint class regex (HEA-231) should not be flagged as catastrophic backtracking"
+  );
 });
 
 test("FP-2: settings_file_alignment excludes utility files from unregistered check", () => {
@@ -722,10 +724,13 @@ test("FP-4: error_handling_sanitization does not flag catch blocks that don't lo
       f.category === "error_handling_sanitization" &&
       (f.message || "").includes("decision-save-prompt")
   );
-  // If the checker still flags this, it's a known false positive (suppressed).
-  if (sanitizeFindings.length > 0) {
-    console.log("    (note: HEA-202 still flagged — suppressed via hook-audit-suppressions.json)");
-  }
+  // Silent catch blocks that don't reference error.message should not trigger
+  // the sanitize-error import requirement.
+  assertEqual(
+    sanitizeFindings.length,
+    0,
+    "Silent catch blocks (HEA-202) should not be flagged for missing sanitize-error"
+  );
 });
 
 test("FP-5: bot_config_freshness only flags bots requiring local config", () => {
