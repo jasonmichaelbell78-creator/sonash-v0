@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.3",
     "firebase-functions-test": "^3.4.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0"
