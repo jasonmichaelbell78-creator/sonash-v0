@@ -65,7 +65,7 @@ describe("loadConfig", () => {
   });
 
   it("throws for config name with backslash", () => {
-    assert.throws(() => loadConfig("subdir\\config"), /Invalid config name/);
+    assert.throws(() => loadConfig(String.raw`subdir\config`), /Invalid config name/);
   });
 
   it("throws for non-string input", () => {

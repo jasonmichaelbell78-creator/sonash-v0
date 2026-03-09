@@ -24,7 +24,7 @@ function makeFail(output = "", stderr = "") {
 }
 
 // Load checker once; route runCommandSafe through a mutable ref
-let runCommandSafeFn = () => makeSuccess("");
+let runCommandSafeFn = (_cmd) => makeSuccess("");
 
 require.cache[UTILS_PATH] = {
   id: UTILS_PATH,
@@ -51,7 +51,7 @@ else delete require.cache[UTILS_PATH];
 
 function reset() {
   realFs.readFileSync = origReadFileSync;
-  runCommandSafeFn = () => makeSuccess("");
+  runCommandSafeFn = (_cmd) => makeSuccess("");
 }
 
 describe("checkPatternEnforcement", () => {

@@ -19,6 +19,7 @@ const { mkdirSync, writeFileSync, rmSync } = require("node:fs");
 const { join } = require("node:path");
 const { tmpdir } = require("node:os");
 const { randomBytes } = require("node:crypto");
+const { pathToFileURL } = require("node:url");
 
 // --- Pure helper implementations mirroring health-log.js internal logic ---
 
@@ -33,8 +34,8 @@ function computeDelta(currentScore, previous) {
 }
 
 function summarizeDimensions(dimensionScores) {
+  if (!dimensionScores) return { errors: 0, warnings: 0, info: 0 };
   const summary = { errors: 0, warnings: 0, info: 0 };
-  if (!dimensionScores) return summary;
   for (const dim of Object.values(dimensionScores)) {
     if (dim.no_data) continue;
     if (dim.score < 60) summary.errors++;
@@ -144,14 +145,16 @@ describe("health-log getLatestScores (ESM export)", () => {
 
     try {
       // health-log.js is ESM — must use dynamic import
-      const mod = await import(
-        // file:// URL required for absolute paths
-        `file:///${join(__dirname, "..", "health-log.js").replaceAll("\\", "/")}`
-      );
+      const mod = await import(pathToFileURL(join(__dirname, "..", "health-log.js")).href);
       getLatestScores = mod.getLatestScores;
-    } catch {
-      // safe-fs unavailable in test environment — skip
-      getLatestScores = null;
+    } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? err.code : null;
+      if (code === "ERR_MODULE_NOT_FOUND" || code === "MODULE_NOT_FOUND") {
+        // safe-fs unavailable in test environment — skip
+        getLatestScores = null;
+      } else {
+        throw err;
+      }
     }
   });
 

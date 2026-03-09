@@ -6,7 +6,7 @@
  * Since the script is a CLI tool without exports, we re-implement and test
  * the pure algorithmic functions directly here.
  */
-import { describe, it, before } from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import * as crypto from "node:crypto";
 
@@ -45,14 +45,14 @@ function normalizeText(text: string): string {
   if (!text) return "";
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
+    .replaceAll(/[^a-z0-9\s]/g, " ")
+    .replaceAll(/\s+/g, " ")
     .trim();
 }
 
 function normalizeParametric(title: string): string {
   if (!title) return "";
-  return title.replace(/\d+/g, "#");
+  return title.replaceAll(/\d+/g, "#");
 }
 
 function shortHash(str: string): string {
@@ -174,7 +174,7 @@ function mergeItems(primary: DebtItem, secondary: DebtItem): DebtItem {
   if (secondaryRank < primaryRank) {
     merged.severity = secondary.severity;
   }
-  if (!merged.merged_from) merged.merged_from = [];
+  merged.merged_from ??= [];
   if (typeof secondary.source_id === "string" && secondary.source_id.trim()) {
     if (!merged.merged_from.includes(secondary.source_id)) {
       merged.merged_from.push(secondary.source_id);
@@ -196,7 +196,7 @@ function normalizeParametricKey(item: DebtItem): string {
 
 describe("dedup-multi-pass: levenshtein + stringSimilarity", () => {
   it("identical strings have similarity 1.0", () => {
-    assert.strictEqual(stringSimilarity("hello world", "hello world"), 1.0);
+    assert.strictEqual(stringSimilarity("hello world", "hello world"), 1);
   });
 
   it("completely different strings have low similarity", () => {

@@ -128,7 +128,7 @@ describe("isCooldownActive", () => {
   });
 
   test("returns false when lastRun is NaN", () => {
-    assert.equal(isCooldownActive(NaN, 10 * 60 * 1000), false);
+    assert.equal(isCooldownActive(Number.NaN, 10 * 60 * 1000), false);
   });
 
   test("returns false when lastRun is negative", () => {

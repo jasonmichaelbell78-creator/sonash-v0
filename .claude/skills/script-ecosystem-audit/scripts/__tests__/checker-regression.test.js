@@ -27,12 +27,17 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner (returned a Promise)");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    console.error(`  \u2717 ${name}: ${err.message}`);
+    const message =
+      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    console.error(`  \u2717 ${name}: ${message}`);
   }
 }
 
@@ -144,7 +149,7 @@ console.log("\n--- Test Group 3: Domain Category Presence ---");
 
 test("module-consistency has cjs_esm_consistency, shebang_entry_point, nodejs_api_compatibility", () => {
   const result = checkerResults["module-consistency"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   assert("cjs_esm_consistency" in result.scores, "Missing cjs_esm_consistency");
   assert("shebang_entry_point" in result.scores, "Missing shebang_entry_point");
   assert("nodejs_api_compatibility" in result.scores, "Missing nodejs_api_compatibility");
@@ -152,7 +157,7 @@ test("module-consistency has cjs_esm_consistency, shebang_entry_point, nodejs_ap
 
 test("safety-error-handling has file_io_safety, error_sanitization, path_traversal_guards, exec_safety, security_helper_usage", () => {
   const result = checkerResults["safety-error-handling"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "file_io_safety",
     "error_sanitization",
@@ -167,7 +172,7 @@ test("safety-error-handling has file_io_safety, error_sanitization, path_travers
 
 test("registration-reachability has package_json_coverage, cross_script_dependencies, shared_lib_utilization", () => {
   const result = checkerResults["registration-reachability"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   assert("package_json_coverage" in result.scores, "Missing package_json_coverage");
   assert("cross_script_dependencies" in result.scores, "Missing cross_script_dependencies");
   assert("shared_lib_utilization" in result.scores, "Missing shared_lib_utilization");
@@ -175,7 +180,7 @@ test("registration-reachability has package_json_coverage, cross_script_dependen
 
 test("code-quality has documentation_headers, consistent_patterns, dead_code, complexity", () => {
   const result = checkerResults["code-quality"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = ["documentation_headers", "consistent_patterns", "dead_code", "complexity"];
   for (const cat of expected) {
     assert(cat in result.scores, `code-quality missing ${cat}`);
@@ -184,7 +189,7 @@ test("code-quality has documentation_headers, consistent_patterns, dead_code, co
 
 test("testing-reliability has test_coverage, test_freshness, error_path_testing", () => {
   const result = checkerResults["testing-reliability"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   assert("test_coverage" in result.scores, "Missing test_coverage");
   assert("test_freshness" in result.scores, "Missing test_freshness");
   assert("error_path_testing" in result.scores, "Missing error_path_testing");
@@ -199,7 +204,7 @@ console.log("\n--- Test Group 4: Score Validity ---");
 test("all checker scores are in 0-100 range with valid ratings", () => {
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const [cat, scoreObj] of Object.entries(result.scores)) {
       const score = scoreObj.score;
       assert(
@@ -225,7 +230,7 @@ test("finding IDs are unique across all script audit checkers", () => {
   const duplicates = [];
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
       if (seen.has(finding.id)) {
         duplicates.push(`${finding.id} (in ${name})`);
@@ -241,7 +246,7 @@ test("all findings have required fields (id, category, severity, message)", () =
   const validSeverities = ["error", "warning", "info"];
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
       for (const field of requiredFields) {
         assert(

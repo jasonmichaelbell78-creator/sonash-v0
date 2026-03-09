@@ -25,8 +25,8 @@ function timestampDaysAgo(days) {
 }
 
 // Load checker once; safeReadLines and runCommandSafe are routed through mutable refs
-let safeReadLinesFn = () => [];
-let runCommandSafeFn = () => makeSuccess("");
+let safeReadLinesFn = (_path) => [];
+let runCommandSafeFn = (_cmd) => makeSuccess("");
 
 require.cache[UTILS_PATH] = {
   id: UTILS_PATH,
@@ -53,11 +53,11 @@ else delete require.cache[UTILS_PATH];
 
 function reset() {
   realFs.readFileSync = origReadFileSync;
-  safeReadLinesFn = () => [];
-  runCommandSafeFn = () => makeSuccess("");
+  safeReadLinesFn = (_path) => [];
+  runCommandSafeFn = (_cmd) => makeSuccess("");
 }
 
-describe("checkHookPipeline", () => {
+describe("checkHookPipeline", { concurrency: 1 }, () => {
   it("returns no_data=false always", () => {
     try {
       assert.equal(checkHookPipeline().no_data, false);
@@ -235,9 +235,9 @@ describe("checkHookPipeline", () => {
       throw new Error("ENOENT");
     };
     safeReadLinesFn = (filePath) => {
-      if (filePath.includes("hook-warnings-log")) return Array(15).fill(recentW);
-      if (filePath.includes("override-log")) return Array(5).fill(recentO);
-      if (filePath.includes("commit-failures")) return Array(8).fill(recentF);
+      if (filePath.includes("hook-warnings-log")) return new Array(15).fill(recentW);
+      if (filePath.includes("override-log")) return new Array(5).fill(recentO);
+      if (filePath.includes("commit-failures")) return new Array(8).fill(recentF);
       return [];
     };
     runCommandSafeFn = () =>

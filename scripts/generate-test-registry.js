@@ -66,17 +66,15 @@ function scanTestFiles() {
       const files = readdirRecursive(absDir);
       for (const file of files) {
         if (!isTestFile(file)) continue;
-        const relPath = path.relative(ROOT, file).replace(/\\/g, "/");
-        const testType = relPath.includes(".property.test.")
-          ? "property"
-          : relPath.includes(".integration.test.")
-            ? "integration"
-            : relPath.includes(".e2e.test.")
-              ? "e2e"
-              : type;
+        const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
+        const e2eOrDefault = relPath.includes(".e2e.test.") ? "e2e" : type;
+        const integrationOrBelow = relPath.includes(".integration.test.")
+          ? "integration"
+          : e2eOrDefault;
+        const testType = relPath.includes(".property.test.") ? "property" : integrationOrBelow;
         const baseName = path
           .basename(file)
-          .replace(/\.(test|property\.test|integration\.test)\.(js|ts|mjs)$/, "");
+          .replace(/\.(?:property|integration|e2e)?\.test\.(?:js|ts|mjs)$/, "");
         entries.push({
           path: relPath,
           source_type: "test_file",
@@ -104,7 +102,7 @@ function scanTestFiles() {
           const files = readdirRecursive(testsDir);
           for (const file of files) {
             if (!isTestFile(file)) continue;
-            const relPath = path.relative(ROOT, file).replace(/\\/g, "/");
+            const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
             const baseName = path.basename(file).replace(/\.test\.(js|ts|mjs)$/, "");
             entries.push({
               path: relPath,
@@ -119,8 +117,8 @@ function scanTestFiles() {
           // Skip unreadable
         }
       }
-    } catch {
-      // Skills dir not readable
+    } catch (err) {
+      console.error(`[generate-test-registry] scanTestFiles/skills: ${sanitizeError(err)}`);
     }
   }
 
@@ -156,8 +154,8 @@ function scanAuditCheckers() {
         // Skip
       }
     }
-  } catch {
-    // Skip
+  } catch (err) {
+    console.error(`[generate-test-registry] scanAuditCheckers: ${sanitizeError(err)}`);
   }
 
   return entries;
@@ -174,7 +172,7 @@ function scanTestProtocols() {
       const files = readdirRecursive(dir);
       for (const file of files) {
         if (!file.endsWith(".protocol.json")) continue;
-        const relPath = path.relative(ROOT, file).replace(/\\/g, "/");
+        const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
         const baseName = path.basename(file).replace(".protocol.json", "");
         entries.push({
           path: relPath,
@@ -213,8 +211,8 @@ function scanSkillCommands() {
         description: `Skill: ${skill.name}`,
       });
     }
-  } catch {
-    // Skip
+  } catch (err) {
+    console.error(`[generate-test-registry] scanSkillCommands: ${sanitizeError(err)}`);
   }
 
   return entries;
@@ -231,7 +229,7 @@ function scanNpmValidators() {
     const scripts = pkg.scripts || {};
     const validatorPatterns =
       /^(test|lint|check|validate|verify|audit|format|security|patterns|review|crossdoc|backlog|agents|hooks:test|docs:|roadmap:|skills:)/;
-    for (const [name, cmd] of Object.entries(scripts)) {
+    for (const [name] of Object.entries(scripts)) {
       if (!validatorPatterns.test(name)) continue;
       entries.push({
         path: "package.json",
@@ -242,8 +240,8 @@ function scanNpmValidators() {
         description: `npm run ${name}`,
       });
     }
-  } catch {
-    // Skip
+  } catch (err) {
+    console.error(`[generate-test-registry] scanNpmValidators: ${sanitizeError(err)}`);
   }
 
   return entries;
@@ -257,11 +255,13 @@ function scanCiSteps() {
 
   try {
     const content = fs.readFileSync(ciPath, "utf8");
-    const stepRegex = /- name:\s*(.+)/g;
+    const stepRegex = /^\s*-\s+name:\s*(.+)\s*$/gm;
     const gatePatterns =
       /check|lint|test|validate|coverage|audit|format|pattern|compliance|verify/i;
     for (const match of content.matchAll(stepRegex)) {
-      const name = match[1].trim();
+      const rawName = match[1].trim();
+      if (rawName === "|" || rawName === ">") continue;
+      const name = rawName.replace(/[\n\r]/g, " ");
       const isGate = gatePatterns.test(name);
       entries.push({
         path: ".github/workflows/ci.yml",
@@ -272,8 +272,8 @@ function scanCiSteps() {
         description: `CI step: ${name}`,
       });
     }
-  } catch {
-    // Skip
+  } catch (err) {
+    console.error(`[generate-test-registry] scanCiSteps: ${sanitizeError(err)}`);
   }
 
   return entries;
@@ -298,8 +298,8 @@ function scanHealthCheckers() {
         description: `Health checker: ${file.replace(".js", "")}`,
       });
     }
-  } catch {
-    // Skip
+  } catch (err) {
+    console.error(`[generate-test-registry] scanHealthCheckers: ${sanitizeError(err)}`);
   }
 
   return entries;
@@ -315,6 +315,7 @@ function readdirRecursive(dir) {
   try {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
+      if (entry.isSymbolicLink()) continue;
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== "fixtures") {
         results.push(...readdirRecursive(fullPath));
@@ -349,6 +350,15 @@ function main() {
       ...scanHealthCheckers(),
     ];
 
+    // Deduplicate by stable key
+    const seen = new Set();
+    const uniqueEntries = allEntries.filter((e) => {
+      const key = `${e.source_type}::${e.path}::${e.target}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
     // Ensure output directory exists
     const outDir = path.dirname(OUTPUT);
     if (!fs.existsSync(outDir)) {
@@ -356,17 +366,20 @@ function main() {
     }
 
     // Write JSONL
-    const jsonl = allEntries.map((e) => JSON.stringify(e)).join("\n") + "\n";
+    const jsonl = uniqueEntries.map((e) => JSON.stringify(e)).join("\n") + "\n";
     fs.writeFileSync(OUTPUT, jsonl, "utf8");
 
     // Summary
+    const dupes = allEntries.length - uniqueEntries.length;
     const byType = {};
-    for (const e of allEntries) {
+    for (const e of uniqueEntries) {
       byType[e.source_type] = (byType[e.source_type] || 0) + 1;
     }
 
     console.log(`Test registry generated: ${path.relative(ROOT, OUTPUT)}`);
-    console.log(`Total entries: ${allEntries.length}`);
+    console.log(
+      `Total entries: ${uniqueEntries.length}${dupes > 0 ? ` (${dupes} duplicates removed)` : ""}`
+    );
     console.log("By source type:");
     for (const [type, count] of Object.entries(byType).sort((a, b) => b[1] - a[1])) {
       console.log(`  ${type}: ${count}`);

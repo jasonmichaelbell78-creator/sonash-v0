@@ -27,7 +27,10 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {
@@ -100,6 +103,7 @@ function buildAuditResult() {
   const allFindings = [];
   const allScores = {};
 
+  let runtimeFailIdx = 0;
   for (const checker of checkers) {
     try {
       const result = checker.run({ rootDir: ROOT_DIR });
@@ -107,14 +111,19 @@ function buildAuditResult() {
         allScores[cat] = score;
       }
       for (const finding of result.findings) {
-        finding.impactScore = finding.impactScore ?? impactScore(finding);
-        allFindings.push(finding);
+        allFindings.push({
+          ...finding,
+          impactScore: finding.impactScore ?? impactScore(finding),
+        });
       }
     } catch (err) {
+      runtimeFailIdx++;
+      const domain =
+        typeof checker.DOMAIN === "string" && checker.DOMAIN ? checker.DOMAIN : "unknown";
       allFindings.push({
-        id: `PEA-FAIL-${checker.DOMAIN}`,
+        id: `PEA-FAIL-${domain}-${runtimeFailIdx}`,
         category: "audit_runtime",
-        domain: checker.DOMAIN,
+        domain,
         severity: "error",
         message: `Checker failed: ${err instanceof Error ? err.message : String(err)}`,
         impactScore: 90,
@@ -130,7 +139,8 @@ function buildAuditResult() {
   for (const f of allFindings) {
     if (f.severity === "error") summary.errors++;
     else if (f.severity === "warning") summary.warnings++;
-    else summary.info++;
+    else if (f.severity === "info") summary.info++;
+    else summary.errors++;
   }
 
   return {

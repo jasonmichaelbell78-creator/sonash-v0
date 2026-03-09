@@ -25,7 +25,7 @@ function truncate(text: string | null | undefined, maxLen: number): string {
 
 function escapeMarkdown(text: string | null | undefined): string {
   if (!text) return "";
-  return text.replace(/\|/g, "\\|").replace(/\n/g, " ");
+  return text.replaceAll(/\|/g, String.raw`\|`).replaceAll(/\n/g, " ");
 }
 
 interface DebtItem {
@@ -77,7 +77,7 @@ function ensureDefaults(item: DebtItem): void {
   if (!item.source_id) {
     item.source_id = item.fingerprint ? `intake:${item.fingerprint}` : `intake:${item.id}`;
   }
-  if (!item.source && item.source_id && item.source_id.includes(":")) {
+  if (!item.source && item.source_id?.includes(":")) {
     item.source = item.source_id.split(":")[0];
   }
   if (!item.status) {
@@ -164,7 +164,7 @@ describe("generate-views: truncate", () => {
 
 describe("generate-views: escapeMarkdown", () => {
   it("escapes pipe characters", () => {
-    assert.strictEqual(escapeMarkdown("foo | bar"), "foo \\| bar");
+    assert.strictEqual(escapeMarkdown("foo | bar"), String.raw`foo \| bar`);
   });
 
   it("replaces newlines with spaces", () => {
@@ -172,7 +172,7 @@ describe("generate-views: escapeMarkdown", () => {
   });
 
   it("handles multiple pipes", () => {
-    assert.strictEqual(escapeMarkdown("a|b|c"), "a\\|b\\|c");
+    assert.strictEqual(escapeMarkdown("a|b|c"), String.raw`a\|b\|c`);
   });
 
   it("returns empty for falsy input", () => {
@@ -427,9 +427,8 @@ describe("generate-views: REGRESSION — deduped.jsonl not overwritten by defaul
     const dedupedItem = { source_id: "audit:existing", content_hash: "newhash" };
 
     // Check hash first
-    const hashAlreadyInMaster =
-      dedupedItem.content_hash && masterHashes.has(dedupedItem.content_hash);
-    assert.strictEqual(hashAlreadyInMaster, false);
+    const hashAlreadyInMaster = masterHashes.has(dedupedItem.content_hash);
+    assert.strictEqual(hashAlreadyInMaster, false, "Empty master set should not contain any hash");
 
     // Check stable ID
     const existingId = idMap.get(`source:${dedupedItem.source_id}`);

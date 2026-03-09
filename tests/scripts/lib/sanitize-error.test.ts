@@ -26,7 +26,7 @@ const PROJECT_ROOT = findProjectRoot(__dirname);
 
 // Use file:// URL so dynamic import works regardless of compiled output directory
 const MODULE_URL =
-  "file://" + path.resolve(PROJECT_ROOT, "scripts/lib/sanitize-error.js").replace(/\\/g, "/");
+  "file://" + path.resolve(PROJECT_ROOT, "scripts/lib/sanitize-error.js").replaceAll(/\\/g, "/");
 
 // The module uses ES module `export` syntax but is consumed via dynamic import
 // We use a typed wrapper after the dynamic import settles.
@@ -102,9 +102,9 @@ describe("sanitizeError", () => {
   });
 
   it("redacts Windows user directory paths", () => {
-    const err = new Error("Path: C:\\Users\\bob\\AppData\\Local\\file.txt");
+    const err = new Error(String.raw`Path: C:\Users\bob\AppData\Local\file.txt`);
     const result = sanitizeError(err);
-    assert.ok(!result.includes("C:\\Users\\bob"), "Windows user path should be redacted");
+    assert.ok(!result.includes(String.raw`C:\Users\bob`), "Windows user path should be redacted");
     assert.ok(result.includes("[REDACTED]"), "Should contain [REDACTED]");
   });
 

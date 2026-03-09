@@ -26,15 +26,16 @@ function extractCommand(arg: string): string {
 }
 
 function getSessionCounter(content: string): number | null {
-  const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
-  return match ? parseInt(match[1], 10) : null;
+  const regex = /\*{0,2}Current Session Count(?:er)?\*{0,2}[\s:]*(\d+)/i;
+  const match = regex.exec(content);
+  return match ? Number.parseInt(match[1], 10) : null;
 }
 
 // Extracted from reportCommitFailure — secret redaction logic
 function redactSecrets(line: string): string {
   let result = line;
-  result = result.replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***");
-  result = result.replaceAll(/ghs_[A-Za-z0-9_]{36,}/g, "ghs_***REDACTED***");
+  result = result.replaceAll(/ghp_\w{36,}/g, "ghp_***REDACTED***");
+  result = result.replaceAll(/ghs_\w{36,}/g, "ghs_***REDACTED***");
   result = result.replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, "sk-***REDACTED***");
   result = result.replaceAll(/AKIA[A-Z0-9]{12,}/g, "AKIA***REDACTED***");
   return result;

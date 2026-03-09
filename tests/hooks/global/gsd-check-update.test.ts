@@ -37,9 +37,14 @@ function isValidVersion(version: string): boolean {
 }
 
 function parseVersion(version: string): [number, number, number] {
-  const parts = version.match(/^(\d+)\.(\d+)\.(\d+)/);
+  const regex = /^(\d+)\.(\d+)\.(\d+)/;
+  const parts = regex.exec(version);
   if (!parts) return [0, 0, 0];
-  return [parseInt(parts[1], 10), parseInt(parts[2], 10), parseInt(parts[3], 10)];
+  return [
+    Number.parseInt(parts[1], 10),
+    Number.parseInt(parts[2], 10),
+    Number.parseInt(parts[3], 10),
+  ];
 }
 
 function compareVersions(a: string, b: string): number {

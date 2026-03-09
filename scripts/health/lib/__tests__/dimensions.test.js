@@ -119,7 +119,7 @@ function makeCheckerResults(overrides) {
       },
     },
   };
-  return Object.assign({}, base, overrides);
+  return { ...base, ...overrides };
 }
 
 describe("DIMENSIONS", () => {

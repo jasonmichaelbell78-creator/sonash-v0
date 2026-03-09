@@ -28,7 +28,10 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {
@@ -151,7 +154,8 @@ test("loadBaseline returns null when no baseline exists", () => {
 });
 
 test("loadBaseline returns null for nonexistent root", () => {
-  const sm = createStateManager("/tmp/nonexistent-skill-audit-test-xyz", () => true);
+  const missingRoot = path.join(os.tmpdir(), "nonexistent-skill-audit-test-xyz");
+  const sm = createStateManager(missingRoot, () => true);
   assertEqual(sm.loadBaseline(), null, "Must return null for missing dir");
 });
 

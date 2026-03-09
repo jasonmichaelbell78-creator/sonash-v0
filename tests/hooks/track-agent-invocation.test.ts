@@ -15,9 +15,9 @@ function sanitizeDescription(desc: string): string {
   if (!desc) return "";
   return desc
     .slice(0, 100)
-    .replace(/[A-Za-z0-9+/=]{20,}/g, "[REDACTED]")
-    .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, "[EMAIL]")
-    .replace(/password|secret|token|key|credential/gi, "[SENSITIVE]");
+    .replaceAll(/[A-Za-z0-9+/=]{20,}/g, "[REDACTED]")
+    .replaceAll(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, "[EMAIL]")
+    .replaceAll(/password|secret|token|key|credential/gi, "[SENSITIVE]");
 }
 
 interface AgentState {
@@ -170,19 +170,19 @@ describe("isProjectDirSafe", () => {
 });
 
 describe("JSON argument parsing", () => {
-  test("extracts subagent_type from JSON arg", () => {
-    function parseArg(arg: string): { subagentType: string; description: string } {
-      try {
-        const parsed = JSON.parse(arg);
-        return {
-          subagentType: parsed.subagent_type || "",
-          description: parsed.description || "",
-        };
-      } catch {
-        return { subagentType: "", description: "" };
-      }
+  function parseArg(arg: string): { subagentType: string; description: string } {
+    try {
+      const parsed = JSON.parse(arg);
+      return {
+        subagentType: parsed.subagent_type || "",
+        description: parsed.description || "",
+      };
+    } catch {
+      return { subagentType: "", description: "" };
     }
+  }
 
+  test("extracts subagent_type from JSON arg", () => {
     const arg = JSON.stringify({
       subagent_type: "code-reviewer",
       description: "Review PR changes",
@@ -193,18 +193,6 @@ describe("JSON argument parsing", () => {
   });
 
   test("returns empty strings for invalid JSON", () => {
-    function parseArg(arg: string): { subagentType: string; description: string } {
-      try {
-        const parsed = JSON.parse(arg);
-        return {
-          subagentType: parsed.subagent_type || "",
-          description: parsed.description || "",
-        };
-      } catch {
-        return { subagentType: "", description: "" };
-      }
-    }
-
     assert.deepEqual(parseArg("not json"), { subagentType: "", description: "" });
     assert.deepEqual(parseArg(""), { subagentType: "", description: "" });
   });

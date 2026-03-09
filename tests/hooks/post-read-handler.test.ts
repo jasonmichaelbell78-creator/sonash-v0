@@ -26,7 +26,7 @@ function normalizeFilePath(rawPath: string, projectDir: string): string {
   if (filePath.includes("\n") || filePath.includes("\r")) return "";
 
   // Normalize backslashes
-  filePath = filePath.replace(/\\/g, "/");
+  filePath = filePath.replaceAll(/\\/g, "/");
 
   // Convert absolute paths to relative
   if (path.isAbsolute(filePath) || /^[A-Za-z]:/.test(filePath)) {
@@ -38,10 +38,10 @@ function normalizeFilePath(rawPath: string, projectDir: string): string {
     }
     const rel = path.relative(projectDir, canonicalized);
     const isOutside = rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel);
-    if (!isOutside) {
-      return rel.replace(/\\/g, "/");
-    } else {
+    if (isOutside) {
       return "";
+    } else {
+      return rel.replaceAll(/\\/g, "/");
     }
   }
 
@@ -134,7 +134,7 @@ describe("normalizeFilePath: path security", () => {
   });
 
   test("normalizes backslashes to forward slashes", () => {
-    const result = normalizeFilePath("src\\module\\util.ts", projectDir);
+    const result = normalizeFilePath(String.raw`src\module\util.ts`, projectDir);
     assert.ok(!result.includes("\\"), `Should not contain backslashes: ${result}`);
   });
 

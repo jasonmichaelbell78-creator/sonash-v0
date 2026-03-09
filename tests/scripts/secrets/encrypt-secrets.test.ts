@@ -11,7 +11,6 @@ import assert from "node:assert/strict";
 import { describe, it, before } from "node:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as os from "node:os";
 import * as crypto from "node:crypto";
 
 function findProjectRoot(start: string): string {

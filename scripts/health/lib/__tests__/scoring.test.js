@@ -228,7 +228,7 @@ describe("compositeScore", () => {
 
   it("skips categories not in weights", () => {
     const cats = { "Code Quality": { score: 90 }, Unknown: { score: 10 } };
-    assert.equal(compositeScore(cats, { "Code Quality": 1.0 }).score, 90);
+    assert.equal(compositeScore(cats, { "Code Quality": 1 }).score, 90);
   });
 
   it("includes breakdown for each counted category", () => {

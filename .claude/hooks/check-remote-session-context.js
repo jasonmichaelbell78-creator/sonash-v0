@@ -107,7 +107,7 @@ function getCurrentBranch() {
  */
 function getSessionCounter(content) {
   // Resilient: optional bold markers, flexible spacing, "Count"/"Counter" (P001 fix)
-  const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
+  const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}[\s:]*(\d+)/i);
   return match ? parseInt(match[1], 10) : 0;
 }
 

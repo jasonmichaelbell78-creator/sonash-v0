@@ -12,7 +12,6 @@ import assert from "node:assert/strict";
 import { describe, it, before } from "node:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as os from "node:os";
 
 function findProjectRoot(start: string): string {
   let dir = start;
@@ -172,9 +171,9 @@ describe("resolve-dependencies.detectCircles", () => {
     const circles = mod.detectCircles(tasks);
     assert.ok(circles.length > 0, "A cycle should be detected");
     // The cycle should contain both E1 and E2
-    const allIds = circles.flat();
-    assert.ok(allIds.includes("E1"), "Cycle should include E1");
-    assert.ok(allIds.includes("E2"), "Cycle should include E2");
+    const allIds = new Set(circles.flat());
+    assert.ok(allIds.has("E1"), "Cycle should include E1");
+    assert.ok(allIds.has("E2"), "Cycle should include E2");
   });
 
   it("returns empty array for an empty map", () => {

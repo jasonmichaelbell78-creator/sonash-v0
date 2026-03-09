@@ -137,7 +137,7 @@ describe("CATEGORY_WEIGHTS", () => {
 
   it("weights sum to approximately 1.0", () => {
     const total = Object.values(CATEGORY_WEIGHTS).reduce((a, b) => a + b, 0);
-    assert.ok(Math.abs(total - 1.0) < 0.01, `weights sum to ${total}, expected ~1.0`);
+    assert.ok(Math.abs(total - 1) < 0.01, `weights sum to ${total}, expected ~1.0`);
   });
 
   it("all weights are positive numbers", () => {

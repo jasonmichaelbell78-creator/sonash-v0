@@ -20,7 +20,7 @@ function isFilePathSafe(filePath: string, projectDir: string): boolean {
   if (!filePath) return false;
   if (filePath.startsWith("-") || filePath.includes("\n") || filePath.includes("\r")) return false;
 
-  const normalized = filePath.replace(/\\/g, "/");
+  const normalized = filePath.replaceAll(/\\/g, "/");
   if (
     path.isAbsolute(normalized) ||
     /^[A-Za-z]:\//.test(normalized) ||
@@ -38,14 +38,14 @@ function isFilePathSafe(filePath: string, projectDir: string): boolean {
 }
 
 // --- firestoreWriteBlock logic ---
-const PROTECTED_COLLECTIONS = [
+const PROTECTED_COLLECTIONS = new Set([
   "journal",
   "daily_logs",
   "inventoryEntries",
   "goals",
   "reflections",
   "users",
-];
+]);
 const FIRESTORE_WRITE_PATTERNS = [
   /addDoc\s*\(\s*collection\s*\([^,]+,\s*["'`]([A-Za-z0-9_-]+)["'`]\)/g,
   /setDoc\s*\(\s*doc\s*\([^,]+,\s*["'`]([A-Za-z0-9_-]+)["'`]/g,
@@ -67,7 +67,7 @@ function checkFirestoreWrite(content: string, filePath: string): string[] {
     pattern.lastIndex = 0;
     let match: RegExpExecArray | null;
     while ((match = pattern.exec(content)) !== null) {
-      if (PROTECTED_COLLECTIONS.includes(match[1])) {
+      if (PROTECTED_COLLECTIONS.has(match[1])) {
         violations.push(match[1]);
       }
     }
@@ -78,7 +78,12 @@ function checkFirestoreWrite(content: string, filePath: string): string[] {
 // --- testMockingValidator logic ---
 function checkTestMocking(content: string, filePath: string): boolean {
   if (!/\.(test|spec)\.(ts|tsx|js|jsx)$/.test(path.basename(filePath).toLowerCase())) return false;
-  if (/^(?:app\/admin|functions)\//.test(filePath) || /^scripts\//.test(filePath)) return false;
+  if (
+    filePath.startsWith("app/admin/") ||
+    filePath.startsWith("functions/") ||
+    filePath.startsWith("scripts/")
+  )
+    return false;
 
   const BAD_MOCK_PATTERNS = [
     /vi\.mock\s*\(\s*["']firebase\/firestore["']/,
@@ -91,8 +96,8 @@ function checkTestMocking(content: string, filePath: string): boolean {
 
 // --- typescriptStrictCheck logic ---
 const ANY_PATTERNS = [
-  /:\s*any(?:\s*[;,)\]}]|\s*$)/,
-  /\s+as\s+any(?:\s*[;,)\]}]|\s*$)/,
+  /:\s*any\s*(?:[;,)\]}]|$)/,
+  /\s+as\s+any\s*(?:[;,)\]}]|$)/,
   /<any>/,
   /:\s*any\[\]/,
   /\)\s*:\s*any\s*[{=>]/,
@@ -100,9 +105,9 @@ const ANY_PATTERNS = [
 
 function checkAnyType(content: string, filePath: string): Array<{ line: number; snippet: string }> {
   if (!/\.(ts|tsx)$/.test(filePath)) return [];
-  if (/\.d\.ts$/.test(filePath)) return [];
+  if (filePath.endsWith(".d.ts")) return [];
   if (/\.(test|spec)\.(ts|tsx)$/.test(filePath)) return [];
-  if (/^scripts\//.test(filePath)) return [];
+  if (filePath.startsWith("scripts/")) return [];
 
   const violations: Array<{ line: number; snippet: string }> = [];
   const lines = content.split("\n");
@@ -260,7 +265,7 @@ describe("checkAnyType: TypeScript strict check", () => {
     // The actual 'any' line (line 2) should still be caught unless the line itself has disable
     const violations = checkAnyType(content, "src/util.ts");
     // Line 2 has "any" but line 2 doesn't have eslint-disable, so it should be caught
-    assert.ok(violations.length >= 0, "Should run without throwing");
+    assert.ok(Array.isArray(violations), "Should run without throwing");
   });
 
   test("ignores comment lines", () => {

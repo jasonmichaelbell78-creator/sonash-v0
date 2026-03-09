@@ -27,12 +27,17 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner (returned a Promise)");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    console.error(`  \u2717 ${name}: ${err.message}`);
+    const message =
+      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    console.error(`  \u2717 ${name}: ${message}`);
   }
 }
 
@@ -138,7 +143,7 @@ console.log("\n--- Test Group 3: Domain Category Presence ---");
 
 test("pipeline-correctness has script_execution_order, data_flow_integrity, intake_pipeline", () => {
   const result = checkerResults["pipeline-correctness"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   for (const cat of ["script_execution_order", "data_flow_integrity", "intake_pipeline"]) {
     assert(cat in result.scores, `pipeline-correctness missing: ${cat}`);
   }
@@ -146,7 +151,7 @@ test("pipeline-correctness has script_execution_order, data_flow_integrity, inta
 
 test("data-quality-dedup has dedup_algorithm_health, schema_compliance, content_hash_integrity, id_uniqueness_referential", () => {
   const result = checkerResults["data-quality-dedup"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "dedup_algorithm_health",
     "schema_compliance",
@@ -160,7 +165,7 @@ test("data-quality-dedup has dedup_algorithm_health, schema_compliance, content_
 
 test("file-io-safety has error_handling_coverage, master_deduped_sync, backup_atomicity", () => {
   const result = checkerResults["file-io-safety"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   for (const cat of ["error_handling_coverage", "master_deduped_sync", "backup_atomicity"]) {
     assert(cat in result.scores, `file-io-safety missing: ${cat}`);
   }
@@ -168,7 +173,7 @@ test("file-io-safety has error_handling_coverage, master_deduped_sync, backup_at
 
 test("roadmap-integration has track_assignment_rules, roadmap_debt_cross_ref, sprint_file_alignment", () => {
   const result = checkerResults["roadmap-integration"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   for (const cat of ["track_assignment_rules", "roadmap_debt_cross_ref", "sprint_file_alignment"]) {
     assert(cat in result.scores, `roadmap-integration missing: ${cat}`);
   }
@@ -176,7 +181,7 @@ test("roadmap-integration has track_assignment_rules, roadmap_debt_cross_ref, sp
 
 test("metrics-reporting has view_generation_accuracy, metrics_dashboard_correctness, audit_trail_completeness", () => {
   const result = checkerResults["metrics-reporting"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   for (const cat of [
     "view_generation_accuracy",
     "metrics_dashboard_correctness",
@@ -195,7 +200,7 @@ console.log("\n--- Test Group 4: Score Validity ---");
 test("all checker scores are in 0-100 range with valid ratings", () => {
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const [cat, scoreObj] of Object.entries(result.scores)) {
       const score = scoreObj.score;
       assert(
@@ -221,7 +226,7 @@ test("finding IDs are unique across all TDMS audit checkers", () => {
   const duplicates = [];
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
       if (seen.has(finding.id)) {
         duplicates.push(`${finding.id} (in ${name})`);
@@ -237,7 +242,7 @@ test("all findings have required fields (id, category, severity, message)", () =
   const validSeverities = ["error", "warning", "info"];
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
       for (const field of requiredFields) {
         assert(finding[field] != null, `Finding ${finding.id || "?"} in ${name} missing: ${field}`);

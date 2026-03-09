@@ -26,12 +26,17 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner (returned a Promise)");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    console.error(`  \u2717 ${name}: ${err.message}`);
+    const message =
+      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    console.error(`  \u2717 ${name}: ${message}`);
   }
 }
 
@@ -49,6 +54,12 @@ function assertEqual(actual, expected, message) {
 }
 
 function assertClose(actual, expected, tolerance, message) {
+  if (!Number.isFinite(actual) || !Number.isFinite(expected) || !Number.isFinite(tolerance)) {
+    throw new Error(
+      (message || "assertClose") +
+        `: expected finite numbers, got actual=${String(actual)}, expected=${String(expected)}, tolerance=${String(tolerance)}`
+    );
+  }
   if (Math.abs(actual - expected) > tolerance) {
     throw new Error(
       (message || "assertClose") + `: expected ${expected} ± ${tolerance}, got ${actual}`

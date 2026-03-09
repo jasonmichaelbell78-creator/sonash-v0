@@ -12,8 +12,9 @@ import { describe, test } from "node:test";
 // Extracted from the hook for unit testing
 
 function getSessionCounterFromContent(content: string): number | null {
-  const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
-  return match ? parseInt(match[1], 10) : null;
+  const regex = /\*{0,2}Current Session Count(?:er)?\*{0,2}[\s:]*(\d+)/i;
+  const match = regex.exec(content);
+  return match ? Number.parseInt(match[1], 10) : null;
 }
 
 function parseCommitLogLines(content: string): object[] {

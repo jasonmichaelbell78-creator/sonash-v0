@@ -65,7 +65,7 @@ let tmpRoot: string;
 
 before(async () => {
   const srcPath = path.resolve(PROJECT_ROOT, "scripts/multi-ai/state-manager.js");
-  const moduleUrl = "file://" + srcPath.replace(/\\/g, "/");
+  const moduleUrl = "file://" + srcPath.replaceAll(/\\/g, "/");
 
   // Use Function-wrapped import to force a true ESM dynamic import
   // (TypeScript compiles `import()` to `require()` in CJS mode which

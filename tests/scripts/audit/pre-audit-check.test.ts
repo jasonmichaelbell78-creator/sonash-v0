@@ -12,7 +12,6 @@ import assert from "node:assert/strict";
 import { describe, it, before } from "node:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as os from "node:os";
 
 function findProjectRoot(start: string): string {
   let dir = start;

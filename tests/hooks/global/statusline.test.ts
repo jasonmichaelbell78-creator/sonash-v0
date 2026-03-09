@@ -34,17 +34,17 @@ function computeContextUsage(remaining: number | null | undefined): {
 
 function sanitizeTerminalOutput(s: string): string {
   return s
-    .replace(/[\x00-\x1f\x7f-\x9f]/g, "")
+    .replaceAll(/[\x00-\x1f\x7f-\x9f]/g, "")
 
-    .replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, "")
+    .replaceAll(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, "")
 
-    .replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, "")
+    .replaceAll(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, "")
     .slice(0, 80);
 }
 
 function isPathContained(filePath: string, containingDir: string): boolean {
-  const rel = require("path").relative(containingDir, require("path").resolve(filePath));
-  return !(rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || require("path").isAbsolute(rel));
+  const rel = require("node:path").relative(containingDir, require("node:path").resolve(filePath));
+  return !(rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || require("node:path").isAbsolute(rel));
 }
 
 describe("computeContextUsage", () => {
@@ -94,7 +94,7 @@ describe("computeContextUsage", () => {
   });
 
   test("handles NaN remaining (from non-numeric context_window data)", () => {
-    const result = computeContextUsage(NaN);
+    const result = computeContextUsage(Number.NaN);
     assert.ok(result !== null);
     // NaN → remRaw is NaN → rem = 0 (fallback) → used = 100
     assert.equal(result.used, 100);
@@ -137,22 +137,22 @@ describe("sanitizeTerminalOutput", () => {
 });
 
 describe("isPathContained", () => {
-  const path = require("path") as typeof import("path");
+  const path = require("node:path");
 
   test("returns true when filePath is inside containingDir", () => {
-    const base = path.resolve(require("os").tmpdir());
+    const base = path.resolve(require("node:os").tmpdir());
     const child = path.join(base, "subdir", "file.json");
     assert.equal(isPathContained(child, base), true);
   });
 
   test("returns false when filePath escapes containingDir via ..", () => {
-    const base = path.resolve(require("os").tmpdir(), "subdir");
-    const outside = path.resolve(require("os").tmpdir(), "other", "file.json");
+    const base = path.resolve(require("node:os").tmpdir(), "subdir");
+    const outside = path.resolve(require("node:os").tmpdir(), "other", "file.json");
     assert.equal(isPathContained(outside, base), false);
   });
 
   test("returns false when filePath equals containingDir (is the dir itself, not a file in it)", () => {
-    const base = path.resolve(require("os").tmpdir());
+    const base = path.resolve(require("node:os").tmpdir());
     // path.relative(base, base) === "" which is caught
     assert.equal(isPathContained(base, base), false);
   });

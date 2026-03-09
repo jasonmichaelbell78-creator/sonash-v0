@@ -3164,6 +3164,57 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #347: Mixed (Qodo + SonarCloud) R1 — ecosystem expansion test infrastructure (2026-03-09)
+
+**PR:** #424 | **Source:** Qodo/CodeRabbit + SonarCloud | **Round:** R1 (3
+parts)
+
+**Scope:** 74 new test files from Ecosystem Expansion Phase 1-2. Massive
+first-pass review covering test quality, security hotspots, code smells, and
+modernization across health checkers, ecosystem audit tests, hook tests, and
+debt pipeline tests.
+
+**Key Findings:**
+
+1. Health checker test mocks used zero-param default functions (`() => []`) but
+   were called with args via spread — SonarCloud flagged as "expects no
+   arguments but 1 provided." Fix: add unused params to defaults.
+
+2. ReDoS risk in session counter regex `\s*:?\s*` — sequential lazy quantifiers
+   on overlapping whitespace. Fix: collapse to single character class `[\s:]*`.
+
+3. Broad catch blocks in ESM dynamic imports (health-log.test.js) silently
+   swallowed syntax errors — only MODULE_NOT_FOUND should be caught.
+
+4. 186 SonarCloud code smells across new test files — bulk modernization:
+   `replaceAll`, `Number.parseInt`, `structuredClone`, optional chaining,
+   `String.raw`, unused import cleanup, `Set` over `Array` for lookups.
+
+5. Ecosystem audit integration tests had non-unique failure IDs, in-place
+   finding mutation, and silent treatment of invalid severity values.
+
+**Resolution:**
+
+- Fixed: 197 items across 60+ files
+- Deferred: 3 items (cognitive complexity refactors — architectural)
+- Rejected: 6 items (test fixture passwords, safe Math.random, bounded regex)
+
+**Key Learnings:**
+
+- When mocking via mutable function refs, give the DEFAULT value a matching
+  parameter signature — SonarCloud infers types from initial assignment
+- `\s*:?\s*` is a common ReDoS pattern — collapse adjacent quantifiers on
+  overlapping classes into `[\s:]*`
+- Broad `catch {}` in test setup hides real failures — always catch specific
+  error codes
+- `structuredClone()` is a cleaner deep-clone than
+  `JSON.parse(JSON.stringify())` and avoids edge cases with undefined,
+  functions, and circular refs
+- SonarCloud S2068 (hard-coded passwords) is a known FP for test fixtures that
+  intentionally test password detection — reject with justification
+
+---
+
 #### Review #346: Qodo R6 — diminishing returns, JSONL data normalization (2026-03-08)
 
 **Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:** #421

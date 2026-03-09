@@ -45,7 +45,7 @@ function parsePids(output: string): number[] {
   return output
     .trim()
     .split(/\r?\n/)
-    .map((p) => parseInt(p.trim(), 10))
+    .map((p) => Number.parseInt(p.trim(), 10))
     .filter((n) => Number.isInteger(n) && n > 0);
 }
 
@@ -127,7 +127,7 @@ describe("isPidValid", () => {
   });
 
   test("returns false for NaN", () => {
-    assert.equal(isPidValid(NaN), false);
+    assert.equal(isPidValid(Number.NaN), false);
   });
 
   test("returns false for floating point numbers", () => {

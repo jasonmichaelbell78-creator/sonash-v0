@@ -108,7 +108,7 @@ describe("checkEcosystemIntegration", () => {
         return callCount === 1 ? entries : [];
       },
     });
-    assert.equal(checkEcosystemIntegration().metrics.avg_rounds.value, 3.0);
+    assert.equal(checkEcosystemIntegration().metrics.avg_rounds.value, 3);
   });
 
   it("counts ci_failures from gh run list JSON output", () => {
@@ -136,7 +136,7 @@ describe("checkEcosystemIntegration", () => {
   it("parses churn_pct from review:churn output", () => {
     const { checkEcosystemIntegration } = loadChecker({
       runCommandSafe: (bin, args) => {
-        if (args && args[1] === "review:churn") return makeSuccess("Review churn: 22.5%");
+        if (args?.[1] === "review:churn") return makeSuccess("Review churn: 22.5%");
         return makeSuccess("");
       },
     });
@@ -155,7 +155,7 @@ describe("checkEcosystemIntegration", () => {
         return callCount === 1 ? [] : velEntries;
       },
     });
-    assert.equal(checkEcosystemIntegration().metrics.velocity_avg.value, 5.0);
+    assert.equal(checkEcosystemIntegration().metrics.velocity_avg.value, 5);
   });
 
   it("all metric scores are in [0, 100]", () => {
@@ -178,7 +178,7 @@ describe("checkEcosystemIntegration", () => {
               { conclusion: "failure" },
             ])
           );
-        if (args && args[1] === "sonar:check") return makeFail("5 conditions failed");
+        if (args?.[1] === "sonar:check") return makeFail("5 conditions failed");
         return makeSuccess("");
       },
     });

@@ -27,12 +27,17 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner (returned a Promise)");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    console.error(`  \u2717 ${name}: ${err.message}`);
+    const message =
+      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    console.error(`  \u2717 ${name}: ${message}`);
   }
 }
 
@@ -144,7 +149,7 @@ console.log("\n--- Test Group 3: Domain Category Presence ---");
 
 test("structural-compliance has frontmatter_schema, step_continuity, section_structure, bloat_score", () => {
   const result = checkerResults["structural-compliance"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   for (const cat of ["frontmatter_schema", "step_continuity", "section_structure", "bloat_score"]) {
     assert(cat in result.scores, `structural-compliance missing: ${cat}`);
   }
@@ -152,7 +157,7 @@ test("structural-compliance has frontmatter_schema, step_continuity, section_str
 
 test("cross-reference-integrity has skill_to_skill_refs, skill_to_script_refs, skill_to_template_refs, evidence_citation_validity, dependency_chain_health", () => {
   const result = checkerResults["cross-reference-integrity"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "skill_to_skill_refs",
     "skill_to_script_refs",
@@ -167,7 +172,7 @@ test("cross-reference-integrity has skill_to_skill_refs, skill_to_script_refs, s
 
 test("coverage-consistency has scope_boundary_clarity, trigger_accuracy, output_format_consistency, skill_registry_sync", () => {
   const result = checkerResults["coverage-consistency"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "scope_boundary_clarity",
     "trigger_accuracy",
@@ -181,7 +186,7 @@ test("coverage-consistency has scope_boundary_clarity, trigger_accuracy, output_
 
 test("staleness-drift has version_history_currency, dead_skill_detection, pattern_reference_sync, inline_code_duplication", () => {
   const result = checkerResults["staleness-drift"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "version_history_currency",
     "dead_skill_detection",
@@ -195,7 +200,7 @@ test("staleness-drift has version_history_currency, dead_skill_detection, patter
 
 test("agent-orchestration has agent_prompt_consistency, agent_skill_alignment, parallelization_correctness, team_config_health", () => {
   const result = checkerResults["agent-orchestration"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "agent_prompt_consistency",
     "agent_skill_alignment",
@@ -216,7 +221,7 @@ console.log("\n--- Test Group 4: Score Validity ---");
 test("all checker scores are in 0-100 range with valid ratings", () => {
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const [cat, scoreObj] of Object.entries(result.scores)) {
       const score = scoreObj.score;
       assert(
@@ -242,7 +247,7 @@ test("finding IDs are unique across all skill audit checkers", () => {
   const duplicates = [];
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
       if (seen.has(finding.id)) {
         duplicates.push(`${finding.id} (in ${name})`);
@@ -258,7 +263,7 @@ test("all findings have required fields (id, category, severity, message)", () =
   const validSeverities = ["error", "warning", "info"];
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
       for (const field of requiredFields) {
         assert(finding[field] != null, `Finding ${finding.id || "?"} in ${name} missing: ${field}`);

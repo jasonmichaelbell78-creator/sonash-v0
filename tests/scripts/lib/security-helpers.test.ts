@@ -63,9 +63,9 @@ describe("security-helpers.sanitizeError", () => {
   });
 
   it("redacts Windows user paths", () => {
-    const err = new Error("File at C:\\Users\\alice\\secret.txt not found");
+    const err = new Error(String.raw`File at C:\Users\alice\secret.txt not found`);
     const result = helpers.sanitizeError(err);
-    assert.ok(!result.includes("C:\\Users\\alice"), "Windows user path should be redacted");
+    assert.ok(!result.includes(String.raw`C:\Users\alice`), "Windows user path should be redacted");
     assert.ok(result.includes("[USER_PATH]") || result.includes("[PATH]"), "Should be replaced");
   });
 

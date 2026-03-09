@@ -32,7 +32,6 @@ interface SessionState {
 
 function isSessionStateValid(state: unknown): state is SessionState {
   if (!state || typeof state !== "object" || Array.isArray(state)) return false;
-  const s = state as Record<string, unknown>;
   // Allow any shape — just must be a non-null object
   return true;
 }

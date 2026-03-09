@@ -102,7 +102,7 @@ function buildMetrics(items: DebtItem[], now: Date) {
     byCategory[item.category ?? ""] = (byCategory[item.category ?? ""] || 0) + 1;
     const itemSource =
       item.source ||
-      (item.source_id && item.source_id.includes(":") ? item.source_id.split(":")[0] : null) ||
+      (item.source_id?.includes(":") ? item.source_id.split(":")[0] : null) ||
       "unknown";
     bySource[itemSource] = (bySource[itemSource] || 0) + 1;
     trackAlertItem(item, alerts);

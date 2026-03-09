@@ -4,7 +4,7 @@
  * Tests the step sequencing logic and runStep behavior.
  * Uses mocked execFileSync and fs.existsSync to avoid real execution.
  */
-import { describe, it, mock, beforeEach } from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 // ─── Re-implementations of the logic under test ───────────────────────────────
@@ -53,7 +53,6 @@ const STEPS: Step[] = [
 // Simulate runStep logic
 function createRunStep(existingScripts: Set<string>, failingScripts: Set<string>) {
   return function runStep(step: Step, _index: number): boolean {
-    const scriptPath = `/scripts/debt/${step.script}`;
     const scriptExists = existingScripts.has(step.script);
 
     if (!scriptExists) {

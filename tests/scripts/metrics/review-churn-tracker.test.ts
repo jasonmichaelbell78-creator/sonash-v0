@@ -64,7 +64,7 @@ before(async () => {
   // syntax, we create a CJS wrapper that dynamically imports it.
   const wrapperSrc = `
 (async () => {
-  const mod = await import(${JSON.stringify("file://" + srcPath.replace(/\\/g, "/"))});
+  const mod = await import(${JSON.stringify("file://" + srcPath.replaceAll(/\\/g, "/"))});
   // The internal functions (isFixCommit, countReviewRounds, etc.) are not exported from the ES module.
   // We must re-create small testable wrappers based on the known logic.
   module.exports = {
@@ -84,7 +84,7 @@ before(async () => {
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const promise = require(wrapperFile) as Promise<ChurnModule>;
+    require(wrapperFile);
     // Wait for the async IIFE to set module.exports
     await new Promise((resolve) => setTimeout(resolve, 200));
     // Re-require to get the resolved exports
@@ -309,7 +309,7 @@ describe("review-churn-tracker.formatResultRow", () => {
       title: "Many review rounds",
       total_commits: 5,
       fix_commits: 0,
-      fix_ratio: 0.0,
+      fix_ratio: 0,
       review_rounds: 5,
       timestamp: new Date().toISOString(),
     };
@@ -323,7 +323,7 @@ describe("review-churn-tracker.formatResultRow", () => {
       title: "A".repeat(100),
       total_commits: 3,
       fix_commits: 0,
-      fix_ratio: 0.0,
+      fix_ratio: 0,
       review_rounds: 1,
       timestamp: new Date().toISOString(),
     };
@@ -339,7 +339,7 @@ describe("review-churn-tracker.formatResultRow", () => {
       title: "My PR",
       total_commits: 3,
       fix_commits: 0,
-      fix_ratio: 0.0,
+      fix_ratio: 0,
       review_rounds: 1,
       timestamp: new Date().toISOString(),
     };

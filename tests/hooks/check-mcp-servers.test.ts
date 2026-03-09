@@ -14,7 +14,7 @@ import * as os from "node:os";
 
 // Extracted sanitization function for unit testing
 function sanitizeOutput(str: string): string {
-  return str.replace(/[^a-zA-Z0-9 ,_-]/g, "");
+  return str.replaceAll(/[^a-zA-Z0-9 ,_-]/g, "");
 }
 
 // Extracted path traversal check logic

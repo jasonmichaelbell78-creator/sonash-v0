@@ -58,7 +58,7 @@ function normalizeFilePath(filePath: unknown, options: { stripRepoRoot?: boolean
     const rawRepoName = process.env.REPO_DIRNAME?.trim() || "sonash-v0";
     // Length guard to prevent catastrophic backtracking with very long env values
     const repoName = rawRepoName.length > 200 ? "sonash-v0" : rawRepoName;
-    const escaped = repoName.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+    const escaped = repoName.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
     const repoRootMatch = new RegExp(`(?:^|/)${escaped}/(.*)$`).exec(normalized);
     if (repoRootMatch) {
       normalized = repoRootMatch[1];
@@ -226,7 +226,7 @@ describe("normalize-all: normalizeLineNumber", () => {
 
 describe("normalize-all: normalizeFilePath", () => {
   it("converts backslashes to forward slashes", () => {
-    assert.strictEqual(normalizeFilePath("src\\lib\\auth.ts"), "src/lib/auth.ts");
+    assert.strictEqual(normalizeFilePath(String.raw`src\lib\auth.ts`), "src/lib/auth.ts");
   });
 
   it("strips leading ./", () => {

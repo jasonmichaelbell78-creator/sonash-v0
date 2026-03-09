@@ -27,12 +27,17 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner (returned a Promise)");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    console.error(`  \u2717 ${name}: ${err.message}`);
+    const message =
+      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    console.error(`  \u2717 ${name}: ${message}`);
   }
 }
 
@@ -142,7 +147,7 @@ console.log("\n--- Test Group 3: Domain Category Presence ---");
 
 test("lifecycle-management has session lifecycle categories", () => {
   const result = checkerResults["lifecycle-management"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "session_begin_completeness",
     "session_end_completeness",
@@ -156,7 +161,7 @@ test("lifecycle-management has session lifecycle categories", () => {
 
 test("state-persistence has state persistence categories", () => {
   const result = checkerResults["state-persistence"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "handoff_file_schema",
     "commit_log_integrity",
@@ -170,7 +175,7 @@ test("state-persistence has state persistence categories", () => {
 
 test("compaction-resilience has compaction categories", () => {
   const result = checkerResults["compaction-resilience"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   const expected = [
     "layer_a_commit_tracker",
     "layer_c_precompact_save",
@@ -184,14 +189,14 @@ test("compaction-resilience has compaction categories", () => {
 
 test("cross-session-safety has safety categories", () => {
   const result = checkerResults["cross-session-safety"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   assert("begin_end_balance" in result.scores, "Missing begin_end_balance");
   assert("multi_session_validation" in result.scores, "Missing multi_session_validation");
 });
 
 test("integration-config has integration categories", () => {
   const result = checkerResults["integration-config"];
-  if (!result) return;
+  assert(result, "Missing smoke-test result (check Test Group 2)");
   assert("hook_registration_alignment" in result.scores, "Missing hook_registration_alignment");
   assert("state_file_management" in result.scores, "Missing state_file_management");
 });
@@ -205,7 +210,7 @@ console.log("\n--- Test Group 4: Score Validity ---");
 test("all checker scores are in 0-100 range with valid ratings", () => {
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const [cat, scoreObj] of Object.entries(result.scores)) {
       const score = scoreObj.score;
       assert(
@@ -231,7 +236,7 @@ test("finding IDs are unique across all session audit checkers", () => {
   const duplicates = [];
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
       if (seen.has(finding.id)) {
         duplicates.push(`${finding.id} (in ${name})`);
@@ -247,7 +252,7 @@ test("all findings have required fields (id, category, severity, message)", () =
   const validSeverities = ["error", "warning", "info"];
   for (const { name } of CHECKERS) {
     const result = checkerResults[name];
-    if (!result) continue;
+    assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
       for (const field of requiredFields) {
         assert(finding[field] != null, `Finding ${finding.id || "?"} in ${name} missing: ${field}`);

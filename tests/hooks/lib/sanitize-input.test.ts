@@ -55,7 +55,7 @@ describe("sanitizeInput", () => {
     assert.equal(result, "helloworld");
   });
 
-  test("preserves tab (\\t), newline (\\n), and carriage return (\\r)", () => {
+  test(String.raw`preserves tab (\t), newline (\n), and carriage return (\r)`, () => {
     const input = "line1\nline2\r\nindented\t";
     const result = sanitizeInput(input);
     assert.equal(result, input);

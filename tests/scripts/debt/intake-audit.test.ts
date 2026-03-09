@@ -40,7 +40,7 @@ function mapCommonAuditFields(
   if (Array.isArray(item.files) && item.files.length > 0 && !item.file) {
     const firstFile = item.files[0];
     if (typeof firstFile === "string") {
-      const lineMatch = firstFile.match(/^(.+):(\d+)$/);
+      const lineMatch = /^(.+):(\d+)$/.exec(firstFile);
       if (lineMatch) {
         mapped.file = lineMatch[1];
         if (item.line === undefined) {
@@ -116,9 +116,9 @@ function mapEnhancementAuditToTdms(item: Record<string, unknown>): {
   const metadata: MappingMetadata = { format_detected: "tdms", mappings_applied: [] };
 
   const hasEnhancementFields =
-    (typeof item.counter_argument === "string" && (item.counter_argument as string).trim()) ||
-    (typeof item.current_approach === "string" && (item.current_approach as string).trim()) ||
-    (typeof item.proposed_outcome === "string" && (item.proposed_outcome as string).trim());
+    (typeof item.counter_argument === "string" && item.counter_argument.trim()) ||
+    (typeof item.current_approach === "string" && item.current_approach.trim()) ||
+    (typeof item.proposed_outcome === "string" && item.proposed_outcome.trim());
 
   if (hasEnhancementFields) {
     metadata.format_detected = "enhancement-audit";
@@ -209,7 +209,7 @@ function getNextDebtId(existingItems: Array<{ id?: string }>): number {
   let maxId = 0;
   for (const item of existingItems) {
     if (item.id) {
-      const match = item.id.match(/DEBT-(\d+)/);
+      const match = /DEBT-(\d+)/.exec(item.id);
       if (match) {
         const num = Number.parseInt(match[1], 10);
         if (num > maxId) maxId = num;
@@ -239,7 +239,7 @@ describe("intake-audit: safeCloneObject", () => {
     const clone = safeCloneObject(obj);
     // __proto__ should not be copied as own property
     assert.ok(
-      !Object.prototype.hasOwnProperty.call(clone, "__proto__"),
+      !Object.hasOwn(clone, "__proto__"),
       "__proto__ should not be an own property on clone"
     );
     assert.strictEqual(clone.title, "safe");
@@ -254,7 +254,7 @@ describe("intake-audit: safeCloneObject", () => {
     });
     const clone = safeCloneObject(obj);
     assert.ok(
-      !Object.prototype.hasOwnProperty.call(clone, "constructor"),
+      !Object.hasOwn(clone, "constructor"),
       "constructor should not be an own property on clone"
     );
   });
@@ -403,11 +403,9 @@ describe("intake-audit: format detection — Doc Standards format", () => {
       category: "security",
       confidence: 85,
     };
-    const { mappedItem, mappingMetadata } = detectAndMapFormat(item);
+    const { mappingMetadata } = detectAndMapFormat(item);
     assert.strictEqual(mappingMetadata.confidence, 85);
     assert.ok(mappingMetadata.mappings_applied.includes("confidence→logged"));
-    // confidence is kept in MASTER_DEBT (as of recent spec change)
-    // so we don't assert it's deleted from mappedItem
   });
 });
 

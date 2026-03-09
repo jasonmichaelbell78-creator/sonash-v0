@@ -64,14 +64,14 @@ function normalizeText(text: string): string {
   if (!text) return "";
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
+    .replaceAll(/[^a-z0-9\s]/g, " ")
+    .replaceAll(/\s+/g, " ")
     .trim();
 }
 
 function normalizeParametric(title: string): string {
   if (!title) return "";
-  return title.replace(/\d+/g, "#");
+  return title.replaceAll(/\d+/g, "#");
 }
 
 function toLineNumber(v: unknown): number | null {
@@ -118,13 +118,13 @@ function mergeItems(primary: DebtItem, secondary: DebtItem): DebtItem {
   const primaryRank = sevRank[primary.severity ?? ""] ?? 99;
   const secondaryRank = sevRank[secondary.severity ?? ""] ?? 99;
   if (secondaryRank < primaryRank) merged.severity = secondary.severity;
-  if (!merged.merged_from) merged.merged_from = [];
+  merged.merged_from ??= [];
   if (typeof secondary.source_id === "string" && secondary.source_id.trim()) {
     if (!merged.merged_from.includes(secondary.source_id)) {
       merged.merged_from.push(secondary.source_id);
     }
   }
-  merged.evidence = mergeEvidence(merged.evidence ?? [], secondary.evidence ?? []) as unknown[];
+  merged.evidence = mergeEvidence(merged.evidence ?? [], secondary.evidence ?? []);
   return merged;
 }
 
@@ -269,14 +269,14 @@ describe("idempotency: dedup-multi-pass run twice produces identical output", ()
     ];
 
     // First run
-    const firstRun = runPass1ExactHash(JSON.parse(JSON.stringify(items)) as DebtItem[]);
+    const firstRun = runPass1ExactHash(structuredClone(items));
     // Second run on the output of the first
-    const secondRun = runPass1ExactHash(JSON.parse(JSON.stringify(firstRun)) as DebtItem[]);
+    const secondRun = runPass1ExactHash(structuredClone(firstRun));
 
     assert.strictEqual(firstRun.length, secondRun.length, "Item count should be identical");
     assert.deepStrictEqual(
-      firstRun.map((i) => i.content_hash).sort(),
-      secondRun.map((i) => i.content_hash).sort(),
+      firstRun.map((i) => i.content_hash).sort((a, b) => (a ?? "").localeCompare(b ?? "")),
+      secondRun.map((i) => i.content_hash).sort((a, b) => (a ?? "").localeCompare(b ?? "")),
       "Content hashes should be identical"
     );
   });
@@ -311,11 +311,11 @@ describe("idempotency: dedup-multi-pass run twice produces identical output", ()
     ];
 
     // First run — should reduce 3 → 2
-    const firstRun = runFullDedup(JSON.parse(JSON.stringify(items)) as DebtItem[]);
+    const firstRun = runFullDedup(structuredClone(items));
     const firstCount = firstRun.length;
 
     // Second run — should remain at 2 (no new dedup)
-    const secondRun = runFullDedup(JSON.parse(JSON.stringify(firstRun)) as DebtItem[]);
+    const secondRun = runFullDedup(structuredClone(firstRun));
     const secondCount = secondRun.length;
 
     assert.strictEqual(
@@ -352,7 +352,7 @@ describe("idempotency: dedup-multi-pass run twice produces identical output", ()
       },
     ];
 
-    const firstRun = runPass2NearMatch(JSON.parse(JSON.stringify(items)) as DebtItem[]);
+    const firstRun = runPass2NearMatch(structuredClone(items));
     const firstCount = firstRun.length;
 
     // Assign hashes to merged items (simulate what dedup does)
@@ -360,7 +360,7 @@ describe("idempotency: dedup-multi-pass run twice produces identical output", ()
       item.content_hash = computeTestHash(item) || `merged-hash-${i}`;
     });
 
-    const secondRun = runPass2NearMatch(JSON.parse(JSON.stringify(firstRun)) as DebtItem[]);
+    const secondRun = runPass2NearMatch(structuredClone(firstRun));
     const secondCount = secondRun.length;
 
     assert.strictEqual(secondCount, firstCount, "Near-match dedup should be idempotent");
@@ -373,11 +373,11 @@ describe("idempotency: dedup-multi-pass run twice produces identical output", ()
       { source_id: "c", file: "src/b.ts", line: 5, title: "Different file", severity: "S3" },
     ];
 
-    const firstRun = runPass0Parametric(JSON.parse(JSON.stringify(items)) as DebtItem[]);
+    const firstRun = runPass0Parametric(structuredClone(items));
     const firstCount = firstRun.length;
 
     // Run again on output
-    const secondRun = runPass0Parametric(JSON.parse(JSON.stringify(firstRun)) as DebtItem[]);
+    const secondRun = runPass0Parametric(structuredClone(firstRun));
     const secondCount = secondRun.length;
 
     assert.strictEqual(secondCount, firstCount, "Parametric dedup should be idempotent");
@@ -423,11 +423,11 @@ describe("idempotency: sync-deduped run twice produces no changes on second run"
   });
 });
 
-describe("idempotency: generate-views stable ID assignment", () => {
-  function generateDebtId(index: number): string {
-    return `DEBT-${String(index).padStart(4, "0")}`;
-  }
+function generateDebtId(index: number): string {
+  return `DEBT-${String(index).padStart(4, "0")}`;
+}
 
+describe("idempotency: generate-views stable ID assignment", () => {
   function assignStableId(
     item: DebtItem,
     idMap: Map<string, string>,

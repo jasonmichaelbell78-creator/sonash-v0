@@ -13,12 +13,14 @@ import { describe, test } from "node:test";
 // Extracted from the hook for unit testing
 
 function getSessionCounter(content: string): number {
-  const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
-  return match ? parseInt(match[1], 10) : 0;
+  const regex = /\*{0,2}Current Session Count(?:er)?\*{0,2}[\s:]*(\d+)/i;
+  const match = regex.exec(content);
+  return match ? Number.parseInt(match[1], 10) : 0;
 }
 
 function getLastUpdated(content: string): string | null {
-  const match = content.match(/\*\*Last Updated\*\*:\s*(\d{4}-\d{2}-\d{2})/);
+  const regex = /\*\*Last Updated\*\*:\s*(\d{4}-\d{2}-\d{2})/;
+  const match = regex.exec(content);
   return match ? match[1] : null;
 }
 
@@ -29,10 +31,7 @@ function normalizeRemoteBranch(branch: string): string {
 // Path traversal check from the hook
 function isOutsideBase(rel: string): boolean {
   /* eslint-disable @typescript-eslint/no-require-imports */
-  return (
-    /^\.\.(?:[\\/]|$)/.test(rel) ||
-    (rel.length > 0 && (require("path") as typeof import("path")).isAbsolute(rel))
-  );
+  return /^\.\.(?:[\\/]|$)/.test(rel) || (rel.length > 0 && require("node:path").isAbsolute(rel));
   /* eslint-enable @typescript-eslint/no-require-imports */
 }
 
@@ -132,51 +131,32 @@ describe("isOutsideBase: path traversal guard", () => {
 
   test("returns true for paths starting with ..", () => {
     assert.equal(isOutsideBase("../other"), true);
-    assert.equal(isOutsideBase("..\\other"), true);
+    assert.equal(isOutsideBase(String.raw`..\other`), true);
     assert.equal(isOutsideBase(".."), true);
   });
 });
 
 describe("shouldFetch TTL logic", () => {
-  test("returns true when no cache data is available", () => {
-    // Simulate shouldFetch() logic
-    function shouldFetch(cacheData: unknown, ttlMs: number): boolean {
-      if (!cacheData || typeof cacheData !== "object") return true;
-      const data = cacheData as Record<string, unknown>;
-      const lastFetch = Number(data.lastFetch);
-      const ageMs = Date.now() - lastFetch;
-      if (Number.isFinite(lastFetch) && ageMs >= 0 && ageMs < ttlMs) return false;
-      return true;
-    }
+  function shouldFetch(cacheData: unknown, ttlMs: number): boolean {
+    if (!cacheData || typeof cacheData !== "object") return true;
+    const data = cacheData as Record<string, unknown>;
+    const lastFetch = Number(data.lastFetch);
+    const ageMs = Date.now() - lastFetch;
+    if (Number.isFinite(lastFetch) && ageMs >= 0 && ageMs < ttlMs) return false;
+    return true;
+  }
 
+  test("returns true when no cache data is available", () => {
     assert.equal(shouldFetch(null, 5 * 60 * 1000), true);
     assert.equal(shouldFetch({}, 5 * 60 * 1000), true);
   });
 
   test("returns false when cache is fresh (within TTL)", () => {
-    function shouldFetch(cacheData: unknown, ttlMs: number): boolean {
-      if (!cacheData || typeof cacheData !== "object") return true;
-      const data = cacheData as Record<string, unknown>;
-      const lastFetch = Number(data.lastFetch);
-      const ageMs = Date.now() - lastFetch;
-      if (Number.isFinite(lastFetch) && ageMs >= 0 && ageMs < ttlMs) return false;
-      return true;
-    }
-
     const freshCache = { lastFetch: Date.now() - 1000 }; // 1 second ago
     assert.equal(shouldFetch(freshCache, 5 * 60 * 1000), false);
   });
 
   test("returns true when cache is stale (beyond TTL)", () => {
-    function shouldFetch(cacheData: unknown, ttlMs: number): boolean {
-      if (!cacheData || typeof cacheData !== "object") return true;
-      const data = cacheData as Record<string, unknown>;
-      const lastFetch = Number(data.lastFetch);
-      const ageMs = Date.now() - lastFetch;
-      if (Number.isFinite(lastFetch) && ageMs >= 0 && ageMs < ttlMs) return false;
-      return true;
-    }
-
     const staleCache = { lastFetch: Date.now() - 10 * 60 * 1000 }; // 10 minutes ago
     assert.equal(shouldFetch(staleCache, 5 * 60 * 1000), true);
   });

@@ -29,7 +29,10 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {

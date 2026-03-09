@@ -544,8 +544,8 @@ function typescriptStrictCheck() {
   if (!content) return;
 
   const ANY_PATTERNS = [
-    /:\s*any(?:\s*[;,)\]}]|\s*$)/,
-    /\s+as\s+any(?:\s*[;,)\]}]|\s*$)/,
+    /:\s*any\s*(?:[;,)\]}]|$)/,
+    /\s+as\s+any\s*(?:[;,)\]}]|$)/,
     /<any>/,
     /:\s*any\[\]/,
     /\)\s*:\s*any\s*[{=>]/,

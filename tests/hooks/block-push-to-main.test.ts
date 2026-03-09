@@ -17,7 +17,7 @@ import { describe, test } from "node:test";
 const PROTECTED_BRANCHES = ["main", "master"];
 
 function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return s.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function isBlockedPush(command: string): { blocked: boolean; branch?: string } {
@@ -25,15 +25,15 @@ function isBlockedPush(command: string): { blocked: boolean; branch?: string } {
     return { blocked: false };
   }
 
-  const normalized = command.replace(/#.*/g, "").replace(/\s+/g, " ").trim();
+  const normalized = command.replaceAll(/#.*/g, "").replaceAll(/\s+/g, " ").trim();
 
   for (const branch of PROTECTED_BRANCHES) {
     const escaped = escapeRegex(branch);
     const directPattern = new RegExp(
-      `\\bgit\\s+push\\b[^|;&]*(?:\\s|^)(?:refs/heads/)?${escaped}(?=\\s|$)`
+      String.raw`\bgit\s+push\b[^|;&]*(?:\s|^)(?:refs/heads/)?${escaped}(?=\s|$)`
     );
     const refspecPattern = new RegExp(
-      `\\bgit\\s+push\\b[^|;&]*:\\s*(?:refs/heads/)?${escaped}(?=\\s|$)`
+      String.raw`\bgit\s+push\b[^|;&]*:\s*(?:refs/heads/)?${escaped}(?=\s|$)`
     );
     if (directPattern.test(normalized) || refspecPattern.test(normalized)) {
       return { blocked: true, branch };

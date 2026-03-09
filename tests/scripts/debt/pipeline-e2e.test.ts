@@ -92,9 +92,9 @@ function computeContentHash(item: {
 }): string {
   const normalizedFile = (item.file ?? "").toLowerCase().replace(/^\.\//, "");
   const line =
-    typeof item.line === "number" ? item.line : parseInt(String(item.line ?? "0"), 10) || 0;
+    typeof item.line === "number" ? item.line : Number.parseInt(String(item.line ?? "0"), 10) || 0;
   const normalizeText = (v: string | undefined, max: number) =>
-    (v ?? "").toLowerCase().trim().replace(/\s+/g, " ").substring(0, max);
+    (v ?? "").toLowerCase().trim().replaceAll(/\s+/g, " ").substring(0, max);
   const hashInput = JSON.stringify([
     normalizedFile,
     line,
@@ -113,7 +113,10 @@ function normalizeItems(items: RawAuditItem[], sourceFile: string): NormalizedIt
       severity: ensureValid(item.severity, VALID_SEVERITIES, "S2"),
       type: ensureValid(item.type, VALID_TYPES, "code-smell"),
       file: (item.file ?? "").replace(/^\.\//, ""),
-      line: typeof item.line === "number" ? item.line : parseInt(String(item.line ?? "0"), 10) || 0,
+      line:
+        typeof item.line === "number"
+          ? item.line
+          : Number.parseInt(String(item.line ?? "0"), 10) || 0,
       title: (item.title ?? "Untitled").substring(0, 500),
       description: item.description ?? "",
       recommendation: item.recommendation ?? "",
@@ -140,15 +143,15 @@ function dedupItems(items: NormalizedItem[]): NormalizedItem[] {
       noHashItems.push(item);
       continue;
     }
-    if (!hashMap.has(item.content_hash)) {
-      hashMap.set(item.content_hash, item);
-    } else {
+    if (hashMap.has(item.content_hash)) {
       // Merge — keep more severe severity
       const existing = hashMap.get(item.content_hash)!;
       const sevRank: Record<string, number> = { S0: 0, S1: 1, S2: 2, S3: 3 };
       if ((sevRank[item.severity] ?? 99) < (sevRank[existing.severity] ?? 99)) {
         hashMap.set(item.content_hash, { ...existing, severity: item.severity });
       }
+    } else {
+      hashMap.set(item.content_hash, item);
     }
   }
 
@@ -169,7 +172,7 @@ function assignIds(items: NormalizedItem[], existingMaster: NormalizedItem[]): N
 
   const maxId = existingMaster.reduce((max, item) => {
     const m = /^DEBT-(\d+)$/.exec(item.id ?? "");
-    return m ? Math.max(max, parseInt(m[1], 10)) : max;
+    return m ? Math.max(max, Number.parseInt(m[1], 10)) : max;
   }, 0);
 
   let nextId = maxId + 1;
@@ -517,7 +520,7 @@ describe("pipeline-e2e: MASTER_DEBT and deduped stay in sync", () => {
     const deduped = dedupItems(normalized);
 
     // Simulate: MASTER has a manual severity change
-    const masterCopy = JSON.parse(JSON.stringify(deduped)) as NormalizedItem[];
+    const masterCopy = structuredClone(deduped);
     const s0Item = masterCopy.find((i) => i.severity === "S0");
     assert.ok(s0Item, "Should have an S0 item");
     s0Item!.severity = "S1"; // manually demoted in MASTER
@@ -525,7 +528,7 @@ describe("pipeline-e2e: MASTER_DEBT and deduped stay in sync", () => {
     // Run sync
     const masterMap = new Map(masterCopy.map((i) => [i.content_hash, i]));
     let severityChanges = 0;
-    const dedupedCopy = JSON.parse(JSON.stringify(deduped)) as NormalizedItem[];
+    const dedupedCopy = structuredClone(deduped);
 
     for (const item of dedupedCopy) {
       const masterItem = masterMap.get(item.content_hash);

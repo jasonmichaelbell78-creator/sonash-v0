@@ -30,7 +30,7 @@ function makeMetricsJson(alerts = {}, summary = {}) {
 }
 
 // Load checker ONCE with faked utils (safeReadLines will be overridden per-test via the mutable ref)
-let safeReadLinesFn = () => [];
+let safeReadLinesFn = (_path) => [];
 
 require.cache[UTILS_PATH] = {
   id: UTILS_PATH,

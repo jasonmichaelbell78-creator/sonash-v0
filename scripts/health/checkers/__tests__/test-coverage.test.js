@@ -17,7 +17,7 @@ const origUtils = require.cache[UTILS_PATH];
 const origReaddirSync = realFs.readdirSync;
 
 // Load checker once; safeReadLines routed through mutable ref
-let safeReadLinesFn = () => [];
+let safeReadLinesFn = (_path) => [];
 
 require.cache[UTILS_PATH] = {
   id: UTILS_PATH,
@@ -44,7 +44,7 @@ else delete require.cache[UTILS_PATH];
 
 function reset() {
   realFs.readdirSync = origReaddirSync;
-  safeReadLinesFn = () => [];
+  safeReadLinesFn = (_path) => [];
 }
 
 function makeTestResult(status, timestamp = new Date().toISOString()) {
@@ -85,7 +85,7 @@ describe("checkTestCoverage", () => {
 
   it("returns no_data=true when the latest .jsonl file is empty", () => {
     realFs.readdirSync = () => ["results-2026-01-01.jsonl"];
-    safeReadLinesFn = () => [];
+    safeReadLinesFn = (_path) => [];
     try {
       assert.equal(checkTestCoverage().no_data, true);
     } finally {
@@ -182,7 +182,7 @@ describe("checkTestCoverage", () => {
     try {
       checkTestCoverage();
       assert.ok(
-        readPath && readPath.includes("2026-03-09"),
+        readPath?.includes("2026-03-09"),
         `expected latest file to be read, got: ${readPath}`
       );
     } finally {

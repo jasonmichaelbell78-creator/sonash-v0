@@ -20,7 +20,7 @@ const VALID_CATEGORIES = [
   "ai-optimization",
 ];
 const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
-const VALID_TYPES = [
+const VALID_TYPES = new Set([
   "bug",
   "code-smell",
   "vulnerability",
@@ -28,9 +28,9 @@ const VALID_TYPES = [
   "tech-debt",
   "process-gap",
   "enhancement",
-];
-const VALID_STATUSES = ["NEW", "VERIFIED", "FALSE_POSITIVE", "IN_PROGRESS", "RESOLVED"];
-const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
+]);
+const VALID_STATUSES = new Set(["NEW", "VERIFIED", "FALSE_POSITIVE", "IN_PROGRESS", "RESOLVED"]);
+const VALID_EFFORTS = new Set(["E0", "E1", "E2", "E3"]);
 const REQUIRED_FIELDS = ["id", "source_id", "title", "severity", "category", "status"];
 
 // ─── Re-implementation of validateItem (pure function, no fs) ─────────────────
@@ -91,17 +91,17 @@ function validateItem(item: DebtItem, lineNum: number): { errors: string[]; warn
   }
 
   // type
-  if (item.type && !VALID_TYPES.includes(item.type)) {
+  if (item.type && !VALID_TYPES.has(item.type)) {
     errors.push(`Line ${lineNum}: Invalid type: "${item.type}"`);
   }
 
   // status
-  if (item.status && !VALID_STATUSES.includes(item.status)) {
+  if (item.status && !VALID_STATUSES.has(item.status)) {
     errors.push(`Line ${lineNum}: Invalid status: "${item.status}"`);
   }
 
   // effort
-  if (item.effort && !VALID_EFFORTS.includes(item.effort)) {
+  if (item.effort && !VALID_EFFORTS.has(item.effort)) {
     warnings.push(`Line ${lineNum}: Invalid effort: "${item.effort}"`);
   }
 
@@ -124,8 +124,8 @@ function validateItem(item: DebtItem, lineNum: number): { errors: string[]; warn
   }
 
   // line number
-  if (item.line !== undefined && (typeof item.line !== "number" || (item.line as number) < 0)) {
-    warnings.push(`Line ${lineNum}: Invalid line number: ${item.line}`);
+  if (item.line !== undefined && (typeof item.line !== "number" || item.line < 0)) {
+    warnings.push(`Line ${lineNum}: Invalid line number: ${String(item.line)}`);
   }
 
   // created date

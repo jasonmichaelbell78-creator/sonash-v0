@@ -33,7 +33,7 @@ const tmpDirs: string[] = [];
 
 before(async () => {
   const srcPath = path.resolve(PROJECT_ROOT, "scripts/planning/lib/read-jsonl.js");
-  const moduleUrl = "file://" + srcPath.replace(/\\/g, "/");
+  const moduleUrl = "file://" + srcPath.replaceAll(/\\/g, "/");
   // Permitted ESM workaround: TypeScript CJS output compiles `import()` to `require()`
   // which cannot handle file:// URLs. Function-wrapped import forces a true ESM dynamic import.
   // Input is always a hardcoded path from path.resolve(), never user-controlled.
@@ -158,13 +158,13 @@ describe("planning.escapeCell", () => {
   it("escapes pipe characters", () => {
     const result = mod.escapeCell("value with | pipe");
     assert.ok(!result.includes(" | "), "Unescaped pipe should be replaced");
-    assert.ok(result.includes("\\|"), "Pipe should be escaped");
+    assert.ok(result.includes(String.raw`\|`), "Pipe should be escaped");
   });
 
   it("escapes backslashes", () => {
-    const result = mod.escapeCell("path\\to\\file");
+    const result = mod.escapeCell(String.raw`path\to\file`);
     // Backslash should be doubled
-    assert.ok(result.includes("\\\\"), "Backslashes should be escaped");
+    assert.ok(result.includes(String.raw`\\`), "Backslashes should be escaped");
   });
 
   it("replaces newlines with spaces", () => {

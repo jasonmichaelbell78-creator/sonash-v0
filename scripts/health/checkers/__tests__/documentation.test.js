@@ -25,7 +25,7 @@ function makeFail(output = "", stderr = "") {
 }
 
 // Load checker once; runCommandSafe routed through mutable ref
-let runCommandSafeFn = () => makeSuccess("");
+let runCommandSafeFn = (_cmd) => makeSuccess("");
 
 require.cache[UTILS_PATH] = {
   id: UTILS_PATH,
@@ -53,7 +53,7 @@ else delete require.cache[UTILS_PATH];
 function reset() {
   realFs.statSync = origStatSync;
   realFs.readdirSync = origReaddirSync;
-  runCommandSafeFn = () => makeSuccess("");
+  runCommandSafeFn = (_cmd) => makeSuccess("");
 }
 
 describe("checkDocumentation", () => {
@@ -130,7 +130,7 @@ describe("checkDocumentation", () => {
       throw new Error("ENOENT");
     };
     realFs.readdirSync = (dir, opts) => {
-      if (opts && opts.withFileTypes) {
+      if (opts?.withFileTypes) {
         return [
           { name: "file1.md", isFile: () => true, isDirectory: () => false },
           { name: "file2.md", isFile: () => true, isDirectory: () => false },
@@ -185,7 +185,7 @@ describe("checkDocumentation", () => {
       throw new Error("ENOENT");
     };
     realFs.readdirSync = (dir, opts) => {
-      if (opts && opts.withFileTypes) {
+      if (opts?.withFileTypes) {
         return Array.from({ length: 100 }, (_, i) => ({
           name: `f${i}.md`,
           isFile: () => true,

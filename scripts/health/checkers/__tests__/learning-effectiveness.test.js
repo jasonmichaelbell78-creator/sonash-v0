@@ -43,10 +43,10 @@ else delete require.cache[UTILS_PATH];
 function makeContent(overrides = {}) {
   const f = {
     effectiveness: 88.5,
-    automation: 32.0,
+    automation: 32,
     failing: 3,
     learned: 15,
-    critical: 92.0,
+    critical: 92,
     ...overrides,
   };
   return [
@@ -134,11 +134,11 @@ describe("checkLearningEffectiveness", () => {
   });
 
   it("parses critical_success correctly", () => {
-    realFs.readFileSync = () => makeContent({ critical: 96.0 });
+    realFs.readFileSync = () => makeContent({ critical: 96 });
     try {
       const r = checkLearningEffectiveness();
       assert.ok("critical_success" in r.metrics);
-      assert.equal(r.metrics.critical_success.value, 96.0);
+      assert.equal(r.metrics.critical_success.value, 96);
     } finally {
       realFs.readFileSync = origReadFileSync;
     }
@@ -157,11 +157,11 @@ describe("checkLearningEffectiveness", () => {
   it("all metric scores are in [0, 100]", () => {
     realFs.readFileSync = () =>
       makeContent({
-        effectiveness: 50.0,
-        automation: 5.0,
+        effectiveness: 50,
+        automation: 5,
         failing: 15,
         learned: 2,
-        critical: 55.0,
+        critical: 55,
       });
     try {
       const r = checkLearningEffectiveness();

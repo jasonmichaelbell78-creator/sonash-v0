@@ -59,7 +59,7 @@ before(async () => {
 const { createRequire } = require("node:module");
 // We use dynamic import to load the ES module, then expose helpers via module.exports promise
 module.exports = (async () => {
-  const mod = await import(${JSON.stringify("file://" + srcPath.replace(/\\/g, "/"))});
+  const mod = await import(${JSON.stringify("file://" + srcPath.replaceAll(/\\/g, "/"))});
   return {
     aggregateCategory: mod.aggregateCategory,
     getCategorySources: mod.getCategorySources,
