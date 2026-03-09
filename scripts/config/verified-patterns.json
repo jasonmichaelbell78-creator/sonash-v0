@@ -49,7 +49,9 @@
     "backfill-reviews.js",
     "generate-fix-template-stubs.js",
     "write-jsonl.js",
-    "promotion-pipeline.test.js"
+    "promotion-pipeline.test.js",
+    "health-log.test.js",
+    "generate-test-registry.js"
   ],
   "git-without-separator": [
     "surface-lessons-learned.js",

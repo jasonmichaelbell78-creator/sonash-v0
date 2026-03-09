@@ -39,8 +39,14 @@ const { ReviewRecord } = schemas;
 const { hasField } = completenessLib;
 
 function loadFixture(name: string): Record<string, unknown> {
-  const filePath = path.join(PROJECT_ROOT, "test/fixtures/ecosystem-v2", name);
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as Record<string, unknown>;
+  const fixturePath = path.join(PROJECT_ROOT, "test/fixtures/ecosystem-v2", name);
+  try {
+    return JSON.parse(fs.readFileSync(fixturePath, "utf8")) as Record<string, unknown>;
+  } catch (err) {
+    throw new Error(
+      `Failed to load fixture "${name}" at ${fixturePath}: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
 }
 
 /**

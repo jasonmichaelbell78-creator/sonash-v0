@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * post-write-validator.js - Consolidated PostToolUse hook for Write/Edit/MultiEdit
  *
@@ -953,6 +953,37 @@ runValidator("repositoryPatternCheck", repositoryPatternCheck);
 // SUGGEST validators
 runValidator("checkRequirements", checkRequirements);
 runValidator("agentTriggerEnforcer", agentTriggerEnforcer);
+runValidator("testRegistryReminder", testRegistryReminder);
+
+// ─── Validator 11: testRegistryReminder (SUGGEST) ─────────────────────────────
+
+function testRegistryReminder() {
+  if (!isWriteTool) return;
+  if (!isTestFile) return;
+  // Only warn for new test files (Write tool creates new files)
+  const registryPath = path.join(projectDir, "data", "ecosystem-v2", "test-registry.jsonl");
+  try {
+    if (!fs.existsSync(registryPath)) return;
+    const normalizedFilePath = filePath.replace(/\\/g, "/");
+    const lines = fs.readFileSync(registryPath, "utf8").split("\n");
+    const found = lines.some((line) => {
+      if (!line.trim()) return false;
+      try {
+        const entry = JSON.parse(line);
+        return entry.path === normalizedFilePath;
+      } catch {
+        return false;
+      }
+    });
+    if (!found) {
+      console.error(
+        `[suggest] New test file created: ${sanitizeInput(filePath)}. Run \`npm run tests:registry\` to update the test registry.`
+      );
+    }
+  } catch {
+    // Registry not readable, skip
+  }
+}
 
 // Final output
 console.log("ok");
