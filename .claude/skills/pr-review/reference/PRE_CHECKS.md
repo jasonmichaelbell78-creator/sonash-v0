@@ -188,3 +188,56 @@ grep -rn 'pattern_you_changed' tests/ --include="*.test.*"
 
 **Source:** PR #396 retro — test regex not updated with production regex (~0.5
 avoidable rounds).
+
+## 19. Tooling Migration Grep
+
+**Trigger:** PR changes a dev tooling wrapper (fnm, nvm, rbenv, pyenv) or
+migrates from one tool to another. Before pushing, grep for ALL usages of the
+old AND new tool across the entire codebase:
+
+```bash
+grep -rn 'fnm env\|fnm use\|nvm use\|nvm install' scripts/ .claude/hooks/ --include="*.sh" --include="*.js"
+```
+
+Fix all instances in the same commit. Do NOT push with partial migration.
+
+**Source:** PR #421 retro — 4-round fnm ripple chain (R2→R5). Each round found
+another script missing `fnm use` after `fnm env`.
+
+## 20. Parser/Algorithm Edge Case Matrix
+
+**Trigger:** PR adds a new parser (YAML, JSON, config, log format) or algorithm
+with multiple input formats. Before committing, enumerate ALL edge cases as a
+test matrix:
+
+- Quoted vs unquoted values
+- Inline vs multi-line syntax
+- Comments (inline, standalone)
+- Empty/missing values
+- Special characters / escaping
+- Boundary markers (siblings vs children)
+
+Commit the test matrix WITH the parser. Do not rely on reviewers to discover
+edge cases one at a time.
+
+**Source:** PR #423 retro — 3-round YAML parser hardening (boundary detection,
+inline flow syntax, sibling keys, quoted comments).
+
+## 21. Run SonarCloud Locally Before Pushing
+
+**Trigger:** PR modifies >5 JS/TS files or introduces new scripts. Run
+SonarCloud analysis locally before pushing to catch CC, code smells, and
+security hotspots before the CI round-trip:
+
+```bash
+npx sonarqube-scanner 2>&1 | grep -E 'MAJOR|CRITICAL|BLOCKER'
+```
+
+Or at minimum, check CC on modified files:
+
+```bash
+npx eslint --rule '{"complexity": ["error", 15]}' <modified-files>
+```
+
+**Source:** PR #411 retro — 43% false positive rate from first-scan SonarCloud
+volume not pre-screened.
