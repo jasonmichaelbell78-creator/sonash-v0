@@ -834,6 +834,41 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review #468: PR #423 R5 — Qodo + Semgrep (2026-03-09)
+
+_Skill audits wave 2 — packaging hardening, test determinism, bounds checks._
+
+**Source:** Qodo (Compliance + Code Suggestions), Semgrep **Total:** 10 unique
+(after dedup) **Fixed:** 4 **Deferred:** 0 **Rejected:** 6
+
+- **Exclude non-distributable dirs:** `package_skill.py` now skips `.git`,
+  `node_modules`, `dist`, `build`, `__pycache__`, `.DS_Store` during packaging
+- **Crash-safe skipped.append:** Wrapped `relative_to()` in try/except to handle
+  paths that can't be made relative (e.g. junction targets)
+- **Deterministic FP-3 test:** Uses `CLAUDE_CHECK_GLOBAL_SETTINGS` +
+  `CLAUDE_GLOBAL_SETTINGS_PATH` env vars with fixture file instead of live
+  `~/.claude/settings.json` — eliminates machine-dependent flakiness
+- **Semgrep bounds check:** Added `raw.length > 0` guard before `raw[0]` access
+  in `parseCacheValue` to prevent undefined on empty string
+
+**Rejected (6 — all repeats or low-value):**
+
+- Local config exposure: R5 repeat (5th time)
+- Silent exception swallow: R5 repeat (4th time)
+- No audit logging: lightweight hook, prompts in CC logs
+- Sensitive filenames in output: user needs skip feedback
+- Explicit is_symlink(): redundant with resolve+relative_to
+- Escaped quotes in YAML: cache values never use escaped quotes
+
+**Patterns:**
+
+- Test fixtures + env var overrides make checker tests deterministic across
+  machines — prefer this over relying on user's live config
+- Always guard array-index access (`arr[0]`) with length check — Semgrep catches
+  this systematically
+
+---
+
 ### Review #465: PR #423 R4 — Qodo (2026-03-09)
 
 _Skill audits wave 2 — scoring accuracy, YAML parsing depth, path traversal._

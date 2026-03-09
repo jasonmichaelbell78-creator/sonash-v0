@@ -701,16 +701,34 @@ test("FP-2: settings_file_alignment excludes utility files from unregistered che
 test("FP-3: global_local_consistency checks global ~/.claude/settings.json", () => {
   // HEA-121: Global hooks registered in ~/.claude/settings.json were being
   // compared only against project settings, causing false positives.
-  const result = configHealth.run({ rootDir: ROOT_DIR });
-  const globalFindings = result.findings.filter((f) => f.id === "HEA-121");
-  // If global hooks are properly registered in ~/.claude/settings.json,
-  // they should not appear as unregistered
-  for (const finding of globalFindings) {
-    const details = finding.details || "";
-    assert(
-      !details.includes("gsd-statusline"),
-      "gsd-statusline.js should NOT be flagged — it's registered in global settings"
+  // Use env vars + fixture for deterministic testing (no dependency on local machine).
+  const prevCheck = process.env.CLAUDE_CHECK_GLOBAL_SETTINGS;
+  const prevPath = process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
+  try {
+    process.env.CLAUDE_CHECK_GLOBAL_SETTINGS = "1";
+    process.env.CLAUDE_GLOBAL_SETTINGS_PATH = path.join(
+      __dirname,
+      "fixtures",
+      "claude-global-settings.json"
     );
+
+    const result = configHealth.run({ rootDir: ROOT_DIR });
+    const globalFindings = result.findings.filter((f) => f.id === "HEA-121");
+    // If global hooks are properly registered in the fixture settings,
+    // gsd-statusline should not appear as unregistered
+    for (const finding of globalFindings) {
+      const details = finding.details || "";
+      assert(
+        !details.includes("gsd-statusline"),
+        "gsd-statusline.js should NOT be flagged — it's registered in global settings"
+      );
+    }
+  } finally {
+    if (prevCheck === undefined) delete process.env.CLAUDE_CHECK_GLOBAL_SETTINGS;
+    else process.env.CLAUDE_CHECK_GLOBAL_SETTINGS = prevCheck;
+
+    if (prevPath === undefined) delete process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
+    else process.env.CLAUDE_GLOBAL_SETTINGS_PATH = prevPath;
   }
 });
 

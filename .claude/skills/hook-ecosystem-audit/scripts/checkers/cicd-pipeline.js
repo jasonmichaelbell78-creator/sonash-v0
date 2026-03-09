@@ -491,7 +491,7 @@ function parseCacheValue(trimmed) {
   let raw = trimmed.slice("cache:".length).trim();
 
   // Handle quoted values (strip inline comments after closing quote)
-  if (raw.startsWith('"') || raw.startsWith("'")) {
+  if (raw.length > 0 && (raw.startsWith('"') || raw.startsWith("'"))) {
     const quote = raw[0];
     const end = raw.indexOf(quote, 1);
     raw = end >= 0 ? raw.slice(0, end + 1) : raw;

@@ -72,15 +72,24 @@ def package_skill(skill_path, output_dir=None):
     try:
         with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
             skipped = []
+            excluded_dirs = {".git", "node_modules", "dist", "build", "__pycache__"}
+            excluded_files = {".ds_store"}
             for file_path in skill_path.rglob('*'):
                 if not file_path.is_file():
+                    continue
+                # Skip non-distributable directories and files
+                parts_lower = {p.lower() for p in file_path.parts}
+                if excluded_dirs & parts_lower or file_path.name.lower() in excluded_files:
                     continue
                 # Skip symlinks or files resolving outside the skill dir
                 try:
                     resolved = file_path.resolve()
                     resolved.relative_to(skill_path.resolve())
                 except (ValueError, OSError):
-                    skipped.append(file_path.relative_to(skill_path.parent))
+                    try:
+                        skipped.append(file_path.relative_to(skill_path.parent))
+                    except ValueError:
+                        skipped.append(Path(str(file_path)))
                     continue
                 # Avoid archiving the output zip into itself
                 if file_path.resolve() == zip_filename.resolve():
