@@ -29,12 +29,12 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-09 02:35 **Branch**: `skill-audits` **Working On**:
-Session #211 — deep-plan ecosystem expansion complete (33 decisions, PLAN.md
-approved).
+**Last Checkpoint**: 2026-03-09 18:30 **Branch**: `new-ecosystem` **Working
+On**: Session #212 — Ecosystem Expansion Phase 1 committed, Phase 2 complete (52
+decisions). Ready for Phase 3 (/create-audit).
 
-**Uncommitted Work**: Deep-plan artifacts (DIAGNOSIS.md, DECISIONS.md, PLAN.md,
-state file)
+**Uncommitted Work**: DECISIONS.md v2.0 (Phase 2 decisions D#34-52), updated
+test-registry.jsonl
 
 ---
 
@@ -50,26 +50,31 @@ state file)
 
 ## Recent Session Summaries
 
+**Session #212** (ECOSYSTEM EXPANSION — PHASE 1 DONE, PHASE 2 DONE):
+
+- **Phase 1 committed** (`3b49a2f5`): 87 new test files, 1,594 total tests (0
+  failures), test registry (294 entries), CI coverage enforcement (65%
+  threshold), TESTING_SYSTEM.md documentation. 104 files changed, +24,938 lines.
+- **Phase 2 complete**: 19 new skill design decisions (D#34-52) via interactive
+  Q&A. Covers SKILL.md phase structure, checker patterns, live test execution
+  strategy (full `npm test` in D5), registry API, dashboard format, self-test
+  scope (6 files), integration points, configuration.
+- DECISIONS.md amended v1.0 → v2.0 (52 total decisions)
+- **Next: Phase 3** — invoke `/create-audit` with DECISIONS.md as input spec.
+  /create-audit produces SKILL.md, REFERENCE.md, 6 checkers, libs, 6 self-tests.
+- **Then: Phase 4** — wire ecosystem into infrastructure (Steps 10-11),
+  including mid-session-alerts hook wiring (D#48)
+- Key Phase 2 decisions: modified 8-phase with live test phase (D#34), full test
+  suite execution in D5 (D#39), graduated coverage severity (D#51),
+  `--skip-live-tests` flag for comprehensive runs (D#49)
+
 **Session #211** (DEEP-PLAN: ECOSYSTEM EXPANSION — 33 DECISIONS):
 
 - `/deep-plan ecosystem-expansion` — exhaustive discovery for health ecosystem
   audit + repo-wide test expansion
-- Phase 0: DIAGNOSIS.md — ROADMAP aligned, health monitoring system inventoried
-  (10 checkers, 7 lib files, 4 data stores, 2 consumer skills, 0% tested)
-- Phase 1: 28+ questions across 4 batches + 3 multi-agent verification passes
-  (Pass 0: catalog 8 test source types, Pass 2: dedupe, Pass 3: false positives)
-- Phase 2: DECISIONS.md — 33 decisions covering ecosystem design (6 domains, 25
-  categories), testing scope (ALL ~314 new tests, 14 test types), ownership
-  transfers (/alerts + /ecosystem-health → health ecosystem)
-- Phase 3: PLAN.md — 11-step implementation plan, 3-wave execution (8 parallel
-  subagent dispatches)
-- Key decisions: HMS- prefix, fast-check for property-based testing, 65%/80% CI
-  coverage floors, live test execution in audit, 3-layer test documentation
-  trigger, /alerts Test Health category
+- 33 decisions, PLAN.md approved (4 phases, 11 steps)
 - Artifacts: `.planning/ecosystem-expansion/` (DIAGNOSIS.md, DECISIONS.md,
   PLAN.md)
-- State: `.claude/state/deep-plan-ecosystem-expansion.state.json`
-- **Execution deferred to next session**
 
 **Session #210** (SKILL AUDITS: CREATE-AUDIT + SCRIPT-ECOSYSTEM):
 
@@ -105,9 +110,9 @@ state file)
 | M1.5 - Quick Wins                 | Paused   | ~20%                                |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%                                |
 
-**Current Branch**: `skill-audits`
+**Current Branch**: `new-ecosystem`
 
-**Test Status**: All tests passing (497/498, 1 skipped)
+**Test Status**: All tests passing (1,594 total, 1,588 pass, 6 skipped, 0 fail)
 
 ---
 
@@ -115,14 +120,15 @@ state file)
 
 ### Immediate Priority (Next Session)
 
-1. **Execute ecosystem expansion plan** — 11-step PLAN.md at
-   `.planning/ecosystem-expansion/PLAN.md` (33 decisions in DECISIONS.md).
-   Execution routing: 8 subagent dispatches across 3 waves. Start with Wave 1
-   (infrastructure + health tests + debt tests in parallel).
-2. **Continue skill quality audits** — remaining targets: session-begin,
-   checkpoint, pr-review, deep-plan, skill-creator (8 audits done so far)
-3. **Merge skill-audits branch** — 5 skill audits + ecosystem expansion planning
-   ready for PR
+1. **Execute Phase 3**: Invoke `/create-audit` to build the
+   health-ecosystem-audit skill. Input: DECISIONS.md (52 decisions). Output:
+   SKILL.md, REFERENCE.md, 6 domain checkers, libs (scoring, benchmarks,
+   state-manager, patch-generator), 6 self-tests. See
+   `.planning/ecosystem-expansion/PLAN.md` Step 9.
+2. **Execute Phase 4** (after /create-audit): Wire ecosystem into infrastructure
+   (Steps 10-11). Mid-session-alerts hook wiring (D#48), comprehensive audit
+   registration (D#49), /alerts Test Health category (D#46).
+3. **Merge new-ecosystem branch** — Phase 1 committed, Phases 2-4 remaining
 
 **See**:
 [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for
@@ -179,7 +185,7 @@ unblocked.
 
 ```bash
 npm run dev          # Start dev server
-npm test             # Run tests (497/498 passing)
+npm test             # Run tests (1,594 total, 0 failures)
 npm run lint         # Check code style
 npm run build        # Production build
 npm run patterns:check  # Anti-pattern detection
@@ -199,16 +205,17 @@ npm run docs:check   # Documentation linting
 
 ## Version History
 
-| Version | Date       | Changes                                                     |
-| ------- | ---------- | ----------------------------------------------------------- |
-| 7.1     | 2026-03-09 | Session #211 — deep-plan ecosystem expansion (33 decisions) |
-| 7.0     | 2026-03-07 | Session #209 — skill-audit session-end full rewrite         |
-| 6.9     | 2026-03-06 | Session #207 — Alerts full + health C->A (92/100)           |
-| 6.8     | 2026-03-05 | Session #206 — PR #417 R1-R3 review complete                |
-| 6.7     | 2026-03-05 | Session #205 — All retro action items implemented           |
-| 6.6     | 2026-03-04 | Session #202 — Deep-plan complete, PLAN.md v1.1             |
-| 6.5     | 2026-03-02 | Session #200 — PR #411 review R1-R9 complete                |
-| 6.4     | 2026-03-01 | Session #199 — v1.0 milestone shipped/archived              |
-| 6.3     | 2026-03-01 | Session #197 updates                                        |
+| Version | Date       | Changes                                                       |
+| ------- | ---------- | ------------------------------------------------------------- |
+| 7.2     | 2026-03-09 | Session #212 — Phase 1 committed, Phase 2 done (52 decisions) |
+| 7.1     | 2026-03-09 | Session #211 — deep-plan ecosystem expansion (33 decisions)   |
+| 7.0     | 2026-03-07 | Session #209 — skill-audit session-end full rewrite           |
+| 6.9     | 2026-03-06 | Session #207 — Alerts full + health C->A (92/100)             |
+| 6.8     | 2026-03-05 | Session #206 — PR #417 R1-R3 review complete                  |
+| 6.7     | 2026-03-05 | Session #205 — All retro action items implemented             |
+| 6.6     | 2026-03-04 | Session #202 — Deep-plan complete, PLAN.md v1.1               |
+| 6.5     | 2026-03-02 | Session #200 — PR #411 review R1-R9 complete                  |
+| 6.4     | 2026-03-01 | Session #199 — v1.0 milestone shipped/archived                |
+| 6.3     | 2026-03-01 | Session #197 updates                                          |
 
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)
