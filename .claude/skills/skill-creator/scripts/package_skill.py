@@ -75,8 +75,11 @@ def package_skill(skill_path, output_dir=None):
             for file_path in skill_path.rglob('*'):
                 if not file_path.is_file():
                     continue
-                # Skip symlinks to prevent packaging files outside the skill dir
-                if file_path.is_symlink():
+                # Skip symlinks or files resolving outside the skill dir
+                try:
+                    resolved = file_path.resolve()
+                    resolved.relative_to(skill_path.resolve())
+                except (ValueError, OSError):
                     skipped.append(file_path.relative_to(skill_path.parent))
                     continue
                 # Avoid archiving the output zip into itself

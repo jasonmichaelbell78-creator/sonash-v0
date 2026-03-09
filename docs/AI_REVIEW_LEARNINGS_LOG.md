@@ -834,6 +834,43 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review #465: PR #423 R4 — Qodo (2026-03-09)
+
+_Skill audits wave 2 — scoring accuracy, YAML parsing depth, path traversal._
+
+**Source:** Qodo (Compliance + Code Suggestions) **Total:** 8 unique (after
+dedup) **Fixed:** 4 **Deferred:** 0 **Rejected:** 4
+
+- **Path traversal via symlink:** `package_skill.py` symlink check upgraded from
+  `is_symlink()` to `resolve()` + `relative_to()` — catches junctions and
+  multi-hop symlinks targeting outside the skill directory
+- **Bot scoring denominator:** Existence score now only counts
+  `requiresLocalConfig` bots, not optional GitHub App bots that don't need
+  repo-level config files
+- **isStepBoundary sibling keys:** Sibling YAML keys (`env:`, `name:`, `id:`) at
+  the same indent as `uses:` are NOT step boundaries — removing this false
+  boundary allows `parseSetupNodeCache` to find `with:` blocks after siblings
+- **Quoted YAML comment handling:** `parseCacheValue` now correctly extracts
+  values from quoted strings before stripping inline comments
+
+**Rejected (all repeats):**
+
+- Local config exposure: R4 repeat (4th time) — intentional, guarded
+- Swallowed exceptions: R4 repeat (3rd time) — intentional design
+- Prompt field fallback: R3 repeat — fields never existed in protocol
+- Stdin payload cap: trusted upstream + 2000-char truncation already exists
+
+**Patterns:**
+
+- `is_symlink()` is insufficient for path traversal — use `resolve()` +
+  `relative_to()` to verify the resolved path stays within the expected tree
+- Scoring denominators must match the population being measured (only bots
+  requiring local config, not all bots including App-configured ones)
+- YAML step boundaries in GitHub Actions: only `- ` list items and outdents mark
+  new steps — sibling keys like `env:` are part of the same step
+
+---
+
 ### Review #462: PR #423 R3 — Qodo (2026-03-09)
 
 _Skill audits wave 2 — security hardening, YAML parsing robustness, hook

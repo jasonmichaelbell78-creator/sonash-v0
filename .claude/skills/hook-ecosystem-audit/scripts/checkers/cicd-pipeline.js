@@ -377,9 +377,10 @@ function checkBotConfigFreshness(rootDir, findings) {
     }
   }
 
-  // Score: existence (50%) + health (50%) — denominator is total bot count (required + optional)
-  const totalBots = BOT_CONFIG_PATTERNS.length;
-  const existencePct = totalBots > 0 ? Math.round((configsFound / totalBots) * 100) : 100;
+  // Score: existence (50%) + health (50%) — denominator is only bots requiring local config
+  const requiredBots = BOT_CONFIG_PATTERNS.filter((b) => b.requiresLocalConfig).length;
+  const existencePct =
+    requiredBots > 0 ? Math.round(((requiredBots - missingBots.length) / requiredBots) * 100) : 100;
   const healthPct = configsFound > 0 ? Math.round((configsHealthy / configsFound) * 100) : 0;
   const configScore = Math.round(existencePct * 0.5 + healthPct * 0.5);
 
@@ -474,20 +475,30 @@ function checkBotConfigHealth(rootDir, botName, content) {
 
 /** Check if a YAML line is a step/block boundary relative to usesIndent. */
 function isStepBoundary(trimmed, indent, usesIndent) {
-  const isYamlKey = /^[A-Za-z0-9_-]+:/.test(trimmed);
-
+  // A new step starts with `- ` at or above the step indentation
   if (indent <= usesIndent && trimmed.startsWith("- ")) return true;
-  if (indent < usesIndent && isYamlKey) return true;
-  return indent === usesIndent && isYamlKey && trimmed !== "with:";
+
+  // Leaving the step block (outdenting) ends scanning
+  if (indent < usesIndent) return true;
+
+  // Sibling keys at the same indentation (env:, name:, id:) are part of
+  // the same step — NOT boundaries. The 25-line scan limit prevents runaway.
+  return false;
 }
 
 /** Extract cache value from a "cache: value" line. */
 function parseCacheValue(trimmed) {
   let raw = trimmed.slice("cache:".length).trim();
 
-  // Strip inline YAML comments from unquoted values (e.g. "cache: npm # fast")
-  const isQuoted = raw.startsWith('"') || raw.startsWith("'");
-  if (!isQuoted) raw = raw.replace(/\s+#.*$/, "");
+  // Handle quoted values (strip inline comments after closing quote)
+  if (raw.startsWith('"') || raw.startsWith("'")) {
+    const quote = raw[0];
+    const end = raw.indexOf(quote, 1);
+    raw = end >= 0 ? raw.slice(0, end + 1) : raw;
+  } else {
+    // Strip inline YAML comments from unquoted values (e.g. "cache: npm # fast")
+    raw = raw.replace(/\s+#.*$/, "");
+  }
 
   raw = raw.trim().replace(/^["']|["']$/g, "");
   const valid = ["npm", "yarn", "pnpm"];
