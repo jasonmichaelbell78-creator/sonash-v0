@@ -258,10 +258,9 @@ function scanCiSteps() {
   try {
     const content = fs.readFileSync(ciPath, "utf8");
     const stepRegex = /- name:\s*(.+)/g;
-    let match;
     const gatePatterns =
       /check|lint|test|validate|coverage|audit|format|pattern|compliance|verify/i;
-    while ((match = stepRegex.exec(content)) !== null) {
+    for (const match of content.matchAll(stepRegex)) {
       const name = match[1].trim();
       const isGate = gatePatterns.test(name);
       entries.push({
