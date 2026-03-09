@@ -834,6 +834,47 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review #462: PR #423 R3 — Qodo (2026-03-09)
+
+_Skill audits wave 2 — security hardening, YAML parsing robustness, hook
+protocol._
+
+**Source:** Qodo (Compliance + Code Suggestions) **Total:** 10 unique (after
+dedup) **Fixed:** 7 **Deferred:** 0 **Rejected:** 3
+
+- **Symlink exfiltration:** `package_skill.py` now skips symlinks during rglob
+  to prevent packaging files outside the skill directory via symlink traversal
+- **Expanded sensitive patterns:** Added SSH keys (`id_rsa`, `id_dsa`,
+  `id_ecdsa`, `id_ed25519`) and `.env.*` wildcard matching to denylist
+- **CI-aware global settings:** config-health.js now defaults global settings
+  check to OFF in CI (`process.env.CI`), opt-in with
+  `CLAUDE_CHECK_GLOBAL_SETTINGS=1`
+- **Cache issue fallback:** Added fallback message when `cacheResult.issue` is
+  undefined to prevent `[undefined]` in findings
+- **block-push-to-main protocol:** Added `console.log("ok"); process.exit(0)` to
+  catch block so hook correctly signals "allow" on parse errors
+- **YAML comment stripping:** `parseCacheValue` now strips inline `# comments`
+  from unquoted cache values
+- **Inline YAML with block:** `parseSetupNodeCache` now handles
+  `with: { cache: npm }` single-line syntax
+
+**Rejected:**
+
+- Audit trail user attribution: automated health score snapshots, no actor
+- Silent exception handling: R2 repeat, intentional design
+- Cache denominator revert: contradicts R2 fix (importance 8)
+
+**Patterns:**
+
+- Symlinks are a common packaging/build exfiltration vector — always skip or
+  resolve-and-validate before including files from rglob
+- YAML parsers should handle both multi-line and inline flow syntax
+  (`with: { key: value }`) — many GitHub Actions use inline form
+- Hook protocol: catch blocks in stdin-parsing hooks must still emit "ok" + exit
+  0 to signal "allow" — silent exit can be interpreted as failure
+
+---
+
 ### Review #459: PR #423 R2 — Qodo + Gemini (2026-03-09)
 
 _Skill audits wave 2 continued — scoring, testing, security, hook resilience._

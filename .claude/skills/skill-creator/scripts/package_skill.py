@@ -21,6 +21,7 @@ SENSITIVE_PATTERNS = {
     ".key", ".pem", ".p12", ".pfx", ".jks",
     "credentials.json", "service-account.json",
     ".secret", ".token",
+    "id_rsa", "id_dsa", "id_ecdsa", "id_ed25519",
 }
 SENSITIVE_EXTENSIONS = {".key", ".pem", ".p12", ".pfx", ".jks"}
 
@@ -74,12 +75,17 @@ def package_skill(skill_path, output_dir=None):
             for file_path in skill_path.rglob('*'):
                 if not file_path.is_file():
                     continue
+                # Skip symlinks to prevent packaging files outside the skill dir
+                if file_path.is_symlink():
+                    skipped.append(file_path.relative_to(skill_path.parent))
+                    continue
                 # Avoid archiving the output zip into itself
                 if file_path.resolve() == zip_filename.resolve():
                     continue
                 # Skip sensitive files (secrets, keys, credentials)
                 fname = file_path.name.lower()
-                if fname in SENSITIVE_PATTERNS or file_path.suffix.lower() in SENSITIVE_EXTENSIONS:
+                is_env_variant = fname == ".env" or fname.startswith(".env.")
+                if fname in SENSITIVE_PATTERNS or is_env_variant or file_path.suffix.lower() in SENSITIVE_EXTENSIONS:
                     skipped.append(file_path.relative_to(skill_path.parent))
                     continue
                 arcname = file_path.relative_to(skill_path.parent)

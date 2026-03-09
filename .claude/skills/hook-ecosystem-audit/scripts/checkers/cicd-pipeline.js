@@ -483,10 +483,13 @@ function isStepBoundary(trimmed, indent, usesIndent) {
 
 /** Extract cache value from a "cache: value" line. */
 function parseCacheValue(trimmed) {
-  const raw = trimmed
-    .slice("cache:".length)
-    .trim()
-    .replace(/^["']|["']$/g, "");
+  let raw = trimmed.slice("cache:".length).trim();
+
+  // Strip inline YAML comments from unquoted values (e.g. "cache: npm # fast")
+  const isQuoted = raw.startsWith('"') || raw.startsWith("'");
+  if (!isQuoted) raw = raw.replace(/\s+#.*$/, "");
+
+  raw = raw.trim().replace(/^["']|["']$/g, "");
   const valid = ["npm", "yarn", "pnpm"];
   return { value: raw, effective: valid.includes(raw) };
 }
@@ -512,6 +515,21 @@ function parseSetupNodeCache(lines, usesLineIndex) {
       withIndent = indent;
       continue;
     }
+
+    // Support inline YAML: with: { cache: npm }
+    if (trimmed.startsWith("with:") && trimmed.includes("{") && trimmed.includes("}")) {
+      const cacheMatch = trimmed.match(/\bcache\s*:\s*([^,}]+)/);
+      if (cacheMatch) {
+        const { value, effective } = parseCacheValue(`cache: ${cacheMatch[1].trim()}`);
+        if (effective) return { effective: true, line: j + 1 };
+        return {
+          effective: false,
+          line: j + 1,
+          issue: `setup-node cache value is unusual: ${value || "(empty)"}`,
+        };
+      }
+    }
+
     if (!inWithBlock || indent <= withIndent) {
       if (indent <= withIndent) inWithBlock = false;
       continue;
@@ -572,7 +590,7 @@ function checkCiCacheEffectiveness(rootDir, findings) {
           cacheIssues.push({
             workflow: workflow.name,
             line: cacheResult.line,
-            issues: [cacheResult.issue],
+            issues: [cacheResult.issue || "setup-node cache is misconfigured"],
           });
         } else {
           cacheIssues.push({

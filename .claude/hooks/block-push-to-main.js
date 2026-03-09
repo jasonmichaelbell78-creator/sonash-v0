@@ -70,6 +70,7 @@ process.stdin.on("end", () => {
     process.exit(0);
   } catch {
     // Parse errors should not block work — allow through
+    console.log("ok");
     process.exit(0);
   }
 });

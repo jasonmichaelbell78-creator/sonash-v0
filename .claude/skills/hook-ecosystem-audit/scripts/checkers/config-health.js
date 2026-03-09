@@ -463,7 +463,9 @@ function checkGlobalLocalConsistency(rootDir, hooksSection, findings) {
   let globalSettingsReferenced = new Set();
   let globalSettingsGlobalReferenced = new Set();
   try {
-    const shouldCheckGlobal = process.env.CLAUDE_CHECK_GLOBAL_SETTINGS !== "0";
+    const shouldCheckGlobal = process.env.CI
+      ? process.env.CLAUDE_CHECK_GLOBAL_SETTINGS === "1"
+      : process.env.CLAUDE_CHECK_GLOBAL_SETTINGS !== "0";
     if (shouldCheckGlobal) {
       const overridePath = process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
       const homeDir = process.env.HOME || process.env.USERPROFILE;
