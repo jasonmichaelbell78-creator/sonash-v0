@@ -351,6 +351,26 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#2)</summary>
+
+- **Date:** 2026-03-09
+- **Reviews consolidated:** #452-#470
+- **Recurring patterns:**
+  - qodo (19x)
+  - gemini (13x)
+  - ci (11x)
+  - clarify-ai-implementation-time (9x)
+  - verify-doc-math-before-commit (9x)
+  - --tests-without-assertions-are-worse-than-no-tests-they-prov (4x)
+  - cache-counting-bug (4x)
+  - fp-1fp-4-test-assertions (4x)
+  - global-settings-deterministic-testing (4x)
+  - restore-continueonerror (4x)
+  - secret-packaging-denylist (4x)
+  - yaml-boundary-detection (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#1)</summary>
 
 - **Date:** 2026-03-06

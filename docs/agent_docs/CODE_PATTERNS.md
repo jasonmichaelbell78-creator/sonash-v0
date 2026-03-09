@@ -1,6 +1,6 @@
 # Code Review Patterns Reference
 
-**Document Version:** 4.0 **Source:** Distilled from 347 AI code reviews **Last
+**Document Version:** 4.1 **Source:** Distilled from 347 AI code reviews **Last
 Updated:** 2026-02-26
 
 ---
@@ -1132,6 +1132,69 @@ recurring pattern from 6 reviews (#448, #449, #450, #452, #455, #458)
 
 **Source:** Consolidation #2 (Reviews #448-#458)
 
+### Verify Doc Math Before Commit
+
+🟡 **Rule:** Verify Doc Math Before Commit — recurring pattern from 9 reviews
+(#453, #455, #456, #457, #459, #461, #464, #467, #470)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
+### Clarify Ai Implementation Time
+
+🟡 **Rule:** Clarify Ai Implementation Time — recurring pattern from 9 reviews
+(#453, #455, #456, #457, #459, #461, #464, #467, #470)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
+### Secret Packaging Denylist
+
+🟡 **Rule:** Secret Packaging Denylist — recurring pattern from 4 reviews (#460,
+#463, #466, #469)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
+### Yaml Boundary Detection
+
+🟡 **Rule:** Yaml Boundary Detection — recurring pattern from 4 reviews (#460,
+#463, #466, #469)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
+### Cache Counting Bug
+
+🟡 **Rule:** Cache Counting Bug — recurring pattern from 4 reviews (#460, #463,
+#466, #469)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
+### Restore Continueonerror
+
+🟡 **Rule:** Restore Continueonerror — recurring pattern from 4 reviews (#460,
+#463, #466, #469)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
+### Fp 1fp 4 Test Assertions
+
+🟡 **Rule:** Fp 1fp 4 Test Assertions — recurring pattern from 4 reviews (#460,
+#463, #466, #469)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
+### Global Settings Deterministic Testing
+
+🟡 **Rule:** Global Settings Deterministic Testing — recurring pattern from 4
+reviews (#460, #463, #466, #469)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
+### Tests Without Assertions Are Worse Than No Tests They Prov
+
+🟡 **Rule:** Tests Without Assertions Are Worse Than No Tests They Prov —
+recurring pattern from 4 reviews (#460, #463, #466, #469)
+
+**Source:** Consolidation #2 (Reviews #452-#470)
+
 ## Enforcement
 
 These patterns are automatically enforced by:
@@ -1153,6 +1216,7 @@ helpers.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.1     | 2026-03-09 | **CONSOLIDATION #2:** Auto-added 9 patterns (verify-doc-math-before-commit, clarify-ai-implementation-time, secret-packaging-denylist, yaml-boundary-detection, cache-counting-bug, restore-continueonerror, fp-1fp-4-test-assertions, global-settings-deterministic-testing, --tests-without-assertions-are-worse-than-no-tests-they-prov). Source: Reviews #452-#470.                                                                                                                                                                                                                                                                                                                                                 |
 | 4.0     | 2026-03-05 | **CONSOLIDATION #2:** Auto-added 52 patterns (suppress-internal-tooling-security-noise, add-security-checklist-to-ecosystem-audit-checker-template, when-adding-escapesanitization-functions, escapecell-propagation, efficiency, pre-push-hook, blocking-implement-cc-pre-push-check, cc-pre-push-check, critical-implement-cc-pre-push-check, ci-1 …(+42 more)). Source: Reviews #448-#458.                                                                                                                                                                                                                                                                                                                           |
 | 3.9     | 2026-03-02 | **CONSOLIDATION #10:** Auto-added 18 patterns (sanitize-markdown-headings, sanitize-markdown-render, composite-key-for-nullable-ids, temp-file-symlink-race, regex-character-class-escaping, cognitive-complexity-extraction, cc-reduction-getlatestloghash, toctou-race-appendentries, retrorecordparse-safeparse, invocation-id-collision …(+8 more)). Source: Reviews #466-#477.                                                                                                                                                                                                                                                                                                                                     |
 | 3.8     | 2026-03-01 | **CONSOLIDATION #8:** Auto-added 1 patterns (pattern-checker-rename-no-fallback-requires-all-4-elements). Source: Reviews #442-#453.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |

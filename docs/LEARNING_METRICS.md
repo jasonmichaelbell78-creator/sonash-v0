@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-03-05
+**Last Updated:** 2026-03-09
 
 ---
 
@@ -27,43 +27,28 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #402 - #417 (9 reviews) **Analysis Date:** 2026-03-05
+**Review Range:** #343 - #346 (4 reviews) **Analysis Date:** 2026-03-09
 
 ### Key Metrics
 
-| Metric                    | Value |
-| ------------------------- | ----- |
-| Learning Effectiveness    | 91.0% |
-| Patterns Learned          | 364   |
-| Patterns Automated        | 32    |
-| Patterns Failing          | 2     |
-| Critical Pattern Success  | 95.8% |
-| Automation Coverage       | 15.5% |
-| Total Documented Patterns | 433   |
-| Total Automated Patterns  | 67    |
+| Metric                    | Value  |
+| ------------------------- | ------ |
+| Learning Effectiveness    | 97.5%  |
+| Patterns Learned          | 420    |
+| Patterns Automated        | 11     |
+| Patterns Failing          | 0      |
+| Critical Pattern Success  | 100.0% |
+| Automation Coverage       | 14.7%  |
+| Total Documented Patterns | 442    |
+| Total Automated Patterns  | 65     |
 
 ### Top Recommended Actions
 
-1. ~~**[Automation]** Automate "Pre\-commit ADM filter"~~ — Already automated as
-   `git-diff-no-filter` in check\-pattern\-compliance.js
-   - Recurred 4 times after documentation \(Reviews: 402, 404, 407, 416\)
-
-2. **[Process]** "AI reviewer verification" — behavioral pattern, not
-   automatable via code scan
-   - Recurred 4 times after documentation \(Reviews: 402, 403, 408, 416\)
-   - Action: Reinforced in pr\-review SKILL.md Step 1 \(validate critical
-     claims\)
-
-3. ~~**[Automation]** Automate "Atomic file writes"~~ — Already automated as
-   `no-raw-fs-write` + `atomic-write-missing-tmp-guard` +
-   `write-without-symlink-guard`
-   - Recurred 3 times after documentation \(Reviews: 402, 416, 417\)
-
-4. **[Documentation]** Improve documentation for "Binary file detection"
+1. **[Documentation]** Improve documentation for "POSIX shell compliance"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Markdown char escaping"
+2. **[Documentation]** Improve documentation for "Signal error code semantics"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -73,10 +58,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 364   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 32    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 34    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 2     | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 420   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 11    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 11    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 0     | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -84,4 +69,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-03-05 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-03-09 | Rewritten to focus on Claude's learning effectiveness |
