@@ -319,5 +319,6 @@
     "validate-schema.js"
   ],
   "for-file-iteration": ["find-polluter.sh"],
-  "no-raw-fs-write": ["run-alerts.js", "seed-commit-log.js"]
+  "no-raw-fs-write": ["run-alerts.js", "seed-commit-log.js"],
+  "exec-without-global-flag": ["generate-test-registry.js"]
 }
