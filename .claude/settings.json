@@ -4,10 +4,6 @@
   },
   "enableAllProjectMcpServers": true,
   "disabledMcpjsonServers": [],
-  "statusLine": {
-    "type": "command",
-    "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/statusline.js"
-  },
   "hooks": {
     "SessionStart": [
       {
@@ -19,26 +15,22 @@
           {
             "type": "command",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/check-mcp-servers.js",
-            "statusMessage": "Checking MCP availability...",
-            "continueOnError": true
+            "statusMessage": "Checking MCP availability..."
           },
           {
             "type": "command",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/check-remote-session-context.js",
-            "statusMessage": "Checking remote branches for session context...",
-            "continueOnError": true
+            "statusMessage": "Checking remote branches for session context..."
           },
           {
             "type": "command",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/stop-serena-dashboard.js",
-            "statusMessage": "Checking for Serena dashboard on port 24282...",
-            "continueOnError": true
+            "statusMessage": "Checking for Serena dashboard on port 24282..."
           },
           {
             "type": "command",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/gsd-check-update.js",
-            "statusMessage": "Checking for GSD updates...",
-            "continueOnError": true
+            "statusMessage": "Checking for GSD updates..."
           }
         ]
       },
@@ -133,8 +125,7 @@
           {
             "type": "command",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/commit-tracker.js $ARGUMENTS",
-            "statusMessage": "Tracking commits...",
-            "continueOnError": true
+            "statusMessage": "Tracking commits..."
           }
         ]
       },
@@ -161,5 +152,14 @@
       }
     ],
     "Notification": []
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/statusline.js"
+  },
+  "enabledPlugins": {
+    "episodic-memory@superpowers-marketplace": true,
+    "superpowers@claude-plugins-official": true,
+    "superpowers-chrome@superpowers-marketplace": true
   }
 }
