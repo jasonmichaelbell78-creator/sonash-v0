@@ -461,13 +461,17 @@ function checkGlobalLocalConsistency(rootDir, hooksSection, findings) {
   let globalSettingsReferenced = new Set();
   let globalSettingsGlobalReferenced = new Set();
   try {
-    const homeDir = process.env.HOME || process.env.USERPROFILE || "";
-    const globalSettingsPath = path.join(homeDir, ".claude", "settings.json");
-    const globalSettingsRaw = fs.readFileSync(globalSettingsPath, "utf8");
-    const globalSettings = JSON.parse(globalSettingsRaw);
-    const globalHooksSection = globalSettings.hooks || {};
-    globalSettingsReferenced = extractReferencedJsFiles(globalHooksSection);
-    globalSettingsGlobalReferenced = extractGlobalReferencedJsFiles(globalHooksSection);
+    const homeDir = process.env.HOME || process.env.USERPROFILE;
+    if (homeDir) {
+      const globalSettingsPath = path.join(homeDir, ".claude", "settings.json");
+      if (fs.existsSync(globalSettingsPath)) {
+        const globalSettingsRaw = fs.readFileSync(globalSettingsPath, "utf8");
+        const globalSettings = JSON.parse(globalSettingsRaw);
+        const globalHooksSection = globalSettings.hooks || {};
+        globalSettingsReferenced = extractReferencedJsFiles(globalHooksSection);
+        globalSettingsGlobalReferenced = extractGlobalReferencedJsFiles(globalHooksSection);
+      }
+    }
   } catch {
     // Global settings not accessible — skip
   }

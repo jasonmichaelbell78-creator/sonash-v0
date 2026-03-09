@@ -834,6 +834,40 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review #458: PR #423 R1 — Qodo + Semgrep + CI (2026-03-09)
+
+_Skill audits wave 2 — hook/checker/MCP portability fixes._
+
+**Source:** Qodo (3 bugs, guide, suggestions, compliance), Semgrep (2), CI
+(lint) **Total:** 9 unique (after dedup) **Fixed:** 9 **Deferred:** 0
+**Rejected:** 0
+
+- **Stdin TTY blocking:** `fs.readFileSync(0)` blocks on TTY — added `isTTY`
+  guard, nested JSON parse with plain-text fallback, `String()` cast for safety
+- **MCP portability:** Replaced `cmd /c npx` with bare `npx` for memory server
+  (cross-platform). Kept `node` for sonarcloud (always available in CC context).
+- **Bot score double-counting:** `totalBots` formula counted required bots twice
+  when configs found — changed denominator to `BOT_CONFIG_PATTERNS.length`
+- **Semgrep bounds check:** Added early return guard in `parseSetupNodeCache`
+  for out-of-bounds `usesLineIndex`
+- **HOME env guard:** config-health.js now skips global settings read when HOME
+  is undefined + adds `existsSync` check
+- **Zip self-inclusion:** package_skill.py skips output zip file during rglob
+- **Script permissions:** Restored `chmod(0o755)` on example.py with Windows
+  OSError fallback
+- **Raw exceptions:** init_skill.py prints `type(e).__name__` instead of `{e}`
+
+**Patterns:**
+
+- Always guard `fs.readFileSync(0)` with `!process.stdin.isTTY` — prevents TTY
+  blocking in hooks that have argv fallbacks
+- MCP server configs should use cross-platform commands (`npx`, `node`) not
+  OS-specific wrappers (`cmd`, `bash`)
+- Scoring formulas: denominator should match the population being measured, not
+  a sum of population + found items
+
+---
+
 ### Review #447: PR #415 R4 — SonarCloud + Qodo (2026-03-04)
 
 _System-wide standardization — security hotspot elimination + code smell fixes._

@@ -2,8 +2,8 @@
   "_note": "Firebase, GitHub, Context7, Serena are auto-discovered by Claude Code plugins. Only non-auto-discovered MCP servers need entries here.",
   "mcpServers": {
     "memory": {
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-memory"]
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
     },
     "sonarcloud": {
       "command": "node",

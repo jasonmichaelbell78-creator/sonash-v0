@@ -62,10 +62,14 @@ def package_skill(skill_path, output_dir=None):
     try:
         with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for file_path in skill_path.rglob('*'):
-                if file_path.is_file():
-                    arcname = file_path.relative_to(skill_path.parent)
-                    zipf.write(file_path, arcname)
-                    print(f"  Added: {arcname}")
+                if not file_path.is_file():
+                    continue
+                # Avoid archiving the output zip into itself
+                if file_path.resolve() == zip_filename.resolve():
+                    continue
+                arcname = file_path.relative_to(skill_path.parent)
+                zipf.write(file_path, arcname)
+                print(f"  Added: {arcname}")
 
         print(f"\n[OK] Packaged skill to: {zip_filename}")
         return zip_filename

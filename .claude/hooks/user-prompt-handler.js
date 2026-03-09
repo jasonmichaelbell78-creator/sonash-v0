@@ -15,13 +15,21 @@ const HOOKS_DIR = path.join(CLAUDE_DIR, "hooks");
 // Fallback to argv for manual testing (e.g. node user-prompt-handler.js "test prompt")
 let userPrompt = "";
 try {
-  const stdinData = fs.readFileSync(0, "utf-8").trim();
-  if (stdinData) {
-    const parsed = JSON.parse(stdinData);
-    userPrompt = (parsed.prompt || "").trim();
+  // Only read stdin when it's piped (not a TTY), to avoid blocking interactive use
+  if (!process.stdin.isTTY) {
+    const stdinData = fs.readFileSync(0, "utf-8").trim();
+    if (stdinData) {
+      try {
+        const parsed = JSON.parse(stdinData);
+        userPrompt = String(parsed.prompt || "").trim();
+      } catch {
+        // Non-JSON stdin: treat as raw prompt for manual testing/piping
+        userPrompt = stdinData;
+      }
+    }
   }
 } catch {
-  /* stdin not available or not JSON */
+  /* stdin not available */
 }
 if (!userPrompt) userPrompt = (process.argv[2] || "").trim();
 if (!userPrompt || typeof userPrompt !== "string") {

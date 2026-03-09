@@ -377,9 +377,9 @@ function checkBotConfigFreshness(rootDir, findings) {
     }
   }
 
-  // Score: existence (50%) + health (50%) — only count bots that require local config
-  const totalBots = BOT_CONFIG_PATTERNS.filter((b) => b.requiresLocalConfig).length + configsFound;
-  const existencePct = Math.round((configsFound / totalBots) * 100);
+  // Score: existence (50%) + health (50%) — denominator is total bot count (required + optional)
+  const totalBots = BOT_CONFIG_PATTERNS.length;
+  const existencePct = totalBots > 0 ? Math.round((configsFound / totalBots) * 100) : 100;
   const healthPct = configsFound > 0 ? Math.round((configsHealthy / configsFound) * 100) : 0;
   const configScore = Math.round(existencePct * 0.5 + healthPct * 0.5);
 
@@ -494,6 +494,7 @@ function parseCacheValue(trimmed) {
  * Returns { effective: bool, line: number, issue?: string } or null if no cache found.
  */
 function parseSetupNodeCache(lines, usesLineIndex) {
+  if (usesLineIndex < 0 || usesLineIndex >= lines.length) return null;
   const usesIndent = lines[usesLineIndex].match(/^\s*/)?.[0].length ?? 0;
   let inWithBlock = false;
   let withIndent = 0;

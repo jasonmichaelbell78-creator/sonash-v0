@@ -106,7 +106,7 @@ def init_skill(skill_name, path):
         skill_dir.mkdir(parents=True, exist_ok=False)
         print(f"[OK] Created skill directory: {skill_dir}")
     except Exception as e:
-        print(f"[ERROR] Creating directory: {e}")
+        print(f"[ERROR] Creating directory: {type(e).__name__}")
         return None
 
     skill_title = title_case_skill_name(skill_name)
@@ -120,7 +120,7 @@ def init_skill(skill_name, path):
         skill_md_path.write_text(skill_content, encoding='utf-8')
         print("[OK] Created SKILL.md")
     except Exception as e:
-        print(f"[ERROR] Creating SKILL.md: {e}")
+        print(f"[ERROR] Creating SKILL.md: {type(e).__name__}")
         return None
 
     try:
@@ -131,6 +131,10 @@ def init_skill(skill_name, path):
             EXAMPLE_SCRIPT.format(skill_name=skill_name),
             encoding='utf-8'
         )
+        try:
+            example_script.chmod(0o755)
+        except OSError:
+            pass  # chmod not supported on Windows
         print("[OK] Created scripts/example.py")
 
         references_dir = skill_dir / 'references'
@@ -142,7 +146,7 @@ def init_skill(skill_name, path):
         )
         print("[OK] Created references/reference.md")
     except Exception as e:
-        print(f"[ERROR] Creating resource directories: {e}")
+        print(f"[ERROR] Creating resource directories: {type(e).__name__}")
         return None
 
     print(f"\n[OK] Skill '{skill_name}' initialized at {skill_dir}")
