@@ -236,7 +236,7 @@ fi
 echo "  ▶ Running lint-staged (auto-format)..."
 # Check if lint-staged is installed as devDependency (security: --no-install prevents supply chain attacks)
 if npm list lint-staged --depth=0 > /dev/null 2>&1; then
-  if ! npx --no-install lint-staged; then
+  if ! npx --no-install lint-staged --no-stash; then
     echo "  ❌ Lint-staged failed"
     exit 1
   fi
@@ -389,7 +389,7 @@ else
     cp DOCUMENTATION_INDEX.md DOCUMENTATION_INDEX.md.bak 2>/dev/null || true
     if npm run docs:index > /dev/null 2>&1; then
       # Format after regeneration so CI Prettier check passes
-      npx prettier --write DOCUMENTATION_INDEX.md > /dev/null 2>&1 || true
+      npx prettier --write DOCUMENTATION_INDEX.md > /dev/null 2>&1 || echo "  ⚠️ Prettier formatting failed for DOCUMENTATION_INDEX.md (non-blocking)"
       git add DOCUMENTATION_INDEX.md
       echo "  ✅ Documentation index updated and staged"
     else

@@ -1,444 +1,292 @@
 ---
 name: script-ecosystem-audit
-description: |
-  Comprehensive diagnostic of the script infrastructure — 18 categories across
-  5 domains with composite health scoring, trend tracking, patch suggestions, and
-  interactive finding-by-finding walkthrough. Covers 300+ scripts for module
-  consistency, safety patterns, reachability, code quality, and testing.
+description: >-
+  Comprehensive diagnostic of the script infrastructure — 18 categories across 5
+  domains with composite health scoring, trend tracking, patch suggestions, and
+  interactive finding-by-finding walkthrough. Covers all .js files under
+  scripts/ and their npm registrations for module consistency, safety patterns,
+  reachability, code quality, and testing.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-24
+**Document Version:** 2.0
+**Last Updated:** 2026-03-08
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 # Script Ecosystem Audit
 
-Deep diagnostic of the entire script infrastructure — `scripts/` directory tree,
-shared libraries (`scripts/lib/`), npm script registrations (`package.json`),
-and cross-script dependencies. Produces per-category scores, a composite health
-grade (A-F), trend tracking across runs, and an interactive walkthrough with
-patch suggestions.
+Deep diagnostic of `scripts/**/*.js` infrastructure — shared libraries, npm
+script registrations, and cross-script dependencies. Produces per-category
+scores, a composite health grade (A-F), trend tracking across runs, and an
+interactive walkthrough with patch suggestions.
 
-**Invocation:** `/script-ecosystem-audit`
+**Scope:** `scripts/**/*.js` only. Skill-local scripts
+(`.claude/skills/*/scripts/`) are owned by `/skill-ecosystem-audit`.
 
-**When to use:** When you want to understand the overall health of the script
-infrastructure, identify module system inconsistencies, safety gaps, unreachable
-scripts, code quality issues, or testing gaps. Complementary with
-`/hook-ecosystem-audit` (hook audit owns hook internals; script audit owns
-`scripts/` infrastructure).
+**Invocation:** `/script-ecosystem-audit` or `/script-ecosystem-audit --summary`
 
----
+## Routing Guide
+
+| Task                                | Use                              |
+| ----------------------------------- | -------------------------------- |
+| Script infrastructure health        | `/script-ecosystem-audit`        |
+| Hook internals                      | `/hook-ecosystem-audit`          |
+| Skill quality & skill-local scripts | `/skill-ecosystem-audit`         |
+| General code review                 | `/audit-code`                    |
+| All ecosystem audits at once        | `/comprehensive-ecosystem-audit` |
 
 ## When to Use
 
-- |
 - User explicitly invokes `/script-ecosystem-audit`
+- Before a major script refactor or reorganization
+- After adding 5+ new scripts to the `scripts/` directory
+- As part of `/comprehensive-ecosystem-audit` (called automatically)
 
 ## When NOT to Use
 
-- When the task doesn't match this skill's scope -- check related skills
-- When a more specialized skill exists for the specific task
+- Auditing hook internals — use `/hook-ecosystem-audit`
+- Auditing individual skill quality — use `/skill-audit`
+- General code review — use `/audit-code`
+- Quick structural check of skills — use `npm run skills:validate`
 
-## CRITICAL RULES (Read First)
+---
 
-1. **CHECK for saved progress first** — resume from
+## CRITICAL RULES (MUST — Read First)
+
+1. **CHECK for saved progress first** (MUST) — resume from
    `.claude/tmp/script-audit-progress.json` if it exists and is < 2 hours old.
    Never re-present findings that were already decided.
-2. **ALWAYS run the script first** (if no saved progress) — never generate
-   findings without data
-3. **ALWAYS display the dashboard to the user** before starting the walkthrough
-4. **Present findings one at a time** using AskUserQuestion for decisions
-5. **SAVE progress after every decision** — write updated state to progress file
-   immediately
-6. **Show patch suggestions inline** with each patchable finding
-7. **Create TDMS entries** for deferred findings via `/add-debt`
-8. **Save decisions** to session log for audit trail
+2. **ALWAYS run the script first** (MUST) — never generate findings without data
+3. **ALWAYS display the dashboard** (MUST) before starting the walkthrough
+4. **Present findings via conversational Q&A** (MUST) — collect decisions
+   through normal conversation. NEVER use AskUserQuestion.
+5. **SAVE progress after every decision** (MUST) — write updated state to
+   progress file immediately
+6. **Show patch suggestions inline** (SHOULD) with each patchable finding
+7. **Include a recommendation with rationale** (MUST) per finding
+8. **Create TDMS entries** (SHOULD) for deferred findings via `/add-debt`
+
+---
+
+## Arguments & Modes
+
+| Flag              | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| _(none)_          | Full audit with JSON output + interactive walkthrough |
+| `--summary`       | Compact score-only output, no walkthrough             |
+| `--check`         | Quick pass/fail (exit code 0 if no errors, 1 if any)  |
+| `--batch`         | Suppress state writes (for iterative fixing)          |
+| `--save-baseline` | Save current scores as regression baseline            |
 
 ---
 
 ## Compaction Guard
 
-Audits are long-running interactive workflows vulnerable to context compaction.
-To survive compaction, save progress after every decision and check for existing
-progress on startup.
-
-### State File
-
 Path: `.claude/tmp/script-audit-progress.json`
 
-Schema:
+> Read `REFERENCE.md` for progress file schema.
 
-```json
-{
-  "auditTimestamp": "ISO timestamp of audit run",
-  "score": 85,
-  "grade": "B",
-  "totalFindings": 142,
-  "currentFindingIndex": 8,
-  "decisions": [
-    {
-      "findingIndex": 1,
-      "category": "file_io_safety",
-      "message": "File I/O call without try/catch in generate-views.js",
-      "decision": "skip",
-      "note": "Already wrapped in outer handler"
-    }
-  ],
-  "fixesApplied": ["added try/catch to sync-sonarcloud.js"],
-  "findingsData": []
-}
-```
+### On Skill Start (MUST — Before Phase 1)
 
-### On Skill Start (Before Phase 1)
+1. Check if progress file exists and is < 2 hours old
+2. If yes: **resume** — display dashboard from saved data, show "Resuming from
+   finding {n}/{total} ({n-1} reviewed)", continue walkthrough
+3. If no (or stale): proceed to Phase 1
 
-1. Check if `.claude/tmp/script-audit-progress.json` exists and is < 2 hours old
-2. If yes: **resume from saved position**
-   - Display the dashboard from saved data (skip re-running the audit script)
-   - Show: "Resuming audit from finding {n}/{total} ({n-1} already reviewed)"
-   - List prior decisions briefly: "{n} fixed, {n} skipped, {n} deferred"
-   - Continue the walkthrough from `currentFindingIndex`
-3. If no (or stale): proceed to Phase 1 normally
+### After Each Decision (MUST — During Phase 3)
 
-### After Each Decision (During Phase 3)
+Update `currentFindingIndex`, append decision, write progress file immediately.
 
-After each AskUserQuestion response, immediately save progress:
+### On Completion
 
-1. Update `currentFindingIndex` to the next finding
-2. Append the decision to the `decisions` array
-3. If "Fix Now" was chosen, append to `fixesApplied`
-4. Write the updated JSON to `.claude/tmp/script-audit-progress.json`
-
-This ensures that if compaction occurs mid-walkthrough, the next invocation
-resumes exactly where it left off — no repeated questions, no lost decisions.
-
-### On Audit Completion (Phase 4)
-
-After the summary is presented, delete the progress file (audit is complete).
+Delete progress file. Append results to history JSONL.
 
 ---
 
 ## Phase 1: Run & Parse
 
 1. Run the audit script:
+   ```bash
+   node .claude/skills/script-ecosystem-audit/scripts/run-script-ecosystem-audit.js
+   ```
+2. **If script fails** (MUST handle): display error, suggest checking
+   `node --version` and module dependencies. Do NOT proceed with empty data.
+3. Parse v2 JSON output from stdout (progress goes to stderr)
+4. Create session log:
+   `.claude/tmp/script-audit-session-{YYYY-MM-DD-HHMM}.jsonl`
+5. Save initial progress state with `currentFindingIndex: 0`
 
-```bash
-node .claude/skills/script-ecosystem-audit/scripts/run-script-ecosystem-audit.js
-```
+> Read `REFERENCE.md` for v2 JSON output schema and session log JSONL schema.
 
-2. Parse the v2 JSON output from stdout (progress goes to stderr).
-
-3. Create a session decision log file:
-   - Path: `.claude/tmp/script-audit-session-{YYYY-MM-DD-HHMM}.jsonl`
-   - Create `.claude/tmp/` directory if it doesn't exist
-
-4. Save initial progress state to `.claude/tmp/script-audit-progress.json` with
-   `currentFindingIndex: 0`, the full findings data, score, and grade.
+**Done when:** Progress file written with score, grade, and findings data.
 
 ---
 
-## Phase 2: Dashboard Overview (compact)
+## Phase 2: Dashboard Overview
 
-Present a compact header with composite grade and domain breakdown:
+**MUST display the dashboard before starting walkthrough.**
 
-```
-Script Ecosystem Health: {grade} ({score}/100)  |  Trend: {sparkline} ({delta})
-{errors} errors · {warnings} warnings · {info} info  |  {patches} patch suggestions
+> Read `REFERENCE.md` for dashboard template.
 
-┌──────────────────────────────────┬───────┬──────────┬──────────────┐
-│ Category                         │ Score │ Rating   │ Trend        │
-├──────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D1: Module System & Consistency  │       │          │              │
-│   CJS/ESM Consistency            │  {s}  │ {rating} │ {trend}      │
-│   Shebang & Entry Points         │  {s}  │ {rating} │ {trend}      │
-│   Node.js API Compatibility      │  {s}  │ {rating} │ {trend}      │
-├──────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D2: Safety & Error Handling      │       │          │              │
-│   File I/O Safety                │  {s}  │ {rating} │ {trend}      │
-│   Error Sanitization             │  {s}  │ {rating} │ {trend}      │
-│   Path Traversal Guards          │  {s}  │ {rating} │ {trend}      │
-│   Exec Safety                    │  {s}  │ {rating} │ {trend}      │
-│   Security Helper Usage          │  {s}  │ {rating} │ {trend}      │
-├──────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D3: Registration & Reachability  │       │          │              │
-│   Package.json Coverage          │  {s}  │ {rating} │ {trend}      │
-│   Cross-Script Dependencies      │  {s}  │ {rating} │ {trend}      │
-│   Shared Lib Utilization         │  {s}  │ {rating} │ {trend}      │
-├──────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D4: Code Quality                 │       │          │              │
-│   Documentation Headers          │  {s}  │ {rating} │ {trend}      │
-│   Consistent Patterns            │  {s}  │ {rating} │ {trend}      │
-│   Dead Code                      │  {s}  │ {rating} │ {trend}      │
-│   Complexity                     │  {s}  │ {rating} │ {trend}      │
-├──────────────────────────────────┼───────┼──────────┼──────────────┤
-│ D5: Testing & Reliability        │       │          │              │
-│   Test Coverage                  │  {s}  │ {rating} │ {trend}      │
-│   Test Freshness                 │  {s}  │ {rating} │ {trend}      │
-│   Error Path Testing             │  {s}  │ {rating} │ {trend}      │
-└──────────────────────────────────┴───────┴──────────┴──────────────┘
-```
+Present compact header with composite grade, domain breakdown, category scores.
 
-Rating badges: good = "Good", average = "Avg", poor = "Poor"
+**If 0 findings** (MUST handle): display score, skip Phase 3, go directly to
+Phase 4. "No findings — script infrastructure is clean."
 
-Then say: **"Found N findings to review. Walking through each one
-(impact-weighted)..."**
+After dashboard, show effort estimate: "Found N findings. Estimated review time:
+~{N×0.3} min full, ~{top20×0.3} min top-20 only."
+
+**If >50 findings** (MUST): "50+ findings detected. Review top 20 by impact,
+then batch-decide the rest? [Y/review all]"
+
+**Done when:** Dashboard displayed, user confirms walkthrough approach.
 
 ---
 
 ## Phase 3: Finding-by-Finding Walkthrough
 
-Sort all findings by `impactScore` descending (highest impact first).
+**MUST use conversational Q&A — NOT AskUserQuestion.** **MUST save progress
+after every decision.**
 
-For each finding, present a context card:
+Sort findings by `impactScore` descending. Present each with a context card:
 
-```
-━━━ Finding {n}/{total} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-{SEVERITY}  |  {domainLabel}: {categoryLabel}  |  Impact: {impactScore}/100
+> Read `REFERENCE.md` for finding card template.
 
-{message}
+Each finding MUST include a **recommended action** with brief rationale.
 
-Evidence:
-  {details}
-```
+### Decision Options
 
-If the finding has `patchable: true`, also show:
+**ERROR findings:** Fix Now | Defer (→ DEBT entry) **WARNING findings:** Fix Now
+| Defer | Skip **INFO findings:** Acknowledge | Defer
 
-```
-Patch Available:
-  Target: {patch.target}
-  Action: {patch.description}
-  Preview:
-    {patch.preview or patch.content}
-```
+### Decision Handling
 
-Then use `AskUserQuestion` with options based on severity:
+- **Fix Now:** Apply patch if available, provide guidance if not
+- **Defer:** Create DEBT entry via `/add-debt` (S1 for errors, S2 for warnings)
+- **Skip/Acknowledge:** Log to session file
 
-**ERROR findings:**
+### After Each Decision
 
-- Fix Now — execute the fix/patch immediately
-- Defer — add to deferred list, create DEBT entry
-- Suppress — suppress this finding type permanently
+Show running tally: "Progress: {n}/{total} | Fixed: {f} | Deferred: {d} |
+Skipped: {s}"
 
-**WARNING findings:**
+### Delegation Protocol (MUST support)
 
-- Fix Now
-- Defer
-- Skip — acknowledge but don't track
+- "you decide" → accept all recommendations
+- "skip remaining INFO" → batch-skip all remaining INFO findings
+- "fix all patchable" → apply all remaining patches without individual review
+- "defer the rest" → defer all remaining findings as DEBT entries
 
-**INFO findings:**
+### Batch Management (MUST for >20 findings after top-20)
 
-- Acknowledge
-- Defer for later
+After reviewing top 20, present remaining by severity: "N remaining: {e} errors,
+{w} warnings, {i} info. Review all / Warnings+ only / Skip to summary?"
 
-### Handling Decisions
-
-**Fix Now:**
-
-1. If patch is available, apply it (edit file, run command, etc.)
-2. If no patch, provide guidance for manual fix
-3. Log decision to session file
-
-**Defer:**
-
-1. Create DEBT entry via `/add-debt` with:
-   - severity: S1 (errors) or S2 (warnings)
-   - category: engineering-productivity
-   - source_id: "review:script-ecosystem-audit-{date}"
-2. Log decision to session file
-
-**Suppress:**
-
-1. Add to suppression list (not yet implemented — log for future)
-2. Log decision to session file
+**Done when:** All findings decided or batch-resolved.
 
 ---
 
-## Phase 4: Summary & Actions
+## Phase 4: Summary, Trend & Actions
 
-After all findings are reviewed, present the summary:
+Present unified summary with trend data (if previous runs exist):
 
-```
-━━━ Audit Summary ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+> Read `REFERENCE.md` for summary template.
 
-Composite: {grade} ({score}/100)  |  {trend}
+Include:
 
-Decisions:
-  Fixed:      {count} findings
-  Deferred:   {count} findings → {count} DEBT entries created
-  Skipped:    {count} findings
-  Suppressed: {count} findings
+- Decision breakdown (fixed/deferred/skipped counts)
+- Patches applied count
+- Top 3 impact areas
+- **Trend data** (SHOULD) — if history JSONL has entries, show direction + delta
+  per category. Flag categories poor across 2+ consecutive runs: "{category} has
+  been {rating} for {N} consecutive runs."
+- **Artifact list** (MUST): session log path, DEBT entries created, files
+  patched, history updated
 
-Patches Applied: {count}/{total patchable}
-
-Top 3 Impact Areas:
-  1. {category} — {brief description}
-  2. {category} — {brief description}
-  3. {category} — {brief description}
-
-Next Steps:
-  - {actionable recommendation based on worst categories}
-  - {actionable recommendation}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+**Done when:** Summary presented to user.
 
 ---
 
-## Phase 5: Trend Report (if previous runs exist)
+## Phase 5: Self-Audit Verification
 
-If the state file has previous entries, show improvement/regression:
-
-```
-━━━ Trend Report ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Composite Trend: {sparkline}  {direction} ({delta})
-
-Improving:
-  {category}: {before} → {after} (+{delta})
-
-Declining:
-  {category}: {before} → {after} ({delta})
-
-Stable:
-  {category}: {score} (no change)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
----
-
-## Phase 6: Self-Audit (Verification)
-
-After all findings are reviewed and fixes committed, re-run the audit to verify
-improvements:
-
-1. Re-run the audit script:
+Re-run the audit script and compare:
 
 ```bash
 node .claude/skills/script-ecosystem-audit/scripts/run-script-ecosystem-audit.js
 ```
 
-2. Compare the new score against the Phase 2 score:
+> Read `REFERENCE.md` for self-audit template.
 
-```
-━━━ Self-Audit Verification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Present before/after comparison. If score didn't improve, investigate why.
 
-Before: {previous_grade} ({previous_score}/100)
-After:  {new_grade} ({new_score}/100)
-Delta:  {+/-delta} points
-
-Improved Categories:
-  {category}: {before} → {after} (+{delta})
-
-Remaining Issues:
-  {count} findings still open (deferred/skipped)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-3. If the score improved, commit the audit state for trend tracking.
-4. If the score did not improve, investigate why — fixes may have introduced new
-   findings.
+**Done when:** Before/after comparison presented.
 
 ---
 
-## Category Reference
+## Phase 6: Learning Loop & Closure (MUST)
 
-### Domain 1: Module System & Consistency (20% weight)
+1. **Auto-learnings** (MUST): Generate 2-3 data-driven insights from audit
+   results. E.g., "Top regressing category: X. Most-fixed category: Y. Recurring
+   issue: Z poor for N consecutive runs." Save to history JSONL `learnings`
+   field.
+2. **Optional user feedback** (SHOULD): "Any additional observations or patterns
+   the checkers should learn?" Accept empty / "none" to proceed. If provided,
+   save to history JSONL `feedback` field.
+3. **Invocation tracking** (MUST):
+   ```bash
+   cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"script-ecosystem-audit","type":"ecosystem-audit","success":true,"context":{}}'
+   ```
+4. Delete progress file (audit complete)
 
-| Category                  | What It Checks                                                        |
-| ------------------------- | --------------------------------------------------------------------- |
-| CJS/ESM Consistency       | Directories use consistent module system (all CJS or all ESM)         |
-| Shebang & Entry Points    | npm script file refs exist, shebangs are correct                      |
-| Node.js API Compatibility | No deprecated APIs (fs.exists, new Buffer, url.parse without 2nd arg) |
+**On next startup** (MUST): If history JSONL has entries, surface previous
+auto-learnings and user feedback: "Previous run noted: [learnings]. User
+feedback: [if any]."
 
-### Domain 2: Safety & Error Handling (25% weight)
-
-| Category              | What It Checks                                                          |
-| --------------------- | ----------------------------------------------------------------------- |
-| File I/O Safety       | All fs.readFileSync/writeFileSync wrapped in try/catch                  |
-| Error Sanitization    | Scripts use sanitize-error.js, don't log raw error.message              |
-| Path Traversal Guards | Correct regex pattern, not startsWith('..')                             |
-| Exec Safety           | All regex.exec() in loops have /g flag                                  |
-| Security Helper Usage | Scripts doing file I/O, git ops, or CLI args import security-helpers.js |
-
-### Domain 3: Registration & Reachability (20% weight)
-
-| Category                  | What It Checks                                                    |
-| ------------------------- | ----------------------------------------------------------------- |
-| Package.json Coverage     | Scripts reachable via npm scripts or internal require/import      |
-| Cross-Script Dependencies | All require/import references resolve to existing files           |
-| Shared Lib Utilization    | Scripts use shared libs instead of reimplementing common patterns |
-
-### Domain 4: Code Quality (20% weight)
-
-| Category              | What It Checks                                                  |
-| --------------------- | --------------------------------------------------------------- |
-| Documentation Headers | JSDoc or block comment at top of each script                    |
-| Consistent Patterns   | Scripts in same directory follow similar structure              |
-| Dead Code             | Exported functions are actually imported elsewhere              |
-| Complexity            | Scripts under 300 lines or have adequate function decomposition |
-
-### Domain 5: Testing & Reliability (15% weight)
-
-| Category           | What It Checks                                                         |
-| ------------------ | ---------------------------------------------------------------------- |
-| Test Coverage      | Each script has a corresponding .test.js file                          |
-| Test Freshness     | Tests updated within 30 days of source changes                         |
-| Error Path Testing | Test files include error scenario coverage (toThrow, rejects, mocking) |
+**Done when:** Learnings generated, invocation logged, progress file deleted.
 
 ---
 
-## Benchmarks
+## Guard Rails
 
-Internal benchmarks are defined in `scripts/lib/benchmarks.js`. Each category
-scores 0-100 with ratings: good (90+), average (70-89), poor (<70). The
-composite grade uses weighted average across all 18 categories with domain
-weights: D1=20%, D2=25%, D3=20%, D4=20%, D5=15%.
+- **Script failure:** Display error + diagnostics, do not proceed with empty
+  data
+- **Empty results:** Skip walkthrough, show clean score
+- **Pause/resume:** User says "pause" → save state, print progress, exit.
+  Resume: `/script-ecosystem-audit` reads progress file and continues.
+- **Circuit breaker:** >50 findings → offer top-20 review + batch
+- **Session log retention:** Ephemeral in `.claude/tmp/`, not archived by
+  `/session-end`. Retained for current session only.
 
 ---
 
-## Checker Development Guide
+## Integration
 
-### Adding a New Category
+**Neighbors:** `/hook-ecosystem-audit` (hooks), `/comprehensive-ecosystem-audit`
+(orchestrator), `/skill-ecosystem-audit` (skill scripts), `/add-debt` (TDMS)
 
-1. Choose the appropriate domain checker in `scripts/checkers/`
-2. Add a new check function following the pattern of existing categories
-3. Add benchmarks to `scripts/lib/benchmarks.js`
-4. Add weight to `CATEGORY_WEIGHTS` in benchmarks.js (adjust existing weights)
-5. Add labels to the orchestrator's `CATEGORY_LABELS` and `CATEGORY_DOMAIN_MAP`
-6. Test: `node scripts/run-script-ecosystem-audit.js --summary`
+**Comprehensive audit integration:** When called by
+`/comprehensive-ecosystem-audit`, the script runs with `--batch --summary` flags
+and returns JSON to stdout. The orchestrator expects:
+`{ grade, score, errors, warnings, info, patches, domains }`.
 
-### Data Sources
+**Artifact Contracts:**
 
-| Source              | Path                    | Content                           |
-| ------------------- | ----------------------- | --------------------------------- |
-| Script source code  | `scripts/**/*.js`       | 300+ script implementations       |
-| Shared libraries    | `scripts/lib/*.js`      | Shared utilities (sanitize, etc.) |
-| Package config      | `package.json`          | npm scripts section               |
-| Test files          | `scripts/**/__tests__`  | Script test suites                |
-| Pre-commit pipeline | `.husky/pre-commit`     | Pre-commit stage references       |
-| State files         | `.claude/state/*.jsonl` | Audit state and history           |
+| Artifact      | Producer                   | Consumer             | Lifetime                          |
+| ------------- | -------------------------- | -------------------- | --------------------------------- |
+| Progress file | This skill                 | This skill (resume)  | Ephemeral — deleted on completion |
+| Session log   | This skill                 | Current session only | Ephemeral                         |
+| History JSONL | Audit script               | This skill (trends)  | Persistent — append-only          |
+| DEBT entries  | This skill via `/add-debt` | TDMS pipeline        | Persistent                        |
 
-### Script Infrastructure Architecture
-
-```
-scripts/
-  ├── lib/                    # Shared libraries
-  │   ├── sanitize-error.js   # Error sanitization
-  │   ├── security-helpers.js # Security utilities
-  │   └── ...                 # Other shared modules
-  ├── __tests__/              # Test files
-  │   ├── *.test.js           # Unit/integration tests
-  │   └── ...
-  ├── ci/                     # CI/CD scripts
-  ├── eval/                   # Evaluation pipeline
-  ├── audit/                  # Audit scripts
-  └── *.js                    # Top-level scripts
-```
+**Category checks enforce patterns from CLAUDE.md Section 5** (Critical
+Anti-Patterns). See CLAUDE.md for canonical definitions.
 
 ---
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-02-24 | Initial implementation |
+| Version | Date       | Description                                                   |
+| ------- | ---------- | ------------------------------------------------------------- |
+| 2.0     | 2026-03-08 | Skill audit v2: 39 decisions, REFERENCE.md extraction, UX fix |
+| 1.0     | 2026-02-24 | Initial implementation                                        |

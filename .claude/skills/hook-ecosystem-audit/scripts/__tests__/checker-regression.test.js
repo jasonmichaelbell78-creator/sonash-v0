@@ -661,6 +661,130 @@ test("all findings have required fields", () => {
 });
 
 // ============================================================================
+// TEST GROUP 10: False Positive Regressions (2026-03-08 audit)
+// ============================================================================
+
+console.log("\n--- Test Group 10: False Positive Regressions (2026-03-08 audit) ---");
+
+test("FP-1: regex_safety does not flag disjoint character class patterns as catastrophic", () => {
+  // HEA-231: /^\s*(?:[A-Z]{2,}\s+){2,}[A-Z]{2,}/ has nested quantifiers but
+  // [A-Z] and \s are disjoint — no ambiguous backtracking possible.
+  const result = codeQualitySecurity.run({ rootDir: ROOT_DIR });
+  const regexFindings = result.findings.filter((f) => f.category === "regex_safety");
+  const capsPatternFindings = regexFindings.filter(
+    (f) => (f.details || "").includes("508") && (f.message || "").includes("user-prompt-handler")
+  );
+  // Disjoint character classes should not be flagged as catastrophic backtracking.
+  // If still flagged, it's suppressed via hook-audit-suppressions.json — but the
+  // checker itself should eventually stop flagging it.
+  assertEqual(
+    capsPatternFindings.length,
+    0,
+    "Disjoint class regex (HEA-231) should not be flagged as catastrophic backtracking"
+  );
+});
+
+test("FP-2: settings_file_alignment excludes utility files from unregistered check", () => {
+  // HEA-102: state-utils.js is a shared module imported by other hooks,
+  // not a standalone hook. It should not be flagged as unregistered.
+  const result = configHealth.run({ rootDir: ROOT_DIR });
+  const alignFindings = result.findings.filter(
+    (f) => f.id === "HEA-102" && (f.details || "").includes("state-utils.js")
+  );
+  assertEqual(
+    alignFindings.length,
+    0,
+    "state-utils.js should NOT be flagged as unregistered (it's a utility module)"
+  );
+});
+
+test("FP-3: global_local_consistency checks global ~/.claude/settings.json", () => {
+  // HEA-121: Global hooks registered in ~/.claude/settings.json were being
+  // compared only against project settings, causing false positives.
+  // Use env vars + fixture for deterministic testing (no dependency on local machine).
+  const prevCheck = process.env.CLAUDE_CHECK_GLOBAL_SETTINGS;
+  const prevPath = process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
+  try {
+    process.env.CLAUDE_CHECK_GLOBAL_SETTINGS = "1";
+    process.env.CLAUDE_GLOBAL_SETTINGS_PATH = path.join(
+      __dirname,
+      "fixtures",
+      "claude-global-settings.json"
+    );
+
+    const result = configHealth.run({ rootDir: ROOT_DIR });
+    const globalFindings = result.findings.filter((f) => f.id === "HEA-121");
+    // If global hooks are properly registered in the fixture settings,
+    // gsd-statusline should not appear as unregistered
+    for (const finding of globalFindings) {
+      const details = finding.details || "";
+      assert(
+        !details.includes("gsd-statusline"),
+        "gsd-statusline.js should NOT be flagged — it's registered in global settings"
+      );
+    }
+  } finally {
+    if (prevCheck === undefined) delete process.env.CLAUDE_CHECK_GLOBAL_SETTINGS;
+    else process.env.CLAUDE_CHECK_GLOBAL_SETTINGS = prevCheck;
+
+    if (prevPath === undefined) delete process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
+    else process.env.CLAUDE_GLOBAL_SETTINGS_PATH = prevPath;
+  }
+});
+
+test("FP-4: error_handling_sanitization does not flag catch blocks that don't log errors", () => {
+  // HEA-202: decision-save-prompt.js has a catch block that exits silently
+  // without logging any error.message. The checker should not flag it for
+  // missing sanitize-error import.
+  const result = codeQualitySecurity.run({ rootDir: ROOT_DIR });
+  const sanitizeFindings = result.findings.filter(
+    (f) =>
+      f.category === "error_handling_sanitization" &&
+      (f.message || "").includes("decision-save-prompt")
+  );
+  // Silent catch blocks that don't reference error.message should not trigger
+  // the sanitize-error import requirement.
+  assertEqual(
+    sanitizeFindings.length,
+    0,
+    "Silent catch blocks (HEA-202) should not be flagged for missing sanitize-error"
+  );
+});
+
+test("FP-5: bot_config_freshness only flags bots requiring local config", () => {
+  // HEA-610: Qodo and Gemini are configured via GitHub App settings,
+  // not repo-level config files. They should not be flagged as missing.
+  let cicdPipeline;
+  try {
+    cicdPipeline = require(path.join(SCRIPTS_DIR, "checkers", "cicd-pipeline"));
+  } catch {
+    console.log("    (skipped: cicd-pipeline checker not loadable)");
+    return;
+  }
+  const result = cicdPipeline.run({ rootDir: ROOT_DIR });
+  const botFindings = result.findings.filter((f) => f.id === "HEA-610");
+  for (const finding of botFindings) {
+    const msg = finding.message || "";
+    assert(!msg.includes("Qodo"), "Qodo should NOT be flagged — configured via GitHub App");
+    assert(!msg.includes("Gemini"), "Gemini should NOT be flagged — configured via GitHub App");
+  }
+});
+
+test("FP-6: stage_ordering does not expect cc_regression stage", () => {
+  // HEA-301: cc_regression was a phantom stage never implemented.
+  // It should not appear in EXPECTED_STAGES.
+  const result = precommitPipeline.run({ rootDir: ROOT_DIR });
+  const stageFindings = result.findings.filter(
+    (f) => f.id === "HEA-301" && (f.details || "").includes("CC regression")
+  );
+  assertEqual(
+    stageFindings.length,
+    0,
+    "cc_regression should NOT be in expected stages (never implemented)"
+  );
+});
+
+// ============================================================================
 // RESULTS
 // ============================================================================
 

@@ -299,10 +299,17 @@ function checkWorkflowScriptAlignment(rootDir, findings) {
 
 // ── Category 18: Bot Configuration Freshness ────────────────────────────────
 
-/** Known bot config file patterns. */
+/**
+ * Known bot config file patterns.
+ * requiresLocalConfig: true = bot needs a repo-level config file to function
+ *   (flag as missing if not found)
+ * requiresLocalConfig: false = bot is configured via GitHub App / Marketplace settings
+ *   (only check health if config file exists, don't flag as missing)
+ */
 const BOT_CONFIG_PATTERNS = [
   {
     name: "Qodo",
+    requiresLocalConfig: false, // Configured via GitHub App settings
     patterns: [
       ".qodo",
       ".qodo.yml",
@@ -316,13 +323,19 @@ const BOT_CONFIG_PATTERNS = [
   },
   {
     name: "Gemini",
+    requiresLocalConfig: false, // Configured via GitHub App settings
     patterns: [".gemini", ".gemini.yml", ".gemini.yaml", "gemini.yml", "gemini.yaml"],
   },
   {
     name: "Renovate",
+    requiresLocalConfig: true, // Requires repo-level config
     patterns: [".renovaterc", ".renovaterc.json", "renovate.json", "renovate.json5"],
   },
-  { name: "Dependabot", patterns: [".github/dependabot.yml", ".github/dependabot.yaml"] },
+  {
+    name: "Dependabot",
+    requiresLocalConfig: true, // Requires repo-level config
+    patterns: [".github/dependabot.yml", ".github/dependabot.yaml"],
+  },
 ];
 
 function checkBotConfigFreshness(rootDir, findings) {
@@ -359,14 +372,15 @@ function checkBotConfigFreshness(rootDir, findings) {
       } else {
         staleConfigs.push({ bot: bot.name, path: configPath, issues: healthIssues });
       }
-    } else {
+    } else if (bot.requiresLocalConfig) {
       missingBots.push(bot.name);
     }
   }
 
-  // Score: existence (50%) + health (50%)
-  const totalBots = BOT_CONFIG_PATTERNS.length;
-  const existencePct = Math.round((configsFound / totalBots) * 100);
+  // Score: existence (50%) + health (50%) — denominator is only bots requiring local config
+  const requiredBots = BOT_CONFIG_PATTERNS.filter((b) => b.requiresLocalConfig).length;
+  const existencePct =
+    requiredBots > 0 ? Math.round(((requiredBots - missingBots.length) / requiredBots) * 100) : 100;
   const healthPct = configsFound > 0 ? Math.round((configsHealthy / configsFound) * 100) : 0;
   const configScore = Math.round(existencePct * 0.5 + healthPct * 0.5);
 
@@ -459,6 +473,92 @@ function checkBotConfigHealth(rootDir, botName, content) {
   return issues;
 }
 
+/** Check if a YAML line is a step/block boundary relative to usesIndent. */
+function isStepBoundary(trimmed, indent, usesIndent) {
+  // A new step starts with `- ` at or above the step indentation
+  if (indent <= usesIndent && trimmed.startsWith("- ")) return true;
+
+  // Leaving the step block (outdenting) ends scanning
+  if (indent < usesIndent) return true;
+
+  // Sibling keys at the same indentation (env:, name:, id:) are part of
+  // the same step — NOT boundaries. The 25-line scan limit prevents runaway.
+  return false;
+}
+
+/** Extract cache value from a "cache: value" line. */
+function parseCacheValue(trimmed) {
+  let raw = trimmed.slice("cache:".length).trim();
+
+  // Handle quoted values (strip inline comments after closing quote)
+  if (raw.length > 0 && (raw.startsWith('"') || raw.startsWith("'"))) {
+    const quote = raw[0];
+    const end = raw.indexOf(quote, 1);
+    raw = end >= 0 ? raw.slice(0, end + 1) : raw;
+  } else {
+    // Strip inline YAML comments from unquoted values (e.g. "cache: npm # fast")
+    raw = raw.replace(/\s+#.*$/, "");
+  }
+
+  raw = raw.trim().replace(/^["']|["']$/g, "");
+  const valid = ["npm", "yarn", "pnpm"];
+  return { value: raw, effective: valid.includes(raw) };
+}
+
+/**
+ * Parse a setup-node action step to find its cache parameter.
+ * Returns { effective: bool, line: number, issue?: string } or null if no cache found.
+ */
+function parseSetupNodeCache(lines, usesLineIndex) {
+  if (usesLineIndex < 0 || usesLineIndex >= lines.length) return null;
+  const usesIndent = lines[usesLineIndex].match(/^\s*/)?.[0].length ?? 0;
+  let inWithBlock = false;
+  let withIndent = 0;
+
+  for (let j = usesLineIndex + 1; j < Math.min(usesLineIndex + 25, lines.length); j++) {
+    const indent = lines[j].match(/^\s*/)?.[0].length ?? 0;
+    const trimmed = lines[j].trim();
+
+    if (isStepBoundary(trimmed, indent, usesIndent)) return null;
+
+    if (trimmed === "with:") {
+      inWithBlock = true;
+      withIndent = indent;
+      continue;
+    }
+
+    // Support inline YAML: with: { cache: npm }
+    if (trimmed.startsWith("with:") && trimmed.includes("{") && trimmed.includes("}")) {
+      const cacheMatch = trimmed.match(/\bcache\s*:\s*([^,}]+)/);
+      if (cacheMatch) {
+        const { value, effective } = parseCacheValue(`cache: ${cacheMatch[1].trim()}`);
+        if (effective) return { effective: true, line: j + 1 };
+        return {
+          effective: false,
+          line: j + 1,
+          issue: `setup-node cache value is unusual: ${value || "(empty)"}`,
+        };
+      }
+    }
+
+    if (!inWithBlock || indent <= withIndent) {
+      if (indent <= withIndent) inWithBlock = false;
+      continue;
+    }
+
+    if (trimmed.startsWith("cache:")) {
+      const { value, effective } = parseCacheValue(trimmed);
+      if (effective) return { effective: true, line: j + 1 };
+      return {
+        effective: false,
+        line: j + 1,
+        issue: `setup-node cache value is unusual: ${value || "(empty)"}`,
+      };
+    }
+  }
+  return null;
+}
+
 // ── Category 19: CI Cache Effectiveness ─────────────────────────────────────
 
 function checkCiCacheEffectiveness(rootDir, findings) {
@@ -492,51 +592,23 @@ function checkCiCacheEffectiveness(rootDir, findings) {
 
       // Detect setup-node with cache
       if (line.startsWith("uses:") && line.includes("actions/setup-node")) {
-        const usesIndent = lines[i].match(/^\s*/)?.[0].length ?? 0;
+        totalCacheSteps++;
 
-        let inWithBlock = false;
-        let withIndent = 0;
-
-        for (let j = i + 1; j < Math.min(i + 25, lines.length); j++) {
-          const raw = lines[j];
-          const indent = raw.match(/^\s*/)?.[0].length ?? 0;
-          const nextLine = raw.trim();
-
-          // Stop if indentation returns to the step level (new step / new top-level key)
-          if (indent <= usesIndent && (nextLine.startsWith("- ") || nextLine.includes(":"))) break;
-
-          if (nextLine === "with:") {
-            inWithBlock = true;
-            withIndent = indent;
-            continue;
-          }
-
-          if (!inWithBlock) continue;
-
-          // If indentation returns to (or above) `with:` level, we're out of `with:`
-          if (indent <= withIndent) {
-            inWithBlock = false;
-            continue;
-          }
-
-          if (nextLine.startsWith("cache:")) {
-            const cacheValue = nextLine
-              .slice("cache:".length)
-              .trim()
-              .replace(/^["']|["']$/g, "");
-            if (cacheValue === "npm" || cacheValue === "yarn" || cacheValue === "pnpm") {
-              totalCacheSteps++;
-              effectiveCacheSteps++;
-            } else {
-              totalCacheSteps++;
-              cacheIssues.push({
-                workflow: workflow.name,
-                line: j + 1,
-                issues: [`setup-node cache value is unusual: ${cacheValue || "(empty)"}`],
-              });
-            }
-            break;
-          }
+        const cacheResult = parseSetupNodeCache(lines, i);
+        if (cacheResult?.effective) {
+          effectiveCacheSteps++;
+        } else if (cacheResult) {
+          cacheIssues.push({
+            workflow: workflow.name,
+            line: cacheResult.line,
+            issues: [cacheResult.issue || "setup-node cache is misconfigured"],
+          });
+        } else {
+          cacheIssues.push({
+            workflow: workflow.name,
+            line: i + 1,
+            issues: ["setup-node is missing a cache: setting"],
+          });
         }
       }
     }

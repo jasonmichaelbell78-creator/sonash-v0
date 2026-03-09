@@ -834,6 +834,198 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review #468: PR #423 R5 — Qodo + Semgrep (2026-03-09)
+
+_Skill audits wave 2 — packaging hardening, test determinism, bounds checks._
+
+**Source:** Qodo (Compliance + Code Suggestions), Semgrep **Total:** 10 unique
+(after dedup) **Fixed:** 4 **Deferred:** 0 **Rejected:** 6
+
+- **Exclude non-distributable dirs:** `package_skill.py` now skips `.git`,
+  `node_modules`, `dist`, `build`, `__pycache__`, `.DS_Store` during packaging
+- **Crash-safe skipped.append:** Wrapped `relative_to()` in try/except to handle
+  paths that can't be made relative (e.g. junction targets)
+- **Deterministic FP-3 test:** Uses `CLAUDE_CHECK_GLOBAL_SETTINGS` +
+  `CLAUDE_GLOBAL_SETTINGS_PATH` env vars with fixture file instead of live
+  `~/.claude/settings.json` — eliminates machine-dependent flakiness
+- **Semgrep bounds check:** Added `raw.length > 0` guard before `raw[0]` access
+  in `parseCacheValue` to prevent undefined on empty string
+
+**Rejected (6 — all repeats or low-value):**
+
+- Local config exposure: R5 repeat (5th time)
+- Silent exception swallow: R5 repeat (4th time)
+- No audit logging: lightweight hook, prompts in CC logs
+- Sensitive filenames in output: user needs skip feedback
+- Explicit is_symlink(): redundant with resolve+relative_to
+- Escaped quotes in YAML: cache values never use escaped quotes
+
+**Patterns:**
+
+- Test fixtures + env var overrides make checker tests deterministic across
+  machines — prefer this over relying on user's live config
+- Always guard array-index access (`arr[0]`) with length check — Semgrep catches
+  this systematically
+
+---
+
+### Review #465: PR #423 R4 — Qodo (2026-03-09)
+
+_Skill audits wave 2 — scoring accuracy, YAML parsing depth, path traversal._
+
+**Source:** Qodo (Compliance + Code Suggestions) **Total:** 8 unique (after
+dedup) **Fixed:** 4 **Deferred:** 0 **Rejected:** 4
+
+- **Path traversal via symlink:** `package_skill.py` symlink check upgraded from
+  `is_symlink()` to `resolve()` + `relative_to()` — catches junctions and
+  multi-hop symlinks targeting outside the skill directory
+- **Bot scoring denominator:** Existence score now only counts
+  `requiresLocalConfig` bots, not optional GitHub App bots that don't need
+  repo-level config files
+- **isStepBoundary sibling keys:** Sibling YAML keys (`env:`, `name:`, `id:`) at
+  the same indent as `uses:` are NOT step boundaries — removing this false
+  boundary allows `parseSetupNodeCache` to find `with:` blocks after siblings
+- **Quoted YAML comment handling:** `parseCacheValue` now correctly extracts
+  values from quoted strings before stripping inline comments
+
+**Rejected (all repeats):**
+
+- Local config exposure: R4 repeat (4th time) — intentional, guarded
+- Swallowed exceptions: R4 repeat (3rd time) — intentional design
+- Prompt field fallback: R3 repeat — fields never existed in protocol
+- Stdin payload cap: trusted upstream + 2000-char truncation already exists
+
+**Patterns:**
+
+- `is_symlink()` is insufficient for path traversal — use `resolve()` +
+  `relative_to()` to verify the resolved path stays within the expected tree
+- Scoring denominators must match the population being measured (only bots
+  requiring local config, not all bots including App-configured ones)
+- YAML step boundaries in GitHub Actions: only `- ` list items and outdents mark
+  new steps — sibling keys like `env:` are part of the same step
+
+---
+
+### Review #462: PR #423 R3 — Qodo (2026-03-09)
+
+_Skill audits wave 2 — security hardening, YAML parsing robustness, hook
+protocol._
+
+**Source:** Qodo (Compliance + Code Suggestions) **Total:** 10 unique (after
+dedup) **Fixed:** 7 **Deferred:** 0 **Rejected:** 3
+
+- **Symlink exfiltration:** `package_skill.py` now skips symlinks during rglob
+  to prevent packaging files outside the skill directory via symlink traversal
+- **Expanded sensitive patterns:** Added SSH keys (`id_rsa`, `id_dsa`,
+  `id_ecdsa`, `id_ed25519`) and `.env.*` wildcard matching to denylist
+- **CI-aware global settings:** config-health.js now defaults global settings
+  check to OFF in CI (`process.env.CI`), opt-in with
+  `CLAUDE_CHECK_GLOBAL_SETTINGS=1`
+- **Cache issue fallback:** Added fallback message when `cacheResult.issue` is
+  undefined to prevent `[undefined]` in findings
+- **block-push-to-main protocol:** Added `console.log("ok"); process.exit(0)` to
+  catch block so hook correctly signals "allow" on parse errors
+- **YAML comment stripping:** `parseCacheValue` now strips inline `# comments`
+  from unquoted cache values
+- **Inline YAML with block:** `parseSetupNodeCache` now handles
+  `with: { cache: npm }` single-line syntax
+
+**Rejected:**
+
+- Audit trail user attribution: automated health score snapshots, no actor
+- Silent exception handling: R2 repeat, intentional design
+- Cache denominator revert: contradicts R2 fix (importance 8)
+
+**Patterns:**
+
+- Symlinks are a common packaging/build exfiltration vector — always skip or
+  resolve-and-validate before including files from rglob
+- YAML parsers should handle both multi-line and inline flow syntax
+  (`with: { key: value }`) — many GitHub Actions use inline form
+- Hook protocol: catch blocks in stdin-parsing hooks must still emit "ok" + exit
+  0 to signal "allow" — silent exit can be interpreted as failure
+
+---
+
+### Review #459: PR #423 R2 — Qodo + Gemini (2026-03-09)
+
+_Skill audits wave 2 continued — scoring, testing, security, hook resilience._
+
+**Source:** Qodo (Compliance + Code Suggestions), Gemini **Total:** 13 unique
+(after dedup) **Fixed:** 7 **Deferred:** 0 **Rejected:** 6
+
+- **Secret packaging denylist:** `package_skill.py` now skips `.env`, `.key`,
+  `.pem`, `credentials.json` etc. during zip creation — prevents accidental
+  credential distribution
+- **YAML boundary detection:** `isStepBoundary` used `includes(":")` which
+  matched colons anywhere in line — replaced with `/^[A-Za-z0-9_-]+:/` regex
+- **Cache counting bug:** `actions/setup-node` without `cache:` wasn't counted
+  in `totalCacheSteps` — inflated effectiveness score. Now always increments
+  counter and reports missing cache as an issue
+- **Restore continueOnError:** 5 SessionStart hooks had `continueOnError: true`
+  removed, making non-critical checks (MCP, remote branches, Serena) blocking.
+  Restored to prevent brittle session startup
+- **FP-1/FP-4 test assertions:** Two regression tests had no assertions (always
+  passed). Added `assertEqual` checks so they actually verify the false positive
+  is resolved
+- **Global settings deterministic testing:** Added `CLAUDE_GLOBAL_SETTINGS_PATH`
+  and `CLAUDE_CHECK_GLOBAL_SETTINGS` env vars to config-health.js for CI/test
+  reproducibility
+
+**Rejected:**
+
+- Sensitive local file access: intentional feature, already guarded in R1
+- Swallowed exceptions: optional feature, catch comment sufficient
+- Unstructured test logging: standard practice for test files
+- Stdin schema validation: upstream (Claude Code) guarantees structure
+- Prompt field fallback: `request`/`message`/`content` never existed in protocol
+- chmod removed: factually incorrect — we restored it in R1
+
+**Patterns:**
+
+- Tests without assertions are worse than no tests — they provide false
+  confidence. Always add `assertEqual`/`assert` or use `test.skip`
+- Scoring denominators: always increment counter for the item being evaluated,
+  not only when sub-analysis succeeds
+- `continueOnError: true` is essential for non-critical startup hooks — without
+  it, a MCP check failure blocks the entire session
+
+---
+
+### Review #458: PR #423 R1 — Qodo + Semgrep + CI (2026-03-09)
+
+_Skill audits wave 2 — hook/checker/MCP portability fixes._
+
+**Source:** Qodo (3 bugs, guide, suggestions, compliance), Semgrep (2), CI
+(lint) **Total:** 9 unique (after dedup) **Fixed:** 9 **Deferred:** 0
+**Rejected:** 0
+
+- **Stdin TTY blocking:** `fs.readFileSync(0)` blocks on TTY — added `isTTY`
+  guard, nested JSON parse with plain-text fallback, `String()` cast for safety
+- **MCP portability:** Replaced `cmd /c npx` with bare `npx` for memory server
+  (cross-platform). Kept `node` for sonarcloud (always available in CC context).
+- **Bot score double-counting:** `totalBots` formula counted required bots twice
+  when configs found — changed denominator to `BOT_CONFIG_PATTERNS.length`
+- **Semgrep bounds check:** Added early return guard in `parseSetupNodeCache`
+  for out-of-bounds `usesLineIndex`
+- **HOME env guard:** config-health.js now skips global settings read when HOME
+  is undefined + adds `existsSync` check
+- **Zip self-inclusion:** package_skill.py skips output zip file during rglob
+- **Script permissions:** Restored `chmod(0o755)` on example.py with Windows
+  OSError fallback
+- **Raw exceptions:** init_skill.py prints `type(e).__name__` instead of `{e}`
+
+**Patterns:**
+
+- Always guard `fs.readFileSync(0)` with `!process.stdin.isTTY` — prevents TTY
+  blocking in hooks that have argv fallbacks
+- MCP server configs should use cross-platform commands (`npx`, `node`) not
+  OS-specific wrappers (`cmd`, `bash`)
+- Scoring formulas: denominator should match the population being measured, not
+  a sum of population + found items
+
+---
+
 ### Review #447: PR #415 R4 — SonarCloud + Qodo (2026-03-04)
 
 _System-wide standardization — security hotspot elimination + code smell fixes._

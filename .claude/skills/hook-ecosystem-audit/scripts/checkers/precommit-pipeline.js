@@ -50,12 +50,6 @@ const EXPECTED_STAGES = [
     orderGroup: 1,
   },
   {
-    name: "cc_regression",
-    label: "CC regression check (1b)",
-    pattern: /CC regression|check-cc-regression/,
-    orderGroup: 2,
-  },
-  {
     name: "lint_staged",
     label: "lint-staged (2)",
     pattern: /lint-staged|Running lint-staged/,

@@ -7,7 +7,7 @@
 <!-- prettier-ignore-end -->
 
 > **Deep-Plan Phase 3 Artifact** **Generated:** 2026-03-04 **Decisions:** See
-> [DECISIONS.md](./DECISIONS.md) (92 decisions, 18 tenets, 41 directives)
+> [DECISIONS.md](./DECISIONS.md) (92 decisions, 19 tenets, 41 directives)
 > **Effort:** XL (estimated 40-60 sessions across 21 steps)
 
 ---
@@ -233,8 +233,8 @@ schema files compile, directory structure matches D21.
 
 ### 1b. Tenets — First CANON Artifact (D32)
 
-Migrate the 18 tenets from `.planning/system-wide-standardization/tenets.jsonl`
-to `.canon/tenets.jsonl`.
+Migrate the tenets from `.planning/system-wide-standardization/tenets.jsonl` to
+`.canon/tenets.jsonl`.
 
 Each line:
 `{ "id": "T1", "category": "foundation|design|operations|process", "name": "snake_case", "statement": "...", "evidence": ["D1", "D6"], "added": "2026-03-04", "version": "0.1.0" }`
@@ -243,7 +243,7 @@ Create `generate-tenets-md.js` — reads `.canon/tenets.jsonl`, outputs
 `.canon/tenets.md`. Standard CLI: `--input`, `--output` flags (D27). Node.js
 only (T7). Idempotent (T12).
 
-**Done when:** `.canon/tenets.jsonl` has all 18 tenets, `.canon/tenets.md` is
+**Done when:** `.canon/tenets.jsonl` has all tenets, `.canon/tenets.md` is
 generated, both are in sync.
 
 ### 1c. Ecosystem Registry (D2, D22)

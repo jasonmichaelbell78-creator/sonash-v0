@@ -303,8 +303,15 @@ proceeding to Step 8.
 
 ### Learning Loop
 
-"Retro on the retro: Was this analysis useful? Any patterns the skill should
-learn for next time?" Capture response in `process_feedback` JSONL field.
+**Auto-learnings** (MUST): Generate 2-3 data-driven insights from the retro
+(most common finding type, most impactful action item, reviewer pattern). Save
+to `learnings` JSONL field.
+
+**Optional user feedback** (SHOULD): "Any additional observations?" Accept empty
+/ "none" to proceed. If provided, save to `process_feedback` JSONL field.
+
+**On next startup** (MUST): If previous retros exist, surface auto-learnings and
+feedback: "Previous retro noted: [learnings]. User feedback: [if any]."
 
 ### Closure Summary
 

@@ -277,3 +277,9 @@ Skills that involve multi-step interaction SHOULD include:
 - [ ] Multi-step skills have UX guidance (progress, warm-up, closure)
 - [ ] Project conventions referenced (CLAUDE.md), not duplicated
 - [ ] Guided prompts used instead of generic `[placeholder]` text
+- [ ] Steps/phases have "Done when:" completion criteria
+- [ ] Anti-patterns list for common mistakes in the skill's domain
+- [ ] Routing guide if 3+ skills share triggers (table format)
+- [ ] Warm-up with effort estimate at skill start
+- [ ] Approval gates before irreversible actions or phase transitions
+- [ ] Post-execution retro prompt (learning loop)

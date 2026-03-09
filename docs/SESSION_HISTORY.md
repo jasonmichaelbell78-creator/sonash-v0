@@ -27,6 +27,16 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #207 (2026-03-06)
+
+**Focus**: Alerts Full + Health Improvements
+
+- GSD updated v1.6.3 -> v1.22.4
+- `/alerts --full` run: 36 categories, processed all alerts interactively
+- Fixed Windows EINVAL spawning npm/npx/gh in alerts checker (shell: true)
+- Health: C (79) -> A (92) | Tests: 497 pass, 0 fail
+- TDMS: 8,350 items (481 resolved)
+
 ### Session #206 (2026-03-06)
 
 **Focus**: PR #417 Review — R1-R3 Complete

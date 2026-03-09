@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/global/gsd-statusline.js"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/global/gsd-check-update.js"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/global/gsd-context-monitor.js"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -46,6 +46,8 @@ const REQUIRED_EVENT_TYPES = ["SessionStart", "PreCompact", "PostToolUse", "User
 
 /** Directories to exclude when listing hook .js files. */
 const EXCLUDED_DIRS = new Set(["lib", "global", "backup"]);
+// Utility modules in hooks/ that are imported by other hooks, not standalone hooks
+const UTILITY_FILES = new Set(["state-utils.js"]);
 
 /**
  * Run all config health checks.
@@ -135,7 +137,7 @@ function listHookJsFiles(rootDir) {
     const entries = fs.readdirSync(hooksDir, { withFileTypes: true });
     for (const entry of entries) {
       if (EXCLUDED_DIRS.has(entry.name)) continue;
-      if (entry.isFile() && entry.name.endsWith(".js")) {
+      if (entry.isFile() && entry.name.endsWith(".js") && !UTILITY_FILES.has(entry.name)) {
         files.add(entry.name);
       }
     }
@@ -450,13 +452,46 @@ function checkGlobalLocalConsistency(rootDir, hooksSection, findings) {
     }
   }
 
-  // Check if global hooks are registered in settings.json
+  // Check if global hooks are registered in settings.json (project OR global)
   const referenced = extractReferencedJsFiles(hooksSection);
   // Also check for global/ path references in commands
   const globalReferenced = extractGlobalReferencedJsFiles(hooksSection);
+
+  // Also check the global ~/.claude/settings.json — global hooks are often registered there
+  // Use CLAUDE_GLOBAL_SETTINGS_PATH env var to override path (deterministic testing)
+  // Set CLAUDE_CHECK_GLOBAL_SETTINGS=0 to skip entirely
+  let globalSettingsReferenced = new Set();
+  let globalSettingsGlobalReferenced = new Set();
+  try {
+    const shouldCheckGlobal = process.env.CI
+      ? process.env.CLAUDE_CHECK_GLOBAL_SETTINGS === "1"
+      : process.env.CLAUDE_CHECK_GLOBAL_SETTINGS !== "0";
+    if (shouldCheckGlobal) {
+      const overridePath = process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
+      const homeDir = process.env.HOME || process.env.USERPROFILE;
+      const globalSettingsPath =
+        overridePath || (homeDir ? path.join(homeDir, ".claude", "settings.json") : null);
+
+      if (globalSettingsPath && fs.existsSync(globalSettingsPath)) {
+        const globalSettingsRaw = fs.readFileSync(globalSettingsPath, "utf8");
+        const globalSettings = JSON.parse(globalSettingsRaw);
+        const globalHooksSection = globalSettings.hooks || {};
+        globalSettingsReferenced = extractReferencedJsFiles(globalHooksSection);
+        globalSettingsGlobalReferenced = extractGlobalReferencedJsFiles(globalHooksSection);
+      }
+    }
+  } catch {
+    // Global settings not accessible — skip
+  }
+
   const unregisteredGlobal = [];
   for (const globalFile of globalFiles) {
-    if (!referenced.has(globalFile) && !globalReferenced.has(globalFile)) {
+    if (
+      !referenced.has(globalFile) &&
+      !globalReferenced.has(globalFile) &&
+      !globalSettingsReferenced.has(globalFile) &&
+      !globalSettingsGlobalReferenced.has(globalFile)
+    ) {
       unregisteredGlobal.push(globalFile);
     }
   }

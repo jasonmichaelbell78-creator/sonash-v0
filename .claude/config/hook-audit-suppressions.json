@@ -1,0 +1,19 @@
+{
+  "$schema": "Suppression file for hook-ecosystem-audit false positives",
+  "suppressions": [
+    {
+      "findingId": "HEA-231",
+      "category": "regex_safety",
+      "reason": "Pattern /^\\s*(?:[A-Z]{2,}\\s+){2,}[A-Z]{2,}/ uses disjoint character classes ([A-Z] vs \\s) — no ReDoS risk despite nested quantifiers",
+      "suppressedAt": "2026-03-08",
+      "reviewBy": "2026-06-08"
+    },
+    {
+      "findingId": "HEA-202",
+      "category": "error_handling_sanitization",
+      "reason": "decision-save-prompt.js catch block does not log any error.message — stderr output is hardcoded strings only",
+      "suppressedAt": "2026-03-08",
+      "reviewBy": "2026-06-08"
+    }
+  ]
+}

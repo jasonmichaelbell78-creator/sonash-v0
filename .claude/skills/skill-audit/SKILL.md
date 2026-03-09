@@ -106,8 +106,13 @@ Categories: 10 | Estimated decisions: [N]
 
 ### Interactive Flow (MUST)
 
-Present ONE category at a time. Wait for user response. Do NOT batch.
+Present ONE category at a time. Wait for user response. Do NOT batch. Even if a
+rewrite is confirmed at mid-audit, MUST continue one-category-at-a-time
+interactive flow. The rewrite conclusion does not change the process.
 
+- **Correction protocol:** If user corrects presentation format, re-present the
+  category in the EXACT original format (full pros, cons, gaps, suggestions with
+  rationale). Never summarize, truncate, or use table-only format.
 - **Mid-category recovery:** If compaction occurs mid-category, re-read state
   file and restart the current category (partial progress not persisted).
 - **Cross-category revision:** If a later category conflicts with an earlier
@@ -121,17 +126,22 @@ Present ONE category at a time. Wait for user response. Do NOT batch.
 4. List ALL cons — what's not working
 5. List ALL issues & gaps — what's missing entirely
 6. Present suggestions — labeled A, B, C. Recommend with rationale. Two modes:
-   multiple options (with pros/cons) or single fix (one recommendation).
+   multiple options (with pros/cons per option) or single fix (one
+   recommendation). Use multi-option mode when genuine alternatives exist.
 7. Cover EVERY con and gap — each MUST have at least one suggestion
 8. Present opportunities (MAY) — value-add ideas beyond fixing problems. Only
    when genuinely useful. Each gets recommendation + rationale.
-9. Collect decisions — accept/modify/reject/alternatives. **Delegation:** if
-   user says "you decide," accept all recommendations; record
-   `delegated-accept`.
-10. Tag confidence (SHOULD) — `high`/`medium`/`low`. Low-confidence gets extra
+9. Collect decisions — accept/modify/reject/alternatives via conversational Q&A.
+   NEVER use AskUserQuestion — present findings and collect decisions through
+   normal conversation. **Delegation:** if user says "you decide," accept all
+   recommendations; record `delegated-accept`.
+10. **AskUserQuestion check** (MUST) — if the audited skill uses
+    AskUserQuestion, flag it as a finding. Skills MUST use conversational Q&A
+    (deep-plan style) instead of AskUserQuestion for all interactive decisions.
+11. Tag confidence (SHOULD) — `high`/`medium`/`low`. Low-confidence gets extra
     confirmation during Phase 4.
-11. Save to state file — persist ALL decisions before next category
-12. Show progress — "Category 3 of 10 complete. 18 decisions so far."
+12. Save to state file — persist ALL decisions before next category
+13. Show progress — "Category 3 of 10 complete. 18 decisions so far."
 
 > If >8 suggestions per category, split into sub-batches by theme,
 > severity-first.
@@ -207,8 +217,8 @@ finding. **Pause for user confirmation before proceeding to Phase 3.**
 3. **Flag conflicts** (MUST) — if two decisions conflict, ask user first
 4. **Low-confidence confirm** (MUST) — decisions tagged `low` get extra
    confirmation before applying
-5. **Rewrite threshold** — if >70% of lines need changing, recommend
-   `/skill-creator` instead of piecemeal edits
+5. **Correction protocol** (MUST) — if user corrects presentation format,
+   re-present in the EXACT original format. Never summarize or truncate.
 6. Update SKILL.md — keep under 300 lines (MUST)
 7. Extract to REFERENCE.md if needed (SHOULD)
 8. Update companion files as needed (SHOULD)
@@ -272,8 +282,15 @@ They are sequential, not alternatives. Fix any PARTIAL/MISSING before summary.
 
 ## Phase 6: Learning Loop + Closure (MUST)
 
-**Learning loop:** "Was this audit useful? Any patterns the process should learn
-for next time?" Capture in state file `process_feedback` field.
+**Auto-learnings** (MUST): Generate 2-3 data-driven insights from audit results
+(lowest-scoring category, most common gap type, recurring patterns across repeat
+audits). Save to state file `learnings` field.
+
+**Optional user feedback** (SHOULD): "Any additional observations?" Accept empty
+/ "none" to proceed. If provided, save to `process_feedback` field.
+
+**On next startup** (MUST): If previous audit state exists for the same skill,
+surface auto-learnings and user feedback from the previous run.
 
 **Invocation tracking** (MUST):
 

@@ -4,10 +4,6 @@
   },
   "enableAllProjectMcpServers": true,
   "disabledMcpjsonServers": [],
-  "statusLine": {
-    "type": "command",
-    "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/statusline.js"
-  },
   "hooks": {
     "SessionStart": [
       {
@@ -154,12 +150,21 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/user-prompt-handler.js $ARGUMENTS",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/user-prompt-handler.js",
             "statusMessage": "Processing user prompt..."
           }
         ]
       }
     ],
     "Notification": []
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/statusline.js"
+  },
+  "enabledPlugins": {
+    "episodic-memory@superpowers-marketplace": true,
+    "superpowers@claude-plugins-official": true,
+    "superpowers-chrome@superpowers-marketplace": true
   }
 }
