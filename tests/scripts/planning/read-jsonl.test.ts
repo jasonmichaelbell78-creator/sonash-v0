@@ -33,7 +33,7 @@ const tmpDirs: string[] = [];
 
 before(async () => {
   const srcPath = path.resolve(PROJECT_ROOT, "scripts/planning/lib/read-jsonl.js");
-  const moduleUrl = "file://" + srcPath.replaceAll(/\\/g, "/");
+  const moduleUrl = "file://" + srcPath.replaceAll("\\", "/");
   // Permitted ESM workaround: TypeScript CJS output compiles `import()` to `require()`
   // which cannot handle file:// URLs. Function-wrapped import forces a true ESM dynamic import.
   // Input is always a hardcoded path from path.resolve(), never user-controlled.

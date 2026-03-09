@@ -26,7 +26,7 @@ const PROJECT_ROOT = findProjectRoot(__dirname);
 
 // Use file:// URL so dynamic import works regardless of compiled output directory
 const MODULE_URL =
-  "file://" + path.resolve(PROJECT_ROOT, "scripts/lib/sanitize-error.js").replaceAll(/\\/g, "/");
+  "file://" + path.resolve(PROJECT_ROOT, "scripts/lib/sanitize-error.js").replaceAll("\\", "/");
 
 // The module uses ES module `export` syntax but is consumed via dynamic import
 // We use a typed wrapper after the dynamic import settles.

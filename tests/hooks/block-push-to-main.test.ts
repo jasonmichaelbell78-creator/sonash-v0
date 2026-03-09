@@ -17,7 +17,7 @@ import { describe, test } from "node:test";
 const PROTECTED_BRANCHES = ["main", "master"];
 
 function escapeRegex(s: string): string {
-  return s.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return s.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
 
 function isBlockedPush(command: string): { blocked: boolean; branch?: string } {

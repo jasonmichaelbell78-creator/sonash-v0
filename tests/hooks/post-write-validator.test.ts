@@ -20,7 +20,7 @@ function isFilePathSafe(filePath: string, projectDir: string): boolean {
   if (!filePath) return false;
   if (filePath.startsWith("-") || filePath.includes("\n") || filePath.includes("\r")) return false;
 
-  const normalized = filePath.replaceAll(/\\/g, "/");
+  const normalized = filePath.replaceAll("\\", "/");
   if (
     path.isAbsolute(normalized) ||
     /^[A-Za-z]:\//.test(normalized) ||

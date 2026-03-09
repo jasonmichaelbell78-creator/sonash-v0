@@ -25,7 +25,7 @@ function truncate(text: string | null | undefined, maxLen: number): string {
 
 function escapeMarkdown(text: string | null | undefined): string {
   if (!text) return "";
-  return text.replaceAll(/\|/g, String.raw`\|`).replaceAll(/\n/g, " ");
+  return text.replaceAll("|", String.raw`\|`).replaceAll("\n", " ");
 }
 
 interface DebtItem {
@@ -422,7 +422,7 @@ describe("generate-views: REGRESSION — deduped.jsonl not overwritten by defaul
     // assignStableId returns isNew=false if the source_id is in the idMap
     const idMap = new Map([["source:audit:existing", "DEBT-0001"]]);
     const masterIds = new Set(["DEBT-0001"]);
-    const masterHashes = new Set<string>();
+    const masterHashes = new Set<string>(["existinghash"]);
 
     const dedupedItem = { source_id: "audit:existing", content_hash: "newhash" };
 

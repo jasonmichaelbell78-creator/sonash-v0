@@ -169,19 +169,19 @@ describe("isProjectDirSafe", () => {
   });
 });
 
-describe("JSON argument parsing", () => {
-  function parseArg(arg: string): { subagentType: string; description: string } {
-    try {
-      const parsed = JSON.parse(arg);
-      return {
-        subagentType: parsed.subagent_type || "",
-        description: parsed.description || "",
-      };
-    } catch {
-      return { subagentType: "", description: "" };
-    }
+function parseArg(arg: string): { subagentType: string; description: string } {
+  try {
+    const parsed = JSON.parse(arg);
+    return {
+      subagentType: parsed.subagent_type || "",
+      description: parsed.description || "",
+    };
+  } catch {
+    return { subagentType: "", description: "" };
   }
+}
 
+describe("JSON argument parsing", () => {
   test("extracts subagent_type from JSON arg", () => {
     const arg = JSON.stringify({
       subagent_type: "code-reviewer",

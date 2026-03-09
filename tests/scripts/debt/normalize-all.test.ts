@@ -47,8 +47,8 @@ function normalizeLineNumber(line: unknown): number {
 
 // Simplified normalizeFilePath that matches the logic of normalize-file-path.js
 function normalizeFilePath(filePath: unknown, options: { stripRepoRoot?: boolean } = {}): string {
-  if (!filePath) return "";
-  const input = typeof filePath === "string" ? filePath : String(filePath);
+  if (!filePath || typeof filePath !== "string") return "";
+  const input = filePath;
   let normalized = input.replaceAll("\\", "/");
   normalized = normalized.replace(/^\.\//, "");
   if (!normalized.startsWith("//")) {
@@ -118,7 +118,7 @@ function normalizeItem(item: RawItem): Record<string, unknown> {
     type: ensureValid(item.type, VALID_TYPES, "code-smell"),
     file: normalizeFilePath(item.file, { stripRepoRoot: true }),
     line: normalizeLineNumber(item.line),
-    title: String(item.title || "Untitled").substring(0, 500),
+    title: (typeof item.title === "string" ? item.title : "Untitled").substring(0, 500),
     description: item.description || "",
     recommendation: item.recommendation || "",
     effort: ensureValid(item.effort, VALID_EFFORTS, "E1"),

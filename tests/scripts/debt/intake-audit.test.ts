@@ -28,35 +28,45 @@ interface MappingMetadata {
   confidence?: number;
 }
 
+function mapFirstFileToPath(
+  item: Record<string, unknown>,
+  mapped: Record<string, unknown>,
+  metadata: MappingMetadata
+): void {
+  if (!Array.isArray(item.files) || item.files.length === 0 || item.file) return;
+
+  const firstFile = item.files[0];
+  if (typeof firstFile !== "string") {
+    metadata.mappings_applied.push("files[0]→file(skipped_non_string)");
+    return;
+  }
+
+  const lineMatch = /^(.+):(\d+)$/.exec(firstFile);
+  if (!lineMatch) {
+    mapped.file = firstFile;
+    metadata.mappings_applied.push("files[0]→file");
+    return;
+  }
+
+  mapped.file = lineMatch[1];
+  if (item.line === undefined) {
+    mapped.line = Number.parseInt(lineMatch[2], 10);
+    metadata.mappings_applied.push("files[0]→file+line");
+  } else {
+    metadata.mappings_applied.push("files[0]→file");
+  }
+}
+
 function mapCommonAuditFields(
   item: Record<string, unknown>,
   mapped: Record<string, unknown>,
   metadata: MappingMetadata
 ): void {
-  if (item.fingerprint && !item.source_id) {
-    mapped.source_id = `audit:${String(item.fingerprint).replaceAll("::", "-")}`;
+  if (typeof item.fingerprint === "string" && item.fingerprint && !item.source_id) {
+    mapped.source_id = `audit:${item.fingerprint.replaceAll("::", "-")}`;
     metadata.mappings_applied.push("fingerprint→source_id");
   }
-  if (Array.isArray(item.files) && item.files.length > 0 && !item.file) {
-    const firstFile = item.files[0];
-    if (typeof firstFile === "string") {
-      const lineMatch = /^(.+):(\d+)$/.exec(firstFile);
-      if (lineMatch) {
-        mapped.file = lineMatch[1];
-        if (item.line === undefined) {
-          mapped.line = Number.parseInt(lineMatch[2], 10);
-          metadata.mappings_applied.push("files[0]→file+line");
-        } else {
-          metadata.mappings_applied.push("files[0]→file");
-        }
-      } else {
-        mapped.file = firstFile;
-        metadata.mappings_applied.push("files[0]→file");
-      }
-    } else {
-      metadata.mappings_applied.push("files[0]→file(skipped_non_string)");
-    }
-  }
+  mapFirstFileToPath(item, mapped, metadata);
   if (item.why_it_matters && !item.description) {
     mapped.description = item.why_it_matters;
     metadata.mappings_applied.push("why_it_matters→description");
@@ -175,8 +185,8 @@ function detectAndMapFormat(item: unknown): {
 }
 
 function isValidFilePath(filePath: unknown): boolean {
-  if (!filePath) return false;
-  const f = String(filePath).trim();
+  if (!filePath || typeof filePath !== "string") return false;
+  const f = filePath.trim();
   if (!f) return false;
   if (/^\d[\d-]*$/.test(f)) return false;
   const placeholders = ["multiple", "various", "several", "unknown", "n/a", "tbd"];
@@ -197,8 +207,12 @@ function coerceVerifiedBy(mappedItem: Record<string, unknown>): string[] {
       mappedItem.verified_by = null;
       warnings.push(`verified_by coerced from boolean false → null (not verified)`);
     } else {
-      const coerced = String(mappedItem.verified_by);
-      warnings.push(`verified_by coerced from ${typeof mappedItem.verified_by} → "${coerced}"`);
+      const rawType = typeof mappedItem.verified_by;
+      const coerced =
+        rawType === "object"
+          ? JSON.stringify(mappedItem.verified_by)
+          : String(mappedItem.verified_by);
+      warnings.push(`verified_by coerced from ${rawType} → "${coerced}"`);
       mappedItem.verified_by = coerced;
     }
   }

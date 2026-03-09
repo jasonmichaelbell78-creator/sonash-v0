@@ -26,7 +26,7 @@ function normalizeFilePath(rawPath: string, projectDir: string): string {
   if (filePath.includes("\n") || filePath.includes("\r")) return "";
 
   // Normalize backslashes
-  filePath = filePath.replaceAll(/\\/g, "/");
+  filePath = filePath.replaceAll("\\", "/");
 
   // Convert absolute paths to relative
   if (path.isAbsolute(filePath) || /^[A-Za-z]:/.test(filePath)) {
@@ -41,7 +41,7 @@ function normalizeFilePath(rawPath: string, projectDir: string): string {
     if (isOutside) {
       return "";
     } else {
-      return rel.replaceAll(/\\/g, "/");
+      return rel.replaceAll("\\", "/");
     }
   }
 

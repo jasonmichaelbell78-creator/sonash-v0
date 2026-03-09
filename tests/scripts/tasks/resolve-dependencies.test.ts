@@ -75,14 +75,13 @@ before(() => {
 });
 
 // Helper: build a Map of tasks from a ROADMAP-like markdown string
-function buildTaskMap(content: string): Map<string, Task> {
+function buildTaskMap(_content: string): Map<string, Task> {
   // Write to a temp ROADMAP.md and swap the module's ROADMAP_PATH by temporarily
   // writing the content to a temp file and patching fs.readFileSync within the
   // wrapped module's closure. Instead, we build the map directly here.
   //
   // Since parseTasks() reads from the real ROADMAP.md (hard-coded path), we test
   // resolveOrder/topologicalOrder/detectCircles directly with hand-crafted maps.
-  void content;
   return new Map();
 }
 

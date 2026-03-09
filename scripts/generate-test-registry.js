@@ -35,9 +35,91 @@ const OUTPUT = path.join(ROOT, "data", "ecosystem-v2", "test-registry.jsonl");
 
 /** @typedef {{ path: string, source_type: string, type: string, owner: string, target: string, description: string }} RegistryEntry */
 
+/**
+ * @param {string} relPath
+ * @param {string} defaultType
+ * @returns {string}
+ */
+function detectTestType(relPath, defaultType) {
+  if (relPath.includes(".property.test.")) return "property";
+  if (relPath.includes(".integration.test.")) return "integration";
+  if (relPath.includes(".e2e.test.")) return "e2e";
+  return defaultType;
+}
+
+/**
+ * @param {string} absDir
+ * @param {string} owner
+ * @param {string} type
+ * @returns {RegistryEntry[]}
+ */
+function scanDirForTests(absDir, owner, type) {
+  if (!fs.existsSync(absDir)) return [];
+  const entries = [];
+  try {
+    const files = readdirRecursive(absDir);
+    for (const file of files) {
+      if (!isTestFile(file)) continue;
+      const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
+      const testType = detectTestType(relPath, type);
+      const baseName = path
+        .basename(file)
+        .replace(/\.(?:property|integration|e2e)?\.test\.(?:js|ts|mjs)$/, "");
+      entries.push({
+        path: relPath,
+        source_type: "test_file",
+        type: testType,
+        owner,
+        target: baseName,
+        description: `${testType} test for ${baseName}`,
+      });
+    }
+  } catch {
+    // Directory not readable, skip
+  }
+  return entries;
+}
+
+/** @returns {RegistryEntry[]} */
+function scanSkillTestFiles() {
+  const entries = [];
+  const skillsDir = path.join(ROOT, ".claude", "skills");
+  if (!fs.existsSync(skillsDir)) return entries;
+
+  try {
+    const skills = fs.readdirSync(skillsDir, { withFileTypes: true });
+    for (const skill of skills) {
+      if (!skill.isDirectory()) continue;
+      const testsDir = path.join(skillsDir, skill.name, "scripts", "__tests__");
+      if (!fs.existsSync(testsDir)) continue;
+      try {
+        const files = readdirRecursive(testsDir);
+        for (const file of files) {
+          if (!isTestFile(file)) continue;
+          const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
+          const baseName = path.basename(file).replace(/\.test\.(js|ts|mjs)$/, "");
+          entries.push({
+            path: relPath,
+            source_type: "test_file",
+            type: "unit",
+            owner: skill.name,
+            target: baseName,
+            description: `${skill.name} test: ${baseName}`,
+          });
+        }
+      } catch {
+        // Skip unreadable
+      }
+    }
+  } catch (err) {
+    console.error(`[generate-test-registry] scanSkillTestFiles: ${sanitizeError(err)}`);
+  }
+
+  return entries;
+}
+
 /** @returns {RegistryEntry[]} */
 function scanTestFiles() {
-  const entries = [];
   const patterns = [
     { dir: "scripts/health/checkers/__tests__", owner: "health", type: "unit" },
     { dir: "scripts/health/lib/__tests__", owner: "health", type: "unit" },
@@ -59,69 +141,11 @@ function scanTestFiles() {
     { dir: "tests/e2e", owner: "e2e", type: "e2e" },
   ];
 
+  const entries = [];
   for (const { dir, owner, type } of patterns) {
-    const absDir = path.join(ROOT, dir);
-    if (!fs.existsSync(absDir)) continue;
-    try {
-      const files = readdirRecursive(absDir);
-      for (const file of files) {
-        if (!isTestFile(file)) continue;
-        const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
-        const e2eOrDefault = relPath.includes(".e2e.test.") ? "e2e" : type;
-        const integrationOrBelow = relPath.includes(".integration.test.")
-          ? "integration"
-          : e2eOrDefault;
-        const testType = relPath.includes(".property.test.") ? "property" : integrationOrBelow;
-        const baseName = path
-          .basename(file)
-          .replace(/\.(?:property|integration|e2e)?\.test\.(?:js|ts|mjs)$/, "");
-        entries.push({
-          path: relPath,
-          source_type: "test_file",
-          type: testType,
-          owner,
-          target: baseName,
-          description: `${testType} test for ${baseName}`,
-        });
-      }
-    } catch {
-      // Directory not readable, skip
-    }
+    entries.push(...scanDirForTests(path.join(ROOT, dir), owner, type));
   }
-
-  // Scan ecosystem audit test files
-  const skillsDir = path.join(ROOT, ".claude", "skills");
-  if (fs.existsSync(skillsDir)) {
-    try {
-      const skills = fs.readdirSync(skillsDir, { withFileTypes: true });
-      for (const skill of skills) {
-        if (!skill.isDirectory()) continue;
-        const testsDir = path.join(skillsDir, skill.name, "scripts", "__tests__");
-        if (!fs.existsSync(testsDir)) continue;
-        try {
-          const files = readdirRecursive(testsDir);
-          for (const file of files) {
-            if (!isTestFile(file)) continue;
-            const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
-            const baseName = path.basename(file).replace(/\.test\.(js|ts|mjs)$/, "");
-            entries.push({
-              path: relPath,
-              source_type: "test_file",
-              type: "unit",
-              owner: skill.name,
-              target: baseName,
-              description: `${skill.name} test: ${baseName}`,
-            });
-          }
-        } catch {
-          // Skip unreadable
-        }
-      }
-    } catch (err) {
-      console.error(`[generate-test-registry] scanTestFiles/skills: ${sanitizeError(err)}`);
-    }
-  }
-
+  entries.push(...scanSkillTestFiles());
   return entries;
 }
 
@@ -261,7 +285,7 @@ function scanCiSteps() {
     for (const match of content.matchAll(stepRegex)) {
       const rawName = match[1].trim();
       if (rawName === "|" || rawName === ">") continue;
-      const name = rawName.replace(/[\n\r]/g, " ");
+      const name = rawName.replaceAll(/[\n\r]/g, " ");
       const isGate = gatePatterns.test(name);
       entries.push({
         path: ".github/workflows/ci.yml",
@@ -377,9 +401,8 @@ function main() {
     }
 
     console.log(`Test registry generated: ${path.relative(ROOT, OUTPUT)}`);
-    console.log(
-      `Total entries: ${uniqueEntries.length}${dupes > 0 ? ` (${dupes} duplicates removed)` : ""}`
-    );
+    const dupeSuffix = dupes > 0 ? ` (${dupes} duplicates removed)` : "";
+    console.log(`Total entries: ${uniqueEntries.length}${dupeSuffix}`);
     console.log("By source type:");
     for (const [type, count] of Object.entries(byType).sort((a, b) => b[1] - a[1])) {
       console.log(`  ${type}: ${count}`);

@@ -92,7 +92,7 @@ describe("sanitizeInput", () => {
   });
 
   test("redacts password= patterns", () => {
-    const input = "password=mysupersecretpassword123";
+    const input = "password=mysupersecretpassword123"; // NOSONAR — intentional test data for redaction testing
     const result = sanitizeInput(input);
     assert.ok(result.includes("[REDACTED]"), `Expected redaction in: ${result}`);
   });

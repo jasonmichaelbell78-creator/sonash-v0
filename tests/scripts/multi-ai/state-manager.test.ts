@@ -65,7 +65,7 @@ let tmpRoot: string;
 
 before(async () => {
   const srcPath = path.resolve(PROJECT_ROOT, "scripts/multi-ai/state-manager.js");
-  const moduleUrl = "file://" + srcPath.replaceAll(/\\/g, "/");
+  const moduleUrl = "file://" + srcPath.replaceAll("\\", "/");
 
   // Use Function-wrapped import to force a true ESM dynamic import
   // (TypeScript compiles `import()` to `require()` in CJS mode which
@@ -234,7 +234,7 @@ describe("state-manager.updateSession", () => {
   it("updates last_updated timestamp", () => {
     useTmpRoot();
     const session = mod.createSession();
-    const before = session.last_updated;
+    const _before = session.last_updated;
     // Small delay to ensure timestamp changes
     const updated = mod.updateSession(session.session_id, { workflow_phase: "aggregating" });
     // last_updated should be a valid ISO string
@@ -242,7 +242,7 @@ describe("state-manager.updateSession", () => {
     assert.ok(!Number.isNaN(Date.parse(updated.last_updated)), "Should be valid ISO date");
     // It may or may not differ in sub-millisecond runs, but the field should exist
     assert.ok("last_updated" in updated);
-    void before; // suppress unused var warning
+    // _before captured for potential future timestamp comparison
   });
 });
 

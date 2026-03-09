@@ -165,7 +165,7 @@ describe("checkInlinePatterns: todo-without-ticket", () => {
 
 describe("checkInlinePatterns: file type filtering", () => {
   test("returns no violations when file type does not match any pattern", () => {
-    const content = "npm install\nconsole.log('x');\npassword=secret123\n";
+    const content = "npm install\nconsole.log('x');\nconfig=value123\n";
     const violations = checkInlinePatterns(content, "file.unknown", ".unknown");
     assert.equal(violations.length, 0, "Unknown file type should produce no violations");
   });

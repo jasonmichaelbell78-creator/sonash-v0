@@ -136,16 +136,16 @@ describe("isOutsideBase: path traversal guard", () => {
   });
 });
 
-describe("shouldFetch TTL logic", () => {
-  function shouldFetch(cacheData: unknown, ttlMs: number): boolean {
-    if (!cacheData || typeof cacheData !== "object") return true;
-    const data = cacheData as Record<string, unknown>;
-    const lastFetch = Number(data.lastFetch);
-    const ageMs = Date.now() - lastFetch;
-    if (Number.isFinite(lastFetch) && ageMs >= 0 && ageMs < ttlMs) return false;
-    return true;
-  }
+function shouldFetch(cacheData: unknown, ttlMs: number): boolean {
+  if (!cacheData || typeof cacheData !== "object") return true;
+  const data = cacheData as Record<string, unknown>;
+  const lastFetch = Number(data.lastFetch);
+  const ageMs = Date.now() - lastFetch;
+  if (Number.isFinite(lastFetch) && ageMs >= 0 && ageMs < ttlMs) return false;
+  return true;
+}
 
+describe("shouldFetch TTL logic", () => {
   test("returns true when no cache data is available", () => {
     assert.equal(shouldFetch(null, 5 * 60 * 1000), true);
     assert.equal(shouldFetch({}, 5 * 60 * 1000), true);

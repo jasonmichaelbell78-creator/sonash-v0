@@ -56,23 +56,90 @@ interface DebtItem {
   [key: string]: unknown;
 }
 
+function validateEnumFields(
+  item: DebtItem,
+  lineNum: number,
+  errors: string[],
+  warnings: string[]
+): void {
+  if (item.category && !VALID_CATEGORIES.includes(item.category)) {
+    errors.push(`Line ${lineNum}: Invalid category: "${item.category}"`);
+  }
+  if (item.severity && !VALID_SEVERITIES.includes(item.severity)) {
+    errors.push(`Line ${lineNum}: Invalid severity: "${item.severity}"`);
+  }
+  if (item.type && !VALID_TYPES.has(item.type)) {
+    errors.push(`Line ${lineNum}: Invalid type: "${item.type}"`);
+  }
+  if (item.status && !VALID_STATUSES.has(item.status)) {
+    errors.push(`Line ${lineNum}: Invalid status: "${item.status}"`);
+  }
+  if (item.effort && !VALID_EFFORTS.has(item.effort)) {
+    warnings.push(`Line ${lineNum}: Invalid effort: "${item.effort}"`);
+  }
+}
+
+function validateFilePath(item: DebtItem, lineNum: number, warnings: string[]): void {
+  if (!item.file) return;
+  const f = String(item.file).trim();
+  const isNumericOnly = /^\d[\d-]*$/.test(f);
+  const isPlaceholder = ["multiple", "various", "several", "unknown", "n/a", "tbd"].includes(
+    f.toLowerCase()
+  );
+  const hasPathChars = f.includes(".") || f.includes("/") || f.includes("\\");
+  if (isNumericOnly || isPlaceholder || !hasPathChars) {
+    warnings.push(`Line ${lineNum}: Invalid file path: "${f}"`);
+  }
+}
+
+function validateFormatFields(item: DebtItem, lineNum: number, warnings: string[]): void {
+  if (item.content_hash && !/^[a-f0-9]{64}$/.test(item.content_hash)) {
+    warnings.push(`Line ${lineNum}: Invalid content_hash format (expected 64 hex chars)`);
+  }
+  validateFilePath(item, lineNum, warnings);
+  if (item.line !== undefined && (typeof item.line !== "number" || item.line < 0)) {
+    const lineDesc = typeof item.line === "object" ? JSON.stringify(item.line) : String(item.line);
+    warnings.push(`Line ${lineNum}: Invalid line number: ${lineDesc}`);
+  }
+  if (item.created && !/^\d{4}-\d{2}-\d{2}$/.test(item.created)) {
+    warnings.push(`Line ${lineNum}: Invalid created date format: "${item.created}"`);
+  }
+}
+
+function validateEnhancementFields(item: DebtItem, lineNum: number, warnings: string[]): void {
+  if (item.type !== "enhancement") return;
+  if (item.counter_argument !== undefined && !item.counter_argument) {
+    warnings.push(`Line ${lineNum}: Enhancement has empty counter_argument (honesty guard)`);
+  }
+  if (item.confidence !== undefined) {
+    if (typeof item.confidence !== "number" || item.confidence < 0 || item.confidence > 100) {
+      warnings.push(
+        `Line ${lineNum}: Enhancement confidence must be 0-100, got: ${item.confidence}`
+      );
+    } else if (item.confidence < 70) {
+      warnings.push(
+        `Line ${lineNum}: Enhancement confidence below threshold (${item.confidence} < 70)`
+      );
+    }
+  }
+  if (item.impact !== undefined && !/^I[0-3]$/.test(item.impact)) {
+    warnings.push(`Line ${lineNum}: Enhancement impact must be I0-I3, got: "${item.impact}"`);
+  }
+}
+
 function validateItem(item: DebtItem, lineNum: number): { errors: string[]; warnings: string[] } {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Required fields
   for (const field of REQUIRED_FIELDS) {
     if (item[field] === undefined || item[field] === null || item[field] === "") {
       errors.push(`Line ${lineNum}: Missing required field: ${field}`);
     }
   }
 
-  // ID format
   if (item.id && !/^DEBT-\d{4,}$/.test(item.id)) {
     errors.push(`Line ${lineNum}: Invalid ID format: "${item.id}" (expected DEBT-XXXX)`);
   }
-
-  // source_id format
   if (item.source_id) {
     const validSourceIdPattern = /^(?:audit:|sonarcloud:|manual:|review:|CANON-)/;
     if (!validSourceIdPattern.test(item.source_id)) {
@@ -80,86 +147,13 @@ function validateItem(item: DebtItem, lineNum: number): { errors: string[]; warn
     }
   }
 
-  // category
-  if (item.category && !VALID_CATEGORIES.includes(item.category)) {
-    errors.push(`Line ${lineNum}: Invalid category: "${item.category}"`);
-  }
+  validateEnumFields(item, lineNum, errors, warnings);
+  validateFormatFields(item, lineNum, warnings);
+  validateEnhancementFields(item, lineNum, warnings);
 
-  // severity
-  if (item.severity && !VALID_SEVERITIES.includes(item.severity)) {
-    errors.push(`Line ${lineNum}: Invalid severity: "${item.severity}"`);
-  }
-
-  // type
-  if (item.type && !VALID_TYPES.has(item.type)) {
-    errors.push(`Line ${lineNum}: Invalid type: "${item.type}"`);
-  }
-
-  // status
-  if (item.status && !VALID_STATUSES.has(item.status)) {
-    errors.push(`Line ${lineNum}: Invalid status: "${item.status}"`);
-  }
-
-  // effort
-  if (item.effort && !VALID_EFFORTS.has(item.effort)) {
-    warnings.push(`Line ${lineNum}: Invalid effort: "${item.effort}"`);
-  }
-
-  // content_hash format
-  if (item.content_hash && !/^[a-f0-9]{64}$/.test(item.content_hash)) {
-    warnings.push(`Line ${lineNum}: Invalid content_hash format (expected 64 hex chars)`);
-  }
-
-  // file path
-  if (item.file) {
-    const f = String(item.file).trim();
-    const isNumericOnly = /^\d[\d-]*$/.test(f);
-    const isPlaceholder = ["multiple", "various", "several", "unknown", "n/a", "tbd"].includes(
-      f.toLowerCase()
-    );
-    const hasPathChars = f.includes(".") || f.includes("/") || f.includes("\\");
-    if (isNumericOnly || isPlaceholder || !hasPathChars) {
-      warnings.push(`Line ${lineNum}: Invalid file path: "${f}"`);
-    }
-  }
-
-  // line number
-  if (item.line !== undefined && (typeof item.line !== "number" || item.line < 0)) {
-    warnings.push(`Line ${lineNum}: Invalid line number: ${String(item.line)}`);
-  }
-
-  // created date
-  if (item.created && !/^\d{4}-\d{2}-\d{2}$/.test(item.created)) {
-    warnings.push(`Line ${lineNum}: Invalid created date format: "${item.created}"`);
-  }
-
-  // enhancement type validations
-  if (item.type === "enhancement") {
-    if (item.counter_argument !== undefined && !item.counter_argument) {
-      warnings.push(`Line ${lineNum}: Enhancement has empty counter_argument (honesty guard)`);
-    }
-    if (item.confidence !== undefined) {
-      if (typeof item.confidence !== "number" || item.confidence < 0 || item.confidence > 100) {
-        warnings.push(
-          `Line ${lineNum}: Enhancement confidence must be 0-100, got: ${item.confidence}`
-        );
-      } else if (item.confidence < 70) {
-        warnings.push(
-          `Line ${lineNum}: Enhancement confidence below threshold (${item.confidence} < 70)`
-        );
-      }
-    }
-    if (item.impact !== undefined && !/^I[0-3]$/.test(item.impact)) {
-      warnings.push(`Line ${lineNum}: Enhancement impact must be I0-I3, got: "${item.impact}"`);
-    }
-  }
-
-  // S0/S1 verification_steps
   if ((item.severity === "S0" || item.severity === "S1") && !item.verification_steps) {
     warnings.push(`Line ${lineNum}: S0/S1 finding "${item.id}" missing verification_steps`);
   }
-
-  // content_hash presence
   if (!item.content_hash) {
     warnings.push(`Line ${lineNum}: Missing content_hash (needed for deduplication)`);
   }

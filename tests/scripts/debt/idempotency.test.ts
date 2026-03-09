@@ -427,20 +427,20 @@ function generateDebtId(index: number): string {
   return `DEBT-${String(index).padStart(4, "0")}`;
 }
 
-describe("idempotency: generate-views stable ID assignment", () => {
-  function assignStableId(
-    item: DebtItem,
-    idMap: Map<string, string>,
-    usedIds: Set<string>,
-    nextId: number
-  ): { id: string; isNew: boolean } {
-    let existingId: string | undefined;
-    if (item.content_hash) existingId = idMap.get(`hash:${item.content_hash}`);
-    if (!existingId && item.source_id) existingId = idMap.get(`source:${item.source_id}`);
-    if (existingId && !usedIds.has(existingId)) return { id: existingId, isNew: false };
-    return { id: generateDebtId(nextId), isNew: true };
-  }
+function assignStableId(
+  item: DebtItem,
+  idMap: Map<string, string>,
+  usedIds: Set<string>,
+  nextId: number
+): { id: string; isNew: boolean } {
+  let existingId: string | undefined;
+  if (item.content_hash) existingId = idMap.get(`hash:${item.content_hash}`);
+  if (!existingId && item.source_id) existingId = idMap.get(`source:${item.source_id}`);
+  if (existingId && !usedIds.has(existingId)) return { id: existingId, isNew: false };
+  return { id: generateDebtId(nextId), isNew: true };
+}
 
+describe("idempotency: generate-views stable ID assignment", () => {
   it("running ID assignment twice on same items preserves existing IDs", () => {
     const items: DebtItem[] = [
       { source_id: "audit:a", content_hash: "hash1", title: "Item A" },

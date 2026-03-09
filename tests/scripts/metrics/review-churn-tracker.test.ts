@@ -55,16 +55,16 @@ let mod: ChurnModule;
 
 before(async () => {
   const srcPath = path.resolve(PROJECT_ROOT, "scripts/metrics/review-churn-tracker.js");
-  let src = fs.readFileSync(srcPath, "utf-8");
+  let _src = fs.readFileSync(srcPath, "utf-8");
 
   // Strip the main() call at the bottom
-  src = src.replace(/^main\(\s*\)\s*;?\s*$/m, "// main() removed for test isolation");
+  _src = _src.replace(/^main\(\s*\)\s*;?\s*$/m, "// main() removed for test isolation");
 
   // Expose helpers via a CJS export at the end. Since the file uses ES module
   // syntax, we create a CJS wrapper that dynamically imports it.
   const wrapperSrc = `
 (async () => {
-  const mod = await import(${JSON.stringify("file://" + srcPath.replaceAll(/\\/g, "/"))});
+  const mod = await import(${JSON.stringify("file://" + srcPath.replaceAll("\\", "/"))});
   // The internal functions (isFixCommit, countReviewRounds, etc.) are not exported from the ES module.
   // We must re-create small testable wrappers based on the known logic.
   module.exports = {
@@ -76,7 +76,6 @@ before(async () => {
   };
 })();
   `;
-  void src; // Not used in this approach
 
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "churn-tracker-test-"));
   const wrapperFile = path.join(tmpDir, "churn-wrapper.cjs");
