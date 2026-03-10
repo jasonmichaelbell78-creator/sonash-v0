@@ -279,7 +279,7 @@ function scanCiSteps() {
 
   try {
     const content = fs.readFileSync(ciPath, "utf8");
-    const stepRegex = /^\s*-\s+name:\s*(.+)\s*$/gm;
+    const stepRegex = /^\s*-\s+name:\s*(.+)$/gm;
     const gatePatterns =
       /check|lint|test|validate|coverage|audit|format|pattern|compliance|verify/i;
     for (const match of content.matchAll(stepRegex)) {

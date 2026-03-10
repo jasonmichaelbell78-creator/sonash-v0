@@ -45,7 +45,14 @@ before(() => {
   let src = fs.readFileSync(srcPath, "utf-8");
 
   // Strip the main() invocation at the bottom so requiring doesn't execute it
-  src = src.replace(/^main\(\s*\)\s*;?\s*$/m, "// main() removed for test isolation");
+  // String-based replacement per S5852 two-strikes rule (no regex)
+  src = src
+    .split("\n")
+    .map((line) => {
+      const t = line.trim();
+      return t === "main();" || t === "main()" ? "// main() removed for test isolation" : line;
+    })
+    .join("\n");
 
   // Expose all the helper functions
   src += `\nmodule.exports = {

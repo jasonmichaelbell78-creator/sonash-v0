@@ -37,7 +37,14 @@ before(() => {
   let src = fs.readFileSync(srcPath, "utf-8");
 
   // Remove run() invocation
-  src = src.replace(/^run\(\s*\)\s*;?\s*$/m, "// run() removed for test isolation");
+  // String-based replacement per S5852 two-strikes rule (no regex)
+  src = src
+    .split("\n")
+    .map((line) => {
+      const t = line.trim();
+      return t === "run();" || t === "run()" ? "// run() removed for test isolation" : line;
+    })
+    .join("\n");
 
   // Expose helpers
   src += `\nmodule.exports = { getSessionNumber, getSprintName, printRollingAverage };\n`;

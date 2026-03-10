@@ -64,9 +64,7 @@ function checkFirestoreWrite(content: string, filePath: string): string[] {
 
   const violations: string[] = [];
   for (const pattern of FIRESTORE_WRITE_PATTERNS) {
-    pattern.lastIndex = 0;
-    let match: RegExpExecArray | null;
-    while ((match = pattern.exec(content)) !== null) {
+    for (const match of content.matchAll(pattern)) {
       if (PROTECTED_COLLECTIONS.has(match[1])) {
         violations.push(match[1]);
       }
@@ -96,11 +94,11 @@ function checkTestMocking(content: string, filePath: string): boolean {
 
 // --- typescriptStrictCheck logic ---
 const ANY_PATTERNS = [
-  /:\s*any\s*(?:[;,)\]}]|$)/,
-  /\s+as\s+any\s*(?:[;,)\]}]|$)/,
+  /:[ \t]*any[ \t]*(?:[;,)\]}]|$)/,
+  /[ \t]+as[ \t]+any[ \t]*(?:[;,)\]}]|$)/,
   /<any>/,
-  /:\s*any\[\]/,
-  /\)\s*:\s*any\s*[{=>]/,
+  /:[ \t]*any\[\]/,
+  /\)[ \t]*:[ \t]*any[ \t]*[{=>]/,
 ];
 
 function checkAnyType(content: string, filePath: string): Array<{ line: number; snippet: string }> {

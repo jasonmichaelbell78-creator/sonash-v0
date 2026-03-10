@@ -57,7 +57,14 @@ before(() => {
   let src = fs.readFileSync(srcPath, "utf-8");
 
   // Remove the main() call at the bottom so requiring doesn't execute it
-  src = src.replace(/^main\(\s*\)\s*;?\s*$/m, "// main() removed for test isolation");
+  // String-based replacement per S5852 two-strikes rule (no regex)
+  src = src
+    .split("\n")
+    .map((line) => {
+      const t = line.trim();
+      return t === "main();" || t === "main()" ? "// main() removed for test isolation" : line;
+    })
+    .join("\n");
 
   // Expose helpers via module.exports
   src += `\nmodule.exports = { validateJsonlFile, printSummary };\n`;

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.92 **Created:** 2026-01-02 **Last Updated:** 2026-03-06
+**Document Version:** 17.93 **Created:** 2026-01-02 **Last Updated:** 2026-03-09
 
 ## Purpose
 
@@ -3161,6 +3161,48 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
   efficient single-root-cause resolution.
 - **Score:** 7.5/10 — Good cycle marred by known SonarCloud FPs and escapeCell
   propagation
+
+---
+
+#### Review #348: SonarCloud R2-2 — ReDoS regex simplification + CI exec blocker (2026-03-09)
+
+**PR:** #424 | **Source:** SonarCloud Security Hotspots + CI | **Round:** R2-2
+
+**Scope:** 11 SonarCloud security hotspots across test files and 1 script, plus
+1 CI pattern compliance blocker. Focused on S5852 (ReDoS), S1523 (code injection
+FP), S2245 (PRNG FP), S5443 (public dir FP).
+
+**Patterns Identified:**
+
+1. `main()/run()` stripping regex (`/^main\(\s*\)\s*;?\s*$/m`) used in 5 test
+   files — multiple `\s*` quantifiers create polynomial backtracking risk.
+   Applied two-strikes rule: replaced with string-based line comparison.
+
+2. `(.+)\s*$` pattern in stepRegex — `.+` captures trailing spaces, then `\s*$`
+   backtracks. Fix: remove redundant `\s*` since `.trim()` handles it.
+
+3. `\s*` in ANY_PATTERNS alternations with `$` — replace with `[ \t]*` to
+   eliminate newline-related backtracking paths.
+
+4. CI pattern checker can't trace `/g` flag through array iteration — flagged
+   `while(exec())` as missing /g even though patterns had it. Fix: use
+   `matchAll()` which is both clearer and satisfies static analysis.
+
+**Resolution:**
+
+- Fixed: 8 items (1 CI blocker + 7 S5852 regex simplifications across 8 files)
+- Deferred: 0 items
+- Rejected: 3 items (S1523 string literal FP, S2245 test PRNG FP, S5443 test
+  fixture path FP)
+
+**Key Learnings:**
+
+- Two-strikes rule works well for test isolation patterns — simple string
+  comparison (`t === "main();"`) is more readable than the regex it replaces
+- `[ \t]*` is a safe drop-in for `\s*` when matching within single lines —
+  eliminates cross-line backtracking without changing behavior
+- `matchAll()` is preferred over `while(exec())` — avoids both the real
+  infinite-loop risk AND false positives from static analyzers
 
 ---
 

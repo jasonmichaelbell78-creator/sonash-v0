@@ -58,7 +58,14 @@ before(async () => {
   let _src = fs.readFileSync(srcPath, "utf-8");
 
   // Strip the main() call at the bottom
-  _src = _src.replace(/^main\(\s*\)\s*;?\s*$/m, "// main() removed for test isolation");
+  // String-based replacement per S5852 two-strikes rule (no regex)
+  _src = _src
+    .split("\n")
+    .map((line) => {
+      const t = line.trim();
+      return t === "main();" || t === "main()" ? "// main() removed for test isolation" : line;
+    })
+    .join("\n");
 
   // Expose helpers via a CJS export at the end. Since the file uses ES module
   // syntax, we create a CJS wrapper that dynamically imports it.
