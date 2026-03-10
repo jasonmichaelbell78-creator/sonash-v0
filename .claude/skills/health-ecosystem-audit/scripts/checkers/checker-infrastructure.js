@@ -59,6 +59,8 @@ function getHealthFiles(rootDir) {
   const checkersDir = path.join(healthDir, "checkers");
   for (const name of safeReadDir(checkersDir)) {
     if (name.endsWith(".js") && !name.includes("__tests__")) {
+      const rel = path.relative(checkersDir, path.join(checkersDir, name));
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
       const filePath = path.join(checkersDir, name);
       const content = safeReadFile(filePath);
       if (content) files.push({ name, filePath, content, type: "checker" });
@@ -69,6 +71,8 @@ function getHealthFiles(rootDir) {
   const libDir = path.join(healthDir, "lib");
   for (const name of safeReadDir(libDir)) {
     if (name.endsWith(".js") && !name.includes("__tests__")) {
+      const rel = path.relative(libDir, path.join(libDir, name));
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
       const filePath = path.join(libDir, name);
       const content = safeReadFile(filePath);
       if (content) files.push({ name, filePath, content, type: "lib" });
@@ -145,9 +149,9 @@ function checkCommandExecution(healthFiles, findings) {
     const lines = file.content.split("\n");
 
     for (let i = 0; i < lines.length; i++) {
+      // Reset lastIndex BEFORE .test() to avoid /g sticky position bug
+      execPattern.lastIndex = 0;
       if (execPattern.test(lines[i])) {
-        // Reset lastIndex since we reuse the pattern
-        execPattern.lastIndex = 0;
         const context = lines.slice(Math.max(0, i - 5), Math.min(lines.length, i + 10)).join("\n");
 
         if (timeoutPattern.test(context)) {

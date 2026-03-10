@@ -10,7 +10,7 @@
  */
 
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 
@@ -314,4 +314,18 @@ export function runMidSessionChecks(opts = {}) {
   }
 
   return { alerts, skipped };
+}
+
+// CLI entry point — allows hooks to spawn this as a subprocess
+// Usage: node scripts/health/lib/mid-session-alerts.js
+if (process.argv[1] && resolve(process.argv[1]) === __filename) {
+  const { alerts, skipped } = runMidSessionChecks();
+  if (alerts.length > 0) {
+    for (const a of alerts) {
+      console.error(`  [mid-session] ${a.severity}: ${a.message}`);
+    }
+  }
+  if (skipped > 0) {
+    console.error(`  [mid-session] ${skipped} alert(s) in cooldown`);
+  }
 }

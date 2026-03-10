@@ -21,24 +21,21 @@ try {
   process.exit(1);
 }
 
-/** Lazily resolved safe-fs helpers (require rootDir which is not available at module load) */
-let _safeFsCache = null;
+/** Lazily resolved safe-fs helpers, keyed by rootDir to avoid cross-instance contamination */
+const _safeFsCache = new Map();
 function getSafeFs(rootDir) {
-  if (_safeFsCache) return _safeFsCache;
+  const cached = _safeFsCache.get(rootDir);
+  if (cached) return cached;
+  let result;
   try {
-    _safeFsCache = require(path.join(rootDir, "scripts", "lib", "safe-fs"));
+    result = require(path.join(rootDir, "scripts", "lib", "safe-fs"));
   } catch {
     // Fallback: thin wrappers that delegate straight to fs (no extra guard needed
     // because callers already passed isSafeToWrite checks before reaching these)
-    _safeFsCache = {
+    result = {
       safeWriteFileSync: (p, d, o) => fs.writeFileSync(p, d, o),
       safeAppendFileSync: (p, d, o) => fs.appendFileSync(p, d, o),
       safeRenameSync: (src, dest) => {
-        try {
-          fs.rmSync(dest, { force: true });
-        } catch {
-          /* ignore */
-        }
         try {
           fs.renameSync(src, dest);
         } catch {
@@ -48,7 +45,8 @@ function getSafeFs(rootDir) {
       },
     };
   }
-  return _safeFsCache;
+  _safeFsCache.set(rootDir, result);
+  return result;
 }
 
 /** Max file size for read operations (5MB) */
