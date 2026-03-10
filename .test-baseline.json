@@ -1,0 +1,290 @@
+{
+  "version": 1,
+  "description": "Scripts without tests. Remove entries as tests are created.",
+  "created": "2026-03-10",
+  "entries": [
+    { "path": ".claude/skills/alerts/scripts/run-alerts.js", "lines": 3746 },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/checkers/content-quality.js",
+      "lines": 477
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/checkers/generation-pipeline.js",
+      "lines": 422
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/checkers/index-registry-health.js",
+      "lines": 527
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/checkers/link-reference-integrity.js",
+      "lines": 542
+    },
+    { "path": ".claude/skills/doc-ecosystem-audit/scripts/lib/benchmarks.js", "lines": 107 },
+    { "path": ".claude/skills/doc-ecosystem-audit/scripts/lib/patch-generator.js", "lines": 162 },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/run-doc-ecosystem-audit.js",
+      "lines": 436
+    },
+    { "path": ".claude/skills/ecosystem-health/scripts/run-ecosystem-health.js", "lines": 270 },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/cicd-pipeline.js",
+      "lines": 767
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/config-health.js",
+      "lines": 591
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js",
+      "lines": 555
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/precommit-pipeline.js",
+      "lines": 775
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js",
+      "lines": 802
+    },
+    { "path": ".claude/skills/hook-ecosystem-audit/scripts/lib/benchmarks.js", "lines": 125 },
+    { "path": ".claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js", "lines": 154 },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js",
+      "lines": 449
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/data-state-health.js",
+      "lines": 779
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/effectiveness-metrics.js",
+      "lines": 569
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/feedback-integration.js",
+      "lines": 538
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/pattern-lifecycle.js",
+      "lines": 593
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/process-compliance.js",
+      "lines": 790
+    },
+    { "path": ".claude/skills/pr-ecosystem-audit/scripts/lib/benchmarks.js", "lines": 189 },
+    { "path": ".claude/skills/pr-ecosystem-audit/scripts/lib/patch-generator.js", "lines": 212 },
+    { "path": ".claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js", "lines": 355 },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/checkers/module-consistency.js",
+      "lines": 453
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/checkers/registration-reachability.js",
+      "lines": 417
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/checkers/safety-error-handling.js",
+      "lines": 551
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/checkers/testing-reliability.js",
+      "lines": 408
+    },
+    { "path": ".claude/skills/script-ecosystem-audit/scripts/lib/benchmarks.js", "lines": 115 },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 160
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/run-script-ecosystem-audit.js",
+      "lines": 440
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js",
+      "lines": 691
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/cross-session-safety.js",
+      "lines": 427
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/integration-config.js",
+      "lines": 536
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/lifecycle-management.js",
+      "lines": 727
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/state-persistence.js",
+      "lines": 763
+    },
+    { "path": ".claude/skills/session-ecosystem-audit/scripts/lib/benchmarks.js", "lines": 107 },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 94
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/run-session-ecosystem-audit.js",
+      "lines": 360
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/agent-orchestration.js",
+      "lines": 450
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/coverage-consistency.js",
+      "lines": 489
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/cross-reference-integrity.js",
+      "lines": 534
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/staleness-drift.js",
+      "lines": 468
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/structural-compliance.js",
+      "lines": 431
+    },
+    { "path": ".claude/skills/skill-ecosystem-audit/scripts/lib/benchmarks.js", "lines": 127 },
+    { "path": ".claude/skills/skill-ecosystem-audit/scripts/lib/patch-generator.js", "lines": 156 },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/run-skill-ecosystem-audit.js",
+      "lines": 447
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/data-quality-dedup.js",
+      "lines": 978
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js",
+      "lines": 632
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/metrics-reporting.js",
+      "lines": 889
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js",
+      "lines": 570
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/roadmap-integration.js",
+      "lines": 585
+    },
+    { "path": ".claude/skills/tdms-ecosystem-audit/scripts/lib/benchmarks.js", "lines": 107 },
+    { "path": ".claude/skills/tdms-ecosystem-audit/scripts/lib/patch-generator.js", "lines": 157 },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/run-tdms-ecosystem-audit.js",
+      "lines": 360
+    },
+    { "path": "scripts/aggregate-audit-findings.js", "lines": 1955 },
+    { "path": "scripts/append-hook-warning.js", "lines": 191 },
+    { "path": "scripts/archive-doc.js", "lines": 772 },
+    { "path": "scripts/archive-reviews.js", "lines": 817 },
+    { "path": "scripts/assign-review-tier.js", "lines": 499 },
+    { "path": "scripts/audit-s0-promotions.js", "lines": 417 },
+    { "path": "scripts/audit/audit-health-check.js", "lines": 451 },
+    { "path": "scripts/audit/compare-audits.js", "lines": 756 },
+    { "path": "scripts/audit/count-commits-since.js", "lines": 296 },
+    { "path": "scripts/audit/generate-results-index.js", "lines": 306 },
+    { "path": "scripts/audit/track-resolutions.js", "lines": 464 },
+    { "path": "scripts/audit/transform-jsonl-schema.js", "lines": 759 },
+    { "path": "scripts/audit/validate-audit-integration.js", "lines": 1244 },
+    { "path": "scripts/audit/validate-templates.js", "lines": 437 },
+    { "path": "scripts/check-agent-compliance.js", "lines": 196 },
+    { "path": "scripts/check-backlog-health.js", "lines": 344 },
+    { "path": "scripts/check-content-accuracy.js", "lines": 527 },
+    { "path": "scripts/check-doc-headers.js", "lines": 270 },
+    { "path": "scripts/check-doc-placement.js", "lines": 658 },
+    { "path": "scripts/check-document-sync.js", "lines": 462 },
+    { "path": "scripts/check-external-links.js", "lines": 702 },
+    { "path": "scripts/check-hook-health.js", "lines": 307 },
+    { "path": "scripts/check-pattern-sync.js", "lines": 311 },
+    { "path": "scripts/check-propagation.js", "lines": 547 },
+    { "path": "scripts/check-review-archive.js", "lines": 739 },
+    { "path": "scripts/check-review-needed.js", "lines": 1058 },
+    { "path": "scripts/check-roadmap-health.js", "lines": 293 },
+    { "path": "scripts/check-roadmap-hygiene.js", "lines": 279 },
+    { "path": "scripts/check-session-gaps.js", "lines": 324 },
+    { "path": "scripts/check-triggers.js", "lines": 577 },
+    { "path": "scripts/cleanup-alert-sessions.js", "lines": 66 },
+    { "path": "scripts/compute-changelog-metrics.js", "lines": 230 },
+    { "path": "scripts/debt/analyze-placement.js", "lines": 363 },
+    { "path": "scripts/debt/assign-roadmap-refs.js", "lines": 313 },
+    { "path": "scripts/debt/backfill-hashes.js", "lines": 169 },
+    { "path": "scripts/debt/categorize-and-assign.js", "lines": 486 },
+    { "path": "scripts/debt/check-phase-status.js", "lines": 123 },
+    { "path": "scripts/debt/clean-intake.js", "lines": 417 },
+    { "path": "scripts/debt/extract-audit-reports.js", "lines": 1021 },
+    { "path": "scripts/debt/extract-audits.js", "lines": 228 },
+    { "path": "scripts/debt/extract-context-debt.js", "lines": 335 },
+    { "path": "scripts/debt/extract-reviews.js", "lines": 267 },
+    { "path": "scripts/debt/extract-roadmap-debt.js", "lines": 470 },
+    { "path": "scripts/debt/extract-scattered-debt.js", "lines": 440 },
+    { "path": "scripts/debt/generate-grand-plan.js", "lines": 458 },
+    { "path": "scripts/debt/ingest-cleaned-intake.js", "lines": 260 },
+    { "path": "scripts/debt/intake-manual.js", "lines": 373 },
+    { "path": "scripts/debt/intake-pr-deferred.js", "lines": 315 },
+    { "path": "scripts/debt/process-review-needed.js", "lines": 309 },
+    { "path": "scripts/debt/reconcile-roadmap.js", "lines": 422 },
+    { "path": "scripts/debt/resolve-bulk.js", "lines": 500 },
+    { "path": "scripts/debt/resolve-item.js", "lines": 409 },
+    { "path": "scripts/debt/reverify-resolved.js", "lines": 410 },
+    { "path": "scripts/debt/sprint-complete.js", "lines": 436 },
+    { "path": "scripts/debt/sprint-intake.js", "lines": 367 },
+    { "path": "scripts/debt/sprint-status.js", "lines": 549 },
+    { "path": "scripts/debt/sprint-wave.js", "lines": 239 },
+    { "path": "scripts/debt/sync-roadmap-refs.js", "lines": 180 },
+    { "path": "scripts/debt/sync-sonarcloud.js", "lines": 923 },
+    { "path": "scripts/debt/verify-resolutions.js", "lines": 668 },
+    { "path": "scripts/generate-claude-antipatterns.js", "lines": 39 },
+    { "path": "scripts/generate-detailed-sonar-report.js", "lines": 563 },
+    { "path": "scripts/generate-fix-template-stubs.js", "lines": 39 },
+    { "path": "scripts/generate-skill-registry.js", "lines": 165 },
+    { "path": "scripts/generate-test-registry.js", "lines": 729 },
+    { "path": "scripts/hook-analytics.js", "lines": 283 },
+    { "path": "scripts/lib/ai-pattern-checks.js", "lines": 553 },
+    { "path": "scripts/lib/generate-content-hash.js", "lines": 39 },
+    { "path": "scripts/lib/normalize-category.js", "lines": 29 },
+    { "path": "scripts/lib/normalize-file-path.js", "lines": 62 },
+    { "path": "scripts/lib/validate-paths.js", "lines": 228 },
+    { "path": "scripts/lib/validate-skip-reason.js", "lines": 70 },
+    { "path": "scripts/lighthouse-audit.js", "lines": 256 },
+    { "path": "scripts/log-override.js", "lines": 531 },
+    { "path": "scripts/log-session-activity.js", "lines": 490 },
+    { "path": "scripts/multi-ai/extract-agent-findings.js", "lines": 222 },
+    { "path": "scripts/multi-ai/fix-schema.js", "lines": 617 },
+    { "path": "scripts/multi-ai/normalize-format.js", "lines": 1019 },
+    { "path": "scripts/multi-ai/unify-findings.js", "lines": 722 },
+    { "path": "scripts/normalize-canon-ids.js", "lines": 436 },
+    { "path": "scripts/place-unassigned-debt.js", "lines": 358 },
+    { "path": "scripts/planning/backfill-tenet-evidence.js", "lines": 152 },
+    { "path": "scripts/planning/decompose-state.js", "lines": 121 },
+    { "path": "scripts/planning/generate-decisions.js", "lines": 455 },
+    { "path": "scripts/planning/generate-discovery-record.js", "lines": 223 },
+    { "path": "scripts/planning/validate-jsonl-md-sync.js", "lines": 92 },
+    { "path": "scripts/promote-patterns.js", "lines": 48 },
+    { "path": "scripts/repair-archives.js", "lines": 436 },
+    { "path": "scripts/reset-audit-triggers.js", "lines": 275 },
+    { "path": "scripts/run-consolidation.js", "lines": 826 },
+    { "path": "scripts/run-consolidation.v1.js", "lines": 825 },
+    { "path": "scripts/search-capabilities.js", "lines": 358 },
+    { "path": "scripts/secrets/decrypt-secrets.js", "lines": 271 },
+    { "path": "scripts/seed-commit-log.js", "lines": 487 },
+    { "path": "scripts/session-end-commit.js", "lines": 268 },
+    { "path": "scripts/suggest-pattern-automation.js", "lines": 427 },
+    { "path": "scripts/sync-reviews-to-jsonl.js", "lines": 1153 },
+    { "path": "scripts/sync-reviews-to-jsonl.v1.js", "lines": 1109 },
+    { "path": "scripts/test-hooks.js", "lines": 635 },
+    { "path": "scripts/validate-canon-schema.js", "lines": 479 },
+    { "path": "scripts/validate-phase-completion.js", "lines": 157 },
+    { "path": "scripts/validate-skill-config.js", "lines": 253 },
+    { "path": "scripts/velocity/generate-report.js", "lines": 227 },
+    { "path": "scripts/verify-skill-usage.js", "lines": 265 }
+  ]
+}

@@ -136,6 +136,11 @@ jobs:
             exit 1
           }
 
+      - name: Check test coverage completeness
+        # Blocks if NEW untested scripts found (not in .test-baseline.json)
+        # Known gaps in baseline are allowed; only new gaps fail CI
+        run: node scripts/generate-test-registry.js --check-coverage
+
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v7
