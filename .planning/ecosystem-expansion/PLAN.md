@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 2.0
-**Last Updated:** 2026-03-09
+**Document Version:** 3.0
+**Last Updated:** 2026-03-10
 **Status:** APPROVED
 <!-- prettier-ignore-end -->
 
@@ -8,41 +8,48 @@
 
 ## Summary
 
-Four-phase plan: (1) build repo-wide testing infrastructure (~316 test files,
-registry, CI enforcement, documentation), (2) run a new discovery & decision
-round for the health ecosystem audit skill informed by the testing
-infrastructure now in place, (3) delegate ecosystem creation to `/create-audit`
-which owns the skill design and implementation, (4) return here to wire the new
-ecosystem into testing infrastructure and verify completeness.
+Seven-phase plan: (1) build repo-wide testing infrastructure (~316 test files,
+registry, CI enforcement, documentation) — DONE, (2) run a new discovery &
+decision round for health ecosystem audit skill design — DONE, (3) delegate
+ecosystem creation to `/create-audit` — PENDING, (4) wire ecosystem into
+infrastructure — PENDING, (5) testing coverage infrastructure (registry fix,
+auto-detection, CI gate, baseline), (6) testing coverage expansion (~181 new
+test files, parallel subagents), (7) testing coverage verification.
 
-**Decisions:** See DECISIONS.md (33 decisions — Phase 1 testing decisions are
-final; Phase 2 ecosystem decisions will be amended after Step 8 discovery)
-**Effort Estimate:** XL (multi-session, heavy parallelization)
+**Decisions:** See DECISIONS.md (81 decisions: D#1-33 testing infrastructure,
+D#34-52 skill design, D#53-81 testing coverage amendment) **Effort Estimate:**
+XL (multi-session, heavy parallelization)
 
 ---
 
 ## Plan Architecture
 
 ```
-PHASE 1: TESTING INFRASTRUCTURE .............. Steps 1-7
+PHASE 1: TESTING INFRASTRUCTURE .............. Steps 1-7     [DONE]
   Build tests, registry, CI gates, documentation
 
-PHASE 2: ECOSYSTEM DISCOVERY ................. Step 8
-  New Q&A round for health-ecosystem-audit skill design
-  Inputs: existing D#1-33 + testing infra in place
-  Output: amended DECISIONS.md with skill design decisions
+PHASE 2: ECOSYSTEM DISCOVERY ................. Step 8        [DONE]
+  Skill design decisions D#34-52
 
-PHASE 3: ECOSYSTEM CREATION .................. Step 9
+PHASE 3: ECOSYSTEM CREATION .................. Step 9        [DONE]
   Delegate to /create-audit (NOT built inline)
-  create-audit owns: SKILL.md, checkers, lib, self-tests
 
-PHASE 4: WIRING & COMPLETION ................. Steps 10-11
-  Wire ecosystem into infrastructure, verify, close gaps
+PHASE 4: WIRING & COMPLETION ................. Steps 10-11   [DONE]
+  Wire ecosystem into infrastructure, verify
+
+PHASE 5: TESTING COVERAGE INFRA .............. Step 12       [DONE]
+  Registry fix, auto-detection, CI gate, baseline, npm scripts
+
+PHASE 6: TESTING COVERAGE EXPANSION .......... Steps 13-19   [NEW]
+  ~181 new test files via parallel subagents
+
+PHASE 7: TESTING COVERAGE VERIFICATION ...... Step 20        [NEW]
+  Full verification, registry clean, baseline active
 ```
 
-**Phase gates:** Each phase has explicit entry/exit criteria. Phase 3 does NOT
-begin until Phase 2 decisions are approved. Phase 4 does NOT begin until
-`/create-audit` completes.
+**Phase gates:** Phases 3-4 and Phases 5-7 are INDEPENDENT — they can run in
+parallel or in either order. Phase 5 MUST complete before Phase 6. Phase 6 MUST
+complete before Phase 7. Phase 4 does NOT begin until `/create-audit` completes.
 
 ---
 
@@ -727,3 +734,623 @@ Per Decision #8: single plan, parallel subagent execution for Phase 1.
 
 **Phase 4 dispatch:** Main context for wiring + verification
 (coordination-heavy)
+
+**Phase 5 dispatch:** Main context (infrastructure changes need coordination)
+
+**Phase 6 dispatch:** 7 parallel subagents (one per area), main context for
+verification
+
+**Phase 7 dispatch:** Main context (verification needs judgment)
+
+---
+
+# PHASE 5: TESTING COVERAGE INFRASTRUCTURE
+
+---
+
+## Step 12: Auto-Detection Infrastructure
+
+Per Decisions #57, #58, #63, #64, #68, #69, #72, #74, #79, #80, #81.
+
+### Step 12a: Fix Test Registry Scanner
+
+Update `scripts/generate-test-registry.js` to:
+
+1. Fix scanning logic that produces stale entries (28 currently stale)
+2. Add missing scan patterns to discover all 63 unregistered test files
+3. Add `--check-coverage` flag (per D#68):
+   - Scans covered directories (per D#64): `scripts/**/*.js`,
+     `.claude/hooks/**/*.js`, `.claude/skills/*/scripts/**/*.js`
+   - Compares against test file inventory
+   - Reads `.test-baseline.json` to exclude known gaps
+   - Auto-cleans baseline entries for deleted scripts (per D#80)
+   - Exits non-zero if NEW untested files found (not in baseline)
+   - Outputs gap report to stdout
+4. Regenerate `data/ecosystem-v2/test-registry.jsonl` — clean state
+
+**Done when:** `npm run tests:registry` produces clean JSONL with no stale
+entries. `--check-coverage` correctly identifies current gaps. **Depends on:**
+None
+
+### Step 12b: Create Test Baseline
+
+Create `.test-baseline.json` (committed to repo, per D#79):
+
+```json
+{
+  "version": 1,
+  "description": "Scripts without tests. Remove entries as tests are created.",
+  "created": "2026-03-10",
+  "entries": [
+    {"path": "scripts/aggregate-audit-findings.js", "lines": 1954},
+    {"path": "scripts/analyze-learning-effectiveness.js", "lines": 1326},
+    ...
+  ]
+}
+```
+
+Populate with all currently-untested scripts from `--check-coverage` output.
+
+**Done when:** `.test-baseline.json` committed. `--check-coverage` passes (all
+gaps are baselined). **Depends on:** Step 12a
+
+### Step 12c: Pre-Commit Hook Integration
+
+Update `.husky/pre-commit` (per D#69):
+
+- Add check: scan staged files for new `.js` files in covered directories
+- If new script has no corresponding test, print warning (per D#63: warn, not
+  block)
+- Warning format: `⚠ New script scripts/foo.js has no test file`
+
+**Done when:** Committing a new script in `scripts/` without a test produces a
+warning. Existing scripts don't trigger. **Depends on:** Step 12a (needs
+coverage check logic)
+
+### Step 12d: CI Gate Integration
+
+Update `.github/workflows/ci.yml` (per D#57, D#63):
+
+- Add step after tests pass: "Check test coverage completeness"
+- Command: `node scripts/generate-test-registry.js --check-coverage`
+- Blocking: exits non-zero if NEW untested files (not in baseline)
+
+**Done when:** CI blocks PRs that add untested scripts. PRs that add tests AND
+remove baseline entries pass. **Depends on:** Steps 12a, 12b
+
+### Step 12e: npm Scripts & tsconfig
+
+Update `package.json` (per D#67):
+
+```json
+{
+  "test:checkers": "node --test .claude/skills/*/scripts/checkers/__tests__/*.test.js",
+  "test:infra": "npm run test:build && node --test dist-tests/tests/scripts/*.test.js dist-tests/tests/scripts/lib/**/*.test.js dist-tests/tests/scripts/audit/**/*.test.js",
+  "test:pipeline": "npm run test:build && node --test dist-tests/tests/scripts/debt/**/*.test.js dist-tests/tests/scripts/multi-ai/**/*.test.js dist-tests/tests/scripts/planning/**/*.test.js"
+}
+```
+
+Update `tsconfig.test.json` (per D#74):
+
+- Replace specific directory includes with wildcard: `tests/**/*.ts`
+
+**Done when:** All three new npm scripts run without error.
+`tsc -p tsconfig.test.json` compiles all test directories. **Depends on:** None
+
+### Step 12f: Investigate Orphan Test
+
+Per D#73: Check if `promotion-pipeline.test.ts` tests `promote-patterns.ts` or a
+combined pipeline. Grep imports, check test descriptions.
+
+- If valid: rename or update to match source
+- If orphaned: delete
+
+**Done when:** Orphan resolved (renamed, reassigned, or deleted). **Depends
+on:** None
+
+---
+
+**PHASE 5 EXIT GATE:** Registry clean (0 stale entries), `--check-coverage`
+passes, pre-commit warns on new untested scripts, CI blocks new untested
+scripts, npm scripts work, tsconfig wildcard, baseline committed.
+
+---
+
+# PHASE 6: TESTING COVERAGE EXPANSION
+
+---
+
+**Per Decisions #53-56, #59-62, #65-66, #70-71, #75, #77-78.**
+
+**All Steps 13-19 can run in parallel via subagents.**
+
+---
+
+## Step 13: Audit Checker Unit Tests (36 files + 7 property files)
+
+Per D#53, D#59, D#77: one test file per checker in existing `__tests__/`
+directories. Per D#75, D#78: property tests co-located.
+
+### Step 13a: Doc Ecosystem Audit Checkers (5 unit + 1 property)
+
+Create in `.claude/skills/doc-ecosystem-audit/scripts/checkers/__tests__/`:
+
+| Test File                          | Target                                    | Key Assertions                                             |
+| ---------------------------------- | ----------------------------------------- | ---------------------------------------------------------- |
+| `index-registry-health.test.js`    | `index-registry-health.js` (526 lines)    | Index sync validation, orphan detection, metadata accuracy |
+| `link-reference-integrity.test.js` | `link-reference-integrity.js` (541 lines) | Internal links, cross-doc deps, anchor resolution          |
+| `content-quality.test.js`          | `content-quality.js` (476 lines)          | Header compliance, formatting, freshness scoring           |
+| `generation-pipeline.test.js`      | `generation-pipeline.js` (421 lines)      | Index correctness, doc optimizer, pre-commit checks        |
+| `coverage-completeness.test.js`    | `coverage-completeness.js` (471 lines)    | Coverage calculation, agent refs, README checks            |
+| `doc-checkers.property.test.js`    | All 5 checkers                            | `check()` → score ∈ [0,100], valid findings schema         |
+
+Each unit test (per D#61, risk-proportional — all >400 lines → full template):
+
+- Happy path with realistic mock filesystem
+- Empty/missing input files
+- Malformed data (corrupt JSONL, broken markdown)
+- Scoring boundary tests
+- Finding ID format validation (`SCA-` prefix)
+
+### Step 13b: Hook Ecosystem Audit Checkers (6 unit + 1 property)
+
+Create in `.claude/skills/hook-ecosystem-audit/scripts/checkers/__tests__/`:
+
+| Test File                        | Target                      | Lines           |
+| -------------------------------- | --------------------------- | --------------- |
+| `config-health.test.js`          | `config-health.js`          | 590             |
+| `code-quality-security.test.js`  | `code-quality-security.js`  | 712             |
+| `precommit-pipeline.test.js`     | `precommit-pipeline.js`     | 774             |
+| `functional-correctness.test.js` | `functional-correctness.js` | 554             |
+| `state-integration.test.js`      | `state-integration.js`      | 801             |
+| `cicd-pipeline.test.js`          | `cicd-pipeline.js`          | 766             |
+| `hook-checkers.property.test.js` | All 6 checkers              | score ∈ [0,100] |
+
+### Step 13c: PR Ecosystem Audit Checkers (5 unit + 1 property)
+
+Create in `.claude/skills/pr-ecosystem-audit/scripts/checkers/__tests__/`:
+
+- `process-compliance.test.js` (789 lines)
+- `feedback-integration.test.js` (537 lines)
+- `pattern-lifecycle.test.js` (592 lines)
+- `effectiveness-metrics.test.js` (568 lines)
+- `data-state-health.test.js` (778 lines)
+- `pr-checkers.property.test.js`
+
+### Step 13d: Script Ecosystem Audit Checkers (5 unit + 1 property)
+
+Create in `.claude/skills/script-ecosystem-audit/scripts/checkers/__tests__/`:
+
+- `module-consistency.test.js` (452 lines)
+- `safety-error-handling.test.js` (550 lines)
+- `registration-reachability.test.js` (416 lines)
+- `code-quality.test.js` (456 lines)
+- `testing-reliability.test.js` (407 lines)
+- `script-checkers.property.test.js`
+
+### Step 13e: Session Ecosystem Audit Checkers (5 unit + 1 property)
+
+Create in `.claude/skills/session-ecosystem-audit/scripts/checkers/__tests__/`:
+
+- `lifecycle-management.test.js` (726 lines)
+- `state-persistence.test.js` (762 lines)
+- `compaction-resilience.test.js` (690 lines)
+- `cross-session-safety.test.js` (426 lines)
+- `integration-config.test.js` (535 lines)
+- `session-checkers.property.test.js`
+
+### Step 13f: Skill Ecosystem Audit Checkers (5 unit + 1 property)
+
+Create in `.claude/skills/skill-ecosystem-audit/scripts/checkers/__tests__/`:
+
+- `structural-compliance.test.js` (430 lines)
+- `cross-reference-integrity.test.js` (533 lines)
+- `coverage-consistency.test.js` (488 lines)
+- `staleness-drift.test.js` (467 lines)
+- `agent-orchestration.test.js` (449 lines)
+- `skill-checkers.property.test.js`
+
+### Step 13g: TDMS Ecosystem Audit Checkers (5 unit + 1 property)
+
+Create in `.claude/skills/tdms-ecosystem-audit/scripts/checkers/__tests__/`:
+
+- `pipeline-correctness.test.js` (569 lines)
+- `data-quality-dedup.test.js` (977 lines)
+- `file-io-safety.test.js` (631 lines)
+- `roadmap-integration.test.js` (584 lines)
+- `metrics-reporting.test.js` (888 lines)
+- `tdms-checkers.property.test.js`
+
+### Step 13h: Audit Lib Property Tests (7 files)
+
+Create `__tests__/` directories in each audit's `scripts/lib/`:
+
+| Audit                   | File                                     | Tests                        |
+| ----------------------- | ---------------------------------------- | ---------------------------- |
+| doc-ecosystem-audit     | `lib/__tests__/scoring.property.test.js` | score ∈ [0,100], grade valid |
+| hook-ecosystem-audit    | `lib/__tests__/scoring.property.test.js` | score ∈ [0,100], grade valid |
+| pr-ecosystem-audit      | `lib/__tests__/scoring.property.test.js` | score ∈ [0,100], grade valid |
+| script-ecosystem-audit  | `lib/__tests__/scoring.property.test.js` | score ∈ [0,100], grade valid |
+| session-ecosystem-audit | `lib/__tests__/scoring.property.test.js` | score ∈ [0,100], grade valid |
+| skill-ecosystem-audit   | `lib/__tests__/scoring.property.test.js` | score ∈ [0,100], grade valid |
+| tdms-ecosystem-audit    | `lib/__tests__/scoring.property.test.js` | score ∈ [0,100], grade valid |
+
+**Done when:** 36 checker unit test files + 7 checker property test files + 7
+audit lib property test files = 50 files. All pass. **Depends on:** Step 12e
+(npm scripts)
+
+---
+
+## Step 14: Root Script Tests (57 files + 4 property files)
+
+Per D#54, D#60, D#61: all 57 untested root scripts, centralized in
+`tests/scripts/`, risk-proportional depth.
+
+### Step 14a: Large Root Scripts (>500 lines, full template — ~15 files)
+
+| Test File                                | Target                            | Lines | Key Focus                                  |
+| ---------------------------------------- | --------------------------------- | ----- | ------------------------------------------ |
+| `aggregate-audit-findings.test.ts`       | aggregate-audit-findings.js       | 1,954 | JSONL aggregation, dedup, output format    |
+| `analyze-learning-effectiveness.test.ts` | analyze-learning-effectiveness.js | 1,326 | Metric extraction, trend computation       |
+| `check-pattern-compliance.test.ts`       | check-pattern-compliance.js       | 2,213 | Pattern detection, false positive handling |
+| `check-review-needed.test.ts`            | check-review-needed.js            | 1,057 | Threshold computation, category matching   |
+| `generate-documentation-index.test.ts`   | generate-documentation-index.js   | 1,079 | Category assignment, dependency tracking   |
+| `sync-reviews-to-jsonl.test.ts`          | sync-reviews-to-jsonl.js          | 1,152 | Markdown→JSONL parsing, numbering          |
+| `run-consolidation.test.ts`              | run-consolidation.js              | 825   | Pattern merging, state management          |
+| `validate-audit.test.ts`                 | validate-audit.js                 | 1,027 | False positive DB, evidence checking       |
+| `archive-reviews.test.ts`                | archive-reviews.js                | 816   | Date parsing, file splitting               |
+| `archive-doc.test.ts`                    | archive-doc.js                    | 771   | Metadata preservation, cross-ref           |
+| `check-review-archive.test.ts`           | check-review-archive.js           | 738   | Archive integrity, gap detection           |
+| `check-external-links.test.ts`           | check-external-links.js           | 701   | HTTP validation, rate limiting (msw)       |
+| `check-doc-placement.test.ts`            | check-doc-placement.js            | 657   | Tier rules, placement validation           |
+| `log-override.test.ts`                   | log-override.js                   | 530   | Override logging, accountability           |
+| `check-propagation.test.ts`              | check-propagation.js              | 546   | Duplicate detection, fix propagation       |
+
+Each: describe per exported function, happy path, error path, boundary, mock
+fs/child_process (per D#71).
+
+### Step 14b: Medium Root Scripts (100-500 lines, minimal — ~32 files)
+
+| Test File                            | Target                        | Lines |
+| ------------------------------------ | ----------------------------- | ----- |
+| `check-content-accuracy.test.ts`     | check-content-accuracy.js     | 526   |
+| `check-cross-doc-deps.test.ts`       | check-cross-doc-deps.js       | 528   |
+| `assign-review-tier.test.ts`         | assign-review-tier.js         | 498   |
+| `log-session-activity.test.ts`       | log-session-activity.js       | 489   |
+| `validate-canon-schema.test.ts`      | validate-canon-schema.js      | 478   |
+| `check-document-sync.test.ts`        | check-document-sync.js        | 461   |
+| `security-check.test.ts`             | security-check.js             | 463   |
+| `normalize-canon-ids.test.ts`        | normalize-canon-ids.js        | 435   |
+| `repair-archives.test.ts`            | repair-archives.js            | 435   |
+| `suggest-pattern-automation.test.ts` | suggest-pattern-automation.js | 426   |
+| `audit-s0-promotions.test.ts`        | audit-s0-promotions.js        | 416   |
+| `place-unassigned-debt.test.ts`      | place-unassigned-debt.js      | 357   |
+| `search-capabilities.test.ts`        | search-capabilities.js        | 357   |
+| `check-session-gaps.test.ts`         | check-session-gaps.js         | 323   |
+| `check-pattern-sync.test.ts`         | check-pattern-sync.js         | 310   |
+| `check-hook-health.test.ts`          | check-hook-health.js          | 306   |
+| `check-roadmap-health.test.ts`       | check-roadmap-health.js       | 292   |
+| `hook-analytics.test.ts`             | hook-analytics.js             | 282   |
+| `check-roadmap-hygiene.test.ts`      | check-roadmap-hygiene.js      | 278   |
+| `reset-audit-triggers.test.ts`       | reset-audit-triggers.js       | 274   |
+| `session-end-commit.test.ts`         | session-end-commit.js         | 267   |
+| `verify-skill-usage.test.ts`         | verify-skill-usage.js         | 264   |
+| `lighthouse-audit.test.ts`           | lighthouse-audit.js           | 255   |
+| `validate-skill-config.test.ts`      | validate-skill-config.js      | 252   |
+| `compute-changelog-metrics.test.ts`  | compute-changelog-metrics.js  | 229   |
+| `check-triggers.test.ts`             | check-triggers.js             | 576   |
+| `check-agent-compliance.test.ts`     | check-agent-compliance.js     | 195   |
+| `append-hook-warning.test.ts`        | append-hook-warning.js        | 190   |
+| `generate-skill-registry.test.ts`    | generate-skill-registry.js    | 164   |
+| `validate-phase-completion.test.ts`  | validate-phase-completion.js  | 156   |
+| `check-doc-headers.test.ts`          | check-doc-headers.js          | 269   |
+| `check-backlog-health.test.ts`       | check-backlog-health.js       | 343   |
+
+Each: 3-5 test cases, core logic + error path + edge case.
+
+### Step 14c: Small Root Scripts (<100 lines, smoke test — ~10 files)
+
+| Test File                                    | Target                             | Lines |
+| -------------------------------------------- | ---------------------------------- | ----- |
+| `cleanup-alert-sessions.test.ts`             | cleanup-alert-sessions.js          | 65    |
+| `promote-patterns.test.ts`                   | promote-patterns.js                | 47    |
+| `generate-claude-antipatterns.test.ts`       | generate-claude-antipatterns.js    | 38    |
+| `generate-fix-template-stubs.test.ts`        | generate-fix-template-stubs.js     | 38    |
+| `seed-commit-log.test.ts`                    | seed-commit-log.js                 | 486   |
+| `generate-detailed-sonar-report.test.ts`     | generate-detailed-sonar-report.js  | 562   |
+| `test-hooks.test.ts`                         | test-hooks.js                      | 634   |
+| V1 parity: `v1-parity-consolidation.test.ts` | run-consolidation.v1.js vs .js     | 824   |
+| V1 parity: `v1-parity-sync-reviews.test.ts`  | sync-reviews-to-jsonl.v1.js vs .js | 1,108 |
+
+V1 parity tests (per D#65): run both v1 and v2 with same mock input, compare
+output shapes.
+
+Note: `seed-commit-log.js` (486), `generate-detailed-sonar-report.js` (562), and
+`test-hooks.js` (634) exceed 100 lines but are listed here because they're
+primarily CLI wrappers. Apply medium template (3-5 test cases) for these.
+
+### Step 14d: Root Script Property Tests (4 files)
+
+Per D#75: property tests for bounded-output functions in `scripts/lib/`:
+
+| File                                                       | Target                   | Property                             |
+| ---------------------------------------------------------- | ------------------------ | ------------------------------------ |
+| `tests/scripts/lib/normalize-category.property.test.ts`    | normalize-category.js    | output ∈ valid category set          |
+| `tests/scripts/lib/normalize-file-path.property.test.ts`   | normalize-file-path.js   | always relative, no `..`             |
+| `tests/scripts/lib/generate-content-hash.property.test.ts` | generate-content-hash.js | always 64-char hex                   |
+| `tests/scripts/debt/normalize-all.property.test.ts`        | normalize-all.js         | severity ∈ {S0-S3}, effort ∈ {E0-E3} |
+
+**Done when:** 57 root script tests + 2 v1 parity tests + 4 property tests = 63
+files. All pass. **Depends on:** Step 12e
+
+---
+
+## Step 15: Debt Pipeline Tests (28 files)
+
+Per D#56, D#60: all 28 untested debt scripts.
+
+Create in `tests/scripts/debt/`:
+
+### Step 15a: Large Debt Scripts (>500 lines, full template — ~5 files)
+
+| Test File                       | Target                   | Lines | Key Focus                                   |
+| ------------------------------- | ------------------------ | ----- | ------------------------------------------- |
+| `sync-sonarcloud.test.ts`       | sync-sonarcloud.js       | 922   | API mocking (msw), response parsing         |
+| `verify-resolutions.test.ts`    | verify-resolutions.js    | 667   | Git history correlation, status transitions |
+| `sprint-status.test.ts`         | sprint-status.js         | 548   | Multi-source aggregation, dashboard output  |
+| `resolve-bulk.test.ts`          | resolve-bulk.js          | 499   | Batch operations, rollback safety           |
+| `categorize-and-assign.test.ts` | categorize-and-assign.js | 485   | Sprint assignment rules, Grand Plan routing |
+
+### Step 15b: Medium Debt Scripts (100-500 lines — ~23 files)
+
+All remaining debt scripts: `analyze-placement.js` (362),
+`assign-roadmap-refs.js` (312), `backfill-hashes.js` (168),
+`check-phase-status.js` (122), `clean-intake.js` (416), `escalate-deferred.js`
+(248), `extract-audits.js` (227), `extract-context-debt.js` (334),
+`extract-reviews.js` (266), `extract-roadmap-debt.js` (469),
+`extract-scattered-debt.js` (439), `generate-grand-plan.js` (457),
+`ingest-cleaned-intake.js` (259), `intake-manual.js` (372),
+`intake-pr-deferred.js` (314), `process-review-needed.js` (308),
+`reconcile-roadmap.js` (421), `resolve-item.js` (408), `reverify-resolved.js`
+(409), `sprint-complete.js` (435), `sprint-intake.js` (366), `sprint-wave.js`
+(238), `sync-roadmap-refs.js` (179)
+
+**Done when:** 28 debt test files. All pass. **Depends on:** Step 12e
+
+---
+
+## Step 16: Audit & Multi-AI Script Tests (12 files)
+
+Per D#56, D#60.
+
+### Step 16a: Audit Scripts (8 files)
+
+Create in `tests/scripts/audit/`:
+
+- `audit-health-check.test.ts` (450 lines)
+- `compare-audits.test.ts` (755 lines — full template)
+- `count-commits-since.test.ts` (295 lines)
+- `generate-results-index.test.ts` (305 lines)
+- `track-resolutions.test.ts` (463 lines)
+- `transform-jsonl-schema.test.ts` (758 lines — full template)
+- `validate-audit-integration.test.ts` (1,243 lines — full template)
+- `validate-templates.test.ts` (436 lines)
+
+### Step 16b: Multi-AI Scripts (4 files)
+
+Create in `tests/scripts/multi-ai/`:
+
+- `extract-agent-findings.test.ts` (221 lines)
+- `fix-schema.test.ts` (616 lines — full template)
+- `normalize-format.test.ts` (1,018 lines — full template)
+- `unify-findings.test.ts` (721 lines — full template)
+
+**Done when:** 12 files. All pass. **Depends on:** Step 12e
+
+---
+
+## Step 17: Lib, Planning & Remaining Script Tests (18 files)
+
+### Step 17a: Lib Scripts (8 files)
+
+Create in `tests/scripts/lib/`:
+
+- `ai-pattern-checks.test.ts` (552 lines — full template)
+- `generate-content-hash.test.ts` (38 lines — smoke)
+- `normalize-category.test.ts` (28 lines — smoke)
+- `normalize-file-path.test.ts` (61 lines — smoke)
+- `read-jsonl.test.ts` (44 lines — smoke)
+- `safe-fs.test.ts` (496 lines — verify existing coverage, expand if needed)
+- `validate-paths.test.ts` (227 lines)
+- `validate-skip-reason.test.ts` (69 lines — smoke)
+
+### Step 17b: Planning Scripts (5 files)
+
+Create in `tests/scripts/planning/`:
+
+- `backfill-tenet-evidence.test.ts` (151 lines)
+- `decompose-state.test.ts` (120 lines)
+- `generate-decisions.test.ts` (454 lines)
+- `generate-discovery-record.test.ts` (222 lines)
+- `validate-jsonl-md-sync.test.ts` (91 lines — smoke)
+
+### Step 17c: Velocity, Secrets, Health (3 files)
+
+- `tests/scripts/velocity/generate-report.test.ts` (226 lines)
+- `tests/scripts/secrets/decrypt-secrets.test.ts` (270 lines)
+- `tests/scripts/health/run-health-check.test.ts` (185 lines — verify existing,
+  expand)
+
+### Step 17d: Hook Scripts (2 files)
+
+- `tests/hooks/gsd-context-monitor.test.ts` (141 lines)
+- `tests/hooks/state-utils.test.ts` (229 lines)
+
+**Done when:** 18 files. All pass. **Depends on:** Step 12e
+
+---
+
+## Step 18: Review System Tests (9 files)
+
+Per D#66.
+
+### Step 18a: Review Script Tests (8 files)
+
+Create in `scripts/reviews/__tests__/`:
+
+- `build-enforcement-manifest.test.ts`
+- `completeness.test.ts`
+- `enforcement-manifest.test.ts`
+- `generate-claude-antipatterns.test.ts`
+- `generate-fix-template-stubs.test.ts`
+- `promote-patterns.test.ts`
+- `verify-enforcement-manifest.test.ts`
+- `read-jsonl.test.ts` / `write-jsonl.test.ts` (may consolidate)
+
+### Step 18b: Review Schema Consolidated Test (1 file)
+
+Create `scripts/reviews/__tests__/schemas.test.ts`:
+
+- Tests all 7 schema files (deferred-item, index, invocation, retro, review,
+  shared, warning)
+- Valid inputs pass, invalid inputs fail, edge cases handled
+
+**Done when:** 9 review test files. All pass. **Depends on:** Step 12e
+
+---
+
+## Step 19: Skill Utility Script Tests (1 file)
+
+Create `tests/scripts/health/run-ecosystem-health.test.ts`:
+
+- Dashboard output format
+- Dimension drill-down
+- Warning integration
+- Trend computation
+
+**Done when:** 1 file. Passes. **Depends on:** Step 12e
+
+---
+
+**PHASE 6 EXIT GATE:** All ~181 new test files created and passing. `npm test`
+runs all existing + new tests with 0 failures.
+
+---
+
+# PHASE 7: TESTING COVERAGE VERIFICATION
+
+---
+
+## Step 20: Full Verification
+
+### Step 20a: Registry & Baseline Verification
+
+- Run `npm run tests:registry` — regenerate registry
+- Run `node scripts/generate-test-registry.js --check-coverage` — verify all new
+  tests discovered, baseline shrunk to 0 (or near 0)
+- Verify no stale entries in registry
+
+### Step 20b: Full Test Suite
+
+- `npm test` — all tests pass (existing ~1,594 + ~181 new)
+- `npm run test:checkers` — audit checker tests pass
+- `npm run test:infra` — infrastructure tests pass
+- `npm run test:pipeline` — pipeline tests pass
+- `npm run test:health` — health tests pass
+- `npm run test:hooks` — hook tests pass
+- `npm run test:debt` — debt tests pass
+- `npm run test:audits` — ecosystem audit self-tests pass
+- `npm run test:coverage` — coverage threshold still met (65%)
+
+### Step 20c: Auto-Detection Smoke Test
+
+- Create a temp script in `scripts/test-temp-untested.js`
+- Commit: verify pre-commit warning fires
+- Push: verify CI gate blocks (file not in baseline, no test)
+- Delete temp script, verify clean
+
+### Step 20d: Code Review
+
+Run code-reviewer agent on all Phase 5-7 new/modified files:
+
+- Security: no command injection in test scripts
+- Patterns: error sanitization, path traversal guards
+- Quality: consistent test patterns, no duplicate logic
+- **All findings MUST be fixed before merge**
+
+### Step 20e: Decision Coverage Audit
+
+Cross-check D#53-81 against implemented artifacts:
+
+- Every decision maps to a concrete file or configuration change
+- No decisions silently skipped
+- Document any deviations with rationale
+
+### Step 20f: Update Documentation
+
+- Update `docs/agent_docs/TESTING_SYSTEM.md` — add new test areas, update
+  coverage map, add auto-detection section
+- Update `DOCUMENTATION_INDEX.md` if needed
+- Update `.planning/ecosystem-expansion/PLAN.md` — mark Phase 5-7 complete
+
+**Done when:** Registry clean, baseline empty or near-empty, all tests pass, CI
+gate works, code review clean, decisions verified, documentation updated.
+**Depends on:** Steps 12-19
+
+---
+
+**PHASE 7 EXIT GATE:** Complete internal testing coverage achieved.
+Auto-detection prevents future gaps. Ready to commit.
+
+---
+
+## Phase 5-7 Parallelization Guide
+
+```
+PHASE 5:
+  Step 12a: Fix registry scanner (sequential)
+    |
+    +-- Step 12b: Create baseline (needs 12a)
+    +-- Step 12e: npm scripts + tsconfig (independent)
+    +-- Step 12f: Investigate orphan test (independent)
+         |
+         +-- Step 12c: Pre-commit hook (needs 12a)
+         +-- Step 12d: CI gate (needs 12a, 12b)
+
+PHASE 6:
+  Steps 13-19 ALL run in parallel via subagents:
+    +-- Step 13: Audit checker tests (1 subagent)
+    +-- Step 14: Root script tests (1 subagent)
+    +-- Step 15: Debt pipeline tests (1 subagent)
+    +-- Step 16: Audit + multi-ai tests (1 subagent)
+    +-- Step 17: Lib + planning + remaining (1 subagent)
+    +-- Step 18: Review system tests (1 subagent)
+    +-- Step 19: Skill utility tests (1 subagent)
+
+PHASE 7:
+  Step 20: Verification (sequential, needs all of Phase 6)
+```
+
+**Phase 6 maximum parallelism:** 7 concurrent subagents.
+
+---
+
+## Phase 5-7 Execution Routing
+
+Per D#76: three-phase execution.
+
+**Phase 5 dispatch:** Main context — infrastructure changes need coordination.
+
+**Phase 6 dispatch:** 7 parallel subagents via Agent tool:
+
+- Subagent 1: Step 13 (audit checkers — 50 files, JS)
+- Subagent 2: Step 14 (root scripts — 63 files, TS)
+- Subagent 3: Step 15 (debt pipeline — 28 files, TS)
+- Subagent 4: Step 16 (audit + multi-ai — 12 files, TS)
+- Subagent 5: Step 17 (lib + planning + remaining — 18 files, TS)
+- Subagent 6: Step 18 (review system — 9 files, TS)
+- Subagent 7: Step 19 (skill utility — 1 file, TS)
+
+Subagent 7 is tiny — may combine with Subagent 6.
+
+**Phase 7 dispatch:** Main context — verification needs judgment.

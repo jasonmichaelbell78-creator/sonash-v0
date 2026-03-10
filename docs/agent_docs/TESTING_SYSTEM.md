@@ -88,15 +88,16 @@ build step.
 
 Each ecosystem audit skill owns a standard set of 4 test files:
 
-| Ecosystem Audit           | Test Directory                                              | Tests Owned                                             |
-| ------------------------- | ----------------------------------------------------------- | ------------------------------------------------------- |
-| `pr-ecosystem-audit`      | `.claude/skills/pr-ecosystem-audit/scripts/__tests__/`      | checker-regression, scoring, state-manager, integration |
-| `session-ecosystem-audit` | `.claude/skills/session-ecosystem-audit/scripts/__tests__/` | checker-regression, scoring, state-manager, integration |
-| `tdms-ecosystem-audit`    | `.claude/skills/tdms-ecosystem-audit/scripts/__tests__/`    | checker-regression, scoring, state-manager, integration |
-| `doc-ecosystem-audit`     | `.claude/skills/doc-ecosystem-audit/scripts/__tests__/`     | checker-regression, scoring, state-manager, integration |
-| `hook-ecosystem-audit`    | `.claude/skills/hook-ecosystem-audit/scripts/__tests__/`    | checker-regression, scoring, state-manager, integration |
-| `script-ecosystem-audit`  | `.claude/skills/script-ecosystem-audit/scripts/__tests__/`  | checker-regression, scoring, state-manager, integration |
-| `skill-ecosystem-audit`   | `.claude/skills/skill-ecosystem-audit/scripts/__tests__/`   | checker-regression, scoring, state-manager, integration |
+| Ecosystem Audit           | Test Directory                                              | Tests Owned                                                                                        |
+| ------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `pr-ecosystem-audit`      | `.claude/skills/pr-ecosystem-audit/scripts/__tests__/`      | checker-regression, scoring, state-manager, integration                                            |
+| `session-ecosystem-audit` | `.claude/skills/session-ecosystem-audit/scripts/__tests__/` | checker-regression, scoring, state-manager, integration                                            |
+| `tdms-ecosystem-audit`    | `.claude/skills/tdms-ecosystem-audit/scripts/__tests__/`    | checker-regression, scoring, state-manager, integration                                            |
+| `doc-ecosystem-audit`     | `.claude/skills/doc-ecosystem-audit/scripts/__tests__/`     | checker-regression, scoring, state-manager, integration                                            |
+| `hook-ecosystem-audit`    | `.claude/skills/hook-ecosystem-audit/scripts/__tests__/`    | checker-regression, scoring, state-manager, integration                                            |
+| `script-ecosystem-audit`  | `.claude/skills/script-ecosystem-audit/scripts/__tests__/`  | checker-regression, scoring, state-manager, integration                                            |
+| `skill-ecosystem-audit`   | `.claude/skills/skill-ecosystem-audit/scripts/__tests__/`   | checker-regression, scoring, state-manager, integration                                            |
+| `health-ecosystem-audit`  | `.claude/skills/health-ecosystem-audit/scripts/__tests__/`  | checker-regression, scoring, state-manager, integration, live-test-execution, registry-consumption |
 
 ### Standard test file pattern per audit
 

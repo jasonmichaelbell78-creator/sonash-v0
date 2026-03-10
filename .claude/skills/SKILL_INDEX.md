@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 2.3 **Last Updated**: 2026-02-24 **Total Skills**: 65
+**Version**: 2.4 **Last Updated**: 2026-03-10 **Total Skills**: 66
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -16,7 +16,7 @@ Quick reference for all available Claude Code skills organized by category.
 
 ## Categories
 
-### Audit & Code Quality (22 skills)
+### Audit & Code Quality (23 skills)
 
 | Skill                             | Description                                                                     |
 | --------------------------------- | ------------------------------------------------------------------------------- |
@@ -36,13 +36,14 @@ Quick reference for all available Claude Code skills organized by category.
 | `/code-reviewer`                  | Run code review on recent changes                                               |
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator with any-format input                     |
 | `/pr-ecosystem-audit`             | Comprehensive PR review ecosystem diagnostic                                    |
+| `/health-ecosystem-audit`         | Health monitoring system diagnostic (25 categories, 6 domains, A-F scoring)     |
 | `/hook-ecosystem-audit`           | Hook system health diagnostic (19 categories, 6 domains, A-F scoring)           |
 | `/tdms-ecosystem-audit`           | TDMS pipeline health diagnostic (16 categories, 5 domains, A-F scoring)         |
 | `/session-ecosystem-audit`        | Session system health diagnostic (16 categories, 5 domains, A-F scoring)        |
 | `/skill-ecosystem-audit`          | Skill ecosystem health diagnostic (21 categories, 5 domains, A-F scoring)       |
 | `/doc-ecosystem-audit`            | Documentation ecosystem diagnostic (16 categories, 5 domains, A-F scoring)      |
 | `/script-ecosystem-audit`         | Script infrastructure diagnostic (18 categories, 5 domains, A-F scoring)        |
-| `/comprehensive-ecosystem-audit`  | Run all 7 ecosystem audits in staged waves with unified report                  |
+| `/comprehensive-ecosystem-audit`  | Run all 8 ecosystem audits in staged waves with unified report                  |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues (replaces sonarcloud-sprint) |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                                            |
 
@@ -155,6 +156,7 @@ Quick reference for all available Claude Code skills organized by category.
 | Sprint management      | `/sprint`                                     |
 | System testing         | `/system-test`                                |
 | PR ecosystem health    | `/pr-ecosystem-audit`                         |
+| Health monitoring      | `/health-ecosystem-audit`                     |
 | Hook ecosystem health  | `/hook-ecosystem-audit`                       |
 | TDMS pipeline health   | `/tdms-ecosystem-audit`                       |
 | Session system health  | `/session-ecosystem-audit`                    |

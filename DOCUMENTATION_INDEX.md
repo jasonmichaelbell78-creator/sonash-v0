@@ -313,7 +313,7 @@ _Claude Code skills_
 | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md)                                   | You have access to the systematic debugging skill at              | ↓0 ↑0      | 2026-01-12    |
 | [add-debt](.claude/skills/add-debt/SKILL.md)                                                                                        | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
-| [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | 1. **MUST** run the checker script before presenting any dat...   | ↓0 ↑0      | 2026-03-09    |
+| [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | -                                                                 | ↓0 ↑0      | 2026-03-09    |
 | [artifacts-builder](.claude/skills/artifacts-builder/SKILL.md)                                                                      | To build powerful frontend claude.ai artifacts, follow these...   | ↓0 ↑0      | 2026-02-24    |
 | [Audit Aggregator — Extended Examples](.claude/skills/audit-aggregator/examples.md)                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [audit-aggregator](.claude/skills/audit-aggregator/SKILL.md)                                                                        | -                                                                 | ↓0 ↑1      | 2026-02-24    |
@@ -340,7 +340,7 @@ _Claude Code skills_
 | [Comprehensive Ecosystem Audit Aggregation Guide](.claude/skills/comprehensive-ecosystem-audit/reference/AGGREGATION_GUIDE.md)      | How to compute the overall ecosystem health grade, domain he...   | ↓1 ↑0      | 2026-02-24    |
 | [Comprehensive Ecosystem Audit Recovery Procedures](.claude/skills/comprehensive-ecosystem-audit/reference/RECOVERY_PROCEDURES.md)  | How to recover from interruptions during a comprehensive eco...   | ↓1 ↑0      | 2026-02-24    |
 | [Comprehensive Ecosystem Audit Wave Details](.claude/skills/comprehensive-ecosystem-audit/reference/WAVE_DETAILS.md)                | Complete reference for staged execution of the 7-audit ecosy...   | ↓1 ↑1      | 2026-02-24    |
-| [comprehensive-ecosystem-audit](.claude/skills/comprehensive-ecosystem-audit/SKILL.md)                                              | Orchestrates all 7 ecosystem audits (hook, session, TDMS, PR...   | ↓0 ↑2      | 2026-02-24    |
+| [comprehensive-ecosystem-audit](.claude/skills/comprehensive-ecosystem-audit/SKILL.md)                                              | Orchestrates all 8 ecosystem audits (hook, session, TDMS, PR...   | ↓0 ↑2      | 2026-02-24    |
 | [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)                                           | Flaky tests often guess at timing with arbitrary delays. Thi...   | ↓0 ↑0      | 2026-01-12    |
 | [Content Research Writer -- Examples & Templates](.claude/skills/content-research-writer/examples.md)                               | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [content-research-writer](.claude/skills/content-research-writer/SKILL.md)                                                          | This skill acts as your writing partner, helping you researc...   | ↓0 ↑1      | 2026-02-24    |
@@ -358,7 +358,7 @@ _Claude Code skills_
 | [Doc-Optimizer Agent Prompts](.claude/skills/doc-optimizer/prompts.md)                                                              | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
 | [docs-maintain](.claude/skills/docs-maintain/SKILL.md)                                                                              | Unified skill for checking doc sync and updating doc artifac...   | ↓0 ↑0      | 2026-02-24    |
 | [Documentation Audit — Agent Prompts & Templates](.claude/skills/audit-documentation/prompts.md)                                    | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
-| [Ecosystem Health -- Interactive Dashboard](.claude/skills/ecosystem-health/SKILL.md)                                               | - User explicitly invokes `/ecosystem-health`                     | ↓0 ↑0      | 2026-03-01    |
+| [Ecosystem Health -- Interactive Dashboard](.claude/skills/ecosystem-health/SKILL.md)                                               | -                                                                 | ↓0 ↑0      | 2026-03-01    |
 | [Excel Analysis](.claude/skills/excel-analysis/SKILL.md)                                                                            | - Analyze Excel spreadsheets, create pivot tables, generate ...   | ↓0 ↑0      | 2026-02-24    |
 | [find-skills](.claude/skills/find-skills/SKILL.md)                                                                                  | This skill helps you discover and install skills and plugins...   | ↓0 ↑0      | 2026-02-24    |
 | [frontend-design](.claude/skills/frontend-design/SKILL.md)                                                                          | -                                                                 | ↓0 ↑0      | 2026-02-24    |
@@ -513,7 +513,7 @@ _Uncategorized_
 
 | Document                                                              | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-03-09    |
+| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-03-10    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                        | Documents all Claude Code hooks configured in `.claude/setti... | ↓2 ↑4      | 2026-02-25    |
 | [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)   | > **DEPRECATION NOTICE (2026-02-23):** The `scripts/sync-cla... | ↓3 ↑0      | 2026-02-25    |
 | [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)          | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-25    |

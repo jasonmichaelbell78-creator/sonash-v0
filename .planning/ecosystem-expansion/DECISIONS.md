@@ -1,14 +1,15 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 2.0
-**Last Updated:** 2026-03-09
+**Document Version:** 3.0
+**Last Updated:** 2026-03-10
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 # Decision Record: Ecosystem Expansion
 
-**Date:** 2026-03-08 (Phase 1), 2026-03-09 (Phase 2) **Questions Asked:** 28 (+3
-follow-ups, +Pass 0/2/3 research) + 19 Phase 2 skill design questions
-**Decisions Captured:** 52
+**Date:** 2026-03-08 (Phase 1), 2026-03-09 (Phase 2), 2026-03-10 (Phase 3)
+**Questions Asked:** 28 (+3 follow-ups, +Pass 0/2/3 research) + 19 Phase 2 skill
+design questions + 29 Phase 3 testing coverage questions **Decisions Captured:**
+81
 
 ## Decisions
 
@@ -153,6 +154,76 @@ follow-ups, +Pass 0/2/3 research) + 19 Phase 2 skill design questions
 | New performance budget tests                  | ~2        | Budget timing                                            |
 | Infrastructure (registry script, CI config)   | ~2        | Utility                                                  |
 | **TOTAL**                                     | **~314**  | 14 test types                                            |
+
+### Phase 3 Decisions (D#53-81) — Complete Internal Testing Coverage
+
+**Date:** 2026-03-10 (Session #214) **Questions Asked:** 29 (5 batches)
+**Decisions Captured:** 29
+
+| #   | Decision                            | Choice                                                                                                                                                | Rationale                                                                                            |
+| --- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 53  | Audit checker unit test depth       | Full unit tests per checker — 36 new test files, ~200 test cases testing parsing, scoring, edge cases individually                                    | User requirement: comprehensive, not selective. Checkers have real logic (400-977 lines each)        |
+| 54  | Root script test scope              | Test ALL 57 untested root scripts regardless of size                                                                                                  | User requirement: ALL internal testing. Small scripts = small tests = low marginal cost              |
+| 55  | V1/backup script treatment          | Investigate → confirmed active fallbacks (npm scripts exist). Test both v1 scripts.                                                                   | `package.json` has `reviews:sync:v1` and `consolidation:run:v1`. Active fallback mechanism           |
+| 56  | Debt pipeline test scope            | Test ALL 28 untested debt scripts — comprehensive, no gaps                                                                                            | User requirement: ALL. Debt pipeline is TDMS backbone — every script matters                         |
+| 57  | Auto-detection mechanism            | Pre-commit warning + CI blocking + registry-based scanning (C+D combined)                                                                             | Pre-commit = fast feedback, CI = enforcement, registry = leverages existing infrastructure           |
+| 58  | Registry cleanup approach           | Fix scanner logic + regenerate + include cleanup in this amendment (C+A combined)                                                                     | Scanner itself needs fixing (28 stale entries, 63 missing). Regeneration produces clean state        |
+| 59  | Checker unit test placement         | Co-located in existing `__tests__/` directories: `.claude/skills/*/scripts/checkers/__tests__/<checker>.test.js`                                      | Matches existing `__tests__/` pattern. Checker scripts are plain JS, tests should be JS too          |
+| 60  | Root/debt/other test placement      | Centralized in `tests/scripts/` matching Phase 1 pattern                                                                                              | Phase 1 established this pattern. Consistency > co-location preference. Compilation pipeline proven  |
+| 61  | Test template pattern               | Risk-proportional: >500 lines = full template, <500 = minimal (3-5 cases), <100 = smoke test (mock execution)                                         | Avoids wasting effort on trivial scripts while under-testing complex ones                            |
+| 62  | Property-based testing strategy     | Selective — property tests for any function where contract is "input → bounded output" (numeric, normalized string, valid set)                        | Property testing shines with clear invariants. Selective gets most value without bloat               |
+| 63  | Pre-commit auto-detect behavior     | Warning locally, blocking in CI                                                                                                                       | Warns without blocking WIP commits locally. CI enforcement ensures nothing merges without tests      |
+| 64  | Covered directories definition      | Convention-based globs: `scripts/**/*.js`, `.claude/hooks/**/*.js`, `.claude/skills/*/scripts/**/*.js`                                                | Self-maintaining — no config file to forget to update. New directories auto-covered                  |
+| 65  | V1 script test depth                | Parity test — single test file per v1/v2 pair, validates outputs match with same input                                                                | V1 exists for fallback parity. Parity test catches v1 drift from v2, which is the actual risk        |
+| 66  | Review schema testing               | Consolidated single test file for all 7 schema files + individual tests for 8 untested script files                                                   | Schema validation can break silently. One consolidated file is proportionate to 7 small schemas      |
+| 67  | New npm test scripts                | Grouped: `test:checkers` (audit checkers), `test:infra` (root scripts + lib + validators), `test:pipeline` (debt + reviews + multi-ai + planning)     | 3 new scripts = good granularity without bloat. Groups align with logical test areas                 |
+| 68  | CI enforcement implementation       | Extend `generate-test-registry.js` with `--check-coverage` flag that exits non-zero if gaps found                                                     | Registry scanner already knows all test files and script directories. Natural extension              |
+| 69  | Pre-commit hook integration         | Add to `.husky/pre-commit` — shell-level check at commit time                                                                                         | Already runs pattern compliance and cross-doc checks. Catches ALL commits, not just Claude-assisted  |
+| 70  | Tiny CLI wrapper smoke tests        | Execute with mock inputs — mock fs/child_process to prevent side effects                                                                              | Even tiny wrappers can break (wrong import, missing dep). Mocking is lightweight, validates behavior |
+| 71  | Test mocking approach               | Mixed: `node:test` mock for fs/child_process, `msw` for HTTP, temp directories for integration-level tests                                            | Unit tests fast (node:test), HTTP calls clean (msw already installed), integration realistic (temp)  |
+| 72  | CI gate for existing untested files | Baseline snapshot in `.test-baseline.json` — CI only blocks NEW untested files after baseline. Entries removed as tests created.                      | Gate active immediately to prevent new gaps. Baseline captures current state honestly                |
+| 73  | Orphan test cleanup                 | Investigate `promotion-pipeline.test.ts` first — maybe source was renamed. Fix or delete accordingly.                                                 | Might test `promote-patterns.ts` or combined pipeline. Investigation prevents deleting a valid test  |
+| 74  | tsconfig.test.json updates          | Wildcard: change include to `tests/**/*.ts` to catch everything                                                                                       | Prevents future "forgot to add directory" problems. Fixes the exact coverage gap type we're closing  |
+| 75  | Property test candidates            | ALL candidates (~15 files): 36 checker check() fns, 7 audit scoring.js, normalize-category, normalize-file-path, generate-content-hash, normalize-all | User override of recommendation. Complete property coverage for all bounded-output functions         |
+| 76  | Execution approach                  | Three phases: Phase A (infrastructure), Phase B (test creation via parallel subagents), Phase C (verification)                                        | Infrastructure must precede tests (auto-detection works from day one). Verification must follow      |
+| 77  | Checker unit test file structure    | One test file per checker: `<checker>.test.js` in `__tests__/`. Distinguishable from `checker-regression.test.js` by name.                            | One-per-checker is cleanest for isolation and debugging. No naming collision with regression tests   |
+| 78  | Property test placement             | Co-located: `<name>.property.test.js` next to `<name>.test.js`, matching existing health lib pattern                                                  | Phase 1 established this with `scoring.property.test.js`. Consistency                                |
+| 79  | Baseline file management            | Committed to repo — visible, auditable, PR diffs show when entries removed (progress)                                                                 | Visibility in PRs. Manual removal is fine — shows deliberate progress                                |
+| 80  | Deleted baseline entries            | Auto-clean during `--check-coverage` run — scanner prunes entries for files that no longer exist                                                      | Prevents stale entries from accumulating. Scanner already knows which files exist                    |
+| 81  | Coverage threshold adjustment       | Keep at 65% — auto-detection mechanism is the real guardrail now, not the percentage                                                                  | Percentage is blunt instrument. File-level auto-detection is stronger guarantee. 65% prevents regr.  |
+
+### Amendment Test Inventory (D#53-56, D#65-66)
+
+| Area                                                | New Tests | Test Types                     | Placement                                       |
+| --------------------------------------------------- | --------- | ------------------------------ | ----------------------------------------------- |
+| Audit checker unit tests (36 checkers × 7 audits)   | ~36       | Unit                           | `.claude/skills/*/scripts/checkers/__tests__/`  |
+| Audit checker property tests (36 checkers)          | ~7        | Property (1 per audit)         | `.claude/skills/*/scripts/checkers/__tests__/`  |
+| Audit scoring property tests (7 × scoring.js)       | ~7        | Property                       | `.claude/skills/*/scripts/lib/__tests__/` (new) |
+| Root scripts (57 untested)                          | ~57       | Unit/smoke (risk-proportional) | `tests/scripts/`                                |
+| Debt pipeline (28 untested)                         | ~28       | Unit                           | `tests/scripts/debt/`                           |
+| Audit scripts (8 untested)                          | ~8        | Unit                           | `tests/scripts/audit/`                          |
+| Lib scripts (8 untested)                            | ~8        | Unit                           | `tests/scripts/lib/`                            |
+| Multi-AI scripts (4 untested)                       | ~4        | Unit                           | `tests/scripts/multi-ai/`                       |
+| Planning scripts (5 untested)                       | ~5        | Unit                           | `tests/scripts/planning/`                       |
+| Velocity (1), Secrets (1), Health (1)               | ~3        | Unit                           | `tests/scripts/velocity/`, etc.                 |
+| V1 parity tests (2 pairs)                           | ~2        | Parity                         | `tests/scripts/`                                |
+| Review scripts (8 untested + 1 schema consolidated) | ~9        | Unit + schema validation       | `scripts/reviews/__tests__/`                    |
+| Hook scripts (2 untested)                           | ~2        | Unit                           | `tests/hooks/`                                  |
+| Skill scripts (run-ecosystem-health.js)             | ~1        | Unit                           | `tests/scripts/health/`                         |
+| Normalization property tests                        | ~4        | Property                       | `tests/scripts/lib/`, `tests/scripts/debt/`     |
+| **TOTAL**                                           | **~181**  | Unit, property, parity, smoke  |                                                 |
+
+### Amendment Infrastructure Changes
+
+| File/Area                                | Change                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------- |
+| `scripts/generate-test-registry.js`      | Fix scanner (28 stale entries, 63 missing), add `--check-coverage` flag |
+| `.test-baseline.json` (NEW)              | Baseline of currently-untested files, committed, auto-cleaned           |
+| `.husky/pre-commit`                      | Add untested-file warning for covered directories                       |
+| `.github/workflows/ci.yml`               | Add `--check-coverage` step after tests pass                            |
+| `tsconfig.test.json`                     | Wildcard: `tests/**/*.ts`                                               |
+| `package.json`                           | Add `test:checkers`, `test:infra`, `test:pipeline` scripts              |
+| 7 × audit `scripts/lib/__tests__/` (NEW) | New directories for audit lib property tests                            |
 
 ## Cross-File Updates Required
 

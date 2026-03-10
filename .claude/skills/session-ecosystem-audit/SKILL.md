@@ -281,6 +281,12 @@ Next Steps:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+**Process verification:** Run `__tests__/` suite to confirm audit integrity:
+
+```bash
+node --test .claude/skills/session-ecosystem-audit/scripts/__tests__/*.test.js
+```
+
 ---
 
 ## Phase 5: Trend Report (if previous runs exist)
