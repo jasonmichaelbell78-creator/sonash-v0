@@ -4,6 +4,26 @@
   "created": "2026-03-10",
   "entries": [
     {
+      "path": ".claude/hooks/backup/analyze-user-request.js",
+      "lines": 155,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
+      "path": ".claude/hooks/backup/check-edit-requirements.js",
+      "lines": 96,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
+      "path": ".claude/hooks/backup/check-write-requirements.js",
+      "lines": 92,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
+      "path": ".claude/hooks/backup/coderabbit-review.js",
+      "lines": 136,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
       "path": ".claude/skills/alerts/scripts/run-alerts.js",
       "lines": 3746
     },
