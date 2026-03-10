@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.94 **Created:** 2026-01-02 **Last Updated:** 2026-03-09
+**Document Version:** 17.95 **Created:** 2026-01-02 **Last Updated:** 2026-03-10
 
 ## Purpose
 
@@ -853,6 +853,57 @@ deduplicated, non-overlapping ranges):
 ---
 
 ## Active Reviews
+
+### Review #469: PR #424 R3 — Mixed (CI + SonarCloud + Qodo) (2026-03-10)
+
+_Ecosystem expansion — lint cleanup, regex safety, test robustness._
+
+**Source:** CI/ESLint, SonarCloud Hotspots, Qodo Compliance + Code Suggestions
+**Total:** 25 **Fixed:** 10 **Deferred:** 0 **Rejected:** 15
+
+- **S5852 two-strikes:** Replaced `stepRegex` in `generate-test-registry.js`
+  with string parsing (line-by-line split + `trimStart` + `startsWith`) per
+  CLAUDE.md regex two-strikes rule
+- **CI step dedupe:** Prepended step index to CI step target values to prevent
+  dedup collisions on duplicate step names
+- **`.js` strip safety:** Changed `file.replace(".js", "")` to
+  `file.replace(/\.js$/, "")` across audit checker + health checker scanners
+- **Unused code removal:** Removed `buildTaskMap` (resolve-dependencies.test),
+  `assertEqual` (script-ecosystem checker-regression); prefixed `_successCount`
+  (consolidate-all.test)
+- **Error safety propagation (x7):** Replaced `err.message` with
+  `err instanceof Error ? err.stack || err.message : String(err)` in all 7
+  ecosystem state-manager test files
+- **process.exit guard (x7):** Wrapped `process.exit()` in
+  `require.main === module` check in all 7 ecosystem scoring test files
+- **Finding ID validation:** Added `typeof finding.id === "string"` guard before
+  uniqueness check in skill-ecosystem checker-regression
+
+**Rejected (15):**
+
+- S5852 `post-write-validator.test.ts` ANY_PATTERNS — `[ \t]*` is 2-char class,
+  no backtracking risk (already narrowed in R2-2)
+- S1523 `normalize-all.test.ts` x2 — "javascript:S2245" is a rule ID string
+- BLOCKER `sanitize-input.test.ts` — Already has `// NOSONAR`; intentional test
+  data for sanitizer testing
+- Object stringification x2 — ternary already handles object case with
+  `JSON.stringify`
+- Qodo symlink/unsafe write fallback — Intentional graceful degradation
+- Qodo error exposure — Test files only
+- Qodo unstructured logs — CLI script, console.log appropriate
+- Sanitize dynamic IDs x3 — Internal constants, not user input
+- Make temp paths unique x2 + async guard — Low risk, not needed
+- CI lint ~400+ warnings — Pre-existing, not in PR diff
+
+**Patterns:**
+
+- Two-strikes regex replacement with string parsing is fastest path to resolve
+  persistent S5852 flags — `line.trimStart().startsWith()` covers most YAML
+  patterns
+- `process.exit()` in test scripts should always be guarded with
+  `require.main === module` to prevent premature termination when imported
+
+---
 
 ### Review #468: PR #423 R5 — Qodo + Semgrep (2026-03-09)
 

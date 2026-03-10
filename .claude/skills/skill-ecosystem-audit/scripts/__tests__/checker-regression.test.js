@@ -249,6 +249,10 @@ test("finding IDs are unique across all skill audit checkers", () => {
     const result = checkerResults[name];
     assert(result, `Missing smoke-test result for ${name} (check Test Group 2)`);
     for (const finding of result.findings) {
+      assert(
+        typeof finding.id === "string" && finding.id.trim().length > 0,
+        `Finding in ${name} has missing or empty id`
+      );
       if (seen.has(finding.id)) {
         duplicates.push(`${finding.id} (in ${name})`);
       }

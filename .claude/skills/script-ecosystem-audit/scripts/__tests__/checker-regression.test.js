@@ -45,15 +45,6 @@ function assert(condition, message) {
   if (!condition) throw new Error(message || "Assertion failed");
 }
 
-function assertEqual(actual, expected, message) {
-  if (actual !== expected) {
-    throw new Error(
-      (message || "assertEqual") +
-        `: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`
-    );
-  }
-}
-
 // ============================================================================
 // LOAD CHECKERS
 // ============================================================================

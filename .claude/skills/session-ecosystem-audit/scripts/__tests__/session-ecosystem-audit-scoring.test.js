@@ -255,4 +255,8 @@ test("impactScore error > warning > info", () => {
 // ============================================================================
 
 console.log(`\n${passed} passed, ${failed} failed`);
-process.exit(failed > 0 ? 1 : 0);
+if (require.main === module) {
+  process.exit(failed > 0 ? 1 : 0);
+} else {
+  process.exitCode = failed > 0 ? 1 : 0;
+}

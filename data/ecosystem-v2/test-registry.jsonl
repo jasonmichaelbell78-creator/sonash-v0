@@ -247,30 +247,33 @@
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"docs:accuracy","description":"npm run docs:accuracy"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"docs:placement","description":"npm run docs:placement"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"patterns:promote","description":"npm run patterns:promote"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Checkout code","description":"CI step: Checkout code"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"Setup Node.js","description":"CI step: Setup Node.js"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"Install dependencies","description":"CI step: Install dependencies"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Run oxlint (fast correctness check)","description":"CI step: Run oxlint (fast correctness check)"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Run ESLint","description":"CI step: Run ESLint"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Check code formatting (Prettier)","description":"CI step: Check code formatting (Prettier)"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Check for circular dependencies","description":"CI step: Check for circular dependencies"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Check for unused dependencies/exports","description":"CI step: Check for unused dependencies/exports"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Get changed files for pattern check","description":"CI step: Get changed files for pattern check"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Pattern compliance check (PR - changed files only)","description":"CI step: Pattern compliance check (PR - changed files only)"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Pattern compliance check (PR - no relevant files changed)","description":"CI step: Pattern compliance check (PR - no relevant files changed)"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Pattern compliance check (push to main)","description":"CI step: Pattern compliance check (push to main)"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Pattern test suite","description":"CI step: Pattern test suite"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Documentation check","description":"CI step: Documentation check"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Validate CANON schema","description":"CI step: Validate CANON schema"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Validate audit files","description":"CI step: Validate audit files"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Validate technical debt schema","description":"CI step: Validate technical debt schema"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Check ROADMAP debt references","description":"CI step: Check ROADMAP debt references"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Verify technical debt views current","description":"CI step: Verify technical debt views current"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Type check","description":"CI step: Type check"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Run tests with coverage","description":"CI step: Run tests with coverage"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Enforce coverage thresholds","description":"CI step: Enforce coverage thresholds"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"Upload coverage report","description":"CI step: Upload coverage report"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"Build application","description":"CI step: Build application"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"1:Checkout code","description":"CI step: Checkout code"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"2:Setup Node.js","description":"CI step: Setup Node.js"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"3:Install dependencies","description":"CI step: Install dependencies"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"4:Run oxlint (fast correctness check)","description":"CI step: Run oxlint (fast correctness check)"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"5:Run ESLint","description":"CI step: Run ESLint"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"6:Check code formatting (Prettier)","description":"CI step: Check code formatting (Prettier)"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"7:Check for circular dependencies","description":"CI step: Check for circular dependencies"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"8:Check for unused dependencies/exports","description":"CI step: Check for unused dependencies/exports"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"9:Get changed files for pattern check","description":"CI step: Get changed files for pattern check"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"10:Pattern compliance check (PR - changed files only)","description":"CI step: Pattern compliance check (PR - changed files only)"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"11:Pattern compliance check (PR - no relevant files changed)","description":"CI step: Pattern compliance check (PR - no relevant files changed)"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"12:Pattern compliance check (push to main)","description":"CI step: Pattern compliance check (push to main)"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"13:Pattern test suite","description":"CI step: Pattern test suite"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"14:Documentation check","description":"CI step: Documentation check"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"15:Validate CANON schema","description":"CI step: Validate CANON schema"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"16:Validate audit files","description":"CI step: Validate audit files"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"17:Validate technical debt schema","description":"CI step: Validate technical debt schema"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"18:Check ROADMAP debt references","description":"CI step: Check ROADMAP debt references"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"19:Verify technical debt views current","description":"CI step: Verify technical debt views current"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"20:Type check","description":"CI step: Type check"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"21:Run tests with coverage","description":"CI step: Run tests with coverage"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"22:Enforce coverage thresholds","description":"CI step: Enforce coverage thresholds"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"23:Upload coverage report","description":"CI step: Upload coverage report"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"24:Checkout code","description":"CI step: Checkout code"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"25:Setup Node.js","description":"CI step: Setup Node.js"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"26:Install dependencies","description":"CI step: Install dependencies"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"27:Build application","description":"CI step: Build application"}
 {"path":"scripts/health/checkers/code-quality.js","source_type":"health_checker","type":"checker","owner":"health","target":"code-quality","description":"Health checker: code-quality"}
 {"path":"scripts/health/checkers/debt-health.js","source_type":"health_checker","type":"checker","owner":"health","target":"debt-health","description":"Health checker: debt-health"}
 {"path":"scripts/health/checkers/documentation.js","source_type":"health_checker","type":"checker","owner":"health","target":"documentation","description":"Health checker: documentation"}

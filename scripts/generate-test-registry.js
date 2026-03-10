@@ -177,8 +177,8 @@ function scanAuditCheckers() {
             source_type: "audit_checker",
             type: "checker",
             owner: skill.name,
-            target: file.replace(".js", ""),
-            description: `${skill.name} domain checker: ${file.replace(".js", "")}`,
+            target: file.replace(/\.js$/, ""),
+            description: `${skill.name} domain checker: ${file.replace(/\.js$/, "")}`,
           });
         }
       } catch {
@@ -286,12 +286,17 @@ function scanCiSteps() {
 
   try {
     const content = fs.readFileSync(ciPath, "utf8");
-    const stepRegex = /^\s*-\s+name:\s*(.+)$/gm;
+    // S5852 two-strikes: replaced regex with string parsing to avoid ReDoS risk
     const gatePatterns =
       /check|lint|test|validate|coverage|audit|format|pattern|compliance|verify/i;
-    for (const match of content.matchAll(stepRegex)) {
-      const rawName = match[1].trim();
-      if (rawName === "|" || rawName === ">") continue;
+    const lines = content.split("\n");
+    let stepIndex = 0;
+    for (const line of lines) {
+      const trimmed = line.trimStart();
+      if (!trimmed.startsWith("- name:")) continue;
+      const rawName = trimmed.slice("- name:".length).trim();
+      if (!rawName || rawName.startsWith("|") || rawName.startsWith(">")) continue;
+      stepIndex++;
       const name = rawName.replaceAll(/[\n\r]/g, " ");
       const isGate = gatePatterns.test(name);
       entries.push({
@@ -299,7 +304,7 @@ function scanCiSteps() {
         source_type: isGate ? "gate_check" : "ci_step",
         type: isGate ? "gate" : "ci",
         owner: "ci",
-        target: name,
+        target: `${stepIndex}:${name}`,
         description: `CI step: ${name}`,
       });
     }
@@ -325,8 +330,8 @@ function scanHealthCheckers() {
         source_type: "health_checker",
         type: "checker",
         owner: "health",
-        target: file.replace(".js", ""),
-        description: `Health checker: ${file.replace(".js", "")}`,
+        target: file.replace(/\.js$/, ""),
+        description: `Health checker: ${file.replace(/\.js$/, "")}`,
       });
     }
   } catch (err) {

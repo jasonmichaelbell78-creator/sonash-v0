@@ -195,13 +195,13 @@ describe("consolidate-all: runStep — error path", () => {
     const failingScripts = new Set(["extract-sonarcloud.js"]); // optional failure
     const runStep = createRunStep(allScripts, failingScripts);
 
-    let successCount = 0;
+    let _successCount = 0;
     let failedCount = 0;
 
     for (let i = 0; i < STEPS.length; i++) {
       try {
         if (runStep(STEPS[i], i)) {
-          successCount++;
+          _successCount++;
         } else {
           failedCount++;
         }
