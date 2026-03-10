@@ -450,14 +450,11 @@ describe("mergeRelatedFindings concept", () => {
     const { crossCutting, fileMap } = detectCrossCuttingFindings(findings);
 
     // Simulate the merge: non-merged findings get cross_cutting: false
-    const processed = new Set<string | undefined>();
     const merged: Finding[] = [];
 
     // No cross-cutting files — add all as non-merged
     for (const finding of findings) {
-      if (!processed.has(finding.canonical_id)) {
-        merged.push({ ...finding, cross_cutting: false, categories: [finding.category!] });
-      }
+      merged.push({ ...finding, cross_cutting: false, categories: [finding.category!] });
     }
 
     assert.equal(merged.length, 1);
