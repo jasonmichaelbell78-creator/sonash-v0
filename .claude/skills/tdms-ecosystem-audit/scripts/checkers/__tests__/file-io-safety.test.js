@@ -39,7 +39,7 @@ describe("file-io-safety checker", () => {
         "const path = require('node:path');",
         "function safeWrite(rootDir, relPath, content) {",
         "  const rel = path.relative(rootDir, path.join(rootDir, relPath));",
-        "  if (/^\\.\\..[\\\\/]|$/.test(rel)) throw new Error('Path traversal');",
+        "  if (/^\\.\\.(?:[\\\\/]|$)/.test(rel)) throw new Error('Path traversal');",
         "  try {",
         "    fs.writeFileSync(path.join(rootDir, relPath), content, 'utf8');",
         "  } catch (e) {",
@@ -50,7 +50,9 @@ describe("file-io-safety checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(scriptsDir, "safe-io.js"), safeScript);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -77,7 +79,9 @@ describe("file-io-safety checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw with no scripts", () => {
       const { run } = require(CHECKER_PATH);
@@ -99,19 +103,22 @@ describe("file-io-safety checker", () => {
       const scriptsDir = path.join(tmpDir, "scripts");
       fs.mkdirSync(scriptsDir, { recursive: true });
       // Unsafe: no try/catch around file operations, startsWith check instead of regex
+      const dotdot = "." + "."; // Avoid pattern-checker false positive on test fixture
       const unsafeScript = [
         '"use strict";',
         "const fs = require('node:fs');",
         "const path = require('node:path');",
         "function read(p) {",
-        "  if (p.startsWith('.'" + "+ '.')) throw new Error('bad');",
+        `  if (p.startsWith('${dotdot}')) throw new Error('bad');`,
         "  return fs.readFileSync(p, 'utf8');",
         "}",
         "module.exports = { read };",
       ].join("\n");
       fs.writeFileSync(path.join(scriptsDir, "unsafe-io.js"), unsafeScript);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on unsafe patterns", () => {
       const { run } = require(CHECKER_PATH);
@@ -132,7 +139,9 @@ describe("file-io-safety checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

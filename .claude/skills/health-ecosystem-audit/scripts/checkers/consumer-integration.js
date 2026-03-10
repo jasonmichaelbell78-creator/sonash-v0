@@ -152,36 +152,27 @@ function checkTimeoutConsistency(rootDir, findings) {
     };
   }
 
-  // Check: does runner distinguish quick vs full checkers?
-  const hasQuickMode = /quick/.test(runnerContent);
-  const hasCheckerLabels = /label/.test(runnerContent);
-
   // Count checkers and check for timeout configuration
   const checkerDefs = runnerContent.match(/["'][\w-]+["']\s*:\s*\{[^}]*fn\s*:/g);
   totalCheckers = checkerDefs ? checkerDefs.length : 0;
 
   // Check: are quick checkers properly tagged?
-  const quickCheckers = runnerContent.match(/quick:\s*true/g);
-  const fullCheckers = runnerContent.match(/quick:\s*false/g);
+  const quickCount = (runnerContent.match(/quick:\s*true/g) || []).length;
+  const fullCount = (runnerContent.match(/quick:\s*false/g) || []).length;
+  consistentCheckers = quickCount + fullCount;
 
-  if (quickCheckers && fullCheckers) {
-    consistentCheckers = totalCheckers; // All tagged
-  } else if (totalCheckers > 0) {
-    // Not all tagged
-    consistentCheckers = Math.max(quickCheckers?.length ?? 0, fullCheckers?.length ?? 0);
-    if (consistentCheckers < totalCheckers) {
-      findings.push({
-        id: "HMS-410",
-        category: "health_check_timeout_consistency",
-        domain: DOMAIN,
-        severity: "info",
-        message: `${totalCheckers - consistentCheckers} checker(s) missing quick/full mode tag`,
-        details: "All checkers should have explicit quick: true/false designation.",
-        impactScore: 30,
-        frequency: totalCheckers - consistentCheckers,
-        blastRadius: 1,
-      });
-    }
+  if (totalCheckers > 0 && consistentCheckers < totalCheckers) {
+    findings.push({
+      id: "HMS-410",
+      category: "health_check_timeout_consistency",
+      domain: DOMAIN,
+      severity: "info",
+      message: `${totalCheckers - consistentCheckers} checker(s) missing quick/full mode tag`,
+      details: "All checkers should have explicit quick: true/false designation.",
+      impactScore: 30,
+      frequency: totalCheckers - consistentCheckers,
+      blastRadius: 1,
+    });
   }
 
   // Check: is there a per-checker timeout mechanism?

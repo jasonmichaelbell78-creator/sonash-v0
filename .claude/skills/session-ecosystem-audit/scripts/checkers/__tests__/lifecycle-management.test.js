@@ -63,7 +63,9 @@ describe("lifecycle-management checker", () => {
         '"use strict";\nprocess.exit(0);\n'
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -90,7 +92,9 @@ describe("lifecycle-management checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when session skill is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -114,7 +118,9 @@ describe("lifecycle-management checker", () => {
         Buffer.from([0xff, 0xfe, 0x00, 0x01])
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed SESSION_CONTEXT", () => {
       const { run } = require(CHECKER_PATH);
@@ -127,7 +133,9 @@ describe("lifecycle-management checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

@@ -51,7 +51,9 @@ describe("safety-error-handling checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(scriptsDir, "safe-script.js"), safeScript);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -78,7 +80,9 @@ describe("safety-error-handling checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when no scripts exist", () => {
       const { run } = require(CHECKER_PATH);
@@ -109,7 +113,9 @@ describe("safety-error-handling checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(scriptsDir, "unsafe.js"), unsafeScript);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on unsafe scripts", () => {
       const { run } = require(CHECKER_PATH);
@@ -133,7 +139,9 @@ describe("safety-error-handling checker", () => {
       fs.mkdirSync(scriptsDir, { recursive: true });
       fs.writeFileSync(path.join(scriptsDir, "test.js"), "const x = require('foo');\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match SIA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

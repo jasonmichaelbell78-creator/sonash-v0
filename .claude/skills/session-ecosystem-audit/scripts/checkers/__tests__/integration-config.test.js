@@ -52,7 +52,9 @@ describe("integration-config checker", () => {
         "# Claude Config\n\n## Rules\n\nBe helpful.\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -79,7 +81,9 @@ describe("integration-config checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when config files are missing", () => {
       const { run } = require(CHECKER_PATH);
@@ -102,7 +106,9 @@ describe("integration-config checker", () => {
       fs.mkdirSync(claudeDir, { recursive: true });
       fs.writeFileSync(path.join(claudeDir, "settings.json"), "{ bad json }");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed settings", () => {
       const { run } = require(CHECKER_PATH);
@@ -115,7 +121,9 @@ describe("integration-config checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

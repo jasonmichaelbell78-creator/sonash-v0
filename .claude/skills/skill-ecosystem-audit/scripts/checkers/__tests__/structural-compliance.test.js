@@ -55,7 +55,9 @@ describe("structural-compliance checker", () => {
         VALID_SKILL_MD.replace("test-skill", "another-skill")
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -82,7 +84,9 @@ describe("structural-compliance checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when skills/ is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -105,7 +109,9 @@ describe("structural-compliance checker", () => {
       fs.mkdirSync(skillDir, { recursive: true });
       fs.writeFileSync(path.join(skillDir, "SKILL.md"), "# Bad Skill\n\nNo frontmatter here.\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on skill with missing frontmatter", () => {
       const { run } = require(CHECKER_PATH);
@@ -133,7 +139,9 @@ describe("structural-compliance checker", () => {
         "---\ntrigger: /gap\n---\n# Gap Skill\n\n## 1. First\n\nContent.\n\n## 3. Third\n\nSkipped step 2.\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on step discontinuity", () => {
       const { run } = require(CHECKER_PATH);
@@ -149,7 +157,9 @@ describe("structural-compliance checker", () => {
       fs.mkdirSync(skillDir, { recursive: true });
       fs.writeFileSync(path.join(skillDir, "SKILL.md"), "");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

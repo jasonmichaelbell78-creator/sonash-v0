@@ -49,7 +49,9 @@ describe("cross-reference-integrity checker", () => {
         "# Claude Config\n\nSee [Skill A](.claude/skills/skill-a/SKILL.md).\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -82,7 +84,9 @@ describe("cross-reference-integrity checker", () => {
         "---\ntrigger: /broken\n---\n# Broken Skill\n\n## 1. Step\n\nSee [Missing](../nonexistent/SKILL.md).\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on broken cross-references", () => {
       const { run } = require(CHECKER_PATH);
@@ -103,7 +107,9 @@ describe("cross-reference-integrity checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw with no skills", () => {
       const { run } = require(CHECKER_PATH);
@@ -116,7 +122,9 @@ describe("cross-reference-integrity checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

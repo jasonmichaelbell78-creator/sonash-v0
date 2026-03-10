@@ -43,7 +43,9 @@ describe("registration-reachability checker", () => {
         })
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -70,7 +72,9 @@ describe("registration-reachability checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw with empty project", () => {
       const { run } = require(CHECKER_PATH);
@@ -96,7 +100,9 @@ describe("registration-reachability checker", () => {
         })
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when referenced script is missing", () => {
       const { run } = require(CHECKER_PATH);
@@ -117,7 +123,9 @@ describe("registration-reachability checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match SIA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

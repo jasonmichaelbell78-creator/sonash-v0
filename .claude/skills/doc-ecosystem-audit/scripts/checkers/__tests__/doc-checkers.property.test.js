@@ -38,7 +38,9 @@ describe("doc-ecosystem checkers — property tests", () => {
     fs.writeFileSync(path.join(tmpDir, "docs", "test.md"), "# Test\nContent.\n");
     fs.writeFileSync(path.join(tmpDir, "package.json"), JSON.stringify({ scripts: {} }));
   });
-  after(() => removeTempDir(tmpDir));
+  after(() => {
+    if (tmpDir) removeTempDir(tmpDir);
+  });
 
   for (const checkerFile of CHECKER_FILES) {
     describe(`${checkerFile}`, () => {

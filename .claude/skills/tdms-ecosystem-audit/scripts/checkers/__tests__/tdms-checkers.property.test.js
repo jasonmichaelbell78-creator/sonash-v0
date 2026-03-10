@@ -64,7 +64,9 @@ describe("tdms-ecosystem checkers — property tests", () => {
       "module.exports={r};\n";
     fs.writeFileSync(path.join(scriptsDir, "safe-util.js"), safeScript);
   });
-  after(() => removeTempDir(tmpDir));
+  after(() => {
+    if (tmpDir) removeTempDir(tmpDir);
+  });
 
   for (const checkerFile of CHECKER_FILES) {
     describe(`${checkerFile}`, () => {
@@ -75,7 +77,7 @@ describe("tdms-ecosystem checkers — property tests", () => {
             const result = checker.run({ rootDir });
             for (const val of Object.values(result.scores)) {
               if (typeof val === "object" && val !== null && typeof val.score === "number") {
-                return val.score >= 0 && val.score <= 100;
+                if (val.score < 0 || val.score > 100) return false;
               }
             }
             return true;

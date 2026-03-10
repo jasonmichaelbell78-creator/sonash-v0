@@ -60,7 +60,9 @@ describe("state-persistence checker", () => {
         JSON.stringify({ notes: ["note 1", "note 2"], sessionNumber: 200 })
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -87,7 +89,9 @@ describe("state-persistence checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when state/ is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -112,7 +116,9 @@ describe("state-persistence checker", () => {
       fs.writeFileSync(path.join(stateDir, "commit-log.jsonl"), "bad line 1\nbad line 2\n");
       fs.writeFileSync(path.join(stateDir, "session-notes.json"), "{ invalid }");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on corrupt state files", () => {
       const { run } = require(CHECKER_PATH);
@@ -137,7 +143,9 @@ describe("state-persistence checker", () => {
       // Missing required fields
       fs.writeFileSync(path.join(stateDir, "handoff.json"), JSON.stringify({ foo: "bar" }));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("detects missing required fields in handoff.json", () => {
       const { run } = require(CHECKER_PATH);
@@ -155,7 +163,9 @@ describe("state-persistence checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

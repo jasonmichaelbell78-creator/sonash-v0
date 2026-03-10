@@ -83,11 +83,15 @@ function computeGrade(score) {
  */
 function sparkline(values) {
   if (!values || values.length === 0) return "";
-  const min = values.reduce((a, b) => (b < a ? b : a), values[0] ?? 0);
-  const max = values.reduce((a, b) => (b > a ? b : a), values[0] ?? 0);
+  const nums = values.filter((v) => typeof v === "number" && Number.isFinite(v));
+  if (nums.length === 0) return "";
+  const min = nums.reduce((a, b) => (b < a ? b : a), nums[0]);
+  const max = nums.reduce((a, b) => (b > a ? b : a), nums[0]);
   const range = max - min || 1;
   const chars = "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588";
-  return values.map((v) => chars[Math.min(7, Math.floor(((v - min) / range) * 7))]).join("");
+  return nums
+    .map((v) => chars[Math.max(0, Math.min(7, Math.floor(((v - min) / range) * 7)))])
+    .join("");
 }
 
 /**
@@ -156,8 +160,8 @@ function compositeScore(categoryScores, weights) {
 function impactScore(finding) {
   const severityWeights = { error: 1.0, warning: 0.6, info: 0.3 };
   const sevWeight = severityWeights[finding.severity] || 0.3;
-  const freq = Math.min(1.0, (finding.frequency || 1) / 10);
-  const blast = Math.min(1.0, (finding.blastRadius || 1) / 5);
+  const freq = Math.min(1.0, (finding.frequency ?? 1) / 10);
+  const blast = Math.min(1.0, (finding.blastRadius ?? 1) / 5);
 
   return Math.round(sevWeight * 40 + freq * 30 + blast * 30);
 }

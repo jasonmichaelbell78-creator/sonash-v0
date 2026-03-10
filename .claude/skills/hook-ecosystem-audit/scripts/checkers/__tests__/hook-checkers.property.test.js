@@ -59,7 +59,9 @@ describe("hook-ecosystem checkers — property tests", () => {
       "name: CI\non: [push]\njobs:\n  test:\n    runs-on: ubuntu-latest\n"
     );
   });
-  after(() => removeTempDir(tmpDir));
+  after(() => {
+    if (tmpDir) removeTempDir(tmpDir);
+  });
 
   for (const checkerFile of CHECKER_FILES) {
     describe(`${checkerFile}`, () => {
@@ -75,9 +77,17 @@ describe("hook-ecosystem checkers — property tests", () => {
                 }
               }
               return true;
-            } catch {
-              // Pre-existing source bugs are not test failures
-              return true;
+            } catch (err) {
+              // Only tolerate known pre-existing errors, not new regressions
+              const msg = err instanceof Error ? err.message : String(err);
+              if (
+                msg.includes("Cannot read properties of undefined") ||
+                msg.includes("is not a function") ||
+                msg.includes("is not defined")
+              ) {
+                return true; // Known pre-existing source bugs
+              }
+              return false; // New/unexpected errors should fail
             }
           }),
           { numRuns: 10 }
@@ -91,8 +101,17 @@ describe("hook-ecosystem checkers — property tests", () => {
             try {
               const result = checker.run({ rootDir });
               return typeof result.domain === "string" && result.domain.length > 0;
-            } catch {
-              return true;
+            } catch (err) {
+              // Only tolerate known pre-existing errors, not new regressions
+              const msg = err instanceof Error ? err.message : String(err);
+              if (
+                msg.includes("Cannot read properties of undefined") ||
+                msg.includes("is not a function") ||
+                msg.includes("is not defined")
+              ) {
+                return true; // Known pre-existing source bugs
+              }
+              return false; // New/unexpected errors should fail
             }
           }),
           { numRuns: 10 }
@@ -106,8 +125,17 @@ describe("hook-ecosystem checkers — property tests", () => {
             try {
               const result = checker.run({ rootDir });
               return Array.isArray(result.findings);
-            } catch {
-              return true;
+            } catch (err) {
+              // Only tolerate known pre-existing errors, not new regressions
+              const msg = err instanceof Error ? err.message : String(err);
+              if (
+                msg.includes("Cannot read properties of undefined") ||
+                msg.includes("is not a function") ||
+                msg.includes("is not defined")
+              ) {
+                return true; // Known pre-existing source bugs
+              }
+              return false; // New/unexpected errors should fail
             }
           }),
           { numRuns: 10 }
@@ -127,8 +155,17 @@ describe("hook-ecosystem checkers — property tests", () => {
                   typeof f.message === "string" &&
                   ["error", "warning", "info"].includes(f.severity)
               );
-            } catch {
-              return true;
+            } catch (err) {
+              // Only tolerate known pre-existing errors, not new regressions
+              const msg = err instanceof Error ? err.message : String(err);
+              if (
+                msg.includes("Cannot read properties of undefined") ||
+                msg.includes("is not a function") ||
+                msg.includes("is not defined")
+              ) {
+                return true; // Known pre-existing source bugs
+              }
+              return false; // New/unexpected errors should fail
             }
           }),
           { numRuns: 10 }

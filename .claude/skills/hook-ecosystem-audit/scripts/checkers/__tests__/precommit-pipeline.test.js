@@ -41,7 +41,9 @@ describe("precommit-pipeline checker", () => {
         })
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -68,7 +70,9 @@ describe("precommit-pipeline checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when no pre-commit config exists", () => {
       const { run } = require(CHECKER_PATH);
@@ -88,7 +92,9 @@ describe("precommit-pipeline checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match HEA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

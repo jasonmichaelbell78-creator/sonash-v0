@@ -60,7 +60,9 @@ describe("roadmap-integration checker", () => {
         ].join("\n") + "\n";
       fs.writeFileSync(path.join(debtDir, "MASTER_DEBT.jsonl"), masterDebt);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -87,7 +89,9 @@ describe("roadmap-integration checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when ROADMAP.md is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -108,7 +112,9 @@ describe("roadmap-integration checker", () => {
       tmpDir = makeTempDir();
       fs.writeFileSync(path.join(tmpDir, "ROADMAP.md"), Buffer.from([0xff, 0xfe]));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed ROADMAP.md", () => {
       const { run } = require(CHECKER_PATH);
@@ -121,7 +127,9 @@ describe("roadmap-integration checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

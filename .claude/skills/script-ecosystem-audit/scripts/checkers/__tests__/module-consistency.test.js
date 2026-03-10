@@ -43,7 +43,9 @@ describe("module-consistency checker", () => {
       );
       fs.writeFileSync(path.join(tmpDir, "package.json"), JSON.stringify({ type: "commonjs" }));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -70,7 +72,9 @@ describe("module-consistency checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when no scripts exist", () => {
       const { run } = require(CHECKER_PATH);
@@ -102,7 +106,9 @@ describe("module-consistency checker", () => {
       );
       fs.writeFileSync(path.join(tmpDir, "package.json"), JSON.stringify({ type: "commonjs" }));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on mixed module styles", () => {
       const { run } = require(CHECKER_PATH);
@@ -123,7 +129,9 @@ describe("module-consistency checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match SIA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

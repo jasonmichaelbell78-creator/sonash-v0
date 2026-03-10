@@ -67,7 +67,9 @@ describe("pipeline-correctness checker", () => {
       fs.writeFileSync(path.join(debtDir, "raw-items.jsonl"), "");
       fs.writeFileSync(path.join(debtDir, "MASTER_DEBT.jsonl"), "");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -94,7 +96,9 @@ describe("pipeline-correctness checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when pipeline scripts are absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -125,7 +129,9 @@ describe("pipeline-correctness checker", () => {
         '"use strict";\nmodule.exports = {};\n'
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on partial pipeline", () => {
       const { run } = require(CHECKER_PATH);
@@ -146,7 +152,9 @@ describe("pipeline-correctness checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

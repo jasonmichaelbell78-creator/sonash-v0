@@ -50,7 +50,9 @@ describe("feedback-integration checker", () => {
         "# Learnings\n\n## Patterns\n\nPattern: always null-check.\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -77,7 +79,9 @@ describe("feedback-integration checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on empty project", () => {
       const { run } = require(CHECKER_PATH);
@@ -100,7 +104,9 @@ describe("feedback-integration checker", () => {
       fs.mkdirSync(stateDir, { recursive: true });
       fs.writeFileSync(path.join(stateDir, "reviews.jsonl"), "{bad}\n{also bad}\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on corrupt JSONL", () => {
       const { run } = require(CHECKER_PATH);
@@ -113,7 +119,9 @@ describe("feedback-integration checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

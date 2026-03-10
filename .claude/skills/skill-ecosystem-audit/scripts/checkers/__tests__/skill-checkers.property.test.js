@@ -65,7 +65,9 @@ describe("skill-ecosystem checkers — property tests", () => {
       "# Claude Config\n\n| Trigger | Action |\n| --- | --- |\n| explore | `explore` skill |\n| test | `/test-skill` |\n"
     );
   });
-  after(() => removeTempDir(tmpDir));
+  after(() => {
+    if (tmpDir) removeTempDir(tmpDir);
+  });
 
   for (const checkerFile of CHECKER_FILES) {
     describe(`${checkerFile}`, () => {
@@ -76,7 +78,7 @@ describe("skill-ecosystem checkers — property tests", () => {
             const result = checker.run({ rootDir });
             for (const val of Object.values(result.scores)) {
               if (typeof val === "object" && val !== null && typeof val.score === "number") {
-                return val.score >= 0 && val.score <= 100;
+                if (val.score < 0 || val.score > 100) return false;
               }
             }
             return true;

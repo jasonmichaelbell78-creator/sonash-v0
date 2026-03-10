@@ -49,7 +49,9 @@ describe("data-quality-dedup checker", () => {
         [makeDebtItem("TD-001"), makeDebtItem("TD-002"), makeDebtItem("TD-003")].join("\n") + "\n";
       fs.writeFileSync(path.join(debtDir, "MASTER_DEBT.jsonl"), masterDebt);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -76,7 +78,9 @@ describe("data-quality-dedup checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when debt files are absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -107,7 +111,9 @@ describe("data-quality-dedup checker", () => {
         ].join("\n") + "\n";
       fs.writeFileSync(path.join(debtDir, "MASTER_DEBT.jsonl"), masterDebt);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on duplicate items", () => {
       const { run } = require(CHECKER_PATH);
@@ -131,7 +137,9 @@ describe("data-quality-dedup checker", () => {
       fs.mkdirSync(debtDir, { recursive: true });
       fs.writeFileSync(path.join(debtDir, "MASTER_DEBT.jsonl"), "bad\n{invalid}\nnot-json\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed JSONL", () => {
       const { run } = require(CHECKER_PATH);
@@ -144,7 +152,9 @@ describe("data-quality-dedup checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

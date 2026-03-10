@@ -60,7 +60,9 @@ describe("agent-orchestration checker", () => {
         "---\ntrigger: /plan\n---\n# Plan Agent\n\n## 1. Plan\n\nPlan implementation.\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -87,7 +89,9 @@ describe("agent-orchestration checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when orchestration docs are absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -107,7 +111,9 @@ describe("agent-orchestration checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

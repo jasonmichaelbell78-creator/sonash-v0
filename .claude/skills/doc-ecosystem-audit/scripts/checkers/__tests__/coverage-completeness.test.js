@@ -47,7 +47,9 @@ describe("coverage-completeness checker", () => {
       fs.writeFileSync(path.join(tmpDir, "CLAUDE.md"), "# Claude AI Config\n\nRules for AI.\n");
       fs.writeFileSync(path.join(tmpDir, "AI_WORKFLOW.md"), "# AI Workflow\n\nWorkflow steps.\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -74,7 +76,9 @@ describe("coverage-completeness checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on empty project", () => {
       const { run } = require(CHECKER_PATH);
@@ -97,7 +101,9 @@ describe("coverage-completeness checker", () => {
       // Only one doc, many areas missing
       fs.writeFileSync(path.join(tmpDir, "docs", "single.md"), "# Single Doc\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("scores are still in [0, 100] for partial coverage", () => {
       const { run } = require(CHECKER_PATH);
@@ -116,7 +122,9 @@ describe("coverage-completeness checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message with DEA- prefix", () => {
       const { run } = require(CHECKER_PATH);

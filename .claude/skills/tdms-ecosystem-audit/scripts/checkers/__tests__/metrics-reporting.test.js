@@ -47,7 +47,9 @@ describe("metrics-reporting checker", () => {
       });
       fs.writeFileSync(path.join(debtDir, "metrics.json"), metricsData);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -74,7 +76,9 @@ describe("metrics-reporting checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when metrics data is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -100,7 +104,9 @@ describe("metrics-reporting checker", () => {
         JSON.stringify({ generatedAt: "2020-01-01T00:00:00.000Z", totalItems: 0 })
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on stale metrics", () => {
       const { run } = require(CHECKER_PATH);
@@ -121,7 +127,9 @@ describe("metrics-reporting checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

@@ -44,7 +44,9 @@ describe("effectiveness-metrics checker", () => {
         ).join("\n") + "\n";
       fs.writeFileSync(path.join(stateDir, "review-metrics.jsonl"), metricsData);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -71,7 +73,9 @@ describe("effectiveness-metrics checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when metric files are absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -94,7 +98,9 @@ describe("effectiveness-metrics checker", () => {
       fs.mkdirSync(stateDir, { recursive: true });
       fs.writeFileSync(path.join(stateDir, "review-metrics.jsonl"), "bad\n{also bad}\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed JSONL", () => {
       const { run } = require(CHECKER_PATH);
@@ -115,7 +121,9 @@ describe("effectiveness-metrics checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

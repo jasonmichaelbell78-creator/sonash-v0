@@ -50,7 +50,9 @@ describe("script-ecosystem checkers — property tests", () => {
       })
     );
   });
-  after(() => removeTempDir(tmpDir));
+  after(() => {
+    if (tmpDir) removeTempDir(tmpDir);
+  });
 
   for (const checkerFile of CHECKER_FILES) {
     describe(`${checkerFile}`, () => {

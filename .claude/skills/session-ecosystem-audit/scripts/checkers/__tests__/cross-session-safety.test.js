@@ -48,7 +48,9 @@ describe("cross-session-safety checker", () => {
         JSON.stringify({ sessionNumber: 5, status: "complete" })
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -75,7 +77,9 @@ describe("cross-session-safety checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw with no state data", () => {
       const { run } = require(CHECKER_PATH);
@@ -99,7 +103,9 @@ describe("cross-session-safety checker", () => {
       fs.writeFileSync(path.join(stateDir, "commit-log.jsonl"), "corrupt\n");
       fs.writeFileSync(path.join(stateDir, "handoff.json"), "corrupt");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on corrupt state files", () => {
       const { run } = require(CHECKER_PATH);
@@ -120,7 +126,9 @@ describe("cross-session-safety checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

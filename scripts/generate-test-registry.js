@@ -138,13 +138,18 @@ function scanSkillTestFiles() {
   const skillsDir = path.join(ROOT, ".claude", "skills");
   if (!fs.existsSync(skillsDir)) return entries;
 
+  const testSubdirs = ["__tests__", "checkers/__tests__", "lib/__tests__"];
+
   try {
     const skills = fs.readdirSync(skillsDir, { withFileTypes: true });
     for (const skill of skills) {
       if (!skill.isDirectory() || skill.name === "worktrees") continue;
-      const testsDir = path.join(skillsDir, skill.name, "scripts", "__tests__");
-      if (!fs.existsSync(testsDir)) continue;
-      entries.push(...scanSingleSkillTests(testsDir, skill.name));
+      const scriptsBase = path.join(skillsDir, skill.name, "scripts");
+      for (const subdir of testSubdirs) {
+        const testsDir = path.join(scriptsBase, subdir);
+        if (!fs.existsSync(testsDir)) continue;
+        entries.push(...scanSingleSkillTests(testsDir, skill.name));
+      }
     }
   } catch (err) {
     console.error(`[generate-test-registry] scanSkillTestFiles: ${sanitizeError(err)}`);
@@ -508,29 +513,47 @@ function scanCoveredScripts() {
  * @returns {boolean}
  */
 /**
+ * Extract a locality key from a relative path (first 2-3 directory segments).
+ * Used to ensure fuzzy matches share a common directory ancestor.
+ * @param {string} relPath - Relative path like "scripts/health/checkers/foo.js"
+ * @returns {string} Locality key like "scripts/health" or ".claude/skills/pr-ecosystem-audit"
+ */
+function getLocalityKey(relPath) {
+  const parts = relPath.split("/");
+  // For .claude/skills/X paths, use first 3 segments to capture skill name
+  if (parts[0] === ".claude" && parts.length >= 3) return parts.slice(0, 3).join("/");
+  // For other paths, use first 2 segments
+  return parts.slice(0, Math.min(2, parts.length)).join("/");
+}
+
+/**
  * Check if a single test entry matches a script name via any strategy.
  * @param {RegistryEntry} entry - Test registry entry
  * @param {string} scriptName - Base name without extension
  * @param {string} prefixStripped - Name with common prefixes removed
+ * @param {string} [scriptDir] - Locality key for directory-aware matching
  * @returns {boolean}
  */
-function entryMatchesScript(entry, scriptName, prefixStripped) {
-  // Strategy 1: exact name match
+function entryMatchesScript(entry, scriptName, prefixStripped, scriptDir) {
+  // Strategy 1: exact name match (no locality check needed)
   if (entry.target === scriptName) return true;
+  // For strategies 2 and 4, require directory locality when scriptDir is provided
+  const localMatch = !scriptDir || getLocalityKey(entry.path) === scriptDir;
   // Strategy 2: test path contains script name
-  if (entry.path.includes(scriptName + ".test.")) return true;
-  if (entry.path.includes(scriptName + ".property.test.")) return true;
+  if (localMatch && entry.path.includes(scriptName + ".test.")) return true;
+  if (localMatch && entry.path.includes(scriptName + ".property.test.")) return true;
   // Strategy 3: prefix-stripped match (check-docs-light -> docs-light)
   if (prefixStripped !== scriptName && entry.target === prefixStripped) return true;
   // Strategy 4: test target contains script name or vice versa
   if (entry.target.includes(scriptName) || scriptName.includes(entry.target)) {
-    if (entry.target.length >= 5 || scriptName.length >= 5) return true;
+    if ((entry.target.length >= 5 || scriptName.length >= 5) && localMatch) return true;
   }
   return false;
 }
 
 function hasTest(scriptPath, testEntries) {
   const scriptName = path.basename(scriptPath, ".js");
+  const scriptDir = getLocalityKey(scriptPath);
   const prefixStripped = scriptName
     .replace(/^check-/, "")
     .replace(/^validate-/, "")
@@ -539,7 +562,8 @@ function hasTest(scriptPath, testEntries) {
 
   return testEntries.some(
     (entry) =>
-      entry.source_type === "test_file" && entryMatchesScript(entry, scriptName, prefixStripped)
+      entry.source_type === "test_file" &&
+      entryMatchesScript(entry, scriptName, prefixStripped, scriptDir)
   );
 }
 

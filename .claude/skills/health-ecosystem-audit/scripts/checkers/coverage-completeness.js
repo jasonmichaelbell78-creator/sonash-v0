@@ -258,15 +258,16 @@ function checkTestCoverage(rootDir, skipLiveTests, findings) {
   let failedTests = 0;
 
   try {
-    testOutput = execSync("npm test 2>&1", {
+    testOutput = execSync("npm test", {
       cwd: rootDir,
       encoding: "utf8",
       timeout: 120000, // 2 min timeout for live tests
       maxBuffer: 10 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "pipe"],
     });
   } catch (err) {
     testExitCode = err.status || 1;
-    testOutput = (err.stdout || "") + "\n" + (err.stderr || "");
+    testOutput = String(err.stdout || "") + "\n" + String(err.stderr || "");
   }
 
   // Parse test results from output
@@ -462,7 +463,23 @@ function checkRegistryCompleteness(ctx, findings) {
   }
 
   // Health checkers should be registered as health_checker source_type
-  expectedSources += 10; // 10 known health checkers
+  // Dynamically count checker files instead of hardcoding
+  try {
+    const auditCheckersDir = path.join(
+      ctx.rootDir,
+      ".claude",
+      "skills",
+      "health-ecosystem-audit",
+      "scripts",
+      "checkers"
+    );
+    const auditCheckerFiles = fs
+      .readdirSync(auditCheckersDir)
+      .filter((f) => f.endsWith(".js") && !f.includes("__tests__") && !f.includes(".test."));
+    expectedSources += auditCheckerFiles.length;
+  } catch {
+    expectedSources += healthCheckerEntries.length; // fallback: count what we have
+  }
   registeredSources += healthCheckerEntries.length;
 
   const registeredPct =

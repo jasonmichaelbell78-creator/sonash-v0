@@ -64,7 +64,9 @@ describe("process-compliance checker", () => {
         JSON.stringify({ id: "TD-001", title: "Fix auth", severity: "high" }) + "\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -91,7 +93,9 @@ describe("process-compliance checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when all data files are absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -114,7 +118,9 @@ describe("process-compliance checker", () => {
       fs.mkdirSync(stateDir, { recursive: true });
       fs.writeFileSync(path.join(stateDir, "reviews.jsonl"), "not-json\n{broken\nalso-broken}\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed JSONL", () => {
       const { run } = require(CHECKER_PATH);
@@ -135,7 +141,9 @@ describe("process-compliance checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs have a consistent prefix format", () => {
       const { run } = require(CHECKER_PATH);

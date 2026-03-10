@@ -59,7 +59,9 @@ describe("pr-ecosystem checkers — property tests", () => {
       JSON.stringify({ id: "TD-001", title: "Fix auth" }) + "\n"
     );
   });
-  after(() => removeTempDir(tmpDir));
+  after(() => {
+    if (tmpDir) removeTempDir(tmpDir);
+  });
 
   for (const checkerFile of CHECKER_FILES) {
     describe(`${checkerFile}`, () => {

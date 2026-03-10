@@ -58,7 +58,9 @@ describe("cicd-pipeline checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(workflowsDir, "ci.yml"), ciYaml);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain or errors gracefully (no unhandled throw)", () => {
       const { result, error } = safeRun({ rootDir: tmpDir });
@@ -90,7 +92,9 @@ describe("cicd-pipeline checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("either returns valid structure or errors with a known error type", () => {
       const { result, error } = safeRun({ rootDir: tmpDir });
@@ -111,7 +115,9 @@ describe("cicd-pipeline checker", () => {
       fs.mkdirSync(workflowsDir, { recursive: true });
       fs.writeFileSync(path.join(workflowsDir, "bad.yml"), ": invalid: yaml: {{{");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("either handles malformed YAML or errors with a known error type", () => {
       const { result, error } = safeRun({ rootDir: tmpDir });
@@ -128,7 +134,9 @@ describe("cicd-pipeline checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match HEA-NNN format if run() succeeds", () => {
       const { result } = safeRun({ rootDir: tmpDir });

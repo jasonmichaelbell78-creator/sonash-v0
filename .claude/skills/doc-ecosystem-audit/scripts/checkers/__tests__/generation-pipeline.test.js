@@ -40,7 +40,9 @@ describe("generation-pipeline checker", () => {
       };
       fs.writeFileSync(path.join(tmpDir, "package.json"), JSON.stringify(pkg, null, 2));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -67,7 +69,9 @@ describe("generation-pipeline checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when package.json is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -88,7 +92,9 @@ describe("generation-pipeline checker", () => {
       tmpDir = makeTempDir();
       fs.writeFileSync(path.join(tmpDir, "package.json"), "{ invalid json !!!}");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed package.json", () => {
       const { run } = require(CHECKER_PATH);
@@ -112,7 +118,9 @@ describe("generation-pipeline checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match DEA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

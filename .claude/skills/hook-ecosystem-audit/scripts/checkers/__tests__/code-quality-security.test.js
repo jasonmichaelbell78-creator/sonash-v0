@@ -47,7 +47,9 @@ describe("code-quality-security checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(hooksDir, "clean-hook.js"), cleanHook);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -74,7 +76,9 @@ describe("code-quality-security checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when hooks/ directory is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -104,7 +108,9 @@ describe("code-quality-security checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(hooksDir, "bad-hook.js"), badHook);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on hooks with unsafe patterns", () => {
       const { run } = require(CHECKER_PATH);
@@ -127,7 +133,9 @@ describe("code-quality-security checker", () => {
       fs.mkdirSync(path.join(tmpDir, ".claude", "hooks"), { recursive: true });
       fs.writeFileSync(path.join(tmpDir, ".claude", "hooks", "test.js"), "eval('bad');\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match HEA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

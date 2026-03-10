@@ -39,7 +39,9 @@ describe("staleness-drift checker", () => {
         `---\ntrigger: /fresh\nversion: 1.0.0\nlastUpdated: ${recentDate}\n---\n# Fresh Skill\n\n## 1. Step\n\nRecently updated.\n`
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -72,7 +74,9 @@ describe("staleness-drift checker", () => {
         "---\ntrigger: /stale\nversion: 0.1.0\nlastUpdated: 2020-01-01\n---\n# Stale Skill\n\n## 1. Step\n\nVery old content.\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on stale skills", () => {
       const { run } = require(CHECKER_PATH);
@@ -93,7 +97,9 @@ describe("staleness-drift checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw with no skills", () => {
       const { run } = require(CHECKER_PATH);
@@ -106,7 +112,9 @@ describe("staleness-drift checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

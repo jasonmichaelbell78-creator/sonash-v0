@@ -44,7 +44,9 @@ describe("pattern-lifecycle checker", () => {
         ).join("\n") + "\n";
       fs.writeFileSync(path.join(stateDir, "reviews.jsonl"), reviews);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -71,7 +73,9 @@ describe("pattern-lifecycle checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when reviews data is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -92,7 +96,9 @@ describe("pattern-lifecycle checker", () => {
       tmpDir = makeTempDir();
       // No patterns = no lifecycle to track
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("scores are valid when no patterns exist", () => {
       const { run } = require(CHECKER_PATH);
@@ -108,7 +114,9 @@ describe("pattern-lifecycle checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

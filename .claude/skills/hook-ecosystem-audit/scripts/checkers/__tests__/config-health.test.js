@@ -71,7 +71,9 @@ describe("config-health checker", () => {
       };
       fs.writeFileSync(path.join(claudeDir, "settings.json"), JSON.stringify(settings, null, 2));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -99,7 +101,9 @@ describe("config-health checker", () => {
       tmpDir = makeTempDir();
       fs.mkdirSync(path.join(tmpDir, ".claude"), { recursive: true });
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when settings.json is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -121,7 +125,9 @@ describe("config-health checker", () => {
       fs.mkdirSync(path.join(tmpDir, ".claude"), { recursive: true });
       fs.writeFileSync(path.join(tmpDir, ".claude", "settings.json"), "{ not valid json }");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on invalid JSON", () => {
       const { run } = require(CHECKER_PATH);
@@ -154,7 +160,9 @@ describe("config-health checker", () => {
       };
       fs.writeFileSync(path.join(claudeDir, "settings.json"), JSON.stringify(settings));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("adds HEA-101 finding when referenced file is missing", () => {
       const { run } = require(CHECKER_PATH);
@@ -185,7 +193,9 @@ describe("config-health checker", () => {
       };
       fs.writeFileSync(path.join(claudeDir, "settings.json"), JSON.stringify(settings));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("adds HEA-110 finding for uncovered event types", () => {
       const { run } = require(CHECKER_PATH);
@@ -201,7 +211,9 @@ describe("config-health checker", () => {
       tmpDir = makeTempDir();
       fs.mkdirSync(path.join(tmpDir, ".claude"), { recursive: true });
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match HEA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

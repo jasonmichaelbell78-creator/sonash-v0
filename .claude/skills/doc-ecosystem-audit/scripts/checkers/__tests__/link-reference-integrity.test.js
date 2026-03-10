@@ -41,7 +41,9 @@ describe("link-reference-integrity checker", () => {
         "# Doc B\nSee [Doc A](doc-a.md) for more.\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns the correct domain", () => {
       const { run } = require(CHECKER_PATH);
@@ -74,7 +76,9 @@ describe("link-reference-integrity checker", () => {
       tmpDir = makeTempDir();
       // No docs directory at all
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when docs/ is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -104,7 +108,9 @@ describe("link-reference-integrity checker", () => {
         "# Broken\nSee [Missing](does-not-exist.md).\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("detects broken internal links and reduces score", () => {
       const { run } = require(CHECKER_PATH);
@@ -134,7 +140,9 @@ describe("link-reference-integrity checker", () => {
       fs.mkdirSync(path.join(tmpDir, "docs"));
       fs.writeFileSync(path.join(tmpDir, "docs", "plain.md"), "# Plain\nNo links here.\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on doc with no links", () => {
       const { run } = require(CHECKER_PATH);
@@ -152,7 +160,9 @@ describe("link-reference-integrity checker", () => {
         "# Test\n[Broken](missing.md)\n[External](https://example.com)\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("each finding has id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

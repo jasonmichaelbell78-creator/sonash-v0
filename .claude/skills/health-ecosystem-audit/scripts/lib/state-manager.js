@@ -173,6 +173,8 @@ function createStateManager(rootDir, isSafeToWrite) {
 
     const previous = entries[entries.length - 1];
     if (!previous.healthScore || !current.healthScore) return null;
+    if (typeof previous.healthScore.score !== "number") return null;
+    if (typeof current.healthScore.score !== "number") return null;
 
     const delta = {
       scoreBefore: previous.healthScore.score,

@@ -49,7 +49,9 @@ describe("state-integration checker", () => {
         }) + "\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -76,7 +78,9 @@ describe("state-integration checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when state/ is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -100,7 +104,9 @@ describe("state-integration checker", () => {
       fs.writeFileSync(path.join(stateDir, "handoff.json"), "{ corrupt: json }");
       fs.writeFileSync(path.join(stateDir, "commit-log.jsonl"), "not-json\nalso-not-json\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on corrupt state files", () => {
       const { run } = require(CHECKER_PATH);
@@ -121,7 +127,9 @@ describe("state-integration checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match HEA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

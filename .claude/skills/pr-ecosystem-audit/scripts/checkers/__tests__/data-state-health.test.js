@@ -46,7 +46,9 @@ describe("data-state-health checker", () => {
         ).join("\n") + "\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -73,7 +75,9 @@ describe("data-state-health checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw with empty project", () => {
       const { run } = require(CHECKER_PATH);
@@ -97,7 +101,9 @@ describe("data-state-health checker", () => {
       fs.writeFileSync(path.join(stateDir, "reviews.jsonl"), "corrupt line\n");
       fs.writeFileSync(path.join(stateDir, "review-metrics.jsonl"), "also corrupt\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on corrupt state files", () => {
       const { run } = require(CHECKER_PATH);
@@ -110,7 +116,9 @@ describe("data-state-health checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

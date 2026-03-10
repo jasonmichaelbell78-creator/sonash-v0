@@ -47,7 +47,9 @@ describe("coverage-consistency checker (skill ecosystem)", () => {
         "# Claude Config\n\n| Trigger | Action |\n| --- | --- |\n| code review | `code-reviewer` skill |\n| session end | `/session-end` skill |\n"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -81,7 +83,9 @@ describe("coverage-consistency checker (skill ecosystem)", () => {
       );
       fs.writeFileSync(path.join(tmpDir, "CLAUDE.md"), "# Claude Config\n\nNo skill references.\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when skills lack CLAUDE.md coverage", () => {
       const { run } = require(CHECKER_PATH);
@@ -102,7 +106,9 @@ describe("coverage-consistency checker (skill ecosystem)", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw with no skills", () => {
       const { run } = require(CHECKER_PATH);
@@ -115,7 +121,9 @@ describe("coverage-consistency checker (skill ecosystem)", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all findings have id, severity, message", () => {
       const { run } = require(CHECKER_PATH);

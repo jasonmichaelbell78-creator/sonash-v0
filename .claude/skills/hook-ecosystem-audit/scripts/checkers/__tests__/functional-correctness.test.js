@@ -46,7 +46,9 @@ describe("functional-correctness checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(hooksDir, "good-hook.js"), goodHook);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -74,7 +76,9 @@ describe("functional-correctness checker", () => {
       tmpDir = makeTempDir();
       fs.mkdirSync(path.join(tmpDir, ".claude", "hooks"), { recursive: true });
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on empty hooks directory", () => {
       const { run } = require(CHECKER_PATH);
@@ -97,7 +101,9 @@ describe("functional-correctness checker", () => {
       fs.mkdirSync(hooksDir, { recursive: true });
       fs.writeFileSync(path.join(hooksDir, "broken.js"), "{ this is not valid js }{{{");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed hook content", () => {
       const { run } = require(CHECKER_PATH);
@@ -118,7 +124,9 @@ describe("functional-correctness checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match HEA-NNN format", () => {
       const { run } = require(CHECKER_PATH);

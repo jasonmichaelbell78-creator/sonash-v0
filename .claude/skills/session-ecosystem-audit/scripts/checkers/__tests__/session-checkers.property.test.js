@@ -76,7 +76,9 @@ describe("session-ecosystem checkers — property tests", () => {
       "# Context Preservation\n\nGuide.\n"
     );
   });
-  after(() => removeTempDir(tmpDir));
+  after(() => {
+    if (tmpDir) removeTempDir(tmpDir);
+  });
 
   for (const checkerFile of CHECKER_FILES) {
     describe(`${checkerFile}`, () => {

@@ -49,7 +49,9 @@ describe("index-registry-health checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(tmpDir, "DOCUMENTATION_INDEX.md"), indexContent);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, and scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -88,7 +90,9 @@ describe("index-registry-health checker", () => {
       tmpDir = makeTempDir();
       fs.mkdirSync(path.join(tmpDir, "docs"), { recursive: true });
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns score of 0 for index_filesystem_sync when index is missing", () => {
       const { run } = require(CHECKER_PATH);
@@ -116,7 +120,9 @@ describe("index-registry-health checker", () => {
         "# Index\nNo links here, just text.\n\x00\xff\xfe"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed index content", () => {
       const { run } = require(CHECKER_PATH);
@@ -142,7 +148,9 @@ describe("index-registry-health checker", () => {
         "| [Readme](docs/readme.md) | docs/readme.md | readme |"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("score is in [0, 100] when index and disk are provided", () => {
       const { run } = require(CHECKER_PATH);
@@ -165,7 +173,9 @@ describe("index-registry-health checker", () => {
         "| [Ghost](docs/ghost.md) | docs/ghost.md | missing |"
       );
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("adds DEA-101 finding for index entry with missing file", () => {
       const { run } = require(CHECKER_PATH);

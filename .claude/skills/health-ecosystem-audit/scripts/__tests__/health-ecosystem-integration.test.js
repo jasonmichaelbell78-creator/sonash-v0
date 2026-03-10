@@ -20,6 +20,7 @@ describe("Health Ecosystem Audit Integration", () => {
 
     it("runs successfully with --summary --batch --skip-live-tests", () => {
       output = execSync(`node "${SCRIPT_PATH}" --summary --batch --skip-live-tests`, {
+        cwd: path.resolve(__dirname, "..", ".."),
         encoding: "utf8",
         timeout: 30000,
         maxBuffer: 5 * 1024 * 1024,
@@ -74,6 +75,7 @@ describe("Health Ecosystem Audit Integration", () => {
 
     it("runs successfully with --batch --skip-live-tests", () => {
       fullOutput = execSync(`node "${SCRIPT_PATH}" --batch --skip-live-tests`, {
+        cwd: path.resolve(__dirname, "..", ".."),
         encoding: "utf8",
         timeout: 30000,
         maxBuffer: 10 * 1024 * 1024,

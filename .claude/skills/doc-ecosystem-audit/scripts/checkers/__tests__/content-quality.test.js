@@ -46,7 +46,9 @@ describe("content-quality checker", () => {
       ].join("\n");
       fs.writeFileSync(path.join(tmpDir, "docs", "good-doc.md"), goodDoc);
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("returns domain, findings array, scores object", () => {
       const { run } = require(CHECKER_PATH);
@@ -73,7 +75,9 @@ describe("content-quality checker", () => {
     before(() => {
       tmpDir = makeTempDir();
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw when docs/ is absent", () => {
       const { run } = require(CHECKER_PATH);
@@ -96,7 +100,9 @@ describe("content-quality checker", () => {
       fs.writeFileSync(path.join(tmpDir, "docs", "empty.md"), "");
       fs.writeFileSync(path.join(tmpDir, "docs", "stub.md"), "# Title\n");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on empty or stub files", () => {
       const { run } = require(CHECKER_PATH);
@@ -123,7 +129,9 @@ describe("content-quality checker", () => {
       // Write non-UTF8 content
       fs.writeFileSync(path.join(tmpDir, "docs", "corrupt.md"), Buffer.from([0xff, 0xfe, 0x00]));
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("does not throw on malformed file content", () => {
       const { run } = require(CHECKER_PATH);
@@ -138,7 +146,9 @@ describe("content-quality checker", () => {
       fs.mkdirSync(path.join(tmpDir, "docs"));
       fs.writeFileSync(path.join(tmpDir, "docs", "bad.md"), "");
     });
-    after(() => removeTempDir(tmpDir));
+    after(() => {
+      if (tmpDir) removeTempDir(tmpDir);
+    });
 
     it("all finding IDs match DEA-NNN format", () => {
       const { run } = require(CHECKER_PATH);
