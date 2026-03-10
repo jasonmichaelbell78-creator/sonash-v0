@@ -964,8 +964,23 @@ function loadExistingReviewObjects() {
  * Detect id collisions between mdReviews and existingIds and renumber colliding
  * reviews to ids above the current maximum. Mutates review.id in place.
  * Returns the (mutated) mdReviews array.
+ *
+ * Uses content-based dedup (title + date) to prevent infinite renumbering loops:
+ * if a markdown review's content already exists in JSONL under any ID, the
+ * markdown entry is mapped to that existing ID instead of being renumbered.
  */
 function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
+  // Build content signature → existing ID index for content-based dedup.
+  // This prevents the infinite renumbering loop where the same markdown entry
+  // gets a new ID on every run because its old ID collides with stale JSONL data.
+  const existingByContent = new Map();
+  for (const [id, obj] of existingById) {
+    const sig = `${obj.title || ""}::${obj.date || ""}`;
+    if (!existingByContent.has(sig)) {
+      existingByContent.set(sig, id);
+    }
+  }
+
   let maxExistingId = 0;
   for (const id of existingIds) {
     if (id > maxExistingId) maxExistingId = id;
@@ -978,6 +993,20 @@ function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
   const newlyAssignedIds = new Set();
 
   for (const review of mdReviews) {
+    // Content-based dedup: if this review's content already exists in JSONL
+    // under ANY id, align to that id (prevents infinite renumbering loop).
+    const sig = `${review.title || ""}::${review.date || ""}`;
+    const contentMatchId = existingByContent.get(sig);
+    if (contentMatchId !== undefined) {
+      if (contentMatchId !== review.id) {
+        mdIds.delete(review.id);
+        review.id = contentMatchId;
+        mdIds.add(review.id);
+      }
+      // Content already exists in JSONL (same or different ID) — skip collision check
+      continue;
+    }
+
     if (!existingIds.has(review.id)) continue; // no collision
 
     const existing = existingById.get(review.id);
@@ -1006,6 +1035,7 @@ function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
     // but do NOT add to existingIds — that would incorrectly filter it out during
     // the missing-review detection step.
     newlyAssignedIds.add(newId);
+    existingByContent.set(sig, newId);
     console.log(`  ⚠️  Review #${oldId} renumbered to #${newId} (collision)`);
   }
   return mdReviews;
@@ -1058,7 +1088,20 @@ function runSyncMode(content) {
   detectAndResolveCollisions(mdReviews, existingIds, existingById);
   // --- End DEBT-7582 ---
 
-  const missingReviews = mdReviews.filter((r) => !existingIds.has(r.id));
+  // Build content signature set for dedup: prevents re-appending reviews
+  // that were previously synced under a different ID (due to renumbering).
+  const existingContentSigs = new Set();
+  for (const [, obj] of existingById) {
+    existingContentSigs.add(`${obj.title || ""}::${obj.date || ""}`);
+  }
+
+  const missingReviews = mdReviews.filter((r) => {
+    if (existingIds.has(r.id)) return false;
+    // Content-based dedup: skip if content already synced under any ID
+    const sig = `${r.title || ""}::${r.date || ""}`;
+    if (existingContentSigs.has(sig)) return false;
+    return true;
+  });
   const missingRetros = mdRetros.filter((r) => !existingRetroIds.has(r.id));
   missingReviews.sort((a, b) => a.id - b.id);
   missingRetros.sort((a, b) => a.pr - b.pr);
