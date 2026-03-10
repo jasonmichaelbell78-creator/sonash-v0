@@ -27,6 +27,16 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #209 (2026-03-07)
+
+**Focus**: Skill Audit: session-end — Full Rewrite
+
+- `/skill-audit session-end` — full 10-category audit, 37 decisions (34
+  accepted, 3 rejected), score 48/100 -> est. 75 post-fix
+- Full rewrite of session-end SKILL.md: 4-phase structure, Critical Rules,
+  MUST/SHOULD/MAY hierarchy, artifact manifest, pre-commit review gate,
+  --no-push option, learning loop, integration section
+
 ### Session #207 (2026-03-06)
 
 **Focus**: Alerts Full + Health Improvements
