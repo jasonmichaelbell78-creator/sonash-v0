@@ -128,6 +128,14 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: test
           NEXT_PUBLIC_FIREBASE_APP_ID: test
 
+      - name: Enforce coverage thresholds
+        run: |
+          echo "Checking overall coverage threshold (65% line coverage)..."
+          npx c8 check-coverage --lines 65 || {
+            echo "::error::Overall line coverage below 65% threshold"
+            exit 1
+          }
+
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v7

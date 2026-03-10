@@ -88,8 +88,17 @@ cycles:
 - **S4036 PATH binary hijacking** — `execFileSync("git", [...])` and similar
   calls with hardcoded binary names and array arguments are safe. No shell
   injection risk.
+- **S5852 regex complexity** — Space-only regexes (`/ +$/gm`, `/\n+/`) in CLI
+  scripts under `scripts/` and `.claude/hooks/` are bounded and operate on
+  trusted local data. Not a ReDoS risk.
 - **Raw error details in CLI error output** — Dev tools that display filesystem
   errors on failure are acceptable. Internal paths aid debugging.
+- **Local config file access** — `config-health.js` intentionally reads
+  `~/.claude/settings.json` for health scoring. This is guarded with HOME env
+  check and existsSync. Not a sensitive data exposure.
+- **Hook stdin field names** — Claude Code hooks receive a documented JSON
+  schema via stdin. Do NOT suggest adding fallback fields (`request`, `message`,
+  `content`) that don't exist in the protocol.
 
 ### Data Files (`docs/technical-debt/`, `docs/audits/`)
 

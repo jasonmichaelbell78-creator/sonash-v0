@@ -71,6 +71,23 @@ When reviewing files in scripts/ or .claude/hooks/:
     views/, or docs/technical-debt/raw/. These are pipeline-generated
     artifacts, not hand-edited source files.
     (Rejected ~50 times across PRs #378-#416)
+
+12. Do NOT flag "sensitive local file access" or "local config exposure" for
+    config-health.js reading ~/.claude/settings.json. This is an intentional
+    feature that checks global Claude Code settings health. The file path is
+    guarded with HOME env check and existsSync.
+    (Rejected 5 consecutive rounds in PR #423 R1-R5)
+
+13. Do NOT flag "prompt field fallback" suggesting request/message/content
+    fields in hook stdin parsing. Claude Code hooks receive a documented
+    JSON schema via stdin — these alternative field names never existed in
+    the protocol.
+    (Rejected 2 times in PR #423 R3-R4)
+
+14. Do NOT flag "stdin payload cap" or suggest limiting stdin input size for
+    hooks. Upstream (Claude Code) controls the payload structure and size.
+    Hooks receive trusted, bounded input.
+    (Rejected in PR #423 R4)
 """
 
 [pr_code_suggestions]

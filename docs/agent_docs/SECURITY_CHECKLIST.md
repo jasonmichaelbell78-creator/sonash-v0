@@ -335,6 +335,40 @@ while ((match = pattern.exec(str)) !== null) {
 }
 ```
 
+### Symlink Guard Checklist
+
+When adding ANY file operation (read, write, copy, delete, directory creation):
+
+- [ ] **Use `resolve()` + containment check** — NOT `is_symlink()` alone.
+      `is_symlink()` misses junctions and multi-hop symlinks. Always resolve the
+      path and verify it stays within the expected directory tree.
+- [ ] **Cover ALL operation types** — reads (`readFileSync`, `copyFileSync`),
+      writes (`writeFileSync`, `renameSync`), deletes (`unlinkSync`, `rmSync`),
+      and directory creation (`mkdirSync`).
+- [ ] **Check directories too** — not just files. `lstatSync` on the target
+      directory before creating/writing inside it.
+- [ ] **Check parent directories** — symlinks anywhere in the path chain can
+      redirect. Use `refuseSymlinkWithParents()` or manually check each
+      ancestor.
+
+```javascript
+// CORRECT — resolve + containment (Python equivalent: resolve() + relative_to())
+const resolved = path.resolve(baseDir, userPath);
+const real = fs.realpathSync(resolved);
+const rel = path.relative(baseDir, real);
+if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+  throw new Error("Path escapes allowed directory");
+}
+
+// WRONG — is_symlink() alone (misses junctions, multi-hop)
+if (fs.lstatSync(p).isSymbolicLink()) {
+  /* insufficient */
+}
+```
+
+**Source:** PR #419 retro (3 rounds of symlink hardening), PR #423 retro (3
+rounds: is_symlink → resolve+relative_to upgrade).
+
 ### Path Security (Comprehensive)
 
 - [ ] **Path containment check**: After resolve(), verify result stays within

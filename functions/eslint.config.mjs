@@ -19,6 +19,8 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       // Warn on any type
       "@typescript-eslint/no-explicit-any": "warn",
+      // CC limit — prevents multi-round CC extraction in reviews (PR #417-#423 retros)
+      complexity: ["warn", 15],
     },
   }
 );

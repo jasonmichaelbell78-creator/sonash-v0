@@ -218,6 +218,21 @@ If any check fails, fix before continuing. **Done when:** All 4 checks pass.
 
 ---
 
+## Step 7.5: Merge Trigger Check (SHOULD — R4+ only)
+
+If this is round 4 or later, check the fix rate:
+
+- **Fix rate < 30%:** Recommend merging. Remaining items become follow-up TDMS
+  entries, not more review rounds. Signal: "Fix rate dropped to N% — diminishing
+  returns. Recommend merging and tracking N remaining items as DEBT."
+- **Fix rate 30-50%:** Flag: "Fix rate is N%. Consider one more round maximum."
+- **Fix rate > 50%:** Continue normally.
+
+**Source:** PR #421 retro (R6: 80% rejection), PR #423 retro (R5: 60%
+rejection). Signal-to-noise drops sharply after R4-R5.
+
+---
+
 ## Step 8: Summary & Commit (MUST)
 
 ```

@@ -25,6 +25,7 @@
 
 const path = require("node:path");
 const fs = require("node:fs");
+const os = require("node:os");
 
 // ============================================================================
 // TEST FRAMEWORK
@@ -35,12 +36,17 @@ let failed = 0;
 
 function test(name, fn) {
   try {
-    fn();
+    const r = fn();
+    if (r && typeof r.then === "function") {
+      throw new Error("Async tests are not supported in this runner (returned a Promise)");
+    }
     passed++;
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    console.error(`  \u2717 ${name}: ${err.message}`);
+    const message =
+      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    console.error(`  \u2717 ${name}: ${message}`);
   }
 }
 
@@ -533,7 +539,7 @@ test("state-manager exposes saveBaseline and loadBaseline methods", () => {
 test("state-manager loadBaseline returns null when no baseline exists", () => {
   const { createStateManager } = require(path.join(SCRIPTS_DIR, "lib", "state-manager"));
   // Use a non-existent root dir to ensure no baseline file
-  const sm = createStateManager("/tmp/nonexistent-audit-test-dir", () => true);
+  const sm = createStateManager(path.join(os.tmpdir(), "nonexistent-audit-test-dir"), () => true);
   const baseline = sm.loadBaseline();
   assertEqual(baseline, null, "loadBaseline should return null when no baseline exists");
 });

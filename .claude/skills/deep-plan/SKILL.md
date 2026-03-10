@@ -229,7 +229,21 @@ Before presenting the plan, verify decisions→plan fidelity:
 3. **Artifact consistency** (MUST) — DIAGNOSIS.md findings addressed by plan
 4. **Signal** (MUST) — "Self-audit: N/N decisions covered, checklist PASS"
 
-Fix any issues before proceeding to Phase 4.
+### Finding Presentation (MUST)
+
+Present each issue found in the same Q&A format used in Phase 1 Discovery:
+
+- **Description:** What the issue is, with full context (cite decision #, plan
+  step, exact text from both)
+- **Why it matters:** Impact if left unfixed
+- **Options:** Enumerate concrete resolution options (A, B, C...)
+- **Recommendation:** "I recommend X because Y. Override?"
+
+Walk through findings **one-by-one** with the user. Collect disposition for each
+(accept recommendation / choose different option / modify / defer) before
+proceeding. Save dispositions to state file after each batch.
+
+Fix all accepted issues in PLAN.md before proceeding to Phase 4.
 
 ---
 

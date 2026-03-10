@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.92 **Created:** 2026-01-02 **Last Updated:** 2026-03-06
+**Document Version:** 17.95 **Created:** 2026-01-02 **Last Updated:** 2026-03-10
 
 ## Purpose
 
@@ -350,6 +350,26 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#2)</summary>
+
+- **Date:** 2026-03-09
+- **Reviews consolidated:** #452-#470
+- **Recurring patterns:**
+  - qodo (19x)
+  - gemini (13x)
+  - ci (11x)
+  - clarify-ai-implementation-time (9x)
+  - verify-doc-math-before-commit (9x)
+  - --tests-without-assertions-are-worse-than-no-tests-they-prov (4x)
+  - cache-counting-bug (4x)
+  - fp-1fp-4-test-assertions (4x)
+  - global-settings-deterministic-testing (4x)
+  - restore-continueonerror (4x)
+  - secret-packaging-denylist (4x)
+  - yaml-boundary-detection (4x)
+
+</details>
 <details>
 <summary>Previous Consolidation (#1)</summary>
 
@@ -833,6 +853,57 @@ deduplicated, non-overlapping ranges):
 ---
 
 ## Active Reviews
+
+### Review #469: PR #424 R3 — Mixed (CI + SonarCloud + Qodo) (2026-03-10)
+
+_Ecosystem expansion — lint cleanup, regex safety, test robustness._
+
+**Source:** CI/ESLint, SonarCloud Hotspots, Qodo Compliance + Code Suggestions
+**Total:** 25 **Fixed:** 10 **Deferred:** 0 **Rejected:** 15
+
+- **S5852 two-strikes:** Replaced `stepRegex` in `generate-test-registry.js`
+  with string parsing (line-by-line split + `trimStart` + `startsWith`) per
+  CLAUDE.md regex two-strikes rule
+- **CI step dedupe:** Prepended step index to CI step target values to prevent
+  dedup collisions on duplicate step names
+- **`.js` strip safety:** Changed `file.replace(".js", "")` to
+  `file.replace(/\.js$/, "")` across audit checker + health checker scanners
+- **Unused code removal:** Removed `buildTaskMap` (resolve-dependencies.test),
+  `assertEqual` (script-ecosystem checker-regression); prefixed `_successCount`
+  (consolidate-all.test)
+- **Error safety propagation (x7):** Replaced `err.message` with
+  `err instanceof Error ? err.stack || err.message : String(err)` in all 7
+  ecosystem state-manager test files
+- **process.exit guard (x7):** Wrapped `process.exit()` in
+  `require.main === module` check in all 7 ecosystem scoring test files
+- **Finding ID validation:** Added `typeof finding.id === "string"` guard before
+  uniqueness check in skill-ecosystem checker-regression
+
+**Rejected (15):**
+
+- S5852 `post-write-validator.test.ts` ANY_PATTERNS — `[ \t]*` is 2-char class,
+  no backtracking risk (already narrowed in R2-2)
+- S1523 `normalize-all.test.ts` x2 — "javascript:S2245" is a rule ID string
+- BLOCKER `sanitize-input.test.ts` — Already has `// NOSONAR`; intentional test
+  data for sanitizer testing
+- Object stringification x2 — ternary already handles object case with
+  `JSON.stringify`
+- Qodo symlink/unsafe write fallback — Intentional graceful degradation
+- Qodo error exposure — Test files only
+- Qodo unstructured logs — CLI script, console.log appropriate
+- Sanitize dynamic IDs x3 — Internal constants, not user input
+- Make temp paths unique x2 + async guard — Low risk, not needed
+- CI lint ~400+ warnings — Pre-existing, not in PR diff
+
+**Patterns:**
+
+- Two-strikes regex replacement with string parsing is fastest path to resolve
+  persistent S5852 flags — `line.trimStart().startsWith()` covers most YAML
+  patterns
+- `process.exit()` in test scripts should always be guarded with
+  `require.main === module` to prevent premature termination when imported
+
+---
 
 ### Review #468: PR #423 R5 — Qodo + Semgrep (2026-03-09)
 
@@ -3141,6 +3212,140 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
   efficient single-root-cause resolution.
 - **Score:** 7.5/10 — Good cycle marred by known SonarCloud FPs and escapeCell
   propagation
+
+---
+
+#### Review #348: SonarCloud R2-2 — ReDoS regex simplification + CI exec blocker (2026-03-09)
+
+**PR:** #424 | **Source:** SonarCloud Security Hotspots + CI | **Round:** R2-2
+
+**Scope:** 11 SonarCloud security hotspots across test files and 1 script, plus
+1 CI pattern compliance blocker. Focused on S5852 (ReDoS), S1523 (code injection
+FP), S2245 (PRNG FP), S5443 (public dir FP).
+
+**Patterns Identified:**
+
+1. `main()/run()` stripping regex (`/^main\(\s*\)\s*;?\s*$/m`) used in 5 test
+   files — multiple `\s*` quantifiers create polynomial backtracking risk.
+   Applied two-strikes rule: replaced with string-based line comparison.
+
+2. `(.+)\s*$` pattern in stepRegex — `.+` captures trailing spaces, then `\s*$`
+   backtracks. Fix: remove redundant `\s*` since `.trim()` handles it.
+
+3. `\s*` in ANY_PATTERNS alternations with `$` — replace with `[ \t]*` to
+   eliminate newline-related backtracking paths.
+
+4. CI pattern checker can't trace `/g` flag through array iteration — flagged
+   `while(exec())` as missing /g even though patterns had it. Fix: use
+   `matchAll()` which is both clearer and satisfies static analysis.
+
+**Resolution:**
+
+- Fixed: 8 items (1 CI blocker + 7 S5852 regex simplifications across 8 files)
+- Deferred: 0 items
+- Rejected: 3 items (S1523 string literal FP, S2245 test PRNG FP, S5443 test
+  fixture path FP)
+
+**Key Learnings:**
+
+- Two-strikes rule works well for test isolation patterns — simple string
+  comparison (`t === "main();"`) is more readable than the regex it replaces
+- `[ \t]*` is a safe drop-in for `\s*` when matching within single lines —
+  eliminates cross-line backtracking without changing behavior
+- `matchAll()` is preferred over `while(exec())` — avoids both the real
+  infinite-loop risk AND false positives from static analyzers
+
+---
+
+#### Review #349: Qodo R2-3 — error handling, duplicate detection, cross-platform (2026-03-09)
+
+**PR:** #424 | **Source:** Qodo Compliance + Code Suggestions | **Round:** R2-3
+
+**Scope:** 13 Qodo suggestions across generate-test-registry.js, 7 ecosystem
+audit integration tests, health-log.test.js, hook-pipeline.test.js, and
+ecosystem state-manager tests.
+
+**Key Findings:**
+
+1. Swallowed catch blocks in `readdirRecursive` silently hide directory read
+   failures. Fix: log with sanitizeError.
+
+2. All 7 ecosystem audit integration tests had identical
+   `allScores[cat] = score` without checking for duplicate category keys from
+   different checkers. Fix: detect collision, emit warning finding, keep first
+   value.
+
+3. Broad `catch {}` in ESM dynamic import (health-log.test.js) silently skipped
+   all errors. Fix: only catch MODULE_NOT_FOUND, rethrow others.
+
+4. Hardcoded `/tmp` paths in 4 state-manager/regression tests break on Windows.
+   Fix: `path.join(os.tmpdir(), ...)` — os was already imported.
+
+**Resolution:**
+
+- Fixed: 9 items (across 17 files with propagation)
+- Deferred: 0 items
+- Rejected: 4 items (CI step dedupe, registry sort, checker validation,
+  fail-fast root)
+
+**Key Learnings:**
+
+- Duplicate category keys across checkers are a silent data-clobbering risk —
+  always guard with `cat in allScores` check
+- `safeWriteFileSync` satisfies pattern checker for symlink guard without manual
+  isSafeToWrite calls
+- Cross-platform test portability: always use `os.tmpdir()` instead of `/tmp`
+
+---
+
+#### Review #347: Mixed (Qodo + SonarCloud) R1 — ecosystem expansion test infrastructure (2026-03-09)
+
+**PR:** #424 | **Source:** Qodo/CodeRabbit + SonarCloud | **Round:** R1 (3
+parts)
+
+**Scope:** 74 new test files from Ecosystem Expansion Phase 1-2. Massive
+first-pass review covering test quality, security hotspots, code smells, and
+modernization across health checkers, ecosystem audit tests, hook tests, and
+debt pipeline tests.
+
+**Key Findings:**
+
+1. Health checker test mocks used zero-param default functions (`() => []`) but
+   were called with args via spread — SonarCloud flagged as "expects no
+   arguments but 1 provided." Fix: add unused params to defaults.
+
+2. ReDoS risk in session counter regex `\s*:?\s*` — sequential lazy quantifiers
+   on overlapping whitespace. Fix: collapse to single character class `[\s:]*`.
+
+3. Broad catch blocks in ESM dynamic imports (health-log.test.js) silently
+   swallowed syntax errors — only MODULE_NOT_FOUND should be caught.
+
+4. 186 SonarCloud code smells across new test files — bulk modernization:
+   `replaceAll`, `Number.parseInt`, `structuredClone`, optional chaining,
+   `String.raw`, unused import cleanup, `Set` over `Array` for lookups.
+
+5. Ecosystem audit integration tests had non-unique failure IDs, in-place
+   finding mutation, and silent treatment of invalid severity values.
+
+**Resolution:**
+
+- Fixed: 197 items across 60+ files
+- Deferred: 3 items (cognitive complexity refactors — architectural)
+- Rejected: 6 items (test fixture passwords, safe Math.random, bounded regex)
+
+**Key Learnings:**
+
+- When mocking via mutable function refs, give the DEFAULT value a matching
+  parameter signature — SonarCloud infers types from initial assignment
+- `\s*:?\s*` is a common ReDoS pattern — collapse adjacent quantifiers on
+  overlapping classes into `[\s:]*`
+- Broad `catch {}` in test setup hides real failures — always catch specific
+  error codes
+- `structuredClone()` is a cleaner deep-clone than
+  `JSON.parse(JSON.stringify())` and avoids edge cases with undefined,
+  functions, and circular refs
+- SonarCloud S2068 (hard-coded passwords) is a known FP for test fixtures that
+  intentionally test password detection — reject with justification
 
 ---
 

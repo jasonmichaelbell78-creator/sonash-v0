@@ -49,7 +49,9 @@
     "backfill-reviews.js",
     "generate-fix-template-stubs.js",
     "write-jsonl.js",
-    "promotion-pipeline.test.js"
+    "promotion-pipeline.test.js",
+    "health-log.test.js",
+    "generate-test-registry.js"
   ],
   "git-without-separator": [
     "surface-lessons-learned.js",
@@ -317,5 +319,6 @@
     "validate-schema.js"
   ],
   "for-file-iteration": ["find-polluter.sh"],
-  "no-raw-fs-write": ["run-alerts.js", "seed-commit-log.js"]
+  "no-raw-fs-write": ["run-alerts.js", "seed-commit-log.js"],
+  "exec-without-global-flag": ["generate-test-registry.js"]
 }

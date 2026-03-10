@@ -254,27 +254,34 @@ Skip if no rejections in this retro.
 
 ---
 
-## STEP 6: ACTION ITEM TRACKING (MUST)
+## STEP 6: ACTION ITEM IMPLEMENTATION (MUST)
 
 ### 6.1 Approval Gate (MUST)
 
-Present all proposed action items as a batch before creating TDMS entries:
+Present all proposed action items as a batch:
 
 | #   | Action | Severity | Category | Effort | Verify Command |
 | --- | ------ | -------- | -------- | ------ | -------------- |
 
 User MAY: accept all, modify severity, reject individual items.
 
-### 6.2 Create TDMS Entries
+### 6.2 Implement Now (DEFAULT)
 
-Every approved action item MUST get a DEBT entry via `/add-debt` with severity
-S2 (or S1 if cross-PR systemic), category `engineering-productivity`, source
-`review:pr-retro-<PR#>`. Store verify command in entry.
+**Default behavior:** Implement every approved action item during this retro
+session. This includes doc updates, config changes, pre-check additions,
+suppression syncs, and code changes. The retro is not complete until all
+accepted action items are implemented and verified.
+
+**Exception — DEBT deferral:** Only create TDMS entries when the user explicitly
+requests deferral (e.g., "defer this one", "create a DEBT item for that"). Never
+default to DEBT — it leads to action items that are recommended repeatedly but
+never implemented.
 
 ### 6.3 Flag Repeat Offenders
 
-Same action item in 2+ retros without implementation: escalate to S1, bold
-**"BLOCKING — recommended N times, never implemented"**.
+Same action item in 2+ retros without implementation: implement NOW during this
+retro. If genuinely blocked, escalate to S1 DEBT with bold **"BLOCKING —
+recommended N times, never implemented"** and explain the blocker.
 
 ---
 
@@ -372,6 +379,7 @@ checks open retro DEBT items. `/pr-review` checks pre-push recommendations.
 
 | Version | Date       | Description                                                                                                                                    |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.1     | 2026-03-09 | Step 6 rewrite: default=implement now, DEBT=explicit only. Source: batch retro PRs #417-#423.                                                  |
 | 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch retros, verification protocol, compaction resilience, routing. Source: skill-audit 37 decisions. |
 | 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                                            |
 | 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items                                                                                        |

@@ -1,13 +1,14 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-08
+**Document Version:** 2.0
+**Last Updated:** 2026-03-09
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 # Decision Record: Ecosystem Expansion
 
-**Date:** 2026-03-08 **Questions Asked:** 28 (+3 follow-ups, +Pass 0/2/3
-research) **Decisions Captured:** 33
+**Date:** 2026-03-08 (Phase 1), 2026-03-09 (Phase 2) **Questions Asked:** 28 (+3
+follow-ups, +Pass 0/2/3 research) + 19 Phase 2 skill design questions
+**Decisions Captured:** 52
 
 ## Decisions
 
@@ -46,6 +47,30 @@ research) **Decisions Captured:** 33
 | 31  | /ecosystem-health skill scope     | Moves to health ecosystem, gets tests (`run-ecosystem-health.js`)                                                                                                                       | 100% health-coupled, currently untested                                                       |
 | 32  | Backup hooks                      | Exclude from testing — 7 files are dead code (superseded versions)                                                                                                                      | Pass 3 confirmed: not registered in settings.json, no references                              |
 | 33  | run-alerts.js testing             | Add tests — 3,745-line monolith with zero tests. Major omission caught in Pass 3.                                                                                                       | Largest skill script in repo, moving to health ecosystem ownership                            |
+
+### Phase 2 Decisions (D#34-52) — Skill Design
+
+| #   | Decision                          | Choice                                                                                                              | Rationale                                                                                          |
+| --- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 34  | SKILL.md phase structure          | Modified 8-phase: add dedicated "Live Test Execution" phase between Run & Dashboard (Phase 1b→1c→2)                 | D15 live test execution is unique to this audit and deserves its own phase step                    |
+| 35  | Domain presentation order         | By score ascending (worst first)                                                                                    | Matches other audits (hook-audit pattern). Most actionable domains shown first                     |
+| 36  | Finding review investigation      | Full investigation — read target file, show context, generate patch, preview, apply on approval                     | Matches hook-ecosystem-audit investigation flow. Audit has all context needed                      |
+| 37  | Batch decision shortcuts          | Offer batch acknowledgment after 3 INFO/WARNING findings. "You decide" always available                             | Matches existing audit pattern. Prevents fatigue on low-severity findings                          |
+| 38  | Checker source pattern            | Fork scoring/state-manager from hook-audit (per D#22), build checkers fresh                                         | Scoring lib is proven; checkers audit completely different domain (health vs hooks)                |
+| 39  | Live test execution strategy      | D5 checker runs `npm test` (full suite, all tests), parses results per-area. Other domain checkers do NOT run tests | User requirement: audit must run ALL tests. Only D5 does this; other checkers are filesystem scans |
+| 40  | Test registry consumption API     | Shared lib with caching: `loadRegistry(rootDir)` loads once, all checkers share via context                         | Registry is read-only during audit. Avoids 6 redundant file reads                                  |
+| 41  | Checker timeout handling          | Per-checker configurable: D5 gets 30s+ (live tests), others get 10s default                                         | D5 inherently slower due to live test execution. Avoids false failures on other checkers           |
+| 42  | REFERENCE.md benchmarks table     | Detailed: category \| metric \| good \| average \| poor \| source/rationale                                         | Matches existing audit REFERENCE.md patterns. No "current value" column (not generated)            |
+| 43  | Self-test suite scope             | 4-file standard + 2 additional: `live-test-execution.test.js` + `registry-consumption.test.js`                      | Live test execution and registry consumption are defining unique features worth dedicated tests    |
+| 44  | Dashboard format                  | Markdown table + sparkline trend indicators (▲▼━)                                                                   | Conveys trend at a glance without visual noise. Matches hook-audit dashboard                       |
+| 45  | History & trend tracking location | `.claude/state/health-ecosystem-audit-history.jsonl`                                                                | Consistency with all 7 other ecosystem audits. data/ecosystem-v2/ serves different purpose         |
+| 46  | /alerts Test Health category      | Show last audit score + test pass rate from most recent live run + unresolved findings count                        | Live test pass rate is the unique value-add (e.g. "1,594/1,594 pass, Score: B+ (82)")              |
+| 47  | /ecosystem-health ownership       | Documentation + D4 checker validates integration contracts + audit flags divergence from expected behavior          | Ownership means audit detects integration drift. D4 designed for this                              |
+| 48  | Mid-session alerts wiring         | Phase 4 infrastructure — hook wiring belongs in Steps 10-11, not /create-audit                                      | /create-audit shouldn't modify hooks outside its skill directory                                   |
+| 49  | Comprehensive audit registration  | Stage 1 with `--skip-live-tests` flag for speed during comprehensive runs                                           | Full test suite adds ~10s; flag lets comprehensive run structural checks fast                      |
+| 50  | Test failure finding format       | One ERROR finding per failing test file + individual failures listed in details field                               | Keeps finding count manageable; details field preserves granularity for investigation              |
+| 51  | Coverage threshold severity       | Graduated: >10% below threshold = ERROR, <10% below = WARNING                                                       | 64% (1% below) is different from 30%. Proportional urgency                                         |
+| 52  | Staleness guard configuration     | In benchmarks.js, overridable via `HMS_STALENESS_HOURS` env var (default 24h)                                       | Keeps with other benchmarks for discoverability; env var enables CI/CD flexibility                 |
 
 ## Domain Detail (Decision #3)
 

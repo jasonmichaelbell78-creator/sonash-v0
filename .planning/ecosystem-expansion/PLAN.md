@@ -1,65 +1,97 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-08
-**Status:** ACTIVE
+**Document Version:** 2.0
+**Last Updated:** 2026-03-09
+**Status:** APPROVED
 <!-- prettier-ignore-end -->
 
 # Implementation Plan: Ecosystem Expansion
 
 ## Summary
 
-Create the 8th ecosystem audit (`health-ecosystem-audit`) for the health
-monitoring system, implement ~314 new test files across all infrastructure
-areas, build a test registry tracking ~380+ validation sources, add CI coverage
-enforcement, and produce human-readable testing documentation.
+Four-phase plan: (1) build repo-wide testing infrastructure (~316 test files,
+registry, CI enforcement, documentation), (2) run a new discovery & decision
+round for the health ecosystem audit skill informed by the testing
+infrastructure now in place, (3) delegate ecosystem creation to `/create-audit`
+which owns the skill design and implementation, (4) return here to wire the new
+ecosystem into testing infrastructure and verify completeness.
 
-**Decisions:** See DECISIONS.md (33 decisions) **Effort Estimate:** XL
-(multi-session, heavy parallelization)
+**Decisions:** See DECISIONS.md (33 decisions — Phase 1 testing decisions are
+final; Phase 2 ecosystem decisions will be amended after Step 8 discovery)
+**Effort Estimate:** XL (multi-session, heavy parallelization)
+
+---
+
+## Plan Architecture
+
+```
+PHASE 1: TESTING INFRASTRUCTURE .............. Steps 1-7
+  Build tests, registry, CI gates, documentation
+
+PHASE 2: ECOSYSTEM DISCOVERY ................. Step 8
+  New Q&A round for health-ecosystem-audit skill design
+  Inputs: existing D#1-33 + testing infra in place
+  Output: amended DECISIONS.md with skill design decisions
+
+PHASE 3: ECOSYSTEM CREATION .................. Step 9
+  Delegate to /create-audit (NOT built inline)
+  create-audit owns: SKILL.md, checkers, lib, self-tests
+
+PHASE 4: WIRING & COMPLETION ................. Steps 10-11
+  Wire ecosystem into infrastructure, verify, close gaps
+```
+
+**Phase gates:** Each phase has explicit entry/exit criteria. Phase 3 does NOT
+begin until Phase 2 decisions are approved. Phase 4 does NOT begin until
+`/create-audit` completes.
+
+---
 
 ## Files to Create/Modify
 
-### New Files (~330)
+### Phase 1 New Files (~320)
 
-1. **Health ecosystem audit skill** (~15 files)
-   - `.claude/skills/health-ecosystem-audit/SKILL.md`
-   - `.claude/skills/health-ecosystem-audit/REFERENCE.md`
-   - `.claude/skills/health-ecosystem-audit/scripts/run-health-ecosystem-audit.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/lib/benchmarks.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/lib/scoring.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/lib/state-manager.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/lib/patch-generator.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/checkers/checker-infrastructure.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/checkers/scoring-pipeline.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/checkers/data-persistence.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/checkers/consumer-integration.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/checkers/coverage-completeness.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/checkers/alert-system.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/__tests__/checker-regression.test.js`
-   - `.claude/skills/health-ecosystem-audit/scripts/__tests__/health-audit-integration.test.js`
-
-2. **Test infrastructure** (~5 files)
+1. **Test infrastructure** (~5 files)
    - `scripts/generate-test-registry.js`
    - `data/ecosystem-v2/test-registry.jsonl`
    - `docs/agent_docs/TESTING_SYSTEM.md`
-   - `tests/scripts/health/checkers/` (directory)
+   - `scripts/health/checkers/__tests__/` (directory, co-located per D#6)
+   - `scripts/health/lib/__tests__/` (directory, co-located per D#6)
    - `tests/hooks/` (directory)
 
-3. **~314 test files** (see Step-by-Step below)
+2. **~316 test files** (see Steps 2-6)
 
-### Modified Files (~20)
+### Phase 1 Modified Files (~10)
+
+1. `.github/workflows/ci.yml` — coverage thresholds + test dirs
+2. `package.json` — fast-check, npm scripts, tests:registry
+3. `tsconfig.test.json` — new test directories
+4. `DOCUMENTATION_INDEX.md` — add TESTING_SYSTEM.md
+5. 7x ecosystem audit SKILL.md — reference their new `__tests__/`
+6. 7x ecosystem audit REFERENCE.md — test patterns section
+
+### Phase 3 New Files (created by /create-audit, ~15)
+
+- `.claude/skills/health-ecosystem-audit/SKILL.md`
+- `.claude/skills/health-ecosystem-audit/REFERENCE.md`
+- `.claude/skills/health-ecosystem-audit/scripts/run-health-ecosystem-audit.js`
+- `.claude/skills/health-ecosystem-audit/scripts/lib/` (benchmarks, scoring,
+  state-manager, patch-generator)
+- `.claude/skills/health-ecosystem-audit/scripts/checkers/` (6 domain checkers)
+- `.claude/skills/health-ecosystem-audit/scripts/__tests__/` (4-file test suite)
+
+### Phase 4 Modified Files (~10)
 
 1. `comprehensive-ecosystem-audit/SKILL.md` — add health #8 to Stage 1
 2. `.claude/COMMAND_REFERENCE.md` — register skill
 3. `.claude/skills/SKILL_INDEX.md` — add entry
 4. `.claude/skills/alerts/SKILL.md` — ownership + Test Health category
 5. `.claude/skills/ecosystem-health/SKILL.md` — ownership
-6. `.github/workflows/ci.yml` — coverage thresholds + test dirs
-7. `package.json` — fast-check, npm scripts, tests:registry
-8. `tsconfig.test.json` — new test directories
-9. `.claude/hooks/session-start.js` — wire mid-session-alerts
-10. `DOCUMENTATION_INDEX.md` — add TESTING_SYSTEM.md
-11. 7× ecosystem audit SKILL.md — reference **tests**/
-12. 7× ecosystem audit REFERENCE.md — test patterns section
+6. `.claude/hooks/session-start.js` — wire mid-session-alerts
+7. `data/ecosystem-v2/test-registry.jsonl` — add new ecosystem's tests
+
+---
+
+# PHASE 1: TESTING INFRASTRUCTURE
 
 ---
 
@@ -78,7 +110,7 @@ npm install --save-dev fast-check
 ```json
 {
   "tests:registry": "node scripts/generate-test-registry.js",
-  "test:health": "node --test tests/scripts/health/**/*.test.js scripts/health/**/*.test.js",
+  "test:health": "node --test scripts/health/checkers/__tests__/**/*.test.* scripts/health/lib/__tests__/**/*.test.*",
   "test:hooks": "node --test dist-tests/tests/hooks/**/*.test.js",
   "test:debt": "node --test dist-tests/tests/scripts/debt/**/*.test.js",
   "test:audits": "node --test .claude/skills/*/scripts/__tests__/*.test.js"
@@ -86,7 +118,8 @@ npm install --save-dev fast-check
 ```
 
 **1c. Update `tsconfig.test.json`:** Add `tests/hooks/`, `tests/scripts/debt/`,
-`tests/scripts/health/` to includes.
+`scripts/health/checkers/__tests__/`, `scripts/health/lib/__tests__/` to
+includes.
 
 **1d. Update `.github/workflows/ci.yml`:**
 
@@ -95,36 +128,46 @@ npm install --save-dev fast-check
   below)
 - Add new test directories to test command glob
 
+**1e. Test naming conventions (global standard per Decision #23):**
+
+All steps (2-6) follow these naming conventions:
+
+- Unit tests: `<module>.test.ts`
+- Property-based tests: `<module>.property.test.ts` (co-located with unit tests,
+  uses `fast-check`)
+- Integration tests: `<module>.integration.test.ts`
+- Regression tests: `<area>/regression.test.ts`
+
+The test registry (Step 7a) must scan for all four patterns.
+
 **Done when:** `npm install` succeeds, `npm test` still passes, CI config valid.
 **Depends on:** None **Triggers:** All subsequent steps
 
 ---
 
-## Step 2: Health System Tests (Phase 1 — Informs Ecosystem Design)
+## Step 2: Health System Tests
 
-Create tests for the health monitoring system. This MUST complete before the
-ecosystem audit skill is built (Step 8), because the audit needs to verify these
-tests exist and pass.
+Create tests for the health monitoring system.
 
 **Steps 2a-2f can run in parallel.**
 
 ### Step 2a: Health Checker Unit Tests
 
-Create unit tests for all 8 untested checkers in
-`tests/scripts/health/checkers/`:
+Create unit tests for all 10 checkers in `scripts/health/checkers/__tests__/`
+(co-located per Decision #6):
 
-| Test File                        | Target                                              | Key Assertions                                                |
-| -------------------------------- | --------------------------------------------------- | ------------------------------------------------------------- |
-| `code-quality.test.ts`           | `scripts/health/checkers/code-quality.js`           | Metric extraction from tsc/eslint output, scoring, edge cases |
-| `documentation.test.ts`          | `scripts/health/checkers/documentation.js`          | File count, staleness calc, freshness scoring                 |
-| `hook-pipeline.test.ts`          | `scripts/health/checkers/hook-pipeline.js`          | JSONL parsing, time-binned filtering, 12 metrics              |
-| `learning-effectiveness.test.ts` | `scripts/health/checkers/learning-effectiveness.js` | Regex extraction from LEARNING_METRICS.md                     |
-| `pattern-enforcement.test.ts`    | `scripts/health/checkers/pattern-enforcement.js`    | warned-files.json parsing, hotspot detection                  |
-| `security.test.ts`               | `scripts/health/checkers/security.js`               | npm audit JSON parsing, vulnerability scoring                 |
-| `session-management.test.ts`     | `scripts/health/checkers/session-management.js`     | Git output parsing, session gap calc                          |
-| `test-coverage.test.ts`          | `scripts/health/checkers/test-coverage.js`          | JSONL result parsing, staleness                               |
-
-Per Decision #6, co-located at `tests/scripts/health/checkers/`.
+| Test File                        | Target                                              | Key Assertions                                                     |
+| -------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------ |
+| `code-quality.test.ts`           | `scripts/health/checkers/code-quality.js`           | Metric extraction from tsc/eslint output, scoring, edge cases      |
+| `debt-health.test.ts`            | `scripts/health/checkers/debt-health.js`            | JSONL item counting, severity distribution, staleness scoring      |
+| `documentation.test.ts`          | `scripts/health/checkers/documentation.js`          | File count, staleness calc, freshness scoring                      |
+| `ecosystem-integration.test.ts`  | `scripts/health/checkers/ecosystem-integration.js`  | Cross-ecosystem validation, dependency checks, integration scoring |
+| `hook-pipeline.test.ts`          | `scripts/health/checkers/hook-pipeline.js`          | JSONL parsing, time-binned filtering, 12 metrics                   |
+| `learning-effectiveness.test.ts` | `scripts/health/checkers/learning-effectiveness.js` | Regex extraction from LEARNING_METRICS.md                          |
+| `pattern-enforcement.test.ts`    | `scripts/health/checkers/pattern-enforcement.js`    | warned-files.json parsing, hotspot detection                       |
+| `security.test.ts`               | `scripts/health/checkers/security.js`               | npm audit JSON parsing, vulnerability scoring                      |
+| `session-management.test.ts`     | `scripts/health/checkers/session-management.js`     | Git output parsing, session gap calc                               |
+| `test-coverage.test.ts`          | `scripts/health/checkers/test-coverage.js`          | JSONL result parsing, staleness                                    |
 
 Each test file includes:
 
@@ -133,25 +176,26 @@ Each test file includes:
 - Error path tests (tool not found, timeout)
 - Property-based tests where applicable (scoring always 0-100)
 
-**Done when:** All 8 checker test files pass. Each checker has ≥5 test cases
+**Done when:** All 10 checker test files pass. Each checker has >=5 test cases
 covering happy path, edge cases, and error paths. **Depends on:** Step 1
 
 ### Step 2b: Health Lib Unit Tests
 
-Create/expand tests for health library modules in `tests/scripts/health/lib/`:
+Create/expand tests for health library modules in
+`scripts/health/lib/__tests__/` (co-located per Decision #6):
 
-| Test File            | Target                             | Key Assertions                                                         |
-| -------------------- | ---------------------------------- | ---------------------------------------------------------------------- |
-| `composite.test.ts`  | `scripts/health/lib/composite.js`  | Weight sum = 1.0, no_data handling, NaN safety                         |
-| `dimensions.test.ts` | `scripts/health/lib/dimensions.js` | All 13 dimensions map correctly, getDimensionDetail edge cases         |
-| `scoring.test.ts`    | `scripts/health/lib/scoring.js`    | scoreMetric directions, computeGrade boundaries (79.5→?), computeTrend |
-| `health-log.test.ts` | `scripts/health/lib/health-log.js` | Append atomicity, read with corrupt entries, trend from empty log      |
+| Test File            | Target                             | Key Assertions                                                          |
+| -------------------- | ---------------------------------- | ----------------------------------------------------------------------- |
+| `composite.test.ts`  | `scripts/health/lib/composite.js`  | Weight sum = 1.0, no_data handling, NaN safety                          |
+| `dimensions.test.ts` | `scripts/health/lib/dimensions.js` | All 13 dimensions map correctly, getDimensionDetail edge cases          |
+| `scoring.test.ts`    | `scripts/health/lib/scoring.js`    | scoreMetric directions, computeGrade boundaries (79.5->?), computeTrend |
+| `health-log.test.ts` | `scripts/health/lib/health-log.js` | Append atomicity, read with corrupt entries, trend from empty log       |
 
 Property-based tests (`fast-check`) for:
 
-- `scoreMetric(value, benchmark, direction)` → score always in [0, 100]
-- `compositeScore(scores, weights)` → score always in [0, 100]
-- `computeGrade(score)` → always returns valid grade string
+- `scoreMetric(value, benchmark, direction)` -> score always in [0, 100]
+- `compositeScore(scores, weights)` -> score always in [0, 100]
+- `computeGrade(score)` -> always returns valid grade string
 
 **Done when:** All lib test files pass with property-based coverage. **Depends
 on:** Step 1
@@ -162,10 +206,10 @@ Expand existing `tests/integration/health-pipeline.integration.test.js`:
 
 - All 10 checkers run and produce valid output structure
 - Composite score computed correctly from real checker data
-- Warning lifecycle integration: health score drop → alert → warning created
+- Warning lifecycle integration: health score drop -> alert -> warning created
 - Add `tests/integration/health-alerts-warnings-lifecycle.integration.test.js`
 
-**Done when:** Integration tests exercise full health→alerts→warnings flow.
+**Done when:** Integration tests exercise full health->alerts->warnings flow.
 **Depends on:** Step 1
 
 ### Step 2d: Health Performance Budget Tests
@@ -181,7 +225,7 @@ Add to `tests/perf/budget.perf.test.js`:
 
 ### Step 2e: Health Regression Tests
 
-Create `tests/scripts/health/regression.test.ts`:
+Create `scripts/health/__tests__/regression.test.ts`:
 
 - Composite score with all-no_data categories doesn't crash
 - Single broken checker doesn't tank composite below threshold
@@ -231,9 +275,9 @@ exists and passes. **Depends on:** Step 1
 
 Create `tests/scripts/debt/idempotency.test.ts`:
 
-- `consolidate-all.js` run twice → identical MASTER_DEBT.jsonl
-- `dedup-multi-pass.js` run twice → zero new dedup removals
-- `sync-deduped.js` run twice → no changes
+- `consolidate-all.js` run twice -> identical MASTER_DEBT.jsonl
+- `dedup-multi-pass.js` run twice -> zero new dedup removals
+- `sync-deduped.js` run twice -> no changes
 
 **Done when:** Pipeline produces identical output on re-run. **Depends on:**
 Step 1
@@ -242,7 +286,8 @@ Step 1
 
 Create `tests/e2e/debt-pipeline.e2e.test.js`:
 
-- Full pipeline: intake → normalize → dedup → generate-views → generate-metrics
+- Full pipeline: intake -> normalize -> dedup -> generate-views ->
+  generate-metrics
 - Uses fixture data, validates end-to-end output
 - Verifies MASTER_DEBT.jsonl and deduped.jsonl stay in sync
 
@@ -276,6 +321,9 @@ Each tests: core functions, error paths, edge cases.
 - Mock stdin/stdout with fixture data
 - Validate exit codes, side effects (state file writes)
 - Test error conditions (missing files, invalid JSON, timeout)
+- **Exclusion (per Decision #32):** Skip unregistered/backup hooks — only test
+  hooks referenced in `.claude/settings.json`. Files not in settings.json are
+  dead code (Pass 3 confirmed: 7 superseded files with no references)
 
 ### Step 4c: Hook Global Tests
 
@@ -284,15 +332,15 @@ Each tests: core functions, error paths, edge cases.
 - `gsd-check-update.test.ts`
 - `statusline.test.ts`
 
-**Done when:** All 22 hook test files pass. Each hook has ≥3 test cases.
+**Done when:** All 22 hook test files pass. Each hook has >=3 test cases.
 **Depends on:** Step 1 **Can run in parallel with:** Steps 3, 5, 6
 
 ---
 
 ## Step 5: Ecosystem Audit Tests
 
-Create test suites for all 7 existing ecosystem audit skills, following the
-hook-ecosystem-audit pattern.
+Create test suites for all existing ecosystem audit skills at time of execution,
+following the hook-ecosystem-audit pattern.
 
 **Steps 5a-5g can run in parallel.**
 
@@ -319,7 +367,7 @@ For each ecosystem audit, create in `.claude/skills/{name}/scripts/__tests__/`:
 
 ### Step 5g: Update hook ecosystem audit tests (expand existing)
 
-**Done when:** All 7 ecosystem audits have 4 test files each. All pass.
+**Done when:** All existing ecosystem audits have 4 test files each. All pass.
 **Depends on:** Step 1 **Can run in parallel with:** Steps 3, 4, 6
 
 ---
@@ -388,101 +436,148 @@ warning. **Depends on:** Step 7a
 Create `docs/agent_docs/TESTING_SYSTEM.md`:
 
 1. Testing architecture overview (framework, runner, coverage tool)
-2. Test file location map (area → directory → test types)
-3. Ownership matrix (ecosystem audit → owned tests)
+2. Test file location map (area -> directory -> test types)
+3. Ownership matrix (ecosystem audit -> owned tests)
 4. Invocation guide (npm scripts, CI, audit-triggered)
 5. Coverage map (tested vs untested, by area)
 6. Test type glossary (14 types, what each means in this repo)
 7. Adding new tests guide (placement, naming, patterns)
-8. Test result flow diagram (CI → /alerts → health scoring)
+8. Test result flow diagram (CI -> /alerts -> health scoring)
 9. Test registry documentation (8 source types, how to register)
 
 **Done when:** TESTING_SYSTEM.md is comprehensive, accurate, and referenced from
 DOCUMENTATION_INDEX.md. **Depends on:** Steps 2-6, 7a
 
+### Step 7d: Phase 1 Verification
+
+Run code-reviewer agent on all Phase 1 new/modified files.
+
+- Security: no command injection in test scripts, no hardcoded paths
+- Patterns: error sanitization, path traversal guards, exec /g flag
+- Quality: consistent test patterns, no duplicate logic
+- Coverage: verify ~316 test files actually created and passing
+- **All findings must be FIXED before Phase 1 closes** — no TDMS deferral
+
+**Done when:** Code reviewer passes clean. All ~316 tests pass. CI coverage
+thresholds met. **Depends on:** Steps 1-7c
+
 ---
 
-## Step 8: Health Ecosystem Audit Skill
+**PHASE 1 EXIT GATE:** All tests pass, CI thresholds enforced, test-registry
+complete, TESTING_SYSTEM.md published. Phase 1 can be committed independently.
 
-Build the ecosystem audit skill. This step depends on Steps 2 (health tests
-exist) and Steps 3-6 (broader test coverage exists for D5 verification).
+---
 
-### Step 8a: Skill Structure
+# PHASE 2: ECOSYSTEM DISCOVERY
 
-Create directory and core files, forked from hook-ecosystem-audit:
+---
 
-- `SKILL.md` — 6 domains, 25 categories, interactive walkthrough with deep-plan
-  Q&A format, live test execution in D5
-- `REFERENCE.md` — templates, schemas, checker development guide, benchmarks
-  table, dashboard template
-- `scripts/lib/benchmarks.js` — 25 category weights summing to 1.0
-- `scripts/lib/scoring.js` — forked from hook-ecosystem-audit
-- `scripts/lib/state-manager.js` — forked from hook-ecosystem-audit
-- `scripts/lib/patch-generator.js` — auto-fix suggestions
+## Step 8: Health Ecosystem Audit — Discovery & Decisions
 
-### Step 8b: Domain Checkers
+Run a new discovery and decision round for the health-ecosystem-audit skill
+design. This is NOT implementation — it produces an amended DECISIONS.md that
+`/create-audit` will consume.
 
-Create 6 checker files per Decision #3:
+### Step 8a: Context Review
 
-| Checker                     | Domain | Categories | Key Checks                                                                             |
-| --------------------------- | ------ | ---------- | -------------------------------------------------------------------------------------- |
-| `checker-infrastructure.js` | D1     | 5          | Command robustness, file I/O, benchmarks, edge cases, error propagation                |
-| `scoring-pipeline.js`       | D2     | 4          | Weight validation, missing data, direction consistency, dimension mapping              |
-| `data-persistence.js`       | D3     | 5          | JSONL atomicity, rotation, schema, timestamps, corrupt entries                         |
-| `consumer-integration.js`   | D4     | 4          | Output versioning, timeouts, duplicate logic, downstream errors                        |
-| `coverage-completeness.js`  | D5     | 4          | Checker aggregation, tool availability, **live test execution**, registry completeness |
-| `alert-system.js`           | D6     | 3          | Cooldown management, warning lifecycle, degradation detection                          |
+Review what exists after Phase 1:
 
-**D5 coverage-completeness.js** is special (per Decision #15):
+- Existing decisions D#1-33 (ecosystem name, domains, weights, prefix, etc.)
+- Testing infrastructure now in place (what tests exist, what patterns emerged)
+- Test registry contents (what's covered, what's not)
+- Insights from building 316 tests (failure modes discovered, patterns learned)
 
-- Runs `npm run test:health` live during audit
-- Reads c8 coverage data (fresh or from CI with staleness guard per Decision
-  #20)
-- Checks test-registry.jsonl for undocumented tests
-- Scores based on pass rate, coverage %, and completeness
+### Step 8b: New Discovery Questions
 
-### Step 8c: Run Script (Orchestrator)
+Topics that could NOT be decided before Phase 1 but CAN be decided now:
 
-Create `run-health-ecosystem-audit.js`:
+- **Skill design:** SKILL.md interactive walkthrough flow, step structure,
+  domain presentation order, finding review format
+- **D5 refinement:** Now that health tests exist, what specific test patterns
+  should D5 verify? What coverage thresholds are realistic based on actual data?
+- **Triage UX:** Decision #30 defined Fix Now/Defer/Skip — what does the full
+  interaction look like? How does inline investigation work?
+- **Checker implementation:** Which existing patterns from the 7 other ecosystem
+  audits should be followed vs diverged from?
+- **REFERENCE.md content:** Templates, schemas, benchmarks table, dashboard
+  format
+- **Self-test scope:** Standard 4-file suite, or additional tests given this
+  audit runs live tests (meta-testing)?
+- **Integration with testing infrastructure:** How does the audit consume
+  test-registry.jsonl? What's the API contract?
 
-- Loads all 6 checkers
-- Computes composite score with Decision #11 weights
-- v2 JSON output (same schema as other ecosystem audits)
-- CLI modes: `--check`, `--summary`, `--batch`, `--save-baseline`
-- Finding deduplication
-- Trend computation from history JSONL
+Format: Same Q&A batches as Phase 1 discovery. Offer defaults, save after each
+batch.
 
-### Step 8d: Audit Self-Tests
+### Step 8c: Amend DECISIONS.md
 
-Create `.claude/skills/health-ecosystem-audit/scripts/__tests__/`:
+Add new decisions (D#34+) to DECISIONS.md covering all skill design choices.
+These become the input specification for `/create-audit`.
 
-- `checker-regression.test.js` — all 6 checkers run, scores valid
-- `health-audit-integration.test.js` — full audit run, v2 JSON schema valid
+**Done when:** DECISIONS.md amended with skill design decisions. User approves
+amended decisions. **Depends on:** Phase 1 complete (Step 7d passed)
 
-**Done when:**
+---
+
+**PHASE 2 EXIT GATE:** Amended DECISIONS.md approved. All skill design choices
+made. Ready to hand off to `/create-audit`.
+
+---
+
+# PHASE 3: ECOSYSTEM CREATION
+
+---
+
+## Step 9: Create Health Ecosystem Audit via /create-audit
+
+**Delegate to `/create-audit`.** This plan does NOT specify the skill
+implementation — that is `/create-audit`'s responsibility.
+
+### What /create-audit receives:
+
+- DECISIONS.md (D#1-33 from Phase 1 + D#34+ from Phase 2)
+- DIAGNOSIS.md (system inventory, existing patterns)
+- Testing infrastructure context (test-registry.jsonl, TESTING_SYSTEM.md)
+
+### What /create-audit produces:
+
+- `SKILL.md` — interactive walkthrough, domains, categories
+- `REFERENCE.md` — templates, schemas, benchmarks, dashboard
+- `scripts/run-health-ecosystem-audit.js` — orchestrator
+- `scripts/lib/` — benchmarks.js, scoring.js, state-manager.js,
+  patch-generator.js
+- `scripts/checkers/` — 6 domain checkers (per D#3) using `HMS-` prefix (per
+  D#2)
+- `scripts/__tests__/` — standard 4-file test suite (checker-regression,
+  scoring, state-manager, integration)
+
+### What this plan explicitly requires of /create-audit:
+
+1. The 4-file test suite MUST be created as part of the skill (not deferred)
+2. Finding IDs MUST use `HMS-` prefix (Decision #2)
+3. Domain weights MUST match Decision #11
+4. D5 checker MUST implement live test execution (Decision #15) with test
+   failure triage UX (Decision #30: Fix Now / Defer / Skip)
+5. Staleness guard for CI results MUST use configurable threshold, 24h default
+   (Decision #20)
+6. Scoring library MUST be forked from hook-ecosystem-audit (Decision #22)
+
+**Done when:** `/create-audit` completes. Skill runs successfully:
 `node .claude/skills/health-ecosystem-audit/scripts/run-health-ecosystem-audit.js --summary`
-runs and produces valid v2 JSON. All self-tests pass. **Depends on:** Steps 2-6,
-7a
+produces valid v2 JSON. All 4 self-tests pass. **Depends on:** Step 8
 
 ---
 
-## Step 9: Wire Mid-Session Alerts
-
-Per Decision #19, wire the orphaned `mid-session-alerts.js` into the hook
-system.
-
-- Update `.claude/hooks/session-start.js` to call `runMidSessionChecks()` after
-  post-commit events (or create a new post-commit hook)
-- Verify cooldown system works (1h per alert type)
-- Verify alerts surface via warning lifecycle
-
-**Done when:** Mid-session alerts fire on score degradation. Cooldown prevents
-alert fatigue. **Depends on:** Step 2c (health integration tests verify the
-flow)
+**PHASE 3 EXIT GATE:** Skill created, self-tests pass, `--summary` produces
+valid output. Ready to wire into infrastructure.
 
 ---
 
-## Step 10: Ownership & Registration Updates
+# PHASE 4: WIRING & COMPLETION
+
+---
+
+## Step 10: Wire Ecosystem into Infrastructure
 
 ### Step 10a: Ownership Transfers
 
@@ -493,78 +588,142 @@ Update `/alerts` SKILL.md and `/ecosystem-health` SKILL.md:
 
 ### Step 10b: Ecosystem Registration
 
-- `comprehensive-ecosystem-audit/SKILL.md` — add health to Stage 1 (5+3)
+- `comprehensive-ecosystem-audit/SKILL.md` — add health to Stage 1 (per D#7)
 - `.claude/COMMAND_REFERENCE.md` — add `/health-ecosystem-audit`
 - `.claude/skills/SKILL_INDEX.md` — add entry
-- `DOCUMENTATION_INDEX.md` — add TESTING_SYSTEM.md
+- `DOCUMENTATION_INDEX.md` — update if needed
 
-### Step 10c: Existing Ecosystem Audit Updates
+### Step 10c: Test Infrastructure Wiring
 
-For all 7 existing ecosystem audits:
+- Run `npm run tests:registry` — verify new ecosystem's tests auto-discovered
+- If not auto-discovered, update `scripts/generate-test-registry.js` scan paths
+- Verify `test:audits` npm script glob picks up new `__tests__/` directory
+- Update `TESTING_SYSTEM.md` ownership matrix with new ecosystem
 
-- Update SKILL.md to reference their new `__tests__/` directory
+### Step 10d: Wire Mid-Session Alerts
+
+Per Decision #19, wire the orphaned `mid-session-alerts.js` into the hook
+system.
+
+- Update `.claude/hooks/session-start.js` to call `runMidSessionChecks()` after
+  post-commit events (or create a new post-commit hook)
+- Verify cooldown system works (1h per alert type)
+- Verify alerts surface via warning lifecycle
+
+### Step 10e: Existing Ecosystem Audit Updates
+
+For all existing ecosystem audits (including the new health one):
+
+- Update SKILL.md to reference their `__tests__/` directory
 - Update REFERENCE.md with test patterns section
 
 **Done when:** All registration files updated. `/health-ecosystem-audit` appears
-in comprehensive orchestrator. **Depends on:** Step 8
+in comprehensive orchestrator. Test registry includes new ecosystem's tests.
+Mid-session alerts wired. **Depends on:** Step 9
 
 ---
 
-## Step 11: Audit Checkpoint
+## Step 11: Final Verification & Gap Analysis
 
-Run code-reviewer agent on all new/modified files.
+### Step 11a: Code Review
 
-Focus areas:
+Run code-reviewer agent on all Phase 3-4 new/modified files.
 
-- Security: no command injection in test scripts, no hardcoded paths
+- Security: no command injection, no hardcoded paths
 - Patterns: error sanitization, path traversal guards, exec /g flag
-- Quality: consistent test patterns, no duplicate logic
-- Coverage: verify ~314 test files actually created and passing
+- Quality: consistent patterns with other ecosystem audits
+- **All findings MUST be fixed before merge — NO TDMS deferral.** A new skill
+  ships clean or it doesn't ship.
 
-**Done when:** All code-reviewer findings addressed or tracked in TDMS.
-**Depends on:** All implementation steps (1-10)
+### Step 11b: Decision Coverage Gap Analysis
+
+Cross-check DECISIONS.md (all decisions, D#1 through final) against implemented
+artifacts:
+
+- Every decision maps to a concrete implementation
+- No decisions were silently skipped or reinterpreted
+- Any deviations documented with rationale
+
+### Step 11c: Full Test Run
+
+- `npm test` — all existing + new tests pass
+- `npm run test:health` — health-specific tests pass
+- `npm run test:audits` — all ecosystem audit self-tests pass (including new)
+- `npm run tests:registry` — registry is complete, no orphaned tests
+- CI coverage thresholds still met
+
+### Step 11d: Integration Smoke Test
+
+- Run `/health-ecosystem-audit` end-to-end — verify all 6 domains produce
+  findings
+- Run `/comprehensive-ecosystem-audit` — verify health audit appears in Stage 1
+  and completes
+- Verify `/alerts` shows "Test Health" category
+- Verify mid-session alerts fire on simulated score degradation
+
+**Done when:** Code review clean. Gap analysis clean. All tests pass. Smoke
+tests pass. **Depends on:** Step 10
+
+---
+
+**PHASE 4 EXIT GATE:** Everything verified. Ready to commit and merge.
 
 ---
 
 ## Parallelization Guide
 
 ```
-Step 1: Infrastructure (sequential — everything depends on this)
-  │
-  ├── Step 2a-2f: Health tests (parallel within)
-  ├── Step 3a-3c: Debt tests (parallel within)
-  ├── Step 4a-4c: Hook tests (parallel within)
-  ├── Step 5a-5g: Ecosystem audit tests (parallel within)
-  └── Step 6a-6c: Root script tests (parallel within)
-       │
-       │  (Steps 2-6 all run in parallel with each other)
-       │
-       ├── Step 7a: Test registry (needs Steps 2-6 complete)
-       ├── Step 7b: Pre-commit hook (needs 7a)
-       └── Step 7c: Documentation (needs Steps 2-6, 7a)
-            │
-            └── Step 8: Health ecosystem audit skill (needs Steps 2-6, 7a)
-                 │
-                 ├── Step 9: Wire mid-session alerts (needs 2c)
-                 └── Step 10: Registration updates (needs 8)
-                      │
-                      └── Step 11: Audit checkpoint (needs all)
+PHASE 1:
+  Step 1: Infrastructure (sequential — everything depends on this)
+    |
+    +-- Step 2a-2f: Health tests (parallel within)
+    +-- Step 3a-3c: Debt tests (parallel within)
+    +-- Step 4a-4c: Hook tests (parallel within)
+    +-- Step 5a-5g: Ecosystem audit tests (parallel within)
+    +-- Step 6a-6c: Root script tests (parallel within)
+         |
+         |  (Steps 2-6 all run in parallel with each other)
+         |
+         +-- Step 7a: Test registry (needs Steps 2-6 complete)
+         +-- Step 7b: Pre-commit hook (needs 7a)
+         +-- Step 7c: Documentation (needs Steps 2-6, 7a)
+         +-- Step 7d: Phase 1 verification (needs 7a-7c)
+
+PHASE 2:
+  Step 8: Discovery & decisions (sequential, interactive)
+
+PHASE 3:
+  Step 9: /create-audit (sequential, interactive)
+
+PHASE 4:
+  Step 10a-10e: Wiring (mostly parallel)
+    |
+    +-- Step 11: Verification (needs all of Step 10)
 ```
 
-**Maximum parallelism:** Steps 2-6 = 5 concurrent workstreams, each with 2-7
-internal parallel tasks. With subagents, up to ~25 parallel tasks.
+**Phase 1 maximum parallelism:** Steps 2-6 = 5 concurrent workstreams, each with
+2-7 internal parallel tasks. With subagents, up to ~25 parallel tasks.
+
+**Phases 2-3** are interactive (user Q&A) and sequential by nature.
+
+**Phase 4** has moderate parallelism in Step 10 (5 substeps, mostly
+independent).
 
 ---
 
 ## Execution Routing
 
-Per Decision #8: single plan, parallel subagent execution.
+Per Decision #8: single plan, parallel subagent execution for Phase 1.
 
-**Recommended dispatch:**
+**Phase 1 dispatch:**
 
-- **6 subagents for Steps 2-6** (one per area)
-- **1 subagent for Step 7** (after 2-6 complete)
-- **1 subagent for Step 8** (after 7 complete)
-- **Sequential for Steps 9-11** (low parallelism, high coordination)
+- **5 subagents for Steps 2-6** (one per area, parallel)
+- **1 subagent for Step 7a-7c** (after 2-6 complete)
+- **Main context for Step 7d** (verification needs judgment)
 
-Total: 8 subagent dispatches across 3 waves.
+**Phase 2 dispatch:** Main context (interactive Q&A with user)
+
+**Phase 3 dispatch:** Invoke `/create-audit` skill (interactive)
+
+**Phase 4 dispatch:** Main context for wiring + verification
+(coordination-heavy)

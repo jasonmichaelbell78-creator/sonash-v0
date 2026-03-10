@@ -425,6 +425,22 @@ const HOOK_TESTS = {
     skipTests: true,
     tests: [],
   },
+  // GSD framework hooks — read JSON from stdin, no "ok" output on empty input
+  "gsd-check-update.js": {
+    description: "GSD update check hook",
+    skipBasicExecution: true,
+    tests: [],
+  },
+  "gsd-context-monitor.js": {
+    description: "GSD context monitoring hook",
+    skipBasicExecution: true,
+    tests: [],
+  },
+  "gsd-statusline.js": {
+    description: "GSD statusline hook",
+    skipBasicExecution: true,
+    tests: [],
+  },
 };
 
 // ANSI color codes
