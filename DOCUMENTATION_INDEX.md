@@ -212,7 +212,7 @@ _AI agent reference docs_
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)                      | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-03-09    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)                        | This document defines the policy for creating, using, and ov... | ↓2 ↑4      | 2026-02-24    |
 | [Skill Ecosystem Audit — Conversation Notes](docs/agent_docs/SKILL_ECOSYSTEM_AUDIT_IDEAS.md) | Brainstorming notes on what a skill-ecosystem-audit would co... | ↓0 ↑0      | 2026-02-28    |
-| [Testing System](docs/agent_docs/TESTING_SYSTEM.md)                                          | Comprehensive reference for SoNash's testing infrastructure.... | ↓0 ↑0      | 2026-03-09    |
+| [Testing System](docs/agent_docs/TESTING_SYSTEM.md)                                          | Comprehensive reference for SoNash's testing infrastructure.... | ↓0 ↑0      | 2026-03-10    |
 
 ### AI Optimization Audit (Tier 3)
 
@@ -313,7 +313,7 @@ _Claude Code skills_
 | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md)                                   | You have access to the systematic debugging skill at              | ↓0 ↑0      | 2026-01-12    |
 | [add-debt](.claude/skills/add-debt/SKILL.md)                                                                                        | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
-| [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | -                                                                 | ↓0 ↑0      | 2026-03-09    |
+| [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | -                                                                 | ↓0 ↑0      | 2026-03-10    |
 | [artifacts-builder](.claude/skills/artifacts-builder/SKILL.md)                                                                      | To build powerful frontend claude.ai artifacts, follow these...   | ↓0 ↑0      | 2026-02-24    |
 | [Audit Aggregator — Extended Examples](.claude/skills/audit-aggregator/examples.md)                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [audit-aggregator](.claude/skills/audit-aggregator/SKILL.md)                                                                        | -                                                                 | ↓0 ↑1      | 2026-02-24    |
@@ -340,7 +340,7 @@ _Claude Code skills_
 | [Comprehensive Ecosystem Audit Aggregation Guide](.claude/skills/comprehensive-ecosystem-audit/reference/AGGREGATION_GUIDE.md)      | How to compute the overall ecosystem health grade, domain he...   | ↓1 ↑0      | 2026-02-24    |
 | [Comprehensive Ecosystem Audit Recovery Procedures](.claude/skills/comprehensive-ecosystem-audit/reference/RECOVERY_PROCEDURES.md)  | How to recover from interruptions during a comprehensive eco...   | ↓1 ↑0      | 2026-02-24    |
 | [Comprehensive Ecosystem Audit Wave Details](.claude/skills/comprehensive-ecosystem-audit/reference/WAVE_DETAILS.md)                | Complete reference for staged execution of the 7-audit ecosy...   | ↓1 ↑1      | 2026-02-24    |
-| [comprehensive-ecosystem-audit](.claude/skills/comprehensive-ecosystem-audit/SKILL.md)                                              | Orchestrates all 8 ecosystem audits (hook, session, TDMS, PR...   | ↓0 ↑2      | 2026-02-24    |
+| [comprehensive-ecosystem-audit](.claude/skills/comprehensive-ecosystem-audit/SKILL.md)                                              | Orchestrates all 8 ecosystem audits (hook, session, TDMS, PR...   | ↓0 ↑2      | 2026-03-10    |
 | [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)                                           | Flaky tests often guess at timing with arbitrary delays. Thi...   | ↓0 ↑0      | 2026-01-12    |
 | [Content Research Writer -- Examples & Templates](.claude/skills/content-research-writer/examples.md)                               | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [content-research-writer](.claude/skills/content-research-writer/SKILL.md)                                                          | This skill acts as your writing partner, helping you researc...   | ↓0 ↑1      | 2026-02-24    |
@@ -353,12 +353,12 @@ _Claude Code skills_
 | [deep-plan](.claude/skills/deep-plan/SKILL.md)                                                                                      | Structured discovery-first planning that produces high-quali...   | ↓0 ↑0      | 2026-03-09    |
 | [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md)                                              | Reject obviously invalid input at API boundary                    | ↓0 ↑0      | 2026-01-12    |
 | [developer-growth-analysis](.claude/skills/developer-growth-analysis/SKILL.md)                                                      | This skill provides personalized feedback on your recent cod...   | ↓0 ↑0      | 2026-02-24    |
-| [doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md)                                                                  | Deep diagnostic of the entire documentation ecosystem — docu...   | ↓0 ↑0      | 2026-02-24    |
+| [doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md)                                                                  | Deep diagnostic of the entire documentation ecosystem — docu...   | ↓0 ↑0      | 2026-03-10    |
 | [doc-optimizer](.claude/skills/doc-optimizer/SKILL.md)                                                                              | -                                                                 | ↓0 ↑0      | 2026-02-24    |
 | [Doc-Optimizer Agent Prompts](.claude/skills/doc-optimizer/prompts.md)                                                              | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
 | [docs-maintain](.claude/skills/docs-maintain/SKILL.md)                                                                              | Unified skill for checking doc sync and updating doc artifac...   | ↓0 ↑0      | 2026-02-24    |
 | [Documentation Audit — Agent Prompts & Templates](.claude/skills/audit-documentation/prompts.md)                                    | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
-| [Ecosystem Health -- Interactive Dashboard](.claude/skills/ecosystem-health/SKILL.md)                                               | -                                                                 | ↓0 ↑0      | 2026-03-01    |
+| [Ecosystem Health -- Interactive Dashboard](.claude/skills/ecosystem-health/SKILL.md)                                               | -                                                                 | ↓0 ↑0      | 2026-03-10    |
 | [Excel Analysis](.claude/skills/excel-analysis/SKILL.md)                                                                            | - Analyze Excel spreadsheets, create pivot tables, generate ...   | ↓0 ↑0      | 2026-02-24    |
 | [find-skills](.claude/skills/find-skills/SKILL.md)                                                                                  | This skill helps you discover and install skills and plugins...   | ↓0 ↑0      | 2026-02-24    |
 | [frontend-design](.claude/skills/frontend-design/SKILL.md)                                                                          | -                                                                 | ↓0 ↑0      | 2026-02-24    |
@@ -366,7 +366,7 @@ _Claude Code skills_
 | [Health Ecosystem Audit — Reference](.claude/skills/health-ecosystem-audit/REFERENCE.md)                                            | Reference material for the health ecosystem audit skill. Con...   | ↓0 ↑0      | 2026-03-10    |
 | [health-ecosystem-audit](.claude/skills/health-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of the health monitoring system — `scripts/h...   | ↓0 ↑0      | 2026-03-10    |
 | [Hook Ecosystem Audit — Reference](.claude/skills/hook-ecosystem-audit/REFERENCE.md)                                                | Reference material for the hook ecosystem audit skill. Conta...   | ↓0 ↑0      | 2026-03-09    |
-| [hook-ecosystem-audit](.claude/skills/hook-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire hook ecosystem — Claude Code h...   | ↓0 ↑0      | 2026-03-09    |
+| [hook-ecosystem-audit](.claude/skills/hook-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire hook ecosystem — Claude Code h...   | ↓0 ↑0      | 2026-03-10    |
 | [Learning Capture (Step 7)](.claude/skills/pr-review/reference/LEARNING_CAPTURE.md)                                                 | Mandatory learning documentation after every PR review proce...   | ↓1 ↑0      | 2026-02-17    |
 | [Market Research Report Formatting Guide](.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md)                        | Quick reference for using the `market_research.sty` style pa...   | ↓0 ↑0      | 2026-01-12    |
 | [Market Research Report Structure Guide](.claude/skills/market-research-reports/references/report_structure_guide.md)               | Create a strong first impression and communicate report scop...   | ↓0 ↑0      | 2026-01-12    |
@@ -383,7 +383,7 @@ _Claude Code skills_
 | [PR Retro Skill -- Archive](.claude/skills/pr-retro/ARCHIVE.md)                                                                     | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-02-24    |
 | [PR Review Pre-Checks](.claude/skills/pr-review/reference/PRE_CHECKS.md)                                                            | <!-- prettier-ignore-start -->                                    | ↓0 ↑1      | 2026-03-09    |
 | [PR Review Skill — Archive](.claude/skills/pr-review/ARCHIVE.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-03-06    |
-| [pr-ecosystem-audit](.claude/skills/pr-ecosystem-audit/SKILL.md)                                                                    | Deep diagnostic of the entire PR review ecosystem — from ski...   | ↓0 ↑0      | 2026-02-24    |
+| [pr-ecosystem-audit](.claude/skills/pr-ecosystem-audit/SKILL.md)                                                                    | Deep diagnostic of the entire PR review ecosystem — from ski...   | ↓0 ↑0      | 2026-03-10    |
 | [pr-retro](.claude/skills/pr-retro/SKILL.md)                                                                                        | Analyze the review cycle for completed PRs and produce an \*\*... | ↓0 ↑1      | 2026-03-09    |
 | [pr-review](.claude/skills/pr-review/SKILL.md)                                                                                      | Process external code review feedback into fixes, deferrals,...   | ↓0 ↑4      | 2026-03-09    |
 | [pre-commit-fixer](.claude/skills/pre-commit-fixer/SKILL.md)                                                                        | Eliminate the context-heavy fix-commit-retry loop that happe...   | ↓0 ↑0      | 2026-02-24    |
@@ -394,18 +394,18 @@ _Claude Code skills_
 | [quick-fix](.claude/skills/quick-fix/SKILL.md)                                                                                      | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-24    |
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
-| [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-03-09    |
+| [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-03-10    |
 | [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | -                                                                 | ↓0 ↑0      | 2026-02-24    |
-| [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-02-24    |
+| [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-03-10    |
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-03-09    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
 | [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑0      | 2026-03-06    |
 | [Skill Creator Reference](.claude/skills/skill-creator/REFERENCE.md)                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-09    |
-| [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-02-24    |
+| [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-03-10    |
 | [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                                                        | <!-- prettier-ignore-start -->                                    | ↓5 ↑0      | 2026-03-09    |
 | [skill-audit](.claude/skills/skill-audit/SKILL.md)                                                                                  | Interactive, category-by-category behavioral quality audit f...   | ↓0 ↑0      | 2026-03-09    |
 | [skill-creator](.claude/skills/skill-creator/SKILL.md)                                                                              | Structured creation workflow that produces high-quality skil...   | ↓0 ↑2      | 2026-03-09    |
-| [skill-ecosystem-audit](.claude/skills/skill-ecosystem-audit/SKILL.md)                                                              | Deep diagnostic of the entire skill ecosystem — SKILL.md fil...   | ↓0 ↑0      | 2026-02-24    |
+| [skill-ecosystem-audit](.claude/skills/skill-ecosystem-audit/SKILL.md)                                                              | Deep diagnostic of the entire skill ecosystem — SKILL.md fil...   | ↓0 ↑0      | 2026-03-10    |
 | [sonarcloud](.claude/skills/sonarcloud/SKILL.md)                                                                                    | Unified orchestrator for all SonarCloud operations against t...   | ↓0 ↑2      | 2026-02-24    |
 | [SonarCloud Enrichment (Step 1.5)](.claude/skills/pr-review/reference/SONARCLOUD_ENRICHMENT.md)                                     | When SonarCloud issues are detected in pasted feedback, auto...   | ↓1 ↑0      | 2026-02-14    |
 | [sprint](.claude/skills/sprint/SKILL.md)                                                                                            | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
@@ -415,7 +415,7 @@ _Claude Code skills_
 | [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)                                                                | - When the task doesn't match this skill's scope -- check re...   | ↓0 ↑0      | 2026-02-24    |
 | [task-next](.claude/skills/task-next/SKILL.md)                                                                                      | Shows which tasks are ready to work on based on dependency r...   | ↓0 ↑0      | 2026-02-24    |
 | [TDMS Integration (Step 6.5)](.claude/skills/pr-review/reference/TDMS_INTEGRATION.md)                                               | When items are deferred during PR review, they MUST be inges...   | ↓1 ↑0      | 2026-02-14    |
-| [tdms-ecosystem-audit](.claude/skills/tdms-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire Technical Debt Management Syst...   | ↓0 ↑0      | 2026-02-24    |
+| [tdms-ecosystem-audit](.claude/skills/tdms-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire Technical Debt Management Syst...   | ↓0 ↑0      | 2026-03-10    |
 | [test-suite](.claude/skills/test-suite/SKILL.md)                                                                                    | Multi-phase UI testing orchestration for SoNash. Runs smoke ...   | ↓0 ↑0      | 2026-02-24    |
 | [ui-design-system](.claude/skills/ui-design-system/SKILL.md)                                                                        | Professional toolkit for creating and maintaining scalable d...   | ↓0 ↑0      | 2026-02-24    |
 | [using-superpowers](.claude/skills/using-superpowers/SKILL.md)                                                                      | - Use when starting any conversation - establishes how to fi...   | ↓0 ↑0      | 2026-02-24    |
@@ -762,9 +762,9 @@ _Uncategorized_
 
 | Document                                                                           | Description                                                     | References | Last Modified |
 | ---------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Decision Record: Ecosystem Expansion](.planning/ecosystem-expansion/DECISIONS.md) | -                                                               | ↓0 ↑0      | 2026-03-09    |
+| [Decision Record: Ecosystem Expansion](.planning/ecosystem-expansion/DECISIONS.md) | -                                                               | ↓0 ↑0      | 2026-03-10    |
 | [Diagnosis: Ecosystem Expansion](.planning/ecosystem-expansion/DIAGNOSIS.md)       | -                                                               | ↓0 ↑0      | 2026-03-09    |
-| [Implementation Plan: Ecosystem Expansion](.planning/ecosystem-expansion/PLAN.md)  | Seven-phase plan: (1) build repo-wide testing infrastructure... | ↓0 ↑0      | 2026-03-09    |
+| [Implementation Plan: Ecosystem Expansion](.planning/ecosystem-expansion/PLAN.md)  | Seven-phase plan: (1) build repo-wide testing infrastructure... | ↓0 ↑0      | 2026-03-10    |
 
 ### .planning > ecosystem-v2 (Tier 4)
 
