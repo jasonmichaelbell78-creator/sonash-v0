@@ -62,10 +62,10 @@ files)
   tests passing (0 failures) across all 7 ecosystem audit domains. Fixed
   PROJECT_ROOT resolution in 11 files, 3 flaky property tests, 5 ESLint
   violations, 1 pattern compliance issue.
-- **Phase 7** (`dad542aa`): Verification — baseline cleaned (133 tested scripts
-  removed, 7 health gaps added), registry regenerated (485 entries), 0 new
-  coverage gaps. Remaining: Steps 20c-f (smoke test, code review, decision
-  audit, docs update).
+- **Phase 7** (`dad542aa`+`9310d7ec`): Verification complete — baseline cleaned,
+  registry regenerated (485 entries), auto-detection smoke test passed, code
+  review (0 critical), decision audit (28/29 implemented), TESTING_SYSTEM.md
+  v2.0.
 
 **Session #213** (PR #424 MERGED + BRANCH CLEANUP):
 
@@ -96,9 +96,9 @@ files)
 | M1.5 - Quick Wins                 | Paused   | ~20%                                |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%                                |
 
-**Current Branch**: `health-ecosystem` (8 commits ahead of `main`)
+**Current Branch**: `health-ecosystem` (9 commits ahead of `main`)
 
-**Test Status**: All tests passing (3,646 total, 3,640 pass, 6 skipped, 0 fail)
+**Test Status**: All tests passing (3,646 total, 3,645 pass, 1 skipped, 0 fail)
 
 ---
 
@@ -106,11 +106,9 @@ files)
 
 ### Immediate Priority (Next Session)
 
-1. **Finish Phase 7 verification** (Steps 20c-f): Auto-detection smoke test,
-   code review on Phase 5-7 files, decision coverage audit (D#53-81), update
-   TESTING_SYSTEM.md.
-2. **Create PR** for `health-ecosystem` branch (8 commits: Phases 3-7). Target:
+1. **PR created** for `health-ecosystem` branch (9 commits: Phases 3-7). Target:
    squash-merge to `main`.
+2. Process PR review feedback and merge.
 3. After PR merge: plan next work from ROADMAP.md.
 
 **See**:
