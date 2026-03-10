@@ -71,7 +71,9 @@ describe("cicd-pipeline checker", () => {
       } else {
         // Known pre-existing bug in source checker (totalBots not defined).
         // Verify it is a ReferenceError, not an unexpected error type.
-        assert.ok(error instanceof ReferenceError || error instanceof Error);
+        const msg = error instanceof Error ? error.message : String(error);
+        assert.ok(error instanceof ReferenceError, `Unexpected error type: ${String(error)}`);
+        assert.ok(msg.includes("totalBots"), `Unexpected ReferenceError: ${msg}`);
       }
     });
 

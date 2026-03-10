@@ -21,7 +21,10 @@ function getStalenessHours() {
   const envVal = process.env.HMS_STALENESS_HOURS;
   if (envVal !== undefined && envVal !== "") {
     const parsed = Number(envVal);
-    if (!isNaN(parsed) && parsed > 0) return parsed;
+    const MAX_STALENESS_HOURS = 24 * 30; // 30 days
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return Math.min(MAX_STALENESS_HOURS, Math.round(parsed));
+    }
   }
   return DEFAULT_STALENESS_HOURS;
 }

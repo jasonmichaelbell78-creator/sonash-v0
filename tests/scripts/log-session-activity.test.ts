@@ -45,14 +45,14 @@ describe("log-session-activity: session entry structure", () => {
 
 describe("log-session-activity: JSONL line building", () => {
   it("produces valid JSON line with newline", () => {
-    const line = toJsonlLine({ id: 1, value: "test" });
-    assert.ok(line.endsWith("\n"));
-    assert.doesNotThrow(() => JSON.parse(line.trim()));
+    const output = toJsonlLine({ id: 1, value: "test" });
+    assert.ok(output.endsWith("\n"));
+    assert.doesNotThrow(() => JSON.parse(output.trim()));
   });
 
   it("handles nested objects", () => {
-    const line = toJsonlLine({ metadata: { version: "1.0" } });
-    const parsed = JSON.parse(line.trim()) as { metadata: { version: string } };
+    const output = toJsonlLine({ metadata: { version: "1.0" } });
+    const parsed = JSON.parse(output.trim()) as { metadata: { version: string } };
     assert.strictEqual(parsed.metadata.version, "1.0");
   });
 });

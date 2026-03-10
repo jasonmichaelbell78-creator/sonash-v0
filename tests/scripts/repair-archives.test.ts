@@ -17,12 +17,8 @@ function isValidArchiveFilename(filename: string): boolean {
 }
 
 function findDuplicateIds(content: string): number[] {
-  const ids: number[] = [];
   const regex = /^####\s+Review\s+#(\d+)/gm;
-  let match;
-  while ((match = regex.exec(content)) !== null) {
-    ids.push(Number.parseInt(match[1], 10));
-  }
+  const ids = Array.from(content.matchAll(regex), (m) => Number.parseInt(m[1], 10));
   const seen = new Set<number>();
   const duplicates = new Set<number>();
   for (const id of ids) {

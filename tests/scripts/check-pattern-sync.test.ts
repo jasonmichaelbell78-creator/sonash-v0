@@ -4,13 +4,8 @@ import assert from "node:assert/strict";
 // Re-implements core logic from scripts/check-pattern-sync.js
 
 function extractPatternIds(content: string): string[] {
-  const ids: string[] = [];
   const regex = /\|\s*(ANTI-\d{3}|PAT-\d{3}|[A-Z]+-\d{3,4})\s*\|/g;
-  let match;
-  while ((match = regex.exec(content)) !== null) {
-    ids.push(match[1]);
-  }
-  return ids;
+  return Array.from(content.matchAll(regex), (m) => m[1]);
 }
 
 function findMismatches(

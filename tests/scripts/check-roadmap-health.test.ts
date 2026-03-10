@@ -4,13 +4,8 @@ import assert from "node:assert/strict";
 // Re-implements core logic from scripts/check-roadmap-health.js
 
 function extractMilestones(content: string): Array<{ title: string; status: string }> {
-  const milestones: Array<{ title: string; status: string }> = [];
   const regex = /^##\s+(.+?)\s*\[(COMPLETE|IN_PROGRESS|PLANNED)\]/gm;
-  let match;
-  while ((match = regex.exec(content)) !== null) {
-    milestones.push({ title: match[1], status: match[2] });
-  }
-  return milestones;
+  return Array.from(content.matchAll(regex), (m) => ({ title: m[1], status: m[2] }));
 }
 
 function calculateHealthScore(total: number, complete: number, inProgress: number): number {

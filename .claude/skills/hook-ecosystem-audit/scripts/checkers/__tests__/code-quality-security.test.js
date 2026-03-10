@@ -103,7 +103,9 @@ describe("code-quality-security checker", () => {
       const badHook = [
         '"use strict";',
         "const { exec } = require('child_process');",
-        "exec('rm -rf ' + process.argv[2]);",
+        "function dangerous(arg) {",
+        "  exec('rm -rf ' + arg);",
+        "}",
         "console.log(error.message);",
       ].join("\n");
       fs.writeFileSync(path.join(hooksDir, "bad-hook.js"), badHook);

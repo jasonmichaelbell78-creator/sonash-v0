@@ -108,7 +108,9 @@ describe("safety-error-handling checker", () => {
         '"use strict";',
         "const { exec } = require('child_process');",
         "const userInput = process.argv[2];",
-        "exec('ls ' + userInput);",
+        "function runUnsafe() {",
+        "  exec('ls ' + userInput);",
+        "}",
         "try { } catch(e) { console.log(e.message); }",
       ].join("\n");
       fs.writeFileSync(path.join(scriptsDir, "unsafe.js"), unsafeScript);

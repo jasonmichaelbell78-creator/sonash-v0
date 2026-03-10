@@ -67,6 +67,13 @@ function createStateManager(rootDir, isSafeToWrite) {
 
   function readEntries() {
     try {
+      const dirStat = fs.lstatSync(STATE_DIR);
+      if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) return [];
+    } catch {
+      return [];
+    }
+
+    try {
       const stat = fs.lstatSync(STATE_FILE);
       if (stat.isSymbolicLink() || !stat.isFile()) return [];
       if (stat.size > MAX_FILE_SIZE) {
@@ -98,7 +105,13 @@ function createStateManager(rootDir, isSafeToWrite) {
 
   function appendEntry(entry) {
     try {
-      if (!fs.existsSync(STATE_DIR)) {
+      try {
+        const dirStat = fs.lstatSync(STATE_DIR);
+        if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+          console.error("  [warn] State dir is not a real directory, skipping write");
+          return false;
+        }
+      } catch {
         fs.mkdirSync(STATE_DIR, { recursive: true });
       }
 
@@ -173,8 +186,8 @@ function createStateManager(rootDir, isSafeToWrite) {
 
     const previous = entries[entries.length - 1];
     if (!previous.healthScore || !current.healthScore) return null;
-    if (typeof previous.healthScore.score !== "number") return null;
-    if (typeof current.healthScore.score !== "number") return null;
+    if (!Number.isFinite(previous.healthScore.score)) return null;
+    if (!Number.isFinite(current.healthScore.score)) return null;
 
     const delta = {
       scoreBefore: previous.healthScore.score,
@@ -220,7 +233,13 @@ function createStateManager(rootDir, isSafeToWrite) {
   function saveBaseline(entry) {
     const baselinePath = path.join(STATE_DIR, "health-ecosystem-audit-baseline.json");
     try {
-      if (!fs.existsSync(STATE_DIR)) {
+      try {
+        const dirStat = fs.lstatSync(STATE_DIR);
+        if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+          console.error("  [warn] State dir is not a real directory, skipping write");
+          return false;
+        }
+      } catch {
         fs.mkdirSync(STATE_DIR, { recursive: true });
       }
 

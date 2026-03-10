@@ -156,8 +156,8 @@ function compositeScore(categoryScores, weights) {
 function impactScore(finding) {
   const severityWeights = { error: 1.0, warning: 0.6, info: 0.3 };
   const sevWeight = severityWeights[finding.severity] || 0.3;
-  const freq = Math.min(1.0, (finding.frequency ?? 1) / 10);
-  const blast = Math.min(1.0, (finding.blastRadius ?? 1) / 5);
+  const freq = Math.max(0, Math.min(1.0, (finding.frequency ?? 1) / 10));
+  const blast = Math.max(0, Math.min(1.0, (finding.blastRadius ?? 1) / 5));
 
   return Math.round(sevWeight * 40 + freq * 30 + blast * 30);
 }

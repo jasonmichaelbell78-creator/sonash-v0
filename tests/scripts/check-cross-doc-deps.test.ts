@@ -4,13 +4,8 @@ import assert from "node:assert/strict";
 // Re-implements core logic from scripts/check-cross-doc-deps.js
 
 function extractMarkdownLinks(content: string): Array<{ text: string; href: string }> {
-  const links: Array<{ text: string; href: string }> = [];
   const regex = /\[([^\]]*)\]\(([^)]+)\)/g;
-  let match;
-  while ((match = regex.exec(content)) !== null) {
-    links.push({ text: match[1], href: match[2] });
-  }
-  return links;
+  return Array.from(content.matchAll(regex), (m) => ({ text: m[1], href: m[2] }));
 }
 
 function isInternalLink(href: string): boolean {

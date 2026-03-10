@@ -5,12 +5,7 @@ import assert from "node:assert/strict";
 
 function extractVersionMentions(content: string, packageName: string): string[] {
   const pattern = new RegExp(String.raw`${packageName}[\s@]*([\d]+\.[\d]+\.[\d]+)`, "gi");
-  const versions: string[] = [];
-  let match;
-  while ((match = pattern.exec(content)) !== null) {
-    versions.push(match[1]);
-  }
-  return versions;
+  return Array.from(content.matchAll(pattern), (m) => m[1]);
 }
 
 function scriptExists(scripts: Record<string, string>, scriptName: string): boolean {

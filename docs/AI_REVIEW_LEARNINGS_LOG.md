@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.96 **Created:** 2026-01-02 **Last Updated:** 2026-03-10
+**Document Version:** 17.97 **Created:** 2026-01-02 **Last Updated:** 2026-03-10
 
 ## Purpose
 
@@ -853,6 +853,46 @@ deduplicated, non-overlapping ranges):
 ---
 
 ## Active Reviews
+
+### Review #471: PR #426 R2-2 — Qodo + Semgrep + CI (2026-03-10)
+
+_Health ecosystem audit — test registry coverage gate, scoring robustness,
+state-manager security, property test correctness, CI compliance._
+
+**Source:** Qodo (2 bugs, 20 suggestions), Semgrep (1), CI (10 blocking)
+**Items:** 28 total (18 fixed, 7 deferred, 3 rejected) **Severity:** 3C / 7M /
+12m / 6T
+
+**Key Patterns:**
+
+1. **Exit code propagation** — `checkCoverage()` returned exit code but `main()`
+   didn't set `process.exitCode`, making CI gate ineffective. Pattern: always
+   verify script exit codes propagate through main().
+2. **Property test early return** — `return val.score >= 0` in a for-loop exits
+   after first score, skipping rest. Pattern: use `if (bad) return false` +
+   final `return true` for "all-pass" checks. Propagated to 4 files.
+3. **toSorted() compatibility** — Not available in all Node.js versions. Use
+   `[...arr].sort()` instead. 2 instances fixed.
+4. **STATE_DIR symlink check** — Individual files were symlink-checked but
+   parent directory was not, allowing redirection. Pattern: check directory
+   before files.
+5. **Scoring input clamping** — `Math.min(1.0, x)` doesn't prevent negative
+   inputs. Use `Math.max(0, Math.min(1.0, x))`. Propagated to 8 scoring.js
+   copies.
+6. **Test fixture executability** — `exec()` at file top level runs on
+   `require()`. Wrap in uninvoked functions. 2 security fixes.
+7. **Pattern compliance in tests** — while/exec loops, JSONL parsing, regex
+   .test() with /g all trigger false positives in test strings. Refactor
+   patterns to avoid.
+
+**Deferred:** Per-checker subprocess timeout enforcement, segment-boundary fuzzy
+matching, per-block tag counting, brace-counting drift parser, schema check
+regex refinement, false 0% pass rate handling, test timeout detection.
+
+**Rejected:** execSync("npm test") (by design), silent scanner catch
+(intentional), basename collision bug body (addressed by locality fix).
+
+---
 
 ### Review #470: PR #426 R1-2 — SonarCloud (2026-03-10)
 

@@ -21,14 +21,9 @@ function validateTimeout(value: string): { valid: boolean; ms?: number; error?: 
 }
 
 function extractLinks(content: string): string[] {
-  const links: string[] = [];
   // Match [text](url) patterns
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-  let match;
-  while ((match = linkRegex.exec(content)) !== null) {
-    links.push(match[2]);
-  }
-  return links;
+  return Array.from(content.matchAll(linkRegex), (m) => m[2]);
 }
 
 function shouldRateLimit(

@@ -478,7 +478,8 @@ function checkRegistryCompleteness(ctx, findings) {
       .filter((f) => f.endsWith(".js") && !f.includes("__tests__") && !f.includes(".test."));
     expectedSources += auditCheckerFiles.length;
   } catch {
-    expectedSources += healthCheckerEntries.length; // fallback: count what we have
+    // Cannot determine expected checker count from disk; don't backfill with registered count
+    // to prevent "expected == registered" from masking missing registrations.
   }
   registeredSources += healthCheckerEntries.length;
 

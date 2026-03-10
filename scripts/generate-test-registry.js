@@ -126,8 +126,10 @@ function scanSingleSkillTests(testsDir, skillName) {
         description: `${skillName} test: ${baseName}`,
       });
     }
-  } catch {
-    // Skip unreadable
+  } catch (err) {
+    console.error(
+      `[generate-test-registry] scanSingleSkillTests(${skillName}): ${sanitizeError(err)}`
+    );
   }
   return entries;
 }
@@ -520,6 +522,7 @@ function scanCoveredScripts() {
  */
 function getLocalityKey(relPath) {
   const parts = relPath.split("/");
+  if (parts.length === 0) return "";
   // For .claude/skills/X paths, use first 3 segments to capture skill name
   if (parts[0] === ".claude" && parts.length >= 3) return parts.slice(0, 3).join("/");
   // For other paths, use first 2 segments
@@ -543,7 +546,7 @@ function entryMatchesScript(entry, scriptName, prefixStripped, scriptDir) {
   if (localMatch && entry.path.includes(scriptName + ".test.")) return true;
   if (localMatch && entry.path.includes(scriptName + ".property.test.")) return true;
   // Strategy 3: prefix-stripped match (check-docs-light -> docs-light)
-  if (prefixStripped !== scriptName && entry.target === prefixStripped) return true;
+  if (localMatch && prefixStripped !== scriptName && entry.target === prefixStripped) return true;
   // Strategy 4: test target contains script name or vice versa
   if (entry.target.includes(scriptName) || scriptName.includes(entry.target)) {
     if ((entry.target.length >= 5 || scriptName.length >= 5) && localMatch) return true;
@@ -577,6 +580,10 @@ function loadBaseline() {
     const content = fs.readFileSync(BASELINE_PATH, "utf8");
     const baseline = JSON.parse(content);
     if (!baseline || !Array.isArray(baseline.entries)) return null;
+    // Validate entries have required 'path' field
+    baseline.entries = baseline.entries.filter(
+      (e) => e && typeof e === "object" && typeof e.path === "string"
+    );
     return baseline;
   } catch (err) {
     console.error(`[generate-test-registry] Failed to load baseline: ${sanitizeError(err)}`);
@@ -624,7 +631,7 @@ function autoCleanBaseline(baseline) {
  * @param {string[]} gaps - Relative paths of untested scripts
  */
 function printGapList(gaps) {
-  for (const gap of gaps.toSorted((a, b) => a.localeCompare(b))) {
+  for (const gap of [...gaps].sort((a, b) => a.localeCompare(b))) {
     let lines = 0;
     try {
       lines = fs.readFileSync(path.join(ROOT, gap), "utf8").split("\n").length;
@@ -660,7 +667,7 @@ function checkCoverageWithBaseline(untested, baseline) {
   console.log("PASS: No new untested scripts found.");
   if (knownGaps.length > 0) {
     console.log(`\nBaseline gaps remaining (${knownGaps.length}):`);
-    for (const gap of knownGaps.toSorted((a, b) => a.localeCompare(b)).slice(0, 10)) {
+    for (const gap of [...knownGaps].sort((a, b) => a.localeCompare(b)).slice(0, 10)) {
       console.log(`  ${gap}`);
     }
     if (knownGaps.length > 10) {
@@ -727,7 +734,9 @@ function main() {
     });
 
     if (isCheckCoverage) {
-      return checkCoverage(uniqueEntries);
+      const exitCode = checkCoverage(uniqueEntries);
+      process.exitCode = exitCode;
+      return;
     }
 
     // Ensure output directory exists
