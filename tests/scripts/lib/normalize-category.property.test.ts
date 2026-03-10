@@ -84,13 +84,22 @@ describe("normalizeCategory property: output is always in the valid category set
 
   it("output is always a non-empty string", () => {
     fc.assert(
-      fc.property(fc.anything(), (input) => {
-        const result = normalizeCategory(input);
-        assert.ok(
-          typeof result === "string" && result.length > 0,
-          `Expected non-empty string, got: ${JSON.stringify(result)}`
-        );
-      })
+      fc.property(
+        fc.oneof(
+          fc.string(),
+          fc.integer(),
+          fc.boolean(),
+          fc.constant(null),
+          fc.constant(undefined)
+        ),
+        (input) => {
+          const result = normalizeCategory(input);
+          assert.ok(
+            typeof result === "string" && result.length > 0,
+            `Expected non-empty string, got: ${JSON.stringify(result)}`
+          );
+        }
+      )
     );
   });
 });

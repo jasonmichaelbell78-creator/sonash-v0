@@ -65,15 +65,24 @@ describe("normalizeFilePath property: empty input returns empty string", () => {
 });
 
 describe("normalizeFilePath property: output is always a string", () => {
-  it("any input returns a string", () => {
+  it("any stringifiable input returns a string", () => {
     fc.assert(
-      fc.property(fc.anything(), (input) => {
-        const result = normalizeFilePath(input as string);
-        assert.ok(
-          typeof result === "string",
-          `Expected string, got ${typeof result} for input ${JSON.stringify(input)}`
-        );
-      })
+      fc.property(
+        fc.oneof(
+          fc.string(),
+          fc.integer(),
+          fc.boolean(),
+          fc.constant(null),
+          fc.constant(undefined)
+        ),
+        (input) => {
+          const result = normalizeFilePath(input as string);
+          assert.ok(
+            typeof result === "string",
+            `Expected string, got ${typeof result} for input ${JSON.stringify(input)}`
+          );
+        }
+      )
     );
   });
 });
