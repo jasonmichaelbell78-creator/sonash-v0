@@ -69,8 +69,8 @@ describe("safePercent", () => {
   });
 
   it("returns fallback for NaN inputs", () => {
-    assert.equal(safePercent(NaN, 10), 100);
-    assert.equal(safePercent(5, NaN), 100);
+    assert.equal(safePercent(Number.NaN, 10), 100);
+    assert.equal(safePercent(5, Number.NaN), 100);
   });
 
   it("returns fallback for Infinity inputs", () => {
@@ -106,7 +106,7 @@ describe("clamp0to100", () => {
   });
 
   it("returns 100 for NaN", () => {
-    assert.equal(clamp0to100(NaN), 100);
+    assert.equal(clamp0to100(Number.NaN), 100);
   });
 });
 
@@ -128,7 +128,7 @@ describe("isPathTraversal", () => {
 
   it("returns true for absolute paths", () => {
     assert.equal(isPathTraversal("/etc/passwd"), true);
-    assert.equal(isPathTraversal("C:\\Windows"), true);
+    assert.equal(isPathTraversal(String.raw`C:\Windows`), true);
   });
 
   it("returns true for Windows drive-letter paths", () => {
@@ -289,11 +289,11 @@ describe("loadPackageJson", () => {
     // We only assert null/object since test environments vary.
     const result = loadPackageJson(pkgPath);
     // Either null (path outside cwd) or a parsed object
-    if (result !== null) {
-      assert.equal(typeof result, "object");
-    } else {
+    if (result === null) {
       // Acceptable: path traversal guard rejected it
       assert.equal(result, null);
+    } else {
+      assert.equal(typeof result, "object");
     }
   });
 

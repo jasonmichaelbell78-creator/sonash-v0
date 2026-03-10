@@ -89,7 +89,7 @@ describe("normalizeFilePath property: output is always a string", () => {
 
 describe("normalizeFilePath property: Windows drive letters are preserved", () => {
   it("C:/path preserves the drive letter", () => {
-    const result = normalizeFilePath("C:\\Users\\alice\\project\\file.ts");
+    const result = normalizeFilePath(String.raw`C:\Users\alice\project\file.ts`);
     assert.ok(
       result.startsWith("C:/") || result.includes("file.ts"),
       `Expected drive letter preservation for Windows path, got: ${result}`

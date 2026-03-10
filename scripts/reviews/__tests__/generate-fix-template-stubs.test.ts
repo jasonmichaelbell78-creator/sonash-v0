@@ -137,11 +137,11 @@ describe("generateFixTemplateStub", () => {
 // 2. appendFixTemplateStubs (dry-run)
 // =========================================================
 
-describe("appendFixTemplateStubs (dry-run)", () => {
-  function writeFixTemplates(content: string): void {
-    fs.writeFileSync(path.join(tmpDir, "docs", "agent_docs", "FIX_TEMPLATES.md"), content, "utf-8");
-  }
+function writeFixTemplates(content: string): void {
+  fs.writeFileSync(path.join(tmpDir, "docs", "agent_docs", "FIX_TEMPLATES.md"), content, "utf-8");
+}
 
+describe("appendFixTemplateStubs (dry-run)", () => {
   test("dry-run returns generated names without writing to disk", () => {
     writeFixTemplates(
       "# FIX TEMPLATES\n\n## Template 1: Old Pattern\n\n**Pattern:** old pattern\n"

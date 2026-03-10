@@ -4,12 +4,12 @@ import path from "node:path";
 
 // Re-implements core logic from scripts/test-hooks.js (medium template)
 
-describe("test-hooks: path containment validation", () => {
-  function isPathContained(targetDir: string, baseDir: string): boolean {
-    const rel = path.relative(baseDir, targetDir);
-    return !(/^\.\.(?:[\\/]|$)/.test(rel) || rel === "" || path.isAbsolute(rel));
-  }
+function isPathContained(targetDir: string, baseDir: string): boolean {
+  const rel = path.relative(baseDir, targetDir);
+  return !(/^\.\.(?:[\\/]|$)/.test(rel) || rel === "" || path.isAbsolute(rel));
+}
 
+describe("test-hooks: path containment validation", () => {
   it("hooksDir within projectDir passes", () => {
     const projectDir = "/project";
     const hooksDir = "/project/.claude/hooks";

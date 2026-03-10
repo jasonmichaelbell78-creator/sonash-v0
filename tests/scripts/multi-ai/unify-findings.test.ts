@@ -147,32 +147,29 @@ function detectCrossCuttingFindings(allFindings: Finding[]): {
   return { crossCutting, fileMap };
 }
 
-function detectDependencyChains(findings: Finding[]): object[] {
-  const chains: object[] = [];
+function detectExplicitChains(findings: Finding[], chains: object[]): void {
   const idMap = new Map(findings.map((f) => [f.canonical_id, f]));
-
   for (const finding of findings) {
-    if (finding.dependencies?.length) {
-      const deps = finding.dependencies
-        .map((depId) => {
-          const dep = idMap.get(depId);
-          return dep
-            ? { id: depId, title: dep.title?.substring(0, 40), severity: dep.severity }
-            : null;
-        })
-        .filter(Boolean);
-
-      if (deps.length > 0) {
-        chains.push({
-          finding_id: finding.canonical_id,
-          finding_title: finding.title?.substring(0, 40),
-          depends_on: deps,
-        });
-      }
+    if (!finding.dependencies?.length) continue;
+    const deps = finding.dependencies
+      .map((depId) => {
+        const dep = idMap.get(depId);
+        return dep
+          ? { id: depId, title: dep.title?.substring(0, 40), severity: dep.severity }
+          : null;
+      })
+      .filter(Boolean);
+    if (deps.length > 0) {
+      chains.push({
+        finding_id: finding.canonical_id,
+        finding_title: finding.title?.substring(0, 40),
+        depends_on: deps,
+      });
     }
   }
+}
 
-  // Implicit: S0/S1 may block S2/S3 in the same file
+function detectImplicitChains(findings: Finding[], chains: object[]): void {
   const fileGroups = new Map<string, Finding[]>();
   for (const finding of findings) {
     for (const file of extractNormalizedFiles(finding)) {
@@ -180,7 +177,6 @@ function detectDependencyChains(findings: Finding[]): object[] {
       fileGroups.get(file)!.push(finding);
     }
   }
-
   for (const [file, fileFindings] of fileGroups) {
     if (fileFindings.length < 2) continue;
     const critical = fileFindings.filter((f) => f.severity === "S0" || f.severity === "S1");
@@ -202,7 +198,12 @@ function detectDependencyChains(findings: Finding[]): object[] {
       });
     }
   }
+}
 
+function detectDependencyChains(findings: Finding[]): object[] {
+  const chains: object[] = [];
+  detectExplicitChains(findings, chains);
+  detectImplicitChains(findings, chains);
   return chains;
 }
 
@@ -447,7 +448,8 @@ describe("mergeRelatedFindings concept", () => {
     const findings: Finding[] = [
       { canonical_id: "A", category: "security", files: ["src/security-only.ts"] },
     ];
-    const { crossCutting, fileMap } = detectCrossCuttingFindings(findings);
+    // Call to verify no error; result not needed for this test case
+    detectCrossCuttingFindings(findings);
 
     // Simulate the merge: non-merged findings get cross_cutting: false
     const merged: Finding[] = [];
@@ -468,7 +470,7 @@ describe("mergeRelatedFindings concept", () => {
     ];
     const { fileMap } = detectCrossCuttingFindings(findings);
 
-    for (const [file, fileFindings] of fileMap) {
+    for (const [, fileFindings] of fileMap) {
       const categories = new Set(fileFindings.map((f) => f.category));
       if (categories.size >= 2) {
         assert.ok(categories.has("security"), "Should have security category");

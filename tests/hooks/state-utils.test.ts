@@ -21,7 +21,7 @@ const MODULE_PATH = path.resolve(PROJECT_ROOT, ".claude/hooks/lib/state-utils.js
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { loadJson, saveJson } = require(MODULE_PATH) as {
-  loadJson: (filePath: string) => unknown | null;
+  loadJson: (filePath: string) => unknown;
   saveJson: (filePath: string, data: unknown) => boolean;
 };
 

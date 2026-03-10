@@ -1003,6 +1003,51 @@ function findNextAvailableId(maxExistingId, state, newlyAssignedIds, mdIds) {
   return newId;
 }
 
+/**
+ * Resolve a single review's ID collision against existing data.
+ * @returns {boolean} true if processing should skip to next review (content match found or no collision)
+ */
+function resolveReviewCollision(
+  review,
+  existingIds,
+  existingById,
+  existingByContent,
+  mdIds,
+  offsetState,
+  newlyAssignedIds,
+  maxExistingId
+) {
+  const sig = `${review.title || ""}::${review.date || ""}`;
+  const contentMatchId = existingByContent.get(sig);
+  if (contentMatchId !== undefined) {
+    if (contentMatchId !== review.id) {
+      mdIds.delete(review.id);
+      review.id = contentMatchId;
+      mdIds.add(review.id);
+    }
+    return true;
+  }
+
+  if (!existingIds.has(review.id)) return true;
+  const existing = existingById.get(review.id);
+  if (!existing) return true;
+
+  const sameContent =
+    existing.title === review.title && existing.pr === review.pr && existing.date === review.date;
+  if (sameContent) return true;
+
+  const oldId = review.id;
+  const newId = findNextAvailableId(maxExistingId, offsetState, newlyAssignedIds, mdIds);
+
+  mdIds.delete(oldId);
+  review.id = newId;
+  mdIds.add(newId);
+  newlyAssignedIds.add(newId);
+  existingByContent.set(sig, newId);
+  console.log(`  ⚠️  Review #${oldId} renumbered to #${newId} (collision)`);
+  return false;
+}
+
 function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
   const existingByContent = buildContentIndex(existingById);
 
@@ -1016,34 +1061,16 @@ function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
   const newlyAssignedIds = new Set();
 
   for (const review of mdReviews) {
-    const sig = `${review.title || ""}::${review.date || ""}`;
-    const contentMatchId = existingByContent.get(sig);
-    if (contentMatchId !== undefined) {
-      if (contentMatchId !== review.id) {
-        mdIds.delete(review.id);
-        review.id = contentMatchId;
-        mdIds.add(review.id);
-      }
-      continue;
-    }
-
-    if (!existingIds.has(review.id)) continue;
-    const existing = existingById.get(review.id);
-    if (!existing) continue;
-
-    const sameContent =
-      existing.title === review.title && existing.pr === review.pr && existing.date === review.date;
-    if (sameContent) continue;
-
-    const oldId = review.id;
-    const newId = findNextAvailableId(maxExistingId, offsetState, newlyAssignedIds, mdIds);
-
-    mdIds.delete(oldId);
-    review.id = newId;
-    mdIds.add(newId);
-    newlyAssignedIds.add(newId);
-    existingByContent.set(sig, newId);
-    console.log(`  ⚠️  Review #${oldId} renumbered to #${newId} (collision)`);
+    resolveReviewCollision(
+      review,
+      existingIds,
+      existingById,
+      existingByContent,
+      mdIds,
+      offsetState,
+      newlyAssignedIds,
+      maxExistingId
+    );
   }
   return mdReviews;
 }

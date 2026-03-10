@@ -269,8 +269,9 @@ function isTraversalPath(rel: string): boolean {
 
 describe("path traversal guard", () => {
   it("detects '../' traversal", () => assert.equal(isTraversalPath("../secret"), true));
-  it("detects '..\\' traversal on Windows paths", () =>
-    assert.equal(isTraversalPath("..\\secret"), true));
+  it(String.raw`detects '..\' traversal on Windows paths`, () =>
+    assert.equal(isTraversalPath(String.raw`..\secret`), true)
+  );
   it("detects bare '..'", () => assert.equal(isTraversalPath(".."), true));
   it("allows normal relative paths", () => assert.equal(isTraversalPath("src/file.ts"), false));
   it("allows paths starting with a filename beginning '..'", () => {

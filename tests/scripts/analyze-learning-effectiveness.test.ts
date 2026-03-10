@@ -6,20 +6,20 @@ import assert from "node:assert/strict";
 function sanitizeError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   return message
-    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+    .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]");
 }
 
 function sanitizeDisplayString(str: string | undefined | null, maxLength = 100): string {
   if (!str) return "";
   const sanitized = String(str)
-    .replace(/```[\s\S]*?```/g, "[CODE]")
-    .replace(/`[^`]+`/g, "[CODE]")
-    .replace(/C:\\Users\\[^\s]+/gi, "[PATH]")
-    .replace(/\/home\/[^\s]+/gi, "[PATH]")
-    .replace(/\/Users\/[^\s]+/gi, "[PATH]")
-    .replace(/\s+/g, " ")
+    .replaceAll(/```[\s\S]*?```/g, "[CODE]")
+    .replaceAll(/`[^`]+`/g, "[CODE]")
+    .replaceAll(/C:\\Users\\[^\s]+/gi, "[PATH]")
+    .replaceAll(/\/home\/[^\s]+/gi, "[PATH]")
+    .replaceAll(/\/Users\/[^\s]+/gi, "[PATH]")
+    .replaceAll(/\s+/g, " ")
     .trim();
   return sanitized.length > maxLength ? sanitized.substring(0, maxLength) + "..." : sanitized;
 }
@@ -54,7 +54,7 @@ function parsePatternBlock(
 
 describe("analyze-learning-effectiveness: sanitizeError", () => {
   it("masks Windows user path", () => {
-    const err = new Error("File not found: C:\\Users\\JohnDoe\\project\\foo.ts");
+    const err = new Error(String.raw`File not found: C:\Users\JohnDoe\project\foo.ts`);
     assert.ok(sanitizeError(err).includes("[USER_PATH]"));
     assert.ok(!sanitizeError(err).includes("JohnDoe"));
   });
@@ -168,23 +168,23 @@ describe("analyze-learning-effectiveness: parsePatternBlock", () => {
 
 function sanitizeForEscape(str: string | undefined | null, maxLength = 100): string {
   if (!str) return "";
-  return String(str).replace(/\s+/g, " ").trim().substring(0, maxLength);
+  return String(str).replaceAll(/\s+/g, " ").trim().substring(0, maxLength);
 }
 
 function escapeMd(str: string, maxLength = 100): string {
   const sanitized = sanitizeForEscape(str, maxLength);
-  return sanitized.replace(/[\\[\]()_*`#>!-]/g, "\\$&");
+  return sanitized.replaceAll(/[\\[\]()_*`#>!-]/g, "\\$&");
 }
 
 describe("analyze-learning-effectiveness: escapeMd", () => {
   it("escapes markdown special characters", () => {
     const result = escapeMd("hello [world]");
-    assert.ok(result.includes("\\["));
-    assert.ok(result.includes("\\]"));
+    assert.ok(result.includes(String.raw`\[`));
+    assert.ok(result.includes(String.raw`\]`));
   });
 
   it("escapes asterisks", () => {
-    assert.ok(escapeMd("**bold**").includes("\\*"));
+    assert.ok(escapeMd("**bold**").includes(String.raw`\*`));
   });
 
   it("escapes backticks", () => {

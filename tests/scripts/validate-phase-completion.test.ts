@@ -10,7 +10,7 @@ function extractPhaseContent(content: string, phase: string): string | null {
 
   const searchStart = phaseStart + header.length;
   const nextPhaseMatch = /\n## 📋 PHASE/.exec(content.slice(searchStart));
-  const phaseEnd = nextPhaseMatch ? searchStart + nextPhaseMatch.index! : content.length;
+  const phaseEnd = nextPhaseMatch ? searchStart + nextPhaseMatch.index : content.length;
   return content.slice(phaseStart, phaseEnd);
 }
 

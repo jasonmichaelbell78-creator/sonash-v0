@@ -60,8 +60,8 @@ const REQUIRED_FIELDS = [
   "acceptance_tests",
 ];
 
-const VALID_SEVERITY = ["S0", "S1", "S2", "S3"];
-const VALID_EFFORT = ["E0", "E1", "E2", "E3"];
+const VALID_SEVERITY = new Set(["S0", "S1", "S2", "S3"]);
+const VALID_EFFORT = new Set(["E0", "E1", "E2", "E3"]);
 
 const FIELD_ALIASES: Record<string, string> = {
   id: "fingerprint",
@@ -227,27 +227,35 @@ interface Finding {
   [key: string]: unknown;
 }
 
-function validateFinding(finding: Finding | null | undefined): string[] {
-  const issues: string[] = [];
+function isFieldEmpty(value: unknown): boolean {
+  return (
+    (typeof value === "string" && value.trim() === "") ||
+    (Array.isArray(value) && value.length === 0) ||
+    value === undefined ||
+    value === null
+  );
+}
 
+function validateRequiredFields(finding: Finding | null | undefined, issues: string[]): void {
   for (const field of REQUIRED_FIELDS) {
     const value = finding?.[field];
     const isMissing = !(field in (finding || {}));
-    const isEmpty =
-      (typeof value === "string" && (value as string).trim() === "") ||
-      (Array.isArray(value) && value.length === 0) ||
-      value === undefined ||
-      value === null;
-    if (isMissing || isEmpty) {
+    if (isMissing || isFieldEmpty(value)) {
       issues.push(`Missing required field: ${field}`);
     }
   }
+}
 
-  if (finding?.severity && !VALID_SEVERITY.includes(finding.severity)) {
-    issues.push(`Invalid severity: ${finding.severity}`);
+function validateFinding(finding: Finding | null | undefined): string[] {
+  const issues: string[] = [];
+
+  validateRequiredFields(finding, issues);
+
+  if (finding?.severity && !VALID_SEVERITY.has(finding.severity)) {
+    issues.push(`Invalid severity: ${String(finding.severity)}`);
   }
-  if (finding?.effort && !VALID_EFFORT.includes(finding.effort)) {
-    issues.push(`Invalid effort: ${finding.effort}`);
+  if (finding?.effort && !VALID_EFFORT.has(finding.effort)) {
+    issues.push(`Invalid effort: ${String(finding.effort)}`);
   }
   if (finding?.confidence !== undefined) {
     if (
@@ -255,7 +263,7 @@ function validateFinding(finding: Finding | null | undefined): string[] {
       finding.confidence < 0 ||
       finding.confidence > 100
     ) {
-      issues.push(`Invalid confidence: ${finding.confidence}`);
+      issues.push(`Invalid confidence: ${String(finding.confidence)}`);
     }
   }
   if (finding?.files && !Array.isArray(finding.files)) {
@@ -461,22 +469,22 @@ describe("applyFieldAliases", () => {
 // 7. validateFinding
 // ---------------------------------------------------------------------------
 
-describe("validateFinding", () => {
-  function buildValid(): Finding {
-    return {
-      category: "security",
-      title: "Auth bypass",
-      fingerprint: "security::src/auth.ts::auth-bypass",
-      severity: "S1",
-      effort: "E2",
-      confidence: 80,
-      files: ["src/auth.ts"],
-      why_it_matters: "Attackers can bypass auth",
-      suggested_fix: "Add input validation",
-      acceptance_tests: ["Verify bypass closed"],
-    };
-  }
+function buildValid(): Finding {
+  return {
+    category: "security",
+    title: "Auth bypass",
+    fingerprint: "security::src/auth.ts::auth-bypass",
+    severity: "S1",
+    effort: "E2",
+    confidence: 80,
+    files: ["src/auth.ts"],
+    why_it_matters: "Attackers can bypass auth",
+    suggested_fix: "Add input validation",
+    acceptance_tests: ["Verify bypass closed"],
+  };
+}
 
+describe("validateFinding", () => {
   it("returns no issues for a valid finding", () => {
     const issues = validateFinding(buildValid());
     assert.equal(issues.length, 0, `Unexpected: ${JSON.stringify(issues)}`);

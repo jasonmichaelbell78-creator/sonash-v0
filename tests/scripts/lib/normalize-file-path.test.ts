@@ -32,7 +32,7 @@ const normalizeFilePath = require(MODULE_PATH) as (
 
 describe("normalizeFilePath", () => {
   it("converts Windows backslashes to forward slashes", () => {
-    const result = normalizeFilePath("src\\lib\\foo.ts");
+    const result = normalizeFilePath(String.raw`src\lib\foo.ts`);
     assert.equal(result, "src/lib/foo.ts");
   });
 

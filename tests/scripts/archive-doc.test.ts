@@ -127,8 +127,8 @@ describe("archive-doc: path containment check using regex", () => {
     assert.strictEqual(isPathTraversalArchiveDoc("../escape"), true);
   });
 
-  it("detects ..\\ on Windows", () => {
-    assert.strictEqual(isPathTraversalArchiveDoc("..\\escape"), true);
+  it(String.raw`detects ..\ on Windows`, () => {
+    assert.strictEqual(isPathTraversalArchiveDoc(String.raw`..\escape`), true);
   });
 
   it("detects standalone ..", () => {

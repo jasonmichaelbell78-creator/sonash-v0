@@ -109,7 +109,7 @@ describe("findCommentStart", () => {
   });
 
   it("handles escaped quote inside string", () => {
-    const idx = findCommentStart("const s = 'it\\'s fine'; // real comment");
+    const idx = findCommentStart(String.raw`const s = 'it\'s fine'; // real comment`);
     assert.ok(idx > 0);
   });
 
@@ -132,7 +132,7 @@ function normalizeForOutput(rawPath: string): string {
 
 describe("normalizeForOutput", () => {
   it("replaces backslashes with forward slashes", () => {
-    assert.equal(normalizeForOutput("src\\auth\\index.ts"), "src/auth/index.ts");
+    assert.equal(normalizeForOutput(String.raw`src\auth\index.ts`), "src/auth/index.ts");
   });
 
   it("removes leading ./", () => {

@@ -181,7 +181,7 @@ describe("detectRecurrence", () => {
       makeReview("rev-3", ["common"], 12),
     ];
     const results = detectRecurrence(reviews, 2, 2);
-    assert.ok(results[0].count >= results[results.length - 1].count);
+    assert.ok(results[0].count >= results.at(-1)!.count);
   });
 
   test("skips reviews with null patterns", () => {

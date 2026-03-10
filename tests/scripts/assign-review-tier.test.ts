@@ -5,9 +5,9 @@ import assert from "node:assert/strict";
 
 function sanitizePath(filePath: string): string {
   return String(filePath)
-    .replace(/\/home\/[^/\s]+/g, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/g, "[HOME]")
-    .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]");
+    .replaceAll(/\/home\/[^/\s]+/g, "[HOME]")
+    .replaceAll(/\/Users\/[^/\s]+/g, "[HOME]")
+    .replaceAll(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]");
 }
 
 function normalizePath(filePath: string): string {
@@ -30,7 +30,7 @@ describe("assign-review-tier: sanitizePath", () => {
   });
 
   it("masks Windows drive paths", () => {
-    const result = sanitizePath("C:\\Users\\jbell\\project\\file.ts");
+    const result = sanitizePath(String.raw`C:\Users\jbell\project\file.ts`);
     assert.ok(result.includes("[HOME]"));
   });
 
@@ -41,7 +41,7 @@ describe("assign-review-tier: sanitizePath", () => {
 
 describe("assign-review-tier: normalizePath", () => {
   it("converts Windows backslashes to forward slashes", () => {
-    assert.strictEqual(normalizePath("src\\lib\\utils.ts"), "src/lib/utils.ts");
+    assert.strictEqual(normalizePath(String.raw`src\lib\utils.ts`), "src/lib/utils.ts");
   });
 
   it("leaves forward slashes unchanged", () => {

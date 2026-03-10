@@ -94,7 +94,7 @@ function getFileRef(finding: Finding): string {
   if (typeof rawLine === "number" && Number.isFinite(rawLine)) {
     return `${file}:${rawLine}`;
   }
-  if (Array.isArray(finding.files) && finding.files[0] && finding.files[0].includes(":")) {
+  if (Array.isArray(finding.files) && finding.files[0]?.includes(":")) {
     return finding.files[0];
   }
   return file;

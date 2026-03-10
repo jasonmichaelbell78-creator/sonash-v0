@@ -23,9 +23,9 @@ function validateWriteSize(content: string, writtenContent: string): boolean {
 function sanitizeErrorArchiveReviews(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
   return msg
-    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+    .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]");
 }
 
 function parseMode(args: Set<string>): { applyMode: boolean; autoMode: boolean; quiet: boolean } {
@@ -83,7 +83,7 @@ describe("archive-reviews: atomic write size validation", () => {
 
 describe("archive-reviews: sanitizeError", () => {
   it("sanitizes Windows paths", () => {
-    const result = sanitizeErrorArchiveReviews(new Error("C:\\Users\\jbell\\projects"));
+    const result = sanitizeErrorArchiveReviews(new Error(String.raw`C:\Users\jbell\projects`));
     assert.ok(result.includes("[USER_PATH]"));
   });
 

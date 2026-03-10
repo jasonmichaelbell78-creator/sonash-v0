@@ -249,7 +249,7 @@ describe("findAuditDirectories logic", () => {
 
       const entries = fs
         .readdirSync(tmpDir, { withFileTypes: true })
-        .filter((e) => e.isDirectory() && /^audit-/.test(e.name))
+        .filter((e) => e.isDirectory() && e.name.startsWith("audit-"))
         .map((e) => e.name);
 
       assert.deepEqual(entries, ["audit-2026-01-15"]);

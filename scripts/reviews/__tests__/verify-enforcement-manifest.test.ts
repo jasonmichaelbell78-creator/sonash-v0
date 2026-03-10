@@ -68,7 +68,7 @@ afterEach(() => {
 });
 
 function writeFile(relPath: string, content: string): string {
-  const rel = relPath.replace(/\\/g, "/");
+  const rel = relPath.replaceAll("\\", "/");
   if (/^\.\.(?:[/\\]|$)/.test(rel)) throw new Error("Path traversal detected");
   const full = path.join(tmpDir, relPath);
   fs.mkdirSync(path.dirname(full), { recursive: true });

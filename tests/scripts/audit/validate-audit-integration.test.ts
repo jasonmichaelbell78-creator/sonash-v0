@@ -54,7 +54,7 @@ const REQUIRED_BASE_FIELDS = [
   "acceptance_tests",
 ];
 
-const VALID_CATEGORIES = [
+const VALID_CATEGORIES = new Set([
   "code-quality",
   "security",
   "performance",
@@ -64,20 +64,24 @@ const VALID_CATEGORIES = [
   "engineering-productivity",
   "enhancements",
   "ai-optimization",
-];
+]);
 
-const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
-const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
-const VALID_FIRST_PASS_METHODS = ["grep", "tool_output", "file_read", "code_search"];
-const VALID_SECOND_PASS_METHODS = ["contextual_review", "exploitation_test", "manual_verification"];
-const VALID_TOOL_CONFIRMATIONS = [
+const VALID_SEVERITIES = new Set(["S0", "S1", "S2", "S3"]);
+const VALID_EFFORTS = new Set(["E0", "E1", "E2", "E3"]);
+const VALID_FIRST_PASS_METHODS = new Set(["grep", "tool_output", "file_read", "code_search"]);
+const VALID_SECOND_PASS_METHODS = new Set([
+  "contextual_review",
+  "exploitation_test",
+  "manual_verification",
+]);
+const VALID_TOOL_CONFIRMATIONS = new Set([
   "eslint",
   "sonarcloud",
   "npm_audit",
   "patterns_check",
   "typescript",
   "NONE",
-];
+]);
 
 // ---------------------------------------------------------------------------
 // Re-implemented pure helpers
@@ -118,14 +122,62 @@ interface FindingItem {
   [key: string]: unknown;
 }
 
-function validateJsonlSchema(
-  item: FindingItem
-): Array<{ type: string; field?: string; message: string }> {
-  const issues: Array<{ type: string; field?: string; message: string }> = [];
-  const findingId =
-    item.fingerprint ||
-    (typeof item.title === "string" ? item.title.substring(0, 30) : "") ||
-    `line-${item._lineNumber}`;
+type SchemaIssue = { type: string; field?: string; message: string };
+
+function validateEnumFields(item: FindingItem, issues: SchemaIssue[]): void {
+  if (item.category && !VALID_CATEGORIES.has(item.category)) {
+    issues.push({
+      type: "INVALID_CATEGORY",
+      field: "category",
+      message: `Invalid category '${item.category}'`,
+    });
+  }
+  if (item.severity && !VALID_SEVERITIES.has(item.severity)) {
+    issues.push({
+      type: "INVALID_SEVERITY",
+      field: "severity",
+      message: `Invalid severity '${item.severity}'`,
+    });
+  }
+  if (item.effort && !VALID_EFFORTS.has(item.effort)) {
+    issues.push({
+      type: "INVALID_EFFORT",
+      field: "effort",
+      message: `Invalid effort '${item.effort}'`,
+    });
+  }
+}
+
+function validateFingerprintFormat(item: FindingItem, issues: SchemaIssue[]): void {
+  if (item.fingerprint === undefined) return;
+  if (typeof item.fingerprint !== "string" || item.fingerprint.trim() === "") {
+    issues.push({
+      type: "INVALID_FINGERPRINT_FORMAT",
+      field: "fingerprint",
+      message: "Fingerprint must be a non-empty string",
+    });
+    return;
+  }
+  const parts = item.fingerprint.split("::").map((p: string) => p.trim());
+  const hasEnoughParts = parts.length >= 3;
+  const hasEmptyPart = parts.some((p: string) => p.length === 0);
+  if (!hasEnoughParts || hasEmptyPart) {
+    issues.push({
+      type: "INVALID_FINGERPRINT_FORMAT",
+      field: "fingerprint",
+      message: "Fingerprint must follow format: <category>::<file>::<identifier>",
+    });
+  } else if (item.category && parts[0] !== item.category) {
+    issues.push({
+      type: "FINGERPRINT_CATEGORY_MISMATCH",
+      field: "fingerprint",
+      message: `Fingerprint category '${parts[0]}' must match item category '${item.category}'`,
+    });
+  }
+}
+
+function validateJsonlSchema(item: FindingItem): SchemaIssue[] {
+  const issues: SchemaIssue[] = [];
 
   // Required fields
   for (const field of REQUIRED_BASE_FIELDS) {
@@ -142,7 +194,7 @@ function validateJsonlSchema(
   for (const field of ["title", "why_it_matters", "suggested_fix"] as const) {
     const val = item[field];
     if (val !== undefined && val !== null) {
-      if (typeof val !== "string" || (val as string).trim() === "") {
+      if (typeof val !== "string" || val.trim() === "") {
         issues.push({
           type: "INVALID_STRING_FIELD",
           field,
@@ -152,32 +204,7 @@ function validateJsonlSchema(
     }
   }
 
-  // Category enum
-  if (item.category && !VALID_CATEGORIES.includes(item.category)) {
-    issues.push({
-      type: "INVALID_CATEGORY",
-      field: "category",
-      message: `Invalid category '${item.category}'`,
-    });
-  }
-
-  // Severity enum
-  if (item.severity && !VALID_SEVERITIES.includes(item.severity)) {
-    issues.push({
-      type: "INVALID_SEVERITY",
-      field: "severity",
-      message: `Invalid severity '${item.severity}'`,
-    });
-  }
-
-  // Effort enum
-  if (item.effort && !VALID_EFFORTS.includes(item.effort)) {
-    issues.push({
-      type: "INVALID_EFFORT",
-      field: "effort",
-      message: `Invalid effort '${item.effort}'`,
-    });
-  }
+  validateEnumFields(item, issues);
 
   // Confidence 0-100
   if (item.confidence !== undefined) {
@@ -208,58 +235,19 @@ function validateJsonlSchema(
     });
   }
 
-  // Fingerprint format
-  if (item.fingerprint !== undefined) {
-    if (typeof item.fingerprint !== "string" || item.fingerprint.trim() === "") {
-      issues.push({
-        type: "INVALID_FINGERPRINT_FORMAT",
-        field: "fingerprint",
-        message: "Fingerprint must be a non-empty string",
-      });
-    } else {
-      const parts = item.fingerprint.split("::").map((p: string) => p.trim());
-      const hasEnoughParts = parts.length >= 3;
-      const hasEmptyPart = parts.some((p: string) => p.length === 0);
-      if (!hasEnoughParts || hasEmptyPart) {
-        issues.push({
-          type: "INVALID_FINGERPRINT_FORMAT",
-          field: "fingerprint",
-          message: "Fingerprint must follow format: <category>::<file>::<identifier>",
-        });
-      } else if (item.category && parts[0] !== item.category) {
-        issues.push({
-          type: "FINGERPRINT_CATEGORY_MISMATCH",
-          field: "fingerprint",
-          message: `Fingerprint category '${parts[0]}' must match item category '${item.category}'`,
-        });
-      }
-    }
-  }
+  validateFingerprintFormat(item, issues);
 
   return issues;
 }
 
-function validateS0S1Requirements(
-  item: FindingItem
-): Array<{ type: string; blocking: boolean; message: string }> {
-  const issues: Array<{ type: string; blocking: boolean; message: string }> = [];
-  const severity = item.severity;
+type BlockingIssue = { type: string; blocking: boolean; message: string };
 
-  if (severity !== "S0" && severity !== "S1") return issues;
-
-  if (!item.verification_steps) {
-    issues.push({
-      type: "MISSING_VERIFICATION_STEPS",
-      blocking: true,
-      message: `Missing required 'verification_steps' object for ${severity} findings`,
-    });
-    return issues;
-  }
-
-  const vs = item.verification_steps;
-
+function validateFirstPass(
+  vs: NonNullable<FindingItem["verification_steps"]>,
+  issues: BlockingIssue[]
+): void {
   if (vs.first_pass) {
-    if (!vs.first_pass.method || !VALID_FIRST_PASS_METHODS.includes(vs.first_pass.method)) {
+    if (!vs.first_pass.method || !VALID_FIRST_PASS_METHODS.has(vs.first_pass.method)) {
       issues.push({
         type: "INVALID_FIRST_PASS_METHOD",
         blocking: true,
@@ -283,9 +271,14 @@ function validateS0S1Requirements(
       message: "Missing 'verification_steps.first_pass' object",
     });
   }
+}
 
+function validateSecondPass(
+  vs: NonNullable<FindingItem["verification_steps"]>,
+  issues: BlockingIssue[]
+): void {
   if (vs.second_pass) {
-    if (!vs.second_pass.method || !VALID_SECOND_PASS_METHODS.includes(vs.second_pass.method)) {
+    if (!vs.second_pass.method || !VALID_SECOND_PASS_METHODS.has(vs.second_pass.method)) {
       issues.push({
         type: "INVALID_SECOND_PASS_METHOD",
         blocking: true,
@@ -306,12 +299,14 @@ function validateS0S1Requirements(
       message: "Missing 'verification_steps.second_pass' object",
     });
   }
+}
 
+function validateToolConfirmation(
+  vs: NonNullable<FindingItem["verification_steps"]>,
+  issues: BlockingIssue[]
+): void {
   if (vs.tool_confirmation) {
-    if (
-      !vs.tool_confirmation.tool ||
-      !VALID_TOOL_CONFIRMATIONS.includes(vs.tool_confirmation.tool)
-    ) {
+    if (!vs.tool_confirmation.tool || !VALID_TOOL_CONFIRMATIONS.has(vs.tool_confirmation.tool)) {
       issues.push({
         type: "INVALID_TOOL_CONFIRMATION",
         blocking: true,
@@ -335,6 +330,27 @@ function validateS0S1Requirements(
       message: "Missing 'verification_steps.tool_confirmation' object",
     });
   }
+}
+
+function validateS0S1Requirements(item: FindingItem): BlockingIssue[] {
+  const issues: BlockingIssue[] = [];
+  const severity = item.severity;
+
+  if (severity !== "S0" && severity !== "S1") return issues;
+
+  if (!item.verification_steps) {
+    issues.push({
+      type: "MISSING_VERIFICATION_STEPS",
+      blocking: true,
+      message: `Missing required 'verification_steps' object for ${severity} findings`,
+    });
+    return issues;
+  }
+
+  const vs = item.verification_steps;
+  validateFirstPass(vs, issues);
+  validateSecondPass(vs, issues);
+  validateToolConfirmation(vs, issues);
 
   return issues;
 }
@@ -728,7 +744,7 @@ describe("loadJsonlFile prototype pollution guard", () => {
       const line = fs.readFileSync(p, "utf8").trim();
       const raw = JSON.parse(line);
       const safe = Object.assign(Object.create(null), raw);
-      delete safe.__proto__;
+      Reflect.deleteProperty(safe, "__proto__");
       delete safe.constructor;
       delete safe.prototype;
 

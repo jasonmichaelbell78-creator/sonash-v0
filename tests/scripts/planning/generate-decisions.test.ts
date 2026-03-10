@@ -51,9 +51,9 @@ function classifyDecision(d: Decision): string {
 function escapeCell(s: string | undefined): string {
   if (!s) return "";
   return String(s)
-    .replaceAll(/\|/g, String.raw`\|`)
-    .replaceAll(/\\/g, String.raw`\\`)
-    .replaceAll(/\n/g, " ");
+    .replaceAll("|", String.raw`\|`)
+    .replaceAll("\\", String.raw`\\`)
+    .replaceAll("\n", " ");
 }
 
 // =========================================================
@@ -139,7 +139,7 @@ describe("escapeCell (Markdown table cell escaping)", () => {
 
   it("escapes pipe characters", () => {
     const result = escapeCell("foo | bar");
-    assert.ok(result.includes("\\|"), `expected escaped pipe in: ${result}`);
+    assert.ok(result.includes(String.raw`\|`), `expected escaped pipe in: ${result}`);
   });
 
   it("replaces newlines with spaces", () => {

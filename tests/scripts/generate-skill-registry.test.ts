@@ -3,14 +3,17 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/generate-skill-registry.js
 
-function parseFrontmatter(content: string): Record<string, string> | null {
-  if (!content.startsWith("---")) return null;
+function findFrontmatterEnd(content: string): number {
   const endLF = content.indexOf("\n---", 3);
   const endCRLF = content.indexOf("\r\n---", 3);
-  let end: number;
-  if (endLF === -1) end = endCRLF;
-  else if (endCRLF === -1) end = endLF;
-  else end = Math.min(endLF, endCRLF);
+  if (endLF === -1) return endCRLF;
+  if (endCRLF === -1) return endLF;
+  return Math.min(endLF, endCRLF);
+}
+
+function parseFrontmatter(content: string): Record<string, string> | null {
+  if (!content.startsWith("---")) return null;
+  const end = findFrontmatterEnd(content);
   if (end === -1) return null;
 
   const fm = content.slice(3, end);
@@ -34,11 +37,11 @@ function buildSkillEntry(
   source: string,
   frontmatter: Record<string, string> | null
 ): object {
-  return {
-    name,
-    source,
-    ...(frontmatter ?? {}),
-  };
+  const base: Record<string, string> = { name, source };
+  if (frontmatter) {
+    Object.assign(base, frontmatter);
+  }
+  return base;
 }
 
 describe("generate-skill-registry: parseFrontmatter", () => {
@@ -62,7 +65,7 @@ describe("generate-skill-registry: parseFrontmatter", () => {
     const content = "---\nname: test\ndescription: |\n---\n";
     const fm = parseFrontmatter(content);
     // description value is block scalar indicator - not stored
-    assert.ok(fm === null || !fm["description"]);
+    assert.ok(!fm?.["description"]);
   });
 
   it("handles CRLF line endings", () => {

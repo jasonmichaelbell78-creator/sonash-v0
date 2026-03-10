@@ -49,30 +49,42 @@ function extractTrackPrefix(id: string): string | null {
   return match ? match[1] : null;
 }
 
-function buildTrackBreakdown(
-  entries: VelocityEntry[]
-): Record<string, { sessions: number; items: number }> {
-  const trackBreakdown: Record<string, { sessions: number; items: number }> = {};
+type TrackMap = Record<string, { sessions: number; items: number }>;
+
+function ensureTrack(trackBreakdown: TrackMap, track: string): void {
+  if (!trackBreakdown[track]) trackBreakdown[track] = { sessions: 0, items: 0 };
+}
+
+function processItemIds(itemIds: string[], trackBreakdown: TrackMap): void {
+  const tracksTouched = new Set<string>();
+  for (const id of itemIds) {
+    const track = extractTrackPrefix(id);
+    if (!track) continue;
+    ensureTrack(trackBreakdown, track);
+    trackBreakdown[track].items += 1;
+    tracksTouched.add(track);
+  }
+  for (const track of tracksTouched) {
+    trackBreakdown[track].sessions += 1;
+  }
+}
+
+function processLegacyTracks(entry: VelocityEntry, trackBreakdown: TrackMap): void {
+  for (const track of entry.tracks || []) {
+    ensureTrack(trackBreakdown, track);
+    trackBreakdown[track].sessions += 1;
+    trackBreakdown[track].items += entry.items_completed ?? 0;
+  }
+}
+
+function buildTrackBreakdown(entries: VelocityEntry[]): TrackMap {
+  const trackBreakdown: TrackMap = {};
   for (const entry of entries) {
     const itemIds = Array.isArray(entry.item_ids) ? entry.item_ids : null;
     if (itemIds && itemIds.length > 0) {
-      const tracksTouched = new Set<string>();
-      for (const id of itemIds) {
-        const track = extractTrackPrefix(id);
-        if (!track) continue;
-        if (!trackBreakdown[track]) trackBreakdown[track] = { sessions: 0, items: 0 };
-        trackBreakdown[track].items += 1;
-        tracksTouched.add(track);
-      }
-      for (const track of tracksTouched) {
-        trackBreakdown[track].sessions += 1;
-      }
+      processItemIds(itemIds, trackBreakdown);
     } else {
-      for (const track of entry.tracks || []) {
-        if (!trackBreakdown[track]) trackBreakdown[track] = { sessions: 0, items: 0 };
-        trackBreakdown[track].sessions += 1;
-        trackBreakdown[track].items += entry.items_completed ?? 0;
-      }
+      processLegacyTracks(entry, trackBreakdown);
     }
   }
   return trackBreakdown;

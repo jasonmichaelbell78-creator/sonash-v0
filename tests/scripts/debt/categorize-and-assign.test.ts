@@ -286,7 +286,7 @@ interface SprintManifest {
 
 function buildExistingAssignments(manifest: SprintManifest | null): Map<string, string> {
   const map = new Map<string, string>();
-  if (!manifest || !manifest.sprints) return map;
+  if (!manifest?.sprints) return map;
   for (const [sprintKey, sprintData] of Object.entries(manifest.sprints)) {
     const ids = sprintData.ids || [];
     for (const id of ids) {

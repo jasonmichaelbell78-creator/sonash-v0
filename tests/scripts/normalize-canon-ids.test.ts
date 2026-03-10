@@ -100,7 +100,7 @@ describe("normalize-canon-ids: getConfidence", () => {
   });
 
   it("handles non-finite values", () => {
-    assert.strictEqual(getConfidence({ confidence: NaN }), 50);
+    assert.strictEqual(getConfidence({ confidence: Number.NaN }), 50);
   });
 });
 

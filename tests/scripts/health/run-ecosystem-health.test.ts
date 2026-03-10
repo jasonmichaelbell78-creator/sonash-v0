@@ -160,8 +160,8 @@ function computeTrend(scores: number[], windowSize = 7): TrendResult {
 
   const previous = window[0];
   const delta = current - previous;
-  const direction: TrendResult["direction"] =
-    Math.abs(delta) < 1 ? "stable" : delta > 0 ? "up" : "down";
+  const deltaDirection: TrendResult["direction"] = delta > 0 ? "up" : "down";
+  const direction: TrendResult["direction"] = Math.abs(delta) < 1 ? "stable" : deltaDirection;
 
   return { direction, delta, windowSize, previous, current };
 }

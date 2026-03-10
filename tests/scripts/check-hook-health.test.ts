@@ -13,7 +13,7 @@ function parseSessionState(content: string): object | null {
   try {
     const parsed = JSON.parse(content) as unknown;
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    return parsed as object;
+    return parsed;
   } catch {
     return null;
   }

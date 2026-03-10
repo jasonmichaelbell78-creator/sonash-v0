@@ -167,7 +167,7 @@ describe("generate-documentation-index: isArchived", () => {
 
 describe("generate-documentation-index: FILE_OVERRIDES key normalization", () => {
   it("converts backslashes to forward slashes", () => {
-    assert.strictEqual(normalizeOverrideKey("docs\\readme.md"), "docs/readme.md");
+    assert.strictEqual(normalizeOverrideKey(String.raw`docs\readme.md`), "docs/readme.md");
   });
 
   it("strips leading ./", () => {

@@ -29,7 +29,7 @@ function parsePropagationArgs(argv: string[]): {
 
 describe("check-propagation: toPosixPath", () => {
   it("converts backslashes to forward slashes", () => {
-    assert.strictEqual(toPosixPath("scripts\\lib\\utils.js"), "scripts/lib/utils.js");
+    assert.strictEqual(toPosixPath(String.raw`scripts\lib\utils.js`), "scripts/lib/utils.js");
   });
 
   it("leaves forward slashes unchanged", () => {
@@ -37,7 +37,7 @@ describe("check-propagation: toPosixPath", () => {
   });
 
   it("handles mixed separators", () => {
-    assert.strictEqual(toPosixPath("scripts\\lib/utils.js"), "scripts/lib/utils.js");
+    assert.strictEqual(toPosixPath(String.raw`scripts\lib/utils.js`), "scripts/lib/utils.js");
   });
 
   it("handles empty string", () => {
@@ -120,23 +120,23 @@ describe("check-propagation: argument parsing", () => {
 });
 
 describe("check-propagation: SEARCH_DIRS and IGNORE_DIRS", () => {
-  const SEARCH_DIRS = ["scripts/", ".claude/skills/", ".claude/hooks/"];
-  const IGNORE_DIRS = ["node_modules", ".git", "docs/archive", "__tests__"];
+  const SEARCH_DIRS = new Set(["scripts/", ".claude/skills/", ".claude/hooks/"]);
+  const IGNORE_DIRS = new Set(["node_modules", ".git", "docs/archive", "__tests__"]);
 
   it("searches in scripts directory", () => {
-    assert.ok(SEARCH_DIRS.includes("scripts/"));
+    assert.ok(SEARCH_DIRS.has("scripts/"));
   });
 
   it("searches in hooks directory", () => {
-    assert.ok(SEARCH_DIRS.includes(".claude/hooks/"));
+    assert.ok(SEARCH_DIRS.has(".claude/hooks/"));
   });
 
   it("ignores node_modules", () => {
-    assert.ok(IGNORE_DIRS.includes("node_modules"));
+    assert.ok(IGNORE_DIRS.has("node_modules"));
   });
 
   it("ignores .git directory", () => {
-    assert.ok(IGNORE_DIRS.includes(".git"));
+    assert.ok(IGNORE_DIRS.has(".git"));
   });
 });
 

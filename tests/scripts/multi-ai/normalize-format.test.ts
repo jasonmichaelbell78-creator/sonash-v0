@@ -111,36 +111,44 @@ interface BraceTracker {
   feed(str: string): void;
 }
 
+interface NormBraceState {
+  depth: number;
+  inString: boolean;
+  escaped: boolean;
+}
+
+function processNormBraceChar(ch: string, state: NormBraceState): void {
+  if (state.escaped) {
+    state.escaped = false;
+    return;
+  }
+  if (state.inString && ch === "\\") {
+    state.escaped = true;
+    return;
+  }
+  if (ch === '"') {
+    state.inString = !state.inString;
+    return;
+  }
+  if (!state.inString) {
+    if (ch === "{") state.depth++;
+    else if (ch === "}") {
+      state.depth--;
+      if (state.depth < 0) state.depth = 0;
+    }
+  }
+}
+
 function createBraceTracker(): BraceTracker {
-  let depth = 0;
-  let inString = false;
-  let escaped = false;
+  const state: NormBraceState = { depth: 0, inString: false, escaped: false };
 
   return {
     get depth() {
-      return depth;
+      return state.depth;
     },
     feed(str: string) {
       for (const ch of str) {
-        if (escaped) {
-          escaped = false;
-          continue;
-        }
-        if (inString && ch === "\\") {
-          escaped = true;
-          continue;
-        }
-        if (ch === '"') {
-          inString = !inString;
-          continue;
-        }
-        if (!inString) {
-          if (ch === "{") depth++;
-          else if (ch === "}") {
-            depth--;
-            if (depth < 0) depth = 0;
-          }
-        }
+        processNormBraceChar(ch, state);
       }
     },
   };
@@ -222,17 +230,57 @@ function validateContainedPath(inputPath: string, root: string): { ok: boolean }
   return { ok: true };
 }
 
+function detectFencedFormat(trimmed: string): string | null {
+  if (!/```jsonl?\s*\n/i.test(trimmed)) return null;
+  const match = /```(json|jsonl)\s*\n([\s\S]*?)```/i.exec(trimmed);
+  if (!match) return null;
+  const content = match[2].trim();
+  return content.startsWith("[") ? FORMAT_TYPES.FENCED_JSON : FORMAT_TYPES.FENCED_JSONL;
+}
+
+function detectJsonlFormat(trimmed: string): string | null {
+  const lines = trimmed.split("\n").filter((l) => l.trim());
+  if (lines.length === 0 || !lines[0].trim().startsWith("{")) return null;
+
+  const validJsonLines = lines.filter((line) => {
+    try {
+      const parsed = JSON.parse(line.trim());
+      return typeof parsed === "object" && !Array.isArray(parsed);
+    } catch {
+      return false;
+    }
+  });
+  if (validJsonLines.length / lines.length > 0.5) return FORMAT_TYPES.JSONL;
+
+  if (validJsonLines.length === 0 || validJsonLines.length / lines.length <= 0.5) {
+    const reconstructed = countReconstructableObjects(lines);
+    if (reconstructed >= 2) return FORMAT_TYPES.JSONL;
+  }
+  return null;
+}
+
+function detectMarkupFormat(trimmed: string): string | null {
+  if (trimmed.includes("|")) {
+    const tableMatch = /\|[^\n]{1,500}\|?\s*\r?\n\|[-: |]{1,500}\|?\s*\r?\n/.exec(trimmed);
+    if (tableMatch) return FORMAT_TYPES.MARKDOWN_TABLE;
+  }
+  if (/^#{2,4}\s+/m.test(trimmed)) {
+    const sectionCount = (trimmed.match(/^#{2,4}\s+/gm) || []).length;
+    if (sectionCount >= 2) return FORMAT_TYPES.HEADED_SECTIONS;
+  }
+  if (/^\d+\.\s+/m.test(trimmed)) {
+    const numberedItems = (trimmed.match(/^\d+\.\s+/gm) || []).length;
+    if (numberedItems >= 2) return FORMAT_TYPES.NUMBERED_LIST;
+  }
+  return null;
+}
+
 function detectFormat(input: unknown): string {
   if (!input || typeof input !== "string") return FORMAT_TYPES.PLAIN_TEXT;
   const trimmed = input.trim();
 
-  if (/```jsonl?\s*\n/i.test(trimmed)) {
-    const match = /```(json|jsonl)\s*\n([\s\S]*?)```/i.exec(trimmed);
-    if (match) {
-      const content = match[2].trim();
-      return content.startsWith("[") ? FORMAT_TYPES.FENCED_JSON : FORMAT_TYPES.FENCED_JSONL;
-    }
-  }
+  const fenced = detectFencedFormat(trimmed);
+  if (fenced) return fenced;
 
   if (trimmed.startsWith("[")) {
     try {
@@ -243,38 +291,11 @@ function detectFormat(input: unknown): string {
     }
   }
 
-  const lines = trimmed.split("\n").filter((l) => l.trim());
-  if (lines.length > 0 && lines[0].trim().startsWith("{")) {
-    const validJsonLines = lines.filter((line) => {
-      try {
-        const parsed = JSON.parse(line.trim());
-        return typeof parsed === "object" && !Array.isArray(parsed);
-      } catch {
-        return false;
-      }
-    });
-    if (validJsonLines.length / lines.length > 0.5) return FORMAT_TYPES.JSONL;
+  const jsonl = detectJsonlFormat(trimmed);
+  if (jsonl) return jsonl;
 
-    if (validJsonLines.length === 0 || validJsonLines.length / lines.length <= 0.5) {
-      const reconstructed = countReconstructableObjects(lines);
-      if (reconstructed >= 2) return FORMAT_TYPES.JSONL;
-    }
-  }
-
-  if (trimmed.includes("|")) {
-    const tableMatch = /\|[^\n]{1,500}\|?\s*\r?\n\|[-: |]{1,500}\|?\s*\r?\n/.exec(trimmed);
-    if (tableMatch) return FORMAT_TYPES.MARKDOWN_TABLE;
-  }
-
-  if (/^#{2,4}\s+/m.test(trimmed)) {
-    const sectionCount = (trimmed.match(/^#{2,4}\s+/gm) || []).length;
-    if (sectionCount >= 2) return FORMAT_TYPES.HEADED_SECTIONS;
-  }
-
-  if (/^\d+\.\s+/m.test(trimmed)) {
-    const numberedItems = (trimmed.match(/^\d+\.\s+/gm) || []).length;
-    if (numberedItems >= 2) return FORMAT_TYPES.NUMBERED_LIST;
-  }
+  const markup = detectMarkupFormat(trimmed);
+  if (markup) return markup;
 
   return FORMAT_TYPES.PLAIN_TEXT;
 }
@@ -391,7 +412,7 @@ describe("createBraceTracker", () => {
 
   it("handles escaped quotes correctly", () => {
     const tracker = createBraceTracker();
-    tracker.feed('{"key":"escaped \\"quote\\" value"}');
+    tracker.feed(String.raw`{"key":"escaped \"quote\" value"}`);
     assert.equal(tracker.depth, 0);
   });
 

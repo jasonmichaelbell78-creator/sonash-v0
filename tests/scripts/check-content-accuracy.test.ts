@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 // Re-implements core logic from scripts/check-content-accuracy.js
 
 function extractVersionMentions(content: string, packageName: string): string[] {
-  const pattern = new RegExp(`${packageName}[\\s@]*([\\d]+\\.[\\d]+\\.[\\d]+)`, "gi");
+  const pattern = new RegExp(String.raw`${packageName}[\s@]*([\d]+\.[\d]+\.[\d]+)`, "gi");
   const versions: string[] = [];
   let match;
   while ((match = pattern.exec(content)) !== null) {
@@ -22,7 +22,7 @@ function isMarkdownFile(filename: string): boolean {
 }
 
 function shouldSkipDirectory(entry: string): boolean {
-  return entry[0] === "." || entry === "node_modules" || entry === "__pycache__";
+  return entry.startsWith(".") || entry === "node_modules" || entry === "__pycache__";
 }
 
 describe("check-content-accuracy: version extraction from markdown", () => {

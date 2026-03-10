@@ -16,7 +16,7 @@ function isUnassigned(item: DebtItem): boolean {
 
 function inferCategoryFromFile(filePath: string): string {
   if (!filePath) return "UNASSIGNED";
-  const normalized = filePath.replaceAll(/\\/g, "/").toLowerCase();
+  const normalized = filePath.replaceAll("\\", "/").toLowerCase();
   if (/\/(auth|security|crypto|token|password)/.test(normalized)) return "security";
   if (/\/(perf|performance|cache|bundle|optimize)/.test(normalized)) return "performance";
   if (/\/(test|spec|__tests__)/.test(normalized)) return "code-quality";

@@ -15,8 +15,8 @@ import assert from "node:assert/strict";
 function escapeCell(s: string | undefined | null): string {
   if (!s) return "";
   return String(s)
-    .replaceAll(/\|/g, String.raw`\|`)
-    .replaceAll(/\n/g, " ");
+    .replaceAll("|", String.raw`\|`)
+    .replaceAll("\n", " ");
 }
 
 // Mirror readCoordination fallback (returns {} on error)
@@ -61,7 +61,7 @@ function isAssessmentDecision(d: DecisionRecord): boolean {
 describe("escapeCell (discovery record)", () => {
   it("escapes pipe characters for Markdown tables", () => {
     const result = escapeCell("foo | bar");
-    assert.ok(result.includes("\\|"));
+    assert.ok(result.includes(String.raw`\|`));
   });
 
   it("replaces newlines with spaces", () => {

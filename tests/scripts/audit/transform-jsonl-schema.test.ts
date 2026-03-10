@@ -55,7 +55,7 @@ function isPathContained(resolvedPath: string, projectRoot: string): boolean {
 function sanitizeFingerprintPart(value: unknown): string {
   return String(value ?? "unknown")
     .replaceAll("::", "--")
-    .replace(/\s+/g, " ")
+    .replaceAll(/\s+/g, " ")
     .trim()
     .slice(0, 200);
 }
@@ -92,13 +92,13 @@ function generateFingerprint(item: RawFinding, normalizedCategory: string): stri
     }
   }
 
-  const rawFile = item.file || (item.files && item.files[0]) || "unknown";
+  const rawFile = item.file || item.files?.[0] || "unknown";
   const file = sanitizeFingerprintPart(rawFile);
   const id = sanitizeFingerprintPart(
     item.id ||
       item.title
         ?.substring(0, 30)
-        .replace(/[^a-zA-Z0-9-]/g, "-")
+        .replaceAll(/[^a-zA-Z0-9-]/g, "-")
         .toLowerCase() ||
       "finding"
   );
@@ -137,18 +137,18 @@ function transformConfidence(item: RawFinding): { confidence: number; issues: st
     const normalized = confidence.trim().toUpperCase();
     confidence = CONFIDENCE_MAP[normalized] || 70;
     issues.push(`confidence: "${item.confidence}" → ${confidence}`);
-  } else if (typeof confidence !== "number" || !Number.isFinite(confidence as number)) {
+  } else if (typeof confidence !== "number" || !Number.isFinite(confidence)) {
     confidence = 70;
     issues.push("confidence: missing/invalid → 70");
   } else {
-    const clamped = Math.max(0, Math.min(100, confidence as number));
+    const clamped = Math.max(0, Math.min(100, confidence));
     if (clamped !== confidence) {
       issues.push(`confidence: out-of-range ${confidence} → ${clamped}`);
       confidence = clamped;
     }
   }
 
-  return { confidence: confidence as number, issues };
+  return { confidence: confidence, issues };
 }
 
 function transformAcceptanceTests(item: RawFinding): {
@@ -160,11 +160,8 @@ function transformAcceptanceTests(item: RawFinding): {
   let acceptance_tests = item.acceptance_tests;
 
   if (!acceptance_tests || !Array.isArray(acceptance_tests) || acceptance_tests.length === 0) {
-    if (
-      Array.isArray(item.verification_steps) &&
-      (item.verification_steps as string[]).length > 0
-    ) {
-      acceptance_tests = (item.verification_steps as string[])
+    if (Array.isArray(item.verification_steps) && item.verification_steps.length > 0) {
+      acceptance_tests = item.verification_steps
         .filter((v) => typeof v === "string" && v.trim())
         .map((v) => v.trim());
       issues.push("verification_steps → acceptance_tests");
@@ -489,7 +486,7 @@ describe("transformItem (field mapping)", () => {
 // ---------------------------------------------------------------------------
 
 describe("BOM stripping", () => {
-  it("strips UTF-8 BOM \\uFEFF from the start of a line", () => {
+  it(String.raw`strips UTF-8 BOM \uFEFF from the start of a line`, () => {
     const bomLine = '\uFEFF{"category":"security","title":"BOM test"}';
     const stripped = bomLine.replace(/^\uFEFF/, "");
     const parsed = JSON.parse(stripped);

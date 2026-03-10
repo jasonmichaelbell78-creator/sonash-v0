@@ -30,8 +30,8 @@ function parseMasterLine(
       }
     }
   } catch {
-    const ln = lineNum ?? "?";
-    void ln; // suppress unused warning — in prod, this logs a warning
+    const _ln = lineNum ?? "?";
+    // In prod, _ln logs a warning; unused in test
   }
 }
 

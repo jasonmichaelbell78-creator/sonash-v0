@@ -49,36 +49,44 @@ interface BraceTracker {
   feed(str: string): void;
 }
 
+interface BraceState {
+  depth: number;
+  inString: boolean;
+  escaped: boolean;
+}
+
+function processBraceChar(ch: string, state: BraceState): void {
+  if (state.escaped) {
+    state.escaped = false;
+    return;
+  }
+  if (state.inString && ch === "\\") {
+    state.escaped = true;
+    return;
+  }
+  if (ch === '"') {
+    state.inString = !state.inString;
+    return;
+  }
+  if (!state.inString) {
+    if (ch === "{") state.depth++;
+    else if (ch === "}") {
+      state.depth--;
+      if (state.depth < 0) state.depth = 0;
+    }
+  }
+}
+
 function createBraceTracker(): BraceTracker {
-  let depth = 0;
-  let inString = false;
-  let escaped = false;
+  const state: BraceState = { depth: 0, inString: false, escaped: false };
 
   return {
     get depth() {
-      return depth;
+      return state.depth;
     },
     feed(str: string) {
       for (const ch of str) {
-        if (escaped) {
-          escaped = false;
-          continue;
-        }
-        if (inString && ch === "\\") {
-          escaped = true;
-          continue;
-        }
-        if (ch === '"') {
-          inString = !inString;
-          continue;
-        }
-        if (!inString) {
-          if (ch === "{") depth++;
-          else if (ch === "}") {
-            depth--;
-            if (depth < 0) depth = 0;
-          }
-        }
+        processBraceChar(ch, state);
       }
     },
   };
@@ -101,7 +109,7 @@ function processFindingJson(
     if (!(finding.title && finding.severity)) return null;
 
     if (finding.file) {
-      let f = finding.file as string;
+      let f = finding.file;
       if (f.startsWith(rootPrefix)) f = f.slice(rootPrefix.length);
       else if (f.startsWith(projectRoot + "/")) f = f.slice(projectRoot.length + 1);
       else if (f.startsWith(projectRoot + "\\")) f = f.slice(projectRoot.length + 1);
@@ -179,7 +187,8 @@ describe("createBraceTracker", () => {
 
   it("handles escaped quotes inside strings correctly", () => {
     const tracker = createBraceTracker();
-    tracker.feed('{"key":"escaped \\"quote\\""}');
+    tracker.feed(String.raw`{"key":"escaped \"quote\""}`);
+
     assert.equal(tracker.depth, 0);
   });
 
@@ -231,12 +240,12 @@ describe("processFindingJson", () => {
   });
 
   it("strips Windows-style absolute project root from file path", () => {
-    const winRoot = "C:\\project\\root";
+    const winRoot = String.raw`C:\project\root`;
     const winPrefix = winRoot + "\\";
     const json = JSON.stringify({
       title: "T",
       severity: "S1",
-      file: "C:\\project\\root\\src\\auth.ts",
+      file: String.raw`C:\project\root\src\auth.ts`,
     });
     const result = processFindingJson(json, winRoot, winPrefix);
     assert.ok(result !== null);
@@ -245,7 +254,11 @@ describe("processFindingJson", () => {
   });
 
   it("converts backslashes in file path to forward slashes", () => {
-    const json = JSON.stringify({ title: "T", severity: "S1", file: "src\\auth\\token.ts" });
+    const json = JSON.stringify({
+      title: "T",
+      severity: "S1",
+      file: String.raw`src\auth\token.ts`,
+    });
     const result = processFindingJson(json, projectRoot, rootPrefix);
     assert.ok(result !== null);
     assert.ok(!(result!.file as string).includes("\\"), "Should not contain backslashes");
