@@ -154,7 +154,10 @@ test("loadBaseline returns null when no baseline exists", () => {
 });
 
 test("loadBaseline returns null for nonexistent root", () => {
-  const sm = createStateManager("/tmp/nonexistent-doc-audit-test-xyz", () => true);
+  const sm = createStateManager(
+    path.join(os.tmpdir(), "nonexistent-doc-audit-test-xyz"),
+    () => true
+  );
   assertEqual(sm.loadBaseline(), null, "Must return null for missing dir");
 });
 

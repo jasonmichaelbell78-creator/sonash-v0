@@ -25,6 +25,7 @@
 
 const path = require("node:path");
 const fs = require("node:fs");
+const os = require("node:os");
 
 // ============================================================================
 // TEST FRAMEWORK
@@ -538,7 +539,7 @@ test("state-manager exposes saveBaseline and loadBaseline methods", () => {
 test("state-manager loadBaseline returns null when no baseline exists", () => {
   const { createStateManager } = require(path.join(SCRIPTS_DIR, "lib", "state-manager"));
   // Use a non-existent root dir to ensure no baseline file
-  const sm = createStateManager("/tmp/nonexistent-audit-test-dir", () => true);
+  const sm = createStateManager(path.join(os.tmpdir(), "nonexistent-audit-test-dir"), () => true);
   const baseline = sm.loadBaseline();
   assertEqual(baseline, null, "loadBaseline should return null when no baseline exists");
 });

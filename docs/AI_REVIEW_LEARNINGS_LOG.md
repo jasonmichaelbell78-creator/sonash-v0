@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.93 **Created:** 2026-01-02 **Last Updated:** 2026-03-09
+**Document Version:** 17.94 **Created:** 2026-01-02 **Last Updated:** 2026-03-09
 
 ## Purpose
 
@@ -3203,6 +3203,47 @@ FP), S2245 (PRNG FP), S5443 (public dir FP).
   eliminates cross-line backtracking without changing behavior
 - `matchAll()` is preferred over `while(exec())` — avoids both the real
   infinite-loop risk AND false positives from static analyzers
+
+---
+
+#### Review #349: Qodo R2-3 — error handling, duplicate detection, cross-platform (2026-03-09)
+
+**PR:** #424 | **Source:** Qodo Compliance + Code Suggestions | **Round:** R2-3
+
+**Scope:** 13 Qodo suggestions across generate-test-registry.js, 7 ecosystem
+audit integration tests, health-log.test.js, hook-pipeline.test.js, and
+ecosystem state-manager tests.
+
+**Key Findings:**
+
+1. Swallowed catch blocks in `readdirRecursive` silently hide directory read
+   failures. Fix: log with sanitizeError.
+
+2. All 7 ecosystem audit integration tests had identical
+   `allScores[cat] = score` without checking for duplicate category keys from
+   different checkers. Fix: detect collision, emit warning finding, keep first
+   value.
+
+3. Broad `catch {}` in ESM dynamic import (health-log.test.js) silently skipped
+   all errors. Fix: only catch MODULE_NOT_FOUND, rethrow others.
+
+4. Hardcoded `/tmp` paths in 4 state-manager/regression tests break on Windows.
+   Fix: `path.join(os.tmpdir(), ...)` — os was already imported.
+
+**Resolution:**
+
+- Fixed: 9 items (across 17 files with propagation)
+- Deferred: 0 items
+- Rejected: 4 items (CI step dedupe, registry sort, checker validation,
+  fail-fast root)
+
+**Key Learnings:**
+
+- Duplicate category keys across checkers are a silent data-clobbering risk —
+  always guard with `cat in allScores` check
+- `safeWriteFileSync` satisfies pattern checker for symlink guard without manual
+  isSafeToWrite calls
+- Cross-platform test portability: always use `os.tmpdir()` instead of `/tmp`
 
 ---
 

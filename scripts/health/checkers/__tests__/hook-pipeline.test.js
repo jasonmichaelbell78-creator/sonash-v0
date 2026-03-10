@@ -47,9 +47,13 @@ require.cache[UTILS_PATH] = {
   },
 };
 delete require.cache[CHECKER_PATH];
-const { checkHookPipeline } = require(CHECKER_PATH);
-if (origUtils) require.cache[UTILS_PATH] = origUtils;
-else delete require.cache[UTILS_PATH];
+let checkHookPipeline;
+try {
+  ({ checkHookPipeline } = require(CHECKER_PATH));
+} finally {
+  if (origUtils) require.cache[UTILS_PATH] = origUtils;
+  else delete require.cache[UTILS_PATH];
+}
 
 function reset() {
   realFs.readFileSync = origReadFileSync;

@@ -215,8 +215,13 @@ describe("health-log computeTrend (ESM export)", () => {
         `file:///${join(__dirname, "..", "health-log.js").replaceAll("\\", "/")}`
       );
       computeTrend = mod.computeTrend;
-    } catch {
-      computeTrend = null;
+    } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? err.code : null;
+      if (code === "ERR_MODULE_NOT_FOUND" || code === "MODULE_NOT_FOUND") {
+        computeTrend = null;
+      } else {
+        throw err;
+      }
     }
   });
 

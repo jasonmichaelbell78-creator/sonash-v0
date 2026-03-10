@@ -30,6 +30,13 @@ try {
   sanitizeError = (err) => (err instanceof Error ? err.message : String(err)).slice(0, 200);
 }
 
+let safeWriteFileSync;
+try {
+  ({ safeWriteFileSync } = require("./lib/safe-fs"));
+} catch {
+  safeWriteFileSync = (p, d, o) => fs.writeFileSync(p, d, o);
+}
+
 const ROOT = path.resolve(__dirname, "..");
 const OUTPUT = path.join(ROOT, "data", "ecosystem-v2", "test-registry.jsonl");
 
@@ -341,14 +348,19 @@ function readdirRecursive(dir) {
     for (const entry of entries) {
       if (entry.isSymbolicLink()) continue;
       const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== "fixtures") {
+      if (
+        entry.isDirectory() &&
+        entry.name !== "node_modules" &&
+        entry.name !== "fixtures" &&
+        entry.name !== ".git"
+      ) {
         results.push(...readdirRecursive(fullPath));
       } else if (entry.isFile()) {
         results.push(fullPath);
       }
     }
-  } catch {
-    // Skip unreadable directories
+  } catch (err) {
+    console.error(`[generate-test-registry] readdirRecursive(${dir}): ${sanitizeError(err)}`);
   }
   return results;
 }
@@ -389,9 +401,9 @@ function main() {
       fs.mkdirSync(outDir, { recursive: true });
     }
 
-    // Write JSONL
+    // Write JSONL (symlink-guarded via safe-fs)
     const jsonl = uniqueEntries.map((e) => JSON.stringify(e)).join("\n") + "\n";
-    fs.writeFileSync(OUTPUT, jsonl, "utf8");
+    safeWriteFileSync(OUTPUT, jsonl, "utf8");
 
     // Summary
     const dupes = allEntries.length - uniqueEntries.length;

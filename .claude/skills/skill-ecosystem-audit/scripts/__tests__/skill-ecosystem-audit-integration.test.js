@@ -35,7 +35,9 @@ function test(name, fn) {
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    console.error(`  \u2717 ${name}: ${err.message}`);
+    const message =
+      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    console.error(`  \u2717 ${name}: ${message}`);
   }
 }
 
@@ -106,6 +108,19 @@ function buildAuditResult() {
     try {
       const result = checker.run({ rootDir: ROOT_DIR });
       for (const [cat, score] of Object.entries(result.scores)) {
+        if (cat in allScores) {
+          const domain =
+            typeof checker.DOMAIN === "string" && checker.DOMAIN ? checker.DOMAIN : "unknown";
+          allFindings.push({
+            id: `SKEA-DUP-CAT-${cat}`,
+            category: "audit_runtime",
+            domain,
+            severity: "warning",
+            message: `Duplicate category key "${cat}" from checker ${domain}; keeping first value`,
+            impactScore: 30,
+          });
+          continue;
+        }
         allScores[cat] = score;
       }
       for (const finding of result.findings) {
@@ -255,6 +270,8 @@ test("orchestrator documents --check, --summary, --batch, --save-baseline", () =
   const content = fs.readFileSync(orch, "utf8");
   assert(content.includes("--check"), "Must document --check");
   assert(content.includes("--summary"), "Must document --summary");
+  assert(content.includes("--batch"), "Must document --batch");
+  assert(content.includes("--save-baseline"), "Must document --save-baseline");
 });
 
 test("orchestrator loads all 5 checker files", () => {
