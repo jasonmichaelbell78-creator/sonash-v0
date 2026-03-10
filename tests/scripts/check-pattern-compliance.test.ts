@@ -3,15 +3,41 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-pattern-compliance.js
 
-describe("check-pattern-compliance: loadWarnedFiles TTL logic", () => {
-  const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-  function isExpired(timestamp: string, now: number): boolean {
-    const ts = new Date(timestamp).getTime();
-    if (!Number.isFinite(ts)) return true;
-    return now - ts > TTL_MS;
+function isExpired(timestamp: string, now: number): boolean {
+  const ts = new Date(timestamp).getTime();
+  if (!Number.isFinite(ts)) return true;
+  return now - ts > TTL_MS;
+}
+
+function validateWarnedFilesData(data: unknown): boolean {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return false;
+  return true;
+}
+
+function safeReadWarnedFiles(mockReader: () => unknown): unknown {
+  try {
+    return mockReader();
+  } catch (err: unknown) {
+    const code =
+      err && typeof err === "object" && "code" in err ? (err as { code: string }).code : null;
+    if (code === "ENOENT") return {};
+    return null;
   }
+}
 
+function buildFpKey(filePath: string, patternId: string): string {
+  return `${filePath}::${patternId}`;
+}
+
+function parseFpKey(key: string): { file: string; pattern: string } | null {
+  const idx = key.indexOf("::");
+  if (idx === -1) return null;
+  return { file: key.slice(0, idx), pattern: key.slice(idx + 2) };
+}
+
+describe("check-pattern-compliance: loadWarnedFiles TTL logic", () => {
   it("identifies old entries as expired", () => {
     const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString();
     assert.strictEqual(isExpired(eightDaysAgo, Date.now()), true);
@@ -33,11 +59,6 @@ describe("check-pattern-compliance: loadWarnedFiles TTL logic", () => {
 });
 
 describe("check-pattern-compliance: warned-files data validation", () => {
-  function validateWarnedFilesData(data: unknown): boolean {
-    if (!data || typeof data !== "object" || Array.isArray(data)) return false;
-    return true;
-  }
-
   it("rejects null", () => {
     assert.strictEqual(validateWarnedFilesData(null), false);
   });
@@ -95,17 +116,6 @@ describe("check-pattern-compliance: pattern severity tiers", () => {
 });
 
 describe("check-pattern-compliance: ENOENT handling", () => {
-  function safeReadWarnedFiles(mockReader: () => unknown): unknown {
-    try {
-      return mockReader();
-    } catch (err: unknown) {
-      const code =
-        err && typeof err === "object" && "code" in err ? (err as { code: string }).code : null;
-      if (code === "ENOENT") return {};
-      return null;
-    }
-  }
-
   it("returns empty object on ENOENT", () => {
     const result = safeReadWarnedFiles(() => {
       const err = Object.assign(new Error("File not found"), { code: "ENOENT" });
@@ -159,16 +169,6 @@ describe("check-pattern-compliance: file extension filtering", () => {
 });
 
 describe("check-pattern-compliance: false positive key format", () => {
-  function buildFpKey(filePath: string, patternId: string): string {
-    return `${filePath}::${patternId}`;
-  }
-
-  function parseFpKey(key: string): { file: string; pattern: string } | null {
-    const idx = key.indexOf("::");
-    if (idx === -1) return null;
-    return { file: key.slice(0, idx), pattern: key.slice(idx + 2) };
-  }
-
   it("builds correct key format", () => {
     const key = buildFpKey("src/lib/utils.ts", "SEC-001");
     assert.strictEqual(key, "src/lib/utils.ts::SEC-001");

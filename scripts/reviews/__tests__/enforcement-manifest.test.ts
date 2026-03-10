@@ -293,32 +293,32 @@ describe("classifyCoverage", () => {
 // 4. isStale
 // =========================================================
 
-describe("isStale", () => {
-  function makeRecord(overrides: Record<string, unknown> = {}): Record<string, unknown> {
-    return {
-      pattern_id: "test",
-      pattern_name: "Test",
-      priority: "edge",
-      category: "General",
-      mechanisms: validMechanisms({ manual: "none" }),
-      coverage: "none",
-      status: "active",
-      last_verified: "2026-03-01",
-      ...overrides,
-    };
-  }
+function makeStaleRecord(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    pattern_id: "test",
+    pattern_name: "Test",
+    priority: "edge",
+    category: "General",
+    mechanisms: validMechanisms({ manual: "none" }),
+    coverage: "none",
+    status: "active",
+    last_verified: "2026-03-01",
+    ...overrides,
+  };
+}
 
+describe("isStale", () => {
   test("returns true when all mechanisms are none and status is active", () => {
-    assert.equal(isStale(makeRecord()), true);
+    assert.equal(isStale(makeStaleRecord()), true);
   });
 
   test("returns false when status is deprecated (even with all-none mechanisms)", () => {
-    assert.equal(isStale(makeRecord({ status: "deprecated" })), false);
+    assert.equal(isStale(makeStaleRecord({ status: "deprecated" })), false);
   });
 
   test("returns false when manual is code-review", () => {
     assert.equal(
-      isStale(makeRecord({ mechanisms: validMechanisms({ manual: "code-review" }) })),
+      isStale(makeStaleRecord({ mechanisms: validMechanisms({ manual: "code-review" }) })),
       false
     );
   });
@@ -326,7 +326,7 @@ describe("isStale", () => {
   test("returns false when regex is active", () => {
     assert.equal(
       isStale(
-        makeRecord({ mechanisms: validMechanisms({ regex: "active:rule", manual: "none" }) })
+        makeStaleRecord({ mechanisms: validMechanisms({ regex: "active:rule", manual: "none" }) })
       ),
       false
     );
@@ -334,21 +334,27 @@ describe("isStale", () => {
 
   test("returns false when ai is claude-md", () => {
     assert.equal(
-      isStale(makeRecord({ mechanisms: validMechanisms({ ai: "claude-md", manual: "none" }) })),
+      isStale(
+        makeStaleRecord({ mechanisms: validMechanisms({ ai: "claude-md", manual: "none" }) })
+      ),
       false
     );
   });
 
   test("returns false when hooks is pre-commit", () => {
     assert.equal(
-      isStale(makeRecord({ mechanisms: validMechanisms({ hooks: "pre-commit", manual: "none" }) })),
+      isStale(
+        makeStaleRecord({ mechanisms: validMechanisms({ hooks: "pre-commit", manual: "none" }) })
+      ),
       false
     );
   });
 
   test("returns false when cross_doc is linked", () => {
     assert.equal(
-      isStale(makeRecord({ mechanisms: validMechanisms({ cross_doc: "linked", manual: "none" }) })),
+      isStale(
+        makeStaleRecord({ mechanisms: validMechanisms({ cross_doc: "linked", manual: "none" }) })
+      ),
       false
     );
   });

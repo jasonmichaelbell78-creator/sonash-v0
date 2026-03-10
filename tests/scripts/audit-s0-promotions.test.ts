@@ -88,22 +88,22 @@ describe("audit-s0-promotions: shouldDemote logic", () => {
   });
 });
 
-describe("audit-s0-promotions: JSONL reading", () => {
-  function parseJsonlContent(content: string): unknown[] {
-    return content
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .flatMap((line, idx) => {
-        try {
-          return [JSON.parse(line)];
-        } catch {
-          console.warn(`WARN: malformed JSON at line ${idx + 1} — skipping`);
-          return [];
-        }
-      });
-  }
+function parseJsonlContent(content: string): unknown[] {
+  return content
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .flatMap((line, idx) => {
+      try {
+        return [JSON.parse(line)];
+      } catch {
+        console.warn(`WARN: malformed JSON at line ${idx + 1} — skipping`);
+        return [];
+      }
+    });
+}
 
+describe("audit-s0-promotions: JSONL reading", () => {
   it("parses valid JSONL lines", () => {
     const content = '{"id":"S0-001","severity":"S0"}\n{"id":"S0-002","severity":"S0"}';
     assert.strictEqual(parseJsonlContent(content).length, 2);

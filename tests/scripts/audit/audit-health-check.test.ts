@@ -42,7 +42,7 @@ function isValidJsonlFile(filePath: string): boolean {
     if (!content) return true;
     const lines = content.split("\n").filter(Boolean);
     JSON.parse(lines[0]);
-    if (lines.length > 1) JSON.parse(lines[lines.length - 1]);
+    if (lines.length > 1) JSON.parse(lines.at(-1)!);
     return true;
   } catch {
     return false;

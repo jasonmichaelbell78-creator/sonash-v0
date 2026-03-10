@@ -3,11 +3,31 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-propagation.js
 
-describe("check-propagation: toPosixPath", () => {
-  function toPosixPath(filePath: string): string {
-    return String(filePath).replaceAll("\\", "/");
-  }
+function toPosixPath(filePath: string): string {
+  return String(filePath).replaceAll("\\", "/");
+}
 
+function posixDirname(filePath: string): string {
+  const s = toPosixPath(filePath).replace(/\/+$/, "");
+  const idx = s.lastIndexOf("/");
+  if (idx === -1) return ".";
+  if (idx === 0) return "/";
+  return s.slice(0, idx);
+}
+
+function parsePropagationArgs(argv: string[]): {
+  verbose: boolean;
+  stagedOnly: boolean;
+  blocking: boolean;
+} {
+  return {
+    verbose: argv.includes("--verbose"),
+    stagedOnly: argv.includes("--staged"),
+    blocking: argv.includes("--blocking"),
+  };
+}
+
+describe("check-propagation: toPosixPath", () => {
   it("converts backslashes to forward slashes", () => {
     assert.strictEqual(toPosixPath("scripts\\lib\\utils.js"), "scripts/lib/utils.js");
   });
@@ -26,18 +46,6 @@ describe("check-propagation: toPosixPath", () => {
 });
 
 describe("check-propagation: posixDirname", () => {
-  function toPosixPath(filePath: string): string {
-    return String(filePath).replaceAll("\\", "/");
-  }
-
-  function posixDirname(filePath: string): string {
-    const s = toPosixPath(filePath).replace(/\/+$/, "");
-    const idx = s.lastIndexOf("/");
-    if (idx === -1) return ".";
-    if (idx === 0) return "/";
-    return s.slice(0, idx);
-  }
-
   it("returns directory of file path", () => {
     assert.strictEqual(posixDirname("scripts/lib/utils.js"), "scripts/lib");
   });
@@ -91,28 +99,20 @@ describe("check-propagation: KNOWN_PATTERN_RULES validation", () => {
 });
 
 describe("check-propagation: argument parsing", () => {
-  function parseArgs(argv: string[]): { verbose: boolean; stagedOnly: boolean; blocking: boolean } {
-    return {
-      verbose: argv.includes("--verbose"),
-      stagedOnly: argv.includes("--staged"),
-      blocking: argv.includes("--blocking"),
-    };
-  }
-
   it("parses --verbose flag", () => {
-    assert.strictEqual(parseArgs(["--verbose"]).verbose, true);
+    assert.strictEqual(parsePropagationArgs(["--verbose"]).verbose, true);
   });
 
   it("parses --staged flag", () => {
-    assert.strictEqual(parseArgs(["--staged"]).stagedOnly, true);
+    assert.strictEqual(parsePropagationArgs(["--staged"]).stagedOnly, true);
   });
 
   it("parses --blocking flag", () => {
-    assert.strictEqual(parseArgs(["--blocking"]).blocking, true);
+    assert.strictEqual(parsePropagationArgs(["--blocking"]).blocking, true);
   });
 
   it("returns false for all flags when none provided", () => {
-    const result = parseArgs([]);
+    const result = parsePropagationArgs([]);
     assert.strictEqual(result.verbose, false);
     assert.strictEqual(result.stagedOnly, false);
     assert.strictEqual(result.blocking, false);

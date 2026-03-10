@@ -180,7 +180,7 @@ describe("mapCategory", () => {
 function normalizeFilePath(component: string): string {
   if (!component) return "";
   const parts = component.split(":");
-  return parts[parts.length - 1] || "";
+  return parts.at(-1) || "";
 }
 
 describe("normalizeFilePath (sonarcloud component)", () => {
@@ -207,7 +207,7 @@ function getNextDebtId(existingItems: Array<{ id?: string }>): number {
   let maxId = 0;
   for (const item of existingItems) {
     if (item.id) {
-      const match = item.id.match(/DEBT-(\d+)/);
+      const match = /DEBT-(\d+)/.exec(item.id);
       if (match) {
         const num = Number.parseInt(match[1], 10);
         if (num > maxId) maxId = num;

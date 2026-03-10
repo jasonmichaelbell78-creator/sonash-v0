@@ -3,18 +3,44 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/reset-audit-triggers.js
 
-describe("reset-audit-triggers: trigger state structure", () => {
-  function createDefaultTriggerState(): object {
-    return {
-      lastResetDate: new Date().toISOString(),
-      triggers: {
-        security_audit: { lastRun: null, nextDue: null, count: 0 },
-        consolidation: { lastRun: null, nextDue: null, count: 0 },
-        skill_validation: { lastRun: null, nextDue: null, count: 0 },
-      },
-    };
-  }
+function createDefaultTriggerState(): object {
+  return {
+    lastResetDate: new Date().toISOString(),
+    triggers: {
+      security_audit: { lastRun: null, nextDue: null, count: 0 },
+      consolidation: { lastRun: null, nextDue: null, count: 0 },
+      skill_validation: { lastRun: null, nextDue: null, count: 0 },
+    },
+  };
+}
 
+function resetTrigger(
+  state: Record<string, unknown>,
+  triggerName: string
+): Record<string, unknown> {
+  const triggers = state["triggers"] as Record<string, Record<string, unknown>> | undefined;
+  if (!triggers || !(triggerName in triggers)) return state;
+  triggers[triggerName] = {
+    ...triggers[triggerName],
+    lastRun: new Date().toISOString(),
+    count: 0,
+  };
+  return { ...state, triggers };
+}
+
+function parseResetArgs(argv: string[]): {
+  category: string | null;
+  all: boolean;
+  dryRun: boolean;
+} {
+  const all = argv.includes("--all");
+  const dryRun = argv.includes("--dry-run");
+  const catArg = argv.find((a) => a.startsWith("--category="));
+  const category = catArg ? catArg.split("=")[1] : null;
+  return { category, all, dryRun };
+}
+
+describe("reset-audit-triggers: trigger state structure", () => {
   it("creates state with required trigger keys", () => {
     const state = createDefaultTriggerState() as Record<string, unknown>;
     const triggers = state["triggers"] as Record<string, unknown>;
@@ -37,20 +63,6 @@ describe("reset-audit-triggers: trigger state structure", () => {
 });
 
 describe("reset-audit-triggers: category reset logic", () => {
-  function resetTrigger(
-    state: Record<string, unknown>,
-    triggerName: string
-  ): Record<string, unknown> {
-    const triggers = state["triggers"] as Record<string, Record<string, unknown>> | undefined;
-    if (!triggers || !(triggerName in triggers)) return state;
-    triggers[triggerName] = {
-      ...triggers[triggerName],
-      lastRun: new Date().toISOString(),
-      count: 0,
-    };
-    return { ...state, triggers };
-  }
-
   it("resets count to 0", () => {
     const state = {
       triggers: {
@@ -71,18 +83,6 @@ describe("reset-audit-triggers: category reset logic", () => {
 });
 
 describe("reset-audit-triggers: argument parsing", () => {
-  function parseResetArgs(argv: string[]): {
-    category: string | null;
-    all: boolean;
-    dryRun: boolean;
-  } {
-    const all = argv.includes("--all");
-    const dryRun = argv.includes("--dry-run");
-    const catArg = argv.find((a) => a.startsWith("--category="));
-    const category = catArg ? catArg.split("=")[1] : null;
-    return { category, all, dryRun };
-  }
-
   it("parses --all flag", () => {
     assert.strictEqual(parseResetArgs(["--all"]).all, true);
   });

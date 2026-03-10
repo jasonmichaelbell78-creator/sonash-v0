@@ -37,16 +37,16 @@ describe("check-agent-compliance: agent trigger detection", () => {
   });
 });
 
-describe("check-agent-compliance: compliance report structure", () => {
-  function buildComplianceReport(
-    violations: Array<{ trigger: string; required: string; found: boolean }>
-  ): { compliant: boolean; violations: typeof violations } {
-    return {
-      compliant: violations.every((v) => v.found),
-      violations,
-    };
-  }
+function buildComplianceReport(
+  violations: Array<{ trigger: string; required: string; found: boolean }>
+): { compliant: boolean; violations: typeof violations } {
+  return {
+    compliant: violations.every((v) => v.found),
+    violations,
+  };
+}
 
+describe("check-agent-compliance: compliance report structure", () => {
   it("marks compliant when all agents found", () => {
     const violations = [{ trigger: "bug", required: "systematic-debugging", found: true }];
     const report = buildComplianceReport(violations);

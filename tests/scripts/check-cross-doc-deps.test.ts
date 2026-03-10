@@ -3,17 +3,35 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-cross-doc-deps.js
 
-describe("check-cross-doc-deps: link extraction", () => {
-  function extractMarkdownLinks(content: string): Array<{ text: string; href: string }> {
-    const links: Array<{ text: string; href: string }> = [];
-    const regex = /\[([^\]]*)\]\(([^)]+)\)/g;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      links.push({ text: match[1], href: match[2] });
-    }
-    return links;
+function extractMarkdownLinks(content: string): Array<{ text: string; href: string }> {
+  const links: Array<{ text: string; href: string }> = [];
+  const regex = /\[([^\]]*)\]\(([^)]+)\)/g;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    links.push({ text: match[1], href: match[2] });
   }
+  return links;
+}
 
+function isInternalLink(href: string): boolean {
+  if (!href) return false;
+  if (href.startsWith("http://") || href.startsWith("https://")) return false;
+  if (href.startsWith("mailto:")) return false;
+  if (href.startsWith("#")) return false;
+  return true;
+}
+
+function buildDependencyGraph(
+  files: Array<{ path: string; links: string[] }>
+): Map<string, string[]> {
+  const graph = new Map<string, string[]>();
+  for (const file of files) {
+    graph.set(file.path, file.links);
+  }
+  return graph;
+}
+
+describe("check-cross-doc-deps: link extraction", () => {
   it("extracts all links from content", () => {
     const content = "See [ROADMAP](ROADMAP.md) and [README](README.md)";
     const links = extractMarkdownLinks(content);
@@ -33,14 +51,6 @@ describe("check-cross-doc-deps: link extraction", () => {
 });
 
 describe("check-cross-doc-deps: external link filtering", () => {
-  function isInternalLink(href: string): boolean {
-    if (!href) return false;
-    if (href.startsWith("http://") || href.startsWith("https://")) return false;
-    if (href.startsWith("mailto:")) return false;
-    if (href.startsWith("#")) return false;
-    return true;
-  }
-
   it("identifies relative path as internal", () => {
     assert.strictEqual(isInternalLink("docs/README.md"), true);
   });
@@ -59,16 +69,6 @@ describe("check-cross-doc-deps: external link filtering", () => {
 });
 
 describe("check-cross-doc-deps: dependency graph building", () => {
-  function buildDependencyGraph(
-    files: Array<{ path: string; links: string[] }>
-  ): Map<string, string[]> {
-    const graph = new Map<string, string[]>();
-    for (const file of files) {
-      graph.set(file.path, file.links);
-    }
-    return graph;
-  }
-
   it("builds correct dependency graph", () => {
     const files = [
       { path: "docs/A.md", links: ["docs/B.md", "docs/C.md"] },

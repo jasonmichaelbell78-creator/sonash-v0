@@ -161,6 +161,6 @@ describe("buildOutput", () => {
     };
     const output = buildOutput(composite, {}, "full");
     const ts = output.timestamp as string;
-    assert.ok(!isNaN(Date.parse(ts)), "timestamp should be parseable ISO string");
+    assert.ok(!Number.isNaN(Date.parse(ts)), "timestamp should be parseable ISO string");
   });
 });

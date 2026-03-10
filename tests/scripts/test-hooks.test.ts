@@ -76,16 +76,16 @@ describe("test-hooks: HOOK_TESTS structure validation", () => {
   });
 });
 
-describe("test-hooks: JSON input validation for hooks", () => {
-  function isValidHookInput(input: string): boolean {
-    try {
-      const parsed = JSON.parse(input) as unknown;
-      return parsed !== null && typeof parsed === "object" && !Array.isArray(parsed);
-    } catch {
-      return false;
-    }
+function isValidHookInput(input: string): boolean {
+  try {
+    const parsed = JSON.parse(input) as unknown;
+    return parsed !== null && typeof parsed === "object" && !Array.isArray(parsed);
+  } catch {
+    return false;
   }
+}
 
+describe("test-hooks: JSON input validation for hooks", () => {
   it("accepts valid JSON object input", () => {
     assert.strictEqual(isValidHookInput(JSON.stringify({ file_path: "src/app.tsx" })), true);
   });

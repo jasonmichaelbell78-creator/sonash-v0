@@ -3,19 +3,32 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-roadmap-hygiene.js
 
-describe("check-roadmap-hygiene: duplicate entry detection", () => {
-  function findDuplicateTitles(items: string[]): string[] {
-    const seen = new Map<string, number>();
-    const dups: string[] = [];
-    for (const item of items) {
-      const normalized = item.trim().toLowerCase();
-      const count = (seen.get(normalized) ?? 0) + 1;
-      seen.set(normalized, count);
-      if (count === 2) dups.push(item);
-    }
-    return dups;
+function findDuplicateTitles(items: string[]): string[] {
+  const seen = new Map<string, number>();
+  const dups: string[] = [];
+  for (const item of items) {
+    const normalized = item.trim().toLowerCase();
+    const count = (seen.get(normalized) ?? 0) + 1;
+    seen.set(normalized, count);
+    if (count === 2) dups.push(item);
   }
+  return dups;
+}
 
+function findOrphanTasks(
+  tasks: Array<{ id: string; milestone?: string }>,
+  milestones: Set<string>
+): string[] {
+  return tasks.filter((t) => t.milestone && !milestones.has(t.milestone)).map((t) => t.id);
+}
+
+function isValidDate(dateStr: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+  const d = new Date(dateStr);
+  return !Number.isNaN(d.getTime());
+}
+
+describe("check-roadmap-hygiene: duplicate entry detection", () => {
   it("detects duplicate titles", () => {
     const items = ["Feature A", "Feature B", "Feature A"];
     assert.deepStrictEqual(findDuplicateTitles(items), ["Feature A"]);
@@ -32,13 +45,6 @@ describe("check-roadmap-hygiene: duplicate entry detection", () => {
 });
 
 describe("check-roadmap-hygiene: orphan task detection", () => {
-  function findOrphanTasks(
-    tasks: Array<{ id: string; milestone?: string }>,
-    milestones: Set<string>
-  ): string[] {
-    return tasks.filter((t) => t.milestone && !milestones.has(t.milestone)).map((t) => t.id);
-  }
-
   it("finds tasks referencing non-existent milestones", () => {
     const tasks = [
       { id: "T-001", milestone: "M-1" },
@@ -56,12 +62,6 @@ describe("check-roadmap-hygiene: orphan task detection", () => {
 });
 
 describe("check-roadmap-hygiene: date format validation", () => {
-  function isValidDate(dateStr: string): boolean {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
-    const d = new Date(dateStr);
-    return !Number.isNaN(d.getTime());
-  }
-
   it("accepts ISO date format", () => {
     assert.strictEqual(isValidDate("2026-03-10"), true);
   });

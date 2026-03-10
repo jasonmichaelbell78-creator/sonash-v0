@@ -3,17 +3,44 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-session-gaps.js
 
-describe("check-session-gaps: getDocumentedSessions", () => {
-  function getDocumentedSessions(content: string): number[] {
-    const matches = content.match(/\*{0,2}Session\s*#(\d+)\s+Summary\*{0,2}/gi) ?? [];
-    return matches
-      .map((m) => {
-        const num = m.match(/#(\d+)/);
-        return num ? Number.parseInt(num[1], 10) : null;
-      })
-      .filter((n): n is number => n !== null);
-  }
+function getDocumentedSessions(content: string): number[] {
+  const matches = content.match(/\*{0,2}Session\s*#(\d+)\s+Summary\*{0,2}/gi) ?? [];
+  return matches
+    .map((m) => {
+      const num = /#(\d+)/.exec(m);
+      return num ? Number.parseInt(num[1], 10) : null;
+    })
+    .filter((n): n is number => n !== null);
+}
 
+function getCurrentSessionCounter(content: string): number | null {
+  const match = /\*{0,2}Current Session Count(?:er)?\*{0,2}\s{0,10}:?\s{0,10}(\d+)/i.exec(content);
+  if (!match) return null;
+  return Number.parseInt(match[1], 10);
+}
+
+function readCommitLog(content: string): unknown[] {
+  if (!content.trim()) return [];
+  return content
+    .split("\n")
+    .map((line) => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+}
+
+function findUndocumentedSessions(
+  commitSessionNums: number[],
+  documentedSessions: Set<number>
+): number[] {
+  return [...new Set(commitSessionNums)].filter((n) => !documentedSessions.has(n));
+}
+
+describe("check-session-gaps: getDocumentedSessions", () => {
   it("extracts session numbers from content", () => {
     const content = "## Session #100 Summary\n\n## Session #101 Summary";
     assert.deepStrictEqual(getDocumentedSessions(content), [100, 101]);
@@ -37,14 +64,6 @@ describe("check-session-gaps: getDocumentedSessions", () => {
 });
 
 describe("check-session-gaps: getCurrentSessionCounter", () => {
-  function getCurrentSessionCounter(content: string): number | null {
-    const match = content.match(
-      /\*{0,2}Current Session Count(?:er)?\*{0,2}\s{0,10}:?\s{0,10}(\d+)/i
-    );
-    if (!match) return null;
-    return Number.parseInt(match[1], 10);
-  }
-
   it("extracts counter from standard format", () => {
     const content = "Current Session Counter: 213";
     assert.strictEqual(getCurrentSessionCounter(content), 213);
@@ -61,20 +80,6 @@ describe("check-session-gaps: getCurrentSessionCounter", () => {
 });
 
 describe("check-session-gaps: JSONL commit log parsing", () => {
-  function readCommitLog(content: string): unknown[] {
-    if (!content.trim()) return [];
-    return content
-      .split("\n")
-      .map((line) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
-  }
-
   it("parses valid commit log entries", () => {
     const content = '{"sha":"abc","message":"feat: add X"}\n{"sha":"def","message":"fix: issue"}';
     const entries = readCommitLog(content);
@@ -92,13 +97,6 @@ describe("check-session-gaps: JSONL commit log parsing", () => {
 });
 
 describe("check-session-gaps: gap detection", () => {
-  function findUndocumentedSessions(
-    commitSessionNums: number[],
-    documentedSessions: Set<number>
-  ): number[] {
-    return [...new Set(commitSessionNums)].filter((n) => !documentedSessions.has(n));
-  }
-
   it("finds sessions in commits but not documented", () => {
     const commitNums = [100, 101, 102];
     const documented = new Set([100, 102]);

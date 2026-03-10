@@ -116,7 +116,7 @@ describe("sampleRandom", () => {
 
 function sprintIdFromFile(filePath: string): string | null {
   const base = filePath.split("/").pop() ?? "";
-  const match = base.match(/^(sprint-[^-]+(?:-[a-z])?)-ids\.json$/);
+  const match = /^(sprint-[^-]+(?:-[a-z])?)-ids\.json$/.exec(base);
   return match ? match[1] : null;
 }
 

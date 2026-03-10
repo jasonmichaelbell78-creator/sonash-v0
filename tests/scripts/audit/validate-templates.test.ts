@@ -310,40 +310,40 @@ describe("extractCategoryFromFilename", () => {
 // Tests: validateTemplate
 // ---------------------------------------------------------------------------
 
-describe("validateTemplate", () => {
-  function buildFullContent(): string {
-    return [
-      "# Security Audit Template",
-      "",
-      "## Purpose",
-      "This template is for security audits.",
-      "",
-      "## Audit Categories",
-      "Focus on auth, crypto, injection.",
-      "",
-      "## Instructions",
-      "Follow the steps below.",
-      "",
-      "## Output Format",
-      "Use JSONL output.",
-      "",
-      "## Quality Guardrails",
-      "Check before submitting.",
-      "",
-      "## TDMS Integration",
-      "Map to technical debt.",
-      "",
-      "```json",
-      '{"category":"security","title":"example"}',
-      "```",
-      "",
-      "Additional content here.",
-      "More content to reach line count threshold.",
-      "Even more content.",
-      "And some more.",
-    ].join("\n");
-  }
+function buildFullContent(): string {
+  return [
+    "# Security Audit Template",
+    "",
+    "## Purpose",
+    "This template is for security audits.",
+    "",
+    "## Audit Categories",
+    "Focus on auth, crypto, injection.",
+    "",
+    "## Instructions",
+    "Follow the steps below.",
+    "",
+    "## Output Format",
+    "Use JSONL output.",
+    "",
+    "## Quality Guardrails",
+    "Check before submitting.",
+    "",
+    "## TDMS Integration",
+    "Map to technical debt.",
+    "",
+    "```json",
+    '{"category":"security","title":"example"}',
+    "```",
+    "",
+    "Additional content here.",
+    "More content to reach line count threshold.",
+    "Even more content.",
+    "And some more.",
+  ].join("\n");
+}
 
+describe("validateTemplate", () => {
   it("gives a high score to a well-formed template", () => {
     const result = validateTemplate("SECURITY_AUDIT.md", buildFullContent());
     assert.ok(result.percentage >= 80, `Expected >= 80%, got ${result.percentage}%`);
@@ -406,18 +406,18 @@ describe("validateTemplate", () => {
 // Tests: formatJsonReport shape
 // ---------------------------------------------------------------------------
 
-describe("formatJsonReport shape", () => {
-  function makeResult(pct: number): TemplateResult {
-    return {
-      filename: "SECURITY_AUDIT.md",
-      checks: [],
-      score: Math.round(pct / 10),
-      total: 10,
-      percentage: pct,
-      category: "security",
-    };
-  }
+function makeResult(pct: number): TemplateResult {
+  return {
+    filename: "SECURITY_AUDIT.md",
+    checks: [],
+    score: Math.round(pct / 10),
+    total: 10,
+    percentage: pct,
+    category: "security",
+  };
+}
 
+describe("formatJsonReport shape", () => {
   it("summary fields are present and correct", () => {
     const results = [makeResult(90), makeResult(60), makeResult(75)];
     const totalTemplates = results.length;

@@ -50,7 +50,10 @@ function classifyDecision(d: Decision): string {
 // Mirror the escapeCell logic (pipe and backslash escaping for Markdown tables)
 function escapeCell(s: string | undefined): string {
   if (!s) return "";
-  return String(s).replace(/\|/g, "\\|").replace(/\\/g, "\\\\").replace(/\n/g, " ");
+  return String(s)
+    .replaceAll(/\|/g, String.raw`\|`)
+    .replaceAll(/\\/g, String.raw`\\`)
+    .replaceAll(/\n/g, " ");
 }
 
 // =========================================================

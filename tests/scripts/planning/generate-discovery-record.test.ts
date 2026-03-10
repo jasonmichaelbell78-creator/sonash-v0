@@ -14,7 +14,9 @@ import assert from "node:assert/strict";
 // Mirror escapeCell from generate-discovery-record.js (same as generate-decisions)
 function escapeCell(s: string | undefined | null): string {
   if (!s) return "";
-  return String(s).replace(/\|/g, "\\|").replace(/\n/g, " ");
+  return String(s)
+    .replaceAll(/\|/g, String.raw`\|`)
+    .replaceAll(/\n/g, " ");
 }
 
 // Mirror readCoordination fallback (returns {} on error)

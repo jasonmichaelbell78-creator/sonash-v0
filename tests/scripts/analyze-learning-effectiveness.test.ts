@@ -3,15 +3,56 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/analyze-learning-effectiveness.js
 
-describe("analyze-learning-effectiveness: sanitizeError", () => {
-  function sanitizeError(error: unknown): string {
-    const message = error instanceof Error ? error.message : String(error);
-    return message
-      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
-  }
+function sanitizeError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  return message
+    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+}
 
+function sanitizeDisplayString(str: string | undefined | null, maxLength = 100): string {
+  if (!str) return "";
+  const sanitized = String(str)
+    .replace(/```[\s\S]*?```/g, "[CODE]")
+    .replace(/`[^`]+`/g, "[CODE]")
+    .replace(/C:\\Users\\[^\s]+/gi, "[PATH]")
+    .replace(/\/home\/[^\s]+/gi, "[PATH]")
+    .replace(/\/Users\/[^\s]+/gi, "[PATH]")
+    .replace(/\s+/g, " ")
+    .trim();
+  return sanitized.length > maxLength ? sanitized.substring(0, maxLength) + "..." : sanitized;
+}
+
+function findArrayEnd(content: string, startIdx: number): number {
+  const openIdx = content.indexOf("[", startIdx);
+  if (openIdx === -1) return content.length;
+  let depth = 0;
+  for (let i = openIdx; i < content.length; i++) {
+    if (content[i] === "[") depth++;
+    else if (content[i] === "]") {
+      depth--;
+      if (depth === 0) return i + 1;
+    }
+  }
+  return content.length;
+}
+
+function parsePatternBlock(
+  block: string
+): { id: string; message: string; reviewRefs: string } | null {
+  const idMatch = /["'`]([^"'`]+)["'`]/.exec(block);
+  if (!idMatch) return null;
+  const messageMatch = /message:\s*["'`]([^"'`]+)["'`]/.exec(block);
+  const reviewMatch = /review:\s*["'`]([^"'`]+)["'`]/.exec(block);
+  return {
+    id: idMatch[1],
+    message: messageMatch ? messageMatch[1] : "",
+    reviewRefs: reviewMatch ? reviewMatch[1] : "",
+  };
+}
+
+describe("analyze-learning-effectiveness: sanitizeError", () => {
   it("masks Windows user path", () => {
     const err = new Error("File not found: C:\\Users\\JohnDoe\\project\\foo.ts");
     assert.ok(sanitizeError(err).includes("[USER_PATH]"));
@@ -40,19 +81,6 @@ describe("analyze-learning-effectiveness: sanitizeError", () => {
 });
 
 describe("analyze-learning-effectiveness: sanitizeDisplayString", () => {
-  function sanitizeDisplayString(str: string | undefined | null, maxLength = 100): string {
-    if (!str) return "";
-    const sanitized = String(str)
-      .replace(/```[\s\S]*?```/g, "[CODE]")
-      .replace(/`[^`]+`/g, "[CODE]")
-      .replace(/C:\\Users\\[^\s]+/gi, "[PATH]")
-      .replace(/\/home\/[^\s]+/gi, "[PATH]")
-      .replace(/\/Users\/[^\s]+/gi, "[PATH]")
-      .replace(/\s+/g, " ")
-      .trim();
-    return sanitized.length > maxLength ? sanitized.substring(0, maxLength) + "..." : sanitized;
-  }
-
   it("replaces code blocks with [CODE]", () => {
     const result = sanitizeDisplayString("Use ```const x = 1``` here");
     assert.ok(result.includes("[CODE]"));
@@ -82,20 +110,6 @@ describe("analyze-learning-effectiveness: sanitizeDisplayString", () => {
 });
 
 describe("analyze-learning-effectiveness: findArrayEnd", () => {
-  function findArrayEnd(content: string, startIdx: number): number {
-    const openIdx = content.indexOf("[", startIdx);
-    if (openIdx === -1) return content.length;
-    let depth = 0;
-    for (let i = openIdx; i < content.length; i++) {
-      if (content[i] === "[") depth++;
-      else if (content[i] === "]") {
-        depth--;
-        if (depth === 0) return i + 1;
-      }
-    }
-    return content.length;
-  }
-
   it("finds end of simple array", () => {
     const content = "const arr = [1, 2, 3];";
     const end = findArrayEnd(content, 0);
@@ -122,20 +136,6 @@ describe("analyze-learning-effectiveness: findArrayEnd", () => {
 });
 
 describe("analyze-learning-effectiveness: parsePatternBlock", () => {
-  function parsePatternBlock(
-    block: string
-  ): { id: string; message: string; reviewRefs: string } | null {
-    const idMatch = block.match(/["'`]([^"'`]+)["'`]/);
-    if (!idMatch) return null;
-    const messageMatch = block.match(/message:\s*["'`]([^"'`]+)["'`]/);
-    const reviewMatch = block.match(/review:\s*["'`]([^"'`]+)["'`]/);
-    return {
-      id: idMatch[1],
-      message: messageMatch ? messageMatch[1] : "",
-      reviewRefs: reviewMatch ? reviewMatch[1] : "",
-    };
-  }
-
   it("parses a valid pattern block", () => {
     const block = `"pattern-id"\n  message: "Don't do X"\n  review: "#123"`;
     const result = parsePatternBlock(block);
@@ -166,17 +166,17 @@ describe("analyze-learning-effectiveness: parsePatternBlock", () => {
   });
 });
 
+function sanitizeForEscape(str: string | undefined | null, maxLength = 100): string {
+  if (!str) return "";
+  return String(str).replace(/\s+/g, " ").trim().substring(0, maxLength);
+}
+
+function escapeMd(str: string, maxLength = 100): string {
+  const sanitized = sanitizeForEscape(str, maxLength);
+  return sanitized.replace(/[\\[\]()_*`#>!-]/g, "\\$&");
+}
+
 describe("analyze-learning-effectiveness: escapeMd", () => {
-  function sanitizeDisplayString(str: string | undefined | null, maxLength = 100): string {
-    if (!str) return "";
-    return String(str).replace(/\s+/g, " ").trim().substring(0, maxLength);
-  }
-
-  function escapeMd(str: string, maxLength = 100): string {
-    const sanitized = sanitizeDisplayString(str, maxLength);
-    return sanitized.replace(/[\\[\]()_*`#>!-]/g, "\\$&");
-  }
-
   it("escapes markdown special characters", () => {
     const result = escapeMd("hello [world]");
     assert.ok(result.includes("\\["));

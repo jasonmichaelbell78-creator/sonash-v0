@@ -30,47 +30,35 @@ interface VelocityResult {
   trackBreakdown: Record<string, { sessions: number; items: number }>;
 }
 
-function calculateVelocity(entries: VelocityEntry[]): VelocityResult {
-  if (entries.length === 0) {
-    return {
-      totalSessions: 0,
-      totalItems: 0,
-      averageVelocity: 0,
-      trend: "insufficient data",
-      recentEntries: [],
-      trackBreakdown: {},
-    };
-  }
+function sumItems(entries: VelocityEntry[]): number {
+  return entries.reduce((sum, e) => sum + (e.items_completed || 0), 0);
+}
 
-  const recent = entries.slice(-10);
-  const totalItems = recent.reduce((sum, e) => sum + (e.items_completed || 0), 0);
-  const averageVelocity = recent.length > 0 ? totalItems / recent.length : 0;
+function computeTrend(recent: VelocityEntry[]): string {
+  if (recent.length < 4) return "insufficient data";
+  const mid = Math.floor(recent.length / 2);
+  const firstAvg = sumItems(recent.slice(0, mid)) / mid;
+  const secondAvg = sumItems(recent.slice(mid)) / (recent.length - mid);
+  if (secondAvg > firstAvg * 1.15) return "accelerating";
+  if (secondAvg < firstAvg * 0.85) return "decelerating";
+  return "steady";
+}
 
-  let trend = "steady";
-  if (recent.length >= 4) {
-    const mid = Math.floor(recent.length / 2);
-    const firstHalf = recent.slice(0, mid);
-    const secondHalf = recent.slice(mid);
-    const firstAvg = firstHalf.reduce((s, e) => s + (e.items_completed || 0), 0) / firstHalf.length;
-    const secondAvg =
-      secondHalf.reduce((s, e) => s + (e.items_completed || 0), 0) / secondHalf.length;
+function extractTrackPrefix(id: string): string | null {
+  const match = /^([A-Z]+)/.exec(String(id));
+  return match ? match[1] : null;
+}
 
-    if (secondAvg > firstAvg * 1.15) {
-      trend = "accelerating";
-    } else if (secondAvg < firstAvg * 0.85) {
-      trend = "decelerating";
-    }
-  } else {
-    trend = "insufficient data";
-  }
-
+function buildTrackBreakdown(
+  entries: VelocityEntry[]
+): Record<string, { sessions: number; items: number }> {
   const trackBreakdown: Record<string, { sessions: number; items: number }> = {};
   for (const entry of entries) {
     const itemIds = Array.isArray(entry.item_ids) ? entry.item_ids : null;
     if (itemIds && itemIds.length > 0) {
       const tracksTouched = new Set<string>();
       for (const id of itemIds) {
-        const track = String(id).match(/^([A-Z]+)/)?.[1];
+        const track = extractTrackPrefix(id);
         if (!track) continue;
         if (!trackBreakdown[track]) trackBreakdown[track] = { sessions: 0, items: 0 };
         trackBreakdown[track].items += 1;
@@ -87,14 +75,32 @@ function calculateVelocity(entries: VelocityEntry[]): VelocityResult {
       }
     }
   }
+  return trackBreakdown;
+}
+
+function calculateVelocity(entries: VelocityEntry[]): VelocityResult {
+  if (entries.length === 0) {
+    return {
+      totalSessions: 0,
+      totalItems: 0,
+      averageVelocity: 0,
+      trend: "insufficient data",
+      recentEntries: [],
+      trackBreakdown: {},
+    };
+  }
+
+  const recent = entries.slice(-10);
+  const recentItemTotal = sumItems(recent);
+  const averageVelocity = recent.length > 0 ? recentItemTotal / recent.length : 0;
 
   return {
     totalSessions: entries.length,
-    totalItems: entries.reduce((sum, e) => sum + (e.items_completed || 0), 0),
+    totalItems: sumItems(entries),
     averageVelocity: Math.round(averageVelocity * 10) / 10,
-    trend,
+    trend: computeTrend(recent),
     recentEntries: recent,
-    trackBreakdown,
+    trackBreakdown: buildTrackBreakdown(entries),
   };
 }
 

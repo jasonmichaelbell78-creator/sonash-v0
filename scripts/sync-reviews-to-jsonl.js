@@ -969,32 +969,53 @@ function loadExistingReviewObjects() {
  * if a markdown review's content already exists in JSONL under any ID, the
  * markdown entry is mapped to that existing ID instead of being renumbered.
  */
-function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
-  // Build content signature → existing ID index for content-based dedup.
-  // This prevents the infinite renumbering loop where the same markdown entry
-  // gets a new ID on every run because its old ID collides with stale JSONL data.
-  const existingByContent = new Map();
+/**
+ * Build a content signature → existing ID index for dedup.
+ * @param {Map<number, object>} existingById
+ * @returns {Map<string, number>}
+ */
+function buildContentIndex(existingById) {
+  const byContent = new Map();
   for (const [id, obj] of existingById) {
     const sig = `${obj.title || ""}::${obj.date || ""}`;
-    if (!existingByContent.has(sig)) {
-      existingByContent.set(sig, id);
+    if (!byContent.has(sig)) {
+      byContent.set(sig, id);
     }
   }
+  return byContent;
+}
+
+/**
+ * Find the next available ID above maxExistingId that doesn't collide.
+ * @param {number} maxExistingId
+ * @param {{ offset: number }} state - Mutable state for nextOffset
+ * @param {Set<number>} newlyAssignedIds
+ * @param {Set<number>} mdIds
+ * @returns {number}
+ */
+function findNextAvailableId(maxExistingId, state, newlyAssignedIds, mdIds) {
+  let newId = maxExistingId + state.offset;
+  while (newlyAssignedIds.has(newId) || mdIds.has(newId)) {
+    state.offset++;
+    newId = maxExistingId + state.offset;
+  }
+  state.offset++;
+  return newId;
+}
+
+function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
+  const existingByContent = buildContentIndex(existingById);
 
   let maxExistingId = 0;
   for (const id of existingIds) {
     if (id > maxExistingId) maxExistingId = id;
   }
 
-  // Track all markdown review IDs to avoid assigning a new ID that collides
-  // with another markdown entry (not just JSONL entries).
   const mdIds = new Set(mdReviews.map((r) => r.id));
-  let nextOffset = 1;
+  const offsetState = { offset: 1 };
   const newlyAssignedIds = new Set();
 
   for (const review of mdReviews) {
-    // Content-based dedup: if this review's content already exists in JSONL
-    // under ANY id, align to that id (prevents infinite renumbering loop).
     const sig = `${review.title || ""}::${review.date || ""}`;
     const contentMatchId = existingByContent.get(sig);
     if (contentMatchId !== undefined) {
@@ -1003,37 +1024,23 @@ function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
         review.id = contentMatchId;
         mdIds.add(review.id);
       }
-      // Content already exists in JSONL (same or different ID) — skip collision check
       continue;
     }
 
-    if (!existingIds.has(review.id)) continue; // no collision
-
+    if (!existingIds.has(review.id)) continue;
     const existing = existingById.get(review.id);
-    if (!existing) continue; // id in set but object missing — treat as no collision
+    if (!existing) continue;
 
-    // Content match check: same title, PR, and date means identical review, not a collision.
     const sameContent =
       existing.title === review.title && existing.pr === review.pr && existing.date === review.date;
     if (sameContent) continue;
 
-    // True collision — different content under the same review number.
     const oldId = review.id;
-    let newId = maxExistingId + nextOffset;
-    // Skip any ids already assigned in this pass OR existing in markdown to avoid reuse
-    while (newlyAssignedIds.has(newId) || mdIds.has(newId)) {
-      nextOffset++;
-      newId = maxExistingId + nextOffset;
-    }
-    nextOffset++;
+    const newId = findNextAvailableId(maxExistingId, offsetState, newlyAssignedIds, mdIds);
 
     mdIds.delete(oldId);
     review.id = newId;
     mdIds.add(newId);
-
-    // Track the new id within this pass so subsequent collisions won't reuse it,
-    // but do NOT add to existingIds — that would incorrectly filter it out during
-    // the missing-review detection step.
     newlyAssignedIds.add(newId);
     existingByContent.set(sig, newId);
     console.log(`  ⚠️  Review #${oldId} renumbered to #${newId} (collision)`);

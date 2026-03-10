@@ -3,16 +3,40 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/repair-archives.js
 
-describe("repair-archives: heading normalization", () => {
-  function normalizeHeadings(content: string): { fixed: string; changes: number } {
-    let changes = 0;
-    const fixed = content.replace(/^###\s+(Review\s+#\d+)/gm, (_, capture) => {
-      changes++;
-      return `#### ${capture}`;
-    });
-    return { fixed, changes };
-  }
+function normalizeHeadings(content: string): { fixed: string; changes: number } {
+  let changes = 0;
+  const fixed = content.replaceAll(/^###\s+(Review\s+#\d+)/gm, (_, capture) => {
+    changes++;
+    return `#### ${capture}`;
+  });
+  return { fixed, changes };
+}
 
+function isValidArchiveFilename(filename: string): boolean {
+  return /^REVIEWS_\d+-\d+\.md$/.test(filename);
+}
+
+function findDuplicateIds(content: string): number[] {
+  const ids: number[] = [];
+  const regex = /^####\s+Review\s+#(\d+)/gm;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    ids.push(Number.parseInt(match[1], 10));
+  }
+  const seen = new Set<number>();
+  const duplicates = new Set<number>();
+  for (const id of ids) {
+    if (seen.has(id)) duplicates.add(id);
+    seen.add(id);
+  }
+  return Array.from(duplicates);
+}
+
+function isPathTraversal(rel: string): boolean {
+  return /^\.\.(?:[\\/]|$)/.test(rel);
+}
+
+describe("repair-archives: heading normalization", () => {
   it("upgrades ### Review headings to ####", () => {
     const content = "### Review #42\nsome content";
     const { fixed, changes } = normalizeHeadings(content);
@@ -34,10 +58,6 @@ describe("repair-archives: heading normalization", () => {
 });
 
 describe("repair-archives: archive file name validation", () => {
-  function isValidArchiveFilename(filename: string): boolean {
-    return /^REVIEWS_\d+-\d+\.md$/.test(filename);
-  }
-
   it("accepts valid archive filename", () => {
     assert.strictEqual(isValidArchiveFilename("REVIEWS_1-50.md"), true);
   });
@@ -53,22 +73,6 @@ describe("repair-archives: archive file name validation", () => {
 });
 
 describe("repair-archives: duplicate detection", () => {
-  function findDuplicateIds(content: string): number[] {
-    const ids: number[] = [];
-    const regex = /^####\s+Review\s+#(\d+)/gm;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      ids.push(Number.parseInt(match[1], 10));
-    }
-    const seen = new Set<number>();
-    const duplicates = new Set<number>();
-    for (const id of ids) {
-      if (seen.has(id)) duplicates.add(id);
-      seen.add(id);
-    }
-    return Array.from(duplicates);
-  }
-
   it("detects duplicate review IDs", () => {
     const content = "#### Review #42\ncontent\n#### Review #42\ncopy";
     const dups = findDuplicateIds(content);
@@ -82,10 +86,6 @@ describe("repair-archives: duplicate detection", () => {
 });
 
 describe("repair-archives: path traversal protection", () => {
-  function isPathTraversal(rel: string): boolean {
-    return /^\.\.(?:[\\/]|$)/.test(rel);
-  }
-
   it("detects ../traversal", () => {
     assert.strictEqual(isPathTraversal("../outside"), true);
   });

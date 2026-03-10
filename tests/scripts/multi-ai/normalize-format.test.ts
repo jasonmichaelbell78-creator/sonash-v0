@@ -121,8 +121,7 @@ function createBraceTracker(): BraceTracker {
       return depth;
     },
     feed(str: string) {
-      for (let i = 0; i < str.length; i++) {
-        const ch = str[i];
+      for (const ch of str) {
         if (escaped) {
           escaped = false;
           continue;
@@ -193,7 +192,7 @@ function normalizeConfidence(value: unknown): number {
   if (str === "high" || str === "certain" || str === "confirmed") return 90;
   if (str === "medium" || str === "moderate" || str === "likely") return 70;
   if (str === "low" || str === "uncertain" || str === "suspected") return 50;
-  const numMatch = str.match(/(\d+)/);
+  const numMatch = /(\d+)/.exec(str);
   if (numMatch) {
     const n = Number.parseInt(numMatch[1], 10);
     if (n >= 0 && n <= 100) return n;
@@ -205,7 +204,7 @@ function mapColumnToField(header: string): string | null {
   const normalized = header
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]/g, "");
+    .replaceAll(/[^a-z0-9]/g, "");
   for (const [field, variations] of Object.entries(COLUMN_MAPPINGS)) {
     for (const variant of variations) {
       if (normalized === variant || normalized.includes(variant)) return field;
@@ -225,10 +224,10 @@ function validateContainedPath(inputPath: string, root: string): { ok: boolean }
 
 function detectFormat(input: unknown): string {
   if (!input || typeof input !== "string") return FORMAT_TYPES.PLAIN_TEXT;
-  const trimmed = (input as string).trim();
+  const trimmed = input.trim();
 
   if (/```jsonl?\s*\n/i.test(trimmed)) {
-    const match = trimmed.match(/```(json|jsonl)\s*\n([\s\S]*?)```/i);
+    const match = /```(json|jsonl)\s*\n([\s\S]*?)```/i.exec(trimmed);
     if (match) {
       const content = match[2].trim();
       return content.startsWith("[") ? FORMAT_TYPES.FENCED_JSON : FORMAT_TYPES.FENCED_JSONL;
@@ -263,7 +262,7 @@ function detectFormat(input: unknown): string {
   }
 
   if (trimmed.includes("|")) {
-    const tableMatch = trimmed.match(/\|[^\n]{1,500}\|?\s*\r?\n\|[-: |]{1,500}\|?\s*\r?\n/);
+    const tableMatch = /\|[^\n]{1,500}\|?\s*\r?\n\|[-: |]{1,500}\|?\s*\r?\n/.exec(trimmed);
     if (tableMatch) return FORMAT_TYPES.MARKDOWN_TABLE;
   }
 

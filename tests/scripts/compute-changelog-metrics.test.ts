@@ -3,11 +3,58 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/compute-changelog-metrics.js
 
-describe("compute-changelog-metrics: filterByPR", () => {
-  function filterByPR(records: Array<{ pr: unknown }>, prNum: number): Array<{ pr: unknown }> {
-    return records.filter((r) => Number(r.pr) === prNum);
-  }
+function filterByPR(records: Array<{ pr: unknown }>, prNum: number): Array<{ pr: unknown }> {
+  return records.filter((r) => Number(r.pr) === prNum);
+}
 
+function filterByRange(
+  records: Array<{ pr: unknown }>,
+  start: number,
+  end: number
+): Array<{ pr: unknown }> {
+  return records.filter((r) => {
+    const pr = Number(r.pr);
+    return Number.isFinite(pr) && pr >= start && pr <= end;
+  });
+}
+
+function toFiniteNumber(value: unknown, fallback = 0): number {
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function computeMetrics(records: Array<Record<string, unknown>>): {
+  totalFindings: number;
+  totalFixed: number;
+  fixRate: number;
+} {
+  let totalFindings = 0;
+  let totalFixed = 0;
+  for (const record of records) {
+    totalFindings += toFiniteNumber(record["findings"]);
+    totalFixed += toFiniteNumber(record["fixed"]);
+  }
+  const fixRate = totalFindings > 0 ? Math.round((totalFixed / totalFindings) * 100) : 0;
+  return { totalFindings, totalFixed, fixRate };
+}
+
+function parseReviewsJsonl(content: string): unknown[] {
+  const cleaned = content.replace(/^\uFEFF/, "");
+  const lines = cleaned.trim().split("\n");
+  const records: unknown[] = [];
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    try {
+      records.push(JSON.parse(line));
+    } catch {
+      // skip
+    }
+  }
+  return records;
+}
+
+describe("compute-changelog-metrics: filterByPR", () => {
   it("filters records by PR number", () => {
     const records = [
       { pr: 395, finding: "issue A" },
@@ -25,17 +72,6 @@ describe("compute-changelog-metrics: filterByPR", () => {
 });
 
 describe("compute-changelog-metrics: filterByRange", () => {
-  function filterByRange(
-    records: Array<{ pr: unknown }>,
-    start: number,
-    end: number
-  ): Array<{ pr: unknown }> {
-    return records.filter((r) => {
-      const pr = Number(r.pr);
-      return Number.isFinite(pr) && pr >= start && pr <= end;
-    });
-  }
-
   it("filters records within range", () => {
     const records = [{ pr: 378 }, { pr: 395 }, { pr: 416 }, { pr: 420 }];
     const result = filterByRange(records, 378, 416);
@@ -49,26 +85,6 @@ describe("compute-changelog-metrics: filterByRange", () => {
 });
 
 describe("compute-changelog-metrics: computeMetrics", () => {
-  function toFiniteNumber(value: unknown, fallback = 0): number {
-    const n = typeof value === "number" ? value : Number(value);
-    return Number.isFinite(n) ? n : fallback;
-  }
-
-  function computeMetrics(records: Array<Record<string, unknown>>): {
-    totalFindings: number;
-    totalFixed: number;
-    fixRate: number;
-  } {
-    let totalFindings = 0;
-    let totalFixed = 0;
-    for (const record of records) {
-      totalFindings += toFiniteNumber(record["findings"]);
-      totalFixed += toFiniteNumber(record["fixed"]);
-    }
-    const fixRate = totalFindings > 0 ? Math.round((totalFixed / totalFindings) * 100) : 0;
-    return { totalFindings, totalFixed, fixRate };
-  }
-
   it("computes correct totals", () => {
     const records = [
       { findings: 8, fixed: 6 },
@@ -98,22 +114,6 @@ describe("compute-changelog-metrics: computeMetrics", () => {
 });
 
 describe("compute-changelog-metrics: JSONL parsing", () => {
-  function parseReviewsJsonl(content: string): unknown[] {
-    const cleaned = content.replace(/^\uFEFF/, "");
-    const lines = cleaned.trim().split("\n");
-    const records: unknown[] = [];
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (!line) continue;
-      try {
-        records.push(JSON.parse(line));
-      } catch {
-        // skip
-      }
-    }
-    return records;
-  }
-
   it("strips BOM before parsing", () => {
     const content = '\uFEFF{"pr":395,"findings":8}';
     const records = parseReviewsJsonl(content);

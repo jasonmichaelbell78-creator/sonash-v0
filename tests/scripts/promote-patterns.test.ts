@@ -3,22 +3,29 @@ import assert from "node:assert/strict";
 
 // Smoke tests for scripts/promote-patterns.js (CLI wrapper)
 
-describe("promote-patterns: CLI argument handling", () => {
-  function parsePromoteArgs(argv: string[]): {
-    dryRun: boolean;
-    minOccurrences: number;
-    minPrs: number;
-  } {
-    const dryRun = argv.includes("--dry-run");
-    const minOccArg = argv.find((a) => a.startsWith("--min-occurrences"));
-    const minPrsArg = argv.find((a) => a.startsWith("--min-prs"));
+function parsePromoteArgs(argv: string[]): {
+  dryRun: boolean;
+  minOccurrences: number;
+  minPrs: number;
+} {
+  const dryRun = argv.includes("--dry-run");
+  const minOccArg = argv.find((a) => a.startsWith("--min-occurrences"));
+  const minPrsArg = argv.find((a) => a.startsWith("--min-prs"));
 
-    const minOccurrences = minOccArg ? Number.parseInt(minOccArg.split("=")[1] ?? "3", 10) : 3;
-    const minPrs = minPrsArg ? Number.parseInt(minPrsArg.split("=")[1] ?? "2", 10) : 2;
+  const minOccurrences = minOccArg ? Number.parseInt(minOccArg.split("=")[1] ?? "3", 10) : 3;
+  const minPrs = minPrsArg ? Number.parseInt(minPrsArg.split("=")[1] ?? "2", 10) : 2;
 
-    return { dryRun, minOccurrences, minPrs };
+  return { dryRun, minOccurrences, minPrs };
+}
+
+function checkMainExport(mainFn: unknown): { valid: boolean; error?: string } {
+  if (typeof mainFn !== "function") {
+    return { valid: false, error: "No callable `main` export found" };
   }
+  return { valid: true };
+}
 
+describe("promote-patterns: CLI argument handling", () => {
   it("defaults to non-dry-run mode", () => {
     assert.strictEqual(parsePromoteArgs([]).dryRun, false);
   });
@@ -39,13 +46,6 @@ describe("promote-patterns: CLI argument handling", () => {
 });
 
 describe("promote-patterns: main export loading guard", () => {
-  function checkMainExport(mainFn: unknown): { valid: boolean; error?: string } {
-    if (typeof mainFn !== "function") {
-      return { valid: false, error: "No callable `main` export found" };
-    }
-    return { valid: true };
-  }
-
   it("validates function export", () => {
     assert.strictEqual(checkMainExport(() => {}).valid, true);
   });

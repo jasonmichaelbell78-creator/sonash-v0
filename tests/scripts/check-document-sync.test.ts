@@ -3,30 +3,38 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-document-sync.js
 
-describe("check-document-sync: document pair matching", () => {
-  interface DocPair {
-    source: string;
-    target: string;
-    required: boolean;
-  }
+interface DocPair {
+  source: string;
+  target: string;
+  required: boolean;
+}
 
-  function findSyncIssues(
-    pairs: DocPair[],
-    existingFiles: Set<string>
-  ): Array<{ source: string; target: string; issue: string }> {
-    const issues: Array<{ source: string; target: string; issue: string }> = [];
-    for (const pair of pairs) {
-      if (!existingFiles.has(pair.source)) {
-        if (pair.required) {
-          issues.push({ source: pair.source, target: pair.target, issue: "source missing" });
-        }
-      } else if (!existingFiles.has(pair.target)) {
-        issues.push({ source: pair.source, target: pair.target, issue: "target missing" });
+function findSyncIssues(
+  pairs: DocPair[],
+  existingFiles: Set<string>
+): Array<{ source: string; target: string; issue: string }> {
+  const issues: Array<{ source: string; target: string; issue: string }> = [];
+  for (const pair of pairs) {
+    if (!existingFiles.has(pair.source)) {
+      if (pair.required) {
+        issues.push({ source: pair.source, target: pair.target, issue: "source missing" });
       }
+    } else if (!existingFiles.has(pair.target)) {
+      issues.push({ source: pair.source, target: pair.target, issue: "target missing" });
     }
-    return issues;
   }
+  return issues;
+}
 
+function contentsMatch(contentA: string, contentB: string): boolean {
+  return contentA.trim() === contentB.trim();
+}
+
+function isPathTraversalDocSync(rel: string): boolean {
+  return /^\.\.(?:[\\/]|$)/.test(rel);
+}
+
+describe("check-document-sync: document pair matching", () => {
   it("reports missing target document", () => {
     const pairs: DocPair[] = [{ source: "docs/A.md", target: "docs/A-copy.md", required: true }];
     const existing = new Set(["docs/A.md"]);
@@ -52,10 +60,6 @@ describe("check-document-sync: document pair matching", () => {
 });
 
 describe("check-document-sync: content hash comparison", () => {
-  function contentsMatch(contentA: string, contentB: string): boolean {
-    return contentA.trim() === contentB.trim();
-  }
-
   it("detects matching contents", () => {
     assert.strictEqual(contentsMatch("hello world", "hello world"), true);
   });
@@ -70,15 +74,11 @@ describe("check-document-sync: content hash comparison", () => {
 });
 
 describe("check-document-sync: path validation", () => {
-  function isPathTraversal(rel: string): boolean {
-    return /^\.\.(?:[\\/]|$)/.test(rel);
-  }
-
   it("detects traversal attempts", () => {
-    assert.strictEqual(isPathTraversal("../etc/passwd"), true);
+    assert.strictEqual(isPathTraversalDocSync("../etc/passwd"), true);
   });
 
   it("allows normal relative paths", () => {
-    assert.strictEqual(isPathTraversal("docs/README.md"), false);
+    assert.strictEqual(isPathTraversalDocSync("docs/README.md"), false);
   });
 });

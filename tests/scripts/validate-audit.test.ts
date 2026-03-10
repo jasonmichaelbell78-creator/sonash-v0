@@ -3,36 +3,85 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/validate-audit.js
 
-describe("validate-audit: REQUIRED_FIELDS_BY_SEVERITY", () => {
-  const REQUIRED_FIELDS_BY_SEVERITY: Record<string, string[]> = {
-    S0: [
-      "id",
-      "category",
-      "severity",
-      "file",
-      "line",
-      "title",
-      "description",
-      "recommendation",
-      "evidence",
-      "confidence",
-    ],
-    S1: [
-      "id",
-      "category",
-      "severity",
-      "file",
-      "line",
-      "title",
-      "description",
-      "recommendation",
-      "evidence",
-      "confidence",
-    ],
-    S2: ["id", "category", "severity", "file", "line", "title", "description", "recommendation"],
-    S3: ["id", "category", "severity", "title", "description"],
-  };
+const REQUIRED_FIELDS_BY_SEVERITY: Record<string, string[]> = {
+  S0: [
+    "id",
+    "category",
+    "severity",
+    "file",
+    "line",
+    "title",
+    "description",
+    "recommendation",
+    "evidence",
+    "confidence",
+  ],
+  S1: [
+    "id",
+    "category",
+    "severity",
+    "file",
+    "line",
+    "title",
+    "description",
+    "recommendation",
+    "evidence",
+    "confidence",
+  ],
+  S2: ["id", "category", "severity", "file", "line", "title", "description", "recommendation"],
+  S3: ["id", "category", "severity", "title", "description"],
+};
 
+const VALID_CONFIDENCES = new Set(["HIGH", "MEDIUM", "LOW"]);
+
+const VALID_TOOL_CONFIRMATIONS = new Set([
+  "eslint",
+  "sonarcloud",
+  "npm_audit",
+  "patterns_check",
+  "typescript",
+  "NONE",
+]);
+
+function validateRequiredFields(finding: Record<string, unknown>): string[] {
+  const severity = finding["severity"] as string;
+  const required = REQUIRED_FIELDS_BY_SEVERITY[severity] ?? REQUIRED_FIELDS_BY_SEVERITY["S3"];
+  return required.filter((field) => !finding[field] && finding[field] !== 0);
+}
+
+function parseAuditJsonl(content: string): Array<{ _lineNumber: number; [key: string]: unknown }> {
+  return content
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line, index) => {
+      try {
+        return { ...JSON.parse(line), _lineNumber: index + 1 };
+      } catch (err) {
+        return {
+          _parseError: err instanceof Error ? err.message : String(err),
+          _lineNumber: index + 1,
+          _raw: line,
+        };
+      }
+    });
+}
+
+interface FalsePositive {
+  id: string;
+  file: string;
+  rule?: string;
+}
+
+interface Finding {
+  id: string;
+  file: string;
+}
+
+function isFalsePositive(finding: Finding, falsePositives: FalsePositive[]): boolean {
+  return falsePositives.some((fp) => fp.id === finding.id && fp.file === finding.file);
+}
+
+describe("validate-audit: REQUIRED_FIELDS_BY_SEVERITY", () => {
   it("S0 requires evidence and confidence", () => {
     assert.ok(REQUIRED_FIELDS_BY_SEVERITY["S0"].includes("evidence"));
     assert.ok(REQUIRED_FIELDS_BY_SEVERITY["S0"].includes("confidence"));
@@ -54,8 +103,6 @@ describe("validate-audit: REQUIRED_FIELDS_BY_SEVERITY", () => {
 });
 
 describe("validate-audit: VALID_CONFIDENCES", () => {
-  const VALID_CONFIDENCES = new Set(["HIGH", "MEDIUM", "LOW"]);
-
   it("accepts HIGH confidence", () => {
     assert.ok(VALID_CONFIDENCES.has("HIGH"));
   });
@@ -70,15 +117,6 @@ describe("validate-audit: VALID_CONFIDENCES", () => {
 });
 
 describe("validate-audit: VALID_TOOL_CONFIRMATIONS", () => {
-  const VALID_TOOL_CONFIRMATIONS = new Set([
-    "eslint",
-    "sonarcloud",
-    "npm_audit",
-    "patterns_check",
-    "typescript",
-    "NONE",
-  ]);
-
   it("accepts eslint as valid tool", () => {
     assert.ok(VALID_TOOL_CONFIRMATIONS.has("eslint"));
   });
@@ -93,41 +131,6 @@ describe("validate-audit: VALID_TOOL_CONFIRMATIONS", () => {
 });
 
 describe("validate-audit: field validation logic", () => {
-  const REQUIRED_FIELDS_BY_SEVERITY: Record<string, string[]> = {
-    S0: [
-      "id",
-      "category",
-      "severity",
-      "file",
-      "line",
-      "title",
-      "description",
-      "recommendation",
-      "evidence",
-      "confidence",
-    ],
-    S1: [
-      "id",
-      "category",
-      "severity",
-      "file",
-      "line",
-      "title",
-      "description",
-      "recommendation",
-      "evidence",
-      "confidence",
-    ],
-    S2: ["id", "category", "severity", "file", "line", "title", "description", "recommendation"],
-    S3: ["id", "category", "severity", "title", "description"],
-  };
-
-  function validateRequiredFields(finding: Record<string, unknown>): string[] {
-    const severity = finding["severity"] as string;
-    const required = REQUIRED_FIELDS_BY_SEVERITY[severity] ?? REQUIRED_FIELDS_BY_SEVERITY["S3"];
-    return required.filter((field) => !finding[field] && finding[field] !== 0);
-  }
-
   it("returns no missing fields for complete S0 finding", () => {
     const finding = {
       id: "FIND-001",
@@ -173,25 +176,6 @@ describe("validate-audit: field validation logic", () => {
 });
 
 describe("validate-audit: JSONL loading", () => {
-  function parseAuditJsonl(
-    content: string
-  ): Array<{ _lineNumber: number; [key: string]: unknown }> {
-    return content
-      .split("\n")
-      .filter((line) => line.trim())
-      .map((line, index) => {
-        try {
-          return { ...JSON.parse(line), _lineNumber: index + 1 };
-        } catch (err) {
-          return {
-            _parseError: err instanceof Error ? err.message : String(err),
-            _lineNumber: index + 1,
-            _raw: line,
-          };
-        }
-      });
-  }
-
   it("parses valid JSONL with line numbers", () => {
     const content = '{"id":"F-001","severity":"S1"}\n{"id":"F-002","severity":"S2"}';
     const results = parseAuditJsonl(content);
@@ -208,20 +192,6 @@ describe("validate-audit: JSONL loading", () => {
 });
 
 describe("validate-audit: false positive matching", () => {
-  interface FalsePositive {
-    id: string;
-    file: string;
-    rule?: string;
-  }
-  interface Finding {
-    id: string;
-    file: string;
-  }
-
-  function isFalsePositive(finding: Finding, falsePositives: FalsePositive[]): boolean {
-    return falsePositives.some((fp) => fp.id === finding.id && fp.file === finding.file);
-  }
-
   it("matches known false positive", () => {
     const fp: FalsePositive = { id: "FIND-001", file: "src/legacy.ts" };
     const finding: Finding = { id: "FIND-001", file: "src/legacy.ts" };

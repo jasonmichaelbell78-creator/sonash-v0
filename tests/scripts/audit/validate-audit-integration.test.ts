@@ -355,7 +355,7 @@ function validateTdmsMapping(
   }
 
   if (typeof item.fingerprint === "string" && item.fingerprint.trim() !== "") {
-    const converted = `audit:${item.fingerprint.replace(/::/g, "-")}`;
+    const converted = `audit:${item.fingerprint.replaceAll("::", "-")}`;
     if (converted.length > 255) {
       issues.push({
         type: "TDMS_MAPPING_WARNING",
@@ -415,22 +415,22 @@ describe("isPathWithinRepo", () => {
 // 2. validateJsonlSchema — required fields
 // ---------------------------------------------------------------------------
 
-describe("validateJsonlSchema — required fields", () => {
-  function buildValidFinding(): FindingItem {
-    return {
-      category: "security",
-      title: "Auth bypass",
-      fingerprint: "security::src/auth.ts::auth-bypass",
-      severity: "S2",
-      effort: "E2",
-      confidence: 80,
-      files: ["src/auth.ts"],
-      why_it_matters: "Attackers can bypass authentication",
-      suggested_fix: "Add input validation",
-      acceptance_tests: ["Verify bypass no longer possible"],
-    };
-  }
+function buildValidFinding(): FindingItem {
+  return {
+    category: "security",
+    title: "Auth bypass",
+    fingerprint: "security::src/auth.ts::auth-bypass",
+    severity: "S2",
+    effort: "E2",
+    confidence: 80,
+    files: ["src/auth.ts"],
+    why_it_matters: "Attackers can bypass authentication",
+    suggested_fix: "Add input validation",
+    acceptance_tests: ["Verify bypass no longer possible"],
+  };
+}
 
+describe("validateJsonlSchema — required fields", () => {
   it("returns no issues for a fully valid finding", () => {
     const issues = validateJsonlSchema(buildValidFinding());
     assert.equal(issues.length, 0, `Unexpected issues: ${JSON.stringify(issues)}`);
@@ -493,37 +493,37 @@ describe("validateJsonlSchema — required fields", () => {
 // 3. validateJsonlSchema — fingerprint format
 // ---------------------------------------------------------------------------
 
-describe("validateJsonlSchema — fingerprint", () => {
-  function base(): FindingItem {
-    return {
-      category: "security",
-      title: "T",
-      fingerprint: "security::src/auth.ts::auth-id",
-      severity: "S2",
-      effort: "E2",
-      confidence: 70,
-      files: ["src/auth.ts"],
-      why_it_matters: "reason",
-      suggested_fix: "fix",
-      acceptance_tests: ["test"],
-    };
-  }
+function baseFinding(): FindingItem {
+  return {
+    category: "security",
+    title: "T",
+    fingerprint: "security::src/auth.ts::auth-id",
+    severity: "S2",
+    effort: "E2",
+    confidence: 70,
+    files: ["src/auth.ts"],
+    why_it_matters: "reason",
+    suggested_fix: "fix",
+    acceptance_tests: ["test"],
+  };
+}
 
+describe("validateJsonlSchema — fingerprint", () => {
   it("reports INVALID_FINGERPRINT_FORMAT for empty fingerprint string", () => {
-    const item = { ...base(), fingerprint: "" };
+    const item = { ...baseFinding(), fingerprint: "" };
     const issues = validateJsonlSchema(item);
     assert.ok(issues.some((i) => i.type === "INVALID_FINGERPRINT_FORMAT"));
   });
 
   it("reports INVALID_FINGERPRINT_FORMAT for too few :: parts", () => {
-    const item = { ...base(), fingerprint: "security::file-only" };
+    const item = { ...baseFinding(), fingerprint: "security::file-only" };
     const issues = validateJsonlSchema(item);
     assert.ok(issues.some((i) => i.type === "INVALID_FINGERPRINT_FORMAT"));
   });
 
   it("reports FINGERPRINT_CATEGORY_MISMATCH when fingerprint category differs from item category", () => {
     const item = {
-      ...base(),
+      ...baseFinding(),
       fingerprint: "performance::src/auth.ts::auth-id",
       category: "security",
     };
@@ -532,7 +532,7 @@ describe("validateJsonlSchema — fingerprint", () => {
   });
 
   it("does not report mismatch when fingerprint category matches item category", () => {
-    const item = base(); // fingerprint starts with 'security' and category is 'security'
+    const item = baseFinding(); // fingerprint starts with 'security' and category is 'security'
     const issues = validateJsonlSchema(item);
     assert.ok(!issues.some((i) => i.type === "FINGERPRINT_CATEGORY_MISMATCH"));
   });
@@ -542,25 +542,25 @@ describe("validateJsonlSchema — fingerprint", () => {
 // 4. validateS0S1Requirements
 // ---------------------------------------------------------------------------
 
-describe("validateS0S1Requirements", () => {
-  function validVerificationSteps() {
-    return {
-      first_pass: {
-        method: "grep",
-        evidence_collected: ["Found via grep: pattern X in src/auth.ts"],
-      },
-      second_pass: {
-        method: "contextual_review",
-        confirmed: true,
-        notes: "Manually verified the bypass path",
-      },
-      tool_confirmation: {
-        tool: "NONE",
-        reference: "No automated tool confirmation available",
-      },
-    };
-  }
+function validVerificationSteps() {
+  return {
+    first_pass: {
+      method: "grep",
+      evidence_collected: ["Found via grep: pattern X in src/auth.ts"],
+    },
+    second_pass: {
+      method: "contextual_review",
+      confirmed: true,
+      notes: "Manually verified the bypass path",
+    },
+    tool_confirmation: {
+      tool: "NONE",
+      reference: "No automated tool confirmation available",
+    },
+  };
+}
 
+describe("validateS0S1Requirements", () => {
   it("returns no issues for S2 finding (not applicable)", () => {
     const item: FindingItem = { severity: "S2" };
     assert.equal(validateS0S1Requirements(item).length, 0);
@@ -691,8 +691,8 @@ describe("validateTdmsMapping", () => {
       files: ["src/a.ts"],
     };
     const issues = validateTdmsMapping(item);
-    // converted = "audit:" + fingerprint.replace(/::/g, "-")
-    const converted = "audit:" + longFingerprint.replace(/::/g, "-");
+    // converted = "audit:" + fingerprint.replaceAll("::", "-")
+    const converted = "audit:" + longFingerprint.replaceAll("::", "-");
     if (converted.length > 255) {
       assert.ok(issues.some((i) => i.type === "TDMS_MAPPING_WARNING" && i.field === "fingerprint"));
     }
@@ -736,7 +736,7 @@ describe("loadJsonlFile prototype pollution guard", () => {
       const checkPolluted = ({} as Record<string, unknown>)["polluted"];
       assert.ok(!checkPolluted, "Object.prototype should not be polluted");
       // The safe object should not have __proto__ as own property
-      assert.ok(!Object.prototype.hasOwnProperty.call(safe, "__proto__"));
+      assert.ok(!Object.hasOwn(safe, "__proto__"));
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }

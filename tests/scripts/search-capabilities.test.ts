@@ -3,11 +3,32 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/search-capabilities.js
 
-describe("search-capabilities: keyword matching", () => {
-  function matchesQuery(content: string, query: string): boolean {
-    return content.toLowerCase().includes(query.toLowerCase());
-  }
+function matchesQuery(content: string, query: string): boolean {
+  return content.toLowerCase().includes(query.toLowerCase());
+}
 
+function extractCapabilities(content: string): string[] {
+  const capabilities: string[] = [];
+  const lines = content.split("\n");
+  for (const line of lines) {
+    const match = /^#+\s+(.+)$/.exec(line);
+    if (match) {
+      capabilities.push(match[1].trim());
+    }
+  }
+  return capabilities;
+}
+
+interface SearchResult {
+  title: string;
+  score: number;
+}
+
+function rankResults(results: SearchResult[]): SearchResult[] {
+  return [...results].sort((a, b) => b.score - a.score);
+}
+
+describe("search-capabilities: keyword matching", () => {
   it("finds keyword in content", () => {
     assert.strictEqual(matchesQuery("Authentication and Authorization", "auth"), true);
   });
@@ -22,18 +43,6 @@ describe("search-capabilities: keyword matching", () => {
 });
 
 describe("search-capabilities: capability extraction from markdown", () => {
-  function extractCapabilities(content: string): string[] {
-    const capabilities: string[] = [];
-    const lines = content.split("\n");
-    for (const line of lines) {
-      const match = line.match(/^#+\s+(.+)$/);
-      if (match) {
-        capabilities.push(match[1].trim());
-      }
-    }
-    return capabilities;
-  }
-
   it("extracts headings as capabilities", () => {
     const content = "# Authentication\n## Token Management\n### JWT Validation";
     const caps = extractCapabilities(content);
@@ -47,15 +56,6 @@ describe("search-capabilities: capability extraction from markdown", () => {
 });
 
 describe("search-capabilities: result ranking", () => {
-  interface SearchResult {
-    title: string;
-    score: number;
-  }
-
-  function rankResults(results: SearchResult[]): SearchResult[] {
-    return [...results].sort((a, b) => b.score - a.score);
-  }
-
   it("ranks higher score first", () => {
     const results: SearchResult[] = [
       { title: "Low match", score: 0.3 },

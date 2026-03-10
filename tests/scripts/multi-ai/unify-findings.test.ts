@@ -152,7 +152,7 @@ function detectDependencyChains(findings: Finding[]): object[] {
   const idMap = new Map(findings.map((f) => [f.canonical_id, f]));
 
   for (const finding of findings) {
-    if (finding.dependencies && finding.dependencies.length > 0) {
+    if (finding.dependencies?.length) {
       const deps = finding.dependencies
         .map((depId) => {
           const dep = idMap.get(depId);
@@ -219,9 +219,9 @@ function parseJsonlFile(filePath: string): Finding[] {
   const lines = content.split("\n").filter((l) => l.trim());
   const findings: Finding[] = [];
 
-  for (let i = 0; i < lines.length; i++) {
+  for (const line of lines) {
     try {
-      findings.push(JSON.parse(lines[i].trim()));
+      findings.push(JSON.parse(line.trim()));
     } catch {
       // skip invalid lines
     }

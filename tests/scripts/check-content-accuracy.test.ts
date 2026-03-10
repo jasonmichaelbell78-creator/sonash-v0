@@ -3,17 +3,29 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-content-accuracy.js
 
-describe("check-content-accuracy: version extraction from markdown", () => {
-  function extractVersionMentions(content: string, packageName: string): string[] {
-    const pattern = new RegExp(`${packageName}[\\s@]*([\\d]+\\.[\\d]+\\.[\\d]+)`, "gi");
-    const versions: string[] = [];
-    let match;
-    while ((match = pattern.exec(content)) !== null) {
-      versions.push(match[1]);
-    }
-    return versions;
+function extractVersionMentions(content: string, packageName: string): string[] {
+  const pattern = new RegExp(`${packageName}[\\s@]*([\\d]+\\.[\\d]+\\.[\\d]+)`, "gi");
+  const versions: string[] = [];
+  let match;
+  while ((match = pattern.exec(content)) !== null) {
+    versions.push(match[1]);
   }
+  return versions;
+}
 
+function scriptExists(scripts: Record<string, string>, scriptName: string): boolean {
+  return Object.hasOwn(scripts, scriptName);
+}
+
+function isMarkdownFile(filename: string): boolean {
+  return filename.endsWith(".md") || filename.endsWith(".mdx");
+}
+
+function shouldSkipDirectory(entry: string): boolean {
+  return entry[0] === "." || entry === "node_modules" || entry === "__pycache__";
+}
+
+describe("check-content-accuracy: version extraction from markdown", () => {
   it("extracts version from package mention", () => {
     const content = "Uses react 19.2.3 for rendering";
     const versions = extractVersionMentions(content, "react");
@@ -27,10 +39,6 @@ describe("check-content-accuracy: version extraction from markdown", () => {
 });
 
 describe("check-content-accuracy: npm script existence check", () => {
-  function scriptExists(scripts: Record<string, string>, scriptName: string): boolean {
-    return Object.prototype.hasOwnProperty.call(scripts, scriptName);
-  }
-
   it("confirms existing script", () => {
     const scripts = { test: "jest", build: "tsc" };
     assert.strictEqual(scriptExists(scripts, "test"), true);
@@ -43,14 +51,6 @@ describe("check-content-accuracy: npm script existence check", () => {
 });
 
 describe("check-content-accuracy: markdown file discovery filter", () => {
-  function isMarkdownFile(filename: string): boolean {
-    return filename.endsWith(".md") || filename.endsWith(".mdx");
-  }
-
-  function shouldSkipDirectory(entry: string): boolean {
-    return entry[0] === "." || entry === "node_modules" || entry === "__pycache__";
-  }
-
   it("identifies .md files", () => {
     assert.strictEqual(isMarkdownFile("README.md"), true);
   });

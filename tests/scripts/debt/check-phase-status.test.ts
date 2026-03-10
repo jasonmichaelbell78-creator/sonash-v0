@@ -58,8 +58,8 @@ describe("getAuditFile", () => {
 // ─── parseAuditContent ───────────────────────────────────────────────────────
 
 function parseAuditContent(content: string): { status: string; date: string | null } {
-  const statusMatch = content.match(/\*\*Status:\*\*\s*(PASS|FAIL)/i);
-  const dateMatch = content.match(/\*\*Audit Date:\*\*\s*(\d{4}-\d{2}-\d{2})/i);
+  const statusMatch = /\*\*Status:\*\*\s*(PASS|FAIL)/i.exec(content);
+  const dateMatch = /\*\*Audit Date:\*\*\s*(\d{4}-\d{2}-\d{2})/i.exec(content);
   return {
     status: statusMatch ? statusMatch[1].toUpperCase() : "UNKNOWN",
     date: dateMatch ? dateMatch[1] : null,

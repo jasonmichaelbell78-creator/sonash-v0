@@ -3,6 +3,17 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-doc-headers.js
 
+function getErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
+
+function parseDocHeaderArgs(argv: string[]): { verbose: boolean; checkAll: boolean } {
+  return {
+    verbose: argv.includes("--verbose"),
+    checkAll: argv.includes("--all"),
+  };
+}
+
 describe("check-doc-headers: required headers validation", () => {
   const REQUIRED_HEADERS = ["Document Version", "Last Updated", "Status"];
 
@@ -36,7 +47,7 @@ describe("check-doc-headers: EXEMPT_PATTERNS", () => {
   ];
 
   function isExempt(filePath: string): boolean {
-    const normalized = filePath.replace(/\\/g, "/");
+    const normalized = filePath.replaceAll("\\", "/");
     return EXEMPT_PATTERNS.some((p) => p.test(normalized));
   }
 
@@ -62,10 +73,6 @@ describe("check-doc-headers: EXEMPT_PATTERNS", () => {
 });
 
 describe("check-doc-headers: getErrorMessage", () => {
-  function getErrorMessage(err: unknown): string {
-    return err instanceof Error ? err.message : String(err);
-  }
-
   it("extracts message from Error", () => {
     assert.strictEqual(getErrorMessage(new Error("file not found")), "file not found");
   });
@@ -80,23 +87,16 @@ describe("check-doc-headers: getErrorMessage", () => {
 });
 
 describe("check-doc-headers: argument parsing", () => {
-  function parseArgs(argv: string[]): { verbose: boolean; checkAll: boolean } {
-    return {
-      verbose: argv.includes("--verbose"),
-      checkAll: argv.includes("--all"),
-    };
-  }
-
   it("parses --verbose flag", () => {
-    assert.strictEqual(parseArgs(["--verbose"]).verbose, true);
+    assert.strictEqual(parseDocHeaderArgs(["--verbose"]).verbose, true);
   });
 
   it("parses --all flag", () => {
-    assert.strictEqual(parseArgs(["--all"]).checkAll, true);
+    assert.strictEqual(parseDocHeaderArgs(["--all"]).checkAll, true);
   });
 
   it("defaults to false for both", () => {
-    const result = parseArgs([]);
+    const result = parseDocHeaderArgs([]);
     assert.strictEqual(result.verbose, false);
     assert.strictEqual(result.checkAll, false);
   });

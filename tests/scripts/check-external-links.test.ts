@@ -3,16 +3,56 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-external-links.js
 
-describe("check-external-links: sanitizeUrlForLogging", () => {
-  function sanitizeUrlForLogging(urlString: string): string {
-    try {
-      const url = new URL(urlString);
-      return `${url.protocol}//${url.host}${url.pathname}`;
-    } catch {
-      return "[invalid URL]";
-    }
+function sanitizeUrlForLogging(urlString: string): string {
+  try {
+    const url = new URL(urlString);
+    return `${url.protocol}//${url.host}${url.pathname}`;
+  } catch {
+    return "[invalid URL]";
   }
+}
 
+function validateTimeout(value: string): { valid: boolean; ms?: number; error?: string } {
+  const ms = Number.parseInt(value, 10);
+  if (!Number.isFinite(ms) || ms <= 0 || !Number.isInteger(ms)) {
+    return { valid: false, error: "--timeout must be a positive integer" };
+  }
+  return { valid: true, ms };
+}
+
+function extractLinks(content: string): string[] {
+  const links: string[] = [];
+  // Match [text](url) patterns
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let match;
+  while ((match = linkRegex.exec(content)) !== null) {
+    links.push(match[2]);
+  }
+  return links;
+}
+
+function shouldRateLimit(
+  domain: string,
+  lastRequest: Map<string, number>,
+  rateLimitMs: number,
+  now: number
+): boolean {
+  const last = lastRequest.get(domain);
+  if (last === undefined) return false;
+  return now - last < rateLimitMs;
+}
+
+function checkWithCache(
+  url: string,
+  cache: Map<string, { status: number }>
+): { cached: boolean; result?: { status: number } } {
+  if (cache.has(url)) {
+    return { cached: true, result: cache.get(url) };
+  }
+  return { cached: false };
+}
+
+describe("check-external-links: sanitizeUrlForLogging", () => {
   it("strips query strings from URL", () => {
     const result = sanitizeUrlForLogging("https://example.com/path?token=secret");
     assert.ok(!result.includes("token"));
@@ -43,14 +83,6 @@ describe("check-external-links: sanitizeUrlForLogging", () => {
 });
 
 describe("check-external-links: timeout argument validation", () => {
-  function validateTimeout(value: string): { valid: boolean; ms?: number; error?: string } {
-    const ms = Number.parseInt(value, 10);
-    if (!Number.isFinite(ms) || ms <= 0 || !Number.isInteger(ms)) {
-      return { valid: false, error: "--timeout must be a positive integer" };
-    }
-    return { valid: true, ms };
-  }
-
   it("accepts valid timeout value", () => {
     const result = validateTimeout("10000");
     assert.strictEqual(result.valid, true);
@@ -82,17 +114,6 @@ describe("check-external-links: timeout argument validation", () => {
 });
 
 describe("check-external-links: URL extraction from markdown", () => {
-  function extractLinks(content: string): string[] {
-    const links: string[] = [];
-    // Match [text](url) patterns
-    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-    let match;
-    while ((match = linkRegex.exec(content)) !== null) {
-      links.push(match[2]);
-    }
-    return links;
-  }
-
   it("extracts inline markdown links", () => {
     const content = "See [docs](https://example.com) and [API](https://api.example.com/v1)";
     const links = extractLinks(content);
@@ -111,17 +132,6 @@ describe("check-external-links: URL extraction from markdown", () => {
 });
 
 describe("check-external-links: domain rate limiting", () => {
-  function shouldRateLimit(
-    domain: string,
-    lastRequest: Map<string, number>,
-    rateLimitMs: number,
-    now: number
-  ): boolean {
-    const last = lastRequest.get(domain);
-    if (last === undefined) return false;
-    return now - last < rateLimitMs;
-  }
-
   it("allows first request to domain", () => {
     const lastRequest = new Map<string, number>();
     assert.strictEqual(shouldRateLimit("example.com", lastRequest, 100, Date.now()), false);
@@ -147,16 +157,6 @@ describe("check-external-links: domain rate limiting", () => {
 });
 
 describe("check-external-links: URL cache behavior", () => {
-  function checkWithCache(
-    url: string,
-    cache: Map<string, { status: number }>
-  ): { cached: boolean; result?: { status: number } } {
-    if (cache.has(url)) {
-      return { cached: true, result: cache.get(url) };
-    }
-    return { cached: false };
-  }
-
   it("returns cached result for repeated URL", () => {
     const cache = new Map([["https://example.com", { status: 200 }]]);
     const result = checkWithCache("https://example.com", cache);

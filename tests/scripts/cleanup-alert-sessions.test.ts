@@ -3,11 +3,15 @@ import assert from "node:assert/strict";
 
 // Smoke tests for scripts/cleanup-alert-sessions.js
 
-describe("cleanup-alert-sessions: session file detection", () => {
-  function isAlertSessionFile(filename: string): boolean {
-    return filename.startsWith("alert-session-") && filename.endsWith(".jsonl");
-  }
+function isAlertSessionFile(filename: string): boolean {
+  return filename.startsWith("alert-session-") && filename.endsWith(".jsonl");
+}
 
+function isPathTraversalCleanup(rel: string): boolean {
+  return /^\.\.(?:[\\/]|$)/.test(rel);
+}
+
+describe("cleanup-alert-sessions: session file detection", () => {
   it("identifies alert session files", () => {
     assert.strictEqual(isAlertSessionFile("alert-session-2026-01-01.jsonl"), true);
   });
@@ -42,15 +46,11 @@ describe("cleanup-alert-sessions: age-based deletion", () => {
 });
 
 describe("cleanup-alert-sessions: path containment", () => {
-  function isPathTraversal(rel: string): boolean {
-    return /^\.\.(?:[\\/]|$)/.test(rel);
-  }
-
   it("rejects path traversal", () => {
-    assert.strictEqual(isPathTraversal("../outside"), true);
+    assert.strictEqual(isPathTraversalCleanup("../outside"), true);
   });
 
   it("allows normal filename", () => {
-    assert.strictEqual(isPathTraversal("alert-session-2026-01.jsonl"), false);
+    assert.strictEqual(isPathTraversalCleanup("alert-session-2026-01.jsonl"), false);
   });
 });

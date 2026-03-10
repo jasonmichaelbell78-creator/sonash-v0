@@ -3,6 +3,17 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-triggers.js
 
+function parseGitOutput(output: string): string[] {
+  return output.split("\n").filter((f) => f.trim());
+}
+
+type TriggerSeverity = "blocking" | "warning";
+
+function computeExitCode(triggers: Array<{ severity: TriggerSeverity }>): number {
+  if (triggers.some((t) => t.severity === "blocking")) return 1;
+  return 0;
+}
+
 describe("check-triggers: TRIGGERS configuration", () => {
   const TRIGGERS = {
     security_audit: {
@@ -87,7 +98,7 @@ describe("check-triggers: skill validation detection", () => {
   const SKILL_PATHS = [".claude/skills/", ".claude/commands/"];
 
   function isSkillFile(filePath: string): boolean {
-    const normalized = filePath.replace(/\\/g, "/");
+    const normalized = filePath.replaceAll("\\", "/");
     return SKILL_PATHS.some((p) => normalized.startsWith(p));
   }
 
@@ -105,10 +116,6 @@ describe("check-triggers: skill validation detection", () => {
 });
 
 describe("check-triggers: tryGitDiff result parsing", () => {
-  function parseGitOutput(output: string): string[] {
-    return output.split("\n").filter((f) => f.trim());
-  }
-
   it("parses list of changed files", () => {
     const output = "src/auth.ts\nlib/token.ts\n";
     const files = parseGitOutput(output);
@@ -126,13 +133,6 @@ describe("check-triggers: tryGitDiff result parsing", () => {
 });
 
 describe("check-triggers: exit code logic", () => {
-  type Severity = "blocking" | "warning";
-
-  function computeExitCode(triggers: Array<{ severity: Severity }>): number {
-    if (triggers.some((t) => t.severity === "blocking")) return 1;
-    return 0;
-  }
-
   it("returns 1 for blocking triggers", () => {
     assert.strictEqual(computeExitCode([{ severity: "blocking" }]), 1);
   });

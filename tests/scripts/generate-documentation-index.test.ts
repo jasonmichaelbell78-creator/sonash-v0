@@ -3,14 +3,55 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/generate-documentation-index.js
 
-describe("generate-documentation-index: isExternalOrSpecialLink", () => {
-  const EXTERNAL_SCHEMES = ["http://", "https://", "mailto:", "ftp://", "#", "tel:"];
+const EXTERNAL_SCHEMES = ["http://", "https://", "mailto:", "ftp://", "#", "tel:"];
+const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"];
+const ARCHIVE_DIRS = ["docs/archive", ".planning/archive"];
 
-  function isExternalOrSpecialLink(href: string | null | undefined): boolean {
-    if (!href || typeof href !== "string") return false;
-    return EXTERNAL_SCHEMES.some((scheme) => href.startsWith(scheme));
+function isExternalOrSpecialLink(href: string | null | undefined): boolean {
+  if (!href || typeof href !== "string") return false;
+  return EXTERNAL_SCHEMES.some((scheme) => href.startsWith(scheme));
+}
+
+function isImageLink(href: string | null | undefined): boolean {
+  if (!href || typeof href !== "string") return false;
+  const pathOnly = href.split(/[?#]/)[0].toLowerCase();
+  return IMAGE_EXTENSIONS.some((ext) => pathOnly.endsWith(ext));
+}
+
+function encodeMarkdownPath(mdPath: string): string {
+  return encodeURI(mdPath).replaceAll("(", "%28").replaceAll(")", "%29");
+}
+
+function canonicalizePath(inputPath: string): string | null {
+  const segments = inputPath.split("/");
+  const result: string[] = [];
+  for (const segment of segments) {
+    if (segment === "" || segment === ".") continue;
+    if (segment === "..") {
+      if (result.length === 0) return null;
+      result.pop();
+    } else {
+      result.push(segment);
+    }
   }
+  return result.join("/");
+}
 
+function isArchived(relativePath: string): boolean {
+  return ARCHIVE_DIRS.some(
+    (archiveDir) => relativePath === archiveDir || relativePath.startsWith(archiveDir + "/")
+  );
+}
+
+function normalizeOverrideKey(k: string): string {
+  return String(k).replaceAll("\\", "/").replace(/^\.\//, "");
+}
+
+function isSafeKey(key: string): boolean {
+  return key !== "__proto__" && key !== "constructor" && key !== "prototype";
+}
+
+describe("generate-documentation-index: isExternalOrSpecialLink", () => {
   it("identifies https links as external", () => {
     assert.strictEqual(isExternalOrSpecialLink("https://example.com"), true);
   });
@@ -38,14 +79,6 @@ describe("generate-documentation-index: isExternalOrSpecialLink", () => {
 });
 
 describe("generate-documentation-index: isImageLink", () => {
-  const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"];
-
-  function isImageLink(href: string | null | undefined): boolean {
-    if (!href || typeof href !== "string") return false;
-    const pathOnly = href.split(/[?#]/)[0].toLowerCase();
-    return IMAGE_EXTENSIONS.some((ext) => pathOnly.endsWith(ext));
-  }
-
   it("identifies .png as image", () => {
     assert.strictEqual(isImageLink("assets/logo.png"), true);
   });
@@ -68,10 +101,6 @@ describe("generate-documentation-index: isImageLink", () => {
 });
 
 describe("generate-documentation-index: encodeMarkdownPath", () => {
-  function encodeMarkdownPath(path: string): string {
-    return encodeURI(path).replaceAll("(", "%28").replaceAll(")", "%29");
-  }
-
   it("encodes spaces in path", () => {
     const result = encodeMarkdownPath("docs/my file.md");
     assert.ok(result.includes("%20"));
@@ -90,21 +119,6 @@ describe("generate-documentation-index: encodeMarkdownPath", () => {
 });
 
 describe("generate-documentation-index: canonicalizePath", () => {
-  function canonicalizePath(inputPath: string): string | null {
-    const segments = inputPath.split("/");
-    const result: string[] = [];
-    for (const segment of segments) {
-      if (segment === "" || segment === ".") continue;
-      if (segment === "..") {
-        if (result.length === 0) return null;
-        result.pop();
-      } else {
-        result.push(segment);
-      }
-    }
-    return result.join("/");
-  }
-
   it("resolves single dot segments", () => {
     assert.strictEqual(canonicalizePath("docs/./readme.md"), "docs/readme.md");
   });
@@ -134,14 +148,6 @@ describe("generate-documentation-index: canonicalizePath", () => {
 });
 
 describe("generate-documentation-index: isArchived", () => {
-  const ARCHIVE_DIRS = ["docs/archive", ".planning/archive"];
-
-  function isArchived(relativePath: string): boolean {
-    return ARCHIVE_DIRS.some(
-      (archiveDir) => relativePath === archiveDir || relativePath.startsWith(archiveDir + "/")
-    );
-  }
-
   it("identifies file in archive directory", () => {
     assert.strictEqual(isArchived("docs/archive/old-file.md"), true);
   });
@@ -160,14 +166,6 @@ describe("generate-documentation-index: isArchived", () => {
 });
 
 describe("generate-documentation-index: FILE_OVERRIDES key normalization", () => {
-  function normalizeOverrideKey(k: string): string {
-    return String(k).replaceAll("\\", "/").replace(/^\.\//, "");
-  }
-
-  function isSafeKey(key: string): boolean {
-    return key !== "__proto__" && key !== "constructor" && key !== "prototype";
-  }
-
   it("converts backslashes to forward slashes", () => {
     assert.strictEqual(normalizeOverrideKey("docs\\readme.md"), "docs/readme.md");
   });

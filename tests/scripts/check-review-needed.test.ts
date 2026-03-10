@@ -3,6 +3,20 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-review-needed.js
 
+function parseReviewNeededArgs(argv: string[]): {
+  jsonOutput: boolean;
+  verbose: boolean;
+  sonarcloudEnabled: boolean;
+  specificCategory: string | null;
+} {
+  const jsonOutput = argv.includes("--json");
+  const verbose = argv.includes("--verbose");
+  const sonarcloudEnabled = argv.includes("--sonarcloud");
+  const categoryArg = argv.find((a) => a.startsWith("--category="));
+  const specificCategory = categoryArg ? categoryArg.split("=")[1] || null : null;
+  return { jsonOutput, verbose, sonarcloudEnabled, specificCategory };
+}
+
 describe("check-review-needed: validateSonarUrl", () => {
   const ALLOWED_SONAR_HOSTS = ["sonarcloud.io", "sonarqube.com", "localhost"];
 
@@ -67,47 +81,33 @@ describe("check-review-needed: validateSonarUrl", () => {
 });
 
 describe("check-review-needed: argument parsing", () => {
-  function parseArgs(argv: string[]): {
-    jsonOutput: boolean;
-    verbose: boolean;
-    sonarcloudEnabled: boolean;
-    specificCategory: string | null;
-  } {
-    const jsonOutput = argv.includes("--json");
-    const verbose = argv.includes("--verbose");
-    const sonarcloudEnabled = argv.includes("--sonarcloud");
-    const categoryArg = argv.find((a) => a.startsWith("--category="));
-    const specificCategory = categoryArg ? categoryArg.split("=")[1] || null : null;
-    return { jsonOutput, verbose, sonarcloudEnabled, specificCategory };
-  }
-
   it("parses --json flag", () => {
-    const result = parseArgs(["--json"]);
+    const result = parseReviewNeededArgs(["--json"]);
     assert.strictEqual(result.jsonOutput, true);
   });
 
   it("parses --verbose flag", () => {
-    const result = parseArgs(["--verbose"]);
+    const result = parseReviewNeededArgs(["--verbose"]);
     assert.strictEqual(result.verbose, true);
   });
 
   it("parses --sonarcloud flag", () => {
-    const result = parseArgs(["--sonarcloud"]);
+    const result = parseReviewNeededArgs(["--sonarcloud"]);
     assert.strictEqual(result.sonarcloudEnabled, true);
   });
 
   it("parses --category=code", () => {
-    const result = parseArgs(["--category=code"]);
+    const result = parseReviewNeededArgs(["--category=code"]);
     assert.strictEqual(result.specificCategory, "code");
   });
 
   it("returns null category when not specified", () => {
-    const result = parseArgs([]);
+    const result = parseReviewNeededArgs([]);
     assert.strictEqual(result.specificCategory, null);
   });
 
   it("handles multiple flags", () => {
-    const result = parseArgs(["--json", "--verbose", "--category=security"]);
+    const result = parseReviewNeededArgs(["--json", "--verbose", "--category=security"]);
     assert.strictEqual(result.jsonOutput, true);
     assert.strictEqual(result.verbose, true);
     assert.strictEqual(result.specificCategory, "security");

@@ -48,7 +48,7 @@ const DIR_TO_CANONICAL: Record<string, string> = {
 };
 
 function extractDate(dirName: string): string | null {
-  const match = dirName.match(/audit-(\d{4}-\d{2}-\d{2})/);
+  const match = /audit-(\d{4}-\d{2}-\d{2})/.exec(dirName);
   return match ? match[1] : null;
 }
 

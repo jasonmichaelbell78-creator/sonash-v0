@@ -3,20 +3,36 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/lighthouse-audit.js
 
-describe("lighthouse-audit: score thresholds", () => {
-  const SCORE_THRESHOLDS = {
-    performance: 90,
-    accessibility: 95,
-    bestPractices: 90,
-    seo: 85,
-  };
+const SCORE_THRESHOLDS: Record<string, number> = {
+  performance: 90,
+  accessibility: 95,
+  bestPractices: 90,
+  seo: 85,
+};
 
-  function passesThreshold(category: string, score: number): boolean {
-    const threshold = SCORE_THRESHOLDS[category as keyof typeof SCORE_THRESHOLDS];
-    if (threshold === undefined) return true;
-    return score >= threshold;
+function passesThreshold(category: string, score: number): boolean {
+  const threshold = SCORE_THRESHOLDS[category];
+  if (threshold === undefined) return true;
+  return score >= threshold;
+}
+
+function normalizeScore(rawScore: number | null | undefined): number {
+  if (rawScore == null) return 0;
+  if (rawScore <= 1) return Math.round(rawScore * 100);
+  return Math.min(100, Math.max(0, Math.round(rawScore)));
+}
+
+function buildSummary(scores: Record<string, number>): { pass: boolean; failed: string[] } {
+  const THRESHOLDS: Record<string, number> = { performance: 90, accessibility: 95 };
+  const failed: string[] = [];
+  for (const [category, threshold] of Object.entries(THRESHOLDS)) {
+    const score = scores[category] ?? 0;
+    if (score < threshold) failed.push(category);
   }
+  return { pass: failed.length === 0, failed };
+}
 
+describe("lighthouse-audit: score thresholds", () => {
   it("passes performance score of 90", () => {
     assert.strictEqual(passesThreshold("performance", 90), true);
   });
@@ -35,12 +51,6 @@ describe("lighthouse-audit: score thresholds", () => {
 });
 
 describe("lighthouse-audit: score normalization", () => {
-  function normalizeScore(rawScore: number | null | undefined): number {
-    if (rawScore == null) return 0;
-    if (rawScore <= 1) return Math.round(rawScore * 100);
-    return Math.min(100, Math.max(0, Math.round(rawScore)));
-  }
-
   it("converts 0-1 score to 0-100", () => {
     assert.strictEqual(normalizeScore(0.95), 95);
   });
@@ -65,16 +75,6 @@ describe("lighthouse-audit: score normalization", () => {
 });
 
 describe("lighthouse-audit: result summary", () => {
-  function buildSummary(scores: Record<string, number>): { pass: boolean; failed: string[] } {
-    const THRESHOLDS: Record<string, number> = { performance: 90, accessibility: 95 };
-    const failed: string[] = [];
-    for (const [category, threshold] of Object.entries(THRESHOLDS)) {
-      const score = scores[category] ?? 0;
-      if (score < threshold) failed.push(category);
-    }
-    return { pass: failed.length === 0, failed };
-  }
-
   it("passes when all scores meet thresholds", () => {
     const result = buildSummary({ performance: 92, accessibility: 97 });
     assert.strictEqual(result.pass, true);

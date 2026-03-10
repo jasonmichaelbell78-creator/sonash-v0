@@ -30,7 +30,7 @@ const SPRINT_ORDER = [
 
 describe("SPRINT_ORDER", () => {
   it("starts with sprint 4", () => assert.equal(SPRINT_ORDER[0], "4"));
-  it("ends with sprint 12b", () => assert.equal(SPRINT_ORDER[SPRINT_ORDER.length - 1], "12b"));
+  it("ends with sprint 12b", () => assert.equal(SPRINT_ORDER.at(-1), "12b"));
   it("contains 16 entries", () => assert.equal(SPRINT_ORDER.length, 16));
   it("contains sub-sprints like 8a, 8b, 8c, 8d", () => {
     ["8a", "8b", "8c", "8d"].forEach((s) => assert.ok(SPRINT_ORDER.includes(s)));

@@ -3,17 +3,33 @@ import assert from "node:assert/strict";
 
 // Smoke tests for scripts/generate-fix-template-stubs.js (CLI wrapper)
 
-describe("generate-fix-template-stubs: main export loading", () => {
-  function checkMainExport(mainFn: unknown): { valid: boolean; error?: string } {
-    if (typeof mainFn !== "function") {
-      return {
-        valid: false,
-        error: "No callable `main` export found. Rebuild scripts/reviews and verify dist output.",
-      };
-    }
-    return { valid: true };
+function checkMainExport(mainFn: unknown): { valid: boolean; error?: string } {
+  if (typeof mainFn !== "function") {
+    return {
+      valid: false,
+      error: "No callable `main` export found. Rebuild scripts/reviews and verify dist output.",
+    };
   }
+  return { valid: true };
+}
 
+function buildTemplateStub(patternId: string, title: string): string {
+  return [
+    `## Fix Template: ${patternId}`,
+    `**Pattern**: ${title}`,
+    "### Problem",
+    "<!-- Describe the problem -->",
+    "### Solution",
+    "<!-- Describe the fix -->",
+    "### Example",
+    "```typescript",
+    "// Before:",
+    "// After:",
+    "```",
+  ].join("\n");
+}
+
+describe("generate-fix-template-stubs: main export loading", () => {
   it("accepts async function export", () => {
     assert.strictEqual(checkMainExport(async () => {}).valid, true);
   });
@@ -25,22 +41,6 @@ describe("generate-fix-template-stubs: main export loading", () => {
 });
 
 describe("generate-fix-template-stubs: template stub structure", () => {
-  function buildTemplateStub(patternId: string, title: string): string {
-    return [
-      `## Fix Template: ${patternId}`,
-      `**Pattern**: ${title}`,
-      "### Problem",
-      "<!-- Describe the problem -->",
-      "### Solution",
-      "<!-- Describe the fix -->",
-      "### Example",
-      "```typescript",
-      "// Before:",
-      "// After:",
-      "```",
-    ].join("\n");
-  }
-
   it("builds template stub with required sections", () => {
     const stub = buildTemplateStub("PAT-001", "Error sanitization");
     assert.ok(stub.includes("## Fix Template: PAT-001"));

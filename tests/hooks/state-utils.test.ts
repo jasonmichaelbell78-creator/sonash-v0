@@ -80,7 +80,7 @@ describe("loadJson", () => {
     const data = { a: { b: { c: 42 } }, arr: [1, 2, 3] };
     fs.writeFileSync(filePath, JSON.stringify(data));
 
-    const result = loadJson(filePath) as typeof data;
+    const result = loadJson(filePath);
     assert.deepEqual(result, data);
   });
 
@@ -140,7 +140,7 @@ describe("loadJson round-trip within .claude/state", () => {
     const data = { session: 42, status: "active", items: ["a", "b"] };
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 
-    const result = loadJson(filePath) as typeof data;
+    const result = loadJson(filePath);
     assert.deepEqual(result, data);
   });
 

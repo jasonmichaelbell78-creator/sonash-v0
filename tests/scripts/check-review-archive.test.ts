@@ -3,27 +3,64 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-review-archive.js
 
-describe("check-review-archive: groupConsecutive", () => {
-  function groupConsecutive(nums: number[]): string[] {
-    const sorted = Array.from(new Set(nums)).sort((a, b) => a - b);
-    if (sorted.length === 0) return [];
-    const ranges: string[] = [];
-    let start = sorted[0];
-    let end = sorted[0];
+function groupConsecutive(nums: number[]): string[] {
+  const sorted = Array.from(new Set(nums)).sort((a, b) => a - b);
+  if (sorted.length === 0) return [];
+  const ranges: string[] = [];
+  let start = sorted[0];
+  let end = sorted[0];
 
-    for (let i = 1; i < sorted.length; i++) {
-      if (sorted[i] === end + 1) {
-        end = sorted[i];
-      } else {
-        ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
-        start = sorted[i];
-        end = sorted[i];
-      }
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] === end + 1) {
+      end = sorted[i];
+    } else {
+      ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
+      start = sorted[i];
+      end = sorted[i];
     }
-    ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
-    return ranges;
   }
+  ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
+  return ranges;
+}
 
+function isValidReviewHeading(line: string): boolean {
+  return /^####\s+Review\s+#\d+/.test(line);
+}
+
+function isInvalidReviewHeading(line: string): boolean {
+  return /^###\s+Review\s+#\d+/.test(line);
+}
+
+function findGaps(ids: number[], knownSkipped: Set<number>): number[] {
+  if (ids.length === 0) return [];
+  const sorted = [...ids].sort((a, b) => a - b);
+  const min = sorted[0];
+  const max = sorted.at(-1)!;
+  const gaps: number[] = [];
+  for (let i = min + 1; i < max; i++) {
+    if (!sorted.includes(i) && !knownSkipped.has(i)) {
+      gaps.push(i);
+    }
+  }
+  return gaps;
+}
+
+function getMaxJsonlId(jsonlContent: string): number {
+  let max = 0;
+  for (const line of jsonlContent.split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const obj = JSON.parse(line) as { id?: unknown };
+      const id = typeof obj.id === "number" ? obj.id : Number(obj.id);
+      if (Number.isFinite(id) && id > max) max = id;
+    } catch {
+      // skip malformed
+    }
+  }
+  return max;
+}
+
+describe("check-review-archive: groupConsecutive", () => {
   it("groups consecutive numbers into ranges", () => {
     const result = groupConsecutive([1, 2, 3, 5, 7, 8]);
     assert.deepStrictEqual(result, ["#1-#3", "#5", "#7-#8"]);
@@ -78,14 +115,6 @@ describe("check-review-archive: KNOWN_DUPLICATE_IDS", () => {
 });
 
 describe("check-review-archive: heading format check", () => {
-  function isValidReviewHeading(line: string): boolean {
-    return /^####\s+Review\s+#\d+/.test(line);
-  }
-
-  function isInvalidReviewHeading(line: string): boolean {
-    return /^###\s+Review\s+#\d+/.test(line);
-  }
-
   it("accepts #### (four hashes) headings", () => {
     assert.strictEqual(isValidReviewHeading("#### Review #123"), true);
   });
@@ -101,20 +130,6 @@ describe("check-review-archive: heading format check", () => {
 });
 
 describe("check-review-archive: gap detection", () => {
-  function findGaps(ids: number[], knownSkipped: Set<number>): number[] {
-    if (ids.length === 0) return [];
-    const sorted = [...ids].sort((a, b) => a - b);
-    const min = sorted[0];
-    const max = sorted[sorted.length - 1];
-    const gaps: number[] = [];
-    for (let i = min + 1; i < max; i++) {
-      if (!sorted.includes(i) && !knownSkipped.has(i)) {
-        gaps.push(i);
-      }
-    }
-    return gaps;
-  }
-
   it("finds gaps in review numbering", () => {
     const ids = [1, 2, 4, 5]; // gap at 3
     const gaps = findGaps(ids, new Set<number>());
@@ -137,21 +152,6 @@ describe("check-review-archive: gap detection", () => {
 });
 
 describe("check-review-archive: JSONL sync max ID comparison", () => {
-  function getMaxJsonlId(jsonlContent: string): number {
-    let max = 0;
-    for (const line of jsonlContent.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        const obj = JSON.parse(line) as { id?: unknown };
-        const id = typeof obj.id === "number" ? obj.id : Number(obj.id);
-        if (Number.isFinite(id) && id > max) max = id;
-      } catch {
-        // skip malformed
-      }
-    }
-    return max;
-  }
-
   it("finds max review ID in JSONL", () => {
     const content = '{"id":101}\n{"id":150}\n{"id":99}\n';
     assert.strictEqual(getMaxJsonlId(content), 150);

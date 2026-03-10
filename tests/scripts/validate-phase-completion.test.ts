@@ -3,18 +3,38 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/validate-phase-completion.js
 
-describe("validate-phase-completion: extractPhaseContent", () => {
-  function extractPhaseContent(content: string, phase: string): string | null {
-    const header = `## 📋 ${phase}`;
-    const phaseStart = content.indexOf(header);
-    if (phaseStart === -1) return null;
+function extractPhaseContent(content: string, phase: string): string | null {
+  const header = `## 📋 ${phase}`;
+  const phaseStart = content.indexOf(header);
+  if (phaseStart === -1) return null;
 
-    const searchStart = phaseStart + header.length;
-    const nextPhaseMatch = content.slice(searchStart).match(/\n## 📋 PHASE/);
-    const phaseEnd = nextPhaseMatch ? searchStart + nextPhaseMatch.index! : content.length;
-    return content.slice(phaseStart, phaseEnd);
+  const searchStart = phaseStart + header.length;
+  const nextPhaseMatch = /\n## 📋 PHASE/.exec(content.slice(searchStart));
+  const phaseEnd = nextPhaseMatch ? searchStart + nextPhaseMatch.index! : content.length;
+  return content.slice(phaseStart, phaseEnd);
+}
+
+function validateSinglePhase(phaseContent: string, phase: string, issues: string[]): boolean {
+  let valid = true;
+
+  const hasAccomplished = /### 📊 What Was Accomplished/.test(phaseContent);
+  if (!hasAccomplished) {
+    issues.push(`${phase}: Missing "What Was Accomplished" section`);
+    valid = false;
   }
 
+  const criteriaChecked = (phaseContent.match(/- \[x\]/g) ?? []).length;
+  const criteriaTotal = (phaseContent.match(/- \[[ x]\]/g) ?? []).length;
+
+  if (criteriaTotal > 0 && criteriaChecked === 0) {
+    issues.push(`${phase}: No acceptance criteria checked`);
+    valid = false;
+  }
+
+  return valid;
+}
+
+describe("validate-phase-completion: extractPhaseContent", () => {
   it("extracts content for named phase", () => {
     const content = "## 📋 PHASE 1\ncontent here\n## 📋 PHASE 2\nother";
     const result = extractPhaseContent(content, "PHASE 1");
@@ -34,26 +54,6 @@ describe("validate-phase-completion: extractPhaseContent", () => {
 });
 
 describe("validate-phase-completion: validateSinglePhase", () => {
-  function validateSinglePhase(phaseContent: string, phase: string, issues: string[]): boolean {
-    let valid = true;
-
-    const hasAccomplished = /### 📊 What Was Accomplished/.test(phaseContent);
-    if (!hasAccomplished) {
-      issues.push(`${phase}: Missing "What Was Accomplished" section`);
-      valid = false;
-    }
-
-    const criteriaChecked = (phaseContent.match(/- \[x\]/g) ?? []).length;
-    const criteriaTotal = (phaseContent.match(/- \[[ x]\]/g) ?? []).length;
-
-    if (criteriaTotal > 0 && criteriaChecked === 0) {
-      issues.push(`${phase}: No acceptance criteria checked`);
-      valid = false;
-    }
-
-    return valid;
-  }
-
   it("passes phase with accomplished section and checked criteria", () => {
     const content = "### 📊 What Was Accomplished\n- [x] Did thing A\n- [x] Did thing B";
     const issues: string[] = [];

@@ -3,9 +3,34 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/validate-canon-schema.js
 
-describe("validate-canon-schema: CANON_ID_REGEX", () => {
-  const CANON_ID_REGEX = /^CANON-\d{4}$/;
+const CANON_ID_REGEX = /^CANON-\d{4}$/;
+const REQUIRED_FIELDS = ["canonical_id", "category", "title", "severity", "effort", "files"];
+const VALID_SEVERITY = ["S0", "S1", "S2", "S3"];
+const VALID_EFFORT = ["E0", "E1", "E2", "E3"];
+const VALID_STATUS = ["CONFIRMED", "SUSPECTED", "NEW", "TRACKED_ELSEWHERE"];
 
+const ALT_ID_PATTERNS = [
+  { pattern: /^F-\d{3}$/, name: "Security (F-XXX)" },
+  { pattern: /^PERF-\d{3}$/, name: "Performance (PERF-XXX)" },
+  { pattern: /^CANON-R-\d{3}$/, name: "Refactoring (CANON-R-XXX)" },
+];
+
+function validateCanonRequiredFields(finding: Record<string, unknown>): string[] {
+  return REQUIRED_FIELDS.filter((f) => !finding[f]);
+}
+
+function isValidEnum(value: string, validValues: string[]): boolean {
+  return validValues.includes(value);
+}
+
+function detectAltIdFormat(id: string): string {
+  for (const alt of ALT_ID_PATTERNS) {
+    if (alt.pattern.test(id)) return alt.name;
+  }
+  return "Unknown";
+}
+
+describe("validate-canon-schema: CANON_ID_REGEX", () => {
   it("accepts CANON-0001", () => {
     assert.ok(CANON_ID_REGEX.test("CANON-0001"));
   });
@@ -32,12 +57,6 @@ describe("validate-canon-schema: CANON_ID_REGEX", () => {
 });
 
 describe("validate-canon-schema: required fields validation", () => {
-  const REQUIRED_FIELDS = ["canonical_id", "category", "title", "severity", "effort", "files"];
-
-  function validateRequiredFields(finding: Record<string, unknown>): string[] {
-    return REQUIRED_FIELDS.filter((f) => !finding[f]);
-  }
-
   it("passes when all fields present", () => {
     const finding = {
       canonical_id: "CANON-0001",
@@ -47,7 +66,7 @@ describe("validate-canon-schema: required fields validation", () => {
       effort: "E2",
       files: ["src/auth.ts"],
     };
-    assert.strictEqual(validateRequiredFields(finding).length, 0);
+    assert.strictEqual(validateCanonRequiredFields(finding).length, 0);
   });
 
   it("reports missing canonical_id", () => {
@@ -58,26 +77,18 @@ describe("validate-canon-schema: required fields validation", () => {
       effort: "E2",
       files: ["src/auth.ts"],
     };
-    assert.ok(validateRequiredFields(finding).includes("canonical_id"));
+    assert.ok(validateCanonRequiredFields(finding).includes("canonical_id"));
   });
 
   it("reports multiple missing fields", () => {
     const finding = { title: "Issue" };
-    const missing = validateRequiredFields(finding);
+    const missing = validateCanonRequiredFields(finding);
     assert.ok(missing.includes("canonical_id"));
     assert.ok(missing.includes("severity"));
   });
 });
 
 describe("validate-canon-schema: enum validation", () => {
-  const VALID_SEVERITY = ["S0", "S1", "S2", "S3"];
-  const VALID_EFFORT = ["E0", "E1", "E2", "E3"];
-  const VALID_STATUS = ["CONFIRMED", "SUSPECTED", "NEW", "TRACKED_ELSEWHERE"];
-
-  function isValidEnum(value: string, validValues: string[]): boolean {
-    return validValues.includes(value);
-  }
-
   it("accepts valid severity S0-S3", () => {
     for (const s of VALID_SEVERITY) {
       assert.strictEqual(isValidEnum(s, VALID_SEVERITY), true);
@@ -106,19 +117,6 @@ describe("validate-canon-schema: enum validation", () => {
 });
 
 describe("validate-canon-schema: detectAltIdFormat", () => {
-  const ALT_ID_PATTERNS = [
-    { pattern: /^F-\d{3}$/, name: "Security (F-XXX)" },
-    { pattern: /^PERF-\d{3}$/, name: "Performance (PERF-XXX)" },
-    { pattern: /^CANON-R-\d{3}$/, name: "Refactoring (CANON-R-XXX)" },
-  ];
-
-  function detectAltIdFormat(id: string): string {
-    for (const alt of ALT_ID_PATTERNS) {
-      if (alt.pattern.test(id)) return alt.name;
-    }
-    return "Unknown";
-  }
-
   it("detects F-XXX security format", () => {
     assert.strictEqual(detectAltIdFormat("F-001"), "Security (F-XXX)");
   });

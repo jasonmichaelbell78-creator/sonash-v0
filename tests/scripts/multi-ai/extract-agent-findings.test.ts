@@ -59,8 +59,7 @@ function createBraceTracker(): BraceTracker {
       return depth;
     },
     feed(str: string) {
-      for (let i = 0; i < str.length; i++) {
-        const ch = str[i];
+      for (const ch of str) {
         if (escaped) {
           escaped = false;
           continue;
@@ -106,7 +105,7 @@ function processFindingJson(
       if (f.startsWith(rootPrefix)) f = f.slice(rootPrefix.length);
       else if (f.startsWith(projectRoot + "/")) f = f.slice(projectRoot.length + 1);
       else if (f.startsWith(projectRoot + "\\")) f = f.slice(projectRoot.length + 1);
-      finding.file = f.replace(/\\/g, "/");
+      finding.file = f.replaceAll("\\", "/");
     }
     return finding;
   } catch {
@@ -264,14 +263,18 @@ describe("processFindingJson", () => {
 // 4. Content-block normalisation logic
 // ---------------------------------------------------------------------------
 
+function normalizeContentBlocks(
+  rawContent: unknown
+): Array<{ type: string; text?: string; [key: string]: unknown }> {
+  if (Array.isArray(rawContent)) return rawContent;
+  if (typeof rawContent === "string") return [{ type: "text", text: rawContent }];
+  return [rawContent as { type: string; [key: string]: unknown }];
+}
+
 describe("content block normalisation", () => {
   it("normalises string content to [{type:'text', text: ...}]", () => {
     const rawContent = "Some plain text finding";
-    const contentBlocks = Array.isArray(rawContent)
-      ? rawContent
-      : typeof rawContent === "string"
-        ? [{ type: "text", text: rawContent }]
-        : [rawContent];
+    const contentBlocks = normalizeContentBlocks(rawContent);
     assert.equal(contentBlocks.length, 1);
     assert.equal(contentBlocks[0].type, "text");
     assert.equal(contentBlocks[0].text, rawContent);
@@ -288,11 +291,7 @@ describe("content block normalisation", () => {
 
   it("wraps a single object content in an array", () => {
     const rawContent = { type: "text", text: "Single block" };
-    const contentBlocks = Array.isArray(rawContent)
-      ? rawContent
-      : typeof rawContent === "string"
-        ? [{ type: "text", text: rawContent }]
-        : [rawContent];
+    const contentBlocks = normalizeContentBlocks(rawContent);
     assert.equal(contentBlocks.length, 1);
   });
 });

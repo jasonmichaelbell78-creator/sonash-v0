@@ -99,7 +99,7 @@ describe("isCanonId", () => {
 // ─── Reference replacement logic ──────────────────────────────────────────────
 
 function replaceCanonRefs(content: string, canonMap: Map<string, string>): string {
-  return content.replace(/CANON-\d{4}/g, (match) => {
+  return content.replaceAll(/CANON-\d{4}/g, (match) => {
     return canonMap.get(match) ?? match;
   });
 }

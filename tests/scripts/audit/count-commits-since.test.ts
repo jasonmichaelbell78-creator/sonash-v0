@@ -54,12 +54,12 @@ const CATEGORIES = [
 function extractLastAuditDate(raw: string): string | null {
   if (typeof raw !== "string" || raw.trim() === "") return null;
   if (raw.trim().toLowerCase().startsWith("never")) return null;
-  const match = raw.match(/(\d{4}-\d{2}-\d{2})/);
+  const match = /(\d{4}-\d{2}-\d{2})/.exec(raw);
   return match ? match[1] : null;
 }
 
 function extractThreshold(rawTrigger: string): number {
-  const match = rawTrigger.match(/(\d+)\s+commits/i);
+  const match = /(\d+)\s+commits/i.exec(rawTrigger);
   return match ? Number.parseInt(match[1], 10) : DEFAULT_THRESHOLD;
 }
 

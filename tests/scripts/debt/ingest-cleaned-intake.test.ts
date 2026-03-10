@@ -23,7 +23,7 @@ function parseMasterLine(
     const item = JSON.parse(line);
     if (item.content_hash) hashSet.add(item.content_hash);
     if (item.id) {
-      const match = (item.id as string).match(/DEBT-(\d+)/);
+      const match = /DEBT-(\d+)/.exec(item.id as string);
       if (match) {
         const num = Number.parseInt(match[1], 10);
         if (num > idState.maxId) idState.maxId = num;

@@ -19,7 +19,7 @@ import assert from "node:assert/strict";
 // top-level file I/O side effects that require real .planning data to exist).
 
 function extractTenetId(raw: string): string | null {
-  const match = raw.match(/^(T\d+)/);
+  const match = /^(T\d+)/.exec(raw);
   return match ? match[1] : null;
 }
 

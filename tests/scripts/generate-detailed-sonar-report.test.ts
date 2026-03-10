@@ -4,21 +4,44 @@ import path from "node:path";
 
 // Re-implements core logic from scripts/generate-detailed-sonar-report.js (medium template)
 
-describe("generate-detailed-sonar-report: resolveProjectPath", () => {
-  const PROJECT_ROOT = "/project/root";
+const PROJECT_ROOT = "/project/root";
 
-  function resolveProjectPath(relativeFilePath: string, projectRoot: string): string {
-    if (relativeFilePath.includes("\0")) {
-      throw new Error("Refusing to read path with null byte");
-    }
-    const abs = path.resolve(projectRoot, relativeFilePath);
-    const rel = path.relative(projectRoot, abs);
-    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
-      throw new Error(`Refusing to read outside project root: ${relativeFilePath}`);
-    }
-    return abs;
+function resolveProjectPath(relativeFilePath: string, projectRoot: string): string {
+  if (relativeFilePath.includes("\0")) {
+    throw new Error("Refusing to read path with null byte");
   }
+  const abs = path.resolve(projectRoot, relativeFilePath);
+  const rel = path.relative(projectRoot, abs);
+  if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+    throw new Error(`Refusing to read outside project root: ${relativeFilePath}`);
+  }
+  return abs;
+}
 
+function parseSonarProperties(content: string): { org: string | null; project: string | null } {
+  const result: { org: string | null; project: string | null } = { org: null, project: null };
+  const props: Record<string, string> = {};
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("#") || !trimmed.includes("=")) continue;
+    const [key, ...rest] = trimmed.split("=");
+    props[key.trim()] = rest.join("=").trim();
+  }
+  result.org = props["sonar.organization"] ?? null;
+  const projectKey = props["sonar.projectKey"];
+  if (projectKey && result.org && projectKey.startsWith(result.org + "_")) {
+    result.project = projectKey.substring(result.org.length + 1);
+  } else if (projectKey) {
+    result.project = projectKey;
+  }
+  return result;
+}
+
+function isPathTraversal(rel: string): boolean {
+  return rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel);
+}
+
+describe("generate-detailed-sonar-report: resolveProjectPath", () => {
   it("resolves path within project root", () => {
     const result = resolveProjectPath("src/app.ts", PROJECT_ROOT);
     assert.ok(result.includes("app.ts"));
@@ -37,25 +60,6 @@ describe("generate-detailed-sonar-report: resolveProjectPath", () => {
 });
 
 describe("generate-detailed-sonar-report: readSonarProperties", () => {
-  function parseSonarProperties(content: string): { org: string | null; project: string | null } {
-    const result: { org: string | null; project: string | null } = { org: null, project: null };
-    const props: Record<string, string> = {};
-    for (const line of content.split("\n")) {
-      const trimmed = line.trim();
-      if (trimmed.startsWith("#") || !trimmed.includes("=")) continue;
-      const [key, ...rest] = trimmed.split("=");
-      props[key.trim()] = rest.join("=").trim();
-    }
-    result.org = props["sonar.organization"] ?? null;
-    const projectKey = props["sonar.projectKey"];
-    if (projectKey && result.org && projectKey.startsWith(result.org + "_")) {
-      result.project = projectKey.substring(result.org.length + 1);
-    } else if (projectKey) {
-      result.project = projectKey;
-    }
-    return result;
-  }
-
   it("parses organization and project key", () => {
     const content = "sonar.organization=myorg\nsonar.projectKey=myorg_myproject";
     const result = parseSonarProperties(content);
@@ -84,10 +88,6 @@ describe("generate-detailed-sonar-report: readSonarProperties", () => {
 });
 
 describe("generate-detailed-sonar-report: path containment regex", () => {
-  function isPathTraversal(rel: string): boolean {
-    return rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel);
-  }
-
   it("flags project root itself (empty rel)", () => {
     assert.strictEqual(isPathTraversal(""), true);
   });

@@ -3,6 +3,21 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-doc-placement.js
 
+function classifyFile(filePath: string): string {
+  if (/PLAN\.md$/i.test(filePath)) return "plan";
+  if (/TEMPLATE\.md$/i.test(filePath)) return "template";
+  if (/\.md$/i.test(filePath)) return "markdown";
+  return "other";
+}
+
+function isPathTraversalDocPlacement(rel: string): boolean {
+  return /^\.\.(?:[\\/]|$)/.test(rel);
+}
+
+function isInArchive(relativePath: string): boolean {
+  return relativePath.startsWith("docs/archive/") || relativePath === "docs/archive";
+}
+
 describe("check-doc-placement: TIER_DEFINITIONS", () => {
   const TIER_DEFINITIONS: Record<
     number,
@@ -82,13 +97,6 @@ describe("check-doc-placement: EXPECTED_LOCATIONS", () => {
 });
 
 describe("check-doc-placement: file classification", () => {
-  function classifyFile(filePath: string): string {
-    if (/PLAN\.md$/i.test(filePath)) return "plan";
-    if (/TEMPLATE\.md$/i.test(filePath)) return "template";
-    if (/\.md$/i.test(filePath)) return "markdown";
-    return "other";
-  }
-
   it("classifies plan files", () => {
     assert.strictEqual(classifyFile("docs/plans/FEATURE_PLAN.md"), "plan");
   });
@@ -107,32 +115,24 @@ describe("check-doc-placement: file classification", () => {
 });
 
 describe("check-doc-placement: path containment check", () => {
-  function isPathTraversal(rel: string): boolean {
-    return /^\.\.(?:[\\/]|$)/.test(rel);
-  }
-
   it("detects ../ traversal", () => {
-    assert.strictEqual(isPathTraversal("../outside"), true);
+    assert.strictEqual(isPathTraversalDocPlacement("../outside"), true);
   });
 
   it("detects standalone ..", () => {
-    assert.strictEqual(isPathTraversal(".."), true);
+    assert.strictEqual(isPathTraversalDocPlacement(".."), true);
   });
 
   it("does not flag normal paths", () => {
-    assert.strictEqual(isPathTraversal("docs/readme.md"), false);
+    assert.strictEqual(isPathTraversalDocPlacement("docs/readme.md"), false);
   });
 
   it("does not flag ..hidden filename", () => {
-    assert.strictEqual(isPathTraversal("..hidden"), false);
+    assert.strictEqual(isPathTraversalDocPlacement("..hidden"), false);
   });
 });
 
 describe("check-doc-placement: archive path detection", () => {
-  function isInArchive(relativePath: string): boolean {
-    return relativePath.startsWith("docs/archive/") || relativePath === "docs/archive";
-  }
-
   it("detects file in docs/archive/", () => {
     assert.strictEqual(isInArchive("docs/archive/old-plan.md"), true);
   });

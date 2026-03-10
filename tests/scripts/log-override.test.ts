@@ -3,94 +3,121 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/log-override.js
 
-describe("log-override: parseArgs", () => {
-  function parseArgs(argv: string[]): {
-    check: string | null;
-    reason: string | null;
-    list: boolean;
-    clear: boolean;
-    analytics: boolean;
-    days: number;
-    json: boolean;
-  } {
-    const args = {
-      check: null as string | null,
-      reason: null as string | null,
-      list: false,
-      clear: false,
-      analytics: false,
-      days: 30,
-      json: false,
-    };
+function parseOverrideArgs(argv: string[]): {
+  check: string | null;
+  reason: string | null;
+  list: boolean;
+  clear: boolean;
+  analytics: boolean;
+  days: number;
+  json: boolean;
+} {
+  const args = {
+    check: null as string | null,
+    reason: null as string | null,
+    list: false,
+    clear: false,
+    analytics: false,
+    days: 30,
+    json: false,
+  };
 
-    for (const arg of argv) {
-      if (arg === "--list") args.list = true;
-      else if (arg === "--clear") args.clear = true;
-      else if (arg === "--analytics") args.analytics = true;
-      else if (arg === "--json") args.json = true;
-      else if (arg.startsWith("--days=")) {
-        const val = Number.parseInt(arg.split("=").slice(1).join("="), 10);
-        if (!Number.isNaN(val) && val > 0) args.days = val;
-      } else if (arg.startsWith("--check=")) {
-        args.check = arg.split("=").slice(1).join("=");
-      } else if (arg.startsWith("--reason=")) {
-        args.reason = arg.split("=").slice(1).join("=");
-      }
+  for (const arg of argv) {
+    if (arg === "--list") args.list = true;
+    else if (arg === "--clear") args.clear = true;
+    else if (arg === "--analytics") args.analytics = true;
+    else if (arg === "--json") args.json = true;
+    else if (arg.startsWith("--days=")) {
+      const val = Number.parseInt(arg.split("=").slice(1).join("="), 10);
+      if (!Number.isNaN(val) && val > 0) args.days = val;
+    } else if (arg.startsWith("--check=")) {
+      args.check = arg.split("=").slice(1).join("=");
+    } else if (arg.startsWith("--reason=")) {
+      args.reason = arg.split("=").slice(1).join("=");
     }
-    return args;
   }
+  return args;
+}
 
+function buildOverrideEntry(check: string, reason: string, timestamp: string): object {
+  return { check, reason, timestamp, type: "override" };
+}
+
+interface OverrideEntry {
+  timestamp: string;
+  check: string;
+  reason: string;
+}
+
+function filterByDays(entries: OverrideEntry[], days: number, now: number): OverrideEntry[] {
+  const cutoff = now - days * 24 * 60 * 60 * 1000;
+  return entries.filter((entry) => {
+    const ts = new Date(entry.timestamp).getTime();
+    return Number.isFinite(ts) && ts >= cutoff;
+  });
+}
+
+function groupByCheck(entries: OverrideEntry[]): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const entry of entries) {
+    counts.set(entry.check, (counts.get(entry.check) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function shouldRotate(currentSize: number): boolean {
+  const MAX_LOG_SIZE = 50 * 1024; // 50KB
+  return currentSize > MAX_LOG_SIZE;
+}
+
+describe("log-override: parseArgs", () => {
   it("parses --list flag", () => {
-    assert.strictEqual(parseArgs(["--list"]).list, true);
+    assert.strictEqual(parseOverrideArgs(["--list"]).list, true);
   });
 
   it("parses --clear flag", () => {
-    assert.strictEqual(parseArgs(["--clear"]).clear, true);
+    assert.strictEqual(parseOverrideArgs(["--clear"]).clear, true);
   });
 
   it("parses --analytics flag", () => {
-    assert.strictEqual(parseArgs(["--analytics"]).analytics, true);
+    assert.strictEqual(parseOverrideArgs(["--analytics"]).analytics, true);
   });
 
   it("parses --json flag", () => {
-    assert.strictEqual(parseArgs(["--json"]).json, true);
+    assert.strictEqual(parseOverrideArgs(["--json"]).json, true);
   });
 
   it("parses --check= value", () => {
-    const result = parseArgs(["--check=triggers"]);
+    const result = parseOverrideArgs(["--check=triggers"]);
     assert.strictEqual(result.check, "triggers");
   });
 
   it("parses --reason= value", () => {
-    const result = parseArgs(["--reason=Already ran security-auditor"]);
+    const result = parseOverrideArgs(["--reason=Already ran security-auditor"]);
     assert.strictEqual(result.reason, "Already ran security-auditor");
   });
 
   it("parses --days= value", () => {
-    const result = parseArgs(["--days=7"]);
+    const result = parseOverrideArgs(["--days=7"]);
     assert.strictEqual(result.days, 7);
   });
 
   it("defaults to 30 days", () => {
-    assert.strictEqual(parseArgs([]).days, 30);
+    assert.strictEqual(parseOverrideArgs([]).days, 30);
   });
 
   it("handles reason with = in value", () => {
-    const result = parseArgs(["--reason=key=value style reason"]);
+    const result = parseOverrideArgs(["--reason=key=value style reason"]);
     assert.strictEqual(result.reason, "key=value style reason");
   });
 
   it("ignores invalid days value", () => {
-    const result = parseArgs(["--days=0"]);
+    const result = parseOverrideArgs(["--days=0"]);
     assert.strictEqual(result.days, 30);
   });
 });
 
 describe("log-override: override log entry building", () => {
-  function buildOverrideEntry(check: string, reason: string, timestamp: string): object {
-    return { check, reason, timestamp, type: "override" };
-  }
-
   it("builds correct override entry structure", () => {
     const entry = buildOverrideEntry(
       "triggers",
@@ -107,20 +134,6 @@ describe("log-override: override log entry building", () => {
 });
 
 describe("log-override: analytics filter by date", () => {
-  interface OverrideEntry {
-    timestamp: string;
-    check: string;
-    reason: string;
-  }
-
-  function filterByDays(entries: OverrideEntry[], days: number, now: number): OverrideEntry[] {
-    const cutoff = now - days * 24 * 60 * 60 * 1000;
-    return entries.filter((entry) => {
-      const ts = new Date(entry.timestamp).getTime();
-      return Number.isFinite(ts) && ts >= cutoff;
-    });
-  }
-
   it("includes recent entries", () => {
     const now = Date.now();
     const entries: OverrideEntry[] = [
@@ -148,20 +161,6 @@ describe("log-override: analytics filter by date", () => {
 });
 
 describe("log-override: analytics grouping by check type", () => {
-  interface OverrideEntry {
-    check: string;
-    reason: string;
-    timestamp: string;
-  }
-
-  function groupByCheck(entries: OverrideEntry[]): Map<string, number> {
-    const counts = new Map<string, number>();
-    for (const entry of entries) {
-      counts.set(entry.check, (counts.get(entry.check) ?? 0) + 1);
-    }
-    return counts;
-  }
-
   it("groups overrides by check type", () => {
     const entries: OverrideEntry[] = [
       { check: "triggers", reason: "r1", timestamp: "2026-01-01" },
@@ -179,12 +178,6 @@ describe("log-override: analytics grouping by check type", () => {
 });
 
 describe("log-override: max log size rotation threshold", () => {
-  const MAX_LOG_SIZE = 50 * 1024; // 50KB
-
-  function shouldRotate(currentSize: number): boolean {
-    return currentSize > MAX_LOG_SIZE;
-  }
-
   it("triggers rotation when log exceeds 50KB", () => {
     assert.strictEqual(shouldRotate(51 * 1024), true);
   });
@@ -194,6 +187,6 @@ describe("log-override: max log size rotation threshold", () => {
   });
 
   it("does not trigger at exactly 50KB", () => {
-    assert.strictEqual(shouldRotate(MAX_LOG_SIZE), false);
+    assert.strictEqual(shouldRotate(50 * 1024), false);
   });
 });

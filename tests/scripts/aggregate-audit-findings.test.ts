@@ -3,6 +3,32 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/aggregate-audit-findings.js
 
+function deduplicateFindings(findings: Array<{ id: string; title: string }>) {
+  const seen = new Set<string>();
+  const unique: Array<{ id: string; title: string }> = [];
+  for (const finding of findings) {
+    const key = finding.id;
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(finding);
+    }
+  }
+  return unique;
+}
+
+function parseJsonlLines(content: string): unknown[] {
+  return content
+    .split("\n")
+    .filter((line) => line.trim())
+    .flatMap((line) => {
+      try {
+        return [JSON.parse(line)];
+      } catch {
+        return [];
+      }
+    });
+}
+
 describe("aggregate-audit-findings: SEVERITY_WEIGHTS", () => {
   const SEVERITY_WEIGHTS: Record<string, number> = { S0: 4, S1: 3, S2: 2, S3: 1 };
   const EFFORT_WEIGHTS: Record<string, number> = { E0: 4, E1: 3, E2: 2, E3: 1 };
@@ -80,19 +106,6 @@ describe("aggregate-audit-findings: CATEGORY_MAP", () => {
 });
 
 describe("aggregate-audit-findings: deduplication logic", () => {
-  function deduplicateFindings(findings: Array<{ id: string; title: string }>) {
-    const seen = new Set<string>();
-    const unique: Array<{ id: string; title: string }> = [];
-    for (const finding of findings) {
-      const key = finding.id;
-      if (!seen.has(key)) {
-        seen.add(key);
-        unique.push(finding);
-      }
-    }
-    return unique;
-  }
-
   it("removes exact duplicate IDs", () => {
     const findings = [
       { id: "FIND-001", title: "Issue A" },
@@ -120,19 +133,6 @@ describe("aggregate-audit-findings: deduplication logic", () => {
 });
 
 describe("aggregate-audit-findings: JSONL parsing", () => {
-  function parseJsonlLines(content: string): unknown[] {
-    return content
-      .split("\n")
-      .filter((line) => line.trim())
-      .flatMap((line) => {
-        try {
-          return [JSON.parse(line)];
-        } catch {
-          return [];
-        }
-      });
-  }
-
   it("parses valid JSONL content", () => {
     const content = '{"id":"F-001","severity":"S1"}\n{"id":"F-002","severity":"S2"}\n';
     const result = parseJsonlLines(content);

@@ -3,19 +3,63 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/sync-reviews-to-jsonl.js
 
-describe("sync-reviews-to-jsonl: tryLabelColonNumber", () => {
-  function tryLabelColonNumber(text: string, afterLabel: number): number {
-    let cursor = afterLabel;
-    while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
-    if (cursor >= text.length || text[cursor] !== ":") return -1;
-    cursor++;
-    while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
-    const numStart = cursor;
-    while (cursor < text.length && text[cursor] >= "0" && text[cursor] <= "9") cursor++;
-    if (cursor > numStart) return Number.parseInt(text.slice(numStart, cursor), 10);
-    return -1;
-  }
+function tryLabelColonNumber(text: string, afterLabel: number): number {
+  let cursor = afterLabel;
+  while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
+  if (cursor >= text.length || text[cursor] !== ":") return -1;
+  cursor++;
+  while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
+  const numStart = cursor;
+  while (cursor < text.length && text[cursor] >= "0" && text[cursor] <= "9") cursor++;
+  if (cursor > numStart) return Number.parseInt(text.slice(numStart, cursor), 10);
+  return -1;
+}
 
+function tryNumberBeforeLabel(text: string, beforePos: number): number {
+  let cursor = beforePos;
+  while (cursor >= 0 && (text[cursor] === " " || text[cursor] === "\t")) cursor--;
+  if (cursor < 0 || text[cursor] < "0" || text[cursor] > "9") return -1;
+  const numEnd = cursor + 1;
+  while (cursor >= 0 && text[cursor] >= "0" && text[cursor] <= "9") cursor--;
+  return Number.parseInt(text.slice(cursor + 1, numEnd), 10);
+}
+
+function parseSeverityCount(text: string, label: string): number {
+  const lower = text.toLowerCase();
+  const lowerLabel = label.toLowerCase();
+  let idx = lower.indexOf(lowerLabel);
+  while (idx !== -1) {
+    const afterIdx = idx + lowerLabel.length;
+    const colonResult = tryLabelColonNumber(text, afterIdx);
+    if (colonResult >= 0) return colonResult;
+    const beforeResult = tryNumberBeforeLabel(text, idx - 1);
+    if (beforeResult >= 0) return beforeResult;
+    idx = lower.indexOf(lowerLabel, afterIdx);
+  }
+  return 0;
+}
+
+function sanitizeError(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  return msg
+    .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]");
+}
+
+function extractReviewIds(content: string): number[] {
+  const ids: number[] = [];
+  const lines = content.split("\n");
+  for (const line of lines) {
+    const match = /^####\s+Review\s+#(\d+)/.exec(line);
+    if (match) {
+      ids.push(Number.parseInt(match[1], 10));
+    }
+  }
+  return ids;
+}
+
+describe("sync-reviews-to-jsonl: tryLabelColonNumber", () => {
   it("parses 'Label: 42' format", () => {
     const text = "Critical: 42";
     const afterLabel = "Critical".length;
@@ -39,15 +83,6 @@ describe("sync-reviews-to-jsonl: tryLabelColonNumber", () => {
 });
 
 describe("sync-reviews-to-jsonl: tryNumberBeforeLabel", () => {
-  function tryNumberBeforeLabel(text: string, beforePos: number): number {
-    let cursor = beforePos;
-    while (cursor >= 0 && (text[cursor] === " " || text[cursor] === "\t")) cursor--;
-    if (cursor < 0 || text[cursor] < "0" || text[cursor] > "9") return -1;
-    const numEnd = cursor + 1;
-    while (cursor >= 0 && text[cursor] >= "0" && text[cursor] <= "9") cursor--;
-    return Number.parseInt(text.slice(cursor + 1, numEnd), 10);
-  }
-
   it("parses '42 LABEL' format", () => {
     const text = "42 CRITICAL";
     const pos = text.indexOf(" CRITICAL");
@@ -67,42 +102,6 @@ describe("sync-reviews-to-jsonl: tryNumberBeforeLabel", () => {
 });
 
 describe("sync-reviews-to-jsonl: parseSeverityCount", () => {
-  function tryLabelColonNumber(text: string, afterLabel: number): number {
-    let cursor = afterLabel;
-    while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
-    if (cursor >= text.length || text[cursor] !== ":") return -1;
-    cursor++;
-    while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
-    const numStart = cursor;
-    while (cursor < text.length && text[cursor] >= "0" && text[cursor] <= "9") cursor++;
-    if (cursor > numStart) return Number.parseInt(text.slice(numStart, cursor), 10);
-    return -1;
-  }
-
-  function tryNumberBeforeLabel(text: string, beforePos: number): number {
-    let cursor = beforePos;
-    while (cursor >= 0 && (text[cursor] === " " || text[cursor] === "\t")) cursor--;
-    if (cursor < 0 || text[cursor] < "0" || text[cursor] > "9") return -1;
-    const numEnd = cursor + 1;
-    while (cursor >= 0 && text[cursor] >= "0" && text[cursor] <= "9") cursor--;
-    return Number.parseInt(text.slice(cursor + 1, numEnd), 10);
-  }
-
-  function parseSeverityCount(text: string, label: string): number {
-    const lower = text.toLowerCase();
-    const lowerLabel = label.toLowerCase();
-    let idx = lower.indexOf(lowerLabel);
-    while (idx !== -1) {
-      const afterIdx = idx + lowerLabel.length;
-      const colonResult = tryLabelColonNumber(text, afterIdx);
-      if (colonResult >= 0) return colonResult;
-      const beforeResult = tryNumberBeforeLabel(text, idx - 1);
-      if (beforeResult >= 0) return beforeResult;
-      idx = lower.indexOf(lowerLabel, afterIdx);
-    }
-    return 0;
-  }
-
   it("parses 'Critical: 3' format", () => {
     assert.strictEqual(parseSeverityCount("Critical: 3", "critical"), 3);
   });
@@ -121,16 +120,8 @@ describe("sync-reviews-to-jsonl: parseSeverityCount", () => {
 });
 
 describe("sync-reviews-to-jsonl: sanitizeError", () => {
-  function sanitizeError(err: unknown): string {
-    const msg = err instanceof Error ? err.message : String(err);
-    return msg
-      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
-  }
-
   it("masks Windows paths", () => {
-    const result = sanitizeError(new Error("at C:\\Users\\jbell\\project"));
+    const result = sanitizeError(new Error(String.raw`at C:\Users\jbell\project`));
     assert.ok(result.includes("[USER_PATH]"));
   });
 
@@ -145,18 +136,6 @@ describe("sync-reviews-to-jsonl: sanitizeError", () => {
 });
 
 describe("sync-reviews-to-jsonl: review ID parsing from markdown", () => {
-  function extractReviewIds(content: string): number[] {
-    const ids: number[] = [];
-    const lines = content.split("\n");
-    for (const line of lines) {
-      const match = line.match(/^####\s+Review\s+#(\d+)/);
-      if (match) {
-        ids.push(Number.parseInt(match[1], 10));
-      }
-    }
-    return ids;
-  }
-
   it("extracts review IDs from markdown headings", () => {
     const content = "#### Review #101\nsome content\n#### Review #102\nmore content";
     assert.deepStrictEqual(extractReviewIds(content), [101, 102]);

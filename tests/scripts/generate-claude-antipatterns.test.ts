@@ -3,17 +3,21 @@ import assert from "node:assert/strict";
 
 // Smoke tests for scripts/generate-claude-antipatterns.js (CLI wrapper)
 
-describe("generate-claude-antipatterns: main export loading", () => {
-  function checkMainExport(mainFn: unknown): { valid: boolean; error?: string } {
-    if (typeof mainFn !== "function") {
-      return {
-        valid: false,
-        error: "No callable `main` export found. Rebuild scripts/reviews and verify dist output.",
-      };
-    }
-    return { valid: true };
+function checkMainExport(mainFn: unknown): { valid: boolean; error?: string } {
+  if (typeof mainFn !== "function") {
+    return {
+      valid: false,
+      error: "No callable `main` export found. Rebuild scripts/reviews and verify dist output.",
+    };
   }
+  return { valid: true };
+}
 
+function buildArgs(argv: string[]): string[] {
+  return argv.slice(2);
+}
+
+describe("generate-claude-antipatterns: main export loading", () => {
   it("accepts function export", () => {
     assert.strictEqual(checkMainExport(() => {}).valid, true);
   });
@@ -31,10 +35,6 @@ describe("generate-claude-antipatterns: main export loading", () => {
 });
 
 describe("generate-claude-antipatterns: CLI arg passthrough", () => {
-  function buildArgs(argv: string[]): string[] {
-    return argv.slice(2);
-  }
-
   it("passes --dry-run to main", () => {
     const args = buildArgs(["node", "script.js", "--dry-run"]);
     assert.ok(args.includes("--dry-run"));

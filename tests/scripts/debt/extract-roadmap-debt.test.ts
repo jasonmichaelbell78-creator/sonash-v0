@@ -123,6 +123,14 @@ const FEATURE_KEYWORDS = [
   "provide",
 ];
 
+function classifyDebtCategory(lower: string): string {
+  if (lower.includes("security")) return "security";
+  if (lower.includes("test") || lower.includes("coverage")) return "code-quality";
+  if (lower.includes("perf")) return "performance";
+  if (lower.includes("doc")) return "documentation";
+  return "refactoring";
+}
+
 function classifyCheckboxItem(text: string): ClassifyResult {
   const lower = text.toLowerCase();
 
@@ -139,15 +147,7 @@ function classifyCheckboxItem(text: string): ClassifyResult {
   }
 
   if (hasDebtKeyword) {
-    const category = lower.includes("security")
-      ? "security"
-      : lower.includes("test") || lower.includes("coverage")
-        ? "code-quality"
-        : lower.includes("perf")
-          ? "performance"
-          : lower.includes("doc")
-            ? "documentation"
-            : "refactoring";
+    const category = classifyDebtCategory(lower);
     return { isDebt: true, category, reason: "debt keyword" };
   }
 
@@ -196,7 +196,7 @@ function computeNextRdSeq(content: string): number {
     if (!line.trim()) continue;
     try {
       const item = JSON.parse(line);
-      const match = (item.id || "").match(/^INTAKE-RD-(\d+)$/);
+      const match = /^INTAKE-RD-(\d+)$/.exec(item.id || "");
       if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
     } catch {
       // skip

@@ -3,14 +3,22 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/assign-review-tier.js
 
-describe("assign-review-tier: sanitizePath", () => {
-  function sanitizePath(filePath: string): string {
-    return String(filePath)
-      .replace(/\/home\/[^/\s]+/g, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/g, "[HOME]")
-      .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]");
-  }
+function sanitizePath(filePath: string): string {
+  return String(filePath)
+    .replace(/\/home\/[^/\s]+/g, "[HOME]")
+    .replace(/\/Users\/[^/\s]+/g, "[HOME]")
+    .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]");
+}
 
+function normalizePath(filePath: string): string {
+  return String(filePath).replaceAll("\\", "/");
+}
+
+function buildTierResult(tier: number, reason: string, escalations: string[]): object {
+  return { tier, reason, escalations };
+}
+
+describe("assign-review-tier: sanitizePath", () => {
   it("masks Unix home paths", () => {
     const result = sanitizePath("/home/jbell/project/file.ts");
     assert.ok(result.includes("[HOME]"));
@@ -32,10 +40,6 @@ describe("assign-review-tier: sanitizePath", () => {
 });
 
 describe("assign-review-tier: normalizePath", () => {
-  function normalizePath(filePath: string): string {
-    return String(filePath).replace(/\\/g, "/");
-  }
-
   it("converts Windows backslashes to forward slashes", () => {
     assert.strictEqual(normalizePath("src\\lib\\utils.ts"), "src/lib/utils.ts");
   });
@@ -70,7 +74,7 @@ describe("assign-review-tier: TIER_RULES matching", () => {
   };
 
   function assignTier(filePath: string): number {
-    const normalized = filePath.replace(/\\/g, "/");
+    const normalized = filePath.replaceAll("\\", "/");
     if (TIER_RULES.tier_0.patterns.some((p) => p.test(normalized))) return 0;
     if (TIER_RULES.tier_3.patterns.some((p) => p.test(normalized))) return 3;
     if (TIER_RULES.tier_2.patterns.some((p) => p.test(normalized))) return 2;
@@ -104,12 +108,8 @@ describe("assign-review-tier: TIER_RULES matching", () => {
 });
 
 describe("assign-review-tier: result structure", () => {
-  function buildResult(tier: number, reason: string, escalations: string[]): object {
-    return { tier, reason, escalations };
-  }
-
   it("produces correct result structure", () => {
-    const result = buildResult(2, "App component changed", ["security-sensitive"]) as Record<
+    const result = buildTierResult(2, "App component changed", ["security-sensitive"]) as Record<
       string,
       unknown
     >;
@@ -119,7 +119,7 @@ describe("assign-review-tier: result structure", () => {
   });
 
   it("accepts empty escalations array", () => {
-    const result = buildResult(1, "Doc update", []) as Record<string, unknown>;
+    const result = buildTierResult(1, "Doc update", []) as Record<string, unknown>;
     assert.deepStrictEqual(result["escalations"], []);
   });
 });

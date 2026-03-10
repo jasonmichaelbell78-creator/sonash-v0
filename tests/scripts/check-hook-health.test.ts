@@ -4,36 +4,44 @@ import path from "node:path";
 
 // Re-implements core logic from scripts/check-hook-health.js
 
-describe("check-hook-health: path containment validation", () => {
-  function isPathContained(targetDir: string, baseDir: string): boolean {
-    const rel = path.relative(baseDir, targetDir);
-    return !(/^\.\.(?:[\\/]|$)/.test(rel) || rel === ".." || path.isAbsolute(rel));
-  }
+function isPathContainedHookHealth(targetDir: string, baseDir: string): boolean {
+  const rel = path.relative(baseDir, targetDir);
+  return !(/^\.\.(?:[\\/]|$)/.test(rel) || rel === ".." || path.isAbsolute(rel));
+}
 
+function parseSessionState(content: string): object | null {
+  try {
+    const parsed = JSON.parse(content) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    return parsed as object;
+  } catch {
+    return null;
+  }
+}
+
+function isHookFile(filename: string): boolean {
+  return filename.endsWith(".js") || filename.endsWith(".ts");
+}
+
+function isTestFile(filename: string): boolean {
+  return filename.includes(".test.") || filename.includes(".spec.");
+}
+
+describe("check-hook-health: path containment validation", () => {
   it("accepts path within base directory", () => {
     const base = "/project";
     const target = "/project/hooks";
-    assert.strictEqual(isPathContained(target, base), true);
+    assert.strictEqual(isPathContainedHookHealth(target, base), true);
   });
 
   it("rejects path outside base directory", () => {
     const base = "/project";
     const target = "/other";
-    assert.strictEqual(isPathContained(target, base), false);
+    assert.strictEqual(isPathContainedHookHealth(target, base), false);
   });
 });
 
 describe("check-hook-health: session state parsing", () => {
-  function parseSessionState(content: string): object | null {
-    try {
-      const parsed = JSON.parse(content) as unknown;
-      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-      return parsed as object;
-    } catch {
-      return null;
-    }
-  }
-
   it("parses valid session state JSON", () => {
     const content = JSON.stringify({ sessionActive: true, startTime: "2026-01-01" });
     const state = parseSessionState(content);
@@ -54,14 +62,6 @@ describe("check-hook-health: session state parsing", () => {
 });
 
 describe("check-hook-health: hook file syntax check", () => {
-  function isHookFile(filename: string): boolean {
-    return filename.endsWith(".js") || filename.endsWith(".ts");
-  }
-
-  function isTestFile(filename: string): boolean {
-    return filename.includes(".test.") || filename.includes(".spec.");
-  }
-
   it("identifies JS hook files", () => {
     assert.strictEqual(isHookFile("pattern-check.js"), true);
   });

@@ -3,17 +3,26 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-pattern-sync.js
 
-describe("check-pattern-sync: pattern ID extraction", () => {
-  function extractPatternIds(content: string): string[] {
-    const ids: string[] = [];
-    const regex = /\|\s*(ANTI-\d{3}|PAT-\d{3}|[A-Z]+-\d{3,4})\s*\|/g;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      ids.push(match[1]);
-    }
-    return ids;
+function extractPatternIds(content: string): string[] {
+  const ids: string[] = [];
+  const regex = /\|\s*(ANTI-\d{3}|PAT-\d{3}|[A-Z]+-\d{3,4})\s*\|/g;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    ids.push(match[1]);
   }
+  return ids;
+}
 
+function findMismatches(
+  codePatterns: Set<string>,
+  learnedPatterns: Set<string>
+): { onlyInCode: string[]; onlyInLearned: string[] } {
+  const onlyInCode = [...codePatterns].filter((p) => !learnedPatterns.has(p));
+  const onlyInLearned = [...learnedPatterns].filter((p) => !codePatterns.has(p));
+  return { onlyInCode, onlyInLearned };
+}
+
+describe("check-pattern-sync: pattern ID extraction", () => {
   it("extracts pattern IDs from markdown table", () => {
     const content = "| ANTI-001 | description | medium |";
     const ids = extractPatternIds(content);
@@ -31,15 +40,6 @@ describe("check-pattern-sync: pattern ID extraction", () => {
 });
 
 describe("check-pattern-sync: sync status comparison", () => {
-  function findMismatches(
-    codePatterns: Set<string>,
-    learnedPatterns: Set<string>
-  ): { onlyInCode: string[]; onlyInLearned: string[] } {
-    const onlyInCode = [...codePatterns].filter((p) => !learnedPatterns.has(p));
-    const onlyInLearned = [...learnedPatterns].filter((p) => !codePatterns.has(p));
-    return { onlyInCode, onlyInLearned };
-  }
-
   it("identifies patterns only in code patterns doc", () => {
     const code = new Set(["PAT-001", "PAT-002"]);
     const learned = new Set(["PAT-001"]);

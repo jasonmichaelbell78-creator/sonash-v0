@@ -103,6 +103,35 @@ function scanDirForTests(absDir, owner, type) {
   return entries;
 }
 
+/**
+ * Scan a single skill's __tests__ directory for test files.
+ * @param {string} testsDir - Absolute path to __tests__
+ * @param {string} skillName - Skill name for entry metadata
+ * @returns {RegistryEntry[]}
+ */
+function scanSingleSkillTests(testsDir, skillName) {
+  const entries = [];
+  try {
+    const files = readdirRecursive(testsDir);
+    for (const file of files) {
+      if (!isTestFile(file)) continue;
+      const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
+      const baseName = extractBaseName(path.basename(file));
+      entries.push({
+        path: relPath,
+        source_type: "test_file",
+        type: "unit",
+        owner: skillName,
+        target: baseName,
+        description: `${skillName} test: ${baseName}`,
+      });
+    }
+  } catch {
+    // Skip unreadable
+  }
+  return entries;
+}
+
 /** @returns {RegistryEntry[]} */
 function scanSkillTestFiles() {
   const entries = [];
@@ -112,29 +141,10 @@ function scanSkillTestFiles() {
   try {
     const skills = fs.readdirSync(skillsDir, { withFileTypes: true });
     for (const skill of skills) {
-      if (!skill.isDirectory()) continue;
-      // Skip worktrees directory
-      if (skill.name === "worktrees") continue;
+      if (!skill.isDirectory() || skill.name === "worktrees") continue;
       const testsDir = path.join(skillsDir, skill.name, "scripts", "__tests__");
       if (!fs.existsSync(testsDir)) continue;
-      try {
-        const files = readdirRecursive(testsDir);
-        for (const file of files) {
-          if (!isTestFile(file)) continue;
-          const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
-          const baseName = extractBaseName(path.basename(file));
-          entries.push({
-            path: relPath,
-            source_type: "test_file",
-            type: "unit",
-            owner: skill.name,
-            target: baseName,
-            description: `${skill.name} test: ${baseName}`,
-          });
-        }
-      } catch {
-        // Skip unreadable
-      }
+      entries.push(...scanSingleSkillTests(testsDir, skill.name));
     }
   } catch (err) {
     console.error(`[generate-test-registry] scanSkillTestFiles: ${sanitizeError(err)}`);
@@ -428,7 +438,7 @@ const COVERED_GLOBS = [
 /**
  * Directories/patterns to exclude from coverage check.
  */
-const COVERAGE_EXCLUDES = [
+const COVERAGE_EXCLUDES = new Set([
   "__tests__",
   "node_modules",
   "dist",
@@ -436,7 +446,7 @@ const COVERAGE_EXCLUDES = [
   "fixtures",
   "worktrees",
   ".git",
-];
+]);
 
 /**
  * File patterns to exclude from coverage check (test files, build output, etc.)
@@ -477,7 +487,7 @@ function scanCoveredScripts() {
       const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
       // Check directory exclusions
       const parts = relPath.split("/");
-      if (parts.some((p) => COVERAGE_EXCLUDES.includes(p))) continue;
+      if (parts.some((p) => COVERAGE_EXCLUDES.has(p))) continue;
       if (shouldExcludeFromCoverage(relPath)) continue;
       scripts.push(relPath);
     }
@@ -497,31 +507,40 @@ function scanCoveredScripts() {
  * @param {RegistryEntry[]} testEntries - All test_file entries from registry
  * @returns {boolean}
  */
+/**
+ * Check if a single test entry matches a script name via any strategy.
+ * @param {RegistryEntry} entry - Test registry entry
+ * @param {string} scriptName - Base name without extension
+ * @param {string} prefixStripped - Name with common prefixes removed
+ * @returns {boolean}
+ */
+function entryMatchesScript(entry, scriptName, prefixStripped) {
+  // Strategy 1: exact name match
+  if (entry.target === scriptName) return true;
+  // Strategy 2: test path contains script name
+  if (entry.path.includes(scriptName + ".test.")) return true;
+  if (entry.path.includes(scriptName + ".property.test.")) return true;
+  // Strategy 3: prefix-stripped match (check-docs-light -> docs-light)
+  if (prefixStripped !== scriptName && entry.target === prefixStripped) return true;
+  // Strategy 4: test target contains script name or vice versa
+  if (entry.target.includes(scriptName) || scriptName.includes(entry.target)) {
+    if (entry.target.length >= 5 || scriptName.length >= 5) return true;
+  }
+  return false;
+}
+
 function hasTest(scriptPath, testEntries) {
   const scriptName = path.basename(scriptPath, ".js");
-  // Common prefixes that tests may omit
   const prefixStripped = scriptName
     .replace(/^check-/, "")
     .replace(/^validate-/, "")
     .replace(/^generate-/, "")
     .replace(/^run-/, "");
 
-  for (const entry of testEntries) {
-    if (entry.source_type !== "test_file") continue;
-    // Strategy 1: exact name match
-    if (entry.target === scriptName) return true;
-    // Strategy 2: test path contains script name
-    if (entry.path.includes(scriptName + ".test.")) return true;
-    if (entry.path.includes(scriptName + ".property.test.")) return true;
-    // Strategy 3: prefix-stripped match (check-docs-light -> docs-light)
-    if (prefixStripped !== scriptName && entry.target === prefixStripped) return true;
-    // Strategy 4: test target contains script name or vice versa
-    if (entry.target.includes(scriptName) || scriptName.includes(entry.target)) {
-      // Avoid false positives for very short names
-      if (entry.target.length >= 5 || scriptName.length >= 5) return true;
-    }
-  }
-  return false;
+  return testEntries.some(
+    (entry) =>
+      entry.source_type === "test_file" && entryMatchesScript(entry, scriptName, prefixStripped)
+  );
 }
 
 /**
@@ -576,70 +595,77 @@ function autoCleanBaseline(baseline) {
  * @param {RegistryEntry[]} registryEntries - Current registry entries
  * @returns {number} Exit code (0 = pass, 1 = new gaps found)
  */
+/**
+ * Print a list of gaps with line counts.
+ * @param {string[]} gaps - Relative paths of untested scripts
+ */
+function printGapList(gaps) {
+  for (const gap of gaps.toSorted((a, b) => a.localeCompare(b))) {
+    let lines = 0;
+    try {
+      lines = fs.readFileSync(path.join(ROOT, gap), "utf8").split("\n").length;
+    } catch {
+      // ignore
+    }
+    console.log(`  ${gap} (${lines} lines)`);
+  }
+}
+
+/**
+ * Check coverage with a baseline file present.
+ * @param {string[]} untested - Untested script paths
+ * @param {{ entries: Array<{path: string, lines: number}> }} baseline
+ * @returns {number} Exit code
+ */
+function checkCoverageWithBaseline(untested, baseline) {
+  autoCleanBaseline(baseline);
+  const baselineSet = new Set(baseline.entries.map((e) => e.path));
+  const newGaps = untested.filter((s) => !baselineSet.has(s));
+  const knownGaps = untested.filter((s) => baselineSet.has(s));
+
+  console.log(`Known gaps (in baseline): ${knownGaps.length}`);
+  console.log(`NEW gaps (not in baseline): ${newGaps.length}\n`);
+
+  if (newGaps.length > 0) {
+    console.log("NEW untested scripts (not in .test-baseline.json):");
+    printGapList(newGaps);
+    console.log("\nTo fix: add tests for these scripts, or add them to .test-baseline.json");
+    return 1;
+  }
+
+  console.log("PASS: No new untested scripts found.");
+  if (knownGaps.length > 0) {
+    console.log(`\nBaseline gaps remaining (${knownGaps.length}):`);
+    for (const gap of knownGaps.toSorted((a, b) => a.localeCompare(b)).slice(0, 10)) {
+      console.log(`  ${gap}`);
+    }
+    if (knownGaps.length > 10) {
+      console.log(`  ... and ${knownGaps.length - 10} more`);
+    }
+  }
+  return 0;
+}
+
 function checkCoverage(registryEntries) {
   console.log("Test Coverage Completeness Check");
   console.log("================================\n");
 
-  // 1. Scan all source scripts in covered directories
   const allScripts = scanCoveredScripts();
   console.log(`Scripts in covered directories: ${allScripts.length}`);
 
-  // 2. Find scripts without tests
   const testEntries = registryEntries.filter((e) => e.source_type === "test_file");
   const untested = allScripts.filter((s) => !hasTest(s, testEntries));
   console.log(`Scripts without tests: ${untested.length}`);
 
-  // 3. Load baseline and auto-clean deleted entries
   const baseline = loadBaseline();
   if (baseline) {
-    autoCleanBaseline(baseline);
-    const baselineSet = new Set(baseline.entries.map((e) => e.path));
-    const newGaps = untested.filter((s) => !baselineSet.has(s));
-    const knownGaps = untested.filter((s) => baselineSet.has(s));
-
-    console.log(`Known gaps (in baseline): ${knownGaps.length}`);
-    console.log(`NEW gaps (not in baseline): ${newGaps.length}\n`);
-
-    if (newGaps.length > 0) {
-      console.log("NEW untested scripts (not in .test-baseline.json):");
-      for (const gap of newGaps.sort()) {
-        let lines = 0;
-        try {
-          lines = fs.readFileSync(path.join(ROOT, gap), "utf8").split("\n").length;
-        } catch {
-          // ignore
-        }
-        console.log(`  ${gap} (${lines} lines)`);
-      }
-      console.log("\nTo fix: add tests for these scripts, or add them to .test-baseline.json");
-      return 1;
-    }
-
-    console.log("PASS: No new untested scripts found.");
-    if (knownGaps.length > 0) {
-      console.log(`\nBaseline gaps remaining (${knownGaps.length}):`);
-      for (const gap of knownGaps.sort().slice(0, 10)) {
-        console.log(`  ${gap}`);
-      }
-      if (knownGaps.length > 10) {
-        console.log(`  ... and ${knownGaps.length - 10} more`);
-      }
-    }
-    return 0;
+    return checkCoverageWithBaseline(untested, baseline);
   }
 
   // No baseline file — all untested scripts are gaps
   if (untested.length > 0) {
     console.log("\nNo .test-baseline.json found. All untested scripts are gaps:");
-    for (const gap of untested.sort()) {
-      let lines = 0;
-      try {
-        lines = fs.readFileSync(path.join(ROOT, gap), "utf8").split("\n").length;
-      } catch {
-        // ignore
-      }
-      console.log(`  ${gap} (${lines} lines)`);
-    }
+    printGapList(untested);
     console.log("\nCreate .test-baseline.json to acknowledge known gaps.");
     return 1;
   }
@@ -676,35 +702,33 @@ function main() {
       return true;
     });
 
-    if (!isCheckCoverage) {
-      // Ensure output directory exists
-      const outDir = path.dirname(OUTPUT);
-      if (!fs.existsSync(outDir)) {
-        fs.mkdirSync(outDir, { recursive: true });
-      }
+    if (isCheckCoverage) {
+      return checkCoverage(uniqueEntries);
+    }
 
-      // Write JSONL (symlink-guarded via safe-fs)
-      const jsonl = uniqueEntries.map((e) => JSON.stringify(e)).join("\n") + "\n";
-      safeWriteFileSync(OUTPUT, jsonl, "utf8");
+    // Ensure output directory exists
+    const outDir = path.dirname(OUTPUT);
+    if (!fs.existsSync(outDir)) {
+      fs.mkdirSync(outDir, { recursive: true });
+    }
 
-      // Summary
-      const dupes = allEntries.length - uniqueEntries.length;
-      const byType = {};
-      for (const e of uniqueEntries) {
-        byType[e.source_type] = (byType[e.source_type] || 0) + 1;
-      }
+    // Write JSONL (symlink-guarded via safe-fs)
+    const jsonl = uniqueEntries.map((e) => JSON.stringify(e)).join("\n") + "\n";
+    safeWriteFileSync(OUTPUT, jsonl, "utf8");
 
-      console.log(`Test registry generated: ${path.relative(ROOT, OUTPUT)}`);
-      const dupeSuffix = dupes > 0 ? ` (${dupes} duplicates removed)` : "";
-      console.log(`Total entries: ${uniqueEntries.length}${dupeSuffix}`);
-      console.log("By source type:");
-      for (const [type, count] of Object.entries(byType).sort((a, b) => b[1] - a[1])) {
-        console.log(`  ${type}: ${count}`);
-      }
-    } else {
-      // --check-coverage mode
-      const exitCode = checkCoverage(uniqueEntries);
-      process.exit(exitCode);
+    // Summary
+    const dupes = allEntries.length - uniqueEntries.length;
+    const byType = {};
+    for (const e of uniqueEntries) {
+      byType[e.source_type] = (byType[e.source_type] || 0) + 1;
+    }
+
+    console.log(`Test registry generated: ${path.relative(ROOT, OUTPUT)}`);
+    const dupeSuffix = dupes > 0 ? ` (${dupes} duplicates removed)` : "";
+    console.log(`Total entries: ${uniqueEntries.length}${dupeSuffix}`);
+    console.log("By source type:");
+    for (const [type, count] of Object.entries(byType).sort((a, b) => b[1] - a[1])) {
+      console.log(`  ${type}: ${count}`);
     }
   } catch (err) {
     console.error(`[generate-test-registry] ${sanitizeError(err)}`);

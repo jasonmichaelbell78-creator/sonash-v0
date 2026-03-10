@@ -69,11 +69,11 @@ describe("suggest-pattern-automation: AUTOMATABLE_CATEGORIES", () => {
   });
 });
 
-describe("suggest-pattern-automation: pattern deduplication", () => {
-  function deduplicatePatterns(patterns: string[]): string[] {
-    return [...new Set(patterns)];
-  }
+function deduplicatePatterns(patterns: string[]): string[] {
+  return [...new Set(patterns)];
+}
 
+describe("suggest-pattern-automation: pattern deduplication", () => {
   it("removes duplicate patterns", () => {
     const result = deduplicatePatterns(["error-handling", "path-traversal", "error-handling"]);
     assert.strictEqual(result.length, 2);

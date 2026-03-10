@@ -225,18 +225,18 @@ describe("detectRecurrence", () => {
 // 2. filterAlreadyPromoted
 // =========================================================
 
-describe("filterAlreadyPromoted", () => {
-  function makeResult(pattern: string): {
-    pattern: string;
-    count: number;
-    distinctPRs: Set<number>;
-    reviewIds: string[];
-  } {
-    return { pattern, count: 3, distinctPRs: new Set([1, 2]), reviewIds: [] };
-  }
+function makeFilterResult(pattern: string): {
+  pattern: string;
+  count: number;
+  distinctPRs: Set<number>;
+  reviewIds: string[];
+} {
+  return { pattern, count: 3, distinctPRs: new Set([1, 2]), reviewIds: [] };
+}
 
+describe("filterAlreadyPromoted", () => {
   test("returns all patterns as new when CODE_PATTERNS.md is empty", () => {
-    const patterns = [makeResult("new-pattern"), makeResult("another-new")];
+    const patterns = [makeFilterResult("new-pattern"), makeFilterResult("another-new")];
     const { newPatterns, alreadyPromoted } = filterAlreadyPromoted(patterns, "");
     assert.equal(newPatterns.length, 2);
     assert.equal(alreadyPromoted.length, 0);
@@ -244,7 +244,7 @@ describe("filterAlreadyPromoted", () => {
 
   test("identifies pattern already in CODE_PATTERNS.md", () => {
     const content = "## Security\n\n### Missing Error Handling\n\nSome text.";
-    const patterns = [makeResult("missing-error-handling"), makeResult("new-one")];
+    const patterns = [makeFilterResult("missing-error-handling"), makeFilterResult("new-one")];
     const { newPatterns, alreadyPromoted } = filterAlreadyPromoted(patterns, content);
     assert.equal(alreadyPromoted.length, 1);
     assert.ok(alreadyPromoted.includes("missing-error-handling"));
@@ -254,7 +254,7 @@ describe("filterAlreadyPromoted", () => {
 
   test("matching is case-insensitive", () => {
     const content = "MISSING ERROR HANDLING description here";
-    const patterns = [makeResult("missing-error-handling")];
+    const patterns = [makeFilterResult("missing-error-handling")];
     const { alreadyPromoted } = filterAlreadyPromoted(patterns, content);
     assert.equal(alreadyPromoted.length, 1);
   });
@@ -316,24 +316,24 @@ describe("categorizePattern", () => {
 // 4. generateRuleSkeleton
 // =========================================================
 
-describe("generateRuleSkeleton", () => {
-  function makeResult(
-    pattern: string,
-    count: number,
-    prCount: number
-  ): {
-    pattern: string;
-    count: number;
-    distinctPRs: Set<number>;
-    reviewIds: string[];
-  } {
-    const prSet = new Set<number>();
-    for (let i = 1; i <= prCount; i++) prSet.add(i);
-    return { pattern, count, distinctPRs: prSet, reviewIds: [] };
-  }
+function makeRuleResult(
+  pattern: string,
+  count: number,
+  prCount: number
+): {
+  pattern: string;
+  count: number;
+  distinctPRs: Set<number>;
+  reviewIds: string[];
+} {
+  const prSet = new Set<number>();
+  for (let i = 1; i <= prCount; i++) prSet.add(i);
+  return { pattern, count, distinctPRs: prSet, reviewIds: [] };
+}
 
+describe("generateRuleSkeleton", () => {
   test("produces an object with id, pattern, message, fix, fileTypes, severity", () => {
-    const result = generateRuleSkeleton(makeResult("missing-null-check", 3, 2));
+    const result = generateRuleSkeleton(makeRuleResult("missing-null-check", 3, 2));
     assert.ok(typeof result.id === "string");
     assert.equal(result.pattern, "TODO_REGEX");
     assert.equal(result.message, "missing-null-check");
@@ -343,36 +343,36 @@ describe("generateRuleSkeleton", () => {
   });
 
   test("severity is 'error' when count >= 5", () => {
-    const result = generateRuleSkeleton(makeResult("high-frequency", 5, 3));
+    const result = generateRuleSkeleton(makeRuleResult("high-frequency", 5, 3));
     assert.equal(result.severity, "error");
   });
 
   test("severity is 'warning' when count < 5", () => {
-    const result = generateRuleSkeleton(makeResult("low-frequency", 4, 2));
+    const result = generateRuleSkeleton(makeRuleResult("low-frequency", 4, 2));
     assert.equal(result.severity, "warning");
   });
 
   test("id is based on a slug of the pattern name", () => {
-    const result = generateRuleSkeleton(makeResult("missing-null-check", 3, 2));
+    const result = generateRuleSkeleton(makeRuleResult("missing-null-check", 3, 2));
     assert.ok(result.id.startsWith("missing-null-check"));
   });
 
   test("avoids duplicate IDs when usedIds set is provided", () => {
     const usedIds = new Set<string>();
-    const r1 = generateRuleSkeleton(makeResult("same-pattern", 3, 2), usedIds);
-    const r2 = generateRuleSkeleton(makeResult("same-pattern", 3, 2), usedIds);
+    const r1 = generateRuleSkeleton(makeRuleResult("same-pattern", 3, 2), usedIds);
+    const r2 = generateRuleSkeleton(makeRuleResult("same-pattern", 3, 2), usedIds);
     assert.notEqual(r1.id, r2.id);
   });
 
   test("fix description mentions count and PR count", () => {
-    const result = generateRuleSkeleton(makeResult("my-pattern", 7, 4));
+    const result = generateRuleSkeleton(makeRuleResult("my-pattern", 7, 4));
     assert.ok(result.fix.includes("7x"));
     assert.ok(result.fix.includes("4 PRs"));
   });
 
   test("id is truncated to max 40 chars base before suffix", () => {
     const longPattern = "a-very-long-pattern-name-that-exceeds-the-forty-character-limit";
-    const result = generateRuleSkeleton(makeResult(longPattern, 3, 2));
+    const result = generateRuleSkeleton(makeRuleResult(longPattern, 3, 2));
     // id = base(<=40) + "-" + 6-char hex
     assert.ok(result.id.length <= 48, `ID too long: ${result.id}`);
   });

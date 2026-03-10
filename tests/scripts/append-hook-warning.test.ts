@@ -3,11 +3,19 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/append-hook-warning.js
 
-describe("append-hook-warning: warning message building", () => {
-  function buildWarningMessage(hookName: string, reason: string, timestamp: string): string {
-    return `<!-- HOOK WARNING: ${hookName} — ${reason} — ${timestamp} -->`;
-  }
+function buildWarningMessage(hookName: string, reason: string, timestamp: string): string {
+  return `<!-- HOOK WARNING: ${hookName} — ${reason} — ${timestamp} -->`;
+}
 
+function hasExistingWarning(content: string, hookName: string): boolean {
+  return content.includes(`HOOK WARNING: ${hookName}`);
+}
+
+function isPathTraversalAppendHook(rel: string): boolean {
+  return /^\.\.(?:[\\/]|$)/.test(rel);
+}
+
+describe("append-hook-warning: warning message building", () => {
   it("builds correct warning comment format", () => {
     const msg = buildWarningMessage("pre-push", "pattern violation", "2026-01-01");
     assert.ok(msg.startsWith("<!-- HOOK WARNING:"));
@@ -18,10 +26,6 @@ describe("append-hook-warning: warning message building", () => {
 });
 
 describe("append-hook-warning: deduplication check", () => {
-  function hasExistingWarning(content: string, hookName: string): boolean {
-    return content.includes(`HOOK WARNING: ${hookName}`);
-  }
-
   it("detects existing warning for same hook", () => {
     const content = "<!-- HOOK WARNING: pre-push — test — 2026-01-01 -->";
     assert.strictEqual(hasExistingWarning(content, "pre-push"), true);
@@ -38,15 +42,11 @@ describe("append-hook-warning: deduplication check", () => {
 });
 
 describe("append-hook-warning: path containment", () => {
-  function isPathTraversal(rel: string): boolean {
-    return /^\.\.(?:[\\/]|$)/.test(rel);
-  }
-
   it("detects traversal", () => {
-    assert.strictEqual(isPathTraversal("../../etc"), true);
+    assert.strictEqual(isPathTraversalAppendHook("../../etc"), true);
   });
 
   it("allows safe path", () => {
-    assert.strictEqual(isPathTraversal(".claude/hooks/WARNINGS.md"), false);
+    assert.strictEqual(isPathTraversalAppendHook(".claude/hooks/WARNINGS.md"), false);
   });
 });

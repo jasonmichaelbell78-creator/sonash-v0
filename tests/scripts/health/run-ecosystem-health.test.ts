@@ -151,7 +151,7 @@ function computeTrend(scores: number[], windowSize = 7): TrendResult {
     return { direction: "stable", delta: 0, windowSize, previous: null, current: 0 };
   }
 
-  const current = scores[scores.length - 1];
+  const current = scores.at(-1)!;
   const window = scores.slice(-windowSize);
 
   if (window.length < 2) {

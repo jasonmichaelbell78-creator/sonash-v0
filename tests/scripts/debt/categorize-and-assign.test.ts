@@ -169,7 +169,7 @@ describe("isRootConfigFile", () => {
 
 function getSprintBucketForPath(filePath: string): number {
   if (!filePath || filePath === "N/A" || filePath === "") return 12;
-  const norm = filePath.replaceAll("\\", "/").replace(/\/+/g, "/");
+  const norm = filePath.replaceAll("\\", "/").replaceAll(/\/+/g, "/");
   if (/(^|\/)\.\.(\/|$)/.test(norm)) return 12;
   if (norm.startsWith("scripts/")) return 8;
   if (norm.startsWith(".claude/") || norm.startsWith("docs/")) return 9;

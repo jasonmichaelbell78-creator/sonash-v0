@@ -172,7 +172,7 @@ function getSourceId(item: Record<string, unknown>, prefix: string): string {
     item.master_id ??
     item.original_id ??
     item.finding_id) as string | undefined;
-  if (id) return `${prefix}:${id}`;
+  if (id) return `${prefix}:${String(id)}`;
   const title = (item.title as string) || "";
   const file = extractFile(item as { file?: string; files?: string[] });
   const line = extractLine(item as { line?: unknown });

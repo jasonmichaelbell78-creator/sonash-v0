@@ -3,13 +3,25 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/validate-skill-config.js
 
+const REQUIRED_SKILL_FIELDS = ["name", "description", "trigger", "version"];
+
+function validateSkillConfig(config: Record<string, unknown>): string[] {
+  return REQUIRED_SKILL_FIELDS.filter((field) => !config[field]);
+}
+
+function isValidVersion(version: string): boolean {
+  return /^\d+\.\d+(\.\d+)?$/.test(version);
+}
+
+function isValidSkillName(name: string): boolean {
+  return /^[a-z][a-z0-9-]*$/.test(name);
+}
+
+function isSkillDirectory(dirName: string): boolean {
+  return !dirName.startsWith(".") && !dirName.startsWith("_");
+}
+
 describe("validate-skill-config: required fields validation", () => {
-  const REQUIRED_SKILL_FIELDS = ["name", "description", "trigger", "version"];
-
-  function validateSkillConfig(config: Record<string, unknown>): string[] {
-    return REQUIRED_SKILL_FIELDS.filter((field) => !config[field]);
-  }
-
   it("passes when all required fields present", () => {
     const config = {
       name: "deep-plan",
@@ -33,10 +45,6 @@ describe("validate-skill-config: required fields validation", () => {
 });
 
 describe("validate-skill-config: version format", () => {
-  function isValidVersion(version: string): boolean {
-    return /^\d+\.\d+(\.\d+)?$/.test(version);
-  }
-
   it("accepts x.y.z format", () => {
     assert.strictEqual(isValidVersion("1.2.3"), true);
   });
@@ -52,10 +60,6 @@ describe("validate-skill-config: version format", () => {
 });
 
 describe("validate-skill-config: skill name format", () => {
-  function isValidSkillName(name: string): boolean {
-    return /^[a-z][a-z0-9-]*$/.test(name);
-  }
-
   it("accepts kebab-case names", () => {
     assert.strictEqual(isValidSkillName("deep-plan"), true);
     assert.strictEqual(isValidSkillName("security-auditor"), true);
@@ -75,10 +79,6 @@ describe("validate-skill-config: skill name format", () => {
 });
 
 describe("validate-skill-config: config file discovery", () => {
-  function isSkillDirectory(dirName: string): boolean {
-    return !dirName.startsWith(".") && !dirName.startsWith("_");
-  }
-
   it("accepts normal skill directory names", () => {
     assert.strictEqual(isSkillDirectory("deep-plan"), true);
   });

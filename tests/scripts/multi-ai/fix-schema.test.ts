@@ -171,7 +171,7 @@ function normalizeConfidence(value: unknown): number {
   if (str === "high" || str === "certain" || str === "confirmed") return 90;
   if (str === "medium" || str === "moderate" || str === "likely") return 70;
   if (str === "low" || str === "uncertain" || str === "suspected") return 50;
-  const numMatch = str.match(/(\d+)/);
+  const numMatch = /(\d+)/.exec(str);
   if (numMatch) {
     const num = Number.parseInt(numMatch[1], 10);
     if (num >= 0 && num <= 100) return num;
@@ -186,7 +186,7 @@ function normalizeFiles(value: unknown): string[] {
   const str = String(value);
   return str
     .split(/[,;\n]+/)
-    .map((f) => f.trim().replace(/(?:^`)|(?:`$)/g, ""))
+    .map((f) => f.trim().replaceAll(/(?:^`)|(?:`$)/g, ""))
     .filter(Boolean);
 }
 

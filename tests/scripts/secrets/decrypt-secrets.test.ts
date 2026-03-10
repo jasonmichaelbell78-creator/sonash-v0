@@ -139,7 +139,7 @@ describe("deriveKey", () => {
 describe("encrypt/decrypt round-trip", () => {
   it("decrypts ciphertext back to original plaintext", () => {
     const plaintext = "GITHUB_TOKEN=fake_token_for_test\nSOMAR_TOKEN=abc";
-    const passphrase = "correct-horse-battery-staple";
+    const passphrase = "correct-horse-battery-staple"; // NOSONAR — test fixture, not a real credential
 
     const cipherBuf = encrypt(plaintext, passphrase);
     const decrypted = decrypt(cipherBuf, passphrase);
