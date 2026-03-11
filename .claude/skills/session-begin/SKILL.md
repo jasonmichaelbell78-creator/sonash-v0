@@ -321,6 +321,25 @@ threshold is breached, warn the user before proceeding.**
 
 **If no anomalies:** Skip silently. Do not output "no anomalies found."
 
+## 7c. Warning Acknowledgment Gate (MUST — L1)
+
+Read `.claude/hook-warnings.json`. If unacknowledged warnings exist (warnings
+added since `lastCleared`), present them and require acknowledgment before
+proceeding:
+
+```
+⚠️ Unacknowledged hook warnings (N):
+  1. [WARNING] propagation: writeFileSync without symlink guard (5 occurrences)
+  2. [ERROR] cognitive-complexity: 12 overrides in 7 days (auto-escalated)
+
+  Acknowledge all? [Y] or review individually? [R]
+```
+
+**If "Y":** Record acknowledgment timestamp in `hook-warnings.json`, proceed.
+**If "R":** Present each warning for individual decision (acknowledge/fix now).
+
+**If no warnings:** Skip silently.
+
 ## 8. Technical Debt Awareness (NEW - Session #98)
 
 **Check current technical debt status:**

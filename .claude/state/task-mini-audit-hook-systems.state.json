@@ -360,7 +360,7 @@
       "L6: Gates that never catch anything should be removed — CANON, test warning, propagation pre-commit"
     ],
     "learnings_presented": 6,
-    "status": "wave-6-complete",
+    "status": "wave-7-complete",
     "wave0_completed": "2026-03-11T21:40:00.000Z",
     "wave0_changes": [
       "C10-G1: Replaced 5 direct fs calls with safe-fs wrappers (suggest-pattern-automation.js: 1 writeFileSync, archive-doc.js: 3 renameSync + 1 writeFileSync)",
@@ -404,6 +404,13 @@
       "C5-G3: Health score delta at session-start — reads health-score-log.jsonl, shows grade + delta, 2+ grade drop = warning with counter increment.",
       "C3-G1: Hook learning synthesizer step (5b) added to session-end SKILL.md — top 3 recurring issues from override-log + warning-log + health-score-log.",
       "L3: Wired data into session-begin (7b anomaly gate: override trend 50%+, 10+ warnings, 2+ grade drop), session-end (7f hook data summary one-liner), /alerts (hook drill-down section with override/warning/health detail)."
+    ],
+    "wave7_completed": "2026-03-11T23:45:00.000Z",
+    "wave7_changes": [
+      "L1: Added guardrail #6 'All passive surfacing must force acknowledgment' to CLAUDE.md Section 4.",
+      "L1: Added warning acknowledgment gate (7c) to session-begin SKILL.md — reads hook-warnings.json, presents unacknowledged warnings, requires ack before proceeding.",
+      "L6: Added Gate Effectiveness Review step to hook-ecosystem-audit Phase 5 — override frequency, false positive rate, catch rate per gate.",
+      "Side note: Added Coverage Cross-Check to hook-ecosystem-audit Phase 5 — maps all 10 mini-audit categories to audit checker domains, flags uncovered categories (C3 learnings, C5 cross-system)."
     ],
     "wave6_completed": "2026-03-11T23:30:00.000Z",
     "wave6_changes": [

@@ -318,6 +318,33 @@ Verify this audit's own process was followed correctly:
 Present: "Process self-audit: N/N checks passed." Fix any failures before
 proceeding.
 
+### Gate Effectiveness Review (L6 — SHOULD)
+
+For each pre-commit and pre-push gate, check:
+
+1. **Override frequency:** Read `.claude/state/override-log.jsonl` — if a gate
+   was overridden >50% of the time in the last 30 days, flag it as ineffective.
+2. **False positive rate:** If a gate's warnings are repeatedly pre-existing
+   debt (not new violations), it may need baseline support.
+3. **Catch rate:** Did the gate ever block a real problem? If no evidence in
+   override log or warning log of it catching issues, consider removing it.
+
+Present gates with effectiveness scores:
+`{gate}: {override%} override rate, {effectiveness} rating (effective/questionable/ineffective)`.
+
+### Coverage Cross-Check (Side Note — SHOULD)
+
+Verify these mini-audit categories are covered by audit checkers. Flag any that
+lack automated detection:
+
+- Override audit trail (C1) — D5 state integration
+- Warning aggregation (C2) — D5 state integration
+- Learnings/improvement loop (C3) — manual review only
+- Pre-existing debt handling (C4) — D3 pre-commit pipeline
+- Cross-system integration (C5) — manual review only
+- Gate effectiveness (C7) — Gate Effectiveness Review above
+- Trigger system (C9) — D4 functional correctness
+
 **Done when:** All process checks pass.
 
 ---
