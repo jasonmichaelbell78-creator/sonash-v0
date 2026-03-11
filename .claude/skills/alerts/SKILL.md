@@ -8,6 +8,9 @@ description: |
 
 # Alerts -- Intelligent Health Dashboard
 
+**Ecosystem ownership:** Part of `health-ecosystem-audit` ecosystem (D#17).
+Audited by `/health-ecosystem-audit` D4: Consumer Integration.
+
 ## Critical Rules
 
 1. **MUST** run the checker script before presenting any data
@@ -332,6 +335,20 @@ External Links, Unused Deps, Review Churn, Backlog.
 
 **Operational (7%):** Hook Warnings 1%, Roadmap 1%, Consolidation 1%, Roadmap
 Health 1%, Debt Resolution 1%, Session Activity 1%, Commit Activity 1%.
+
+### Test Health Category (D#21, D#46)
+
+Added as part of `health-ecosystem-audit` ecosystem ownership. Shows data from
+the most recent `/health-ecosystem-audit` run:
+
+- **Last audit score:** Composite grade and numeric score (e.g., "B+ (82)")
+- **Test pass rate:** From most recent live test execution (e.g., "1,594/1,594
+  pass")
+- **Unresolved findings:** Count of ERROR/WARNING findings not yet fixed or
+  deferred
+
+Data source: `.claude/state/health-ecosystem-audit-history.jsonl` (most recent
+entry).
 
 ## Integration
 

@@ -183,6 +183,22 @@ function logCommitFailure(command) {
 }
 
 /**
+ * D#19: Run mid-session health alerts after successful commits (non-blocking).
+ * Spawns mid-session-alerts.js as async subprocess with 5s timeout.
+ */
+function runMidSessionAlerts() {
+  try {
+    const { execFile } = require("node:child_process");
+    const alertScript = path.join(projectDir, "scripts", "health", "lib", "mid-session-alerts.js");
+    if (fs.existsSync(alertScript)) {
+      execFile(process.execPath, [alertScript], { timeout: 5000, stdio: "pipe" }, () => {});
+    }
+  } catch {
+    // Non-critical — mid-session alert failure should never block commit tracking
+  }
+}
+
+/**
  * Main
  */
 function main() {
@@ -267,6 +283,9 @@ function main() {
       // Non-critical — rotation failure doesn't block commit tracking
     }
   }
+
+  // D#19: Run mid-session health alerts after successful commits
+  runMidSessionAlerts();
 
   // --- Commit failure reporting (merged from commit-failure-reporter.js) ---
   // If the commit command failed, surface pre-commit hook output

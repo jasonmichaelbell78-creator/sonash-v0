@@ -1,8 +1,8 @@
 # Testing System
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-09
+**Document Version:** 2.0
+**Last Updated:** 2026-03-10
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -55,25 +55,30 @@ build step.
 
 ## 2. Test File Location Map
 
-| Area             | Test Directory                        | Language | Test Types                             |
-| ---------------- | ------------------------------------- | -------- | -------------------------------------- |
-| Health checkers  | `scripts/health/checkers/__tests__/`  | JS       | unit, property                         |
-| Health lib       | `scripts/health/lib/__tests__/`       | JS       | unit, property                         |
-| Hooks            | `tests/hooks/`                        | TS       | unit                                   |
-| Hook helpers     | `tests/hooks/lib/`                    | TS       | unit                                   |
-| Global hooks     | `tests/hooks/global/`                 | TS       | unit                                   |
-| Debt pipeline    | `tests/scripts/debt/`                 | TS       | unit, idempotency, E2E                 |
-| Shared lib       | `tests/scripts/lib/`                  | TS       | unit                                   |
-| Audit scripts    | `tests/scripts/audit/`                | TS       | unit                                   |
-| Multi-AI         | `tests/scripts/multi-ai/`             | TS       | unit                                   |
-| Config           | `tests/scripts/config/`               | TS       | unit                                   |
-| Tasks            | `tests/scripts/tasks/`                | TS       | unit                                   |
-| Velocity         | `tests/scripts/velocity/`             | TS       | unit                                   |
-| Secrets          | `tests/scripts/secrets/`              | TS       | unit                                   |
-| Metrics          | `tests/scripts/metrics/`              | TS       | unit                                   |
-| Planning         | `tests/scripts/planning/`             | TS       | unit                                   |
-| Ecosystem audits | `.claude/skills/*/scripts/__tests__/` | JS       | unit, regression, scoring, integration |
-| Integration      | `tests/integration/`                  | JS       | integration                            |
+| Area                     | Test Directory                                 | Language | Test Types                             |
+| ------------------------ | ---------------------------------------------- | -------- | -------------------------------------- |
+| Health checkers          | `scripts/health/checkers/__tests__/`           | JS       | unit, property                         |
+| Health lib               | `scripts/health/lib/__tests__/`                | JS       | unit, property                         |
+| Hooks                    | `tests/hooks/`                                 | TS       | unit                                   |
+| Hook helpers             | `tests/hooks/lib/`                             | TS       | unit                                   |
+| Global hooks             | `tests/hooks/global/`                          | TS       | unit                                   |
+| Debt pipeline            | `tests/scripts/debt/`                          | TS       | unit, property, idempotency, E2E       |
+| Shared lib               | `tests/scripts/lib/`                           | TS       | unit, property                         |
+| Audit scripts            | `tests/scripts/audit/`                         | TS       | unit                                   |
+| Multi-AI                 | `tests/scripts/multi-ai/`                      | TS       | unit                                   |
+| Config                   | `tests/scripts/config/`                        | TS       | unit                                   |
+| Tasks                    | `tests/scripts/tasks/`                         | TS       | unit                                   |
+| Velocity                 | `tests/scripts/velocity/`                      | TS       | unit                                   |
+| Secrets                  | `tests/scripts/secrets/`                       | TS       | unit                                   |
+| Metrics                  | `tests/scripts/metrics/`                       | TS       | unit                                   |
+| Planning                 | `tests/scripts/planning/`                      | TS       | unit                                   |
+| Health scripts           | `tests/scripts/health/`                        | TS       | unit                                   |
+| Root scripts             | `tests/scripts/`                               | TS       | unit                                   |
+| Review scripts           | `scripts/reviews/__tests__/`                   | TS       | unit                                   |
+| Ecosystem audits         | `.claude/skills/*/scripts/__tests__/`          | JS       | unit, regression, scoring, integration |
+| Ecosystem audit checkers | `.claude/skills/*/scripts/checkers/__tests__/` | JS       | unit, property                         |
+| Ecosystem audit libs     | `.claude/skills/*/scripts/lib/__tests__/`      | JS       | property                               |
+| Integration              | `tests/integration/`                           | JS       | integration                            |
 
 ### Key distinction
 
@@ -88,15 +93,16 @@ build step.
 
 Each ecosystem audit skill owns a standard set of 4 test files:
 
-| Ecosystem Audit           | Test Directory                                              | Tests Owned                                             |
-| ------------------------- | ----------------------------------------------------------- | ------------------------------------------------------- |
-| `pr-ecosystem-audit`      | `.claude/skills/pr-ecosystem-audit/scripts/__tests__/`      | checker-regression, scoring, state-manager, integration |
-| `session-ecosystem-audit` | `.claude/skills/session-ecosystem-audit/scripts/__tests__/` | checker-regression, scoring, state-manager, integration |
-| `tdms-ecosystem-audit`    | `.claude/skills/tdms-ecosystem-audit/scripts/__tests__/`    | checker-regression, scoring, state-manager, integration |
-| `doc-ecosystem-audit`     | `.claude/skills/doc-ecosystem-audit/scripts/__tests__/`     | checker-regression, scoring, state-manager, integration |
-| `hook-ecosystem-audit`    | `.claude/skills/hook-ecosystem-audit/scripts/__tests__/`    | checker-regression, scoring, state-manager, integration |
-| `script-ecosystem-audit`  | `.claude/skills/script-ecosystem-audit/scripts/__tests__/`  | checker-regression, scoring, state-manager, integration |
-| `skill-ecosystem-audit`   | `.claude/skills/skill-ecosystem-audit/scripts/__tests__/`   | checker-regression, scoring, state-manager, integration |
+| Ecosystem Audit           | Test Directory                                              | Tests Owned                                                                                        |
+| ------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `pr-ecosystem-audit`      | `.claude/skills/pr-ecosystem-audit/scripts/__tests__/`      | checker-regression, scoring, state-manager, integration                                            |
+| `session-ecosystem-audit` | `.claude/skills/session-ecosystem-audit/scripts/__tests__/` | checker-regression, scoring, state-manager, integration                                            |
+| `tdms-ecosystem-audit`    | `.claude/skills/tdms-ecosystem-audit/scripts/__tests__/`    | checker-regression, scoring, state-manager, integration                                            |
+| `doc-ecosystem-audit`     | `.claude/skills/doc-ecosystem-audit/scripts/__tests__/`     | checker-regression, scoring, state-manager, integration                                            |
+| `hook-ecosystem-audit`    | `.claude/skills/hook-ecosystem-audit/scripts/__tests__/`    | checker-regression, scoring, state-manager, integration                                            |
+| `script-ecosystem-audit`  | `.claude/skills/script-ecosystem-audit/scripts/__tests__/`  | checker-regression, scoring, state-manager, integration                                            |
+| `skill-ecosystem-audit`   | `.claude/skills/skill-ecosystem-audit/scripts/__tests__/`   | checker-regression, scoring, state-manager, integration                                            |
+| `health-ecosystem-audit`  | `.claude/skills/health-ecosystem-audit/scripts/__tests__/`  | checker-regression, scoring, state-manager, integration, live-test-execution, registry-consumption |
 
 ### Standard test file pattern per audit
 
@@ -121,6 +127,9 @@ Each ecosystem audit skill owns a standard set of 4 test files:
 | `npm run test:hooks`     | Hook tests only (builds TS first)                 | Yes        | `dist-tests/tests/hooks/**`                                                |
 | `npm run test:debt`      | Debt pipeline tests only (builds TS first)        | Yes        | `dist-tests/tests/scripts/debt/**`                                         |
 | `npm run test:audits`    | Ecosystem audit self-tests                        | No         | `.claude/skills/*/scripts/__tests__/*.test.js`                             |
+| `npm run test:checkers`  | Ecosystem audit checker tests                     | No         | `.claude/skills/*/scripts/checkers/__tests__/*.test.js`                    |
+| `npm run test:infra`     | Root + lib + audit script tests                   | Yes        | `dist-tests/tests/scripts/*.test.js` + lib + audit subdirs                 |
+| `npm run test:pipeline`  | Debt + multi-AI + planning pipeline tests         | Yes        | `dist-tests/tests/scripts/debt/**` + multi-ai + planning                   |
 | `npm run tests:registry` | Regenerate the test registry JSONL                | No         | Scans all 8 source types, writes `data/ecosystem-v2/test-registry.jsonl`   |
 | `npm run test:coverage`  | Full suite with c8 coverage (text + HTML reports) | Yes        | Same scope as `npm test`, plus coverage                                    |
 
@@ -174,14 +183,19 @@ retention.
 
 ### Areas with strong coverage
 
-| Area                            | Coverage Status | Notes                                 |
-| ------------------------------- | --------------- | ------------------------------------- |
-| Health checkers                 | Strong          | 10 checker tests + 2 property tests   |
-| Health scoring lib              | Strong          | Unit + property-based with fast-check |
-| Hooks                           | Strong          | 14+ hook test files, helper lib tests |
-| Debt pipeline                   | Strong          | Unit, idempotency, dedup, E2E         |
-| Ecosystem audit checkers        | Strong          | 28 test files across 7 audits         |
-| Shared lib (sanitize, security) | Moderate        | Core helpers tested                   |
+| Area                            | Coverage Status | Notes                                      |
+| ------------------------------- | --------------- | ------------------------------------------ |
+| Health checkers                 | Strong          | 10 checker tests + 2 property tests        |
+| Health scoring lib              | Strong          | Unit + property-based with fast-check      |
+| Hooks                           | Strong          | 14+ hook test files, helper lib tests      |
+| Debt pipeline                   | Strong          | 28 test files (unit, property, E2E)        |
+| Ecosystem audit checkers        | Strong          | 84 test files across 8 audit domains       |
+| Ecosystem audit libs            | Strong          | 8 property test files (scoring invariants) |
+| Root scripts                    | Strong          | 60+ unit tests for standalone scripts      |
+| Review scripts                  | Strong          | 18 unit tests for review pipeline          |
+| Shared lib (sanitize, security) | Strong          | Core helpers + property tests              |
+| Planning scripts                | Moderate        | 5 test files for planning pipeline         |
+| Multi-AI scripts                | Moderate        | 4 test files for AI aggregation pipeline   |
 
 ### Areas that need more coverage
 
@@ -450,12 +464,72 @@ The command prints a summary showing total entries and counts by source type.
 
 ---
 
+## 10. Auto-Detection Pipeline
+
+The auto-detection pipeline prevents untested scripts from entering the codebase
+without explicit acknowledgment.
+
+### How it works
+
+```
+New script added to scripts/, .claude/hooks/, or .claude/skills/*/scripts/
+        |
+        v
+  Pre-commit hook (check #13)
+  Warns: "New script X has no test file"
+        |
+        v
+  --check-coverage mode (CI gate)
+  node scripts/generate-test-registry.js --check-coverage
+        |
+        +--> Scans covered directories for scripts
+        +--> Compares against test inventory
+        +--> Reads .test-baseline.json for known gaps
+        v
+  NEW gaps found?
+        |
+        +--> YES: Exit 1 (CI blocks)
+        +--> NO: Exit 0 (pass)
+```
+
+### Baseline file
+
+`.test-baseline.json` tracks scripts that are known to lack tests. The file
+schema:
+
+```json
+{
+  "version": 1,
+  "description": "Scripts without tests. Remove entries as tests are created.",
+  "created": "2026-03-10",
+  "entries": [
+    { "path": "scripts/example.js", "lines": 100 },
+    { "path": "scripts/complex.js", "lines": 500, "note": "optional context" }
+  ]
+}
+```
+
+- **New scripts** not in the baseline cause `--check-coverage` to fail
+- **Adding a test** for a baselined script: remove its entry from the baseline
+- **Intentionally untested scripts**: add to `.test-baseline.json` with a `note`
+  explaining why
+
+### Covered directories
+
+The scanner checks these directories for untested scripts:
+
+- `scripts/` (root-level scripts)
+- `.claude/hooks/` (hook scripts)
+- `.claude/skills/*/scripts/` (ecosystem audit scripts)
+
+---
+
 ## Quick Reference
 
 | Fact                    | Value                                   |
 | ----------------------- | --------------------------------------- |
-| Total tests             | ~1,594                                  |
-| Test files              | 87 new files added                      |
+| Total tests             | ~3,640                                  |
+| Test files              | ~310 files across all test directories  |
 | Test failures           | 0                                       |
 | Coverage threshold (CI) | 65% line coverage                       |
 | Test runner             | `node:test` (Node.js built-in)          |
@@ -464,11 +538,13 @@ The command prints a summary showing total entries and counts by source type.
 | TS compilation target   | `dist-tests/`                           |
 | Registry output         | `data/ecosystem-v2/test-registry.jsonl` |
 | Registry source types   | 8                                       |
+| Baseline file           | `.test-baseline.json`                   |
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes               |
-| ------- | ---------- | --------------------- |
-| 1.0     | 2026-03-09 | Initial documentation |
+| Version | Date       | Changes                                                      |
+| ------- | ---------- | ------------------------------------------------------------ |
+| 2.0     | 2026-03-10 | Phase 5-7: auto-detection, expanded coverage map, 3640 tests |
+| 1.0     | 2026-03-09 | Initial documentation                                        |

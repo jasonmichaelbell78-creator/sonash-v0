@@ -312,6 +312,8 @@ Verify this audit's own process was followed correctly:
 - [ ] All ERROR findings addressed (fixed, deferred, or skipped with documented
       false-positive justification)
 - [ ] TDMS entries created for all deferred findings
+- [ ] `__tests__/` suite passes (run:
+      `node --test .claude/skills/hook-ecosystem-audit/scripts/__tests__/*.test.js`)
 
 Present: "Process self-audit: N/N checks passed." Fix any failures before
 proceeding.

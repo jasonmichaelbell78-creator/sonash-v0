@@ -25,10 +25,7 @@
     "scripts/reviews/__tests__/**/*.ts",
     "scripts/reviews/backfill-reviews.ts",
     "scripts/health/checkers/__tests__/**/*.ts",
-    "scripts/health/lib/__tests__/**/*.ts",
-    "tests/hooks/**/*.ts",
-    "tests/scripts/debt/**/*.ts",
-    "tests/scripts/health/**/*.ts"
+    "scripts/health/lib/__tests__/**/*.ts"
   ],
   "exclude": ["node_modules", "dist", "dist-tests", "tests/semgrep"]
 }

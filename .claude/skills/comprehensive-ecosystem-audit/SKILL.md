@@ -1,7 +1,7 @@
 ---
 name: comprehensive-ecosystem-audit
 description: |
-  Orchestrates all 7 ecosystem audits in staged waves with 4-concurrent-agent
+  Orchestrates all 8 ecosystem audits in staged waves with 4-concurrent-agent
   limit, aggregates results into a unified health report with cross-audit
   insights, domain heat maps, and priority-ranked findings.
 supports_parallel: true
@@ -18,8 +18,8 @@ estimated_time_sequential: 90 min
 
 # Comprehensive Ecosystem Audit
 
-Orchestrates all 7 ecosystem audits (hook, session, TDMS, PR, skill, doc,
-script) in 2 staged waves, aggregates results into a unified health report.
+Orchestrates all 8 ecosystem audits (hook, session, TDMS, PR, health, skill,
+doc, script) in 2 staged waves, aggregates results into a unified health report.
 
 **Invocation:** `/comprehensive-ecosystem-audit`
 
@@ -61,16 +61,19 @@ Tracks stages (pending/completed), individual audit status
 
 ---
 
-## Stage 1: Foundation Audits (4 parallel)
+## Stage 1: Foundation Audits (5 parallel, D#7)
 
-**Dependencies:** All 4 agents are independent. Stage 2 depends on Stage 1.
+**Dependencies:** All 5 agents are independent. Stage 2 depends on Stage 1.
+Health audit uses `--skip-live-tests` for speed during comprehensive runs
+(D#49).
 
-| Agent | Audit   | Script                                                                                                 | Result File                     |
-| ----- | ------- | ------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| 1     | Hook    | `node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js --batch --summary`       | `ecosystem-hook-result.json`    |
-| 2     | Session | `node .claude/skills/session-ecosystem-audit/scripts/run-session-ecosystem-audit.js --batch --summary` | `ecosystem-session-result.json` |
-| 3     | TDMS    | `node .claude/skills/tdms-ecosystem-audit/scripts/run-tdms-ecosystem-audit.js --batch --summary`       | `ecosystem-tdms-result.json`    |
-| 4     | PR      | `node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --batch --summary`           | `ecosystem-pr-result.json`      |
+| Agent | Audit   | Script                                                                                                                 | Result File                     |
+| ----- | ------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| 1     | Hook    | `node .claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js --batch --summary`                       | `ecosystem-hook-result.json`    |
+| 2     | Session | `node .claude/skills/session-ecosystem-audit/scripts/run-session-ecosystem-audit.js --batch --summary`                 | `ecosystem-session-result.json` |
+| 3     | TDMS    | `node .claude/skills/tdms-ecosystem-audit/scripts/run-tdms-ecosystem-audit.js --batch --summary`                       | `ecosystem-tdms-result.json`    |
+| 4     | PR      | `node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --batch --summary`                           | `ecosystem-pr-result.json`      |
+| 5     | Health  | `node .claude/skills/health-ecosystem-audit/scripts/run-health-ecosystem-audit.js --batch --summary --skip-live-tests` | `ecosystem-health-result.json`  |
 
 After completion: verify files exist, check sizes with `wc -c`, update progress.
 
@@ -82,9 +85,9 @@ After completion: verify files exist, check sizes with `wc -c`, update progress.
 
 | Agent | Audit  | Script                                                                                               | Result File                    |
 | ----- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------ |
-| 5     | Skill  | `node .claude/skills/skill-ecosystem-audit/scripts/run-skill-ecosystem-audit.js --batch --summary`   | `ecosystem-skill-result.json`  |
-| 6     | Doc    | `node .claude/skills/doc-ecosystem-audit/scripts/run-doc-ecosystem-audit.js --batch --summary`       | `ecosystem-doc-result.json`    |
-| 7     | Script | `node .claude/skills/script-ecosystem-audit/scripts/run-script-ecosystem-audit.js --batch --summary` | `ecosystem-script-result.json` |
+| 6     | Skill  | `node .claude/skills/skill-ecosystem-audit/scripts/run-skill-ecosystem-audit.js --batch --summary`   | `ecosystem-skill-result.json`  |
+| 7     | Doc    | `node .claude/skills/doc-ecosystem-audit/scripts/run-doc-ecosystem-audit.js --batch --summary`       | `ecosystem-doc-result.json`    |
+| 8     | Script | `node .claude/skills/script-ecosystem-audit/scripts/run-script-ecosystem-audit.js --batch --summary` | `ecosystem-script-result.json` |
 
 ---
 
@@ -95,15 +98,16 @@ Sequential. Read ONLY summary sections from each result file (first 50 lines or
 
 ### Weighted Health Grade
 
-| Audit   | Weight | Rationale                    |
-| ------- | ------ | ---------------------------- |
-| Hook    | 15%    | Core infrastructure          |
-| Session | 10%    | Session management           |
-| TDMS    | 15%    | Debt tracking                |
-| PR      | 15%    | Review workflow quality gate |
-| Skill   | 20%    | Largest surface area         |
-| Doc     | 10%    | Supporting infrastructure    |
-| Script  | 15%    | Build/test/deploy pipeline   |
+| Audit   | Weight | Rationale                      |
+| ------- | ------ | ------------------------------ |
+| Hook    | 14%    | Core infrastructure            |
+| Session | 9%     | Session management             |
+| TDMS    | 14%    | Debt tracking                  |
+| PR      | 14%    | Review workflow quality gate   |
+| Health  | 10%    | Health monitoring system (D#7) |
+| Skill   | 18%    | Largest surface area           |
+| Doc     | 9%     | Supporting infrastructure      |
+| Script  | 12%    | Build/test/deploy pipeline     |
 
 Formula: `overallScore = sum(score * weight) / sum(completed_weights)` Grades:
 A=90+, B=80+, C=70+, D=60+, F=<60.
@@ -147,14 +151,14 @@ weighted average using only completed audits. Note missing coverage in report.
 
 - Quick single-domain check (use individual audit skills)
 - Debugging specific issues (use `/systematic-debugging`)
-- When context budget is tight (7 agent launches)
+- When context budget is tight (8 agent launches)
 
 ## Related Skills
 
 Individual audits: `/hook-ecosystem-audit`, `/session-ecosystem-audit`,
-`/tdms-ecosystem-audit`, `/pr-ecosystem-audit`, `/skill-ecosystem-audit`,
-`/doc-ecosystem-audit`, `/script-ecosystem-audit`. Also: `/audit-comprehensive`
-(9-domain code audit -- different scope).
+`/tdms-ecosystem-audit`, `/pr-ecosystem-audit`, `/health-ecosystem-audit`,
+`/skill-ecosystem-audit`, `/doc-ecosystem-audit`, `/script-ecosystem-audit`.
+Also: `/audit-comprehensive` (9-domain code audit -- different scope).
 
 ---
 
@@ -162,5 +166,6 @@ Individual audits: `/hook-ecosystem-audit`, `/session-ecosystem-audit`,
 
 | Version | Date       | Description                                            |
 | ------- | ---------- | ------------------------------------------------------ |
+| 1.2     | 2026-03-10 | Add health-ecosystem-audit as #8 to Stage 1 (D#7)      |
 | 1.1     | 2026-02-24 | Trim to <500 lines: condense tables and agent prompts  |
 | 1.0     | 2026-02-24 | Initial -- 7 audits in 2 staged waves with aggregation |

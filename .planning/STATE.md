@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 2.0
-**Last Updated:** 2026-03-01
+**Document Version:** 3.0
+**Last Updated:** 2026-03-10
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -12,15 +12,47 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Reliably capture every review finding, track it through
 resolution, and prevent recurrence through automated enforcement — no data loss,
-no dead ends, no manual steps that get skipped. **Current focus:** v1.0
-milestone complete — planning next milestone
+no dead ends, no manual steps that get skipped. **Current focus:** Ecosystem
+expansion — testing coverage (Phase 6 complete, Phase 7 verification next)
 
 ## Current Position
 
-Phase: N/A — between milestones Plan: N/A Status: v1.0 shipped, next milestone
-not yet started Last activity: 2026-03-01 — v1.0 milestone archived
+Phase: Ecosystem Expansion — Phase 7 verification COMPLETE Plan:
+`.planning/ecosystem-expansion/PLAN.md` (v3.0) Status: 179 new test files
+committed (3645 tests, 0 failures). All verification steps complete. Last
+activity: 2026-03-10 — Phase 7 verification complete
 
-Progress: v1.0 [██████████] 100%
+Progress: Phases 1-7 [██████████] 100% (All steps complete)
+
+## Ecosystem Expansion Progress
+
+- Phase 1: Testing infrastructure — DONE (Steps 1-7)
+- Phase 2: Ecosystem discovery — DONE (Step 8)
+- Phase 3: Ecosystem creation — DONE (Step 9, health-ecosystem-audit)
+- Phase 4: Wiring & completion — DONE (Steps 10-11)
+- Phase 5: Testing coverage infra — DONE (Step 12)
+- **Phase 6: Testing coverage expansion — DONE (Steps 13-19)**
+  - Step 13: 50 JS audit checker tests (43 unit + 7 lib property)
+  - Step 14: 60 TS root script tests (15 large + 32 medium + 9 small + 4
+    property)
+  - Step 15: 28 TS debt pipeline tests
+  - Step 16: 12 TS audit + multi-AI tests
+  - Step 17: 18 TS lib/planning/remaining tests
+  - Step 18+19: 10 TS review + skill utility tests
+  - Total: 178 new files, 266 total test files on disk
+- **Phase 7: Verification — IN PROGRESS (Step 20)**
+  - Step 20a: Registry regenerated (485 entries), baseline updated (133 removed,
+    7 added)
+  - Step 20b: Full test suite passes (3640 tests, 0 failures)
+  - Step 20c: Auto-detection smoke test PASS (pre-commit warns, CI blocks)
+  - Step 20d: Code review — 0 critical, 4 warnings (W4 fixed), 5 info
+  - Step 20e: Decision audit — 28/29 implemented, 1 minor deviation (D#74)
+  - Step 20f: TESTING_SYSTEM.md updated to v2.0
+
+### Known Issues from Phase 6
+
+- Pre-existing bug: `cicd-pipeline.js` references undeclared `totalBots`
+- Pre-existing TS error: `intake-manual.test.ts` line 154 (`undefined ?? "E1"`)
 
 ## Performance Metrics
 
@@ -37,13 +69,11 @@ Progress: v1.0 [██████████] 100%
 
 ### Decisions
 
-Full decision log in PROJECT.md Key Decisions table. All v1.0 decisions
-evaluated — 11 marked Good, 2 marked Revisit (parallel build then swap, gradual
-v1/v2 coexistence).
+Full decision log in PROJECT.md Key Decisions table + DECISIONS.md (D#1-81).
 
 ### Pending Todos
 
-None — milestone complete.
+- None (Phases 1-7 complete, ready for PR)
 
 ### Blockers/Concerns
 
@@ -51,12 +81,15 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-01T23:30:00Z Stopped at: v1.0 milestone complete and
-archived Resume file: None
+Last session: 2026-03-10T15:00:00Z Stopped at: Phase 6 complete, Phase 7
+verification next Resume: Run Phase 7 Step 20 (registry, full test suite, code
+review, docs)
 
 ### GSD Process Position
 
-- v1.0: COMPLETE (7 phases, 30 plans, 59/59 requirements, audited, archived)
-- Next: `/gsd:new-milestone` to start v1.1 or v2.0
+- v1.0: COMPLETE (archived)
+- Ecosystem expansion: Phase 6/7 — 6 done, 1 remaining
+- Branch: `health-ecosystem`
+- 3 prior commits: e5cfe516, debfeece, 445d5eb7
 
-_Updated after v1.0 milestone completion_
+_Updated after Phase 6 completion_

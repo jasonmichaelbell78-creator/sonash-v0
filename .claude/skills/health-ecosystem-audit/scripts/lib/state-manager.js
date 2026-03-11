@@ -1,0 +1,321 @@
+/* eslint-disable @typescript-eslint/no-require-imports, no-undef */
+
+/**
+ * State manager for Health Ecosystem Audit.
+ *
+ * Handles reading/writing .claude/state/health-ecosystem-audit-history.jsonl,
+ * computing deltas between runs, and trend extraction.
+ *
+ * Forked from hook-ecosystem-audit — changed state file path (D#45).
+ */
+
+"use strict";
+
+let fs, path;
+try {
+  fs = require("node:fs");
+  path = require("node:path");
+} catch (err) {
+  const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
+  console.error(`Fatal: failed to load core Node.js modules (${code})`);
+  process.exit(1);
+}
+
+/** Lazily resolved safe-fs helpers, keyed by rootDir to avoid cross-instance contamination */
+const _safeFsCache = new Map();
+function getSafeFs(rootDir) {
+  const cached = _safeFsCache.get(rootDir);
+  if (cached) return cached;
+  let result;
+  try {
+    result = require(path.join(rootDir, "scripts", "lib", "safe-fs"));
+  } catch {
+    // Fallback: thin wrappers that delegate straight to fs (no extra guard needed
+    // because callers already passed isSafeToWrite checks before reaching these)
+    result = {
+      safeWriteFileSync: (p, d, o) => fs.writeFileSync(p, d, o),
+      safeAppendFileSync: (p, d, o) => fs.appendFileSync(p, d, o),
+      safeRenameSync: (src, dest) => {
+        try {
+          fs.renameSync(src, dest);
+        } catch {
+          fs.copyFileSync(src, dest);
+          fs.unlinkSync(src);
+        }
+      },
+    };
+  }
+  _safeFsCache.set(rootDir, result);
+  return result;
+}
+
+/** Max file size for read operations (5MB) */
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+/** Max entries to keep in state file */
+const MAX_ENTRIES = 100;
+
+/**
+ * Create a state manager instance.
+ * @param {string} rootDir - Project root directory
+ * @param {function} isSafeToWrite - Symlink guard function
+ * @returns {object} State manager API
+ */
+function createStateManager(rootDir, isSafeToWrite) {
+  const STATE_DIR = path.join(rootDir, ".claude", "state");
+  const STATE_FILE = path.join(STATE_DIR, "health-ecosystem-audit-history.jsonl");
+
+  function readEntries() {
+    try {
+      const dirStat = fs.lstatSync(STATE_DIR);
+      if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) return [];
+    } catch {
+      return [];
+    }
+
+    try {
+      const stat = fs.lstatSync(STATE_FILE);
+      if (stat.isSymbolicLink() || !stat.isFile()) return [];
+      if (stat.size > MAX_FILE_SIZE) {
+        console.error("  [warn] State file too large, skipping read");
+        return [];
+      }
+    } catch {
+      return [];
+    }
+
+    try {
+      const content = fs.readFileSync(STATE_FILE, "utf8");
+      return content
+        .trim()
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => {
+          try {
+            return JSON.parse(line);
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
+  function appendEntry(entry) {
+    try {
+      try {
+        const dirStat = fs.lstatSync(STATE_DIR);
+        if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+          console.error("  [warn] State dir is not a real directory, skipping write");
+          return false;
+        }
+      } catch {
+        fs.mkdirSync(STATE_DIR, { recursive: true });
+        // Re-verify after creation to mitigate TOCTOU
+        try {
+          const dirStat = fs.lstatSync(STATE_DIR);
+          if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+            console.error(
+              "  [warn] State dir is not a real directory after creation, skipping write"
+            );
+            return false;
+          }
+        } catch {
+          return false;
+        }
+      }
+
+      if (!isSafeToWrite(STATE_FILE)) {
+        console.error("  [warn] State file failed symlink guard, skipping write");
+        return false;
+      }
+
+      const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = getSafeFs(rootDir);
+      const line = JSON.stringify(entry) + "\n";
+
+      const existing = readEntries();
+      if (existing.length >= MAX_ENTRIES) {
+        const trimmed = existing.slice(-(MAX_ENTRIES - 1));
+        const tmpPath = STATE_FILE + ".tmp";
+        const bakPath = STATE_FILE + ".bak";
+        if (!isSafeToWrite(tmpPath)) return false;
+        if (!isSafeToWrite(bakPath)) return false;
+        const content = trimmed.map((e) => JSON.stringify(e)).join("\n") + "\n" + line;
+        // Write to tmp first; safeRenameSync handles rmSync-before-rename internally,
+        // eliminating the rmSync→renameSync race condition.
+        safeWriteFileSync(tmpPath, content, "utf8");
+        try {
+          if (fs.existsSync(STATE_FILE)) {
+            safeRenameSync(STATE_FILE, bakPath);
+          }
+          safeRenameSync(tmpPath, STATE_FILE);
+          try {
+            fs.rmSync(bakPath, { force: true });
+          } catch {
+            /* ignore */
+          }
+        } catch {
+          try {
+            if (fs.existsSync(bakPath) && !fs.existsSync(STATE_FILE)) {
+              safeRenameSync(bakPath, STATE_FILE);
+            }
+          } catch {
+            /* ignore */
+          }
+          try {
+            fs.rmSync(tmpPath, { force: true });
+          } catch {
+            /* ignore */
+          }
+          return false;
+        }
+      } else {
+        if (!isSafeToWrite(STATE_FILE)) {
+          console.error("  [warn] State file failed symlink guard, skipping write");
+          return false;
+        }
+        safeAppendFileSync(STATE_FILE, line, "utf8");
+      }
+
+      return true;
+    } catch (err) {
+      console.error(
+        `  [warn] Failed to write state: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
+      );
+      return false;
+    }
+  }
+
+  function getRecent(n = 5) {
+    return readEntries().slice(-n);
+  }
+
+  function computeDelta(current) {
+    const entries = readEntries();
+    if (entries.length === 0) return null;
+
+    const previous = entries[entries.length - 1];
+    if (!previous.healthScore || !current.healthScore) return null;
+    if (!Number.isFinite(previous.healthScore.score)) return null;
+    if (!Number.isFinite(current.healthScore.score)) return null;
+
+    const delta = {
+      scoreBefore: previous.healthScore.score,
+      gradeBefore: previous.healthScore.grade,
+      scoreAfter: current.healthScore.score,
+      gradeAfter: current.healthScore.grade,
+      scoreDelta: current.healthScore.score - previous.healthScore.score,
+      previousTimestamp: previous.timestamp,
+      categoryDeltas: {},
+    };
+
+    for (const [cat, data] of Object.entries(current.categories || {})) {
+      const prevCat = previous.categories?.[cat];
+      if (prevCat && typeof data.score === "number" && typeof prevCat.score === "number") {
+        delta.categoryDeltas[cat] = {
+          before: prevCat.score,
+          after: data.score,
+          delta: data.score - prevCat.score,
+        };
+      }
+    }
+
+    return delta;
+  }
+
+  function getCategoryHistory(categoryKey, windowSize = 10) {
+    const entries = readEntries().slice(-windowSize);
+    return entries
+      .map((e) => e.categories?.[categoryKey]?.score)
+      .filter((v) => typeof v === "number");
+  }
+
+  function getCompositeHistory(windowSize = 10) {
+    const entries = readEntries().slice(-windowSize);
+    return entries.map((e) => e.healthScore?.score).filter((v) => typeof v === "number");
+  }
+
+  /**
+   * Save the current audit entry as a baseline for future regression detection.
+   * @param {object} entry - The state entry to save as baseline
+   * @returns {boolean} True if saved successfully
+   */
+  function saveBaseline(entry) {
+    const baselinePath = path.join(STATE_DIR, "health-ecosystem-audit-baseline.json");
+    try {
+      try {
+        const dirStat = fs.lstatSync(STATE_DIR);
+        if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+          console.error("  [warn] State dir is not a real directory, skipping write");
+          return false;
+        }
+      } catch {
+        fs.mkdirSync(STATE_DIR, { recursive: true });
+        // Re-verify after creation to mitigate TOCTOU
+        try {
+          const dirStat = fs.lstatSync(STATE_DIR);
+          if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+            console.error(
+              "  [warn] State dir is not a real directory after creation, skipping write"
+            );
+            return false;
+          }
+        } catch {
+          return false;
+        }
+      }
+
+      if (!isSafeToWrite(baselinePath)) {
+        console.error("  [warn] Baseline file failed symlink guard, skipping write");
+        return false;
+      }
+
+      const { safeWriteFileSync } = getSafeFs(rootDir);
+      safeWriteFileSync(baselinePath, JSON.stringify(entry, null, 2) + "\n", "utf8");
+      return true;
+    } catch (err) {
+      console.error(
+        `  [warn] Failed to write baseline: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Load the previously saved baseline, or return null if none exists.
+   * @returns {object|null} The baseline entry, or null
+   */
+  function loadBaseline() {
+    const baselinePath = path.join(STATE_DIR, "health-ecosystem-audit-baseline.json");
+    try {
+      const stat = fs.lstatSync(baselinePath);
+      if (stat.isSymbolicLink() || !stat.isFile()) {
+        console.error("  [warn] Baseline path is not a regular file, skipping read");
+        return null;
+      }
+      if (stat.size > MAX_FILE_SIZE) {
+        console.error("  [warn] Baseline file too large, skipping read");
+        return null;
+      }
+      const content = fs.readFileSync(baselinePath, "utf8");
+      return JSON.parse(content);
+    } catch {
+      return null;
+    }
+  }
+
+  return {
+    readEntries,
+    appendEntry,
+    getRecent,
+    computeDelta,
+    getCategoryHistory,
+    getCompositeHistory,
+    saveBaseline,
+    loadBaseline,
+  };
+}
+
+module.exports = { createStateManager };

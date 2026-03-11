@@ -471,5 +471,47 @@ else
   fi
 fi
 
+# 13. Test coverage warning for new scripts (non-blocking, D#63/#69)
+# Warns when new .js files in covered directories have no corresponding test file
+STAGED_JS_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -E '\.(js)$' || true)
+if [ -n "$STAGED_JS_FILES" ]; then
+  NEW_JS_FILES=$(git diff --cached --name-only --diff-filter=A 2>/dev/null | grep -E '\.(js)$' || true)
+  if [ -n "$NEW_JS_FILES" ]; then
+    _test_warn_fd="2"
+    if { : >&3; } 2>/dev/null; then _test_warn_fd="3"; fi
+    printf '%s\n' "$NEW_JS_FILES" | while IFS= read -r js_file || [ -n "$js_file" ]; do
+      [ -z "$js_file" ] && continue
+      # Only check covered directories: scripts/, .claude/hooks/, .claude/skills/*/scripts/
+      case "$js_file" in
+        scripts/*|.claude/hooks/*|.claude/skills/*/scripts/*) ;;
+        *) continue ;;
+      esac
+      # Skip test files, dist output, and __tests__ directories
+      case "$js_file" in
+        *.test.js|*__tests__/*|*/dist/*|*/fixtures/*) continue ;;
+      esac
+      # Check if a corresponding test file exists
+      base_name=$(basename "$js_file" .js)
+      has_test=0
+      # Search common test locations
+      for test_loc in \
+        "tests/scripts/${base_name}.test.ts" \
+        "tests/scripts/${base_name}.test.js" \
+        "tests/${base_name}.test.ts" \
+        "tests/${base_name}.test.js"; do
+        if [ -f "$test_loc" ]; then has_test=1; break; fi
+      done
+      # Also check co-located __tests__ directories
+      dir_name=$(dirname "$js_file")
+      if [ -f "${dir_name}/__tests__/${base_name}.test.js" ] || [ -f "${dir_name}/__tests__/${base_name}.test.ts" ]; then
+        has_test=1
+      fi
+      if [ "$has_test" -eq 0 ]; then
+        echo "  ⚠ New script $js_file has no test file" >&${_test_warn_fd}
+      fi
+    done
+  fi
+fi
+
 echo ""
 echo "✅ All pre-commit checks passed - commit allowed"

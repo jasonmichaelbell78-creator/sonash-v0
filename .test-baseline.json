@@ -1,0 +1,328 @@
+{
+  "version": 1,
+  "description": "Scripts without tests. Remove entries as tests are created.",
+  "created": "2026-03-10",
+  "entries": [
+    {
+      "path": ".claude/hooks/backup/analyze-user-request.js",
+      "lines": 155,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
+      "path": ".claude/hooks/backup/check-edit-requirements.js",
+      "lines": 96,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
+      "path": ".claude/hooks/backup/check-write-requirements.js",
+      "lines": 92,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
+      "path": ".claude/hooks/backup/coderabbit-review.js",
+      "lines": 136,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
+      "path": ".claude/skills/alerts/scripts/run-alerts.js",
+      "lines": 3746
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/checkers/content-quality.js",
+      "lines": 477,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/checkers/generation-pipeline.js",
+      "lines": 422,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/checkers/index-registry-health.js",
+      "lines": 527,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/checkers/link-reference-integrity.js",
+      "lines": 542,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/lib/benchmarks.js",
+      "lines": 107
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 162
+    },
+    {
+      "path": ".claude/skills/doc-ecosystem-audit/scripts/run-doc-ecosystem-audit.js",
+      "lines": 436
+    },
+    {
+      "path": ".claude/skills/ecosystem-health/scripts/run-ecosystem-health.js",
+      "lines": 270
+    },
+    {
+      "path": ".claude/skills/health-ecosystem-audit/scripts/checkers/alert-system.js",
+      "lines": 402
+    },
+    {
+      "path": ".claude/skills/health-ecosystem-audit/scripts/checkers/checker-infrastructure.js",
+      "lines": 480
+    },
+    {
+      "path": ".claude/skills/health-ecosystem-audit/scripts/checkers/consumer-integration.js",
+      "lines": 364
+    },
+    {
+      "path": ".claude/skills/health-ecosystem-audit/scripts/checkers/data-persistence.js",
+      "lines": 459
+    },
+    {
+      "path": ".claude/skills/health-ecosystem-audit/scripts/lib/benchmarks.js",
+      "lines": 164
+    },
+    {
+      "path": ".claude/skills/health-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 160
+    },
+    {
+      "path": ".claude/skills/health-ecosystem-audit/scripts/run-health-ecosystem-audit.js",
+      "lines": 467
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/cicd-pipeline.js",
+      "lines": 767,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/config-health.js",
+      "lines": 591,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js",
+      "lines": 555,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/precommit-pipeline.js",
+      "lines": 775,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js",
+      "lines": 802,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/lib/benchmarks.js",
+      "lines": 125
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 154
+    },
+    {
+      "path": ".claude/skills/hook-ecosystem-audit/scripts/run-hook-ecosystem-audit.js",
+      "lines": 449
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/data-state-health.js",
+      "lines": 779,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/effectiveness-metrics.js",
+      "lines": 569,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/feedback-integration.js",
+      "lines": 538,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/pattern-lifecycle.js",
+      "lines": 593,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/checkers/process-compliance.js",
+      "lines": 790,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/lib/benchmarks.js",
+      "lines": 189
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 212
+    },
+    {
+      "path": ".claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js",
+      "lines": 355
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/checkers/module-consistency.js",
+      "lines": 453,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/checkers/registration-reachability.js",
+      "lines": 417,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/checkers/safety-error-handling.js",
+      "lines": 551,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/checkers/testing-reliability.js",
+      "lines": 408,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/lib/benchmarks.js",
+      "lines": 115
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 160
+    },
+    {
+      "path": ".claude/skills/script-ecosystem-audit/scripts/run-script-ecosystem-audit.js",
+      "lines": 440
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/compaction-resilience.js",
+      "lines": 691,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/cross-session-safety.js",
+      "lines": 427,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/integration-config.js",
+      "lines": 536,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/lifecycle-management.js",
+      "lines": 727,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/checkers/state-persistence.js",
+      "lines": 763,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/lib/benchmarks.js",
+      "lines": 107
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 94
+    },
+    {
+      "path": ".claude/skills/session-ecosystem-audit/scripts/run-session-ecosystem-audit.js",
+      "lines": 360
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/agent-orchestration.js",
+      "lines": 450,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/coverage-consistency.js",
+      "lines": 489,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/cross-reference-integrity.js",
+      "lines": 534,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/staleness-drift.js",
+      "lines": 468,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/checkers/structural-compliance.js",
+      "lines": 431,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/lib/benchmarks.js",
+      "lines": 127
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 156
+    },
+    {
+      "path": ".claude/skills/skill-ecosystem-audit/scripts/run-skill-ecosystem-audit.js",
+      "lines": 447
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/data-quality-dedup.js",
+      "lines": 978,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js",
+      "lines": 632,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/metrics-reporting.js",
+      "lines": 889,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js",
+      "lines": 570,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/roadmap-integration.js",
+      "lines": 585,
+      "note": "has co-located __tests__ (coverage checker blind spot)"
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/lib/benchmarks.js",
+      "lines": 107
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/lib/patch-generator.js",
+      "lines": 157
+    },
+    {
+      "path": ".claude/skills/tdms-ecosystem-audit/scripts/run-tdms-ecosystem-audit.js",
+      "lines": 360
+    },
+    {
+      "path": "scripts/debt/extract-audit-reports.js",
+      "lines": 1021
+    },
+    {
+      "path": "scripts/generate-test-registry.js",
+      "lines": 729
+    },
+    {
+      "path": "scripts/run-consolidation.v1.js",
+      "lines": 825
+    },
+    {
+      "path": "scripts/sync-reviews-to-jsonl.v1.js",
+      "lines": 1109
+    }
+  ]
+}

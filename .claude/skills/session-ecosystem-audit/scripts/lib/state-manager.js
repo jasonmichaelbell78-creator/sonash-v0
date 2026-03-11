@@ -72,6 +72,18 @@ function createStateManager(rootDir, isSafeToWrite) {
     try {
       if (!fs.existsSync(STATE_DIR)) {
         fs.mkdirSync(STATE_DIR, { recursive: true });
+        // Re-verify after creation to mitigate TOCTOU
+        try {
+          const dirStat = fs.lstatSync(STATE_DIR);
+          if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+            console.error(
+              "  [warn] State dir is not a real directory after creation, skipping write"
+            );
+            return false;
+          }
+        } catch {
+          return false;
+        }
       }
 
       if (!isSafeToWrite(STATE_FILE)) {

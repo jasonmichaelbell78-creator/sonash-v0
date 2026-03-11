@@ -17,7 +17,9 @@
  *   ci_step          — CI workflow steps (all)
  *   health_checker   — health monitoring checker scripts
  *
- * Usage: node scripts/generate-test-registry.js
+ * Usage:
+ *   node scripts/generate-test-registry.js               # regenerate registry
+ *   node scripts/generate-test-registry.js --check-coverage  # check for untested scripts
  */
 
 const fs = require("node:fs");
@@ -39,6 +41,7 @@ try {
 
 const ROOT = path.resolve(__dirname, "..");
 const OUTPUT = path.join(ROOT, "data", "ecosystem-v2", "test-registry.jsonl");
+const BASELINE_PATH = path.join(ROOT, ".test-baseline.json");
 
 /** @typedef {{ path: string, source_type: string, type: string, owner: string, target: string, description: string }} RegistryEntry */
 
@@ -51,7 +54,22 @@ function detectTestType(relPath, defaultType) {
   if (relPath.includes(".property.test.")) return "property";
   if (relPath.includes(".integration.test.")) return "integration";
   if (relPath.includes(".e2e.test.")) return "e2e";
+  if (relPath.includes(".contract.test.")) return "contract";
+  if (relPath.includes(".perf.test.")) return "performance";
   return defaultType;
+}
+
+/**
+ * Extract base name from test filename, stripping test suffixes.
+ * Fixed: handles .test.js, .property.test.js, .integration.test.js etc.
+ * @param {string} fileName
+ * @returns {string}
+ */
+function extractBaseName(fileName) {
+  return fileName.replace(
+    /\.(?:(?:property|integration|e2e|contract|perf)\.)?test\.(?:js|ts|mjs)$/,
+    ""
+  );
 }
 
 /**
@@ -69,9 +87,7 @@ function scanDirForTests(absDir, owner, type) {
       if (!isTestFile(file)) continue;
       const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
       const testType = detectTestType(relPath, type);
-      const baseName = path
-        .basename(file)
-        .replace(/\.(?:property|integration|e2e)?\.test\.(?:js|ts|mjs)$/, "");
+      const baseName = extractBaseName(path.basename(file));
       entries.push({
         path: relPath,
         source_type: "test_file",
@@ -87,35 +103,54 @@ function scanDirForTests(absDir, owner, type) {
   return entries;
 }
 
+/**
+ * Scan a single skill's __tests__ directory for test files.
+ * @param {string} testsDir - Absolute path to __tests__
+ * @param {string} skillName - Skill name for entry metadata
+ * @returns {RegistryEntry[]}
+ */
+function scanSingleSkillTests(testsDir, skillName) {
+  const entries = [];
+  try {
+    const files = readdirRecursive(testsDir);
+    for (const file of files) {
+      if (!isTestFile(file)) continue;
+      const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
+      const baseName = extractBaseName(path.basename(file));
+      entries.push({
+        path: relPath,
+        source_type: "test_file",
+        type: "unit",
+        owner: skillName,
+        target: baseName,
+        description: `${skillName} test: ${baseName}`,
+      });
+    }
+  } catch (err) {
+    console.error(
+      `[generate-test-registry] scanSingleSkillTests(${skillName}): ${sanitizeError(err)}`
+    );
+  }
+  return entries;
+}
+
 /** @returns {RegistryEntry[]} */
 function scanSkillTestFiles() {
   const entries = [];
   const skillsDir = path.join(ROOT, ".claude", "skills");
   if (!fs.existsSync(skillsDir)) return entries;
 
+  const testSubdirs = ["__tests__", "checkers/__tests__", "lib/__tests__"];
+
   try {
     const skills = fs.readdirSync(skillsDir, { withFileTypes: true });
     for (const skill of skills) {
-      if (!skill.isDirectory()) continue;
-      const testsDir = path.join(skillsDir, skill.name, "scripts", "__tests__");
-      if (!fs.existsSync(testsDir)) continue;
-      try {
-        const files = readdirRecursive(testsDir);
-        for (const file of files) {
-          if (!isTestFile(file)) continue;
-          const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
-          const baseName = path.basename(file).replace(/\.test\.(js|ts|mjs)$/, "");
-          entries.push({
-            path: relPath,
-            source_type: "test_file",
-            type: "unit",
-            owner: skill.name,
-            target: baseName,
-            description: `${skill.name} test: ${baseName}`,
-          });
-        }
-      } catch {
-        // Skip unreadable
+      if (!skill.isDirectory() || skill.name === "worktrees") continue;
+      const scriptsBase = path.join(skillsDir, skill.name, "scripts");
+      for (const subdir of testSubdirs) {
+        const testsDir = path.join(scriptsBase, subdir);
+        if (!fs.existsSync(testsDir)) continue;
+        entries.push(...scanSingleSkillTests(testsDir, skill.name));
       }
     }
   } catch (err) {
@@ -127,12 +162,15 @@ function scanSkillTestFiles() {
 
 /** @returns {RegistryEntry[]} */
 function scanTestFiles() {
+  // Comprehensive scan patterns covering all test directories
   const patterns = [
+    // Co-located test directories
     { dir: "scripts/health/checkers/__tests__", owner: "health", type: "unit" },
     { dir: "scripts/health/lib/__tests__", owner: "health", type: "unit" },
+    { dir: "scripts/health", owner: "health", type: "unit" }, // co-located .test.js files
+    { dir: "scripts/reviews/__tests__", owner: "reviews", type: "unit" },
+    // Centralized test directories
     { dir: "tests/hooks", owner: "hooks", type: "unit" },
-    { dir: "tests/hooks/lib", owner: "hooks", type: "unit" },
-    { dir: "tests/hooks/global", owner: "hooks", type: "unit" },
     { dir: "tests/scripts/debt", owner: "debt", type: "unit" },
     { dir: "tests/scripts/lib", owner: "shared-lib", type: "unit" },
     { dir: "tests/scripts/audit", owner: "audit", type: "unit" },
@@ -144,8 +182,14 @@ function scanTestFiles() {
     { dir: "tests/scripts/tasks", owner: "tasks", type: "unit" },
     { dir: "tests/scripts/metrics", owner: "metrics", type: "unit" },
     { dir: "tests/scripts/health", owner: "health", type: "unit" },
+    { dir: "tests/scripts/ecosystem-v2", owner: "ecosystem-v2", type: "unit" },
+    { dir: "tests/scripts", owner: "scripts", type: "unit" }, // root-level script tests
+    { dir: "tests/utils", owner: "utils", type: "unit" },
+    { dir: "tests/security", owner: "security", type: "unit" },
     { dir: "tests/integration", owner: "integration", type: "integration" },
     { dir: "tests/e2e", owner: "e2e", type: "e2e" },
+    { dir: "tests/perf", owner: "perf", type: "performance" },
+    { dir: "tests", owner: "app", type: "unit" }, // root-level app tests
   ];
 
   const entries = [];
@@ -231,6 +275,8 @@ function scanSkillCommands() {
     const skills = fs.readdirSync(skillsDir, { withFileTypes: true });
     for (const skill of skills) {
       if (!skill.isDirectory()) continue;
+      // Skip worktrees directory
+      if (skill.name === "worktrees") continue;
       const skillMd = path.join(skillsDir, skill.name, "SKILL.md");
       if (!fs.existsSync(skillMd)) continue;
       entries.push({
@@ -357,7 +403,10 @@ function readdirRecursive(dir) {
         entry.isDirectory() &&
         entry.name !== "node_modules" &&
         entry.name !== "fixtures" &&
-        entry.name !== ".git"
+        entry.name !== ".git" &&
+        entry.name !== "dist" &&
+        entry.name !== "dist-tests" &&
+        entry.name !== "worktrees"
       ) {
         results.push(...readdirRecursive(fullPath));
       } else if (entry.isFile()) {
@@ -376,10 +425,319 @@ function readdirRecursive(dir) {
  */
 function isTestFile(filePath) {
   const name = path.basename(filePath);
-  return /\.(test|property\.test|integration\.test|e2e\.test)\.(js|ts|mjs)$/.test(name);
+  return /\.(?:(?:property|integration|e2e|contract|perf)\.)?test\.(?:js|ts|mjs)$/.test(name);
 }
 
+// =========================================================
+// --check-coverage: Test coverage gap detection (D#57, D#68)
+// =========================================================
+
+/**
+ * Covered directory globs for script files that should have tests (D#64).
+ * Convention-based: new directories auto-covered.
+ */
+const COVERED_GLOBS = [
+  { base: "scripts", ext: ".js" },
+  { base: ".claude/hooks", ext: ".js" },
+  { base: ".claude/skills", ext: ".js" },
+];
+
+/**
+ * Directories/patterns to exclude from coverage check.
+ */
+const COVERAGE_EXCLUDES = new Set([
+  "__tests__",
+  "node_modules",
+  "dist",
+  "dist-tests",
+  "fixtures",
+  "worktrees",
+  ".git",
+]);
+
+/**
+ * File patterns to exclude from coverage check (test files, build output, etc.)
+ */
+function shouldExcludeFromCoverage(relPath) {
+  // Exclude test files themselves
+  if (isTestFile(relPath)) return true;
+  // Exclude dist/ build output under scripts/reviews/dist
+  if (relPath.includes("scripts/reviews/dist/")) return true;
+  // Exclude planning lib (duplicate of scripts/lib)
+  if (relPath.includes("scripts/planning/lib/")) return true;
+  // Exclude mcp server (external tool)
+  if (relPath.includes("scripts/mcp/")) return true;
+  // Exclude backup/legacy hooks (D#32: superseded versions in root hooks dir)
+  // state-utils.js is a copy of lib/state-utils.js (tested via that path)
+  if (relPath === ".claude/hooks/state-utils.js") return true;
+  // gsd-check-update.js in hooks root is superseded by global/gsd-check-update.js
+  if (relPath === ".claude/hooks/gsd-check-update.js") return true;
+  // gsd-statusline.js in hooks root is superseded by global/statusline.js
+  if (relPath === ".claude/hooks/gsd-statusline.js") return true;
+  // gsd-context-monitor.js is a legacy hook not registered in settings.json
+  if (relPath === ".claude/hooks/gsd-context-monitor.js") return true;
+  return false;
+}
+
+/**
+ * Scan all .js files in covered directories.
+ * @returns {string[]} Relative paths of all source scripts
+ */
+function scanCoveredScripts() {
+  const scripts = [];
+  for (const { base, ext } of COVERED_GLOBS) {
+    const absBase = path.join(ROOT, base);
+    if (!fs.existsSync(absBase)) continue;
+    const files = readdirRecursive(absBase);
+    for (const file of files) {
+      if (!file.endsWith(ext)) continue;
+      const relPath = path.relative(ROOT, file).replaceAll("\\", "/");
+      // Check directory exclusions
+      const parts = relPath.split("/");
+      if (parts.some((p) => COVERAGE_EXCLUDES.has(p))) continue;
+      if (shouldExcludeFromCoverage(relPath)) continue;
+      scripts.push(relPath);
+    }
+  }
+  return scripts;
+}
+
+/**
+ * Check if a script has a corresponding test file.
+ * Uses multiple matching strategies:
+ *   1. Exact name match (script "foo.js" -> test target "foo")
+ *   2. Test path contains script name (script "foo.js" -> test "foo.test.ts")
+ *   3. Prefix-stripped match (script "check-foo.js" -> test target "foo")
+ *   4. Suffix-stripped match (script "validate-foo.js" -> test target "foo")
+ *
+ * @param {string} scriptPath - Relative path like "scripts/foo.js"
+ * @param {RegistryEntry[]} testEntries - All test_file entries from registry
+ * @returns {boolean}
+ */
+/**
+ * Extract a locality key from a relative path (first 2-3 directory segments).
+ * Used to ensure fuzzy matches share a common directory ancestor.
+ * @param {string} relPath - Relative path like "scripts/health/checkers/foo.js"
+ * @returns {string} Locality key like "scripts/health" or ".claude/skills/pr-ecosystem-audit"
+ */
+function getLocalityKey(relPath) {
+  const dir = path.posix.dirname(relPath.replaceAll("\\", "/"));
+  const parts = dir.split("/").filter(Boolean);
+  if (parts.length === 0) return "";
+  // For .claude/skills/X paths, use first 3 segments to capture skill name
+  if (parts[0] === ".claude" && parts[1] === "skills" && parts.length >= 3) {
+    return parts.slice(0, 3).join("/");
+  }
+  // For shallow paths, keep full dir; truncate only when deep
+  if (parts.length <= 3) return parts.join("/");
+  return parts.slice(0, 2).join("/");
+}
+
+/**
+ * Check if a single test entry matches a script name via any strategy.
+ * @param {RegistryEntry} entry - Test registry entry
+ * @param {string} scriptName - Base name without extension
+ * @param {string} prefixStripped - Name with common prefixes removed
+ * @param {string} [scriptDir] - Locality key for directory-aware matching
+ * @returns {boolean}
+ */
+function entryMatchesScript(entry, scriptName, prefixStripped, scriptDir) {
+  const entryTarget = typeof entry.target === "string" ? entry.target : "";
+  const entryPath = typeof entry.path === "string" ? entry.path : "";
+  // Strategy 1: exact name match (no locality check needed)
+  if (entryTarget === scriptName) return true;
+  // For strategies 2 and 4, require directory locality when scriptDir is provided
+  const localMatch = !scriptDir || getLocalityKey(entryPath) === scriptDir;
+  // Strategy 2: test path contains script name
+  if (localMatch && entryPath.includes(scriptName + ".test.")) return true;
+  if (localMatch && entryPath.includes(scriptName + ".property.test.")) return true;
+  // Strategy 3: prefix-stripped match (check-docs-light -> docs-light)
+  if (localMatch && prefixStripped !== scriptName && entryTarget === prefixStripped) return true;
+  // Strategy 4: test target contains script name or vice versa
+  if (entryTarget && (entryTarget.includes(scriptName) || scriptName.includes(entryTarget))) {
+    if ((entryTarget.length >= 5 || scriptName.length >= 5) && localMatch) return true;
+  }
+  return false;
+}
+
+function hasTest(scriptPath, testEntries) {
+  const scriptName = path.basename(scriptPath, ".js");
+  const scriptDir = getLocalityKey(scriptPath);
+  const prefixStripped = scriptName
+    .replace(/^check-/, "")
+    .replace(/^validate-/, "")
+    .replace(/^generate-/, "")
+    .replace(/^run-/, "");
+
+  return testEntries.some(
+    (entry) =>
+      entry.source_type === "test_file" &&
+      entryMatchesScript(entry, scriptName, prefixStripped, scriptDir)
+  );
+}
+
+/**
+ * Load and validate .test-baseline.json
+ * @returns {{ entries: Array<{path: string, lines: number}> } | null}
+ */
+function loadBaseline() {
+  try {
+    if (!fs.existsSync(BASELINE_PATH)) return null;
+    const content = fs.readFileSync(BASELINE_PATH, "utf8");
+    const baseline = JSON.parse(content);
+    if (!baseline || !Array.isArray(baseline.entries)) return null;
+    // Validate entries have required 'path' field
+    baseline.entries = baseline.entries
+      .filter((e) => e && typeof e === "object" && typeof e.path === "string")
+      .map((e) => ({ ...e, path: e.path.replaceAll("\\", "/").replace(/^\.\//, "") }))
+      .filter((e) => {
+        const p = e.path;
+        if (!p || path.posix.isAbsolute(p) || p.includes("\0")) return false;
+        const normalized = path.posix.normalize(p);
+        if (/^\.\.(?:[\\/]|$)/.test(normalized)) return false;
+        e.path = normalized;
+        return true;
+      });
+    return baseline;
+  } catch (err) {
+    console.error(`[generate-test-registry] Failed to load baseline: ${sanitizeError(err)}`);
+    return null;
+  }
+}
+
+/**
+ * Auto-clean baseline entries for deleted scripts (D#80).
+ * @param {{ version: number, description: string, created: string, entries: Array<{path: string, lines: number}> }} baseline
+ * @returns {boolean} Whether baseline was modified
+ */
+function autoCleanBaseline(baseline, { allowWrite = false } = {}) {
+  const originalCount = baseline.entries.length;
+  baseline.entries = baseline.entries.filter((entry) => {
+    const absPath = path.join(ROOT, entry.path);
+    return fs.existsSync(absPath);
+  });
+  const removed = originalCount - baseline.entries.length;
+  if (removed > 0) {
+    console.log(`  Baseline auto-cleaned: removed ${removed} entries for deleted scripts`);
+    if (allowWrite) {
+      try {
+        safeWriteFileSync(BASELINE_PATH, JSON.stringify(baseline, null, 2) + "\n", "utf8");
+      } catch (err) {
+        console.error(
+          `[generate-test-registry] Failed to write cleaned baseline: ${sanitizeError(err)}`
+        );
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Run --check-coverage mode.
+ * Scans covered directories, compares against test inventory,
+ * reads .test-baseline.json to exclude known gaps.
+ * Exits non-zero if NEW untested files found (not in baseline).
+ *
+ * @param {RegistryEntry[]} registryEntries - Current registry entries
+ * @returns {number} Exit code (0 = pass, 1 = new gaps found)
+ */
+/**
+ * Print a list of gaps with line counts.
+ * @param {string[]} gaps - Relative paths of untested scripts
+ */
+function printGapList(gaps) {
+  const MAX_GAP_FILE_SIZE = 2 * 1024 * 1024;
+  for (const gap of [...gaps].sort((a, b) => a.localeCompare(b))) {
+    let lines = "?";
+    try {
+      const abs = path.resolve(ROOT, gap);
+      const rel = path.relative(ROOT, abs);
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+        continue;
+      }
+      const stat = fs.statSync(abs);
+      if (stat.size <= MAX_GAP_FILE_SIZE) {
+        lines = fs.readFileSync(abs, "utf8").split("\n").length;
+      }
+    } catch {
+      // ignore
+    }
+    console.log(`  ${gap} (${lines} lines)`);
+  }
+}
+
+/**
+ * Check coverage with a baseline file present.
+ * @param {string[]} untested - Untested script paths
+ * @param {{ entries: Array<{path: string, lines: number}> }} baseline
+ * @returns {number} Exit code
+ */
+function checkCoverageWithBaseline(untested, baseline) {
+  autoCleanBaseline(baseline);
+  const baselineSet = new Set(baseline.entries.map((e) => e.path));
+  const newGaps = untested.filter((s) => !baselineSet.has(s));
+  const knownGaps = untested.filter((s) => baselineSet.has(s));
+
+  console.log(`Known gaps (in baseline): ${knownGaps.length}`);
+  console.log(`NEW gaps (not in baseline): ${newGaps.length}\n`);
+
+  if (newGaps.length > 0) {
+    console.log("NEW untested scripts (not in .test-baseline.json):");
+    printGapList(newGaps);
+    console.log("\nTo fix: add tests for these scripts, or add them to .test-baseline.json");
+    return 1;
+  }
+
+  console.log("PASS: No new untested scripts found.");
+  if (knownGaps.length > 0) {
+    console.log(`\nBaseline gaps remaining (${knownGaps.length}):`);
+    for (const gap of [...knownGaps].sort((a, b) => a.localeCompare(b)).slice(0, 10)) {
+      console.log(`  ${gap}`);
+    }
+    if (knownGaps.length > 10) {
+      console.log(`  ... and ${knownGaps.length - 10} more`);
+    }
+  }
+  return 0;
+}
+
+function checkCoverage(registryEntries) {
+  console.log("Test Coverage Completeness Check");
+  console.log("================================\n");
+
+  const allScripts = scanCoveredScripts();
+  console.log(`Scripts in covered directories: ${allScripts.length}`);
+
+  const testEntries = registryEntries.filter((e) => e.source_type === "test_file");
+  const untested = allScripts.filter((s) => !hasTest(s, testEntries));
+  console.log(`Scripts without tests: ${untested.length}`);
+
+  const baseline = loadBaseline();
+  if (baseline) {
+    return checkCoverageWithBaseline(untested, baseline);
+  }
+
+  // No baseline file — all untested scripts are gaps
+  if (untested.length > 0) {
+    console.log("\nNo .test-baseline.json found. All untested scripts are gaps:");
+    printGapList(untested);
+    console.log("\nCreate .test-baseline.json to acknowledge known gaps.");
+    return 1;
+  }
+
+  console.log("PASS: All scripts have tests.");
+  return 0;
+}
+
+// =========================================================
+// Main
+// =========================================================
+
 function main() {
+  const args = process.argv.slice(2);
+  const isCheckCoverage = args.includes("--check-coverage");
+
   try {
     const allEntries = [
       ...scanTestFiles(),
@@ -399,6 +757,12 @@ function main() {
       seen.add(key);
       return true;
     });
+
+    if (isCheckCoverage) {
+      const exitCode = checkCoverage(uniqueEntries);
+      process.exitCode = exitCode;
+      return;
+    }
 
     // Ensure output directory exists
     const outDir = path.dirname(OUTPUT);

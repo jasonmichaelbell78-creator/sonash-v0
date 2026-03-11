@@ -16,6 +16,11 @@ score"
 
 # Ecosystem Health -- Interactive Dashboard
 
+**Ecosystem ownership:** Part of `health-ecosystem-audit` ecosystem (D#18,
+D#31). Audited by `/health-ecosystem-audit` D4: Consumer Integration, which
+validates integration contracts and flags divergence from expected behavior
+(D#47).
+
 ## When to Use
 
 - User explicitly invokes `/ecosystem-health`

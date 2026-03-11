@@ -68,6 +68,9 @@ const KNOWN_SKIPPED_IDS = new Set([
   119, 120, 157, 158, 159, 160, 166, 167, 168, 169, 170, 172, 173, 174, 175, 176, 177, 178, 185,
   203, 205, 206, 207, 208, 209, 210, 220, 228, 229, 230, 231, 232, 233, 234, 240, 241, 242, 243,
   244, 245, 246, 247, 248, 323, 335, 349, 375,
+  // #460-#461, #463-#464, #466-#467: Phantom IDs from collision renumbering loop (fixed Session #214)
+  460,
+  461, 463, 464, 466, 467,
 ]);
 
 // Known-duplicate review IDs: IDs that legitimately exist in multiple archive files

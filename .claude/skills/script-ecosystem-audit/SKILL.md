@@ -210,6 +210,12 @@ Include:
 
 ## Phase 5: Self-Audit Verification
 
+Run `__tests__/` suite to confirm audit integrity:
+
+```bash
+node --test .claude/skills/script-ecosystem-audit/scripts/__tests__/*.test.js
+```
+
 Re-run the audit script and compare:
 
 ```bash
