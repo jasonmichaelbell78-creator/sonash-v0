@@ -852,6 +852,41 @@ deduplicated, non-overlapping ranges):
 
 ---
 
+## Retrospectives
+
+### Batch Retro: PRs #420, #424, #426 (2026-03-11, Session #215)
+
+**Scope:** 3 PRs, 12 rounds total (2 + 3 + 7), ~604 review items across all
+rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
+
+**Scores:** PR #420: 7/10 | PR #424: 6.5/10 | PR #426: 5/10 | Cross-PR: 6/10
+
+**Top Findings:**
+
+1. **SonarCloud first-scan volume** — PRs #424/#426 produced 541+ items on R1
+   from new file scans. Fix: batch-acknowledgment step added to `/pr-review`.
+2. **Propagation misses** — #1 churn driver across all 3 PRs (process.execPath
+   4x, .js strip, exit codes, scoring clamping). Fix: propagation sweep
+   strengthened in `/pr-review` Step 4.
+3. **Cross-round re-raises** — Qodo and SonarCloud re-flag rejected items. Fix:
+   cross-round dedup + stale HEAD check added to `/pr-review` Step 2.
+4. **CC pre-push check was misidentified** — existed for cyclomatic (ESLint) but
+   not cognitive (SonarCloud S3776). Fix: `scripts/check-cc.js` created and
+   wired into `.husky/pre-push`.
+
+**Action Items Implemented (9/9):**
+
+- `/pr-review` SKILL.md v4.1: Step 0 (size advisory + first-scan batch), Step 2
+  (cross-round dedup + stale HEAD + prior rejection), Step 4 (propagation
+  sweep), Step 6 (data completeness check)
+- `sonar-project.properties`: S5852 test file suppressions (fp6c/fp6d)
+- `.husky/pre-push`: cognitive complexity check via `scripts/check-cc.js`
+- `retros.jsonl`: PR #420 upgraded to full, #424 and #426 records created
+- DEBT-45519: Pre-push SonarCloud lint script (deferred)
+- Deep-plan task: JSONL-only migration (planned for future session)
+
+---
+
 ## Active Reviews
 
 ### Review #472: PR #426 R3 — Mixed (Qodo + CI + SonarCloud) (2026-03-10)

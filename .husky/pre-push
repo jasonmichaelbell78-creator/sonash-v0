@@ -285,6 +285,32 @@ else
   fi # end cc_base check
 fi
 
+# 5c. Cognitive Complexity check (blocking — SonarCloud S3776)
+# Distinct from 5b cyclomatic complexity. Uses acorn AST to compute cognitive CC.
+# Created in retro session #215 to close the 5x repeat-offender action item.
+if [ "${SKIP_COG_CC:-}" = "1" ]; then
+  require_skip_reason "SKIP_COG_CC=1"
+  echo "  ⚠️ Cognitive CC check skipped (SKIP_COG_CC=1)"
+  node scripts/log-override.js --quick --check=cognitive-cc --reason="$SKIP_REASON" 2>/dev/null || true
+elif [ -f scripts/check-cc.js ]; then
+  echo "  ▶ Checking cognitive complexity (push diff)..."
+  set +e
+  cog_output=$(node scripts/check-cc.js 2>&1)
+  cog_exit=$?
+  set -e
+  if [ "$cog_exit" -eq 1 ]; then
+    echo "  ❌ Cognitive complexity violations (CC >15) in pushed files:"
+    printf '%s\n' "$cog_output" | grep -E "CC [0-9]+" | head -10
+    echo ""
+    echo "  Extract helper functions to reduce complexity before pushing."
+    echo "  Override: SKIP_REASON=\"reason\" SKIP_COG_CC=1 git push"
+    exit 1
+  elif [ "$cog_exit" -eq 0 ]; then
+    echo "  ✅ Cognitive complexity passed (CC ≤15)"
+  else
+    echo "  ⚠️ Cognitive CC check errored (exit $cog_exit), continuing"
+  fi
+fi
 
 # 6. Security audit (non-blocking warning, ~3-8s)
 # Checks for high/critical vulnerabilities in dependencies

@@ -35,6 +35,8 @@
     "phase:complete:auto": "node scripts/phase-complete-check.js --auto",
     "phase:validate": "node scripts/validate-phase-completion.js",
     "propagation:check": "node scripts/check-propagation.js",
+    "cc:check": "node scripts/check-cc.js",
+    "cc:check-all": "node scripts/check-cc.js --all",
     "patterns:check": "node scripts/check-pattern-compliance.js",
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",

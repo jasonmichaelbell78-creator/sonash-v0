@@ -54,6 +54,9 @@ finding-by-finding walkthrough.
 7. Every observation MUST have a recommended action with estimated effort.
 8. Cross-PR systemic analysis is MUST for every retro.
 9. Follow CLAUDE.md Section 5 anti-patterns and Section 6 coding standards.
+10. **MUST implement accepted action items** — retro is blocked until every item
+    is done or user explicitly says "defer" or "create DEBT". No implicit
+    deferral. No moving to Step 7 with unfinished items.
 
 ---
 
@@ -254,7 +257,12 @@ Skip if no rejections in this retro.
 
 ---
 
-## STEP 6: ACTION ITEM IMPLEMENTATION (MUST)
+## STEP 6: ACTION ITEM IMPLEMENTATION (MUST — BLOCKING)
+
+> **This step is a hard gate.** The retro CANNOT proceed to Step 7 until every
+> accepted action item is either implemented+verified or explicitly deferred by
+> the user saying "defer" or "create DEBT." No implicit deferral. No skipping.
+> This is the #1 structural fix for repeat-offender action items.
 
 ### 6.1 Approval Gate (MUST)
 
@@ -265,23 +273,42 @@ Present all proposed action items as a batch:
 
 User MAY: accept all, modify severity, reject individual items.
 
-### 6.2 Implement Now (DEFAULT)
+### 6.2 Implement Every Item (MUST — not DEFAULT)
 
-**Default behavior:** Implement every approved action item during this retro
-session. This includes doc updates, config changes, pre-check additions,
-suppression syncs, and code changes. The retro is not complete until all
-accepted action items are implemented and verified.
+Implement every approved action item during this retro session. This includes
+doc updates, config changes, pre-check additions, suppression syncs, scripts,
+and code changes. **No exceptions without explicit user instruction.**
 
-**Exception — DEBT deferral:** Only create TDMS entries when the user explicitly
-requests deferral (e.g., "defer this one", "create a DEBT item for that"). Never
-default to DEBT — it leads to action items that are recommended repeatedly but
-never implemented.
+After each implementation, run the verify command and mark the item:
 
-### 6.3 Flag Repeat Offenders
+- `[DONE]` — implemented and verified
+- `[BLOCKED]` — cannot be done now, explain why, ask user what to do
+
+**DEBT/TDMS is NOT an option unless the user explicitly requests it.** Do not
+offer "defer to DEBT" as a choice. Do not create TDMS entries unless the user
+says words like "defer", "create DEBT", or "add to TDMS." If an item is complex,
+the options are: implement now, or plan it (add to SESSION_CONTEXT.md next goals
+/ ROADMAP.md) — not file it into TDMS where it gets lost.
+
+### 6.3 Implementation Checklist (MUST — before proceeding)
+
+After all items are addressed, present the implementation status:
+
+```
+Action Item Status:
+  [DONE] #1 — description (verify: passed)
+  [DONE] #2 — description (verify: passed)
+  [BLOCKED] #3 — description (reason: X, user decision: Y)
+```
+
+**Gate check:** If ANY item is not `[DONE]` or explicitly resolved by the user,
+do NOT proceed to Step 7. Ask the user how to handle remaining items.
+
+### 6.4 Flag Repeat Offenders
 
 Same action item in 2+ retros without implementation: implement NOW during this
-retro. If genuinely blocked, escalate to S1 DEBT with bold **"BLOCKING —
-recommended N times, never implemented"** and explain the blocker.
+retro. These get highest priority in the implementation queue. If genuinely
+blocked, explain the blocker and ask the user — do not auto-defer.
 
 ---
 
@@ -296,8 +323,8 @@ Audits BOTH the retro output AND the skill process itself:
    decisions logged to state file? Were verify commands real and runnable?
 2. **Section completeness** — are all 9 mandatory retro sections covered?
 3. **Action item verification** — run stored verify commands against codebase.
-   Flag `[NOT IMPLEMENTED]` items for user resolution (implement now / defer /
-   reject).
+   Flag `[NOT IMPLEMENTED]` items — these MUST be implemented now (Step 6 gate
+   should have caught this). If found, return to Step 6.
 4. **Data integrity** — JSONL parseable, markdown appended, sync succeeded
 5. **Cross-PR consistency** (batch only) — individual records, no duplicates
 
@@ -379,6 +406,7 @@ checks open retro DEBT items. `/pr-review` checks pre-push recommendations.
 
 | Version | Date       | Description                                                                                                                                    |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.2     | 2026-03-11 | Step 6 hard gate: implement=MUST not DEFAULT, DEBT only on explicit user request, implementation checklist + gate check before Step 7.         |
 | 4.1     | 2026-03-09 | Step 6 rewrite: default=implement now, DEBT=explicit only. Source: batch retro PRs #417-#423.                                                  |
 | 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch retros, verification protocol, compaction resilience, routing. Source: skill-audit 37 decisions. |
 | 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                                            |

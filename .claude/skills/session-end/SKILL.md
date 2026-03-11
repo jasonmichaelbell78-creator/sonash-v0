@@ -198,9 +198,15 @@ continue with the remaining commands.
 | d   | `node scripts/debt/consolidate-all.js`                                 | TDMS consolidation      | MASTER_DEBT.jsonl          | Never skip               |
 | e   | `node scripts/debt/generate-metrics.js`                                | TDMS metrics            | metrics.json, METRICS.md   | Never skip               |
 
-**Show to user:** Health score dashboard (7c) and velocity summary (7a).
-Summarize other output only if errors occurred. If health score degraded since
-last check, note in session summary (Step 2).
+**Ecosystem health triage check (SHOULD):** After 7c, check if
+`.claude/state/task-ecosystem-health-triage.state.json` exists. If it does, read
+it and include in session summary: "N dimensions triaged (M fixed, K deferred)."
+If the file doesn't exist, skip silently (triage wasn't run this session).
+
+**Show to user:** Health score dashboard (7c), velocity summary (7a), and
+ecosystem health triage results (if any). Summarize other output only if errors
+occurred. If health score degraded since last check, note in session summary
+(Step 2).
 
 > **Note:** Learning consolidation runs automatically during SessionStart when
 > threshold is reached (10+ reviews). No action needed here.
@@ -271,20 +277,21 @@ Session-end is complete when ALL of the following are true:
 
 ## Artifact Manifest
 
-| File                       | Read/Write | Step | Purpose                             |
-| -------------------------- | ---------- | ---- | ----------------------------------- |
-| SESSION_CONTEXT.md         | R/W        | 2    | Session summary, status, goals      |
-| SESSION_HISTORY.md         | W          | 2    | Archived session summaries          |
-| ROADMAP.md                 | R/W        | 3    | Feature completion status           |
-| .session-agents.json       | R/D        | 4, 8 | Agent compliance check, then delete |
-| .agent-trigger-state.json  | R/D        | 4, 8 | Agent trigger check, then delete    |
-| pending-reviews.json       | R/D        | 4, 8 | Review queue check, then delete     |
-| velocity-log.jsonl         | W          | 7a   | Velocity metrics                    |
-| reviews.jsonl              | W          | 7b   | Review sync                         |
-| ecosystem-health-log.jsonl | W          | 7c   | Health score trend                  |
-| MASTER_DEBT.jsonl          | W          | 7d   | Consolidated debt                   |
-| metrics.json               | W          | 7e   | Machine-readable metrics            |
-| METRICS.md                 | W          | 7e   | Human-readable metrics              |
+| File                                    | Read/Write | Step | Purpose                             |
+| --------------------------------------- | ---------- | ---- | ----------------------------------- |
+| SESSION_CONTEXT.md                      | R/W        | 2    | Session summary, status, goals      |
+| SESSION_HISTORY.md                      | W          | 2    | Archived session summaries          |
+| ROADMAP.md                              | R/W        | 3    | Feature completion status           |
+| .session-agents.json                    | R/D        | 4, 8 | Agent compliance check, then delete |
+| .agent-trigger-state.json               | R/D        | 4, 8 | Agent trigger check, then delete    |
+| pending-reviews.json                    | R/D        | 4, 8 | Review queue check, then delete     |
+| velocity-log.jsonl                      | W          | 7a   | Velocity metrics                    |
+| reviews.jsonl                           | W          | 7b   | Review sync                         |
+| ecosystem-health-log.jsonl              | W          | 7c   | Health score trend                  |
+| task-ecosystem-health-triage.state.json | R          | 7c   | Triage results (if exists)          |
+| MASTER_DEBT.jsonl                       | W          | 7d   | Consolidated debt                   |
+| metrics.json                            | W          | 7e   | Machine-readable metrics            |
+| METRICS.md                              | W          | 7e   | Human-readable metrics              |
 
 ---
 

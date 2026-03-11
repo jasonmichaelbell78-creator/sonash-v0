@@ -70,6 +70,26 @@ Ready to receive review feedback. Paste it below.
 
 ---
 
+## Step 0: Pre-Checks (MUST — before parsing)
+
+**PR size advisory (MUST):** Check file count before starting review:
+
+```bash
+gh pr view {PR} --json files --jq '.files | length'
+```
+
+If >50 changed files: "This PR has N files. Large PRs produce noisy review
+cycles. Consider splitting before review. Continue anyway? [Y/split]"
+
+**First-scan detection (MUST for R1):** If SonarCloud items >100 on R1, most are
+likely first-scan noise on new files (not bugs introduced by the PR). Offer
+batch acknowledgment: "SonarCloud flagged N items on R1. This appears to be
+first-scan volume on new files. Batch-acknowledge known-safe patterns (S5852,
+S4036, S106 in scripts/tests)? [Y/review individually]" Apply existing
+suppression patterns, triage only remaining items individually.
+
+---
+
 ## Step 1: Context & Parse (MUST)
 
 > Read `reference/PRE_CHECKS.md` for 18 mandatory pre-push checks. Run ALL
@@ -118,6 +138,17 @@ trivial). Estimated effort: [small <=5 | medium 6-15 | large 16-30 | XL 30+]."
 | **Pre-existing, complex** | Track via `/add-debt` with DEBT-XXXX ID      |
 | **Architectural**         | Present to user with impact + recommendation |
 
+**Cross-round dedup (MUST for R2+):** Before investigating any item, check prior
+round dispositions for the same PR. Auto-reject items that match a prior
+rejection (same rule ID + same file). Reference the prior round: "Already
+rejected in R{N} — same justification applies." This applies to ALL reviewers
+(Qodo, SonarCloud, Gemini), not just Qodo.
+
+**Stale HEAD check (MUST):** When a SonarCloud item references a file already
+modified in the current fix commit, flag as potentially stale. Verify against
+current HEAD before investigating: `git show HEAD:{file} | grep -n "pattern"`.
+Mark confirmed stale items as "Stale (fixed in R{N} commit {hash})."
+
 **Triage summary (non-blocking):** Show breakdown, auto-proceed. User MAY
 interrupt. For architectural items: state finding, impact, recommendation, wait.
 
@@ -148,11 +179,16 @@ by file) > TRIVIAL (batch all).
 
 **Per fix:** Check FIX_TEMPLATES first. Read file, understand context, apply.
 
-**Propagation (MUST — NEVER skip):** After every pattern-based fix, grep the
-entire codebase for same pattern and fix ALL instances before committing:
+**Propagation sweep (MUST — NEVER skip):** After every pattern-based fix, grep
+the entire codebase for the same pattern and fix ALL instances before
+committing. This is the #1 source of avoidable review rounds (evidenced across
+PRs #420, #424, #426). Do NOT commit a fix until all instances are addressed:
 
 ```bash
-grep -rn "PATTERN" scripts/ .claude/hooks/ --include="*.js"
+# Search for the same anti-pattern across the codebase
+grep -rn "PATTERN" scripts/ .claude/hooks/ tests/ --include="*.js" --include="*.ts"
+# Verify: count remaining instances (must be 0)
+grep -rc "PATTERN" scripts/ .claude/hooks/ tests/ --include="*.js" --include="*.ts" | grep -v ':0$'
 ```
 
 **Verify (MUST):** Re-read modified files, `npm run lint`, `npm run test`,
@@ -203,7 +239,14 @@ cd scripts/reviews && npx tsc && node dist/write-review-record.js --data '{...}'
 See LEARNING_CAPTURE.md for full schema, deferred-items, and invocation
 tracking.
 
-**Done when:** Learning entry + JSONL record created.
+**Data completeness check (MUST):** Before marking Step 6 done, verify both
+artifacts exist: (1) markdown entry appended to `AI_REVIEW_LEARNINGS_LOG.md`
+with correct review number, (2) JSONL record written via
+`write-review-record.js` with all fields populated (pr, round, total, fixed,
+rejected, deferred, source). Missing either artifact causes data gaps in
+`/pr-retro` analysis.
+
+**Done when:** Learning entry + JSONL record created, both verified.
 
 ---
 
@@ -280,7 +323,8 @@ after completion as review record.
 
 ## Version History
 
-| Version | Date       | Description                                                                                                                                |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 4.0     | 2026-03-07 | Full rewrite from skill-audit (49 decisions). 8 sequential steps, pre-checks extracted, MUST/SHOULD/MAY, compaction, guard rails, routing. |
-| 3.7     | 2026-03-05 | Out-of-scope table, completeness gate                                                                                                      |
+| Version | Date       | Description                                                                                                                                                                                                |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.1     | 2026-03-11 | Retro PRs #420/#424/#426: Step 0 (size advisory + first-scan batch), Step 2 (cross-round dedup + stale HEAD + prior rejection), Step 4 (propagation sweep strengthened), Step 6 (data completeness check). |
+| 4.0     | 2026-03-07 | Full rewrite from skill-audit (49 decisions). 8 sequential steps, pre-checks extracted, MUST/SHOULD/MAY, compaction, guard rails, routing.                                                                 |
+| 3.7     | 2026-03-05 | Out-of-scope table, completeness gate                                                                                                                                                                      |
