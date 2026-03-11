@@ -27,8 +27,8 @@ suggestions.
 **When to use:** When you want to understand the overall health of the TDMS
 pipeline, identify data quality issues, sync drift between master and deduped
 files, broken roadmap cross-references, or metrics accuracy problems.
-Complementary with `/verify-technical-debt` (that skill verifies individual DEBT
-items; this skill audits the SYSTEM itself).
+Complementary with the verification queue workflow (that verifies individual
+DEBT items; this skill audits the SYSTEM itself).
 
 ---
 
@@ -341,7 +341,7 @@ Stable:
 | ---------------------------- | ---------------------------------------------------------------- |
 | Track Assignment Rules       | roadmap_ref values use valid tracks and phases                   |
 | ROADMAP-DEBT Cross-Reference | DEBT-XXXX refs in ROADMAP.md exist in MASTER_DEBT and vice versa |
-| Sprint File Alignment        | Sprint ID files match item statuses; no stale sprint refs        |
+| Milestone File Alignment     | Milestone assignments match item statuses; no stale refs         |
 
 ### Domain 5: Metrics & Reporting (20% weight)
 
@@ -375,17 +375,16 @@ weights: D1=20%, D2=25%, D3=20%, D4=15%, D5=20%.
 
 ### Data Sources
 
-| Source         | Path                                     | Content                                  |
-| -------------- | ---------------------------------------- | ---------------------------------------- |
-| TDMS scripts   | `scripts/debt/*.js`                      | 37 pipeline and utility scripts          |
-| Canonical data | `docs/technical-debt/MASTER_DEBT.jsonl`  | 4,500+ technical debt items              |
-| Deduped source | `docs/technical-debt/raw/deduped.jsonl`  | Must stay in sync with master            |
-| Views          | `docs/technical-debt/views/*.md`         | Generated severity/category/status views |
-| Metrics        | `docs/technical-debt/METRICS.md`         | Dashboard with totals and trends         |
-| Logs           | `docs/technical-debt/logs/*.jsonl`       | Intake, dedup, resolution logs           |
-| Schema         | `scripts/config/audit-schema.json`       | Canonical field definitions              |
-| Sprint files   | `docs/technical-debt/logs/sprint-*.json` | Sprint ID assignments                    |
-| ROADMAP        | `ROADMAP.md`                             | Sprint tracks with DEBT refs             |
+| Source         | Path                                    | Content                                  |
+| -------------- | --------------------------------------- | ---------------------------------------- |
+| TDMS scripts   | `scripts/debt/*.js`                     | 37 pipeline and utility scripts          |
+| Canonical data | `docs/technical-debt/MASTER_DEBT.jsonl` | 4,500+ technical debt items              |
+| Deduped source | `docs/technical-debt/raw/deduped.jsonl` | Must stay in sync with master            |
+| Views          | `docs/technical-debt/views/*.md`        | Generated severity/category/status views |
+| Metrics        | `docs/technical-debt/METRICS.md`        | Dashboard with totals and trends         |
+| Logs           | `docs/technical-debt/logs/*.jsonl`      | Intake, dedup, resolution logs           |
+| Schema         | `scripts/config/audit-schema.json`      | Canonical field definitions              |
+| ROADMAP        | `ROADMAP.md`                            | Milestone tracks with DEBT refs          |
 
 ### TDMS Pipeline Architecture
 

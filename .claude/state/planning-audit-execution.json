@@ -1,0 +1,153 @@
+{
+  "task": "Planning Landscape Audit & Cleanup",
+  "created": "2026-03-11",
+  "status": "in_progress",
+  "current_wave": "5-pending",
+  "waves": {
+    "wave_1": {
+      "status": "complete",
+      "completed": "2026-03-11",
+      "results": {
+        "1a": "3 files renamed, 12 edits across 9 files, 3645 tests pass",
+        "1b": "6 items archived to .planning/archive/ and docs/archive/, STATE.md updated to v3.1",
+        "1c": "4 files archived to .claude/plans/archive/"
+      }
+    },
+    "wave_2": {
+      "status": "complete",
+      "completed": "2026-03-11",
+      "results": "CAPTURE_MANIFEST.md created at .planning/system-wide-standardization/"
+    },
+    "wave_3": {
+      "status": "complete",
+      "completed": "2026-03-11",
+      "results": "3 files folded to .claude/plans/archive/. 4 files remain active."
+    },
+    "wave_4": {
+      "status": "complete",
+      "completed": "2026-03-11",
+      "description": "Multi-agent deep research + execution: Grand Plan removal (9 agents, 6 passes, 4 sub-waves executed)",
+      "decisions": {
+        "D1_framework_repo_copies": "DELETE",
+        "D2_place_unassigned_debt": "DELETE (recreate if needed later)",
+        "D3_ideas_jsonl_gp_lines": "DELETE lines 2, 33, 43",
+        "D4_tech_debt_resolution_plan": "ARCHIVE to .claude/plans/archive/",
+        "D5_master_debt_sprint_fields": "N/A (zero sprint_id fields exist)"
+      },
+      "execution_plan": {
+        "total_deletions": 50,
+        "total_modifications": 22,
+        "execution_waves": 4,
+        "W1_core_infrastructure": {
+          "status": "complete",
+          "description": "Delete scripts + skills + state. Modify resolve-bulk/item/reconcile-roadmap.",
+          "delete": [
+            ".claude/skills/sprint/ (entire directory)",
+            ".claude/skills/verify-technical-debt/ (entire directory)",
+            "scripts/debt/generate-grand-plan.js",
+            "scripts/debt/sprint-status.js",
+            "scripts/debt/sprint-intake.js",
+            "scripts/debt/sprint-complete.js",
+            "scripts/debt/sprint-wave.js",
+            "scripts/debt/categorize-and-assign.js",
+            "scripts/debt/analyze-placement.js",
+            "scripts/place-unassigned-debt.js",
+            ".claude/state/active-sprint.json (if exists)"
+          ],
+          "modify": [
+            "scripts/debt/resolve-bulk.js — remove lines 440-446 (generate-grand-plan execFileSync call)",
+            "scripts/debt/resolve-item.js — remove lines 307-314 (generate-grand-plan execFileSync call)",
+            "scripts/debt/reconcile-roadmap.js — remove Step 9b (lines 195-288: buildGrandPlanSection + GP imports)"
+          ],
+          "commit": "feat: remove Grand Plan sprint infrastructure",
+          "verify": "grep for deleted script names, npm test"
+        },
+        "W2_tests_and_data": {
+          "status": "complete",
+          "description": "Delete test files, sprint log files, GRAND_PLAN_V2.md. Archive tech-debt-resolution-plan.",
+          "delete": [
+            "tests/scripts/debt/sprint-status.test.ts",
+            "tests/scripts/debt/sprint-intake.test.ts",
+            "tests/scripts/debt/sprint-complete.test.ts",
+            "tests/scripts/debt/sprint-wave.test.ts",
+            "tests/scripts/debt/generate-grand-plan.test.ts",
+            "tests/scripts/debt/categorize-and-assign.test.ts",
+            "tests/scripts/debt/analyze-placement.test.ts",
+            "tests/scripts/place-unassigned-debt.test.ts",
+            "dist-tests equivalents of all 8 above",
+            "docs/technical-debt/GRAND_PLAN_V2.md",
+            "docs/technical-debt/logs/grand-plan-manifest.json",
+            "docs/technical-debt/logs/sprint-{1,2,3,4,5,6,7}-ids.json",
+            "docs/technical-debt/logs/sprint-{8a,8b,8c,8d}-ids.json",
+            "docs/technical-debt/logs/sprint-{9a,9b}-ids.json",
+            "docs/technical-debt/logs/sprint-10-ids.json",
+            "docs/technical-debt/logs/sprint-{11a,11b,11c}-ids.json",
+            "docs/technical-debt/logs/sprint-{12a,12b,12c,12d}-ids.json"
+          ],
+          "archive": [".claude/plans/technical-debt-resolution-plan.md → .claude/plans/archive/"],
+          "commit": "chore: remove Grand Plan tests, data, and plan doc",
+          "verify": "npm run test:debt"
+        },
+        "W3_config_and_skills": {
+          "status": "complete",
+          "description": "Update package.json, skill-registry, verified-patterns, command refs, skill docs.",
+          "modify": [
+            "package.json — remove 5 sprint:* npm scripts (lines 81-85)",
+            "scripts/config/skill-registry.json — remove /sprint entry",
+            "scripts/config/verified-patterns.json — remove 7 deleted script names from all arrays",
+            ".claude/COMMAND_REFERENCE.md — remove /sprint (line 76) and /verify-technical-debt (line 66)",
+            ".claude/skills/SKILL_INDEX.md — remove /sprint and /verify-technical-debt (3 locations)",
+            "docs/SLASH_COMMANDS_REFERENCE.md — remove /sprint (line 187) and /verify-technical-debt (line 189)",
+            ".claude/skills/add-debt/SKILL.md — remove verify-technical-debt references",
+            ".claude/skills/ecosystem-health/SKILL.md — remove sprint track reference",
+            ".claude/skills/ecosystem-health/REFERENCE.md — remove /sprint --track=debt and /verify-technical-debt",
+            ".claude/skills/alerts/SKILL.md — remove /sprint debt items reference",
+            ".claude/skills/sonarcloud/SKILL.md — remove verify-technical-debt reference"
+          ],
+          "commit": "refactor: remove Grand Plan from config and skill docs",
+          "verify": "npm run patterns:check"
+        },
+        "W4_documentation": {
+          "status": "complete",
+          "description": "Scrub roadmap, readme, planning docs, framework-repo copies.",
+          "modify": [
+            "ROADMAP.md — remove GP milestone row (~line 93), phase bucket (~line 124), GP section (~lines 332-347)",
+            "README.md — remove 3 GP references",
+            "SESSION_CONTEXT.md — remove GP row (~line 92)",
+            "DOCUMENTATION_INDEX.md — remove GP entries",
+            ".planning/system-wide-standardization/directives.jsonl — delete line 2 (directive id=2)",
+            ".planning/system-wide-standardization/ideas.jsonl — delete lines 2, 33, 43",
+            ".planning/system-wide-standardization/PLAN.md — remove GP pre-check directives",
+            ".planning/system-wide-standardization/DISCOVERY_RECORD.md — remove GP findings",
+            ".planning/system-wide-standardization/GAP-ANALYSIS.md — remove GP dependency",
+            "docs/DOCUMENT_DEPENDENCIES.md (line 338) — remove sprint mention",
+            "scripts/config/doc-dependencies.json (line 70) — remove sprint reason"
+          ],
+          "delete": [
+            ".planning/system-wide-standardization/reference/framework-repo/.claude/skills/sprint/ (entire dir)",
+            ".planning/system-wide-standardization/reference/framework-repo/scripts/debt/sprint-*.js",
+            ".planning/system-wide-standardization/reference/framework-repo/scripts/debt/generate-grand-plan.js",
+            ".planning/system-wide-standardization/reference/framework-repo/scripts/debt/categorize-and-assign.js",
+            ".planning/system-wide-standardization/reference/framework-repo/scripts/debt/analyze-placement.js"
+          ],
+          "commit": "docs: remove Grand Plan from roadmap and documentation",
+          "verify": "npm test (full suite), grep sweep for orphaned refs"
+        }
+      }
+    },
+    "wave_5": {
+      "status": "pending",
+      "description": "Canonicalization planning + auto-generated plan map",
+      "tasks": {
+        "5a_canonicalization_plan": {
+          "status": "pending",
+          "description": "Design final directory structure, naming convention, compliance enforcement"
+        },
+        "5b_plan_map_generator": {
+          "status": "pending",
+          "description": "Build generate-plan-map.js script, wire into session-start or npm script"
+        }
+      }
+    }
+  }
+}

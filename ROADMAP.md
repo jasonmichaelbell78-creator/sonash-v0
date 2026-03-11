@@ -1409,8 +1409,8 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 | Severity | Count | Description                 | Sprint Location                      |
 | -------- | ----- | --------------------------- | ------------------------------------ |
 | **S0**   | 35    | Critical - Immediate action | **Active Sprint - S0 Critical Debt** |
-| **S1**   | 708   | High - Current/next sprint  | Grand Plan Sprints 4-12              |
-| **S2**   | 1,723 | Medium - Backlog priority   | Grand Plan Sprints 8-12              |
+| **S1**   | 708   | High - Current/next sprint  | Active milestone backlog             |
+| **S2**   | 1,723 | Medium - Backlog priority   | Future milestone backlog             |
 | **S3**   | 1,616 | Low - Nice to have          | Backlog                              |
 
 ### S0 Critical Items (Immediate Action)

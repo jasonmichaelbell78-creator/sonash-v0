@@ -214,7 +214,7 @@ Phase 1:** A15-A18 ✅ (Session #75) **Firebase Console Phase 2:** A19-A22 ✅
 
 > **293/294 unit tests passing** (1 skipped) | **TypeScript build:** ✅ |
 > **ESLint:** ✅ **Testing Plan:**
-> [TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md) **UI
+> [TRACK_A_TESTING_CHECKLIST.md](docs/plans/TRACK_A_TESTING_CHECKLIST.md) **UI
 > Protocols:** 8 admin protocols available via `/test-suite`
 
 | Category            | Tests | Passed | Status                  |

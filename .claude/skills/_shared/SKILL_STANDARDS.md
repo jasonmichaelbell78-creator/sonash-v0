@@ -192,7 +192,7 @@ Audit skills reference the shared template instead of duplicating boilerplate:
 | Convention | Pattern                   | Example                  |
 | ---------- | ------------------------- | ------------------------ |
 | Skill name | lowercase-kebab-case      | `audit-code`             |
-| Directory  | `.claude/skills/<name>/`  | `.claude/skills/sprint/` |
+| Directory  | `.claude/skills/<name>/`  | `.claude/skills/alerts/` |
 | Companion  | lowercase with extension  | `prompts.md`             |
 | Shared     | `.claude/skills/_shared/` | UPPERCASE filenames      |
 

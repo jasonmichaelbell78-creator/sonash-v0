@@ -5,7 +5,7 @@
       "id": "suppress-2026-02-17-1626",
       "category": "debt-metrics",
       "messagePattern": "S0 critical debt item.*need attention",
-      "reason": "All S0 items moved to Active Sprint S0 Critical Debt section in ROADMAP.md and tracked with sprintLocation in MASTER_DEBT.jsonl",
+      "reason": "All S0 items tracked in Active S0 Critical Debt section in ROADMAP.md with sprintLocation in MASTER_DEBT.jsonl",
       "suppressedAt": "2026-02-17T16:26:00.000Z",
       "expiresAt": null
     },
@@ -21,7 +21,7 @@
       "id": "suppress-2026-02-17-1636",
       "category": "debt-metrics",
       "messagePattern": "S1 high-priority items",
-      "reason": "S1 items are from SonarCloud/audit bulk scans, tracked in ROADMAP sprints (Grand Plan Sprints 4-7). Threshold of 10 is unrealistic for this project size with 2300+ tracked items.",
+      "reason": "S1 items are from SonarCloud/audit bulk scans, tracked in ROADMAP milestone backlog. Threshold of 10 is unrealistic for this project size with 2300+ tracked items.",
       "suppressedAt": "2026-02-17T16:36:00.000Z",
       "expiresAt": null
     },
@@ -29,7 +29,7 @@
       "id": "suppress-2026-02-17-1638a",
       "category": "debt-metrics",
       "messagePattern": "resolution rate",
-      "reason": "7.4% rate is expected with 2300+ bulk scan items. Rate will improve as Grand Plan sprints 4-7 execute. Not actionable as a session alert.",
+      "reason": "7.4% rate is expected with 2300+ bulk scan items. Rate will improve as milestone debt resolution progresses. Not actionable as a session alert.",
       "suppressedAt": "2026-02-17T16:38:00.000Z",
       "expiresAt": null
     },

@@ -58,10 +58,8 @@
 {"path":"tests/hooks/stop-serena-dashboard.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"stop-serena-dashboard","description":"unit test for stop-serena-dashboard"}
 {"path":"tests/hooks/track-agent-invocation.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"track-agent-invocation","description":"unit test for track-agent-invocation"}
 {"path":"tests/hooks/user-prompt-handler.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"user-prompt-handler","description":"unit test for user-prompt-handler"}
-{"path":"tests/scripts/debt/analyze-placement.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"analyze-placement","description":"unit test for analyze-placement"}
 {"path":"tests/scripts/debt/assign-roadmap-refs.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"assign-roadmap-refs","description":"unit test for assign-roadmap-refs"}
 {"path":"tests/scripts/debt/backfill-hashes.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"backfill-hashes","description":"unit test for backfill-hashes"}
-{"path":"tests/scripts/debt/categorize-and-assign.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"categorize-and-assign","description":"unit test for categorize-and-assign"}
 {"path":"tests/scripts/debt/check-phase-status.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"check-phase-status","description":"unit test for check-phase-status"}
 {"path":"tests/scripts/debt/clean-intake.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"clean-intake","description":"unit test for clean-intake"}
 {"path":"tests/scripts/debt/consolidate-all.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"consolidate-all","description":"unit test for consolidate-all"}
@@ -72,7 +70,6 @@
 {"path":"tests/scripts/debt/extract-reviews.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"extract-reviews","description":"unit test for extract-reviews"}
 {"path":"tests/scripts/debt/extract-roadmap-debt.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"extract-roadmap-debt","description":"unit test for extract-roadmap-debt"}
 {"path":"tests/scripts/debt/extract-scattered-debt.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"extract-scattered-debt","description":"unit test for extract-scattered-debt"}
-{"path":"tests/scripts/debt/generate-grand-plan.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"generate-grand-plan","description":"unit test for generate-grand-plan"}
 {"path":"tests/scripts/debt/generate-metrics.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"generate-metrics","description":"unit test for generate-metrics"}
 {"path":"tests/scripts/debt/generate-views.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"generate-views","description":"unit test for generate-views"}
 {"path":"tests/scripts/debt/idempotency.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"idempotency","description":"unit test for idempotency"}
@@ -88,10 +85,6 @@
 {"path":"tests/scripts/debt/resolve-bulk.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"resolve-bulk","description":"unit test for resolve-bulk"}
 {"path":"tests/scripts/debt/resolve-item.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"resolve-item","description":"unit test for resolve-item"}
 {"path":"tests/scripts/debt/reverify-resolved.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"reverify-resolved","description":"unit test for reverify-resolved"}
-{"path":"tests/scripts/debt/sprint-complete.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"sprint-complete","description":"unit test for sprint-complete"}
-{"path":"tests/scripts/debt/sprint-intake.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"sprint-intake","description":"unit test for sprint-intake"}
-{"path":"tests/scripts/debt/sprint-status.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"sprint-status","description":"unit test for sprint-status"}
-{"path":"tests/scripts/debt/sprint-wave.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"sprint-wave","description":"unit test for sprint-wave"}
 {"path":"tests/scripts/debt/sync-deduped.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"sync-deduped","description":"unit test for sync-deduped"}
 {"path":"tests/scripts/debt/sync-roadmap-refs.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"sync-roadmap-refs","description":"unit test for sync-roadmap-refs"}
 {"path":"tests/scripts/debt/sync-sonarcloud.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"sync-sonarcloud","description":"unit test for sync-sonarcloud"}
@@ -193,7 +186,6 @@
 {"path":"tests/scripts/normalize-canon-ids.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"normalize-canon-ids","description":"unit test for normalize-canon-ids"}
 {"path":"tests/scripts/pattern-compliance.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"pattern-compliance","description":"unit test for pattern-compliance"}
 {"path":"tests/scripts/phase-complete-check.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"phase-complete-check","description":"unit test for phase-complete-check"}
-{"path":"tests/scripts/place-unassigned-debt.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"place-unassigned-debt","description":"unit test for place-unassigned-debt"}
 {"path":"tests/scripts/promote-patterns.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"promote-patterns","description":"unit test for promote-patterns"}
 {"path":"tests/scripts/repair-archives.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"repair-archives","description":"unit test for repair-archives"}
 {"path":"tests/scripts/reset-audit-triggers.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"reset-audit-triggers","description":"unit test for reset-audit-triggers"}
@@ -427,7 +419,6 @@
 {"path":".claude/skills/using-superpowers/SKILL.md","source_type":"skill_command","type":"skill","owner":"using-superpowers","target":"using-superpowers","description":"Skill: using-superpowers"}
 {"path":".claude/skills/ux-researcher-designer/SKILL.md","source_type":"skill_command","type":"skill","owner":"ux-researcher-designer","target":"ux-researcher-designer","description":"Skill: ux-researcher-designer"}
 {"path":".claude/skills/validate-claude-folder/SKILL.md","source_type":"skill_command","type":"skill","owner":"validate-claude-folder","target":"validate-claude-folder","description":"Skill: validate-claude-folder"}
-{"path":".claude/skills/verify-technical-debt/SKILL.md","source_type":"skill_command","type":"skill","owner":"verify-technical-debt","target":"verify-technical-debt","description":"Skill: verify-technical-debt"}
 {"path":".claude/skills/webapp-testing/SKILL.md","source_type":"skill_command","type":"skill","owner":"webapp-testing","target":"webapp-testing","description":"Skill: webapp-testing"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"lint","description":"npm run lint"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"lint:fast","description":"npm run lint:fast"}

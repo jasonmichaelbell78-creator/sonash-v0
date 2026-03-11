@@ -479,7 +479,7 @@ function generateVerificationQueue(byStatus, today) {
   verifyMd += `**Items Needing Verification:** ${newItems.length}
 
 This queue contains items with status=NEW that require verification.
-Run \`verify-technical-debt\` skill to process this queue.
+Review items manually or use \`tdms-ecosystem-audit\` to process this queue.
 
 `;
 

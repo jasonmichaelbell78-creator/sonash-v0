@@ -423,7 +423,6 @@ function checkMasterDedupedSync(rootDir, debtScripts) {
     "sync-sonarcloud.js",
     "intake-manual.js",
     "intake-pr-deferred.js",
-    "sprint-intake.js",
   ];
 
   for (const scriptName of intakeScriptNames) {
