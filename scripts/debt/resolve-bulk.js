@@ -436,14 +436,6 @@ Example:
   } catch {
     console.warn("  ⚠️ reconcile-roadmap.js failed — run manually if needed");
   }
-  try {
-    execFileSync(process.execPath, [path.join(__dirname, "generate-grand-plan.js")], {
-      stdio: "pipe",
-    });
-    console.log("  ✅ GRAND_PLAN_V2.md + manifest regenerated");
-  } catch {
-    console.warn("  ⚠️ generate-grand-plan.js failed — run manually if needed");
-  }
 
   // Scan active plan files for references to resolved DEBT IDs
   const planFiles = [
