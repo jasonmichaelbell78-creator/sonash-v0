@@ -30,15 +30,15 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-03-11 **Branch**: `testing-31126` **Working On**:
-Session #215 — Starting
+Session #215 — Hook systems audit complete, implementation plan approved
 
-**Uncommitted Work**: None (clean tree)
+**Uncommitted Work**: Implementation plan + state file + session context updates
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 215 (since Jan 1, 2026)
+**Current Session Count**: 216 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,6 +47,18 @@ Session #215 — Starting
 ---
 
 ## Recent Session Summaries
+
+**Session #215** (HOOK SYSTEMS MINI-AUDIT):
+
+- Pre-commit/pre-push mini-audit: 10 categories, 35 decisions, 6 learnings
+- Categories: override trail, warning aggregation, learnings loop, pre-existing
+  debt, cross-system integration, code quality, gate effectiveness, missing
+  gates, trigger system, underlying issues
+- Key decisions: ban "pre-existing" skip reason, known-debt-baseline.json,
+  extract `_shared.sh`, remove 3 dead gates, acknowledgment gates for passive
+  surfacing, wire data into /alerts + session-begin/end
+- Implementation plan approved: 8 waves, ~4-5 hours across 2-3 sessions
+- Planning landscape audit Wave 5 still pending (canonicalization)
 
 **Session #214** (ECOSYSTEM EXPANSION — PHASES 3-7):
 
@@ -104,10 +116,12 @@ Session #215 — Starting
 
 ### Immediate Priority (Next Session)
 
-1. **PR created** for `health-ecosystem` branch (9 commits: Phases 3-7). Target:
-   squash-merge to `main`.
-2. Process PR review feedback and merge.
-3. After PR merge: plan next work from ROADMAP.md.
+1. **Implement hook systems audit** — 8 waves in
+   `.claude/plans/hook-systems-audit-implementation.md`. Start Wave 0 (quick
+   wins), proceed through waves in order.
+2. State file: `.claude/state/task-mini-audit-hook-systems.state.json` (35
+   decisions + 6 learnings, all approved)
+3. Planning landscape Wave 5 (canonicalization) still pending.
 
 **See**:
 [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for
