@@ -52,6 +52,55 @@ function parseArgs() {
 }
 
 /**
+ * Count recent occurrences of a warning type from the JSONL trail (C2-G2)
+ * Used for auto-escalation: 5+ → warning, 15+ → error
+ */
+function countRecentOccurrences(type, sinceDaysAgo) {
+  try {
+    const logPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
+    const content = fs.readFileSync(logPath, "utf8");
+    const cutoff = Date.now() - (sinceDaysAgo || 7) * 24 * 60 * 60 * 1000;
+    let count = 0;
+    for (const line of content.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        const entry = JSON.parse(line);
+        if (entry.type === type && new Date(entry.timestamp).getTime() > cutoff) count++;
+      } catch {
+        /* skip malformed */
+      }
+    }
+    return count;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Count occurrences since a given timestamp (C2-G3)
+ */
+function countOccurrencesSince(type, sinceTimestamp) {
+  try {
+    const logPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
+    const content = fs.readFileSync(logPath, "utf8");
+    const since = new Date(sinceTimestamp).getTime();
+    let count = 0;
+    for (const line of content.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        const entry = JSON.parse(line);
+        if (entry.type === type && new Date(entry.timestamp).getTime() > since) count++;
+      } catch {
+        /* skip malformed */
+      }
+    }
+    return count;
+  } catch {
+    return 0;
+  }
+}
+
+/**
  * Read existing warnings file or create empty structure
  * Pattern #70: Skip existsSync, use try/catch alone (race condition safe)
  */
@@ -102,8 +151,11 @@ function writeWarnings(data) {
 
 /**
  * Append a warning
+ * C2-G1: Accepts optional files (comma-separated) and pattern name
+ * C2-G2: Auto-escalates severity based on occurrence count (5+ → warning, 15+ → error)
+ * C2-G3: Tracks occurrences_since_ack for acknowledgment awareness
  */
-function appendWarning(hook, type, severity, message, action = null) {
+function appendWarning(hook, type, severity, message, action = null, files = null, pattern = null) {
   const data = readWarnings();
 
   // Check for duplicate (same hook, type, message within last hour)
@@ -117,14 +169,42 @@ function appendWarning(hook, type, severity, message, action = null) {
   );
 
   if (!isDuplicate) {
-    data.warnings.push({
+    // C2-G2: Count recent occurrences for auto-escalation
+    const occurrences = countRecentOccurrences(type);
+    let effectiveSeverity = severity || "warning";
+    if (occurrences >= 15) effectiveSeverity = "error";
+    else if (occurrences >= 5 && effectiveSeverity === "info") effectiveSeverity = "warning";
+
+    // C2-G3: Compute occurrences since last acknowledgment
+    const lastAck = (data.acknowledged && data.acknowledged[type]) || null;
+    const sinceAck = lastAck ? countOccurrencesSince(type, lastAck) : occurrences;
+
+    // C2-G1: Parse files into array (max 3)
+    const fileList = files
+      ? files
+          .split(",")
+          .map((f) => f.trim())
+          .filter(Boolean)
+          .slice(0, 3)
+      : undefined;
+
+    const entry = {
       hook,
       type,
-      severity: severity || "warning",
+      severity: effectiveSeverity,
       message,
       action,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // C2-G1: Add enrichment fields if present
+    if (fileList && fileList.length > 0) entry.files = fileList;
+    if (pattern) entry.pattern = pattern;
+    // C2-G2/G3: Add occurrence tracking
+    if (occurrences > 0) entry.occurrences = occurrences;
+    if (sinceAck > 0) entry.occurrences_since_ack = sinceAck;
+
+    data.warnings.push(entry);
 
     // Keep only last 50 warnings to prevent file bloat
     if (data.warnings.length > 50) {
@@ -141,15 +221,7 @@ function appendWarning(hook, type, severity, message, action = null) {
       }
       const logPath = path.join(logDir, "hook-warnings-log.jsonl");
       if (!isSafeToWrite(logPath)) return;
-      const entry = JSON.stringify({
-        hook,
-        type,
-        severity: severity || "warning",
-        message,
-        action,
-        timestamp: new Date().toISOString(),
-      });
-      fs.appendFileSync(logPath, entry + "\n");
+      fs.appendFileSync(logPath, JSON.stringify(entry) + "\n");
     } catch {
       // Best-effort — never block hooks on log failure
     }
@@ -158,11 +230,14 @@ function appendWarning(hook, type, severity, message, action = null) {
 
 /**
  * Clear warnings (called at session start or when surfaced)
+ * C2-G3: Preserves acknowledged map across clears
  */
 function clearWarnings() {
+  const existing = readWarnings();
   writeWarnings({
     warnings: [],
     lastCleared: new Date().toISOString(),
+    acknowledged: existing.acknowledged || {},
   });
 }
 
@@ -178,7 +253,9 @@ if (args.clear === "true") {
     args.type || "general",
     args.severity || "warning",
     args.message,
-    args.action || null
+    args.action || null,
+    args.files || null,
+    args.pattern || null
   );
   // Silent success for hook usage
 } else {

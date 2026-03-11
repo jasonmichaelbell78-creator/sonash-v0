@@ -355,30 +355,47 @@ function computeAnalytics(entries, days) {
   }
   patterns.sort((a, b) => b.count - a.count);
 
-  // Trend: last 7 days vs prior 7 days
+  // Trend: rolling 7-day windows — overall and per-check (C1-G3)
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-  const currentWeek = entries.filter((e) => {
-    if (!e.timestamp) return false;
-    const d = new Date(e.timestamp);
-    return d >= oneWeekAgo && d <= now;
-  }).length;
-  const previousWeek = entries.filter((e) => {
-    if (!e.timestamp) return false;
-    const d = new Date(e.timestamp);
-    return d >= twoWeeksAgo && d < oneWeekAgo;
-  }).length;
-  let changePct;
-  if (previousWeek > 0) {
-    changePct = Math.round(((currentWeek - previousWeek) / previousWeek) * 100);
-  } else {
-    changePct = currentWeek > 0 ? 100 : 0;
+
+  function countInWindow(list, from, to) {
+    return list.filter((e) => {
+      if (!e.timestamp) return false;
+      const d = new Date(e.timestamp);
+      return d >= from && d < to;
+    }).length;
+  }
+
+  const currentWeek = countInWindow(entries, oneWeekAgo, now);
+  const previousWeek = countInWindow(entries, twoWeeksAgo, oneWeekAgo);
+
+  function computeChangePct(current, previous) {
+    if (previous > 0) return Math.round(((current - previous) / previous) * 100);
+    return current > 0 ? null : 0; // null = new activity (no baseline)
+  }
+
+  // Per-check trends (C1-G3: more actionable than overall)
+  const allChecks = new Set(entries.map((e) => e.check || "unknown"));
+  const perCheck = {};
+  for (const check of allChecks) {
+    const checkEntries = entries.filter((e) => (e.check || "unknown") === check);
+    const cur = countInWindow(checkEntries, oneWeekAgo, now);
+    const prev = countInWindow(checkEntries, twoWeeksAgo, oneWeekAgo);
+    if (cur > 0 || prev > 0) {
+      perCheck[check] = {
+        current_week: cur,
+        previous_week: prev,
+        change_pct: computeChangePct(cur, prev),
+      };
+    }
   }
 
   const trend = {
     current_week: currentWeek,
     previous_week: previousWeek,
-    change_pct: changePct,
+    change_pct: computeChangePct(currentWeek, previousWeek),
+    per_check: perCheck,
   };
 
   return {
@@ -417,10 +434,19 @@ function showAnalytics(analytics) {
     console.log("\nPatterns: None detected");
   }
 
-  const sign = trend.change_pct >= 0 ? "+" : "";
+  // C1-G3: Overall + per-check trends
+  const fmtPct = (pct) => (pct === null ? "new" : `${pct >= 0 ? "+" : ""}${pct}%`);
   console.log(
-    `\nTrend: ${sign}${trend.change_pct}% vs previous week (${trend.current_week} vs ${trend.previous_week})`
+    `\nTrend: ${fmtPct(trend.change_pct)} vs previous week (${trend.current_week} vs ${trend.previous_week})`
   );
+  if (trend.per_check && Object.keys(trend.per_check).length > 0) {
+    console.log("  Per-check:");
+    for (const [check, t] of Object.entries(trend.per_check)) {
+      console.log(
+        `    ${check.padEnd(20)} ${fmtPct(t.change_pct).padStart(5)}  (${t.current_week} vs ${t.previous_week})`
+      );
+    }
+  }
   console.log("");
 }
 

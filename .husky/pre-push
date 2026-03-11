@@ -2,48 +2,13 @@
 # Pre-push hook - Additional gate before pushing to remote
 # This blocks pushes if checks fail
 
-# Shared guard: any SKIP_ override requires SKIP_REASON (Session #162)
-require_skip_reason() {
-  if [ -z "${SKIP_REASON:-}" ]; then
-    echo "  ❌ SKIP_REASON is required when overriding checks"
-    echo "  Usage: SKIP_REASON=\"your reason\" $1 git push ..."
-    echo "  The audit trail is useless without a reason."
-    exit 1
-  fi
-  # Reject multi-line reasons (prevents JSONL/log injection) — POSIX-safe (no grep -P)
-  cr="$(printf '\r')"
-  if [ "$(printf '%s' "$SKIP_REASON" | wc -l | tr -d ' ')" -gt 1 ] || printf '%s' "$SKIP_REASON" | grep -q "$cr"; then
-    echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
-    exit 1
-  fi
-  # Reject control characters (prevents log injection) — POSIX-safe
-  if printf '%s' "$SKIP_REASON" | LC_ALL=C grep -q '[[:cntrl:]]'; then
-    echo "  ❌ SKIP_REASON must not contain control characters"
-    exit 1
-  fi
-  # Enforce max length to prevent DoS via oversized reasons
-  skip_len=${#SKIP_REASON}
-  if [ "$skip_len" -gt 500 ]; then
-    echo "  ❌ SKIP_REASON must be <= 500 characters (got $skip_len)"
-    exit 1
-  fi
-  # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
-  if [ "$skip_len" -lt 10 ]; then
-    echo "  ❌ SKIP_REASON must be at least 10 characters (got $skip_len)"
-    echo "  Provide a meaningful reason for the audit trail."
-    exit 1
-  fi
-}
+# Source shared hook infrastructure (add_exit_trap, is_skipped, require_skip_reason, _shared_init_fnm)
+. "$(dirname "$0")/_shared.sh"
 
-# Initialize fnm so node/npm/npx are available in this shell context
-if command -v fnm > /dev/null 2>&1; then
-  FNM_ENV="$(fnm env --shell bash 2>/dev/null || true)"
-  if [ -z "$FNM_ENV" ]; then
-    echo "  ❌ fnm detected but failed to initialize; cannot reliably run Node-based checks" >&2
-    exit 1
-  fi
-  eval "$FNM_ENV"
-fi
+_shared_init_fnm
+
+# Log append-hook-warning output instead of silencing (C7-G5)
+HOOK_OUTPUT_LOG="$(git rev-parse --show-toplevel 2>/dev/null || echo .)/.git/hook-output.log"
 
 echo "🚀 Running pre-push checks..."
 
@@ -81,7 +46,9 @@ if [ -n "${push_diff_files:-}" ]; then
     printf '%s\n' "$pattern_output" | grep -E "❌|⚠️|BLOCK|WARN" | head -10
     echo ""
     echo "  Fix issues or run: npm run patterns:check"
-    node scripts/append-hook-warning.js --hook=pre-push --type=patterns --severity=warning --message="Pattern compliance issues in pushed files" --action="npm run patterns:check" 2>/dev/null || true
+    # C2-G1: Extract top 3 affected files for enriched warning
+    _pat_files=$(printf '%s\n' "$pattern_output" | grep -oE '📄 [^ ]+' | sed 's/📄 //' | head -3 | tr '\n' ',' | sed 's/,$//')
+    node scripts/append-hook-warning.js --hook=pre-push --type=patterns --severity=warning --message="Pattern compliance issues in pushed files" --action="npm run patterns:check" --files="${_pat_files:-unknown}" --pattern="check-pattern-compliance" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
   else
     echo "  ✅ Pattern compliance passed (push diff)"
   fi
@@ -97,14 +64,15 @@ script_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null
 set -e
 
 if [ -n "${script_changes:-}" ]; then
-  # Check if code-reviewer was invoked this session
-  reviewer_ran=0
-  if [ -f ".claude/state/agent-invocations.jsonl" ]; then
-    # Look for code-reviewer invocation in the last 4 hours
-    if grep -q '"code-reviewer"' .claude/state/agent-invocations.jsonl 2>/dev/null; then
-      reviewer_ran=1
-    fi
-  fi
+  # Check if code-reviewer was invoked within the last 4 hours (C7-G1)
+  reviewer_ran=$(node -e "
+    try {
+      const lines = require('fs').readFileSync('.claude/state/agent-invocations.jsonl','utf8').trim().split('\\n');
+      const cutoff = Date.now() - 4*3600000;
+      const ok = lines.some(l => { try { const e = JSON.parse(l); return e.agent === 'code-reviewer' && new Date(e.timestamp).getTime() > cutoff; } catch { return false; } });
+      process.stdout.write(ok ? '1' : '0');
+    } catch { process.stdout.write('0'); }
+  " 2>/dev/null || echo "0")
 
   if [ "$reviewer_ran" -eq 0 ]; then
     echo "  ⚠️ Script changes detected but code-reviewer not invoked this session"
@@ -119,7 +87,7 @@ if [ -n "${script_changes:-}" ]; then
     require_skip_reason "SKIP_REVIEWER=1"
     echo "  ⚠️ Bypassed with SKIP_REVIEWER=1"
     node scripts/log-override.js --quick --check=reviewer --reason="$SKIP_REASON" 2>/dev/null || true
-    node scripts/append-hook-warning.js --hook=pre-push --type=reviewer --severity=warning --message="Code-reviewer bypassed for script changes" --action="Run code-reviewer agent" 2>/dev/null || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=reviewer --severity=warning --message="Code-reviewer bypassed for script changes" --action="Run code-reviewer agent" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
   else
     echo "  ✅ Code-reviewer was invoked for script changes"
   fi
@@ -145,10 +113,15 @@ if [ "$prop_exit" -ne 0 ]; then
   require_skip_reason "SKIP_PROPAGATION=1"
   echo "  ⚠️ Bypassed with SKIP_PROPAGATION=1"
   node scripts/log-override.js --quick --check=propagation --reason="$SKIP_REASON" 2>/dev/null || true
-  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=warning --message="Propagation check bypassed" --action="Review duplicate functions" 2>/dev/null || true
+  # C2-G1: Extract top 3 affected files and pattern name for enriched warning
+  _prop_files=$(printf '%s\n' "$prop_output" | grep -E '^\s+- ' | sed 's/^\s*- //' | head -3 | tr '\n' ',' | sed 's/,$//')
+  _prop_pattern=$(printf '%s\n' "$prop_output" | grep -oE 'Pattern: [^ ]+' | head -1 | sed 's/Pattern: //')
+  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=warning --message="Propagation check bypassed" --action="Review duplicate functions" --files="${_prop_files:-unknown}" --pattern="${_prop_pattern:-propagation}" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
 elif echo "$prop_output" | grep -q "⚠️"; then
   printf '%s\n' "$prop_output"
-  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=info --message="Propagation warnings found in pushed code" --action="Review duplicate functions" 2>/dev/null || true
+  _prop_files=$(printf '%s\n' "$prop_output" | grep -E '^\s+- ' | sed 's/^\s*- //' | head -3 | tr '\n' ',' | sed 's/,$//')
+  _prop_pattern=$(printf '%s\n' "$prop_output" | grep -oE 'Pattern: [^ ]+' | head -1 | sed 's/Pattern: //')
+  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=info --message="Propagation warnings found in pushed code" --action="Review duplicate functions" --files="${_prop_files:-unknown}" --pattern="${_prop_pattern:-propagation}" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
 elif echo "$prop_output" | grep -q "✅"; then
   printf '%s\n' "$prop_output"
 fi
@@ -170,7 +143,7 @@ if [ -n "${hook_changes:-}" ]; then
     printf '%s\n' "$hook_test_output" | grep -E "✗|FAIL|Failed" | head -10
     echo ""
     echo "  Fix hook tests before pushing. Run: npm run hooks:test"
-    node scripts/append-hook-warning.js --hook=pre-push --type=hook-tests --severity=warning --message="Hook tests failed" --action="npm run hooks:test" 2>/dev/null || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=hook-tests --severity=warning --message="Hook tests failed" --action="npm run hooks:test" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
     exit 1
   fi
   echo "  ✅ Hook tests passed"
@@ -184,7 +157,12 @@ fi
 # lines that were actually added in the push.
 echo "  ▶ Running security pattern check (diff-only)..."
 set +e
-security_diff=$(git diff --diff-filter=ACMR @{u}...HEAD -U0 2>/dev/null | grep -E '^\+[^+]' | grep -v '^+++')
+# Filter to .js/.ts content only using diff headers (C6-G4)
+security_diff=$(git diff --diff-filter=ACMR @{u}...HEAD -U0 2>/dev/null | awk '
+  /^diff --git / { f=$NF; sub(/^b\//, "", f); js=(f ~ /\.(js|jsx|ts|tsx|mjs)$/) }
+  /^\+\+\+/ { next }
+  js && /^\+[^+]/ { print }
+')
 diff_exit=$?
 set -e
 
@@ -195,7 +173,7 @@ else
   # Use .js extension so security-check.js applies JS/TS patterns to the content
   # Note: mktemp --suffix is GNU-only; use mktemp + mv for POSIX portability
   SEC_TMPFILE_BASE=$(mktemp) || { echo "  ❌ Failed to create temp file"; exit 1; }
-  trap 'rm -f "$SEC_TMPFILE_BASE" "$SEC_TMPFILE"' EXIT
+  add_exit_trap 'rm -f "$SEC_TMPFILE_BASE" "$SEC_TMPFILE"'
   SEC_TMPFILE="${SEC_TMPFILE_BASE}.js"
   mv "$SEC_TMPFILE_BASE" "$SEC_TMPFILE" || { echo "  ❌ Failed to rename temp file"; exit 1; }
   printf '%s\n' "$security_diff" > "$SEC_TMPFILE"
@@ -213,105 +191,132 @@ else
     exit 1
   elif echo "$out" | grep -q "MEDIUM\|LOW"; then
     echo "  ⚠️ Security warnings in new code (not blocking) - review recommended"
-    node scripts/append-hook-warning.js --hook=pre-push --type=security --severity=warning --message="Security warnings (MEDIUM/LOW) found in pushed code" --action="npm run security:check" 2>/dev/null || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=security --severity=warning --message="Security warnings (MEDIUM/LOW) found in pushed code" --action="npm run security:check" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
   else
     echo "  ✅ Security check passed (new code only)"
   fi
 fi
 
-# 5. Type check
-echo "  ▶ Running type check..."
-if ! npx tsc --noEmit > /dev/null 2>&1; then
+# 5. Parallel type + complexity checks (C8-G1)
+# Run tsc, cyclomatic CC, and cognitive CC concurrently for ~5-8s savings
+echo "  ▶ Running type + complexity checks in parallel..."
+
+# Handle skip flags before launching parallel jobs
+_cyc_skip=0; _cog_skip=0
+if [ "${SKIP_CC:-}" = "1" ]; then
+  require_skip_reason "SKIP_CC=1"
+  echo "  ⚠️ CC check skipped (SKIP_CC=1)"
+  node scripts/log-override.js --quick --check=cc --reason="$SKIP_REASON" 2>/dev/null || true
+  _cyc_skip=1
+fi
+if [ "${SKIP_COG_CC:-}" = "1" ]; then
+  require_skip_reason "SKIP_COG_CC=1"
+  echo "  ⚠️ Cognitive CC check skipped (SKIP_COG_CC=1)"
+  node scripts/log-override.js --quick --check=cognitive-cc --reason="$SKIP_REASON" 2>/dev/null || true
+  _cog_skip=1
+fi
+
+# Create tmpfiles for parallel results
+_TSC_OUT=$(mktemp); _CYC_OUT=$(mktemp); _COG_OUT=$(mktemp)
+add_exit_trap 'rm -f "$_TSC_OUT" "$_CYC_OUT" "$_COG_OUT" "${_TSC_OUT}.rc" "${_CYC_OUT}.rc" "${_COG_OUT}.rc"'
+
+# 5a. Type check (background)
+(npx tsc --noEmit > "$_TSC_OUT" 2>&1; echo $? > "${_TSC_OUT}.rc") &
+
+# 5b. Cyclomatic complexity (background, unless skipped)
+if [ "$_cyc_skip" -eq 0 ]; then
+  (
+    _base=""
+    if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+      _base="@{u}"
+    elif git rev-parse --verify origin/main >/dev/null 2>&1; then
+      _base="origin/main"
+    elif git rev-parse --verify origin/master >/dev/null 2>&1; then
+      _base="origin/master"
+    fi
+    if [ -z "$_base" ]; then
+      echo "SKIP:no-base" > "$_CYC_OUT"; echo "0" > "${_CYC_OUT}.rc"; exit 0
+    fi
+    _all=$(git diff --name-only --diff-filter=ACMR "$_base"...HEAD 2>/dev/null | grep -E '\.(js|mjs)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)' || true)
+    _total=$(printf '%s\n' "$_all" | sed '/^$/d' | wc -l | tr -d ' ')
+    _files=$(printf '%s\n' "$_all" | head -50)
+    if [ "$_total" -gt 50 ]; then
+      echo "TOO_MANY:$_total" > "$_CYC_OUT"; echo "1" > "${_CYC_OUT}.rc"; exit 0
+    fi
+    if [ -z "$_files" ]; then
+      echo "NO_FILES" > "$_CYC_OUT"; echo "0" > "${_CYC_OUT}.rc"; exit 0
+    fi
+    _out=$(printf '%s\n' "$_files" | grep -Ev '(eslint-plugin-sonash/|\.claude/hooks/backup/|\.claude/state/|docs/archive/|scripts/reviews/dist/|\.planning/)' | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- 2>&1 || true)
+    if printf '%s\n' "$_out" | grep -qE "complexity"; then
+      printf '%s\n' "$_out" > "$_CYC_OUT"; echo "1" > "${_CYC_OUT}.rc"
+    else
+      echo "0" > "${_CYC_OUT}.rc"
+    fi
+  ) &
+fi
+
+# 5c. Cognitive complexity (background, unless skipped)
+if [ "$_cog_skip" -eq 0 ] && [ -f scripts/check-cc.js ]; then
+  (node scripts/check-cc.js > "$_COG_OUT" 2>&1; echo $? > "${_COG_OUT}.rc") &
+fi
+
+# Wait for all background jobs
+wait
+
+# --- Process results ---
+
+# 5a result: type check
+_tsc_rc=$(cat "${_TSC_OUT}.rc" 2>/dev/null || echo "1")
+if [ "$_tsc_rc" -ne 0 ]; then
   echo "  ❌ Type check failed"
-  npx tsc --noEmit 2>&1 | tail -10
+  tail -10 "$_TSC_OUT"
   echo ""
   echo "  Fix type errors before pushing. Run: npx tsc --noEmit"
   exit 1
 fi
 echo "  ✅ Type check passed"
 
-# 5b. Cognitive Complexity check (blocking — CC >15 is error)
-# Recommended 6x since PR #369, ~15 avoidable review rounds caused by CC violations.
-# Pre-commit warns; pre-push blocks. Enforces CC ≤15 on push diff files.
-if [ "${SKIP_CC:-}" = "1" ]; then
-  require_skip_reason "SKIP_CC=1"
-  echo "  ⚠️ CC check skipped (SKIP_CC=1)"
-  node scripts/log-override.js --quick --check=cc --reason="$SKIP_REASON" 2>/dev/null || true
-else
-  echo "  ▶ Checking cognitive complexity (push diff)..."
-
-  # Determine diff base: upstream if available, otherwise main/master
-  if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
-    cc_base="@{u}"
-  elif git rev-parse --verify origin/main >/dev/null 2>&1; then
-    cc_base="origin/main"
-  elif git rev-parse --verify origin/master >/dev/null 2>&1; then
-    cc_base="origin/master"
-  else
-    echo "  ⚠️ CC check: no upstream or main/master found, skipping"
-    cc_base=""
-  fi
-
-  if [ -n "$cc_base" ]; then
-  set +e
-  cc_all_files=$(git diff --name-only --diff-filter=ACMR "$cc_base"...HEAD 2>/dev/null | grep -E '\.(js|mjs)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)')
-  cc_total=$(printf '%s\n' "$cc_all_files" | sed '/^$/d' | wc -l | tr -d ' ')
-  cc_files=$(printf '%s\n' "$cc_all_files" | head -50)
-  set -e
-
-  if [ "$cc_total" -gt 50 ]; then
-    echo "  ❌ Cyclomatic complexity check: too many JS files changed ($cc_total > 50)."
-    echo "  Split the push or override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
-    exit 1
-  fi
-
-  if [ -n "${cc_files:-}" ]; then
-    set +e
-    cc_output=$(printf '%s\n' "$cc_files" | grep -Ev '(eslint-plugin-sonash/|\.claude/hooks/backup/|\.claude/state/|docs/archive/|scripts/reviews/dist/|\.planning/)' | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- 2>&1)
-    cc_exit=$?
-    set -e
-    # Only fail on actual complexity violations — not on config/directive
-    # errors (exit 123 from eslint-disable directives for unavailable plugins
-    # when running with --no-config-lookup).
-    if printf '%s\n' "$cc_output" | grep -qE "complexity"; then
-      echo "  ❌ Cyclomatic complexity violations (CC >15) in pushed files:"
-      printf '%s\n' "$cc_output" | grep -E "complexity" | head -10
-      echo ""
-      echo "  Extract helper functions to reduce complexity before pushing."
-      echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
-      exit 1
-    fi
-    echo "  ✅ Cyclomatic complexity passed (CC ≤15)"
-  else
-    echo "  ⏭️ No JS files in push diff"
-  fi
-  fi # end cc_base check
+# 5b result: cyclomatic complexity
+if [ "$_cyc_skip" -eq 0 ]; then
+  _cyc_rc=$(cat "${_CYC_OUT}.rc" 2>/dev/null || echo "0")
+  _cyc_out=$(cat "$_CYC_OUT" 2>/dev/null || echo "")
+  case "$_cyc_out" in
+    SKIP:no-base)
+      echo "  ⚠️ CC check: no upstream or main/master found, skipping" ;;
+    TOO_MANY:*)
+      _n=${_cyc_out#TOO_MANY:}
+      echo "  ❌ Cyclomatic complexity check: too many JS files changed ($_n > 50)."
+      echo "  Split the push or override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
+      exit 1 ;;
+    NO_FILES)
+      echo "  ⏭️ No JS files in push diff" ;;
+    *)
+      if [ "$_cyc_rc" -ne 0 ]; then
+        echo "  ❌ Cyclomatic complexity violations (CC >15) in pushed files:"
+        grep -E "complexity" "$_CYC_OUT" | head -10
+        echo ""
+        echo "  Extract helper functions to reduce complexity before pushing."
+        echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
+        exit 1
+      fi
+      echo "  ✅ Cyclomatic complexity passed (CC ≤15)" ;;
+  esac
 fi
 
-# 5c. Cognitive Complexity check (blocking — SonarCloud S3776)
-# Distinct from 5b cyclomatic complexity. Uses acorn AST to compute cognitive CC.
-# Created in retro session #215 to close the 5x repeat-offender action item.
-if [ "${SKIP_COG_CC:-}" = "1" ]; then
-  require_skip_reason "SKIP_COG_CC=1"
-  echo "  ⚠️ Cognitive CC check skipped (SKIP_COG_CC=1)"
-  node scripts/log-override.js --quick --check=cognitive-cc --reason="$SKIP_REASON" 2>/dev/null || true
-elif [ -f scripts/check-cc.js ]; then
-  echo "  ▶ Checking cognitive complexity (push diff)..."
-  set +e
-  cog_output=$(node scripts/check-cc.js 2>&1)
-  cog_exit=$?
-  set -e
-  if [ "$cog_exit" -eq 1 ]; then
+# 5c result: cognitive complexity
+if [ "$_cog_skip" -eq 0 ] && [ -f scripts/check-cc.js ]; then
+  _cog_rc=$(cat "${_COG_OUT}.rc" 2>/dev/null || echo "2")
+  if [ "$_cog_rc" -eq 1 ]; then
     echo "  ❌ Cognitive complexity violations (CC >15) in pushed files:"
-    printf '%s\n' "$cog_output" | grep -E "CC=" | head -10
+    grep -E "CC=" "$_COG_OUT" | head -10
     echo ""
     echo "  Extract helper functions to reduce complexity before pushing."
     echo "  Override: SKIP_REASON=\"reason\" SKIP_COG_CC=1 git push"
     exit 1
-  elif [ "$cog_exit" -eq 0 ]; then
+  elif [ "$_cog_rc" -eq 0 ]; then
     echo "  ✅ Cognitive complexity passed (CC ≤15)"
   else
-    echo "  ⚠️ Cognitive CC check errored (exit $cog_exit), continuing"
+    echo "  ⚠️ Cognitive CC check errored (exit $_cog_rc), continuing"
   fi
 fi
 
@@ -335,7 +340,7 @@ if [ "$audit_exit" -ne 0 ]; then
   if echo "$audit_output" | grep -q "vulnerabilities"; then
     echo "  ⚠️ Security vulnerabilities found (not blocking - run: npm audit)"
     echo "$audit_output" | grep -E "high|critical|vulnerabilities" | head -5
-    node scripts/append-hook-warning.js --hook=pre-push --type=audit --severity=warning --message="npm audit found security vulnerabilities" --action="npm audit" 2>/dev/null || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=audit --severity=warning --message="npm audit found security vulnerabilities" --action="npm audit" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
   else
     echo "  ⚠️ npm audit check skipped (network or registry issue)"
   fi
@@ -370,7 +375,7 @@ else
       first_warning_one_line=$(printf '%s' "$first_warning" | tr '\n\r' '  ' | sed 's/[[:space:]]\{1,\}/ /g; s/^ *//; s/ *$//')
       # Review #214: Only create alert if we have a non-empty message
       if [ -n "$first_warning_one_line" ]; then
-        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning_one_line" 2>/dev/null || true
+        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning_one_line" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
       fi
     else
       echo "  ✅ No blocking triggers"

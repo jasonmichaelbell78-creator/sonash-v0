@@ -619,6 +619,35 @@ try {
   console.log("Health: skipped (non-fatal)");
 }
 
+// C5-G3: Health score delta from health-score-log.jsonl (grade + delta, 2+ grade drop = warning)
+try {
+  const gradeOrder = ["A", "B", "C", "D", "F"];
+  const hsLogPath = path.join(projectDir, ".claude", "state", "health-score-log.jsonl");
+  const hsContent = fs.readFileSync(hsLogPath, "utf8");
+  const hsLines = hsContent.trim().split("\n").filter(Boolean);
+  if (hsLines.length >= 2) {
+    const current = JSON.parse(hsLines[hsLines.length - 1]);
+    const previous = JSON.parse(hsLines[hsLines.length - 2]);
+    const curIdx = gradeOrder.indexOf(current.grade);
+    const prevIdx = gradeOrder.indexOf(previous.grade);
+    const scoreDelta = current.score - previous.score;
+    const deltaStr = scoreDelta >= 0 ? `+${scoreDelta}` : `${scoreDelta}`;
+    if (curIdx >= 0 && prevIdx >= 0 && curIdx - prevIdx >= 2) {
+      console.log(
+        `   ⚠️ Health grade dropped ${previous.grade} → ${current.grade} (${deltaStr}pts)`
+      );
+      warnings++;
+    } else if (curIdx >= 0 && prevIdx >= 0 && curIdx !== prevIdx) {
+      const arrow = curIdx < prevIdx ? "↑" : "↓";
+      console.log(
+        `   ${arrow} Health trend: ${previous.grade} → ${current.grade} (${deltaStr}pts)`
+      );
+    }
+  }
+} catch {
+  // Non-fatal — health-score-log.jsonl may not exist yet
+}
+
 // DS-6: Log session start to session-activity.jsonl
 try {
   execFileSync(process.execPath, ["scripts/log-session-activity.js", "--event=session_start"], {

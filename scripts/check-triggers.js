@@ -7,7 +7,6 @@
  *
  * Triggers:
  *   - security_audit: Security-sensitive files modified
- *   - consolidation: Review count threshold exceeded
  *   - skill_validation: Skill files modified
  *
  * Usage:
@@ -46,12 +45,7 @@ const TRIGGERS = {
     ],
     action: "Run: npm run audit-security OR use security-auditor agent",
   },
-  consolidation: {
-    severity: "warning",
-    description: "Review consolidation may be needed",
-    threshold: 2, // Warn when 2 or fewer reviews remaining until 10 threshold
-    action: "Consolidation will auto-run at next session-start",
-  },
+  // consolidation trigger REMOVED (C9-G2) — session-start handles it with better context
   skill_validation: {
     severity: "warning",
     description: "Skill/agent files modified",
@@ -153,6 +147,10 @@ function checkSecurityTrigger(files) {
     /^\.husky\//i,
     /^scripts\//i, // Scripts are infrastructure, not app code
     /node_modules\//i,
+    /^tests\//i, // Test files — not security-relevant (C9-G1)
+    /\.test\./i,
+    /\.spec\./i,
+    /\/__tests__\//i,
     /\.md$/i,
     /\.jsonl$/i,
   ];
@@ -196,90 +194,6 @@ function resolveGitRoot() {
   return gitRoot.status === 0 && gitRoot.stdout
     ? gitRoot.stdout.trim()
     : path.resolve(process.cwd());
-}
-
-/**
- * Count pending reviews from JSONL file since last consolidation
- */
-function countPendingReviews(reviewsPath, lastConsolidated) {
-  // Size guard: skip oversized state files to prevent local DoS (Review #256)
-  const MAX_REVIEWS_SIZE = 512 * 1024; // 512 KB
-  let stat;
-  try {
-    stat = fs.statSync(reviewsPath);
-  } catch {
-    return 0; // File disappeared between existsSync and statSync
-  }
-  if (stat.size > MAX_REVIEWS_SIZE) {
-    console.error(`   ⚠️  reviews.jsonl exceeds ${MAX_REVIEWS_SIZE} bytes, skipping`);
-    return 0;
-  }
-
-  // Handle CRLF line endings + coerce string IDs (Review #256)
-  let content;
-  try {
-    content = fs.readFileSync(reviewsPath, "utf8").replaceAll("\r\n", "\n").trim();
-  } catch {
-    return 0; // File became unreadable
-  }
-  if (!content) return 0;
-
-  const lines = content.split("\n").filter(Boolean);
-  let count = 0;
-  for (const line of lines) {
-    try {
-      const r = JSON.parse(line);
-      const id =
-        typeof r.id === "number"
-          ? r.id
-          : typeof r.id === "string"
-            ? Number.parseInt(r.id, 10)
-            : NaN;
-      if (Number.isFinite(id) && id > lastConsolidated) count++;
-    } catch {
-      /* skip malformed lines */
-    }
-  }
-  return count;
-}
-
-// Check consolidation trigger (reads JSONL state files directly — Session #156)
-function checkConsolidationTrigger() {
-  const trigger = TRIGGERS.consolidation;
-
-  try {
-    const rootDir = resolveGitRoot();
-    const statePath = path.join(rootDir, ".claude", "state", "consolidation.json");
-    const reviewsPath = path.join(rootDir, ".claude", "state", "reviews.jsonl");
-
-    if (!fs.existsSync(statePath) || !fs.existsSync(reviewsPath)) {
-      return { triggered: false, name: "consolidation" };
-    }
-
-    const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
-    const lastConsolidated =
-      typeof state.lastConsolidatedReview === "number" ? state.lastConsolidatedReview : 0;
-    const consolidationThreshold = typeof state.threshold === "number" ? state.threshold : 10;
-    const pendingCount = countPendingReviews(reviewsPath, lastConsolidated);
-
-    const remaining = consolidationThreshold - pendingCount;
-    if (remaining <= trigger.threshold) {
-      return {
-        triggered: true,
-        name: "consolidation",
-        severity: trigger.severity,
-        description: trigger.description,
-        action: trigger.action,
-        details: `  - ${remaining <= 0 ? "0" : remaining} reviews until consolidation threshold (${pendingCount} pending)`,
-      };
-    }
-
-    return { triggered: false, name: "consolidation" };
-  } catch (err) {
-    const errMsg = err instanceof Error ? err.message : String(err);
-    console.error(`   ⚠️  Consolidation check failed: ${errMsg}`);
-    return { triggered: false, name: "consolidation" };
-  }
 }
 
 // Check skill validation trigger
@@ -517,7 +431,6 @@ function main() {
   // Run all trigger checks
   results.push(
     checkSecurityTrigger(files),
-    checkConsolidationTrigger(),
     checkSkillValidationTrigger(files),
     checkReviewSyncTrigger()
   );

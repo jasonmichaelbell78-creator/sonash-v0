@@ -25,9 +25,7 @@
  */
 
 import {
-  renameSync,
   readFileSync,
-  writeFileSync,
   existsSync,
   unlinkSync,
   mkdirSync,
@@ -45,6 +43,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const require_ = createRequire(import.meta.url);
 const { isSafeToWrite } = require_("../.claude/hooks/lib/symlink-guard");
+const { safeWriteFileSync, safeRenameSync } = require_("./lib/safe-fs");
 const ROOT = join(__dirname, "..");
 
 // Directories
@@ -183,11 +182,11 @@ function atomicSwap(filePath, tmpPath, bakPath) {
     throw new Error("Refusing atomic swap: symlink detected");
   }
   try {
-    if (existsSync(filePath)) renameSync(filePath, bakPath);
-    renameSync(tmpPath, filePath);
+    if (existsSync(filePath)) safeRenameSync(filePath, bakPath);
+    safeRenameSync(tmpPath, filePath);
   } catch (error_) {
     try {
-      if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
+      if (existsSync(bakPath) && !existsSync(filePath)) safeRenameSync(bakPath, filePath);
     } catch {
       /* best effort restore */
     }
@@ -235,7 +234,7 @@ function safeWriteFile(filePath, content, description) {
   }
 
   try {
-    writeFileSync(tmpPath, content, "utf-8");
+    safeWriteFileSync(tmpPath, content, "utf-8");
     atomicSwap(filePath, tmpPath, bakPath);
     return { success: true };
   } catch (error) {

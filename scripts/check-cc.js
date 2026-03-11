@@ -13,16 +13,22 @@
  *
  * Uses acorn for parsing — no ESLint plugin dependencies required.
  *
- * Usage: node scripts/check-cc.js [--threshold=N] [--verbose] [--all]
+ * Usage: node scripts/check-cc.js [--threshold=N] [--verbose] [--all] [--update-baseline]
  *
  * Options:
- *   --threshold=N  Set complexity threshold (default: 15)
- *   --verbose      Show all functions, not just violations
- *   --all          Check all .js/.mjs files, not just changed ones
+ *   --threshold=N     Set complexity threshold (default: 15)
+ *   --verbose         Show all functions, not just violations
+ *   --all             Check all .js/.mjs files, not just changed ones
+ *   --update-baseline Record current CC per file into known-debt-baseline.json
+ *
+ * Baseline mode (C10-G4):
+ *   When a baseline exists, only regressions (new violations or increased CC)
+ *   are reported. Known debt is suppressed. Use --update-baseline to snapshot
+ *   the current state after fixing violations.
  *
  * Exit codes:
- *   0 = All functions within threshold
- *   1 = One or more functions exceed threshold
+ *   0 = All functions within threshold (or no regressions with baseline)
+ *   1 = One or more functions exceed threshold (regressions found)
  *   2 = Script error (parse failure, git failure, etc.)
  */
 
@@ -30,10 +36,13 @@ import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, "..");
+const require_ = createRequire(import.meta.url);
+const { safeWriteFileSync } = require_("./lib/safe-fs");
 
 // ---------------------------------------------------------------------------
 // Sanitize error helper (inline to avoid import issues across CJS/ESM)
@@ -64,6 +73,8 @@ function getArgValue(name, defaultVal) {
 const THRESHOLD = Number.parseInt(getArgValue("threshold", "15"), 10);
 const VERBOSE = args.includes("--verbose");
 const CHECK_ALL = args.includes("--all");
+const UPDATE_BASELINE = args.includes("--update-baseline");
+const BASELINE_PATH = join(ROOT, ".claude", "state", "known-debt-baseline.json");
 
 if (Number.isNaN(THRESHOLD) || THRESHOLD < 1) {
   console.error("[check-cc] Invalid threshold value. Must be a positive integer.");
@@ -543,6 +554,42 @@ function printReport(violations, totalFunctions, parseErrors, fileCount) {
 }
 
 // ---------------------------------------------------------------------------
+// Baseline support (C10-G4)
+// ---------------------------------------------------------------------------
+function readBaseline() {
+  try {
+    const data = JSON.parse(readFileSync(BASELINE_PATH, "utf-8"));
+    return data?.checks?.["cognitive-complexity"] || {};
+  } catch {
+    return {};
+  }
+}
+
+function writeBaseline(allResults) {
+  let data;
+  try {
+    data = JSON.parse(readFileSync(BASELINE_PATH, "utf-8"));
+  } catch {
+    data = { generated: "", description: "", checks: {} };
+  }
+
+  // Record max CC per file for files with violations
+  const ccByFile = {};
+  for (const result of allResults) {
+    if (result.error || result.functions.length === 0) continue;
+    const maxCC = Math.max(...result.functions.map((f) => f.cc));
+    if (maxCC > THRESHOLD) {
+      ccByFile[result.file] = maxCC;
+    }
+  }
+
+  data.generated = new Date().toISOString();
+  data.checks["cognitive-complexity"] = ccByFile;
+  safeWriteFileSync(BASELINE_PATH, JSON.stringify(data, null, 2) + "\n");
+  console.log(`[check-cc] Baseline updated: ${Object.keys(ccByFile).length} file(s) recorded.`);
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 function main() {
@@ -565,9 +612,11 @@ function main() {
   let totalFunctions = 0;
   let parseErrors = 0;
   const violations = [];
+  const allResults = [];
 
   for (const file of jsFiles) {
     const result = analyzeFile(file);
+    allResults.push(result);
 
     if (result.error) {
       parseErrors++;
@@ -587,8 +636,34 @@ function main() {
     }
   }
 
-  printReport(violations, totalFunctions, parseErrors, jsFiles.length);
-  process.exit(violations.length > 0 ? 1 : 0);
+  // Baseline update mode: snapshot current state and exit
+  if (UPDATE_BASELINE) {
+    writeBaseline(allResults);
+    printReport(violations, totalFunctions, parseErrors, jsFiles.length);
+    process.exit(0);
+  }
+
+  // Normal mode: filter out known-debt violations (only block on regressions)
+  const baseline = readBaseline();
+  const baselineKeys = Object.keys(baseline);
+  let reportedViolations;
+
+  if (baselineKeys.length > 0) {
+    reportedViolations = violations.filter((v) => {
+      const baselineCC = baseline[v.file];
+      if (baselineCC === undefined) return true; // New file — always report
+      return v.cc > baselineCC; // Only report if CC increased past baseline
+    });
+    const suppressed = violations.length - reportedViolations.length;
+    if (suppressed > 0) {
+      console.log(`[check-cc] ${suppressed} known-debt violation(s) suppressed by baseline.`);
+    }
+  } else {
+    reportedViolations = violations;
+  }
+
+  printReport(reportedViolations, totalFunctions, parseErrors, jsFiles.length);
+  process.exit(reportedViolations.length > 0 ? 1 : 0);
 }
 
 main();

@@ -1,0 +1,507 @@
+{
+  "type": "mini-audit",
+  "target": "pre-commit-pre-push-systems",
+  "focus": "learnings-tracking-and-improvement-loops",
+  "created": "2026-03-11T15:50:00.000Z",
+  "status": "learnings-review-pending",
+  "currentCategory": 1,
+  "currentFinding": 8,
+  "categories": {
+    "1-override-audit-trail": {
+      "score": 7,
+      "findings": 3,
+      "decisions": ["C1-G1", "C1-G2", "C1-G3"],
+      "complete": true
+    },
+    "2-warning-aggregation": {
+      "score": 5,
+      "findings": 4,
+      "decisions": ["C2-G1", "C2-G2", "C2-G3", "C2-G4"],
+      "complete": true
+    },
+    "3-learnings-improvement-loop": {
+      "score": 4,
+      "findings": 4,
+      "decisions": ["C3-G1", "C3-G2", "C3-G3", "C3-G4"],
+      "complete": true
+    },
+    "4-pre-existing-debt-handling": {
+      "score": 3,
+      "findings": 3,
+      "decisions": ["C4-G1", "C4-G2", "C4-G3"],
+      "complete": true
+    },
+    "5-cross-system-integration": {
+      "score": 6,
+      "findings": 3,
+      "decisions": ["C5-G1", "C5-G2", "C5-G3"],
+      "complete": true
+    },
+    "6-code-quality-duplication": {
+      "score": 5,
+      "findings": 4,
+      "decisions": ["C6-G1", "C6-G2", "C6-G3", "C6-G4"],
+      "complete": true
+    },
+    "7-gate-effectiveness": {
+      "score": 5,
+      "findings": 5,
+      "decisions": ["C7-G1", "C7-G2", "C7-G3", "C7-G4", "C7-G5"],
+      "complete": true
+    },
+    "8-missing-gates": {
+      "score": 6,
+      "findings": 2,
+      "decisions": ["C8-G1", "C8-G2"],
+      "complete": true
+    },
+    "9-trigger-system": {
+      "score": 5,
+      "findings": 2,
+      "decisions": ["C9-G1", "C9-G2"],
+      "complete": true
+    },
+    "10-underlying-issues": {
+      "score": 4,
+      "findings": 5,
+      "decisions": ["C10-G1", "C10-G2", "C10-G3", "C10-G4", "C10-G5"],
+      "complete": true
+    }
+  },
+  "decisions": [
+    {
+      "id": "C1-G1",
+      "category": "1-override-audit-trail",
+      "finding": "Override data never consumed by improvement pipeline",
+      "decision": "accept",
+      "action": "Wire override frequency into both session-start AND /alerts — threshold 10 bypasses per check in 7 days",
+      "confidence": "high",
+      "timestamp": "2026-03-11T15:52:00.000Z"
+    },
+    {
+      "id": "C1-G2",
+      "category": "1-override-audit-trail",
+      "finding": "No alerting threshold for high-frequency bypasses",
+      "decision": "accept-folded",
+      "action": "Folded into C1-G1 — 10 bypasses per check in 7 days threshold confirmed",
+      "confidence": "high",
+      "timestamp": "2026-03-11T15:53:00.000Z"
+    },
+    {
+      "id": "C1-G3",
+      "category": "1-override-audit-trail",
+      "finding": "Trend calculation broken — compares all-time vs previous week instead of week-over-week",
+      "decision": "accept",
+      "action": "Fix date window logic in log-override.js to compare rolling 7-day windows",
+      "confidence": "high",
+      "timestamp": "2026-03-11T15:55:00.000Z"
+    },
+    {
+      "id": "C2-G1",
+      "category": "2-warning-aggregation",
+      "finding": "Warnings are generic — no file names, pattern types, or progression context",
+      "decision": "accept",
+      "action": "Enrich warning payloads from check-propagation.js and check-triggers.js with top 3 affected files and pattern name",
+      "confidence": "high",
+      "timestamp": "2026-03-11T15:57:00.000Z"
+    },
+    {
+      "id": "C2-G2",
+      "category": "2-warning-aggregation",
+      "finding": "No severity escalation for recurring warnings — same info level forever",
+      "decision": "accept",
+      "action": "Add occurrence counting to append-hook-warning.js — escalate 5+ to warning, 15+ to error. Pair with C2-G4 (JSONL trail analysis)",
+      "confidence": "high",
+      "timestamp": "2026-03-11T15:58:00.000Z"
+    },
+    {
+      "id": "C2-G3",
+      "category": "2-warning-aggregation",
+      "finding": "Warning → action loop broken — no acknowledgment tracking, no pause-and-respond gate",
+      "decision": "accept",
+      "action": "Add last_acknowledged + occurrences_since_ack to hook-warnings.json. BROADER ISSUE: session-start/session-begin has no 'stop and respond to warnings' gate — warnings are fire-and-forget wallpaper. Needs session-begin skill fix to pause on unacknowledged warnings before continuing.",
+      "note": "User identified this as inherent flaw in session start/begin skills — not just a hook warning issue",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:00:00.000Z"
+    },
+    {
+      "id": "C2-G4",
+      "category": "2-warning-aggregation",
+      "finding": "JSONL warning trail (32 entries) is never analyzed — no trend detection or /alerts integration",
+      "decision": "accept",
+      "action": "Add hook-warning-trends dimension to /alerts reading JSONL trail. Pairs with C2-G2 (escalation) and C1-G1 (override analytics). Must surface in learnings review at end.",
+      "note": "User: all implementations must surface in end-of-process learnings review with options and recommendations",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:02:00.000Z"
+    },
+    {
+      "id": "C3-G1",
+      "category": "3-learnings-improvement-loop",
+      "finding": "No automated learning → action pipeline — override, warning, and health data are all passive",
+      "decision": "accept",
+      "action": "Create hook learning synthesizer at session-end (reads override-log + warning-log + health-score-log, surfaces top 3 recurring issues). ALSO wire into /alerts. CRITICAL: must force acknowledgment — passive surfacing is useless per user feedback (recurring theme from C2-G3).",
+      "note": "User: if it doesn't MAKE me acknowledge it, it's useless. Add to alerts as well.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:04:00.000Z"
+    },
+    {
+      "id": "C3-G2",
+      "category": "3-learnings-improvement-loop",
+      "finding": "PR retro learnings delayed — same recommendation 5 times before action, no escalation trigger",
+      "decision": "accept",
+      "action": "Add escalation rule to pr-retro skill: 3+ occurrences of same recommendation → auto-tag CRITICAL and add to session action items",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:06:00.000Z"
+    },
+    {
+      "id": "C3-G3",
+      "category": "3-learnings-improvement-loop",
+      "finding": "Override patterns don't create TDMS entries — 30 propagation + 28 CC bypasses with no DEBT items",
+      "decision": "accept",
+      "action": "Auto-generate DEBT entry when check bypassed 15+ times in 14 days. Deduplicate against MASTER_DEBT. Source: hook-override-auto, severity S2, category engineering-productivity.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:07:00.000Z"
+    },
+    {
+      "id": "C3-G4",
+      "category": "3-learnings-improvement-loop",
+      "finding": "No closed-loop verification — learnings not marked addressed, no before/after metrics",
+      "decision": "defer",
+      "action": "Add learning_addressed field to reviews.jsonl. Depends on C3-G2 and C3-G3 being in place first.",
+      "confidence": "medium",
+      "timestamp": "2026-03-11T16:08:00.000Z"
+    },
+    {
+      "id": "C4-G1",
+      "category": "4-pre-existing-debt-handling",
+      "finding": "78% of overrides cite 'pre-existing' — gates defeated by noise",
+      "decision": "accept-modified",
+      "action": "BAN 'pre-existing' as a skip reason. Codify across: (1) SKIP_REASON validator in pre-commit/pre-push to reject reasons containing 'pre-existing'/'pre existing', (2) CLAUDE.md or CODE_PATTERNS.md to document the rule, (3) known-debt-baseline.json so gates only block on regressions — eliminating the NEED for 'pre-existing' as a reason. Either fix the underlying debt or use baseline mode.",
+      "note": "User: 'pre-existing' is NOT a skip reason anymore. Codify everywhere. Fix now or create DEBT item.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:10:00.000Z"
+    },
+    {
+      "id": "C4-G2",
+      "category": "4-pre-existing-debt-handling",
+      "finding": "No baseline/diff-only mode for known debt",
+      "decision": "accept-folded",
+      "action": "Folded into C4-G1 — baseline file is the implementation mechanism for the 'pre-existing' ban. Option A (known-debt-baseline.json) accepted.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:12:00.000Z"
+    },
+    {
+      "id": "C4-G3",
+      "category": "4-pre-existing-debt-handling",
+      "finding": "Override fatigue — 2-3 SKIP flags per push becomes reflexive copy-paste",
+      "decision": "accept",
+      "action": "Add bypass budget metric to /alerts — track weekly override count vs average, flag when above threshold. Safety net for C4-G1 baseline.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:13:00.000Z"
+    },
+    {
+      "id": "C5-G1",
+      "category": "5-cross-system-integration",
+      "finding": "No integration between override-log and TDMS",
+      "decision": "accept-folded",
+      "action": "Folded into C3-G3 — override → DEBT auto-intake at 15+ bypasses in 14 days",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:14:00.000Z"
+    },
+    {
+      "id": "C5-G2",
+      "category": "5-cross-system-integration",
+      "finding": "No integration between hook-warnings-log and /alerts",
+      "decision": "accept-folded",
+      "action": "Folded into C2-G4 — hook-warning-trends dimension in /alerts",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:15:00.000Z"
+    },
+    {
+      "id": "C5-G3",
+      "category": "5-cross-system-integration",
+      "finding": "Health score history not surfaced at session-start — F/59 invisible unless you run /ecosystem-health",
+      "decision": "accept",
+      "action": "Session-start reads latest health score entry, shows one-liner with grade + delta. 2+ grade drop = warning. MUST include action prompt (recurring theme) — not just informational text.",
+      "note": "User: if there is no action prompt it gets lost in the shuffle",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:16:00.000Z"
+    },
+    {
+      "id": "C6-G1",
+      "category": "6-code-quality-duplication",
+      "finding": "require_skip_reason() + fnm init duplicated verbatim across pre-commit and pre-push (44 LOC)",
+      "decision": "accept",
+      "action": "Extract to .husky/_shared.sh sourced by both hooks. Also enables single-place implementation of C4-G1 'pre-existing' ban.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:30:00.000Z"
+    },
+    {
+      "id": "C6-G2",
+      "category": "6-code-quality-duplication",
+      "finding": "EXIT trap inconsistency — pre-commit chains safely, pre-push overwrites",
+      "decision": "accept",
+      "action": "Move add_exit_trap() into .husky/_shared.sh (piggybacks on C6-G1). Pre-push adopts chaining pattern.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:31:00.000Z"
+    },
+    {
+      "id": "C6-G3",
+      "category": "6-code-quality-duplication",
+      "finding": "STAGED_FILES computed 3x identically in pre-commit (lines 172, 299, 338)",
+      "decision": "accept",
+      "action": "Compute once after fnm init, reuse variable throughout pre-commit",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:32:00.000Z"
+    },
+    {
+      "id": "C6-G4",
+      "category": "6-code-quality-duplication",
+      "finding": "Security check temp file assumes .js extension for mixed-content diff — false positives on non-JS content",
+      "decision": "accept",
+      "action": "Filter diff to only .js/.ts file content before passing to security-check.js. Use diff --git headers to identify file type.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:33:00.000Z"
+    },
+    {
+      "id": "C7-G1",
+      "category": "7-gate-effectiveness",
+      "finding": "Code-reviewer gate has no timestamp validation — stale entries from days ago pass the check (HIGH)",
+      "decision": "accept",
+      "action": "Option A: Parse JSONL, extract most recent code-reviewer timestamp, verify within 4 hours. Preserves historical data for analytics.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:35:00.000Z"
+    },
+    {
+      "id": "C7-G2",
+      "category": "7-gate-effectiveness",
+      "finding": "Propagation check runs twice — pre-commit warning is noise, pre-push blocking is the real gate",
+      "decision": "accept",
+      "action": "Remove gate 3b (propagation warning) from pre-commit. Keep blocking version in pre-push. Saves 1-2s/commit, eliminates 13 of 32 warning-log entries.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:36:00.000Z"
+    },
+    {
+      "id": "C7-G3",
+      "category": "7-gate-effectiveness",
+      "finding": "CANON validation gate fires ~1-2% of commits, non-blocking, CI validates same thing",
+      "decision": "accept",
+      "action": "Remove gate 5 (CANON validation) from pre-commit. Rely on CI.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:37:00.000Z"
+    },
+    {
+      "id": "C7-G4",
+      "category": "7-gate-effectiveness",
+      "finding": "Test coverage warning (gate 13) redundant with CI test registry — non-blocking, hardcoded, less accurate",
+      "decision": "accept",
+      "action": "Remove gate 13 (test coverage warning) from pre-commit. CI test registry is authoritative. Saves 40 LOC.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:38:00.000Z"
+    },
+    {
+      "id": "C7-G5",
+      "category": "7-gate-effectiveness",
+      "finding": "append-hook-warning.js failures silently swallowed (2>/dev/null || true) — audit trail dies without notice",
+      "decision": "accept",
+      "action": "Replace silent suppression with logging to HOOK_OUTPUT_LOG. Non-blocking but visible. Protects C1-C2 decisions.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:39:00.000Z"
+    },
+    {
+      "id": "C8-G1",
+      "category": "8-missing-gates",
+      "finding": "Pre-push type check + CC checks run sequentially (~12-14s) — could parallelize for ~5-8s savings",
+      "decision": "accept",
+      "action": "Parallelize tsc, cyclomatic CC, and cognitive CC in pre-push using same background-process pattern as pre-commit Wave 1.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:40:00.000Z"
+    },
+    {
+      "id": "C8-G2",
+      "category": "8-missing-gates",
+      "finding": "No hook catches null/undefined safety — #1 reviewer finding across Qodo reviews",
+      "decision": "defer",
+      "action": "Defer to TDMS. Option A (standalone diff-only scanner) is viable; Option B (strict TS ESLint rules) needs deep-plan due to repo-wide perf + violation impact.",
+      "confidence": "medium",
+      "timestamp": "2026-03-11T16:42:00.000Z"
+    },
+    {
+      "id": "C9-G1",
+      "category": "9-trigger-system",
+      "finding": "Security trigger blocks on filenames not content — 100% false positive rate, 10 bypasses in 30 days",
+      "decision": "accept",
+      "action": "Tighten security trigger: check changed line content (like security-check.js) OR exclude test files and docs from filename pattern matching.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:44:00.000Z"
+    },
+    {
+      "id": "C9-G2",
+      "category": "9-trigger-system",
+      "finding": "Consolidation trigger redundant with session-start — non-blocking warning during push is wallpaper",
+      "decision": "accept",
+      "action": "Remove consolidation trigger from check-triggers.js. Session-start handles it with better context and timing.",
+      "confidence": "high",
+      "timestamp": "2026-03-11T16:45:00.000Z"
+    }
+  ],
+  "meta": {
+    "learnings_review_requested": true,
+    "learnings_review_format": "description of issue, options, recommendation — then act on them immediately",
+    "recurring_theme": "Passive surfacing is useless — all improvements MUST force acknowledgment. Fire-and-forget warnings become wallpaper. This applies to session-start, session-end, and /alerts.",
+    "side_note_hook_audit_skill": "Any categories or checks from this mini-audit that are NOT present in the hook-ecosystem-audit skill (or script-ecosystem-audit if applicable) MUST be added. Cross-check all 9 categories against the existing audit skill categories.",
+    "phase": "learnings-review",
+    "learnings_to_present": [
+      "L1: Passive surfacing is useless — needs acknowledgment gate in session-begin + CLAUDE.md rule",
+      "L2: Pre-existing is not a valid excuse — ban word + create baseline",
+      "L3: Data without consumers is dead weight — wire override/warning/health into /alerts + session-end",
+      "L4: Escalation must be automatic — pr-retro 3+ rule, warning 5+/15+ escalation",
+      "L5: Duplicate code between hooks is maintenance risk — extract to _shared.sh",
+      "L6: Gates that never catch anything should be removed — CANON, test warning, propagation pre-commit"
+    ],
+    "learnings_presented": 6,
+    "status": "wave-5-complete",
+    "wave0_completed": "2026-03-11T21:40:00.000Z",
+    "wave0_changes": [
+      "C10-G1: Replaced 5 direct fs calls with safe-fs wrappers (suggest-pattern-automation.js: 1 writeFileSync, archive-doc.js: 3 renameSync + 1 writeFileSync)",
+      "C6-G3: Computed STAGED_FILES once after fnm init in pre-commit, removed 3 duplicate computations",
+      "C7-G5: Replaced 2>/dev/null || true on 13 append-hook-warning calls with visible logging (pre-commit: removed 2>/dev/null since exec redirect covers it, pre-push: redirect to HOOK_OUTPUT_LOG)"
+    ],
+    "wave1_completed": "2026-03-11T21:50:00.000Z",
+    "wave1_changes": [
+      "C6-G1: Created .husky/_shared.sh with add_exit_trap, is_skipped, require_skip_reason, _shared_init_fnm. Both hooks source it.",
+      "C6-G2: Pre-push raw trap replaced with add_exit_trap chaining (SEC_TMPFILE cleanup).",
+      "C4-G1: 'pre-existing' ban added to require_skip_reason() — case-insensitive, catches pre-existing/pre existing/preexisting. known-debt-baseline.json schema created.",
+      "~44 LOC of duplication removed across both hooks."
+    ],
+    "wave2_completed": "2026-03-11T21:55:00.000Z",
+    "wave2_changes": [
+      "C7-G2: Removed gate 3b (propagation warning) from pre-commit — pre-push blocks, this was noise (13/32 warning entries).",
+      "C7-G3: Removed gate 5 (CANON validation) from pre-commit — fires ~1-2%, non-blocking, CI validates same thing.",
+      "C7-G4: Removed gate 13 (test coverage warning) from pre-commit — redundant with CI test registry, ~40 LOC removed.",
+      "C9-G2: Removed consolidation trigger from check-triggers.js — session-start handles with better context. ~80 LOC removed (checkConsolidationTrigger + countPendingReviews)."
+    ],
+    "wave3_completed": "2026-03-11T22:30:00.000Z",
+    "wave3_changes": [
+      "C7-G1: Code-reviewer gate now parses JSONL timestamps, verifies invocation within 4 hours (node one-liner).",
+      "C6-G4: Security diff filtered to .js/.ts content only using awk + diff --git headers — eliminates false positives from non-JS content.",
+      "C9-G1: Security trigger excludes test files (tests/, .test., .spec., __tests__/) — reduces false positive rate.",
+      "C8-G1: Parallelized tsc + cyclomatic CC + cognitive CC in pre-push using background subshells + tmpfiles — ~5-8s savings.",
+      "C10-G4: CC baseline support in check-cc.js — --update-baseline flag, readBaseline/writeBaseline, regression-only gating via known-debt-baseline.json."
+    ],
+    "wave4_completed": "2026-03-11T22:45:00.000Z",
+    "wave4_changes": [
+      "C2-G1: Enriched warning payloads — append-hook-warning.js accepts --files and --pattern args, stored in warning entries. Pre-push extracts top 3 files from propagation + pattern compliance output.",
+      "C2-G2: Auto-escalation — countRecentOccurrences() reads JSONL trail, 5+ occurrences escalates info→warning, 15+ escalates to error.",
+      "C2-G3: Acknowledgment tracking — data.acknowledged map preserved across clears, occurrences_since_ack computed per warning entry.",
+      "C1-G3: Fixed trend calculation — per-check trends added to computeAnalytics(), null for new activity (no baseline), fmtPct display in showAnalytics()."
+    ],
+    "wave5_completed": "2026-03-11T23:00:00.000Z",
+    "wave5_changes": [
+      "C1-G1: Per-check override frequency alert in run-alerts.js checkSkipAbuse() — 10 bypasses/check/7d threshold.",
+      "C4-G3: Bypass budget metric in run-alerts.js checkSkipAbuse() — current week vs 4-week rolling average, 1.5x spike = warning.",
+      "C2-G4: Hook-warning-trends week-over-week comparison in run-alerts.js checkHookHealth() — 50%+ increase with 5+ delta = warning.",
+      "C5-G3: Health score delta at session-start — reads health-score-log.jsonl, shows grade + delta, 2+ grade drop = warning with counter increment.",
+      "C3-G1: Hook learning synthesizer step (5b) added to session-end SKILL.md — top 3 recurring issues from override-log + warning-log + health-score-log.",
+      "L3: Wired data into session-begin (7b anomaly gate: override trend 50%+, 10+ warnings, 2+ grade drop), session-end (7f hook data summary one-liner), /alerts (hook drill-down section with override/warning/health detail)."
+    ],
+    "implementation_plan": ".claude/plans/hook-systems-audit-implementation.md",
+    "learnings_decisions": [
+      {
+        "id": "L1",
+        "learning": "Passive surfacing is useless — needs acknowledgment gate",
+        "decision": "accept",
+        "option": "B",
+        "action": "Add acknowledgment gate to session-begin skill + codify 'all passive surfacing must force acknowledgment' as a rule in CLAUDE.md Section 4 (Behavioral Guardrails)",
+        "timestamp": "2026-03-11T17:00:00.000Z"
+      },
+      {
+        "id": "L2",
+        "learning": "Pre-existing is not a valid excuse — ban word + create baseline",
+        "decision": "accept",
+        "option": "A",
+        "action": "Confirms C4-G1 — ban 'pre-existing' as skip reason + known-debt-baseline.json. No scope change needed.",
+        "timestamp": "2026-03-11T17:02:00.000Z"
+      },
+      {
+        "id": "L3",
+        "learning": "Data without consumers is dead weight — wire into active surfaces",
+        "decision": "accept",
+        "option": "C-refined",
+        "action": "Wire override-log, warning-log, health-score-log into 3 surfaces: (1) session-begin as acknowledgment gate on anomalies only (override trend up 50%+, warning threshold, health drop 2+ grades), (2) session-end as passive archival summary one-liner, (3) /alerts as opt-in drill-down. Session-begin is the only forced-acknowledgment surface.",
+        "timestamp": "2026-03-11T17:05:00.000Z"
+      },
+      {
+        "id": "L4",
+        "learning": "Escalation must be automatic — repeated signals at constant volume become noise",
+        "decision": "accept",
+        "option": "C",
+        "action": "Implement escalation in individual systems now (C2-G2 warning 5+/15+, C3-G2 pr-retro 3+ same rec). Centralize into unified engine when 5+ systems use escalation logic.",
+        "timestamp": "2026-03-11T17:08:00.000Z"
+      },
+      {
+        "id": "L5",
+        "learning": "Duplicate code between hooks is maintenance risk — no shared file convention existed",
+        "decision": "accept",
+        "option": "A",
+        "action": "Extract require_skip_reason(), is_skipped(), add_exit_trap(), fnm init to .husky/_shared.sh. Both hooks source it. Confirms C6-G1/C6-G2. No lint check needed at current scale.",
+        "timestamp": "2026-03-11T17:10:00.000Z"
+      },
+      {
+        "id": "L6",
+        "learning": "Gates that never catch anything should be removed — non-blocking duplicates are worse than useless",
+        "decision": "accept",
+        "option": "B",
+        "action": "Remove 3 dead gates (confirms C7-G2/G3/G4) + add gate effectiveness review step to hook-ecosystem-audit skill (catch rate, blocking vs non-blocking, duplicate detection).",
+        "timestamp": "2026-03-11T17:12:00.000Z"
+      }
+    ],
+    "category10_decisions": [
+      {
+        "id": "C10-G1",
+        "category": "10-underlying-issues",
+        "finding": "5 no-raw-fs-write pattern violations in suggest-pattern-automation.js and archive-doc.js",
+        "decision": "accept",
+        "action": "Fix now — replace 5 direct fs calls with safe-fs wrappers (safeWriteFileSync, safeRenameSync)",
+        "confidence": "high",
+        "timestamp": "2026-03-11T17:20:00.000Z"
+      },
+      {
+        "id": "C10-G2",
+        "category": "10-underlying-issues",
+        "finding": "Test suite 40% pass rate, 31 days stale — health score based on fiction",
+        "decision": "accept",
+        "action": "Run test suite diagnostic. Fix trivial failures inline. Create targeted DEBT items for complex failures. Update health state file with fresh results.",
+        "confidence": "high",
+        "timestamp": "2026-03-11T17:22:00.000Z"
+      },
+      {
+        "id": "C10-G3",
+        "category": "10-underlying-issues",
+        "finding": "39 S0 critical debt items — likely over-assigned, poisoning health score and desensitizing severity",
+        "decision": "accept",
+        "action": "Bulk reclassify S0 items: keep S0 only for security vulnerabilities, data loss, or production-breaking bugs. Reclassify doc/process/tooling items to S1. Codify S0 criteria.",
+        "confidence": "high",
+        "timestamp": "2026-03-11T17:25:00.000Z"
+      },
+      {
+        "id": "C10-G4",
+        "category": "10-underlying-issues",
+        "finding": "267 CC violations across 100 files — gate always bypassed, effectively disabled",
+        "decision": "accept",
+        "action": "Implement known-debt-baseline for CC (pairs with C4-G1). Baseline records current CC per file, gate only blocks on regressions. Zero bypasses needed on day one.",
+        "confidence": "high",
+        "timestamp": "2026-03-11T17:28:00.000Z"
+      },
+      {
+        "id": "C10-G5",
+        "category": "10-underlying-issues",
+        "finding": "6 propagation patterns across 500+ files, 1200+ violations — gate always bypassed",
+        "decision": "accept",
+        "action": "Apply baseline (C4-G1) to stop bypasses. Fix security-critical patterns only: writeFileSync without symlink guard (321 occurrences) and path.resolve without containment (272 occurrences). Baseline the remaining 4 patterns (filter(Boolean), statSync, rmSync, escapeCell) as tracked debt.",
+        "confidence": "high",
+        "timestamp": "2026-03-11T17:30:00.000Z"
+      }
+    ]
+  }
+}

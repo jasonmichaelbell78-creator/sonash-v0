@@ -1564,6 +1564,37 @@ function checkSkipAbuse() {
     byType24h[key] = (byType24h[key] || 0) + 1;
   }
 
+  // C1-G1: Per-check threshold — 10 bypasses per check in 7 days
+  for (const [check, count] of Object.entries(byType7d)) {
+    if (count >= 10) {
+      addAlert(
+        "skip-abuse",
+        "error",
+        `${check} overridden ${count} times in 7 days (threshold: 10)`,
+        null,
+        `Review why ${check} is being bypassed \u2014 fix the check or fix the underlying code`
+      );
+    }
+  }
+
+  // C4-G3: Bypass budget — current week vs 4-week rolling average
+  const fourWeeksAgo = new Date(now.getTime() - 28 * DAY_MS);
+  const overrides4w = entries.filter((e) => {
+    if (!e.timestamp) return false;
+    const t = new Date(e.timestamp).getTime();
+    return !isNaN(t) && t > fourWeeksAgo.getTime();
+  });
+  const weeklyAvg4w = overrides4w.length / 4;
+  if (weeklyAvg4w > 0 && last7d.length > weeklyAvg4w * 1.5) {
+    addAlert(
+      "skip-abuse",
+      "warning",
+      `Override count this week (${last7d.length}) exceeds 4-week average (${Math.round(weeklyAvg4w)}) by ${Math.round(((last7d.length - weeklyAvg4w) / weeklyAvg4w) * 100)}%`,
+      null,
+      "Run: node scripts/log-override.js --analytics"
+    );
+  }
+
   // Rate against benchmarks
   const rate24h = rateLowerBetter(last24h.length, BENCHMARKS.skip_abuse.overrides_24h);
   const rate7d = rateLowerBetter(last7d.length, BENCHMARKS.skip_abuse.overrides_7d);
@@ -2235,6 +2266,32 @@ function checkHookHealth() {
     const key = String(o.check || "unknown");
     if (!overridesByCheck[key]) overridesByCheck[key] = [];
     overridesByCheck[key].push(o);
+  }
+
+  // C2-G4: Hook-warning-trends — week-over-week comparison
+  const twoWeeksAgo = now - 14 * DAY_MS;
+  const warningsPrevWeek = allWarnings.filter((w) => {
+    const t = new Date(w.timestamp).getTime();
+    return !isNaN(t) && t > twoWeeksAgo && t <= cutoff7d;
+  });
+  const warningTrend = {
+    current_week: warnings7d.length,
+    previous_week: warningsPrevWeek.length,
+  };
+  if (warningsPrevWeek.length > 0) {
+    warningTrend.change_pct = Math.round(
+      ((warnings7d.length - warningsPrevWeek.length) / warningsPrevWeek.length) * 100
+    );
+  }
+  // Alert on significant increase (>50% or 5+ more than last week)
+  if (warningTrend.change_pct > 50 && warnings7d.length - warningsPrevWeek.length >= 5) {
+    addAlert(
+      "hook-health",
+      "warning",
+      `Hook warnings trending up: ${warnings7d.length} this week vs ${warningsPrevWeek.length} last week (+${warningTrend.change_pct}%)`,
+      `Top warning type: ${Object.entries(warningsByType).sort((a, b) => b[1].length - a[1].length)[0]?.[0] || "none"}`,
+      "Review hook-warnings-log.jsonl for recurring patterns"
+    );
   }
 
   // --- 2b. Parse commit-failures.jsonl (persistent pre-commit failure log) ---

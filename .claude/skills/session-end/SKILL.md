@@ -175,6 +175,30 @@ If overrides exist: Were they justified? Did the skipped check pass later?
 Should it be made non-blocking? Flag overrides without reasons as process
 violations. Skip if no overrides were used this session.
 
+### Step 5b. Hook Learning Synthesizer (SHOULD — C3-G1)
+
+Surface the top 3 recurring hook issues from the last 7 days. Read these data
+sources (best-effort — skip any that don't exist):
+
+1. **Override log:** `.claude/state/override-log.jsonl` — group by `check`,
+   count occurrences
+2. **Hook warnings log:** `.claude/state/hook-warnings-log.jsonl` — group by
+   `type`, count occurrences
+3. **Health score log:** `.claude/state/health-score-log.jsonl` — find
+   categories scoring below 70
+
+**Synthesize:** Merge the top contributors from each source, deduplicate, rank
+by frequency, and present the top 3 as a one-liner each:
+
+```
+Hook learnings (7d):
+  1. cognitive-complexity: 12 overrides, 8 warnings — consider raising baseline
+  2. propagation: 6 warnings — writeFileSync still most common pattern
+  3. hook-health score dropped to 50 — check pre-push reliability
+```
+
+**If no data or all sources empty:** Skip silently (no output).
+
 ### Step 6. Update Session State (SHOULD)
 
 ```bash
@@ -214,6 +238,26 @@ occurred. If health score degraded since last check, note in session summary
 > **v1/v2 Note (INTG-06):** Review sync (7b) uses the v1 script which bridges
 > legacy markdown reviews to JSONL. The v2 pipeline writes JSONL directly.
 > Fallback: `npm run reviews:sync:v1`.
+
+### Step 7f. Hook Data Summary (SHOULD — L3)
+
+After running metrics, include a one-liner in the session summary (Step 2A) if
+any hook data is notable:
+
+- Overrides this session: count from `.claude/state/override-log.jsonl` entries
+  with today's date
+- Warnings this session: count from `.claude/state/hook-warnings-log.jsonl`
+  entries with today's date
+- Health delta: grade change from `.claude/state/health-score-log.jsonl` (last
+  two entries)
+
+**Format** (only include if non-zero):
+
+```
+Hook summary: 3 overrides, 2 warnings, health B→B (stable)
+```
+
+**If all zero or no data:** Skip silently.
 
 **Progress: Metrics & data pipeline complete (3/4 phases).**
 
