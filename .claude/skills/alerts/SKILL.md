@@ -368,7 +368,7 @@ alerts-history.jsonl.
 - Code issues: `/audit-code`
 - Security alerts: `/audit-security`
 - Review quality: `/pr-retro {pr_number}`
-- Debt items: `/sprint`
+- Debt items: `/add-debt`
 - Hook issues: `/hook-ecosystem-audit`
 
 ## Scripts

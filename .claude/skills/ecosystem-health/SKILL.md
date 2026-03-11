@@ -128,7 +128,7 @@ Present the script's markdown output. Add severity emoji badges to grades:
 
 **Scope boundary (MUST):** The triage loop is for quick fixes and deferral
 decisions. If a fix requires more than one command or 5 minutes, recommend
-deferring to a dedicated session/sprint track.
+deferring to a dedicated session.
 
 **Entry:** Identify all dimensions scoring below C (< 70). If none, skip to
 Phase 5.

@@ -230,8 +230,7 @@ Updated files:
 
 Next steps:
    - Item is in verification queue (status: NEW)
-   - Run 'verify-technical-debt' to verify this item
-   - Or manually update status to VERIFIED after confirming issue exists
+   - Manually update status to VERIFIED after confirming issue exists
 ```
 
 ---
@@ -307,7 +306,6 @@ If ANY items are deferred during review:
 
 - `sonarcloud` - Import from SonarCloud (replaces deprecated
   `sync-sonarcloud-debt`)
-- `verify-technical-debt` - Verify items in queue
 - `pr-review` - Full PR review workflow
 
 ---

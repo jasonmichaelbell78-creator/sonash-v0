@@ -184,9 +184,7 @@ All 58 skills in `.claude/skills/`. Invoke with `/skill-name`.
 | `/developer-growth-analysis` | Analyze developer growth patterns                |
 | `/pr-retro`                  | PR review retrospective with actionable analysis |
 | `/pr-review`                 | Process PR review feedback (CodeRabbit, Qodo)    |
-| `/sprint`                    | TDMS sprint workflow automation                  |
 | `/using-superpowers`         | Claude skills usage guide                        |
-| `/verify-technical-debt`     | Verify and triage technical debt items           |
 
 ### Data & Analysis (3 skills)
 
@@ -237,11 +235,6 @@ All 96 npm scripts organized by domain. Run with `npm run <script>`.
 | ----------------- | ------------------------------------------ |
 | `tdms:metrics`    | Generate TDMS metrics dashboard            |
 | `tdms:views`      | Generate TDMS views from MASTER_DEBT.jsonl |
-| `sprint:status`   | Show current sprint status                 |
-| `sprint:complete` | Complete current sprint                    |
-| `sprint:intake`   | Intake new items into sprint               |
-| `sprint:sync`     | Sync sprint items                          |
-| `sprint:wave`     | Process sprint wave                        |
 | `backlog:check`   | Check backlog health                       |
 | `validate:canon`  | Validate canonical IDs                     |
 | `canon:normalize` | Normalize canonical IDs                    |

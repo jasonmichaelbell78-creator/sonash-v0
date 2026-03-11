@@ -111,8 +111,8 @@ Phase 3 triage to present fix options.
 | eslint-compliance       | Auto-fix lint issues                | `npm run lint -- --fix`, `npm run patterns:check`          |
 | pattern-enforcement     | Review pattern violations           | `npm run patterns:check`, update `verified-patterns.jsonl` |
 | vulnerability-status    | Run security audit, update deps     | `npm audit fix`, `/audit-security`                         |
-| debt-aging              | Triage oldest S0/S1 items           | `/sprint --track=debt`, `/verify-technical-debt`           |
-| debt-velocity           | Resolve more debt than created      | `/sprint --track=debt`, reduce intake via code review      |
+| debt-aging              | Triage oldest S0/S1 items           | `/add-debt`, resolve via TDMS pipeline                     |
+| debt-velocity           | Resolve more debt than created      | Resolve via TDMS pipeline, reduce intake via code review   |
 | test-pass-rate          | Fix failing tests, run suite        | `npm test`, fix failures, `npm run test:health`            |
 | learning-effectiveness  | Automate learned patterns           | `npm run patterns:check`, add to `verified-patterns.jsonl` |
 | hook-pipeline-health    | Reduce false positives, fix hooks   | `npm run hooks:health`, `npm run hooks:analytics`          |
@@ -135,7 +135,7 @@ Each triage decision is captured in the state file with this structure:
       "score": 25,
       "grade": "F",
       "action": "fixed|deferred|skipped",
-      "command": "npm run sprint -- --track=debt",
+      "command": "node scripts/debt/resolve-bulk.js",
       "result": "success|failure|null",
       "timestamp": "2026-03-11T09:30:00Z"
     }
@@ -187,7 +187,7 @@ triage. Run health checks on `main` or at session start, not during review.
 
 Scope explosion. Each F-grade dimension can require 30+ minutes to properly
 address. If 3+ dimensions are F-grade, pick the highest-impact one, defer the
-rest to dedicated sprint tracks.
+rest to dedicated sessions.
 
 ### 3. Ignoring trend direction
 
