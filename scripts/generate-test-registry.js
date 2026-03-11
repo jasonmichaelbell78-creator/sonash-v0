@@ -425,7 +425,7 @@ function readdirRecursive(dir) {
  */
 function isTestFile(filePath) {
   const name = path.basename(filePath);
-  return /\.(?:property|integration|e2e|contract|perf)?\.?test\.(?:js|ts|mjs)$/.test(name);
+  return /\.(?:(?:property|integration|e2e|contract|perf)\.)?test\.(?:js|ts|mjs)$/.test(name);
 }
 
 // =========================================================
@@ -528,8 +528,9 @@ function getLocalityKey(relPath) {
   if (parts[0] === ".claude" && parts[1] === "skills" && parts.length >= 3) {
     return parts.slice(0, 3).join("/");
   }
-  // For other paths, use first 2 segments
-  return parts.slice(0, Math.min(2, parts.length)).join("/");
+  // For shallow paths, keep full dir; truncate only when deep
+  if (parts.length <= 3) return parts.join("/");
+  return parts.slice(0, 2).join("/");
 }
 
 /**
@@ -588,7 +589,15 @@ function loadBaseline() {
     // Validate entries have required 'path' field
     baseline.entries = baseline.entries
       .filter((e) => e && typeof e === "object" && typeof e.path === "string")
-      .map((e) => ({ ...e, path: e.path.replaceAll("\\", "/") }));
+      .map((e) => ({ ...e, path: e.path.replaceAll("\\", "/").replace(/^\.\//, "") }))
+      .filter((e) => {
+        const p = e.path;
+        if (!p || path.posix.isAbsolute(p) || p.includes("\0")) return false;
+        const normalized = path.posix.normalize(p);
+        if (/^\.\.(?:[\\/]|$)/.test(normalized)) return false;
+        e.path = normalized;
+        return true;
+      });
     return baseline;
   } catch (err) {
     console.error(`[generate-test-registry] Failed to load baseline: ${sanitizeError(err)}`);
@@ -601,7 +610,7 @@ function loadBaseline() {
  * @param {{ version: number, description: string, created: string, entries: Array<{path: string, lines: number}> }} baseline
  * @returns {boolean} Whether baseline was modified
  */
-function autoCleanBaseline(baseline, { allowWrite } = { allowWrite: false }) {
+function autoCleanBaseline(baseline, { allowWrite = false } = {}) {
   const originalCount = baseline.entries.length;
   baseline.entries = baseline.entries.filter((entry) => {
     const absPath = path.join(ROOT, entry.path);
@@ -642,7 +651,11 @@ function printGapList(gaps) {
   for (const gap of [...gaps].sort((a, b) => a.localeCompare(b))) {
     let lines = "?";
     try {
-      const abs = path.join(ROOT, gap);
+      const abs = path.resolve(ROOT, gap);
+      const rel = path.relative(ROOT, abs);
+      if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+        continue;
+      }
       const stat = fs.statSync(abs);
       if (stat.size <= MAX_GAP_FILE_SIZE) {
         lines = fs.readFileSync(abs, "utf8").split("\n").length;

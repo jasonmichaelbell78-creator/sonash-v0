@@ -3,37 +3,44 @@ import assert from "node:assert/strict";
 
 // Re-implements core logic from scripts/check-backlog-health.js
 
+function parseJsonlEntry(
+  line: string
+): { item: { id: string; severity: string; status?: string } } | { error: string } {
+  const entry = JSON.parse(line) as unknown;
+  if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+    return { error: "Entry is not a JSON object" };
+  }
+  const obj = entry as Record<string, unknown>;
+  if (!obj["id"] || !obj["severity"]) {
+    return { error: "Missing required field (id or severity)" };
+  }
+  return {
+    item: {
+      ...obj,
+      severity: typeof obj["severity"] === "string" ? obj["severity"].toUpperCase() : "S2",
+      status: typeof obj["status"] === "string" ? obj["status"].toUpperCase() : undefined,
+    } as { id: string; severity: string; status?: string },
+  };
+}
+
 function parseBacklogItems(content: string): {
   items: Array<{ id: string; severity: string; status?: string }>;
   corruptLines: Array<{ lineNumber: number; error: string }>;
 } {
   const items: Array<{ id: string; severity: string; status?: string }> = [];
   const corruptLines: Array<{ lineNumber: number; error: string }> = [];
-  const normalized = content.replaceAll("\uFEFF", "");
-  const lines = normalized.split(/\r?\n/);
+  const lines = content.replaceAll("\uFEFF", "").split(/\r?\n/);
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (line === "") continue;
     try {
-      const entry = JSON.parse(line) as unknown;
-      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
-        corruptLines.push({ lineNumber: i + 1, error: "Entry is not a JSON object" });
-        continue;
+      const result = parseJsonlEntry(line);
+      if ("error" in result) {
+        corruptLines.push({ lineNumber: i + 1, error: result.error });
+      } else {
+        items.push(result.item);
       }
-      const obj = entry as Record<string, unknown>;
-      if (!obj["id"] || !obj["severity"]) {
-        corruptLines.push({
-          lineNumber: i + 1,
-          error: "Missing required field (id or severity)",
-        });
-        continue;
-      }
-      items.push({
-        ...obj,
-        severity: typeof obj["severity"] === "string" ? obj["severity"].toUpperCase() : "S2",
-        status: typeof obj["status"] === "string" ? obj["status"].toUpperCase() : undefined,
-      } as { id: string; severity: string; status?: string });
     } catch (err) {
       corruptLines.push({
         lineNumber: i + 1,

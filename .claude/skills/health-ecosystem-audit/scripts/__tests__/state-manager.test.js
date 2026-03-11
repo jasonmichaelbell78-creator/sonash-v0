@@ -27,7 +27,9 @@ describe("State Manager", () => {
 
   afterEach(() => {
     try {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
+      if (typeof tmpDir === "string" && tmpDir.length > 0) {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      }
     } catch {
       // cleanup best-effort
     }

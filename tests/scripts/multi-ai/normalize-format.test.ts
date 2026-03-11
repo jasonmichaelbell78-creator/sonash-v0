@@ -192,6 +192,18 @@ function normalizeEffort(value: unknown): string {
   return EFFORT_MAPPINGS[str] || "E1";
 }
 
+const CONFIDENCE_WORDS: Record<string, number> = {
+  high: 90,
+  certain: 90,
+  confirmed: 90,
+  medium: 70,
+  moderate: 70,
+  likely: 70,
+  low: 50,
+  uncertain: 50,
+  suspected: 50,
+};
+
 function normalizeConfidence(value: unknown): number {
   if (value === undefined || value === null) return 70;
   if (typeof value === "number") {
@@ -200,9 +212,8 @@ function normalizeConfidence(value: unknown): number {
   }
   if (typeof value === "object" && value !== null) return 70;
   const str = String(value).toLowerCase().trim();
-  if (str === "high" || str === "certain" || str === "confirmed") return 90;
-  if (str === "medium" || str === "moderate" || str === "likely") return 70;
-  if (str === "low" || str === "uncertain" || str === "suspected") return 50;
+  const wordMatch = CONFIDENCE_WORDS[str];
+  if (wordMatch !== undefined) return wordMatch;
   const numMatch = /(\d+)/.exec(str);
   if (numMatch) {
     const n = Number.parseInt(numMatch[1], 10);

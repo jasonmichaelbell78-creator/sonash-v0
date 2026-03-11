@@ -253,15 +253,18 @@ function checkWarningLifecycle(dataDir, warningContent, findings) {
         // Check for stale warnings (open for > 30 days)
         const cutoff = new Date();
         cutoff.setDate(cutoff.getDate() - 30);
-        const cutoffStr = cutoff.toISOString().slice(0, 10);
+        const cutoffTime = cutoff.getTime();
 
         let staleCount = 0;
         for (const line of lines) {
           try {
             const entry = JSON.parse(line);
             if (entry.lifecycle === "new" || entry.lifecycle === "active") {
-              if (entry.date && entry.date < cutoffStr) {
-                staleCount++;
+              if (typeof entry.date === "string") {
+                const t = new Date(entry.date).getTime();
+                if (Number.isFinite(t) && t < cutoffTime) {
+                  staleCount++;
+                }
               }
             }
           } catch {

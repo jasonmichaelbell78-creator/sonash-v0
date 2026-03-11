@@ -6,7 +6,7 @@
 
 "use strict";
 
-const { describe, it } = require("node:test");
+const { describe, it, before } = require("node:test");
 const assert = require("node:assert/strict");
 const { execFileSync } = require("node:child_process");
 const path = require("node:path");
@@ -19,18 +19,25 @@ describe("Health Ecosystem Audit Integration", () => {
     let output;
     let parsed;
 
+    before(() => {
+      output = execFileSync(
+        process.execPath,
+        [SCRIPT_PATH, "--summary", "--batch", "--skip-live-tests"],
+        {
+          cwd: REPO_ROOT,
+          encoding: "utf8",
+          timeout: 30000,
+          maxBuffer: 5 * 1024 * 1024,
+        }
+      );
+      parsed = JSON.parse(output);
+    });
+
     it("runs successfully with --summary --batch --skip-live-tests", () => {
-      output = execFileSync("node", [SCRIPT_PATH, "--summary", "--batch", "--skip-live-tests"], {
-        cwd: REPO_ROOT,
-        encoding: "utf8",
-        timeout: 30000,
-        maxBuffer: 5 * 1024 * 1024,
-      });
       assert.ok(output, "Produces output");
     });
 
     it("produces valid JSON", () => {
-      parsed = JSON.parse(output);
       assert.ok(parsed, "Parsed successfully");
     });
 

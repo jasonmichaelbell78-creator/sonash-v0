@@ -974,15 +974,21 @@ function loadExistingReviewObjects() {
  * @param {Map<number, object>} existingById
  * @returns {Map<string, number>}
  */
+function contentNorm(v) {
+  return String(v ?? "")
+    .trim()
+    .toLowerCase()
+    .replaceAll(/\s+/g, " ");
+}
+
+function contentSignature(obj) {
+  return `${contentNorm(obj.title)}::${contentNorm(obj.pr)}::${contentNorm(obj.date)}`;
+}
+
 function buildContentIndex(existingById) {
   const byContent = new Map();
-  const norm = (v) =>
-    String(v ?? "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
   for (const [id, obj] of existingById) {
-    const sig = `${norm(obj.title)}::${norm(obj.pr)}::${norm(obj.date)}`;
+    const sig = contentSignature(obj);
     if (!byContent.has(sig)) {
       byContent.set(sig, id);
     }
@@ -1022,12 +1028,7 @@ function resolveReviewCollision(review, ctx) {
     newlyAssignedIds,
     maxExistingId,
   } = ctx;
-  const norm = (v) =>
-    String(v ?? "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
-  const sig = `${norm(review.title)}::${norm(review.pr)}::${norm(review.date)}`;
+  const sig = contentSignature(review);
   const contentMatchId = existingByContent.get(sig);
   if (contentMatchId !== undefined) {
     if (contentMatchId !== review.id) {
@@ -1150,14 +1151,13 @@ function runSyncMode(content) {
   // that were previously synced under a different ID (due to renumbering).
   const existingContentSigs = new Set();
   for (const [, obj] of existingById) {
-    existingContentSigs.add(`${obj.title || ""}::${obj.date || ""}`);
+    existingContentSigs.add(contentSignature(obj));
   }
 
   const missingReviews = mdReviews.filter((r) => {
     if (existingIds.has(r.id)) return false;
     // Content-based dedup: skip if content already synced under any ID
-    const sig = `${r.title || ""}::${r.date || ""}`;
-    if (existingContentSigs.has(sig)) return false;
+    if (existingContentSigs.has(contentSignature(r))) return false;
     return true;
   });
   const missingRetros = mdRetros.filter((r) => !existingRetroIds.has(r.id));

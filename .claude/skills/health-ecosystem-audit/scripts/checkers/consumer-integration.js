@@ -153,7 +153,7 @@ function checkTimeoutConsistency(rootDir, findings) {
   }
 
   // Count checkers and check for timeout configuration
-  const checkerDefs = runnerContent.match(/["'][\w-]+["']\s*:\s*\{[^}]*fn\s*:/g);
+  const checkerDefs = runnerContent.match(/\bfn\s*:/g);
   totalCheckers = checkerDefs ? checkerDefs.length : 0;
 
   // Check: are quick checkers properly tagged?

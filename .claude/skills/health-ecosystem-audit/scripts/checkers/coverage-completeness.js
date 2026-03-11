@@ -257,8 +257,9 @@ function checkTestCoverage(rootDir, skipLiveTests, findings) {
   let passedTests = 0;
   let failedTests = 0;
 
+  const npmBin = process.platform === "win32" ? "npm.cmd" : "npm";
   try {
-    testOutput = execSync("npm test", {
+    testOutput = execSync(`${npmBin} test`, {
       cwd: rootDir,
       encoding: "utf8",
       timeout: 120000, // 2 min timeout for live tests
@@ -291,7 +292,23 @@ function checkTestCoverage(rootDir, skipLiveTests, findings) {
     }
   }
 
-  passRate = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0;
+  const countsKnown = totalTests > 0;
+  passRate = countsKnown ? Math.round((passedTests / totalTests) * 100) : 0;
+
+  if (!countsKnown && testExitCode === 0) {
+    findings.push({
+      id: "HMS-520A",
+      category: "test_coverage_verification",
+      domain: DOMAIN,
+      severity: "info",
+      message: "Live tests ran but results could not be parsed",
+      details:
+        "npm test succeeded, but the output format did not include parseable test counts; pass-rate thresholds were not applied.",
+      impactScore: 20,
+      frequency: 1,
+      blastRadius: 1,
+    });
+  }
 
   // Generate findings for failures (D#50: one ERROR per failing test file)
   if (failedTests > 0) {
