@@ -53,6 +53,7 @@ function isPathContained(resolvedPath: string, projectRoot: string): boolean {
 }
 
 function sanitizeFingerprintPart(value: unknown): string {
+  if (typeof value === "object" && value !== null) return "unknown";
   return String(value ?? "unknown")
     .replaceAll("::", "--")
     .replaceAll(/\s+/g, " ")

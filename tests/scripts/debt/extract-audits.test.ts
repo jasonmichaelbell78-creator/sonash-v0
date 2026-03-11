@@ -75,6 +75,7 @@ describe("extractLine", () => {
 
 function normalizeEffort(effort: unknown): string {
   if (!effort) return "E1";
+  if (typeof effort === "object" && effort !== null) return "E1";
   if (/^E[0-3]$/.test(String(effort))) return String(effort);
   const map: Record<string, string> = {
     trivial: "E0",
@@ -122,6 +123,7 @@ describe("normalizeEffort", () => {
 
 function normalizeSeverity(severity: unknown): string {
   if (!severity) return "S2";
+  if (typeof severity === "object" && severity !== null) return "S2";
   if (/^S[0-3]$/.test(String(severity))) return String(severity);
   const map: Record<string, string> = {
     critical: "S0",

@@ -178,6 +178,7 @@ function countReconstructableObjects(lines: string[]): number {
 
 function normalizeSeverity(value: unknown): string {
   if (!value) return "S2";
+  if (typeof value === "object" && value !== null) return "S2";
   const str = String(value).toLowerCase().trim();
   if (/^s[0-3]$/i.test(str)) return str.toUpperCase();
   return SEVERITY_MAPPINGS[str] || "S2";
@@ -185,6 +186,7 @@ function normalizeSeverity(value: unknown): string {
 
 function normalizeEffort(value: unknown): string {
   if (!value) return "E1";
+  if (typeof value === "object" && value !== null) return "E1";
   const str = String(value).toLowerCase().trim();
   if (/^e[0-3]$/i.test(str)) return str.toUpperCase();
   return EFFORT_MAPPINGS[str] || "E1";
@@ -196,6 +198,7 @@ function normalizeConfidence(value: unknown): number {
     if (value >= 0 && value <= 100) return Math.round(value);
     if (value >= 0 && value <= 1) return Math.round(value * 100);
   }
+  if (typeof value === "object" && value !== null) return 70;
   const str = String(value).toLowerCase().trim();
   if (str === "high" || str === "certain" || str === "confirmed") return 90;
   if (str === "medium" || str === "moderate" || str === "likely") return 70;

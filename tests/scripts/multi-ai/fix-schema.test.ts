@@ -144,6 +144,7 @@ const EFFORT_NORMALIZE: Record<string, string> = {
 
 function normalizeSeverity(value: unknown): string {
   if (!value) return "S2";
+  if (typeof value === "object" && value !== null) return "S2";
   const str = String(value).toLowerCase().trim();
   if (/^s[0-3]$/i.test(str)) return str.toUpperCase();
   return SEVERITY_NORMALIZE[str] || "S2";
@@ -151,6 +152,7 @@ function normalizeSeverity(value: unknown): string {
 
 function normalizeEffort(value: unknown): string {
   if (!value) return "E1";
+  if (typeof value === "object" && value !== null) return "E1";
   const str = String(value).toLowerCase().trim();
   if (/^e[0-3]$/i.test(str)) return str.toUpperCase();
   if (EFFORT_NORMALIZE[str]) return EFFORT_NORMALIZE[str];
@@ -167,6 +169,7 @@ function normalizeConfidence(value: unknown): number {
     if (value >= 0 && value <= 100) return Math.round(value);
     if (value >= 0 && value <= 1) return Math.round(value * 100);
   }
+  if (typeof value === "object" && value !== null) return 70;
   const str = String(value).toLowerCase().trim();
   if (str === "high" || str === "certain" || str === "confirmed") return 90;
   if (str === "medium" || str === "moderate" || str === "likely") return 70;
@@ -183,6 +186,7 @@ function normalizeFiles(value: unknown): string[] {
   if (!value) return [];
   if (Array.isArray(value))
     return (value as unknown[]).filter((f) => f && typeof f === "string") as string[];
+  if (typeof value === "object" && value !== null && !Array.isArray(value)) return [];
   const str = String(value);
   return str
     .split(/[,;\n]+/)
@@ -194,6 +198,8 @@ function normalizeAcceptanceTests(value: unknown): string[] {
   if (!value) return ["Verify fix applied correctly"];
   if (Array.isArray(value))
     return (value as unknown[]).filter((t) => t && typeof t === "string") as string[];
+  if (typeof value === "object" && value !== null && !Array.isArray(value))
+    return ["Verify fix applied correctly"];
   const str = String(value);
   if (str.includes("\n")) {
     return str

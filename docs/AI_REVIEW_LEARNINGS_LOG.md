@@ -854,6 +854,48 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review #472: PR #426 R3 — Mixed (Qodo + CI + SonarCloud) (2026-03-10)
+
+_Health ecosystem audit — dedup correctness, test registry locality, TOCTOU
+hardening, NaN-safe scoring, CI security check, SonarCloud code smells._
+
+**Source:** Qodo compliance (5) + suggestions (12), CI security (3), SonarCloud
+(27) **Items:** 24 total (17 fixed, 0 deferred, 7 rejected) **Severity:** 0C /
+4M / 9m / 4T
+
+**Key Patterns:**
+
+1. **Content dedup fingerprint weakness** — title+date signature misses PR
+   number and is case/whitespace sensitive, risking false dedup matches.
+   Pattern: include all identifying fields and normalize before fingerprinting.
+2. **Locality key includes filename** — `getLocalityKey()` splits full path
+   including filename, so single-segment paths use the file as the key. Pattern:
+   use `path.posix.dirname()` before extracting directory segments.
+3. **TOCTOU on mkdir** — After `mkdirSync()` in a catch block, the created path
+   could be swapped before use. Pattern: re-verify with `lstatSync()` after
+   creation. Propagated to 8 state-manager files (13 occurrences).
+4. **Duplicate IDs in collision resolution** — content-match reassignment could
+   create duplicate IDs when the matched ID was already in use. Pattern: check
+   target set membership before reassigning.
+5. **Options object for >7 params** — SonarCloud brain-overload rule flags
+   functions with 8+ parameters. Pattern: extract context object for related
+   parameters.
+6. **Object stringification in property tests** — `String(value)` where
+   `value: unknown` produces "[object Object]" for object inputs. Pattern: add
+   `typeof value === "object"` guard before `String()` calls. Propagated to 6
+   test files (14 edits).
+7. **execSync → execFileSync in tests** — Template literals in execSync create
+   shell injection vectors (SEC-001/SEC-010). Use execFileSync with args array.
+   Also fix cwd to repo root.
+
+**Rejected:** Arbitrary script execution (by design), silent loadRegistry
+failure (intentional graceful degradation), error detail exposure (internal
+tool), captured command output (internal tool), baseline JSON trust (already
+validated R2-2), commit-tracker.js path containment (pre-existing LOW),
+checker-regression.test.js path containment (LOW, test file).
+
+---
+
 ### Review #471: PR #426 R2-2 — Qodo + Semgrep + CI (2026-03-10)
 
 _Health ecosystem audit — test registry coverage gate, scoring robustness,

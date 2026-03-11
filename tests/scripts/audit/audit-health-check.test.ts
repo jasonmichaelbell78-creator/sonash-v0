@@ -42,7 +42,8 @@ function isValidJsonlFile(filePath: string): boolean {
     if (!content) return true;
     const lines = content.split("\n").filter(Boolean);
     JSON.parse(lines[0]);
-    if (lines.length > 1) JSON.parse(lines.at(-1)!);
+    const lastLine = lines.at(-1);
+    if (lines.length > 1 && lastLine !== undefined) JSON.parse(lastLine);
     return true;
   } catch {
     return false;
@@ -262,6 +263,7 @@ describe("addResult logic", () => {
     addResult("Pass", true, "good");
 
     assert.equal(allPassed, false, "allPassed should stay false after first failure");
+    assert.equal(results.length, 2);
   });
 
   it("passCount and totalCount are derivable from results array", () => {

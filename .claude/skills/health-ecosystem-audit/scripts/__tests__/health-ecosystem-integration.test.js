@@ -8,10 +8,11 @@
 
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 const path = require("node:path");
 
 const SCRIPT_PATH = path.resolve(__dirname, "..", "run-health-ecosystem-audit.js");
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..", "..");
 
 describe("Health Ecosystem Audit Integration", () => {
   describe("--summary mode", () => {
@@ -19,8 +20,8 @@ describe("Health Ecosystem Audit Integration", () => {
     let parsed;
 
     it("runs successfully with --summary --batch --skip-live-tests", () => {
-      output = execSync(`node "${SCRIPT_PATH}" --summary --batch --skip-live-tests`, {
-        cwd: path.resolve(__dirname, "..", ".."),
+      output = execFileSync("node", [SCRIPT_PATH, "--summary", "--batch", "--skip-live-tests"], {
+        cwd: REPO_ROOT,
         encoding: "utf8",
         timeout: 30000,
         maxBuffer: 5 * 1024 * 1024,
@@ -74,8 +75,8 @@ describe("Health Ecosystem Audit Integration", () => {
     let fullParsed;
 
     it("runs successfully with --batch --skip-live-tests", () => {
-      fullOutput = execSync(`node "${SCRIPT_PATH}" --batch --skip-live-tests`, {
-        cwd: path.resolve(__dirname, "..", ".."),
+      fullOutput = execFileSync("node", [SCRIPT_PATH, "--batch", "--skip-live-tests"], {
+        cwd: REPO_ROOT,
         encoding: "utf8",
         timeout: 30000,
         maxBuffer: 10 * 1024 * 1024,

@@ -31,8 +31,8 @@ function parseBacklogItems(content: string): {
       }
       items.push({
         ...obj,
-        severity: String(obj["severity"]).toUpperCase(),
-        status: obj["status"] ? String(obj["status"]).toUpperCase() : undefined,
+        severity: typeof obj["severity"] === "string" ? obj["severity"].toUpperCase() : "S2",
+        status: typeof obj["status"] === "string" ? obj["status"].toUpperCase() : undefined,
       } as { id: string; severity: string; status?: string });
     } catch (err) {
       corruptLines.push({

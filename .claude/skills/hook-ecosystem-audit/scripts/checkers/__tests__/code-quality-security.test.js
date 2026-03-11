@@ -106,7 +106,11 @@ describe("code-quality-security checker", () => {
         "function dangerous(arg) {",
         "  exec('rm -rf ' + arg);",
         "}",
-        "console.log(error.message);",
+        "try {",
+        "  throw new Error('boom');",
+        "} catch (error) {",
+        "  console.log(error.message);",
+        "}",
       ].join("\n");
       fs.writeFileSync(path.join(hooksDir, "bad-hook.js"), badHook);
     });

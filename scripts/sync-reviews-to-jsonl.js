@@ -976,8 +976,13 @@ function loadExistingReviewObjects() {
  */
 function buildContentIndex(existingById) {
   const byContent = new Map();
+  const norm = (v) =>
+    String(v ?? "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
   for (const [id, obj] of existingById) {
-    const sig = `${obj.title || ""}::${obj.date || ""}`;
+    const sig = `${norm(obj.title)}::${norm(obj.pr)}::${norm(obj.date)}`;
     if (!byContent.has(sig)) {
       byContent.set(sig, id);
     }
@@ -1007,20 +1012,38 @@ function findNextAvailableId(maxExistingId, state, newlyAssignedIds, mdIds) {
  * Resolve a single review's ID collision against existing data.
  * @returns {boolean} true if processing should skip to next review (content match found or no collision)
  */
-function resolveReviewCollision(
-  review,
-  existingIds,
-  existingById,
-  existingByContent,
-  mdIds,
-  offsetState,
-  newlyAssignedIds,
-  maxExistingId
-) {
-  const sig = `${review.title || ""}::${review.date || ""}`;
+function resolveReviewCollision(review, ctx) {
+  const {
+    existingIds,
+    existingById,
+    existingByContent,
+    mdIds,
+    offsetState,
+    newlyAssignedIds,
+    maxExistingId,
+  } = ctx;
+  const norm = (v) =>
+    String(v ?? "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+  const sig = `${norm(review.title)}::${norm(review.pr)}::${norm(review.date)}`;
   const contentMatchId = existingByContent.get(sig);
   if (contentMatchId !== undefined) {
     if (contentMatchId !== review.id) {
+      // Guard: prevent duplicate IDs within the markdown set
+      if (mdIds.has(contentMatchId)) {
+        const oldId = review.id;
+        const newId = findNextAvailableId(maxExistingId, offsetState, newlyAssignedIds, mdIds);
+        mdIds.delete(oldId);
+        review.id = newId;
+        mdIds.add(newId);
+        newlyAssignedIds.add(newId);
+        console.log(
+          `  ⚠️  Review #${oldId} renumbered to #${newId} (content-match id already used)`
+        );
+        return false;
+      }
       mdIds.delete(review.id);
       review.id = contentMatchId;
       mdIds.add(review.id);
@@ -1060,17 +1083,18 @@ function detectAndResolveCollisions(mdReviews, existingIds, existingById) {
   const offsetState = { offset: 1 };
   const newlyAssignedIds = new Set();
 
+  const ctx = {
+    existingIds,
+    existingById,
+    existingByContent,
+    mdIds,
+    offsetState,
+    newlyAssignedIds,
+    maxExistingId,
+  };
+
   for (const review of mdReviews) {
-    resolveReviewCollision(
-      review,
-      existingIds,
-      existingById,
-      existingByContent,
-      mdIds,
-      offsetState,
-      newlyAssignedIds,
-      maxExistingId
-    );
+    resolveReviewCollision(review, ctx);
   }
   return mdReviews;
 }

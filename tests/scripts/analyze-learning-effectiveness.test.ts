@@ -173,7 +173,7 @@ function sanitizeForEscape(str: string | undefined | null, maxLength = 100): str
 
 function escapeMd(str: string, maxLength = 100): string {
   const sanitized = sanitizeForEscape(str, maxLength);
-  return sanitized.replaceAll(/[\\[\]()_*`#>!-]/g, "\\$&");
+  return sanitized.replaceAll(/[\\[\]()_*`#>!-]/g, String.raw`\$&`);
 }
 
 describe("analyze-learning-effectiveness: escapeMd", () => {

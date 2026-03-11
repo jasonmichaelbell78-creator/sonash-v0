@@ -67,7 +67,7 @@ function detectTestType(relPath, defaultType) {
  */
 function extractBaseName(fileName) {
   return fileName.replace(
-    /\.(?:property|integration|e2e|contract|perf)?\.?test\.(?:js|ts|mjs)$/,
+    /\.(?:(?:property|integration|e2e|contract|perf)\.)?test\.(?:js|ts|mjs)$/,
     ""
   );
 }
@@ -521,10 +521,13 @@ function scanCoveredScripts() {
  * @returns {string} Locality key like "scripts/health" or ".claude/skills/pr-ecosystem-audit"
  */
 function getLocalityKey(relPath) {
-  const parts = relPath.split("/");
+  const dir = path.posix.dirname(relPath.replaceAll("\\", "/"));
+  const parts = dir.split("/").filter(Boolean);
   if (parts.length === 0) return "";
   // For .claude/skills/X paths, use first 3 segments to capture skill name
-  if (parts[0] === ".claude" && parts.length >= 3) return parts.slice(0, 3).join("/");
+  if (parts[0] === ".claude" && parts[1] === "skills" && parts.length >= 3) {
+    return parts.slice(0, 3).join("/");
+  }
   // For other paths, use first 2 segments
   return parts.slice(0, Math.min(2, parts.length)).join("/");
 }
@@ -538,18 +541,20 @@ function getLocalityKey(relPath) {
  * @returns {boolean}
  */
 function entryMatchesScript(entry, scriptName, prefixStripped, scriptDir) {
+  const entryTarget = typeof entry.target === "string" ? entry.target : "";
+  const entryPath = typeof entry.path === "string" ? entry.path : "";
   // Strategy 1: exact name match (no locality check needed)
-  if (entry.target === scriptName) return true;
+  if (entryTarget === scriptName) return true;
   // For strategies 2 and 4, require directory locality when scriptDir is provided
-  const localMatch = !scriptDir || getLocalityKey(entry.path) === scriptDir;
+  const localMatch = !scriptDir || getLocalityKey(entryPath) === scriptDir;
   // Strategy 2: test path contains script name
-  if (localMatch && entry.path.includes(scriptName + ".test.")) return true;
-  if (localMatch && entry.path.includes(scriptName + ".property.test.")) return true;
+  if (localMatch && entryPath.includes(scriptName + ".test.")) return true;
+  if (localMatch && entryPath.includes(scriptName + ".property.test.")) return true;
   // Strategy 3: prefix-stripped match (check-docs-light -> docs-light)
-  if (localMatch && prefixStripped !== scriptName && entry.target === prefixStripped) return true;
+  if (localMatch && prefixStripped !== scriptName && entryTarget === prefixStripped) return true;
   // Strategy 4: test target contains script name or vice versa
-  if (entry.target.includes(scriptName) || scriptName.includes(entry.target)) {
-    if ((entry.target.length >= 5 || scriptName.length >= 5) && localMatch) return true;
+  if (entryTarget && (entryTarget.includes(scriptName) || scriptName.includes(entryTarget))) {
+    if ((entryTarget.length >= 5 || scriptName.length >= 5) && localMatch) return true;
   }
   return false;
 }
@@ -581,9 +586,9 @@ function loadBaseline() {
     const baseline = JSON.parse(content);
     if (!baseline || !Array.isArray(baseline.entries)) return null;
     // Validate entries have required 'path' field
-    baseline.entries = baseline.entries.filter(
-      (e) => e && typeof e === "object" && typeof e.path === "string"
-    );
+    baseline.entries = baseline.entries
+      .filter((e) => e && typeof e === "object" && typeof e.path === "string")
+      .map((e) => ({ ...e, path: e.path.replaceAll("\\", "/") }));
     return baseline;
   } catch (err) {
     console.error(`[generate-test-registry] Failed to load baseline: ${sanitizeError(err)}`);
@@ -596,7 +601,7 @@ function loadBaseline() {
  * @param {{ version: number, description: string, created: string, entries: Array<{path: string, lines: number}> }} baseline
  * @returns {boolean} Whether baseline was modified
  */
-function autoCleanBaseline(baseline) {
+function autoCleanBaseline(baseline, { allowWrite } = { allowWrite: false }) {
   const originalCount = baseline.entries.length;
   baseline.entries = baseline.entries.filter((entry) => {
     const absPath = path.join(ROOT, entry.path);
@@ -605,12 +610,14 @@ function autoCleanBaseline(baseline) {
   const removed = originalCount - baseline.entries.length;
   if (removed > 0) {
     console.log(`  Baseline auto-cleaned: removed ${removed} entries for deleted scripts`);
-    try {
-      safeWriteFileSync(BASELINE_PATH, JSON.stringify(baseline, null, 2) + "\n", "utf8");
-    } catch (err) {
-      console.error(
-        `[generate-test-registry] Failed to write cleaned baseline: ${sanitizeError(err)}`
-      );
+    if (allowWrite) {
+      try {
+        safeWriteFileSync(BASELINE_PATH, JSON.stringify(baseline, null, 2) + "\n", "utf8");
+      } catch (err) {
+        console.error(
+          `[generate-test-registry] Failed to write cleaned baseline: ${sanitizeError(err)}`
+        );
+      }
     }
     return true;
   }
@@ -631,10 +638,15 @@ function autoCleanBaseline(baseline) {
  * @param {string[]} gaps - Relative paths of untested scripts
  */
 function printGapList(gaps) {
+  const MAX_GAP_FILE_SIZE = 2 * 1024 * 1024;
   for (const gap of [...gaps].sort((a, b) => a.localeCompare(b))) {
-    let lines = 0;
+    let lines = "?";
     try {
-      lines = fs.readFileSync(path.join(ROOT, gap), "utf8").split("\n").length;
+      const abs = path.join(ROOT, gap);
+      const stat = fs.statSync(abs);
+      if (stat.size <= MAX_GAP_FILE_SIZE) {
+        lines = fs.readFileSync(abs, "utf8").split("\n").length;
+      }
     } catch {
       // ignore
     }
