@@ -1,5 +1,4 @@
 {"id":1,"idea":"ROADMAP entries will change significantly post-standardization","captured_during":"deep-plan-discovery"}
-{"id":2,"idea":"Grand Plan debt items may become invalid as files change","captured_during":"deep-plan-discovery"}
 {"id":3,"idea":"State persistence should use whatever resources are best","captured_during":"deep-plan-discovery"}
 {"id":4,"idea":"Future idea capture mechanism needed","captured_during":"deep-plan-discovery"}
 {"id":5,"idea":"Cross-ecosystem subsystem mapping is its own discovery task","captured_during":"deep-plan-discovery"}
@@ -30,7 +29,6 @@
 {"id":30,"idea":"audit-aggregator produces report but nobody places findings into sprints unless human does it — another missing pipeline","captured_during":"deep-plan-discovery"}
 {"id":31,"idea":"App-layer ecosystem planning is fundamentally different from process ecosystem planning — connection points between layers are the priority, not internal structure","captured_during":"deep-plan-discovery"}
 {"id":32,"idea":"Operational sprint health monitoring items may overlap with ecosystem standardization health monitoring — need reconciliation during sequencing","captured_during":"deep-plan-discovery"}
-{"id":33,"idea":"Planning docs (ROADMAP, sprints, grand plan, future roadmap) need continuous updates during plan execution — additions AND deletions of completed/deprecated items","captured_during":"deep-plan-discovery"}
 {"id":34,"idea":"Audits L5 pathway should be architecturally designed during L4 work — versioned audit standards, automated regression detection, self-auditing capabilities","captured_during":"deep-plan-discovery"}
 {"id":35,"idea":"Checklist adaptation formalization: rigid framework + earned flexibility. Per-ecosystem mapping with required justification for any deviation from the 16-item standard","captured_during":"deep-plan-discovery"}
 {"id":36,"idea":"Wave structure allows both parallelism (within waves) and learning transfer (between waves) — hybrid approach","captured_during":"deep-plan-discovery"}
@@ -40,6 +38,5 @@
 {"id":40,"idea":"ROADMAP additions should trigger dedupe against MASTER_DEBT to prevent duplicate entries","captured_during":"deep-plan-discovery"}
 {"id":41,"idea":"Knowledge base concept: all prior research (framework repo, PR Review v2, research agents, decision logs, standards) form a reusable database for every ecosystem deep-plan Phase 0","captured_during":"deep-plan-discovery"}
 {"id":42,"idea":"3+ sessions without standardization progress should trigger ecosystem health dashboard flag (T8 automation over discipline)","captured_during":"deep-plan-discovery"}
-{"id":43,"idea":"Grand Plan pre-checks before each ecosystem: scan changelog for MASTER_DEBT items referencing files about to be modified","captured_during":"deep-plan-discovery"}
 {"id":44,"idea":"Changelog extensible-core schema mirrors D22 ecosystem registry pattern — required fields + optional context","captured_during":"deep-plan-discovery"}
 {"id":45,"idea":"CANON version trajectory: 0.1.0 → 0.2.0 (checkpoint #4) → 0.3.0 (checkpoint #7) → 0.4.0 (checkpoint #15) → 1.0.0 (checkpoint #21)","captured_during":"deep-plan-discovery"}

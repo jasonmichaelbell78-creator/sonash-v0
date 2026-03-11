@@ -89,7 +89,6 @@ Session #215 — Starting
 | **System-Wide Standardization**   | PLANNED  | PLAN.md v1.1 approved, 92 decisions |
 | **Operational Visibility Sprint** | BLOCKED  | ~75% (paused for overhaul)          |
 | **PR #411 Review (9 rounds)**     | COMPLETE | 135 fixed/415 total                 |
-| **GRAND PLAN: Debt Elimination**  | BLOCKED  | ~6% (paused for overhaul)           |
 | **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                        |
 | Track B: Dev Dashboard MVP        | Paused   | ~10%                                |
 | M1.5 - Quick Wins                 | Paused   | ~20%                                |

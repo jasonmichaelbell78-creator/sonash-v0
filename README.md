@@ -52,8 +52,8 @@ project:
 
 ### Testing & QA
 
-- **[docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing
-  guide (includes manual checklists)
+- **[docs/TESTING_CHECKLIST.md](./docs/TESTING_CHECKLIST.md)** - Comprehensive
+  testing guide (includes manual checklists)
 - **[docs/plans/TESTING_USER_MANUAL.md](./docs/plans/TESTING_USER_MANUAL.md)** -
   UI testing with `/test-suite` skill (27 protocols, 5 phases)
 
@@ -184,29 +184,28 @@ chip (WIP) │ └── ui/ # shadcn components └── public/ └── ima
 
 ## Project Status
 
-**Last Updated:** February 27, 2026 **Overall Progress:** ~15% **Current
-Focus:** 🧹 GRAND PLAN: Debt Elimination + 🚀 Operational Visibility
+**Last Updated:** March 11, 2026 **Overall Progress:** ~15% **Current Focus:**
+🔧 System-Wide Standardization + 🚀 Operational Visibility
 
 ### Milestone Status
 
-| Milestone                       | Status      | Progress |
-| ------------------------------- | ----------- | -------- |
-| M1 - Foundation                 | ✅ Complete | 100%     |
-| Integrated Improvement Plan     | ✅ Complete | 100%     |
-| 🧹 GRAND PLAN: Debt Elimination | ⏸️ ACTIVE   | 6%       |
-| 🚀 Operational Visibility       | ⏸️ ACTIVE   | 25%      |
-| M1.5 - Quick Wins               | ⏸️ Paused   | 20%      |
-| M1.6 - Admin Panel + UX         | ⏸️ Paused   | 75%      |
-| M2 - Architecture               | ⏸️ Optional | 0%       |
-| M3 - Meetings                   | 📋 Planned  | 0%       |
-| M4 - Expansion                  | 📋 Planned  | 0%       |
-| M4.5 - Security & Privacy       | 📋 Planned  | 0%       |
-| M5 - Offline + Steps            | 📋 Planned  | 0%       |
-| M6 - Journaling + Safety        | 📋 Planned  | 0%       |
-| M7 - Fellowship Suite           | 📋 Planned  | 0%       |
-| M8 - Speakers                   | 📋 Planned  | 0%       |
-| M9 - Native App                 | 📋 Planned  | 0%       |
-| M10 - Monetization + Future     | 🔬 Research | 0%       |
+| Milestone                   | Status      | Progress |
+| --------------------------- | ----------- | -------- |
+| M1 - Foundation             | ✅ Complete | 100%     |
+| Integrated Improvement Plan | ✅ Complete | 100%     |
+| 🚀 Operational Visibility   | ⏸️ ACTIVE   | 25%      |
+| M1.5 - Quick Wins           | ⏸️ Paused   | 20%      |
+| M1.6 - Admin Panel + UX     | ⏸️ Paused   | 75%      |
+| M2 - Architecture           | ⏸️ Optional | 0%       |
+| M3 - Meetings               | 📋 Planned  | 0%       |
+| M4 - Expansion              | 📋 Planned  | 0%       |
+| M4.5 - Security & Privacy   | 📋 Planned  | 0%       |
+| M5 - Offline + Steps        | 📋 Planned  | 0%       |
+| M6 - Journaling + Safety    | 📋 Planned  | 0%       |
+| M7 - Fellowship Suite       | 📋 Planned  | 0%       |
+| M8 - Speakers               | 📋 Planned  | 0%       |
+| M9 - Native App             | 📋 Planned  | 0%       |
+| M10 - Monetization + Future | 🔬 Research | 0%       |
 
 ### Recent Completions
 
@@ -215,7 +214,6 @@ Focus:** 🧹 GRAND PLAN: Debt Elimination + 🚀 Operational Visibility
 
 ### Current Sprint
 
-- 🔄 🧹 GRAND PLAN: Debt Elimination (6%)
 - 🔄 🚀 Operational Visibility (25%)
 
 See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
@@ -272,8 +270,8 @@ npm run lint
 
 **Test Status:** 89/91 passing (97.8%)
 
-See **[TESTING_PLAN.md](docs/TESTING_PLAN.md)** for testing strategy and manual
-QA checklist. For automated UI testing, use `/test-suite` — see
+See **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)** for testing strategy
+and manual QA checklist. For automated UI testing, use `/test-suite` — see
 **[TESTING_USER_MANUAL.md](docs/plans/TESTING_USER_MANUAL.md)**.
 
 ---

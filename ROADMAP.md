@@ -84,33 +84,32 @@ recovery practices.
 
 ## 4. 📊 Milestones Overview
 
-| Milestone                           | Status      | Progress         | Phase       | Priority   | Items        |
-| ----------------------------------- | ----------- | ---------------- | ----------- | ---------- | ------------ |
-| **M0 - Baseline**                   | ✅ Complete | 100%             | Foundation  | Foundation | -            |
-| **M1 - Foundation**                 | ✅ Complete | 100%             | Foundation  | P0         | -            |
-| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -            |
-| **🔧 System-Wide Standardization**  | 🚧 BLOCKER  | Phase 1b done    | Meta        | **P0**     | 92 decisions |
-| **🧹 GRAND PLAN: Debt Elimination** | ⏸️ BLOCKED  | ~6% (237/4,082)  | Parallel    | **P0**     | 4,082        |
-| **🚀 Operational Visibility**       | ⏸️ BLOCKED  | ~25%             | Foundation  | **P0**     | ~105         |
-| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19          |
-| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15          |
-| **M2 - Architecture**               | ⏸️ Optional | 0%               | Parallel    | P2         | ~72          |
-| ↳ M2.1 Code Quality                 |             |                  | Parallel    | P2         | ~25          |
-| ↳ M2.2 Monitoring                   |             |                  | Parallel    | P2         | ~25          |
-| ↳ M2.3 Infrastructure               |             |                  | Parallel    | P2         | ~22          |
-| **M3 - Meetings**                   | 📋 Planned  | 0%               | Core        | P1         | 6            |
-| **M4 - Expansion**                  | 📋 Planned  | 0%               | Core        | P1         | ~8           |
-| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%               | Core        | **P0**     | 13           |
-| **M5 - Offline + Steps**            | 📋 Planned  | 0%               | Enhancement | P1         | 23           |
-| **M6 - Journaling + Safety**        | 📋 Planned  | 0%               | Enhancement | P1         | 26           |
-| **M7 - Fellowship Suite**           | 📋 Planned  | 0%               | Enhancement | P1         | ~55          |
-| ↳ M7.1 Sponsor & Sharing            |             |                  | Enhancement | P1         | ~15          |
-| ↳ M7.2 Exports & Reports            |             |                  | Enhancement | P1         | ~14          |
-| ↳ M7.3 Nashville & Knowledge        |             |                  | Enhancement | P1         | ~21          |
-| ↳ M7.4 Personalization              |             |                  | Enhancement | P2         | ~17          |
-| **M8 - Speakers**                   | 📋 Planned  | 0%               | Advanced    | P2         | 3            |
-| **M9 - Native App**                 | 📋 Planned  | 0%               | Advanced    | P2         | 15           |
-| **M10 - Monetization + Future**     | 🔬 Research | 0%               | Future      | P2         | ~15          |
+| Milestone                          | Status      | Progress         | Phase       | Priority   | Items        |
+| ---------------------------------- | ----------- | ---------------- | ----------- | ---------- | ------------ |
+| **M0 - Baseline**                  | ✅ Complete | 100%             | Foundation  | Foundation | -            |
+| **M1 - Foundation**                | ✅ Complete | 100%             | Foundation  | P0         | -            |
+| **Integrated Improvement Plan**    | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -            |
+| **🔧 System-Wide Standardization** | 🚧 BLOCKER  | Phase 1b done    | Meta        | **P0**     | 92 decisions |
+| **🚀 Operational Visibility**      | ⏸️ BLOCKED  | ~25%             | Foundation  | **P0**     | ~105         |
+| **M1.5 - Quick Wins**              | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19          |
+| **M1.6 - Admin Panel + UX**        | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15          |
+| **M2 - Architecture**              | ⏸️ Optional | 0%               | Parallel    | P2         | ~72          |
+| ↳ M2.1 Code Quality                |             |                  | Parallel    | P2         | ~25          |
+| ↳ M2.2 Monitoring                  |             |                  | Parallel    | P2         | ~25          |
+| ↳ M2.3 Infrastructure              |             |                  | Parallel    | P2         | ~22          |
+| **M3 - Meetings**                  | 📋 Planned  | 0%               | Core        | P1         | 6            |
+| **M4 - Expansion**                 | 📋 Planned  | 0%               | Core        | P1         | ~8           |
+| **M4.5 - Security & Privacy**      | 📋 Planned  | 0%               | Core        | **P0**     | 13           |
+| **M5 - Offline + Steps**           | 📋 Planned  | 0%               | Enhancement | P1         | 23           |
+| **M6 - Journaling + Safety**       | 📋 Planned  | 0%               | Enhancement | P1         | 26           |
+| **M7 - Fellowship Suite**          | 📋 Planned  | 0%               | Enhancement | P1         | ~55          |
+| ↳ M7.1 Sponsor & Sharing           |             |                  | Enhancement | P1         | ~15          |
+| ↳ M7.2 Exports & Reports           |             |                  | Enhancement | P1         | ~14          |
+| ↳ M7.3 Nashville & Knowledge       |             |                  | Enhancement | P1         | ~21          |
+| ↳ M7.4 Personalization             |             |                  | Enhancement | P2         | ~17          |
+| **M8 - Speakers**                  | 📋 Planned  | 0%               | Advanced    | P2         | 3            |
+| **M9 - Native App**                | 📋 Planned  | 0%               | Advanced    | P2         | 15           |
+| **M10 - Monetization + Future**    | 🔬 Research | 0%               | Future      | P2         | ~15          |
 
 ### Timing System (Session #128)
 
@@ -121,7 +120,7 @@ recovery practices.
 - **Enhancement**: M5, M6, M7 (after Core complete)
 - **Advanced**: M8, M9 (after Enhancement complete)
 - **Future**: M10+ (research/long-term)
-- **Parallel**: M2, GRAND PLAN (can run alongside any phase as needed)
+- **Parallel**: M2 (can run alongside any phase as needed)
 
 **Priority Levels**:
 
@@ -328,23 +327,6 @@ Process (2), Code Quality (1)**
 
 **Note:** Cognitive complexity items (DEBT-0012, 0037, 1056, 1064, 1538, 1624)
 demoted to S1 in Session #179 — they are code quality, not critical.
-
-### GRAND PLAN: Technical Debt Elimination
-
-> **Authoritative document:**
-> [GRAND_PLAN_V2.md](docs/technical-debt/GRAND_PLAN_V2.md)
-
-| Metric              | Value            |
-| ------------------- | ---------------- |
-| Total items         | 4,082            |
-| Grand Plan sprints  | 19               |
-| Roadmap-bound items | 435              |
-| Resolved            | 237 (5.8%)       |
-| S0 Critical         | 35 (18 verified) |
-| S1 High             | 708              |
-| Coverage            | 100%             |
-
-See GRAND_PLAN_V2.md for full sprint details and execution strategy.
 
 #### Priority Research: SQLite Migration for TDMS (DEBT-7593)
 
@@ -773,7 +755,7 @@ MASTER_DEBT.jsonl.
 ### Track T - Testing Infrastructure (NEW - Session #103)
 
 > **Spec:**
-> [TESTING_INFRASTRUCTURE_PLAN.md](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)
+> [TESTING_INFRASTRUCTURE_CHECKLIST.md](docs/plans/TESTING_INFRASTRUCTURE_CHECKLIST.md)
 > **Goal:** Automated testing for components, user journeys, and visual
 > regression **Note:** Consolidates D5.5, AUTO-004, TEST-001, TEST-002 into
 > unified testing track
@@ -3092,8 +3074,8 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design
   patterns
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
-- **[TESTING_PLAN.md](docs/TESTING_PLAN.md)** - Testing strategy and QA
-  procedures
+- **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)** - Testing strategy and
+  QA procedures
 - **[TESTING_USER_MANUAL.md](docs/plans/TESTING_USER_MANUAL.md)** - UI testing
   with `/test-suite` skill (27 protocols, 5 phases)
 - **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and
@@ -3110,8 +3092,8 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
   model research and recommendations (M10)
 - **[JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)** -
   December 2025 journal refactor changelog
-- **[TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing strategy
-  and multi-phase fixes
+- **[TESTING_CHECKLIST.md](./docs/TESTING_CHECKLIST.md)** - Comprehensive
+  testing strategy and multi-phase fixes
 - **[TESTING_USER_MANUAL.md](./docs/plans/TESTING_USER_MANUAL.md)** -
   `/test-suite` skill reference (smoke, feature, security, performance testing)
 - **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud
