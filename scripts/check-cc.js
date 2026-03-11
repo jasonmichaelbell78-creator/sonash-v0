@@ -179,37 +179,50 @@ function getChangedFiles() {
 // ---------------------------------------------------------------------------
 
 /**
+ * Try to extract a name from the parent node context.
+ */
+function getNameFromParent(parent) {
+  if (!parent) return null;
+
+  switch (parent.type) {
+    case "VariableDeclarator":
+      return parent.id && parent.id.type === "Identifier" ? parent.id.name : null;
+
+    case "Property":
+      if (!parent.key) return null;
+      if (parent.key.type === "Identifier") return parent.key.name;
+      if (parent.key.type === "Literal") return String(parent.key.value);
+      return null;
+
+    case "MethodDefinition":
+      return parent.key && parent.key.type === "Identifier" ? parent.key.name : null;
+
+    case "AssignmentExpression":
+      return getNameFromAssignment(parent.left);
+
+    default:
+      return null;
+  }
+}
+
+function getNameFromAssignment(left) {
+  if (!left) return null;
+  if (left.type === "Identifier") return left.name;
+  if (left.type === "MemberExpression" && left.property && left.property.type === "Identifier") {
+    return left.property.name;
+  }
+  return null;
+}
+
+/**
  * Extract the function name from an AST node, or return a positional label.
  */
 function getFunctionName(node, parent, sourceLines) {
-  // Named function declaration/expression
   if (node.id && node.id.name) return node.id.name;
 
-  // Variable declaration: const foo = function() {} or const foo = () => {}
-  if (parent && parent.type === "VariableDeclarator" && parent.id) {
-    if (parent.id.type === "Identifier") return parent.id.name;
-  }
+  const parentName = getNameFromParent(parent);
+  if (parentName) return parentName;
 
-  // Property or method: { foo() {} } or { foo: function() {} }
-  if (parent && parent.type === "Property" && parent.key) {
-    if (parent.key.type === "Identifier") return parent.key.name;
-    if (parent.key.type === "Literal") return String(parent.key.value);
-  }
-
-  // Method definition in class: class Foo { bar() {} }
-  if (parent && parent.type === "MethodDefinition" && parent.key) {
-    if (parent.key.type === "Identifier") return parent.key.name;
-  }
-
-  // Assignment: module.exports.foo = function() {}
-  if (parent && parent.type === "AssignmentExpression" && parent.left) {
-    if (parent.left.type === "MemberExpression" && parent.left.property) {
-      if (parent.left.property.type === "Identifier") return parent.left.property.name;
-    }
-    if (parent.left.type === "Identifier") return parent.left.name;
-  }
-
-  // Fall back to line number
   const line = getLineNumber(node, sourceLines);
   return `(anonymous:${line})`;
 }
@@ -254,166 +267,162 @@ function computeLogicalComplexity(node) {
 }
 
 /**
+ * Walk all child AST nodes.
+ */
+function walkChildren(node, nesting, parent, walkFn) {
+  for (const key of Object.keys(node)) {
+    if (key === "type" || key === "start" || key === "end" || key === "loc") continue;
+
+    const child = node[key];
+    if (Array.isArray(child)) {
+      for (const item of child) {
+        if (item && typeof item === "object" && item.type) {
+          walkFn(item, nesting, parent);
+        }
+      }
+    } else if (child && typeof child === "object" && child.type) {
+      walkFn(child, nesting, parent);
+    }
+  }
+}
+
+/**
+ * Handle IfStatement node for cognitive complexity.
+ */
+function handleIfStatement(node, nesting, parent, state, walkFn) {
+  const isElseIf = parent && parent.type === "IfStatement" && parent.alternate === node;
+  state.complexity += isElseIf ? 1 : 1 + nesting;
+  state.complexity += computeLogicalComplexity(node.test);
+
+  walkFn(node.consequent, nesting + 1, node);
+
+  if (node.alternate) {
+    if (node.alternate.type === "IfStatement") {
+      walkFn(node.alternate, nesting, node);
+    } else {
+      state.complexity += 1;
+      walkFn(node.alternate, nesting + 1, node);
+    }
+  }
+}
+
+/**
+ * Handle loop statements (for, while, do-while) for cognitive complexity.
+ */
+function handleLoopStatement(node, nesting, state, walkFn) {
+  state.complexity += 1 + nesting;
+  if (node.test) state.complexity += computeLogicalComplexity(node.test);
+  walkChildren(node, nesting + 1, node, walkFn);
+}
+
+/**
+ * Handle LogicalExpression for cognitive complexity.
+ * Returns true if handled (caller should skip default walk).
+ */
+function handleLogicalExpression(node, parent, state) {
+  const testParentTypes = new Set([
+    "IfStatement",
+    "WhileStatement",
+    "DoWhileStatement",
+    "ForStatement",
+    "ConditionalExpression",
+  ]);
+
+  if (parent && testParentTypes.has(parent.type) && parent.test === node) {
+    return false; // Already counted by parent — use default walk
+  }
+  state.complexity += computeLogicalComplexity(node);
+  return true; // Handled — skip children
+}
+
+const LOOP_TYPES = new Set([
+  "ForStatement",
+  "ForInStatement",
+  "ForOfStatement",
+  "WhileStatement",
+  "DoWhileStatement",
+]);
+
+const NESTING_BLOCK_TYPES = new Set(["SwitchStatement", "CatchClause"]);
+
+/**
+ * Handle a ConditionalExpression (ternary) for cognitive complexity.
+ */
+function handleConditionalExpression(node, nesting, state, walkFn) {
+  state.complexity += 1 + nesting;
+  state.complexity += computeLogicalComplexity(node.test);
+  walkFn(node.consequent, nesting + 1, node);
+  walkFn(node.alternate, nesting + 1, node);
+}
+
+/**
+ * Process a single AST node for cognitive complexity.
+ * Returns true if the node was fully handled (skip default child walk).
+ */
+function processNode(node, nesting, parent, state, walkFn) {
+  if (node.type === "IfStatement") {
+    handleIfStatement(node, nesting, parent, state, walkFn);
+    return true;
+  }
+
+  if (LOOP_TYPES.has(node.type)) {
+    handleLoopStatement(node, nesting, state, walkFn);
+    return true;
+  }
+
+  if (NESTING_BLOCK_TYPES.has(node.type)) {
+    state.complexity += 1 + nesting;
+    walkChildren(node, nesting + 1, node, walkFn);
+    return true;
+  }
+
+  if (node.type === "ConditionalExpression") {
+    handleConditionalExpression(node, nesting, state, walkFn);
+    return true;
+  }
+
+  if (node.type === "LogicalExpression") {
+    return handleLogicalExpression(node, parent, state);
+  }
+
+  if (FN_TYPES.has(node.type) && parent !== null) {
+    walkFn(node.body, nesting + 1, node);
+    return true;
+  }
+
+  if (node.type === "BreakStatement" || node.type === "ContinueStatement") {
+    if (node.label) state.complexity += 1;
+  }
+
+  return false;
+}
+
+/**
  * Compute cognitive complexity of a function body.
  */
 function computeCC(functionBody) {
-  let complexity = 0;
+  const state = { complexity: 0 };
 
   function walk(node, nesting, parent) {
     if (!node || typeof node !== "object") return;
 
-    // Skip null nodes
-    if (node === null) return;
-
-    switch (node.type) {
-      // --- B1+B2: structural + nesting increment ---
-      case "IfStatement": {
-        // `else if` is treated specially: the `if` inside an `else` chain
-        // does NOT get a nesting increment — it just gets +1 (structural).
-        const isElseIf = parent && parent.type === "IfStatement" && parent.alternate === node;
-
-        if (isElseIf) {
-          // else if: +1 structural only (no nesting)
-          complexity += 1;
-        } else {
-          // Regular if: +1 structural + nesting
-          complexity += 1 + nesting;
-        }
-
-        // Walk the test expression for logical operators
-        complexity += computeLogicalComplexity(node.test);
-
-        // Walk consequent at +1 nesting
-        walk(node.consequent, nesting + 1, node);
-
-        // Walk alternate
-        if (node.alternate) {
-          if (node.alternate.type === "IfStatement") {
-            // else if: walk at same nesting (the if will handle itself)
-            walk(node.alternate, nesting, node);
-          } else {
-            // else: +1 structural, walk body at nesting+1
-            complexity += 1;
-            walk(node.alternate, nesting + 1, node);
-          }
-        }
-        return; // Handled children manually
-      }
-
-      case "ForStatement":
-      case "ForInStatement":
-      case "ForOfStatement":
-      case "WhileStatement":
-      case "DoWhileStatement":
-        // +1 structural + nesting
-        complexity += 1 + nesting;
-        if (node.test) complexity += computeLogicalComplexity(node.test);
-        // Walk body at increased nesting
-        walkChildren(node, nesting + 1, node);
-        return;
-
-      case "SwitchStatement":
-        // +1 structural + nesting
-        complexity += 1 + nesting;
-        walkChildren(node, nesting + 1, node);
-        return;
-
-      case "CatchClause":
-        // +1 structural + nesting
-        complexity += 1 + nesting;
-        walkChildren(node, nesting + 1, node);
-        return;
-
-      // --- B3: fundamental increment (no nesting) ---
-      case "BreakStatement":
-        // Only labeled breaks get +1
-        if (node.label) complexity += 1;
-        break;
-
-      case "ContinueStatement":
-        // Only labeled continues get +1
-        if (node.label) complexity += 1;
-        break;
-
-      case "ConditionalExpression":
-        // Ternary: +1 structural + nesting
-        complexity += 1 + nesting;
-        complexity += computeLogicalComplexity(node.test);
-        walk(node.consequent, nesting + 1, node);
-        walk(node.alternate, nesting + 1, node);
-        return;
-
-      case "LogicalExpression":
-        // Standalone logical expressions (not inside if/while test — those are
-        // handled by computeLogicalComplexity called from the parent).
-        // We only count these if the parent didn't already account for them.
-        if (
-          parent &&
-          (parent.type === "IfStatement" ||
-            parent.type === "WhileStatement" ||
-            parent.type === "DoWhileStatement" ||
-            parent.type === "ForStatement" ||
-            parent.type === "ConditionalExpression") &&
-          parent.test === node
-        ) {
-          // Already counted by parent — just walk children
-          break;
-        }
-        // Standalone logical: count sequences
-        complexity += computeLogicalComplexity(node);
-        // Don't walk children — computeLogicalComplexity already traversed them
-        return;
-
-      // Nested functions increase nesting for their contents
-      case "FunctionDeclaration":
-      case "FunctionExpression":
-      case "ArrowFunctionExpression":
-        // If this is the top-level function we're analyzing, don't add nesting.
-        // But if nested inside another function body, it adds nesting.
-        if (parent !== null) {
-          // Nested function — walk its body at increased nesting
-          walk(node.body, nesting + 1, node);
-          return;
-        }
-        break;
-
-      default:
-        break;
-    }
-
-    // Walk all children at current nesting
-    walkChildren(node, nesting, node);
-  }
-
-  function walkChildren(node, nesting, parent) {
-    for (const key of Object.keys(node)) {
-      if (key === "type" || key === "start" || key === "end" || key === "loc") continue;
-
-      const child = node[key];
-      if (Array.isArray(child)) {
-        for (const item of child) {
-          if (item && typeof item === "object" && item.type) {
-            walk(item, nesting, parent);
-          }
-        }
-      } else if (child && typeof child === "object" && child.type) {
-        walk(child, nesting, parent);
-      }
+    if (!processNode(node, nesting, parent, state, walk)) {
+      walkChildren(node, nesting, node, walk);
     }
   }
 
-  // Start walking the function body at nesting 0
   if (functionBody.type === "BlockStatement") {
     for (const stmt of functionBody.body) {
       walk(stmt, 0, null);
     }
   } else {
-    // Arrow function with expression body
     walk(functionBody, 0, null);
   }
 
-  return complexity;
+  return state.complexity;
 }
+
+const FN_TYPES = new Set(["FunctionDeclaration", "FunctionExpression", "ArrowFunctionExpression"]);
 
 /**
  * Find all top-level and class-method functions in an AST and compute their CC.
@@ -431,41 +440,15 @@ function analyzeAST(ast, source) {
   function visitNode(node, parent) {
     if (!node || typeof node !== "object") return;
 
-    const isFn =
-      node.type === "FunctionDeclaration" ||
-      node.type === "FunctionExpression" ||
-      node.type === "ArrowFunctionExpression";
-
-    if (isFn && node.body) {
+    if (FN_TYPES.has(node.type) && node.body) {
       const name = getFunctionName(node, parent, lineOffsets);
       const line = node.loc ? node.loc.start.line : "?";
-      const body = node.body;
-      const cc = computeCC(body);
-
-      results.push({ name, line, cc });
-
-      // Don't recurse into this function's body for more functions —
-      // we want top-level CC per function. Nested functions inside
-      // will add to the parent's nesting complexity.
-      // However, we DO want to find nested function declarations
-      // that are independently reportable. Walk children to find them.
+      results.push({ name, line, cc: computeCC(node.body) });
     }
 
-    // Walk children
-    for (const key of Object.keys(node)) {
-      if (key === "type" || key === "start" || key === "end" || key === "loc") continue;
-
-      const child = node[key];
-      if (Array.isArray(child)) {
-        for (const item of child) {
-          if (item && typeof item === "object" && item.type) {
-            visitNode(item, node);
-          }
-        }
-      } else if (child && typeof child === "object" && child.type) {
-        visitNode(child, node);
-      }
-    }
+    walkChildren(node, 0, node, (child, _nesting, _parent) => {
+      visitNode(child, node);
+    });
   }
 
   visitNode(ast, null);
@@ -517,25 +500,56 @@ function analyzeFile(filePath) {
 }
 
 // ---------------------------------------------------------------------------
+// File filtering
+// ---------------------------------------------------------------------------
+const EXCLUDED_DIRS = ["node_modules", ".next/", "dist/", "dist-tests/", "consolidation-output/"];
+
+function filterJsFiles(files) {
+  return files.filter((f) => {
+    const ext = extname(f);
+    if (ext !== ".js" && ext !== ".mjs") return false;
+    return !EXCLUDED_DIRS.some((dir) => f.includes(dir));
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Reporting
+// ---------------------------------------------------------------------------
+function printReport(violations, totalFunctions, parseErrors, fileCount) {
+  console.log();
+
+  if (violations.length > 0) {
+    console.log(`[check-cc] ${violations.length} function(s) exceed CC threshold of ${THRESHOLD}:`);
+    console.log();
+    for (const v of violations) {
+      console.log(`  FAIL  ${v.file}:${v.line}  ${v.name}  CC=${v.cc}  (threshold: ${THRESHOLD})`);
+    }
+    console.log();
+    console.log(`[check-cc] Tip: Extract helper functions to reduce nesting and branching.`);
+    console.log(`[check-cc] See: https://www.sonarsource.com/docs/CognitiveComplexity.pdf`);
+  } else {
+    console.log(`[check-cc] All ${totalFunctions} function(s) within threshold.`);
+  }
+
+  if (parseErrors > 0) {
+    console.log(
+      `[check-cc] ${parseErrors} file(s) skipped due to parse errors (JSX, syntax issues).`
+    );
+  }
+
+  console.log(
+    `[check-cc] Summary: ${fileCount} files, ${totalFunctions} functions, ${violations.length} violations.`
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 function main() {
   console.log(`[check-cc] Cognitive complexity check (threshold: ${THRESHOLD})`);
   console.log();
 
-  // Get files to check
-  const allChanged = getChangedFiles();
-  const jsFiles = allChanged.filter((f) => {
-    const ext = extname(f);
-    return (
-      (ext === ".js" || ext === ".mjs") &&
-      !f.includes("node_modules") &&
-      !f.includes(".next/") &&
-      !f.includes("dist/") &&
-      !f.includes("dist-tests/") &&
-      !f.includes("consolidation-output/")
-    );
-  });
+  const jsFiles = filterJsFiles(getChangedFiles());
 
   if (jsFiles.length === 0) {
     console.log("[check-cc] No changed .js/.mjs files to check.");
@@ -557,54 +571,23 @@ function main() {
 
     if (result.error) {
       parseErrors++;
-      if (VERBOSE) {
-        console.warn(`  [SKIP] ${file}: ${result.error}`);
-      }
+      if (VERBOSE) console.warn(`  [SKIP] ${file}: ${result.error}`);
       continue;
     }
 
     totalFunctions += result.functions.length;
 
     for (const fn of result.functions) {
-      if (fn.cc > THRESHOLD) {
-        violations.push({ file, ...fn });
-      }
-
+      if (fn.cc > THRESHOLD) violations.push({ file, ...fn });
       if (VERBOSE && fn.cc > 0) {
-        const marker = fn.cc > THRESHOLD ? "FAIL" : "ok";
-        console.log(`  [${marker}] ${file}:${fn.line} ${fn.name} — CC ${fn.cc}`);
+        console.log(
+          `  [${fn.cc > THRESHOLD ? "FAIL" : "ok"}] ${file}:${fn.line} ${fn.name} — CC ${fn.cc}`
+        );
       }
     }
   }
 
-  // Report
-  console.log();
-
-  if (violations.length > 0) {
-    console.log(`[check-cc] ${violations.length} function(s) exceed CC threshold of ${THRESHOLD}:`);
-    console.log();
-
-    for (const v of violations) {
-      console.log(`  FAIL  ${v.file}:${v.line}  ${v.name}  CC=${v.cc}  (threshold: ${THRESHOLD})`);
-    }
-
-    console.log();
-    console.log(`[check-cc] Tip: Extract helper functions to reduce nesting and branching.`);
-    console.log(`[check-cc] See: https://www.sonarsource.com/docs/CognitiveComplexity.pdf`);
-  } else {
-    console.log(`[check-cc] All ${totalFunctions} function(s) within threshold.`);
-  }
-
-  if (parseErrors > 0) {
-    console.log(
-      `[check-cc] ${parseErrors} file(s) skipped due to parse errors (JSX, syntax issues).`
-    );
-  }
-
-  console.log(
-    `[check-cc] Summary: ${jsFiles.length} files, ${totalFunctions} functions, ${violations.length} violations.`
-  );
-
+  printReport(violations, totalFunctions, parseErrors, jsFiles.length);
   process.exit(violations.length > 0 ? 1 : 0);
 }
 

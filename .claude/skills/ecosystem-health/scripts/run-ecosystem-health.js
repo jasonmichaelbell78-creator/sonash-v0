@@ -246,6 +246,41 @@ function formatDashboard(result, record, trend, activeWarnings) {
 }
 
 /**
+ * Build a lookup of active health-check warnings keyed by dimension id.
+ */
+function buildActiveWarningMap(entries) {
+  const activeByDim = new Map();
+  for (const w of entries) {
+    const isActive = w.lifecycle === "new" || w.lifecycle === "acknowledged";
+    if (isActive && w.source_script === "health-check") {
+      activeByDim.set(w.category, w);
+    }
+  }
+  return activeByDim;
+}
+
+/**
+ * Create a warning record for a failing dimension.
+ */
+function createWarningRecord(dimId, data) {
+  return {
+    id: `warn-${Date.now()}-${dimId}`,
+    date: new Date().toISOString().slice(0, 10),
+    schema_version: 1,
+    completeness: "full",
+    completeness_missing: [],
+    origin: { type: "manual", tool: "health-check" },
+    category: dimId,
+    message: `${dimId} scored ${data.grade}/${data.score} — below threshold`,
+    severity: data.score < 60 ? "error" : "warning",
+    lifecycle: "new",
+    resolved_date: null,
+    source_script: "health-check",
+    related_ids: null,
+  };
+}
+
+/**
  * Generate warnings from health check results.
  * Creates warnings for dimensions scoring below threshold,
  * resolves existing warnings for dimensions now passing.
@@ -255,17 +290,7 @@ function generateWarnings(result) {
   if (!result.dimensionScores || !safeWriteFileSync || !safeAppendFileSync) return;
 
   const existing = readJsonlEntries(WARNINGS_PATH);
-
-  // Build lookup of active warnings by dimension (category field stores dimension id)
-  const activeByDim = new Map();
-  for (const w of existing) {
-    if (w.lifecycle === "new" || w.lifecycle === "acknowledged") {
-      if (w.source_script === "health-check") {
-        activeByDim.set(w.category, w);
-      }
-    }
-  }
-
+  const activeByDim = buildActiveWarningMap(existing);
   let changed = false;
 
   for (const [dimId, data] of Object.entries(result.dimensionScores)) {
@@ -275,27 +300,10 @@ function generateWarnings(result) {
     const hasActive = activeByDim.has(dimId);
 
     if (score < 70 && !hasActive) {
-      // Create warning for failing dimension
-      const severity = score < 60 ? "error" : "warning";
-      const record = {
-        id: `warn-${Date.now()}-${dimId}`,
-        date: new Date().toISOString().slice(0, 10),
-        schema_version: 1,
-        completeness: "full",
-        completeness_missing: [],
-        origin: { type: "manual", tool: "health-check" },
-        category: dimId,
-        message: `${dimId} scored ${data.grade}/${score} — below threshold`,
-        severity,
-        lifecycle: "new",
-        resolved_date: null,
-        source_script: "health-check",
-        related_ids: null,
-      };
+      const record = createWarningRecord(dimId, data);
       fs.mkdirSync(path.dirname(WARNINGS_PATH), { recursive: true });
       safeAppendFileSync(WARNINGS_PATH, JSON.stringify(record) + "\n");
     } else if (score >= 70 && hasActive) {
-      // Resolve warning for passing dimension
       const w = activeByDim.get(dimId);
       w.lifecycle = "resolved";
       w.resolved_date = new Date().toISOString().slice(0, 10);
@@ -303,7 +311,6 @@ function generateWarnings(result) {
     }
   }
 
-  // Rewrite file if any warnings were resolved
   if (changed) {
     const lines = existing.map((r) => JSON.stringify(r)).join("\n") + "\n";
     fs.mkdirSync(path.dirname(WARNINGS_PATH), { recursive: true });
