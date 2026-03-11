@@ -177,6 +177,73 @@ function logOverride(check, reason) {
   }
 }
 
+/**
+ * C3-G3: Auto-generate DEBT entry when a check hits 15+ bypasses in 14 days.
+ * Deduplicates against MASTER_DEBT.jsonl to avoid duplicate entries.
+ * Best-effort — never blocks hook execution.
+ */
+function checkBypassDebtThreshold(check) {
+  try {
+    const content = fs.readFileSync(OVERRIDE_LOG, "utf8");
+    const cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    let count = 0;
+    for (const line of content.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        const e = JSON.parse(line);
+        if (e.check === check && new Date(e.timestamp).getTime() > cutoff) count++;
+      } catch {
+        /* skip malformed */
+      }
+    }
+    if (count < 15) return;
+
+    // Check if DEBT entry already exists for this check's bypass pattern
+    const repoRoot = getRepoRoot();
+    const masterDebtPath = path.join(repoRoot, "docs", "technical-debt", "MASTER_DEBT.jsonl");
+    const dedupedPath = path.join(repoRoot, "docs", "technical-debt", "raw", "deduped.jsonl");
+    const debtTitle = `Hook bypass threshold: ${check} overridden ${count}+ times in 14 days`;
+
+    try {
+      const debtContent = fs.readFileSync(masterDebtPath, "utf8");
+      if (debtContent.includes(`"hook-bypass-${check}"`)) return; // Already tracked
+    } catch {
+      /* file may not exist — proceed with creation */
+    }
+
+    const debtEntry = {
+      source_id: `hook-bypass-${check}`,
+      source_file: "scripts/log-override.js",
+      category: "process",
+      severity: "S1",
+      type: "process-debt",
+      file: check,
+      line: 0,
+      title: debtTitle,
+      description: `The "${check}" check was overridden ${count} times in the last 14 days, indicating the check may need adjustment or the underlying issue needs fixing.`,
+      recommendation: `Review why "${check}" is being bypassed. Either fix the underlying violations, adjust the check threshold, or add to known-debt-baseline.json.`,
+      effort: "E2",
+      status: "NEW",
+      roadmap_ref: "",
+      created: new Date().toISOString().slice(0, 10),
+      verified_by: null,
+      resolution: null,
+      id: `AUTO-BYPASS-${check.toUpperCase()}`,
+    };
+    const debtLine = JSON.stringify(debtEntry) + "\n";
+
+    // Append to both MASTER_DEBT and deduped (per memory: generate-views.js overwrites MASTER_DEBT from deduped)
+    for (const p of [masterDebtPath, dedupedPath]) {
+      if (isSafeToWrite(p)) {
+        fs.appendFileSync(p, debtLine);
+      }
+    }
+    console.log(`  📋 Auto-generated DEBT entry: ${check} bypassed ${count}x in 14 days`);
+  } catch {
+    // Best-effort — never block hooks
+  }
+}
+
 // Get current git branch
 function getGitBranch() {
   try {
@@ -516,6 +583,7 @@ function main() {
     }
     const entry = logOverride(args.check, args.reason);
     if (!entry) process.exit(1);
+    checkBypassDebtThreshold(args.check);
     process.exit(0);
   }
 
@@ -548,6 +616,9 @@ function main() {
   if (!args.reason) {
     console.log("⚠️  Warning: No reason provided. Consider using --reason or SKIP_REASON env var.");
   }
+
+  // C3-G3: Check if bypass count warrants auto-DEBT entry
+  checkBypassDebtThreshold(args.check);
 }
 
 // Only run main() when executed directly (not when required as a module)

@@ -168,7 +168,10 @@ Save state. If user declines, exit gracefully.
    Y? Build chain tables.
 2. **Scope creep** — items in non-PR files? Pre-existing vs this-PR origin?
 3. **Recurring patterns** — patterns in 3+ rounds = automation candidates.
-   Reference REFERENCE.md known churn patterns.
+   Reference REFERENCE.md known churn patterns. **Escalation (C3-G2):** If the
+   same recommendation appears in 3+ retros (check
+   `docs/AI_REVIEW_LEARNINGS_LOG.md` and `reviews.jsonl`), auto-tag it CRITICAL
+   and add to session action items — it must be resolved this session.
 4. **Rejection analysis** — group by reason, check false-positive rate by source
 
 Present intermediate summary: "Analysis complete: N findings identified across M

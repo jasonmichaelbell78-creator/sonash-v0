@@ -360,7 +360,7 @@
       "L6: Gates that never catch anything should be removed — CANON, test warning, propagation pre-commit"
     ],
     "learnings_presented": 6,
-    "status": "wave-5-complete",
+    "status": "wave-6-complete",
     "wave0_completed": "2026-03-11T21:40:00.000Z",
     "wave0_changes": [
       "C10-G1: Replaced 5 direct fs calls with safe-fs wrappers (suggest-pattern-automation.js: 1 writeFileSync, archive-doc.js: 3 renameSync + 1 writeFileSync)",
@@ -404,6 +404,12 @@
       "C5-G3: Health score delta at session-start — reads health-score-log.jsonl, shows grade + delta, 2+ grade drop = warning with counter increment.",
       "C3-G1: Hook learning synthesizer step (5b) added to session-end SKILL.md — top 3 recurring issues from override-log + warning-log + health-score-log.",
       "L3: Wired data into session-begin (7b anomaly gate: override trend 50%+, 10+ warnings, 2+ grade drop), session-end (7f hook data summary one-liner), /alerts (hook drill-down section with override/warning/health detail)."
+    ],
+    "wave6_completed": "2026-03-11T23:30:00.000Z",
+    "wave6_changes": [
+      "C3-G2: Added 3+ same recommendation = CRITICAL escalation rule to pr-retro SKILL.md Step 2 (recurring patterns analysis).",
+      "C3-G3: Auto-DEBT generation in log-override.js — checkBypassDebtThreshold() counts 14-day bypasses per check, creates DEBT entry at 15+ (deduplicates against MASTER_DEBT, writes to both MASTER_DEBT and deduped.jsonl).",
+      "L4: No additional work (confirms C2-G2 auto-escalation + C3-G2 retro escalation)."
     ],
     "implementation_plan": ".claude/plans/hook-systems-audit-implementation.md",
     "learnings_decisions": [
