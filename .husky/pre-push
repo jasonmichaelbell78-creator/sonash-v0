@@ -270,7 +270,11 @@ else
     cc_output=$(printf '%s\n' "$cc_files" | grep -Ev '(eslint-plugin-sonash/|\.claude/hooks/backup/|\.claude/state/|docs/archive/|scripts/reviews/dist/|\.planning/)' | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- 2>&1)
     cc_exit=$?
     set -e
-    if [ "$cc_exit" -ne 0 ]; then
+    # Only fail on actual complexity violations — not on config/directive
+    # errors (exit 123 from eslint-disable directives for unavailable plugins
+    # when running with --no-config-lookup).
+    cc_violations=$(printf '%s\n' "$cc_output" | grep -cE "complexity" || echo "0")
+    if [ "$cc_violations" -gt 0 ]; then
       echo "  ❌ Cyclomatic complexity violations (CC >15) in pushed files:"
       printf '%s\n' "$cc_output" | grep -E "complexity" | head -10
       echo ""

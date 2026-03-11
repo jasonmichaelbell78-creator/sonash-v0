@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-undef */
+/* eslint-disable no-undef -- CJS globals (__dirname, require) */
 /**
  * One-time migration: extract retro data from markdown and write to retros.jsonl.
  * Run from project root: node scripts/reviews/migrate-retros.js
