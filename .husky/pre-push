@@ -273,8 +273,7 @@ else
     # Only fail on actual complexity violations — not on config/directive
     # errors (exit 123 from eslint-disable directives for unavailable plugins
     # when running with --no-config-lookup).
-    cc_violations=$(printf '%s\n' "$cc_output" | grep -cE "complexity" || echo "0")
-    if [ "$cc_violations" -gt 0 ]; then
+    if printf '%s\n' "$cc_output" | grep -qE "complexity"; then
       echo "  ❌ Cyclomatic complexity violations (CC >15) in pushed files:"
       printf '%s\n' "$cc_output" | grep -E "complexity" | head -10
       echo ""
@@ -304,7 +303,7 @@ elif [ -f scripts/check-cc.js ]; then
   set -e
   if [ "$cog_exit" -eq 1 ]; then
     echo "  ❌ Cognitive complexity violations (CC >15) in pushed files:"
-    printf '%s\n' "$cog_output" | grep -E "CC [0-9]+" | head -10
+    printf '%s\n' "$cog_output" | grep -E "CC=" | head -10
     echo ""
     echo "  Extract helper functions to reduce complexity before pushing."
     echo "  Override: SKIP_REASON=\"reason\" SKIP_COG_CC=1 git push"
