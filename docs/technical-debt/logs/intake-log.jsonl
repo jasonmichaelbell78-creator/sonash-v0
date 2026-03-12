@@ -64,3 +64,4 @@
 {"timestamp":"2026-03-07T13:57:12.139Z","action":"intake-manual","item_id":"DEBT-11352","file":"package.json","severity":"S3","category":"refactoring"}
 {"timestamp":"2026-03-07T13:57:13.494Z","action":"intake-manual","item_id":"DEBT-11353","file":"package.json","severity":"S3","category":"refactoring"}
 {"timestamp":"2026-03-07T14:29:58.068Z","action":"intake-manual","item_id":"DEBT-11354","file":"package.json","severity":"S3","category":"refactoring"}
+{"timestamp":"2026-03-12T01:26:41.961Z","action":"intake-pr-deferred","pr_number":427,"item_id":"DEBT-45520","file":"scripts/append-hook-warning.js","severity":"S3"}

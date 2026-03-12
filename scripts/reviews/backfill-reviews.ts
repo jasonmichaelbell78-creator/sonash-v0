@@ -21,7 +21,7 @@ import { ReviewRecord, type ReviewRecordType } from "./lib/schemas/review";
 import { RetroRecord, type RetroRecordType } from "./lib/schemas/retro";
 import type { CompletenessTierType } from "./lib/schemas/shared";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { isSafeToWrite } = require("../lib/safe-fs") as { isSafeToWrite: (p: string) => boolean };
 
 // ---- Atomic write helper ----------------------------------------------------

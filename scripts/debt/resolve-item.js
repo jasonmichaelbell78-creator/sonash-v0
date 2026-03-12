@@ -303,17 +303,7 @@ function syncPlanFiles(debtId) {
     console.warn("  ⚠️ reconcile-roadmap.js failed — run manually if needed");
   }
 
-  // 2. Regenerate GRAND_PLAN_V2.md + manifest
-  try {
-    execFileSync(process.execPath, [path.join(__dirname, "generate-grand-plan.js")], {
-      stdio: "pipe",
-    });
-    console.log("  ✅ GRAND_PLAN_V2.md + manifest regenerated");
-  } catch {
-    console.warn("  ⚠️ generate-grand-plan.js failed — run manually if needed");
-  }
-
-  // 3. Scan active plan files for references to the resolved DEBT ID
+  // 2. Scan active plan files for references to the resolved DEBT ID
   const planFiles = [
     path.join(ROOT, "ROADMAP_FUTURE.md"),
     path.join(ROOT, "ROADMAP_LOG.md"),

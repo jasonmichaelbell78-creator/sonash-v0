@@ -37,8 +37,12 @@ function test(name, fn) {
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    const message =
-      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    let message;
+    if (err instanceof Error) {
+      message = err.stack || err.message;
+    } else {
+      message = `Non-Error thrown: ${String(err)}`;
+    }
     console.error(`  \u2717 ${name}: ${message}`);
   }
 }
@@ -66,9 +70,13 @@ let createStateManager;
 try {
   ({ createStateManager } = require(path.join(SCRIPTS_DIR, "lib", "state-manager")));
 } catch (err) {
-  console.error(
-    `Fatal: Could not load state-manager: ${err instanceof Error ? err.message : String(err)}`
-  );
+  let errMsg;
+  if (err instanceof Error) {
+    errMsg = err.message;
+  } else {
+    errMsg = String(err);
+  }
+  console.error(`Fatal: Could not load state-manager: ${errMsg}`);
   process.exit(1);
 }
 

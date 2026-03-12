@@ -75,7 +75,7 @@ function runStep(step, index) {
   } catch (error) {
     if (step.required) {
       console.error(`\n❌ Step failed: ${step.name}`);
-      console.error(`   ${error.message}`);
+      console.error(`   ${error instanceof Error ? error.message : String(error)}`);
       process.exit(1);
     }
     console.warn(`\n⚠️ Step failed (non-required): ${step.name}`);

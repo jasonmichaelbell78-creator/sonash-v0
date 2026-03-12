@@ -162,7 +162,7 @@ const FORBIDDEN_PATTERNS = [
   },
   {
     // Matches .env, .env.local, .env.production, etc. (limited extension length for safety)
-    // eslint-disable-next-line security/detect-unsafe-regex -- validated: bounded quantifier, no catastrophic backtracking
+
     pattern: /(^|[/\\])\.env(\.[a-zA-Z0-9_-]{1,30})*$/,
     reason:
       ".env file (or variant like .env.local, .env.development.local) should not be committed",
@@ -304,8 +304,7 @@ function validateSymlink(resolvedFile, projectRoot) {
 
     return { valid: true, realPath: realResolvedFile };
   } catch (error) {
-    const errorMsg =
-      error && typeof error === "object" && "message" in error ? error.message : String(error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
     return { valid: false, warning: `Could not resolve real path: ${sanitizePath(errorMsg)}` };
   }
 }
@@ -326,8 +325,7 @@ function processFileContent(file, realResolvedFile) {
     // Check for forbidden patterns
     result.violations = checkForbiddenPatterns(file, content);
   } catch (error) {
-    const errorMsg =
-      error && typeof error === "object" && "message" in error ? error.message : String(error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
     result.warning = `Could not read file: ${sanitizePath(errorMsg)}`;
   }
 

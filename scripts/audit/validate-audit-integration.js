@@ -199,7 +199,7 @@ function loadJsonlFile(filePath) {
       delete safe.prototype;
 
       items.push({ ...safe, _lineNumber: i + 1 });
-    } catch (err) {
+    } catch {
       // Don't include raw content in errors (may contain sensitive data)
       errors.push({
         type: "PARSE_ERROR",

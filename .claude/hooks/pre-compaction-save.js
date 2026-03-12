@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * pre-compaction-save.js - PreCompact hook for state snapshot
  *
@@ -30,8 +30,19 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { gitExec, projectDir } = require("./lib/git-utils.js");
-const { loadJson, saveJson } = require("./lib/state-utils.js");
+let gitExec, projectDir, loadJson, saveJson;
+try {
+  ({ gitExec, projectDir } = require("./lib/git-utils.js"));
+} catch {
+  console.log("ok");
+  process.exit(0);
+}
+try {
+  ({ loadJson, saveJson } = require("./lib/state-utils.js"));
+} catch {
+  loadJson = () => null;
+  saveJson = () => false;
+}
 
 // State file paths
 const STATE_DIR = path.join(projectDir, ".claude", "state");
@@ -253,6 +264,7 @@ function gatherActivePlan() {
       .map((f) => {
         const full = path.join(PLANS_DIR, f);
         try {
+          if (fs.lstatSync(full).isSymbolicLink()) return null;
           return { name: f, mtime: fs.statSync(full).mtimeMs, path: full };
         } catch {
           return null;
@@ -350,6 +362,63 @@ function getCompactionTrigger() {
 }
 
 /**
+ * Build the recovery instruction string from gathered context.
+ */
+function buildRecoveryInstruction(teamStatus, activePlan, sessionNotes, activeAudits) {
+  let instruction =
+    "CONTEXT WAS COMPACTED. Read this handoff to restore session state. " +
+    "Key info: sessionCounter, git.branch, taskStates (full task progress), " +
+    "commitLog (recent work), agentsUsed (what was done). ";
+  if (teamStatus) instruction += "teamStatus (active agent team info - check teammate progress). ";
+  if (activePlan) instruction += `activePlan (executing plan: ${activePlan.file}). `;
+  if (sessionNotes) instruction += "sessionNotes (AI-written context about current task/intent). ";
+  if (activeAudits)
+    instruction += `activeAudits (${activeAudits.length} ecosystem audit(s) in progress — resume with their /skill commands). `;
+  instruction += "Continue from where the session left off.";
+  return instruction;
+}
+
+/**
+ * Log handoff summary to stderr.
+ */
+function logHandoffSummary(handoff, taskCount, commitCount, contextTracking) {
+  console.error("");
+  console.error("  PRE-COMPACTION STATE SAVED");
+  console.error("\u2501".repeat(42));
+  console.error(`   Session: #${handoff.sessionCounter || "?"}`);
+  console.error(`   Branch: ${handoff.git.branch}`);
+  console.error(`   Task states: ${taskCount} saved`);
+  console.error(`   Commit log: ${commitCount} recent entries`);
+  console.error(`   Uncommitted: ${handoff.git.uncommittedFiles.length} files`);
+  console.error(`   Agents used: ${Object.keys(handoff.agentsUsed).length} types`);
+  console.error(`   Files read: ${contextTracking.filesRead?.length || 0}`);
+  if (handoff.teamStatus) {
+    console.error(
+      `   Agent teams: enabled (${handoff.teamStatus.teamInvocations} team invocations)`
+    );
+  }
+  if (handoff.activePlan) {
+    console.error(
+      `   Active plan: ${handoff.activePlan.file} (${handoff.activePlan.modifiedAgo} ago)`
+    );
+  }
+  if (handoff.sessionNotes) {
+    console.error(`   Session notes: ${handoff.sessionNotes.notes?.length || 0} entries`);
+  }
+  if (handoff.activeAudits) {
+    for (const audit of handoff.activeAudits) {
+      console.error(
+        `   Active audit: ${audit.auditName} (finding ${audit.currentFinding}/${audit.totalFindings})`
+      );
+    }
+  }
+  console.error(`   Trigger: ${handoff.trigger}`);
+  console.error("");
+  console.error("   Saved to: .claude/state/handoff.json");
+  console.error("\u2501".repeat(42));
+}
+
+/**
  * Main
  */
 function main() {
@@ -385,53 +454,17 @@ function main() {
     sessionNotes: sessionNotes,
     activeAudits: activeAudits,
     recovery: {
-      instruction:
-        "CONTEXT WAS COMPACTED. Read this handoff to restore session state. " +
-        "Key info: sessionCounter, git.branch, taskStates (full task progress), " +
-        "commitLog (recent work), agentsUsed (what was done). " +
-        (teamStatus ? "teamStatus (active agent team info - check teammate progress). " : "") +
-        (activePlan ? `activePlan (executing plan: ${activePlan.file}). ` : "") +
-        (sessionNotes ? "sessionNotes (AI-written context about current task/intent). " : "") +
-        (activeAudits
-          ? `activeAudits (${activeAudits.length} ecosystem audit(s) in progress — resume with their /skill commands). `
-          : "") +
-        "Continue from where the session left off.",
+      instruction: buildRecoveryInstruction(teamStatus, activePlan, sessionNotes, activeAudits),
     },
   };
 
   if (saveJson(HANDOFF_OUTPUT, handoff)) {
-    const taskCount = Object.keys(taskStates).length;
-    const commitCount = commitLogEntries.length;
-    console.error("");
-    console.error("  PRE-COMPACTION STATE SAVED");
-    console.error("\u2501".repeat(42));
-    console.error(`   Session: #${sessionCounter || "?"}`);
-    console.error(`   Branch: ${gitContext.branch}`);
-    console.error(`   Task states: ${taskCount} saved`);
-    console.error(`   Commit log: ${commitCount} recent entries`);
-    console.error(`   Uncommitted: ${gitContext.uncommittedFiles.length} files`);
-    console.error(`   Agents used: ${Object.keys(agentSummary).length} types`);
-    console.error(`   Files read: ${contextTracking.filesRead?.length || 0}`);
-    if (teamStatus) {
-      console.error(`   Agent teams: enabled (${teamStatus.teamInvocations} team invocations)`);
-    }
-    if (activePlan) {
-      console.error(`   Active plan: ${activePlan.file} (${activePlan.modifiedAgo} ago)`);
-    }
-    if (sessionNotes) {
-      console.error(`   Session notes: ${sessionNotes.notes?.length || 0} entries`);
-    }
-    if (activeAudits) {
-      for (const audit of activeAudits) {
-        console.error(
-          `   Active audit: ${audit.auditName} (finding ${audit.currentFinding}/${audit.totalFindings})`
-        );
-      }
-    }
-    console.error(`   Trigger: ${trigger}`);
-    console.error("");
-    console.error("   Saved to: .claude/state/handoff.json");
-    console.error("\u2501".repeat(42));
+    logHandoffSummary(
+      handoff,
+      Object.keys(taskStates).length,
+      commitLogEntries.length,
+      contextTracking
+    );
   }
 
   console.log("ok");

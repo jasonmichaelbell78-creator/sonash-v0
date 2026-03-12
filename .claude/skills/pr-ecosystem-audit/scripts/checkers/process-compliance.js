@@ -11,12 +11,16 @@
 
 "use strict";
 
-/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
 function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[process-compliance] ${m}`);
   }
 }
@@ -87,7 +91,7 @@ function countKeywordMatches(reviews, keywords) {
  * @param {string[]} keywords - keywords to search for
  * @returns {{ total: number, matched: number }}
  */
-function countAllKeywordHits(reviews, keywords) {
+function _countAllKeywordHits(reviews, keywords) {
   let total = 0;
   let matched = 0;
   for (const review of reviews) {
@@ -323,16 +327,16 @@ function checkSkillInvocationFidelity(reviewsJsonl, learningsContent, findings) 
 
 // ── Category 2: Review Process Completeness ────────────────────────────────
 
-function computeKeywordPct(reviews, keywords, defaultPct) {
+function _computeKeywordPct(reviews, keywords, defaultPct) {
   const matchCount = countKeywordMatches(reviews, keywords);
   if (reviews.length === 0) return defaultPct !== undefined ? defaultPct : 0;
-  return Math.round((matchCount / reviews.length) * 100);
+  return Math.round((reviews.length > 0 ? matchCount / reviews.length : 0) * 100);
 }
 
 function computeKeywordPctWithMarkdown(reviews, keywords, mdSections, defaultPct) {
   const matchCount = countKeywordMatchesWithMarkdown(reviews, keywords, mdSections);
   if (reviews.length === 0) return defaultPct !== undefined ? defaultPct : 0;
-  return Math.round((matchCount / reviews.length) * 100);
+  return Math.round((reviews.length > 0 ? matchCount / reviews.length : 0) * 100);
 }
 
 function pushPropagationFinding(findings, r2, propagationPct, reviewCount) {
@@ -667,9 +671,13 @@ function countNumberingGaps(learningsContent, rootDir) {
       }
     } catch (err) {
       // Archives not accessible — count gaps from active log only
-      console.warn(
-        `[process-compliance] Could not read archive directory: ${err instanceof Error ? err.message : String(err)}`
-      );
+      let errMsg;
+      if (err instanceof Error) {
+        errMsg = err.message;
+      } else {
+        errMsg = String(err);
+      }
+      console.warn(`[process-compliance] Could not read archive directory: ${errMsg}`);
     }
   }
 

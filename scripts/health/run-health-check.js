@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-undef */
 
 /**
  * Ecosystem Health Check Runner
@@ -80,7 +79,9 @@ function main() {
     try {
       checkerResults[name] = checker.fn();
     } catch (err) {
-      console.error(`  [error] ${checker.label} failed: ${err.message || err}`);
+      console.error(
+        `  [error] ${checker.label} failed: ${(err instanceof Error ? err.message : String(err)) || err}`
+      );
       checkerResults[name] = { metrics: {}, no_data: true };
     }
   }

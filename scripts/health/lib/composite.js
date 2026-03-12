@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Composite scoring engine for Health Check system
  *

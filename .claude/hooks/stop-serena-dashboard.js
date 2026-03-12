@@ -26,8 +26,22 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
-const { isSafeToWrite } = require("./lib/symlink-guard");
-const { sanitizeInput } = require("./lib/sanitize-input");
+let isSafeToWrite, sanitizeInput;
+try {
+  ({ isSafeToWrite } = require("./lib/symlink-guard"));
+} catch {
+  isSafeToWrite = () => false;
+}
+try {
+  ({ sanitizeInput } = require("./lib/sanitize-input"));
+} catch {
+  /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
+  sanitizeInput = (v) =>
+    String(v ?? "")
+      .replace(/[\x00-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
+}
 
 const PORT = 24282;
 const PROCESS_ALLOWLIST = ["node", "node.exe", "serena", "claude", "python", "python.exe"];

@@ -15,7 +15,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[alert-system] ${m}`);
   }
 }
@@ -178,6 +183,30 @@ function checkCooldownState(cooldownPath, alertsContent, findings) {
 
 // -- Category 2: Warning Lifecycle Consistency -------------------------------
 
+/** Count JSONL lines with lifecycle "new"/"active" older than `days` days. */
+function countStaleWarnings(lines, days) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const cutoffTime = cutoff.getTime();
+  let count = 0;
+  for (const line of lines) {
+    try {
+      const entry = JSON.parse(line);
+      if (entry.lifecycle === "new" || entry.lifecycle === "active") {
+        if (typeof entry.date === "string") {
+          const t = new Date(entry.date).getTime();
+          if (Number.isFinite(t) && t < cutoffTime) {
+            count++;
+          }
+        }
+      }
+    } catch {
+      // skip
+    }
+  }
+  return count;
+}
+
 function checkWarningLifecycle(dataDir, warningContent, findings) {
   const bench = BENCHMARKS.warning_lifecycle_consistency;
   let totalChecks = 0;
@@ -251,26 +280,7 @@ function checkWarningLifecycle(dataDir, warningContent, findings) {
         }
 
         // Check for stale warnings (open for > 30 days)
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - 30);
-        const cutoffTime = cutoff.getTime();
-
-        let staleCount = 0;
-        for (const line of lines) {
-          try {
-            const entry = JSON.parse(line);
-            if (entry.lifecycle === "new" || entry.lifecycle === "active") {
-              if (typeof entry.date === "string") {
-                const t = new Date(entry.date).getTime();
-                if (Number.isFinite(t) && t < cutoffTime) {
-                  staleCount++;
-                }
-              }
-            }
-          } catch {
-            // skip
-          }
-        }
+        const staleCount = countStaleWarnings(lines, 30);
 
         if (staleCount > 0) {
           findings.push({

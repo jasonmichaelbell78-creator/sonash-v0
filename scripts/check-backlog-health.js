@@ -38,6 +38,42 @@ const BACKLOG_FILE = join(__dirname, "..", "docs", "technical-debt", "MASTER_DEB
 const ACTIVE_STATUSES = new Set(["NEW", "VERIFIED", "IN_PROGRESS", "PENDING"]);
 
 /**
+ * Attempt to parse and validate a single JSONL line into a backlog entry.
+ * Returns { item } on success, or { error } on failure.
+ */
+function parseSingleEntry(line) {
+  // Size guard: prevent pathological single-line JSON DoS
+  if (line.length > 200_000) {
+    return { error: `Line too large (${line.length} chars)` };
+  }
+
+  let entry;
+  try {
+    entry = JSON.parse(line);
+  } catch {
+    return { error: "Invalid JSON" };
+  }
+
+  // Reject non-object JSON values (strings, numbers, arrays, null)
+  if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+    return { error: "Entry is not a JSON object" };
+  }
+
+  // Validate minimum required fields
+  if (!entry.id || !entry.severity) {
+    return { error: "Missing required field (id or severity)" };
+  }
+
+  return {
+    item: {
+      ...entry,
+      severity: String(entry.severity).toUpperCase(),
+      status: entry.status ? String(entry.status).toUpperCase() : entry.status,
+    },
+  };
+}
+
+/**
  * Parse backlog items from JSONL content.
  * Returns { items, corruptLines } where items are successfully parsed entries
  * and corruptLines is an array of { lineNumber, error } for bad lines.
@@ -53,29 +89,16 @@ function parseBacklogItems(content) {
     if (line === "") continue;
 
     try {
-      const entry = JSON.parse(line);
-
-      // Reject non-object JSON values (strings, numbers, arrays, null)
-      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
-        corruptLines.push({ lineNumber: i + 1, error: "Entry is not a JSON object" });
-        continue;
+      const result = parseSingleEntry(line);
+      if (result.error) {
+        corruptLines.push({ lineNumber: i + 1, error: result.error });
+      } else {
+        items.push(result.item);
       }
-
-      // Validate minimum required fields
-      if (!entry.id || !entry.severity) {
-        corruptLines.push({ lineNumber: i + 1, error: "Missing required field (id or severity)" });
-        continue;
-      }
-
-      items.push({
-        ...entry,
-        severity: String(entry.severity).toUpperCase(),
-        status: entry.status ? String(entry.status).toUpperCase() : entry.status,
-      });
     } catch (err) {
       corruptLines.push({
         lineNumber: i + 1,
-        error: err && err.message ? err.message : String(err),
+        error: err instanceof Error ? err.message : String(err),
       });
     }
   }

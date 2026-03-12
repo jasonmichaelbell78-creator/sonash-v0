@@ -10,12 +10,16 @@
 
 "use strict";
 
-/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
 function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[config-health] ${m}`);
   }
 }
@@ -31,7 +35,6 @@ const { BENCHMARKS } = safeRequire("../lib/benchmarks");
  */
 function isValidRegex(pattern) {
   try {
-    // eslint-disable-next-line no-new
     new RegExp(pattern); // pattern-checker:verified — intentional validation
     return true;
   } catch {
@@ -415,6 +418,37 @@ function matchersOverlap(m1, m2) {
 
 // ── Category 3: Global/Local Consistency ───────────────────────────────────
 
+/**
+ * Load hook references from the global ~/.claude/settings.json.
+ * Respects CLAUDE_GLOBAL_SETTINGS_PATH and CLAUDE_CHECK_GLOBAL_SETTINGS env vars.
+ */
+function loadGlobalSettingsHookRefs() {
+  let referenced = new Set();
+  let globalReferenced = new Set();
+  try {
+    const shouldCheckGlobal = process.env.CI
+      ? process.env.CLAUDE_CHECK_GLOBAL_SETTINGS === "1"
+      : process.env.CLAUDE_CHECK_GLOBAL_SETTINGS !== "0";
+    if (shouldCheckGlobal) {
+      const overridePath = process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
+      const homeDir = process.env.HOME || process.env.USERPROFILE;
+      const globalSettingsPath =
+        overridePath || (homeDir ? path.join(homeDir, ".claude", "settings.json") : null);
+
+      if (globalSettingsPath && fs.existsSync(globalSettingsPath)) {
+        const globalSettingsRaw = fs.readFileSync(globalSettingsPath, "utf8");
+        const globalSettings = JSON.parse(globalSettingsRaw);
+        const globalHooksSection = globalSettings.hooks || {};
+        referenced = extractReferencedJsFiles(globalHooksSection);
+        globalReferenced = extractGlobalReferencedJsFiles(globalHooksSection);
+      }
+    }
+  } catch {
+    // Global settings not accessible — skip
+  }
+  return { referenced, globalReferenced };
+}
+
 function checkGlobalLocalConsistency(rootDir, hooksSection, findings) {
   const bench = BENCHMARKS.global_local_consistency;
 
@@ -458,31 +492,8 @@ function checkGlobalLocalConsistency(rootDir, hooksSection, findings) {
   const globalReferenced = extractGlobalReferencedJsFiles(hooksSection);
 
   // Also check the global ~/.claude/settings.json — global hooks are often registered there
-  // Use CLAUDE_GLOBAL_SETTINGS_PATH env var to override path (deterministic testing)
-  // Set CLAUDE_CHECK_GLOBAL_SETTINGS=0 to skip entirely
-  let globalSettingsReferenced = new Set();
-  let globalSettingsGlobalReferenced = new Set();
-  try {
-    const shouldCheckGlobal = process.env.CI
-      ? process.env.CLAUDE_CHECK_GLOBAL_SETTINGS === "1"
-      : process.env.CLAUDE_CHECK_GLOBAL_SETTINGS !== "0";
-    if (shouldCheckGlobal) {
-      const overridePath = process.env.CLAUDE_GLOBAL_SETTINGS_PATH;
-      const homeDir = process.env.HOME || process.env.USERPROFILE;
-      const globalSettingsPath =
-        overridePath || (homeDir ? path.join(homeDir, ".claude", "settings.json") : null);
-
-      if (globalSettingsPath && fs.existsSync(globalSettingsPath)) {
-        const globalSettingsRaw = fs.readFileSync(globalSettingsPath, "utf8");
-        const globalSettings = JSON.parse(globalSettingsRaw);
-        const globalHooksSection = globalSettings.hooks || {};
-        globalSettingsReferenced = extractReferencedJsFiles(globalHooksSection);
-        globalSettingsGlobalReferenced = extractGlobalReferencedJsFiles(globalHooksSection);
-      }
-    }
-  } catch {
-    // Global settings not accessible — skip
-  }
+  const { referenced: globalSettingsReferenced, globalReferenced: globalSettingsGlobalReferenced } =
+    loadGlobalSettingsHookRefs();
 
   const unregisteredGlobal = [];
   for (const globalFile of globalFiles) {
@@ -501,7 +512,7 @@ function checkGlobalLocalConsistency(rootDir, hooksSection, findings) {
   const score = Math.max(0, Math.min(100, rawScore));
 
   // Use lower-is-better scoring for conflict_count
-  const result = scoreMetric(nameCollisions.length, bench.conflict_count, "lower-is-better");
+  const _result = scoreMetric(nameCollisions.length, bench.conflict_count, "lower-is-better");
 
   if (nameCollisions.length > 0) {
     findings.push({

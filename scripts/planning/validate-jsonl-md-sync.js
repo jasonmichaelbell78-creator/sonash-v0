@@ -77,7 +77,9 @@ for (const gen of GENERATORS) {
       failures++;
     }
   } catch (err) {
-    console.error(`  ❌ ${gen.name} generator failed: ${err.message}`);
+    console.error(
+      `  ❌ ${gen.name} generator failed: ${err instanceof Error ? err.message : String(err)}`
+    );
     failures++;
   }
 }

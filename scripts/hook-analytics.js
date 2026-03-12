@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+
 /**
  * hook-analytics.js - Hook & Agent Observability Report
  *

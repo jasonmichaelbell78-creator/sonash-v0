@@ -683,7 +683,7 @@ function resolveFileArgs(files) {
   let rootRealResolved = rootResolved;
   try {
     rootRealResolved = resolve(realpathSync(ROOT));
-  } catch (error) {
+  } catch {
     console.warn(`Warning: Cannot resolve real path for ROOT, using resolved path`);
   }
 

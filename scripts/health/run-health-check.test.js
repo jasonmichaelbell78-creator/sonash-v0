@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Tests for health check system
  * Uses node:test (project convention)

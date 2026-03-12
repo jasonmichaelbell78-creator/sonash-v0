@@ -27,8 +27,22 @@ const { execSync, execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
-const { isSafeToWrite } = require("./lib/symlink-guard");
-const { sanitizeInput } = require("./lib/sanitize-input");
+let isSafeToWrite, sanitizeInput;
+try {
+  ({ isSafeToWrite } = require("./lib/symlink-guard"));
+} catch {
+  isSafeToWrite = () => false;
+}
+try {
+  ({ sanitizeInput } = require("./lib/sanitize-input"));
+} catch {
+  /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
+  sanitizeInput = (v) =>
+    String(v ?? "")
+      .replace(/[\x00-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
+}
 
 // Detect environment (remote/local)
 const isRemote = process.env.CLAUDE_CODE_REMOTE === "true";
@@ -80,13 +94,13 @@ const SESSION_STATE_FILE = path.join(projectDir, ".claude", "hooks", ".session-s
  */
 function readSessionState() {
   try {
-    if (fs.existsSync(SESSION_STATE_FILE)) {
-      return JSON.parse(fs.readFileSync(SESSION_STATE_FILE, "utf8"));
-    }
+    return JSON.parse(fs.readFileSync(SESSION_STATE_FILE, "utf8"));
   } catch (err) {
-    console.error(
-      `session-start: failed to read session state: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
-    );
+    if (err && err.code !== "ENOENT") {
+      console.error(
+        `session-start: failed to read session state: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
+      );
+    }
   }
   return null;
 }
@@ -253,9 +267,12 @@ function needsRootInstall() {
     const currentHash = computeHash("package-lock.json");
     if (!currentHash) return true; // Force reinstall if hash failed
 
-    const cachedHash = fs.existsSync(LOCKFILE_HASH_FILE)
-      ? fs.readFileSync(LOCKFILE_HASH_FILE, "utf8").trim()
-      : "";
+    let cachedHash = "";
+    try {
+      cachedHash = fs.readFileSync(LOCKFILE_HASH_FILE, "utf8").trim();
+    } catch {
+      /* no cache */
+    }
     return currentHash !== cachedHash;
   } catch {
     return true;
@@ -270,9 +287,12 @@ function needsFunctionsInstall() {
     const currentHash = computeHash("functions/package-lock.json");
     if (!currentHash) return true; // Force reinstall if hash failed
 
-    const cachedHash = fs.existsSync(FUNCTIONS_LOCKFILE_HASH_FILE)
-      ? fs.readFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, "utf8").trim()
-      : "";
+    let cachedHash = "";
+    try {
+      cachedHash = fs.readFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, "utf8").trim();
+    } catch {
+      /* no cache */
+    }
     return currentHash !== cachedHash;
   } catch {
     return true;
@@ -285,13 +305,45 @@ function saveRootHash() {
   const dir = path.dirname(LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   const absPath = path.resolve(LOCKFILE_HASH_FILE);
-  if (!isSafeToWrite(absPath)) {
+  const tmpPath = `${absPath}.tmp`;
+  if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
     console.error("session-start: refusing to write — symlink detected on lockfile hash");
     return;
   }
   try {
-    fs.writeFileSync(LOCKFILE_HASH_FILE, hash, "utf-8");
+    fs.writeFileSync(tmpPath, hash, "utf-8");
+    try {
+      fs.renameSync(tmpPath, absPath);
+    } catch {
+      if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
+        try {
+          fs.rmSync(tmpPath, { force: true });
+        } catch {
+          /* cleanup */
+        }
+        return;
+      }
+      try {
+        fs.rmSync(absPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
+        try {
+          fs.rmSync(tmpPath, { force: true });
+        } catch {
+          /* cleanup */
+        }
+        return;
+      }
+      fs.renameSync(tmpPath, absPath);
+    }
   } catch (err) {
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      /* cleanup */
+    }
     console.warn(
       `session-start: failed to save root lockfile hash: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
     );
@@ -304,13 +356,45 @@ function saveFunctionsHash() {
   const dir = path.dirname(FUNCTIONS_LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   const absPath = path.resolve(FUNCTIONS_LOCKFILE_HASH_FILE);
-  if (!isSafeToWrite(absPath)) {
+  const tmpPath = `${absPath}.tmp`;
+  if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
     console.error("session-start: refusing to write — symlink detected on functions lockfile hash");
     return;
   }
   try {
-    fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash, "utf-8");
+    fs.writeFileSync(tmpPath, hash, "utf-8");
+    try {
+      fs.renameSync(tmpPath, absPath);
+    } catch {
+      if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
+        try {
+          fs.rmSync(tmpPath, { force: true });
+        } catch {
+          /* cleanup */
+        }
+        return;
+      }
+      try {
+        fs.rmSync(absPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
+        try {
+          fs.rmSync(tmpPath, { force: true });
+        } catch {
+          /* cleanup */
+        }
+        return;
+      }
+      fs.renameSync(tmpPath, absPath);
+    }
   } catch (err) {
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      /* cleanup */
+    }
     console.warn(
       `session-start: failed to save functions lockfile hash: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
     );
@@ -397,9 +481,13 @@ const TEST_BUILD_TTL_MS = 60 * 60 * 1000; // 1 hour
 let needsTestBuild = true;
 try {
   if (fs.existsSync(distTestsDir)) {
-    const stat = fs.statSync(distTestsDir);
-    if (Date.now() - stat.mtimeMs < TEST_BUILD_TTL_MS) {
-      needsTestBuild = false;
+    if (fs.lstatSync(distTestsDir).isSymbolicLink()) {
+      needsTestBuild = true;
+    } else {
+      const stat = fs.statSync(distTestsDir);
+      if (Date.now() - stat.mtimeMs < TEST_BUILD_TTL_MS) {
+        needsTestBuild = false;
+      }
     }
   }
 } catch (err) {
@@ -504,12 +592,14 @@ try {
 // Archive health check: rotate reviews.jsonl when it exceeds 50 entries (OPT #74)
 try {
   const reviewsPath = path.join(projectDir, ".claude", "state", "reviews.jsonl");
-  if (fs.existsSync(reviewsPath)) {
-    const reviewCount = fs
-      .readFileSync(reviewsPath, "utf8")
-      .trim()
-      .split("\n")
-      .filter(Boolean).length;
+  let reviewContent;
+  try {
+    reviewContent = fs.readFileSync(reviewsPath, "utf8");
+  } catch {
+    reviewContent = null;
+  }
+  if (reviewContent !== null) {
+    const reviewCount = reviewContent.trim().split("\n").filter(Boolean).length;
     if (reviewCount > 50) {
       try {
         const { archiveRotateJsonl } = require("./lib/rotate-state.js");
@@ -551,22 +641,19 @@ try {
 try {
   const { archiveRotateJsonl, rotateJsonl } = require("./lib/rotate-state.js");
   const hookWarningsPath = path.join(projectDir, ".claude", "state", "hook-warnings-log.jsonl");
-  if (fs.existsSync(hookWarningsPath)) {
-    const hwResult = archiveRotateJsonl(hookWarningsPath, 50, 30);
-    if (hwResult && hwResult.rotated) {
-      console.log(
-        `   🔄 hook-warnings-log.jsonl rotated: ${hwResult.before} → ${hwResult.after} entries (${hwResult.archived} archived)`
-      );
-    }
+  // rotateJsonl/archiveRotateJsonl internally handle missing files gracefully
+  const hwResult = archiveRotateJsonl(hookWarningsPath, 50, 30);
+  if (hwResult && hwResult.rotated) {
+    console.log(
+      `   🔄 hook-warnings-log.jsonl rotated: ${hwResult.before} → ${hwResult.after} entries (${hwResult.archived} archived)`
+    );
   }
   const healthScorePath = path.join(projectDir, ".claude", "state", "health-score-log.jsonl");
-  if (fs.existsSync(healthScorePath)) {
-    const hsResult = rotateJsonl(healthScorePath, 30, 20);
-    if (hsResult) {
-      console.log(
-        `   🔄 health-score-log.jsonl rotated: ${hsResult.before} → ${hsResult.after} entries`
-      );
-    }
+  const hsResult = rotateJsonl(healthScorePath, 30, 20);
+  if (hsResult && hsResult.rotated) {
+    console.log(
+      `   🔄 health-score-log.jsonl rotated: ${hsResult.before} → ${hsResult.after} entries`
+    );
   }
 } catch {
   // Non-fatal
@@ -575,8 +662,14 @@ try {
 // Technical Debt health check (TDMS)
 try {
   const metricsPath = path.join(projectDir, "docs", "technical-debt", "metrics.json");
-  if (fs.existsSync(metricsPath)) {
-    const metrics = JSON.parse(fs.readFileSync(metricsPath, "utf8"));
+  let metricsRaw;
+  try {
+    metricsRaw = fs.readFileSync(metricsPath, "utf8");
+  } catch {
+    metricsRaw = null;
+  }
+  if (metricsRaw !== null) {
+    const metrics = JSON.parse(metricsRaw);
     const s0Count = metrics.by_severity?.S0 ?? 0;
     const s1Count = metrics.by_severity?.S1 ?? 0;
     const total = metrics.summary?.total ?? 0;
@@ -617,6 +710,35 @@ try {
   }
 } catch {
   console.log("Health: skipped (non-fatal)");
+}
+
+// C5-G3: Health score delta from health-score-log.jsonl (grade + delta, 2+ grade drop = warning)
+try {
+  const gradeOrder = ["A", "B", "C", "D", "F"];
+  const hsLogPath = path.join(projectDir, ".claude", "state", "health-score-log.jsonl");
+  const hsContent = fs.readFileSync(hsLogPath, "utf8");
+  const hsLines = hsContent.trim().split("\n").filter(Boolean);
+  if (hsLines.length >= 2) {
+    const current = JSON.parse(hsLines[hsLines.length - 1]);
+    const previous = JSON.parse(hsLines[hsLines.length - 2]);
+    const curIdx = gradeOrder.indexOf(current.grade);
+    const prevIdx = gradeOrder.indexOf(previous.grade);
+    const scoreDelta = current.score - previous.score;
+    const deltaStr = scoreDelta >= 0 ? `+${scoreDelta}` : `${scoreDelta}`;
+    if (curIdx >= 0 && prevIdx >= 0 && curIdx - prevIdx >= 2) {
+      console.log(
+        `   ⚠️ Health grade dropped ${previous.grade} → ${current.grade} (${deltaStr}pts)`
+      );
+      warnings++;
+    } else if (curIdx >= 0 && prevIdx >= 0 && curIdx !== prevIdx) {
+      const arrow = curIdx < prevIdx ? "↑" : "↓";
+      console.log(
+        `   ${arrow} Health trend: ${previous.grade} → ${current.grade} (${deltaStr}pts)`
+      );
+    }
+  }
+} catch {
+  // Non-fatal — health-score-log.jsonl may not exist yet
 }
 
 // DS-6: Log session start to session-activity.jsonl

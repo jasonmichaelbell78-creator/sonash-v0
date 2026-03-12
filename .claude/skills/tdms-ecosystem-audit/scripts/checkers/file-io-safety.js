@@ -14,7 +14,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[file-io-safety] ${m}`);
   }
 }
@@ -367,7 +372,7 @@ function checkMasterDedupedSync(rootDir, debtScripts) {
       if (masterIds.has(id)) matchesInMaster++;
     }
 
-    const sampleSize = Math.max(masterSample.length, dedupedSample.length, 1);
+    const _sampleSize = Math.max(masterSample.length, dedupedSample.length, 1);
     const totalMatches = matchesInDeduped + matchesInMaster;
     const totalChecked = masterSample.length + dedupedSample.length;
     const matchRatio = totalChecked > 0 ? totalMatches / totalChecked : 1;
@@ -423,7 +428,6 @@ function checkMasterDedupedSync(rootDir, debtScripts) {
     "sync-sonarcloud.js",
     "intake-manual.js",
     "intake-pr-deferred.js",
-    "sprint-intake.js",
   ];
 
   for (const scriptName of intakeScriptNames) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global __dirname */
-/* eslint-disable complexity */
+
 /**
  * Extract technical debt items from .claude/state/ markdown files into TDMS JSONL.
  *

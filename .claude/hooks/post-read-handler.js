@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename, security/detect-object-injection */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * post-read-handler.js - Consolidated PostToolUse (Read) hook
  *
@@ -21,8 +21,19 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { projectDir } = require("./lib/git-utils.js");
-const { loadJson, saveJson } = require("./lib/state-utils.js");
+let projectDir, loadJson, saveJson;
+try {
+  ({ projectDir } = require("./lib/git-utils.js"));
+} catch {
+  console.log("ok");
+  process.exit(0);
+}
+try {
+  ({ loadJson, saveJson } = require("./lib/state-utils.js"));
+} catch {
+  loadJson = () => null;
+  saveJson = () => false;
+}
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
@@ -158,6 +169,7 @@ function runContextTracking() {
   // Estimate line count from file size (avoids reading entire file into memory)
   let lineCount = 0;
   try {
+    if (fs.lstatSync(fullPath).isSymbolicLink()) return;
     const stat = fs.statSync(fullPath);
     lineCount = Math.ceil(stat.size / 80); // Estimate ~80 bytes per line
   } catch {

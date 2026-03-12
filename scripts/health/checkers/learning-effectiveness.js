@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Learning Effectiveness Health Checker
  *

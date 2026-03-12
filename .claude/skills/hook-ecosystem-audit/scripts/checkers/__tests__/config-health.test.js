@@ -16,7 +16,7 @@ function removeTempDir(dir) {
 
 const CHECKER_PATH = path.join(__dirname, "..", "config-health.js");
 
-function makeSettings(hooks = {}) {
+function _makeSettings(hooks = {}) {
   return JSON.stringify({ hooks }, null, 2);
 }
 

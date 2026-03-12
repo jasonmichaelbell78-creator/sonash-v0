@@ -44,8 +44,12 @@ function test(name, fn) {
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    const message =
-      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    let message;
+    if (err instanceof Error) {
+      message = err.stack || err.message;
+    } else {
+      message = `Non-Error thrown: ${String(err)}`;
+    }
     console.error(`  \u2717 ${name}: ${message}`);
   }
 }
@@ -73,7 +77,7 @@ function assertIncludes(arr, value, message) {
   }
 }
 
-function assertNotIncludes(arr, value, message) {
+function _assertNotIncludes(arr, value, message) {
   if (arr.includes(value)) {
     throw new Error(
       (message || "assertNotIncludes") + `: expected array NOT to include ${JSON.stringify(value)}`
@@ -97,9 +101,13 @@ try {
   stateIntegration = require(path.join(SCRIPTS_DIR, "checkers", "state-integration"));
   ({ HOOK_PROTOCOL } = require(path.join(SCRIPTS_DIR, "lib", "constants")));
 } catch (err) {
-  console.error(
-    `Fatal: Could not load checker modules: ${err instanceof Error ? err.message : String(err)}`
-  );
+  let errMsg;
+  if (err instanceof Error) {
+    errMsg = err.message;
+  } else {
+    errMsg = String(err);
+  }
+  console.error(`Fatal: Could not load checker modules: ${errMsg}`);
   process.exit(1);
 }
 

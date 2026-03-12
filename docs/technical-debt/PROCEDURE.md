@@ -28,7 +28,7 @@ canonical format stored in `MASTER_DEBT.jsonl`.
 | Add debt from audit        | Run `node scripts/debt/intake-audit.js <file>`         |
 | Add debt (manual or PR)    | Use `add-debt` skill                                   |
 | Sync with SonarCloud       | Use `sonarcloud` skill                                 |
-| Verify items in queue      | Use `verify-technical-debt` skill                      |
+| Verify items in queue      | Read `docs/technical-debt/views/verification-queue.md` |
 | Mark item as resolved      | Run `node scripts/debt/resolve-item.js DEBT-XXXX`      |
 | Check verification backlog | Read `docs/technical-debt/views/verification-queue.md` |
 
@@ -297,11 +297,7 @@ Verification is triggered when:
 
 ### 3.3 Running Verification
 
-```
-Use the verify-technical-debt skill
-```
-
-For each item, the skill will:
+For each item in the verification queue:
 
 1. Read the referenced file:line
 2. Determine if issue still exists
@@ -388,11 +384,11 @@ All scripts are located in `scripts/debt/`.
 
 ## 6. Available Skills
 
-| Skill                   | Purpose                          | When to Use               |
-| ----------------------- | -------------------------------- | ------------------------- |
-| `sonarcloud`            | Sync with SonarCloud API         | On-demand                 |
-| `add-debt`              | Add debt (manual or PR-deferred) | When discovering new debt |
-| `verify-technical-debt` | Verify items in queue            | When backlog builds up    |
+| Skill                  | Purpose                          | When to Use               |
+| ---------------------- | -------------------------------- | ------------------------- |
+| `sonarcloud`           | Sync with SonarCloud API         | On-demand                 |
+| `add-debt`             | Add debt (manual or PR-deferred) | When discovering new debt |
+| `tdms-ecosystem-audit` | Audit TDMS system health         | When backlog builds up    |
 
 ---
 

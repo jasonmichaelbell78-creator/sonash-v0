@@ -174,7 +174,12 @@ for (const checker of checkers) {
     const findingCount = result.findings.length;
     console.error(`    ✓ ${categoryCount} categories, ${findingCount} findings`);
   } catch (err) {
-    const msg = err && err.message ? err.message : String(err);
+    let msg;
+    if (err instanceof Error) {
+      msg = err.message;
+    } else {
+      msg = String(err);
+    }
     console.error(`    ✗ ${domainName} failed: ${msg}`);
 
     allFindings.push({

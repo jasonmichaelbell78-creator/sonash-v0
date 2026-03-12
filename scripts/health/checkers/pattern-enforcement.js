@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Pattern Enforcement Health Checker
  *

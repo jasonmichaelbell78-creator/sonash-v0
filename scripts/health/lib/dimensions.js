@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Dimension mapping for Health Check drill-down
  *

@@ -13,8 +13,30 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
-const { isSafeToWrite } = require("./lib/symlink-guard");
-const { sanitizeInput } = require("./lib/sanitize-input");
+let isSafeToWrite, sanitizeInput;
+try {
+  ({ isSafeToWrite } = require("./lib/symlink-guard"));
+} catch {
+  isSafeToWrite = (filePath) => {
+    try {
+      return !fs.lstatSync(filePath).isSymbolicLink();
+    } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? err.code : null;
+      if (code === "ENOENT") return true; // allow creating new files
+      return false;
+    }
+  };
+}
+try {
+  ({ sanitizeInput } = require("./lib/sanitize-input"));
+} catch {
+  /* eslint-disable no-control-regex -- intentional: sanitize dangerous control chars */
+  sanitizeInput = (v) =>
+    String(v ?? "")
+      .replace(/[\x00-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
+}
 
 // Fetch TTL cache (path resolved after projectDir is defined below)
 let FETCH_CACHE_FILE;

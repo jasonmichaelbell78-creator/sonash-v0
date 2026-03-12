@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.97 **Created:** 2026-01-02 **Last Updated:** 2026-03-10
+**Document Version:** 17.99 **Created:** 2026-01-02 **Last Updated:** 2026-03-12
 
 ## Purpose
 
@@ -852,7 +852,78 @@ deduplicated, non-overlapping ranges):
 
 ---
 
+## Retrospectives
+
+### Batch Retro: PRs #420, #424, #426 (2026-03-11, Session #215)
+
+**Scope:** 3 PRs, 12 rounds total (2 + 3 + 7), ~604 review items across all
+rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
+
+**Scores:** PR #420: 7/10 | PR #424: 6.5/10 | PR #426: 5/10 | Cross-PR: 6/10
+
+**Top Findings:**
+
+1. **SonarCloud first-scan volume** — PRs #424/#426 produced 541+ items on R1
+   from new file scans. Fix: batch-acknowledgment step added to `/pr-review`.
+2. **Propagation misses** — #1 churn driver across all 3 PRs (process.execPath
+   4x, .js strip, exit codes, scoring clamping). Fix: propagation sweep
+   strengthened in `/pr-review` Step 4.
+3. **Cross-round re-raises** — Qodo and SonarCloud re-flag rejected items. Fix:
+   cross-round dedup + stale HEAD check added to `/pr-review` Step 2.
+4. **CC pre-push check was misidentified** — existed for cyclomatic (ESLint) but
+   not cognitive (SonarCloud S3776). Fix: `scripts/check-cc.js` created and
+   wired into `.husky/pre-push`.
+
+**Action Items Implemented (9/9):**
+
+- `/pr-review` SKILL.md v4.1: Step 0 (size advisory + first-scan batch), Step 2
+  (cross-round dedup + stale HEAD + prior rejection), Step 4 (propagation
+  sweep), Step 6 (data completeness check)
+- `sonar-project.properties`: S5852 test file suppressions (fp6c/fp6d)
+- `.husky/pre-push`: cognitive complexity check via `scripts/check-cc.js`
+- `retros.jsonl`: PR #420 upgraded to full, #424 and #426 records created
+- DEBT-45519: Pre-push SonarCloud lint script (deferred)
+- Deep-plan task: JSONL-only migration (planned for future session)
+
+---
+
 ## Active Reviews
+
+### Review #473: PR #427 R1 — Mixed (SonarCloud + Semgrep + CI + Qodo) (2026-03-11)
+
+_Hook audit wave 8 — CC double-counting bug, cyclomatic gate bypass,
+generateWarnings data loss, bulk lint cleanup across hooks/skills/scripts._
+
+**Source:** SonarCloud hotspots (6) + code smells (16), Semgrep (1), CI (1 + 127
+lint warnings), Qodo compliance (6) + bugs (2) + suggestions (6) **Items:** 25
+total (24 fixed, 1 deferred, 5 rejected) **Severity:** 3C / 7M / 8m / 2T
+**Deferred:** DEBT-45520
+
+**Key Patterns:**
+
+1. **CC double-counting in check-cc.js** — `processNode()` walked into nested
+   function bodies, inflating parent CC. `analyzeAST()` already computes CC per
+   function. Fix: treat nested functions as boundaries, don't recurse.
+2. **generateWarnings data loss** — `safeAppendFileSync` wrote to disk, then
+   `safeWriteFileSync` overwrote the file from an in-memory array that lacked
+   the appended records. Fix: mutate array in-memory, write once.
+3. **Cyclomatic gate `|| true` mask** — pre-push ESLint gate swallowed all exit
+   codes; only grepped for "complexity". Config/parse errors silently passed.
+   Fix: capture exit status explicitly.
+4. **CJS parse fallback** — acorn parsed as ESM only; CJS scripts hit parse
+   errors and were silently skipped. Fix: try ESM, fall back to CJS.
+
+**Process Learnings:**
+
+- First-scan volume on large PRs (247 files) produces significant reviewer
+  noise. Batch-acknowledge known-safe patterns early.
+- "Pre-existing" is banned as skip reason — fix or track with DEBT ID.
+- CC refactoring (extracting helpers) is mechanical but high-value — reduces
+  both SonarCloud noise and review round count.
+- **Score:** 8/10 — Comprehensive review with 3 real bugs caught. Large PR
+  amplified lint noise but core findings were high-signal.
+
+---
 
 ### Review #472: PR #426 R3 — Mixed (Qodo + CI + SonarCloud) (2026-03-10)
 
@@ -2161,5 +2232,208 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
   efficient single-root-cause resolution.
 - **Score:** 7.5/10 — Good cycle marred by known SonarCloud FPs and escapeCell
   propagation
+
+---
+
+#### Review #354: PR #427 R4 — TOCTOU Hardening, Sanitize Fallbacks, Semgrep Rule ID Fix (2026-03-12)
+
+**Source:** Mixed (Qodo Compliance + Suggestions, Semgrep/CodeQL, CI Pattern
+Compliance) **PR/Branch:** PR #427 / testing-31126 **Suggestions:** 25 total
+(Critical: 2, Major: 11, Minor: 8, Trivial: 4)
+
+**Patterns Identified:**
+
+1. TOCTOU in atomic write helpers: isSafeToWrite checks at function entry become
+   stale by the time mutation ops execute in error-recovery paths.
+   - Root cause: Single upfront check doesn't protect retry/fallback paths
+   - Prevention: Re-check isSafeToWrite immediately before each mutation op
+
+2. Fallback sanitizeInput missing control char stripping: 6 hook files had
+   `String(v).slice(0, 500)` fallback — no protection against log injection via
+   control characters.
+   - Root cause: Original fallback only truncated, didn't sanitize
+   - Prevention: Propagation sweep caught all 6 instances (2 flagged + 4 found)
+
+3. Semgrep nosemgrep comments using wrong rule ID: Custom rule
+   `sonash.security.no-eval-usage` not suppressed by community rule ID
+   `javascript.lang.security.detect-eval-with-expression`.
+   - Root cause: nosemgrep comments copied from community rule, not updated for
+     custom rule
+   - Prevention: Both rule IDs now in all nosemgrep comments
+
+4. Pattern compliance checker heuristic is line-based: rmSync within 10 lines of
+   renameSync = violation, regardless of control flow (catch handlers, error
+   paths). Copy+unlink is the safe alternative.
+   - Root cause: Simple line-scanning heuristic doesn't model try/catch
+   - Prevention: Use copy+unlink fallback pattern instead of rmSync+renameSync
+
+**Resolution:**
+
+- Fixed: 20 items (including 4 propagation fixes for sanitizeInput fallbacks)
+- Deferred: 0 items
+- Rejected: 5 items (4 compliance items: hooks lack user context by design; 1
+  code suggestion: pre-delete conflicts with compliance checker)
+
+**Key Learnings:**
+
+- Propagation sweep is critical: sanitizeInput fallback fix found 4 additional
+  unfixed files beyond the 2 Qodo flagged
+- Pattern compliance heuristic doesn't understand control flow — restructure
+  code to avoid the pattern entirely rather than adding it in catch handlers
+- Always add BOTH community + custom rule IDs to nosemgrep comments
+
+---
+
+#### Review #353: PR #427 R2 — Security Fail-Closed, Error Safety Codemod, Bulk Lint (2026-03-12)
+
+**Source:** Mixed (Qodo Compliance, Semgrep, SonarCloud, CI, Qodo Suggestions)
+**PR/Branch:** PR #427 / testing-31126 **Suggestions:** 21 total (Critical: 1,
+Major: 6, Minor: 8, Trivial: 3, Rejected: 2, Stale: 1)
+
+**Patterns Identified:**
+
+1. Symlink guard fail-open: 8 instances of `isSafeToWrite = () => true` fallback
+   across 7 hook files — security module failure silently disables all write
+   protections.
+   - Root cause: R1 introduced try/catch guards but used fail-open fallback
+   - Prevention: ESLint rule for fail-open patterns in security guard loading
+
+2. Unsafe error.message access: 308 instances across 129 files — catch params
+   accessed without instanceof Error check crash on non-Error throws.
+   - Root cause: Pattern accumulated over time, no auto-fixer existed
+   - Prevention: Added auto-fixer to ESLint rule + ConditionalExpression guard
+     detection to prevent cascading re-fixes
+
+3. Atomic write patterns: Multiple files using rmSync+renameSync instead of
+   try-rename-first approach — data loss window between delete and rename.
+   - Root cause: Inconsistent application of atomic write best practice
+   - Prevention: Consider ESLint rule for rmSync-before-renameSync anti-pattern
+
+**Resolution:**
+
+- Fixed: 18 items (including 308 error.message instances via auto-fixer)
+- Deferred: 0 items
+- Rejected: 2 items (1 false positive, 1 intentional design)
+
+**Key Learnings:**
+
+- ESLint auto-fixers are the right tool for mechanical codebase-wide fixes —
+  added fixer to no-unsafe-error-access rule with ConditionalExpression guard
+  detection to prevent cascading
+- pr-review skill Rule 6 updated: "pre-existing" no longer auto-dismissible;
+  must present user with fix (+ effort estimate) or DEBT options
+
+---
+
+### Review #480: PR #427 R3 — Mixed (CI + CodeQL + Semgrep + Qodo + SonarCloud) (2026-03-12)
+
+**Source:** Mixed (CI blocking, CodeQL, Semgrep, Qodo Compliance, Qodo
+Suggestions, SonarCloud) **PR/Branch:** PR #427 / testing-31126 **Items:** 45
+total (Fixed: 45, Deferred: 0, Rejected: 0)
+
+**Patterns Identified:**
+
+1. R2 auto-fixer nested ternary residue: ESLint auto-fixer for
+   no-unsafe-error-access produced overly nested ternaries
+   (`error && typeof error === "object" && "message" in error ? error instanceof Error ? error.message : String(error) : String(error)`)
+   that SonarCloud flagged as cognitive complexity and object-stringification
+   issues.
+   - Root cause: R2 auto-fixer didn't simplify pre-guarded patterns
+   - Fix: Manual simplification to
+     `error instanceof Error ? error.message : String(error)`
+   - Files: assign-review-tier.js, check-backlog-health.js, lighthouse-audit.js
+
+2. rmSync-before-renameSync in 7 state-manager.js copies: CI blocking pattern
+   (data-loss window). First agent fix introduced NEW violations by using bare
+   renameSync without try/catch, requiring a second pass.
+   - Root cause: Agent didn't understand cross-device rename semantics
+   - Fix: `safeRename` helper with copyFileSync+unlinkSync fallback
+   - Prevention: Agent instructions need explicit cross-device fallback pattern
+
+3. Cognitive complexity reduction (3 files): check-backlog-health.js (CC 22→15),
+   cleanup-alert-sessions.js (CC 17→15), validate-canon-schema.js (CC 17→15).
+   - Technique: Extract helper functions (parseSingleEntry,
+     tryDeleteSessionFile, readFileContent, checkDuplicateId,
+     parseAndValidateLine)
+
+4. Semgrep false positives on safe patterns: setTimeout with arrow (not string
+   eval), process.argv[1] for main-module detection (not filesystem access),
+   execFileSync with clamped integer arg (not injection).
+   - Fix: nosemgrep comments with justification
+
+5. Eval-usage false positives: CodeQL/Semgrep flagged setTimeout, Function
+   constructor usage that were safe. Fixed with inline suppression comments.
+
+**Resolution:**
+
+- Fixed: 45 items (28 original + 17 SonarCloud)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- ESLint auto-fixer output should be reviewed for over-nesting before commit —
+  R2's auto-fixer created 4 files with unnecessarily complex ternaries that
+  triggered SonarCloud in R3
+- Agent fixes for pattern compliance need explicit verification — Agent 1's
+  initial rmSync fix introduced 18 new violations (up from 5 original)
+- Cross-device rename fallback (copyFileSync+unlinkSync) must be in every
+  safeRename helper — bare renameSync fails on cross-device moves
+- CC reduction via helper extraction is mechanical but effective — 3 files
+  reduced by extracting 2-3 helpers each
+
+---
+
+### Review #481: PR #427 R5 — Qodo + Semgrep + SonarCloud (2026-03-12)
+
+**Source:** Mixed (Qodo Compliance, Qodo Code Suggestions, Semgrep, SonarCloud)
+**PR/Branch:** PR #427 / testing-31126 **Items:** 23 total (Major: 6, Minor: 12,
+Trivial: 5)
+
+**Context:** Fifth review round on large hook-systems-audit PR (426 files). R5
+focused on security hardening of fallback implementations, CC reduction, and
+pattern compliance.
+
+**Issues Found:**
+
+1. Fallback sanitizeInput regex too permissive:
+   `[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]` preserved tab, LF, CR, and ESC — enabling
+   potential log injection and ANSI escape attacks. Fixed by expanding to
+   `[\x00-\x1f\x7f]` across all 7 fallback implementations. Propagation sweep
+   confirmed zero remaining old-pattern instances.
+
+2. Fallback isSafeToWrite parent dir traversal: rotate-state.js had a fallback
+   that checked only the leaf path for symlinks. An attacker could create a
+   symlinked parent directory. Fixed by walking parent chain.
+
+3. Semgrep taint-path-traversal re-flag: R4 added inline validation but
+   Semgrep's taint analysis didn't recognize it. Refactored to use
+   validatePathInDir() from security-helpers.js — the Semgrep-approved helper.
+
+4. Object spread on optional sub-properties: `...provided?.first_pass` throws
+   TypeError when provided exists but first_pass is undefined. Fixed with
+   `?? {}`.
+
+5. SonarCloud CC reduction: Extracted countBypassesInWindow() from
+   checkBypassDebtThreshold (18→12) and readRawContent() from readJsonl (16→11).
+
+**Resolution:**
+
+- Fixed: 20 items
+- Deferred: 0 items
+- Rejected: 3 items (C3: local error logging not a leak, C4: system-generated
+  fields not user data, SC5: mutable accumulator pattern — false positive)
+
+**Key Learnings:**
+
+- Expanding control char regex from `[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]` to
+  `[\x00-\x1f\x7f]` is a single-line fix that addresses both ANSI escape
+  injection (Q2/Q4) and log injection (Q5/Q6) simultaneously — 4 items with 1
+  regex change
+- Semgrep taint analysis requires using the project's approved helper functions
+  (validatePathInDir) — inline validation that achieves the same result won't
+  satisfy the taint tracker
+- Parent directory symlink traversal is a real attack vector even when the leaf
+  path is checked — fallback isSafeToWrite implementations need the parent walk
 
 ---

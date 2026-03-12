@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable security/detect-non-literal-fs-filename */
+
 /**
  * check-hook-health.js - Hook Health and Session State Monitor
  *

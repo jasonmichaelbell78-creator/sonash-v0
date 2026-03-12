@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable security/detect-object-injection */
+
 /**
  * check-session-gaps.js - Session-begin gap detector (Layer D)
  *

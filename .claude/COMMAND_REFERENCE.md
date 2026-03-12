@@ -63,7 +63,6 @@ Source: `.claude/skills/*/SKILL.md`
 | `/systematic-debugging`           | Systematic bug investigation                                      |
 | `/task-next`                      | Show next tasks from ROADMAP.md                                   |
 | `/test-suite`                     | Multi-phase UI testing orchestration                              |
-| `/verify-technical-debt`          | Verify and triage technical debt items                            |
 | `/add-debt`                       | Add items to MASTER_DEBT.jsonl                                    |
 | `/skill-creator`                  | Structured workflow for creating or updating skills               |
 | `/skill-audit`                    | Interactive behavioral quality audit for individual skills        |
@@ -73,7 +72,6 @@ Source: `.claude/skills/*/SKILL.md`
 | `/decrypt-secrets`                | Decrypt MCP tokens for remote sessions                            |
 | `/gh-fix-ci`                      | Fix failing GitHub CI actions                                     |
 | `/market-research-reports`        | Generate market research reports                                  |
-| `/sprint`                         | TDMS sprint workflow automation                                   |
 | `/ui-design-system`               | Design system components toolkit                                  |
 | `/using-superpowers`              | Claude skills usage guide                                         |
 | `/ux-researcher-designer`         | UX research and design toolkit                                    |

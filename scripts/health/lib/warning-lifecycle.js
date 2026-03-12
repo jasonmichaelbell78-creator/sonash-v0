@@ -7,7 +7,7 @@
 
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve, basename } from "node:path";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +18,7 @@ const require = createRequire(import.meta.url);
 const { appendRecord } = require("../../reviews/dist/lib/write-jsonl");
 const { readValidatedJsonl } = require("../../reviews/dist/lib/read-jsonl");
 const { WarningRecord } = require("../../reviews/dist/lib/schemas/warning");
-const { isSafeToWrite } = require("../../lib/safe-fs");
+const { isSafeToWrite, safeWriteFileSync } = require("../../lib/safe-fs");
 
 // Walk up from __dirname to find project root (same pattern used throughout codebase)
 function findProjectRoot(startDir) {
@@ -85,7 +85,7 @@ function writeAll(filePath, records) {
   mkdirSync(dirname(absPath), { recursive: true });
 
   const lines = records.map((r) => JSON.stringify(r)).join("\n") + "\n";
-  writeFileSync(absPath, lines, "utf8");
+  safeWriteFileSync(absPath, lines, "utf8");
 }
 
 /**

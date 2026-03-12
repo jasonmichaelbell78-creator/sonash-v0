@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-redeclare, no-undef */
+/* eslint-disable no-undef */
 /**
  * generate-report.js - Generates velocity report from session history
  *

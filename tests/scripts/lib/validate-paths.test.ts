@@ -26,7 +26,6 @@ const PROJECT_ROOT = findProjectRoot(__dirname);
 
 const MODULE_PATH = path.resolve(PROJECT_ROOT, "scripts/lib/validate-paths.js");
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { validateFilePath, sanitizeFilesystemError, validateAndVerifyPath } = require(
   MODULE_PATH
 ) as {

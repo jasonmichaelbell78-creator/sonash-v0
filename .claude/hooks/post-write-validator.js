@@ -723,6 +723,128 @@ function checkRequirements() {
 
 // ─── Validator 10: agentTriggerEnforcer (SUGGEST) ────────────────────────────
 
+/**
+ * Load and normalize agent trigger state from disk.
+ */
+function loadAgentTriggerState(statePath) {
+  let state = { uses: 0, firstUse: null, lastUse: null, suggestedAgents: {}, phase: 1 };
+  try {
+    state = JSON.parse(fs.readFileSync(statePath, "utf8"));
+  } catch {
+    // Use default
+  }
+  if (!state || typeof state !== "object") {
+    state = { uses: 0, firstUse: null, lastUse: null, suggestedAgents: {}, phase: 1 };
+  }
+  if (
+    !state.suggestedAgents ||
+    typeof state.suggestedAgents !== "object" ||
+    Array.isArray(state.suggestedAgents)
+  ) {
+    state.suggestedAgents = {};
+  }
+  state.uses = Number.isFinite(Number(state.uses)) ? Number(state.uses) + 1 : 1;
+  state.phase = Number.isFinite(Number(state.phase))
+    ? Math.min(3, Math.max(1, Math.trunc(Number(state.phase))))
+    : 1;
+  if (!state.firstUse) state.firstUse = new Date().toISOString();
+  state.lastUse = new Date().toISOString();
+  return state;
+}
+
+/**
+ * Check if a phase transition notification is needed.
+ */
+function checkPhaseTransition(state) {
+  const now = Date.now();
+  const firstUse = state.firstUse ? new Date(state.firstUse).getTime() : now;
+  const daysSinceFirstUse = Math.floor((now - firstUse) / (1000 * 60 * 60 * 24));
+  if (state.phase === 1 && (state.uses >= 50 || daysSinceFirstUse >= 30)) {
+    return {
+      message: `Agent Trigger Enforcer has been active for ${state.uses} uses / ${daysSinceFirstUse} days`,
+      recommendation: "Consider upgrading to Phase 2 (WARNING mode) for stronger guidance",
+    };
+  }
+  if (state.phase === 2 && (state.uses >= 100 || daysSinceFirstUse >= 60)) {
+    return {
+      message: `Agent Trigger Enforcer has been active for ${state.uses} uses / ${daysSinceFirstUse} days`,
+      recommendation: "Consider upgrading to Phase 3 (BLOCKING mode) for enforcement",
+    };
+  }
+  return null;
+}
+
+/**
+ * Update delegated code review queue.
+ */
+function updateReviewQueue(reviewQueuePath, normalizedFile, threshold) {
+  let reviewQueue = { files: [], queued: false, lastQueued: null };
+  try {
+    reviewQueue = JSON.parse(fs.readFileSync(reviewQueuePath, "utf8"));
+    if (!Array.isArray(reviewQueue.files)) reviewQueue.files = [];
+  } catch {
+    // Use default
+  }
+
+  if (!reviewQueue.files.includes(normalizedFile)) {
+    reviewQueue.files.push(normalizedFile);
+  }
+
+  if (reviewQueue.files.length >= threshold && !reviewQueue.queued) {
+    reviewQueue.queued = true;
+    reviewQueue.lastQueued = new Date().toISOString();
+
+    console.error("");
+    console.error("\u{1F4CB}  DELEGATED REVIEW QUEUED");
+    console.error("\u2501".repeat(30));
+    console.error(`  ${reviewQueue.files.length} code files modified this session.`);
+    console.error("  Consider spawning a code-reviewer subagent:");
+    console.error("");
+    console.error("  Task({ subagent_type: 'code-reviewer',");
+    console.error("    description: 'Review session changes',");
+    console.error("    prompt: '<diff of changes>' })");
+    console.error("");
+    console.error("  Or run /code-reviewer before committing.");
+    console.error("  Review queue: .claude/state/pending-reviews.json");
+    console.error("\u2501".repeat(30));
+  }
+
+  // Write review queue (atomic)
+  const tmpReviewPath = `${reviewQueuePath}.tmp`;
+  try {
+    if (!isSafeToWrite(reviewQueuePath)) return;
+    if (!isSafeToWrite(tmpReviewPath)) return;
+    fs.mkdirSync(path.dirname(reviewQueuePath), { recursive: true });
+    fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
+    const cleanupTmp = () => {
+      try {
+        fs.rmSync(tmpReviewPath, { force: true });
+      } catch {
+        /* cleanup */
+      }
+    };
+    try {
+      if (!isSafeToWrite(reviewQueuePath) || !isSafeToWrite(tmpReviewPath)) return cleanupTmp();
+      fs.renameSync(tmpReviewPath, reviewQueuePath);
+    } catch {
+      try {
+        if (!isSafeToWrite(reviewQueuePath)) return cleanupTmp();
+        fs.rmSync(reviewQueuePath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      if (!isSafeToWrite(reviewQueuePath) || !isSafeToWrite(tmpReviewPath)) return cleanupTmp();
+      fs.renameSync(tmpReviewPath, reviewQueuePath);
+    }
+  } catch {
+    try {
+      fs.rmSync(tmpReviewPath, { force: true });
+    } catch {
+      /* cleanup */
+    }
+  }
+}
+
 function agentTriggerEnforcer() {
   const AGENT_TRIGGERS = agentTriggersConfig.agentTriggers;
   const REVIEW_CHANGE_THRESHOLD = agentTriggersConfig.reviewChangeThreshold;
@@ -739,42 +861,16 @@ function agentTriggerEnforcer() {
 
   const STATE_FILE = ".claude/hooks/.agent-trigger-state.json";
   const REVIEW_QUEUE_FILE = ".claude/state/pending-reviews.json";
-
-  // Read state
   const statePath = path.join(projectDir, STATE_FILE);
-  let state = { uses: 0, firstUse: null, lastUse: null, suggestedAgents: {}, phase: 1 };
-  try {
-    state = JSON.parse(fs.readFileSync(statePath, "utf8"));
-  } catch {
-    // Use default
-  }
 
-  // Normalize persisted state shape (defensive against corrupted/manual edits)
-  if (!state || typeof state !== "object") {
-    state = { uses: 0, firstUse: null, lastUse: null, suggestedAgents: {}, phase: 1 };
-  }
-  if (
-    !state.suggestedAgents ||
-    typeof state.suggestedAgents !== "object" ||
-    Array.isArray(state.suggestedAgents)
-  ) {
-    state.suggestedAgents = {};
-  }
-
-  state.uses = Number.isFinite(Number(state.uses)) ? Number(state.uses) + 1 : 1;
-  state.phase = Number.isFinite(Number(state.phase))
-    ? Math.min(3, Math.max(1, Math.trunc(Number(state.phase))))
-    : 1;
-  if (!state.firstUse) state.firstUse = new Date().toISOString();
-  state.lastUse = new Date().toISOString();
+  const state = loadAgentTriggerState(statePath);
 
   const sessionKey = new Date().toISOString().split("T")[0];
   if (!Array.isArray(state.suggestedAgents[sessionKey])) state.suggestedAgents[sessionKey] = [];
 
   // Prune suggestedAgents entries older than 30 days (Review #289)
-  const PRUNE_DAYS = 30;
   const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - PRUNE_DAYS);
+  cutoff.setDate(cutoff.getDate() - 30);
   const cutoffKey = cutoff.toISOString().split("T")[0];
   for (const key of Object.keys(state.suggestedAgents)) {
     if (key < cutoffKey) delete state.suggestedAgents[key];
@@ -788,22 +884,7 @@ function agentTriggerEnforcer() {
     state.suggestedAgents[sessionKey].push(agent.agent);
   }
 
-  // Phase transition check
-  const now = Date.now();
-  const firstUse = state.firstUse ? new Date(state.firstUse).getTime() : now;
-  const daysSinceFirstUse = Math.floor((now - firstUse) / (1000 * 60 * 60 * 24));
-  let phaseTransition = null;
-  if (state.phase === 1 && (state.uses >= 50 || daysSinceFirstUse >= 30)) {
-    phaseTransition = {
-      message: `Agent Trigger Enforcer has been active for ${state.uses} uses / ${daysSinceFirstUse} days`,
-      recommendation: "Consider upgrading to Phase 2 (WARNING mode) for stronger guidance",
-    };
-  } else if (state.phase === 2 && (state.uses >= 100 || daysSinceFirstUse >= 60)) {
-    phaseTransition = {
-      message: `Agent Trigger Enforcer has been active for ${state.uses} uses / ${daysSinceFirstUse} days`,
-      recommendation: "Consider upgrading to Phase 3 (BLOCKING mode) for enforcement",
-    };
-  }
+  const phaseTransition = checkPhaseTransition(state);
 
   // Write state (atomic: tmp + rename)
   const tmpPath = `${statePath}.tmp`;
@@ -862,63 +943,15 @@ function agentTriggerEnforcer() {
 
   // Delegated code review queue
   if (applicableAgents.some((a) => a.agent === "code-reviewer")) {
-    const reviewQueuePath = path.join(projectDir, REVIEW_QUEUE_FILE);
-    let reviewQueue = { files: [], queued: false, lastQueued: null };
-    try {
-      reviewQueue = JSON.parse(fs.readFileSync(reviewQueuePath, "utf8"));
-      if (!Array.isArray(reviewQueue.files)) reviewQueue.files = [];
-    } catch {
-      // Use default
-    }
-
     const normalizedFile = path
       .relative(projectDir, path.resolve(projectDir, filePath))
       .split(path.sep)
       .join("/");
-
-    if (!reviewQueue.files.includes(normalizedFile)) {
-      reviewQueue.files.push(normalizedFile);
-    }
-
-    if (reviewQueue.files.length >= REVIEW_CHANGE_THRESHOLD && !reviewQueue.queued) {
-      reviewQueue.queued = true;
-      reviewQueue.lastQueued = new Date().toISOString();
-
-      console.error("");
-      console.error("\u{1F4CB}  DELEGATED REVIEW QUEUED");
-      console.error("\u2501".repeat(30));
-      console.error(`  ${reviewQueue.files.length} code files modified this session.`);
-      console.error("  Consider spawning a code-reviewer subagent:");
-      console.error("");
-      console.error("  Task({ subagent_type: 'code-reviewer',");
-      console.error("    description: 'Review session changes',");
-      console.error("    prompt: '<diff of changes>' })");
-      console.error("");
-      console.error("  Or run /code-reviewer before committing.");
-      console.error("  Review queue: .claude/state/pending-reviews.json");
-      console.error("\u2501".repeat(30));
-    }
-
-    // Write review queue (atomic)
-    const tmpReviewPath = `${reviewQueuePath}.tmp`;
-    try {
-      if (!isSafeToWrite(reviewQueuePath)) return;
-      if (!isSafeToWrite(tmpReviewPath)) return;
-      fs.mkdirSync(path.dirname(reviewQueuePath), { recursive: true });
-      fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
-      try {
-        fs.rmSync(reviewQueuePath, { force: true });
-      } catch {
-        /* best-effort */
-      }
-      fs.renameSync(tmpReviewPath, reviewQueuePath);
-    } catch {
-      try {
-        fs.rmSync(tmpReviewPath, { force: true });
-      } catch {
-        /* cleanup */
-      }
-    }
+    updateReviewQueue(
+      path.join(projectDir, REVIEW_QUEUE_FILE),
+      normalizedFile,
+      REVIEW_CHANGE_THRESHOLD
+    );
   }
 }
 

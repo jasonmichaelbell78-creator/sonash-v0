@@ -276,7 +276,7 @@ describe("safeRenameSync", () => {
   test("falls back to copy+unlink on EXDEV error", () => {
     // safe-fs.js uses require("node:fs") internally (CJS).
     // We access the same CJS module object to mock renameSync.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cjsFs = require("node:fs");
 
     const tmpDir = createTempDir();

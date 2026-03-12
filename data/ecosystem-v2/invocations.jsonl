@@ -18,3 +18,5 @@
 {"id":"inv-1772992533358-36844-1","date":"2026-03-08","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"manual","session":"manual"},"skill":"hook-ecosystem-audit","type":"skill","success":true,"context":{}}
 {"id":"inv-1773003391675-47268-1","date":"2026-03-08","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"manual","session":"manual"},"skill":"skill-audit","type":"skill","success":true,"context":{}}
 {"id":"inv-1773011876354-58908-1","date":"2026-03-08","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"manual","session":"211"},"skill":"skill-audit","type":"skill","success":true,"context":{}}
+{"id":"inv-1773223767506-32856-1","date":"2026-03-11","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"manual","session":"215"},"skill":"skill-audit","type":"skill","success":true,"context":{}}
+{"id":"inv-1773228962005-30384-1","date":"2026-03-11","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"manual","tool":"pr-retro"},"skill":"pr-retro","type":"skill","success":true,"context":{}}

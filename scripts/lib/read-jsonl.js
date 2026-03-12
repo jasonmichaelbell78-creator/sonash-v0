@@ -13,20 +13,30 @@ const path = require("node:path");
  * @param {boolean} [options.quiet=false] - If true, suppress per-line parse warnings
  * @returns {object[]} Parsed items
  */
+/**
+ * Read raw file content, returning null on error (or exiting if not safe mode).
+ */
+function readRawContent(filePath, safe) {
+  try {
+    return fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    if (safe) return null;
+    const errCode = err && typeof err === "object" && "code" in err ? String(err.code) : "";
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to read ${path.basename(filePath)}: ${errCode || errMsg}`);
+    process.exit(1);
+  }
+}
+
 function readJsonl(filePath, options = {}) {
   const { safe = false, quiet = false } = options;
 
-  let raw;
-  try {
-    raw = fs.readFileSync(filePath, "utf8");
-  } catch (err) {
-    if (safe) return [];
-    console.error(`Failed to read ${path.basename(filePath)}: ${err.code || err.message}`);
-    process.exit(1);
-  }
+  const raw = readRawContent(filePath, safe);
+  if (raw === null) return [];
 
   const lines = raw.split("\n");
   const items = [];
+  const name = path.basename(filePath);
   for (let i = 0; i < lines.length; i++) {
     const trimmed = lines[i].trim();
     if (!trimmed) continue;
@@ -34,7 +44,7 @@ function readJsonl(filePath, options = {}) {
       items.push(JSON.parse(trimmed));
     } catch {
       if (!quiet) {
-        console.warn(`  Skipping malformed JSON at line ${i + 1} in ${path.basename(filePath)}`);
+        console.warn(`  Skipping malformed JSON at line ${i + 1} in ${name}`);
       }
     }
   }

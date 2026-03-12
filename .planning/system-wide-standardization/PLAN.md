@@ -60,17 +60,6 @@ Every ecosystem completes with:
 4. Health checker(s) passing
 5. Tests passing (existing + new)
 
-### TDMS Grand Plan Pre-Check (D73, D38)
-
-Before each ecosystem (#1-#7), run lightweight pre-check:
-
-```bash
-node scripts/debt/scan-changelog.js --ecosystem <id> --check-master-debt
-```
-
-_(Script created in Step 1. Scans `.canon/changelog.jsonl` for MASTER_DEBT items
-referencing files about to be modified.)_
-
 ### ROADMAP Integration (D70)
 
 After each ecosystem completes:
@@ -427,9 +416,8 @@ skill (`.claude/skills/skill-audit/`) drives per-skill assessment (directive
 
 ### Pre-implementation
 
-1. TDMS Grand Plan pre-check (D73)
-2. Deep-plan for Skills ecosystem (T13) — consults knowledge base (D75)
-3. Register ecosystem: add entry to `.canon/ecosystems.jsonl`
+1. Deep-plan for Skills ecosystem (T13) — consults knowledge base (D75)
+2. Register ecosystem: add entry to `.canon/ecosystems.jsonl`
 
 ### Implementation
 
@@ -474,9 +462,8 @@ Delta is mainly Zod schemas + formalized contracts + versioning.
 
 ### Pre-implementation
 
-1. TDMS Grand Plan pre-check
-2. Deep-plan for Hooks ecosystem
-3. Register in `.canon/ecosystems.jsonl`
+1. Deep-plan for Hooks ecosystem
+2. Register in `.canon/ecosystems.jsonl`
 
 ### Implementation
 
@@ -511,9 +498,8 @@ ecosystem to reach L5 — validates CANON before applying it broadly.
 
 ### Pre-implementation
 
-1. TDMS Grand Plan pre-check
-2. Deep-plan (lightweight — mostly gap-filling)
-3. Register in `.canon/ecosystems.jsonl`
+1. Deep-plan (lightweight — mostly gap-filling)
+2. Register in `.canon/ecosystems.jsonl`
 
 ### Implementation
 
@@ -566,9 +552,8 @@ BEFORE any further ecosystems are standardized.
 
 ### Pre-implementation
 
-1. TDMS Grand Plan pre-check
-2. Deep-plan for Docs ecosystem
-3. Register in `.canon/ecosystems.jsonl`
+1. Deep-plan for Docs ecosystem
+2. Register in `.canon/ecosystems.jsonl`
 
 ### Implementation
 
@@ -616,9 +601,8 @@ configuration, and inter-ecosystem test contracts.
 
 ### Pre-implementation
 
-1. TDMS Grand Plan pre-check
-2. Deep-plan for Testing ecosystem
-3. Register in `.canon/ecosystems.jsonl`
+1. Deep-plan for Testing ecosystem
+2. Register in `.canon/ecosystems.jsonl`
 
 ### Implementation
 
@@ -661,9 +645,8 @@ layer.
 
 ### Pre-implementation
 
-1. TDMS Grand Plan pre-check (last one before #8)
-2. Deep-plan for Sessions ecosystem
-3. Register in `.canon/ecosystems.jsonl`
+1. Deep-plan for Sessions ecosystem
+2. Register in `.canon/ecosystems.jsonl`
 
 ### Implementation
 
@@ -726,27 +709,21 @@ validated, checkpoint #2 passed.
 Per D34 and directive #19, TDMS is critical and targets L5 across three stages.
 Stage 1 focuses on Zod schemas + monitoring for 37 scripts in `scripts/debt/`.
 
-**Grand Plan full reassessment at this step** (D73): The TDMS Grand Plan needs
-reassessment — changing many files invalidates existing debt items (directive
-#2).
-
 ### Pre-implementation
 
-1. **Full TDMS Grand Plan reassessment** (D73) — not just a pre-check
-2. Deep-plan for TDMS Stage 1
-3. Register in `.canon/ecosystems.jsonl`
+1. Deep-plan for TDMS Stage 1
+2. Register in `.canon/ecosystems.jsonl`
 
 ### Implementation
 
 - Zod schemas for all TDMS data structures:
   - `MASTER_DEBT.jsonl` line schema
-  - Sprint state schemas
+  - TDMS state schemas
   - Audit finding schemas
   - Health report schemas
 - Add schema validation to all 37 `scripts/debt/` scripts
 - Health monitoring: TDMS health checker with trend data
-- Formalize TDMS data flow: intake → classification → sprint → resolution →
-  archival
+- Formalize TDMS data flow: intake → classification → resolution → archival
 - Address 9-writer race condition on MASTER_DEBT (T12 idempotent operations
   violation)
 - Standardize error handling across all 37 scripts (T11)
@@ -756,18 +733,15 @@ reassessment — changing many files invalidates existing debt items (directive
 
 - `scripts/debt/` — 37 scripts
 - `docs/technical-debt/MASTER_DEBT.jsonl` — canonical debt database
-- `.claude/skills/sprint/` — sprint automation
 - `.claude/skills/sonarcloud/` — SonarCloud integration
 - `.claude/skills/add-debt/` — debt intake
-- `.claude/skills/verify-technical-debt/` — debt triage
 
 ### Exit criteria (Stage 1 only)
 
 16-item checklist scorecard (some items deferred to Stage 2/3 with justification
 per D54), user review, changelog.
 
-**Done when:** TDMS at L3, all scripts have Zod schemas, monitoring operational,
-Grand Plan reassessed.
+**Done when:** TDMS at L3, all scripts have Zod schemas, monitoring operational.
 
 ---
 
@@ -975,7 +949,7 @@ the start. 22 quality + 7 ecosystem audit skills.
   detection, self-auditing capabilities
 - Monitoring: audit ecosystem health checker
 - Inter-ecosystem contracts: Audits ↔ every ecosystem (audit coverage), Audits ↔
-  TDMS (findings → debt items), Audits ↔ Roadmap (findings → sprint items)
+  TDMS (findings → debt items), Audits ↔ Roadmap (findings → work items)
 
 ### Key existing files
 
@@ -1103,14 +1077,14 @@ input pipelines are missing (directive #21, Idea #26).
 ### Implementation
 
 - Build missing input pipelines (T8 automation over discipline):
-  - Audit findings → ROADMAP sprint items (currently manual — Idea #30)
+  - Audit findings → ROADMAP work items (currently manual — Idea #30)
   - Deep-plan decisions → ROADMAP items (currently manual — Idea #29)
   - Feature requests → ROADMAP items
   - Architecture decisions → ROADMAP items
 - Zod schema for ROADMAP.md structure
 - Dedupe automation: ROADMAP additions auto-checked against MASTER_DEBT
   (directive #35)
-- Formalize sprint lifecycle: plan → execute → review → archive
+- Formalize work lifecycle: plan → execute → review → archive
 - Monitoring: roadmap health checker (enhance existing
   `scripts/check-roadmap-health.js`)
 - Inter-ecosystem contracts: Roadmap ↔ every ecosystem (work item intake),
@@ -1122,7 +1096,6 @@ input pipelines are missing (directive #21, Idea #26).
 - `ROADMAP.md`, `ROADMAP_FUTURE.md`, `ROADMAP_LOG.md`
 - `scripts/check-roadmap-health.js`
 - `scripts/check-roadmap-hygiene.js`
-- `.claude/skills/sprint/`
 - `.claude/skills/task-next/`
 
 ### Exit criteria

@@ -129,7 +129,9 @@ async function main() {
         items.push(normalized);
         fileItemCount++;
       } catch (err) {
-        console.warn(`  ⚠️ Failed to parse line in ${fileName}: ${err.message}`);
+        console.warn(
+          `  ⚠️ Failed to parse line in ${fileName}: ${err instanceof Error ? err.message : String(err)}`
+        );
       }
     }
 

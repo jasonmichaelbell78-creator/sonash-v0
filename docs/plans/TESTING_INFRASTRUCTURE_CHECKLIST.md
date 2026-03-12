@@ -2,7 +2,8 @@
 
 **Document Version:** 1.2 **Created:** 2026-01-27 (Session #103) **Last
 Updated:** 2026-02-23 **Status:** ACTIVE **Priority:** P1 **Related:**
-[TESTING_PLAN.md](../TESTING_PLAN.md), [ROADMAP.md](../../ROADMAP.md) (Track T)
+[TESTING_CHECKLIST.md](../TESTING_CHECKLIST.md), [ROADMAP.md](../../ROADMAP.md)
+(Track T)
 
 > **Integrated:** This plan is now **Track T** in the Active Sprint. See
 > [ROADMAP.md#track-t](../../ROADMAP.md#track-t---testing-infrastructure-new---session-103)
@@ -28,17 +29,17 @@ This document outlines a comprehensive testing infrastructure for SoNash that:
 
 ### What We Have
 
-| Category           | Status      | Details                                      |
-| ------------------ | ----------- | -------------------------------------------- |
-| Unit Tests         | ✅ Strong   | 294+ tests, Vitest, 98.9% pass rate          |
-| Manual Checklists  | ✅ Good     | TESTING_PLAN.md with phase-specific guidance |
-| Track A Tests      | ✅ Complete | 131 tests across 8 categories                |
-| CI Integration     | ✅ Basic    | Pre-push test run, pattern compliance        |
-| Coverage Reporting | ⚠️ Planned  | AUTO-004 in backlog                          |
-| E2E Tests          | ❌ Missing  | Only D5.5 golden-path planned                |
-| Visual Regression  | ❌ Missing  | No infrastructure                            |
-| Component Testing  | ❌ Missing  | No isolated component tests                  |
-| Load Testing       | ❌ Missing  | No infrastructure                            |
+| Category           | Status      | Details                                           |
+| ------------------ | ----------- | ------------------------------------------------- |
+| Unit Tests         | ✅ Strong   | 294+ tests, Vitest, 98.9% pass rate               |
+| Manual Checklists  | ✅ Good     | TESTING_CHECKLIST.md with phase-specific guidance |
+| Track A Tests      | ✅ Complete | 131 tests across 8 categories                     |
+| CI Integration     | ✅ Basic    | Pre-push test run, pattern compliance             |
+| Coverage Reporting | ⚠️ Planned  | AUTO-004 in backlog                               |
+| E2E Tests          | ❌ Missing  | Only D5.5 golden-path planned                     |
+| Visual Regression  | ❌ Missing  | No infrastructure                                 |
+| Component Testing  | ❌ Missing  | No isolated component tests                       |
+| Load Testing       | ❌ Missing  | No infrastructure                                 |
 
 ### Key Gaps
 

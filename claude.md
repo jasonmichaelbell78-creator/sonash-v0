@@ -58,6 +58,10 @@ Section 8).
 5. **One correction = full stop.** If corrected on approach or format, do not
    make a small adjustment and retry. Stop, ask what's wrong, confirm the
    correct approach, then proceed.
+6. **All passive surfacing must force acknowledgment.** Never fire-and-forget
+   warnings or data summaries. If data is surfaced (session-start, /alerts,
+   session-end), it must require the user to acknowledge or act on it.
+   Unacknowledged warnings become wallpaper.
 
 ## 5. Critical Anti-Patterns
 

@@ -626,7 +626,7 @@ function buildSectionFinding(heading, lines, lineIdx, severityContext) {
  * Strategy 2: Extract from numbered/lettered sections with severity markers
  * Patterns: "### 1.", "#### A.", "🔴 CRITICAL:", etc.
  */
-function extractFromSections(lines, reportConfig) {
+function extractFromSections(lines, _reportConfig) {
   const findings = [];
   let currentSeverityContext = "";
 

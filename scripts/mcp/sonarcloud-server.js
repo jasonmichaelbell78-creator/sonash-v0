@@ -89,6 +89,7 @@ async function sonarFetch(endpoint, params = {}) {
 
   // Add timeout using AbortController
   const controller = new AbortController();
+  // nosemgrep: sonash.security.no-eval-usage
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   let response;
@@ -101,10 +102,12 @@ async function sonarFetch(endpoint, params = {}) {
     };
     response = await undiciFetch(url.toString(), fetchOptions);
   } catch (error) {
-    if (error.name === "AbortError") {
+    if (error instanceof Error && error.name === "AbortError") {
       throw new Error("SonarCloud API error: Request timed out");
     }
-    throw new Error(`SonarCloud API error: Network request failed - ${error.message || "unknown"}`);
+    throw new Error(
+      `SonarCloud API error: Network request failed - ${(error instanceof Error ? error.message : String(error)) || "unknown"}`
+    );
   } finally {
     clearTimeout(timeoutId);
   }
@@ -304,6 +307,7 @@ async function handleGetSecurityHotspots(args) {
     "hotspots"
   );
 
+  // nosemgrep: sonash.security.no-unsanitized-error-response
   const hotspots = allHotspots.map((h) => ({
     key: h.key,
     message: h.message,
@@ -336,6 +340,7 @@ async function handleGetIssues(args) {
     "issues"
   );
 
+  // nosemgrep: sonash.security.no-unsanitized-error-response
   const issues = allIssues.map((i) => ({
     key: i.key,
     type: i.type,
@@ -446,6 +451,8 @@ try {
   }
 } catch (error) {
   // Sanitize error output - don't expose stack traces
-  console.error(`Fatal error: ${error.message || "Unknown error"}`);
+  console.error(
+    `Fatal error: ${(error instanceof Error ? error.message : String(error)) || "Unknown error"}`
+  );
   process.exit(1);
 }

@@ -5,8 +5,7 @@
  *
  * Sub-steps:
  *   9a: Replace CANON-XXXX references with DEBT-XXXX IDs
- *   9b: Update Grand Plan section with summary pointing to GRAND_PLAN_V2.md
- *   9c: Print summary of all changes
+ *   9b: Print summary of all changes
  *
  * Usage:
  *   node scripts/debt/reconcile-roadmap.js [--write] [--verbose]
@@ -23,9 +22,6 @@ const ROOT = path.join(__dirname, "../..");
 const ROADMAP_PATH = path.join(ROOT, "ROADMAP.md");
 const ROADMAP_BAK = path.join(ROOT, "ROADMAP.md.bak");
 const MAPPING_PATH = path.join(ROOT, "docs/technical-debt/LEGACY_ID_MAPPING.json");
-const METRICS_PATH = path.join(ROOT, "docs/technical-debt/metrics.json");
-const MANIFEST_PATH = path.join(ROOT, "docs/technical-debt/logs/grand-plan-manifest.json");
-
 // --- CLI args ---
 const args = new Set(process.argv.slice(2));
 const writeMode = args.has("--write");
@@ -192,109 +188,12 @@ function replaceCanonIds(text, canonMap) {
   };
 }
 
-// --- Step 9b: Update Grand Plan Section ---
-
-/**
- * Build the replacement content for the Grand Plan section.
- * @param {object} metrics - From metrics.json
- * @param {object} manifest - From grand-plan-manifest.json
- * @returns {string}
- */
-function buildGrandPlanSection(metrics, manifest) {
-  const totalItems = metrics.summary.total;
-  const sprintCount = Object.keys(manifest.sprints).length;
-
-  // Calculate roadmap-bound items from manifest
-  let roadmapBound = 0;
-  if (manifest.roadmap_bound) {
-    for (const cat of Object.values(manifest.roadmap_bound)) {
-      roadmapBound += cat.count ?? 0;
-    }
-  }
-
-  const resolutionRate = metrics.summary.resolution_rate_pct;
-
-  const section = [
-    "### GRAND PLAN: Technical Debt Elimination",
-    "",
-    "> **Authoritative document:** [GRAND_PLAN_V2.md](docs/technical-debt/GRAND_PLAN_V2.md)",
-    "",
-    "| Metric | Value |",
-    "|---|---|",
-    `| Total items | ${totalItems} |`,
-    `| Grand Plan sprints | ${sprintCount} |`,
-    `| Roadmap-bound items | ${roadmapBound} |`,
-    `| Resolution rate | ${resolutionRate}% |`,
-    "| Coverage | 100% |",
-    "",
-    "See GRAND_PLAN_V2.md for full sprint details and execution strategy.",
-  ];
-
-  return section.join("\n");
-}
-
-/**
- * Replace the Grand Plan section in the roadmap text.
- * Finds the heading and replaces content up to the next heading of same or higher level.
- * @param {string} text
- * @returns {{ text: string, found: boolean, startLine: number, endLine: number }}
- */
-function replaceGrandPlanSection(text, metrics, manifest) {
-  const lines = text.split("\n");
-
-  // Find the Grand Plan heading
-  let startIdx = -1;
-  let headingLevel = 0;
-  const grandPlanPattern = /^(#{1,6})\s+[^\n]{0,100}GRAND PLAN[^\n]{0,100}Technical Debt/i;
-
-  for (let i = 0; i < lines.length; i++) {
-    const match = lines[i].match(grandPlanPattern);
-    if (match) {
-      startIdx = i;
-      headingLevel = match[1].length;
-      break;
-    }
-  }
-
-  if (startIdx === -1) {
-    return { text, found: false, startLine: 0, endLine: 0 };
-  }
-
-  // Find the next heading of same or higher level (fewer or equal # chars)
-  let endIdx = lines.length;
-  const nextHeadingPattern = new RegExp(String.raw`^#{1,${headingLevel}}\s`);
-  for (let i = startIdx + 1; i < lines.length; i++) {
-    if (nextHeadingPattern.test(lines[i])) {
-      endIdx = i;
-      break;
-    }
-  }
-
-  // Build replacement
-  const newContent = buildGrandPlanSection(metrics, manifest);
-  const newLines = newContent.split("\n");
-
-  // Splice: remove from startIdx to endIdx (exclusive), insert newLines
-  const before = lines.slice(0, startIdx);
-  const after = lines.slice(endIdx);
-  const result = [...before, ...newLines, "", ...after];
-
-  return {
-    text: result.join("\n"),
-    found: true,
-    startLine: startIdx + 1,
-    endLine: endIdx,
-  };
-}
-
 // --- Load all required files ---
 
 function loadRequiredFiles() {
   const files = [
     { path: ROADMAP_PATH, name: "ROADMAP.md" },
     { path: MAPPING_PATH, name: "LEGACY_ID_MAPPING.json" },
-    { path: METRICS_PATH, name: "metrics.json" },
-    { path: MANIFEST_PATH, name: "grand-plan-manifest.json" },
   ];
   const contents = {};
   for (const f of files) {
@@ -309,10 +208,8 @@ function loadRequiredFiles() {
 
 function parseJsonFiles(contents) {
   const fullMapping = safeParseJSON(contents["LEGACY_ID_MAPPING.json"], "LEGACY_ID_MAPPING.json");
-  const metrics = safeParseJSON(contents["metrics.json"], "metrics.json");
-  const manifest = safeParseJSON(contents["grand-plan-manifest.json"], "grand-plan-manifest.json");
-  if (!fullMapping || !metrics || !manifest) process.exit(1);
-  return { fullMapping, metrics, manifest };
+  if (!fullMapping) process.exit(1);
+  return { fullMapping };
 }
 
 // --- Print verbose 9a details ---
@@ -365,7 +262,7 @@ function main() {
   console.log(`Mode: ${writeMode ? "WRITE" : "DRY-RUN"}\n`);
 
   const contents = loadRequiredFiles();
-  const { fullMapping, metrics, manifest } = parseJsonFiles(contents);
+  const { fullMapping } = parseJsonFiles(contents);
 
   // 9a: Replace CANON -> DEBT IDs
   console.log("--- Step 9a: Replace CANON -> DEBT IDs ---\n");
@@ -376,41 +273,23 @@ function main() {
   console.log(`Unmapped CANON IDs: ${result9a.unmapped.length}`);
   if (verbose) printVerbose9a(result9a);
 
-  // 9b: Update Grand Plan Section
-  console.log("\n--- Step 9b: Update Grand Plan Section ---\n");
-  const result9b = replaceGrandPlanSection(result9a.text, metrics, manifest);
-  if (result9b.found) {
-    console.log(`Grand Plan section found at lines ${result9b.startLine}-${result9b.endLine}`);
-    console.log("Replaced with summary pointing to GRAND_PLAN_V2.md");
-  } else {
-    console.log("WARNING: Grand Plan section not found in ROADMAP.md");
-  }
-
-  // 9c: Summary
-  console.log("\n--- Step 9c: Summary ---\n");
+  // 9b: Summary
+  console.log("\n--- Step 9b: Summary ---\n");
   const totalReplacements = result9a.details.filter((d) => d.debt).length;
   console.log(`Total CANON references replaced: ${totalReplacements}`);
   console.log(`Unique CANON IDs mapped: ${result9a.replaced.size}`);
   console.log(`Unmapped CANON IDs: ${result9a.unmapped.length}`);
   console.log(`CANON references skipped (inside code fences): ${result9a.skippedFenced}`);
-  console.log(`Grand Plan section updated: ${result9b.found ? "YES" : "NO"}`);
 
   // Diff summary
   console.log("\n--- Diff Summary ---\n");
-  const changes = [];
   if (totalReplacements > 0) {
-    changes.push(`${totalReplacements} CANON->DEBT replacement(s)`);
-  }
-  if (result9b.found) {
-    changes.push("Grand Plan section rewritten");
-  }
-  if (changes.length > 0) {
-    console.log(`Changes staged: ${changes.join(", ")}`);
+    console.log(`Changes staged: ${totalReplacements} CANON->DEBT replacement(s)`);
   } else {
     console.log("No changes to apply.");
   }
 
-  if (writeMode) writeChanges(result9b.text);
+  if (writeMode) writeChanges(result9a.text);
   else console.log("\nDry-run complete. Use --write to apply changes.");
 
   if (result9a.unmapped.length > 0) {

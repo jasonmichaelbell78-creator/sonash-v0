@@ -21,6 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 const { loadConfig } = require("../config/load-config");
 
 // Cache audit schema at module scope (avoid re-reading per item)
@@ -375,11 +376,17 @@ function buildVerificationSteps(item) {
       verification_steps: {
         ...defaultVerificationSteps,
         ...provided,
-        first_pass: { ...defaultVerificationSteps.first_pass, ...(provided.first_pass || {}) },
-        second_pass: { ...defaultVerificationSteps.second_pass, ...(provided.second_pass || {}) },
+        first_pass: {
+          ...defaultVerificationSteps.first_pass,
+          ...provided?.first_pass,
+        },
+        second_pass: {
+          ...defaultVerificationSteps.second_pass,
+          ...provided?.second_pass,
+        },
         tool_confirmation: {
           ...defaultVerificationSteps.tool_confirmation,
-          ...(provided.tool_confirmation || {}),
+          ...provided?.tool_confirmation,
         },
       },
       issue: "verification_steps: normalized object structure",
@@ -591,17 +598,12 @@ function processFile(inputPath, outputPath, dryRun) {
       const output = results.map((r) => JSON.stringify(r)).join("\n") + "\n";
 
       // Use exclusive write flag for security (wx = write exclusive)
-      const fd = fs.openSync(tmpPath, "wx", 0o600);
-      try {
-        fs.writeFileSync(fd, output, "utf8");
-      } finally {
-        fs.closeSync(fd);
-      }
+      safeWriteFileSync(tmpPath, output, { encoding: "utf8", flag: "wx", mode: 0o600 });
 
       // Atomic rename (with Windows fallback)
       try {
-        fs.renameSync(tmpPath, outputPath);
-      } catch (error_) {
+        safeRenameSync(tmpPath, outputPath);
+      } catch {
         // Windows can fail to overwrite existing destination; fall back to unlink+rename
         try {
           const st = fs.statSync(outputPath);
@@ -622,7 +624,7 @@ function processFile(inputPath, outputPath, dryRun) {
             throw error__;
           }
         }
-        fs.renameSync(tmpPath, outputPath);
+        safeRenameSync(tmpPath, outputPath);
       }
 
       console.log(`  Written to: ${outputPath}`);

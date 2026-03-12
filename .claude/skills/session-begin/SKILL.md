@@ -294,6 +294,52 @@ npm run hooks:analytics -- --since=$(date -d '7 days ago' +%Y-%m-%d)
 **Record results in session audit** - these must be marked as "Ran" or "Failed
 (reason)" in `/session-end` audit.
 
+## 7b. Hook Anomaly Gate (MUST — L3)
+
+After running session scripts, check for hook system anomalies. **If any
+threshold is breached, warn the user before proceeding.**
+
+**Data sources** (best-effort — skip any that don't exist):
+
+1. **Override trend:** Read `.claude/state/override-log.jsonl`. Count overrides
+   in last 7 days vs previous 7 days. If current week is 50%+ higher and at
+   least 5 more overrides → warn.
+2. **Hook warnings:** Read `.claude/state/hook-warnings-log.jsonl`. If 10+
+   warnings in last 7 days → warn.
+3. **Health grade drop:** Read `.claude/state/health-score-log.jsonl`. Compare
+   last two entries. If grade dropped 2+ levels (e.g. B→D) → warn.
+
+**Output format** (only show if anomalies found):
+
+```
+⚠️ Hook anomalies detected:
+  - Override trend: 18 this week vs 8 last week (+125%)
+  - Hook warnings: 14 in last 7 days (threshold: 10)
+  - Health grade: B → D (2-grade drop)
+  Recommend: /alerts --full for details
+```
+
+**If no anomalies:** Skip silently. Do not output "no anomalies found."
+
+## 7c. Warning Acknowledgment Gate (MUST — L1)
+
+Read `.claude/hook-warnings.json`. If unacknowledged warnings exist (warnings
+added since `lastCleared`), present them and require acknowledgment before
+proceeding:
+
+```
+⚠️ Unacknowledged hook warnings (N):
+  1. [WARNING] propagation: writeFileSync without symlink guard (5 occurrences)
+  2. [ERROR] cognitive-complexity: 12 overrides in 7 days (auto-escalated)
+
+  Acknowledge all? [Y] or review individually? [R]
+```
+
+**If "Y":** Record acknowledgment timestamp in `hook-warnings.json`, proceed.
+**If "R":** Present each warning for individual decision (acknowledge/fix now).
+
+**If no warnings:** Skip silently.
+
 ## 8. Technical Debt Awareness (NEW - Session #98)
 
 **Check current technical debt status:**

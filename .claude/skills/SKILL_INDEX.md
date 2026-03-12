@@ -120,9 +120,7 @@ Quick reference for all available Claude Code skills organized by category.
 | `/developer-growth-analysis` | Analyze developer growth                         |
 | `/pr-retro`                  | PR review retrospective with actionable analysis |
 | `/pr-review`                 | Process PR review feedback                       |
-| `/sprint`                    | TDMS sprint workflow automation                  |
 | `/using-superpowers`         | Claude superpowers guide                         |
-| `/verify-technical-debt`     | Verify and triage technical debt items           |
 
 ### Data & Analysis (3 skills)
 
@@ -153,7 +151,6 @@ Quick reference for all available Claude Code skills organized by category.
 | Ending work            | `/session-end`                                |
 | CI failures            | `/gh-fix-ci`                                  |
 | System health          | `/alerts`                                     |
-| Sprint management      | `/sprint`                                     |
 | System testing         | `/system-test`                                |
 | PR ecosystem health    | `/pr-ecosystem-audit`                         |
 | Health monitoring      | `/health-ecosystem-audit`                     |

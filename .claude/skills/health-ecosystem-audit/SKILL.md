@@ -51,18 +51,20 @@ patch suggestions.
 - Auditing hook infrastructure — use `/hook-ecosystem-audit`
 - Auditing PR workflow — use `/pr-ecosystem-audit`
 - Quick health check — use `node scripts/health/run-health-check.js`
+- Interactive health dashboard with triage — use `/ecosystem-health`
 - Running all ecosystem audits — use `/comprehensive-ecosystem-audit`
 
 ## Routing Guide
 
-| Concern                    | Audit                            |
-| -------------------------- | -------------------------------- |
-| Health monitoring system   | `/health-ecosystem-audit`        |
-| Hook internals, pre-commit | `/hook-ecosystem-audit`          |
-| PR review workflow         | `/pr-ecosystem-audit`            |
-| Session lifecycle          | `/session-ecosystem-audit`       |
-| Technical debt management  | `/tdms-ecosystem-audit`          |
-| All of the above           | `/comprehensive-ecosystem-audit` |
+| Concern                        | Use                              |
+| ------------------------------ | -------------------------------- |
+| Health monitoring system audit | `/health-ecosystem-audit`        |
+| Interactive health dashboard   | `/ecosystem-health`              |
+| Hook internals, pre-commit     | `/hook-ecosystem-audit`          |
+| PR review workflow             | `/pr-ecosystem-audit`            |
+| Session lifecycle              | `/session-ecosystem-audit`       |
+| Technical debt management      | `/tdms-ecosystem-audit`          |
+| All of the above               | `/comprehensive-ecosystem-audit` |
 
 ---
 

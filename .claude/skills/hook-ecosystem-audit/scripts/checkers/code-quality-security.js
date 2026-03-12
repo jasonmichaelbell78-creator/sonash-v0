@@ -15,7 +15,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[code-quality-security] ${m}`);
   }
 }
@@ -255,7 +260,7 @@ function checkSecurityPatterns(hookFiles) {
   const symlinkGuardPattern = /\bsymlink-guard\b/;
   const pathTraversalLiteral = /['"]\.\.\//;
   const pathResolvePattern = /\bpath\.resolve\b/;
-  const jsonParsePattern = /\bJSON\.parse\b/;
+  const _jsonParsePattern = /\bJSON\.parse\b/;
   const argumentsPattern = /\$ARGUMENTS|\bprocess\.argv\b/;
 
   for (const hook of hookFiles) {

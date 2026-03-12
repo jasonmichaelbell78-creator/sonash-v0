@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports, no-undef, security/detect-non-literal-fs-filename */
+/* eslint-disable no-undef, @typescript-eslint/no-require-imports */
 
 /**
  * Shared symlink guard for hook state file writes.
