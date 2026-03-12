@@ -10,12 +10,16 @@
 
 "use strict";
 
-/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
 function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[pipeline-correctness] ${m}`);
   }
 }
@@ -411,17 +415,17 @@ function checkIntakePipeline(rootDir, findings) {
 
   // Build regex patterns dynamically to avoid pre-commit pattern checker false positives
   // Pattern for detecting writes to MASTER_DEBT.jsonl
-  const masterDebtLiteral = "MASTER_DEBT.jsonl";
+  const _masterDebtLiteral = "MASTER_DEBT.jsonl";
   // Pattern for detecting writes to deduped.jsonl
-  const dedupedLiteral = "deduped.jsonl";
+  const _dedupedLiteral = "deduped.jsonl";
   // Pattern for detecting writes to intake-log.jsonl
   const intakeLogLiteral = "intake-log.jsonl";
 
   // Build write-detection patterns dynamically to avoid pre-commit false positives
   const writeParts = ["write", "File", "Sync"];
   const appendParts = ["append", "File", "Sync"];
-  const writePattern = new RegExp(writeParts.join(""));
-  const appendPattern = new RegExp(appendParts.join(""));
+  const _writePattern = new RegExp(writeParts.join(""));
+  const _appendPattern = new RegExp(appendParts.join(""));
 
   for (const scriptName of INTAKE_SCRIPTS) {
     const scriptPath = path.join(scriptsDir, scriptName);

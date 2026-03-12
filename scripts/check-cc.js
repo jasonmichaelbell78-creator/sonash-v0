@@ -51,11 +51,11 @@ const { safeWriteFileSync } = require_("./lib/safe-fs");
 function sanitizeError(error) {
   const message = error instanceof Error ? error.message : String(error);
   return message
-    .replace(/C:\\Users\\[^\\\s]+/gi, "[USER_PATH]")
-    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-    .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-    .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
+    .replaceAll(/C:\\Users\\[^\\\s]+/gi, "[USER_PATH]")
+    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+    .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]")
+    .replaceAll(/\/[^\s]*\/[^\s]+/g, "[PATH]");
 }
 
 // ---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ function getNameFromParent(parent) {
 
   switch (parent.type) {
     case "VariableDeclarator":
-      return parent.id && parent.id.type === "Identifier" ? parent.id.name : null;
+      return parent.id?.type === "Identifier" ? parent.id.name : null;
 
     case "Property":
       if (!parent.key) return null;
@@ -206,7 +206,7 @@ function getNameFromParent(parent) {
       return null;
 
     case "MethodDefinition":
-      return parent.key && parent.key.type === "Identifier" ? parent.key.name : null;
+      return parent.key?.type === "Identifier" ? parent.key.name : null;
 
     case "AssignmentExpression":
       return getNameFromAssignment(parent.left);
@@ -219,7 +219,7 @@ function getNameFromParent(parent) {
 function getNameFromAssignment(left) {
   if (!left) return null;
   if (left.type === "Identifier") return left.name;
-  if (left.type === "MemberExpression" && left.property && left.property.type === "Identifier") {
+  if (left.type === "MemberExpression" && left.property?.type === "Identifier") {
     return left.property.name;
   }
   return null;
@@ -229,7 +229,7 @@ function getNameFromAssignment(left) {
  * Extract the function name from an AST node, or return a positional label.
  */
 function getFunctionName(node, parent, sourceLines) {
-  if (node.id && node.id.name) return node.id.name;
+  if (node.id?.name) return node.id.name;
 
   const parentName = getNameFromParent(parent);
   if (parentName) return parentName;
@@ -242,8 +242,8 @@ function getLineNumber(node, sourceLines) {
   if (node.loc) return node.loc.start.line;
   // Count newlines before position
   let line = 1;
-  for (let i = 0; i < sourceLines.length; i++) {
-    if (sourceLines[i] >= node.start) return line;
+  for (const offset of sourceLines) {
+    if (offset >= node.start) return line;
     line++;
   }
   return line;
@@ -277,21 +277,25 @@ function computeLogicalComplexity(node) {
   return complexity;
 }
 
+const METADATA_KEYS = new Set(["type", "start", "end", "loc"]);
+
+function isAstNode(val) {
+  return val && typeof val === "object" && val.type;
+}
+
 /**
  * Walk all child AST nodes.
  */
 function walkChildren(node, nesting, parent, walkFn) {
   for (const key of Object.keys(node)) {
-    if (key === "type" || key === "start" || key === "end" || key === "loc") continue;
+    if (METADATA_KEYS.has(key)) continue;
 
     const child = node[key];
     if (Array.isArray(child)) {
       for (const item of child) {
-        if (item && typeof item === "object" && item.type) {
-          walkFn(item, nesting, parent);
-        }
+        if (isAstNode(item)) walkFn(item, nesting, parent);
       }
-    } else if (child && typeof child === "object" && child.type) {
+    } else if (isAstNode(child)) {
       walkFn(child, nesting, parent);
     }
   }
@@ -301,7 +305,7 @@ function walkChildren(node, nesting, parent, walkFn) {
  * Handle IfStatement node for cognitive complexity.
  */
 function handleIfStatement(node, nesting, parent, state, walkFn) {
-  const isElseIf = parent && parent.type === "IfStatement" && parent.alternate === node;
+  const isElseIf = parent?.type === "IfStatement" && parent.alternate === node;
   state.complexity += isElseIf ? 1 : 1 + nesting;
   state.complexity += computeLogicalComplexity(node.test);
 
@@ -397,7 +401,8 @@ function processNode(node, nesting, parent, state, walkFn) {
   }
 
   if (FN_TYPES.has(node.type) && parent !== null) {
-    walkFn(node.body, nesting + 1, node);
+    // Nested functions are independent — their CC is computed separately by analyzeAST.
+    // Walking into them would inflate the parent's CC and double-count.
     return true;
   }
 
@@ -484,26 +489,30 @@ function analyzeFile(filePath) {
     return { file: filePath, functions: [], error: sanitizeError(err) };
   }
 
-  // Parse with acorn
+  // Parse with acorn — try ESM first, fall back to CJS
+  const parseOptions = {
+    ecmaVersion: "latest",
+    locations: true,
+    allowImportExportEverywhere: true,
+    allowAwaitOutsideFunction: true,
+    allowReturnOutsideFunction: true,
+    allowHashBang: true,
+  };
+
   let ast;
   try {
-    ast = acorn.parse(source, {
-      ecmaVersion: "latest",
-      sourceType: "module",
-      locations: true,
-      allowImportExportEverywhere: true,
-      allowAwaitOutsideFunction: true,
-      allowReturnOutsideFunction: true,
-      // Tolerate hashbang
-      allowHashBang: true,
-    });
-  } catch (parseErr) {
-    // Parse failures are expected for some files (JSX, etc.) — warn, don't fail
-    return {
-      file: filePath,
-      functions: [],
-      error: `Parse error: ${sanitizeError(parseErr)}`,
-    };
+    ast = acorn.parse(source, { ...parseOptions, sourceType: "module" });
+  } catch {
+    try {
+      ast = acorn.parse(source, { ...parseOptions, sourceType: "script" });
+    } catch (parseErr) {
+      // Parse failures are expected for some files (JSX, etc.) — warn, don't fail
+      return {
+        file: filePath,
+        functions: [],
+        error: `Parse error: ${sanitizeError(parseErr)}`,
+      };
+    }
   }
 
   const functions = analyzeAST(ast, source);
@@ -592,6 +601,61 @@ function writeBaseline(allResults) {
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
+function collectViolations(file, functions) {
+  const violations = [];
+  for (const fn of functions) {
+    if (fn.cc > THRESHOLD) violations.push({ file, ...fn });
+    if (VERBOSE && fn.cc > 0) {
+      const status = fn.cc > THRESHOLD ? "FAIL" : "ok";
+      console.log(`  [${status}] ${file}:${fn.line} ${fn.name} — CC ${fn.cc}`);
+    }
+  }
+  return violations;
+}
+
+function analyzeFiles(jsFiles) {
+  let totalFunctions = 0;
+  let parseErrors = 0;
+  const violations = [];
+  const allResults = [];
+
+  for (const file of jsFiles) {
+    const result = analyzeFile(file);
+    allResults.push(result);
+
+    if (result.error) {
+      parseErrors++;
+      if (VERBOSE) console.warn(`  [SKIP] ${file}: ${result.error}`);
+      continue;
+    }
+
+    totalFunctions += result.functions.length;
+    violations.push(...collectViolations(file, result.functions));
+  }
+
+  return { totalFunctions, parseErrors, violations, allResults };
+}
+
+function filterByBaseline(violations) {
+  const baseline = readBaseline();
+  const baselineKeys = Object.keys(baseline);
+
+  if (baselineKeys.length === 0) return violations;
+
+  const filtered = violations.filter((v) => {
+    const baselineCC = baseline[v.file];
+    if (baselineCC === undefined) return true; // New file — always report
+    return v.cc > baselineCC; // Only report if CC increased past baseline
+  });
+
+  const suppressed = violations.length - filtered.length;
+  if (suppressed > 0) {
+    console.log(`[check-cc] ${suppressed} known-debt violation(s) suppressed by baseline.`);
+  }
+
+  return filtered;
+}
+
 function main() {
   console.log(`[check-cc] Cognitive complexity check (threshold: ${THRESHOLD})`);
   console.log();
@@ -609,59 +673,15 @@ function main() {
     console.log();
   }
 
-  let totalFunctions = 0;
-  let parseErrors = 0;
-  const violations = [];
-  const allResults = [];
+  const { totalFunctions, parseErrors, violations, allResults } = analyzeFiles(jsFiles);
 
-  for (const file of jsFiles) {
-    const result = analyzeFile(file);
-    allResults.push(result);
-
-    if (result.error) {
-      parseErrors++;
-      if (VERBOSE) console.warn(`  [SKIP] ${file}: ${result.error}`);
-      continue;
-    }
-
-    totalFunctions += result.functions.length;
-
-    for (const fn of result.functions) {
-      if (fn.cc > THRESHOLD) violations.push({ file, ...fn });
-      if (VERBOSE && fn.cc > 0) {
-        console.log(
-          `  [${fn.cc > THRESHOLD ? "FAIL" : "ok"}] ${file}:${fn.line} ${fn.name} — CC ${fn.cc}`
-        );
-      }
-    }
-  }
-
-  // Baseline update mode: snapshot current state and exit
   if (UPDATE_BASELINE) {
     writeBaseline(allResults);
     printReport(violations, totalFunctions, parseErrors, jsFiles.length);
     process.exit(0);
   }
 
-  // Normal mode: filter out known-debt violations (only block on regressions)
-  const baseline = readBaseline();
-  const baselineKeys = Object.keys(baseline);
-  let reportedViolations;
-
-  if (baselineKeys.length > 0) {
-    reportedViolations = violations.filter((v) => {
-      const baselineCC = baseline[v.file];
-      if (baselineCC === undefined) return true; // New file — always report
-      return v.cc > baselineCC; // Only report if CC increased past baseline
-    });
-    const suppressed = violations.length - reportedViolations.length;
-    if (suppressed > 0) {
-      console.log(`[check-cc] ${suppressed} known-debt violation(s) suppressed by baseline.`);
-    }
-  } else {
-    reportedViolations = violations;
-  }
-
+  const reportedViolations = filterByBaseline(violations);
   printReport(reportedViolations, totalFunctions, parseErrors, jsFiles.length);
   process.exit(reportedViolations.length > 0 ? 1 : 0);
 }

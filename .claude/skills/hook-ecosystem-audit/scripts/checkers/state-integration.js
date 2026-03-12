@@ -14,7 +14,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[state-integration] ${m}`);
   }
 }
@@ -225,7 +230,12 @@ function checkStateFileHealth(stateDir, findings) {
       }
     }
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    let msg;
+    if (e instanceof Error) {
+      msg = e.message;
+    } else {
+      msg = String(e);
+    }
     findings.push({
       id: "HEA-506",
       category: "state_file_health",
@@ -350,6 +360,69 @@ function buildEventOrdering(rootDir) {
   return ordering;
 }
 
+/** Detect read-before-write ordering violations across hooks. Returns issue count. */
+function checkReadBeforeWriteOrdering(readersOf, writersOf, eventOrdering, findings) {
+  let issues = 0;
+  for (const [stateFile, readers] of Object.entries(readersOf)) {
+    const writers = writersOf[stateFile] || [];
+    if (writers.length === 0) continue;
+
+    for (const reader of readers) {
+      for (const writer of writers) {
+        if (reader === writer) continue;
+        const readerOrder = eventOrdering[reader];
+        const writerOrder = eventOrdering[writer];
+        if (!readerOrder || !writerOrder) continue;
+
+        if (readerOrder.index < writerOrder.index) {
+          issues++;
+          findings.push({
+            id: "HEA-511",
+            category: "cross_hook_dependencies",
+            domain: DOMAIN,
+            severity: "warning",
+            message: `Read-before-write: ${reader} reads ${stateFile} before ${writer} writes it`,
+            details: `${reader} (${readerOrder.event}, index ${readerOrder.index}) reads ${stateFile} but ${writer} (${writerOrder.event}, index ${writerOrder.index}) writes it later. Data may be stale.`,
+            impactScore: 60,
+            frequency: 1,
+            blastRadius: 3,
+          });
+        }
+      }
+    }
+  }
+  return issues;
+}
+
+/** Detect circular state-file dependencies between hook pairs. Returns issue count. */
+function checkCircularDependencies(depMap, findings) {
+  let issues = 0;
+  for (const [hookA, depsA] of Object.entries(depMap)) {
+    for (const [hookB, depsB] of Object.entries(depMap)) {
+      if (hookA >= hookB) continue;
+
+      const aWritesBReads = depsA.writes.some((w) => depsB.reads.includes(w));
+      const bWritesAReads = depsB.writes.some((w) => depsA.reads.includes(w));
+
+      if (aWritesBReads && bWritesAReads) {
+        issues++;
+        findings.push({
+          id: "HEA-512",
+          category: "cross_hook_dependencies",
+          domain: DOMAIN,
+          severity: "error",
+          message: `Circular dependency: ${hookA} <-> ${hookB}`,
+          details: `${hookA} writes state that ${hookB} reads, and vice versa. This creates an ordering paradox.`,
+          impactScore: 80,
+          frequency: 1,
+          blastRadius: 4,
+        });
+      }
+    }
+  }
+  return issues;
+}
+
 /**
  * Scan hook source files and build dependency maps.
  */
@@ -435,65 +508,17 @@ function checkCrossHookDependencies(rootDir, hooksDir, findings) {
 
     // Check write-before-read ordering
     const eventOrdering = buildEventOrdering(rootDir);
-
-    for (const [stateFile, readers] of Object.entries(readersOf)) {
-      const writers = writersOf[stateFile] || [];
-      if (writers.length === 0) continue; // No writer tracked, skip
-
-      for (const reader of readers) {
-        for (const writer of writers) {
-          if (reader === writer) continue; // Same hook reads and writes — ok
-
-          const readerOrder = eventOrdering[reader];
-          const writerOrder = eventOrdering[writer];
-
-          if (!readerOrder || !writerOrder) continue; // Not registered in settings
-
-          if (readerOrder.index < writerOrder.index) {
-            issuesCount++;
-            findings.push({
-              id: "HEA-511",
-              category: "cross_hook_dependencies",
-              domain: DOMAIN,
-              severity: "warning",
-              message: `Read-before-write: ${reader} reads ${stateFile} before ${writer} writes it`,
-              details: `${reader} (${readerOrder.event}, index ${readerOrder.index}) reads ${stateFile} but ${writer} (${writerOrder.event}, index ${writerOrder.index}) writes it later. Data may be stale.`,
-              impactScore: 60,
-              frequency: 1,
-              blastRadius: 3,
-            });
-          }
-        }
-      }
-    }
+    issuesCount += checkReadBeforeWriteOrdering(readersOf, writersOf, eventOrdering, findings);
 
     // Check circular dependencies
-    for (const [hookA, depsA] of Object.entries(depMap)) {
-      for (const [hookB, depsB] of Object.entries(depMap)) {
-        if (hookA >= hookB) continue; // Avoid duplicates
-
-        // A writes something B reads, AND B writes something A reads
-        const aWritesBReads = depsA.writes.some((w) => depsB.reads.includes(w));
-        const bWritesAReads = depsB.writes.some((w) => depsA.reads.includes(w));
-
-        if (aWritesBReads && bWritesAReads) {
-          issuesCount++;
-          findings.push({
-            id: "HEA-512",
-            category: "cross_hook_dependencies",
-            domain: DOMAIN,
-            severity: "error",
-            message: `Circular dependency: ${hookA} <-> ${hookB}`,
-            details: `${hookA} writes state that ${hookB} reads, and vice versa. This creates an ordering paradox.`,
-            impactScore: 80,
-            frequency: 1,
-            blastRadius: 4,
-          });
-        }
-      }
-    }
+    issuesCount += checkCircularDependencies(depMap, findings);
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    let msg;
+    if (e instanceof Error) {
+      msg = e.message;
+    } else {
+      msg = String(e);
+    }
     findings.push({
       id: "HEA-513",
       category: "cross_hook_dependencies",

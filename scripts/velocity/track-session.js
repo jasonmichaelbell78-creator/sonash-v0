@@ -19,7 +19,7 @@
 const { execSync, execFileSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
-const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
+const { safeAppendFileSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const VELOCITY_LOG = path.join(PROJECT_ROOT, ".claude/state/velocity-log.jsonl");

@@ -14,9 +14,9 @@
  * Output: v2 JSON schema to stdout, progress to stderr.
  */
 
-let execSync, execFileSync, fs, path;
+let execFileSync, fs, path;
 try {
-  ({ execSync, execFileSync } = require("node:child_process"));
+  ({ execFileSync } = require("node:child_process"));
   fs = require("node:fs");
   path = require("node:path");
 } catch (err) {
@@ -522,7 +522,6 @@ function saveBaseline() {
     } catch {
       // Windows can fail to overwrite existing dest; fall back to copy
       // Fallback: rename failed, use copy instead
-      // eslint-disable-next-line sonash/no-non-atomic-write -- fallback: rename failed (Windows overwrite quirks)
       fs.copyFileSync(tmpPath, BASELINE_PATH);
       wrote = true;
     } finally {
@@ -2289,7 +2288,10 @@ function checkHookHealth() {
       "hook-health",
       "warning",
       `Hook warnings trending up: ${warnings7d.length} this week vs ${warningsPrevWeek.length} last week (+${warningTrend.change_pct}%)`,
-      `Top warning type: ${Object.entries(warningsByType).sort((a, b) => b[1].length - a[1].length)[0]?.[0] || "none"}`,
+      `Top warning type: ${(() => {
+        const sorted = Object.entries(warningsByType).sort((a, b) => b[1].length - a[1].length);
+        return sorted.length > 0 ? sorted[0][0] : "none";
+      })()}`,
       "Review hook-warnings-log.jsonl for recurring patterns"
     );
   }

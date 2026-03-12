@@ -164,7 +164,7 @@ const retros = [
       "Auto-compute changelog metrics from JSONL source data instead of manual calculation",
     ],
     score: 9.5,
-    metrics: { total_findings: 8, fix_rate: 1.0, pattern_recurrence: 1 },
+    metrics: { total_findings: 8, fix_rate: 1, pattern_recurrence: 1 },
   },
   {
     pr: 415,
@@ -216,9 +216,10 @@ for (const retro of retros) {
     console.log(`OK: ${record.id}`);
     success++;
   } catch (err) {
-    console.error(`FAIL PR #${retro.pr}: ${err.message}`);
+    console.error(`FAIL PR #${retro.pr}: ${err instanceof Error ? err.message : String(err)}`);
     failed++;
   }
 }
 
 console.log(`\nMigration complete: ${success} written, ${failed} failed`);
+if (failed > 0) process.exit(1);

@@ -155,9 +155,13 @@ function createStateManager(rootDir, isSafeToWrite) {
 
       return true;
     } catch (err) {
-      console.error(
-        `  [warn] Failed to write state: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
-      );
+      let errMsg;
+      if (err instanceof Error) {
+        errMsg = err.message;
+      } else {
+        errMsg = String(err);
+      }
+      console.error(`  [warn] Failed to write state: ${errMsg.slice(0, 200)}`);
       return false;
     }
   }
@@ -241,9 +245,13 @@ function createStateManager(rootDir, isSafeToWrite) {
       fs.writeFileSync(baselinePath, JSON.stringify(entry, null, 2) + "\n", "utf8");
       return true;
     } catch (err) {
-      console.error(
-        `  [warn] Failed to write baseline: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
-      );
+      let errMsg;
+      if (err instanceof Error) {
+        errMsg = err.message;
+      } else {
+        errMsg = String(err);
+      }
+      console.error(`  [warn] Failed to write baseline: ${errMsg.slice(0, 200)}`);
       return false;
     }
   }

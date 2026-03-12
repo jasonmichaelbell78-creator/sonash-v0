@@ -10,12 +10,16 @@
 
 "use strict";
 
-/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
 function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[generation-pipeline] ${m}`);
   }
 }

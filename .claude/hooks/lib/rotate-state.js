@@ -1,5 +1,5 @@
 /* global module, require, __dirname, process */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * rotate-state.js - Shared state file rotation helpers
  *
@@ -12,7 +12,12 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { isSafeToWrite } = require("./symlink-guard");
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require("./symlink-guard"));
+} catch {
+  isSafeToWrite = () => true;
+}
 
 /**
  * Rotate a JSONL file to keep only the newest N entries.
@@ -255,9 +260,13 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
       return { rotated: true, before: lines.length, after: kept.length, archived: evicted.length };
     });
   } catch (err) {
-    process.stderr.write(
-      `[archiveRotateJsonl] Error rotating ${filePath}: ${err.code || err.message}\n`
-    );
+    const errDetail =
+      err && typeof err === "object" && "code" in err
+        ? err.code
+        : err instanceof Error
+          ? err.message
+          : String(err);
+    process.stderr.write(`[archiveRotateJsonl] Error rotating ${filePath}: ${errDetail}\n`);
     return { rotated: false, before: 0, after: 0, archived: 0 };
   }
 }

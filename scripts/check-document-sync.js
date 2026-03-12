@@ -92,7 +92,7 @@ function parseDocumentDependencies() {
         console.error(`⚠️  Skipping path outside repository: ${constructedPath}`);
         continue;
       }
-    } catch (error) {
+    } catch {
       // File doesn't exist yet - validate constructed path manually
       const normalizedRoot = realpathSync(ROOT);
       const normalizedPath = join(normalizedRoot, location.trim(), instance.trim());
@@ -238,7 +238,7 @@ function checkBrokenLinks(filePath) {
           }
           continue;
         }
-      } catch (error) {
+      } catch {
         // File doesn't exist - validate constructed path manually
         const rel = relative(normalizedRoot, targetPath);
 

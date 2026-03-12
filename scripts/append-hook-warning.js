@@ -166,77 +166,101 @@ function writeWarnings(data) {
  * C2-G2: Auto-escalates severity based on occurrence count (5+ → warning, 15+ → error)
  * C2-G3: Tracks occurrences_since_ack for acknowledgment awareness
  */
-function appendWarning(hook, type, severity, message, action = null, files = null, pattern = null) {
-  const data = readWarnings();
-
-  // Check for duplicate (same hook, type, message within last hour)
+function isDuplicateWarning(data, hook, type, message) {
   const oneHourAgo = Date.now() - 60 * 60 * 1000;
-  const isDuplicate = data.warnings.some(
+  return data.warnings.some(
     (w) =>
       w.hook === hook &&
       w.type === type &&
       w.message === message &&
       new Date(w.timestamp).getTime() > oneHourAgo
   );
+}
 
-  if (!isDuplicate) {
-    // C2-G2: Count recent occurrences for auto-escalation
-    const occurrences = countRecentOccurrences(type);
-    let effectiveSeverity = severity || "warning";
-    if (occurrences >= 15) effectiveSeverity = "error";
-    else if (occurrences >= 5 && effectiveSeverity === "info") effectiveSeverity = "warning";
+function escalateSeverity(severity, occurrences) {
+  if (occurrences >= 15) return "error";
+  if (occurrences >= 5 && severity === "info") return "warning";
+  return severity || "warning";
+}
 
-    // C2-G3: Compute occurrences since last acknowledgment
-    const lastAck = (data.acknowledged && data.acknowledged[type]) || null;
-    const sinceAck = lastAck ? countOccurrencesSince(type, lastAck) : occurrences;
+function parseFileList(files) {
+  if (!files) return undefined;
+  return files
+    .split(",")
+    .map((f) => f.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+}
 
-    // C2-G1: Parse files into array (max 3)
-    const fileList = files
-      ? files
-          .split(",")
-          .map((f) => f.trim())
-          .filter(Boolean)
-          .slice(0, 3)
-      : undefined;
+function buildWarningEntry(
+  hook,
+  type,
+  severity,
+  message,
+  action,
+  occurrences,
+  sinceAck,
+  fileList,
+  pattern
+) {
+  const entry = {
+    hook,
+    type,
+    severity,
+    message,
+    action,
+    timestamp: new Date().toISOString(),
+  };
+  if (fileList && fileList.length > 0) entry.files = fileList;
+  if (pattern) entry.pattern = pattern;
+  if (occurrences > 0) entry.occurrences = occurrences;
+  if (sinceAck > 0) entry.occurrences_since_ack = sinceAck;
+  return entry;
+}
 
-    const entry = {
-      hook,
-      type,
-      severity: effectiveSeverity,
-      message,
-      action,
-      timestamp: new Date().toISOString(),
-    };
-
-    // C2-G1: Add enrichment fields if present
-    if (fileList && fileList.length > 0) entry.files = fileList;
-    if (pattern) entry.pattern = pattern;
-    // C2-G2/G3: Add occurrence tracking
-    if (occurrences > 0) entry.occurrences = occurrences;
-    if (sinceAck > 0) entry.occurrences_since_ack = sinceAck;
-
-    data.warnings.push(entry);
-
-    // Keep only last 50 warnings to prevent file bloat
-    if (data.warnings.length > 50) {
-      data.warnings = data.warnings.slice(-50);
+function writeAuditTrail(entry) {
+  try {
+    const logDir = path.join(ROOT_DIR, ".claude", "state");
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
     }
-
-    writeWarnings(data);
-
-    // Permanent JSONL audit trail (best-effort, never block hooks)
-    try {
-      const logDir = path.join(ROOT_DIR, ".claude", "state");
-      if (!fs.existsSync(logDir)) {
-        fs.mkdirSync(logDir, { recursive: true });
-      }
-      const logPath = path.join(logDir, "hook-warnings-log.jsonl");
-      if (!isSafeToWrite(logPath)) return;
-      safeAppendFileSync(logPath, JSON.stringify(entry) + "\n");
-    } catch {
-      // Best-effort — never block hooks on log failure
-    }
+    const logPath = path.join(logDir, "hook-warnings-log.jsonl");
+    if (!isSafeToWrite(logPath)) return;
+    safeAppendFileSync(logPath, JSON.stringify(entry) + "\n");
+  } catch {
+    // Best-effort — never block hooks on log failure
   }
+}
+
+function appendWarning(hook, type, severity, message, action = null, files = null, pattern = null) {
+  const data = readWarnings();
+  if (isDuplicateWarning(data, hook, type, message)) return;
+
+  const occurrences = countRecentOccurrences(type);
+  const effectiveSeverity = escalateSeverity(severity, occurrences);
+  const lastAck = data.acknowledged?.[type] || null;
+  const sinceAck = lastAck ? countOccurrencesSince(type, lastAck) : occurrences;
+  const fileList = parseFileList(files);
+
+  const entry = buildWarningEntry(
+    hook,
+    type,
+    effectiveSeverity,
+    message,
+    action,
+    occurrences,
+    sinceAck,
+    fileList,
+    pattern
+  );
+  data.warnings.push(entry);
+
+  if (data.warnings.length > 50) {
+    data.warnings = data.warnings.slice(-50);
+  }
+
+  writeWarnings(data);
+  writeAuditTrail(entry);
 }
 
 /**

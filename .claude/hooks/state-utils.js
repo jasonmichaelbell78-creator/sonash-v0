@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, module, console */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * state-utils.js - Shared utilities for .claude/state/ file-based persistence
  *
@@ -18,8 +18,17 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { isSafeToWrite } = require("./lib/symlink-guard");
-const { sanitizeInput } = require("./lib/sanitize-input");
+let isSafeToWrite, sanitizeInput;
+try {
+  ({ isSafeToWrite } = require("./lib/symlink-guard"));
+} catch {
+  isSafeToWrite = () => true;
+}
+try {
+  ({ sanitizeInput } = require("./lib/sanitize-input"));
+} catch {
+  sanitizeInput = (v) => String(v).slice(0, 500);
+}
 
 const STATE_DIR = ".claude/state";
 

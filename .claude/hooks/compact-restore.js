@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * compact-restore.js - SessionStart hook (compact matcher)
  *
@@ -122,31 +122,10 @@ function formatRecentCommits(commits) {
 }
 
 /**
- * Main
+ * Build the core recovery text sections.
  */
-function main() {
-  const handoff = loadHandoff();
-
-  if (!handoff) {
-    // No handoff data — can't help with recovery
-    console.error("  No handoff.json found for post-compaction recovery.");
-    console.log("ok");
-    process.exit(0);
-  }
-
-  const ageMs = handoff.timestamp ? Date.now() - new Date(handoff.timestamp).getTime() : NaN;
-
-  // Skip stale handoffs (>60 min old = likely from a previous session)
-  if (Number.isNaN(ageMs) || ageMs > 60 * 60 * 1000) {
-    console.error("  Handoff data is stale (>60 min). Skipping recovery injection.");
-    console.log("ok");
-    process.exit(0);
-  }
-
-  const age = Math.round(ageMs / 60000);
-
-  // Output recovery context to stdout (Claude sees this)
-  const recovery = [
+function buildRecoveryHeader(handoff, age) {
+  return [
     "CONTEXT COMPACTION RECOVERY",
     "=".repeat(40),
     `Session: #${handoff.sessionCounter || "?"}`,
@@ -174,8 +153,12 @@ function main() {
       : "  (none)",
     "",
   ];
+}
 
-  // Active plan context
+/**
+ * Append optional context sections (plan, notes, audits) to recovery array.
+ */
+function appendOptionalSections(recovery, handoff) {
   if (handoff.activePlan) {
     recovery.push(
       "ACTIVE PLAN:",
@@ -188,8 +171,6 @@ function main() {
       ""
     );
   }
-
-  // Session notes (AI-written intent/context)
   if (handoff.sessionNotes?.notes?.length > 0) {
     recovery.push("SESSION NOTES (AI-written context):");
     for (const note of handoff.sessionNotes.notes.slice(-5)) {
@@ -198,8 +179,6 @@ function main() {
     }
     recovery.push("");
   }
-
-  // Active ecosystem audits
   if (handoff.activeAudits?.length > 0) {
     recovery.push("ACTIVE ECOSYSTEM AUDITS:");
     for (const audit of handoff.activeAudits) {
@@ -213,19 +192,12 @@ function main() {
     }
     recovery.push("");
   }
+}
 
-  recovery.push(
-    "RECOVERY INSTRUCTION:",
-    "Read .claude/state/handoff.json for full details.",
-    "Read .claude/state/task-*.state.json for in-progress task data.",
-    "Check git status for uncommitted work.",
-    "Continue from where the session left off.",
-    "=".repeat(40)
-  );
-
-  const recoveryText = recovery.join("\n");
-
-  // To stderr for user visibility
+/**
+ * Log recovery summary to stderr for user visibility.
+ */
+function logRecoverySummary(handoff, age) {
   console.error("");
   console.error("  POST-COMPACTION RECOVERY");
   console.error("\u2501".repeat(42));
@@ -246,9 +218,45 @@ function main() {
     }
   }
   console.error("\u2501".repeat(42));
+}
+
+/**
+ * Main
+ */
+function main() {
+  const handoff = loadHandoff();
+
+  if (!handoff) {
+    console.error("  No handoff.json found for post-compaction recovery.");
+    console.log("ok");
+    process.exit(0);
+  }
+
+  const ageMs = handoff.timestamp ? Date.now() - new Date(handoff.timestamp).getTime() : NaN;
+
+  if (Number.isNaN(ageMs) || ageMs > 60 * 60 * 1000) {
+    console.error("  Handoff data is stale (>60 min). Skipping recovery injection.");
+    console.log("ok");
+    process.exit(0);
+  }
+
+  const age = Math.round(ageMs / 60000);
+
+  const recovery = buildRecoveryHeader(handoff, age);
+  appendOptionalSections(recovery, handoff);
+  recovery.push(
+    "RECOVERY INSTRUCTION:",
+    "Read .claude/state/handoff.json for full details.",
+    "Read .claude/state/task-*.state.json for in-progress task data.",
+    "Check git status for uncommitted work.",
+    "Continue from where the session left off.",
+    "=".repeat(40)
+  );
+
+  logRecoverySummary(handoff, age);
 
   // To stdout for Claude context injection
-  console.log(recoveryText);
+  console.log(recovery.join("\n"));
   process.exit(0);
 }
 

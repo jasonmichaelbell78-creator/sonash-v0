@@ -11,12 +11,16 @@
 
 "use strict";
 
-/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
 function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[pattern-lifecycle] ${m}`);
   }
 }
@@ -105,7 +109,7 @@ function checkPatternDiscoveryAutomation(
 
   // Count automation candidates mentioned in retros
   const automationCandidates = (learnings.match(/automation candidate/gi) || []).length;
-  const recurringPatterns = (learnings.match(/recurring pattern/gi) || []).length;
+  const _recurringPatterns = (learnings.match(/recurring pattern/gi) || []).length;
 
   // Pipeline completion: discovered → documented → automated
   const discoveredTotal = Math.max(1, documentedPatterns + automationCandidates);

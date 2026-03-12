@@ -587,7 +587,7 @@ _Uncategorized_
 | Document                                                                                | Description                                               | References | Last Modified |
 | --------------------------------------------------------------------------------------- | --------------------------------------------------------- | ---------- | ------------- |
 | [Hook Ecosystem Audit Report — 2026-03-08](.claude/tmp/hook-audit-report-2026-03-08.md) | \| # \| ID \| Severity \| Category \| Decision \| Note \| | ↓0 ↑0      | 2026-03-08    |
-| [pr body](.claude/tmp/pr-body.md)                                                       | -                                                         | ↓0 ↑0      | 2026-03-06    |
+| [pr body](.claude/tmp/pr-body.md)                                                       | -                                                         | ↓0 ↑0      | 2026-03-12    |
 
 ### .gemini (Tier 4)
 

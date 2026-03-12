@@ -259,7 +259,12 @@ for (const checker of checkers) {
     const findingCount = result.findings.length;
     console.error(`    \u2713 ${categoryCount} categories, ${findingCount} findings`);
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    let msg;
+    if (err instanceof Error) {
+      msg = err.message;
+    } else {
+      msg = String(err);
+    }
     console.error(`    \u2717 ${domainName} failed: ${msg.slice(0, 200)}`);
 
     allFindings.push({

@@ -209,7 +209,7 @@ async function checkHostnameSafe(hostname) {
     }
 
     return { safe: true };
-  } catch (err) {
+  } catch {
     // DNS resolution error - let the actual request handle it
     // Empty catch is intentional: DNS errors shouldn't block URL checking,
     // as the actual HTTP request will properly report the DNS failure

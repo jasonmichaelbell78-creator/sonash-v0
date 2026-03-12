@@ -229,6 +229,7 @@ function checkBypassDebtThreshold(check) {
     // Append to both MASTER_DEBT and deduped (per memory: generate-views.js overwrites MASTER_DEBT from deduped)
     for (const p of [masterDebtPath, dedupedPath]) {
       try {
+        fs.mkdirSync(path.dirname(p), { recursive: true });
         safeAppendFileSync(p, debtLine);
       } catch {
         /* skip unsafe paths */
@@ -498,7 +499,11 @@ function showAnalytics(analytics) {
   }
 
   // C1-G3: Overall + per-check trends
-  const fmtPct = (pct) => (pct === null ? "new" : `${pct >= 0 ? "+" : ""}${pct}%`);
+  function fmtPct(pct) {
+    if (pct === null) return "new";
+    const sign = pct >= 0 ? "+" : "";
+    return `${sign}${pct}%`;
+  }
   console.log(
     `\nTrend: ${fmtPct(trend.change_pct)} vs previous week (${trend.current_week} vs ${trend.previous_week})`
   );

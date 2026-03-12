@@ -10,12 +10,16 @@
 
 "use strict";
 
-/* eslint-disable no-unused-vars -- safeRequire is a safety wrapper */
 function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[functional-correctness] ${m}`);
   }
 }
@@ -34,7 +38,6 @@ function safeTestRegex(pattern) {
     // Claude Code's matcher engine supports inline flags like (?i) for
     // case-insensitive matching. Strip them before JS RegExp validation.
     const normalized = pattern.replace(/\(\?[gimsuy]+\)/g, "");
-    // eslint-disable-next-line no-new -- validation only
     new RegExp(normalized); // pattern-checker:ignore — intentional validation
     return true;
   } catch {
@@ -246,7 +249,7 @@ function checkOutputProtocol(hooksDir, hookInventory, findings) {
     // thresholds since all stdout usage is intentional protocol output.
 
     // Check 3: process.exit() usage
-    const exitZero = /process\.exit\(\s*0\s*\)/.test(content);
+    const _exitZero = /process\.exit\(\s*0\s*\)/.test(content);
     const exitOne = /process\.exit\(\s*1\s*\)/.test(content);
     const exitOther = /process\.exit\(\s*[^01)\s]/.test(content);
 

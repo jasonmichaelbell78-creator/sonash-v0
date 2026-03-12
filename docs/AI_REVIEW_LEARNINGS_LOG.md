@@ -889,6 +889,42 @@ rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
 
 ## Active Reviews
 
+### Review #473: PR #427 R1 — Mixed (SonarCloud + Semgrep + CI + Qodo) (2026-03-11)
+
+_Hook audit wave 8 — CC double-counting bug, cyclomatic gate bypass,
+generateWarnings data loss, bulk lint cleanup across hooks/skills/scripts._
+
+**Source:** SonarCloud hotspots (6) + code smells (16), Semgrep (1), CI (1 + 127
+lint warnings), Qodo compliance (6) + bugs (2) + suggestions (6) **Items:** 25
+total (24 fixed, 1 deferred, 5 rejected) **Severity:** 3C / 7M / 8m / 2T
+**Deferred:** DEBT-45520
+
+**Key Patterns:**
+
+1. **CC double-counting in check-cc.js** — `processNode()` walked into nested
+   function bodies, inflating parent CC. `analyzeAST()` already computes CC per
+   function. Fix: treat nested functions as boundaries, don't recurse.
+2. **generateWarnings data loss** — `safeAppendFileSync` wrote to disk, then
+   `safeWriteFileSync` overwrote the file from an in-memory array that lacked
+   the appended records. Fix: mutate array in-memory, write once.
+3. **Cyclomatic gate `|| true` mask** — pre-push ESLint gate swallowed all exit
+   codes; only grepped for "complexity". Config/parse errors silently passed.
+   Fix: capture exit status explicitly.
+4. **CJS parse fallback** — acorn parsed as ESM only; CJS scripts hit parse
+   errors and were silently skipped. Fix: try ESM, fall back to CJS.
+
+**Process Learnings:**
+
+- First-scan volume on large PRs (247 files) produces significant reviewer
+  noise. Batch-acknowledge known-safe patterns early.
+- "Pre-existing" is banned as skip reason — fix or track with DEBT ID.
+- CC refactoring (extracting helpers) is mechanical but high-value — reduces
+  both SonarCloud noise and review round count.
+- **Score:** 8/10 — Comprehensive review with 3 real bugs caught. Large PR
+  amplified lint noise but core findings were high-signal.
+
+---
+
 ### Review #472: PR #426 R3 — Mixed (Qodo + CI + SonarCloud) (2026-03-10)
 
 _Health ecosystem audit — dedup correctness, test registry locality, TOCTOU

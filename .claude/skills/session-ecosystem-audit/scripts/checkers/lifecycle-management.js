@@ -16,7 +16,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[lifecycle-management] ${m}`);
   }
 }
@@ -440,7 +445,8 @@ function checkSessionCounterAccuracy(rootDir, findings) {
       blastRadius: 3,
       patchType: "data_fix",
       patchTarget: "SESSION_CONTEXT.md",
-      patchContent: `Update session counter to match commit-log (${commitLogMax}) or backfill missing sessions`,
+      patchContent:
+        "Sync session counter to commit-log (" + commitLogMax + ") — backfill missing sessions",
       patchImpact: "Restore session tracking accuracy",
     });
   }

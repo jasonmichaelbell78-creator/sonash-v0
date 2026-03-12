@@ -45,7 +45,7 @@ function levenshteinDistance(str1, str2) {
   const m = s1.length;
   const n = s2.length;
   let prevRow = Array.from({ length: n + 1 }, (_, i) => i);
-  let currentRow = new Array(n + 1).fill(0);
+  let currentRow = Array.from({ length: n + 1 }, () => 0);
   for (let i = 1; i <= m; i++) {
     currentRow[0] = i;
     for (let j = 1; j <= n; j++) {
@@ -142,7 +142,7 @@ function parseJsonlFile(filePath) {
   for (let i = 0; i < lines.length; i++) {
     try {
       findings.push(JSON.parse(lines[i].trim()));
-    } catch (error) {
+    } catch {
       console.warn(`${basename(filePath)} line ${i + 1}: Invalid JSON`);
     }
   }

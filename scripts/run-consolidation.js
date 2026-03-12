@@ -37,9 +37,8 @@ let safeWriteFileSync, safeRenameSync;
 try {
   ({ safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs"));
 } catch {
-  console.error("safe-fs unavailable; refusing to write");
-  safeWriteFileSync = () => {};
-  safeRenameSync = () => {};
+  console.error("safe-fs unavailable; cannot safely write files");
+  process.exit(2);
 }
 
 // Symlink guard (Review #316-#323)

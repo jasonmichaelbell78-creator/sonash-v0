@@ -79,7 +79,12 @@ describe("hook-ecosystem checkers — property tests", () => {
               return true;
             } catch (err) {
               // Only tolerate known pre-existing errors, not new regressions
-              const msg = err instanceof Error ? err.message : String(err);
+              let msg;
+              if (err instanceof Error) {
+                msg = err.message;
+              } else {
+                msg = String(err);
+              }
               if (
                 msg.includes("Cannot read properties of undefined") ||
                 msg.includes("is not a function") ||
@@ -103,7 +108,12 @@ describe("hook-ecosystem checkers — property tests", () => {
               return typeof result.domain === "string" && result.domain.length > 0;
             } catch (err) {
               // Only tolerate known pre-existing errors, not new regressions
-              const msg = err instanceof Error ? err.message : String(err);
+              let msg;
+              if (err instanceof Error) {
+                msg = err.message;
+              } else {
+                msg = String(err);
+              }
               if (
                 msg.includes("Cannot read properties of undefined") ||
                 msg.includes("is not a function") ||
@@ -127,7 +137,12 @@ describe("hook-ecosystem checkers — property tests", () => {
               return Array.isArray(result.findings);
             } catch (err) {
               // Only tolerate known pre-existing errors, not new regressions
-              const msg = err instanceof Error ? err.message : String(err);
+              let msg;
+              if (err instanceof Error) {
+                msg = err.message;
+              } else {
+                msg = String(err);
+              }
               if (
                 msg.includes("Cannot read properties of undefined") ||
                 msg.includes("is not a function") ||
@@ -157,7 +172,12 @@ describe("hook-ecosystem checkers — property tests", () => {
               );
             } catch (err) {
               // Only tolerate known pre-existing errors, not new regressions
-              const msg = err instanceof Error ? err.message : String(err);
+              let msg;
+              if (err instanceof Error) {
+                msg = err.message;
+              } else {
+                msg = String(err);
+              }
               if (
                 msg.includes("Cannot read properties of undefined") ||
                 msg.includes("is not a function") ||

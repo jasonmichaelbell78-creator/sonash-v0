@@ -55,63 +55,13 @@ try {
 // State file tracks which files have been warned for which patterns
 const WARNED_FILES_PATH = join(ROOT, ".claude", "state", "warned-files.json");
 
-// TTL for warned-files entries: entries older than this are expired on load
-// Prevents false positives from blocking indefinitely (Fix: hook-quality session)
-const WARNED_FILES_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-
-function loadWarnedFiles() {
-  try {
-    const raw = readFileSync(WARNED_FILES_PATH, "utf-8").replace(/^\uFEFF/, "");
-    const data = JSON.parse(raw);
-
-    // Validate parsed data is a plain object (not array, null, etc.)
-    if (!data || typeof data !== "object" || Array.isArray(data)) {
-      console.warn("Warning: warned-files.json is not a plain object — resetting");
-      return {};
-    }
-
-    // Purge expired entries (older than TTL)
-    const now = Date.now();
-    let purged = 0;
-    for (const key of Object.keys(data)) {
-      const ts = new Date(data[key]).getTime();
-      if (!Number.isFinite(ts) || now - ts > WARNED_FILES_TTL_MS) {
-        delete data[key];
-        purged++;
-      }
-    }
-    if (purged > 0 && VERBOSE) {
-      console.log(`   Purged ${purged} expired pattern warning(s) (older than 7 days)`);
-    }
-    if (purged > 0) {
-      try {
-        const tmpPath = `${WARNED_FILES_PATH}.tmp`;
-        safeWriteFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
-        if (existsSync(WARNED_FILES_PATH)) unlinkSync(WARNED_FILES_PATH);
-        safeRenameSync(tmpPath, WARNED_FILES_PATH);
-      } catch {
-        /* best effort */
-      }
-    }
-
-    return data;
-  } catch (err) {
-    const code = err && typeof err === "object" && "code" in err ? err.code : null;
-    if (code === "ENOENT") return {};
-    // Non-ENOENT error (corrupt file, permission issue) — return null
-    // so caller preserves existing state instead of wiping it
-    console.warn(`Warning: could not load pattern warning state: ${sanitizeError(err)}`);
-    return null;
-  }
-}
-
 /**
  * Best-effort file removal (swallows errors).
  */
 function tryUnlink(filePath) {
   try {
     if (existsSync(filePath)) unlinkSync(filePath);
-  } catch (_err) {
+  } catch {
     // Best-effort — ignore failures
   }
 }
@@ -122,7 +72,7 @@ function tryUnlink(filePath) {
 function isSymlink(filePath) {
   try {
     return existsSync(filePath) && lstatSync(filePath).isSymbolicLink();
-  } catch (_err) {
+  } catch {
     return false;
   }
 }
@@ -166,7 +116,7 @@ function saveWarnedFiles(warned) {
     // Backup-and-replace: rename existing to .bak, then swap in new file
     try {
       if (existsSync(WARNED_FILES_PATH)) safeRenameSync(WARNED_FILES_PATH, bakPath);
-    } catch (_err) {
+    } catch {
       // If backup fails, proceed; safeRenameSync may still work
     }
 
@@ -178,7 +128,7 @@ function saveWarnedFiles(warned) {
     try {
       if (existsSync(bakPath) && !existsSync(WARNED_FILES_PATH))
         safeRenameSync(bakPath, WARNED_FILES_PATH);
-    } catch (_err) {
+    } catch {
       // Best-effort restore
     }
     console.warn(`Warning: could not save pattern warning state: ${sanitizeError(err)}`);
@@ -894,7 +844,7 @@ const ANTI_PATTERNS = [
   {
     id: "jsonl-parse-no-try-catch",
     severity: "high",
-    testFn: (content, filePath) => {
+    testFn: (content, _filePath) => {
       const matches = [];
       const lines = content.split("\n");
       for (let i = 0; i < lines.length; i++) {
@@ -927,7 +877,7 @@ const ANTI_PATTERNS = [
   {
     id: "rename-no-fallback",
     severity: "high",
-    testFn: (content, filePath) => {
+    testFn: (content, _filePath) => {
       const matches = [];
       const lines = content.split("\n");
       for (let i = 0; i < lines.length; i++) {
@@ -967,7 +917,7 @@ const ANTI_PATTERNS = [
   {
     id: "session-id-no-validation",
     severity: "critical",
-    testFn: (content, filePath) => {
+    testFn: (content, _filePath) => {
       const matches = [];
       const lines = content.split("\n");
       // Look for sessionId being interpolated into file paths without prior validation

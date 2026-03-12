@@ -301,8 +301,9 @@ function generateWarnings(result) {
 
     if (score < 70 && !hasActive) {
       const record = createWarningRecord(dimId, data);
-      fs.mkdirSync(path.dirname(WARNINGS_PATH), { recursive: true });
-      safeAppendFileSync(WARNINGS_PATH, JSON.stringify(record) + "\n");
+      existing.push(record);
+      activeByDim.set(dimId, record);
+      changed = true;
     } else if (score >= 70 && hasActive) {
       const w = activeByDim.get(dimId);
       w.lifecycle = "resolved";

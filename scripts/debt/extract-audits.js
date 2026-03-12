@@ -39,7 +39,7 @@ function extractLine(item) {
 }
 
 // Get source ID
-function getSourceId(item, sourceFile) {
+function getSourceId(item, _sourceFile) {
   // Try various ID fields
   const id = item.id || item.canonical_id || item.master_id || item.original_id || item.finding_id;
   if (id) {

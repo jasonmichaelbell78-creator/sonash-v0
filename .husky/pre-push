@@ -246,8 +246,9 @@ if [ "$_cyc_skip" -eq 0 ]; then
     if [ -z "$_files" ]; then
       echo "NO_FILES" > "$_CYC_OUT"; echo "0" > "${_CYC_OUT}.rc"; exit 0
     fi
-    _out=$(printf '%s\n' "$_files" | grep -Ev '(eslint-plugin-sonash/|\.claude/hooks/backup/|\.claude/state/|docs/archive/|scripts/reviews/dist/|\.planning/)' | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- 2>&1 || true)
-    if printf '%s\n' "$_out" | grep -qE "complexity"; then
+    _eslint_rc=0
+    _out=$(printf '%s\n' "$_files" | grep -Ev '(eslint-plugin-sonash/|\.claude/hooks/backup/|\.claude/state/|docs/archive/|scripts/reviews/dist/|\.planning/)' | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- 2>&1) || _eslint_rc=$?
+    if [ "$_eslint_rc" -ne 0 ]; then
       printf '%s\n' "$_out" > "$_CYC_OUT"; echo "1" > "${_CYC_OUT}.rc"
     else
       echo "0" > "${_CYC_OUT}.rc"

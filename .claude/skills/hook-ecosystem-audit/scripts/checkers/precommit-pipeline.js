@@ -16,7 +16,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[precommit-pipeline] ${m}`);
   }
 }
@@ -179,7 +184,10 @@ function checkStageOrdering(content, lines, findings, scores) {
     }
   }
 
-  const stagesPresentPct = Math.round((foundStages.length / EXPECTED_STAGES.length) * 100);
+  const stagesPresentPct =
+    EXPECTED_STAGES.length > 0
+      ? Math.round((foundStages.length / EXPECTED_STAGES.length) * 100)
+      : 100;
 
   // Report missing stages
   if (missingStages.length > 0) {
@@ -614,36 +622,7 @@ function checkGateEffectiveness(content, lines, findings, scores) {
   }
 
   // Check for stages that silently fail (no warning, no exit)
-  // Look for stages that swallow errors with "|| true" but don't warn
-  const silentFailPattern = /\|\|\s*true/g;
-  const silentFails = [];
-  for (const silentMatch of content.matchAll(silentFailPattern)) {
-    const pos = silentMatch.index;
-    const lineIdx = content.slice(0, pos).split("\n").length - 1;
-    const line = (lines[lineIdx] || "").trim();
-
-    // Exclude: log-override.js calls (expected), temp file cleanup (expected),
-    // process kill (expected), 2>/dev/null (expected stderr suppression),
-    // and variable assignments with grep (|| true prevents set -e exit on no match)
-    if (
-      /log-override\.js/.test(line) ||
-      /rm\s+-f/.test(line) ||
-      /kill\s+/.test(line) ||
-      /append-hook-warning/.test(line) ||
-      /2>\/dev\/null/.test(line) ||
-      /=\$\(.*\bgrep\b.*\|\|\s*true\)/.test(line)
-    ) {
-      continue;
-    }
-
-    // Check if there's a warning echo nearby
-    const context = content.slice(Math.max(0, pos - 200), pos + 200);
-    const hasWarning = /\u26a0\ufe0f/.test(context);
-
-    if (!hasWarning) {
-      silentFails.push({ lineNumber: lineIdx + 1, line });
-    }
-  }
+  const silentFails = detectSilentFails(content, lines);
 
   if (silentFails.length > 0) {
     findings.push({
@@ -663,47 +642,10 @@ function checkGateEffectiveness(content, lines, findings, scores) {
   }
 
   // Check temp file cleanup: every mktemp should have a matching add_exit_trap rm
-  const mktempPattern = /\$\(mktemp\)/g;
-  const tempFiles = [];
-  for (const mktempMatch of content.matchAll(mktempPattern)) {
-    const pos = mktempMatch.index;
-    const lineIdx = content.slice(0, pos).split("\n").length - 1;
-    const line = (lines[lineIdx] || "").trim();
-
-    // Extract the variable name the temp file is assigned to
-    const assignMatch = line.match(/^([A-Z_]+)="\$\(mktemp\)"/);
-    const varName = assignMatch ? assignMatch[1] : null;
-
-    tempFiles.push({
-      lineNumber: lineIdx + 1,
-      varName,
-    });
-  }
-
-  // Check for corresponding add_exit_trap 'rm -f ...' for each temp file
-  let tempFilesWithCleanup = 0;
-  const tempFilesWithoutCleanup = [];
-
-  for (const tf of tempFiles) {
-    if (!tf.varName) {
-      // Can't verify without a variable name, assume okay
-      tempFilesWithCleanup++;
-      continue;
-    }
-
-    // Look for: add_exit_trap 'rm -f "$VARNAME" ...' or add_exit_trap "rm -f $VARNAME ..."
-    // Note: allow double quotes inside single-quoted strings (and vice versa)
-    const varRef = `(?:\\$\\{${escapeRegex(tf.varName)}\\}|\\$${escapeRegex(tf.varName)})`;
-    const cleanupPattern = new RegExp(
-      `add_exit_trap\\s+'[^']*${varRef}[^']*'|add_exit_trap\\s+"[^"]*${varRef}[^"]*"`,
-      "m"
-    );
-    if (cleanupPattern.test(content)) {
-      tempFilesWithCleanup++;
-    } else {
-      tempFilesWithoutCleanup.push(tf);
-    }
-  }
+  const { tempFiles, tempFilesWithCleanup, tempFilesWithoutCleanup } = auditTempFileCleanup(
+    content,
+    lines
+  );
 
   if (tempFilesWithoutCleanup.length > 0) {
     findings.push({
@@ -751,6 +693,80 @@ function checkGateEffectiveness(content, lines, findings, scores) {
 // ============================================================================
 // HELPERS
 // ============================================================================
+
+/**
+ * Detect "|| true" occurrences that silently swallow errors without warning.
+ * Excludes known-safe patterns (cleanup, kill, grep assignments, etc.).
+ */
+function detectSilentFails(content, lines) {
+  const silentFailPattern = /\|\|\s*true/g;
+  const silentFails = [];
+  for (const silentMatch of content.matchAll(silentFailPattern)) {
+    const pos = silentMatch.index;
+    const lineIdx = content.slice(0, pos).split("\n").length - 1;
+    const line = (lines[lineIdx] || "").trim();
+
+    if (
+      /log-override\.js/.test(line) ||
+      /rm\s+-f/.test(line) ||
+      /kill\s+/.test(line) ||
+      /append-hook-warning/.test(line) ||
+      /2>\/dev\/null/.test(line) ||
+      /=\$\(.*\bgrep\b.*\|\|\s*true\)/.test(line)
+    ) {
+      continue;
+    }
+
+    const context = content.slice(Math.max(0, pos - 200), pos + 200);
+    const hasWarning = /\u26a0\ufe0f/.test(context);
+
+    if (!hasWarning) {
+      silentFails.push({ lineNumber: lineIdx + 1, line });
+    }
+  }
+  return silentFails;
+}
+
+/**
+ * Audit mktemp calls for matching add_exit_trap cleanup.
+ * Returns temp file lists and cleanup counts.
+ */
+function auditTempFileCleanup(content, lines) {
+  const mktempPattern = /\$\(mktemp\)/g;
+  const tempFiles = [];
+  for (const mktempMatch of content.matchAll(mktempPattern)) {
+    const pos = mktempMatch.index;
+    const lineIdx = content.slice(0, pos).split("\n").length - 1;
+    const line = (lines[lineIdx] || "").trim();
+
+    const assignMatch = line.match(/^([A-Z_]+)="\$\(mktemp\)"/);
+    const varName = assignMatch ? assignMatch[1] : null;
+    tempFiles.push({ lineNumber: lineIdx + 1, varName });
+  }
+
+  let tempFilesWithCleanup = 0;
+  const tempFilesWithoutCleanup = [];
+
+  for (const tf of tempFiles) {
+    if (!tf.varName) {
+      tempFilesWithCleanup++;
+      continue;
+    }
+
+    const varRef = `(?:\\$\\{${escapeRegex(tf.varName)}\\}|\\$${escapeRegex(tf.varName)})`;
+    const cleanupPattern = new RegExp(
+      `add_exit_trap\\s+'[^']*${varRef}[^']*'|add_exit_trap\\s+"[^"]*${varRef}[^"]*"`,
+      "m"
+    );
+    if (cleanupPattern.test(content)) {
+      tempFilesWithCleanup++;
+    } else {
+      tempFilesWithoutCleanup.push(tf);
+    }
+  }
+
+  return { tempFiles, tempFilesWithCleanup, tempFilesWithoutCleanup };
+}
 
 function safeReadFile(filePath) {
   try {

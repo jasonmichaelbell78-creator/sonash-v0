@@ -197,7 +197,7 @@ function getCodeSnippet(filePath, line, textRange, contextLines = 3) {
   let resolved;
   try {
     resolved = resolveProjectPath(filePath);
-  } catch (err) {
+  } catch {
     return { found: false, snippet: `[Path outside project: ${filePath}]` };
   }
 

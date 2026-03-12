@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console, __dirname */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * track-agent-invocation.js - PostToolUse hook for Task tool
  *
@@ -12,7 +12,12 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { sanitizeInput } = require("./lib/sanitize-input");
+let sanitizeInput;
+try {
+  ({ sanitizeInput } = require("./lib/sanitize-input"));
+} catch {
+  sanitizeInput = (v) => String(v).slice(0, 500);
+}
 
 // Lazy-load shared helpers (best-effort — never block on import failure)
 let isSafeToWrite, rotateJsonl, withLock;
@@ -120,6 +125,11 @@ function writeState(state) {
     fs.mkdirSync(dir, { recursive: true });
     // Atomic write: write to temp file, then rename
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    try {
+      fs.rmSync(statePath, { force: true });
+    } catch {
+      /* best-effort */
+    }
     fs.renameSync(tmpPath, statePath);
   } catch (err) {
     // Clean up temp file on error
@@ -129,7 +139,10 @@ function writeState(state) {
       // ignore cleanup failures
     }
     // Log error but don't block execution
-    console.error(`Warning: Could not write to ${STATE_FILE}:`, sanitizeInput(err.message));
+    console.error(
+      `Warning: Could not write to ${STATE_FILE}:`,
+      sanitizeInput(err instanceof Error ? err.message : String(err))
+    );
   }
 }
 

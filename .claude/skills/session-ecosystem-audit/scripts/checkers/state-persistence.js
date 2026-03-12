@@ -15,7 +15,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[state-persistence] ${m}`);
   }
 }
@@ -40,7 +45,12 @@ function safeReadFile(filePath) {
     const content = fs.readFileSync(filePath, "utf8");
     return { content };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    let msg;
+    if (e instanceof Error) {
+      msg = e.message;
+    } else {
+      msg = String(e);
+    }
     return { error: msg };
   }
 }
@@ -193,7 +203,10 @@ function checkHandoffFileSchema(stateDir, findings) {
     });
   }
 
-  const validPct = Math.round((presentFields / HANDOFF_REQUIRED_FIELDS.length) * 100);
+  const validPct =
+    HANDOFF_REQUIRED_FIELDS.length > 0
+      ? Math.round((presentFields / HANDOFF_REQUIRED_FIELDS.length) * 100)
+      : 0;
   const scored = scoreMetric(validPct, bench.valid_pct, "higher-is-better");
 
   return {
@@ -430,7 +443,12 @@ function checkTaskStateFileHealth(stateDir, findings) {
       );
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    let msg;
+    if (e instanceof Error) {
+      msg = e.message;
+    } else {
+      msg = String(e);
+    }
     findings.push({
       id: "SEA-220",
       category: "task_state_file_health",

@@ -186,8 +186,13 @@ function runAnalyze() {
     }
   }
 
+  /** Escape a string for safe use in RegExp constructor */
+  function escapeRegex(s) {
+    return s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+  }
+
   function matchesWord(pattern) {
-    const parts = pattern.split(".?").map((p) => p.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"));
+    const parts = pattern.split(".?").map((p) => escapeRegex(p));
     const joined = parts.join("[^a-z0-9]?");
     return new RegExp(`(^|[^a-z0-9])(${joined})([^a-z0-9]|$)`, "i").test(requestLower);
   }
@@ -198,7 +203,7 @@ function runAnalyze() {
       .trim()
       .split(/\s+/)
       .filter(Boolean)
-      .map((t) => t.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"));
+      .map((t) => escapeRegex(t));
     if (tokens.length === 0) return false;
     return new RegExp(`(^|[^a-z0-9])(${tokens.join("[^a-z0-9]+")})([^a-z0-9]|$)`, "i").test(
       requestLower

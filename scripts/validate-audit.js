@@ -26,12 +26,6 @@ const __dirname = node_path.dirname(__filename);
 const FP_FILE = node_path.join(__dirname, "..", "docs", "audits", "FALSE_POSITIVES.jsonl");
 const AUDITS_DIR = node_path.join(__dirname, "..", "docs", "audits", "single-session");
 
-// Severity levels for validation strictness
-const SEVERITY_LEVELS = { S0: 0, S1: 1, S2: 2, S3: 3 };
-
-// Confidence levels
-const CONFIDENCE_LEVELS = { HIGH: 2, MEDIUM: 1, LOW: 0 };
-
 // Valid confidence values
 const VALID_CONFIDENCES = new Set(["HIGH", "MEDIUM", "LOW"]);
 

@@ -15,7 +15,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[data-quality-dedup] ${m}`);
   }
 }
@@ -42,8 +47,7 @@ function safeReadFile(filePath) {
     const readParts = ["read", "File", "Sync"];
     const readMethod = readParts.join("");
     return fs[readMethod](filePath, "utf8");
-  } catch (e) {
-    void (e instanceof Error ? e.message : String(e));
+  } catch {
     return null;
   }
 }
@@ -52,8 +56,7 @@ function safeReadFile(filePath) {
 function safeStatFile(filePath) {
   try {
     return fs.statSync(filePath);
-  } catch (e) {
-    void (e instanceof Error ? e.message : String(e));
+  } catch {
     return null;
   }
 }
@@ -81,7 +84,12 @@ function parseJsonlFile(filePath, maxSize) {
     try {
       items.push(JSON.parse(line));
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
+      let msg;
+      if (e instanceof Error) {
+        msg = e.message;
+      } else {
+        msg = String(e);
+      }
       parseErrors.push({ line: i + 1, error: msg });
     }
   }
@@ -97,8 +105,7 @@ function safeParseJson(filePath) {
   if (content === null) return null;
   try {
     return JSON.parse(content);
-  } catch (e) {
-    void (e instanceof Error ? e.message : String(e));
+  } catch {
     return null;
   }
 }
