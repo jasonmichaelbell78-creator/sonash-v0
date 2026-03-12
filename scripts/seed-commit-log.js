@@ -97,7 +97,7 @@ function getSessionCounter() {
  */
 function getRecentCommits() {
   try {
-    // nosemgrep: javascript.lang.security.audit.command-injection — count is a clamped integer [1,500], execFileSync uses arg array (no shell)
+    // nosemgrep: sonash.security.taint-user-input-to-exec
     const output = execFileSync(
       "git",
       [

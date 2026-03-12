@@ -258,10 +258,12 @@ function appendWarning(hook, type, severity, message, action = null, files = nul
   const data = readWarnings();
   if (isDuplicateWarning(data, hook, type, message)) return;
 
-  const occurrences = countRecentOccurrences(type);
+  const priorOccurrences = countRecentOccurrences(type);
+  const occurrences = priorOccurrences + 1; // include this warning
   const effectiveSeverity = escalateSeverity(severity, occurrences);
   const lastAck = data.acknowledged?.[type] || null;
-  const sinceAck = lastAck ? countOccurrencesSince(type, lastAck) : occurrences;
+  const priorSinceAck = lastAck ? countOccurrencesSince(type, lastAck) : priorOccurrences;
+  const sinceAck = priorSinceAck + 1; // include this warning
   const fileList = parseFileList(files);
 
   const entry = buildWarningEntry({

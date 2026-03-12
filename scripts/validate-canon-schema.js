@@ -267,17 +267,17 @@ function validateFile(filepath) {
   const result = new ValidationResult(basename(filepath));
 
   const content = readFileContent(filepath, result);
-  if (content === null) return result;
+  if (content !== null) {
+    const lines = content.trim().split("\n");
+    const seenIds = new Map();
 
-  const lines = content.trim().split("\n");
-  const seenIds = new Map();
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-
-    if (parseAndValidateLine(line, i + 1, seenIds, result)) {
-      result.findings++;
+      if (parseAndValidateLine(line, i + 1, seenIds, result)) {
+        result.findings++;
+      }
     }
   }
 

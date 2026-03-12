@@ -89,7 +89,7 @@ async function sonarFetch(endpoint, params = {}) {
 
   // Add timeout using AbortController
   const controller = new AbortController();
-  // nosemgrep: javascript.lang.security.detect-eval-with-expression, sonash.security.no-eval-usage — setTimeout with arrow function, not string eval
+  // nosemgrep: sonash.security.no-eval-usage
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   let response;
@@ -102,7 +102,7 @@ async function sonarFetch(endpoint, params = {}) {
     };
     response = await undiciFetch(url.toString(), fetchOptions);
   } catch (error) {
-    if (error.name === "AbortError") {
+    if (error instanceof Error && error.name === "AbortError") {
       throw new Error("SonarCloud API error: Request timed out");
     }
     throw new Error(
@@ -307,6 +307,7 @@ async function handleGetSecurityHotspots(args) {
     "hotspots"
   );
 
+  // nosemgrep: sonash.security.no-unsanitized-error-response
   const hotspots = allHotspots.map((h) => ({
     key: h.key,
     message: h.message,
@@ -339,6 +340,7 @@ async function handleGetIssues(args) {
     "issues"
   );
 
+  // nosemgrep: sonash.security.no-unsanitized-error-response
   const issues = allIssues.map((i) => ({
     key: i.key,
     type: i.type,

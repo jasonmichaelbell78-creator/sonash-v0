@@ -715,7 +715,7 @@ export { extractDeliverablesFromPlan, verifyDeliverable, runAutomatedDeliverable
 // Wrap in try-catch for robust handling of edge cases (relative paths, symlinks, etc.)
 let isMainModule = false;
 try {
-  // nosemgrep: javascript.lang.security.audit.path-traversal — argv[1] used only for main-module detection, not filesystem access
+  // nosemgrep: sonash.security.taint-path-traversal
   isMainModule =
     !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 } catch {

@@ -278,7 +278,7 @@ Exit codes:
     }
   } catch (err) {
     // validatePathInDir throws on escape; realpath throws on missing — both mean reject
-    if (err && err.message && err.message.includes("must be within")) {
+    if (err?.message?.includes("must be within")) {
       console.error("Error: File path escapes project root via symlink");
       process.exit(2);
     }

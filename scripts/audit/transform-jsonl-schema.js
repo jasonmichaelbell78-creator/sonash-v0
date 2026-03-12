@@ -378,15 +378,15 @@ function buildVerificationSteps(item) {
         ...provided,
         first_pass: {
           ...defaultVerificationSteps.first_pass,
-          ...(provided?.first_pass ?? {}),
+          ...provided?.first_pass,
         },
         second_pass: {
           ...defaultVerificationSteps.second_pass,
-          ...(provided?.second_pass ?? {}),
+          ...provided?.second_pass,
         },
         tool_confirmation: {
           ...defaultVerificationSteps.tool_confirmation,
-          ...(provided?.tool_confirmation ?? {}),
+          ...provided?.tool_confirmation,
         },
       },
       issue: "verification_steps: normalized object structure",

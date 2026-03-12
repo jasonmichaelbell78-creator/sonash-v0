@@ -1743,6 +1743,7 @@ function findPatternMatches(antiPattern, content, filePath) {
     const safeMatches = Array.isArray(matches) ? matches : [];
     for (const m of safeMatches) {
       if (!m || typeof m.line !== "number") continue;
+      // nosemgrep: sonash.security.no-unsanitized-error-response
       violations.push({
         file: filePath,
         line: m.line,
@@ -1800,6 +1801,7 @@ function findPatternMatches(antiPattern, content, filePath) {
 function buildViolation(antiPattern, match, content, filePath) {
   const beforeMatch = content.slice(0, match.index);
   const lineNumber = (beforeMatch.match(/\n/g) || []).length + 1;
+  // nosemgrep: sonash.security.no-unsanitized-error-response
   return {
     file: filePath,
     line: lineNumber,

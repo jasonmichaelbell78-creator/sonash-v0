@@ -345,7 +345,7 @@ async function fetchSonarCloudData() {
   };
 
   const controller = new AbortController();
-  // nosemgrep: javascript.lang.security.detect-eval-with-expression, sonash.security.no-eval-usage — setTimeout with arrow function, not string eval
+  // nosemgrep: sonash.security.no-eval-usage
   const timeoutId = setTimeout(() => controller.abort(), SONAR_CONFIG.timeout);
 
   try {
@@ -415,7 +415,7 @@ async function fetchSonarCloudData() {
       },
     };
   } catch (error) {
-    if (error.name === "AbortError") {
+    if (error instanceof Error && error.name === "AbortError") {
       return { success: false, error: "SonarCloud API: Request timed out" };
     }
     return {
