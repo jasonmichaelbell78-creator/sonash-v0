@@ -38,7 +38,7 @@ try {
   /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
   sanitizeInput = (v) =>
     String(v ?? "")
-      .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "")
+      .replace(/[\x00-\x1f\x7f]/g, "")
       .slice(0, 500);
   /* eslint-enable no-control-regex */
 }

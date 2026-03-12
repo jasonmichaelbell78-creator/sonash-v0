@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.98 **Created:** 2026-01-02 **Last Updated:** 2026-03-12
+**Document Version:** 17.99 **Created:** 2026-01-02 **Last Updated:** 2026-03-12
 
 ## Purpose
 
@@ -2381,5 +2381,59 @@ total (Fixed: 45, Deferred: 0, Rejected: 0)
   safeRename helper — bare renameSync fails on cross-device moves
 - CC reduction via helper extraction is mechanical but effective — 3 files
   reduced by extracting 2-3 helpers each
+
+---
+
+### Review #481: PR #427 R5 — Qodo + Semgrep + SonarCloud (2026-03-12)
+
+**Source:** Mixed (Qodo Compliance, Qodo Code Suggestions, Semgrep, SonarCloud)
+**PR/Branch:** PR #427 / testing-31126 **Items:** 23 total (Major: 6, Minor: 12,
+Trivial: 5)
+
+**Context:** Fifth review round on large hook-systems-audit PR (426 files). R5
+focused on security hardening of fallback implementations, CC reduction, and
+pattern compliance.
+
+**Issues Found:**
+
+1. Fallback sanitizeInput regex too permissive:
+   `[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]` preserved tab, LF, CR, and ESC — enabling
+   potential log injection and ANSI escape attacks. Fixed by expanding to
+   `[\x00-\x1f\x7f]` across all 7 fallback implementations. Propagation sweep
+   confirmed zero remaining old-pattern instances.
+
+2. Fallback isSafeToWrite parent dir traversal: rotate-state.js had a fallback
+   that checked only the leaf path for symlinks. An attacker could create a
+   symlinked parent directory. Fixed by walking parent chain.
+
+3. Semgrep taint-path-traversal re-flag: R4 added inline validation but
+   Semgrep's taint analysis didn't recognize it. Refactored to use
+   validatePathInDir() from security-helpers.js — the Semgrep-approved helper.
+
+4. Object spread on optional sub-properties: `...provided?.first_pass` throws
+   TypeError when provided exists but first_pass is undefined. Fixed with
+   `?? {}`.
+
+5. SonarCloud CC reduction: Extracted countBypassesInWindow() from
+   checkBypassDebtThreshold (18→12) and readRawContent() from readJsonl (16→11).
+
+**Resolution:**
+
+- Fixed: 20 items
+- Deferred: 0 items
+- Rejected: 3 items (C3: local error logging not a leak, C4: system-generated
+  fields not user data, SC5: mutable accumulator pattern — false positive)
+
+**Key Learnings:**
+
+- Expanding control char regex from `[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]` to
+  `[\x00-\x1f\x7f]` is a single-line fix that addresses both ANSI escape
+  injection (Q2/Q4) and log injection (Q5/Q6) simultaneously — 4 items with 1
+  regex change
+- Semgrep taint analysis requires using the project's approved helper functions
+  (validatePathInDir) — inline validation that achieves the same result won't
+  satisfy the taint tracker
+- Parent directory symlink traversal is a real attack vector even when the leaf
+  path is checked — fallback isSafeToWrite implementations need the parent walk
 
 ---

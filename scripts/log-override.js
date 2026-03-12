@@ -180,30 +180,38 @@ function logOverride(check, reason) {
  * Deduplicates against MASTER_DEBT.jsonl to avoid duplicate entries.
  * Best-effort — never blocks hook execution.
  */
+/**
+ * Count how many times a check was bypassed in the override log within the given window.
+ * Returns -1 if the log is unreadable/unsafe.
+ */
+function countBypassesInWindow(check, windowDays) {
+  try {
+    const st = fs.lstatSync(OVERRIDE_LOG);
+    if (st.isSymbolicLink()) return -1;
+    if (st.size > 2 * 1024 * 1024) return -1;
+  } catch {
+    return -1;
+  }
+  const content = fs.readFileSync(OVERRIDE_LOG, "utf8");
+  const cutoff = Date.now() - windowDays * 24 * 60 * 60 * 1000;
+  let count = 0;
+  for (const line of content.split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const e = JSON.parse(line);
+      if (e.check === check && new Date(e.timestamp).getTime() > cutoff) count++;
+    } catch {
+      /* skip malformed */
+    }
+  }
+  return count;
+}
+
 function checkBypassDebtThreshold(check) {
   try {
-    try {
-      const st = fs.lstatSync(OVERRIDE_LOG);
-      if (st.isSymbolicLink()) return;
-      if (st.size > 2 * 1024 * 1024) return; // refuse unexpectedly large logs
-    } catch {
-      return; // missing/unreadable log: nothing to do
-    }
-    const content = fs.readFileSync(OVERRIDE_LOG, "utf8");
-    const cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
-    let count = 0;
-    for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        const e = JSON.parse(line);
-        if (e.check === check && new Date(e.timestamp).getTime() > cutoff) count++;
-      } catch {
-        /* skip malformed */
-      }
-    }
+    const count = countBypassesInWindow(check, 14);
     if (count < 15) return;
 
-    // Check if DEBT entry already exists for this check's bypass pattern
     const repoRoot = getRepoRoot();
     const masterDebtPath = path.join(repoRoot, "docs", "technical-debt", "MASTER_DEBT.jsonl");
     const dedupedPath = path.join(repoRoot, "docs", "technical-debt", "raw", "deduped.jsonl");
@@ -214,15 +222,14 @@ function checkBypassDebtThreshold(check) {
         .replaceAll(/[^A-Z0-9_:-]+/g, "_")
         .slice(0, 60) || "UNKNOWN";
 
-    const debtTitle = `Hook bypass threshold: ${check} overridden ${count}+ times in 14 days`;
-
     try {
       const debtContent = fs.readFileSync(masterDebtPath, "utf8");
-      if (debtContent.includes(`"hook-bypass-${safeCheckToken}"`)) return; // Already tracked
+      if (debtContent.includes(`"hook-bypass-${safeCheckToken}"`)) return;
     } catch {
       /* file may not exist — proceed with creation */
     }
 
+    const debtTitle = `Hook bypass threshold: ${check} overridden ${count}+ times in 14 days`;
     const debtEntry = {
       source_id: `hook-bypass-${safeCheckToken}`,
       source_file: "scripts/log-override.js",
@@ -245,7 +252,6 @@ function checkBypassDebtThreshold(check) {
     };
     const debtLine = JSON.stringify(debtEntry) + "\n";
 
-    // Append to both MASTER_DEBT and deduped (per memory: generate-views.js overwrites MASTER_DEBT from deduped)
     for (const p of [masterDebtPath, dedupedPath]) {
       try {
         fs.mkdirSync(path.dirname(p), { recursive: true });

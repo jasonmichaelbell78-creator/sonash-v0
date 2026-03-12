@@ -242,8 +242,8 @@ const HTML_ENTITY_RE = /&(?:lt|gt|amp|quot|#39);/g;
 
 function stripHtml(html) {
   return html
-    .replace(/<[^>]{1,1000}>/g, "")
-    .replace(HTML_ENTITY_RE, (match) => HTML_ENTITIES[match] || match);
+    .replaceAll(/<[^>]{1,1000}>/g, "")
+    .replaceAll(HTML_ENTITY_RE, (match) => HTML_ENTITIES[match] || match);
 }
 
 // Main function

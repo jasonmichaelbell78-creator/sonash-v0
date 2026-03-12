@@ -70,6 +70,13 @@ function parseArgs() {
 function countRecentOccurrences(type, sinceDaysAgo) {
   try {
     const logPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
+    try {
+      const st = fs.lstatSync(logPath);
+      if (st.isSymbolicLink()) return 0;
+      if (st.size > 2 * 1024 * 1024) return 0;
+    } catch {
+      return 0;
+    }
     const content = fs.readFileSync(logPath, "utf8");
     const cutoff = Date.now() - (sinceDaysAgo || 7) * 24 * 60 * 60 * 1000;
     let count = 0;
@@ -94,6 +101,13 @@ function countRecentOccurrences(type, sinceDaysAgo) {
 function countOccurrencesSince(type, sinceTimestamp) {
   try {
     const logPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
+    try {
+      const st = fs.lstatSync(logPath);
+      if (st.isSymbolicLink()) return 0;
+      if (st.size > 2 * 1024 * 1024) return 0;
+    } catch {
+      return 0;
+    }
     const content = fs.readFileSync(logPath, "utf8");
     const since = new Date(sinceTimestamp).getTime();
     let count = 0;
@@ -231,6 +245,7 @@ function writeAuditTrail(entry) {
     const auditRecord = {
       ...entry,
       actor: "hook-system",
+      user: process.env.USER || process.env.USERNAME || "unknown",
       outcome: entry.severity === "error" ? "blocked" : "warned",
     };
     safeAppendFileSync(logPath, JSON.stringify(auditRecord) + "\n");

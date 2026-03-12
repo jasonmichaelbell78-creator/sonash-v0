@@ -22,7 +22,15 @@ let isSafeToWrite, sanitizeInput;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
 } catch {
-  isSafeToWrite = () => false;
+  isSafeToWrite = (filePath) => {
+    try {
+      return !fs.lstatSync(filePath).isSymbolicLink();
+    } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? err.code : null;
+      if (code === "ENOENT") return true; // allow creating new files
+      return false;
+    }
+  };
 }
 try {
   ({ sanitizeInput } = require("./lib/sanitize-input"));
@@ -30,7 +38,7 @@ try {
   /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
   sanitizeInput = (v) =>
     String(v ?? "")
-      .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "")
+      .replace(/[\x00-\x1f\x7f]/g, "")
       .slice(0, 500);
   /* eslint-enable no-control-regex */
 }

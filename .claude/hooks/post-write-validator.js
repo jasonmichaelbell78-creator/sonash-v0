@@ -816,17 +816,24 @@ function updateReviewQueue(reviewQueuePath, normalizedFile, threshold) {
     if (!isSafeToWrite(tmpReviewPath)) return;
     fs.mkdirSync(path.dirname(reviewQueuePath), { recursive: true });
     fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
+    const cleanupTmp = () => {
+      try {
+        fs.rmSync(tmpReviewPath, { force: true });
+      } catch {
+        /* cleanup */
+      }
+    };
     try {
-      if (!isSafeToWrite(reviewQueuePath) || !isSafeToWrite(tmpReviewPath)) return;
+      if (!isSafeToWrite(reviewQueuePath) || !isSafeToWrite(tmpReviewPath)) return cleanupTmp();
       fs.renameSync(tmpReviewPath, reviewQueuePath);
     } catch {
       try {
-        if (!isSafeToWrite(reviewQueuePath)) return;
+        if (!isSafeToWrite(reviewQueuePath)) return cleanupTmp();
         fs.rmSync(reviewQueuePath, { force: true });
       } catch {
         /* best-effort */
       }
-      if (!isSafeToWrite(reviewQueuePath) || !isSafeToWrite(tmpReviewPath)) return;
+      if (!isSafeToWrite(reviewQueuePath) || !isSafeToWrite(tmpReviewPath)) return cleanupTmp();
       fs.renameSync(tmpReviewPath, reviewQueuePath);
     }
   } catch {

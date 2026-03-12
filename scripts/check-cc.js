@@ -34,7 +34,7 @@
 
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { join, dirname, extname } from "node:path";
+import { join, dirname, extname, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
@@ -476,6 +476,13 @@ function analyzeAST(ast, source) {
 // ---------------------------------------------------------------------------
 function analyzeFile(filePath) {
   const fullPath = join(ROOT, filePath);
+
+  // Path containment: ensure filePath doesn't escape ROOT via traversal
+  const rel = relative(ROOT, fullPath);
+  if (!rel || /^\.\.(?:[\\/]|$)/.test(rel) || isAbsolute(rel)) {
+    return { file: filePath, functions: [], error: "Path traversal blocked" };
+  }
+
   let source;
 
   // CLAUDE.md: wrap file reads in try/catch

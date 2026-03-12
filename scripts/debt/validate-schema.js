@@ -19,6 +19,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { loadConfig } = require("../config/load-config");
+const { validatePathInDir } = require("../lib/security-helpers");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const DEFAULT_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -256,31 +257,32 @@ Exit codes:
   const rawFilePath = parsed.file || DEFAULT_FILE;
 
   // Security: validate path is within project root (path traversal prevention)
+  // Uses validatePathInDir from security-helpers.js (Semgrep-approved pattern)
   const projectRoot = path.join(__dirname, "../..");
-  const resolvedPath = path.isAbsolute(rawFilePath)
-    ? path.resolve(rawFilePath)
-    : path.resolve(projectRoot, rawFilePath);
-
-  const validateWithinRoot = (candidatePath) => {
-    const rel = path.relative(projectRoot, candidatePath);
-    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
-      console.error("Error: File path must be within project root");
-      process.exit(2);
-    }
-  };
-
-  validateWithinRoot(resolvedPath);
+  let filePath;
+  try {
+    const validatedRel = validatePathInDir(projectRoot, rawFilePath);
+    filePath = path.resolve(projectRoot, validatedRel);
+  } catch {
+    console.error("Error: File path must be within project root");
+    process.exit(2);
+  }
 
   // Prevent symlink escape when the file exists
-  let filePath = resolvedPath;
   try {
-    if (fs.existsSync(resolvedPath)) {
-      const real = fs.realpathSync(resolvedPath);
-      validateWithinRoot(real);
+    if (fs.existsSync(filePath)) {
+      const real = fs.realpathSync(filePath);
+      // Re-validate the resolved real path
+      validatePathInDir(projectRoot, path.relative(projectRoot, real));
       filePath = real;
     }
-  } catch {
-    // If realpath fails, keep the earlier lexical-path validation
+  } catch (err) {
+    // validatePathInDir throws on escape; realpath throws on missing — both mean reject
+    if (err && err.message && err.message.includes("must be within")) {
+      console.error("Error: File path escapes project root via symlink");
+      process.exit(2);
+    }
+    // If realpath fails for other reasons, keep the lexical-path validation
   }
 
   if (!parsed.quiet) {

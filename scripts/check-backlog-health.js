@@ -42,6 +42,11 @@ const ACTIVE_STATUSES = new Set(["NEW", "VERIFIED", "IN_PROGRESS", "PENDING"]);
  * Returns { item } on success, or { error } on failure.
  */
 function parseSingleEntry(line) {
+  // Size guard: prevent pathological single-line JSON DoS
+  if (line.length > 200_000) {
+    return { error: `Line too large (${line.length} chars)` };
+  }
+
   let entry;
   try {
     entry = JSON.parse(line);
