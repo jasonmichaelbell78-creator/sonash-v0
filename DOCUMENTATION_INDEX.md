@@ -160,7 +160,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓0 ↑8      | 2026-03-11    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓0 ↑8      | 2026-03-12    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-03-11    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-05    |
 | [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑17    | 2026-03-11    |
@@ -441,7 +441,7 @@ _TDMS tracking and management_
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-23    |
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓4 ↑4      | 2026-03-11    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-11    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-09    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-11    |
 
 ### Templates (Tier 3)
 
