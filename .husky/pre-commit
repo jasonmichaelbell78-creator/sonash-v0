@@ -7,7 +7,7 @@
 # Note: Husky v9 runs hooks with `sh -e`, so must be POSIX-compatible.
 # Cannot use bash process substitution >() since sh doesn't support it.
 # Simple redirect to log file; caller can read the log after.
-HOOK_OUTPUT_LOG="$(git rev-parse --show-toplevel 2>/dev/null || echo .)/.git/hook-output.log"
+HOOK_OUTPUT_LOG="$(git rev-parse --git-dir 2>/dev/null || echo .git)/hook-output.log"
 exec 3>&2  # save original stderr for non-fatal warnings (PR creep, etc.)
 exec > "$HOOK_OUTPUT_LOG" 2>&1
 

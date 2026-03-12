@@ -1,47 +1,83 @@
 # Implementation Plan: Tooling & Infrastructure Audit
 
+**Date:** 2026-03-12 **Status:** Draft
+
+## Purpose & Scope
+
+Optimize the project's tooling infrastructure across security, CI/CD,
+configuration, and developer experience. Covers: security hardening (branch
+protection, vulnerability alerts, SHA pinning), GitHub workflow fixes and
+modernization, plugin/agent/MCP deduplication, npm script audit, ESLint plugin
+optimization, new tooling additions, review bot configuration, and documentation
+updates.
+
 ## Summary
 
-Comprehensive optimization of the project's tooling infrastructure: security hardening (branch protection, vulnerability alerts, SHA pinning), GitHub workflow fixes and modernization, plugin/agent/MCP deduplication (remove 19 agents, 2 plugins, 2 MCP servers), npm script full audit, ESLint plugin optimization, new tooling additions (4 devDeps, 1 GH Action), review bot configuration, and documentation update across all affected files.
+Comprehensive optimization of the project's tooling infrastructure: security
+hardening (branch protection, vulnerability alerts, SHA pinning), GitHub
+workflow fixes and modernization, plugin/agent/MCP deduplication (remove 19
+agents, 2 plugins, 2 MCP servers), npm script full audit, ESLint plugin
+optimization, new tooling additions (4 devDeps, 1 GH Action), review bot
+configuration, and documentation update across all affected files.
 
-**Decisions:** See DECISIONS.md (30 decisions)
-**Effort Estimate:** XL — 8 implementation steps spanning security, CI/CD, config, code, and documentation
+**Decisions:** See DECISIONS.md (30 decisions) **Effort Estimate:** XL — 8
+implementation steps spanning security, CI/CD, config, code, and documentation
 
-**Out of Scope:** CI failure on main (pre-existing, not caused by tooling configuration — tracked separately).
+**Out of Scope:** CI failure on main (pre-existing, not caused by tooling
+configuration — tracked separately).
+
+## Status & Progress
+
+- **Current:** Not started — pending approval
+- **Prerequisite for:** Plan 2 (Code Quality Overhaul)
 
 ## Files to Create/Modify
 
 ### New Files (5)
+
 1. **`.qodo.yaml`** — Qodo review bot configuration with category suppressions
 2. **`.github/workflows/bundle-size.yml`** — compressed-size-action workflow
 3. **`commitlint.config.js`** — commitlint configuration
-4. **`.planning/tooling-infrastructure-audit/npm-script-audit.md`** — audit results for ~140 scripts
-5. **`.planning/tooling-infrastructure-audit/skill-orphan-scan.md`** — orphan skill findings
+4. **`.planning/tooling-infrastructure-audit/npm-script-audit.md`** — audit
+   results for ~140 scripts
+5. **`.planning/tooling-infrastructure-audit/skill-orphan-scan.md`** — orphan
+   skill findings
 
 ### Modified Files (25+)
+
 1. **`.claude/settings.json`** — remove GSD hook duplication, update hook refs
-2. **`~/.claude/settings.json`** (user-level) — remove CodeRabbit, hookify, add commitlint config
+2. **`~/.claude/settings.json`** (user-level) — remove CodeRabbit, hookify, add
+   commitlint config
 3. **`.mcp.json`** — remove memory server entry
-4. **`.claude/skills/checkpoint/SKILL.md`** — remove --mcp flag and MCP Save section
+4. **`.claude/skills/checkpoint/SKILL.md`** — remove --mcp flag and MCP Save
+   section
 5. **`.serena/project.yml`** — DELETE
 6. **`.claude/hooks/stop-serena-dashboard.js`** — DELETE
 7. **19 agent files in `.claude/agents/`** — DELETE
 8. **`.github/workflows/ci.yml`** — update action versions + SHA pins
-9. **`.github/workflows/auto-label-review-tier.yml`** — SHA-pin tj-actions/changed-files
+9. **`.github/workflows/auto-label-review-tier.yml`** — SHA-pin
+   tj-actions/changed-files
 10. **`.github/workflows/docs-lint.yml`** — SHA-pin tj-actions/changed-files
-11. **`.github/workflows/backlog-enforcement.yml`** — remove dead backlog-health job, update action versions
-12. **`.github/workflows/deploy-firebase.yml`** — remove dead preview-deploy job, fix service account key handling
-13. **`.github/workflows/cleanup-branches.yml`** — fix counter bug, update action version
-14. **`.github/workflows/pattern-compliance-audit.yml`** — fix string-vs-numeric comparison
+11. **`.github/workflows/backlog-enforcement.yml`** — remove dead backlog-health
+    job, update action versions
+12. **`.github/workflows/deploy-firebase.yml`** — remove dead preview-deploy
+    job, fix service account key handling
+13. **`.github/workflows/cleanup-branches.yml`** — fix counter bug, update
+    action version
+14. **`.github/workflows/pattern-compliance-audit.yml`** — fix string-vs-numeric
+    comparison
 15. **`.github/workflows/semgrep.yml`** — migrate to semgrep/semgrep-action
-16. **`.github/workflows/sonarcloud.yml`** — update action versions (keep disabled)
+16. **`.github/workflows/sonarcloud.yml`** — update action versions (keep
+    disabled)
 17. **`.github/workflows/validate-plan.yml`** — DELETE
-18. **`.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md`** — DELETE (one-time procedure already executed; git history preserves content)
+18. **`.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md`** — DELETE (one-time
+    procedure already executed; git history preserves content)
 19. **`.github/copilot-instructions.md`** — full rewrite to current state
 20. **`eslint-plugin-sonash/index.js`** — enable 4 rules, merge 1, remove 2
 21. **`eslint.config.mjs`** — update rule config for sonash plugin changes
 22. **`.husky/pre-commit`** — add timing output
-23. **`package.json`** — add new devDeps, remove dead scripts, consolidate overlapping
+23. **`package.json`** — add new devDeps, remove dead scripts, consolidate
+    overlapping
 24. **`CLAUDE.md`** — update agent trigger references
 25. **`SKILL_INDEX.md`** — update after any skill orphan removal
 
@@ -56,6 +92,7 @@ Comprehensive optimization of the project's tooling infrastructure: security har
    - Require status checks to pass (CI workflow)
    - No required reviewers (solo dev)
    - Disallow force pushes
+
    ```bash
    gh api repos/jasonmichaelbell78-creator/sonash-v0/branches/main/protection \
      -X PUT -f required_status_checks='{"strict":true,"contexts":["lint-typecheck-test","build"]}' \
@@ -68,8 +105,8 @@ Comprehensive optimization of the project's tooling infrastructure: security har
    gh api repos/jasonmichaelbell78-creator/sonash-v0/vulnerability-alerts -X PUT
    ```
 
-**Done when:** `gh api repos/.../branches/main/protection` returns protection rules; `gh api repos/.../vulnerability-alerts` returns 204.
-**Depends on:** None
+**Done when:** `gh api repos/.../branches/main/protection` returns protection
+rules; `gh api repos/.../vulnerability-alerts` returns 204. **Depends on:** None
 **Triggers:** None
 
 ---
@@ -80,7 +117,9 @@ Comprehensive optimization of the project's tooling infrastructure: security har
 
 ### 2a: SHA-pin all third-party actions to latest stable
 
-For every workflow file, replace tag-only references with SHA-pinned latest versions:
+For every workflow file, replace tag-only references with SHA-pinned latest
+versions:
+
 - `actions/checkout@v6` → `actions/checkout@<v6-SHA>`
 - `actions/setup-node@v6` → `actions/setup-node@<v6-SHA>`
 - `actions/github-script@v8` → `actions/github-script@<v8-SHA>`
@@ -90,6 +129,7 @@ For every workflow file, replace tag-only references with SHA-pinned latest vers
 - `github/codeql-action/*@v4` → pinned SHAs
 
 Fetch latest SHAs:
+
 ```bash
 gh api repos/actions/checkout/git/refs/tags/v6 --jq '.object.sha'
 # Repeat for each action
@@ -98,26 +138,37 @@ gh api repos/actions/checkout/git/refs/tags/v6 --jq '.object.sha'
 ### 2b: Migrate Semgrep action
 
 In `semgrep.yml`:
-- Replace `returntocorp/semgrep-action@<old-SHA>` with `semgrep/semgrep-action@<latest-SHA>`
+
+- Replace `returntocorp/semgrep-action@<old-SHA>` with
+  `semgrep/semgrep-action@<latest-SHA>`
 - Remove `|| true` that masks failures in local rules step
 - Verify SARIF upload still works
 
 ### 2c: Fix workflow bugs
 
-1. **cleanup-branches.yml** — Fix counter bug: replace pipe-to-while with process substitution or temp file approach so DELETED/SKIPPED/FAILED counters propagate
-2. **pattern-compliance-audit.yml** — Fix comparison: `${{ steps.scan.outputs.blocking != '0' }}` instead of `${{ steps.scan.outputs.blocking > 0 }}`
-3. **deploy-firebase.yml** — Replace service account key file write with `google-github-actions/auth` action
+1. **cleanup-branches.yml** — Fix counter bug: replace pipe-to-while with
+   process substitution or temp file approach so DELETED/SKIPPED/FAILED counters
+   propagate
+2. **pattern-compliance-audit.yml** — Fix comparison:
+   `${{ steps.scan.outputs.blocking != '0' }}` instead of
+   `${{ steps.scan.outputs.blocking > 0 }}`
+3. **deploy-firebase.yml** — Replace service account key file write with
+   `google-github-actions/auth` action
 
 ### 2d: Remove dead code
 
-1. **backlog-enforcement.yml** — Remove `backlog-health` job entirely (references archived file); keep `security-patterns` job
+1. **backlog-enforcement.yml** — Remove `backlog-health` job entirely
+   (references archived file); keep `security-patterns` job
 2. **deploy-firebase.yml** — Remove commented-out `preview-deploy` job
 3. **validate-plan.yml** — DELETE entire file
-4. **ISSUE_TEMPLATE_APP_CHECK_REENABLE.md** — DELETE (one-time procedure already executed; git history preserves content)
+4. **ISSUE_TEMPLATE_APP_CHECK_REENABLE.md** — DELETE (one-time procedure already
+   executed; git history preserves content)
 
-**Done when:** All workflows pass `act` dry-run or manual workflow_dispatch test; no tag-only third-party action refs remain; `grep -r '@v[0-9]' .github/workflows/` returns only first-party actions.
-**Depends on:** None (can run parallel with Step 1)
-**Triggers:** Step 8 (documentation update)
+**Done when:** All workflows pass `act` dry-run or manual workflow_dispatch
+test; no tag-only third-party action refs remain;
+`grep -r '@v[0-9]' .github/workflows/` returns only first-party actions.
+**Depends on:** None (can run parallel with Step 1) **Triggers:** Step 8
+(documentation update)
 
 ---
 
@@ -128,13 +179,15 @@ In `semgrep.yml`:
 ### 3a: Remove MCP memory server
 
 1. Edit `.mcp.json` — remove `memory` server entry (keep `sonarcloud`)
-2. Edit `.claude/skills/checkpoint/SKILL.md` — remove `--mcp` flag, "MCP Save" section, and step 3 from recovery flow
+2. Edit `.claude/skills/checkpoint/SKILL.md` — remove `--mcp` flag, "MCP Save"
+   section, and step 3 from recovery flow
 
 ### 3b: Remove Serena
 
 1. DELETE `.serena/project.yml`
 2. DELETE `.claude/hooks/stop-serena-dashboard.js`
-3. Edit `.claude/settings.json` — remove the SessionStart hook entry for `stop-serena-dashboard.js`
+3. Edit `.claude/settings.json` — remove the SessionStart hook entry for
+   `stop-serena-dashboard.js`
 
 ### 3c: Remove dead plugins (user-level settings)
 
@@ -144,11 +197,14 @@ In `semgrep.yml`:
 
 ### 3d: Remove GSD hook duplication
 
-1. Edit `.claude/settings.json` — remove the SessionStart hook entry for `gsd-check-update.js` (lines 33-38). The user-level `~/.claude/settings.json` handles this globally.
+1. Edit `.claude/settings.json` — remove the SessionStart hook entry for
+   `gsd-check-update.js` (lines 33-38). The user-level `~/.claude/settings.json`
+   handles this globally.
 
-**Done when:** `.mcp.json` has only `sonarcloud`; `.serena/` directory gone; no Serena hook in settings; CodeRabbit and hookify removed from user settings; GSD hook runs once per session (not twice).
-**Depends on:** None (can run parallel with Steps 1-2)
-**Triggers:** Step 8 (documentation update)
+**Done when:** `.mcp.json` has only `sonarcloud`; `.serena/` directory gone; no
+Serena hook in settings; CodeRabbit and hookify removed from user settings; GSD
+hook runs once per session (not twice). **Depends on:** None (can run parallel
+with Steps 1-2) **Triggers:** Step 8 (documentation update)
 
 ---
 
@@ -159,6 +215,7 @@ In `semgrep.yml`:
 ### 4a: Delete 19 agent files
 
 Delete the following from `.claude/agents/`:
+
 ```
 database-architect.md
 fullstack-developer.md
@@ -184,6 +241,7 @@ git-flow-manager.md
 ### 4b: Verify remaining agents
 
 Confirm `.claude/agents/` contains only:
+
 - `nextjs-architecture-expert.md`
 - `react-performance-optimization.md`
 - `security-auditor.md`
@@ -191,9 +249,9 @@ Confirm `.claude/agents/` contains only:
 - `documentation-expert.md`
 - `global/` (11 GSD agents — do not touch)
 
-**Done when:** `ls .claude/agents/*.md | wc -l` returns 5; `ls .claude/agents/global/*.md | wc -l` returns 11.
-**Depends on:** None (can run parallel with Steps 1-3)
-**Triggers:** Step 8 (documentation update)
+**Done when:** `ls .claude/agents/*.md | wc -l` returns 5;
+`ls .claude/agents/global/*.md | wc -l` returns 11. **Depends on:** None (can
+run parallel with Steps 1-3) **Triggers:** Step 8 (documentation update)
 
 ---
 
@@ -204,6 +262,7 @@ Confirm `.claude/agents/` contains only:
 ### 5a: Enable 4 Phase 3 rules
 
 In `eslint.config.mjs`, add to the sonash rules section:
+
 ```javascript
 "sonash/no-effect-missing-cleanup": "warn",
 "sonash/no-async-component": "error",
@@ -214,7 +273,9 @@ In `eslint.config.mjs`, add to the sonash rules section:
 ### 5b: Merge no-unguarded-loadconfig into no-unguarded-file-read
 
 In `eslint-plugin-sonash/`:
-1. Add `require()` coverage from `no-unguarded-loadconfig` into `no-unguarded-file-read` rule
+
+1. Add `require()` coverage from `no-unguarded-loadconfig` into
+   `no-unguarded-file-read` rule
 2. Remove `no-unguarded-loadconfig` rule definition
 3. Update index.js to remove the rule export
 
@@ -230,11 +291,13 @@ In `eslint-plugin-sonash/`:
 ```bash
 npm run lint
 ```
+
 Address any new findings from the 4 newly-enabled rules.
 
-**Done when:** `npm run lint` passes cleanly; 4 new rules active; 2 rules removed; merged rule covers both file-read and loadconfig patterns.
-**Depends on:** None (can run parallel with Steps 1-4)
-**Triggers:** Step 8 (documentation update)
+**Done when:** `npm run lint` passes cleanly; 4 new rules active; 2 rules
+removed; merged rule covers both file-read and loadconfig patterns. **Depends
+on:** None (can run parallel with Steps 1-4) **Triggers:** Step 8 (documentation
+update)
 
 ---
 
@@ -251,16 +314,32 @@ npm install -D @next/bundle-analyzer commitlint @commitlint/config-conventional 
 ### 6b: Configure commitlint
 
 Create `commitlint.config.js`:
+
 ```javascript
 export default {
-  extends: ['@commitlint/config-conventional'],
+  extends: ["@commitlint/config-conventional"],
   rules: {
-    'type-enum': [2, 'always', ['feat', 'fix', 'docs', 'chore', 'refactor', 'test', 'ci', 'perf', 'style']],
+    "type-enum": [
+      2,
+      "always",
+      [
+        "feat",
+        "fix",
+        "docs",
+        "chore",
+        "refactor",
+        "test",
+        "ci",
+        "perf",
+        "style",
+      ],
+    ],
   },
 };
 ```
 
 Add commitlint to husky commit-msg hook:
+
 ```bash
 # .husky/commit-msg
 npx --no-install commitlint --edit "$1"
@@ -269,9 +348,12 @@ npx --no-install commitlint --edit "$1"
 ### 6c: Configure @next/bundle-analyzer
 
 Add to `next.config.js`/`next.config.mjs`:
+
 ```javascript
-import bundleAnalyzer from '@next/bundle-analyzer';
-const withBundleAnalyzer = bundleAnalyzer({ enabled: process.env.ANALYZE === 'true' });
+import bundleAnalyzer from "@next/bundle-analyzer";
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 // Wrap existing config
 ```
 
@@ -280,6 +362,7 @@ Add npm script: `"analyze": "ANALYZE=true npm run build"`
 ### 6d: Add compressed-size-action workflow
 
 Create `.github/workflows/bundle-size.yml`:
+
 ```yaml
 name: Bundle Size
 on: pull_request
@@ -295,7 +378,8 @@ jobs:
 
 ### 6e: Configure typedoc
 
-Add npm script: `"docs:api": "typedoc --entryPointStrategy expand src/lib/ --out docs/api"`
+Add npm script:
+`"docs:api": "typedoc --entryPointStrategy expand src/lib/ --out docs/api"`
 
 ### 6f: Evaluate unit-test-generator plugin
 
@@ -306,9 +390,11 @@ Add npm script: `"docs:api": "typedoc --entryPointStrategy expand src/lib/ --out
 # If useful: keep and document
 ```
 
-**Done when:** `npm run analyze` produces bundle report; `npx commitlint --from HEAD~1` validates commits; `npm run docs:api` generates typedoc output; bundle-size workflow passes dry run.
-**Depends on:** None (can run parallel with Steps 1-5)
-**Triggers:** Step 7 (npm script audit — new scripts to integrate), Step 8 (documentation update)
+**Done when:** `npm run analyze` produces bundle report;
+`npx commitlint --from HEAD~1` validates commits; `npm run docs:api` generates
+typedoc output; bundle-size workflow passes dry run. **Depends on:** None (can
+run parallel with Steps 1-5) **Triggers:** Step 7 (npm script audit — new
+scripts to integrate), Step 8 (documentation update)
 
 ---
 
@@ -319,11 +405,16 @@ Add npm script: `"docs:api": "typedoc --entryPointStrategy expand src/lib/ --out
 ### 7a: Audit all ~140 npm scripts
 
 For each script in `package.json`:
-1. Run it (or dry-run if destructive)
-2. Classify: ACTIVE (runs successfully, serves clear purpose), DEAD (references deleted files, errors), REDUNDANT (duplicate of another script), CONSOLIDATE (merge with related script)
-3. Document findings in `.planning/tooling-infrastructure-audit/npm-script-audit.md`
 
-Known dead scripts (from memory): `ecosystem:audit:all`, `lighthouse`, `docs:lint` (and 3 others)
+1. Run it (or dry-run if destructive)
+2. Classify: ACTIVE (runs successfully, serves clear purpose), DEAD (references
+   deleted files, errors), REDUNDANT (duplicate of another script), CONSOLIDATE
+   (merge with related script)
+3. Document findings in
+   `.planning/tooling-infrastructure-audit/npm-script-audit.md`
+
+Known dead scripts (from memory): `ecosystem:audit:all`, `lighthouse`,
+`docs:lint` (and 3 others)
 
 ### 7b: Execute cleanup
 
@@ -333,13 +424,15 @@ Known dead scripts (from memory): `ecosystem:audit:all`, `lighthouse`, `docs:lin
 
 ### 7c: Review bot configuration
 
-1. Create `.qodo.yaml` — suppress categories where Gemini/Copilot provide better coverage
+1. Create `.qodo.yaml` — suppress categories where Gemini/Copilot provide better
+   coverage
 2. Update Gemini config (if configurable) to focus on architectural review
 3. copilot-instructions.md update happens in Step 8
 
 ### 7d: Husky pre-commit optimization
 
 1. Add timing output to pre-commit hook:
+
    ```bash
    HOOK_START=$(date +%s%N)
    # ... at end:
@@ -348,19 +441,25 @@ Known dead scripts (from memory): `ecosystem:audit:all`, `lighthouse`, `docs:lin
    echo "⏱️ Pre-commit checks completed in ${ELAPSED}ms"
    ```
 
-2. Investigate oxlint double-run: lint-staged runs `oxlint -c .oxlintrc.json` on staged files, then Wave 1 runs `npm run lint` which runs ESLint (not oxlint again). Verify whether ESLint config also invokes oxlint — if not, this may be correct behavior (oxlint on staged only, ESLint on all).
+2. Investigate oxlint double-run: lint-staged runs `oxlint -c .oxlintrc.json` on
+   staged files, then Wave 1 runs `npm run lint` which runs ESLint (not oxlint
+   again). Verify whether ESLint config also invokes oxlint — if not, this may
+   be correct behavior (oxlint on staged only, ESLint on all).
 
 ### 7e: Skill orphan scan
 
 Quick scan for skills that:
+
 - Reference deleted agents
 - Reference removed scripts
-- Have broken internal links
-Document findings in `.planning/tooling-infrastructure-audit/skill-orphan-scan.md`
+- Have broken internal links Document findings in
+  `.planning/tooling-infrastructure-audit/skill-orphan-scan.md`
 
-**Done when:** npm-script-audit.md documents all ~140 scripts with classifications; dead scripts removed; .qodo.yaml created; pre-commit hook has timing output; skill orphan scan complete.
-**Depends on:** Steps 3-6 (need to know what was removed/changed to check for broken references)
-**Triggers:** Step 8 (documentation update)
+**Done when:** npm-script-audit.md documents all ~140 scripts with
+classifications; dead scripts removed; .qodo.yaml created; pre-commit hook has
+timing output; skill orphan scan complete. **Depends on:** Steps 3-6 (need to
+know what was removed/changed to check for broken references) **Triggers:** Step
+8 (documentation update)
 
 ---
 
@@ -370,13 +469,15 @@ Document findings in `.planning/tooling-infrastructure-audit/skill-orphan-scan.m
 
 ### 8a: Update CLAUDE.md
 
-- Section 7 agent triggers: verify security-auditor, code-reviewer, documentation-expert references still point to existing agents
+- Section 7 agent triggers: verify security-auditor, code-reviewer,
+  documentation-expert references still point to existing agents
 - Remove any references to deleted agents
 - Add any new tooling references (commitlint, typedoc, bundle analyzer)
 
 ### 8b: Update copilot-instructions.md
 
 Full rewrite of `.github/copilot-instructions.md` to reflect current:
+
 - Project structure
 - Stack versions (Next.js 16, React 19, Firebase 12.8, etc.)
 - Build/test commands
@@ -399,10 +500,12 @@ Full rewrite of `.github/copilot-instructions.md` to reflect current:
 
 ### 8e: Update .mcp.json note
 
-Update the `_note` field in `.mcp.json` to reflect current auto-discovered servers (remove Serena reference if present).
+Update the `_note` field in `.mcp.json` to reflect current auto-discovered
+servers (remove Serena reference if present).
 
-**Done when:** All docs reference only existing agents/skills/workflows/scripts; copilot-instructions.md is current; no broken references in CLAUDE.md.
-**Depends on:** All previous steps (needs final state to document accurately)
+**Done when:** All docs reference only existing agents/skills/workflows/scripts;
+copilot-instructions.md is current; no broken references in CLAUDE.md. **Depends
+on:** All previous steps (needs final state to document accurately)
 **Triggers:** Step 9 (audit)
 
 ---
@@ -411,13 +514,16 @@ Update the `_note` field in `.mcp.json` to reflect current auto-discovered serve
 
 Run code-reviewer agent on all new/modified files. Verify:
 
-1. **Security:** Branch protection active, vulnerability alerts enabled, all actions SHA-pinned
-2. **Consistency:** No references to deleted agents, removed plugins, dead scripts
-3. **Functionality:** CI passes, pre-commit hook works, new devDeps configured correctly
+1. **Security:** Branch protection active, vulnerability alerts enabled, all
+   actions SHA-pinned
+2. **Consistency:** No references to deleted agents, removed plugins, dead
+   scripts
+3. **Functionality:** CI passes, pre-commit hook works, new devDeps configured
+   correctly
 4. **Completeness:** Every decision in DECISIONS.md maps to a completed action
 
-**Done when:** All findings addressed or tracked in TDMS.
-**Depends on:** All previous steps.
+**Done when:** All findings addressed or tracked in TDMS. **Depends on:** All
+previous steps.
 
 ---
 
@@ -430,4 +536,13 @@ Wave 3 (after Wave 2): Step 8 (needs final state)
 Wave 4 (after Wave 3): Step 9 (audit)
 ```
 
-Steps 1-6 are fully independent and can be executed in parallel by separate agents.
+Steps 1-6 are fully independent and can be executed in parallel by separate
+agents.
+
+---
+
+## Version History
+
+| Version | Date       | Changes       |
+| ------- | ---------- | ------------- |
+| 1.0     | 2026-03-12 | Initial draft |
