@@ -267,7 +267,7 @@ function extractExternalUrls(content, filePath) {
  * Sleep for specified milliseconds
  */
 function sleep(ms) {
-  // nosemgrep: javascript.lang.security.detect-eval-with-expression — setTimeout with function ref, not string eval
+  // nosemgrep: javascript.lang.security.detect-eval-with-expression, sonash.security.no-eval-usage — setTimeout with function ref, not string eval
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 

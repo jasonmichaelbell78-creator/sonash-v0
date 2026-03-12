@@ -91,7 +91,7 @@ async function fetchSonarCloudIssues(token, componentKey) {
 
     const url = `${SONARCLOUD_API}/issues/search?${params}`;
     const controller = new AbortController();
-    // nosemgrep: javascript.lang.security.detect-eval-with-expression — setTimeout with arrow function, not string eval
+    // nosemgrep: javascript.lang.security.detect-eval-with-expression, sonash.security.no-eval-usage — setTimeout with arrow function, not string eval
     const timeout = setTimeout(() => controller.abort(), 30_000);
     const response = await fetch(url, {
       signal: controller.signal,
@@ -146,7 +146,7 @@ async function fetchSonarCloudHotspots(token, componentKey) {
 
     const url = `${SONARCLOUD_API}/hotspots/search?${params}`;
     const controller = new AbortController();
-    // nosemgrep: javascript.lang.security.detect-eval-with-expression — setTimeout with arrow function, not string eval
+    // nosemgrep: javascript.lang.security.detect-eval-with-expression, sonash.security.no-eval-usage — setTimeout with arrow function, not string eval
     const timeout = setTimeout(() => controller.abort(), 30_000);
     const response = await fetch(url, {
       signal: controller.signal,

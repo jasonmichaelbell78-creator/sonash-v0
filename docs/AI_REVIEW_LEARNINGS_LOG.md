@@ -2235,6 +2235,55 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #354: PR #427 R4 — TOCTOU Hardening, Sanitize Fallbacks, Semgrep Rule ID Fix (2026-03-12)
+
+**Source:** Mixed (Qodo Compliance + Suggestions, Semgrep/CodeQL, CI Pattern
+Compliance) **PR/Branch:** PR #427 / testing-31126 **Suggestions:** 25 total
+(Critical: 2, Major: 11, Minor: 8, Trivial: 4)
+
+**Patterns Identified:**
+
+1. TOCTOU in atomic write helpers: isSafeToWrite checks at function entry become
+   stale by the time mutation ops execute in error-recovery paths.
+   - Root cause: Single upfront check doesn't protect retry/fallback paths
+   - Prevention: Re-check isSafeToWrite immediately before each mutation op
+
+2. Fallback sanitizeInput missing control char stripping: 6 hook files had
+   `String(v).slice(0, 500)` fallback — no protection against log injection via
+   control characters.
+   - Root cause: Original fallback only truncated, didn't sanitize
+   - Prevention: Propagation sweep caught all 6 instances (2 flagged + 4 found)
+
+3. Semgrep nosemgrep comments using wrong rule ID: Custom rule
+   `sonash.security.no-eval-usage` not suppressed by community rule ID
+   `javascript.lang.security.detect-eval-with-expression`.
+   - Root cause: nosemgrep comments copied from community rule, not updated for
+     custom rule
+   - Prevention: Both rule IDs now in all nosemgrep comments
+
+4. Pattern compliance checker heuristic is line-based: rmSync within 10 lines of
+   renameSync = violation, regardless of control flow (catch handlers, error
+   paths). Copy+unlink is the safe alternative.
+   - Root cause: Simple line-scanning heuristic doesn't model try/catch
+   - Prevention: Use copy+unlink fallback pattern instead of rmSync+renameSync
+
+**Resolution:**
+
+- Fixed: 20 items (including 4 propagation fixes for sanitizeInput fallbacks)
+- Deferred: 0 items
+- Rejected: 5 items (4 compliance items: hooks lack user context by design; 1
+  code suggestion: pre-delete conflicts with compliance checker)
+
+**Key Learnings:**
+
+- Propagation sweep is critical: sanitizeInput fallback fix found 4 additional
+  unfixed files beyond the 2 Qodo flagged
+- Pattern compliance heuristic doesn't understand control flow — restructure
+  code to avoid the pattern entirely rather than adding it in catch handlers
+- Always add BOTH community + custom rule IDs to nosemgrep comments
+
+---
+
 #### Review #353: PR #427 R2 — Security Fail-Closed, Error Safety Codemod, Bulk Lint (2026-03-12)
 
 **Source:** Mixed (Qodo Compliance, Semgrep, SonarCloud, CI, Qodo Suggestions)

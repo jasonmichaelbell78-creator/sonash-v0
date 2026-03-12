@@ -231,19 +231,9 @@ module.exports = {
             fix(fixer) {
               const sourceCode = context.sourceCode ?? context.getSourceCode();
               const accessText = sourceCode.getText(access);
-              // Build the safe replacement: paramName instanceof Error ? original : String(paramName)
-              const replacement = `${paramName} instanceof Error ? ${accessText} : String(${paramName})`;
-              // Check if parent needs wrapping parens (binary/logical ops, unary, etc.)
-              const parent = access.parent;
-              const needsParens =
-                parent &&
-                (parent.type === "BinaryExpression" ||
-                  parent.type === "LogicalExpression" ||
-                  parent.type === "UnaryExpression" ||
-                  parent.type === "MemberExpression" ||
-                  (parent.type === "ConditionalExpression" && parent.test === access));
-              const finalText = needsParens ? `(${replacement})` : replacement;
-              return fixer.replaceText(access, finalText);
+              // Always parenthesize to avoid operator precedence issues
+              const replacement = `(${paramName} instanceof Error ? ${accessText} : String(${paramName}))`;
+              return fixer.replaceText(access, replacement);
             },
           });
         }

@@ -36,7 +36,12 @@ try {
 try {
   ({ sanitizeInput } = require("./lib/sanitize-input"));
 } catch {
-  sanitizeInput = (v) => String(v).slice(0, 500);
+  /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
+  sanitizeInput = (v) =>
+    String(v ?? "")
+      .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
 }
 
 // Detect environment (remote/local)
@@ -310,7 +315,7 @@ function saveRootHash() {
     try {
       fs.renameSync(tmpPath, absPath);
     } catch {
-      if (!isSafeToWrite(absPath)) {
+      if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
         try {
           fs.rmSync(tmpPath, { force: true });
         } catch {
@@ -322,6 +327,14 @@ function saveRootHash() {
         fs.rmSync(absPath, { force: true });
       } catch {
         /* best-effort */
+      }
+      if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
+        try {
+          fs.rmSync(tmpPath, { force: true });
+        } catch {
+          /* cleanup */
+        }
+        return;
       }
       fs.renameSync(tmpPath, absPath);
     }
@@ -353,10 +366,26 @@ function saveFunctionsHash() {
     try {
       fs.renameSync(tmpPath, absPath);
     } catch {
+      if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
+        try {
+          fs.rmSync(tmpPath, { force: true });
+        } catch {
+          /* cleanup */
+        }
+        return;
+      }
       try {
         fs.rmSync(absPath, { force: true });
       } catch {
         /* best-effort */
+      }
+      if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
+        try {
+          fs.rmSync(tmpPath, { force: true });
+        } catch {
+          /* cleanup */
+        }
+        return;
       }
       fs.renameSync(tmpPath, absPath);
     }

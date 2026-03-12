@@ -42,7 +42,12 @@ const ACTIVE_STATUSES = new Set(["NEW", "VERIFIED", "IN_PROGRESS", "PENDING"]);
  * Returns { item } on success, or { error } on failure.
  */
 function parseSingleEntry(line) {
-  const entry = JSON.parse(line);
+  let entry;
+  try {
+    entry = JSON.parse(line);
+  } catch {
+    return { error: "Invalid JSON" };
+  }
 
   // Reject non-object JSON values (strings, numbers, arrays, null)
   if (!entry || typeof entry !== "object" || Array.isArray(entry)) {

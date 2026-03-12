@@ -182,6 +182,13 @@ function logOverride(check, reason) {
  */
 function checkBypassDebtThreshold(check) {
   try {
+    try {
+      const st = fs.lstatSync(OVERRIDE_LOG);
+      if (st.isSymbolicLink()) return;
+      if (st.size > 2 * 1024 * 1024) return; // refuse unexpectedly large logs
+    } catch {
+      return; // missing/unreadable log: nothing to do
+    }
     const content = fs.readFileSync(OVERRIDE_LOG, "utf8");
     const cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
     let count = 0;

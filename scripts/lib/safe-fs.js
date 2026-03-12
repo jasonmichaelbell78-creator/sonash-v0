@@ -102,19 +102,22 @@ function safeRenameSync(src, dest) {
   if (!isSafeToWrite(absDest)) {
     throw new Error(`Refusing to rename to symlinked path: ${path.basename(absDest)}`);
   }
-  // Remove destination first (Windows fails if dest exists), but never clobber directories
-  if (fs.existsSync(absDest)) {
-    const st = fs.lstatSync(absDest);
-    if (st.isDirectory()) {
-      throw new Error(`Refusing to rename over directory: ${path.basename(absDest)}`);
-    }
-    fs.rmSync(absDest, { force: true });
-  }
+  // Try rename first; if it fails due to dest existing (Windows), remove and retry
   try {
     fs.renameSync(absSrc, absDest);
   } catch (err) {
     if (err.code === "EXDEV") {
       // Cross-device: copy then remove source
+      fs.copyFileSync(absSrc, absDest);
+      fs.unlinkSync(absSrc);
+    } else if (err.code === "EPERM" || err.code === "EACCES" || err.code === "EEXIST") {
+      // Windows: dest exists — use copy+unlink fallback (avoids rmSync→renameSync race)
+      if (fs.existsSync(absDest)) {
+        const st = fs.lstatSync(absDest);
+        if (st.isDirectory()) {
+          throw new Error(`Refusing to rename over directory: ${path.basename(absDest)}`);
+        }
+      }
       fs.copyFileSync(absSrc, absDest);
       fs.unlinkSync(absSrc);
     } else {
@@ -344,8 +347,10 @@ function releaseLock(filePath) {
     }
   } catch (err) {
     // Lock already gone or unreadable — nothing to do
+    const errCode = err && typeof err === "object" && "code" in err ? String(err.code) : "";
+    const errMsg = err instanceof Error ? err.message : String(err);
     process.stderr.write(
-      `[safe-fs] DEBUG: releaseLock skipped (${err.code || (err instanceof Error ? err.message : String(err))}): ${lockPath}\n`
+      `[safe-fs] DEBUG: releaseLock skipped (${errCode || errMsg}): ${lockPath}\n`
     );
   }
 }

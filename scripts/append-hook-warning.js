@@ -226,6 +226,7 @@ function writeAuditTrail(entry) {
       fs.mkdirSync(logDir, { recursive: true });
     }
     const logPath = path.join(logDir, "hook-warnings-log.jsonl");
+    if (!isSafeToWrite(logDir)) return;
     if (!isSafeToWrite(logPath)) return;
     const auditRecord = {
       ...entry,

@@ -21,7 +21,9 @@ try {
   isSafeToWrite = (filePath) => {
     try {
       return !fs.lstatSync(filePath).isSymbolicLink();
-    } catch {
+    } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? err.code : null;
+      if (code === "ENOENT") return true; // new file path is OK
       return false;
     }
   };

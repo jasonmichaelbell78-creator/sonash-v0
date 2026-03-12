@@ -213,7 +213,7 @@ function validateFinding(finding, lineNum, result) {
  */
 function readFileContent(filepath, result) {
   try {
-    return readFileSync(filepath, "utf-8");
+    return readFileSync(filepath, "utf-8").replace(/^\uFEFF/, "");
   } catch (err) {
     result.addError(
       0,

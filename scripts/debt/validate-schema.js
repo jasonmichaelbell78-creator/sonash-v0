@@ -257,13 +257,31 @@ Exit codes:
 
   // Security: validate path is within project root (path traversal prevention)
   const projectRoot = path.join(__dirname, "../..");
-  const resolvedPath = path.resolve(rawFilePath);
-  const rel = path.relative(projectRoot, resolvedPath);
-  if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
-    console.error("Error: File path must be within project root");
-    process.exit(2);
+  const resolvedPath = path.isAbsolute(rawFilePath)
+    ? path.resolve(rawFilePath)
+    : path.resolve(projectRoot, rawFilePath);
+
+  const validateWithinRoot = (candidatePath) => {
+    const rel = path.relative(projectRoot, candidatePath);
+    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+      console.error("Error: File path must be within project root");
+      process.exit(2);
+    }
+  };
+
+  validateWithinRoot(resolvedPath);
+
+  // Prevent symlink escape when the file exists
+  let filePath = resolvedPath;
+  try {
+    if (fs.existsSync(resolvedPath)) {
+      const real = fs.realpathSync(resolvedPath);
+      validateWithinRoot(real);
+      filePath = real;
+    }
+  } catch {
+    // If realpath fails, keep the earlier lexical-path validation
   }
-  const filePath = resolvedPath;
 
   if (!parsed.quiet) {
     console.log("🔍 Validating TDMS schema...\n");

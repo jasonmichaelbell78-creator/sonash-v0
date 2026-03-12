@@ -27,7 +27,12 @@ try {
 try {
   ({ sanitizeInput } = require("./lib/sanitize-input"));
 } catch {
-  sanitizeInput = (v) => String(v).slice(0, 500);
+  /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
+  sanitizeInput = (v) =>
+    String(v ?? "")
+      .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
 }
 
 const STATE_DIR = ".claude/state";
