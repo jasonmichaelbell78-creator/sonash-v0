@@ -2235,6 +2235,31 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #355: PR #428 R1 — ESLint v10 Contradiction, Phantom Corruption, Doc Lint (2026-03-12)
+
+**Source:** Doc Lint, Qodo, Gemini, CI **Items:** 10 total (10 fixed, 0
+deferred, 0 rejected)
+
+## Key Patterns
+
+- **AI hallucination in planning docs:** DIAGNOSIS.md claimed
+  `aggregate-audit-findings.js` L1950 had "10-level nested instanceof
+  corruption" — verified false against actual codebase. AI-generated planning
+  docs must be verified before accepting claims about code state.
+- **Forward-referencing non-existent software:** Plan referenced "ESLint v10
+  Migration" with `npm install eslint@^10.0.0`, but DIAGNOSIS.md in the same set
+  correctly noted v10 doesn't exist (v9.39.4 is stable). Plans must not assume
+  future software exists — use "preparation" language instead.
+- **Worktree compatibility:** Pre-commit hook used
+  `$(git rev-parse --show-toplevel)/.git/hook-output.log` which fails in
+  worktrees where `.git` is a file, not a directory. Fix: use
+  `$(git rev-parse --git-dir)/hook-output.log`.
+- **Doc lint as automated quality gate:** Missing Purpose/Scope,
+  Status/Progress, Version History sections were caught by CI doc lint. These
+  sections should be included from the start in planning doc templates.
+
+---
+
 #### Review #354: PR #427 R4 — TOCTOU Hardening, Sanitize Fallbacks, Semgrep Rule ID Fix (2026-03-12)
 
 **Source:** Mixed (Qodo Compliance + Suggestions, Semgrep/CodeQL, CI Pattern

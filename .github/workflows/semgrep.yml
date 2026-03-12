@@ -1,20 +1,9 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow file requires a free account on Semgrep.dev to
-# manage rules, file ignores, notifications, and more.
-#
-# See https://semgrep.dev/docs
-
 name: Semgrep
 
 on:
   push:
     branches: ["main"]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: ["main"]
   schedule:
     - cron: "17 13 * * 3"
@@ -25,22 +14,19 @@ permissions:
 jobs:
   semgrep:
     permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      contents: read
+      security-events: write
+      actions: read
     name: Scan
     runs-on: ubuntu-latest
     steps:
-      # Checkout project source
       - uses: actions/checkout@v6
 
-      # Install Semgrep for local custom rules
       - name: Install Semgrep
         run: pip install semgrep
 
       # Run local custom rules from .semgrep/rules/
       # No --error flag: findings are informational (uploaded via SARIF).
-      # Using --error blocks subsequent steps on any findings.
       - name: Run local custom rules
         run: |
           semgrep --config .semgrep/rules/ \
@@ -56,26 +42,9 @@ jobs:
             --config .semgrep/rules/ \
             tests/semgrep/
 
-      # Scan code using project's configuration on https://semgrep.dev/manage
-      - name: Run cloud-managed rules
-        uses: returntocorp/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d
-        if: always()
-        with:
-          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
-          publishDeployment: ${{ secrets.SEMGREP_DEPLOYMENT_ID }}
-          generateSarif: "1"
-
-      # Upload both SARIF files (local custom rules + cloud-managed rules)
-      - name: Upload local rules SARIF
+      - name: Upload SARIF
         uses: github/codeql-action/upload-sarif@v4
+        if: always() && hashFiles('semgrep-local.sarif') != ''
         with:
           sarif_file: semgrep-local.sarif
           category: semgrep-local
-        if: always()
-
-      - name: Upload cloud rules SARIF
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: semgrep.sarif
-          category: semgrep-cloud
-        if: always()

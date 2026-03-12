@@ -280,9 +280,10 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       } catch (error: unknown) {
         // Permission denied is expected for new anonymous users without a profile
         const isPermissionDenied =
-          error instanceof Error &&
-          (error.message.includes("permission-denied") ||
-            error.message.includes("Missing or insufficient permissions"));
+          error instanceof Error
+            ? error.message.includes("permission-denied") ||
+              error.message.includes("Missing or insufficient permissions")
+            : false;
 
         if (isPermissionDenied) {
           // Don't log as error - this is expected for new users
