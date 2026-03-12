@@ -14,7 +14,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[registration-reachability] ${m}`);
   }
 }
@@ -97,7 +102,7 @@ function checkPackageJsonCoverage(rootDir, scriptFiles) {
   // Collect all file references from npm scripts
   const referencedFiles = new Set();
   const nodeRunPattern = /\bnode\s+([^\s;|&"']+\.js)/g;
-  const npmRunPattern = /npm\s+run\s+(\w[\w:-]*)/g;
+  const _npmRunPattern = /npm\s+run\s+(\w[\w:-]*)/g;
 
   for (const [, cmd] of Object.entries(pkgScripts)) {
     const cmdStr = String(cmd);

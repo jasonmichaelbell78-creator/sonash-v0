@@ -37,7 +37,9 @@ function parseJsonl(filePath) {
     try {
       results.push(JSON.parse(trimmed));
     } catch (err) {
-      console.warn(`Warning: skipping corrupt JSONL line in ${filePath}: ${err.message}`);
+      console.warn(
+        `Warning: skipping corrupt JSONL line in ${filePath}: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
   return results;

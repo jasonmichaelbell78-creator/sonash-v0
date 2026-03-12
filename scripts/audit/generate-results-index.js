@@ -3,6 +3,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 // Resolve paths relative to repo root
 const repoRoot = path.resolve(__dirname, "../../");
@@ -246,9 +247,9 @@ function atomicWrite(content) {
   const tmpFile = path.join(outputDir, `.RESULTS_INDEX.md.tmp-${process.pid}-${Date.now()}`);
   try {
     // Exclusive-create the tmp file to prevent TOCTOU/symlink races
-    fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
+    safeWriteFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
     try {
-      fs.renameSync(tmpFile, outputFile);
+      safeRenameSync(tmpFile, outputFile);
     } catch {
       // Cross-platform fallback: rename may fail on Windows if destination exists
       guardSymlink(outputFile, outputFile);
@@ -257,7 +258,7 @@ function atomicWrite(content) {
       } catch {
         /* best-effort */
       }
-      fs.renameSync(tmpFile, outputFile);
+      safeRenameSync(tmpFile, outputFile);
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

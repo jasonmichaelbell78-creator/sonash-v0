@@ -110,7 +110,11 @@ function createStateManager(rootDir, isSafeToWrite) {
             fs.renameSync(src, dest);
           } catch {
             fs.copyFileSync(src, dest);
-            fs.unlinkSync(src);
+            try {
+              fs.unlinkSync(src);
+            } catch {
+              /* best-effort cleanup */
+            }
           }
         };
         try {
@@ -153,9 +157,13 @@ function createStateManager(rootDir, isSafeToWrite) {
 
       return true;
     } catch (err) {
-      console.error(
-        `  [warn] Failed to write state: ${(err instanceof Error ? err.message : String(err)).slice(0, 200)}`
-      );
+      let errMsg;
+      if (err instanceof Error) {
+        errMsg = err.message;
+      } else {
+        errMsg = String(err);
+      }
+      console.error(`  [warn] Failed to write state: ${errMsg.slice(0, 200)}`);
       return false;
     }
   }

@@ -13,7 +13,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[cross-session-safety] ${m}`);
   }
 }
@@ -43,7 +48,12 @@ function safeReadFile(filePath) {
     const content = fs.readFileSync(filePath, "utf8");
     return { content };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    let msg;
+    if (e instanceof Error) {
+      msg = e.message;
+    } else {
+      msg = String(e);
+    }
     return { error: msg.slice(0, 200) };
   }
 }
@@ -57,7 +67,12 @@ function safeParseJSON(text) {
   try {
     return { data: JSON.parse(text) };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    let msg;
+    if (e instanceof Error) {
+      msg = e.message;
+    } else {
+      msg = String(e);
+    }
     return { error: msg.slice(0, 200) };
   }
 }

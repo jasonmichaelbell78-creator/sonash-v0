@@ -26,8 +26,17 @@
 const fs = require("node:fs"); // catch-verified: core module
 const pathMod = require("node:path"); // catch-verified: core module
 const { existsSync, readFileSync, lstatSync, rmSync, mkdirSync } = fs; // require() destructure
-const { writeFileSync, appendFileSync, copyFileSync } = fs; // require() destructure
+const { copyFileSync } = fs; // require() destructure
 const { join } = pathMod; // require() destructure
+
+// Safe-fs wrappers (symlink guard + EXDEV fallback)
+let safeWriteFileSync, safeAppendFileSync;
+try {
+  ({ safeWriteFileSync, safeAppendFileSync } = require("./lib/safe-fs"));
+} catch {
+  console.error("safe-fs unavailable; cannot safely write files");
+  process.exit(2);
+}
 
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
@@ -72,7 +81,7 @@ function atomicWriteFileSync(targetPath, content) {
   if (!isSafeToWrite(targetPath)) {
     throw new Error("Refusing to write: symlink detected at target path");
   }
-  writeFileSync(tmpPath, content, "utf8"); // atomic .tmp → copy below
+  safeWriteFileSync(tmpPath, content, "utf8"); // atomic .tmp → copy below
   if (existsSync(targetPath)) rmSync(targetPath, { force: true });
   copyFileSync(tmpPath, targetPath);
   try {
@@ -905,7 +914,7 @@ function applySyncEntries(missing, missingReviews, missingRetros) {
   const lines = missing.map((r) => JSON.stringify(r));
   // isSafeToWrite guard verified above for REVIEWS_FILE
   try {
-    appendFileSync(REVIEWS_FILE, lines.join("\n") + "\n");
+    safeAppendFileSync(REVIEWS_FILE, lines.join("\n") + "\n");
   } catch (err) {
     console.error("❌ Failed to write reviews.jsonl:", sanitizeError(err));
     process.exitCode = 2;

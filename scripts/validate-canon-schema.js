@@ -207,48 +207,78 @@ function validateFinding(finding, lineNum, result) {
   validateConsensus(finding, lineNum, result);
 }
 
+/**
+ * Read file content safely, adding an error to result on failure.
+ * Returns the content string, or null if the file could not be read.
+ */
+function readFileContent(filepath, result) {
+  try {
+    return readFileSync(filepath, "utf-8").replace(/^\uFEFF/, "");
+  } catch (err) {
+    result.addError(
+      0,
+      "file",
+      `Cannot read file: ${err instanceof Error ? err.message : String(err)}`
+    );
+    return null;
+  }
+}
+
+/**
+ * Check for duplicate canonical IDs and record errors.
+ */
+function checkDuplicateId(finding, lineNum, seenIds, result) {
+  if (!finding.canonical_id) return;
+
+  if (seenIds.has(finding.canonical_id)) {
+    result.addError(
+      lineNum,
+      "canonical_id",
+      `Duplicate ID: "${finding.canonical_id}" (first seen on line ${seenIds.get(finding.canonical_id)})`
+    );
+  } else {
+    seenIds.set(finding.canonical_id, lineNum);
+  }
+}
+
+/**
+ * Parse a single JSONL line and validate it, updating result.
+ * Returns true if a valid finding was parsed, false otherwise.
+ */
+function parseAndValidateLine(line, lineNum, seenIds, result) {
+  let finding;
+  try {
+    finding = JSON.parse(line);
+  } catch (err) {
+    result.addError(
+      lineNum,
+      "json",
+      `Invalid JSON: ${err instanceof Error ? err.message : String(err)}`
+    );
+    return false;
+  }
+
+  checkDuplicateId(finding, lineNum, seenIds, result);
+  validateFinding(finding, lineNum, result);
+  return true;
+}
+
 function validateFile(filepath) {
   const result = new ValidationResult(basename(filepath));
 
-  let content;
-  try {
-    content = readFileSync(filepath, "utf-8");
-  } catch (err) {
-    result.addError(0, "file", `Cannot read file: ${err.message}`);
-    return result;
-  }
+  const content = readFileContent(filepath, result);
+  if (content !== null) {
+    const lines = content.trim().split("\n");
+    const seenIds = new Map();
 
-  const lines = content.trim().split("\n");
-  const seenIds = new Map(); // Track seen IDs for duplicate detection
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-
-    let finding;
-    try {
-      finding = JSON.parse(line);
-    } catch (err) {
-      result.addError(i + 1, "json", `Invalid JSON: ${err.message}`);
-      continue;
-    }
-
-    result.findings++;
-
-    // Check for duplicate IDs
-    if (finding.canonical_id) {
-      if (seenIds.has(finding.canonical_id)) {
-        result.addError(
-          i + 1,
-          "canonical_id",
-          `Duplicate ID: "${finding.canonical_id}" (first seen on line ${seenIds.get(finding.canonical_id)})`
-        );
-      } else {
-        seenIds.set(finding.canonical_id, i + 1);
+      if (parseAndValidateLine(line, i + 1, seenIds, result)) {
+        result.findings++;
       }
     }
-
-    validateFinding(finding, i + 1, result);
   }
 
   return result;
@@ -351,7 +381,9 @@ function findCanonFilesRecursive(dir, files) {
   try {
     entries = readdirSync(dir);
   } catch (err) {
-    console.error(`Error reading directory ${dir}: ${err.message}`);
+    console.error(
+      `Error reading directory ${dir}: ${err instanceof Error ? err.message : String(err)}`
+    );
     return;
   }
 
@@ -369,7 +401,9 @@ function findCanonFilesRecursive(dir, files) {
         files.push(fullPath);
       }
     } catch (err) {
-      console.error(`Error accessing path ${fullPath}: ${err.message}`);
+      console.error(
+        `Error accessing path ${fullPath}: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 }
@@ -413,7 +447,9 @@ function collectFilesFromArgs(args) {
       // This prevents symlink traversal attacks that could escape project boundaries
       stat = lstatSync(argResolved);
     } catch (err) {
-      console.error(`Error accessing path ${arg}: ${err.message}`);
+      console.error(
+        `Error accessing path ${arg}: ${err instanceof Error ? err.message : String(err)}`
+      );
       continue;
     }
 

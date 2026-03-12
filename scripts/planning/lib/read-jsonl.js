@@ -34,7 +34,9 @@ export function readJsonl(planningDir, filename) {
       try {
         results.push(JSON.parse(line.trim()));
       } catch (err) {
-        console.warn(`WARNING: ${filename} line ${lineNum}: parse error — ${err.message}`);
+        console.warn(
+          `WARNING: ${filename} line ${lineNum}: parse error — ${err instanceof Error ? err.message : String(err)}`
+        );
       }
     }
     return results;

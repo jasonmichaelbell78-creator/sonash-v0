@@ -133,3 +133,6 @@ nul
 # Raw agent research transcripts (contain PII: local paths, session IDs)
 .planning/**/agent-research/*.txt
 .planning/**/agent-research/*.json
+
+# Git worktrees (isolated workspaces, never commit)
+.worktrees/

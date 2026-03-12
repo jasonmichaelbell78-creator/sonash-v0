@@ -685,7 +685,7 @@ Output Files:
 
 Remaining Manual Steps:
   1. Review S0/S1 items above for immediate action
-  2. Verify S0/S1 findings: use 'verify-technical-debt' skill
+  2. Verify S0/S1 findings: check referenced file:line in codebase
   3. Archive session when satisfied: move to docs/audits/multi-ai/archive/
 ```
 

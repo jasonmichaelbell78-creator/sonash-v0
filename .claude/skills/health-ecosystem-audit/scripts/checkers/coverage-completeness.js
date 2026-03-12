@@ -19,7 +19,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[coverage-completeness] ${m}`);
   }
 }
@@ -385,12 +390,12 @@ function checkTestCoverage(rootDir, skipLiveTests, findings) {
   };
 }
 
-function checkTestCoverageStatic(rootDir, findings) {
+function checkTestCoverageStatic(rootDir, _findings) {
   const bench = BENCHMARKS.test_coverage_verification;
 
   // Count test files for health checkers
   const checkersTestDir = path.join(rootDir, "scripts", "health", "checkers", "__tests__");
-  const libTestDir = path.join(rootDir, "scripts", "health", "lib", "__tests__");
+  const _libTestDir = path.join(rootDir, "scripts", "health", "lib", "__tests__");
 
   let totalCheckers = 0;
   let testedCheckers = 0;

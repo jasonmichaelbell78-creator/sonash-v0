@@ -31,7 +31,6 @@ function findProjectRoot(startDir: string): string {
 const PROJECT_ROOT = findProjectRoot(__dirname);
 const distPath = path.resolve(PROJECT_ROOT, "scripts/reviews/dist");
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const {
   slugify,
   parseCodePatterns,

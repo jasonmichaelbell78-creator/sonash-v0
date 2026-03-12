@@ -23,12 +23,15 @@ const HEALTH_LOG_PATH = path.join(ROOT, "data", "ecosystem-v2", "ecosystem-healt
 const WARNINGS_PATH = path.join(ROOT, "data", "ecosystem-v2", "warnings.jsonl");
 
 // Import safe-fs for symlink-guarded writes
-let safeAppendFileSync;
+let safeAppendFileSync, safeWriteFileSync;
 try {
-  ({ safeAppendFileSync } = require(path.join(ROOT, "scripts", "lib", "safe-fs.js")));
+  ({ safeAppendFileSync, safeWriteFileSync } = require(
+    path.join(ROOT, "scripts", "lib", "safe-fs.js")
+  ));
 } catch {
   // safe-fs unavailable -- this should not happen in practice
   safeAppendFileSync = null;
+  safeWriteFileSync = null;
 }
 
 /**
@@ -242,6 +245,80 @@ function formatDashboard(result, record, trend, activeWarnings) {
   return lines.join("\n");
 }
 
+/**
+ * Build a lookup of active health-check warnings keyed by dimension id.
+ */
+function buildActiveWarningMap(entries) {
+  const activeByDim = new Map();
+  for (const w of entries) {
+    const isActive = w.lifecycle === "new" || w.lifecycle === "acknowledged";
+    if (isActive && w.source_script === "health-check") {
+      activeByDim.set(w.category, w);
+    }
+  }
+  return activeByDim;
+}
+
+/**
+ * Create a warning record for a failing dimension.
+ */
+function createWarningRecord(dimId, data) {
+  return {
+    id: `warn-${Date.now()}-${dimId}`,
+    date: new Date().toISOString().slice(0, 10),
+    schema_version: 1,
+    completeness: "full",
+    completeness_missing: [],
+    origin: { type: "manual", tool: "health-check" },
+    category: dimId,
+    message: `${dimId} scored ${data.grade}/${data.score} — below threshold`,
+    severity: data.score < 60 ? "error" : "warning",
+    lifecycle: "new",
+    resolved_date: null,
+    source_script: "health-check",
+    related_ids: null,
+  };
+}
+
+/**
+ * Generate warnings from health check results.
+ * Creates warnings for dimensions scoring below threshold,
+ * resolves existing warnings for dimensions now passing.
+ * @param {object} result - Health check result with dimensionScores
+ */
+function generateWarnings(result) {
+  if (!result.dimensionScores || !safeWriteFileSync) return;
+
+  const existing = readJsonlEntries(WARNINGS_PATH);
+  const activeByDim = buildActiveWarningMap(existing);
+  let changed = false;
+
+  for (const [dimId, data] of Object.entries(result.dimensionScores)) {
+    if (data.no_data) continue;
+
+    const score = data.score;
+    const hasActive = activeByDim.has(dimId);
+
+    if (score < 70 && !hasActive) {
+      const record = createWarningRecord(dimId, data);
+      existing.push(record);
+      activeByDim.set(dimId, record);
+      changed = true;
+    } else if (score >= 70 && hasActive) {
+      const w = activeByDim.get(dimId);
+      w.lifecycle = "resolved";
+      w.resolved_date = new Date().toISOString().slice(0, 10);
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    const lines = existing.map((r) => JSON.stringify(r)).join("\n") + "\n";
+    fs.mkdirSync(path.dirname(WARNINGS_PATH), { recursive: true });
+    safeWriteFileSync(WARNINGS_PATH, lines);
+  }
+}
+
 // Main
 function main() {
   const args = process.argv.slice(2);
@@ -253,6 +330,9 @@ function main() {
 
   // Step 2: Persist score
   const record = appendHealthScore(result, mode);
+
+  // Step 2b: Generate/resolve warnings based on dimension scores
+  generateWarnings(result);
 
   // Step 3: Read history for trend
   const allEntries = readJsonlEntries(HEALTH_LOG_PATH);

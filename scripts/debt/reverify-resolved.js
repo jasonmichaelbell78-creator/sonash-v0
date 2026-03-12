@@ -87,7 +87,7 @@ const falseAlarms = new Set([
   // RECAPTCHA_REMOVAL_GUIDE.md now has Document Version 1.0 and Status
   "DEBT-1406",
 
-  // TESTING_PLAN.md now has Document Version 1.0 and Status: Active
+  // TESTING_CHECKLIST.md (formerly TESTING_PLAN.md) now has Document Version 1.0 and Status: Active
   "DEBT-1407",
   "DEBT-1417",
 
@@ -111,7 +111,7 @@ const falseAlarms = new Set([
   "DEBT-2231",
   "DEBT-2232",
 
-  // multi-ai-audit, add-debt, verify-technical-debt, pr-retro, sonarcloud, test-suite
+  // multi-ai-audit, add-debt, pr-retro, sonarcloud, test-suite
   // now listed in SKILL_INDEX.md (grep found 9 matches)
   "DEBT-2233",
   "DEBT-2234",

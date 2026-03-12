@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports, no-undef */
 /**
  * Integration Test: Cross-Module Pipeline Data Contracts
  *

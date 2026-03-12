@@ -66,17 +66,6 @@ function walkAstNodes(node, visitor, seen = new WeakSet()) {
   }
 }
 
-function containsCallTo(node, funcName) {
-  if (!node) return false;
-  let found = false;
-  walkAstNodes(node, (n) => {
-    if (!found && n.type === "CallExpression" && getCalleeName(n.callee) === funcName) {
-      found = true;
-    }
-  });
-  return found;
-}
-
 /** Check if a variable was assigned a .tmp path in the containing block */
 function isVarAssignedToTmp(argNode, renameNode) {
   const block = findContainingBlock(renameNode);

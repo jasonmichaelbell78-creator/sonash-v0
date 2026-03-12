@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
+/* global process, console */
 /**
  * block-push-to-main.js - PreToolUse hook (Bash)
  *

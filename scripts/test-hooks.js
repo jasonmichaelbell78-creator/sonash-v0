@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global __dirname */
-/* eslint-disable security/detect-non-literal-fs-filename */
+
 /**
  * test-hooks.js - Hook Health Test Suite
  *

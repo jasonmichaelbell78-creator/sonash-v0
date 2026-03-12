@@ -27,6 +27,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const { isSafeToWrite } = require("../.claude/hooks/lib/symlink-guard");
+const { safeAppendFileSync, safeRenameSync } = require("./lib/safe-fs");
 
 // Shared rotation helper (entry-count-based)
 let rotateJsonl;
@@ -117,15 +118,13 @@ function rotateSizeBasedIfNeeded() {
   if (stats.size <= MAX_LOG_SIZE) return;
 
   const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
-  if (!isSafeToWrite(backupFile)) return;
 
   try {
-    fs.renameSync(OVERRIDE_LOG, backupFile);
+    safeRenameSync(OVERRIDE_LOG, backupFile);
+    console.log(`Override log rotated to ${path.basename(backupFile)}`);
   } catch {
-    fs.copyFileSync(OVERRIDE_LOG, backupFile);
-    fs.unlinkSync(OVERRIDE_LOG);
+    // Best-effort — never block logging on rotation failure
   }
-  console.log(`Override log rotated to ${path.basename(backupFile)}`);
 }
 
 // Rotate log file by entry count (keep 60 of last 100, only when > 64KB)
@@ -163,8 +162,7 @@ function logOverride(check, reason) {
   try {
     rotateSizeBasedIfNeeded();
 
-    if (!isSafeToWrite(OVERRIDE_LOG)) return null;
-    fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
+    safeAppendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
 
     rotateEntryBasedIfNeeded();
 
@@ -174,6 +172,97 @@ function logOverride(check, reason) {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.error(`Warning: Could not write to override log: ${errMsg}`);
     return null;
+  }
+}
+
+/**
+ * C3-G3: Auto-generate DEBT entry when a check hits 15+ bypasses in 14 days.
+ * Deduplicates against MASTER_DEBT.jsonl to avoid duplicate entries.
+ * Best-effort — never blocks hook execution.
+ */
+/**
+ * Count how many times a check was bypassed in the override log within the given window.
+ * Returns -1 if the log is unreadable/unsafe.
+ */
+function countBypassesInWindow(check, windowDays) {
+  try {
+    const st = fs.lstatSync(OVERRIDE_LOG);
+    if (st.isSymbolicLink()) return -1;
+    if (st.size > 2 * 1024 * 1024) return -1;
+  } catch {
+    return -1;
+  }
+  const content = fs.readFileSync(OVERRIDE_LOG, "utf8");
+  const cutoff = Date.now() - windowDays * 24 * 60 * 60 * 1000;
+  let count = 0;
+  for (const line of content.split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const e = JSON.parse(line);
+      if (e.check === check && new Date(e.timestamp).getTime() > cutoff) count++;
+    } catch {
+      /* skip malformed */
+    }
+  }
+  return count;
+}
+
+function checkBypassDebtThreshold(check) {
+  try {
+    const count = countBypassesInWindow(check, 14);
+    if (count < 15) return;
+
+    const repoRoot = getRepoRoot();
+    const masterDebtPath = path.join(repoRoot, "docs", "technical-debt", "MASTER_DEBT.jsonl");
+    const dedupedPath = path.join(repoRoot, "docs", "technical-debt", "raw", "deduped.jsonl");
+    const safeCheckToken =
+      String(check)
+        .trim()
+        .toUpperCase()
+        .replaceAll(/[^A-Z0-9_:-]+/g, "_")
+        .slice(0, 60) || "UNKNOWN";
+
+    try {
+      const debtContent = fs.readFileSync(masterDebtPath, "utf8");
+      if (debtContent.includes(`"hook-bypass-${safeCheckToken}"`)) return;
+    } catch {
+      /* file may not exist — proceed with creation */
+    }
+
+    const debtTitle = `Hook bypass threshold: ${check} overridden ${count}+ times in 14 days`;
+    const debtEntry = {
+      source_id: `hook-bypass-${safeCheckToken}`,
+      source_file: "scripts/log-override.js",
+      category: "process",
+      severity: "S1",
+      type: "process-debt",
+      file: check,
+      line: 0,
+      title: debtTitle,
+      description: `The "${check}" check was overridden ${count} times in the last 14 days, indicating the check may need adjustment or the underlying issue needs fixing.`,
+      recommendation: `Review why "${check}" is being bypassed. Either fix the underlying violations, adjust the check threshold, or add to known-debt-baseline.json.`,
+      effort: "E2",
+      status: "NEW",
+      roadmap_ref: "",
+      created: new Date().toISOString().slice(0, 10),
+      user: "hook-system",
+      verified_by: null,
+      resolution: null,
+      id: `AUTO-BYPASS-${safeCheckToken}`,
+    };
+    const debtLine = JSON.stringify(debtEntry) + "\n";
+
+    for (const p of [masterDebtPath, dedupedPath]) {
+      try {
+        fs.mkdirSync(path.dirname(p), { recursive: true });
+        safeAppendFileSync(p, debtLine);
+      } catch {
+        /* skip unsafe paths */
+      }
+    }
+    console.log(`  📋 Auto-generated DEBT entry: ${check} bypassed ${count}x in 14 days`);
+  } catch {
+    // Best-effort — never block hooks
   }
 }
 
@@ -355,30 +444,47 @@ function computeAnalytics(entries, days) {
   }
   patterns.sort((a, b) => b.count - a.count);
 
-  // Trend: last 7 days vs prior 7 days
+  // Trend: rolling 7-day windows — overall and per-check (C1-G3)
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-  const currentWeek = entries.filter((e) => {
-    if (!e.timestamp) return false;
-    const d = new Date(e.timestamp);
-    return d >= oneWeekAgo && d <= now;
-  }).length;
-  const previousWeek = entries.filter((e) => {
-    if (!e.timestamp) return false;
-    const d = new Date(e.timestamp);
-    return d >= twoWeeksAgo && d < oneWeekAgo;
-  }).length;
-  let changePct;
-  if (previousWeek > 0) {
-    changePct = Math.round(((currentWeek - previousWeek) / previousWeek) * 100);
-  } else {
-    changePct = currentWeek > 0 ? 100 : 0;
+
+  function countInWindow(list, from, to) {
+    return list.filter((e) => {
+      if (!e.timestamp) return false;
+      const d = new Date(e.timestamp);
+      return d >= from && d < to;
+    }).length;
+  }
+
+  const currentWeek = countInWindow(entries, oneWeekAgo, now);
+  const previousWeek = countInWindow(entries, twoWeeksAgo, oneWeekAgo);
+
+  function computeChangePct(current, previous) {
+    if (previous > 0) return Math.round(((current - previous) / previous) * 100);
+    return current > 0 ? null : 0; // null = new activity (no baseline)
+  }
+
+  // Per-check trends (C1-G3: more actionable than overall)
+  const allChecks = new Set(entries.map((e) => e.check || "unknown"));
+  const perCheck = {};
+  for (const check of allChecks) {
+    const checkEntries = entries.filter((e) => (e.check || "unknown") === check);
+    const cur = countInWindow(checkEntries, oneWeekAgo, now);
+    const prev = countInWindow(checkEntries, twoWeeksAgo, oneWeekAgo);
+    if (cur > 0 || prev > 0) {
+      perCheck[check] = {
+        current_week: cur,
+        previous_week: prev,
+        change_pct: computeChangePct(cur, prev),
+      };
+    }
   }
 
   const trend = {
     current_week: currentWeek,
     previous_week: previousWeek,
-    change_pct: changePct,
+    change_pct: computeChangePct(currentWeek, previousWeek),
+    per_check: perCheck,
   };
 
   return {
@@ -391,6 +497,13 @@ function computeAnalytics(entries, days) {
     patterns,
     trend,
   };
+}
+
+// Format a percentage change for display (pure utility, no closure deps)
+function fmtPct(pct) {
+  if (pct === null) return "new";
+  const sign = pct >= 0 ? "+" : "";
+  return `${sign}${pct}%`;
 }
 
 // Display analytics in human-readable format
@@ -417,10 +530,18 @@ function showAnalytics(analytics) {
     console.log("\nPatterns: None detected");
   }
 
-  const sign = trend.change_pct >= 0 ? "+" : "";
+  // C1-G3: Overall + per-check trends
   console.log(
-    `\nTrend: ${sign}${trend.change_pct}% vs previous week (${trend.current_week} vs ${trend.previous_week})`
+    `\nTrend: ${fmtPct(trend.change_pct)} vs previous week (${trend.current_week} vs ${trend.previous_week})`
   );
+  if (trend.per_check && Object.keys(trend.per_check).length > 0) {
+    console.log("  Per-check:");
+    for (const [check, t] of Object.entries(trend.per_check)) {
+      console.log(
+        `    ${check.padEnd(20)} ${fmtPct(t.change_pct).padStart(5)}  (${t.current_week} vs ${t.previous_week})`
+      );
+    }
+  }
   console.log("");
 }
 
@@ -429,14 +550,11 @@ function clearLog() {
   ensureLogDir();
   if (fs.existsSync(OVERRIDE_LOG)) {
     const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-archived-${Date.now()}.jsonl`);
-    if (isSafeToWrite(backupFile)) {
-      try {
-        fs.renameSync(OVERRIDE_LOG, backupFile);
-      } catch {
-        fs.copyFileSync(OVERRIDE_LOG, backupFile);
-        fs.unlinkSync(OVERRIDE_LOG);
-      }
+    try {
+      safeRenameSync(OVERRIDE_LOG, backupFile);
       console.log(`Override log archived to ${path.basename(backupFile)}`);
+    } catch {
+      /* skip if unsafe */
     }
   }
   console.log("Override log cleared.");
@@ -490,6 +608,7 @@ function main() {
     }
     const entry = logOverride(args.check, args.reason);
     if (!entry) process.exit(1);
+    checkBypassDebtThreshold(args.check);
     process.exit(0);
   }
 
@@ -522,6 +641,9 @@ function main() {
   if (!args.reason) {
     console.log("⚠️  Warning: No reason provided. Consider using --reason or SKIP_REASON env var.");
   }
+
+  // C3-G3: Check if bypass count warrants auto-DEBT entry
+  checkBypassDebtThreshold(args.check);
 }
 
 // Only run main() when executed directly (not when required as a module)

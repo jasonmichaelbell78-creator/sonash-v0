@@ -9,10 +9,10 @@
 
 "use strict";
 
-let fs, path;
+let _fs, _path;
 try {
-  fs = require("node:fs");
-  path = require("node:path");
+  _fs = require("node:fs");
+  _path = require("node:path");
 } catch (err) {
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
   console.error(`Fatal: failed to load core Node.js modules (${code})`);
@@ -54,7 +54,7 @@ const PATCH_TYPES = {
   },
 };
 
-function createPatchGenerator(rootDir) {
+function createPatchGenerator(_rootDir) {
   function generate(finding) {
     if (!finding.patchType) return null;
 

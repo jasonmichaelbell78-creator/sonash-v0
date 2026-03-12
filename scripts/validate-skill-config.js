@@ -25,7 +25,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { loadConfigWithRegex } = require("./config/load-config");
-const { safeWriteFileSync } = require("./lib/safe-fs");
 
 // Configuration — single source of truth: scripts/config/skill-config.json
 const SKILLS_DIR = ".claude/commands";

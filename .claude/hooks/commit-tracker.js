@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * commit-tracker.js - PostToolUse hook (Bash) for automatic commit logging
  *
@@ -21,9 +21,27 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { isSafeToWrite } = require("./lib/symlink-guard");
-const { gitExec, projectDir } = require("./lib/git-utils.js");
-const { sanitizeInput } = require("./lib/sanitize-input");
+let isSafeToWrite, gitExec, projectDir, sanitizeInput;
+try {
+  ({ isSafeToWrite } = require("./lib/symlink-guard"));
+} catch {
+  isSafeToWrite = () => false;
+}
+try {
+  ({ gitExec, projectDir } = require("./lib/git-utils.js"));
+} catch {
+  process.exit(0);
+}
+try {
+  ({ sanitizeInput } = require("./lib/sanitize-input"));
+} catch {
+  /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
+  sanitizeInput = (v) =>
+    String(v ?? "")
+      .replace(/[\x00-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
+}
 
 // Security check - bidirectional containment
 const safeBaseDir = path.resolve(process.cwd());
@@ -323,6 +341,7 @@ function reportCommitFailure() {
       }
       const dotGitPath = path.join(process.cwd(), ".git");
       try {
+        if (fs.lstatSync(dotGitPath).isSymbolicLink()) return dotGitPath;
         const st = fs.statSync(dotGitPath);
         if (st.isFile()) {
           const txt = fs.readFileSync(dotGitPath, "utf8").trim();
@@ -342,6 +361,7 @@ function reportCommitFailure() {
     // Read hook output log if it exists and is fresh (<60s old)
     let content;
     try {
+      if (fs.lstatSync(logFile).isSymbolicLink()) return;
       const stats = fs.statSync(logFile);
       if (stats.size === 0 || Date.now() - stats.mtimeMs > 60000) return;
       content = fs.readFileSync(logFile, "utf8").trim();

@@ -360,7 +360,6 @@ Full cleanup workflow: sync + report + create cleanup branch + track fixes.
 
 ## Related
 
-- `verify-technical-debt` - Verify items in verification queue
 - `add-debt` - Add items to TDMS (manual or PR-deferred)
 - [SONARCLOUD_CLEANUP_RUNBOOK.md](../../../docs/SONARCLOUD_CLEANUP_RUNBOOK.md) -
   Operational runbook

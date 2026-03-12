@@ -1,5 +1,4 @@
 {"id":1,"key":"roadmap_will_change","directive":"ROADMAP.md will need additions, changes, removals after this process"}
-{"id":2,"key":"grand_plan_reassessment","directive":"TDMS Grand Plan needs reassessment — changing many files invalidates existing debt items"}
 {"id":3,"key":"state_persistence_standard","directive":"Constant state file saving is a standard here AND repo-wide going forward — to be canonized as rules"}
 {"id":4,"key":"capture_all_ideas","directive":"Stream-of-consciousness ideas MUST be captured even if not immediately actionable"}
 {"id":5,"key":"canon_is_ecosystem_zero","directive":"CANON is the meta-system/Ecosystem Zero — building block for all others"}

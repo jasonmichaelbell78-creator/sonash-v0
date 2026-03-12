@@ -449,7 +449,7 @@ try to extend or mock the service.
 | Component Architecture              | Medium   | Medium          | ARCHITECTURE.md hierarchy accurate; DEVELOPMENT.md structure partially stale            |
 | Onboarding (New Dev)                | Medium   | Medium          | `DEVELOPMENT.md` Quick Start is complete; project structure section is stale            |
 | ADR / Decisions                     | Low      | High (template) | Template is excellent; no active ADRs since Jan 2026                                    |
-| Testing Guide                       | High     | High            | `docs/TESTING_PLAN.md`, `docs/plans/TESTING_USER_MANUAL.md` both current                |
+| Testing Guide                       | High     | High            | `docs/TESTING_CHECKLIST.md`, `docs/plans/TESTING_USER_MANUAL.md` both current           |
 | AI Workflow                         | High     | High            | `AI_WORKFLOW.md`, `SESSION_CONTEXT.md` are current and well-maintained                  |
 | Technical Debt                      | High     | High            | TDMS system is comprehensive; MASTER_DEBT.jsonl is authoritative                        |
 | Agent/Skill Docs                    | High     | Medium          | 59 skills exist, counts in README outdated                                              |

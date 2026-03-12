@@ -92,7 +92,7 @@ function parseDocumentDependencies() {
         console.error(`⚠️  Skipping path outside repository: ${constructedPath}`);
         continue;
       }
-    } catch (error) {
+    } catch {
       // File doesn't exist yet - validate constructed path manually
       const normalizedRoot = realpathSync(ROOT);
       const normalizedPath = join(normalizedRoot, location.trim(), instance.trim());
@@ -238,7 +238,7 @@ function checkBrokenLinks(filePath) {
           }
           continue;
         }
-      } catch (error) {
+      } catch {
         // File doesn't exist - validate constructed path manually
         const rel = relative(normalizedRoot, targetPath);
 
@@ -453,7 +453,10 @@ try {
   formatOutput(results);
   process.exit(results.success ? 0 : 1);
 } catch (error) {
-  console.error("❌ Error during document sync check:", error.message);
+  console.error(
+    "❌ Error during document sync check:",
+    error instanceof Error ? error.message : String(error)
+  );
   if (VERBOSE) {
     console.error(error.stack);
   }

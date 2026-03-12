@@ -67,7 +67,7 @@
     {
       "trigger": "app/(protected)/dashboard/",
       "dependents": ["ROADMAP.md"],
-      "reason": "Dashboard changes must update sprint status in ROADMAP.md",
+      "reason": "Dashboard changes must update milestone status in ROADMAP.md",
       "checkDiff": false,
       "gitFilter": "AD"
     },

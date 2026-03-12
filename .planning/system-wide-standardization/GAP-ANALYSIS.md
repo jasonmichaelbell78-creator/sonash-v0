@@ -100,7 +100,7 @@ From Tier 2 Domain 9 analysis:
 | **Step 2 (Skills)**        | HIGH       | HIGH            | MEDIUM     | 62-65 skills with interactive audit; touches most ecosystems; no scope cap                 |
 | **Step 3 (Hooks)**         | MEDIUM     | MEDIUM          | HIGH       | ~350-line pre-commit hook; framework-repo lists 8 additional waves; depends on Steps 1+2   |
 | **Step 4 (Checkpoint #1)** | MEDIUM     | LOW             | HIGH       | **Single hardest dependency** — failure requires iterating Step 1 with no iteration budget |
-| **Step 8 (TDMS Stage 1)**  | HIGH       | HIGH            | MEDIUM     | 37 scripts, 9-writer race condition, Grand Plan reassessment makes scope unfixed           |
+| **Step 8 (TDMS Stage 1)**  | HIGH       | HIGH            | MEDIUM     | 37 scripts, 9-writer race condition, scope depends on pipeline complexity                  |
 | **Step 9 (Scripts)**       | MEDIUM     | HIGH            | MEDIUM     | 300+ scripts; "largest scope delta" in plan; no triage/prioritization guidance             |
 
 ---

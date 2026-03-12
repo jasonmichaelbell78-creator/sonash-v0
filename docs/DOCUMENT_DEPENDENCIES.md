@@ -335,7 +335,7 @@ changes in one document affect the accuracy of another.
 | New hook added                     | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`, `.claude/COMMAND_REFERENCE.md` | Hook documentation must be complete                     | ✅ BLOCK |
 | `app/admin/` files changed         | `ROADMAP_LOG.md` (Track A archived)                                                  | Admin Panel changes — Track A archived to ROADMAP_LOG   | Manual   |
 | `functions/src/admin*` changed     | `ROADMAP_LOG.md` (Track A archived)                                                  | Admin backend changes — Track A archived to ROADMAP_LOG | Manual   |
-| `app/(protected)/dashboard/`       | `ROADMAP.md` (sprint status)                                                         | Dashboard changes must update roadmap                   | ✅ BLOCK |
+| `app/(protected)/dashboard/`       | `ROADMAP.md` (milestone status)                                                      | Dashboard changes must update roadmap                   | ✅ BLOCK |
 | Milestone/Feature completed        | `ROADMAP.md`, `ROADMAP_LOG.md`                                                       | Multiple docs track completion status                   | Manual   |
 | New policy document created        | `claude.md` or relevant policy index                                                 | Policy references need updating                         | Manual   |
 | PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                                                         | Lessons learned must be captured                        | Manual   |
@@ -347,8 +347,8 @@ changes in one document affect the accuracy of another.
 | Test coverage changes              | `SESSION_CONTEXT.md` (Test Status line)                                              | Keep test counts current                                |
 | Session summary archival           | `docs/SESSION_HISTORY.md`                                                            | Old session summaries archive here                      | Manual   |
 | `SESSION_CONTEXT.md` 5+ sessions   | `docs/SESSION_HISTORY.md`, `SESSION_CONTEXT.md`                                      | Keep SESSION_CONTEXT.md < 200 lines                     | Manual   |
-| `tests/e2e/` files changed         | `ROADMAP.md` (Track T status), `TESTING_PLAN.md`                                     | E2E test changes must update Track T status             | Manual   |
-| Testing infrastructure changes     | `docs/plans/TESTING_INFRASTRUCTURE_PLAN.md`                                          | Track T spec must reflect implementation                | Manual   |
+| `tests/e2e/` files changed         | `ROADMAP.md` (Track T status), `TESTING_CHECKLIST.md`                                | E2E test changes must update Track T status             | Manual   |
+| Testing infrastructure changes     | `docs/plans/TESTING_INFRASTRUCTURE_CHECKLIST.md`                                     | Track T spec must reflect implementation                | Manual   |
 | Planning documents added/archived  | `docs/archive/PLAN_MAP.md`                                                           | Plan map shows documentation hierarchy                  | Manual   |
 | `.claude/plans/` files changed     | `docs/archive/PLAN_MAP.md`                                                           | Keep plan map current with active plans                 | Manual   |
 | **Docs added/removed/moved**       | `DOCUMENTATION_INDEX.md` (run `npm run docs:index`)                                  | Auto-generated index must reflect current state         | Manual   |

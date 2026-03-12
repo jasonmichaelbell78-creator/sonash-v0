@@ -40,6 +40,7 @@ export default [
       ".claude/agents/gsd-*",
       ".claude/hooks/gsd-*",
       ".claude/gsd-file-manifest.json",
+      ".worktrees/**",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },

@@ -1,5 +1,4 @@
 /* global module */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * sanitize-input.js - Shared input sanitization for hook scripts
  *

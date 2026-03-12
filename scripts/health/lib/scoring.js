@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Scoring utilities for Health Check system
  *

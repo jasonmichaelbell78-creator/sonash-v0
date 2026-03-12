@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-03-07T03:58:35.013Z",
-  "skillCount": 61,
+  "skillCount": 59,
   "skills": [
     {
       "name": "_shared",
@@ -295,12 +295,6 @@
       "description": "description: |"
     },
     {
-      "name": "sprint",
-      "source": ".claude/skills",
-      "displayName": "sprint",
-      "description": "TDMS Sprint workflow automation. Dashboard, team-based parallel execution,"
-    },
-    {
       "name": "system-test",
       "source": ".claude/skills",
       "displayName": "system-test",
@@ -354,12 +348,6 @@
       "source": ".claude/skills",
       "description": "Validate .claude folder configuration consistency",
       "displayName": "validate-claude-folder"
-    },
-    {
-      "name": "verify-technical-debt",
-      "source": ".claude/skills",
-      "displayName": "verify-technical-debt",
-      "description": "Verify and triage technical debt items - classify, then place into ROADMAP"
     },
     {
       "name": "webapp-testing",

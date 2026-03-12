@@ -35,8 +35,12 @@ function test(name, fn) {
     console.log(`  \u2713 ${name}`);
   } catch (err) {
     failed++;
-    const message =
-      err instanceof Error ? err.stack || err.message : `Non-Error thrown: ${String(err)}`;
+    let message;
+    if (err instanceof Error) {
+      message = err.stack || err.message;
+    } else {
+      message = `Non-Error thrown: ${String(err)}`;
+    }
     console.error(`  \u2717 ${name}: ${message}`);
   }
 }
@@ -89,9 +93,13 @@ try {
     require(path.join(SCRIPTS_DIR, "checkers", "coverage-completeness")),
   ];
 } catch (err) {
-  console.error(
-    `Fatal: Could not load modules: ${err instanceof Error ? err.message : String(err)}`
-  );
+  let errMsg;
+  if (err instanceof Error) {
+    errMsg = err.message;
+  } else {
+    errMsg = String(err);
+  }
+  console.error(`Fatal: Could not load modules: ${errMsg}`);
   process.exit(1);
 }
 
@@ -133,12 +141,18 @@ function buildAuditResult() {
       runtimeFailIdx++;
       const domain =
         typeof checker.DOMAIN === "string" && checker.DOMAIN ? checker.DOMAIN : "unknown";
+      let errMsg;
+      if (err instanceof Error) {
+        errMsg = err.message;
+      } else {
+        errMsg = String(err);
+      }
       allFindings.push({
         id: `DEA-FAIL-${domain}-${runtimeFailIdx}`,
         category: "audit_runtime",
         domain,
         severity: "error",
-        message: `Checker failed: ${err instanceof Error ? err.message : String(err)}`,
+        message: `Checker failed: ${errMsg}`,
         impactScore: 90,
       });
     }
@@ -170,7 +184,13 @@ let auditResult;
 try {
   auditResult = buildAuditResult();
 } catch (err) {
-  console.error(`Fatal: audit build failed: ${err instanceof Error ? err.message : String(err)}`);
+  let errMsg;
+  if (err instanceof Error) {
+    errMsg = err.message;
+  } else {
+    errMsg = String(err);
+  }
+  console.error(`Fatal: audit build failed: ${errMsg}`);
   process.exit(1);
 }
 

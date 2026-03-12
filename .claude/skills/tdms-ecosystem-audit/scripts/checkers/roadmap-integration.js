@@ -14,7 +14,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[roadmap-integration] ${m}`);
   }
 }
@@ -429,7 +434,12 @@ function checkSprintFileAlignment(masterItems, masterIdSet, logsDir, findings) {
       return idx === 0 && sidx > prefix.length && sidx + suffix.length === f.length;
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    let msg;
+    if (e instanceof Error) {
+      msg = e.message;
+    } else {
+      msg = String(e);
+    }
     findings.push({
       id: "RDM-301",
       category: "sprint_file_alignment",

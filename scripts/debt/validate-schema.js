@@ -19,6 +19,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { loadConfig } = require("../config/load-config");
+const { validatePathInDir } = require("../lib/security-helpers");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const DEFAULT_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -253,7 +254,36 @@ Exit codes:
   }
 
   const parsed = parseArgs(args);
-  const filePath = parsed.file || DEFAULT_FILE;
+  const rawFilePath = parsed.file || DEFAULT_FILE;
+
+  // Security: validate path is within project root (path traversal prevention)
+  // Uses validatePathInDir from security-helpers.js (Semgrep-approved pattern)
+  const projectRoot = path.join(__dirname, "../..");
+  let filePath;
+  try {
+    const validatedRel = validatePathInDir(projectRoot, rawFilePath);
+    filePath = path.resolve(projectRoot, validatedRel);
+  } catch {
+    console.error("Error: File path must be within project root");
+    process.exit(2);
+  }
+
+  // Prevent symlink escape when the file exists
+  try {
+    if (fs.existsSync(filePath)) {
+      const real = fs.realpathSync(filePath);
+      // Re-validate the resolved real path
+      validatePathInDir(projectRoot, path.relative(projectRoot, real));
+      filePath = real;
+    }
+  } catch (err) {
+    // validatePathInDir throws on escape; realpath throws on missing — both mean reject
+    if (err?.message?.includes("must be within")) {
+      console.error("Error: File path escapes project root via symlink");
+      process.exit(2);
+    }
+    // If realpath fails for other reasons, keep the lexical-path validation
+  }
 
   if (!parsed.quiet) {
     console.log("🔍 Validating TDMS schema...\n");
@@ -337,7 +367,9 @@ Exit codes:
     } catch (err) {
       // Skip parse errors for unchanged lines in staged-only mode
       if (changedLines && !changedLines.has(lineNum)) continue;
-      allErrors.push(`Line ${lineNum}: JSON parse error: ${err.message}`);
+      allErrors.push(
+        `Line ${lineNum}: JSON parse error: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 

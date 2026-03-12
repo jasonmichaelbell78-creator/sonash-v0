@@ -11,12 +11,38 @@ rules:
       code-pattern-ref: "Shell interpolation"
       confidence: HIGH
       cwe: "CWE-95: Eval Injection"
+    patterns:
+      - pattern-either:
+          - pattern: eval(...)
+          - pattern: setTimeout($CB, ...)
+          - pattern: setInterval($CB, ...)
+      - pattern-not: setTimeout(($ARGS) => {...}, ...)
+      - pattern-not: setTimeout(($ARGS) => $RET, ...)
+      - pattern-not: setTimeout(function (...) {...}, ...)
+      - pattern-not: setInterval(($ARGS) => {...}, ...)
+      - pattern-not: setInterval(($ARGS) => $RET, ...)
+      - pattern-not: setInterval(function (...) {...}, ...)
+    paths:
+      exclude:
+        - node_modules/
+        - tests/
+        - "*.test.*"
+  # Separate rule for constructor-based eval (split to avoid pattern-not conflicts)
+  - id: sonash.security.no-eval-constructor
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Function() constructor detected. This executes arbitrary code and enables
+      injection attacks. Use safer alternatives like JSON.parse() for data or
+      explicit function references for dynamic dispatch.
+    metadata:
+      category: security
+      code-pattern-ref: "Shell interpolation"
+      confidence: HIGH
+      cwe: "CWE-95: Eval Injection"
     pattern-either:
-      - pattern: eval(...)
       - pattern: new Function(...)
       - pattern: Function(...)
-      - pattern: setTimeout($STR, ...)
-      - pattern: setInterval($STR, ...)
     paths:
       exclude:
         - node_modules/

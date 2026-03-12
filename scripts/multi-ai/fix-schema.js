@@ -14,7 +14,7 @@
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { join, resolve, dirname } from "node:path";
+import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
@@ -22,7 +22,6 @@ import { safeWriteFileSync } from "../lib/safe-fs.js";
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const REPO_ROOT = resolve(__dirname, "../..");
 
 // Required fields per JSONL_SCHEMA_STANDARD.md
 const REQUIRED_FIELDS = [
@@ -535,7 +534,7 @@ export function processFile(inputPath, outputPath, category) {
   for (let i = 0; i < lines.length; i++) {
     try {
       findings.push(JSON.parse(lines[i].trim()));
-    } catch (error) {
+    } catch {
       console.warn(`Line ${i + 1}: Invalid JSON, skipping`);
     }
   }
@@ -550,14 +549,14 @@ export function processFile(inputPath, outputPath, category) {
 
   // Validate results
   let validCount = 0;
-  let issueCount = 0;
+  let _issueCount = 0;
 
   for (const finding of fixed) {
     const issues = validateFinding(finding);
     if (issues.length === 0) {
       validCount++;
     } else {
-      issueCount += issues.length;
+      _issueCount += issues.length;
     }
   }
 

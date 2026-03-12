@@ -29,7 +29,7 @@ function findProjectRoot(startDir: string): string {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { isSafeToWrite } = require(
   path.resolve(findProjectRoot(__dirname), "scripts/lib/safe-fs.js")
 ) as { isSafeToWrite: (p: string) => boolean };

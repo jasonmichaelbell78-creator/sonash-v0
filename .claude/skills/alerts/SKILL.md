@@ -368,8 +368,40 @@ alerts-history.jsonl.
 - Code issues: `/audit-code`
 - Security alerts: `/audit-security`
 - Review quality: `/pr-retro {pr_number}`
-- Debt items: `/sprint`
+- Debt items: `/add-debt`
 - Hook issues: `/hook-ecosystem-audit`
+
+## Hook Data Drill-Down (L3 — opt-in)
+
+When the dashboard shows hook-related alerts (skip-abuse, hook-health, or
+hook-warning-trends), offer the user a drill-down:
+
+```
+Hook alerts detected. Drill down into hook data? [Y/n]
+```
+
+**If yes**, read and summarize these data sources:
+
+1. **Override log** (`.claude/state/override-log.jsonl`): Top 3 most-overridden
+   checks (7d), total count, trend vs previous week
+2. **Hook warnings log** (`.claude/state/hook-warnings-log.jsonl`): Top 3
+   warning types (7d), auto-escalation status, any with 15+ occurrences
+3. **Health score log** (`.claude/state/health-score-log.jsonl`): Last 3 grades
+   with timestamps, categories scoring below 70
+
+**Output format:**
+
+```
+Hook Drill-Down (7d):
+  Overrides: 18 total (cognitive-complexity: 12, propagation: 4, security: 2)
+    Trend: +125% vs prev week
+  Warnings: 8 total (propagation: 5, pattern-compliance: 2, canon: 1)
+    Auto-escalated: propagation (5+ occurrences → warning)
+  Health: F(59) ← C(76) ← B(80) — declining
+    Below 70: code(60), security(70), debt-metrics(60), hook-health(50)
+```
+
+**If no or no hook alerts:** Skip silently.
 
 ## Scripts
 

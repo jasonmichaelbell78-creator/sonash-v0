@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Documentation Health Checker
  *

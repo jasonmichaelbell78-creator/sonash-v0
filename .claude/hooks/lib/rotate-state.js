@@ -1,5 +1,5 @@
 /* global module, require, __dirname, process */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * rotate-state.js - Shared state file rotation helpers
  *
@@ -12,7 +12,44 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { isSafeToWrite } = require("./symlink-guard");
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require("./symlink-guard"));
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  process.stderr.write(`[rotate-state] symlink-guard unavailable: ${msg}\n`);
+  isSafeToWrite = (filePath) => {
+    try {
+      // Check leaf path
+      try {
+        if (fs.lstatSync(filePath).isSymbolicLink()) return false;
+      } catch (leafErr) {
+        const code =
+          leafErr && typeof leafErr === "object" && "code" in leafErr ? String(leafErr.code) : "";
+        if (code !== "ENOENT") return false;
+      }
+
+      // Reject any symlinked parent directory
+      let dir = path.resolve(path.dirname(filePath));
+      for (;;) {
+        try {
+          if (fs.lstatSync(dir).isSymbolicLink()) return false;
+        } catch (dirErr) {
+          const code =
+            dirErr && typeof dirErr === "object" && "code" in dirErr ? String(dirErr.code) : "";
+          if (code !== "ENOENT") return false;
+        }
+        const parent = path.dirname(dir);
+        if (parent === dir) break;
+        dir = parent;
+      }
+
+      return true;
+    } catch {
+      return false;
+    }
+  };
+}
 
 /**
  * Rotate a JSONL file to keep only the newest N entries.
@@ -255,9 +292,13 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
       return { rotated: true, before: lines.length, after: kept.length, archived: evicted.length };
     });
   } catch (err) {
-    process.stderr.write(
-      `[archiveRotateJsonl] Error rotating ${filePath}: ${err.code || err.message}\n`
-    );
+    const errDetail =
+      err && typeof err === "object" && "code" in err
+        ? err.code
+        : err instanceof Error
+          ? err.message
+          : String(err);
+    process.stderr.write(`[archiveRotateJsonl] Error rotating ${filePath}: ${errDetail}\n`);
     return { rotated: false, before: 0, after: 0, archived: 0 };
   }
 }

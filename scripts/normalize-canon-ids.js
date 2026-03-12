@@ -18,8 +18,12 @@
  *   4. Create an ID mapping file for reference
  */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
 import { join, basename } from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { safeWriteFileSync } = require("./lib/safe-fs.js");
 
 const SEVERITY_ORDER = { S0: 0, S1: 1, S2: 2, S3: 3 };
 const EFFORT_ORDER = { E0: 0, E1: 1, E2: 2, E3: 3 };
@@ -153,7 +157,10 @@ function parseJsonl(content, filename, failFast = true) {
       // Only log line number, character count, and sanitized error message
       parseErrors.push({
         line: i + 1,
-        error: err.message.replace(/position \d+/, "position [redacted]"),
+        error: (err instanceof Error ? err.message : String(err)).replace(
+          /position \d+/,
+          "position [redacted]"
+        ),
         charCount: lines[i].length,
       });
     }
@@ -335,7 +342,7 @@ function rewriteAllIdReferences(fileData, idMap, dryRun, verbose) {
       console.log(`    Would update ${updatedFindings.length} findings`);
     } else {
       try {
-        writeFileSync(filepath, toJsonl(updatedFindings));
+        safeWriteFileSync(filepath, toJsonl(updatedFindings));
         console.log(`    ✓ Updated ${updatedFindings.length} findings`);
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : String(err);
@@ -361,7 +368,7 @@ function writeIdMappingFile(directory, globalCounter, idMapping, dryRun) {
   };
 
   try {
-    writeFileSync(mappingPath, JSON.stringify(mappingContent, null, 2));
+    safeWriteFileSync(mappingPath, JSON.stringify(mappingContent, null, 2));
     console.log(`\n✓ ID mapping saved to ${mappingPath}`);
   } catch (err) {
     console.error(`Error writing ID mapping: ${err instanceof Error ? err.message : String(err)}`);

@@ -17,7 +17,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[data-persistence] ${m}`);
   }
 }
@@ -321,7 +326,7 @@ function checkSchemaValidation(dataDir, findings) {
 
 // -- Category 4: Timestamp Consistency ---------------------------------------
 
-function checkTimestampConsistency(dataDir, findings) {
+function checkTimestampConsistency(dataDir, _findings) {
   const bench = BENCHMARKS.timestamp_consistency;
   let totalTimestamps = 0;
   let validTimestamps = 0;

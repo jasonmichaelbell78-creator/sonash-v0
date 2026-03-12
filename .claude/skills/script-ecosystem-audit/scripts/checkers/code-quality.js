@@ -15,7 +15,12 @@ function safeRequire(id) {
   try {
     return require(id);
   } catch (e) {
-    const m = e instanceof Error ? e.message : String(e);
+    let m;
+    if (e instanceof Error) {
+      m = e.message;
+    } else {
+      m = String(e);
+    }
     throw new Error(`[code-quality] ${m}`);
   }
 }
@@ -302,7 +307,7 @@ function checkDeadCode(scriptFiles) {
   let usedExports = 0;
 
   let deadCodeFindingCount = 0;
-  for (const [key, exp] of exportedFunctions) {
+  for (const [_key, exp] of exportedFunctions) {
     const escaped = exp.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const usagePattern = new RegExp(`\\b${escaped}\\b`);
     let foundUsage = false;

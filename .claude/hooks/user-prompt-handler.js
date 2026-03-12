@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console, __dirname */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename, security/detect-non-literal-regexp, security/detect-object-injection */
+/* eslint-disable @typescript-eslint/no-require-imports */
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -186,9 +186,19 @@ function runAnalyze() {
     }
   }
 
+  /** Escape a string for safe use in RegExp constructor */
+  function escapeRegex(s) {
+    return s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+  }
+
   function matchesWord(pattern) {
-    const parts = pattern.split(".?").map((p) => p.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"));
-    const joined = parts.join("[^a-z0-9]?");
+    const raw = String(pattern);
+    if (raw.length > 200) return false;
+
+    const parts = raw.split(".?").filter((p) => p.length > 0);
+    if (parts.length === 0 || parts.length > 25) return false;
+
+    const joined = parts.map((p) => escapeRegex(p)).join("[^a-z0-9]?");
     return new RegExp(`(^|[^a-z0-9])(${joined})([^a-z0-9]|$)`, "i").test(requestLower);
   }
 
@@ -198,7 +208,7 @@ function runAnalyze() {
       .trim()
       .split(/\s+/)
       .filter(Boolean)
-      .map((t) => t.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"));
+      .map((t) => escapeRegex(t));
     if (tokens.length === 0) return false;
     return new RegExp(`(^|[^a-z0-9])(${tokens.join("[^a-z0-9]+")})([^a-z0-9]|$)`, "i").test(
       requestLower

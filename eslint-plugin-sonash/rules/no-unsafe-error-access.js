@@ -102,30 +102,51 @@ function consequentAlwaysExits(consequent) {
   return false;
 }
 
-/** Check if a specific access node is guarded by an instanceof check in an ancestor IfStatement */
+const FUNCTION_TYPES = new Set([
+  "FunctionDeclaration",
+  "FunctionExpression",
+  "ArrowFunctionExpression",
+]);
+
+/** Check if an IfStatement guards the access node via instanceof */
+function checkIfStatementGuard(ifNode, accessNode, paramName) {
+  if (isInstanceofGuardTest(ifNode.test, paramName)) {
+    return ifNode.consequent && isNodeWithin(accessNode, ifNode.consequent);
+  }
+  if (
+    isNegatedInstanceofGuardTest(ifNode.test, paramName) &&
+    consequentAlwaysExits(ifNode.consequent)
+  ) {
+    return !isNodeWithin(accessNode, ifNode.consequent);
+  }
+  return undefined; // not a guard — continue walking
+}
+
+/** Check if a ConditionalExpression guards the access node via instanceof */
+function checkTernaryGuard(condNode, accessNode, paramName) {
+  if (
+    isInstanceofGuardTest(condNode.test, paramName) &&
+    condNode.consequent &&
+    isNodeWithin(accessNode, condNode.consequent)
+  ) {
+    return true;
+  }
+  return undefined;
+}
+
+/** Check if a specific access node is guarded by an instanceof check in an ancestor IfStatement or ConditionalExpression */
 function isAccessGuarded(accessNode, paramName) {
   let current = accessNode.parent;
   while (current) {
     if (current.type === "IfStatement") {
-      // Direct guard: if (err instanceof Error) { ... err.message ... }
-      if (isInstanceofGuardTest(current.test, paramName)) {
-        return current.consequent && isNodeWithin(accessNode, current.consequent);
-      }
-      // Early-exit guard: if (!(err instanceof Error)) return/throw; ... err.message
-      if (
-        isNegatedInstanceofGuardTest(current.test, paramName) &&
-        consequentAlwaysExits(current.consequent)
-      ) {
-        return !isNodeWithin(accessNode, current.consequent);
-      }
+      const result = checkIfStatementGuard(current, accessNode, paramName);
+      if (result !== undefined) return result;
     }
-    if (
-      current.type === "FunctionDeclaration" ||
-      current.type === "FunctionExpression" ||
-      current.type === "ArrowFunctionExpression"
-    ) {
-      return false;
+    if (current.type === "ConditionalExpression") {
+      const result = checkTernaryGuard(current, accessNode, paramName);
+      if (result !== undefined) return result;
     }
+    if (FUNCTION_TYPES.has(current.type)) return false;
     current = current.parent;
   }
   return false;
@@ -179,6 +200,7 @@ function isMessageMember(member, paramName) {
 module.exports = {
   meta: {
     type: "problem",
+    fixable: "code",
     docs: {
       description: "Require instanceof Error check before accessing .message on catch parameter",
       recommended: true,
@@ -206,6 +228,13 @@ module.exports = {
           context.report({
             node: access,
             messageId: "unsafeErrorAccess",
+            fix(fixer) {
+              const sourceCode = context.sourceCode ?? context.getSourceCode();
+              const accessText = sourceCode.getText(access);
+              // Always parenthesize to avoid operator precedence issues
+              const replacement = `(${paramName} instanceof Error ? ${accessText} : String(${paramName}))`;
+              return fixer.replaceText(access, replacement);
+            },
           });
         }
       },

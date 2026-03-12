@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * check-mcp-servers.js - SessionStart hook for MCP server availability
  *
@@ -39,7 +39,12 @@ if (!fs.existsSync(mcpConfigPath)) {
 }
 
 // Security: Avoid DoS - refuse to read extremely large config files
+// Also check for symlinks before stat to prevent symlink attacks
 try {
+  if (fs.lstatSync(mcpConfigPath).isSymbolicLink()) {
+    console.log("No MCP servers configured");
+    process.exit(0);
+  }
   const stat = fs.statSync(mcpConfigPath);
   if (!stat.isFile() || stat.size > 1024 * 1024) {
     console.log("No MCP servers configured");

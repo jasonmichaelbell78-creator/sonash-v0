@@ -12,7 +12,7 @@
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { join, resolve, relative, isAbsolute, dirname } from "node:path";
+import { resolve, relative, isAbsolute, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
 
@@ -256,7 +256,7 @@ function parseJsonl(input) {
           findings.push(parsed);
           continue;
         }
-      } catch (_) {
+      } catch {
         // Not a complete JSON object on this line — fall through to accumulator
       }
     }
@@ -410,7 +410,7 @@ function parseJsonArray(input) {
  * @param {string} category - Category for findings
  * @returns {{ findings: object[], errors: string[] }}
  */
-function parseFencedBlock(input, category) {
+function parseFencedBlock(input, _category) {
   // Extract content from code fences
   const match = input.match(/```(?:json|jsonl)?\s*\n([\s\S]*?)```/i);
   if (!match) {

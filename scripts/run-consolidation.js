@@ -28,9 +28,18 @@ const fs = require("node:fs"); // catch-verified: core module
 const path = require("node:path"); // catch-verified: core module
 const cp = require("node:child_process"); // catch-verified: core module
 const { existsSync, readFileSync, mkdirSync, rmSync } = fs; // require() destructure
-const { writeFileSync, copyFileSync } = fs; // require() destructure
+const { copyFileSync } = fs; // require() destructure
 const { join } = path; // require() destructure
 const { execFileSync } = cp; // require() destructure
+
+// Safe-fs wrappers (symlink guard + EXDEV fallback)
+let safeWriteFileSync, safeRenameSync;
+try {
+  ({ safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs"));
+} catch {
+  console.error("safe-fs unavailable; cannot safely write files");
+  process.exit(2);
+}
 
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
@@ -115,7 +124,7 @@ function safeRename(src, dest) {
   if (!isSafeToWrite(dest)) return; // symlink guard
   // Try atomic rename first; fall back to copy+delete for cross-device moves
   try {
-    fs.renameSync(src, dest);
+    safeRenameSync(src, dest);
     return;
   } catch (err) {
     if (
@@ -150,7 +159,7 @@ function writeState(state) {
     log("Refusing to write: symlink detected at consolidation.json", c.red);
     return;
   }
-  writeFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8"); // atomic .tmp → safeRename below
+  safeWriteFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8"); // atomic .tmp → safeRename below
   if (existsSync(bakPath)) rmSync(bakPath, { force: true });
   if (existsSync(CONSOLIDATION_FILE)) {
     if (!isSafeToWrite(bakPath)) {
@@ -396,7 +405,7 @@ function generateRuleSuggestions(recurringPatterns, range) {
       log("  ⚠️ Refusing to write suggestions: symlink detected at tmp path", c.yellow);
       return;
     }
-    writeFileSync(tmpOutputPath, content, "utf8"); // atomic .tmp → safeRename below
+    safeWriteFileSync(tmpOutputPath, content, "utf8"); // atomic .tmp → safeRename below
     safeRename(tmpOutputPath, OUTPUT_FILE);
     log(
       `  ✅ Rule suggestions → consolidation-output/suggested-rules.md (${recurringPatterns.length} patterns)`,
@@ -574,7 +583,7 @@ function appendToCodePatterns(recurringPatterns, categories, consolidationNumber
       log("  ⚠️ Refusing to write: symlink at tmp path", c.yellow);
       return { added: 0 };
     }
-    writeFileSync(tmpPath, content, "utf8");
+    safeWriteFileSync(tmpPath, content, "utf8");
     safeRename(tmpPath, CODE_PATTERNS_FILE);
 
     log(`  ✅ CODE_PATTERNS.md: added ${newPatterns.length} new patterns`, c.green);
@@ -649,7 +658,7 @@ function appendConsolidationToMarkdown(newNumber, minId, maxId, today, recurring
       log("  ⚠️ Refusing to write: symlink detected at target path", c.yellow);
       return;
     }
-    writeFileSync(tmpPath, content, "utf8"); // atomic .tmp → safeRename below
+    safeWriteFileSync(tmpPath, content, "utf8"); // atomic .tmp → safeRename below
     safeRename(tmpPath, LEARNINGS_LOG);
   } catch (err) {
     log(`  ⚠️ Failed to update markdown consolidation section: ${sanitizeError(err)}`, c.yellow);
