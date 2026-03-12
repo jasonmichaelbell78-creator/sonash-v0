@@ -23,6 +23,17 @@ try {
   process.exit(1);
 }
 
+// Safe-fs wrappers (symlink guard + EXDEV fallback)
+let safeWriteFileSync, safeRenameSync, safeAppendFileSync;
+try {
+  ({ safeWriteFileSync, safeRenameSync, safeAppendFileSync } = require("./lib/safe-fs"));
+} catch {
+  console.error("safe-fs unavailable; disabling writes");
+  safeWriteFileSync = () => {};
+  safeRenameSync = () => {};
+  safeAppendFileSync = () => {};
+}
+
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
 try {
@@ -128,7 +139,7 @@ function writeWarnings(data) {
       fs.mkdirSync(claudeDir, { recursive: true });
     }
 
-    fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2));
+    safeWriteFileSync(tmpFile, JSON.stringify(data, null, 2));
 
     // Windows: rename over existing file may fail, so remove first
     try {
@@ -137,7 +148,7 @@ function writeWarnings(data) {
       // ignore - file may not exist
     }
 
-    fs.renameSync(tmpFile, WARNINGS_FILE);
+    safeRenameSync(tmpFile, WARNINGS_FILE);
   } catch {
     // Best-effort cleanup to avoid leaving stale tmp files
     try {
@@ -221,7 +232,7 @@ function appendWarning(hook, type, severity, message, action = null, files = nul
       }
       const logPath = path.join(logDir, "hook-warnings-log.jsonl");
       if (!isSafeToWrite(logPath)) return;
-      fs.appendFileSync(logPath, JSON.stringify(entry) + "\n");
+      safeAppendFileSync(logPath, JSON.stringify(entry) + "\n");
     } catch {
       // Best-effort — never block hooks on log failure
     }

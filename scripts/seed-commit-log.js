@@ -42,6 +42,16 @@ const projectDir = getRepoRoot();
 const COMMIT_LOG = path.join(projectDir, ".claude", "state", "commit-log.jsonl");
 const SESSION_CONTEXT = path.join(projectDir, "SESSION_CONTEXT.md");
 
+// Safe-fs wrappers (symlink guard + EXDEV fallback)
+let safeWriteFileSync, safeRenameSync;
+try {
+  ({ safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs"));
+} catch {
+  console.error("safe-fs unavailable; disabling writes");
+  safeWriteFileSync = () => {};
+  safeRenameSync = () => {};
+}
+
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
 try {
@@ -150,9 +160,9 @@ function writeEntries(entries) {
     process.exit(1);
   }
   try {
-    fs.writeFileSync(tmpPath, content, "utf8");
+    safeWriteFileSync(tmpPath, content, "utf8");
     try {
-      fs.renameSync(tmpPath, COMMIT_LOG);
+      safeRenameSync(tmpPath, COMMIT_LOG);
     } catch {
       // Cross-drive fallback: copy + unlink (Review #265)
       if (!isSafeToWrite(COMMIT_LOG)) {
@@ -361,7 +371,7 @@ function appendEntries(entries) {
         process.exit(1);
       }
       fd = fs.openSync(COMMIT_LOG, "wx", 0o644);
-      fs.writeFileSync(fd, content, "utf8");
+      safeWriteFileSync(fd, content, "utf8");
     }
   } finally {
     if (fd != null) {
@@ -389,7 +399,7 @@ function updateTrackerState() {
     const trackerDir = path.dirname(TRACKER_STATE);
     fs.mkdirSync(trackerDir, { recursive: true });
     if (!isSafeToWrite(TRACKER_STATE)) return;
-    fs.writeFileSync(
+    safeWriteFileSync(
       TRACKER_STATE,
       JSON.stringify({ lastHead: head, updatedAt: new Date().toISOString() })
     );

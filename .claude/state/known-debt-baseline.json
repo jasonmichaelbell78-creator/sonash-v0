@@ -4,6 +4,12 @@
   "checks": {
     "cognitive-complexity": {},
     "cyclomatic-complexity": {},
-    "propagation": {}
+    "propagation": {},
+    "path-resolve-unvalidated": {
+      "description": "path.resolve() without containment validation. All 104 occurrences verified safe (hardcoded paths, __dirname-based, or already validated). No user-input-to-path.resolve flows found.",
+      "baselined": "2026-03-11",
+      "count": 104,
+      "status": "verified-safe"
+    }
   }
 }

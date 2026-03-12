@@ -23,6 +23,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("../lib/safe-fs");
 const { refuseSymlinkWithParents } = require("../lib/security-helpers");
 
 const ROOT = path.join(__dirname, "../..");
@@ -75,7 +76,7 @@ function writeJsonl(filePath, items) {
   refuseSymlinkWithParents(filePath);
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
   try {
-    fs.writeFileSync(filePath, content, "utf8");
+    safeWriteFileSync(filePath, content, "utf8");
   } catch {
     const msg = `Failed to write ${path.basename(filePath)}`;
     if (jsonOutput) {

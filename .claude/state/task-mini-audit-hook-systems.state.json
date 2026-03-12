@@ -360,7 +360,7 @@
       "L6: Gates that never catch anything should be removed — CANON, test warning, propagation pre-commit"
     ],
     "learnings_presented": 6,
-    "status": "wave-7-complete",
+    "status": "wave-8-complete",
     "wave0_completed": "2026-03-11T21:40:00.000Z",
     "wave0_changes": [
       "C10-G1: Replaced 5 direct fs calls with safe-fs wrappers (suggest-pattern-automation.js: 1 writeFileSync, archive-doc.js: 3 renameSync + 1 writeFileSync)",
@@ -413,6 +413,12 @@
       "Side note: Added Coverage Cross-Check to hook-ecosystem-audit Phase 5 — maps all 10 mini-audit categories to audit checker domains, flags uncovered categories (C3 learnings, C5 cross-system)."
     ],
     "wave6_completed": "2026-03-11T23:30:00.000Z",
+    "wave8_completed": "2026-03-12T00:15:00.000Z",
+    "wave8_changes": [
+      "C10-G3: 35 items reclassified S0→S1 in MASTER_DEBT.jsonl (18 in deduped.jsonl). S0 count: 67→19. Kept 4 genuinely security-critical items at S0.",
+      "C10-G2: Test suite diagnostic — 3645 pass, 0 fail, 1 skipped. No remediation needed.",
+      "C10-G5: Migrated bare fs.writeFileSync→safeWriteFileSync across 21 production scripts (56+ calls). Also migrated fs.renameSync→safeRenameSync and fs.appendFileSync→safeAppendFileSync. path.resolve verified safe (all hardcoded/\\_\\_dirname-based) — baselined in known-debt-baseline.json."
+    ],
     "wave6_changes": [
       "C3-G2: Added 3+ same recommendation = CRITICAL escalation rule to pr-retro SKILL.md Step 2 (recurring patterns analysis).",
       "C3-G3: Auto-DEBT generation in log-override.js — checkBypassDebtThreshold() counts 14-day bypasses per check, creates DEBT entry at 15+ (deduplicates against MASTER_DEBT, writes to both MASTER_DEBT and deduped.jsonl).",

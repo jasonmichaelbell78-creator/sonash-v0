@@ -27,6 +27,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const { isSafeToWrite } = require("../.claude/hooks/lib/symlink-guard");
+const { safeAppendFileSync, safeRenameSync } = require("./lib/safe-fs");
 
 // Shared rotation helper (entry-count-based)
 let rotateJsonl;
@@ -117,14 +118,8 @@ function rotateSizeBasedIfNeeded() {
   if (stats.size <= MAX_LOG_SIZE) return;
 
   const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
-  if (!isSafeToWrite(backupFile)) return;
 
-  try {
-    fs.renameSync(OVERRIDE_LOG, backupFile);
-  } catch {
-    fs.copyFileSync(OVERRIDE_LOG, backupFile);
-    fs.unlinkSync(OVERRIDE_LOG);
-  }
+  safeRenameSync(OVERRIDE_LOG, backupFile);
   console.log(`Override log rotated to ${path.basename(backupFile)}`);
 }
 
@@ -163,8 +158,7 @@ function logOverride(check, reason) {
   try {
     rotateSizeBasedIfNeeded();
 
-    if (!isSafeToWrite(OVERRIDE_LOG)) return null;
-    fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
+    safeAppendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
 
     rotateEntryBasedIfNeeded();
 
@@ -234,8 +228,10 @@ function checkBypassDebtThreshold(check) {
 
     // Append to both MASTER_DEBT and deduped (per memory: generate-views.js overwrites MASTER_DEBT from deduped)
     for (const p of [masterDebtPath, dedupedPath]) {
-      if (isSafeToWrite(p)) {
-        fs.appendFileSync(p, debtLine);
+      try {
+        safeAppendFileSync(p, debtLine);
+      } catch {
+        /* skip unsafe paths */
       }
     }
     console.log(`  📋 Auto-generated DEBT entry: ${check} bypassed ${count}x in 14 days`);
@@ -522,14 +518,11 @@ function clearLog() {
   ensureLogDir();
   if (fs.existsSync(OVERRIDE_LOG)) {
     const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-archived-${Date.now()}.jsonl`);
-    if (isSafeToWrite(backupFile)) {
-      try {
-        fs.renameSync(OVERRIDE_LOG, backupFile);
-      } catch {
-        fs.copyFileSync(OVERRIDE_LOG, backupFile);
-        fs.unlinkSync(OVERRIDE_LOG);
-      }
+    try {
+      safeRenameSync(OVERRIDE_LOG, backupFile);
       console.log(`Override log archived to ${path.basename(backupFile)}`);
+    } catch {
+      /* skip if unsafe */
     }
   }
   console.log("Override log cleared.");

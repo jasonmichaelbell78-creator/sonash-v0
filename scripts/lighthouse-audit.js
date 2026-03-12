@@ -16,6 +16,7 @@ const lighthouse = require("lighthouse");
 const chromeLauncher = require("chrome-launcher");
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("./lib/safe-fs");
 
 // Configuration
 const BASE_URL = process.env.LIGHTHOUSE_BASE_URL || "http://localhost:3000";
@@ -115,12 +116,12 @@ async function auditPage(route, chromePort, options = {}) {
     const device = options.desktop ? "desktop" : "mobile";
     const baseName = `${route.name}-${device}-${timestamp}`;
 
-    fs.writeFileSync(
+    safeWriteFileSync(
       path.join(OUTPUT_DIR, `${baseName}.json`),
       JSON.stringify(result.lhr, null, 2)
     );
 
-    fs.writeFileSync(path.join(OUTPUT_DIR, `${baseName}.html`), result.report[1]);
+    safeWriteFileSync(path.join(OUTPUT_DIR, `${baseName}.html`), result.report[1]);
 
     return { route: route.name, url, scores, success: true };
   } catch (error) {
@@ -236,7 +237,7 @@ async function main() {
 
     // Save summary JSON
     const summary = buildSummary(results, desktop);
-    fs.writeFileSync(path.join(OUTPUT_DIR, "summary.json"), JSON.stringify(summary, null, 2));
+    safeWriteFileSync(path.join(OUTPUT_DIR, "summary.json"), JSON.stringify(summary, null, 2));
 
     // Exit with error if any audits failed
     const failures = results.filter((r) => !r.success);

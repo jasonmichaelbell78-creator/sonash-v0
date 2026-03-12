@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-03-11 **Active Documents:** 514 **Archived Documents:** 104
+**Generated:** 2026-03-12 **Active Documents:** 514 **Archived Documents:** 104
 
 ---
 
@@ -367,7 +367,7 @@ _Claude Code skills_
 | [Health Ecosystem Audit — Reference](.claude/skills/health-ecosystem-audit/REFERENCE.md)                                            | Reference material for the health ecosystem audit skill. Con...   | ↓0 ↑0      | 2026-03-10    |
 | [health-ecosystem-audit](.claude/skills/health-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of the health monitoring system — `scripts/h...   | ↓0 ↑0      | 2026-03-11    |
 | [Hook Ecosystem Audit — Reference](.claude/skills/hook-ecosystem-audit/REFERENCE.md)                                                | Reference material for the hook ecosystem audit skill. Conta...   | ↓0 ↑0      | 2026-03-09    |
-| [hook-ecosystem-audit](.claude/skills/hook-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire hook ecosystem — Claude Code h...   | ↓0 ↑0      | 2026-03-10    |
+| [hook-ecosystem-audit](.claude/skills/hook-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire hook ecosystem — Claude Code h...   | ↓0 ↑0      | 2026-03-11    |
 | [Learning Capture (Step 7)](.claude/skills/pr-review/reference/LEARNING_CAPTURE.md)                                                 | Mandatory learning documentation after every PR review proce...   | ↓1 ↑0      | 2026-02-17    |
 | [Market Research Report Formatting Guide](.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md)                        | Quick reference for using the `market_research.sty` style pa...   | ↓0 ↑0      | 2026-01-12    |
 | [Market Research Report Structure Guide](.claude/skills/market-research-reports/references/report_structure_guide.md)               | Create a strong first impression and communicate report scop...   | ↓0 ↑0      | 2026-01-12    |
@@ -2547,7 +2547,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-03-11 | Auto-generated from codebase scan |
+| Auto    | 2026-03-12 | Auto-generated from codebase scan |
 
 ---
 

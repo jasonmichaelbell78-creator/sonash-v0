@@ -23,6 +23,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const MASTER_DEBT_PATH = path.join(REPO_ROOT, "docs", "technical-debt", "MASTER_DEBT.jsonl");
@@ -123,7 +124,7 @@ function guardSymlink(targetPath, label) {
  */
 function safeRename(tmpFile, destFile, destDir) {
   try {
-    fs.renameSync(tmpFile, destFile);
+    safeRenameSync(tmpFile, destFile);
   } catch {
     guardSymlink(destDir, destDir);
     guardSymlink(destFile, destFile);
@@ -132,7 +133,7 @@ function safeRename(tmpFile, destFile, destDir) {
     } catch {
       /* best-effort */
     }
-    fs.renameSync(tmpFile, destFile);
+    safeRenameSync(tmpFile, destFile);
   }
 }
 
@@ -143,7 +144,7 @@ function writeMasterDebt(items) {
   const dir = path.dirname(MASTER_DEBT_PATH);
   const tmpFile = path.join(dir, `.MASTER_DEBT.jsonl.tmp-${process.pid}-${Date.now()}`);
   try {
-    fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
+    safeWriteFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
     safeRename(tmpFile, MASTER_DEBT_PATH, dir);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

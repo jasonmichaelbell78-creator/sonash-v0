@@ -21,6 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 const { loadConfig } = require("../config/load-config");
 
 // Cache audit schema at module scope (avoid re-reading per item)
@@ -593,14 +594,14 @@ function processFile(inputPath, outputPath, dryRun) {
       // Use exclusive write flag for security (wx = write exclusive)
       const fd = fs.openSync(tmpPath, "wx", 0o600);
       try {
-        fs.writeFileSync(fd, output, "utf8");
+        safeWriteFileSync(fd, output, "utf8");
       } finally {
         fs.closeSync(fd);
       }
 
       // Atomic rename (with Windows fallback)
       try {
-        fs.renameSync(tmpPath, outputPath);
+        safeRenameSync(tmpPath, outputPath);
       } catch (error_) {
         // Windows can fail to overwrite existing destination; fall back to unlink+rename
         try {
@@ -622,7 +623,7 @@ function processFile(inputPath, outputPath, dryRun) {
             throw error__;
           }
         }
-        fs.renameSync(tmpPath, outputPath);
+        safeRenameSync(tmpPath, outputPath);
       }
 
       console.log(`  Written to: ${outputPath}`);

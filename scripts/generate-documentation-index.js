@@ -13,7 +13,7 @@
  *   --verbose  Show detailed processing information
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync, lstatSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, lstatSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, relative, dirname, basename, extname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,6 +25,7 @@ const ROOT = join(__dirname, "..");
 
 // CJS interop for loading JSON configs from ESM
 const require = createRequire(import.meta.url);
+const { safeWriteFileSync } = require("./lib/safe-fs.js");
 const { loadConfig } = require("./config/load-config");
 
 // All config — single source of truth: scripts/config/doc-generator-config.json
@@ -1053,7 +1054,7 @@ function main() {
 
     const outputPath = join(ROOT, CONFIG.outputFile);
     try {
-      writeFileSync(outputPath, markdown, "utf-8");
+      safeWriteFileSync(outputPath, markdown, "utf-8");
       log(`   Written to ${CONFIG.outputFile}`);
     } catch (writeError) {
       console.error(`Error writing to ${CONFIG.outputFile}: ${writeError.message}`);

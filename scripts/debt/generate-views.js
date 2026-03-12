@@ -21,7 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { writeMasterDebtSync, appendMasterDebtSync } = require("../lib/safe-fs");
+const { writeMasterDebtSync, appendMasterDebtSync, safeWriteFileSync } = require("../lib/safe-fs");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
@@ -403,7 +403,7 @@ ${
 **Legacy ID Mapping:** See \`LEGACY_ID_MAPPING.json\` for CANON-*, DEDUP-*, MASTER-* → DEBT-XXXX mapping.
 `;
 
-  fs.writeFileSync(INDEX_FILE, indexMd);
+  safeWriteFileSync(INDEX_FILE, indexMd);
   console.log(`  ✅ ${INDEX_FILE}`);
 }
 
@@ -427,7 +427,7 @@ function generateSeverityView(bySeverity, today) {
     }
   }
 
-  fs.writeFileSync(path.join(VIEWS_DIR, "by-severity.md"), severityMd);
+  safeWriteFileSync(path.join(VIEWS_DIR, "by-severity.md"), severityMd);
   console.log(`  ✅ ${path.join(VIEWS_DIR, "by-severity.md")}`);
 }
 
@@ -445,7 +445,7 @@ function generateCategoryView(byCategory, today) {
     categoryMd += "\n";
   }
 
-  fs.writeFileSync(path.join(VIEWS_DIR, "by-category.md"), categoryMd);
+  safeWriteFileSync(path.join(VIEWS_DIR, "by-category.md"), categoryMd);
   console.log(`  ✅ ${path.join(VIEWS_DIR, "by-category.md")}`);
 }
 
@@ -468,7 +468,7 @@ function generateStatusView(byStatus, today) {
     }
   }
 
-  fs.writeFileSync(path.join(VIEWS_DIR, "by-status.md"), statusMd);
+  safeWriteFileSync(path.join(VIEWS_DIR, "by-status.md"), statusMd);
   console.log(`  ✅ ${path.join(VIEWS_DIR, "by-status.md")}`);
 }
 
@@ -492,7 +492,7 @@ Review items manually or use \`tdms-ecosystem-audit\` to process this queue.
     }
   }
 
-  fs.writeFileSync(path.join(VIEWS_DIR, "verification-queue.md"), verifyMd);
+  safeWriteFileSync(path.join(VIEWS_DIR, "verification-queue.md"), verifyMd);
   console.log(`  ✅ ${path.join(VIEWS_DIR, "verification-queue.md")}`);
 }
 
@@ -658,7 +658,7 @@ function main() {
     if (item.original_id) legacyMapping[item.original_id] = item.id;
     if (item.source_id) legacyMapping[item.source_id] = item.id;
   }
-  fs.writeFileSync(LEGACY_MAP_FILE, JSON.stringify(legacyMapping, null, 2));
+  safeWriteFileSync(LEGACY_MAP_FILE, JSON.stringify(legacyMapping, null, 2));
   console.log(`  ✅ ${LEGACY_MAP_FILE}`);
 
   // Group and generate views

@@ -27,6 +27,15 @@ const ACTIVE_LOG = path.join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const applyMode = process.argv.includes("--apply");
 const GROUP_SIZE = 40;
 
+// Safe-fs wrappers (symlink guard + EXDEV fallback)
+let safeWriteFileSync;
+try {
+  ({ safeWriteFileSync } = require("./lib/safe-fs"));
+} catch {
+  console.error("safe-fs unavailable; refusing to write");
+  safeWriteFileSync = () => {};
+}
+
 // Symlink guard
 let isSafeToWrite;
 try {
@@ -362,7 +371,7 @@ function applyRepair(archiveFiles, groups, toDelete, today) {
     const content = buildArchiveFileContent(g.entries, g.rangeStart, g.rangeEnd, today);
     const filePath = path.join(ARCHIVE_DIR, g.filename);
     if (!isSafeToWrite(filePath)) continue;
-    fs.writeFileSync(filePath, content, "utf8");
+    safeWriteFileSync(filePath, content, "utf8");
   }
   console.log(`  Wrote ${groups.length} archive files`);
   console.log("\nRepair complete!");

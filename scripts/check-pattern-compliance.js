@@ -27,16 +27,7 @@
  * Exit codes: 0 = no critical violations, 1 = critical violations found, 2 = error
  */
 
-import {
-  readFileSync,
-  existsSync,
-  readdirSync,
-  lstatSync,
-  writeFileSync,
-  mkdirSync,
-  renameSync,
-  unlinkSync,
-} from "node:fs";
+import { readFileSync, existsSync, readdirSync, lstatSync, mkdirSync, unlinkSync } from "node:fs";
 import { join, dirname, extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
@@ -49,6 +40,7 @@ const ROOT = join(__dirname, "..");
 
 // Load verified pattern exclusions from JSON config (single source of truth)
 const require = createRequire(import.meta.url);
+const { safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs.js");
 const { loadConfig } = require("./config/load-config.js");
 let verifiedPatterns;
 try {
@@ -94,9 +86,9 @@ function loadWarnedFiles() {
     if (purged > 0) {
       try {
         const tmpPath = `${WARNED_FILES_PATH}.tmp`;
-        writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
+        safeWriteFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
         if (existsSync(WARNED_FILES_PATH)) unlinkSync(WARNED_FILES_PATH);
-        renameSync(tmpPath, WARNED_FILES_PATH);
+        safeRenameSync(tmpPath, WARNED_FILES_PATH);
       } catch {
         /* best effort */
       }
@@ -169,23 +161,23 @@ function saveWarnedFiles(warned) {
       for (const k of toDrop) delete warned[k];
     }
 
-    writeFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
+    safeWriteFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
 
     // Backup-and-replace: rename existing to .bak, then swap in new file
     try {
-      if (existsSync(WARNED_FILES_PATH)) renameSync(WARNED_FILES_PATH, bakPath);
+      if (existsSync(WARNED_FILES_PATH)) safeRenameSync(WARNED_FILES_PATH, bakPath);
     } catch (_err) {
-      // If backup fails, proceed; renameSync may still work
+      // If backup fails, proceed; safeRenameSync may still work
     }
 
-    renameSync(tmpPath, WARNED_FILES_PATH);
+    safeRenameSync(tmpPath, WARNED_FILES_PATH);
     tryUnlink(bakPath);
   } catch (err) {
     tryUnlink(tmpPath);
     // Restore backup if destination is gone
     try {
       if (existsSync(bakPath) && !existsSync(WARNED_FILES_PATH))
-        renameSync(bakPath, WARNED_FILES_PATH);
+        safeRenameSync(bakPath, WARNED_FILES_PATH);
     } catch (_err) {
       // Best-effort restore
     }

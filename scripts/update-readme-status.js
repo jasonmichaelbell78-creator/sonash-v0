@@ -23,14 +23,18 @@
  * Exit codes: 0 = success, 1 = error
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, "..");
+
+const require = createRequire(import.meta.url);
+const { safeWriteFileSync } = require("./lib/safe-fs.js");
 
 // File paths
 const ROADMAP_PATH = join(ROOT, "ROADMAP.md");
@@ -104,7 +108,7 @@ function safeWriteFile(filePath, content, description) {
   verbose(`Writing ${content.length} characters to ${description}`);
 
   try {
-    writeFileSync(filePath, content, "utf-8");
+    safeWriteFileSync(filePath, content, "utf-8");
     return { success: true };
   } catch (error) {
     // Use sanitizeError for consistent, safe error logging (Review #51)

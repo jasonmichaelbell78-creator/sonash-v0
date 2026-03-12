@@ -23,8 +23,18 @@ const crypto = require("node:crypto"); // catch-verified: core module
 const fs = require("node:fs"); // catch-verified: core module
 const pathMod = require("node:path"); // catch-verified: core module
 const { existsSync, readFileSync, mkdirSync, lstatSync, rmSync } = fs; // require() destructure
-const { writeFileSync, copyFileSync } = fs; // require() destructure
+const { copyFileSync } = fs; // require() destructure
 const { join, dirname } = pathMod; // require() destructure
+
+// Safe-fs wrappers (symlink guard + EXDEV fallback)
+let safeWriteFileSync, safeRenameSync;
+try {
+  ({ safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs"));
+} catch {
+  console.error("safe-fs unavailable; refusing to write");
+  safeWriteFileSync = () => {};
+  safeRenameSync = () => {};
+}
 
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
@@ -100,7 +110,7 @@ function atomicWrite(filePath, content) {
     throw new Error("Refusing to write: symlink detected at tmp path");
   }
 
-  writeFileSync(tmpPath, content, "utf8");
+  safeWriteFileSync(tmpPath, content, "utf8");
 
   // Validate tmp was written successfully
   const written = readFileSync(tmpPath, "utf8");
@@ -116,7 +126,7 @@ function atomicWrite(filePath, content) {
   // Try atomic rename first; fall back to copy+delete for cross-device moves
   try {
     if (existsSync(filePath)) rmSync(filePath, { force: true });
-    fs.renameSync(tmpPath, filePath);
+    safeRenameSync(tmpPath, filePath);
   } catch {
     if (existsSync(filePath)) rmSync(filePath, { force: true });
     copyFileSync(tmpPath, filePath);
