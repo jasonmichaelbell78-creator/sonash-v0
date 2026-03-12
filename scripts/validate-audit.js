@@ -111,7 +111,11 @@ function loadAuditFindings(filePath) {
       try {
         return { ...JSON.parse(line), _lineNumber: index + 1 };
       } catch (err) {
-        return { _parseError: err.message, _lineNumber: index + 1, _raw: line };
+        return {
+          _parseError: err instanceof Error ? err.message : String(err),
+          _lineNumber: index + 1,
+          _raw: line,
+        };
       }
     });
 }

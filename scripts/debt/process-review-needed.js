@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global __dirname */
-/* eslint-disable complexity */
+
 /**
  * Process review-needed.jsonl — Step 0e of Technical Debt Resolution Plan.
  *

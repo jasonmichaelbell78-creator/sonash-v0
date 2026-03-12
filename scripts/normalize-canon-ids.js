@@ -157,7 +157,10 @@ function parseJsonl(content, filename, failFast = true) {
       // Only log line number, character count, and sanitized error message
       parseErrors.push({
         line: i + 1,
-        error: err.message.replace(/position \d+/, "position [redacted]"),
+        error: (err instanceof Error ? err.message : String(err)).replace(
+          /position \d+/,
+          "position [redacted]"
+        ),
         charCount: lines[i].length,
       });
     }

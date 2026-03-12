@@ -393,7 +393,9 @@ if (isMainModule) {
     // Avoid exposing sensitive paths in error messages
     // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
     // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
-    const safeMessage = String(err?.message ?? err ?? "Unknown error")
+    const safeMessage = String(
+      (err instanceof Error ? err?.message : String(err)) ?? err ?? "Unknown error"
+    )
       .split("\n")[0]
       .replace(/\r$/, "") // Strip trailing CR from Windows CRLF line endings
       // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety

@@ -337,7 +337,9 @@ Exit codes:
     } catch (err) {
       // Skip parse errors for unchanged lines in staged-only mode
       if (changedLines && !changedLines.has(lineNum)) continue;
-      allErrors.push(`Line ${lineNum}: JSON parse error: ${err.message}`);
+      allErrors.push(
+        `Line ${lineNum}: JSON parse error: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 

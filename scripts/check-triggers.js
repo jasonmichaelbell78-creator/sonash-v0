@@ -325,7 +325,9 @@ function main() {
     } catch (error_) {
       // Inline fallback: write structured audit entry directly
       // Log primary failure for debugging (stderr only, not persisted)
-      console.error(`   [debug] Primary logger failed: ${error_?.message ?? "unknown"}`);
+      console.error(
+        `   [debug] Primary logger failed: ${(error_ instanceof Error ? error_?.message : String(error_)) ?? "unknown"}`
+      );
       try {
         // Truncate reason to prevent accidental secret persistence (max 200 chars)
         const safeReason = reason.length > 200 ? reason.slice(0, 200) + "..." : reason;
@@ -393,7 +395,9 @@ function main() {
         logDestination = "file";
       } catch (error_) {
         // Both paths failed — warn but don't block
-        console.error(`   [debug] Fallback logger failed: ${error_?.message ?? "unknown"}`);
+        console.error(
+          `   [debug] Fallback logger failed: ${(error_ instanceof Error ? error_?.message : String(error_)) ?? "unknown"}`
+        );
       }
     }
     let logMessage;

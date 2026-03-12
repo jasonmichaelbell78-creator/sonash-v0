@@ -265,7 +265,7 @@ function tryBreakExistingLock(lockPath) {
   } catch (readErr) {
     // Can't read/parse lock file — log and attempt removal
     process.stderr.write(
-      `[safe-fs] WARNING: unreadable lock file (${readErr.code || readErr.message}), removing: ${lockPath}\n`
+      `[safe-fs] WARNING: unreadable lock file (${readErr.code || (readErr instanceof Error ? readErr.message : String(readErr))}), removing: ${lockPath}\n`
     );
     breakStaleLock(lockPath);
     return true;
@@ -342,7 +342,7 @@ function releaseLock(filePath) {
   } catch (err) {
     // Lock already gone or unreadable — nothing to do
     process.stderr.write(
-      `[safe-fs] DEBUG: releaseLock skipped (${err.code || err.message}): ${lockPath}\n`
+      `[safe-fs] DEBUG: releaseLock skipped (${err.code || (err instanceof Error ? err.message : String(err))}): ${lockPath}\n`
     );
   }
 }

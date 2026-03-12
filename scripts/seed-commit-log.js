@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
+
 /**
  * seed-commit-log.js - Backfill commit-log.jsonl from git history
  *

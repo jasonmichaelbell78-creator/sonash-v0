@@ -64,11 +64,19 @@ require_skip_reason() {
 # Initialize fnm so node/npm/npx are available in this shell context
 _shared_init_fnm() {
   if command -v fnm > /dev/null 2>&1; then
-    FNM_ENV="$(fnm env --shell bash 2>/dev/null || true)"
+    # Prefer POSIX output where supported; fall back to bash output only if needed
+    FNM_ENV="$(fnm env --shell posix 2>/dev/null || fnm env --shell bash 2>/dev/null || true)"
     if [ -z "$FNM_ENV" ]; then
       echo "  ❌ fnm detected but failed to initialize; cannot reliably run Node-based checks" >&2
       exit 1
     fi
+    # Refuse clearly non-POSIX constructs that can break /bin/sh
+    case "$FNM_ENV" in
+      *"function "*|*"declare "*)
+        echo "  ❌ fnm produced non-POSIX shell init; cannot safely eval in /bin/sh" >&2
+        exit 1
+        ;;
+    esac
     eval "$FNM_ENV"
   fi
 }

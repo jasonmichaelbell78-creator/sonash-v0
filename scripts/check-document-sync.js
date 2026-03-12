@@ -453,7 +453,10 @@ try {
   formatOutput(results);
   process.exit(results.success ? 0 : 1);
 } catch (error) {
-  console.error("❌ Error during document sync check:", error.message);
+  console.error(
+    "❌ Error during document sync check:",
+    error instanceof Error ? error.message : String(error)
+  );
   if (VERBOSE) {
     console.error(error.stack);
   }

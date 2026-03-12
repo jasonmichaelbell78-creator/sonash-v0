@@ -16,7 +16,7 @@ let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require("./symlink-guard"));
 } catch {
-  isSafeToWrite = () => true;
+  isSafeToWrite = () => false;
 }
 
 /**

@@ -75,7 +75,12 @@ function parseBacklogItems(content) {
     } catch (err) {
       corruptLines.push({
         lineNumber: i + 1,
-        error: err && err.message ? err.message : String(err),
+        error:
+          err && (err instanceof Error ? err.message : String(err))
+            ? err instanceof Error
+              ? err.message
+              : String(err)
+            : String(err),
       });
     }
   }

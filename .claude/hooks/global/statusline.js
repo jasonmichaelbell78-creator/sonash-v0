@@ -12,7 +12,7 @@ const os = require("os");
 // Sanitize dynamic values: strip control chars, CSI/OSC escapes, cap length
 /* eslint-disable no-control-regex -- Intentional control char sanitization */
 const sanitize = (s) =>
-  s
+  String(s ?? "")
     .replace(/[\x00-\x1f\x7f-\x9f]/g, "")
     .replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, "")
     .replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, "")

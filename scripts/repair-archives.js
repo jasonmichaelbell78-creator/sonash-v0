@@ -32,8 +32,8 @@ let safeWriteFileSync;
 try {
   ({ safeWriteFileSync } = require("./lib/safe-fs"));
 } catch {
-  console.error("safe-fs unavailable; refusing to write");
-  safeWriteFileSync = () => {};
+  console.error("safe-fs unavailable; cannot safely write archives");
+  process.exit(2);
 }
 
 // Symlink guard

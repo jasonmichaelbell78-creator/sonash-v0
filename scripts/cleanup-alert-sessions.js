@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/no-require-imports, no-undef */
+/* eslint-disable no-undef */
 /**
  * Cleanup Alert Sessions
  * Deletes alert session JSONL logs older than 7 days from .claude/tmp/
@@ -55,7 +55,9 @@ function main() {
         deleted++;
       }
     } catch (err) {
-      console.error(`  [warn] Could not process ${file}: ${err.code || err.message}`);
+      console.error(
+        `  [warn] Could not process ${file}: ${err.code || (err instanceof Error ? err.message : String(err))}`
+      );
     }
   }
 

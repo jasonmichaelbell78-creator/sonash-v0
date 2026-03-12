@@ -214,7 +214,11 @@ function validateFile(filepath) {
   try {
     content = readFileSync(filepath, "utf-8");
   } catch (err) {
-    result.addError(0, "file", `Cannot read file: ${err.message}`);
+    result.addError(
+      0,
+      "file",
+      `Cannot read file: ${err instanceof Error ? err.message : String(err)}`
+    );
     return result;
   }
 
@@ -229,7 +233,11 @@ function validateFile(filepath) {
     try {
       finding = JSON.parse(line);
     } catch (err) {
-      result.addError(i + 1, "json", `Invalid JSON: ${err.message}`);
+      result.addError(
+        i + 1,
+        "json",
+        `Invalid JSON: ${err instanceof Error ? err.message : String(err)}`
+      );
       continue;
     }
 
@@ -351,7 +359,9 @@ function findCanonFilesRecursive(dir, files) {
   try {
     entries = readdirSync(dir);
   } catch (err) {
-    console.error(`Error reading directory ${dir}: ${err.message}`);
+    console.error(
+      `Error reading directory ${dir}: ${err instanceof Error ? err.message : String(err)}`
+    );
     return;
   }
 
@@ -369,7 +379,9 @@ function findCanonFilesRecursive(dir, files) {
         files.push(fullPath);
       }
     } catch (err) {
-      console.error(`Error accessing path ${fullPath}: ${err.message}`);
+      console.error(
+        `Error accessing path ${fullPath}: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 }
@@ -413,7 +425,9 @@ function collectFilesFromArgs(args) {
       // This prevents symlink traversal attacks that could escape project boundaries
       stat = lstatSync(argResolved);
     } catch (err) {
-      console.error(`Error accessing path ${arg}: ${err.message}`);
+      console.error(
+        `Error accessing path ${arg}: ${err instanceof Error ? err.message : String(err)}`
+      );
       continue;
     }
 

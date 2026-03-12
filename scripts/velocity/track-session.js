@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-redeclare, no-undef */
+/* eslint-disable no-undef */
 /**
  * track-session.js - Captures velocity metrics at session end
  *

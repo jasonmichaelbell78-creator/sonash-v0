@@ -23,9 +23,9 @@ try {
 let isSafeToWrite, rotateJsonl, withLock;
 try {
   isSafeToWrite = require("./lib/symlink-guard").isSafeToWrite;
-  if (typeof isSafeToWrite !== "function") isSafeToWrite = () => true;
+  if (typeof isSafeToWrite !== "function") isSafeToWrite = () => false;
 } catch {
-  isSafeToWrite = () => true;
+  isSafeToWrite = () => false;
 }
 try {
   rotateJsonl = require("./lib/rotate-state").rotateJsonl;
@@ -126,11 +126,16 @@ function writeState(state) {
     // Atomic write: write to temp file, then rename
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
     try {
-      fs.rmSync(statePath, { force: true });
+      fs.renameSync(tmpPath, statePath);
     } catch {
-      /* best-effort */
+      // Windows can fail to overwrite existing dest: unlink then retry
+      try {
+        fs.rmSync(statePath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpPath, statePath);
     }
-    fs.renameSync(tmpPath, statePath);
   } catch (err) {
     // Clean up temp file on error
     try {

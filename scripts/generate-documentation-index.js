@@ -1057,7 +1057,9 @@ function main() {
       safeWriteFileSync(outputPath, markdown, "utf-8");
       log(`   Written to ${CONFIG.outputFile}`);
     } catch (writeError) {
-      console.error(`Error writing to ${CONFIG.outputFile}: ${writeError.message}`);
+      console.error(
+        `Error writing to ${CONFIG.outputFile}: ${writeError instanceof Error ? writeError.message : String(writeError)}`
+      );
       process.exit(1);
     }
 

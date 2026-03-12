@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports, no-undef */
 /**
  * Tests for cross-doc dependency checker: diffPattern filtering and auto-fix logic
  *

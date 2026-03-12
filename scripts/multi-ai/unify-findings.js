@@ -285,7 +285,7 @@ function mergeRelatedFindings(allFindings, fileMap) {
       }
 
       // Take best finding from each category
-      for (const [_category, catFindings] of byCategory) {
+      for (const [, catFindings] of byCategory) {
         // Sort by severity then consensus
         catFindings.sort((a, b) => {
           const sevRank = { S0: 0, S1: 1, S2: 2, S3: 3 };

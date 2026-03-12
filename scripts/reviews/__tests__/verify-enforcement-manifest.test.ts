@@ -30,7 +30,6 @@ function findProjectRoot(startDir: string): string {
 const PROJECT_ROOT = findProjectRoot(__dirname);
 const distPath = path.resolve(PROJECT_ROOT, "scripts/reviews/dist/verify-enforcement-manifest.js");
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { readManifest, getActualRegexRules, getActualEslintRules, getActualSemgrepRules } = require(
   distPath
 ) as {

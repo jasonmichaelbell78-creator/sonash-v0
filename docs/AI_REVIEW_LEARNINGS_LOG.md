@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.97 **Created:** 2026-01-02 **Last Updated:** 2026-03-10
+**Document Version:** 17.98 **Created:** 2026-01-02 **Last Updated:** 2026-03-12
 
 ## Purpose
 
@@ -2232,5 +2232,46 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
   efficient single-root-cause resolution.
 - **Score:** 7.5/10 — Good cycle marred by known SonarCloud FPs and escapeCell
   propagation
+
+---
+
+#### Review #353: PR #427 R2 — Security Fail-Closed, Error Safety Codemod, Bulk Lint (2026-03-12)
+
+**Source:** Mixed (Qodo Compliance, Semgrep, SonarCloud, CI, Qodo Suggestions)
+**PR/Branch:** PR #427 / testing-31126 **Suggestions:** 21 total (Critical: 1,
+Major: 6, Minor: 8, Trivial: 3, Rejected: 2, Stale: 1)
+
+**Patterns Identified:**
+
+1. Symlink guard fail-open: 8 instances of `isSafeToWrite = () => true` fallback
+   across 7 hook files — security module failure silently disables all write
+   protections.
+   - Root cause: R1 introduced try/catch guards but used fail-open fallback
+   - Prevention: ESLint rule for fail-open patterns in security guard loading
+
+2. Unsafe error.message access: 308 instances across 129 files — catch params
+   accessed without instanceof Error check crash on non-Error throws.
+   - Root cause: Pattern accumulated over time, no auto-fixer existed
+   - Prevention: Added auto-fixer to ESLint rule + ConditionalExpression guard
+     detection to prevent cascading re-fixes
+
+3. Atomic write patterns: Multiple files using rmSync+renameSync instead of
+   try-rename-first approach — data loss window between delete and rename.
+   - Root cause: Inconsistent application of atomic write best practice
+   - Prevention: Consider ESLint rule for rmSync-before-renameSync anti-pattern
+
+**Resolution:**
+
+- Fixed: 18 items (including 308 error.message instances via auto-fixer)
+- Deferred: 0 items
+- Rejected: 2 items (1 false positive, 1 intentional design)
+
+**Key Learnings:**
+
+- ESLint auto-fixers are the right tool for mechanical codebase-wide fixes —
+  added fixer to no-unsafe-error-access rule with ConditionalExpression guard
+  detection to prevent cascading
+- pr-review skill Rule 6 updated: "pre-existing" no longer auto-dismissible;
+  must present user with fix (+ effort estimate) or DEBT options
 
 ---

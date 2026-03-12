@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Ecosystem Integration Health Checker
  *

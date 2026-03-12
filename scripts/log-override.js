@@ -119,8 +119,12 @@ function rotateSizeBasedIfNeeded() {
 
   const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
 
-  safeRenameSync(OVERRIDE_LOG, backupFile);
-  console.log(`Override log rotated to ${path.basename(backupFile)}`);
+  try {
+    safeRenameSync(OVERRIDE_LOG, backupFile);
+    console.log(`Override log rotated to ${path.basename(backupFile)}`);
+  } catch {
+    // Best-effort — never block logging on rotation failure
+  }
 }
 
 // Rotate log file by entry count (keep 60 of last 100, only when > 64KB)
@@ -196,17 +200,23 @@ function checkBypassDebtThreshold(check) {
     const repoRoot = getRepoRoot();
     const masterDebtPath = path.join(repoRoot, "docs", "technical-debt", "MASTER_DEBT.jsonl");
     const dedupedPath = path.join(repoRoot, "docs", "technical-debt", "raw", "deduped.jsonl");
+    const safeCheckToken = String(check)
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9_:-]+/g, "_")
+      .slice(0, 60);
+
     const debtTitle = `Hook bypass threshold: ${check} overridden ${count}+ times in 14 days`;
 
     try {
       const debtContent = fs.readFileSync(masterDebtPath, "utf8");
-      if (debtContent.includes(`"hook-bypass-${check}"`)) return; // Already tracked
+      if (debtContent.includes(`"hook-bypass-${safeCheckToken}"`)) return; // Already tracked
     } catch {
       /* file may not exist — proceed with creation */
     }
 
     const debtEntry = {
-      source_id: `hook-bypass-${check}`,
+      source_id: `hook-bypass-${safeCheckToken}`,
       source_file: "scripts/log-override.js",
       category: "process",
       severity: "S1",
@@ -220,9 +230,10 @@ function checkBypassDebtThreshold(check) {
       status: "NEW",
       roadmap_ref: "",
       created: new Date().toISOString().slice(0, 10),
+      user: process.env.USER || process.env.USERNAME || "unknown",
       verified_by: null,
       resolution: null,
-      id: `AUTO-BYPASS-${check.toUpperCase()}`,
+      id: `AUTO-BYPASS-${safeCheckToken}`,
     };
     const debtLine = JSON.stringify(debtEntry) + "\n";
 
@@ -474,6 +485,13 @@ function computeAnalytics(entries, days) {
   };
 }
 
+// Format a percentage change for display (pure utility, no closure deps)
+function fmtPct(pct) {
+  if (pct === null) return "new";
+  const sign = pct >= 0 ? "+" : "";
+  return `${sign}${pct}%`;
+}
+
 // Display analytics in human-readable format
 function showAnalytics(analytics) {
   const { period, total, byCheck, noReasonCount, noReasonPct, patterns, trend } = analytics;
@@ -499,11 +517,6 @@ function showAnalytics(analytics) {
   }
 
   // C1-G3: Overall + per-check trends
-  function fmtPct(pct) {
-    if (pct === null) return "new";
-    const sign = pct >= 0 ? "+" : "";
-    return `${sign}${pct}%`;
-  }
   console.log(
     `\nTrend: ${fmtPct(trend.change_pct)} vs previous week (${trend.current_week} vs ${trend.previous_week})`
   );

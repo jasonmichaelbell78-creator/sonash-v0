@@ -104,7 +104,9 @@ async function sonarFetch(endpoint, params = {}) {
     if (error.name === "AbortError") {
       throw new Error("SonarCloud API error: Request timed out");
     }
-    throw new Error(`SonarCloud API error: Network request failed - ${error.message || "unknown"}`);
+    throw new Error(
+      `SonarCloud API error: Network request failed - ${(error instanceof Error ? error.message : String(error)) || "unknown"}`
+    );
   } finally {
     clearTimeout(timeoutId);
   }
@@ -446,6 +448,8 @@ try {
   }
 } catch (error) {
   // Sanitize error output - don't expose stack traces
-  console.error(`Fatal error: ${error.message || "Unknown error"}`);
+  console.error(
+    `Fatal error: ${(error instanceof Error ? error.message : String(error)) || "Unknown error"}`
+  );
   process.exit(1);
 }

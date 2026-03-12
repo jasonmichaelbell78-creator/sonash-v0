@@ -21,7 +21,10 @@ Every item is either fixed or tracked — no silent dismissals.
 3. **ALWAYS create learning entry FIRST** — before fixing any items.
 4. **ALWAYS read files before editing** — no blind edits.
 5. **ALWAYS verify fixes** — re-read modified files after applying changes.
-6. **NEVER dismiss as "pre-existing"** — fix (<5 min) or track with DEBT ID.
+6. **NEVER dismiss as "pre-existing"** — present the user with two options: (a)
+   **Fix now** with an effort estimate (e.g., "3 files, ~10 min" or "47
+   instances, ~2 hours with agents"), or (b) **Create a DEBT item** via
+   `/add-debt`. The user decides which path — never auto-dismiss.
 7. **Propagation is MANDATORY** — after fixing a pattern-based issue, grep the
    entire codebase for the same pattern and fix ALL instances in one commit.
 

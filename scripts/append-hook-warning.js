@@ -19,7 +19,7 @@ try {
   fs = require("node:fs");
   path = require("node:path");
 } catch (e) {
-  console.error("Failed to load required modules:", e.message);
+  console.error("Failed to load required modules:", e instanceof Error ? e.message : String(e));
   process.exit(1);
 }
 
@@ -192,7 +192,7 @@ function parseFileList(files) {
     .slice(0, 3);
 }
 
-function buildWarningEntry(
+function buildWarningEntry({
   hook,
   type,
   severity,
@@ -201,8 +201,8 @@ function buildWarningEntry(
   occurrences,
   sinceAck,
   fileList,
-  pattern
-) {
+  pattern,
+}) {
   const entry = {
     hook,
     type,
@@ -242,17 +242,17 @@ function appendWarning(hook, type, severity, message, action = null, files = nul
   const sinceAck = lastAck ? countOccurrencesSince(type, lastAck) : occurrences;
   const fileList = parseFileList(files);
 
-  const entry = buildWarningEntry(
+  const entry = buildWarningEntry({
     hook,
     type,
-    effectiveSeverity,
+    severity: effectiveSeverity,
     message,
     action,
     occurrences,
     sinceAck,
     fileList,
-    pattern
-  );
+    pattern,
+  });
   data.warnings.push(entry);
 
   if (data.warnings.length > 50) {

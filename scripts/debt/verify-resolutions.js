@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global __dirname */
-/* eslint-disable complexity */
+
 /**
  * verify-resolutions.js — Audit item statuses in MASTER_DEBT.jsonl
  *

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-redeclare, no-undef */
+/* eslint-disable no-undef */
 /**
  * resolve-dependencies.js - Dependency-aware task ordering for ROADMAP.md
  *

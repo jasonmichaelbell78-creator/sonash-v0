@@ -34,7 +34,6 @@ function findProjectRoot(startDir: string): string {
 const PROJECT_ROOT = findProjectRoot(__dirname);
 const distSchemasPath = path.resolve(PROJECT_ROOT, "scripts/reviews/dist/lib/schemas");
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const {
   BaseRecord,
   CompletenessTier,

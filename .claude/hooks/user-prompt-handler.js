@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* global require, process, console, __dirname */
-/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename, security/detect-non-literal-regexp, security/detect-object-injection */
+/* eslint-disable @typescript-eslint/no-require-imports */
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -192,8 +192,13 @@ function runAnalyze() {
   }
 
   function matchesWord(pattern) {
-    const parts = pattern.split(".?").map((p) => escapeRegex(p));
-    const joined = parts.join("[^a-z0-9]?");
+    const raw = String(pattern);
+    if (raw.length > 200) return false;
+
+    const parts = raw.split(".?");
+    if (parts.length > 25) return false;
+
+    const joined = parts.map((p) => escapeRegex(p)).join("[^a-z0-9]?");
     return new RegExp(`(^|[^a-z0-9])(${joined})([^a-z0-9]|$)`, "i").test(requestLower);
   }
 

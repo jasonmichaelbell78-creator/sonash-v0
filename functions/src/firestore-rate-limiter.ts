@@ -130,7 +130,10 @@ export class FirestoreRateLimiter {
         );
       });
     } catch (error) {
-      if (error instanceof Error && error.message.includes("Rate limit exceeded")) {
+      if (
+        error instanceof Error &&
+        (error instanceof Error ? error.message : String(error)).includes("Rate limit exceeded")
+      ) {
         throw error; // Re-throw rate limit errors
       }
       // SECURITY: Fail-closed strategy

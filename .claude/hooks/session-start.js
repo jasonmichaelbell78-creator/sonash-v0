@@ -31,7 +31,7 @@ let isSafeToWrite, sanitizeInput;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
 } catch {
-  isSafeToWrite = () => true;
+  isSafeToWrite = () => false;
 }
 try {
   ({ sanitizeInput } = require("./lib/sanitize-input"));
@@ -308,11 +308,15 @@ function saveRootHash() {
   try {
     fs.writeFileSync(tmpPath, hash, "utf-8");
     try {
-      fs.rmSync(absPath, { force: true });
+      fs.renameSync(tmpPath, absPath);
     } catch {
-      /* best-effort */
+      try {
+        fs.rmSync(absPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpPath, absPath);
     }
-    fs.renameSync(tmpPath, absPath);
   } catch (err) {
     try {
       fs.rmSync(tmpPath, { force: true });
@@ -339,11 +343,15 @@ function saveFunctionsHash() {
   try {
     fs.writeFileSync(tmpPath, hash, "utf-8");
     try {
-      fs.rmSync(absPath, { force: true });
+      fs.renameSync(tmpPath, absPath);
     } catch {
-      /* best-effort */
+      try {
+        fs.rmSync(absPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpPath, absPath);
     }
-    fs.renameSync(tmpPath, absPath);
   } catch (err) {
     try {
       fs.rmSync(tmpPath, { force: true });

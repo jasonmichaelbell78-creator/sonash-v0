@@ -50,7 +50,9 @@ function readJsonlFromGit(commit, relPath) {
         }
       });
   } catch (err) {
-    console.error(`Failed to read ${relPath} from git commit ${commit}: ${err.message}`);
+    console.error(
+      `Failed to read ${relPath} from git commit ${commit}: ${err instanceof Error ? err.message : String(err)}`
+    );
     process.exit(1);
   }
 }

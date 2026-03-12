@@ -127,7 +127,7 @@ async function auditPage(route, chromePort, options = {}) {
   } catch (error) {
     const message =
       error && typeof error === "object" && "message" in error
-        ? String(error.message)
+        ? String(error instanceof Error ? error.message : String(error))
         : String(error);
     console.error(`  Error auditing ${route.name}: ${message}`);
     return { route: route.name, url, error: message, success: false };

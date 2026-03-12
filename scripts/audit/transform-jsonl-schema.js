@@ -375,12 +375,12 @@ function buildVerificationSteps(item) {
     return {
       verification_steps: {
         ...defaultVerificationSteps,
-        ...provided,
-        first_pass: { ...defaultVerificationSteps.first_pass, ...provided.first_pass },
-        second_pass: { ...defaultVerificationSteps.second_pass, ...provided.second_pass },
+        ...(provided ?? {}),
+        first_pass: { ...defaultVerificationSteps.first_pass, ...(provided?.first_pass ?? {}) },
+        second_pass: { ...defaultVerificationSteps.second_pass, ...(provided?.second_pass ?? {}) },
         tool_confirmation: {
           ...defaultVerificationSteps.tool_confirmation,
-          ...provided.tool_confirmation,
+          ...(provided?.tool_confirmation ?? {}),
         },
       },
       issue: "verification_steps: normalized object structure",
@@ -592,12 +592,7 @@ function processFile(inputPath, outputPath, dryRun) {
       const output = results.map((r) => JSON.stringify(r)).join("\n") + "\n";
 
       // Use exclusive write flag for security (wx = write exclusive)
-      const fd = fs.openSync(tmpPath, "wx", 0o600);
-      try {
-        safeWriteFileSync(fd, output, "utf8");
-      } finally {
-        fs.closeSync(fd);
-      }
+      safeWriteFileSync(tmpPath, output, { encoding: "utf8", flag: "wx", mode: 0o600 });
 
       // Atomic rename (with Windows fallback)
       try {

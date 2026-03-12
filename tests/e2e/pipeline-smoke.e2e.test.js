@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports, no-undef */
 /**
  * E2E Smoke Test: Full Pipeline
  *

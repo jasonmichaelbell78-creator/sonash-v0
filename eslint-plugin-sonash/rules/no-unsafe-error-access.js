@@ -102,7 +102,7 @@ function consequentAlwaysExits(consequent) {
   return false;
 }
 
-/** Check if a specific access node is guarded by an instanceof check in an ancestor IfStatement */
+/** Check if a specific access node is guarded by an instanceof check in an ancestor IfStatement or ConditionalExpression */
 function isAccessGuarded(accessNode, paramName) {
   let current = accessNode.parent;
   while (current) {
@@ -117,6 +117,16 @@ function isAccessGuarded(accessNode, paramName) {
         consequentAlwaysExits(current.consequent)
       ) {
         return !isNodeWithin(accessNode, current.consequent);
+      }
+    }
+    // Ternary guard: err instanceof Error ? err.message : fallback
+    if (current.type === "ConditionalExpression") {
+      if (
+        isInstanceofGuardTest(current.test, paramName) &&
+        current.consequent &&
+        isNodeWithin(accessNode, current.consequent)
+      ) {
+        return true;
       }
     }
     if (
@@ -179,6 +189,7 @@ function isMessageMember(member, paramName) {
 module.exports = {
   meta: {
     type: "problem",
+    fixable: "code",
     docs: {
       description: "Require instanceof Error check before accessing .message on catch parameter",
       recommended: true,
@@ -206,6 +217,23 @@ module.exports = {
           context.report({
             node: access,
             messageId: "unsafeErrorAccess",
+            fix(fixer) {
+              const sourceCode = context.sourceCode ?? context.getSourceCode();
+              const accessText = sourceCode.getText(access);
+              // Build the safe replacement: paramName instanceof Error ? original : String(paramName)
+              const replacement = `${paramName} instanceof Error ? ${accessText} : String(${paramName})`;
+              // Check if parent needs wrapping parens (binary/logical ops, unary, etc.)
+              const parent = access.parent;
+              const needsParens =
+                parent &&
+                (parent.type === "BinaryExpression" ||
+                  parent.type === "LogicalExpression" ||
+                  parent.type === "UnaryExpression" ||
+                  parent.type === "MemberExpression" ||
+                  (parent.type === "ConditionalExpression" && parent.test === access));
+              const finalText = needsParens ? `(${replacement})` : replacement;
+              return fixer.replaceText(access, finalText);
+            },
           });
         }
       },

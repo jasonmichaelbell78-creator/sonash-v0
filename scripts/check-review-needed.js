@@ -417,7 +417,10 @@ async function fetchSonarCloudData() {
     if (error.name === "AbortError") {
       return { success: false, error: "SonarCloud API: Request timed out" };
     }
-    return { success: false, error: `SonarCloud API: ${error.message || "Network error"}` };
+    return {
+      success: false,
+      error: `SonarCloud API: ${(error instanceof Error ? error.message : String(error)) || "Network error"}`,
+    };
   } finally {
     clearTimeout(timeoutId);
   }

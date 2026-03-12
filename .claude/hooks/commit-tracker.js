@@ -25,7 +25,7 @@ let isSafeToWrite, gitExec, projectDir, sanitizeInput;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
 } catch {
-  isSafeToWrite = () => true;
+  isSafeToWrite = () => false;
 }
 try {
   ({ gitExec, projectDir } = require("./lib/git-utils.js"));
