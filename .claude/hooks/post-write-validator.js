@@ -817,11 +817,15 @@ function updateReviewQueue(reviewQueuePath, normalizedFile, threshold) {
     fs.mkdirSync(path.dirname(reviewQueuePath), { recursive: true });
     fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
     try {
-      fs.rmSync(reviewQueuePath, { force: true });
+      fs.renameSync(tmpReviewPath, reviewQueuePath);
     } catch {
-      /* best-effort */
+      try {
+        fs.rmSync(reviewQueuePath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpReviewPath, reviewQueuePath);
     }
-    fs.renameSync(tmpReviewPath, reviewQueuePath);
   } catch {
     try {
       fs.rmSync(tmpReviewPath, { force: true });

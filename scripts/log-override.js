@@ -200,11 +200,12 @@ function checkBypassDebtThreshold(check) {
     const repoRoot = getRepoRoot();
     const masterDebtPath = path.join(repoRoot, "docs", "technical-debt", "MASTER_DEBT.jsonl");
     const dedupedPath = path.join(repoRoot, "docs", "technical-debt", "raw", "deduped.jsonl");
-    const safeCheckToken = String(check)
-      .trim()
-      .toUpperCase()
-      .replace(/[^A-Z0-9_:-]+/g, "_")
-      .slice(0, 60);
+    const safeCheckToken =
+      String(check)
+        .trim()
+        .toUpperCase()
+        .replaceAll(/[^A-Z0-9_:-]+/g, "_")
+        .slice(0, 60) || "UNKNOWN";
 
     const debtTitle = `Hook bypass threshold: ${check} overridden ${count}+ times in 14 days`;
 
@@ -230,7 +231,7 @@ function checkBypassDebtThreshold(check) {
       status: "NEW",
       roadmap_ref: "",
       created: new Date().toISOString().slice(0, 10),
-      user: process.env.USER || process.env.USERNAME || "unknown",
+      user: "hook-system",
       verified_by: null,
       resolution: null,
       id: `AUTO-BYPASS-${safeCheckToken}`,

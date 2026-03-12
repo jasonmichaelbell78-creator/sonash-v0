@@ -264,8 +264,11 @@ function tryBreakExistingLock(lockPath) {
     return true;
   } catch (readErr) {
     // Can't read/parse lock file — log and attempt removal
+    const readErrCode =
+      readErr && typeof readErr === "object" && "code" in readErr ? String(readErr.code) : "";
+    const readErrMsg = readErr instanceof Error ? readErr.message : String(readErr);
     process.stderr.write(
-      `[safe-fs] WARNING: unreadable lock file (${readErr.code || (readErr instanceof Error ? readErr.message : String(readErr))}), removing: ${lockPath}\n`
+      `[safe-fs] WARNING: unreadable lock file (${readErrCode || readErrMsg}), removing: ${lockPath}\n`
     );
     breakStaleLock(lockPath);
     return true;

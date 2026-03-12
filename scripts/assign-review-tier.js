@@ -304,12 +304,7 @@ function validateSymlink(resolvedFile, projectRoot) {
 
     return { valid: true, realPath: realResolvedFile };
   } catch (error) {
-    const errorMsg =
-      error && typeof error === "object" && "message" in error
-        ? error instanceof Error
-          ? error.message
-          : String(error)
-        : String(error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
     return { valid: false, warning: `Could not resolve real path: ${sanitizePath(errorMsg)}` };
   }
 }
@@ -330,12 +325,7 @@ function processFileContent(file, realResolvedFile) {
     // Check for forbidden patterns
     result.violations = checkForbiddenPatterns(file, content);
   } catch (error) {
-    const errorMsg =
-      error && typeof error === "object" && "message" in error
-        ? error instanceof Error
-          ? error.message
-          : String(error)
-        : String(error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
     result.warning = `Could not read file: ${sanitizePath(errorMsg)}`;
   }
 

@@ -53,7 +53,7 @@ function truncate(text, maxLen) {
 // Escape markdown special chars in table cells
 function escapeMarkdown(text) {
   if (!text) return "";
-  return text.replace(/\|/g, "\\|").replace(/\n/g, " ");
+  return text.replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/\n/g, " ");
 }
 
 // Sort by severity (S0 first)

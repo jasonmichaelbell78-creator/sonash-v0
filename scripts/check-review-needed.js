@@ -345,6 +345,7 @@ async function fetchSonarCloudData() {
   };
 
   const controller = new AbortController();
+  // nosemgrep: javascript.lang.security.detect-eval-with-expression — setTimeout with arrow function, not string eval
   const timeoutId = setTimeout(() => controller.abort(), SONAR_CONFIG.timeout);
 
   try {

@@ -104,15 +104,14 @@ function createStateManager(rootDir, isSafeToWrite) {
         fs.writeFileSync(tmpPath, content, "utf8");
         const safeRename = (src, dest) => {
           try {
-            try {
-              fs.rmSync(dest, { force: true });
-            } catch {
-              /* ignore */
-            }
             fs.renameSync(src, dest);
           } catch {
             fs.copyFileSync(src, dest);
-            fs.unlinkSync(src);
+            try {
+              fs.unlinkSync(src);
+            } catch {
+              /* best-effort cleanup */
+            }
           }
         };
         try {

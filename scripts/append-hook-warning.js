@@ -19,7 +19,10 @@ try {
   fs = require("node:fs");
   path = require("node:path");
 } catch (e) {
-  console.error("Failed to load required modules:", e instanceof Error ? e.message : String(e));
+  console.error(
+    "Failed to load required modules:",
+    e instanceof Error ? e.constructor.name : typeof e
+  );
   process.exit(1);
 }
 
@@ -28,10 +31,8 @@ let safeWriteFileSync, safeRenameSync, safeAppendFileSync;
 try {
   ({ safeWriteFileSync, safeRenameSync, safeAppendFileSync } = require("./lib/safe-fs"));
 } catch {
-  console.error("safe-fs unavailable; disabling writes");
-  safeWriteFileSync = () => {};
-  safeRenameSync = () => {};
-  safeAppendFileSync = () => {};
+  console.error("safe-fs unavailable; refusing to write");
+  process.exit(2);
 }
 
 // Symlink guard (Review #316-#323)
@@ -226,7 +227,12 @@ function writeAuditTrail(entry) {
     }
     const logPath = path.join(logDir, "hook-warnings-log.jsonl");
     if (!isSafeToWrite(logPath)) return;
-    safeAppendFileSync(logPath, JSON.stringify(entry) + "\n");
+    const auditRecord = {
+      ...entry,
+      actor: "hook-system",
+      outcome: entry.severity === "error" ? "blocked" : "warned",
+    };
+    safeAppendFileSync(logPath, JSON.stringify(auditRecord) + "\n");
   } catch {
     // Best-effort — never block hooks on log failure
   }

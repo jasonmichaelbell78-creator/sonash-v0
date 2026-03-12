@@ -89,6 +89,7 @@ async function sonarFetch(endpoint, params = {}) {
 
   // Add timeout using AbortController
   const controller = new AbortController();
+  // nosemgrep: javascript.lang.security.detect-eval-with-expression — setTimeout with arrow function, not string eval
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   let response;

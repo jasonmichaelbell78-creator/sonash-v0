@@ -30,7 +30,6 @@ try {
 try {
   ({ gitExec, projectDir } = require("./lib/git-utils.js"));
 } catch {
-  console.log("ok");
   process.exit(0);
 }
 try {

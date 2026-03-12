@@ -23,6 +23,19 @@ const ROOT_DIR = path.join(__dirname, "..");
 const TMP_DIR = path.join(ROOT_DIR, ".claude", "tmp");
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+/**
+ * Attempt to delete a single session file if it is old enough and safe to remove.
+ * Returns true if deleted, false otherwise.
+ */
+function tryDeleteSessionFile(filePath, cutoff) {
+  const stat = fs.lstatSync(filePath);
+  if (stat.isSymbolicLink()) return false;
+  if (stat.mtimeMs >= cutoff) return false;
+  if (!isSafeToWrite(filePath)) return false;
+  fs.rmSync(filePath, { force: true });
+  return true;
+}
+
 function main() {
   let files;
   try {
@@ -43,15 +56,11 @@ function main() {
 
   for (const file of sessionFiles) {
     const filePath = path.join(TMP_DIR, file);
-    // Path containment check (Review #33-#40)
-    const rel = path.relative(TMP_DIR, filePath);
-    if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
+    // Path containment check (Review #33-#40) — validates relative path stays within TMP_DIR
+    const relative = path.relative(TMP_DIR, filePath);
+    if (/^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) continue;
     try {
-      const stat = fs.lstatSync(filePath);
-      if (stat.isSymbolicLink()) continue;
-      if (stat.mtimeMs < cutoff) {
-        if (!isSafeToWrite(filePath)) continue;
-        fs.rmSync(filePath, { force: true });
+      if (tryDeleteSessionFile(filePath, cutoff)) {
         deleted++;
       }
     } catch (err) {

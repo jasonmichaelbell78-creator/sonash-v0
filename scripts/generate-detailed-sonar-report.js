@@ -91,6 +91,7 @@ async function fetchSonarCloudIssues(token, componentKey) {
 
     const url = `${SONARCLOUD_API}/issues/search?${params}`;
     const controller = new AbortController();
+    // nosemgrep: javascript.lang.security.detect-eval-with-expression — setTimeout with arrow function, not string eval
     const timeout = setTimeout(() => controller.abort(), 30_000);
     const response = await fetch(url, {
       signal: controller.signal,
@@ -145,6 +146,7 @@ async function fetchSonarCloudHotspots(token, componentKey) {
 
     const url = `${SONARCLOUD_API}/hotspots/search?${params}`;
     const controller = new AbortController();
+    // nosemgrep: javascript.lang.security.detect-eval-with-expression — setTimeout with arrow function, not string eval
     const timeout = setTimeout(() => controller.abort(), 30_000);
     const response = await fetch(url, {
       signal: controller.signal,
@@ -228,14 +230,20 @@ function getCodeSnippet(filePath, line, textRange, contextLines = 3) {
 }
 
 // Strip HTML tags from code (SonarCloud returns HTML-formatted code)
+// Single-pass entity replacement avoids double-unescaping (CodeQL: incomplete-multi-character-sanitization)
+const HTML_ENTITIES = {
+  "&lt;": "<",
+  "&gt;": ">",
+  "&amp;": "&",
+  "&quot;": '"',
+  "&#39;": "'",
+};
+const HTML_ENTITY_RE = /&(?:lt|gt|amp|quot|#39);/g;
+
 function stripHtml(html) {
   return html
     .replace(/<[^>]{1,1000}>/g, "")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
+    .replace(HTML_ENTITY_RE, (match) => HTML_ENTITIES[match] || match);
 }
 
 // Main function

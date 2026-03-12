@@ -253,7 +253,17 @@ Exit codes:
   }
 
   const parsed = parseArgs(args);
-  const filePath = parsed.file || DEFAULT_FILE;
+  const rawFilePath = parsed.file || DEFAULT_FILE;
+
+  // Security: validate path is within project root (path traversal prevention)
+  const projectRoot = path.join(__dirname, "../..");
+  const resolvedPath = path.resolve(rawFilePath);
+  const rel = path.relative(projectRoot, resolvedPath);
+  if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+    console.error("Error: File path must be within project root");
+    process.exit(2);
+  }
+  const filePath = resolvedPath;
 
   if (!parsed.quiet) {
     console.log("🔍 Validating TDMS schema...\n");

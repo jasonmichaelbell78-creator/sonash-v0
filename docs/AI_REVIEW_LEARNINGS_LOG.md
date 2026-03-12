@@ -2275,3 +2275,62 @@ Major: 6, Minor: 8, Trivial: 3, Rejected: 2, Stale: 1)
   must present user with fix (+ effort estimate) or DEBT options
 
 ---
+
+### Review #480: PR #427 R3 — Mixed (CI + CodeQL + Semgrep + Qodo + SonarCloud) (2026-03-12)
+
+**Source:** Mixed (CI blocking, CodeQL, Semgrep, Qodo Compliance, Qodo
+Suggestions, SonarCloud) **PR/Branch:** PR #427 / testing-31126 **Items:** 45
+total (Fixed: 45, Deferred: 0, Rejected: 0)
+
+**Patterns Identified:**
+
+1. R2 auto-fixer nested ternary residue: ESLint auto-fixer for
+   no-unsafe-error-access produced overly nested ternaries
+   (`error && typeof error === "object" && "message" in error ? error instanceof Error ? error.message : String(error) : String(error)`)
+   that SonarCloud flagged as cognitive complexity and object-stringification
+   issues.
+   - Root cause: R2 auto-fixer didn't simplify pre-guarded patterns
+   - Fix: Manual simplification to
+     `error instanceof Error ? error.message : String(error)`
+   - Files: assign-review-tier.js, check-backlog-health.js, lighthouse-audit.js
+
+2. rmSync-before-renameSync in 7 state-manager.js copies: CI blocking pattern
+   (data-loss window). First agent fix introduced NEW violations by using bare
+   renameSync without try/catch, requiring a second pass.
+   - Root cause: Agent didn't understand cross-device rename semantics
+   - Fix: `safeRename` helper with copyFileSync+unlinkSync fallback
+   - Prevention: Agent instructions need explicit cross-device fallback pattern
+
+3. Cognitive complexity reduction (3 files): check-backlog-health.js (CC 22→15),
+   cleanup-alert-sessions.js (CC 17→15), validate-canon-schema.js (CC 17→15).
+   - Technique: Extract helper functions (parseSingleEntry,
+     tryDeleteSessionFile, readFileContent, checkDuplicateId,
+     parseAndValidateLine)
+
+4. Semgrep false positives on safe patterns: setTimeout with arrow (not string
+   eval), process.argv[1] for main-module detection (not filesystem access),
+   execFileSync with clamped integer arg (not injection).
+   - Fix: nosemgrep comments with justification
+
+5. Eval-usage false positives: CodeQL/Semgrep flagged setTimeout, Function
+   constructor usage that were safe. Fixed with inline suppression comments.
+
+**Resolution:**
+
+- Fixed: 45 items (28 original + 17 SonarCloud)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- ESLint auto-fixer output should be reviewed for over-nesting before commit —
+  R2's auto-fixer created 4 files with unnecessarily complex ternaries that
+  triggered SonarCloud in R3
+- Agent fixes for pattern compliance need explicit verification — Agent 1's
+  initial rmSync fix introduced 18 new violations (up from 5 original)
+- Cross-device rename fallback (copyFileSync+unlinkSync) must be in every
+  safeRename helper — bare renameSync fails on cross-device moves
+- CC reduction via helper extraction is mechanical but effective — 3 files
+  reduced by extracting 2-3 helpers each
+
+---

@@ -310,6 +310,14 @@ function saveRootHash() {
     try {
       fs.renameSync(tmpPath, absPath);
     } catch {
+      if (!isSafeToWrite(absPath)) {
+        try {
+          fs.rmSync(tmpPath, { force: true });
+        } catch {
+          /* cleanup */
+        }
+        return;
+      }
       try {
         fs.rmSync(absPath, { force: true });
       } catch {

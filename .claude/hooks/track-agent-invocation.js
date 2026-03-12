@@ -127,8 +127,9 @@ function writeState(state) {
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
     try {
       fs.renameSync(tmpPath, statePath);
-    } catch {
-      // Windows can fail to overwrite existing dest: unlink then retry
+    } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? err.code : null;
+      if (code !== "EPERM" && code !== "EACCES" && code !== "EBUSY") throw err;
       try {
         fs.rmSync(statePath, { force: true });
       } catch {

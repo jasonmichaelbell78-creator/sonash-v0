@@ -15,8 +15,16 @@ const path = require("node:path");
 let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require("./symlink-guard"));
-} catch {
-  isSafeToWrite = () => false;
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  process.stderr.write(`[rotate-state] symlink-guard unavailable: ${msg}\n`);
+  isSafeToWrite = (filePath) => {
+    try {
+      return !fs.lstatSync(filePath).isSymbolicLink();
+    } catch {
+      return false;
+    }
+  };
 }
 
 /**

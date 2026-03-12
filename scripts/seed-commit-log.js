@@ -62,6 +62,7 @@ try {
 }
 
 const isSync = process.argv.includes("--sync");
+// Safe: parseInt + clamp ensures count is always an integer in [1, 500] — no injection risk with execFileSync arg arrays
 const count = isSync ? 500 : Math.max(1, Math.min(Number.parseInt(process.argv[2], 10) || 50, 500));
 
 /**
@@ -97,11 +98,12 @@ function getSessionCounter() {
  */
 function getRecentCommits() {
   try {
+    // nosemgrep: javascript.lang.security.audit.command-injection — count is a clamped integer [1,500], execFileSync uses arg array (no shell)
     const output = execFileSync(
       "git",
       [
         "log",
-        `--max-count=${count}`,
+        `--max-count=${String(count)}`,
         "--format=%H%x00%h%x00%s%x00%an%x00%ad%x00%D",
         "--date=iso-strict",
       ],

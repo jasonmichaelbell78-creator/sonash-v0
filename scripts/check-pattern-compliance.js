@@ -46,8 +46,7 @@ let verifiedPatterns;
 try {
   verifiedPatterns = loadConfig("verified-patterns");
 } catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  console.error(`Error: failed to load verified-patterns config: ${msg}`);
+  console.error(`Error: failed to load verified-patterns config: ${sanitizeError(err)}`);
   process.exit(2);
 }
 

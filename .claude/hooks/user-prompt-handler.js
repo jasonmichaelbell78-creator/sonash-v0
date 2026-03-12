@@ -195,8 +195,8 @@ function runAnalyze() {
     const raw = String(pattern);
     if (raw.length > 200) return false;
 
-    const parts = raw.split(".?");
-    if (parts.length > 25) return false;
+    const parts = raw.split(".?").filter((p) => p.length > 0);
+    if (parts.length === 0 || parts.length > 25) return false;
 
     const joined = parts.map((p) => escapeRegex(p)).join("[^a-z0-9]?");
     return new RegExp(`(^|[^a-z0-9])(${joined})([^a-z0-9]|$)`, "i").test(requestLower);

@@ -22,7 +22,12 @@ try {
 try {
   ({ sanitizeInput } = require("./lib/sanitize-input"));
 } catch {
-  sanitizeInput = (v) => String(v).slice(0, 500);
+  /* eslint-disable no-control-regex -- intentional: sanitize dangerous control chars */
+  sanitizeInput = (v) =>
+    String(v ?? "")
+      .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
 }
 
 // Fetch TTL cache (path resolved after projectDir is defined below)

@@ -110,7 +110,11 @@ function createStateManager(rootDir, isSafeToWrite) {
             fs.renameSync(src, dest);
           } catch {
             fs.copyFileSync(src, dest);
-            fs.unlinkSync(src);
+            try {
+              fs.unlinkSync(src);
+            } catch {
+              /* best-effort cleanup */
+            }
           }
         };
         try {

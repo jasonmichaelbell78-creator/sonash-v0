@@ -287,7 +287,7 @@ function createWarningRecord(dimId, data) {
  * @param {object} result - Health check result with dimensionScores
  */
 function generateWarnings(result) {
-  if (!result.dimensionScores || !safeWriteFileSync || !safeAppendFileSync) return;
+  if (!result.dimensionScores || !safeWriteFileSync) return;
 
   const existing = readJsonlEntries(WARNINGS_PATH);
   const activeByDim = buildActiveWarningMap(existing);

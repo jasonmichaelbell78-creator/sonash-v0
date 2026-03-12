@@ -21,9 +21,9 @@ function readJsonl(filePath, options = {}) {
     raw = fs.readFileSync(filePath, "utf8");
   } catch (err) {
     if (safe) return [];
-    console.error(
-      `Failed to read ${path.basename(filePath)}: ${err.code || (err instanceof Error ? err.message : String(err))}`
-    );
+    const errCode = err && typeof err === "object" && "code" in err ? String(err.code) : "";
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to read ${path.basename(filePath)}: ${errCode || errMsg}`);
     process.exit(1);
   }
 
