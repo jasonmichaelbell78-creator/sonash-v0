@@ -29,18 +29,17 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-13 **Branch**: `tooling-code-plan` **Working On**:
-Session #217 — Data Effectiveness Audit deep-plan (35 decisions), 3 approved
-plans total
+**Last Checkpoint**: 2026-03-13 **Branch**: `plan-implementation` **Working
+On**: Session #218 — Meta Pipeline alignment (4 plans sequenced, SWS
+forward-compat, CI guardrail gaps, ROADMAP updated)
 
-**Uncommitted Work**: Deep-plan artifacts (DIAGNOSIS.md, DECISIONS.md, PLAN.md),
-state files
+**Uncommitted Work**: None
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 217 (since Jan 1, 2026)
+**Current Session Count**: 218 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -49,6 +48,19 @@ state files
 ---
 
 ## Recent Session Summaries
+
+**Session #218** (META PIPELINE ALIGNMENT):
+
+- **ROADMAP updated**: 4-plan Meta Pipeline as P0 blocking chain (Tooling → Code
+  Quality → Data Effectiveness → SWS → all other work)
+- **Cross-plan analysis**: 4 agents analyzed all plans in parallel, identified
+  gaps in CI ownership, guardrail coverage, SWS forward-compatibility
+- **Plans amended**: All 3 pre-SWS plans updated with SWS forward-compat
+  requirements (Zod schemas, JSONL-first, declarative config, changelogs)
+- **Code Quality CI gaps**: 19 fix-without-guardrail gaps identified and added
+  to plan (Step 0 for CI-on-main, missing CI enforcement steps, per-WS gaps)
+- **LSP configured**: Native typescript-language-server via `.lsp.json`,
+  CLAUDE.md updated with LSP preference over Grep
 
 **Session #217** (DATA EFFECTIVENESS AUDIT — DEEP PLAN):
 

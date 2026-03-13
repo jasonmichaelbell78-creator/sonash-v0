@@ -18,6 +18,114 @@ removes dead code, and fixes workflows — giving this plan a clean baseline.
 
 ---
 
+## SWS Forward-Compatibility Requirements
+
+This plan executes BEFORE System-Wide Standardization (SWS). All artifacts must
+be born-compliant with SWS tenets to avoid rework.
+
+### Zod Schemas for New Data Formats (SWS D24, D9)
+
+Convergence loop artifacts (`findings.jsonl`, `triage.jsonl`, `changes.jsonl`,
+`verify.jsonl`) and validator outputs MUST have Zod schemas. New validators
+(`check-skill-index-sync.js`, `check-npm-script-refs.js`, `check-hook-refs.js`,
+`check-truncation-guard.js`) MUST output findings in a consistent schema.
+
+### Declarative Ratchet Configuration (SWS T17)
+
+The `--max-warnings N` ratchet baseline MUST live in a declarative config file
+(e.g., `config/quality-baselines.json`), not hardcoded in `ci.yml`. CI reads the
+config to determine the current threshold.
+
+### Version Fields (SWS T6, D22)
+
+`.truncation-guard.json` MUST include `schema_version`. All Zod schemas use
+`.passthrough()` for future extension.
+
+### Cross-Impact Changelog (SWS T18, D72)
+
+Create `.planning/code-quality-overhaul/CHANGELOG.jsonl` tracking
+cross-ecosystem impacts using D72 schema:
+`{timestamp, ecosystem, change, affects, type?, decision_ref?, files_changed?}`.
+
+### Forward Findings (SWS T13, T14)
+
+After plan completion, produce a `forward-findings.jsonl` documenting
+discoveries that feed into SWS ecosystem deep-plans (Testing, CI/CD, Scripts
+ecosystems).
+
+---
+
+## CI Ownership & Guardrail Completeness
+
+### CI Failure on Main (MUST — Step 0)
+
+**This plan owns diagnosing and fixing the current CI failure on main.** Neither
+the Tooling plan nor this plan previously claimed ownership. Since this plan's
+guardrails depend on CI working (`--max-warnings 0`, pattern compliance
+blocking), the CI failure must be resolved before Step 7 (zero-warnings lock).
+
+**Action:** Add a Step 0 before existing steps:
+
+1. Run `gh run list --branch main --limit 5` to identify failing workflow(s)
+2. Diagnose root cause (build, test, lint, or other failure)
+3. Fix and verify CI passes on main
+4. This unblocks all CI-level guardrails in subsequent steps
+
+### Missing CI-Level Enforcement (MUST — amend affected steps)
+
+The following guardrails exist only in local hooks (pre-commit/pre-push) but NOT
+in CI. GitHub UI pushes, API pushes, and hook-bypassed pushes can introduce
+regressions silently. Each needs a CI step:
+
+| Guardrail                  | Current Enforcement               | CI Step Needed                                                                                                              |
+| -------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Propagation check          | Pre-push only                     | `node scripts/check-propagation.js --all` in CI                                                                             |
+| Truncation guard           | Post-write + pre-commit           | `node scripts/validators/check-truncation-guard.js` in CI                                                                   |
+| SHA-pin enforcement        | One-time pin (Tooling plan)       | `if grep -RIn -- '@v[0-9]' .github/workflows/ \| grep -vE '^\s*#'; then echo "::error::Found unpinned actions"; exit 1; fi` |
+| Pattern compliance on main | CI with `continue-on-error: true` | Change to blocking (`continue-on-error: false`)                                                                             |
+
+### Pre-Commit Warning Enforcement (MUST — Step 7b amendment)
+
+The pre-commit hook runs `npm run lint` which checks exit code (errors only).
+After `--max-warnings 0` is added to CI, the pre-commit hook MUST also enforce
+zero warnings on staged files. Specify the exact mechanism: either modify the
+pre-commit lint step to pass `--max-warnings 0`, or add a separate staged-file
+warning check.
+
+### Guardrail Gaps per Workstream
+
+**WS2 — Disabled Security Rules:** Add a pattern-compliance rule that blocks
+re-enabling `security/detect-non-literal-fs-filename` and
+`security/detect-object-injection` in `eslint.config.mjs`. A comment is
+insufficient — automated enforcement required.
+
+**WS2 — v10 API Lock:** Add a pattern-compliance rule checking for deprecated
+ESLint v9 APIs (`getFilename(`, `getSourceCode(`, `getCwd(`) in
+`eslint-plugin-sonash/`. Prevents regression after migration.
+
+**WS4 — CC Threshold Sync:** Document the reconciliation between
+`scripts/check-cc.js` thresholds and ESLint `sonarjs/cognitive-complexity`
+thresholds. If they diverge, violations slip through one gate but not the other.
+Add a test that verifies both use the same threshold.
+
+**WS5 — Fragility Guardrails:** WS5 MUST NOT defer 100% of guardrail design to
+the research loop. Pre-specify a minimum set of guardrails before research:
+
+- `JSON.parse` without try/catch → pattern-compliance rule
+- Regex-based markdown parsing → pattern-compliance rule
+- Deep nesting (>4 levels) → ESLint rule or CC threshold coverage
+
+**WS6 — Truncation Guard Freshness:** Add a CI step that runs
+`populate-truncation-guard.js --check` and fails if new large files are not in
+the allowlist. Prevents `.truncation-guard.json` drift.
+
+**WS7 — Pattern Compliance Blocking:** The `continue-on-error: true` on pattern
+compliance for push-to-main (ci.yml) MUST be changed to blocking. Otherwise
+orphan validators integrated into pattern-compliance are non-blocking on main,
+defeating their purpose.
+
+---
+
 ## Research Loop Specification (Per Decision #12)
 
 Every workstream uses the same convergence loop during implementation. This

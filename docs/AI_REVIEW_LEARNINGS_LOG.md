@@ -351,6 +351,17 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#3)</summary>
+
+- **Date:** 2026-03-13
+- **Reviews consolidated:** #471-#484
+- **Recurring patterns:**
+  - qodo (11x)
+  - ci (9x)
+  - sonarcloud (9x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#2)</summary>
 
 - **Date:** 2026-03-09
@@ -888,6 +899,75 @@ rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
 ---
 
 ## Active Reviews
+
+### Review #475: PR #430 R2 — Qodo (2026-03-13)
+
+_R1 fix regression (pre-commit hook overwrote edits), archive dedup, data
+quality fixes, SHA-pin grep hardening._
+
+**Source:** Qodo Bug (1), Qodo Compliance (1), Qodo Suggestions (7) **Items:** 9
+total (7 fixed, 0 deferred, 2 rejected) **Severity:** 0C / 2M / 5m / 2T
+
+**Key Patterns:**
+
+1. **Pre-commit hook overwrites manual edits** — R1 fixed `CLAUDE.md` →
+   `claude.md` in DOCUMENTATION_INDEX.md, but the pre-commit hook runs
+   `npm run docs:index` which regenerated the file using Windows NTFS casing
+   (`CLAUDE.md`). Root fix: `git mv claude.md CLAUDE.md` to align Git tracking
+   with filesystem/generator.
+2. **Archive JSONL duplication** — reviews.jsonl.archive had 521 lines for 403
+   unique entries. Same append-without-dedup pattern as review-metrics.jsonl
+   (R1).
+3. **JSONL records with null/zero fields** — Records 478/479 had `pr:null` and
+   `total:0` despite non-empty patterns. Fixed to `pr:419` and correct totals.
+
+**Rejections:**
+
+- PATH binary hijack (.lsp.json) — standard `$PATH` tool invocation, not a
+  vulnerability. Every CLI tool has this "risk."
+- Preserve metrics history — R1 dedup removed only duplicate entries (same PR
+  repeated 60x), no unique data was lost.
+
+**Process Learnings:**
+
+- When editing auto-generated files, always check for pre-commit hooks that
+  regenerate them. Fix the source (rename, generator config), not the output.
+- **Score:** 7/10 — Good R2 findings, caught R1 regression and data quality
+  issues. Two reasonable rejections.
+
+---
+
+### Review #474: PR #430 R1 — Mixed (Qodo + Gemini + CI) (2026-03-13)
+
+_Planning docs alignment — CLAUDE.md casing, SHA-pin CI guardrail logic,
+duplicate metrics entries, ESLint first-scan volume._
+
+**Source:** Qodo PR Reviewer (3 items + 3 suggestions), Gemini Code Assist (2),
+CI (ESLint 1324 warnings) **Items:** 4 total (3 fixed, 0 deferred, 1 rejected)
+**Severity:** 0C / 2M / 1m / 0T
+
+**Key Patterns:**
+
+1. **Case-sensitive file links** — DOCUMENTATION_INDEX.md generator output
+   `CLAUDE.md` but actual file is `claude.md`. Breaks on Linux/CI. Fix: correct
+   all 4 references to match actual filename casing.
+2. **Flawed CI grep exit logic** — `grep X && exit 1 || true` always succeeds
+   because `|| true` catches the `exit 1`. Fix: use `if grep; then exit 1; fi`.
+3. **Append-only metrics without dedup** — review-metrics.jsonl grew from 15
+   unique PRs to 903 lines (60x bloat). Fix: deduplicate keeping latest per PR.
+
+**Rejections:**
+
+- ESLint 1324 warnings — pre-existing across 100+ files, none introduced by this
+  docs-only PR. User confirmed: skip.
+
+**Process Learnings:**
+
+- Multi-source convergence (Qodo + Gemini both flagged casing + grep logic)
+  confirms high signal. Auto-elevate when 2+ sources agree.
+- **Score:** 7/10 — Small PR with valid findings. All fixable items addressed.
+
+---
 
 ### Review #473: PR #427 R1 — Mixed (SonarCloud + Semgrep + CI + Qodo) (2026-03-11)
 
