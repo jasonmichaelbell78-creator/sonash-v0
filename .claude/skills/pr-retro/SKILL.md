@@ -135,8 +135,25 @@ grep "pr-review" docs/technical-debt/MASTER_DEBT.jsonl | grep "${PR_NUM}"
 
 ### 1.4 Check Previous Retros (MUST)
 
-Read last 3-5 retros. For each action item: run its stored verify command (if
-available). If no verify command, check documentation. Flag unimplemented items.
+Read last 3-5 retros from `retros.jsonl`. For each retro's `action_items` array
+(or `process_changes` for pre-schema records):
+
+1. **If `action_items` field exists:** Run each item's stored `verify_cmd`.
+   Report pass/fail.
+2. **If only `process_changes` exists (legacy):** For each item, construct a
+   meaningful verification -- check the actual mechanism, not just keyword grep.
+   "Documented in X" does not equal "Implemented." Verify the mechanism exists
+   and functions.
+3. **Flag unimplemented items** -- these become mandatory action items for this
+   retro (repeat offender escalation).
+
+**Verification quality rules:**
+
+- Verify commands MUST be executable shell commands that return non-zero on
+  failure
+- "grep for keyword in docs" is NOT valid verification -- check the actual
+  code/hook/config
+- If no verify command exists, construct one that tests the actual mechanism
 
 ### 1.5 Present Intermediate Summary
 
@@ -286,6 +303,14 @@ After each implementation, run the verify command and mark the item:
 
 - `[DONE]` — implemented and verified
 - `[BLOCKED]` — cannot be done now, explain why, ask user what to do
+
+**State file tracking (MUST):** After each item implementation, update the state
+file's `finding_decisions` entry with `implementation_status` and
+`verify_result`. When writing the JSONL record in Step 4, populate the
+`action_items` array with per-item `{title, status, verify_cmd, implemented_in}`
+from the state file. The `process_changes` field continues to hold the string
+descriptions for backward compatibility, but `action_items` is now the
+authoritative tracking field.
 
 **DEBT/TDMS is NOT an option unless the user explicitly requests it.** Do not
 offer "defer to DEBT" as a choice. Do not create TDMS entries unless the user

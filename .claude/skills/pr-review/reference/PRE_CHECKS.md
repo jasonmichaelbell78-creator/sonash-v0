@@ -241,3 +241,42 @@ npx eslint --rule '{"complexity": ["error", 15]}' <modified-files>
 
 **Source:** PR #411 retro — 43% false positive rate from first-scan SonarCloud
 volume not pre-screened.
+
+## 22. Auto-Fixer Output Review
+
+**Trigger:** PR runs an ESLint auto-fixer or codemod across multiple files.
+After running any auto-fixer, review 3-5 transformed files for over-nesting,
+unnecessary complexity, or patterns that will trigger SonarCloud. Auto-fixers
+can produce technically correct but overly complex output.
+
+```bash
+# Check for deeply nested ternaries in fixed files
+grep -n '? .* ? .* ?' <fixed-files> | head -10
+```
+
+**Source:** PR #427 retro — ESLint auto-fixer for no-unsafe-error-access
+produced overly nested ternaries (R2→R3 ping-pong, ~0.5 avoidable rounds).
+
+## 23. Escape Character Enumeration
+
+**Trigger:** PR adds or modifies an escape/sanitization function (escapeMd,
+escapeCell, escapeLinkText, sanitizeInput, etc.). Before committing, enumerate
+ALL characters that need escaping for the target context and handle them in a
+single pass. Do NOT discover characters one-at-a-time across review rounds.
+
+Reference:
+[MDN - Characters with special meaning](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions#escaping)
+
+**Source:** PR #398 retro — escapeLinkText needed 2 rounds due to incomplete
+initial character enumeration.
+
+## 24. Error Context in Catch Blocks
+
+**Trigger:** PR adds or modifies try/catch blocks. Every `catch` block that logs
+or re-throws MUST include the operation context (what was being attempted, which
+file/record). Bare `catch(e) { throw e; }` or `console.error(e.message)` loses
+context for debugging. Wrap with: `throw new Error(\`Failed to \${operation}:
+\${e.message}\`)`.
+
+**Source:** PR #427 retro — multiple catch blocks across review scripts lost
+error context, required 2+ rounds to fix.

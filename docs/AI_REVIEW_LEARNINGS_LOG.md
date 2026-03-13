@@ -2235,6 +2235,31 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #355: PR #428 R1 — ESLint v10 Contradiction, Phantom Corruption, Doc Lint (2026-03-12)
+
+**Source:** Doc Lint, Qodo, Gemini, CI **Items:** 10 total (10 fixed, 0
+deferred, 0 rejected)
+
+## Key Patterns
+
+- **AI hallucination in planning docs:** DIAGNOSIS.md claimed
+  `aggregate-audit-findings.js` L1950 had "10-level nested instanceof
+  corruption" — verified false against actual codebase. AI-generated planning
+  docs must be verified before accepting claims about code state.
+- **Forward-referencing non-existent software:** Plan referenced "ESLint v10
+  Migration" with `npm install eslint@^10.0.0`, but DIAGNOSIS.md in the same set
+  correctly noted v10 doesn't exist (v9.39.4 is stable). Plans must not assume
+  future software exists — use "preparation" language instead.
+- **Worktree compatibility:** Pre-commit hook used
+  `$(git rev-parse --show-toplevel)/.git/hook-output.log` which fails in
+  worktrees where `.git` is a file, not a directory. Fix: use
+  `$(git rev-parse --git-dir)/hook-output.log`.
+- **Doc lint as automated quality gate:** Missing Purpose/Scope,
+  Status/Progress, Version History sections were caught by CI doc lint. These
+  sections should be included from the start in planning doc templates.
+
+---
+
 #### Review #354: PR #427 R4 — TOCTOU Hardening, Sanitize Fallbacks, Semgrep Rule ID Fix (2026-03-12)
 
 **Source:** Mixed (Qodo Compliance + Suggestions, Semgrep/CodeQL, CI Pattern
@@ -2435,5 +2460,209 @@ pattern compliance.
   satisfy the taint tracker
 - Parent directory symlink traversal is a real attack vector even when the leaf
   path is checked — fallback isSafeToWrite implementations need the parent walk
+
+---
+
+### PR #427 Retrospective (2026-03-12)
+
+**PR:** feat: Grand Plan Removal, Hook Systems Mini-Audit (35 Decisions, 8
+Waves), Batch Retros, Pre-Push CC Gate, writeFileSync Security Migration (21
+Scripts) **Rounds:** 5 | **Items:** 139 total (127 fixed, 1 deferred, 15
+rejected) | **Fix Rate:** 91% | **Rejection Rate:** 10.8% **Score:** 7/10
+
+#### Review Cycle Summary
+
+| Round | Source                                    | Items | Fixed | Deferred | Rejected |
+| ----- | ----------------------------------------- | ----- | ----- | -------- | -------- |
+| R1    | SonarCloud + Semgrep + CI + Qodo          | 25    | 24    | 1        | 5        |
+| R2    | Qodo + Semgrep + SonarCloud + CI          | 21    | 18    | 0        | 2        |
+| R3    | CI + CodeQL + Semgrep + Qodo + SonarCloud | 45    | 45    | 0        | 0        |
+| R4    | Qodo + Semgrep + CI Pattern Compliance    | 25    | 20    | 0        | 5        |
+| R5    | Qodo + Semgrep + SonarCloud               | 23    | 20    | 0        | 3        |
+
+#### Ping-Pong Chains
+
+1. **isSafeToWrite 4-round evolution (R1→R2→R4→R5):** fail-open fallback →
+   fail-closed → TOCTOU in atomic writes → parent dir symlink traversal. Classic
+   Pattern 8 incremental hardening. ~2 avoidable rounds.
+2. **ESLint auto-fixer cascade (R2→R3):** Auto-fixer for error.message produced
+   overly nested ternaries. SonarCloud flagged cognitive complexity in R3. ~0.5
+   avoidable rounds.
+3. **Agent fix regression (R3):** Agent fixed rmSync-before-renameSync but
+   introduced bare renameSync without cross-device fallback. Required second
+   pass with safeRename helper. ~0.5 avoidable rounds.
+4. **sanitizeInput incremental hardening (R4→R5):** Narrow control char regex in
+   R4 missed ANSI escapes. Widened to full C0 block in R5. ~0.5 avoidable
+   rounds.
+
+#### Rejection Analysis
+
+15/139 = 10.8% — best for a 5-round, 247-file PR. R3 achieved 0% rejection.
+Rejections were appropriate: hooks lacking user context by design (4), local
+error logging not a leak (1), mutable accumulator FP (1), intentional design
+choices (2), false positives (7).
+
+#### Top Wins
+
+- 10.8% rejection rate — best for a large multi-round PR in project history
+- 308-file error.message codemod via ESLint auto-fixer with
+  ConditionalExpression guard detection
+- Propagation sweeps caught 4 additional sanitizeInput files beyond reviewer
+  flags
+- pr-review v4.1 improvements (first-scan batch-ack, cross-round dedup)
+  validated
+
+#### Top Misses
+
+- isSafeToWrite evolved across 4 of 5 rounds (Pattern 8)
+- ESLint auto-fixer output not reviewed before commit — cascading SonarCloud
+  flags
+- Agent fix introduced NEW violations on rmSync pattern
+- CC pre-push check: 6th recommendation, still not implemented
+
+#### Process Changes
+
+1. Security Guard Lifecycle Checklist → SECURITY_CHECKLIST.md
+2. Auto-fixer output review pre-check → pr-review PRE_CHECKS.md
+3. Cross-device rename fallback pattern → CODE_PATTERNS.md
+4. Wire check-cc.js into pre-push hook (CRITICAL — 6th recommendation)
+5. AI hallucination verification → deep-plan skill
+6. Worktree .git compatibility → CODE_PATTERNS.md
+7. CRITICAL: Retro JSONL schema — add action_items with per-item tracking
+8. CRITICAL: Step 1.4 — run stored verify commands, not keyword grep
+9. CRITICAL: Step 6 — write implementation status to state file
+
+#### Verdict
+
+Solid review cycle for a 247-file PR. 91% fix rate and 10.8% rejection show
+pr-review v4.1 is working. Main cost was incremental security hardening (~3.5
+avoidable rounds from 4 ping-pong chains). The systemic finding — retro
+infrastructure disconnect causing action items to be silently dropped — is the
+most impactful outcome of this retro.
+
+---
+
+### PR #428 Retrospective (2026-03-12)
+
+**PR:** docs: Two Deep Plans — Tooling Audit (30 decisions) + Code Quality
+Overhaul (26 decisions) **Rounds:** 1 | **Items:** 10 total (10 fixed, 0
+deferred, 0 rejected) | **Fix Rate:** 100% | **Rejection Rate:** 0% **Score:**
+9/10
+
+#### Review Cycle Summary
+
+| Round | Source                        | Items | Fixed | Deferred | Rejected |
+| ----- | ----------------------------- | ----- | ----- | -------- | -------- |
+| R1    | Doc Lint + Qodo + Gemini + CI | 10    | 10    | 0        | 0        |
+
+#### Key Findings
+
+- **AI hallucination:** DIAGNOSIS.md claimed phantom "10-level nested instanceof
+  corruption" — verified false against codebase
+- **Forward-referencing:** Plan referenced ESLint v10 migration when v10 doesn't
+  exist (v9.39.4 is stable)
+- **Worktree compatibility:** Pre-commit hook used `.git/` path instead of
+  `$(git rev-parse --git-dir)/`
+- **Doc lint effectiveness:** Missing Purpose/Scope/Version History caught by
+  automated CI gate
+
+#### Verdict
+
+Perfect single-round cycle. Validates focused-scope planning PRs as the cleanest
+PR type (joining PR #414 at 100% fix rate, PR #416 at 0 rounds). AI
+hallucination in planning docs is the only process concern — fixable with
+verification requirements in the deep-plan skill.
+
+---
+
+### Review #482: PR #429 R1 — SonarCloud + Qodo + CI (2026-03-13)
+
+**Source:** Mixed (SonarCloud Security Hotspots, SonarCloud Code Smells, Qodo PR
+Reviewer Guide, Qodo Compliance, Qodo Code Suggestions, CI Failure)
+**PR/Branch:** PR #429 / tooling-code-plan **Items:** 15 total (Critical: 1,
+Major: 5, Minor: 6, Rejected: 3)
+
+**Context:** First review round on tooling/code-plan PR (46 files). Mix of new
+scripts (semgrep test harness, JSONL validator, changelog metrics), hook test
+enhancements, and deep-plan artifacts.
+
+**Issues Found:**
+
+1. CI BLOCKER: `lib/firestore-service.ts` imported `setDoc` (direct Firestore
+   write) despite all methods using `httpsCallable` Cloud Functions. Dead import
+   from pre-migration era. Removed import, type member, and default dep.
+
+2. Hook test `block-push-to-main.js` listed in `CRITICAL_POSTTOOL_HOOKS` but
+   actually configured in PreToolUse, not PostToolUse. Test silently passed via
+   `continue` before review caught it. Split into `CRITICAL_PRETOOLUSE_HOOKS`
+   with dedicated test.
+
+3. Semgrep test harness fallback reported PASS without checking `parsed.errors`,
+   hiding scan/config errors. Added error field check + documented that fallback
+   doesn't validate `// ruleid:` annotations.
+
+4. Duplicate DEBT entries from casing variations in `log-override.js` — same
+   check generating `hook-bypass-propagation` and `hook-bypass-PROPAGATION`
+   source_ids, inflating metrics. Deferred as DEBT-45528.
+
+**Resolution:**
+
+- Fixed: 12 items
+- Deferred: 1 item (DEBT-45528)
+- Rejected: 2 items (S4036 PATH: `execFileSync` doesn't use shell; secure
+  logging: hook commands are script paths, not secrets)
+
+**Key Learnings:**
+
+- Dead imports from pre-migration code can trigger CI blockers — `setDoc` was in
+  DI deps but no method called it. Pattern compliance checks catch these.
+- Hook placement matters: `block-push-to-main.js` is a PreToolUse hook (blocks
+  before `git push` command runs), not PostToolUse. Test lists must match actual
+  settings.json configuration.
+- `if (!hook) continue` in hook tests creates silent passes — caught by Qodo.
+  Changed to `assert.ok` for both critical and non-critical hooks to ensure hook
+  presence is verified.
+- Semgrep JSON output can contain an `errors` array even on exit code 0 — always
+  check it before reporting PASS.
+
+---
+
+### Review #483: PR #429 R2 — Qodo + Gemini + CI (2026-03-13)
+
+**Key learnings:**
+
+- Auto-generated DEBT entries (e.g. from log-override.js hook bypass detection)
+  must use DEBT-XXXX format IDs and valid type enums. `AUTO-BYPASS-*` IDs and
+  `process-debt` type broke CI schema validation. Root cause: the generator
+  script doesn't validate against TDMS schema before writing.
+- When Zod schemas and documentation disagree on enum values, check existing
+  data to determine truth. Gemini suggested changing `"implemented"` to `"done"`
+  in retro schema, but 11 existing records use `"implemented"` — fix the docs,
+  not the schema.
+- SARIF upload guarded by `hashFiles() != ''` without asserting file existence
+  means Semgrep execution failures are invisible. Always add an existence
+  assertion step before conditional uploads.
+- Validator scripts claiming "all files" coverage but only checking a hardcoded
+  subset creates false confidence. Either add schemas or be honest about partial
+  coverage.
+
+---
+
+### Review #484: PR #429 R3 — SonarCloud + Qodo + CI (2026-03-13)
+
+**Key learnings:**
+
+- Semgrep `--test` mode catch blocks must distinguish between "flag not
+  supported" (fallback to `--json` scan) and real test failures (exit non-zero).
+  Swallowing all errors silently hides annotation mismatches.
+- `readFileSync` on JSONL files without size guards risks OOM on unexpectedly
+  large files. Add `statSync` size check before reading (50MB cap is reasonable
+  for ecosystem data files).
+- IIFE-in-template-literal (`${(() => {...})()}`) is valid JS but hurts
+  readability in test assertions. Extract to a named helper for clarity and
+  reusability.
+- Cross-round dedup saves effort: R3 item 7 (hook.command logging risk) was
+  already addressed in R2 truncation fix — auto-rejected with prior-round
+  reference.
 
 ---

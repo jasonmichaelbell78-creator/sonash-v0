@@ -22,7 +22,6 @@ import { db as defaultDb } from "./firebase";
 import {
   collection,
   doc,
-  setDoc,
   getDoc,
   getDocs,
   query,
@@ -103,7 +102,6 @@ type FirestoreDependencies = {
   validateUserDocumentPath: typeof validateUserDocumentPath;
   collection: typeof collection;
   doc: typeof doc;
-  setDoc: typeof setDoc;
   getDoc: typeof getDoc;
   getDocs: typeof getDocs;
   query: typeof query;
@@ -119,7 +117,6 @@ const defaultDeps: FirestoreDependencies = {
   validateUserDocumentPath,
   collection,
   doc,
-  setDoc,
   getDoc,
   getDocs,
   query,
@@ -280,9 +277,10 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       } catch (error: unknown) {
         // Permission denied is expected for new anonymous users without a profile
         const isPermissionDenied =
-          error instanceof Error &&
-          (error.message.includes("permission-denied") ||
-            error.message.includes("Missing or insufficient permissions"));
+          error instanceof Error
+            ? error.message.includes("permission-denied") ||
+              error.message.includes("Missing or insufficient permissions")
+            : false;
 
         if (isPermissionDenied) {
           // Don't log as error - this is expected for new users
