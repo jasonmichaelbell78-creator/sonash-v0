@@ -900,6 +900,43 @@ rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
 
 ## Active Reviews
 
+### Review #475: PR #430 R2 — Qodo (2026-03-13)
+
+_R1 fix regression (pre-commit hook overwrote edits), archive dedup, data
+quality fixes, SHA-pin grep hardening._
+
+**Source:** Qodo Bug (1), Qodo Compliance (1), Qodo Suggestions (7) **Items:** 9
+total (7 fixed, 0 deferred, 2 rejected) **Severity:** 0C / 2M / 5m / 2T
+
+**Key Patterns:**
+
+1. **Pre-commit hook overwrites manual edits** — R1 fixed `CLAUDE.md` →
+   `claude.md` in DOCUMENTATION_INDEX.md, but the pre-commit hook runs
+   `npm run docs:index` which regenerated the file using Windows NTFS casing
+   (`CLAUDE.md`). Root fix: `git mv claude.md CLAUDE.md` to align Git tracking
+   with filesystem/generator.
+2. **Archive JSONL duplication** — reviews.jsonl.archive had 521 lines for 403
+   unique entries. Same append-without-dedup pattern as review-metrics.jsonl
+   (R1).
+3. **JSONL records with null/zero fields** — Records 478/479 had `pr:null` and
+   `total:0` despite non-empty patterns. Fixed to `pr:419` and correct totals.
+
+**Rejections:**
+
+- PATH binary hijack (.lsp.json) — standard `$PATH` tool invocation, not a
+  vulnerability. Every CLI tool has this "risk."
+- Preserve metrics history — R1 dedup removed only duplicate entries (same PR
+  repeated 60x), no unique data was lost.
+
+**Process Learnings:**
+
+- When editing auto-generated files, always check for pre-commit hooks that
+  regenerate them. Fix the source (rename, generator config), not the output.
+- **Score:** 7/10 — Good R2 findings, caught R1 regression and data quality
+  issues. Two reasonable rejections.
+
+---
+
 ### Review #474: PR #430 R1 — Mixed (Qodo + Gemini + CI) (2026-03-13)
 
 _Planning docs alignment — CLAUDE.md casing, SHA-pin CI guardrail logic,
