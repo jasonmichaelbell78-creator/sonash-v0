@@ -1,8 +1,8 @@
 # PR Retro — Reference
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-06
+**Document Version:** 1.1
+**Last Updated:** 2026-03-13
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -145,6 +145,21 @@ When multiple PRs are selected (USER-REQ-1):
 ## Known Churn Patterns
 
 Patterns observed across multiple PRs. Reference during Step 2 analysis.
+
+## Override Audit Cross-Reference (D26 data flow — ls-006)
+
+During Step 2 (churn analysis), read `.claude/state/override-log.jsonl` to
+cross-reference override patterns with PR review rounds:
+
+1. Filter override entries for the PR being analyzed (match by date range or
+   branch name)
+2. If the PR had overrides, note them in the churn analysis:
+   - Which checks were overridden
+   - Whether the override reason matches the PR's fix patterns
+3. If the same check was overridden 3+ times across recent PRs, flag as a
+   recurring override pattern — candidate for threshold adjustment
+
+This prevents the override audit trail from being write-only data.
 
 ### Pattern 6: Filesystem Guard Lifecycle (realpathSync Edge Cases)
 

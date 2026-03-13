@@ -186,6 +186,20 @@ Agent Activity This Session:
 
 If the file doesn't exist or has no current-session entries, skip silently.
 
+### Step 4c. Planning Data Summary (SHOULD — D26 data flow)
+
+Read `.planning/system-wide-standardization/decisions.jsonl` and
+`.planning/system-wide-standardization/changelog.jsonl` to surface active
+planning context:
+
+1. Count total decisions and recent changes (last 7 days)
+2. If either file doesn't exist, skip silently
+3. If no recent changes, note: "Planning data stable (no changes in 7d)"
+4. If recent changes exist, summarize: "N decisions total, M changes in last 7d"
+
+Include in session summary output. This prevents planning data from becoming
+write-only dead weight.
+
 ### Step 5. Override Audit Review (SHOULD — if overrides were used)
 
 ```bash
@@ -280,6 +294,23 @@ Hook summary: 3 overrides, 2 warnings, health B→B (stable)
 
 **If all zero or no data:** Skip silently.
 
+### Step 7g. Commit Analytics (SHOULD — D26 data flow)
+
+Read `.claude/state/commit-log.jsonl` for today's entries to provide commit
+pattern insights:
+
+- Count of commits this session
+- Average files changed per commit
+- Flag if session had 0 granular commits (only session-end)
+
+**Format** (only include if notable):
+
+```
+Commit analytics: 5 commits, avg 3.2 files/commit
+```
+
+**If no commit data or single commit:** Skip silently.
+
 **Progress: Metrics & data pipeline complete (3/4 phases).**
 
 ---
@@ -351,6 +382,8 @@ Session-end is complete when ALL of the following are true:
 | .agent-trigger-state.json               | R/D        | 4, 8 | Agent trigger check, then delete    |
 | pending-reviews.json                    | R/D        | 4, 8 | Review queue check, then delete     |
 | agent-invocations.jsonl                 | R          | 4b   | Agent invocation summary            |
+| decisions.jsonl                         | R          | 4c   | Planning decisions context          |
+| changelog.jsonl                         | R          | 4c   | Planning change tracking            |
 | velocity-log.jsonl                      | W          | 7a   | Velocity metrics                    |
 | reviews.jsonl                           | W          | 7b   | Review sync                         |
 | ecosystem-health-log.jsonl              | W          | 7c   | Health score trend                  |
@@ -358,6 +391,7 @@ Session-end is complete when ALL of the following are true:
 | MASTER_DEBT.jsonl                       | W          | 7d   | Consolidated debt                   |
 | metrics.json                            | W          | 7e   | Machine-readable metrics            |
 | METRICS.md                              | W          | 7e   | Human-readable metrics              |
+| commit-log.jsonl                        | R          | 7g   | Commit pattern analytics            |
 
 ---
 
@@ -406,9 +440,10 @@ future invocations benefit from accumulated experience.
 
 ## Version History
 
-| Version | Date       | Description                                           |
-| ------- | ---------- | ----------------------------------------------------- |
-| 2.1     | 2026-03-13 | Add Step 4b: agent invocation summary (D26 data flow) |
-| 2.0     | 2026-03-07 | Full rewrite from skill-audit: 32 decisions applied   |
-| 1.1     | 2026-03-01 | Add health score snapshot step (INTG-02)              |
-| 1.0     | 2026-02-25 | Initial implementation                                |
+| Version | Date       | Description                                                               |
+| ------- | ---------- | ------------------------------------------------------------------------- |
+| 2.2     | 2026-03-13 | Add Steps 4c (planning data) and 7g (commit analytics) — D26 Recall fixes |
+| 2.1     | 2026-03-13 | Add Step 4b: agent invocation summary (D26 data flow)                     |
+| 2.0     | 2026-03-07 | Full rewrite from skill-audit: 32 decisions applied                       |
+| 1.1     | 2026-03-01 | Add health score snapshot step (INTG-02)                                  |
+| 1.0     | 2026-02-25 | Initial implementation                                                    |

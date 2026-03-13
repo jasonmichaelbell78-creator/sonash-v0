@@ -3453,6 +3453,203 @@ function checkCrossdocDeps() {
 }
 
 // ============================================================================
+// WAVE 6 CHECKERS — Data Effectiveness Audit (ls-014, ls-015, ls-017, ls-020)
+// ============================================================================
+
+/**
+ * ls-014: Velocity Regression — detect sharp velocity drops (Limited mode)
+ */
+function checkVelocityRegression() {
+  console.error("  Checking velocity regression...");
+
+  const logPath = path.join(ROOT_DIR, ".claude", "state", "velocity-log.jsonl");
+  const lines = safeReadLines(logPath);
+  if (lines.length === 0) {
+    ensureCategory("velocity-regression", "Velocity Regression");
+    return;
+  }
+
+  const recent = lines
+    .slice(-3)
+    .map((l) => safeParse(l))
+    .filter(Boolean);
+
+  if (recent.length < 2) {
+    ensureCategory("velocity-regression", "Velocity Regression");
+    return;
+  }
+
+  // Compare last session velocity to the one before it
+  const velocities = recent.map((e) => e.items_completed || e.velocity || 0);
+  const lastIdx = velocities.length - 1;
+  const prevIdx = lastIdx - 1;
+  const lastVelocity = velocities[lastIdx];
+  const prevVelocity = velocities[prevIdx];
+
+  if (prevVelocity > 0) {
+    const dropPct = ((prevVelocity - lastVelocity) / prevVelocity) * 100;
+
+    if (dropPct >= 50) {
+      addAlert(
+        "velocity-regression",
+        "warning",
+        `Velocity dropped ${Math.round(dropPct)}% (${prevVelocity} → ${lastVelocity} items/session)`,
+        null,
+        "Review recent session for blockers or scope changes"
+      );
+    }
+  }
+
+  addContext("velocity-regression", {
+    recentVelocities: velocities,
+    sessions: recent.length,
+  });
+}
+
+/**
+ * ls-017: Stale Planning Data — flag old planning decisions (Full mode)
+ */
+function checkStalePlanningData() {
+  console.error("  Checking planning data staleness...");
+
+  const decisionsPath = path.join(
+    ROOT_DIR,
+    ".planning",
+    "system-wide-standardization",
+    "decisions.jsonl"
+  );
+  const lines = safeReadLines(decisionsPath);
+  if (lines.length === 0) {
+    ensureCategory("planning-data", "Planning Data");
+    return;
+  }
+
+  // Find the most recent entry date
+  let latestDate = null;
+  for (const line of lines) {
+    const entry = safeParse(line);
+    if (!entry) continue;
+    const dateStr = entry.date || entry.timestamp || entry.created;
+    if (!dateStr) continue;
+    const ts = new Date(dateStr).getTime();
+    if (isNaN(ts)) continue;
+    if (latestDate === null || ts > latestDate) {
+      latestDate = ts;
+    }
+  }
+
+  if (latestDate === null) {
+    ensureCategory("planning-data", "Planning Data");
+    return;
+  }
+
+  const daysSinceUpdate = Math.floor((Date.now() - latestDate) / (24 * 60 * 60 * 1000));
+
+  if (daysSinceUpdate >= 30) {
+    addAlert(
+      "planning-data",
+      "info",
+      `Planning decisions stale — last entry ${daysSinceUpdate} days ago — review if still applicable`,
+      null,
+      "Review .planning/system-wide-standardization/decisions.jsonl"
+    );
+  }
+
+  addContext("planning-data", {
+    totalDecisions: lines.length,
+    daysSinceLastEntry: daysSinceUpdate,
+  });
+}
+
+/**
+ * ls-020: Deferred Items Staleness — flag unresolved deferred items (Full mode)
+ */
+function checkDeferredItemsStaleness() {
+  console.error("  Checking deferred items staleness...");
+
+  const deferredPath = path.join(ROOT_DIR, "data", "ecosystem-v2", "deferred-items.jsonl");
+  const lines = safeReadLines(deferredPath);
+  if (lines.length === 0) {
+    ensureCategory("deferred-items", "Deferred Items");
+    return;
+  }
+
+  let unresolvedCount = 0;
+  for (const line of lines) {
+    const entry = safeParse(line);
+    if (!entry) continue;
+    if (!entry.resolved_date) {
+      unresolvedCount++;
+    }
+  }
+
+  if (unresolvedCount > 20) {
+    addAlert(
+      "deferred-items",
+      "warning",
+      `${unresolvedCount} unresolved deferred items — backlog may need triage`,
+      null,
+      "Review and resolve or close stale deferred items"
+    );
+  }
+
+  addContext("deferred-items", {
+    totalItems: lines.length,
+    unresolvedCount,
+  });
+}
+
+/**
+ * ls-015: Commit Patterns — detect over-reliance on session-end commits (Full mode)
+ */
+function checkCommitPatterns() {
+  console.error("  Checking commit patterns...");
+
+  const logPath = path.join(ROOT_DIR, ".claude", "state", "commit-log.jsonl");
+  const lines = safeReadLines(logPath);
+  if (lines.length === 0) {
+    ensureCategory("commit-patterns", "Commit Patterns");
+    return;
+  }
+
+  const entries = lines
+    .slice(-10)
+    .map((l) => safeParse(l))
+    .filter(Boolean);
+
+  if (entries.length === 0) {
+    ensureCategory("commit-patterns", "Commit Patterns");
+    return;
+  }
+
+  let sessionEndCount = 0;
+  for (const entry of entries) {
+    const msg = (entry.message || "").toLowerCase();
+    if (msg.includes("session")) {
+      sessionEndCount++;
+    }
+  }
+
+  const sessionEndPct = (sessionEndCount / entries.length) * 100;
+
+  if (sessionEndPct > 50) {
+    addAlert(
+      "commit-patterns",
+      "info",
+      `${Math.round(sessionEndPct)}% of recent commits are session-end — consider more granular commit practices`,
+      null,
+      "Commit after each logical change instead of batching at session end"
+    );
+  }
+
+  addContext("commit-patterns", {
+    recentCommits: entries.length,
+    sessionEndCommits: sessionEndCount,
+    sessionEndPct: Math.round(sessionEndPct),
+  });
+}
+
+// ============================================================================
 // SUPPRESSION FILTER (W3)
 // ============================================================================
 
@@ -3713,6 +3910,8 @@ function main() {
   checkReviewsSync();
   checkReviewArchive();
   checkCrossdocDeps();
+  // Wave 6 limited-mode checker (ls-014)
+  checkVelocityRegression();
 
   // Full mode only (additional 17 categories)
   if (isFullMode) {
@@ -3737,6 +3936,10 @@ function main() {
     checkBacklogHealth();
     checkGitHubActions();
     checkSonarCloud();
+    // Wave 6 full-mode checkers (ls-015, ls-017, ls-020)
+    checkStalePlanningData();
+    checkDeferredItemsStaleness();
+    checkCommitPatterns();
   }
 
   // Ensure every limited-mode category appears
@@ -3756,6 +3959,7 @@ function main() {
   ensureCategory("reviews-sync", "Reviews Sync");
   ensureCategory("review-archive", "Review Archive Health");
   ensureCategory("crossdoc", "Cross-Document Dependencies");
+  ensureCategory("velocity-regression", "Velocity Regression");
 
   if (isFullMode) {
     ensureCategory("docs", "Documentation Health");
@@ -3778,6 +3982,9 @@ function main() {
     ensureCategory("backlog-health", "Backlog Health");
     ensureCategory("github-actions", "GitHub Actions");
     ensureCategory("sonarcloud", "SonarCloud");
+    ensureCategory("planning-data", "Planning Data");
+    ensureCategory("deferred-items", "Deferred Items");
+    ensureCategory("commit-patterns", "Commit Patterns");
   }
 
   // Filter suppressed alerts (W3)

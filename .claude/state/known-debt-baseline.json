@@ -1,15 +1,21 @@
 {
-  "generated": "2026-03-11T21:45:00.000Z",
-  "description": "Known debt baseline — gates only block on regressions, not pre-existing issues. Eliminates the need for 'pre-existing' as a skip reason.",
-  "checks": {
-    "cognitive-complexity": {},
-    "cyclomatic-complexity": {},
-    "propagation": {},
-    "path-resolve-unvalidated": {
-      "description": "path.resolve() without containment validation. All 104 occurrences verified safe (hardcoded paths, __dirname-based, or already validated). No user-input-to-path.resolve flows found.",
-      "baselined": "2026-03-11",
-      "count": 104,
-      "status": "verified-safe"
+  "schema_version": 1,
+  "updated": "2026-03-13",
+  "baselines": {
+    "writeFileSync-without-guard": {
+      "baseline": 0,
+      "recorded": "2026-03-13",
+      "ratchet_history": []
+    },
+    "raw-error-message": {
+      "baseline": 0,
+      "recorded": "2026-03-13",
+      "ratchet_history": []
+    },
+    "startsWith-path-check": {
+      "baseline": 0,
+      "recorded": "2026-03-13",
+      "ratchet_history": []
     }
   }
 }

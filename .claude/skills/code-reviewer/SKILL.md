@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-version: "2.1"
+version: "2.2"
 updated: 2026-03-13
 description:
   Code review skill for SoNash (Next.js/TypeScript/Firebase). Includes automated
@@ -193,7 +193,11 @@ review. If **any violations**, block the review and require fixes first.
 8. **Prototype pollution**: Using `safeCloneObject()` for parsed JSON?
 9. **Silent catches**: No empty `catch {}` blocks?
 10. **Fix templates**: Check `docs/agent_docs/FIX_TEMPLATES.md` for standard
-    fixes
+    fixes — use existing templates before writing custom solutions (ls-010)
+11. **Security checklist**: For scripts handling file I/O, git, CLI args, or
+    shell commands, verify against `docs/agent_docs/SECURITY_CHECKLIST.md` at
+    point of use — don't just reference, actively check each applicable item
+    (ls-009)
 
 ### Security
 
@@ -244,7 +248,8 @@ npm run patterns:check
 
 ## Version History
 
-| Version | Date       | Description                                      |
-| ------- | ---------- | ------------------------------------------------ |
-| 2.1     | 2026-03-13 | Add anti-pattern & positive pattern verification |
-| 1.0     | 2026-02-25 | Initial implementation                           |
+| Version | Date       | Description                                                          |
+| ------- | ---------- | -------------------------------------------------------------------- |
+| 2.2     | 2026-03-13 | Strengthen fix template + security checklist recall (D26 ls-009/010) |
+| 2.1     | 2026-03-13 | Add anti-pattern & positive pattern verification                     |
+| 1.0     | 2026-02-25 | Initial implementation                                               |
