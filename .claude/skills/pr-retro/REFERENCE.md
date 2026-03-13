@@ -53,21 +53,22 @@ Your decision? [default: A]
 
 Required fields for `write-retro-record.js`:
 
-| Field                | Type         | Description                                                 |
-| -------------------- | ------------ | ----------------------------------------------------------- |
-| pr                   | number       | PR number                                                   |
-| date                 | string       | YYYY-MM-DD                                                  |
-| schema_version       | number       | Always 1                                                    |
-| completeness         | string       | "full" or "partial"                                         |
-| completeness_missing | string[]     | Missing sections if partial                                 |
-| origin               | object       | `{type: "pr-retro", pr: N, tool: "write-retro-record.ts"}`  |
-| session              | number\|null | Session number                                              |
-| top_wins             | string[]     | Top things that went well                                   |
-| top_misses           | string[]     | Top things that went wrong                                  |
-| process_changes      | string[]     | Recommended process changes                                 |
-| score                | number       | 1-10 overall efficiency                                     |
-| metrics              | object       | `{total_findings: N, fix_rate: 0.8, pattern_recurrence: N}` |
-| process_feedback     | string\|null | User feedback on the retro process (learning loop)          |
+| Field                | Type         | Description                                                                |
+| -------------------- | ------------ | -------------------------------------------------------------------------- |
+| pr                   | number       | PR number                                                                  |
+| date                 | string       | YYYY-MM-DD                                                                 |
+| schema_version       | number       | Always 1                                                                   |
+| completeness         | string       | "full" or "partial"                                                        |
+| completeness_missing | string[]     | Missing sections if partial                                                |
+| origin               | object       | `{type: "pr-retro", pr: N, tool: "write-retro-record.ts"}`                 |
+| session              | number\|null | Session number                                                             |
+| top_wins             | string[]     | Top things that went well                                                  |
+| top_misses           | string[]     | Top things that went wrong                                                 |
+| process_changes      | string[]     | Recommended process changes                                                |
+| action_items         | object[]     | Per-item tracking: `{title, status, verify_cmd, implemented_in, severity}` |
+| score                | number       | 1-10 overall efficiency                                                    |
+| metrics              | object       | `{total_findings: N, fix_rate: 0.8, pattern_recurrence: N}`                |
+| process_feedback     | string\|null | User feedback on the retro process (learning loop)                         |
 
 > Exact CLI invocation:
 > `cd scripts/reviews && npx tsc && node dist/write-retro-record.js --data '<JSON>'`
@@ -99,7 +100,9 @@ State file: `.claude/state/task-pr-retro.state.json`
       "decision": "A",
       "action_item": "...",
       "verify_cmd": "...",
-      "severity": "High"
+      "severity": "High",
+      "implementation_status": "done|blocked|deferred",
+      "verify_result": "pass|fail|skipped"
     }
   ],
   "action_items_approved": [],

@@ -147,6 +147,11 @@ rejection (same rule ID + same file). Reference the prior round: "Already
 rejected in R{N} — same justification applies." This applies to ALL reviewers
 (Qodo, SonarCloud, Gemini), not just Qodo.
 
+**Multi-source convergence (SHOULD for R2+):** If 2+ reviewer sources
+(SonarCloud, Qodo, Gemini, Semgrep) flag the same file+pattern in the same
+round, auto-elevate to next severity tier. Multi-source agreement is strong
+signal.
+
 **Stale HEAD check (MUST):** When a SonarCloud item references a file already
 modified in the current fix commit, flag as potentially stale. Verify against
 current HEAD before investigating: `git show HEAD:{file} | grep -n "pattern"`.

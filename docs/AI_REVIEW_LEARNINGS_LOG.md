@@ -2462,3 +2462,115 @@ pattern compliance.
   path is checked — fallback isSafeToWrite implementations need the parent walk
 
 ---
+
+### PR #427 Retrospective (2026-03-12)
+
+**PR:** feat: Grand Plan Removal, Hook Systems Mini-Audit (35 Decisions, 8
+Waves), Batch Retros, Pre-Push CC Gate, writeFileSync Security Migration (21
+Scripts) **Rounds:** 5 | **Items:** 139 total (127 fixed, 1 deferred, 15
+rejected) | **Fix Rate:** 91% | **Rejection Rate:** 10.8% **Score:** 7/10
+
+#### Review Cycle Summary
+
+| Round | Source                                    | Items | Fixed | Deferred | Rejected |
+| ----- | ----------------------------------------- | ----- | ----- | -------- | -------- |
+| R1    | SonarCloud + Semgrep + CI + Qodo          | 25    | 24    | 1        | 5        |
+| R2    | Qodo + Semgrep + SonarCloud + CI          | 21    | 18    | 0        | 2        |
+| R3    | CI + CodeQL + Semgrep + Qodo + SonarCloud | 45    | 45    | 0        | 0        |
+| R4    | Qodo + Semgrep + CI Pattern Compliance    | 25    | 20    | 0        | 5        |
+| R5    | Qodo + Semgrep + SonarCloud               | 23    | 20    | 0        | 3        |
+
+#### Ping-Pong Chains
+
+1. **isSafeToWrite 4-round evolution (R1→R2→R4→R5):** fail-open fallback →
+   fail-closed → TOCTOU in atomic writes → parent dir symlink traversal. Classic
+   Pattern 8 incremental hardening. ~2 avoidable rounds.
+2. **ESLint auto-fixer cascade (R2→R3):** Auto-fixer for error.message produced
+   overly nested ternaries. SonarCloud flagged cognitive complexity in R3. ~0.5
+   avoidable rounds.
+3. **Agent fix regression (R3):** Agent fixed rmSync-before-renameSync but
+   introduced bare renameSync without cross-device fallback. Required second
+   pass with safeRename helper. ~0.5 avoidable rounds.
+4. **sanitizeInput incremental hardening (R4→R5):** Narrow control char regex in
+   R4 missed ANSI escapes. Widened to full C0 block in R5. ~0.5 avoidable
+   rounds.
+
+#### Rejection Analysis
+
+15/139 = 10.8% — best for a 5-round, 247-file PR. R3 achieved 0% rejection.
+Rejections were appropriate: hooks lacking user context by design (4), local
+error logging not a leak (1), mutable accumulator FP (1), intentional design
+choices (2), false positives (7).
+
+#### Top Wins
+
+- 10.8% rejection rate — best for a large multi-round PR in project history
+- 308-file error.message codemod via ESLint auto-fixer with
+  ConditionalExpression guard detection
+- Propagation sweeps caught 4 additional sanitizeInput files beyond reviewer
+  flags
+- pr-review v4.1 improvements (first-scan batch-ack, cross-round dedup)
+  validated
+
+#### Top Misses
+
+- isSafeToWrite evolved across 4 of 5 rounds (Pattern 8)
+- ESLint auto-fixer output not reviewed before commit — cascading SonarCloud
+  flags
+- Agent fix introduced NEW violations on rmSync pattern
+- CC pre-push check: 6th recommendation, still not implemented
+
+#### Process Changes
+
+1. Security Guard Lifecycle Checklist → SECURITY_CHECKLIST.md
+2. Auto-fixer output review pre-check → pr-review PRE_CHECKS.md
+3. Cross-device rename fallback pattern → CODE_PATTERNS.md
+4. Wire check-cc.js into pre-push hook (CRITICAL — 6th recommendation)
+5. AI hallucination verification → deep-plan skill
+6. Worktree .git compatibility → CODE_PATTERNS.md
+7. CRITICAL: Retro JSONL schema — add action_items with per-item tracking
+8. CRITICAL: Step 1.4 — run stored verify commands, not keyword grep
+9. CRITICAL: Step 6 — write implementation status to state file
+
+#### Verdict
+
+Solid review cycle for a 247-file PR. 91% fix rate and 10.8% rejection show
+pr-review v4.1 is working. Main cost was incremental security hardening (~3.5
+avoidable rounds from 4 ping-pong chains). The systemic finding — retro
+infrastructure disconnect causing action items to be silently dropped — is the
+most impactful outcome of this retro.
+
+---
+
+### PR #428 Retrospective (2026-03-12)
+
+**PR:** docs: Two Deep Plans — Tooling Audit (30 decisions) + Code Quality
+Overhaul (26 decisions) **Rounds:** 1 | **Items:** 10 total (10 fixed, 0
+deferred, 0 rejected) | **Fix Rate:** 100% | **Rejection Rate:** 0% **Score:**
+9/10
+
+#### Review Cycle Summary
+
+| Round | Source                        | Items | Fixed | Deferred | Rejected |
+| ----- | ----------------------------- | ----- | ----- | -------- | -------- |
+| R1    | Doc Lint + Qodo + Gemini + CI | 10    | 10    | 0        | 0        |
+
+#### Key Findings
+
+- **AI hallucination:** DIAGNOSIS.md claimed phantom "10-level nested instanceof
+  corruption" — verified false against codebase
+- **Forward-referencing:** Plan referenced ESLint v10 migration when v10 doesn't
+  exist (v9.39.4 is stable)
+- **Worktree compatibility:** Pre-commit hook used `.git/` path instead of
+  `$(git rev-parse --git-dir)/`
+- **Doc lint effectiveness:** Missing Purpose/Scope/Version History caught by
+  automated CI gate
+
+#### Verdict
+
+Perfect single-round cycle. Validates focused-scope planning PRs as the cleanest
+PR type (joining PR #414 at 100% fix rate, PR #416 at 0 rounds). AI
+hallucination in planning docs is the only process concern — fixable with
+verification requirements in the deep-plan skill.
+
+---

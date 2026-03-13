@@ -1,6 +1,6 @@
 # Security Checklist for Scripts
 
-**Document Version:** 1.2 **Last Updated:** 2026-03-01 **Status:** Active
+**Document Version:** 1.3 **Last Updated:** 2026-03-12 **Status:** Active
 
 **Pattern Range:** 180+ patterns (from CODE_PATTERNS.md), templates up to #36
 (as of 2026-02-22) | **Recent Additions:** Patterns #31-41 (PR #310 Session #90)
@@ -369,6 +369,43 @@ if (fs.lstatSync(p).isSymbolicLink()) {
 **Source:** PR #419 retro (3 rounds of symlink hardening), PR #423 retro (3
 rounds: is_symlink → resolve+relative_to upgrade).
 
+### Security Guard Lifecycle
+
+When introducing or modifying ANY security guard function (isSafeToWrite,
+validatePath, refuseSymlink, etc.):
+
+- [ ] **Fail-closed default** — guard failure MUST deny access, never
+      `() => true` fallback — [Manual review only]
+- [ ] **TOCTOU protection** — re-check guard immediately before each mutation
+      op, not just at function entry — [Manual review only]
+- [ ] **Parent directory check** — symlinks anywhere in the path chain redirect;
+      check ALL ancestors — [Manual review only]
+- [ ] **Cross-device support** — `renameSync` fails cross-device; use
+      copyFileSync+unlinkSync fallback — [Manual review only]
+- [ ] **Error recovery paths** — guard checks in retry/fallback paths go stale;
+      re-validate after any fs state change — [Manual review only]
+
+```javascript
+// WRONG — fail-open fallback
+let isSafeToWrite;
+try {
+  isSafeToWrite = require("./security-helpers").isSafeToWrite;
+} catch {
+  isSafeToWrite = () => true;
+} // NEVER — disables all protection
+
+// CORRECT — fail-closed
+let isSafeToWrite;
+try {
+  isSafeToWrite = require("./security-helpers").isSafeToWrite;
+} catch {
+  isSafeToWrite = () => false;
+} // Deny on failure
+```
+
+**Source:** PR #427 retro — isSafeToWrite evolved across 4 of 5 rounds
+(fail-open → fail-closed → TOCTOU → parent dir check). Pattern 8 recurrence.
+
 ### Path Security (Comprehensive)
 
 - [ ] **Path containment check**: After resolve(), verify result stays within
@@ -586,9 +623,10 @@ When a PR review discovers a new security pattern:
 
 ## Version History
 
-| Version | Date       | Patterns Added | Description                                                      |
-| ------- | ---------- | -------------- | ---------------------------------------------------------------- |
-| 1.2     | 2026-03-01 | --             | Add enforcement annotations (ESLint/Semgrep/Manual) per GATE-06  |
-| 1.1     | 2026-02-23 | --             | Note templates up to #36 (as of 2026-02-22), update Last Updated |
-| 1.1     | 2026-01-24 | 180+ patterns  | Enhanced with critical patterns from CODE_PATTERNS.md            |
-| 1.0     | 2026-01-24 | #31-41         | Initial checklist from PR #310 review                            |
+| Version | Date       | Patterns Added | Description                                                       |
+| ------- | ---------- | -------------- | ----------------------------------------------------------------- |
+| 1.3     | 2026-03-12 | --             | Add Security Guard Lifecycle, Validator Design Principle sections |
+| 1.2     | 2026-03-01 | --             | Add enforcement annotations (ESLint/Semgrep/Manual) per GATE-06   |
+| 1.1     | 2026-02-23 | --             | Note templates up to #36 (as of 2026-02-22), update Last Updated  |
+| 1.1     | 2026-01-24 | 180+ patterns  | Enhanced with critical patterns from CODE_PATTERNS.md             |
+| 1.0     | 2026-01-24 | #31-41         | Initial checklist from PR #310 review                             |

@@ -110,7 +110,14 @@ reference actual patterns, not generic placeholders.
    - ROADMAP alignment check (aligned / misaligned / new direction)
    - Relevant existing systems and their patterns
    - Reframe check: is the task what it appears to be?
-6. Present DIAGNOSIS.md to user for review (MUST)
+6. **Verify code-state claims (MUST):** All claims in DIAGNOSIS.md about
+   specific code state (line numbers, bug descriptions, specific values,
+   corruption claims) MUST include a verify command. Claims without verification
+   are flagged as `[UNVERIFIED]`. Run `npm view <pkg> version` for any version
+   references — plans MUST NOT assume future/unreleased software exists. Use
+   "preparation" language ("prepare for eventual vN") not imperative ("migrate
+   to vN").
+7. Present DIAGNOSIS.md to user for review (MUST)
 
 **If misaligned with ROADMAP:** Present the conflict to the user. Options: (1)
 proceed with acknowledgment, (2) reframe to align, (3) abort. Do NOT silently
@@ -321,6 +328,8 @@ Capture in state file `process_feedback` field.
 
 | Version | Date       | Description                                            |
 | ------- | ---------- | ------------------------------------------------------ |
+| 3.1     | 2026-03-12 | Add code-state verification requirement to Phase 0     |
+|         |            | (UNVERIFIED flag, version validation). PR #428 retro.  |
 | 3.0     | 2026-03-07 | Skill audit (29 decisions): self-audit phase, warm-up  |
 |         |            | routing guide, input/output spec, MUST/SHOULD/MAY,     |
 |         |            | invocation tracking, phase markers, mid-discovery      |

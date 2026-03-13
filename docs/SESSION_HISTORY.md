@@ -27,6 +27,39 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #216 (2026-03-12)
+
+**Focus**: PR #427/#428 Batch Retro — 17 action items implemented, retro
+infrastructure fixed
+
+- Batch retro for PRs #427 (5 rounds, 139 items, score 7/10) and #428 (1 round,
+  10 items, score 9/10)
+- 14 findings walked through interactively, all 17 action items (9 new + 8
+  previously unimplemented) implemented and verified
+- Critical structural fix: retro JSONL schema now has `action_items[]` with
+  per-item status/verify_cmd/commit tracking
+- PR-retro Step 1.4 upgraded from keyword grep to stored verify_cmd execution
+- PR-retro Step 6 now writes implementation_status + verify_result to state file
+- New scripts: compute-changelog-metrics.js, validate-jsonl-schemas.js,
+  test-semgrep-rules.js
+- New docs: Security Guard Lifecycle, Symlink Guard, 3 pre-checks (#22-#24),
+  deep-plan code-state verification
+- hook-continueOnError tests expanded from 3 to 6
+
+### Session #213 (2026-03-10)
+
+**Focus**: PR #424 merged, branch cleanup
+
+- PR #424 squash-merged to main: Ecosystem Expansion Phases 1-2
+- Branch cleanup, review #469 logged
+
+### Session #212 (2026-03-09)
+
+**Focus**: Ecosystem Expansion Phase 1 + Phase 2
+
+- Phase 1 committed: 87 test files, 1,594 tests
+- Phase 2: 19 decisions (D#34-52)
+
 ### Session #209 (2026-03-07)
 
 **Focus**: Skill Audit: session-end — Full Rewrite
