@@ -125,6 +125,16 @@ function makeAllGoodResults() {
         churn_pct: { score: 100, value: 5 },
       },
     },
+    "data-effectiveness": {
+      no_data: false,
+      metrics: {
+        avg_lifecycle_score: { score: 100, value: 10 },
+        below_threshold_pct: { score: 100, value: 0 },
+        recall_coverage: { score: 100, value: 100 },
+        action_coverage: { score: 100, value: 60 },
+        orphan_count: { score: 100, value: 0 },
+      },
+    },
   };
 }
 
@@ -148,7 +158,7 @@ describe("CATEGORY_WEIGHTS", () => {
 });
 
 describe("CHECKER_TO_CATEGORY", () => {
-  it("maps all 10 checker names", () => {
+  it("maps all 11 checker names", () => {
     const checkers = [
       "code-quality",
       "security",
@@ -160,6 +170,7 @@ describe("CHECKER_TO_CATEGORY", () => {
       "documentation",
       "pattern-enforcement",
       "ecosystem-integration",
+      "data-effectiveness",
     ];
     for (const name of checkers) {
       assert.ok(name in CHECKER_TO_CATEGORY, `"${name}" not in CHECKER_TO_CATEGORY`);
@@ -195,7 +206,7 @@ describe("computeCompositeScore", () => {
     assert.equal(r.grade, "F");
   });
 
-  it("returns categoryScores object with all 8 categories", () => {
+  it("returns categoryScores object with all 9 categories", () => {
     const r = computeCompositeScore(makeAllGoodResults());
     for (const cat of Object.keys(CATEGORY_WEIGHTS)) {
       assert.ok(cat in r.categoryScores, `"${cat}" missing from categoryScores`);

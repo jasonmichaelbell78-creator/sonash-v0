@@ -53,8 +53,8 @@ describe("scoring.js", () => {
 describe("dimensions.js", () => {
   const { DIMENSIONS } = require("./lib/dimensions");
 
-  it("has exactly 13 dimensions", () => {
-    assert.equal(DIMENSIONS.length, 13);
+  it("has exactly 14 dimensions", () => {
+    assert.equal(DIMENSIONS.length, 14);
   });
 
   it("each dimension has required fields", () => {
@@ -67,6 +67,7 @@ describe("dimensions.js", () => {
       "Infrastructure",
       "Documentation",
       "Process & Workflow",
+      "Data Effectiveness",
     ]);
 
     for (const dim of DIMENSIONS) {
@@ -82,9 +83,9 @@ describe("dimensions.js", () => {
     }
   });
 
-  it("all 8 categories are represented", () => {
+  it("all 9 categories are represented", () => {
     const categories = new Set(DIMENSIONS.map((d) => d.category));
-    assert.equal(categories.size, 8);
+    assert.equal(categories.size, 9);
   });
 });
 
@@ -157,13 +158,19 @@ describe("composite.js", () => {
         },
         no_data: false,
       },
+      "data-effectiveness": {
+        metrics: {
+          avg_lifecycle_score: { value: 9, score: 100, rating: "good" },
+        },
+        no_data: false,
+      },
     };
 
     const result = computeCompositeScore(mockCheckers);
     assert.equal(result.score, 100, "all-good checkers should produce score 100");
     assert.equal(result.grade, "A");
-    assert.equal(Object.keys(result.categoryScores).length, 8);
-    assert.equal(Object.keys(result.dimensionScores).length, 13);
+    assert.equal(Object.keys(result.categoryScores).length, 9);
+    assert.equal(Object.keys(result.dimensionScores).length, 14);
   });
 
   it("handles no_data checkers gracefully", () => {

@@ -314,10 +314,15 @@ describe("deduplication", () => {
     const result1 = route(learning, { routesPath });
     assert.equal(result1.action, "scaffolded");
 
-    // Second call with same learning is detected as duplicate
+    // Second call with same learning is detected as duplicate (conflict resolution)
     const result2 = route(learning, { routesPath });
     assert.equal(result2.action, "skipped");
-    assert.equal(result2.reason, "duplicate");
+    assert.ok(
+      ["duplicate", "enforcement-in-pipeline", "existing-enforcement-verified"].includes(
+        result2.reason
+      ),
+      `Expected conflict resolution reason, got: ${result2.reason}`
+    );
     assert.ok(result2.existingEntry, "existingEntry should be defined");
     assert.equal(result2.existingEntry.id, generateId(learning));
   });

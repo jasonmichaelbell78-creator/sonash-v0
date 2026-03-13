@@ -19,7 +19,7 @@ const { computeCompositeScore } = require("./lib/composite");
 const { getDimensionDetail, DIMENSIONS } = require("./lib/dimensions");
 const { computeGrade } = require("./lib/scoring");
 
-// All 10 checkers
+// All 11 checkers
 const { checkCodeQuality } = require("./checkers/code-quality");
 const { checkSecurity } = require("./checkers/security");
 const { checkDebtHealth } = require("./checkers/debt-health");
@@ -30,6 +30,7 @@ const { checkSessionManagement } = require("./checkers/session-management");
 const { checkDocumentation } = require("./checkers/documentation");
 const { checkPatternEnforcement } = require("./checkers/pattern-enforcement");
 const { checkEcosystemIntegration } = require("./checkers/ecosystem-integration");
+const { checkDataEffectiveness } = require("./checkers/data-effectiveness");
 
 const ALL_CHECKERS = {
   "code-quality": { fn: checkCodeQuality, quick: true, label: "Code Quality" },
@@ -53,6 +54,11 @@ const ALL_CHECKERS = {
     fn: checkEcosystemIntegration,
     quick: false,
     label: "Ecosystem Integration",
+  },
+  "data-effectiveness": {
+    fn: checkDataEffectiveness,
+    quick: false,
+    label: "Data Effectiveness",
   },
 };
 

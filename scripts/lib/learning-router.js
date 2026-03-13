@@ -355,15 +355,39 @@ function route(learning, options) {
     throw new Error(`Invalid learning: ${validation.errors.join("; ")}`);
   }
 
-  // 2. Check for duplicates
+  // 2. Check for duplicates with status-aware conflict resolution
   const dupCheck = deduplicateCheck(learning, options);
   if (dupCheck.isDuplicate) {
-    return {
-      action: "skipped",
-      reason: "duplicate",
-      existingEntry: dupCheck.existingEntry,
-      id: generateId(learning),
-    };
+    const existingStatus = dupCheck.existingEntry && dupCheck.existingEntry.status;
+
+    if (existingStatus === "verified") {
+      process.stderr.write(
+        `[learning-router] INFO: Skipping pattern "${learning.pattern}" — existing enforcement verified\n`
+      );
+      return {
+        action: "skipped",
+        reason: "existing-enforcement-verified",
+        existingEntry: dupCheck.existingEntry,
+        id: generateId(learning),
+      };
+    }
+
+    if (existingStatus === "enforced" || existingStatus === "scaffolded") {
+      process.stderr.write(
+        `[learning-router] INFO: Skipping pattern "${learning.pattern}" — enforcement already in pipeline (status: ${existingStatus})\n`
+      );
+      return {
+        action: "skipped",
+        reason: "enforcement-in-pipeline",
+        existingEntry: dupCheck.existingEntry,
+        id: generateId(learning),
+      };
+    }
+
+    // Other statuses (e.g., "failed", "stale") — proceed with re-routing (widen scope)
+    process.stderr.write(
+      `[learning-router] INFO: Re-routing pattern "${learning.pattern}" — existing status "${existingStatus}" allows scope widening\n`
+    );
   }
 
   // 3. Dispatch by type

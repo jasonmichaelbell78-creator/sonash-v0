@@ -127,8 +127,8 @@ describe("DIMENSIONS", () => {
     assert.ok(Array.isArray(DIMENSIONS));
   });
 
-  it("has exactly 13 dimensions", () => {
-    assert.equal(DIMENSIONS.length, 13);
+  it("has exactly 14 dimensions", () => {
+    assert.equal(DIMENSIONS.length, 14);
   });
 
   it("each dimension has required fields: id, name, category, checkerField, metricKeys", () => {

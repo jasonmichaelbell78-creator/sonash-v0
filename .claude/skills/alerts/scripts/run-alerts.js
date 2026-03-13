@@ -3650,6 +3650,65 @@ function checkCommitPatterns() {
 }
 
 // ============================================================================
+// ENFORCEMENT VERIFICATION (Wave 9)
+// ============================================================================
+
+/**
+ * Wave 9: Check for enforced patterns that haven't been verified yet.
+ * Reads learning-routes.jsonl and counts entries with status "enforced"
+ * that have no corresponding "verified" status entry.
+ */
+function checkEnforcementVerification() {
+  console.error("  Checking enforcement verification...");
+
+  const routesPath = path.join(ROOT_DIR, ".claude", "state", "learning-routes.jsonl");
+  const lines = safeReadLines(routesPath);
+  if (lines.length === 0) {
+    ensureCategory("enforcement-verification", "Enforcement Verification");
+    return;
+  }
+
+  const entries = lines.map((l) => safeParse(l)).filter(Boolean);
+  if (entries.length === 0) {
+    ensureCategory("enforcement-verification", "Enforcement Verification");
+    return;
+  }
+
+  // Build a set of pattern IDs that have been verified
+  const verifiedIds = new Set();
+  for (const entry of entries) {
+    if (entry.status === "verified" && entry.id) {
+      verifiedIds.add(entry.id);
+    }
+  }
+
+  // Find entries with status "enforced" that are NOT in the verified set
+  const unverified = [];
+  for (const entry of entries) {
+    if (entry.status === "enforced" && entry.id && !verifiedIds.has(entry.id)) {
+      unverified.push(entry);
+    }
+  }
+
+  if (unverified.length > 0) {
+    addAlert(
+      "enforcement-verification",
+      "warning",
+      `${unverified.length} enforced pattern${unverified.length === 1 ? "" : "s"} not yet verified`,
+      { unverifiedIds: unverified.map((e) => e.id) },
+      "Run verify-enforcement.js to confirm enforced patterns are working correctly"
+    );
+  }
+
+  addContext("enforcement-verification", {
+    totalRoutes: entries.length,
+    enforcedCount: entries.filter((e) => e.status === "enforced").length,
+    verifiedCount: verifiedIds.size,
+    unverifiedCount: unverified.length,
+  });
+}
+
+// ============================================================================
 // SUPPRESSION FILTER (W3)
 // ============================================================================
 
@@ -3757,7 +3816,11 @@ function appendHealthScoreLog() {
       summary: results.summary,
       categoryScores,
     });
-    fs.appendFileSync(logPath, entry + "\n");
+    if (isSafeToWrite(logPath)) {
+      fs.appendFileSync(logPath, entry + "\n");
+    } else {
+      console.error(`  [warn] Symlink guard blocked write to ${path.basename(logPath)}`);
+    }
   } catch (err) {
     console.error(`  [warn] Failed to append health score log: ${safeErrorMsg(err)}`);
   }
@@ -3940,6 +4003,8 @@ function main() {
     checkStalePlanningData();
     checkDeferredItemsStaleness();
     checkCommitPatterns();
+    // Wave 9 full-mode checker (enforcement verification)
+    checkEnforcementVerification();
   }
 
   // Ensure every limited-mode category appears
@@ -3985,6 +4050,7 @@ function main() {
     ensureCategory("planning-data", "Planning Data");
     ensureCategory("deferred-items", "Deferred Items");
     ensureCategory("commit-patterns", "Commit Patterns");
+    ensureCategory("enforcement-verification", "Enforcement Verification");
   }
 
   // Filter suppressed alerts (W3)
