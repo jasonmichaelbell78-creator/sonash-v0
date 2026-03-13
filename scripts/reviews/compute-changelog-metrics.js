@@ -33,7 +33,10 @@ function readJsonl(fp) {
         }
       })
       .filter(Boolean);
-  } catch {
+  } catch (err) {
+    console.error(
+      `  Warning: failed to read ${fp}: ${err instanceof Error ? err.message : String(err)}`
+    );
     return [];
   }
 }

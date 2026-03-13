@@ -64,16 +64,26 @@ try {
   console.log("Semgrep rule test harness: PASS");
   process.exit(0);
 } catch (testErr) {
-  // semgrep --test exits non-zero on test failures AND when --test is unsupported
-  if (testErr.stdout?.includes("test result")) {
-    // --test ran but some tests failed
-    console.log(testErr.stdout);
-    if (testErr.stderr) console.error(testErr.stderr);
-    console.log("Semgrep rule test harness: FAIL (some test annotations did not match)");
+  const stdout = typeof testErr.stdout === "string" ? testErr.stdout : "";
+  const stderr = typeof testErr.stderr === "string" ? testErr.stderr : "";
+  const combined = `${stdout}\n${stderr}`.toLowerCase();
+
+  // Detect if --test flag itself is unsupported (vs real test failures)
+  const testUnsupported =
+    (combined.includes("unknown option") ||
+      combined.includes("unknown flag") ||
+      combined.includes("no such option")) &&
+    combined.includes("--test");
+
+  if (!testUnsupported) {
+    // Real --test failure (annotation mismatch, rule error, etc.)
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+    console.error("Semgrep rule test harness: FAIL (semgrep --test failed)");
     process.exit(1);
   }
 
-  // --test not supported or semgrep not installed -- fall back to --json scan
+  // --test not supported -- fall back to --json scan
   console.log("semgrep --test not available, falling back to --json scan...\n");
 }
 
@@ -128,16 +138,23 @@ try {
       process.exit(1);
     }
   } else {
-    // Semgrep not installed or other execution failure
     const skipIfMissing = process.argv.includes("--skip-if-missing");
-    console.log("Semgrep not available (not installed or not in PATH).");
-    console.log("Install with: pip install semgrep  OR  brew install semgrep");
-    if (skipIfMissing) {
-      console.log("Skipping test harness (--skip-if-missing).");
-      process.exit(0);
-    } else {
+    const isMissingBinary = err && typeof err === "object" && err.code === "ENOENT";
+
+    if (isMissingBinary) {
+      console.log("Semgrep not available (not installed or not in PATH).");
+      console.log("Install with: pip install semgrep  OR  brew install semgrep");
+      if (skipIfMissing) {
+        console.log("Skipping test harness (--skip-if-missing).");
+        process.exit(0);
+      }
       console.error("Semgrep rule test harness: FAIL (semgrep binary not found)");
       process.exit(1);
     }
+
+    // Other execution failure (timeout, permission, etc.)
+    if (err.stderr) console.error(err.stderr);
+    console.error("Semgrep rule test harness: FAIL (semgrep execution error)");
+    process.exit(1);
   }
 }

@@ -91,6 +91,14 @@ for (const [filename, schemaKey] of Object.entries(JSONL_FILES)) {
   filesChecked++;
   let lines;
   try {
+    const stat = fs.statSync(filePath);
+    if (stat.size > 50 * 1024 * 1024) {
+      console.error(
+        `  ${filename}: file too large (${(stat.size / 1024 / 1024).toFixed(1)}MB), skipping`
+      );
+      totalErrors++;
+      continue;
+    }
     lines = fs.readFileSync(filePath, "utf-8").trim().split("\n").filter(Boolean);
   } catch (err) {
     console.error(

@@ -2647,3 +2647,22 @@ enhancements, and deep-plan artifacts.
   coverage.
 
 ---
+
+### Review #484: PR #429 R3 — SonarCloud + Qodo + CI (2026-03-13)
+
+**Key learnings:**
+
+- Semgrep `--test` mode catch blocks must distinguish between "flag not
+  supported" (fallback to `--json` scan) and real test failures (exit non-zero).
+  Swallowing all errors silently hides annotation mismatches.
+- `readFileSync` on JSONL files without size guards risks OOM on unexpectedly
+  large files. Add `statSync` size check before reading (50MB cap is reasonable
+  for ecosystem data files).
+- IIFE-in-template-literal (`${(() => {...})()}`) is valid JS but hurts
+  readability in test assertions. Extract to a named helper for clarity and
+  reusability.
+- Cross-round dedup saves effort: R3 item 7 (hook.command logging risk) was
+  already addressed in R2 truncation fix — auto-rejected with prior-round
+  reference.
+
+---
