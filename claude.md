@@ -1,8 +1,8 @@
 # AI Context & Rules for SoNash
 
 <!-- prettier-ignore-start -->
-**Document Version:** 5.1
-**Last Updated:** 2026-02-10
+**Document Version:** 5.4
+**Last Updated:** 2026-03-13
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -101,6 +101,16 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 - **State**: `useState` local, Context global, Firestore server
 - **Validation**: Zod runtime matching TS interfaces
 
+### Code Navigation (LSP)
+
+Native LSP is configured via `.lsp.json` (typescript-language-server). **Prefer
+LSP tools over Grep for symbol lookups:**
+
+- **Go-to-definition, find-references, rename** → Use LSP
+- **Text/pattern search, regex matching** → Use Grep
+- Do NOT use Grep to find class definitions, function implementations, or type
+  declarations when LSP can resolve them directly
+
 ## 7. Agent/Skill Triggers
 
 > [!CAUTION] Agents are REQUIRED when triggers match - not optional suggestions.
@@ -156,6 +166,7 @@ Evidence-Based).
 
 | Version | Date       | Changes                               |
 | ------- | ---------- | ------------------------------------- |
+| 5.4     | 2026-03-13 | Add LSP code navigation preference    |
 | 5.3     | 2026-03-05 | Add behavioral guardrails (Section 4) |
 | 5.2     | 2026-02-26 | Agent triggers, reference docs table  |
 | 5.1     | 2026-02-10 | Initial versioned release             |
