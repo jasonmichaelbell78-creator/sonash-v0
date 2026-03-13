@@ -51,6 +51,64 @@ automated enforcement (D8/D9 reframe).
 
 ---
 
+## SWS Forward-Compatibility Requirements
+
+This plan executes BEFORE System-Wide Standardization (SWS). All artifacts must
+be born-compliant with SWS tenets to avoid rework. Key requirements:
+
+### Zod Schema-First (SWS D24, D9)
+
+Every new JSONL file MUST have a formal Zod schema extending `BaseRecord` from
+`scripts/reviews/lib/schemas/shared.ts`. Required fields: `id`, `date`,
+`schema_version`, `completeness`, `origin`. Write utilities MUST use
+`appendRecord()` from `scripts/reviews/lib/write-jsonl.ts` with locking and
+symlink guards. Register all schemas in a SCHEMA_MAP for dynamic validation.
+
+### JSONL-First for Structured Data (SWS T2, T4, D79)
+
+All structured data artifacts (scores, metrics, routing decisions) MUST be
+JSONL-backed with generated MD views. Never create hand-maintained markdown for
+structured data. Generation scripts follow `--input`/`--output` CLI convention
+(SWS D27).
+
+### Declarative Configuration (SWS T17)
+
+Configuration values (rotation tiers, ratchet thresholds) MUST live in
+declarative config files, not hardcoded in scripts. This enables changes without
+code modification.
+
+### Idempotency (SWS T12)
+
+All scripts MUST produce identical results when run multiple times. Rotation
+uses timestamp watermarks (not "delete older than X from now"). Learning router
+deduplicates before scaffolding. Ratchet baselines are monotonically decreasing.
+
+### Health Checker Contract (SWS D25)
+
+The Data Effectiveness health checker MUST output: JSON summary envelope (score,
+trend, metadata) + JSONL findings stream (one finding per line). This is the
+standard contract for all SWS health checkers.
+
+### Cross-Impact Changelog (SWS T18, D72)
+
+Create `.planning/learnings-effectiveness-audit/CHANGELOG.jsonl` tracking all
+cross-ecosystem impacts using D72 schema:
+`{timestamp, ecosystem, change, affects, type?, decision_ref?, files_changed?}`.
+
+### Ownership Declaration (SWS T16)
+
+- `scripts/lib/learning-router.js` — owned by Data Effectiveness domain
+- `learning-routes.jsonl` — one writer (router), many consumers
+- `lifecycle-scores.jsonl` — one writer (scoring script), consumers: health
+  checker, alerts
+
+### Version Fields (SWS T6)
+
+All new config files and JSONL schemas include `schema_version` field. All Zod
+schemas use `.passthrough()` (SWS D22) for future extension.
+
+---
+
 ## Wave 0: Cleanup & Foundation (no dependencies)
 
 _Estimated: 30 min | Files: 5-8_
@@ -106,6 +164,12 @@ const TIERS = {
 
 **Wire into session-start:** Add `node scripts/rotate-jsonl.js` call to
 `.claude/hooks/session-start.js`.
+
+**SWS Alignment:** Rotation tiers MUST be defined in a declarative config file
+(`config/rotation-policy.json`), not hardcoded in the script. The config file
+must have a Zod schema (`rotation-policy.schema.ts`). The rotation script reads
+the config, validates against the schema, and applies policies. Rotation uses
+timestamp watermarks for idempotency (SWS T12).
 
 **Done when:** Script runs on session-start, rotates files by tier, logs
 rotation count. Test with mock data.
@@ -266,6 +330,13 @@ Schema per entry:
 }
 ```
 
+**SWS Alignment:** This schema MUST be implemented as a Zod schema extending
+`BaseRecord` from `scripts/reviews/lib/schemas/shared.ts`. Required additions:
+`id` (auto-generated), `date` (ISO), `schema_version` (number), `completeness`
+(enum: full/partial/stub), `origin` (structured object with type/session/tool).
+The write utility must use `appendRecord()` with locking. Register in SCHEMA_MAP
+for `validate-jsonl-schemas.js` coverage.
+
 **Done when:** Router logs every routing decision. Status tracks full lifecycle
 from scaffolded → verified.
 
@@ -306,6 +377,10 @@ For each anti-pattern in CODE_PATTERNS.md, create the positive equivalent:
 - Raw `error.message` → `sanitizeError(error)` — include import path
 - `startsWith('..')` → regex path traversal check — include exact regex
 - Direct Firestore writes → `httpsCallable` pattern — include template
+
+**SWS Alignment (T4):** If POSITIVE_PATTERNS contains structured data (pattern
+name, anti-pattern ref, code snippet), it should be JSONL-backed with generated
+MD. Evaluate at implementation time.
 
 **Done when:** Every anti-pattern has a corresponding positive template with
 exact import/usage. Referenced in CLAUDE.md Section 5.
@@ -423,6 +498,12 @@ Score each of the 40+ data files across all 12 capture categories:
 
 _Scores updated as waves fix issues (e.g., rotation improves Storage score)._
 
+**SWS Alignment (T2, T4, D79):** Lifecycle scores MUST be JSONL-first. Create
+`lifecycle-scores.jsonl` as the canonical source with a Zod schema. Generate
+`LIFECYCLE_SCORES.md` via `scripts/generate-lifecycle-scores-md.js` (following
+`--input`/`--output` CLI convention per SWS D27). Never hand-edit the generated
+markdown.
+
 **Done when:** Every data system scored. Gap column identifies specific fix
 needed. Systems below 6/12 flagged for Wave 6 remediation.
 
@@ -506,6 +587,10 @@ compares to baseline, updates baseline downward if violations decreased.
 
 **Wire into session-start** for automatic ratcheting.
 
+**SWS Alignment (T12):** Ratchet operations must be idempotent — running twice
+with unchanged violation counts produces identical output. Validate entries
+against a Zod schema before writing.
+
 **Done when:** Baselines recorded for all non-security patterns. Ratchet script
 runs on session-start.
 
@@ -535,6 +620,12 @@ Checker logic:
    - Opportunities: count of identified but unimplemented improvements
 3. Compute composite score (0-100)
 4. Map to letter grade (A-F)
+
+**SWS Alignment (D25):** Health checker output MUST follow the standard
+contract: JSON summary envelope (`{score, grade, trend, dimensions}`) + JSONL
+findings stream (one finding per line with
+`{category, finding, severity, recommendation}`). This matches the existing
+health checker interface at `scripts/health/`.
 
 **Done when:** Checker runs, produces grade, integrates with ecosystem-health.
 

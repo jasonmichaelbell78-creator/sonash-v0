@@ -31,6 +31,37 @@ configuration — tracked separately).
 - **Current:** Not started — pending approval
 - **Prerequisite for:** Plan 2 (Code Quality Overhaul)
 
+## SWS Forward-Compatibility Requirements
+
+This plan executes FIRST in the Meta Pipeline. Minimal SWS alignment needed, but
+these items prevent rework:
+
+### Platform Agnosticism (SWS T7)
+
+Pre-commit timing additions MUST use Node.js (`Date.now()`), not bash-specific
+`date +%s%N`. All new scripts must be Node.js, not shell.
+
+### Cross-Impact Changelog (SWS T18, D72)
+
+Create `.planning/tooling-infrastructure-audit/CHANGELOG.jsonl` tracking
+cross-ecosystem impacts using D72 schema:
+`{timestamp, ecosystem, change, affects, type?, decision_ref?, files_changed?}`.
+Key cross-impacts to track: agent deletions affecting CLAUDE.md, MCP removal
+affecting checkpoint skill, Serena removal affecting hooks.
+
+### Forward Findings (SWS T13, T14)
+
+After plan completion, produce a `forward-findings.jsonl` documenting
+discoveries that feed into SWS ecosystem deep-plans (CI/CD, Scripts, Hooks
+ecosystems).
+
+### SHA-Pin Enforcement Guardrail
+
+The one-time SHA-pinning of GitHub Actions (Step 2a) MUST be accompanied by an
+automated check preventing regression. Add to CI:
+`grep -rn '@v[0-9]' .github/workflows/ | grep -v '#' && exit 1 || true` This
+ensures new workflow additions cannot use unpinned tag references.
+
 ## Files to Create/Modify
 
 ### New Files (5)
@@ -167,8 +198,10 @@ In `semgrep.yml`:
 **Done when:** All workflows pass `act` dry-run or manual workflow_dispatch
 test; no tag-only third-party action refs remain;
 `grep -r '@v[0-9]' .github/workflows/` returns only first-party actions.
-**Depends on:** None (can run parallel with Step 1) **Triggers:** Step 8
-(documentation update)
+**Regression Prevention:** Add a CI step that greps for unpinned action
+references (`@v[0-9]`) in `.github/workflows/`. One-time pinning without
+enforcement allows regression when new workflows are added. **Depends on:** None
+(can run parallel with Step 1) **Triggers:** Step 8 (documentation update)
 
 ---
 
@@ -441,6 +474,9 @@ Known dead scripts (from memory): `ecosystem:audit:all`, `lighthouse`,
    echo "⏱️ Pre-commit checks completed in ${ELAPSED}ms"
    ```
 
+   **SWS T7 Note:** Use `node -e "console.log(Date.now())"` for timing, not
+   `date +%s%N` which is not portable across all platforms.
+
 2. Investigate oxlint double-run: lint-staged runs `oxlint -c .oxlintrc.json` on
    staged files, then Wave 1 runs `npm run lint` which runs ESLint (not oxlint
    again). Verify whether ESLint config also invokes oxlint — if not, this may
@@ -543,6 +579,7 @@ agents.
 
 ## Version History
 
-| Version | Date       | Changes       |
-| ------- | ---------- | ------------- |
-| 1.0     | 2026-03-12 | Initial draft |
+| Version | Date       | Changes                                    |
+| ------- | ---------- | ------------------------------------------ |
+| 1.1     | 2026-03-13 | Add SWS forward-compatibility requirements |
+| 1.0     | 2026-03-12 | Initial draft                              |

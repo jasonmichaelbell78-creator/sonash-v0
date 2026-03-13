@@ -84,32 +84,35 @@ recovery practices.
 
 ## 4. 📊 Milestones Overview
 
-| Milestone                          | Status      | Progress         | Phase       | Priority   | Items        |
-| ---------------------------------- | ----------- | ---------------- | ----------- | ---------- | ------------ |
-| **M0 - Baseline**                  | ✅ Complete | 100%             | Foundation  | Foundation | -            |
-| **M1 - Foundation**                | ✅ Complete | 100%             | Foundation  | P0         | -            |
-| **Integrated Improvement Plan**    | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -            |
-| **🔧 System-Wide Standardization** | 🚧 BLOCKER  | Phase 1b done    | Meta        | **P0**     | 92 decisions |
-| **🚀 Operational Visibility**      | ⏸️ BLOCKED  | ~25%             | Foundation  | **P0**     | ~105         |
-| **M1.5 - Quick Wins**              | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19          |
-| **M1.6 - Admin Panel + UX**        | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15          |
-| **M2 - Architecture**              | ⏸️ Optional | 0%               | Parallel    | P2         | ~72          |
-| ↳ M2.1 Code Quality                |             |                  | Parallel    | P2         | ~25          |
-| ↳ M2.2 Monitoring                  |             |                  | Parallel    | P2         | ~25          |
-| ↳ M2.3 Infrastructure              |             |                  | Parallel    | P2         | ~22          |
-| **M3 - Meetings**                  | 📋 Planned  | 0%               | Core        | P1         | 6            |
-| **M4 - Expansion**                 | 📋 Planned  | 0%               | Core        | P1         | ~8           |
-| **M4.5 - Security & Privacy**      | 📋 Planned  | 0%               | Core        | **P0**     | 13           |
-| **M5 - Offline + Steps**           | 📋 Planned  | 0%               | Enhancement | P1         | 23           |
-| **M6 - Journaling + Safety**       | 📋 Planned  | 0%               | Enhancement | P1         | 26           |
-| **M7 - Fellowship Suite**          | 📋 Planned  | 0%               | Enhancement | P1         | ~55          |
-| ↳ M7.1 Sponsor & Sharing           |             |                  | Enhancement | P1         | ~15          |
-| ↳ M7.2 Exports & Reports           |             |                  | Enhancement | P1         | ~14          |
-| ↳ M7.3 Nashville & Knowledge       |             |                  | Enhancement | P1         | ~21          |
-| ↳ M7.4 Personalization             |             |                  | Enhancement | P2         | ~17          |
-| **M8 - Speakers**                  | 📋 Planned  | 0%               | Advanced    | P2         | 3            |
-| **M9 - Native App**                | 📋 Planned  | 0%               | Advanced    | P2         | 15           |
-| **M10 - Monetization + Future**    | 🔬 Research | 0%               | Future      | P2         | ~15          |
+| Milestone                             | Status      | Progress         | Phase       | Priority   | Items        |
+| ------------------------------------- | ----------- | ---------------- | ----------- | ---------- | ------------ |
+| **M0 - Baseline**                     | ✅ Complete | 100%             | Foundation  | Foundation | -            |
+| **M1 - Foundation**                   | ✅ Complete | 100%             | Foundation  | P0         | -            |
+| **Integrated Improvement Plan**       | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -            |
+| **🔧 1. Tooling & Infrastructure**    | 🔄 ACTIVE   | 0%               | Meta        | **P0**     | 30 decisions |
+| **🔧 2. Code Quality Overhaul**       | ⏸️ BLOCKED  | 0%               | Meta        | **P0**     | 26 decisions |
+| **🔧 3. Data Effectiveness**          | ⏸️ BLOCKED  | 0%               | Meta        | **P0**     | 35 decisions |
+| **🔧 4. System-Wide Standardization** | ⏸️ BLOCKED  | Phase 1b done    | Meta        | **P0**     | 92 decisions |
+| **🚀 Operational Visibility**         | ⏸️ BLOCKED  | ~25%             | Foundation  | **P0**     | ~105         |
+| **M1.5 - Quick Wins**                 | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19          |
+| **M1.6 - Admin Panel + UX**           | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15          |
+| **M2 - Architecture**                 | ⏸️ Optional | 0%               | Parallel    | P2         | ~72          |
+| ↳ M2.1 Code Quality                   |             |                  | Parallel    | P2         | ~25          |
+| ↳ M2.2 Monitoring                     |             |                  | Parallel    | P2         | ~25          |
+| ↳ M2.3 Infrastructure                 |             |                  | Parallel    | P2         | ~22          |
+| **M3 - Meetings**                     | 📋 Planned  | 0%               | Core        | P1         | 6            |
+| **M4 - Expansion**                    | 📋 Planned  | 0%               | Core        | P1         | ~8           |
+| **M4.5 - Security & Privacy**         | 📋 Planned  | 0%               | Core        | **P0**     | 13           |
+| **M5 - Offline + Steps**              | 📋 Planned  | 0%               | Enhancement | P1         | 23           |
+| **M6 - Journaling + Safety**          | 📋 Planned  | 0%               | Enhancement | P1         | 26           |
+| **M7 - Fellowship Suite**             | 📋 Planned  | 0%               | Enhancement | P1         | ~55          |
+| ↳ M7.1 Sponsor & Sharing              |             |                  | Enhancement | P1         | ~15          |
+| ↳ M7.2 Exports & Reports              |             |                  | Enhancement | P1         | ~14          |
+| ↳ M7.3 Nashville & Knowledge          |             |                  | Enhancement | P1         | ~21          |
+| ↳ M7.4 Personalization                |             |                  | Enhancement | P2         | ~17          |
+| **M8 - Speakers**                     | 📋 Planned  | 0%               | Advanced    | P2         | 3            |
+| **M9 - Native App**                   | 📋 Planned  | 0%               | Advanced    | P2         | 15           |
+| **M10 - Monetization + Future**       | 🔬 Research | 0%               | Future      | P2         | ~15          |
 
 ### Timing System (Session #128)
 
@@ -145,11 +148,15 @@ flowchart TD
         DOC[Integrated Improvement Plan]
     end
 
-    subgraph Blocker["🚧 BLOCKER"]
-        SWS[System-Wide Standardization\nEcosystem Overhaul]
+    subgraph MetaPipeline["🔧 Meta Pipeline (P0 BLOCKING)"]
+        TOOL[1. Tooling & Infrastructure\n30 decisions]
+        CQ[2. Code Quality Overhaul\n26 decisions]
+        DE[3. Data Effectiveness\n35 decisions]
+        SWS[4. System-Wide Standardization\n92 decisions]
+        TOOL --> CQ --> DE --> SWS
     end
 
-    subgraph Blocked["⏸️ BLOCKED (pending overhaul)"]
+    subgraph Blocked["⏸️ BLOCKED (pending Meta Pipeline)"]
         OVS[Operational Visibility\nAdmin + Dev Dashboard]
     end
 
@@ -182,7 +189,8 @@ flowchart TD
 
     M0 --> M1
     M1 --> DOC
-    DOC --> OVS
+    DOC --> TOOL
+    SWS --> OVS
     OVS --> M15
     OVS --> M16
     M15 --> M3
@@ -200,6 +208,10 @@ flowchart TD
     style M0 fill:#90EE90
     style M1 fill:#90EE90
     style DOC fill:#90EE90
+    style TOOL fill:#FFD700
+    style CQ fill:#FFA500
+    style DE fill:#FFA500
+    style SWS fill:#FFA500
     style OVS fill:#FF6B6B
     style M15 fill:#D3D3D3
     style M16 fill:#D3D3D3
@@ -216,6 +228,19 @@ flowchart TD
 ```
 
 ### Critical Dependency Chains
+
+**Chain 0: Meta Pipeline → All Other Work (P0 BLOCKING)**
+
+- Tooling & Infrastructure → Code Quality → Data Effectiveness → System-Wide
+  Standardization → Operational Visibility → all downstream
+- **Impact:** ALL milestones blocked until Meta Pipeline completes
+- **Rationale:** Clean tooling before quality fixes, quality fixes before data
+  pipelines, data pipelines before ecosystem standardization. Each plan builds
+  on the prior's output.
+- **Plans:** `.planning/tooling-infrastructure-audit/`,
+  `.planning/code-quality-overhaul/`,
+  `.planning/learnings-effectiveness-audit/`,
+  `.planning/system-wide-standardization/`
 
 **Chain 1: Encryption → Offline → Features**
 
