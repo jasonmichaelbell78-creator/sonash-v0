@@ -64,8 +64,8 @@ function slugify(text) {
   return (
     text
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-") // non-alphanum -> hyphen
-      .replace(/^-+|-+$/g, "") // strip leading/trailing hyphens
+      .replace(/[^a-z0-9]+/g, "-") // non-alphanum -> hyphen  // S5852: safe — no backtracking risk in character class
+      .replace(/^-+|-+$/g, "") // strip leading/trailing hyphens  // S5852: safe — no backtracking risk in anchored alternation
       .slice(0, 60) || "unnamed"
   );
 }
@@ -225,7 +225,7 @@ function scaffoldClaudeMdAnnotation(learning) {
  * @returns {{ isDuplicate: boolean, existingEntry?: object }}
  */
 function deduplicateCheck(learning, options) {
-  const routesPath = (options && options.routesPath) || DEFAULT_ROUTES_PATH;
+  const routesPath = options?.routesPath || DEFAULT_ROUTES_PATH;
   const id = generateId(learning);
 
   let content;
@@ -273,7 +273,7 @@ function deduplicateCheck(learning, options) {
  * @param {string} [options.routesPath] - Override JSONL path for testing
  */
 function trackRouting(learning, result, options) {
-  const routesPath = (options && options.routesPath) || DEFAULT_ROUTES_PATH;
+  const routesPath = options?.routesPath || DEFAULT_ROUTES_PATH;
   const absPath = path.resolve(routesPath);
 
   // Ensure parent directory exists
@@ -358,7 +358,7 @@ function route(learning, options) {
   // 2. Check for duplicates with status-aware conflict resolution
   const dupCheck = deduplicateCheck(learning, options);
   if (dupCheck.isDuplicate) {
-    const existingStatus = dupCheck.existingEntry && dupCheck.existingEntry.status;
+    const existingStatus = dupCheck.existingEntry?.status;
 
     if (existingStatus === "verified") {
       process.stderr.write(
@@ -397,6 +397,7 @@ function route(learning, options) {
       scaffold = scaffoldVerifiedPattern(learning);
       // Code learnings also get a lint rule skeleton
       scaffold.lintRule = scaffoldLintRule(learning);
+      scaffold.targetFiles = [scaffold.targetFile, scaffold.lintRule.targetFile];
       break;
     case "process":
       scaffold = scaffoldHookGate(learning);

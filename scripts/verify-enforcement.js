@@ -123,11 +123,13 @@ function runEnforcementTest(testPath) {
     });
     return { passed: true, reason: "test passed (exit 0)" };
   } catch (err) {
-    if (err && err.killed) {
+    const code = err && typeof err.code === "string" ? err.code : null;
+    const signal = err && typeof err.signal === "string" ? err.signal : null;
+    if (code === "ETIMEDOUT" || signal === "SIGTERM" || signal === "SIGKILL") {
       return { passed: false, reason: `test timed out after ${TEST_TIMEOUT_MS}ms` };
     }
-    const code = err && typeof err.status === "number" ? err.status : "unknown";
-    return { passed: false, reason: `test exit code ${code}` };
+    const status = err && typeof err.status === "number" ? err.status : "unknown";
+    return { passed: false, reason: `test exit code ${status}` };
   }
 }
 
@@ -170,6 +172,48 @@ function evaluateMetrics(metrics) {
 }
 
 /**
+ * Decide verification result from test and metrics outcomes.
+ *
+ * Decision logic:
+ * - Test fails → failed (regardless of metrics)
+ * - Test passes AND metrics not improved → failed
+ * - Test passes (metrics improved or absent) → verified
+ * - No test AND metrics improved → verified
+ * - No test AND metrics not improved → failed
+ * - Neither available → skipped
+ *
+ * @param {object|null} testResult - Result from runEnforcementTest, or null
+ * @param {object|null} metricsResult - Result from evaluateMetrics, or null
+ * @returns {{ result: string, reason: string }}
+ */
+function decideVerification(testResult, metricsResult) {
+  if (testResult && !testResult.passed) {
+    return { result: "failed", reason: testResult.reason };
+  }
+
+  if (testResult?.passed) {
+    if (metricsResult && !metricsResult.improved) {
+      return {
+        result: "failed",
+        reason: `test passed but ${metricsResult.reason}`,
+      };
+    }
+    const metricsInfo = metricsResult ? `, ${metricsResult.reason}` : "";
+    return { result: "verified", reason: `${testResult.reason}${metricsInfo}` };
+  }
+
+  if (metricsResult?.improved) {
+    return { result: "verified", reason: metricsResult.reason };
+  }
+
+  if (metricsResult) {
+    return { result: "failed", reason: metricsResult.reason };
+  }
+
+  return { result: "skipped", reason: "no verification data available" };
+}
+
+/**
  * Verify a single enforced entry.
  *
  * @param {object} entry - A learning-routes.jsonl entry
@@ -185,52 +229,10 @@ function verifyEntry(entry) {
     return { result: "skipped", reason: "no enforcement_test or metrics" };
   }
 
-  let testResult = null;
-  let metricsResult = null;
+  const testResult = hasTest ? runEnforcementTest(entry.enforcement_test) : null;
+  const metricsResult = hasMetrics ? evaluateMetrics(entry.metrics) : null;
 
-  // Run test if available
-  if (hasTest) {
-    testResult = runEnforcementTest(entry.enforcement_test);
-  }
-
-  // Evaluate metrics if available
-  if (hasMetrics) {
-    metricsResult = evaluateMetrics(entry.metrics);
-  }
-
-  // Decision logic:
-  // - Test passes AND metrics improved → verified
-  // - Test passes AND no metrics → verified (test alone is sufficient)
-  // - No test AND metrics improved → verified (metrics alone is sufficient)
-  // - Test fails → failed (regardless of metrics)
-  // - Metrics not improved AND no test → failed
-
-  if (testResult && !testResult.passed) {
-    const reason = testResult.reason;
-    return { result: "failed", reason };
-  }
-
-  if (testResult && testResult.passed) {
-    if (metricsResult && !metricsResult.improved) {
-      return {
-        result: "failed",
-        reason: `test passed but ${metricsResult.reason}`,
-      };
-    }
-    const metricsInfo = metricsResult ? `, ${metricsResult.reason}` : "";
-    return { result: "verified", reason: `${testResult.reason}${metricsInfo}` };
-  }
-
-  // No test, only metrics
-  if (metricsResult && metricsResult.improved) {
-    return { result: "verified", reason: metricsResult.reason };
-  }
-
-  if (metricsResult) {
-    return { result: "failed", reason: metricsResult.reason };
-  }
-
-  return { result: "skipped", reason: "no verification data available" };
+  return decideVerification(testResult, metricsResult);
 }
 
 /**
@@ -271,17 +273,40 @@ function writeEntries(routesPath, entries) {
 }
 
 /**
- * Main verification pipeline.
+ * Build an empty summary with zero counts.
  *
- * @param {object} options
- * @param {boolean} [options.dryRun=false] - Do not modify the file
- * @param {boolean} [options.json=false] - Output JSON instead of text
- * @param {string} [options.routesPath] - Override default routes file path
- * @returns {object} Summary with counts and details
+ * @returns {object} Empty summary object
  */
-function run(options = {}) {
-  const { dryRun = false, json = false, routesPath = ROUTES_PATH } = options;
+function emptySummary() {
+  return { total_checked: 0, verified: 0, failed: 0, skipped: 0, details: [] };
+}
 
+/**
+ * Output an early-exit message (no entries to verify) in the requested format.
+ *
+ * @param {string} msg - Human-readable message
+ * @param {boolean} json - Whether to output JSON format
+ */
+function outputEarlyExit(msg, json) {
+  if (json) {
+    const output = { timestamp: new Date().toISOString(), ...emptySummary(), message: msg };
+    process.stdout.write(JSON.stringify(output, null, 2) + "\n");
+  } else {
+    process.stdout.write(`${msg}\n`);
+  }
+}
+
+/**
+ * Validate that the routes file exists and contains enforced entries.
+ * Returns null when validation passes, or an early-exit message string
+ * when there is nothing to verify.
+ *
+ * @param {string} routesPath - Path to learning-routes.jsonl
+ * @param {object[]} allEntries - Parsed entries (populated by reference)
+ * @param {number[]} enforcedIndices - Indices of enforced entries (populated by reference)
+ * @returns {string|null} Early-exit message, or null if validation passes
+ */
+function validateInputs(routesPath, allEntries, enforcedIndices) {
   // Check if file exists
   let fileExists = false;
   try {
@@ -292,60 +317,19 @@ function run(options = {}) {
   }
 
   if (!fileExists) {
-    const msg = "No learning-routes.jsonl found";
-    if (json) {
-      const output = {
-        timestamp: new Date().toISOString(),
-        total_checked: 0,
-        verified: 0,
-        failed: 0,
-        skipped: 0,
-        details: [],
-        message: msg,
-      };
-      process.stdout.write(JSON.stringify(output, null, 2) + "\n");
-    } else {
-      process.stdout.write(`${msg}\n`);
-    }
-    return {
-      total_checked: 0,
-      verified: 0,
-      failed: 0,
-      skipped: 0,
-      details: [],
-    };
+    return "No learning-routes.jsonl found";
   }
 
   // Read all entries
-  const allEntries = readEntries(routesPath);
+  const entries = readEntries(routesPath);
+  // Populate the passed-in array
+  entries.forEach((e) => allEntries.push(e));
 
   if (allEntries.length === 0) {
-    const msg = "learning-routes.jsonl is empty — 0 entries to verify";
-    if (json) {
-      const output = {
-        timestamp: new Date().toISOString(),
-        total_checked: 0,
-        verified: 0,
-        failed: 0,
-        skipped: 0,
-        details: [],
-        message: msg,
-      };
-      process.stdout.write(JSON.stringify(output, null, 2) + "\n");
-    } else {
-      process.stdout.write(`${msg}\n`);
-    }
-    return {
-      total_checked: 0,
-      verified: 0,
-      failed: 0,
-      skipped: 0,
-      details: [],
-    };
+    return "learning-routes.jsonl is empty \u2014 0 entries to verify";
   }
 
   // Filter enforced entries
-  const enforcedIndices = [];
   for (let i = 0; i < allEntries.length; i++) {
     if (allEntries[i].status === "enforced") {
       enforcedIndices.push(i);
@@ -353,31 +337,20 @@ function run(options = {}) {
   }
 
   if (enforcedIndices.length === 0) {
-    const msg = `learning-routes.jsonl has ${allEntries.length} entries, 0 with status "enforced" — nothing to verify`;
-    if (json) {
-      const output = {
-        timestamp: new Date().toISOString(),
-        total_checked: 0,
-        verified: 0,
-        failed: 0,
-        skipped: 0,
-        details: [],
-        message: msg,
-      };
-      process.stdout.write(JSON.stringify(output, null, 2) + "\n");
-    } else {
-      process.stdout.write(`${msg}\n`);
-    }
-    return {
-      total_checked: 0,
-      verified: 0,
-      failed: 0,
-      skipped: 0,
-      details: [],
-    };
+    return `learning-routes.jsonl has ${allEntries.length} entries, 0 with status "enforced" \u2014 nothing to verify`;
   }
 
-  // Verify each enforced entry
+  return null;
+}
+
+/**
+ * Run verification on all enforced entries and apply status updates.
+ *
+ * @param {object[]} allEntries - All parsed JSONL entries
+ * @param {number[]} enforcedIndices - Indices of entries with status "enforced"
+ * @returns {{ details: object[], verified: number, failed: number, skipped: number }}
+ */
+function scanEntries(allEntries, enforcedIndices) {
   const details = [];
   let verified = 0;
   let failed = 0;
@@ -386,7 +359,7 @@ function run(options = {}) {
   for (const idx of enforcedIndices) {
     const entry = allEntries[idx];
     const id = entry.id || `entry-${idx}`;
-    const pattern = (entry.learning && entry.learning.pattern) || entry.pattern || "(unknown)";
+    const pattern = entry.learning?.pattern || entry.pattern || "(unknown)";
 
     let verification;
     try {
@@ -398,12 +371,7 @@ function run(options = {}) {
       };
     }
 
-    details.push({
-      id,
-      pattern,
-      result: verification.result,
-      reason: verification.reason,
-    });
+    details.push({ id, pattern, result: verification.result, reason: verification.reason });
 
     // Update status in allEntries (for later write-back)
     if (verification.result === "verified") {
@@ -423,6 +391,75 @@ function run(options = {}) {
     }
   }
 
+  return { details, verified, failed, skipped };
+}
+
+/**
+ * Format and output the verification summary.
+ *
+ * @param {object} summary - Full summary object with counts and details
+ * @param {boolean} json - Whether to output JSON format
+ * @param {boolean} dryRun - Whether this was a dry-run
+ */
+function outputSummary(summary, json, dryRun) {
+  if (json) {
+    process.stdout.write(JSON.stringify(summary, null, 2) + "\n");
+    return;
+  }
+
+  process.stdout.write(`\n=== Enforcement Verification ===\n`);
+  process.stdout.write(`Total enforced entries checked: ${summary.total_checked}\n`);
+  process.stdout.write(`  Verified:     ${summary.verified}\n`);
+  process.stdout.write(`  Failed:       ${summary.failed}\n`);
+  process.stdout.write(`  Skipped:      ${summary.skipped}\n`);
+
+  if (dryRun) {
+    process.stdout.write(`  (dry-run: no file changes)\n`);
+  }
+
+  if (summary.details.length > 0) {
+    process.stdout.write(`\nDetails:\n`);
+    for (const d of summary.details) {
+      let icon;
+      if (d.result === "verified") {
+        icon = "[OK]";
+      } else if (d.result === "failed") {
+        icon = "[FAIL]";
+      } else {
+        icon = "[SKIP]";
+      }
+      process.stdout.write(`  ${icon} ${d.id}: ${d.pattern} \u2014 ${d.reason}\n`);
+    }
+  }
+
+  process.stdout.write(`\n`);
+}
+
+/**
+ * Main verification pipeline.
+ *
+ * @param {object} options
+ * @param {boolean} [options.dryRun=false] - Do not modify the file
+ * @param {boolean} [options.json=false] - Output JSON instead of text
+ * @param {string} [options.routesPath] - Override default routes file path
+ * @returns {object} Summary with counts and details
+ */
+function run(options = {}) {
+  const { dryRun = false, json = false, routesPath = ROUTES_PATH } = options;
+
+  // Validate inputs and collect entries
+  const allEntries = [];
+  const enforcedIndices = [];
+  const earlyExitMsg = validateInputs(routesPath, allEntries, enforcedIndices);
+
+  if (earlyExitMsg) {
+    outputEarlyExit(earlyExitMsg, json);
+    return emptySummary();
+  }
+
+  // Scan all enforced entries
+  const { details, verified, failed, skipped } = scanEntries(allEntries, enforcedIndices);
+
   // Write back unless dry-run
   if (!dryRun && (verified > 0 || failed > 0)) {
     try {
@@ -431,43 +468,21 @@ function run(options = {}) {
       process.stderr.write(
         `[verify-enforcement] ERROR: failed to write updates: ${sanitizeError(err)}\n`
       );
+      process.exitCode = 1;
     }
   }
 
-  // Output
-  const totalChecked = enforcedIndices.length;
+  // Build and output summary
   const summary = {
     timestamp: new Date().toISOString(),
-    total_checked: totalChecked,
+    total_checked: enforcedIndices.length,
     verified,
     failed,
     skipped,
     details,
   };
 
-  if (json) {
-    process.stdout.write(JSON.stringify(summary, null, 2) + "\n");
-  } else {
-    process.stdout.write(`\n=== Enforcement Verification ===\n`);
-    process.stdout.write(`Total enforced entries checked: ${totalChecked}\n`);
-    process.stdout.write(`  Verified:     ${verified}\n`);
-    process.stdout.write(`  Failed:       ${failed}\n`);
-    process.stdout.write(`  Skipped:      ${skipped}\n`);
-
-    if (dryRun) {
-      process.stdout.write(`  (dry-run: no file changes)\n`);
-    }
-
-    if (details.length > 0) {
-      process.stdout.write(`\nDetails:\n`);
-      for (const d of details) {
-        const icon = d.result === "verified" ? "[OK]" : d.result === "failed" ? "[FAIL]" : "[SKIP]";
-        process.stdout.write(`  ${icon} ${d.id}: ${d.pattern} — ${d.reason}\n`);
-      }
-    }
-
-    process.stdout.write(`\n`);
-  }
+  outputSummary(summary, json, dryRun);
 
   return summary;
 }
@@ -477,9 +492,9 @@ function run(options = {}) {
 // ---------------------------------------------------------------------------
 
 function main() {
-  const args = process.argv.slice(2);
-  const dryRun = args.includes("--dry-run");
-  const json = args.includes("--json");
+  const args = new Set(process.argv.slice(2));
+  const dryRun = args.has("--dry-run");
+  const json = args.has("--json");
 
   try {
     run({ dryRun, json });
@@ -498,9 +513,13 @@ if (require.main === module) {
 module.exports = {
   run,
   verifyEntry,
+  decideVerification,
   evaluateMetrics,
   runEnforcementTest,
   readEntries,
   writeEntries,
+  validateInputs,
+  scanEntries,
+  outputSummary,
   ROUTES_PATH,
 };

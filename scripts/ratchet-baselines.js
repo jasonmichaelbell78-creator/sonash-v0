@@ -93,15 +93,26 @@ function ratchet(baselineData, currentCounts, opts = {}) {
   const improvements = [];
   const unchanged = [];
 
-  for (const [patternId, entry] of Object.entries(baselineData.baselines)) {
+  // Defensive: validate baselines is an object
+  const baselines =
+    baselineData && typeof baselineData.baselines === "object" && baselineData.baselines !== null
+      ? baselineData.baselines
+      : {};
+
+  for (const [patternId, entry] of Object.entries(baselines)) {
     const current = currentCounts[patternId] || 0;
-    const stored = entry.baseline;
+    // Defensive: default baseline to 0 if not a number
+    const stored = typeof entry.baseline === "number" ? entry.baseline : 0;
 
     if (current > stored) {
       regressions.push(patternId);
     } else if (current < stored) {
       improvements.push(patternId);
       if (!dryRun) {
+        // Defensive: ensure ratchet_history is an array before pushing
+        if (!Array.isArray(entry.ratchet_history)) {
+          entry.ratchet_history = [];
+        }
         entry.ratchet_history.push({ date: today, from: stored, to: current });
         entry.baseline = current;
         entry.recorded = today;
@@ -125,6 +136,44 @@ function ratchet(baselineData, currentCounts, opts = {}) {
   return { regressions, improvements, unchanged };
 }
 
+/** Build the JSON output object for --json mode. */
+function buildJsonOutput(result, dryRun) {
+  return {
+    dryRun,
+    regressions: result.regressions,
+    improvements: result.improvements,
+    unchanged: result.unchanged,
+    exitCode: result.regressions.length > 0 ? 1 : 0,
+  };
+}
+
+/** Print human-readable improvement details. */
+function reportImprovements(result, baselineData, dryRun) {
+  if (result.improvements.length === 0) return;
+  console.log(`Improvements (ratcheted${dryRun ? " — dry-run, not saved" : ""}):`);
+  for (const id of result.improvements) {
+    const entry = baselineData.baselines[id];
+    const hist = entry.ratchet_history;
+    const last = hist[hist.length - 1];
+    if (last) {
+      console.log(`  ${id}: ${last.from} -> ${last.to}`);
+    } else {
+      console.log(`  ${id}: improved`);
+    }
+  }
+}
+
+/** Print human-readable regression details. */
+function reportRegressions(result, baselineData, currentCounts) {
+  if (result.regressions.length === 0) return;
+  console.error("REGRESSIONS detected (current > baseline):");
+  for (const id of result.regressions) {
+    const stored = baselineData.baselines[id].baseline;
+    const current = currentCounts[id] || 0;
+    console.error(`  ${id}: baseline=${stored}, current=${current}`);
+  }
+}
+
 function run(argv) {
   const args = argv || process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
@@ -135,41 +184,15 @@ function run(argv) {
   const result = ratchet(baselineData, currentCounts, { dryRun });
 
   if (jsonOut) {
-    const output = {
-      dryRun,
-      regressions: result.regressions,
-      improvements: result.improvements,
-      unchanged: result.unchanged,
-      exitCode: result.regressions.length > 0 ? 1 : 0,
-    };
-    console.log(JSON.stringify(output, null, 2));
+    console.log(JSON.stringify(buildJsonOutput(result, dryRun), null, 2));
   } else {
-    if (result.improvements.length > 0) {
-      console.log(`Improvements (ratcheted${dryRun ? " — dry-run, not saved" : ""}):`);
-      for (const id of result.improvements) {
-        const entry = baselineData.baselines[id];
-        const hist = entry.ratchet_history;
-        const last = hist[hist.length - 1];
-        if (last) {
-          console.log(`  ${id}: ${last.from} -> ${last.to}`);
-        } else {
-          console.log(`  ${id}: improved`);
-        }
-      }
-    }
+    reportImprovements(result, baselineData, dryRun);
 
     if (result.unchanged.length > 0) {
       console.log(`Unchanged: ${result.unchanged.join(", ")}`);
     }
 
-    if (result.regressions.length > 0) {
-      console.error("REGRESSIONS detected (current > baseline):");
-      for (const id of result.regressions) {
-        const stored = baselineData.baselines[id].baseline;
-        const current = currentCounts[id] || 0;
-        console.error(`  ${id}: baseline=${stored}, current=${current}`);
-      }
-    }
+    reportRegressions(result, baselineData, currentCounts);
   }
 
   if (result.regressions.length > 0) {

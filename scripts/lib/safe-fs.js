@@ -102,6 +102,8 @@ function safeRenameSync(src, dest) {
   if (!isSafeToWrite(absDest)) {
     throw new Error(`Refusing to rename to symlinked path: ${path.basename(absDest)}`);
   }
+  // Pre-rename rmSync guard: remove destination if it exists (Windows compat)
+  if (fs.existsSync(absDest)) fs.rmSync(absDest, { force: true });
   // Try rename first; if it fails due to dest existing (Windows), remove and retry
   try {
     fs.renameSync(absSrc, absDest);

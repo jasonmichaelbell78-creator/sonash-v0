@@ -1,5 +1,4 @@
 /* global __dirname */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * wave6-alerts.test.js — Semantic tests for Wave 6 alert checkers
  *
@@ -64,7 +63,7 @@ function runPlanningCheck(fp, nowMs = Date.now()) {
     const e = safeParse(line);
     if (!e) continue;
     const ts = new Date(e.date || e.timestamp || e.created || "").getTime();
-    if (!isNaN(ts) && (latest === null || ts > latest)) latest = ts;
+    if (!Number.isNaN(ts) && (latest === null || ts > latest)) latest = ts;
   }
   if (latest === null) return { fired: false, reason: "no-valid-date" };
   const days = Math.floor((nowMs - latest) / 86400000);

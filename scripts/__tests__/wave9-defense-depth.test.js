@@ -1,5 +1,4 @@
 /* global __dirname */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * wave9-defense-depth.test.js
  * Part of Data Effectiveness Audit (Wave 9)
@@ -332,7 +331,7 @@ describe("verified-patterns.json integrity — Wave 9", () => {
     for (const pattern of schema.patterns) {
       for (const field of requiredFields) {
         assert.ok(
-          Object.prototype.hasOwnProperty.call(pattern, field),
+          Object.hasOwn(pattern, field),
           `Pattern "${pattern.id || "(no id)"}" is missing required field: ${field}`
         );
         assert.ok(
@@ -376,10 +375,8 @@ describe("verified-patterns.json integrity — Wave 9", () => {
   it("every positive_pattern_ref like 'POSITIVE_PATTERNS.md S1' maps to a real section heading", () => {
     // Extract all section IDs present in the markdown, e.g. "S1", "S2", ...
     // Section headings have the form: ## S1: <Title>
-    const sectionPattern = /^## (S\d+):/gm;
     const presentSections = new Set();
     let match;
-    // Reset regex lastIndex between calls by using a fresh regex per iteration
     const sectionRegex = /^## (S\d+):/gm;
     while ((match = sectionRegex.exec(positivePatternsContent)) !== null) {
       presentSections.add(match[1]);

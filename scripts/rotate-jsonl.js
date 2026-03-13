@@ -40,6 +40,7 @@ try {
   // Inline fallback: strip paths but keep the message useful
   sanitizeError = (err) => {
     const msg = err instanceof Error ? err.message : String(err);
+    // regex patterns required for case-insensitive matching — replaceAll not applicable
     return msg
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]")
@@ -98,14 +99,21 @@ function detectTimestampField(absPath) {
     return KNOWN_DATE_FIELDS[basename];
   }
 
-  // Probe the first line of the file
+  // Probe the first line of the file (read only first 64KB to avoid loading large files)
   try {
-    const content = fs.readFileSync(absPath, "utf-8");
-    const firstLine = content.split("\n").find((l) => l.trim().length > 0);
-    if (firstLine) {
-      const entry = JSON.parse(firstLine);
-      if (entry.timestamp !== undefined) return "timestamp";
-      if (entry.date !== undefined) return "date";
+    const fd = fs.openSync(absPath, "r");
+    try {
+      const buf = Buffer.alloc(65536);
+      const bytesRead = fs.readSync(fd, buf, 0, buf.length, 0);
+      const chunk = buf.toString("utf-8", 0, bytesRead);
+      const firstLine = chunk.split("\n").find((l) => l.trim().length > 0);
+      if (firstLine) {
+        const entry = JSON.parse(firstLine);
+        if (entry.timestamp !== undefined) return "timestamp";
+        if (entry.date !== undefined) return "date";
+      }
+    } finally {
+      fs.closeSync(fd);
     }
   } catch {
     // File missing or unparseable — fall through to default
@@ -117,6 +125,57 @@ function detectTimestampField(absPath) {
 // ---------------------------------------------------------------------------
 // Config validation
 // ---------------------------------------------------------------------------
+
+/**
+ * Validate a single file path entry within a tier.
+ * @param {string} tierName
+ * @param {unknown} file
+ * @returns {string[]} Array of error messages (empty if valid)
+ */
+function validateFilePath(tierName, file) {
+  const errors = [];
+  if (typeof file !== "string" || file.trim().length === 0) {
+    errors.push(`Tier '${tierName}': each file entry must be a non-empty string`);
+  }
+  // Reject path traversal attempts
+  if (/^\.\.(?:[\\/]|$)/.test(file) || path.isAbsolute(file)) {
+    errors.push(`Tier '${tierName}': file path '${file}' must be relative and non-traversing`);
+  }
+  return errors;
+}
+
+/**
+ * Validate a single tier entry in the config.
+ * @param {string} tierName
+ * @param {unknown} tier
+ * @returns {string[]} Array of error messages (empty if valid)
+ */
+function validateTierEntry(tierName, tier) {
+  const errors = [];
+
+  if (!tier || typeof tier !== "object") {
+    errors.push(`Tier '${tierName}' must be an object`);
+    return errors;
+  }
+
+  // maxAgeDays must be a positive number or null (permanent)
+  if (tier.maxAgeDays !== null) {
+    if (typeof tier.maxAgeDays !== "number" || tier.maxAgeDays <= 0) {
+      errors.push(`Tier '${tierName}': maxAgeDays must be a positive number or null`);
+    }
+  }
+
+  if (!Array.isArray(tier.files)) {
+    errors.push(`Tier '${tierName}': 'files' must be an array`);
+    return errors;
+  }
+
+  for (const file of tier.files) {
+    errors.push(...validateFilePath(tierName, file));
+  }
+
+  return errors;
+}
 
 /**
  * Validate the rotation policy config structure.
@@ -140,32 +199,7 @@ function validateConfig(config) {
   }
 
   for (const [tierName, tier] of Object.entries(config.tiers)) {
-    if (!tier || typeof tier !== "object") {
-      errors.push(`Tier '${tierName}' must be an object`);
-      continue;
-    }
-
-    // maxAgeDays must be a positive number or null (permanent)
-    if (tier.maxAgeDays !== null) {
-      if (typeof tier.maxAgeDays !== "number" || tier.maxAgeDays <= 0) {
-        errors.push(`Tier '${tierName}': maxAgeDays must be a positive number or null`);
-      }
-    }
-
-    if (!Array.isArray(tier.files)) {
-      errors.push(`Tier '${tierName}': 'files' must be an array`);
-      continue;
-    }
-
-    for (const file of tier.files) {
-      if (typeof file !== "string" || file.trim().length === 0) {
-        errors.push(`Tier '${tierName}': each file entry must be a non-empty string`);
-      }
-      // Reject path traversal attempts
-      if (/^\.\.(?:[\\/]|$)/.test(file) || path.isAbsolute(file)) {
-        errors.push(`Tier '${tierName}': file path '${file}' must be relative and non-traversing`);
-      }
-    }
+    errors.push(...validateTierEntry(tierName, tier));
   }
 
   return { valid: errors.length === 0, errors };
@@ -176,20 +210,100 @@ function validateConfig(config) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Load and parse the rotation policy config from disk.
+ * @returns {{ config: object|null, error: string|null }}
+ */
+function loadConfig() {
+  const configPath = path.resolve(projectRoot, "config", "rotation-policy.json");
+  try {
+    const configContent = fs.readFileSync(configPath, "utf-8");
+    return { config: JSON.parse(configContent), error: null };
+  } catch (err) {
+    return { config: null, error: sanitizeError(err) };
+  }
+}
+
+/**
+ * Process a single file for rotation within a tier.
+ * @param {string} relFile - Relative file path from project root
+ * @param {string} tierName - Name of the tier
+ * @param {number} maxAgeDays - Maximum age in days for entries
+ * @returns {{ entry: object, isError: boolean }}
+ */
+function processFile(relFile, tierName, maxAgeDays) {
+  const absPath = path.resolve(projectRoot, relFile);
+
+  // Check file exists (skip silently if missing — idempotent)
+  try {
+    fs.accessSync(absPath, fs.constants.R_OK);
+  } catch {
+    return {
+      entry: {
+        file: relFile,
+        tier: tierName,
+        status: "skipped",
+        reason: "file not found",
+        removed: 0,
+      },
+      isError: false,
+    };
+  }
+
+  // Symlink safety check
+  if (!isSafeToWrite(absPath)) {
+    return {
+      entry: {
+        file: relFile,
+        tier: tierName,
+        status: "skipped",
+        reason: "symlink safety check failed",
+        removed: 0,
+      },
+      isError: false,
+    };
+  }
+
+  // Detect timestamp field and run expiration
+  const tsField = detectTimestampField(absPath);
+  try {
+    const result = expireJsonlByAge(absPath, maxAgeDays, tsField);
+    const removed = result.before - result.after;
+    return {
+      entry: {
+        file: relFile,
+        tier: tierName,
+        status: result.expired ? "rotated" : "unchanged",
+        reason: null,
+        before: result.before,
+        after: result.after,
+        removed,
+        timestampField: tsField,
+      },
+      isError: false,
+    };
+  } catch (err) {
+    return {
+      entry: {
+        file: relFile,
+        tier: tierName,
+        status: "error",
+        reason: sanitizeError(err),
+        removed: 0,
+      },
+      isError: true,
+    };
+  }
+}
+
+/**
  * Run JSONL rotation for all eligible tiers.
  * @returns {{ success: boolean, summary: object[] }}
  */
 function runRotation() {
   // 1. Load config
-  const configPath = path.resolve(projectRoot, "config", "rotation-policy.json");
-
-  let rawConfig;
-  try {
-    const configContent = fs.readFileSync(configPath, "utf-8");
-    rawConfig = JSON.parse(configContent);
-  } catch (err) {
-    const safeMsg = sanitizeError(err);
-    process.stderr.write(`[rotate-jsonl] Failed to load config: ${safeMsg}\n`);
+  const { config: rawConfig, error: loadError } = loadConfig();
+  if (loadError) {
+    process.stderr.write(`[rotate-jsonl] Failed to load config: ${loadError}\n`);
     return { success: false, summary: [] };
   }
 
@@ -214,63 +328,9 @@ function runRotation() {
     }
 
     for (const relFile of tier.files) {
-      const absPath = path.resolve(projectRoot, relFile);
-
-      // Check file exists (skip silently if missing — idempotent)
-      try {
-        fs.accessSync(absPath, fs.constants.R_OK);
-      } catch {
-        summary.push({
-          file: relFile,
-          tier: tierName,
-          status: "skipped",
-          reason: "file not found",
-          removed: 0,
-        });
-        continue;
-      }
-
-      // Symlink safety check
-      if (!isSafeToWrite(absPath)) {
-        summary.push({
-          file: relFile,
-          tier: tierName,
-          status: "skipped",
-          reason: "symlink safety check failed",
-          removed: 0,
-        });
-        continue;
-      }
-
-      // Detect timestamp field
-      const tsField = detectTimestampField(absPath);
-
-      // Run expiration
-      try {
-        const result = expireJsonlByAge(absPath, tier.maxAgeDays, tsField);
-
-        const removed = result.before - result.after;
-        summary.push({
-          file: relFile,
-          tier: tierName,
-          status: result.expired ? "rotated" : "unchanged",
-          reason: null,
-          before: result.before,
-          after: result.after,
-          removed,
-          timestampField: tsField,
-        });
-      } catch (err) {
-        const safeMsg = sanitizeError(err);
-        summary.push({
-          file: relFile,
-          tier: tierName,
-          status: "error",
-          reason: safeMsg,
-          removed: 0,
-        });
-        hasErrors = true;
-      }
+      const { entry, isError } = processFile(relFile, tierName, tier.maxAgeDays);
+      summary.push(entry);
+      if (isError) hasErrors = true;
     }
   }
 
@@ -325,4 +385,13 @@ if (require.main === module) {
 }
 
 // Export for testing
-module.exports = { runRotation, validateConfig, detectTimestampField, KNOWN_DATE_FIELDS };
+module.exports = {
+  runRotation,
+  validateConfig,
+  validateTierEntry,
+  validateFilePath,
+  detectTimestampField,
+  loadConfig,
+  processFile,
+  KNOWN_DATE_FIELDS,
+};

@@ -21,6 +21,7 @@ try {
 } catch {
   sanitizeError = (e) =>
     (e instanceof Error ? e.message : String(e))
+      // Regex patterns with character classes — replaceAll requires string literals, not regex
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]");
 }
@@ -108,9 +109,16 @@ function run(options = {}) {
       pattern: `${gap.system}: ${gap.gap}`,
       source: `lifecycle-scores.jsonl:${gap.id} (Action=${gap.action})`,
       severity: gap.total < 6 ? "high" : "medium",
-      evidence: [
-        `Lifecycle score: ${gap.capture}/${gap.storage}/${gap.recall}/${gap.action} = ${gap.total}/12`,
-      ],
+      evidence: {
+        summary: `Lifecycle score: ${gap.capture}/${gap.storage}/${gap.recall}/${gap.action} = ${gap.total}/12`,
+        scores: {
+          capture: gap.capture,
+          storage: gap.storage,
+          recall: gap.recall,
+          action: gap.action,
+          total: gap.total,
+        },
+      },
     };
 
     try {
@@ -132,10 +140,10 @@ function run(options = {}) {
 }
 
 if (require.main === module) {
-  const args = process.argv.slice(2);
+  const args = new Set(process.argv.slice(2));
   const result = run({
-    dryRun: args.includes("--dry-run"),
-    json: args.includes("--json"),
+    dryRun: args.has("--dry-run"),
+    json: args.has("--json"),
   });
   if (!result.success) process.exitCode = 1;
 }

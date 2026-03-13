@@ -21,6 +21,7 @@ try {
 } catch {
   sanitizeError = (e) =>
     (e instanceof Error ? e.message : String(e))
+      // Regex patterns with character classes — replaceAll requires string literals, not regex
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]");
 }
@@ -32,6 +33,61 @@ const CLAUDE_MD_PATH = path.join(PROJECT_ROOT, "CLAUDE.md");
 // Parse CLAUDE.md for enforcement gaps
 // ---------------------------------------------------------------------------
 
+/**
+ * Try to extract rule text from a single line using known markdown patterns.
+ * Returns the matched text or null if no pattern matches.
+ */
+function matchRuleLine(trimmedLine) {
+  // Match numbered list: "1. **Rule text**..."
+  const numberedMatch = trimmedLine.match(/^\d+\.\s+\*\*(.+?)\*\*/);
+  if (numberedMatch) return numberedMatch[1].trim();
+
+  // Match bulleted list: "- **Rule text**..."
+  const bulletMatch = trimmedLine.match(/^-\s+\*\*(.+?)\*\*/);
+  if (bulletMatch) return bulletMatch[1].trim();
+
+  // S5852: safe — lazy quantifier bounded by literal lookahead
+  const headingAnnotated = trimmedLine.match(/^###\s+(.+?)(?:\s*`\[)/);
+  if (headingAnnotated) return headingAnnotated[1].trim();
+
+  // Fallback: heading without annotation
+  const bareHeading = trimmedLine.match(/^###\s+(.+)/);
+  if (bareHeading) return bareHeading[1].replace(/`\[.*\]`/, "").trim();
+
+  return null;
+}
+
+/**
+ * Search backwards from annotationLineIndex to find the rule text
+ * that the enforcement annotation refers to.
+ */
+function findRuleText(lines, annotationLineIndex) {
+  for (let j = annotationLineIndex; j >= Math.max(0, annotationLineIndex - 10); j--) {
+    const result = matchRuleLine(lines[j].trim());
+    if (result) return result;
+  }
+  return null;
+}
+
+/**
+ * Try to extract rule text from an inline heading on the annotation line itself.
+ */
+function extractInlineRule(line) {
+  const trimmed = line.trim();
+  // S5852: safe — lazy quantifier bounded by literal lookahead
+  const inlineHeading = trimmed.match(/^###\s+(.+?)(?:\s*`\[)/);
+  return inlineHeading ? inlineHeading[1].trim() : null;
+}
+
+/**
+ * Parse a section heading line (## N. Title) and return the section label,
+ * or null if the line is not a section heading.
+ */
+function parseSectionHeading(line) {
+  const headingMatch = line.match(/^##\s+(\d+)\.\s+(.*)/);
+  return headingMatch ? `Section ${headingMatch[1]}: ${headingMatch[2]}` : null;
+}
+
 function extractGaps(content) {
   const gaps = [];
   const lines = content.split(/\r?\n/);
@@ -42,63 +98,31 @@ function extractGaps(content) {
     const line = lines[i];
 
     // Track section headings
-    const headingMatch = line.match(/^##\s+(\d+)\.\s+(.*)/);
-    if (headingMatch) {
-      currentSection = `Section ${headingMatch[1]}: ${headingMatch[2]}`;
+    const section = parseSectionHeading(line);
+    if (section) {
+      currentSection = section;
       continue;
     }
 
     // Find [BEHAVIORAL: no automated enforcement] annotations
-    if (line.includes("[BEHAVIORAL: no automated enforcement]")) {
-      // Look backwards for the rule text (numbered list item or heading)
-      let ruleText = "";
-      for (let j = i; j >= Math.max(0, i - 10); j--) {
-        const rLine = lines[j].trim();
-        // Match numbered list: "1. **Rule text**..."
-        const numberedMatch = rLine.match(/^\d+\.\s+\*\*(.+?)\*\*/);
-        if (numberedMatch) {
-          ruleText = numberedMatch[1].trim();
-          break;
-        }
-        // Match bulleted list: "- **Rule text**..."
-        const bulletMatch = rLine.match(/^-\s+\*\*(.+?)\*\*/);
-        if (bulletMatch) {
-          ruleText = bulletMatch[1].trim();
-          break;
-        }
-        // Match heading with annotation: "### PRE-TASK..."
-        const headingMatch = rLine.match(/^###\s+(.+?)(?:\s*`\[)/);
-        if (headingMatch) {
-          ruleText = headingMatch[1].trim();
-          break;
-        }
-        // Fallback: heading without annotation
-        const bareHeading = rLine.match(/^###\s+(.+)/);
-        if (bareHeading) {
-          ruleText = bareHeading[1].replace(/`\[.*\]`/, "").trim();
-          break;
-        }
-      }
+    if (!line.includes("[BEHAVIORAL: no automated enforcement]")) continue;
 
-      // Check if the annotation is on the same line as a heading
-      if (!ruleText) {
-        const sameLine = line.trim();
-        const inlineHeading = sameLine.match(/^###\s+(.+?)(?:\s*`\[)/);
-        if (inlineHeading) {
-          ruleText = inlineHeading[1].trim();
-        }
-      }
+    let ruleText = findRuleText(lines, i);
 
-      if (!ruleText) {
-        ruleText = line.replace(/`\[BEHAVIORAL:.*\]`/, "").trim() || `(line ${i + 1})`;
-      }
-
-      gaps.push({
-        section: currentSection,
-        rule: ruleText,
-        line: i + 1,
-      });
+    // Check if the annotation is on the same line as a heading
+    if (!ruleText) {
+      ruleText = extractInlineRule(line);
     }
+
+    if (!ruleText) {
+      ruleText = line.replace(/`\[BEHAVIORAL:.*\]`/, "").trim() || `(line ${i + 1})`;
+    }
+
+    gaps.push({
+      section: currentSection,
+      rule: ruleText,
+      line: i + 1,
+    });
   }
 
   return gaps;
@@ -120,7 +144,9 @@ function routeGaps(gaps, options = {}) {
       pattern: gap.rule,
       source: `CLAUDE.md:${gap.line} (${gap.section})`,
       severity: "medium",
-      evidence: [`No automated enforcement found in CLAUDE.md annotation`],
+      evidence: {
+        notes: ["No automated enforcement found in CLAUDE.md annotation"],
+      },
     };
 
     if (dryRun) {
@@ -197,9 +223,9 @@ function run(options = {}) {
 
 // CLI entry point
 if (require.main === module) {
-  const args = process.argv.slice(2);
-  const dryRun = args.includes("--dry-run");
-  const json = args.includes("--json");
+  const args = new Set(process.argv.slice(2));
+  const dryRun = args.has("--dry-run");
+  const json = args.has("--json");
 
   const result = run({ dryRun, json });
   if (!result.success) {

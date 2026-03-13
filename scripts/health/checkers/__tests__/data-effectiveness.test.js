@@ -461,12 +461,6 @@ describe("checkDataEffectiveness", () => {
 
     it("metric value field is rounded to at most 2 decimal places", () => {
       // Use totals that produce a repeating decimal without rounding: 1/3 = 0.333...
-      const unevenSystems = [
-        { total: 1, recall: 0, action: 0 },
-        { total: 2, recall: 0, action: 0 },
-        { total: 0, recall: 0, action: 0 }, // avg = 1, no rounding issue; use below_threshold instead
-      ];
-      // All 3 systems have total < 6 → below_threshold_pct = 100% (clean)
       // To exercise rounding: use 3 systems, 1 with recall >= 2 → 1/3 * 100 = 33.33...
       const roundingSystems = [
         { total: 7, recall: 2, action: 1 },

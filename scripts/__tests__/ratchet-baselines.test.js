@@ -1,5 +1,4 @@
 /* global __dirname */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * ratchet-baselines.test.js — Semantic tests for the ratchet-baselines script
  * Part of Data Effectiveness Audit (Wave 6.3)
@@ -46,13 +45,6 @@ function cleanTempDir(dir) {
   } catch {
     // Best-effort cleanup
   }
-}
-
-/**
- * Write a baseline JSON file at filePath.
- */
-function writeBaselineFile(filePath, data) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf-8");
 }
 
 /**
@@ -440,7 +432,7 @@ describe("run function", () => {
     assert.equal(output.regressions.length, 1);
 
     // Must be valid JSON with all required fields.
-    const parsed = JSON.parse(JSON.stringify(output));
+    const parsed = structuredClone(output);
     assert.deepEqual(parsed.regressions, ["raw-error-message"]);
     assert.ok(Array.isArray(parsed.improvements));
     assert.ok(Array.isArray(parsed.unchanged));
@@ -503,7 +495,7 @@ describe("run function", () => {
         process.exit(1);
       }
       assert.fail("Expected process.exit(1) to throw");
-    } catch (err) {
+    } catch (_err) {
       assert.equal(capturedCode, 1);
     } finally {
       process.exit = originalExit;

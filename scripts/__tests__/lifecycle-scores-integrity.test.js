@@ -24,7 +24,7 @@ const PROJECT_ROOT = path.resolve(__dirname, "..", "..");
 const SCORES_PATH = path.join(PROJECT_ROOT, ".claude", "state", "lifecycle-scores.jsonl");
 
 // Valid categories from the Zod schema
-const VALID_CATEGORIES = [
+const VALID_CATEGORIES = new Set([
   "pattern-rules",
   "review-learnings",
   "retro-findings",
@@ -45,7 +45,7 @@ const VALID_CATEGORIES = [
   "audit-findings",
   "aggregation-data",
   "ecosystem-deferred",
-];
+]);
 
 function loadScores() {
   const content = fs.readFileSync(SCORES_PATH, "utf-8");
@@ -130,7 +130,7 @@ describe("lifecycle-scores.jsonl data integrity", () => {
   it("all categories are valid enum values", () => {
     for (const entry of entries) {
       assert.ok(
-        VALID_CATEGORIES.includes(entry.category),
+        VALID_CATEGORIES.has(entry.category),
         `${entry.system} has invalid category "${entry.category}"`
       );
     }

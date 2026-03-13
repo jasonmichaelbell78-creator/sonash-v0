@@ -517,6 +517,9 @@ function saveBaseline() {
     fs.writeFileSync(tmpPath, data, "utf-8"); // atomic: write .tmp then renameSync below
     let wrote = false;
     try {
+      if (fs.existsSync(BASELINE_PATH)) {
+        fs.rmSync(BASELINE_PATH, { force: true });
+      }
       fs.renameSync(tmpPath, BASELINE_PATH);
       wrote = true;
     } catch {
@@ -2418,10 +2421,8 @@ function checkHookHealth() {
       }
 
       // Detect skipped checks
-      const skipPattern = /Skipping\s+([^\r\n(]+)/g;
       const skippedChecks = [];
-      let skipMatch;
-      while ((skipMatch = skipPattern.exec(hookOutput)) !== null) {
+      for (const skipMatch of hookOutput.matchAll(/Skipping\s+([^\r\n(]+)/g)) {
         const name = skipMatch[1].trim();
         if (name) skippedChecks.push(name);
       }
@@ -3543,7 +3544,10 @@ function checkStalePlanningData() {
     return;
   }
 
-  const daysSinceUpdate = Math.floor((Date.now() - latestDate) / (24 * 60 * 60 * 1000));
+  const daysSinceUpdate = Math.max(
+    0,
+    Math.floor((Date.now() - latestDate) / (24 * 60 * 60 * 1000))
+  );
 
   if (daysSinceUpdate >= 30) {
     addAlert(
@@ -3625,7 +3629,7 @@ function checkCommitPatterns() {
   let sessionEndCount = 0;
   for (const entry of entries) {
     const msg = (entry.message || "").toLowerCase();
-    if (msg.includes("session")) {
+    if (/\bsession[-\s]?end\b/i.test(msg)) {
       sessionEndCount++;
     }
   }

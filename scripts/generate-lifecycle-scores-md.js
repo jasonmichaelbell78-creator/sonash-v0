@@ -13,11 +13,13 @@
 const path = require("node:path");
 const fs = require("node:fs");
 
-let sanitizeError;
+// sanitizeError loaded for future error-handling use; prefixed to satisfy linter
+let _sanitizeError;
 try {
-  ({ sanitizeError } = require(path.join(__dirname, "lib", "security-helpers.js")));
+  ({ sanitizeError: _sanitizeError } = require(path.join(__dirname, "lib", "security-helpers.js")));
 } catch {
-  sanitizeError = (e) =>
+  // regex patterns required for case-insensitive matching — replaceAll not applicable
+  _sanitizeError = (e) =>
     (e instanceof Error ? e.message : String(e))
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]");
@@ -73,13 +75,13 @@ function scoreEmoji(score) {
   return "F";
 }
 
-function generateMarkdown(entries) {
-  const now = new Date().toISOString().split("T")[0];
-
-  // Sort by total score ascending (worst first)
-  const sorted = [...entries].sort((a, b) => a.total - b.total);
-
-  // Compute aggregates
+/**
+ * Generate the summary table section.
+ * @param {object[]} entries - All scored entries
+ * @param {string} now - Current date string (YYYY-MM-DD)
+ * @returns {string} Markdown for header + summary table
+ */
+function generateHeader(entries, now) {
   const totalSystems = entries.length;
   const avgScore =
     entries.length > 0
@@ -90,11 +92,11 @@ function generateMarkdown(entries) {
   const recallGaps = entries.filter((e) => e.recall < 2).length;
   const storageGaps = entries.filter((e) => e.storage < 2).length;
 
-  let md = `# Lifecycle Scores — Data Effectiveness Audit
+  return `# Lifecycle Scores — Data Effectiveness Audit
 
 <!-- prettier-ignore-start -->
 **Document Version:** 1.0
-**Last Updated:** ${now.split("T")[0]}
+**Last Updated:** ${now}
 **Status:** ACTIVE
 **Generated:** ${now}
 **Source:** \`.claude/state/lifecycle-scores.jsonl\`
@@ -124,68 +126,110 @@ function generateMarkdown(entries) {
 | System | Files | Cap | Sto | Rec | Act | Total | Grade | Gap |
 |--------|-------|-----|-----|-----|-----|-------|-------|-----|
 `;
+}
 
+/**
+ * Generate the all-systems table rows.
+ * @param {object[]} sorted - Entries sorted by total ascending
+ * @returns {string} Markdown table rows
+ */
+function generateSystemsTable(sorted) {
+  let md = "";
   for (const e of sorted) {
     const fileList = e.files.map((f) => `\`${path.basename(f)}\``).join(", ");
     const grade = scoreEmoji(e.total);
     const flag = e.total < 6 ? " **FLAG**" : "";
     md += `| ${e.system} | ${fileList} | ${e.capture} | ${e.storage} | ${e.recall} | ${e.action} | **${e.total}** | ${grade}${flag} | ${e.gap} |\n`;
   }
+  return md;
+}
 
-  // Section: Systems below threshold
-  const flagged = sorted.filter((e) => e.total < 6);
-  if (flagged.length > 0) {
-    md += `\n---\n\n## Flagged Systems (Total < 6)\n\n`;
-    for (const e of flagged) {
-      md += `### ${e.system} (${e.total}/12)\n\n`;
-      md += `- **Category:** ${e.category}\n`;
-      md += `- **Files:** ${e.files.join(", ")}\n`;
-      md += `- **Gap:** ${e.gap}\n`;
-      if (e.remediation) {
-        md += `- **Remediation:** ${e.remediation}\n`;
-      }
-      if (e.wave_fixed) {
-        md += `- **Wave fixed:** ${e.wave_fixed}\n`;
-      }
-      md += "\n";
+/**
+ * Generate the flagged systems section (total < 6).
+ * @param {object[]} flagged - Entries with total < 6
+ * @returns {string} Markdown section (empty string if no flagged systems)
+ */
+function generateFlaggedSection(flagged) {
+  if (flagged.length === 0) return "";
+  let md = `\n---\n\n## Flagged Systems (Total < 6)\n\n`;
+  for (const e of flagged) {
+    md += `### ${e.system} (${e.total}/12)\n\n`;
+    md += `- **Category:** ${e.category}\n`;
+    md += `- **Files:** ${e.files.join(", ")}\n`;
+    md += `- **Gap:** ${e.gap}\n`;
+    if (e.remediation) {
+      md += `- **Remediation:** ${e.remediation}\n`;
     }
-  }
-
-  // Section: Action gaps
-  const actionGapSystems = sorted.filter((e) => e.action < 2);
-  if (actionGapSystems.length > 0) {
-    md += `---\n\n## Action Gaps (Action < 2) — Priority for Wave 6\n\n`;
-    md += `| System | Action Score | Gap | Remediation |\n`;
-    md += `|--------|-------------|-----|-------------|\n`;
-    for (const e of actionGapSystems) {
-      md += `| ${e.system} | ${e.action} | ${e.gap} | ${e.remediation || "Pending"} |\n`;
+    if (e.wave_fixed) {
+      md += `- **Wave fixed:** ${e.wave_fixed}\n`;
     }
     md += "\n";
   }
+  return md;
+}
 
-  // Section: Recall gaps
-  const recallGapSystems = sorted.filter((e) => e.recall < 2);
-  if (recallGapSystems.length > 0) {
-    md += `---\n\n## Recall Gaps (Recall < 2) — Priority for Wave 6\n\n`;
-    md += `| System | Recall Score | Gap |\n`;
-    md += `|--------|-------------|-----|\n`;
-    for (const e of recallGapSystems) {
-      md += `| ${e.system} | ${e.recall} | ${e.gap} |\n`;
-    }
-    md += "\n";
+/**
+ * Generate the action gaps table section.
+ * @param {object[]} systems - Entries with action < 2
+ * @returns {string} Markdown section
+ */
+function generateActionGapsSection(systems) {
+  if (systems.length === 0) return "";
+  let md = `---\n\n## Action Gaps (Action < 2) — Priority for Wave 6\n\n`;
+  md += `| System | Action Score | Gap | Remediation |\n`;
+  md += `|--------|-------------|-----|-------------|\n`;
+  for (const e of systems) {
+    md += `| ${e.system} | ${e.action} | ${e.gap} | ${e.remediation || "Pending"} |\n`;
   }
+  md += "\n";
+  return md;
+}
 
-  // Section: Wave improvements
+/**
+ * Generate the recall gaps table section.
+ * @param {object[]} systems - Entries with recall < 2
+ * @returns {string} Markdown section
+ */
+function generateRecallGapsSection(systems) {
+  if (systems.length === 0) return "";
+  let md = `---\n\n## Recall Gaps (Recall < 2) — Priority for Wave 6\n\n`;
+  md += `| System | Recall Score | Gap |\n`;
+  md += `|--------|-------------|-----|\n`;
+  for (const e of systems) {
+    md += `| ${e.system} | ${e.recall} | ${e.gap} |\n`;
+  }
+  md += "\n";
+  return md;
+}
+
+/**
+ * Generate the wave improvements table section.
+ * @param {object[]} entries - All entries (filtered internally for wave_fixed)
+ * @returns {string} Markdown section
+ */
+function generateWaveImprovementsSection(entries) {
   const waveFixed = entries.filter((e) => e.wave_fixed);
-  if (waveFixed.length > 0) {
-    md += `---\n\n## Wave Improvements Applied\n\n`;
-    md += `| System | Wave | Remediation |\n`;
-    md += `|--------|------|-------------|\n`;
-    for (const e of waveFixed) {
-      md += `| ${e.system} | ${e.wave_fixed} | ${e.remediation} |\n`;
-    }
-    md += "\n";
+  if (waveFixed.length === 0) return "";
+  let md = `---\n\n## Wave Improvements Applied\n\n`;
+  md += `| System | Wave | Remediation |\n`;
+  md += `|--------|------|-------------|\n`;
+  for (const e of waveFixed) {
+    md += `| ${e.system} | ${e.wave_fixed} | ${e.remediation} |\n`;
   }
+  md += "\n";
+  return md;
+}
+
+function generateMarkdown(entries) {
+  const now = new Date().toISOString().split("T")[0];
+  const sorted = [...entries].sort((a, b) => a.total - b.total);
+
+  let md = generateHeader(entries, now);
+  md += generateSystemsTable(sorted);
+  md += generateFlaggedSection(sorted.filter((e) => e.total < 6));
+  md += generateActionGapsSection(sorted.filter((e) => e.action < 2));
+  md += generateRecallGapsSection(sorted.filter((e) => e.recall < 2));
+  md += generateWaveImprovementsSection(entries);
 
   return md;
 }
