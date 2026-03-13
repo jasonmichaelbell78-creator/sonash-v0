@@ -71,19 +71,6 @@ function findCurrentTask(session, homeDir) {
   }
 }
 
-/**
- * Check if GSD update is available.
- */
-function checkGsdUpdate(homeDir) {
-  try {
-    const cacheFile = path.join(homeDir, ".claude", "cache", "gsd-update-check.json");
-    const cache = JSON.parse(fs.readFileSync(cacheFile, "utf8"));
-    return cache.update_available ? "\x1b[33m\u2B06 /gsd:update\x1b[0m \u2502 " : "";
-  } catch {
-    return "";
-  }
-}
-
 // Read JSON from stdin
 let input = "";
 process.stdin.setEncoding("utf8");
@@ -97,8 +84,8 @@ process.stdin.on("end", () => {
     const homeDir = os.homedir();
 
     const ctx = buildContextDisplay(data.context_window?.remaining_percentage);
-    const task = findCurrentTask(session, homeDir);
-    const gsdUpdate = checkGsdUpdate(homeDir);
+    const task = sanitize(findCurrentTask(session, homeDir));
+    const safeModel = sanitize(model);
 
     // Git branch
     let branch = "";
@@ -118,11 +105,11 @@ process.stdin.on("end", () => {
     const branchPart = safeBranch ? ` \u2502 \x1b[36m${safeBranch}\x1b[0m` : "";
     if (task) {
       process.stdout.write(
-        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} \u2502 \x1b[1m${task}\x1b[0m \u2502 \x1b[2m${safeDirname}\x1b[0m${ctx}`
+        `\x1b[2m${safeModel}\x1b[0m${branchPart} \u2502 \x1b[1m${task}\x1b[0m \u2502 \x1b[2m${safeDirname}\x1b[0m${ctx}`
       );
     } else {
       process.stdout.write(
-        `${gsdUpdate}\x1b[2m${model}\x1b[0m${branchPart} \u2502 \x1b[2m${safeDirname}\x1b[0m${ctx}`
+        `\x1b[2m${safeModel}\x1b[0m${branchPart} \u2502 \x1b[2m${safeDirname}\x1b[0m${ctx}`
       );
     }
   } catch {

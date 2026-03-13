@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /* global __dirname */
 /**
- * Validate all ecosystem JSONL files against their Zod schemas.
+ * Validate schema-covered ecosystem JSONL files against their Zod schemas.
  * Usage: node scripts/reviews/validate-jsonl-schemas.js [--file NAME]
  *
  * Reads compiled schemas from dist/lib/schemas/index.js (run `npx tsc` first).
- * Validates each record in every JSONL file against its corresponding schema.
+ * Validates each record in schema-mapped JSONL files. Files without a
+ * corresponding Zod schema are reported but not validated.
  *
  * Source: PR #395 retro (DEBT-11312) --- JSONL schema drift caused silent data issues.
  */
@@ -23,6 +24,13 @@ const DIST_SCHEMAS = path.join(SCRIPT_DIR, "dist/lib/schemas/index.js");
 const args = process.argv.slice(2);
 const fileIdx = args.indexOf("--file");
 const fileFilter = fileIdx >= 0 ? args[fileIdx + 1] : null;
+
+if (fileIdx >= 0 && (!fileFilter || fileFilter.startsWith("--"))) {
+  console.error(
+    "Missing --file value. Usage: node scripts/reviews/validate-jsonl-schemas.js --file reviews.jsonl"
+  );
+  process.exit(1);
+}
 
 // Load compiled schemas
 let schemaModule;
@@ -109,7 +117,10 @@ for (const [filename, schemaKey] of Object.entries(JSONL_FILES)) {
     if (!result.success) {
       fileErrors++;
       totalErrors++;
-      const id = (record && typeof record === "object" && record.id) || `line-${i + 1}`;
+      const id =
+        record && typeof record === "object" && "id" in record && record.id != null
+          ? String(record.id)
+          : `line-${i + 1}`;
       const issues = result.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ");
       console.error(`  ${filename} [${id}]: ${issues}`);
     }
@@ -117,6 +128,17 @@ for (const [filename, schemaKey] of Object.entries(JSONL_FILES)) {
 
   const status = fileErrors === 0 ? "OK" : `${fileErrors} error(s)`;
   console.log(`  ${filename}: ${lines.length} records -- ${status}`);
+}
+
+// Report JSONL files in DATA_DIR that have no schema mapping
+try {
+  const allJsonl = fs.readdirSync(DATA_DIR).filter((f) => f.endsWith(".jsonl"));
+  const unmapped = allJsonl.filter((f) => !JSONL_FILES[f]);
+  if (unmapped.length > 0) {
+    console.log(`\nUnvalidated JSONL files (no schema mapping): ${unmapped.join(", ")}`);
+  }
+} catch {
+  // DATA_DIR read failure is non-fatal
 }
 
 console.log(

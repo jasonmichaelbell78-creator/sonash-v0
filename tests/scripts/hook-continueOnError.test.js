@@ -35,7 +35,8 @@ const CRITICAL_PRETOOLUSE_HOOKS = ["block-push-to-main.js"];
 
 /** Flatten all hooks from a hook group array */
 function flattenHooks(groups) {
-  return (groups || []).flatMap((g) => g.hooks || []);
+  const arr = Array.isArray(groups) ? groups : [];
+  return arr.flatMap((g) => (g && Array.isArray(g.hooks) ? g.hooks : []));
 }
 
 describe("Hook continueOnError configuration", () => {
@@ -141,7 +142,7 @@ describe("Hook continueOnError configuration", () => {
           const hookFile = allKnownNonCritical.find((name) => hook.command?.includes(name));
           assert.ok(
             hookFile,
-            `Unknown hook in ${groupName} has continueOnError: true — add to non-critical list or remove flag. Command: ${hook.command}`
+            `Unknown hook in ${groupName} has continueOnError: true — add to non-critical list or remove flag. Command: ${((c) => (c.length > 80 ? c.slice(0, 80) + "…" : c))(hook.command || "")}`
           );
         }
       }

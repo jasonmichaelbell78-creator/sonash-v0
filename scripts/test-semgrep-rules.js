@@ -106,6 +106,16 @@ try {
   if (err.stdout) {
     try {
       const parsed = JSON.parse(err.stdout);
+
+      const errors = Array.isArray(parsed.errors) ? parsed.errors : [];
+      if (errors.length > 0) {
+        console.error(`Semgrep reported ${errors.length} error(s):`);
+        for (const e of errors) {
+          console.error(`  ${e.type || "error"}: ${e.message || JSON.stringify(e)}`);
+        }
+        process.exit(1);
+      }
+
       const findings = parsed.results || [];
       console.log(`Found ${findings.length} finding(s) (expected for test fixtures):`);
       for (const f of findings) {
@@ -119,9 +129,15 @@ try {
     }
   } else {
     // Semgrep not installed or other execution failure
+    const skipIfMissing = process.argv.includes("--skip-if-missing");
     console.log("Semgrep not available (not installed or not in PATH).");
     console.log("Install with: pip install semgrep  OR  brew install semgrep");
-    console.log("Skipping test harness -- no Semgrep binary found.");
-    process.exit(0);
+    if (skipIfMissing) {
+      console.log("Skipping test harness (--skip-if-missing).");
+      process.exit(0);
+    } else {
+      console.error("Semgrep rule test harness: FAIL (semgrep binary not found)");
+      process.exit(1);
+    }
   }
 }

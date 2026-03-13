@@ -2626,3 +2626,24 @@ enhancements, and deep-plan artifacts.
   check it before reporting PASS.
 
 ---
+
+### Review #483: PR #429 R2 — Qodo + Gemini + CI (2026-03-13)
+
+**Key learnings:**
+
+- Auto-generated DEBT entries (e.g. from log-override.js hook bypass detection)
+  must use DEBT-XXXX format IDs and valid type enums. `AUTO-BYPASS-*` IDs and
+  `process-debt` type broke CI schema validation. Root cause: the generator
+  script doesn't validate against TDMS schema before writing.
+- When Zod schemas and documentation disagree on enum values, check existing
+  data to determine truth. Gemini suggested changing `"implemented"` to `"done"`
+  in retro schema, but 11 existing records use `"implemented"` — fix the docs,
+  not the schema.
+- SARIF upload guarded by `hashFiles() != ''` without asserting file existence
+  means Semgrep execution failures are invisible. Always add an existence
+  assertion step before conditional uploads.
+- Validator scripts claiming "all files" coverage but only checking a hardcoded
+  subset creates false confidence. Either add schemas or be honest about partial
+  coverage.
+
+---

@@ -101,7 +101,7 @@ State file: `.claude/state/task-pr-retro.state.json`
       "action_item": "...",
       "verify_cmd": "...",
       "severity": "High",
-      "implementation_status": "done|blocked|deferred",
+      "implementation_status": "implemented|blocked|deferred|rejected",
       "verify_result": "pass|fail|skipped"
     }
   ],
