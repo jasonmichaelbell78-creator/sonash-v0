@@ -1769,6 +1769,12 @@
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-111","removed":"audit:hash-Tm8gaTE4biBp","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-112","removed":"audit:hash-Sm91cm5hbCBs","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-113","removed":"audit:hash-U3dpcGUgbmF2","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"manual:retro-batch-420-424-426","removed":"manual:retro-batch-420-424-426","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"manual:hook-bypass-cc","removed":"manual:hook-bypass-cc","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"hook-bypass-propagation","removed":"hook-bypass-propagation","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"hook-bypass-PROPAGATION","removed":"hook-bypass-PROPAGATION","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"hook-bypass-cc","removed":"hook-bypass-cc","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"hook-bypass-CC","removed":"hook-bypass-CC","reason":"identical content hash"}
 {"pass":2,"type":"near_match","kept":"audit:process-package.json-never-executes-learning-category","removed":"audit:process::package.json::never-executes-learning-since","reason":"same file, line diff ≤5, title similarity >80%"}
 {"pass":3,"type":"semantic_match","kept":"sonarcloud:AZwrA-pN94jZShN2JzMo","removed":"sonarcloud:AZwrA-pN94jZShN2JzMs","reason":"same file, title similarity >90%","flagged_for_review":true}
 {"pass":5,"type":"systemic_pattern","source_id":"sonarcloud:AZwrA-pN94jZShN2JzMo","cluster_id":"CLUSTER-a7aabc982fef","cluster_count":41,"is_primary":true,"reason":"title appears in 41 different files"}
