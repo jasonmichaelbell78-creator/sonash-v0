@@ -1394,7 +1394,7 @@
 | DEBT-45526              | Hook bypass threshold: cc overridden 30+ times in 14 days     | cc                                                                                                                                                 | 0    | process                  | E2        |
 | DEBT-45527              | Hook bypass threshold: cc overridden 31+ times in 14 days     | cc                                                                                                                                                 | 0    | process                  | E2        |
 
-## S2 - Medium (3386)
+## S2 - Medium (3387)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4784,6 +4784,7 @@
 | DEBT-11346 | Upgrade tailwind-merge 2.6→3.5 (API changes for TW v4)            | package.json                                                                                                                                                                | 150       | refactoring              | E1        |
 | DEBT-45519 | Pre-push SonarCloud lint script for new files                     | scripts/                                                                                                                                                                    | 0         | engineering-productivity | E1        |
 | DEBT-45522 | Pre-push SonarCloud lint script for new files                     | scripts/                                                                                                                                                                    | 0         | engineering-productivity | E1        |
+| DEBT-45528 | log-override.js generates duplicate DEBT entries with cas...      | scripts/log-override.js                                                                                                                                                     | 0         | process                  | E1        |
 
 ## S3 - Low (3622)
 

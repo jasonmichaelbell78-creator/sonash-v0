@@ -28,7 +28,15 @@ const NON_CRITICAL_POSTTOOL_HOOKS = ["commit-tracker.js"];
 const CRITICAL_HOOKS = ["session-start.js", "compact-restore.js"];
 
 // PostToolUse hooks that MUST NOT have continueOnError (critical validation)
-const CRITICAL_POSTTOOL_HOOKS = ["post-write-validator.js", "block-push-to-main.js"];
+const CRITICAL_POSTTOOL_HOOKS = ["post-write-validator.js"];
+
+// PreToolUse hooks that MUST NOT have continueOnError (critical validation)
+const CRITICAL_PRETOOLUSE_HOOKS = ["block-push-to-main.js"];
+
+/** Flatten all hooks from a hook group array */
+function flattenHooks(groups) {
+  return (groups || []).flatMap((g) => g.hooks || []);
+}
 
 describe("Hook continueOnError configuration", () => {
   const settingsPath = ".claude/settings.json";
@@ -39,11 +47,6 @@ describe("Hook continueOnError configuration", () => {
   } catch {
     // If settings file doesn't exist, skip gracefully
     settings = null;
-  }
-
-  /** Flatten all hooks from a hook group array */
-  function flattenHooks(groups) {
-    return (groups || []).flatMap((g) => g.hooks || []);
   }
 
   it("settings.json is parseable", () => {
@@ -71,7 +74,7 @@ describe("Hook continueOnError configuration", () => {
 
     for (const hookName of CRITICAL_HOOKS) {
       const hook = allHooks.find((h) => h.command?.includes(hookName));
-      if (!hook) continue; // Hook may not exist in all configurations
+      assert.ok(hook, `Critical hook ${hookName} not found in SessionStart`);
       assert.notStrictEqual(
         hook.continueOnError,
         true,
@@ -86,7 +89,7 @@ describe("Hook continueOnError configuration", () => {
 
     for (const hookName of NON_CRITICAL_POSTTOOL_HOOKS) {
       const hook = allHooks.find((h) => h.command?.includes(hookName));
-      if (!hook) continue; // Hook may not be configured
+      assert.ok(hook, `Non-critical hook ${hookName} not found in PostToolUse`);
       assert.strictEqual(
         hook.continueOnError,
         true,
@@ -101,11 +104,26 @@ describe("Hook continueOnError configuration", () => {
 
     for (const hookName of CRITICAL_POSTTOOL_HOOKS) {
       const hook = allHooks.find((h) => h.command?.includes(hookName));
-      if (!hook) continue; // Hook may not be configured
+      assert.ok(hook, `Critical hook ${hookName} not found in PostToolUse`);
       assert.notStrictEqual(
         hook.continueOnError,
         true,
         `PostToolUse ${hookName} is critical and must NOT have continueOnError: true`
+      );
+    }
+  });
+
+  it("critical PreToolUse hooks do NOT have continueOnError", () => {
+    if (!settings) return;
+    const allHooks = flattenHooks(settings.hooks?.PreToolUse);
+
+    for (const hookName of CRITICAL_PRETOOLUSE_HOOKS) {
+      const hook = allHooks.find((h) => h.command?.includes(hookName));
+      assert.ok(hook, `Critical hook ${hookName} not found in PreToolUse`);
+      assert.notStrictEqual(
+        hook.continueOnError,
+        true,
+        `PreToolUse ${hookName} is critical and must NOT have continueOnError: true`
       );
     }
   });

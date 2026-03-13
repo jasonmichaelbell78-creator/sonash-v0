@@ -22,7 +22,7 @@ const DIST_SCHEMAS = path.join(SCRIPT_DIR, "dist/lib/schemas/index.js");
 // Parse args
 const args = process.argv.slice(2);
 const fileIdx = args.indexOf("--file");
-const fileFilter = fileIdx !== -1 ? args[fileIdx + 1] : null;
+const fileFilter = fileIdx >= 0 ? args[fileIdx + 1] : null;
 
 // Load compiled schemas
 let schemaModule;
@@ -109,7 +109,7 @@ for (const [filename, schemaKey] of Object.entries(JSONL_FILES)) {
     if (!result.success) {
       fileErrors++;
       totalErrors++;
-      const id = record.id || `line-${i + 1}`;
+      const id = (record && typeof record === "object" && record.id) || `line-${i + 1}`;
       const issues = result.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ");
       console.error(`  ${filename} [${id}]: ${issues}`);
     }

@@ -65,7 +65,7 @@ try {
   process.exit(0);
 } catch (testErr) {
   // semgrep --test exits non-zero on test failures AND when --test is unsupported
-  if (testErr.stdout && testErr.stdout.includes("test result")) {
+  if (testErr.stdout?.includes("test result")) {
     // --test ran but some tests failed
     console.log(testErr.stdout);
     if (testErr.stderr) console.error(testErr.stderr);
@@ -78,6 +78,8 @@ try {
 }
 
 // Fallback: run semgrep scan and report findings
+// NOTE: This fallback does NOT validate // ruleid: / // ok: annotations.
+// It only confirms semgrep can parse and run the rules. Use semgrep --test for full validation.
 try {
   const result = execFileSync(
     "semgrep",
@@ -85,6 +87,14 @@ try {
     { cwd: ROOT, maxBuffer: 10 * 1024 * 1024, encoding: "utf-8", timeout: 60000 }
   );
   const parsed = JSON.parse(result);
+  const errors = Array.isArray(parsed.errors) ? parsed.errors : [];
+  if (errors.length > 0) {
+    console.error(`Semgrep reported ${errors.length} error(s):`);
+    for (const e of errors) {
+      console.error(`  ${e.type || "error"}: ${e.message || JSON.stringify(e)}`);
+    }
+    process.exit(1);
+  }
   const findings = parsed.results || [];
   console.log(`Found ${findings.length} finding(s) across ${testFiles.length} file(s):`);
   for (const f of findings) {

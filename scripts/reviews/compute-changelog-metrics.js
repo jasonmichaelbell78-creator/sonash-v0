@@ -24,10 +24,11 @@ function readJsonl(fp) {
       .trim()
       .split("\n")
       .filter(Boolean)
-      .map((l) => {
+      .map((l, idx) => {
         try {
           return JSON.parse(l);
         } catch {
+          console.error(`  Warning: skipped malformed JSON at ${fp} line ${idx + 1}`);
           return null;
         }
       })
@@ -39,7 +40,7 @@ function readJsonl(fp) {
 
 const args = process.argv.slice(2);
 const prIdx = args.indexOf("--pr");
-const prFilter = prIdx !== -1 ? parseInt(args[prIdx + 1], 10) : null;
+const prFilter = prIdx >= 0 ? Number.parseInt(args[prIdx + 1], 10) : null;
 
 if (prFilter !== null && Number.isNaN(prFilter)) {
   console.error("Invalid --pr value. Usage: node compute-changelog-metrics.js --pr 427");
@@ -78,7 +79,7 @@ for (const r of filteredRetros) {
   console.log(`PR #${r.pr} (${r.date}) --- Score: ${r.score ?? "N/A"}/10`);
   console.log(`  [Retro metrics]`);
   console.log(
-    `    Findings: ${m.total_findings ?? "N/A"} | Fix rate: ${m.fix_rate != null ? (m.fix_rate * 100).toFixed(1) + "%" : "N/A"} | Pattern recurrence: ${m.pattern_recurrence ?? "N/A"}`
+    `    Findings: ${m.total_findings ?? "N/A"} | Fix rate: ${m.fix_rate !== null && m.fix_rate !== undefined ? (m.fix_rate * 100).toFixed(1) + "%" : "N/A"} | Pattern recurrence: ${m.pattern_recurrence ?? "N/A"}`
   );
   console.log(
     `    Action items: ${actionItems.length} | Wins: ${wins.length} | Misses: ${misses.length}`

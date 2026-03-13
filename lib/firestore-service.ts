@@ -22,7 +22,6 @@ import { db as defaultDb } from "./firebase";
 import {
   collection,
   doc,
-  setDoc,
   getDoc,
   getDocs,
   query,
@@ -103,7 +102,6 @@ type FirestoreDependencies = {
   validateUserDocumentPath: typeof validateUserDocumentPath;
   collection: typeof collection;
   doc: typeof doc;
-  setDoc: typeof setDoc;
   getDoc: typeof getDoc;
   getDocs: typeof getDocs;
   query: typeof query;
@@ -119,7 +117,6 @@ const defaultDeps: FirestoreDependencies = {
   validateUserDocumentPath,
   collection,
   doc,
-  setDoc,
   getDoc,
   getDocs,
   query,

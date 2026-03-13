@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2062)
+## NEW (2063)
 
 | ID                      | Title                                                           | Severity | Category                 |
 | ----------------------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -659,6 +659,7 @@
 | DEBT-11346              | Upgrade tailwind-merge 2.6→3.5 (API changes for TW v4)          | S2       | refactoring              |
 | DEBT-45519              | Pre-push SonarCloud lint script for new files                   | S2       | engineering-productivity |
 | DEBT-45522              | Pre-push SonarCloud lint script for new files                   | S2       | engineering-productivity |
+| DEBT-45528              | log-override.js generates duplicate DEBT entries with cas...    | S2       | process                  |
 | DEBT-0001               | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443               | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447               | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |

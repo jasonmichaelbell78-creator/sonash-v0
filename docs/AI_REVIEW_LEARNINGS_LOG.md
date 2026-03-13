@@ -2574,3 +2574,55 @@ hallucination in planning docs is the only process concern — fixable with
 verification requirements in the deep-plan skill.
 
 ---
+
+### Review #482: PR #429 R1 — SonarCloud + Qodo + CI (2026-03-13)
+
+**Source:** Mixed (SonarCloud Security Hotspots, SonarCloud Code Smells, Qodo PR
+Reviewer Guide, Qodo Compliance, Qodo Code Suggestions, CI Failure)
+**PR/Branch:** PR #429 / tooling-code-plan **Items:** 15 total (Critical: 1,
+Major: 5, Minor: 6, Rejected: 3)
+
+**Context:** First review round on tooling/code-plan PR (46 files). Mix of new
+scripts (semgrep test harness, JSONL validator, changelog metrics), hook test
+enhancements, and deep-plan artifacts.
+
+**Issues Found:**
+
+1. CI BLOCKER: `lib/firestore-service.ts` imported `setDoc` (direct Firestore
+   write) despite all methods using `httpsCallable` Cloud Functions. Dead import
+   from pre-migration era. Removed import, type member, and default dep.
+
+2. Hook test `block-push-to-main.js` listed in `CRITICAL_POSTTOOL_HOOKS` but
+   actually configured in PreToolUse, not PostToolUse. Test silently passed via
+   `continue` before review caught it. Split into `CRITICAL_PRETOOLUSE_HOOKS`
+   with dedicated test.
+
+3. Semgrep test harness fallback reported PASS without checking `parsed.errors`,
+   hiding scan/config errors. Added error field check + documented that fallback
+   doesn't validate `// ruleid:` annotations.
+
+4. Duplicate DEBT entries from casing variations in `log-override.js` — same
+   check generating `hook-bypass-propagation` and `hook-bypass-PROPAGATION`
+   source_ids, inflating metrics. Deferred as DEBT-45528.
+
+**Resolution:**
+
+- Fixed: 12 items
+- Deferred: 1 item (DEBT-45528)
+- Rejected: 2 items (S4036 PATH: `execFileSync` doesn't use shell; secure
+  logging: hook commands are script paths, not secrets)
+
+**Key Learnings:**
+
+- Dead imports from pre-migration code can trigger CI blockers — `setDoc` was in
+  DI deps but no method called it. Pattern compliance checks catch these.
+- Hook placement matters: `block-push-to-main.js` is a PreToolUse hook (blocks
+  before `git push` command runs), not PostToolUse. Test lists must match actual
+  settings.json configuration.
+- `if (!hook) continue` in hook tests creates silent passes — caught by Qodo.
+  Changed to `assert.ok` for both critical and non-critical hooks to ensure hook
+  presence is verified.
+- Semgrep JSON output can contain an `errors` array even on exit code 0 — always
+  check it before reporting PASS.
+
+---

@@ -6310,7 +6310,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (723)
+## process (724)
 
 | ID                      | Title                                                         | Severity | File                                                                    | Line |
 | ----------------------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6676,6 +6676,7 @@
 | DEBT-11313              | Auto-increment review numbers from JSONL max to prevent c...  | S2       | scripts/reviews-sync.js                                                 | 1    |
 | DEBT-11314              | Add cross-platform path normalization pattern to CODE_PAT...  | S2       | docs/agent_docs/CODE_PATTERNS.md                                        | 1    |
 | DEBT-11330              | Auto-increment review numbers from JSONL max to prevent c...  | S2       | scripts/sync-reviews-to-jsonl.js                                        | 1    |
+| DEBT-45528              | log-override.js generates duplicate DEBT entries with cas...  | S2       | scripts/log-override.js                                                 | 0    |
 | DEBT-0811               | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
 | DEBT-0812               | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
 | DEBT-0813               | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |

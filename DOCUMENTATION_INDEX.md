@@ -787,9 +787,9 @@ _Uncategorized_
 
 | Document                                                                                          | Description                    | References | Last Modified |
 | ------------------------------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Data Effectiveness Audit — DECISIONS](.planning/learnings-effectiveness-audit/DECISIONS.md)      | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-13    |
-| [Data Effectiveness Audit — PLAN](.planning/learnings-effectiveness-audit/PLAN.md)                | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-13    |
-| [Learnings Effectiveness Audit — DIAGNOSIS](.planning/learnings-effectiveness-audit/DIAGNOSIS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-13    |
+| [Data Effectiveness Audit — DECISIONS](.planning/learnings-effectiveness-audit/DECISIONS.md)      | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-12    |
+| [Data Effectiveness Audit — PLAN](.planning/learnings-effectiveness-audit/PLAN.md)                | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-12    |
+| [Learnings Effectiveness Audit — DIAGNOSIS](.planning/learnings-effectiveness-audit/DIAGNOSIS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-12    |
 
 ### .planning > milestones (Tier 4)
 

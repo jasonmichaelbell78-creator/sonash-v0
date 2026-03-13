@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2062
+**Items Needing Verification:** 2063
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -662,6 +662,7 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-11346              | Upgrade tailwind-merge 2.6→3.5 (API changes for TW v4)          | S2       | package.json                                                                     | 150       |
 | DEBT-45519              | Pre-push SonarCloud lint script for new files                   | S2       | scripts/                                                                         | 0         |
 | DEBT-45522              | Pre-push SonarCloud lint script for new files                   | S2       | scripts/                                                                         | 0         |
+| DEBT-45528              | log-override.js generates duplicate DEBT entries with cas...    | S2       | scripts/log-override.js                                                          | 0         |
 | DEBT-0001               | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443               | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447               | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |
