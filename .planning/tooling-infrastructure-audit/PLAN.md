@@ -59,8 +59,8 @@ ecosystems).
 
 The one-time SHA-pinning of GitHub Actions (Step 2a) MUST be accompanied by an
 automated check preventing regression. Add to CI:
-`grep -rn '@v[0-9]' .github/workflows/ | grep -v '#' && exit 1 || true` This
-ensures new workflow additions cannot use unpinned tag references.
+`if grep -rn '@v[0-9]' .github/workflows/ | grep -v '#'; then echo "::error::Found unpinned actions using version tags. Please use SHA pins."; exit 1; fi`
+This ensures new workflow additions cannot use unpinned tag references.
 
 ## Files to Create/Modify
 

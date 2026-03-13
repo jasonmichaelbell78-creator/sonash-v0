@@ -351,6 +351,17 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#3)</summary>
+
+- **Date:** 2026-03-13
+- **Reviews consolidated:** #471-#484
+- **Recurring patterns:**
+  - qodo (11x)
+  - ci (9x)
+  - sonarcloud (9x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#2)</summary>
 
 - **Date:** 2026-03-09
@@ -888,6 +899,38 @@ rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
 ---
 
 ## Active Reviews
+
+### Review #474: PR #430 R1 — Mixed (Qodo + Gemini + CI) (2026-03-13)
+
+_Planning docs alignment — CLAUDE.md casing, SHA-pin CI guardrail logic,
+duplicate metrics entries, ESLint first-scan volume._
+
+**Source:** Qodo PR Reviewer (3 items + 3 suggestions), Gemini Code Assist (2),
+CI (ESLint 1324 warnings) **Items:** 4 total (3 fixed, 0 deferred, 1 rejected)
+**Severity:** 0C / 2M / 1m / 0T
+
+**Key Patterns:**
+
+1. **Case-sensitive file links** — DOCUMENTATION_INDEX.md generator output
+   `CLAUDE.md` but actual file is `claude.md`. Breaks on Linux/CI. Fix: correct
+   all 4 references to match actual filename casing.
+2. **Flawed CI grep exit logic** — `grep X && exit 1 || true` always succeeds
+   because `|| true` catches the `exit 1`. Fix: use `if grep; then exit 1; fi`.
+3. **Append-only metrics without dedup** — review-metrics.jsonl grew from 15
+   unique PRs to 903 lines (60x bloat). Fix: deduplicate keeping latest per PR.
+
+**Rejections:**
+
+- ESLint 1324 warnings — pre-existing across 100+ files, none introduced by this
+  docs-only PR. User confirmed: skip.
+
+**Process Learnings:**
+
+- Multi-source convergence (Qodo + Gemini both flagged casing + grep logic)
+  confirms high signal. Auto-elevate when 2+ sources agree.
+- **Score:** 7/10 — Small PR with valid findings. All fixable items addressed.
+
+---
 
 ### Review #473: PR #427 R1 — Mixed (SonarCloud + Semgrep + CI + Qodo) (2026-03-11)
 

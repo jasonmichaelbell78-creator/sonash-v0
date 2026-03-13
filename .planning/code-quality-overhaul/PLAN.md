@@ -77,12 +77,12 @@ The following guardrails exist only in local hooks (pre-commit/pre-push) but NOT
 in CI. GitHub UI pushes, API pushes, and hook-bypassed pushes can introduce
 regressions silently. Each needs a CI step:
 
-| Guardrail                  | Current Enforcement               | CI Step Needed                                            |
-| -------------------------- | --------------------------------- | --------------------------------------------------------- |
-| Propagation check          | Pre-push only                     | `node scripts/check-propagation.js --all` in CI           |
-| Truncation guard           | Post-write + pre-commit           | `node scripts/validators/check-truncation-guard.js` in CI |
-| SHA-pin enforcement        | One-time pin (Tooling plan)       | `grep -r '@v[0-9]' .github/workflows/` as CI check        |
-| Pattern compliance on main | CI with `continue-on-error: true` | Change to blocking (`continue-on-error: false`)           |
+| Guardrail                  | Current Enforcement               | CI Step Needed                                                                                                     |
+| -------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Propagation check          | Pre-push only                     | `node scripts/check-propagation.js --all` in CI                                                                    |
+| Truncation guard           | Post-write + pre-commit           | `node scripts/validators/check-truncation-guard.js` in CI                                                          |
+| SHA-pin enforcement        | One-time pin (Tooling plan)       | `if grep -rn '@v[0-9]' .github/workflows/ \| grep -v '#'; then echo "::error::Found unpinned actions"; exit 1; fi` |
+| Pattern compliance on main | CI with `continue-on-error: true` | Change to blocking (`continue-on-error: false`)                                                                    |
 
 ### Pre-Commit Warning Enforcement (MUST — Step 7b amendment)
 

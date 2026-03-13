@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-03-09
+**Last Updated:** 2026-03-13
 
 ---
 
@@ -27,28 +27,28 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #343 - #346 (4 reviews) **Analysis Date:** 2026-03-09
+**Review Range:** #353 - #355 (3 reviews) **Analysis Date:** 2026-03-13
 
 ### Key Metrics
 
-| Metric                    | Value  |
-| ------------------------- | ------ |
-| Learning Effectiveness    | 97.5%  |
-| Patterns Learned          | 420    |
-| Patterns Automated        | 11     |
-| Patterns Failing          | 0      |
-| Critical Pattern Success  | 100.0% |
-| Automation Coverage       | 14.7%  |
-| Total Documented Patterns | 442    |
-| Total Automated Patterns  | 65     |
+| Metric                    | Value |
+| ------------------------- | ----- |
+| Learning Effectiveness    | 93.0% |
+| Patterns Learned          | 391   |
+| Patterns Automated        | 22    |
+| Patterns Failing          | 0     |
+| Critical Pattern Success  | 96.6% |
+| Automation Coverage       | 14.6% |
+| Total Documented Patterns | 444   |
+| Total Automated Patterns  | 65    |
 
 ### Top Recommended Actions
 
-1. **[Documentation]** Improve documentation for "POSIX shell compliance"
+1. **[Documentation]** Improve documentation for "Signal error code semantics"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-2. **[Documentation]** Improve documentation for "Signal error code semantics"
+2. **[Documentation]** Improve documentation for "Set vs Array migration"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -58,9 +58,9 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 420   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 11    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 11    | Pattern recurred 1-2 times - needs attention |
+| ✅ LEARNED   | 391   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 22    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 31    | Pattern recurred 1-2 times - needs attention |
 | 🔴 FAILED    | 0     | Pattern recurred 3+ times - needs automation |
 
 ---
@@ -69,4 +69,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-03-09 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-03-13 | Rewritten to focus on Claude's learning effectiveness |

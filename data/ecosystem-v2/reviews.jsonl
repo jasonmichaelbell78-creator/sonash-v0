@@ -400,3 +400,4 @@
 {"id":"PR-429-R1","date":"2026-03-13","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review"},"pr":429,"source":"mixed","total":15,"fixed":12,"deferred":1,"rejected":2}
 {"id":"rev-483","date":"2026-03-13","schema_version":2,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review"},"pr":429,"source":"mixed","total":9,"fixed":9,"deferred":0,"rejected":0}
 {"id":"rev-484","date":"2026-03-13","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review"},"pr":429,"source":"mixed","total":7,"fixed":6,"deferred":0,"rejected":1}
+{"id":"rev-485","date":"2026-03-13","schema_version":2,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review"},"pr":430,"source":"mixed","total":4,"fixed":3,"deferred":0,"rejected":1,"patterns":["case-sensitive-file-links","flawed-ci-grep-exit-logic","append-only-metrics-dedup"]}
