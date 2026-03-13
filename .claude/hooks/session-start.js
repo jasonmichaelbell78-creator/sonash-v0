@@ -577,6 +577,22 @@ try {
   }
 }
 
+// Unified JSONL rotation (D11/D25: tiered rotation per config/rotation-policy.json)
+try {
+  execFileSync(process.execPath, ["scripts/rotate-jsonl.js"], {
+    cwd: projectDir,
+    stdio: "pipe",
+    timeout: 10000,
+  });
+} catch (rotateErr) {
+  // Non-fatal: log but don't block session start
+  const rotateMsg = rotateErr instanceof Error ? rotateErr.message : String(rotateErr);
+  if (rotateMsg && !rotateMsg.includes("exit code 0")) {
+    console.log("   ⚠️ JSONL rotation: " + sanitizeInput(rotateMsg.split("\n")[0]));
+    warnings++;
+  }
+}
+
 // Sync commit log from git history (fills gaps when commit-tracker hook misses)
 try {
   execFileSync(process.execPath, ["scripts/seed-commit-log.js", "--sync"], {

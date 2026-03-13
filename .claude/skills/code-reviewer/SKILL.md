@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
-version: "2.0"
-updated: 2026-02-14
+version: "2.1"
+updated: 2026-03-13
 description:
   Code review skill for SoNash (Next.js/TypeScript/Firebase). Includes automated
   code analysis, best practice checking, security scanning, and review checklist
@@ -96,6 +96,55 @@ mcp__plugin_episodic -
 
 ---
 
+## Anti-Pattern & Positive Pattern Verification (MUST -- D27/D32)
+
+Before detailed review, run a quick pattern check against staged/modified files:
+
+### 1. Check anti-patterns
+
+For each file being reviewed, scan for known anti-patterns from
+`docs/agent_docs/CODE_PATTERNS.md`:
+
+- Raw `error.message` without sanitization
+- `startsWith('..')` instead of regex path traversal check
+- `existsSync` before `readFileSync` (TOCTOU race)
+- `exec()` without `/g` flag in while loops
+- Direct Firestore writes to protected collections
+- `writeFileSync` without `isSafeToWrite` guard
+- `fs.appendFileSync` without `withLock` for shared JSONL files
+
+### 2. Check positive patterns
+
+Verify safe alternatives are used:
+
+- `sanitizeError()` or `sanitizeInput()` for error messages
+- Regex path traversal check with `/^\.\.(?:[\/\\]|$)/`
+- try/catch wrapping all file reads
+- `safeWriteFileSync` or `isSafeToWrite` guard before writes
+- `withLock` for concurrent-write JSONL files
+
+### 3. On violation
+
+- **Block immediately** (per D32 -- no warning mode)
+- Reference the specific positive pattern from
+  `docs/agent_docs/POSITIVE_PATTERNS.md`
+- Show the exact import and usage to fix
+
+### 4. Report format
+
+```
+Anti-Pattern Check: 2 violations found
+  X src/utils/logger.js:45 -- raw error.message (use sanitizeError())
+    -> See POSITIVE_PATTERNS.md S1
+  X scripts/new-script.js:12 -- writeFileSync without guard (use safeWriteFileSync)
+    -> See POSITIVE_PATTERNS.md S6
+```
+
+If **0 violations**, report `Anti-Pattern Check: PASS` and proceed to detailed
+review. If **any violations**, block the review and require fixes first.
+
+---
+
 ## Review Checklist
 
 ### TypeScript / JavaScript
@@ -184,11 +233,10 @@ npm run patterns:check
 
 ## Reference Documentation
 
-- `docs/agent_docs/CODE_PATTERNS.md` — Detailed patterns and practices (230+
-  from 259 reviews)
-- `docs/agent_docs/SECURITY_CHECKLIST.md` — Pre-write security checklist
-- `docs/agent_docs/FIX_TEMPLATES.md` — Standard fix patterns
-- `docs/agent_docs/CODE_PATTERNS.md` — 230+ patterns from 259 reviews
+- `docs/agent_docs/CODE_PATTERNS.md` — Detailed anti-patterns and practices
+  (230+ from 259 reviews)
+- `docs/agent_docs/POSITIVE_PATTERNS.md` — Safe alternatives and correct usage
+  for each anti-pattern
 - `docs/agent_docs/SECURITY_CHECKLIST.md` — Pre-write security checklist
 - `docs/agent_docs/FIX_TEMPLATES.md` — Standard fix patterns
 
@@ -196,6 +244,7 @@ npm run patterns:check
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-02-25 | Initial implementation |
+| Version | Date       | Description                                      |
+| ------- | ---------- | ------------------------------------------------ |
+| 2.1     | 2026-03-13 | Add anti-pattern & positive pattern verification |
+| 1.0     | 2026-02-25 | Initial implementation                           |

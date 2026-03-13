@@ -6,8 +6,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.0
-**Last Updated:** 2026-03-06
+**Document Version:** 4.4
+**Last Updated:** 2026-03-13
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -133,7 +133,28 @@ git log --oneline --grep="PR #${PR_NUM}" --grep="R[0-9]" --all-match
 grep "pr-review" docs/technical-debt/MASTER_DEBT.jsonl | grep "${PR_NUM}"
 ```
 
-### 1.4 Check Previous Retros (MUST)
+### 1.3b Review Metrics Enrichment (SHOULD -- D12 data flow)
+
+Read `.claude/state/review-metrics.jsonl` and find the entry matching the PR
+being retro'd:
+
+1. Search for entry where `pr` matches the current PR number (use the latest
+   entry if duplicates exist for the same PR number)
+2. If found, extract and display:
+   - `fix_ratio` -- percentage of commits that were fixes
+   - `review_rounds` -- total review rounds
+   - `total_commits` / `fix_commits` breakdown
+3. Use this data to:
+   - Inform churn analysis in Step 2 (quantitative backing for "too many rounds"
+     or high fix ratios)
+   - Set baseline for "was this PR unusually churny?" (compare to average across
+     last 5 PRs in the file)
+   - Include in the JSONL record's `metrics` field
+
+If the file doesn't exist or no matching entry found, note "No review-metrics
+data available for this PR" and continue.
+
+### 1.4 Check Previous Retros + Build Pattern Recurrence Map (MUST)
 
 Read last 3-5 retros from `retros.jsonl`. For each retro's `action_items` array
 (or `process_changes` for pre-schema records):
@@ -146,6 +167,19 @@ Read last 3-5 retros from `retros.jsonl`. For each retro's `action_items` array
    and functions.
 3. **Flag unimplemented items** -- these become mandatory action items for this
    retro (repeat offender escalation).
+
+**Pattern recurrence counting (D7):**
+
+4. **Build a pattern recurrence map** from ALL prior retros (not just last 3-5).
+   For each retro entry, extract finding categories from `top_misses`,
+   `action_items[].title`, and `process_changes`. Count how many prior retros
+   contain each pattern category (e.g., "ping-pong", "scope creep", "missing
+   test coverage").
+5. **Store the map** for use in Step 2 (recurring pattern detection) and Step 4
+   (JSONL record writing).
+6. **Auto-escalation rule:** Any pattern category with recurrence count >= 3
+   MUST be auto-tagged CRITICAL in this retro's findings. This is non-negotiable
+   — 3+ appearances means the pattern is systemic and must be resolved NOW.
 
 **Verification quality rules:**
 
@@ -185,10 +219,12 @@ Save state. If user declines, exit gracefully.
    Y? Build chain tables.
 2. **Scope creep** — items in non-PR files? Pre-existing vs this-PR origin?
 3. **Recurring patterns** — patterns in 3+ rounds = automation candidates.
-   Reference REFERENCE.md known churn patterns. **Escalation (C3-G2):** If the
-   same recommendation appears in 3+ retros (check
-   `docs/AI_REVIEW_LEARNINGS_LOG.md` and `reviews.jsonl`), auto-tag it CRITICAL
-   and add to session action items — it must be resolved this session.
+   Reference REFERENCE.md known churn patterns. **Use the pattern recurrence map
+   from Step 1.4** to identify cross-retro recurrence. **Escalation (C3-G2 +
+   D7):** If the pattern recurrence map shows count >= 3 for any category,
+   auto-tag it CRITICAL and add to session action items — it must be resolved
+   this session. The `metrics.pattern_recurrence` field in the JSONL record MUST
+   reflect the highest recurrence count found.
 4. **Rejection analysis** — group by reason, check false-positive rate by source
 
 Present intermediate summary: "Analysis complete: N findings identified across M
@@ -434,6 +470,8 @@ checks open retro DEBT items. `/pr-review` checks pre-push recommendations.
 
 | Version | Date       | Description                                                                                                                                    |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.4     | 2026-03-13 | D12: Add Step 1.3b — review-metrics.jsonl enrichment for churn quantification in retro analysis.                                               |
+| 4.3     | 2026-03-13 | D7: pattern_recurrence populated at creation time from prior retros, auto-escalate >=3 to CRITICAL. Step 1.4 + 2.3 + REFERENCE.md updated.     |
 | 4.2     | 2026-03-11 | Step 6 hard gate: implement=MUST not DEFAULT, DEBT only on explicit user request, implementation checklist + gate check before Step 7.         |
 | 4.1     | 2026-03-09 | Step 6 rewrite: default=implement now, DEBT=explicit only. Source: batch retro PRs #417-#423.                                                  |
 | 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch retros, verification protocol, compaction resilience, routing. Source: skill-audit 37 decisions. |

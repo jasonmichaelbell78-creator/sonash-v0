@@ -165,6 +165,27 @@ cat .claude/state/pending-reviews.json 2>/dev/null
 If `pending-reviews.json` shows `queued: true` but no code-reviewer was invoked,
 flag as a compliance gap.
 
+### Step 4b. Agent Invocation Summary (SHOULD — D26 data flow)
+
+Read `.claude/state/agent-invocations.jsonl` to summarize agent activity:
+
+1. Filter entries to current session (match session ID or today's date)
+2. Group by agent/skill name
+3. For each group, report:
+   - Count of invocations
+   - Success/failure breakdown
+   - Total duration (if available)
+4. Include in session summary output:
+
+```
+Agent Activity This Session:
+  code-reviewer: 3 runs (3 pass, 0 fail)
+  security-auditor: 1 run (1 pass)
+  Total: 4 invocations, 100% success rate
+```
+
+If the file doesn't exist or has no current-session entries, skip silently.
+
 ### Step 5. Override Audit Review (SHOULD — if overrides were used)
 
 ```bash
@@ -329,6 +350,7 @@ Session-end is complete when ALL of the following are true:
 | .session-agents.json                    | R/D        | 4, 8 | Agent compliance check, then delete |
 | .agent-trigger-state.json               | R/D        | 4, 8 | Agent trigger check, then delete    |
 | pending-reviews.json                    | R/D        | 4, 8 | Review queue check, then delete     |
+| agent-invocations.jsonl                 | R          | 4b   | Agent invocation summary            |
 | velocity-log.jsonl                      | W          | 7a   | Velocity metrics                    |
 | reviews.jsonl                           | W          | 7b   | Review sync                         |
 | ecosystem-health-log.jsonl              | W          | 7c   | Health score trend                  |
@@ -384,8 +406,9 @@ future invocations benefit from accumulated experience.
 
 ## Version History
 
-| Version | Date       | Description                                         |
-| ------- | ---------- | --------------------------------------------------- |
-| 2.0     | 2026-03-07 | Full rewrite from skill-audit: 32 decisions applied |
-| 1.1     | 2026-03-01 | Add health score snapshot step (INTG-02)            |
-| 1.0     | 2026-02-25 | Initial implementation                              |
+| Version | Date       | Description                                           |
+| ------- | ---------- | ----------------------------------------------------- |
+| 2.1     | 2026-03-13 | Add Step 4b: agent invocation summary (D26 data flow) |
+| 2.0     | 2026-03-07 | Full rewrite from skill-audit: 32 decisions applied   |
+| 1.1     | 2026-03-01 | Add health score snapshot step (INTG-02)              |
+| 1.0     | 2026-02-25 | Initial implementation                                |

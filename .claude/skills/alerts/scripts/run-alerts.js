@@ -1851,6 +1851,24 @@ function checkReviewQuality() {
     }
   }
 
+  // Avoidable round rate (D12/D26: review-metrics → /alerts)
+  // A round is "avoidable" if the PR had fix_ratio > 0.5 AND review_rounds > 1
+  // (majority of commits were fixes + needed multiple review cycles)
+  const avoidableCount = recent.filter(
+    (e) => (e.fix_ratio || 0) > 0.5 && (e.review_rounds || e.rounds || 0) > 1
+  ).length;
+  const avoidableRate = recent.length > 0 ? avoidableCount / recent.length : 0;
+
+  if (avoidableRate > 0.4) {
+    addAlert(
+      "review-quality",
+      "warning",
+      `Review churn: ${Math.round(avoidableRate * 100)}% avoidable rounds in last ${recent.length} PRs (threshold: 40%)`,
+      null,
+      "Run /pr-retro on high-churn PRs to identify root causes"
+    );
+  }
+
   // Average rounds
   const roundsList = recent.map((e) => e.review_rounds || e.rounds || 0).filter((r) => r > 0);
   const avgRounds =

@@ -23,6 +23,7 @@ scripts/reviews/dist
 # misc
 .DS_Store
 *.pem
+claude.cmd
 
 # debug
 npm-debug.log*
