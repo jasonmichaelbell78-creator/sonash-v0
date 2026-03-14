@@ -26,8 +26,7 @@ try {
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]")
       .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-      .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
+      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
   };
 }
 
@@ -69,7 +68,13 @@ function getCurrentViolations() {
   } catch (err) {
     // execFileSync throws on non-zero exit; stdout is still available
     if (err.stdout) {
-      stdout = typeof err.stdout === "string" ? err.stdout : String(err.stdout);
+      if (typeof err.stdout === "string") {
+        stdout = err.stdout;
+      } else if (Buffer.isBuffer(err.stdout)) {
+        stdout = err.stdout.toString("utf-8");
+      } else {
+        stdout = String(err.stdout);
+      }
     } else {
       console.error("Failed to run patterns:check:", sanitizeError(err));
       process.exit(2);
@@ -101,6 +106,28 @@ function getCurrentViolations() {
   }
 }
 
+/** Record an improvement: update baseline, history, and recorded date. */
+function recordImprovement(entry, today, stored, current) {
+  // Defensive: ensure ratchet_history is an array before pushing
+  if (!Array.isArray(entry.ratchet_history)) {
+    entry.ratchet_history = [];
+  }
+  entry.ratchet_history.push({ date: today, from: stored, to: current });
+  entry.baseline = current;
+  entry.recorded = today;
+}
+
+/** Find pattern IDs in currentCounts that are not in baselines and have count > 0. */
+function findNewPatternRegressions(baselines, currentCounts) {
+  const regressions = [];
+  for (const [patternId, current] of Object.entries(currentCounts)) {
+    if (!Object.hasOwn(baselines, patternId) && current > 0) {
+      regressions.push(patternId);
+    }
+  }
+  return regressions;
+}
+
 /** Core ratchet logic: compare current counts against baselines. */
 function ratchet(baselineData, currentCounts, opts = {}) {
   const { dryRun = false } = opts;
@@ -125,13 +152,7 @@ function ratchet(baselineData, currentCounts, opts = {}) {
     } else if (current < stored) {
       improvements.push(patternId);
       if (!dryRun) {
-        // Defensive: ensure ratchet_history is an array before pushing
-        if (!Array.isArray(entry.ratchet_history)) {
-          entry.ratchet_history = [];
-        }
-        entry.ratchet_history.push({ date: today, from: stored, to: current });
-        entry.baseline = current;
-        entry.recorded = today;
+        recordImprovement(entry, today, stored, current);
       }
     } else {
       unchanged.push(patternId);
@@ -139,11 +160,7 @@ function ratchet(baselineData, currentCounts, opts = {}) {
   }
 
   // New pattern IDs not present in baselines: treat as regression (baseline assumed 0)
-  for (const [patternId, current] of Object.entries(currentCounts)) {
-    if (!Object.prototype.hasOwnProperty.call(baselines, patternId) && current > 0) {
-      regressions.push(patternId);
-    }
-  }
+  regressions.push(...findNewPatternRegressions(baselines, currentCounts));
 
   // Write updated baselines if there were improvements and not dry-run
   if (improvements.length > 0 && !dryRun) {
@@ -192,7 +209,10 @@ function reportRegressions(result, baselineData, currentCounts) {
   console.error("REGRESSIONS detected (current > baseline):");
   for (const id of result.regressions) {
     const entry = baselineData.baselines?.[id];
-    const stored = entry ? (typeof entry.baseline === "number" ? entry.baseline : 0) : 0;
+    let stored = 0;
+    if (entry && typeof entry.baseline === "number") {
+      stored = entry.baseline;
+    }
     const current = currentCounts[id] || 0;
     console.error(`  ${id}: baseline=${stored}, current=${current}`);
   }

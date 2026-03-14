@@ -164,7 +164,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓0 ↑9      | 2026-03-13    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓2 ↑9      | 2026-03-13    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-03-12    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-05    |
 | [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑17    | 2026-03-13    |
@@ -211,7 +211,7 @@ _AI agent reference docs_
 | Document                                                                                     | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)                      | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-02-23    |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓6 ↑1      | 2026-03-13    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓6 ↑2      | 2026-03-13    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md)          | Detailed guidance for preventing loss of important decisions... | ↓2 ↑0      | 2026-02-23    |
 | [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)                | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-28    |
 | [Positive Pattern Templates](docs/agent_docs/POSITIVE_PATTERNS.md)                           | The RIGHT way to do things. Reference this BEFORE writing co... | ↓0 ↑0      | 2026-03-13    |
@@ -1405,7 +1405,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-23    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑2      | 2026-03-13    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-13    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-03-12    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-23    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-07    |
@@ -1554,7 +1554,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**404 orphaned documents:**
+**403 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
@@ -1900,7 +1900,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Implementation Plan: Tooling & Infrastructure Audit](.planning/tooling-infrastructure-audit/PLAN.md)
 - [SoNash - Sober Nashville Recovery Notebook](.worktrees/planning/README.md)
 - [Scripts Reference](.worktrees/planning/scripts/README.md)
-- [AI Context & Rules for SoNash](CLAUDE.md)
 - [SoNash - Sober Nashville Recovery Notebook](README.md)
 - [ROADMAP Full Analysis Summary](analysis/FULL_ANALYSIS_SUMMARY.md)
 - [ROADMAP Deep Analysis - Integration Summary](analysis/INTEGRATION_SUMMARY.md)

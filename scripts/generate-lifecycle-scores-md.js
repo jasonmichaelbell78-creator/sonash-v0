@@ -24,8 +24,7 @@ try {
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]")
       .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-      .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
+      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
 }
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
@@ -139,10 +138,12 @@ function generateHeader(entries, now) {
 function generateSystemsTable(sorted) {
   let md = "";
   for (const e of sorted) {
-    const fileList = e.files.map((f) => `\`${path.basename(f)}\``).join(", ");
-    const grade = scoreEmoji(e.total);
-    const flag = e.total < 6 ? " **FLAG**" : "";
-    md += `| ${e.system} | ${fileList} | ${e.capture} | ${e.storage} | ${e.recall} | ${e.action} | **${e.total}** | ${grade}${flag} | ${e.gap} |\n`;
+    const files = Array.isArray(e.files) ? e.files : [];
+    const fileList = files.map((f) => `\`${path.basename(String(f))}\``).join(", ");
+    const total = Number.isFinite(e.total) ? e.total : 0;
+    const grade = scoreEmoji(total);
+    const flag = total < 6 ? " **FLAG**" : "";
+    md += `| ${e.system} | ${fileList} | ${e.capture} | ${e.storage} | ${e.recall} | ${e.action} | **${total}** | ${grade}${flag} | ${e.gap} |\n`;
   }
   return md;
 }

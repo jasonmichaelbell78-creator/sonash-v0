@@ -333,7 +333,7 @@ describe("verified-patterns.json integrity — Wave 9", () => {
     for (const pattern of schema.patterns) {
       for (const field of requiredFields) {
         assert.ok(
-          Object.prototype.hasOwnProperty.call(pattern, field),
+          Object.hasOwn(pattern, field),
           `Pattern "${pattern.id || "(no id)"}" is missing required field: ${field}`
         );
         assert.ok(

@@ -32,7 +32,9 @@ const { run, verifyEntry, evaluateMetrics, runEnforcementTest } = require(script
  * @returns {string} Absolute path to temp dir
  */
 function makeTempDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "verify-enforcement-test-"));
+  const base = path.join(projectRoot, ".tmp");
+  fs.mkdirSync(base, { recursive: true });
+  return fs.mkdtempSync(path.join(base, "verify-enforcement-test-"));
 }
 
 /**

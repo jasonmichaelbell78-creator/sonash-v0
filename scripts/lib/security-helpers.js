@@ -47,8 +47,7 @@ function sanitizeError(error) {
     .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
     .replace(/\/home\/[^/\s]+/gi, "[HOME]")
     .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-    .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-    .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
+    .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
 }
 
 /**

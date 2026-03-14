@@ -54,8 +54,7 @@ try {
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]")
       .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-      .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
+      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
   };
 }
 
@@ -100,6 +99,22 @@ const TEST_TIMEOUT_MS = 30_000;
 // ---------------------------------------------------------------------------
 
 /**
+ * Classify an execFileSync error into a verification result.
+ *
+ * @param {unknown} err - Error thrown by execFileSync
+ * @returns {{ passed: boolean, reason: string }}
+ */
+function classifyExecError(err) {
+  const code = err && typeof err.code === "string" ? err.code : null;
+  const signal = err && typeof err.signal === "string" ? err.signal : null;
+  if (code === "ETIMEDOUT" || signal === "SIGTERM" || signal === "SIGKILL") {
+    return { passed: false, reason: `test timed out after ${TEST_TIMEOUT_MS}ms` };
+  }
+  const status = err && typeof err.status === "number" ? err.status : "unknown";
+  return { passed: false, reason: `test exit code ${status}` };
+}
+
+/**
  * Run an enforcement test script and return the result.
  *
  * @param {string} testPath - Absolute or project-relative path to test script
@@ -137,13 +152,7 @@ function runEnforcementTest(testPath) {
     });
     return { passed: true, reason: "test passed (exit 0)" };
   } catch (err) {
-    const code = err && typeof err.code === "string" ? err.code : null;
-    const signal = err && typeof err.signal === "string" ? err.signal : null;
-    if (code === "ETIMEDOUT" || signal === "SIGTERM" || signal === "SIGKILL") {
-      return { passed: false, reason: `test timed out after ${TEST_TIMEOUT_MS}ms` };
-    }
-    const status = err && typeof err.status === "number" ? err.status : "unknown";
-    return { passed: false, reason: `test exit code ${status}` };
+    return classifyExecError(err);
   }
 }
 
@@ -531,6 +540,7 @@ module.exports = {
   verifyEntry,
   decideVerification,
   evaluateMetrics,
+  classifyExecError,
   runEnforcementTest,
   readEntries,
   writeEntries,

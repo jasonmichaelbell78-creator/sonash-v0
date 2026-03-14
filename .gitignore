@@ -10,6 +10,7 @@ node_modules
 # testing
 /coverage
 .temp-test-phase-*/
+.tmp/
 
 # next.js
 /.next/

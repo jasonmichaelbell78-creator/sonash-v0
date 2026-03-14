@@ -12,7 +12,7 @@ improvements made.
 
 - **[AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)** - How to triage and handle
   reviews
-- **[claude.md](../claude.md)** - Distilled patterns (always in AI context)
+- **[claude.md](../CLAUDE.md)** - Distilled patterns (always in AI context)
 
 ---
 
@@ -300,7 +300,7 @@ This log uses a tiered structure to optimize context consumption:
 
 | Tier  | Content                                                                                                                                                                                                                                                                                                                                                                                    | When to Read                  | Size        |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------- | ----------- |
-| **1** | [claude.md](../claude.md)                                                                                                                                                                                                                                                                                                                                                                  | Always (in AI context)        | ~115 lines  |
+| **1** | [claude.md](../CLAUDE.md)                                                                                                                                                                                                                                                                                                                                                                  | Always (in AI context)        | ~115 lines  |
 | **2** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)                                                                                                                                                                                                                                                                                                                                          | When investigating violations | ~612 lines  |
 | **3** | Active Reviews (below)                                                                                                                                                                                                                                                                                                                                                                     | Deep investigation            | ~2400 lines |
 | **4** | Archive ([#1-40](./archive/REVIEWS_1-40.md), [#42-138](./archive/REVIEWS_42-138.md), [#139-195](./archive/REVIEWS_139-195.md), [#196-259](./archive/REVIEWS_196-259.md), [#260-299](./archive/REVIEWS_260-299.md), [#300-341](./archive/REVIEWS_300-341.md), [#342-383](./archive/REVIEWS_342-383.md), [#384-423](./archive/REVIEWS_384-423.md), [#424-457](./archive/REVIEWS_424-457.md)) | Historical research           | ~8000 lines |
@@ -2783,5 +2783,58 @@ Trivial: 23)
   check-pattern-compliance.js. The mismatch caused silent ratchet failures.
 - check-cc.js and ratchet-baselines.js share known-debt-baseline.json but use
   different sections (checks vs baselines). Both must be preserved on write.
+
+---
+
+#### Review #357: PR #431 R3 — Robustness, Complexity & Propagation Fixes (2026-03-13)
+
+**Source:** Qodo / SonarCloud / Gemini **PR/Branch:** #431 plan-implementation
+**Suggestions:** 26 consolidated (Critical: 2, Major: 8, Minor: 14, Trivial: 2)
+
+**Patterns Identified:**
+
+1. Over-redacting regex in sanitizeError: `/\/[^\s]*\/[^\s]+/g` matched any
+   path-like string (URLs, API paths), destroying useful debug context.
+   - Root cause: Overly broad catch-all added to complement Windows path
+     redaction
+   - Prevention: Canonical sanitizeError should only redact known-sensitive
+     prefixes (/home, /Users, C:\Users), not arbitrary unix paths
+   - Propagation: Fixed in 8 files (canonical + 7 fallback copies)
+2. Cognitive complexity in new scripts: ratchet-baselines.js (24→15) and
+   verify-enforcement.js (16→15) exceeded SonarCloud threshold.
+   - Root cause: Single functions doing too much — iteration + mutation +
+     reporting
+   - Prevention: Extract helpers when function has >2 concerns
+3. Pre-existing test failure: verify-enforcement tests created temp scripts in
+   os.tmpdir() but runEnforcementTest enforces repo boundary check.
+   - Root cause: Test helper didn't account for the security boundary
+   - Fix: Create temp dirs inside project root (.tmp/) instead
+
+**Resolution:**
+
+- Fixed: 16 items
+- Deferred: 0 items
+- Rejected: 10 items (3 already-fixed, 7 no-value-add)
+
+**Rejected Items:**
+
+- Exemptions schema (already handled at check-pattern-compliance.js:49)
+- Baseline schema breaks (file retains `checks` key, IDs match violation IDs)
+- Unguarded baseline overwrite (already uses safeWriteFileSync)
+- sanitizeError fallbacks (R2 fixed — full 5-replace chain present)
+- Symlink validation in run-alerts.js (BASELINE_PATH is hardcoded internal)
+- json parameter design smell (simple boolean in 7-line function)
+- Missing CLI validation (internal script)
+- replaceAll x37 (all regex with /g flag — no semantic benefit)
+- Set.has x2 (SonarCloud FP — string.includes(), not array)
+- structuredClone (JSON roundtrip is intentional serialization validation)
+
+**Key Learnings:**
+
+- When sanitizing errors, only redact known-sensitive path prefixes. A catch-all
+  unix path regex destroys useful diagnostic info (API paths, URLs).
+- Test helpers must respect the same security boundaries as production code.
+  When scripts enforce repo-root containment, test fixtures must live inside the
+  repo.
 
 ---

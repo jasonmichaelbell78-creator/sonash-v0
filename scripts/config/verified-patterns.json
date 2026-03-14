@@ -340,7 +340,8 @@
       "extract-agent-findings.js",
       "promote-patterns.js",
       "decrypt-secrets.js",
-      "encrypt-secrets.js"
+      "encrypt-secrets.js",
+      "verify-enforcement.test.js"
     ],
     "session-id-no-validation": ["state-manager.js", "unify-findings.js"],
     "path-join-without-containment": ["check-hook-health.js", "validate-templates.js"],

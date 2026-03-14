@@ -79,8 +79,11 @@ function makeEntry(baseline, ratchet_history = []) {
  */
 function withBaselineContent(content, fn) {
   let realContent = null;
+  const existedBefore = fs.existsSync(REAL_BASELINE_PATH);
   try {
-    realContent = fs.readFileSync(REAL_BASELINE_PATH, "utf-8");
+    if (existedBefore) {
+      realContent = fs.readFileSync(REAL_BASELINE_PATH, "utf-8");
+    }
   } catch {
     // Production file may not exist in all CI environments.
   }
@@ -94,8 +97,14 @@ function withBaselineContent(content, fn) {
     fn(freshMod);
   } finally {
     // Always restore before re-populating cache.
-    if (realContent !== null) {
+    if (existedBefore && realContent !== null) {
       fs.writeFileSync(REAL_BASELINE_PATH, realContent, "utf-8");
+    } else if (!existedBefore) {
+      try {
+        fs.rmSync(REAL_BASELINE_PATH, { force: true });
+      } catch {
+        // Best-effort cleanup
+      }
     }
     delete require.cache[require.resolve(scriptPath)];
     require(scriptPath); // repopulate cache for the shared `ratchet` binding
@@ -432,7 +441,7 @@ describe("run function", () => {
     assert.equal(output.regressions.length, 1);
 
     // Must be valid JSON with all required fields.
-    const parsed = JSON.parse(JSON.stringify(output));
+    const parsed = structuredClone(output);
     assert.deepEqual(parsed.regressions, ["raw-error-message"]);
     assert.ok(Array.isArray(parsed.improvements));
     assert.ok(Array.isArray(parsed.unchanged));
@@ -528,12 +537,12 @@ describe("run function", () => {
 // ---------------------------------------------------------------------------
 
 describe("edge cases", () => {
-  it("empty baselines object produces all-empty result arrays", () => {
+  it("empty baselines object treats new patterns with violations as regressions", () => {
     const data = makeBaselineData({});
 
     const result = ratchet(data, { "any-pattern": 5 }, { dryRun: true });
 
-    assert.deepEqual(result.regressions, []);
+    assert.deepEqual(result.regressions, ["any-pattern"]);
     assert.deepEqual(result.improvements, []);
     assert.deepEqual(result.unchanged, []);
   });

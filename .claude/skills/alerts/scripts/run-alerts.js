@@ -523,6 +523,7 @@ function saveBaseline() {
       // Windows may fail to overwrite; fall back to copy (no rmSync race)
       try {
         fs.copyFileSync(tmpPath, BASELINE_PATH);
+        wrote = true;
       } catch {
         // Last resort: remove dest then copy
         try {
@@ -531,8 +532,8 @@ function saveBaseline() {
           /* ignore */
         }
         fs.copyFileSync(tmpPath, BASELINE_PATH);
+        wrote = true;
       }
-      wrote = true;
     } finally {
       if (wrote) {
         try {
@@ -3531,17 +3532,17 @@ function checkStalePlanningData() {
     return;
   }
 
-  // Find the most recent entry date
+  // Find the most recent entry date (iterate backwards — append-only file)
   let latestDate = null;
-  for (const line of lines) {
-    const entry = safeParse(line);
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const entry = safeParse(lines[i]);
     if (!entry) continue;
     const dateStr = entry.date || entry.timestamp || entry.created;
     if (!dateStr) continue;
     const ts = new Date(dateStr).getTime();
-    if (isNaN(ts)) continue;
-    if (latestDate === null || ts > latestDate) {
+    if (!isNaN(ts)) {
       latestDate = ts;
+      break;
     }
   }
 
@@ -3687,16 +3688,20 @@ function checkEnforcementVerification() {
   // Build a set of pattern IDs that have been verified
   const verifiedIds = new Set();
   for (const entry of entries) {
-    if (entry.status === "verified" && entry.id) {
+    if (entry.status === "verified" && typeof entry.id === "string" && entry.id.trim()) {
       verifiedIds.add(entry.id);
     }
   }
 
   // Find entries with status "enforced" that are NOT in the verified set
+  // Treat missing/invalid IDs as unverified to avoid silent false negatives
   const unverified = [];
   for (const entry of entries) {
-    if (entry.status === "enforced" && entry.id && !verifiedIds.has(entry.id)) {
-      unverified.push(entry);
+    if (entry.status !== "enforced") continue;
+
+    const id = typeof entry.id === "string" && entry.id.trim() ? entry.id : null;
+    if (!id || !verifiedIds.has(id)) {
+      unverified.push({ ...entry, id: id || "(missing id)" });
     }
   }
 
