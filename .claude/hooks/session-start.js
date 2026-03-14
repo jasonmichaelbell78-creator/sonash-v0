@@ -598,6 +598,113 @@ try {
   }
 }
 
+// ─── Enforcement pipeline: discover gaps → refine → verify → ratchet ───
+// (Automation Gap Closure spec: 2026-03-14)
+
+// 1. Route lifecycle gaps (discover new gaps → scaffolded entries)
+try {
+  execFileSync(process.execPath, ["scripts/route-lifecycle-gaps.js"], {
+    cwd: projectDir,
+    stdio: ["ignore", "ignore", "pipe"],
+    timeout: 15000,
+  });
+} catch (routeLifecycleErr) {
+  const msg =
+    routeLifecycleErr instanceof Error ? routeLifecycleErr.message : String(routeLifecycleErr);
+  if (msg && !msg.includes("exit code 0")) {
+    const redactedMsg = msg
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+    console.log("   ⚠️ Lifecycle gaps: " + sanitizeInput(redactedMsg.split("\n")[0]));
+    warnings++;
+  }
+}
+
+// 2. Route enforcement gaps (discover CLAUDE.md gaps → scaffolded entries)
+try {
+  execFileSync(process.execPath, ["scripts/route-enforcement-gaps.js"], {
+    cwd: projectDir,
+    stdio: ["ignore", "ignore", "pipe"],
+    timeout: 15000,
+  });
+} catch (routeEnforcementErr) {
+  const msg =
+    routeEnforcementErr instanceof Error
+      ? routeEnforcementErr.message
+      : String(routeEnforcementErr);
+  if (msg && !msg.includes("exit code 0")) {
+    const redactedMsg = msg
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+    console.log("   ⚠️ Enforcement gaps: " + sanitizeInput(redactedMsg.split("\n")[0]));
+    warnings++;
+  }
+}
+
+// 3. Refine scaffolded entries (scaffolded → enforced or refined)
+try {
+  execFileSync(process.execPath, ["scripts/refine-scaffolds.js"], {
+    cwd: projectDir,
+    stdio: ["ignore", "ignore", "pipe"],
+    timeout: 20000,
+  });
+} catch (refineErr) {
+  const msg = refineErr instanceof Error ? refineErr.message : String(refineErr);
+  if (msg && !msg.includes("exit code 0")) {
+    const redactedMsg = msg
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+    console.log("   ⚠️ Scaffold refinement: " + sanitizeInput(redactedMsg.split("\n")[0]));
+    warnings++;
+  }
+}
+
+// 4. Verify enforced entries (enforced → verified, or flag for repair)
+try {
+  execFileSync(process.execPath, ["scripts/verify-enforcement.js"], {
+    cwd: projectDir,
+    stdio: ["ignore", "ignore", "pipe"],
+    timeout: 30000,
+  });
+} catch (verifyErr) {
+  const msg = verifyErr instanceof Error ? verifyErr.message : String(verifyErr);
+  if (msg && !msg.includes("exit code 0")) {
+    const redactedMsg = msg
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+    console.log("   ⚠️ Enforcement verify: " + sanitizeInput(redactedMsg.split("\n")[0]));
+    warnings++;
+  }
+}
+
+// 5. Ratchet baselines (tighten thresholds on improvement, check-only mode)
+try {
+  execFileSync(process.execPath, ["scripts/ratchet-baselines.js", "--check-only"], {
+    cwd: projectDir,
+    stdio: ["ignore", "ignore", "pipe"],
+    timeout: 20000,
+  });
+} catch (ratchetErr) {
+  const msg = ratchetErr instanceof Error ? ratchetErr.message : String(ratchetErr);
+  if (msg && !msg.includes("exit code 0")) {
+    const redactedMsg = msg
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+    console.log("   ⚠️ Ratchet baselines: " + sanitizeInput(redactedMsg.split("\n")[0]));
+    warnings++;
+  }
+}
+
 // Sync commit log from git history (fills gaps when commit-tracker hook misses)
 try {
   execFileSync(process.execPath, ["scripts/seed-commit-log.js", "--sync"], {
