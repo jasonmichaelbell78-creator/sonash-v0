@@ -2786,6 +2786,53 @@ Trivial: 23)
 
 ---
 
+#### Review #361: PR #431 R7 — Flagged Section Sanitization, TOCTOU & Diminishing Returns (2026-03-14)
+
+**Source:** Qodo + SonarCloud **PR/Branch:** #431 plan-implementation
+**Suggestions:** 17 total (Critical: 0, Major: 1, Minor: 9, Trivial: 7)
+
+**Patterns Identified:**
+
+1. Incomplete sanitization propagation: R6 sanitized the systems table but not
+   the flagged section in generate-lifecycle-scores-md.js. Pattern: after fixing
+   one section, check ALL output paths in the same file.
+2. TOCTOU in rollback paths: existsSync before renameSync in error recovery
+   creates a race. Replace with direct rename + ENOENT catch.
+3. Diminishing returns at R7: fix rate dropped to 35%. Cross-round dedup now
+   covers 7 rounds — same items (Set.has, type-dependent design) resurfacing
+   every round despite repeated rejection.
+
+| Round | Source | Items | Fixed | Deferred | Rejected |
+| ----- | ------ | ----- | ----- | -------- | -------- |
+| R7    | Qodo   | 17    | 6     | 0        | 11       |
+
+- Fixed: 6 items across 5 files
+- Rejected: 11 items (4 cross-round dedup R4-R6, 1 intentional TODO scaffold, 6
+  over-engineering/no-behavior-change)
+
+**Rejected Items:**
+
+- Set.has for tableContent (R4+R5+R6 dedup — string.includes())
+- Set.has for antiPatternSection (R4+R5+R6 dedup — string.includes())
+- Type-dependent design (R4+R5+R6 dedup — simple boolean)
+- OS temp dir for test (R3+R4 dedup — repo boundary needed)
+- TODO comment in scaffold (intentional placeholder)
+- Baseline write try/catch (writeFileSync failure leaves file unchanged)
+- Config parsing tightening (internal config, theoretical edge cases)
+- Sanitize exitCode in test (test-only, literal values)
+- Defensive error.code access (doesn't change behavior)
+- Skip tests on missing fixtures (should fail loudly)
+- Guard JSONL stringify (internal objects can't fail)
+
+**Key Learnings:**
+
+- R7 fix rate (35%) triggers merge recommendation. This PR has processed 220+
+  items across 7 rounds. Recommend merging after this round.
+- Sanitization fixes propagate across output functions, not just the one
+  flagged. Future reviews should check all render paths in the same file.
+
+---
+
 #### Review #360: PR #431 R6 — Sanitization, Scaffold Validity & Baseline Bug (2026-03-14)
 
 **Source:** Qodo **PR/Branch:** #431 plan-implementation **Suggestions:** 20

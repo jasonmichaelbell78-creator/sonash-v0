@@ -85,10 +85,13 @@ function buildLearning(gap) {
   const recall = Number.isFinite(gap.recall) ? gap.recall : 0;
   const action = Number.isFinite(gap.action) ? gap.action : 0;
   const total = Number.isFinite(gap.total) ? gap.total : capture + storage + recall + action;
-  const toOneLine = (v) =>
-    String(v ?? "")
-      .replaceAll(/[\r\n\t]/g, " ")
+  const toOneLine = (v, maxLen = 200) => {
+    const s = String(v ?? "")
+      .replaceAll(/[\r\n\t\x00-\x1f\x7f]/g, " ") // eslint-disable-line no-control-regex
+      .replaceAll(/\s+/g, " ")
       .trim();
+    return s.length > maxLen ? s.slice(0, maxLen) + "..." : s;
+  };
   const system =
     typeof gap.system === "string" && gap.system.trim().length > 0
       ? toOneLine(gap.system)
@@ -98,7 +101,9 @@ function buildLearning(gap) {
       ? toOneLine(gap.gap)
       : "Unspecified gap";
   const id =
-    typeof gap.id === "string" && gap.id.trim().length > 0 ? toOneLine(gap.id) : "unknown-id";
+    typeof gap.id === "string" && gap.id.trim().length > 0
+      ? toOneLine(gap.id)
+      : `missing-id:${system}`;
 
   return {
     type,

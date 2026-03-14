@@ -544,9 +544,11 @@ function saveBaseline() {
         } catch {
           // Replacement failed; attempt rollback
           try {
-            if (fs.existsSync(backupPath)) fs.renameSync(backupPath, BASELINE_PATH);
-          } catch {
-            /* ignore */
+            fs.renameSync(backupPath, BASELINE_PATH);
+          } catch (renameErr) {
+            if (!(renameErr && typeof renameErr === "object" && renameErr.code === "ENOENT")) {
+              /* ignore non-ENOENT errors */
+            }
           }
         }
       }

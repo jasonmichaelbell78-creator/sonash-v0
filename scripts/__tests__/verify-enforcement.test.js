@@ -96,7 +96,7 @@ function createTestScript(dir, name, exitCode) {
   const scriptFile = path.join(dir, name);
   fs.writeFileSync(scriptFile, scriptContent, "utf8");
   try {
-    fs.chmodSync(scriptFile, 0o755);
+    fs.chmodSync(scriptFile, 0o700);
   } catch {
     // Best-effort (no-op on Windows)
   }

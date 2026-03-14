@@ -170,18 +170,32 @@ function generateSystemsTable(sorted) {
 function generateFlaggedSection(flagged) {
   if (flagged.length === 0) return "";
   let md = `\n---\n\n## Flagged Systems (Total < 6)\n\n`;
+  const oneLine = (v) =>
+    String(v ?? "")
+      .replaceAll(/[\r\n\t\x00-\x1f\x7f]/g, " ") // eslint-disable-line no-control-regex
+      .trim();
+
   for (const e of flagged) {
     const files = Array.isArray(e.files) ? e.files : [];
     const total = Number.isFinite(e.total) ? e.total : 0;
-    md += `### ${e.system} (${total}/12)\n\n`;
-    md += `- **Category:** ${e.category}\n`;
-    md += `- **Files:** ${files.join(", ")}\n`;
-    md += `- **Gap:** ${e.gap}\n`;
-    if (e.remediation) {
-      md += `- **Remediation:** ${e.remediation}\n`;
+    const system = oneLine(e.system) || "(unknown)";
+    const category = oneLine(e.category) || "(unknown)";
+    const gap = oneLine(e.gap);
+    const remediation = oneLine(e.remediation);
+    const waveFixed = oneLine(e.wave_fixed);
+
+    md += `### ${system} (${total}/12)\n\n`;
+    md += `- **Category:** ${category}\n`;
+    md += `- **Files:** ${files
+      .map((f) => oneLine(f))
+      .filter(Boolean)
+      .join(", ")}\n`;
+    md += `- **Gap:** ${gap}\n`;
+    if (remediation) {
+      md += `- **Remediation:** ${remediation}\n`;
     }
-    if (e.wave_fixed) {
-      md += `- **Wave fixed:** ${e.wave_fixed}\n`;
+    if (waveFixed) {
+      md += `- **Wave fixed:** ${waveFixed}\n`;
     }
     md += "\n";
   }

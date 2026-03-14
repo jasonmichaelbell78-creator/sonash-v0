@@ -89,7 +89,7 @@ function checkDataEffectiveness() {
     benchmark: BENCHMARKS.orphan_count,
   };
 
-  return { metrics };
+  return { metrics, no_data: false };
 }
 
 module.exports = { checkDataEffectiveness };
