@@ -236,6 +236,7 @@ function run(argv) {
   const args = argv || process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
   const jsonOut = args.includes("--json");
+  const checkOnly = args.includes("--check-only");
 
   const baselineData = readBaselines();
   const currentCounts = getCurrentViolations();
@@ -254,8 +255,17 @@ function run(argv) {
   }
 
   if (result.regressions.length > 0) {
+    if (checkOnly) {
+      // Report regressions to stderr but exit 0 (session-start context)
+      console.error(
+        `[ratchet] ${result.regressions.length} regression(s) detected (check-only mode, not blocking)`
+      );
+      return result;
+    }
     process.exit(1);
   }
+
+  return result;
 }
 
 // Run if invoked directly
