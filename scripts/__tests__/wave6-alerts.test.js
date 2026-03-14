@@ -95,7 +95,7 @@ function runCommitCheck(fp) {
     .filter(Boolean);
   if (entries.length === 0) return { fired: false, reason: "no-valid-entries" };
   const sessionCount = entries.filter((e) =>
-    (e.message || "").toLowerCase().includes("session")
+    /\bsession[-\s]?end\b/.test((e.message || "").toLowerCase())
   ).length;
   const pct = (sessionCount / entries.length) * 100;
   return {

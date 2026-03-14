@@ -44,7 +44,9 @@ const { safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs.js");
 const { loadConfig } = require("./config/load-config.js");
 let verifiedPatterns;
 try {
-  verifiedPatterns = loadConfig("verified-patterns");
+  const vpConfig = loadConfig("verified-patterns");
+  // Support new schema { schema_version, patterns, exemptions } and legacy flat format
+  verifiedPatterns = vpConfig.exemptions || vpConfig;
 } catch (err) {
   console.error(`Error: failed to load verified-patterns config: ${sanitizeError(err)}`);
   process.exit(2);

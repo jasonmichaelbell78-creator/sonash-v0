@@ -53,7 +53,9 @@ try {
     return msg
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
+      .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
   };
 }
 
@@ -106,20 +108,32 @@ const TEST_TIMEOUT_MS = 30_000;
 function runEnforcementTest(testPath) {
   const absPath = path.isAbsolute(testPath) ? testPath : path.resolve(ROOT, testPath);
 
+  // Enforce repo boundary (defense-in-depth against tampered JSONL / symlinks)
+  let realAbsPath;
+  try {
+    realAbsPath = fs.realpathSync(absPath);
+    const rel = path.relative(ROOT, realAbsPath);
+    if (!rel || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+      return { passed: false, reason: "test path outside repository root" };
+    }
+  } catch {
+    return { passed: false, reason: `test file not found: ${path.basename(absPath)}` };
+  }
+
   // Check file exists
   try {
-    fs.accessSync(absPath, fs.constants.R_OK);
+    fs.accessSync(realAbsPath, fs.constants.R_OK);
   } catch {
     return { passed: false, reason: `test file not found: ${path.basename(absPath)}` };
   }
 
   // Execute with timeout
   try {
-    execFileSync(process.execPath, [absPath], {
+    execFileSync(process.execPath, [realAbsPath], {
       timeout: TEST_TIMEOUT_MS,
       cwd: ROOT,
-      stdio: "pipe",
-      env: { ...process.env, NODE_ENV: "test" },
+      stdio: "ignore",
+      env: { ...process.env, NODE_ENV: "test", NODE_OPTIONS: "" },
     });
     return { passed: true, reason: "test passed (exit 0)" };
   } catch (err) {
@@ -307,10 +321,12 @@ function outputEarlyExit(msg, json) {
  * @returns {string|null} Early-exit message, or null if validation passes
  */
 function validateInputs(routesPath, allEntries, enforcedIndices) {
+  const absRoutesPath = path.resolve(routesPath);
+
   // Check if file exists
   let fileExists = false;
   try {
-    fs.accessSync(routesPath, fs.constants.R_OK);
+    fs.accessSync(absRoutesPath, fs.constants.R_OK);
     fileExists = true;
   } catch {
     // File doesn't exist
@@ -321,7 +337,7 @@ function validateInputs(routesPath, allEntries, enforcedIndices) {
   }
 
   // Read all entries
-  const entries = readEntries(routesPath);
+  const entries = readEntries(absRoutesPath);
   // Populate the passed-in array
   entries.forEach((e) => allEntries.push(e));
 

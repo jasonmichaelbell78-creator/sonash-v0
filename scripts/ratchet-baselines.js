@@ -20,7 +20,23 @@ let sanitizeError;
 try {
   ({ sanitizeError } = require(path.join(__dirname, "lib", "security-helpers.js")));
 } catch {
-  sanitizeError = (err) => (err instanceof Error ? err.message : String(err));
+  sanitizeError = (err) => {
+    const message = err instanceof Error ? err.message : String(err);
+    return message
+      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
+      .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
+  };
+}
+
+// Import safeWriteFileSync with fallback (symlink-guarded writes)
+let safeWriteFileSync;
+try {
+  ({ safeWriteFileSync } = require(path.join(__dirname, "lib", "safe-fs.js")));
+} catch {
+  safeWriteFileSync = (filePath, data, options) => fs.writeFileSync(filePath, data, options);
 }
 
 const ROOT = path.join(__dirname, "..");
@@ -53,7 +69,7 @@ function getCurrentViolations() {
   } catch (err) {
     // execFileSync throws on non-zero exit; stdout is still available
     if (err.stdout) {
-      stdout = err.stdout;
+      stdout = typeof err.stdout === "string" ? err.stdout : String(err.stdout);
     } else {
       console.error("Failed to run patterns:check:", sanitizeError(err));
       process.exit(2);
@@ -122,11 +138,18 @@ function ratchet(baselineData, currentCounts, opts = {}) {
     }
   }
 
+  // New pattern IDs not present in baselines: treat as regression (baseline assumed 0)
+  for (const [patternId, current] of Object.entries(currentCounts)) {
+    if (!Object.prototype.hasOwnProperty.call(baselines, patternId) && current > 0) {
+      regressions.push(patternId);
+    }
+  }
+
   // Write updated baselines if there were improvements and not dry-run
   if (improvements.length > 0 && !dryRun) {
     baselineData.updated = today;
     try {
-      fs.writeFileSync(BASELINE_PATH, JSON.stringify(baselineData, null, 2) + "\n", "utf-8");
+      safeWriteFileSync(BASELINE_PATH, JSON.stringify(baselineData, null, 2) + "\n", "utf-8");
     } catch (err) {
       console.error("Failed to write baselines:", sanitizeError(err));
       process.exit(2);
@@ -153,8 +176,8 @@ function reportImprovements(result, baselineData, dryRun) {
   console.log(`Improvements (ratcheted${dryRun ? " — dry-run, not saved" : ""}):`);
   for (const id of result.improvements) {
     const entry = baselineData.baselines[id];
-    const hist = entry.ratchet_history;
-    const last = hist[hist.length - 1];
+    const hist = Array.isArray(entry?.ratchet_history) ? entry.ratchet_history : [];
+    const last = hist.length > 0 ? hist[hist.length - 1] : null;
     if (last) {
       console.log(`  ${id}: ${last.from} -> ${last.to}`);
     } else {
@@ -168,7 +191,8 @@ function reportRegressions(result, baselineData, currentCounts) {
   if (result.regressions.length === 0) return;
   console.error("REGRESSIONS detected (current > baseline):");
   for (const id of result.regressions) {
-    const stored = baselineData.baselines[id].baseline;
+    const entry = baselineData.baselines?.[id];
+    const stored = entry ? (typeof entry.baseline === "number" ? entry.baseline : 0) : 0;
     const current = currentCounts[id] || 0;
     console.error(`  ${id}: baseline=${stored}, current=${current}`);
   }

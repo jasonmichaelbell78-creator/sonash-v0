@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BaseRecord } from "./shared";
+import { BaseRecord } from "./shared.js";
 
 /**
  * Learning object — what was discovered.

@@ -33,10 +33,21 @@ try {
   process.exit(1);
 }
 
-let sanitizeError;
+let sanitizeError, validatePathInDir;
 try {
-  ({ sanitizeError } = require(path.resolve(projectRoot, "scripts", "lib", "security-helpers.js")));
+  ({ sanitizeError, validatePathInDir } = require(
+    path.resolve(projectRoot, "scripts", "lib", "security-helpers.js")
+  ));
 } catch {
+  // Fallback: proper containment check
+  validatePathInDir = (baseDir, userPath) => {
+    const resolved = path.resolve(baseDir, userPath);
+    const rel = path.relative(baseDir, resolved);
+    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+      throw new Error("Path escapes base directory");
+    }
+    return rel;
+  };
   // Inline fallback: strip paths but keep the message useful
   sanitizeError = (err) => {
     const msg = err instanceof Error ? err.message : String(err);
@@ -44,7 +55,9 @@ try {
     return msg
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
       .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
+      .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
   };
 }
 
@@ -136,9 +149,12 @@ function validateFilePath(tierName, file) {
   const errors = [];
   if (typeof file !== "string" || file.trim().length === 0) {
     errors.push(`Tier '${tierName}': each file entry must be a non-empty string`);
+    return errors;
   }
-  // Reject path traversal attempts
-  if (/^\.\.(?:[\\/]|$)/.test(file) || path.isAbsolute(file)) {
+  // Reject path traversal attempts using proper containment check
+  try {
+    validatePathInDir(projectRoot, file);
+  } catch {
     errors.push(`Tier '${tierName}': file path '${file}' must be relative and non-traversing`);
   }
   return errors;

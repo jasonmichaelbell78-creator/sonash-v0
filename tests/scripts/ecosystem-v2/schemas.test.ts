@@ -267,13 +267,21 @@ describe("WarningRecord", () => {
 // =========================================================
 
 describe("SCHEMA_MAP", () => {
-  test("has exactly 5 entries", () => {
-    assert.equal(Object.keys(SCHEMA_MAP).length, 5);
+  test("has exactly 7 entries", () => {
+    assert.equal(Object.keys(SCHEMA_MAP).length, 7);
   });
 
   test("has correct keys", () => {
     const keys = Object.keys(SCHEMA_MAP).sort((a, b) => a.localeCompare(b));
-    assert.deepEqual(keys, ["deferred-items", "invocations", "retros", "reviews", "warnings"]);
+    assert.deepEqual(keys, [
+      "deferred-items",
+      "invocations",
+      "learning-routes",
+      "lifecycle-scores",
+      "retros",
+      "reviews",
+      "warnings",
+    ]);
   });
 
   test("each entry is a Zod schema with parse method", () => {

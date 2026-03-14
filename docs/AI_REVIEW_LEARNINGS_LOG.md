@@ -2746,3 +2746,42 @@ enhancements, and deep-plan artifacts.
   reference.
 
 ---
+
+#### Review #356: PR #431 R2 — Data Effectiveness Audit Schema & Security Fixes (2026-03-13)
+
+**Source:** Qodo / SonarCloud / Gemini / CI **PR/Branch:** #431
+plan-implementation **Suggestions:** 54 total (Critical: 2, Major: 8, Minor: 21,
+Trivial: 23)
+
+**Patterns Identified:**
+
+1. Schema migration breaks consumers: verified-patterns.json restructured to
+   `{schema_version, patterns, exemptions}` but check-pattern-compliance.js
+   still indexed the flat object. Baseline keys didn't match antipattern IDs.
+   - Root cause: Schema refactored without updating all consumers
+   - Prevention: Schema migration checklist — grep all consumers before shipping
+2. Traversal validation incomplete: rotate-jsonl.js regex only caught leading
+   `..`, missing mid-path traversal like `x/../../y`.
+   - Root cause: Ad-hoc regex instead of using existing validatePathInDir helper
+   - Prevention: Always use security-helpers.js for path validation
+3. sanitizeError fallbacks leak raw err.message: 8 scripts had fallbacks missing
+   the full redaction chain from the canonical sanitizeError.
+   - Root cause: Copy-paste fallbacks diverged from canonical implementation
+   - Prevention: All fallbacks must match the 5-replace canonical pattern
+
+**Resolution:**
+
+- Fixed: 54 items
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Schema changes require consumer audit — the verified-patterns.json change
+  broke exemption loading AND FP reporting because only the config was updated.
+- Baseline key names must exactly match the antiPattern.id values emitted by
+  check-pattern-compliance.js. The mismatch caused silent ratchet failures.
+- check-cc.js and ratchet-baselines.js share known-debt-baseline.json but use
+  different sections (checks vs baselines). Both must be preserved on write.
+
+---

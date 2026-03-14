@@ -86,7 +86,7 @@ function withBaselineContent(content, fn) {
   }
 
   fs.writeFileSync(REAL_BASELINE_PATH, content, "utf-8");
-  delete require.cache[scriptPath];
+  delete require.cache[require.resolve(scriptPath)];
 
   let freshMod;
   try {
@@ -97,7 +97,7 @@ function withBaselineContent(content, fn) {
     if (realContent !== null) {
       fs.writeFileSync(REAL_BASELINE_PATH, realContent, "utf-8");
     }
-    delete require.cache[scriptPath];
+    delete require.cache[require.resolve(scriptPath)];
     require(scriptPath); // repopulate cache for the shared `ratchet` binding
   }
 }
@@ -432,7 +432,7 @@ describe("run function", () => {
     assert.equal(output.regressions.length, 1);
 
     // Must be valid JSON with all required fields.
-    const parsed = structuredClone(output);
+    const parsed = JSON.parse(JSON.stringify(output));
     assert.deepEqual(parsed.regressions, ["raw-error-message"]);
     assert.ok(Array.isArray(parsed.improvements));
     assert.ok(Array.isArray(parsed.unchanged));
@@ -495,7 +495,8 @@ describe("run function", () => {
         process.exit(1);
       }
       assert.fail("Expected process.exit(1) to throw");
-    } catch (_err) {
+    } catch {
+      /* expected exit */
       assert.equal(capturedCode, 1);
     } finally {
       process.exit = originalExit;

@@ -23,7 +23,10 @@ try {
     (e instanceof Error ? e.message : String(e))
       // Regex patterns with character classes — replaceAll requires string literals, not regex
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]");
+      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
+      .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
 }
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
@@ -133,7 +136,6 @@ function extractGaps(content) {
 // ---------------------------------------------------------------------------
 
 function routeGaps(gaps, options = {}) {
-  const { route } = require(path.join(__dirname, "lib", "learning-router.js"));
   const dryRun = options.dryRun || false;
 
   const results = [];
@@ -153,11 +155,14 @@ function routeGaps(gaps, options = {}) {
       results.push({
         gap,
         learning,
-        route: "behavioral → claudemd-annotation",
+        route: "behavioral \u2192 claudemd-annotation",
         action: "Would scaffold enforcement via learning-router",
       });
       continue;
     }
+
+    // Lazy-load learning-router only when actually routing (not dry-run)
+    const { route } = require(path.join(__dirname, "lib", "learning-router.js"));
 
     try {
       const result = route(learning, { track: true });

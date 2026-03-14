@@ -128,10 +128,12 @@ function parseJsonl(filePath) {
  * @returns {object} The entry that was written
  */
 function seedRouteEntry(filePath, learning, status) {
+  const now = new Date();
+  const iso = now.toISOString();
   const entry = {
     id: generateId(learning),
-    timestamp: new Date().toISOString(),
-    date: new Date().toISOString().split("T")[0],
+    timestamp: iso,
+    date: iso.split("T")[0],
     schema_version: 1,
     learning: {
       type: learning.type,
@@ -331,7 +333,7 @@ describe("verified-patterns.json integrity — Wave 9", () => {
     for (const pattern of schema.patterns) {
       for (const field of requiredFields) {
         assert.ok(
-          Object.hasOwn(pattern, field),
+          Object.prototype.hasOwnProperty.call(pattern, field),
           `Pattern "${pattern.id || "(no id)"}" is missing required field: ${field}`
         );
         assert.ok(
@@ -376,9 +378,7 @@ describe("verified-patterns.json integrity — Wave 9", () => {
     // Extract all section IDs present in the markdown, e.g. "S1", "S2", ...
     // Section headings have the form: ## S1: <Title>
     const presentSections = new Set();
-    let match;
-    const sectionRegex = /^## (S\d+):/gm;
-    while ((match = sectionRegex.exec(positivePatternsContent)) !== null) {
+    for (const match of positivePatternsContent.matchAll(/^## (S\d+):/gm)) {
       presentSections.add(match[1]);
     }
 

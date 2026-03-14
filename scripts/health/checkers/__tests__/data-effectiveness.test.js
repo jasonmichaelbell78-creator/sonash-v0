@@ -47,13 +47,16 @@ function loadChecker(linesFn) {
   };
 
   delete require.cache[CHECKER_PATH];
-  const mod = require(CHECKER_PATH);
-
-  // Restore original utils cache entry (or remove the fake)
-  if (origUtils) {
-    require.cache[UTILS_PATH] = origUtils;
-  } else {
-    delete require.cache[UTILS_PATH];
+  let mod;
+  try {
+    mod = require(CHECKER_PATH);
+  } finally {
+    // Restore original utils cache entry (or remove the fake)
+    if (origUtils) {
+      require.cache[UTILS_PATH] = origUtils;
+    } else {
+      delete require.cache[UTILS_PATH];
+    }
   }
 
   return mod;

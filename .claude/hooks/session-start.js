@@ -581,7 +581,7 @@ try {
 try {
   execFileSync(process.execPath, ["scripts/rotate-jsonl.js"], {
     cwd: projectDir,
-    stdio: "pipe",
+    stdio: "ignore",
     timeout: 10000,
   });
 } catch (rotateErr) {

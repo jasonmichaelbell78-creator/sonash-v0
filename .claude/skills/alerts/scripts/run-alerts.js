@@ -517,15 +517,21 @@ function saveBaseline() {
     fs.writeFileSync(tmpPath, data, "utf-8"); // atomic: write .tmp then renameSync below
     let wrote = false;
     try {
-      if (fs.existsSync(BASELINE_PATH)) {
-        fs.rmSync(BASELINE_PATH, { force: true });
-      }
       fs.renameSync(tmpPath, BASELINE_PATH);
       wrote = true;
     } catch {
-      // Windows can fail to overwrite existing dest; fall back to copy
-      // Fallback: rename failed, use copy instead
-      fs.copyFileSync(tmpPath, BASELINE_PATH);
+      // Windows may fail to overwrite; fall back to copy (no rmSync race)
+      try {
+        fs.copyFileSync(tmpPath, BASELINE_PATH);
+      } catch {
+        // Last resort: remove dest then copy
+        try {
+          fs.unlinkSync(BASELINE_PATH);
+        } catch {
+          /* ignore */
+        }
+        fs.copyFileSync(tmpPath, BASELINE_PATH);
+      }
       wrote = true;
     } finally {
       if (wrote) {
@@ -3629,7 +3635,7 @@ function checkCommitPatterns() {
   let sessionEndCount = 0;
   for (const entry of entries) {
     const msg = (entry.message || "").toLowerCase();
-    if (/\bsession[-\s]?end\b/i.test(msg)) {
+    if (/\bsession[-\s]?end\b/.test(msg)) {
       sessionEndCount++;
     }
   }

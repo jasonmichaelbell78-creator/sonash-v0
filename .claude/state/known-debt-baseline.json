@@ -1,18 +1,21 @@
 {
   "schema_version": 1,
   "updated": "2026-03-13",
+  "checks": {
+    "cognitive-complexity": {}
+  },
   "baselines": {
-    "writeFileSync-without-guard": {
+    "write-without-symlink-guard": {
       "baseline": 0,
       "recorded": "2026-03-13",
       "ratchet_history": []
     },
-    "raw-error-message": {
+    "unsanitized-error-response": {
       "baseline": 0,
       "recorded": "2026-03-13",
       "ratchet_history": []
     },
-    "startsWith-path-check": {
+    "simple-path-traversal-check": {
       "baseline": 0,
       "recorded": "2026-03-13",
       "ratchet_history": []

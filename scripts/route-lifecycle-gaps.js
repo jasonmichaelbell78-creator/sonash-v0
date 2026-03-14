@@ -23,7 +23,10 @@ try {
     (e instanceof Error ? e.message : String(e))
       // Regex patterns with character classes — replaceAll requires string literals, not regex
       .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]");
+      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
+      .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
 }
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
@@ -83,8 +86,11 @@ function run(options = {}) {
     return { success: false, routed: 0 };
   }
 
-  // Filter systems with Action < 2
-  const gaps = entries.filter((e) => e.action < 2);
+  // Filter systems with Action < 2 (guard against non-finite values)
+  const gaps = entries.filter((e) => {
+    const action = Number.isFinite(e.action) ? e.action : 0;
+    return action < 2;
+  });
 
   console.log(`Found ${gaps.length} systems with Action < 2 (of ${entries.length} total):\n`);
   for (const g of gaps) {
