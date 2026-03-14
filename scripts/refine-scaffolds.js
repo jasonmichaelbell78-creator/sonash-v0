@@ -23,12 +23,7 @@ let sanitizeError;
 try {
   ({ sanitizeError } = require(path.join(__dirname, "lib", "security-helpers.js")));
 } catch {
-  sanitizeError = (e) =>
-    (e instanceof Error ? e.message : String(e))
-      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+  sanitizeError = () => "error (details redacted — security-helpers unavailable)";
 }
 
 const { safeWriteFileSync, safeAppendFileSync } = require(
@@ -70,12 +65,18 @@ function readJsonl(filePath) {
 
   const lines = content.split("\n").filter((l) => l.trim());
   const entries = [];
+  let malformed = 0;
   for (const line of lines) {
     try {
       entries.push(JSON.parse(line));
     } catch {
-      // Skip malformed lines silently
+      malformed++;
     }
+  }
+  if (malformed > 0) {
+    console.error(
+      `[refine-scaffolds] Warning: ${malformed} malformed line(s) skipped in ${path.basename(filePath)}`
+    );
   }
   return entries;
 }
@@ -113,7 +114,12 @@ function appendJsonl(filePath, entry) {
  * @returns {string}
  */
 function buildEnforcementTestPath(id) {
-  return `tests/enforcement/check-${id}.test.js`;
+  const safeId = String(id || "unknown")
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9_-]+/g, "-")
+    .replaceAll(/-+/g, "-")
+    .replaceAll(/^-|-$/g, "");
+  return `tests/enforcement/check-${safeId || "unknown"}.test.js`;
 }
 
 /**
@@ -184,6 +190,7 @@ function run(options = {}) {
   let skipped = 0;
   const promotedIds = [];
   const refinedIds = [];
+  const pendingToAppend = [];
 
   const updatedEntries = entries.map((entry) => {
     // Only process "scaffolded" entries
@@ -195,12 +202,13 @@ function run(options = {}) {
     const classification = classify(entry);
 
     if (classification.confidence === "high") {
-      // Promote to enforced
+      // Promote to enforced (test + metrics start null; verify-enforcement skips until populated)
       const updated = {
         ...entry,
         status: "enforced",
-        enforcement_test: buildEnforcementTestPath(entry.id),
-        metrics: buildInitialMetrics(),
+        enforcement_test: null,
+        metrics: null,
+        _pending_test: buildEnforcementTestPath(entry.id),
         refined_at: new Date().toISOString(),
         classification: {
           confidence: classification.confidence,
@@ -224,14 +232,7 @@ function run(options = {}) {
         },
       };
 
-      if (!dryRun) {
-        // Append to pending-refinements.jsonl
-        try {
-          appendJsonl(pendingPath, buildPendingEntry(entry, classification));
-        } catch (error) {
-          console.error(`Failed to append to pending-refinements.jsonl: ${sanitizeError(error)}`);
-        }
-      }
+      pendingToAppend.push(buildPendingEntry(entry, classification));
 
       refined++;
       refinedIds.push(entry.id);
@@ -240,11 +241,21 @@ function run(options = {}) {
   });
 
   if (!dryRun) {
+    // Write routes first (atomic); only then append pending entries
     try {
       writeJsonl(routesPath, updatedEntries);
     } catch (error) {
       console.error(`Failed to write learning-routes.jsonl: ${sanitizeError(error)}`);
       return { success: false, promoted, refined, skipped };
+    }
+
+    // Routes persisted — now safe to append pending entries
+    for (const pending of pendingToAppend) {
+      try {
+        appendJsonl(pendingPath, pending);
+      } catch (error) {
+        console.error(`Failed to append to pending-refinements.jsonl: ${sanitizeError(error)}`);
+      }
     }
   }
 
@@ -260,15 +271,13 @@ function run(options = {}) {
 
   if (json) {
     console.log(JSON.stringify(summary, null, 2));
+  } else if (dryRun) {
+    console.log(
+      `Dry run: ${promoted} would be promoted to 'enforced', ` +
+        `${refined} to 'refined', ${skipped} skipped.`
+    );
   } else {
-    if (dryRun) {
-      console.log(
-        `Dry run: ${promoted} would be promoted to 'enforced', ` +
-          `${refined} to 'refined', ${skipped} skipped.`
-      );
-    } else {
-      console.log(`Promoted: ${promoted} | Refined: ${refined} | Skipped: ${skipped}`);
-    }
+    console.log(`Promoted: ${promoted} | Refined: ${refined} | Skipped: ${skipped}`);
   }
 
   return { success: true, promoted, refined, skipped };

@@ -119,7 +119,10 @@ function classify(entry) {
       return {
         confidence: "high",
         reason: "code type matching existing verified-pattern — regex update",
-        action: { type: "update-verified-pattern", targetFile: VP_PATH },
+        action: {
+          type: "update-verified-pattern",
+          targetFile: "scripts/config/verified-patterns.json",
+        },
       };
     }
     // code type but no match → low

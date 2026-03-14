@@ -515,29 +515,29 @@ describe("SCHEMA_MAP", () => {
 // 10. learning-route.ts — LearningRouteRecord
 // =========================================================
 
-describe("LearningRouteRecord", () => {
-  function validLearningRoute(overrides: Record<string, unknown> = {}): Record<string, unknown> {
-    return {
-      id: "lr-001",
-      date: "2026-03-14",
-      schema_version: 1,
-      completeness: "full",
-      origin: { type: "manual", session: "test", tool: "test" },
-      learning: {
-        type: "code",
-        pattern: "test-pattern",
-        source: "test-source",
-        severity: "medium",
-      },
-      route: "verified-pattern",
-      scaffold: "scripts/config/verified-patterns.json",
-      status: "scaffolded",
-      enforcement_test: null,
-      metrics: { violations_before: null, violations_after: null },
-      ...overrides,
-    };
-  }
+function validLearningRoute(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    id: "lr-001",
+    date: "2026-03-14",
+    schema_version: 1,
+    completeness: "full",
+    origin: { type: "manual", session: "test", tool: "test" },
+    learning: {
+      type: "code",
+      pattern: "test-pattern",
+      source: "test-source",
+      severity: "medium",
+    },
+    route: "verified-pattern",
+    scaffold: "scripts/config/verified-patterns.json",
+    status: "scaffolded",
+    enforcement_test: null,
+    metrics: { violations_before: null, violations_after: null },
+    ...overrides,
+  };
+}
 
+describe("LearningRouteRecord", () => {
   test("accepts all valid status values", () => {
     for (const status of ["scaffolded", "refined", "enforced", "verified"] as const) {
       assert.equal(LearningRouteRecord.safeParse(validLearningRoute({ status })).success, true);

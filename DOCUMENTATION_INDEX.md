@@ -639,9 +639,9 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-23    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓4 ↑4      | 2026-03-13    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓4 ↑4      | 2026-03-14    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-12    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-13    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-14    |
 
 ### Templates (Tier 3)
 
@@ -3566,7 +3566,7 @@ _Reference_
 | [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                  | This is a **one-page quick reference** for the SoNash review...   | ↓3 ↑4      | 2026-01-15    |
 | [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                  | This document provides **visual diagrams and flowcharts** fo...   | ↓2 ↑3      | 2026-01-15    |
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-01-24    |
-| [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-03-13    |
+| [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-03-14    |
 | [Slash Commands & Skills Reference](docs/SLASH_COMMANDS_REFERENCE.md)             | Comprehensive reference for all slash commands and skills av...   | ↓1 ↑2      | 2026-03-12    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-02-17    |
 
@@ -3594,7 +3594,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-23    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-03-13    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-03-14    |
 
 ### scripts (Tier 4)
 
@@ -3635,11 +3635,11 @@ _Auto-generated debt dashboards_
 
 | Document                                                                     | Description                    | References | Last Modified |
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-13    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-13    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-13    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-14    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-14    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-14    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-13    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-14    |
 
 ---
 

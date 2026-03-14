@@ -2315,6 +2315,57 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #362: PR #432 R1 — Automation Pipeline Safety, Escalation Integrity, DRY Refactor (2026-03-14)
+
+**Source:** Mixed (SonarCloud, Gemini, Qodo, CI) **PR/Branch:** PR #432 /
+plan-implementation **Suggestions:** 17 total (Critical: 1, Major: 8, Minor: 5,
+Trivial: 2)
+
+**Patterns Identified:**
+
+1. **Escalation claims without implementation**: `checkPendingRefinements()`
+   claimed to auto-create DEBT items but never wrote to MASTER_DEBT.jsonl,
+   permanently dropping tracked items.
+   - Root cause: Alert-only scope assumed DEBT creation happened elsewhere
+   - Prevention: Alert text must match actual behavior; keep items in queue
+     until explicitly resolved
+2. **Placeholder paths break downstream verification**: Promoted entries got
+   placeholder test paths pointing to non-existent files, causing immediate
+   verify-enforcement failure.
+   - Root cause: refine-scaffolds set `enforcement_test` to a path that was
+     never materialized
+   - Prevention: Set new fields to null until populated; downstream must skip
+     null gracefully
+3. **Non-atomic multi-file writes**: Appending to pending-refinements.jsonl
+   before writing learning-routes.jsonl caused duplicate entries on partial
+   failure retry.
+   - Root cause: Side-effects during mapping loop before main file write
+   - Prevention: Collect mutations in memory, persist primary file first, then
+     side-effects
+4. **DRY violation in hook code**: 5 identical try/catch blocks with inline
+   error redaction patterns.
+   - Root cause: Copy-paste during rapid pipeline wiring
+   - Prevention: Extract helper function before repeating pattern 3+ times
+
+**Resolution:**
+
+- Fixed: 16 items
+- Deferred: 0 items
+- Rejected: 1 item (test try/catch in controlled temp dir — standard test
+  practice)
+
+**Key Learnings:**
+
+- Escalation/automation code that claims to perform an action (DEBT creation,
+  file writes) must either implement the action or use accurate "candidate"
+  language
+- Newly promoted lifecycle entries should start with null test/metrics and skip
+  verification until populated
+- Pipeline helper functions in hooks should use centralized sanitizeError, not
+  inline regex redaction
+
+---
+
 #### Review #355: PR #428 R1 — ESLint v10 Contradiction, Phantom Corruption, Doc Lint (2026-03-12)
 
 **Source:** Doc Lint, Qodo, Gemini, CI **Items:** 10 total (10 fixed, 0

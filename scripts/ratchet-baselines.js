@@ -30,13 +30,8 @@ try {
   };
 }
 
-// Import safeWriteFileSync with fallback (symlink-guarded writes)
-let safeWriteFileSync;
-try {
-  ({ safeWriteFileSync } = require(path.join(__dirname, "lib", "safe-fs.js")));
-} catch {
-  safeWriteFileSync = (filePath, data, options) => fs.writeFileSync(filePath, data, options);
-}
+// Import safeWriteFileSync (core dependency — must be present)
+const { safeWriteFileSync } = require(path.join(__dirname, "lib", "safe-fs.js"));
 
 const ROOT = path.join(__dirname, "..");
 const BASELINE_PATH = path.join(ROOT, ".claude", "state", "known-debt-baseline.json");

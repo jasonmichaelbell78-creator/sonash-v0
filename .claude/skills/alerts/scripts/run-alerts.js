@@ -3768,12 +3768,23 @@ function checkPendingRefinements() {
   const escalated = [];
 
   for (const entry of entries) {
+    // Skip entries without actionable generated_code
+    if (typeof entry.generated_code !== "string" || !entry.generated_code.trim()) {
+      updatedEntries.push(entry);
+      continue;
+    }
+
+    // Don't re-increment already-escalated items
+    if (entry.escalated) {
+      escalated.push(entry);
+      continue;
+    }
+
     const surfacedCount = (typeof entry.surfaced_count === "number" ? entry.surfaced_count : 0) + 1;
     const updated = { ...entry, surfaced_count: surfacedCount };
 
     if (surfacedCount >= 3) {
-      // Auto-escalate: create DEBT item at S1 with 7-day deadline
-      escalated.push(updated);
+      escalated.push({ ...updated, escalated: true });
     } else {
       updatedEntries.push(updated);
     }
@@ -3781,6 +3792,7 @@ function checkPendingRefinements() {
 
   // Surface remaining pending items as alerts
   for (const entry of updatedEntries) {
+    if (typeof entry.generated_code !== "string" || !entry.generated_code.trim()) continue;
     addAlert(
       "pending-refinements",
       "warning",
@@ -3789,39 +3801,44 @@ function checkPendingRefinements() {
         id: entry.id,
         confidence: entry.confidence,
         reason: entry.reason,
-        generated_code: entry.generated_code,
+        has_generated_code: true,
         surfaced_count: entry.surfaced_count,
       },
       "Resolve via /alerts: approve, edit+approve, or DEBT"
     );
   }
 
-  // Report escalated items
+  // Report escalated items (kept in queue until resolved via /alerts or /add-debt)
   for (const entry of escalated) {
     addAlert(
       "pending-refinements",
       "critical",
-      `Auto-escalated to S1 DEBT (surfaced ${entry.surfaced_count}x without action): ${entry.pattern || "(unknown)"}`,
+      `S1 DEBT candidate (surfaced ${entry.surfaced_count}x without action): ${entry.pattern || "(unknown)"}`,
       { id: entry.id, escalated: true },
-      "DEBT item auto-created in MASTER_DEBT.jsonl with 7-day deadline"
+      "Create S1 DEBT item via /add-debt with 7-day deadline"
     );
   }
 
-  // Write back updated entries (minus escalated ones)
+  // Write back all entries (both active and escalated remain tracked)
+  const allTracked = [...updatedEntries, ...escalated];
   try {
     if (isSafeToWrite(pendingPath)) {
       const updatedContent =
-        updatedEntries.map((e) => JSON.stringify(e)).join("\n") +
-        (updatedEntries.length > 0 ? "\n" : "");
+        allTracked.map((e) => JSON.stringify(e)).join("\n") + (allTracked.length > 0 ? "\n" : "");
       fs.writeFileSync(pendingPath, updatedContent, "utf-8");
     }
-  } catch {
-    // Non-fatal: don't block alerts on write failure
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(
+      `[run-alerts] Failed to persist pending-refinements.jsonl — escalation counts will not be saved: ${errMsg}`
+    );
   }
 
   addContext("pending-refinements", {
-    totalPending: entries.length,
-    active: updatedEntries.length,
+    totalPending: allTracked.length,
+    active: updatedEntries.filter(
+      (e) => typeof e.generated_code === "string" && e.generated_code.trim()
+    ).length,
     escalatedToDebt: escalated.length,
   });
 }

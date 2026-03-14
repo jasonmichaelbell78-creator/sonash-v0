@@ -152,11 +152,17 @@ describe("refine-scaffolds: high-confidence entry", () => {
     assert.strictEqual(updatedEntries.length, 1);
     assert.strictEqual(updatedEntries[0].status, "enforced");
     const enforced0 = updatedEntries[0] as unknown as Record<string, unknown>;
-    assert.ok(enforced0.enforcement_test, "enforced entry should have enforcement_test field");
-    assert.ok(enforced0.metrics, "enforced entry should have metrics field");
+    // enforcement_test and metrics start null (verify-enforcement skips until populated)
+    assert.strictEqual(
+      enforced0.enforcement_test,
+      null,
+      "enforcement_test should be null initially"
+    );
+    assert.strictEqual(enforced0.metrics, null, "metrics should be null initially");
+    assert.ok(enforced0._pending_test, "should have _pending_test placeholder");
   });
 
-  it("enforcement_test is a placeholder path string", () => {
+  it("_pending_test is a sanitized placeholder path string", () => {
     const entry = makeScaffoldedEntry({
       id: "high-conf-002",
       learning: {
@@ -172,12 +178,12 @@ describe("refine-scaffolds: high-confidence entry", () => {
 
     const updatedEntries = readJsonl(routesPath) as Array<Record<string, unknown>>;
     const enforced = updatedEntries[0] as unknown as Record<string, unknown>;
-    assert.ok(typeof enforced.enforcement_test === "string");
-    assert.match(enforced.enforcement_test as string, /tests\/enforcement\//);
-    assert.match(enforced.enforcement_test as string, /high-conf-002/);
+    assert.ok(typeof enforced._pending_test === "string");
+    assert.match(enforced._pending_test as string, /tests\/enforcement\//);
+    assert.match(enforced._pending_test as string, /high-conf-002/);
   });
 
-  it("metrics field has violations_before=0 and violations_after=null", () => {
+  it("enforcement_test and metrics are null for newly promoted entries", () => {
     const entry = makeScaffoldedEntry({
       id: "high-conf-003",
       learning: {
@@ -192,10 +198,8 @@ describe("refine-scaffolds: high-confidence entry", () => {
     run({ routesPath, pendingPath });
 
     const updatedEntries = readJsonl(routesPath) as Array<Record<string, unknown>>;
-    const metrics = updatedEntries[0].metrics as Record<string, unknown>;
-    assert.ok(metrics, "metrics should be set");
-    assert.strictEqual(metrics.violations_before, 0);
-    assert.strictEqual(metrics.violations_after, null);
+    assert.strictEqual(updatedEntries[0].enforcement_test, null);
+    assert.strictEqual(updatedEntries[0].metrics, null);
   });
 });
 
