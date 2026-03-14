@@ -531,8 +531,12 @@ function saveBaseline() {
         } catch {
           /* ignore */
         }
-        fs.copyFileSync(tmpPath, BASELINE_PATH);
-        wrote = true;
+        try {
+          fs.copyFileSync(tmpPath, BASELINE_PATH);
+          wrote = true;
+        } catch {
+          // All write strategies exhausted — baseline not updated this run
+        }
       }
     } finally {
       if (wrote) {

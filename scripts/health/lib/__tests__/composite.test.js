@@ -186,14 +186,14 @@ describe("CHECKER_TO_CATEGORY", () => {
 
 describe("computeCompositeScore", () => {
   it("returns score in [0, 100] and a valid grade", () => {
-    const r = computeCompositeScore(makeAllGoodResults());
-    assert.ok(r.score >= 0 && r.score <= 100);
-    assert.ok(["A", "B", "C", "D", "F"].includes(r.grade));
+    const result = computeCompositeScore(makeAllGoodResults());
+    assert.ok(result.score >= 0 && result.score <= 100);
+    assert.ok(["A", "B", "C", "D", "F"].includes(result.grade));
   });
 
   it("returns high score when all checkers report score=100", () => {
-    const r = computeCompositeScore(makeAllGoodResults());
-    assert.ok(r.score >= 90, `expected >= 90, got ${r.score}`);
+    const result = computeCompositeScore(makeAllGoodResults());
+    assert.ok(result.score >= 90, `expected >= 90, got ${result.score}`);
   });
 
   it("returns score=0 and grade=F when all checkers have no_data", () => {
@@ -201,34 +201,34 @@ describe("computeCompositeScore", () => {
     for (const name of Object.keys(makeAllGoodResults())) {
       noData[name] = { no_data: true, metrics: {} };
     }
-    const r = computeCompositeScore(noData);
-    assert.equal(r.score, 0);
-    assert.equal(r.grade, "F");
+    const result = computeCompositeScore(noData);
+    assert.equal(result.score, 0);
+    assert.equal(result.grade, "F");
   });
 
   it("returns categoryScores object with all 9 categories", () => {
-    const r = computeCompositeScore(makeAllGoodResults());
+    const result = computeCompositeScore(makeAllGoodResults());
     for (const cat of Object.keys(CATEGORY_WEIGHTS)) {
-      assert.ok(cat in r.categoryScores, `"${cat}" missing from categoryScores`);
+      assert.ok(cat in result.categoryScores, `"${cat}" missing from categoryScores`);
     }
   });
 
   it("returns dimensionScores object with entries", () => {
-    const r = computeCompositeScore(makeAllGoodResults());
-    assert.ok(typeof r.dimensionScores === "object");
-    assert.ok(Object.keys(r.dimensionScores).length > 0);
+    const result = computeCompositeScore(makeAllGoodResults());
+    assert.ok(typeof result.dimensionScores === "object");
+    assert.ok(Object.keys(result.dimensionScores).length > 0);
   });
 
   it("handles empty checker results gracefully (returns score=0)", () => {
-    const r = computeCompositeScore({});
-    assert.equal(r.score, 0);
+    const result = computeCompositeScore({});
+    assert.equal(result.score, 0);
   });
 
   it("ignores unknown checker names", () => {
     const results = makeAllGoodResults();
     results["totally-unknown"] = { no_data: false, metrics: { m: { score: 10, value: 1 } } };
-    const r = computeCompositeScore(results);
-    assert.ok(r.score >= 0 && r.score <= 100);
+    const result = computeCompositeScore(results);
+    assert.ok(result.score >= 0 && result.score <= 100);
   });
 
   it("poor scores in one category lower the composite score", () => {
@@ -238,10 +238,10 @@ describe("computeCompositeScore", () => {
       no_data: false,
       metrics: { ts_errors: { score: 0, value: 100 }, eslint_errors: { score: 0, value: 50 } },
     };
-    const r = computeCompositeScore(poor);
+    const result = computeCompositeScore(poor);
     assert.ok(
-      r.score < good.score,
-      `poor code quality should lower score: ${r.score} vs ${good.score}`
+      result.score < good.score,
+      `poor code quality should lower score: ${result.score} vs ${good.score}`
     );
   });
 });

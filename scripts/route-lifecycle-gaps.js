@@ -21,11 +21,10 @@ try {
 } catch {
   sanitizeError = (e) =>
     (e instanceof Error ? e.message : String(e))
-      // Regex patterns with character classes — replaceAll requires string literals, not regex
-      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
 }
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
@@ -78,6 +77,26 @@ function categorizeGap(entry) {
   return "process"; // default
 }
 
+/** Build a learning entry from a lifecycle gap. */
+function buildLearning(gap) {
+  const type = categorizeGap(gap);
+  const capture = Number.isFinite(gap.capture) ? gap.capture : 0;
+  const storage = Number.isFinite(gap.storage) ? gap.storage : 0;
+  const recall = Number.isFinite(gap.recall) ? gap.recall : 0;
+  const action = Number.isFinite(gap.action) ? gap.action : 0;
+  const total = Number.isFinite(gap.total) ? gap.total : capture + storage + recall + action;
+  return {
+    type,
+    pattern: `${gap.system}: ${gap.gap}`,
+    source: `lifecycle-scores.jsonl:${gap.id} (Action=${action})`,
+    severity: total < 6 ? "high" : "medium",
+    evidence: {
+      summary: `Lifecycle score: ${capture}/${storage}/${recall}/${action} = ${total}/12`,
+      scores: { capture, storage, recall, action, total },
+    },
+  };
+}
+
 function run(options = {}) {
   const entries = readJsonl(SCORES_PATH);
   if (entries.length === 0) {
@@ -108,25 +127,7 @@ function run(options = {}) {
   let errors = 0;
 
   for (const gap of gaps) {
-    const type = categorizeGap(gap);
-
-    const capture = Number.isFinite(gap.capture) ? gap.capture : 0;
-    const storage = Number.isFinite(gap.storage) ? gap.storage : 0;
-    const recall = Number.isFinite(gap.recall) ? gap.recall : 0;
-    const action = Number.isFinite(gap.action) ? gap.action : 0;
-    const total = Number.isFinite(gap.total) ? gap.total : capture + storage + recall + action;
-
-    const learning = {
-      type,
-      pattern: `${gap.system}: ${gap.gap}`,
-      source: `lifecycle-scores.jsonl:${gap.id} (Action=${action})`,
-      severity: total < 6 ? "high" : "medium",
-      evidence: {
-        summary: `Lifecycle score: ${capture}/${storage}/${recall}/${action} = ${total}/12`,
-        scores: { capture, storage, recall, action, total },
-      },
-    };
-
+    const learning = buildLearning(gap);
     try {
       route(learning, { track: true });
       routed++;

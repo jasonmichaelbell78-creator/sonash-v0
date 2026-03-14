@@ -33,10 +33,10 @@ try {
   sanitizeError = (error) => {
     const message = error instanceof Error ? error.message : String(error);
     return message
-      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
   };
 }
 
@@ -65,8 +65,8 @@ function slugify(text) {
   return (
     text
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-") // non-alphanum -> hyphen  // S5852: safe — no backtracking risk in character class
-      .replace(/^-+|-+$/g, "") // strip leading/trailing hyphens  // S5852: safe — no backtracking risk in anchored alternation
+      .replaceAll(/[^a-z0-9]+/g, "-") // non-alphanum -> hyphen  // S5852: safe — no backtracking risk in character class
+      .replaceAll(/^-+|-+$/g, "") // strip leading/trailing hyphens  // S5852: safe — no backtracking risk in anchored alternation
       .slice(0, 60) || "unnamed"
   );
 }

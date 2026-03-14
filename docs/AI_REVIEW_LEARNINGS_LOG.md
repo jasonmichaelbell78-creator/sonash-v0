@@ -2786,6 +2786,64 @@ Trivial: 23)
 
 ---
 
+#### Review #358: PR #431 R4 — Modernization, Complexity & Data Guards (2026-03-14)
+
+**Source:** Qodo / SonarCloud / CI **PR/Branch:** #431 plan-implementation
+**Suggestions:** 53 raw (52 unique after dedup) (Critical: 2, Major: 3, Minor:
+13, Trivial: 34)
+
+**Patterns Identified:**
+
+1. SonarCloud replaceAll re-flag: R3 rejected 37 replaceAll items as "no
+   semantic benefit." R4 re-flagged 28. Fixed this round to clear persistent
+   noise and prevent infinite review loops on cosmetic items.
+   - Lesson: When SonarCloud will re-flag the same items every round, fix them
+     even if cosmetic — the review cycle cost exceeds the change cost.
+2. Cognitive complexity regression: ratchet-baselines.js crept from 15→16 after
+   R3's reduction (24→15). Extracted `getBaselines` and `persistBaselines`.
+   route-lifecycle-gaps.js at 19 — extracted `buildLearning` helper.
+3. Data validation gaps: generateFlaggedSection still called `e.files.join()`
+   without Array guard and `e.total` without Number.isFinite.
+   generateSystemsTable had unguarded sub-scores
+   (capture/storage/recall/action).
+4. CI blocker on single-letter vars: `const r` in composite.test.js and
+   wave6-alerts.test.js triggered patterns:check blocking violation.
+5. Pre-existing test failure: wave6-alerts.test.js `checkCommitPatterns` test
+   expects `sessionEndPct: 50` but implementation returns 0 when `fired: false`.
+
+**Resolution:**
+
+- Fixed: 37 items
+- Deferred: 0 items
+- Rejected: 15 items (2 R3 dedup, 13 over-engineering/false-positive)
+
+**Rejected Items:**
+
+- POSIX path redaction (R3 dedup — R3 deliberately removed this regex)
+- OS temp directory for tests (R3 dedup — tests need repo boundary compat)
+- Symlink security in run-alerts.js (isSafeToWrite guard already at L515)
+- mkdirSync in test helper (parent dir always exists)
+- stderr JSON fallback (child process outputs JSON to stdout only)
+- Recompute totals (stored total is authoritative)
+- File read try/catch (over-engineering readJsonl callers)
+- Normalize rotation results (over-engineering internal returns)
+- Guard require() in loop (Node caches modules)
+- chmod test scripts (node invoked directly, not via shebang)
+- Skip tests when fixtures missing (silent skip hides problems)
+- Capture test output (adds complexity for marginal debugging)
+- Set.has x2 (SonarCloud FP — string.includes(), not array)
+- json parameter design smell (simple boolean in 6-line function)
+
+**Key Learnings:**
+
+- SonarCloud cosmetic items that persist across rounds should be fixed even if
+  the change is purely mechanical. The review overhead of re-triaging them every
+  round exceeds the 5-minute fix.
+- Complexity extractions can regress if the function is subsequently modified
+  without re-checking complexity. Consider adding complexity to CI gates.
+
+---
+
 #### Review #357: PR #431 R3 — Robustness, Complexity & Propagation Fixes (2026-03-13)
 
 **Source:** Qodo / SonarCloud / Gemini **PR/Branch:** #431 plan-implementation

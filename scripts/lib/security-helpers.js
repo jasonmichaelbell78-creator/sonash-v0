@@ -44,10 +44,10 @@ try {
 function sanitizeError(error) {
   const message = error instanceof Error ? error.message : String(error);
   return message
-    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-    .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+    .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+    .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
 }
 
 /**
@@ -62,12 +62,12 @@ function sanitizeDisplayString(str, maxLength = 100) {
   if (!str) return "";
 
   const sanitized = String(str)
-    .replace(/```[\s\S]*?```/g, "[CODE]")
-    .replace(/`[^`]+`/g, "[CODE]")
-    .replace(/C:\\Users\\[^\s]+/gi, "[PATH]")
-    .replace(/\/home\/[^\s]+/gi, "[PATH]")
-    .replace(/\/Users\/[^\s]+/gi, "[PATH]")
-    .replace(/\s+/g, " ")
+    .replaceAll(/```[\s\S]*?```/g, "[CODE]")
+    .replaceAll(/`[^`]+`/g, "[CODE]")
+    .replaceAll(/C:\\Users\\[^\s]+/gi, "[PATH]")
+    .replaceAll(/\/home\/[^\s]+/gi, "[PATH]")
+    .replaceAll(/\/Users\/[^\s]+/gi, "[PATH]")
+    .replaceAll(/\s+/g, " ")
     .trim();
 
   return sanitized.length > maxLength ? sanitized.substring(0, maxLength) + "..." : sanitized;
@@ -84,7 +84,7 @@ function sanitizeDisplayString(str, maxLength = 100) {
 function escapeMd(str, maxLength = 100) {
   const sanitized = sanitizeDisplayString(str, maxLength);
   // Escape all Markdown metacharacters including backslash
-  return sanitized.replace(/[\\[\]()_*`#>!-]/g, "\\$&");
+  return sanitized.replaceAll(/[\\[\]()_*`#>!-]/g, "\\$&");
 }
 
 /**
@@ -249,10 +249,10 @@ function sanitizeFilename(name, options = {}) {
   const { maxLength = 60, fallback = "UNNAMED" } = options;
 
   const safe = String(name || "")
-    .replace(/[/\\]/g, "_") // Remove path separators
-    .replace(/\s+/g, "_") // Spaces to underscores
-    .replace(/[^a-zA-Z0-9_.-]/g, "") // Remove special chars
-    .replace(/^-+/, "") // Strip leading dashes (Pattern #31)
+    .replaceAll(/[/\\]/g, "_") // Remove path separators
+    .replaceAll(/\s+/g, "_") // Spaces to underscores
+    .replaceAll(/[^a-zA-Z0-9_.-]/g, "") // Remove special chars
+    .replaceAll(/^-+/g, "") // Strip leading dashes (Pattern #31)
     .slice(0, maxLength);
 
   return safe || fallback;

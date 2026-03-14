@@ -145,10 +145,10 @@ describe("checkVelocityRegression", () => {
       j({ items_completed: 8 }),
       j({ items_completed: 4 }),
     ]);
-    const r = runVelocityCheck(fp);
-    assert.equal(r.fired, true);
-    assert.equal(r.severity, "warning");
-    assert.equal(r.category, "velocity-regression");
+    const result = runVelocityCheck(fp);
+    assert.equal(result.fired, true);
+    assert.equal(result.severity, "warning");
+    assert.equal(result.category, "velocity-regression");
   });
 
   it("does not fire when velocity drop is less than 50%", () => {
@@ -169,9 +169,9 @@ describe("checkVelocityRegression", () => {
 
   it("handles single-entry log — cannot compare, returns insufficient", () => {
     const fp = write("v-one.jsonl", [j({ items_completed: 5 })]);
-    const r = runVelocityCheck(fp);
-    assert.equal(r.fired, false);
-    assert.equal(r.reason, "insufficient");
+    const result = runVelocityCheck(fp);
+    assert.equal(result.fired, false);
+    assert.equal(result.reason, "insufficient");
   });
 
   it("handles entries with missing velocity fields without crashing", () => {
@@ -191,10 +191,10 @@ describe("checkStalePlanningData", () => {
 
   it("fires info when most recent entry is 31 days old", () => {
     const fp = write("d.jsonl", [j({ date: daysAgo(60) }), j({ date: daysAgo(31) })]);
-    const r = runPlanningCheck(fp);
-    assert.equal(r.fired, true);
-    assert.equal(r.severity, "info");
-    assert.equal(r.category, "planning-data");
+    const result = runPlanningCheck(fp);
+    assert.equal(result.fired, true);
+    assert.equal(result.severity, "info");
+    assert.equal(result.category, "planning-data");
   });
 
   it("does not fire when most recent entry is 20 days old", () => {
@@ -203,9 +203,9 @@ describe("checkStalePlanningData", () => {
   });
 
   it("handles missing file gracefully", () => {
-    const r = runPlanningCheck(path.join(tempDir, "no-such-file.jsonl"));
-    assert.equal(r.fired, false);
-    assert.equal(r.reason, "empty");
+    const result = runPlanningCheck(path.join(tempDir, "no-such-file.jsonl"));
+    assert.equal(result.fired, false);
+    assert.equal(result.reason, "empty");
   });
 
   it("handles empty file gracefully", () => {
@@ -219,9 +219,9 @@ describe("checkStalePlanningData", () => {
       j({ created: daysAgo(45) }),
       j({ date: daysAgo(5) }),
     ]);
-    const r = runPlanningCheck(fp);
-    assert.equal(r.fired, false, "most recent is 5 days — should not fire");
-    assert.ok(r.daysSinceLastEntry <= 6);
+    const result = runPlanningCheck(fp);
+    assert.equal(result.fired, false, "most recent is 5 days — should not fire");
+    assert.ok(result.daysSinceLastEntry <= 6);
   });
 });
 
@@ -238,11 +238,11 @@ describe("checkDeferredItemsStaleness", () => {
       "def.jsonl",
       Array.from({ length: 21 }, (_, i) => j({ id: i }))
     );
-    const r = runDeferredCheck(fp);
-    assert.equal(r.fired, true);
-    assert.equal(r.unresolvedCount, 21);
-    assert.equal(r.severity, "warning");
-    assert.equal(r.category, "deferred-items");
+    const result = runDeferredCheck(fp);
+    assert.equal(result.fired, true);
+    assert.equal(result.unresolvedCount, 21);
+    assert.equal(result.severity, "warning");
+    assert.equal(result.category, "deferred-items");
   });
 
   it("does not fire when there are exactly 20 unresolved items", () => {
@@ -250,9 +250,9 @@ describe("checkDeferredItemsStaleness", () => {
       "def.jsonl",
       Array.from({ length: 20 }, (_, i) => j({ id: i }))
     );
-    const r = runDeferredCheck(fp);
-    assert.equal(r.fired, false);
-    assert.equal(r.unresolvedCount, 20);
+    const result = runDeferredCheck(fp);
+    assert.equal(result.fired, false);
+    assert.equal(result.unresolvedCount, 20);
   });
 
   it("correctly ignores entries that have a resolved_date field", () => {
@@ -261,15 +261,15 @@ describe("checkDeferredItemsStaleness", () => {
       j({ id: 2, resolved_date: "2026-02-01" }),
       ...Array.from({ length: 5 }, (_, i) => j({ id: i + 3 })),
     ];
-    const r = runDeferredCheck(write("def-mix.jsonl", rows));
-    assert.equal(r.unresolvedCount, 5);
-    assert.equal(r.fired, false);
+    const result = runDeferredCheck(write("def-mix.jsonl", rows));
+    assert.equal(result.unresolvedCount, 5);
+    assert.equal(result.fired, false);
   });
 
   it("handles empty file gracefully", () => {
-    const r = runDeferredCheck(write("def-empty.jsonl", []));
-    assert.equal(r.fired, false);
-    assert.equal(r.unresolvedCount, 0);
+    const result = runDeferredCheck(write("def-empty.jsonl", []));
+    assert.equal(result.fired, false);
+    assert.equal(result.unresolvedCount, 0);
   });
 
   it("skips corrupt JSON lines and counts only valid unresolved entries", () => {
@@ -297,11 +297,11 @@ describe("checkCommitPatterns", () => {
       ...Array.from({ length: 6 }, (_, i) => j({ message: `session-end wrap ${i}` })),
       ...Array.from({ length: 4 }, (_, i) => j({ message: `feat: add thing ${i}` })),
     ];
-    const r = runCommitCheck(write("c.jsonl", rows));
-    assert.equal(r.fired, true);
-    assert.equal(r.sessionEndCount, 6);
-    assert.equal(r.severity, "info");
-    assert.equal(r.category, "commit-patterns");
+    const result = runCommitCheck(write("c.jsonl", rows));
+    assert.equal(result.fired, true);
+    assert.equal(result.sessionEndCount, 6);
+    assert.equal(result.severity, "info");
+    assert.equal(result.category, "commit-patterns");
   });
 
   it("does not fire when exactly 50% of commits contain 'session'", () => {
@@ -309,9 +309,9 @@ describe("checkCommitPatterns", () => {
       ...Array.from({ length: 5 }, (_, i) => j({ message: `session wrap ${i}` })),
       ...Array.from({ length: 5 }, (_, i) => j({ message: `fix: bug ${i}` })),
     ];
-    const r = runCommitCheck(write("c-50.jsonl", rows));
-    assert.equal(r.fired, false);
-    assert.equal(r.sessionEndPct, 50);
+    const result = runCommitCheck(write("c-50.jsonl", rows));
+    assert.equal(result.fired, false);
+    assert.equal(result.sessionEndPct, 50);
   });
 
   it("handles empty file gracefully without throwing", () => {
@@ -323,9 +323,9 @@ describe("checkCommitPatterns", () => {
     const rows = Array.from({ length: 10 }, (_, i) =>
       j({ message: `chore: cleanup ${i}`, tag: "session-tag" })
     );
-    const r = runCommitCheck(write("c-tag.jsonl", rows));
-    assert.equal(r.fired, false);
-    assert.equal(r.sessionEndCount, 0);
+    const result = runCommitCheck(write("c-tag.jsonl", rows));
+    assert.equal(result.fired, false);
+    assert.equal(result.sessionEndCount, 0);
   });
 
   it("handles fewer than 10 entries and counts only those present", () => {
@@ -334,10 +334,10 @@ describe("checkCommitPatterns", () => {
       j({ message: "session-end: wrap" }),
       j({ message: "fix: thing" }),
     ];
-    const r = runCommitCheck(write("c-few.jsonl", rows));
-    assert.equal(r.fired, true, "2/3 = 66.7% should fire");
-    assert.equal(r.totalEntries, 3);
-    assert.equal(r.sessionEndCount, 2);
+    const result = runCommitCheck(write("c-few.jsonl", rows));
+    assert.equal(result.fired, true, "2/3 = 66.7% should fire");
+    assert.equal(result.totalEntries, 3);
+    assert.equal(result.sessionEndCount, 2);
   });
 });
 

@@ -31,7 +31,7 @@ function checkDataEffectiveness() {
   const systems = [];
   for (const line of lines) {
     const parsed = safeParse(line);
-    if (parsed && typeof parsed.total === "number") {
+    if (parsed && Number.isFinite(parsed.total)) {
       systems.push(parsed);
     }
   }

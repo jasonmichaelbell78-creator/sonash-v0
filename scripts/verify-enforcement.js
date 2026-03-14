@@ -51,10 +51,10 @@ try {
   sanitizeError = (err) => {
     const msg = err instanceof Error ? err.message : String(err);
     return msg
-      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
   };
 }
 

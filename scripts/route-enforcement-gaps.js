@@ -21,11 +21,10 @@ try {
 } catch {
   sanitizeError = (e) =>
     (e instanceof Error ? e.message : String(e))
-      // Regex patterns with character classes — replaceAll requires string literals, not regex
-      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
 }
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");

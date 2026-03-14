@@ -23,10 +23,10 @@ try {
   sanitizeError = (err) => {
     const message = err instanceof Error ? err.message : String(err);
     return message
-      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
   };
 }
 
@@ -128,6 +128,26 @@ function findNewPatternRegressions(baselines, currentCounts) {
   return regressions;
 }
 
+/** Persist updated baselines to disk. */
+function persistBaselines(baselineData, today) {
+  baselineData.updated = today;
+  try {
+    safeWriteFileSync(BASELINE_PATH, JSON.stringify(baselineData, null, 2) + "\n", "utf-8");
+  } catch (err) {
+    console.error("Failed to write baselines:", sanitizeError(err));
+    process.exit(2);
+  }
+}
+
+/** Extract validated baselines object from raw data. */
+function getBaselines(baselineData) {
+  return baselineData &&
+    typeof baselineData.baselines === "object" &&
+    baselineData.baselines !== null
+    ? baselineData.baselines
+    : {};
+}
+
 /** Core ratchet logic: compare current counts against baselines. */
 function ratchet(baselineData, currentCounts, opts = {}) {
   const { dryRun = false } = opts;
@@ -136,15 +156,10 @@ function ratchet(baselineData, currentCounts, opts = {}) {
   const improvements = [];
   const unchanged = [];
 
-  // Defensive: validate baselines is an object
-  const baselines =
-    baselineData && typeof baselineData.baselines === "object" && baselineData.baselines !== null
-      ? baselineData.baselines
-      : {};
+  const baselines = getBaselines(baselineData);
 
   for (const [patternId, entry] of Object.entries(baselines)) {
     const current = currentCounts[patternId] || 0;
-    // Defensive: default baseline to 0 if not a number
     const stored = typeof entry.baseline === "number" ? entry.baseline : 0;
 
     if (current > stored) {
@@ -164,13 +179,7 @@ function ratchet(baselineData, currentCounts, opts = {}) {
 
   // Write updated baselines if there were improvements and not dry-run
   if (improvements.length > 0 && !dryRun) {
-    baselineData.updated = today;
-    try {
-      safeWriteFileSync(BASELINE_PATH, JSON.stringify(baselineData, null, 2) + "\n", "utf-8");
-    } catch (err) {
-      console.error("Failed to write baselines:", sanitizeError(err));
-      process.exit(2);
-    }
+    persistBaselines(baselineData, today);
   }
 
   return { regressions, improvements, unchanged };

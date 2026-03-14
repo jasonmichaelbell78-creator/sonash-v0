@@ -18,13 +18,12 @@ let _sanitizeError;
 try {
   ({ sanitizeError: _sanitizeError } = require(path.join(__dirname, "lib", "security-helpers.js")));
 } catch {
-  // regex patterns required for case-insensitive matching — replaceAll not applicable
   _sanitizeError = (e) =>
     (e instanceof Error ? e.message : String(e))
-      .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
 }
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
@@ -143,7 +142,13 @@ function generateSystemsTable(sorted) {
     const total = Number.isFinite(e.total) ? e.total : 0;
     const grade = scoreEmoji(total);
     const flag = total < 6 ? " **FLAG**" : "";
-    md += `| ${e.system} | ${fileList} | ${e.capture} | ${e.storage} | ${e.recall} | ${e.action} | **${total}** | ${grade}${flag} | ${e.gap} |\n`;
+    const system = String(e.system ?? "").replaceAll("|", "\\|") || "(unknown)";
+    const capture = Number.isFinite(e.capture) ? e.capture : 0;
+    const storage = Number.isFinite(e.storage) ? e.storage : 0;
+    const recall = Number.isFinite(e.recall) ? e.recall : 0;
+    const action = Number.isFinite(e.action) ? e.action : 0;
+    const gap = String(e.gap ?? "").replaceAll("|", "\\|");
+    md += `| ${system} | ${fileList} | ${capture} | ${storage} | ${recall} | ${action} | **${total}** | ${grade}${flag} | ${gap} |\n`;
   }
   return md;
 }
@@ -157,9 +162,11 @@ function generateFlaggedSection(flagged) {
   if (flagged.length === 0) return "";
   let md = `\n---\n\n## Flagged Systems (Total < 6)\n\n`;
   for (const e of flagged) {
-    md += `### ${e.system} (${e.total}/12)\n\n`;
+    const files = Array.isArray(e.files) ? e.files : [];
+    const total = Number.isFinite(e.total) ? e.total : 0;
+    md += `### ${e.system} (${total}/12)\n\n`;
     md += `- **Category:** ${e.category}\n`;
-    md += `- **Files:** ${e.files.join(", ")}\n`;
+    md += `- **Files:** ${files.join(", ")}\n`;
     md += `- **Gap:** ${e.gap}\n`;
     if (e.remediation) {
       md += `- **Remediation:** ${e.remediation}\n`;
