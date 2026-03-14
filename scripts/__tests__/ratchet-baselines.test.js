@@ -88,6 +88,7 @@ function withBaselineContent(content, fn) {
     // Production file may not exist in all CI environments.
   }
 
+  fs.mkdirSync(path.dirname(REAL_BASELINE_PATH), { recursive: true });
   fs.writeFileSync(REAL_BASELINE_PATH, content, "utf-8");
   delete require.cache[require.resolve(scriptPath)];
 
@@ -108,9 +109,8 @@ function withBaselineContent(content, fn) {
     }
     try {
       delete require.cache[require.resolve(scriptPath)];
-      require(scriptPath); // repopulate cache for the shared `ratchet` binding
     } catch {
-      // Cleanup must not fail the test suite (Jest teardown may invalidate require)
+      // Best-effort cleanup: teardown should not fail the suite
     }
   }
 }

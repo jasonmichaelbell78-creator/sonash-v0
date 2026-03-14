@@ -95,6 +95,11 @@ function createTestScript(dir, name, exitCode) {
   const scriptContent = `#!/usr/bin/env node\nprocess.exit(${exitCode});\n`;
   const scriptFile = path.join(dir, name);
   fs.writeFileSync(scriptFile, scriptContent, "utf8");
+  try {
+    fs.chmodSync(scriptFile, 0o755);
+  } catch {
+    // Best-effort (no-op on Windows)
+  }
   return scriptFile;
 }
 

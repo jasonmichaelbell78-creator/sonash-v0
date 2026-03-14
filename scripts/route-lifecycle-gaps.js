@@ -85,13 +85,20 @@ function buildLearning(gap) {
   const recall = Number.isFinite(gap.recall) ? gap.recall : 0;
   const action = Number.isFinite(gap.action) ? gap.action : 0;
   const total = Number.isFinite(gap.total) ? gap.total : capture + storage + recall + action;
+  const toOneLine = (v) =>
+    String(v ?? "")
+      .replaceAll(/[\r\n\t]/g, " ")
+      .trim();
   const system =
     typeof gap.system === "string" && gap.system.trim().length > 0
-      ? gap.system.trim()
+      ? toOneLine(gap.system)
       : "Unknown system";
   const gapText =
-    typeof gap.gap === "string" && gap.gap.trim().length > 0 ? gap.gap.trim() : "Unspecified gap";
-  const id = typeof gap.id === "string" && gap.id.trim().length > 0 ? gap.id.trim() : "unknown-id";
+    typeof gap.gap === "string" && gap.gap.trim().length > 0
+      ? toOneLine(gap.gap)
+      : "Unspecified gap";
+  const id =
+    typeof gap.id === "string" && gap.id.trim().length > 0 ? toOneLine(gap.id) : "unknown-id";
 
   return {
     type,

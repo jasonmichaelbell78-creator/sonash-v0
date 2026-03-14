@@ -40,6 +40,10 @@ try {
   };
 }
 
+/** Strip control characters and newlines from a string for safe log output. */
+// eslint-disable-next-line no-control-regex
+const safePat = (s) => String(s ?? "").replaceAll(/[\x00-\x1f\x7f]/g, "");
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -189,7 +193,10 @@ function scaffoldLintRule(learning) {
         },
         schema: [],
       },
-      create: "/* TODO: implement rule logic */",
+      create() {
+        /* TODO: implement rule logic */
+        return {};
+      },
     },
     targetFile: `eslint-rules/${slug}.js`,
     status: "scaffolded",
@@ -370,7 +377,7 @@ function route(learning, options) {
 
     if (existingStatus === "verified") {
       process.stderr.write(
-        `[learning-router] INFO: Skipping pattern "${learning.pattern}" — existing enforcement verified\n`
+        `[learning-router] INFO: Skipping pattern "${safePat(learning.pattern)}" — existing enforcement verified\n`
       );
       return {
         action: "skipped",
@@ -382,7 +389,7 @@ function route(learning, options) {
 
     if (existingStatus === "enforced" || existingStatus === "scaffolded") {
       process.stderr.write(
-        `[learning-router] INFO: Skipping pattern "${learning.pattern}" — enforcement already in pipeline (status: ${existingStatus})\n`
+        `[learning-router] INFO: Skipping pattern "${safePat(learning.pattern)}" — enforcement already in pipeline (status: ${safePat(existingStatus)})\n`
       );
       return {
         action: "skipped",
@@ -394,7 +401,7 @@ function route(learning, options) {
 
     // Other statuses (e.g., "failed", "stale") — proceed with re-routing (widen scope)
     process.stderr.write(
-      `[learning-router] INFO: Re-routing pattern "${learning.pattern}" — existing status "${existingStatus}" allows scope widening\n`
+      `[learning-router] INFO: Re-routing pattern "${safePat(learning.pattern)}" — existing status "${safePat(existingStatus)}" allows scope widening\n`
     );
   }
 

@@ -46,7 +46,13 @@ let verifiedPatterns;
 try {
   const vpConfig = loadConfig("verified-patterns");
   // Support new schema { schema_version, patterns, exemptions } and legacy flat format
-  verifiedPatterns = vpConfig.exemptions || vpConfig;
+  if (vpConfig && typeof vpConfig.exemptions === "object" && vpConfig.exemptions !== null) {
+    verifiedPatterns = vpConfig.exemptions;
+  } else if (vpConfig && typeof vpConfig === "object" && !Array.isArray(vpConfig)) {
+    verifiedPatterns = vpConfig;
+  } else {
+    verifiedPatterns = {};
+  }
 } catch (err) {
   console.error(`Error: failed to load verified-patterns config: ${sanitizeError(err)}`);
   process.exit(2);

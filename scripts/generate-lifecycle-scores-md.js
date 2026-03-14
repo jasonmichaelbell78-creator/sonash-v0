@@ -45,7 +45,7 @@ function readJsonl(filePath) {
     content = fs.readFileSync(filePath, "utf-8");
   } catch (error) {
     if (error.code === "ENOENT") return [];
-    throw error;
+    throw new Error(`Failed to read ${path.basename(filePath)}: ${_sanitizeError(error)}`);
   }
 
   const entries = [];
@@ -58,7 +58,7 @@ function readJsonl(filePath) {
       entries.push(JSON.parse(line));
     } catch (parseErr) {
       const safeExcerpt = line.slice(0, 80).replaceAll(/[^\x20-\x7e]/g, "?");
-      const reason = parseErr instanceof Error ? parseErr.message : "unknown";
+      const reason = _sanitizeError(parseErr);
       console.warn(
         `[JSONL] Skipping corrupt line ${i + 1} in ${path.basename(filePath)}: ${reason} (excerpt: "${safeExcerpt}")`
       );
@@ -72,7 +72,7 @@ function readJsonl(filePath) {
 // Generate markdown
 // ---------------------------------------------------------------------------
 
-function scoreEmoji(score) {
+function scoreGrade(score) {
   if (score >= 10) return "A";
   if (score >= 8) return "B";
   if (score >= 6) return "C";
@@ -144,14 +144,19 @@ function generateSystemsTable(sorted) {
     const files = Array.isArray(e.files) ? e.files : [];
     const fileList = files.map((f) => `\`${path.basename(String(f))}\``).join(", ");
     const total = Number.isFinite(e.total) ? e.total : 0;
-    const grade = scoreEmoji(total);
+    const grade = scoreGrade(total);
     const flag = total < 6 ? " **FLAG**" : "";
-    const system = String(e.system ?? "").replaceAll("|", String.raw`\|`) || "(unknown)";
+    const system =
+      String(e.system ?? "")
+        .replaceAll(/\r?\n/g, " ")
+        .replaceAll("|", String.raw`\|`) || "(unknown)";
     const capture = Number.isFinite(e.capture) ? e.capture : 0;
     const storage = Number.isFinite(e.storage) ? e.storage : 0;
     const recall = Number.isFinite(e.recall) ? e.recall : 0;
     const action = Number.isFinite(e.action) ? e.action : 0;
-    const gap = String(e.gap ?? "").replaceAll("|", String.raw`\|`);
+    const gap = String(e.gap ?? "")
+      .replaceAll(/\r?\n/g, " ")
+      .replaceAll("|", String.raw`\|`);
     md += `| ${system} | ${fileList} | ${capture} | ${storage} | ${recall} | ${action} | **${total}** | ${grade}${flag} | ${gap} |\n`;
   }
   return md;

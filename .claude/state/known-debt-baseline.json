@@ -1,24 +1,17 @@
 {
   "schema_version": 1,
-  "updated": "2026-03-13",
-  "checks": {
-    "cognitive-complexity": {}
-  },
+  "updated": "2026-03-14",
   "baselines": {
-    "write-without-symlink-guard": {
-      "baseline": 0,
-      "recorded": "2026-03-13",
-      "ratchet_history": []
-    },
-    "unsanitized-error-response": {
-      "baseline": 0,
-      "recorded": "2026-03-13",
-      "ratchet_history": []
-    },
-    "simple-path-traversal-check": {
-      "baseline": 0,
-      "recorded": "2026-03-13",
-      "ratchet_history": []
+    "raw-error-message": {
+      "baseline": 3,
+      "recorded": "2026-03-14",
+      "ratchet_history": [
+        {
+          "date": "2026-03-14",
+          "from": 5,
+          "to": 3
+        }
+      ]
     }
   }
 }

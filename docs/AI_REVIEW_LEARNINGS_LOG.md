@@ -2786,6 +2786,54 @@ Trivial: 23)
 
 ---
 
+#### Review #360: PR #431 R6 — Sanitization, Scaffold Validity & Baseline Bug (2026-03-14)
+
+**Source:** Qodo **PR/Branch:** #431 plan-implementation **Suggestions:** 20
+total (Critical: 0, Major: 1, Minor: 12, Trivial: 7)
+
+**Patterns Identified:**
+
+1. Detached object reference in getBaselines: When a getter returns a new `{}`
+   instead of initializing `baselineData.baselines`, mutations to the returned
+   object don't persist back — improvements silently lost on write.
+2. Scaffold validity: ESLint rule `create` property must be a function, not a
+   string. Scaffolded skeletons should be loadable without runtime errors.
+3. Sanitization propagation: stderr writes, markdown table fields, and JSONL
+   parse errors all need consistent sanitization. Pattern: after fixing one
+   instance, grep for the same pattern across the codebase.
+4. Cross-round dedup efficiency: R4+R5 rejections (Set.has, type-dependent
+   design) continue to resurface. May need permanent suppression rules.
+
+| Round | Source | Items | Fixed | Deferred | Rejected |
+| ----- | ------ | ----- | ----- | -------- | -------- |
+| R6    | Qodo   | 20    | 14    | 0        | 6        |
+
+- Fixed: 14 items across 8 files
+- Rejected: 6 items (3 cross-round dedup R4+R5, 1 architectural, 2
+  over-engineering)
+
+**Rejected Items:**
+
+- Set.has for tableContent (R4+R5 dedup — string.includes(), not array)
+- Set.has for antiPatternSection (R4+R5 dedup — string.includes(), not array)
+- Type-dependent design (R4+R5 dedup — simple boolean in 6-line function)
+- No JSONL schema validation (architectural — downstream has Number.isFinite and
+  Array.isArray guards)
+- Use shared sanitizeError in session-start.js (cross-boundary import fragile;
+  hook has own sanitizeInput)
+- Normalize malformed baseline in persistBaselines (over-engineering — input
+  always from script's own prior output)
+
+**Key Learnings:**
+
+- Detached-object-reference is a subtle bug category: `return obj.field ?? {}`
+  looks safe but mutations to the returned `{}` are lost. Always initialize the
+  parent when the getter creates a fallback.
+- R6 fix rate (70%) is above merge threshold but cumulative review cost is high.
+  This PR (R1-R6) has processed 200+ items total.
+
+---
+
 #### Review #359: PR #431 R5 — Backup Safety, Nullish Coalescing & Error Context (2026-03-14)
 
 **Source:** Qodo **PR/Branch:** #431 plan-implementation **Suggestions:** 18

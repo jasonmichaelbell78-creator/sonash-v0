@@ -142,11 +142,15 @@ function persistBaselines(baselineData, today) {
 
 /** Extract validated baselines object from raw data. */
 function getBaselines(baselineData) {
-  return baselineData &&
-    typeof baselineData.baselines === "object" &&
-    baselineData.baselines !== null
-    ? baselineData.baselines
-    : {};
+  if (!baselineData || typeof baselineData !== "object") return {};
+  if (
+    typeof baselineData.baselines !== "object" ||
+    baselineData.baselines === null ||
+    Array.isArray(baselineData.baselines)
+  ) {
+    baselineData.baselines = {};
+  }
+  return baselineData.baselines;
 }
 
 /** Core ratchet logic: compare current counts against baselines. */
