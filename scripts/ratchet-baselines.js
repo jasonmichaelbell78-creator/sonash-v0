@@ -132,6 +132,7 @@ function findNewPatternRegressions(baselines, currentCounts) {
 function persistBaselines(baselineData, today) {
   baselineData.updated = today;
   try {
+    fs.mkdirSync(path.dirname(BASELINE_PATH), { recursive: true });
     safeWriteFileSync(BASELINE_PATH, JSON.stringify(baselineData, null, 2) + "\n", "utf-8");
   } catch (err) {
     console.error("Failed to write baselines:", sanitizeError(err));

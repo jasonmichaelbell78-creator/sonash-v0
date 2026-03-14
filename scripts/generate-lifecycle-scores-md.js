@@ -56,8 +56,12 @@ function readJsonl(filePath) {
     if (!line) continue;
     try {
       entries.push(JSON.parse(line));
-    } catch {
-      console.warn(`[JSONL] Skipping corrupt line ${i + 1} in ${path.basename(filePath)}`);
+    } catch (parseErr) {
+      const safeExcerpt = line.slice(0, 80).replaceAll(/[^\x20-\x7e]/g, "?");
+      const reason = parseErr instanceof Error ? parseErr.message : "unknown";
+      console.warn(
+        `[JSONL] Skipping corrupt line ${i + 1} in ${path.basename(filePath)}: ${reason} (excerpt: "${safeExcerpt}")`
+      );
     }
   }
 
@@ -142,12 +146,12 @@ function generateSystemsTable(sorted) {
     const total = Number.isFinite(e.total) ? e.total : 0;
     const grade = scoreEmoji(total);
     const flag = total < 6 ? " **FLAG**" : "";
-    const system = String(e.system ?? "").replaceAll("|", "\\|") || "(unknown)";
+    const system = String(e.system ?? "").replaceAll("|", String.raw`\|`) || "(unknown)";
     const capture = Number.isFinite(e.capture) ? e.capture : 0;
     const storage = Number.isFinite(e.storage) ? e.storage : 0;
     const recall = Number.isFinite(e.recall) ? e.recall : 0;
     const action = Number.isFinite(e.action) ? e.action : 0;
-    const gap = String(e.gap ?? "").replaceAll("|", "\\|");
+    const gap = String(e.gap ?? "").replaceAll("|", String.raw`\|`);
     md += `| ${system} | ${fileList} | ${capture} | ${storage} | ${recall} | ${action} | **${total}** | ${grade}${flag} | ${gap} |\n`;
   }
   return md;

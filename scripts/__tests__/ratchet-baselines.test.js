@@ -106,8 +106,12 @@ function withBaselineContent(content, fn) {
         // Best-effort cleanup
       }
     }
-    delete require.cache[require.resolve(scriptPath)];
-    require(scriptPath); // repopulate cache for the shared `ratchet` binding
+    try {
+      delete require.cache[require.resolve(scriptPath)];
+      require(scriptPath); // repopulate cache for the shared `ratchet` binding
+    } catch {
+      // Cleanup must not fail the test suite (Jest teardown may invalidate require)
+    }
   }
 }
 

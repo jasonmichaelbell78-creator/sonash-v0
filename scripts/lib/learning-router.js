@@ -231,6 +231,13 @@ function deduplicateCheck(learning, options) {
 
   let content;
   try {
+    const st = fs.statSync(routesPath);
+    if (st.size > 10 * 1024 * 1024) {
+      process.stderr.write(
+        `[learning-router] WARNING: routes file too large for full dedupe (${Math.round(st.size / 1024)}KB) — skipping dedup check\n`
+      );
+      return { isDuplicate: false };
+    }
     content = fs.readFileSync(routesPath, "utf-8");
   } catch (err) {
     // File doesn't exist or is unreadable — no duplicates possible

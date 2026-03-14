@@ -2786,6 +2786,50 @@ Trivial: 23)
 
 ---
 
+#### Review #359: PR #431 R5 — Backup Safety, Nullish Coalescing & Error Context (2026-03-14)
+
+**Source:** Qodo **PR/Branch:** #431 plan-implementation **Suggestions:** 18
+total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
+
+**Patterns Identified:**
+
+1. Backup-and-restore for file replacement: The unlinkSync+copyFileSync fallback
+   in run-alerts.js risked data loss if the copy failed after deletion. Replaced
+   with rename-to-backup, copy, then cleanup/rollback pattern.
+2. Nullish coalescing (`??`) vs logical OR (`||`): `|| 0` treats valid zero
+   values as falsy, skipping to fallback. Fixed velocity metric fields to use
+   `??` for zero-preserving semantics.
+3. Error context in JSONL parsing: Silent catch blocks that swallow parse errors
+   make corruption debugging harder. Added safe excerpts and error reasons.
+4. String.raw for escaped replacements: `"\\|"` and `"\\$&"` are clearer as
+   `String.raw\`\|\``and`String.raw\`\$&\``.
+
+| Round | Source | Items | Fixed | Deferred | Rejected |
+| ----- | ------ | ----- | ----- | -------- | -------- |
+| R5    | Qodo   | 18    | 11    | 0        | 7        |
+
+- Fixed: 11 items across 9 files
+- Rejected: 7 items (5 cross-round dedup from R3/R4, 1 architectural, 1 FP)
+
+**Rejected Items:**
+
+- Symlink overwrite risk (R4 dedup — isSafeToWrite guard at L515)
+- Set.has x2 (R4 dedup — string.includes(), not array)
+- Unix path redaction (R3+R4 dedup — deliberately removed in R3)
+- Type-dependent design (R4 dedup — simple boolean in 6-line function)
+- Audit logging (architectural — internal report generator, no user context)
+
+**Key Learnings:**
+
+- Cross-round dedup now covers 5 rounds of this PR. Items that survive R3+R4
+  rejection keep coming back — may need permanent suppression.
+- Backup-and-restore is strictly superior to delete-then-copy for file
+  replacement. This pattern should be in FIX_TEMPLATES.
+- Fix rate at R5 (61%) is within normal range but trending downward. Diminishing
+  returns expected by R6.
+
+---
+
 #### Review #358: PR #431 R4 — Modernization, Complexity & Data Guards (2026-03-14)
 
 **Source:** Qodo / SonarCloud / CI **PR/Branch:** #431 plan-implementation

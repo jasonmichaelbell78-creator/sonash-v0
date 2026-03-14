@@ -85,10 +85,18 @@ function buildLearning(gap) {
   const recall = Number.isFinite(gap.recall) ? gap.recall : 0;
   const action = Number.isFinite(gap.action) ? gap.action : 0;
   const total = Number.isFinite(gap.total) ? gap.total : capture + storage + recall + action;
+  const system =
+    typeof gap.system === "string" && gap.system.trim().length > 0
+      ? gap.system.trim()
+      : "Unknown system";
+  const gapText =
+    typeof gap.gap === "string" && gap.gap.trim().length > 0 ? gap.gap.trim() : "Unspecified gap";
+  const id = typeof gap.id === "string" && gap.id.trim().length > 0 ? gap.id.trim() : "unknown-id";
+
   return {
     type,
-    pattern: `${gap.system}: ${gap.gap}`,
-    source: `lifecycle-scores.jsonl:${gap.id} (Action=${action})`,
+    pattern: `${system}: ${gapText}`,
+    source: `lifecycle-scores.jsonl:${id} (Action=${action})`,
     severity: total < 6 ? "high" : "medium",
     evidence: {
       summary: `Lifecycle score: ${capture}/${storage}/${recall}/${action} = ${total}/12`,

@@ -588,7 +588,12 @@ try {
   // Non-fatal: log but don't block session start
   const rotateMsg = rotateErr instanceof Error ? rotateErr.message : String(rotateErr);
   if (rotateMsg && !rotateMsg.includes("exit code 0")) {
-    console.log("   ⚠️ JSONL rotation: " + sanitizeInput(rotateMsg.split("\n")[0]));
+    const redactedMsg = rotateMsg
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+    console.log("   ⚠️ JSONL rotation: " + sanitizeInput(redactedMsg.split("\n")[0]));
     warnings++;
   }
 }

@@ -525,17 +525,29 @@ function saveBaseline() {
         fs.copyFileSync(tmpPath, BASELINE_PATH);
         wrote = true;
       } catch {
-        // Last resort: remove dest then copy
+        // Last resort: backup-and-restore to avoid data loss if copy fails
+        const backupPath = `${BASELINE_PATH}.bak`;
         try {
-          fs.unlinkSync(BASELINE_PATH);
-        } catch {
-          /* ignore */
-        }
-        try {
+          try {
+            fs.renameSync(BASELINE_PATH, backupPath);
+          } catch {
+            // No existing baseline or rename failed — proceed without backup
+          }
           fs.copyFileSync(tmpPath, BASELINE_PATH);
           wrote = true;
+          // Replacement succeeded; cleanup backup
+          try {
+            fs.unlinkSync(backupPath);
+          } catch {
+            /* ignore */
+          }
         } catch {
-          // All write strategies exhausted — baseline not updated this run
+          // Replacement failed; attempt rollback
+          try {
+            if (fs.existsSync(backupPath)) fs.renameSync(backupPath, BASELINE_PATH);
+          } catch {
+            /* ignore */
+          }
         }
       }
     } finally {
@@ -1996,7 +2008,7 @@ function checkVelocity() {
     return;
   }
 
-  const completed = recent.map((e) => e.items_completed || 0);
+  const completed = recent.map((e) => e.items_completed ?? 0);
   const avg = completed.length > 0 ? completed.reduce((a, b) => a + b, 0) / completed.length : 0;
 
   addAlert(
@@ -3492,7 +3504,7 @@ function checkVelocityRegression() {
   }
 
   // Compare last session velocity to the one before it
-  const velocities = recent.map((e) => e.items_completed || e.velocity || 0);
+  const velocities = recent.map((e) => e.items_completed ?? e.velocity ?? 0);
   const lastIdx = velocities.length - 1;
   const prevIdx = lastIdx - 1;
   const lastVelocity = velocities[lastIdx];

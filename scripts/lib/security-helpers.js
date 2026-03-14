@@ -84,7 +84,7 @@ function sanitizeDisplayString(str, maxLength = 100) {
 function escapeMd(str, maxLength = 100) {
   const sanitized = sanitizeDisplayString(str, maxLength);
   // Escape all Markdown metacharacters including backslash
-  return sanitized.replaceAll(/[\\[\]()_*`#>!-]/g, "\\$&");
+  return sanitized.replaceAll(/[\\[\]()_*`#>!-]/g, String.raw`\$&`);
 }
 
 /**
