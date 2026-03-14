@@ -66,16 +66,23 @@ function readJsonl(filePath) {
   const lines = content.split("\n").filter((l) => l.trim());
   const entries = [];
   let malformed = 0;
+  let invalid = 0;
   for (const line of lines) {
     try {
-      entries.push(JSON.parse(line));
+      const parsed = JSON.parse(line);
+      // Validate: entries must be objects with required fields
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed) || !parsed.id) {
+        invalid++;
+        continue;
+      }
+      entries.push(parsed);
     } catch {
       malformed++;
     }
   }
-  if (malformed > 0) {
+  if (malformed > 0 || invalid > 0) {
     console.error(
-      `[refine-scaffolds] Warning: ${malformed} malformed line(s) skipped in ${path.basename(filePath)}`
+      `[refine-scaffolds] Warning: ${malformed} malformed, ${invalid} invalid line(s) skipped in ${path.basename(filePath)}`
     );
   }
   return entries;
@@ -249,13 +256,24 @@ function run(options = {}) {
       return { success: false, promoted, refined, skipped };
     }
 
+    // Audit trail: log state mutation (Review #432 R2)
+    console.error(
+      `[refine-scaffolds] Wrote ${updatedEntries.length} entries to ${path.basename(routesPath)} ` +
+        `(promoted=${promoted}, refined=${refined}, skipped=${skipped}) at ${new Date().toISOString()}`
+    );
+
     // Routes persisted — now safe to append pending entries
+    let appendFailures = 0;
     for (const pending of pendingToAppend) {
       try {
         appendJsonl(pendingPath, pending);
       } catch (error) {
+        appendFailures++;
         console.error(`Failed to append to pending-refinements.jsonl: ${sanitizeError(error)}`);
       }
+    }
+    if (appendFailures > 0) {
+      return { success: false, promoted, refined, skipped };
     }
   }
 

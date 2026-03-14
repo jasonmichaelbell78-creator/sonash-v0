@@ -21,7 +21,12 @@ describe("checkPendingRefinements logic", () => {
     const entry = { id: "test-1", surfaced_count: 0, pattern: "test" };
     fs.writeFileSync(pendingPath, JSON.stringify(entry) + "\n");
 
-    const lines = fs.readFileSync(pendingPath, "utf-8").trim().split("\n");
+    let lines: string[];
+    try {
+      lines = fs.readFileSync(pendingPath, "utf-8").trim().split("\n");
+    } catch (err) {
+      throw new Error(`Failed to read pending file: ${err instanceof Error ? err.message : String(err)}`);
+    }
     const parsed = lines.map((l) => JSON.parse(l));
     const updated = parsed.map((e: { surfaced_count?: number }) => ({
       ...e,
@@ -35,7 +40,12 @@ describe("checkPendingRefinements logic", () => {
     const entry = { id: "test-1", surfaced_count: 2, pattern: "test" };
     fs.writeFileSync(pendingPath, JSON.stringify(entry) + "\n");
 
-    const lines = fs.readFileSync(pendingPath, "utf-8").trim().split("\n");
+    let lines: string[];
+    try {
+      lines = fs.readFileSync(pendingPath, "utf-8").trim().split("\n");
+    } catch (err) {
+      throw new Error(`Failed to read pending file: ${err instanceof Error ? err.message : String(err)}`);
+    }
     const parsed = lines.map((l) => JSON.parse(l));
     const escalated: unknown[] = [];
     const active: unknown[] = [];
@@ -53,7 +63,12 @@ describe("checkPendingRefinements logic", () => {
     const entry = { id: "test-1", surfaced_count: 0, pattern: "test" };
     fs.writeFileSync(pendingPath, JSON.stringify(entry) + "\n");
 
-    const lines = fs.readFileSync(pendingPath, "utf-8").trim().split("\n");
+    let lines: string[];
+    try {
+      lines = fs.readFileSync(pendingPath, "utf-8").trim().split("\n");
+    } catch (err) {
+      throw new Error(`Failed to read pending file: ${err instanceof Error ? err.message : String(err)}`);
+    }
     const parsed = lines.map((l) => JSON.parse(l));
     const escalated: unknown[] = [];
     const active: unknown[] = [];

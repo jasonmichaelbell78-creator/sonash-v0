@@ -37,6 +37,32 @@ try {
   isSafeToWrite = () => false;
 }
 
+// Safe filesystem helpers (Review #432 R2: use safeWriteFileSync for symlink protection)
+let safeWriteFileSync;
+try {
+  ({ safeWriteFileSync } = require(
+    path.join(__dirname, "..", "..", "..", "..", "scripts", "lib", "safe-fs.js")
+  ));
+} catch {
+  // Fallback: use isSafeToWrite + fs.writeFileSync
+  safeWriteFileSync = (filePath, data, options) => {
+    if (!isSafeToWrite(path.resolve(filePath))) {
+      throw new Error(`Refusing to write to symlinked path: ${path.basename(filePath)}`);
+    }
+    fs.writeFileSync(path.resolve(filePath), data, options);
+  };
+}
+
+// Error sanitization (Review #432 R2: sanitize errors before logging)
+let sanitizeError;
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "..", "..", "..", "scripts", "lib", "security-helpers.js")
+  ));
+} catch {
+  sanitizeError = () => "error (details redacted — security-helpers unavailable)";
+}
+
 // Find project root (where claude.md is)
 // Review #214: Use platform-agnostic root detection
 // OD-A: Use claude.md as root marker — package.json can exist in subdirs like .claude/
@@ -3791,16 +3817,21 @@ function checkPendingRefinements() {
   }
 
   // Surface remaining pending items as alerts
+  // Review #432 R2: Truncate pattern/reason to prevent sensitive data leakage in logs
+  const truncate = (s, max = 80) => {
+    const str = String(s || "");
+    return str.length > max ? str.slice(0, max) + "..." : str;
+  };
   for (const entry of updatedEntries) {
     if (typeof entry.generated_code !== "string" || !entry.generated_code.trim()) continue;
     addAlert(
       "pending-refinements",
       "warning",
-      `Pending refinement: ${entry.pattern || "(unknown)"} [${entry.route_type}] — surfaced ${entry.surfaced_count}x`,
+      `Pending refinement: ${truncate(entry.pattern, 60)} [${entry.route_type}] — surfaced ${entry.surfaced_count}x`,
       {
         id: entry.id,
         confidence: entry.confidence,
-        reason: entry.reason,
+        reason: truncate(entry.reason),
         has_generated_code: true,
         surfaced_count: entry.surfaced_count,
       },
@@ -3822,15 +3853,12 @@ function checkPendingRefinements() {
   // Write back all entries (both active and escalated remain tracked)
   const allTracked = [...updatedEntries, ...escalated];
   try {
-    if (isSafeToWrite(pendingPath)) {
-      const updatedContent =
-        allTracked.map((e) => JSON.stringify(e)).join("\n") + (allTracked.length > 0 ? "\n" : "");
-      fs.writeFileSync(pendingPath, updatedContent, "utf-8");
-    }
+    const updatedContent =
+      allTracked.map((e) => JSON.stringify(e)).join("\n") + (allTracked.length > 0 ? "\n" : "");
+    safeWriteFileSync(pendingPath, updatedContent, { encoding: "utf-8" });
   } catch (err) {
-    const errMsg = err instanceof Error ? err.message : String(err);
     console.error(
-      `[run-alerts] Failed to persist pending-refinements.jsonl — escalation counts will not be saved: ${errMsg}`
+      `[run-alerts] Failed to persist pending-refinements.jsonl — escalation counts will not be saved: ${sanitizeError(err)}`
     );
   }
 

@@ -33,7 +33,10 @@ function loadVerifiedPatterns() {
     const data = JSON.parse(raw);
     if (!Array.isArray(data.patterns)) return [];
     return data.patterns.map((p) => (p.anti_pattern || "").toLowerCase()).filter(Boolean);
-  } catch {
+  } catch (err) {
+    // Review #432 R2: Log VP load failure for diagnostics (silent return [] masked classification errors)
+    const code = err && typeof err === "object" && "code" in err ? err.code : "UNKNOWN";
+    console.error(`[confidence-classifier] Warning: failed to load verified-patterns.json (${code}) — Rule 2 matching disabled`);
     return [];
   }
 }
@@ -59,16 +62,22 @@ function matchesVerifiedPattern(pattern, vpPatterns) {
   return vpPatterns.some((vp) => lower.includes(vp));
 }
 
-// Module-level cache for verified patterns (loaded once per process)
-let _vpCache = null;
+// Module-level cache for verified patterns
+// Review #432 R2: Use sentinel to distinguish "never loaded" from "loaded empty",
+// allowing retry after transient load failure while caching successful empty results
+let _vpCache = undefined;
+let _vpLoadFailed = false;
 
 /**
- * Get cached verified patterns (loads once, reuses thereafter).
+ * Get cached verified patterns. On successful load (even if empty), caches permanently.
+ * On load failure, allows one retry per call until a successful load occurs.
  * @returns {string[]}
  */
 function getCachedVerifiedPatterns() {
-  if (_vpCache === null) {
+  if (_vpCache === undefined || _vpLoadFailed) {
     _vpCache = loadVerifiedPatterns();
+    // If we got results, mark success; if empty but file exists, also success
+    _vpLoadFailed = _vpCache.length === 0 && !fs.existsSync(VP_PATH);
   }
   return _vpCache;
 }

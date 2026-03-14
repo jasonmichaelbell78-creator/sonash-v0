@@ -2315,6 +2315,39 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 ---
 
+#### Review #363: PR #432 R2 — Safe Writes, Error Sanitization, Fail-Fast Appends (2026-03-14)
+
+**Source:** Qodo (Compliance Guide + Code Suggestions + PR Comments) **PR/Branch:** PR #432 /
+plan-implementation **Suggestions:** 10 total (Major: 3, Minor: 6, Trivial: 1)
+
+**Patterns Identified:**
+
+1. **Safe write helpers must be used consistently**: `run-alerts.js` used
+   `fs.writeFileSync` with a manual `isSafeToWrite` guard instead of the
+   centralized `safeWriteFileSync` from `safe-fs.js`.
+   - Root cause: run-alerts.js predates safe-fs.js and only imported
+     symlink-guard directly
+   - Prevention: New file writes must use safe-fs helpers; propagation sweep
+     catches stragglers
+2. **Silent failures in append loops mask state inconsistency**: When
+   `appendJsonl()` failed silently inside a loop, `refine-scaffolds.js`
+   returned `success: true` despite pending-refinements.jsonl being incomplete.
+   - Root cause: Catch-and-continue pattern without tracking failure count
+   - Prevention: Track failures and return `success: false` when any append
+     fails
+3. **VP cache loaded once but never retried on transient failure**: The
+   confidence-classifier cached an empty array on file-not-found, permanently
+   disabling Rule 2 matching for the process lifetime.
+   - Root cause: Sentinel value (`null`) didn't distinguish "never loaded" from
+     "loaded empty"
+   - Prevention: Use `undefined` sentinel + existence check to allow retry
+
+**Applied:** All 3 patterns. Fixed 9 items, rejected 1 (prototype pollution via
+JSON.parse+spread is a false positive — JSON.parse creates regular own properties,
+not prototype chain modifications).
+
+---
+
 #### Review #362: PR #432 R1 — Automation Pipeline Safety, Escalation Integrity, DRY Refactor (2026-03-14)
 
 **Source:** Mixed (SonarCloud, Gemini, Qodo, CI) **PR/Branch:** PR #432 /
