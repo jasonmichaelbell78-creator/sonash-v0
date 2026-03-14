@@ -520,10 +520,38 @@ function saveBaseline() {
       fs.renameSync(tmpPath, BASELINE_PATH);
       wrote = true;
     } catch {
-      // Windows can fail to overwrite existing dest; fall back to copy
-      // Fallback: rename failed, use copy instead
-      fs.copyFileSync(tmpPath, BASELINE_PATH);
-      wrote = true;
+      // Windows may fail to overwrite; fall back to copy (no rmSync race)
+      try {
+        fs.copyFileSync(tmpPath, BASELINE_PATH);
+        wrote = true;
+      } catch {
+        // Last resort: backup-and-restore to avoid data loss if copy fails
+        const backupPath = `${BASELINE_PATH}.bak`;
+        try {
+          try {
+            fs.renameSync(BASELINE_PATH, backupPath);
+          } catch {
+            // No existing baseline or rename failed — proceed without backup
+          }
+          fs.copyFileSync(tmpPath, BASELINE_PATH);
+          wrote = true;
+          // Replacement succeeded; cleanup backup
+          try {
+            fs.unlinkSync(backupPath);
+          } catch {
+            /* ignore */
+          }
+        } catch {
+          // Replacement failed; attempt rollback
+          try {
+            fs.renameSync(backupPath, BASELINE_PATH);
+          } catch (renameErr) {
+            if (!(renameErr && typeof renameErr === "object" && renameErr.code === "ENOENT")) {
+              /* ignore non-ENOENT errors */
+            }
+          }
+        }
+      }
     } finally {
       if (wrote) {
         try {
@@ -1851,6 +1879,24 @@ function checkReviewQuality() {
     }
   }
 
+  // Avoidable round rate (D12/D26: review-metrics → /alerts)
+  // A round is "avoidable" if the PR had fix_ratio > 0.5 AND review_rounds > 1
+  // (majority of commits were fixes + needed multiple review cycles)
+  const avoidableCount = recent.filter(
+    (e) => (e.fix_ratio || 0) > 0.5 && (e.review_rounds || e.rounds || 0) > 1
+  ).length;
+  const avoidableRate = recent.length > 0 ? avoidableCount / recent.length : 0;
+
+  if (avoidableRate > 0.4) {
+    addAlert(
+      "review-quality",
+      "warning",
+      `Review churn: ${Math.round(avoidableRate * 100)}% avoidable rounds in last ${recent.length} PRs (threshold: 40%)`,
+      null,
+      "Run /pr-retro on high-churn PRs to identify root causes"
+    );
+  }
+
   // Average rounds
   const roundsList = recent.map((e) => e.review_rounds || e.rounds || 0).filter((r) => r > 0);
   const avgRounds =
@@ -1964,7 +2010,7 @@ function checkVelocity() {
     return;
   }
 
-  const completed = recent.map((e) => e.items_completed || 0);
+  const completed = recent.map((e) => e.items_completed ?? 0);
   const avg = completed.length > 0 ? completed.reduce((a, b) => a + b, 0) / completed.length : 0;
 
   addAlert(
@@ -2400,10 +2446,8 @@ function checkHookHealth() {
       }
 
       // Detect skipped checks
-      const skipPattern = /Skipping\s+([^\r\n(]+)/g;
       const skippedChecks = [];
-      let skipMatch;
-      while ((skipMatch = skipPattern.exec(hookOutput)) !== null) {
+      for (const skipMatch of hookOutput.matchAll(/Skipping\s+([^\r\n(]+)/g)) {
         const name = skipMatch[1].trim();
         if (name) skippedChecks.push(name);
       }
@@ -3435,6 +3479,269 @@ function checkCrossdocDeps() {
 }
 
 // ============================================================================
+// WAVE 6 CHECKERS — Data Effectiveness Audit (ls-014, ls-015, ls-017, ls-020)
+// ============================================================================
+
+/**
+ * ls-014: Velocity Regression — detect sharp velocity drops (Limited mode)
+ */
+function checkVelocityRegression() {
+  console.error("  Checking velocity regression...");
+
+  const logPath = path.join(ROOT_DIR, ".claude", "state", "velocity-log.jsonl");
+  const lines = safeReadLines(logPath);
+  if (lines.length === 0) {
+    ensureCategory("velocity-regression", "Velocity Regression");
+    return;
+  }
+
+  const recent = lines
+    .slice(-3)
+    .map((l) => safeParse(l))
+    .filter(Boolean);
+
+  if (recent.length < 2) {
+    ensureCategory("velocity-regression", "Velocity Regression");
+    return;
+  }
+
+  // Compare last session velocity to the one before it
+  const velocities = recent.map((e) => e.items_completed ?? e.velocity ?? 0);
+  const lastIdx = velocities.length - 1;
+  const prevIdx = lastIdx - 1;
+  const lastVelocity = velocities[lastIdx];
+  const prevVelocity = velocities[prevIdx];
+
+  if (prevVelocity > 0) {
+    const dropPct = ((prevVelocity - lastVelocity) / prevVelocity) * 100;
+
+    if (dropPct >= 50) {
+      addAlert(
+        "velocity-regression",
+        "warning",
+        `Velocity dropped ${Math.round(dropPct)}% (${prevVelocity} → ${lastVelocity} items/session)`,
+        null,
+        "Review recent session for blockers or scope changes"
+      );
+    }
+  }
+
+  addContext("velocity-regression", {
+    recentVelocities: velocities,
+    sessions: recent.length,
+  });
+}
+
+/**
+ * ls-017: Stale Planning Data — flag old planning decisions (Full mode)
+ */
+function checkStalePlanningData() {
+  console.error("  Checking planning data staleness...");
+
+  const decisionsPath = path.join(
+    ROOT_DIR,
+    ".planning",
+    "system-wide-standardization",
+    "decisions.jsonl"
+  );
+  const lines = safeReadLines(decisionsPath);
+  if (lines.length === 0) {
+    ensureCategory("planning-data", "Planning Data");
+    return;
+  }
+
+  // Find the most recent entry date (iterate backwards — append-only file)
+  let latestDate = null;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const entry = safeParse(lines[i]);
+    if (!entry) continue;
+    const dateStr = entry.date || entry.timestamp || entry.created;
+    if (!dateStr) continue;
+    const ts = new Date(dateStr).getTime();
+    if (!isNaN(ts)) {
+      latestDate = ts;
+      break;
+    }
+  }
+
+  if (latestDate === null) {
+    ensureCategory("planning-data", "Planning Data");
+    return;
+  }
+
+  const daysSinceUpdate = Math.max(
+    0,
+    Math.floor((Date.now() - latestDate) / (24 * 60 * 60 * 1000))
+  );
+
+  if (daysSinceUpdate >= 30) {
+    addAlert(
+      "planning-data",
+      "info",
+      `Planning decisions stale — last entry ${daysSinceUpdate} days ago — review if still applicable`,
+      null,
+      "Review .planning/system-wide-standardization/decisions.jsonl"
+    );
+  }
+
+  addContext("planning-data", {
+    totalDecisions: lines.length,
+    daysSinceLastEntry: daysSinceUpdate,
+  });
+}
+
+/**
+ * ls-020: Deferred Items Staleness — flag unresolved deferred items (Full mode)
+ */
+function checkDeferredItemsStaleness() {
+  console.error("  Checking deferred items staleness...");
+
+  const deferredPath = path.join(ROOT_DIR, "data", "ecosystem-v2", "deferred-items.jsonl");
+  const lines = safeReadLines(deferredPath);
+  if (lines.length === 0) {
+    ensureCategory("deferred-items", "Deferred Items");
+    return;
+  }
+
+  let unresolvedCount = 0;
+  for (const line of lines) {
+    const entry = safeParse(line);
+    if (!entry) continue;
+    if (!entry.resolved_date) {
+      unresolvedCount++;
+    }
+  }
+
+  if (unresolvedCount > 20) {
+    addAlert(
+      "deferred-items",
+      "warning",
+      `${unresolvedCount} unresolved deferred items — backlog may need triage`,
+      null,
+      "Review and resolve or close stale deferred items"
+    );
+  }
+
+  addContext("deferred-items", {
+    totalItems: lines.length,
+    unresolvedCount,
+  });
+}
+
+/**
+ * ls-015: Commit Patterns — detect over-reliance on session-end commits (Full mode)
+ */
+function checkCommitPatterns() {
+  console.error("  Checking commit patterns...");
+
+  const logPath = path.join(ROOT_DIR, ".claude", "state", "commit-log.jsonl");
+  const lines = safeReadLines(logPath);
+  if (lines.length === 0) {
+    ensureCategory("commit-patterns", "Commit Patterns");
+    return;
+  }
+
+  const entries = lines
+    .slice(-10)
+    .map((l) => safeParse(l))
+    .filter(Boolean);
+
+  if (entries.length === 0) {
+    ensureCategory("commit-patterns", "Commit Patterns");
+    return;
+  }
+
+  let sessionEndCount = 0;
+  for (const entry of entries) {
+    const msg = (entry.message || "").toLowerCase();
+    if (/\bsession[-\s]?end\b/.test(msg)) {
+      sessionEndCount++;
+    }
+  }
+
+  const sessionEndPct = (sessionEndCount / entries.length) * 100;
+
+  if (sessionEndPct > 50) {
+    addAlert(
+      "commit-patterns",
+      "info",
+      `${Math.round(sessionEndPct)}% of recent commits are session-end — consider more granular commit practices`,
+      null,
+      "Commit after each logical change instead of batching at session end"
+    );
+  }
+
+  addContext("commit-patterns", {
+    recentCommits: entries.length,
+    sessionEndCommits: sessionEndCount,
+    sessionEndPct: Math.round(sessionEndPct),
+  });
+}
+
+// ============================================================================
+// ENFORCEMENT VERIFICATION (Wave 9)
+// ============================================================================
+
+/**
+ * Wave 9: Check for enforced patterns that haven't been verified yet.
+ * Reads learning-routes.jsonl and counts entries with status "enforced"
+ * that have no corresponding "verified" status entry.
+ */
+function checkEnforcementVerification() {
+  console.error("  Checking enforcement verification...");
+
+  const routesPath = path.join(ROOT_DIR, ".claude", "state", "learning-routes.jsonl");
+  const lines = safeReadLines(routesPath);
+  if (lines.length === 0) {
+    ensureCategory("enforcement-verification", "Enforcement Verification");
+    return;
+  }
+
+  const entries = lines.map((l) => safeParse(l)).filter(Boolean);
+  if (entries.length === 0) {
+    ensureCategory("enforcement-verification", "Enforcement Verification");
+    return;
+  }
+
+  // Build a set of pattern IDs that have been verified
+  const verifiedIds = new Set();
+  for (const entry of entries) {
+    if (entry.status === "verified" && typeof entry.id === "string" && entry.id.trim()) {
+      verifiedIds.add(entry.id);
+    }
+  }
+
+  // Find entries with status "enforced" that are NOT in the verified set
+  // Treat missing/invalid IDs as unverified to avoid silent false negatives
+  const unverified = [];
+  for (const entry of entries) {
+    if (entry.status !== "enforced") continue;
+
+    const id = typeof entry.id === "string" && entry.id.trim() ? entry.id : null;
+    if (!id || !verifiedIds.has(id)) {
+      unverified.push({ ...entry, id: id || "(missing id)" });
+    }
+  }
+
+  if (unverified.length > 0) {
+    addAlert(
+      "enforcement-verification",
+      "warning",
+      `${unverified.length} enforced pattern${unverified.length === 1 ? "" : "s"} not yet verified`,
+      { unverifiedIds: unverified.map((e) => e.id) },
+      "Run verify-enforcement.js to confirm enforced patterns are working correctly"
+    );
+  }
+
+  addContext("enforcement-verification", {
+    totalRoutes: entries.length,
+    enforcedCount: entries.filter((e) => e.status === "enforced").length,
+    verifiedCount: verifiedIds.size,
+    unverifiedCount: unverified.length,
+  });
+}
+
+// ============================================================================
 // SUPPRESSION FILTER (W3)
 // ============================================================================
 
@@ -3542,7 +3849,11 @@ function appendHealthScoreLog() {
       summary: results.summary,
       categoryScores,
     });
-    fs.appendFileSync(logPath, entry + "\n");
+    if (isSafeToWrite(logPath)) {
+      fs.appendFileSync(logPath, entry + "\n");
+    } else {
+      console.error(`  [warn] Symlink guard blocked write to ${path.basename(logPath)}`);
+    }
   } catch (err) {
     console.error(`  [warn] Failed to append health score log: ${safeErrorMsg(err)}`);
   }
@@ -3695,6 +4006,8 @@ function main() {
   checkReviewsSync();
   checkReviewArchive();
   checkCrossdocDeps();
+  // Wave 6 limited-mode checker (ls-014)
+  checkVelocityRegression();
 
   // Full mode only (additional 17 categories)
   if (isFullMode) {
@@ -3719,6 +4032,12 @@ function main() {
     checkBacklogHealth();
     checkGitHubActions();
     checkSonarCloud();
+    // Wave 6 full-mode checkers (ls-015, ls-017, ls-020)
+    checkStalePlanningData();
+    checkDeferredItemsStaleness();
+    checkCommitPatterns();
+    // Wave 9 full-mode checker (enforcement verification)
+    checkEnforcementVerification();
   }
 
   // Ensure every limited-mode category appears
@@ -3738,6 +4057,7 @@ function main() {
   ensureCategory("reviews-sync", "Reviews Sync");
   ensureCategory("review-archive", "Review Archive Health");
   ensureCategory("crossdoc", "Cross-Document Dependencies");
+  ensureCategory("velocity-regression", "Velocity Regression");
 
   if (isFullMode) {
     ensureCategory("docs", "Documentation Health");
@@ -3760,6 +4080,10 @@ function main() {
     ensureCategory("backlog-health", "Backlog Health");
     ensureCategory("github-actions", "GitHub Actions");
     ensureCategory("sonarcloud", "SonarCloud");
+    ensureCategory("planning-data", "Planning Data");
+    ensureCategory("deferred-items", "Deferred Items");
+    ensureCategory("commit-patterns", "Commit Patterns");
+    ensureCategory("enforcement-verification", "Enforcement Verification");
   }
 
   // Filter suppressed alerts (W3)

@@ -1,8 +1,8 @@
 /**
  * Composite scoring engine for Health Check system
  *
- * Aggregates metrics from 10 checkers into 8 weighted categories
- * with 13 drill-down dimensions.
+ * Aggregates metrics from 11 checkers into 9 weighted categories
+ * with 14 drill-down dimensions.
  */
 
 "use strict";
@@ -14,14 +14,15 @@ const { DIMENSIONS, getDimensionDetail } = require("./dimensions");
  * Category weights (must sum to ~1.0)
  */
 const CATEGORY_WEIGHTS = {
-  "Code Quality": 0.18,
-  Security: 0.15,
-  "Technical Debt": 0.14,
-  Infrastructure: 0.12,
-  "Process & Workflow": 0.11,
-  Testing: 0.1,
-  "Learning & Patterns": 0.1,
-  Documentation: 0.1,
+  "Code Quality": 0.15,
+  Security: 0.13,
+  "Technical Debt": 0.12,
+  Infrastructure: 0.1,
+  "Process & Workflow": 0.1,
+  Testing: 0.09,
+  "Learning & Patterns": 0.08,
+  Documentation: 0.08,
+  "Data Effectiveness": 0.15,
 };
 
 /**
@@ -38,11 +39,12 @@ const CHECKER_TO_CATEGORY = {
   documentation: "Documentation",
   "pattern-enforcement": "Learning & Patterns",
   "ecosystem-integration": "Process & Workflow",
+  "data-effectiveness": "Data Effectiveness",
 };
 
 /**
  * Compute composite score from all checker results
- * @param {Object} checkerResults - Raw output from all 10 checkers, keyed by checker name
+ * @param {Object} checkerResults - Raw output from all 11 checkers, keyed by checker name
  * @returns {{ score: number, grade: string, categoryScores: Object, dimensionScores: Object }}
  */
 function computeCompositeScore(checkerResults) {

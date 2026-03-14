@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "description": "JSONL rotation policy — tiered by data lifecycle",
+  "tiers": {
+    "operational": {
+      "maxAgeDays": 30,
+      "description": "High-volume operational logs",
+      "files": [
+        ".claude/state/hook-warnings-log.jsonl",
+        ".claude/state/override-log.jsonl",
+        ".claude/state/commit-log.jsonl",
+        ".claude/state/agent-invocations.jsonl"
+      ]
+    },
+    "historical": {
+      "maxAgeDays": 90,
+      "description": "Review and audit history",
+      "files": [
+        ".claude/state/reviews.jsonl",
+        ".claude/state/retros.jsonl",
+        ".claude/state/review-metrics.jsonl",
+        ".claude/state/doc-ecosystem-audit-history.jsonl",
+        ".claude/state/script-ecosystem-audit-history.jsonl",
+        ".claude/state/session-ecosystem-audit-history.jsonl",
+        ".claude/state/skill-ecosystem-audit-history.jsonl",
+        ".claude/state/tdms-ecosystem-audit-history.jsonl",
+        ".claude/state/hook-ecosystem-audit-history.jsonl"
+      ]
+    },
+    "permanent": {
+      "maxAgeDays": null,
+      "description": "Never rotated — metrics, debt tracking, and lifecycle data",
+      "files": [
+        ".claude/state/health-score-log.jsonl",
+        "docs/technical-debt/MASTER_DEBT.jsonl",
+        ".claude/state/velocity-log.jsonl",
+        ".claude/state/lifecycle-scores.jsonl",
+        ".claude/state/learning-routes.jsonl"
+      ]
+    }
+  }
+}

@@ -1,14 +1,14 @@
 /**
  * Dimension mapping for Health Check drill-down
  *
- * Maps 13 dimensions into 8 categories with checker field references.
+ * Maps 14 dimensions into 9 categories with checker field references.
  * Each dimension provides detail-level access into individual metrics.
  */
 
 "use strict";
 
 /**
- * 13 health dimensions mapped to 8 categories
+ * 14 health dimensions mapped to 9 categories
  */
 const DIMENSIONS = [
   {
@@ -136,6 +136,20 @@ const DIMENSIONS = [
     checkerField: "ecosystem-integration",
     metricKeys: ["ci_failures", "sonar_issues", "velocity_avg", "reviews_missing"],
     description: "CI/CD health and integration completeness",
+  },
+  {
+    id: "data-effectiveness",
+    name: "Data Effectiveness",
+    category: "Data Effectiveness",
+    checkerField: "data-effectiveness",
+    metricKeys: [
+      "avg_lifecycle_score",
+      "below_threshold_pct",
+      "recall_coverage",
+      "action_coverage",
+      "orphan_count",
+    ],
+    description: "How effectively data systems capture, store, recall, and act on information",
   },
 ];
 

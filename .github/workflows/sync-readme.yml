@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -48,31 +49,21 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit and push if changed
+      - name: Create PR if changed
         if: ${{ steps.changes.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          BRANCH="auto/sync-readme-$(date +%Y%m%d-%H%M%S)"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          git checkout -b "$BRANCH"
           git add README.md
-          git commit --no-verify -m "docs: Auto-sync README status from ROADMAP.md" || echo "No README changes to commit"
-
-          # Avoid non-fast-forward failures when multiple runs queue up
-          git fetch origin main
-          git rebase origin/main || (git rebase --abort && exit 1)
-
-          # Retry push to handle race conditions (explicit remote/branch for CI reliability)
-          PUSH_SUCCESS=false
-          for i in 1 2 3; do
-            if git push origin HEAD:main; then
-              PUSH_SUCCESS=true
-              break
-            fi
-            echo "Push failed (attempt $i). Retrying in 5 seconds..."
-            sleep 5
-            git pull --rebase origin main || exit 1
-          done
-
-          if [ "$PUSH_SUCCESS" != "true" ]; then
-            echo "Push failed after 3 attempts."
-            exit 1
-          fi
+          git commit --no-verify -m "docs: Auto-sync README status from ROADMAP.md"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "docs: Auto-sync README status from ROADMAP.md" \
+            --body "Automated PR to sync README status badges with ROADMAP.md changes." \
+            --base main \
+            --head "$BRANCH"
+          gh pr merge "$BRANCH" --auto --merge

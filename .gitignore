@@ -10,6 +10,7 @@ node_modules
 # testing
 /coverage
 .temp-test-phase-*/
+.tmp/
 
 # next.js
 /.next/
@@ -23,6 +24,7 @@ scripts/reviews/dist
 # misc
 .DS_Store
 *.pem
+claude.cmd
 
 # debug
 npm-debug.log*

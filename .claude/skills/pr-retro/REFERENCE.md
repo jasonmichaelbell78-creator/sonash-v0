@@ -1,8 +1,8 @@
 # PR Retro — Reference
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-06
+**Document Version:** 1.1
+**Last Updated:** 2026-03-13
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -67,8 +67,20 @@ Required fields for `write-retro-record.js`:
 | process_changes      | string[]     | Recommended process changes                                                |
 | action_items         | object[]     | Per-item tracking: `{title, status, verify_cmd, implemented_in, severity}` |
 | score                | number       | 1-10 overall efficiency                                                    |
-| metrics              | object       | `{total_findings: N, fix_rate: 0.8, pattern_recurrence: N}`                |
+| metrics              | object       | `{total_findings: N, fix_rate: 0.8, pattern_recurrence: N}` — see below    |
 | process_feedback     | string\|null | User feedback on the retro process (learning loop)                         |
+
+**`metrics.pattern_recurrence` population (D7):**
+
+The `pattern_recurrence` value MUST be populated at creation time, not guessed:
+
+1. Read ALL prior retro entries from `retros.jsonl` (not just last 3-5)
+2. For each entry, extract pattern categories from `top_misses`,
+   `action_items[].title`, and `process_changes`
+3. Build a map: `{category: count_of_retros_containing_it}`
+4. Set `metrics.pattern_recurrence` to the **highest count** across all
+   categories found in this retro's findings
+5. If highest count >= 3, ensure all matching findings are tagged CRITICAL
 
 > Exact CLI invocation:
 > `cd scripts/reviews && npx tsc && node dist/write-retro-record.js --data '<JSON>'`
@@ -133,6 +145,21 @@ When multiple PRs are selected (USER-REQ-1):
 ## Known Churn Patterns
 
 Patterns observed across multiple PRs. Reference during Step 2 analysis.
+
+## Override Audit Cross-Reference (D26 data flow — ls-006)
+
+During Step 2 (churn analysis), read `.claude/state/override-log.jsonl` to
+cross-reference override patterns with PR review rounds:
+
+1. Filter override entries for the PR being analyzed (match by date range or
+   branch name)
+2. If the PR had overrides, note them in the churn analysis:
+   - Which checks were overridden
+   - Whether the override reason matches the PR's fix patterns
+3. If the same check was overridden 3+ times across recent PRs, flag as a
+   recurring override pattern — candidate for threshold adjustment
+
+This prevents the override audit trail from being write-only data.
 
 ### Pattern 6: Filesystem Guard Lifecycle (realpathSync Edge Cases)
 

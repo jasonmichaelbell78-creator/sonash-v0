@@ -39,7 +39,7 @@ try {
   /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
   sanitizeInput = (v) =>
     String(v ?? "")
-      .replace(/[\x00-\x1f\x7f]/g, "")
+      .replaceAll(/[\x00-\x1f\x7f]/g, "")
       .slice(0, 500);
   /* eslint-enable no-control-regex */
 }
@@ -574,6 +574,27 @@ try {
   const archiveMsg = archiveErr instanceof Error ? archiveErr.message : String(archiveErr);
   if (archiveMsg && !archiveMsg.includes("exit code 0")) {
     console.log("   ⚠️ Auto-archive: " + archiveMsg.split("\n")[0]);
+  }
+}
+
+// Unified JSONL rotation (D11/D25: tiered rotation per config/rotation-policy.json)
+try {
+  execFileSync(process.execPath, ["scripts/rotate-jsonl.js"], {
+    cwd: projectDir,
+    stdio: ["ignore", "ignore", "pipe"],
+    timeout: 10000,
+  });
+} catch (rotateErr) {
+  // Non-fatal: log but don't block session start
+  const rotateMsg = rotateErr instanceof Error ? rotateErr.message : String(rotateErr);
+  if (rotateMsg && !rotateMsg.includes("exit code 0")) {
+    const redactedMsg = rotateMsg
+      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
+      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
+    console.log("   ⚠️ JSONL rotation: " + sanitizeInput(redactedMsg.split("\n")[0]));
+    warnings++;
   }
 }
 

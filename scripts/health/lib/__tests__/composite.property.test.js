@@ -104,12 +104,12 @@ describe("computeCompositeScore property: grade always valid", () => {
   });
 });
 
-describe("computeCompositeScore property: categoryScores has 8 entries", () => {
+describe("computeCompositeScore property: categoryScores has 9 entries", () => {
   it("holds for any input", () => {
     fc.assert(
       fc.property(arbitraryCheckerResults, (results) => {
         const r = computeCompositeScore(results);
-        return Object.keys(r.categoryScores).length === 8;
+        return Object.keys(r.categoryScores).length === 9;
       }),
       { numRuns: 100, seed: 103 }
     );

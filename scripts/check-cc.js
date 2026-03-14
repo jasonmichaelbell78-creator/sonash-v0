@@ -586,7 +586,7 @@ function writeBaseline(allResults) {
   try {
     data = JSON.parse(readFileSync(BASELINE_PATH, "utf-8"));
   } catch {
-    data = { generated: "", description: "", checks: {} };
+    data = { schema_version: 1, updated: "", checks: {}, baselines: {} };
   }
 
   // Record max CC per file for files with violations

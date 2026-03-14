@@ -102,7 +102,7 @@ function safeRenameSync(src, dest) {
   if (!isSafeToWrite(absDest)) {
     throw new Error(`Refusing to rename to symlinked path: ${path.basename(absDest)}`);
   }
-  // Try rename first; if it fails due to dest existing (Windows), remove and retry
+  // Try rename first; if it fails due to dest existing (Windows), fall back to copy
   try {
     fs.renameSync(absSrc, absDest);
   } catch (err) {

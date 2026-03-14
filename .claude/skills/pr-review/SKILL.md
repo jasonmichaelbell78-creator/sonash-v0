@@ -102,6 +102,23 @@ suppression patterns, triage only remaining items individually.
 For R2+: load previous round's state file, check learning log for prior
 rejections, auto-detect repeat items (same rule ID + file = repeat-rejected).
 
+**Retro Pattern Check (SHOULD — D26 backward flow):**
+
+1. Read `.claude/state/retros.jsonl` (last 3 entries — if file exists)
+2. For each retro entry, extract `action_items[]` array
+3. For each action item where `status !== 'complete'`:
+   - Check if the current PR's changed files overlap with the action item's
+     context
+   - Check if the PR description or review feedback mentions the same pattern
+     category
+4. If a match is found, flag it prominently in the triage output:
+   ```
+   ⚠️ REPEAT PATTERN from retro PR #{retro.pr}:
+     Action item: "{item.title}" (status: {item.status})
+     This PR appears to repeat this pattern. Priority: ELEVATED
+   ```
+5. Auto-elevate matched items to at minimum MAJOR severity
+
 **Parse (MUST):**
 
 1. Identify source (CodeRabbit, Qodo, SonarCloud, Mixed)
@@ -333,6 +350,7 @@ after completion as review record.
 
 | Version | Date       | Description                                                                                                                                                                                                |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.2     | 2026-03-13 | D26 backward flow: Step 1 retro pattern check reads last 3 retros' action_items[], flags repeat patterns, auto-elevates to MAJOR.                                                                          |
 | 4.1     | 2026-03-11 | Retro PRs #420/#424/#426: Step 0 (size advisory + first-scan batch), Step 2 (cross-round dedup + stale HEAD + prior rejection), Step 4 (propagation sweep strengthened), Step 6 (data completeness check). |
 | 4.0     | 2026-03-07 | Full rewrite from skill-audit (49 decisions). 8 sequential steps, pre-checks extracted, MUST/SHOULD/MAY, compaction, guard rails, routing.                                                                 |
 | 3.7     | 2026-03-05 | Out-of-scope table, completeness gate                                                                                                                                                                      |

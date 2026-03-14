@@ -12,7 +12,7 @@ improvements made.
 
 - **[AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)** - How to triage and handle
   reviews
-- **[claude.md](../claude.md)** - Distilled patterns (always in AI context)
+- **[claude.md](../CLAUDE.md)** - Distilled patterns (always in AI context)
 
 ---
 
@@ -300,7 +300,7 @@ This log uses a tiered structure to optimize context consumption:
 
 | Tier  | Content                                                                                                                                                                                                                                                                                                                                                                                    | When to Read                  | Size        |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------- | ----------- |
-| **1** | [claude.md](../claude.md)                                                                                                                                                                                                                                                                                                                                                                  | Always (in AI context)        | ~115 lines  |
+| **1** | [claude.md](../CLAUDE.md)                                                                                                                                                                                                                                                                                                                                                                  | Always (in AI context)        | ~115 lines  |
 | **2** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)                                                                                                                                                                                                                                                                                                                                          | When investigating violations | ~612 lines  |
 | **3** | Active Reviews (below)                                                                                                                                                                                                                                                                                                                                                                     | Deep investigation            | ~2400 lines |
 | **4** | Archive ([#1-40](./archive/REVIEWS_1-40.md), [#42-138](./archive/REVIEWS_42-138.md), [#139-195](./archive/REVIEWS_139-195.md), [#196-259](./archive/REVIEWS_196-259.md), [#260-299](./archive/REVIEWS_260-299.md), [#300-341](./archive/REVIEWS_300-341.md), [#342-383](./archive/REVIEWS_342-383.md), [#384-423](./archive/REVIEWS_384-423.md), [#424-457](./archive/REVIEWS_424-457.md)) | Historical research           | ~8000 lines |
@@ -2744,5 +2744,294 @@ enhancements, and deep-plan artifacts.
 - Cross-round dedup saves effort: R3 item 7 (hook.command logging risk) was
   already addressed in R2 truncation fix — auto-rejected with prior-round
   reference.
+
+---
+
+#### Review #356: PR #431 R2 — Data Effectiveness Audit Schema & Security Fixes (2026-03-13)
+
+**Source:** Qodo / SonarCloud / Gemini / CI **PR/Branch:** #431
+plan-implementation **Suggestions:** 54 total (Critical: 2, Major: 8, Minor: 21,
+Trivial: 23)
+
+**Patterns Identified:**
+
+1. Schema migration breaks consumers: verified-patterns.json restructured to
+   `{schema_version, patterns, exemptions}` but check-pattern-compliance.js
+   still indexed the flat object. Baseline keys didn't match antipattern IDs.
+   - Root cause: Schema refactored without updating all consumers
+   - Prevention: Schema migration checklist — grep all consumers before shipping
+2. Traversal validation incomplete: rotate-jsonl.js regex only caught leading
+   `..`, missing mid-path traversal like `x/../../y`.
+   - Root cause: Ad-hoc regex instead of using existing validatePathInDir helper
+   - Prevention: Always use security-helpers.js for path validation
+3. sanitizeError fallbacks leak raw err.message: 8 scripts had fallbacks missing
+   the full redaction chain from the canonical sanitizeError.
+   - Root cause: Copy-paste fallbacks diverged from canonical implementation
+   - Prevention: All fallbacks must match the 5-replace canonical pattern
+
+**Resolution:**
+
+- Fixed: 54 items
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Schema changes require consumer audit — the verified-patterns.json change
+  broke exemption loading AND FP reporting because only the config was updated.
+- Baseline key names must exactly match the antiPattern.id values emitted by
+  check-pattern-compliance.js. The mismatch caused silent ratchet failures.
+- check-cc.js and ratchet-baselines.js share known-debt-baseline.json but use
+  different sections (checks vs baselines). Both must be preserved on write.
+
+---
+
+#### Review #361: PR #431 R7 — Flagged Section Sanitization, TOCTOU & Diminishing Returns (2026-03-14)
+
+**Source:** Qodo + SonarCloud **PR/Branch:** #431 plan-implementation
+**Suggestions:** 17 total (Critical: 0, Major: 1, Minor: 9, Trivial: 7)
+
+**Patterns Identified:**
+
+1. Incomplete sanitization propagation: R6 sanitized the systems table but not
+   the flagged section in generate-lifecycle-scores-md.js. Pattern: after fixing
+   one section, check ALL output paths in the same file.
+2. TOCTOU in rollback paths: existsSync before renameSync in error recovery
+   creates a race. Replace with direct rename + ENOENT catch.
+3. Diminishing returns at R7: fix rate dropped to 35%. Cross-round dedup now
+   covers 7 rounds — same items (Set.has, type-dependent design) resurfacing
+   every round despite repeated rejection.
+
+| Round | Source | Items | Fixed | Deferred | Rejected |
+| ----- | ------ | ----- | ----- | -------- | -------- |
+| R7    | Qodo   | 17    | 6     | 0        | 11       |
+
+- Fixed: 6 items across 5 files
+- Rejected: 11 items (4 cross-round dedup R4-R6, 1 intentional TODO scaffold, 6
+  over-engineering/no-behavior-change)
+
+**Rejected Items:**
+
+- Set.has for tableContent (R4+R5+R6 dedup — string.includes())
+- Set.has for antiPatternSection (R4+R5+R6 dedup — string.includes())
+- Type-dependent design (R4+R5+R6 dedup — simple boolean)
+- OS temp dir for test (R3+R4 dedup — repo boundary needed)
+- TODO comment in scaffold (intentional placeholder)
+- Baseline write try/catch (writeFileSync failure leaves file unchanged)
+- Config parsing tightening (internal config, theoretical edge cases)
+- Sanitize exitCode in test (test-only, literal values)
+- Defensive error.code access (doesn't change behavior)
+- Skip tests on missing fixtures (should fail loudly)
+- Guard JSONL stringify (internal objects can't fail)
+
+**Key Learnings:**
+
+- R7 fix rate (35%) triggers merge recommendation. This PR has processed 220+
+  items across 7 rounds. Recommend merging after this round.
+- Sanitization fixes propagate across output functions, not just the one
+  flagged. Future reviews should check all render paths in the same file.
+
+---
+
+#### Review #360: PR #431 R6 — Sanitization, Scaffold Validity & Baseline Bug (2026-03-14)
+
+**Source:** Qodo **PR/Branch:** #431 plan-implementation **Suggestions:** 20
+total (Critical: 0, Major: 1, Minor: 12, Trivial: 7)
+
+**Patterns Identified:**
+
+1. Detached object reference in getBaselines: When a getter returns a new `{}`
+   instead of initializing `baselineData.baselines`, mutations to the returned
+   object don't persist back — improvements silently lost on write.
+2. Scaffold validity: ESLint rule `create` property must be a function, not a
+   string. Scaffolded skeletons should be loadable without runtime errors.
+3. Sanitization propagation: stderr writes, markdown table fields, and JSONL
+   parse errors all need consistent sanitization. Pattern: after fixing one
+   instance, grep for the same pattern across the codebase.
+4. Cross-round dedup efficiency: R4+R5 rejections (Set.has, type-dependent
+   design) continue to resurface. May need permanent suppression rules.
+
+| Round | Source | Items | Fixed | Deferred | Rejected |
+| ----- | ------ | ----- | ----- | -------- | -------- |
+| R6    | Qodo   | 20    | 14    | 0        | 6        |
+
+- Fixed: 14 items across 8 files
+- Rejected: 6 items (3 cross-round dedup R4+R5, 1 architectural, 2
+  over-engineering)
+
+**Rejected Items:**
+
+- Set.has for tableContent (R4+R5 dedup — string.includes(), not array)
+- Set.has for antiPatternSection (R4+R5 dedup — string.includes(), not array)
+- Type-dependent design (R4+R5 dedup — simple boolean in 6-line function)
+- No JSONL schema validation (architectural — downstream has Number.isFinite and
+  Array.isArray guards)
+- Use shared sanitizeError in session-start.js (cross-boundary import fragile;
+  hook has own sanitizeInput)
+- Normalize malformed baseline in persistBaselines (over-engineering — input
+  always from script's own prior output)
+
+**Key Learnings:**
+
+- Detached-object-reference is a subtle bug category: `return obj.field ?? {}`
+  looks safe but mutations to the returned `{}` are lost. Always initialize the
+  parent when the getter creates a fallback.
+- R6 fix rate (70%) is above merge threshold but cumulative review cost is high.
+  This PR (R1-R6) has processed 200+ items total.
+
+---
+
+#### Review #359: PR #431 R5 — Backup Safety, Nullish Coalescing & Error Context (2026-03-14)
+
+**Source:** Qodo **PR/Branch:** #431 plan-implementation **Suggestions:** 18
+total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
+
+**Patterns Identified:**
+
+1. Backup-and-restore for file replacement: The unlinkSync+copyFileSync fallback
+   in run-alerts.js risked data loss if the copy failed after deletion. Replaced
+   with rename-to-backup, copy, then cleanup/rollback pattern.
+2. Nullish coalescing (`??`) vs logical OR (`||`): `|| 0` treats valid zero
+   values as falsy, skipping to fallback. Fixed velocity metric fields to use
+   `??` for zero-preserving semantics.
+3. Error context in JSONL parsing: Silent catch blocks that swallow parse errors
+   make corruption debugging harder. Added safe excerpts and error reasons.
+4. String.raw for escaped replacements: `"\\|"` and `"\\$&"` are clearer as
+   `String.raw\`\|\``and`String.raw\`\$&\``.
+
+| Round | Source | Items | Fixed | Deferred | Rejected |
+| ----- | ------ | ----- | ----- | -------- | -------- |
+| R5    | Qodo   | 18    | 11    | 0        | 7        |
+
+- Fixed: 11 items across 9 files
+- Rejected: 7 items (5 cross-round dedup from R3/R4, 1 architectural, 1 FP)
+
+**Rejected Items:**
+
+- Symlink overwrite risk (R4 dedup — isSafeToWrite guard at L515)
+- Set.has x2 (R4 dedup — string.includes(), not array)
+- Unix path redaction (R3+R4 dedup — deliberately removed in R3)
+- Type-dependent design (R4 dedup — simple boolean in 6-line function)
+- Audit logging (architectural — internal report generator, no user context)
+
+**Key Learnings:**
+
+- Cross-round dedup now covers 5 rounds of this PR. Items that survive R3+R4
+  rejection keep coming back — may need permanent suppression.
+- Backup-and-restore is strictly superior to delete-then-copy for file
+  replacement. This pattern should be in FIX_TEMPLATES.
+- Fix rate at R5 (61%) is within normal range but trending downward. Diminishing
+  returns expected by R6.
+
+---
+
+#### Review #358: PR #431 R4 — Modernization, Complexity & Data Guards (2026-03-14)
+
+**Source:** Qodo / SonarCloud / CI **PR/Branch:** #431 plan-implementation
+**Suggestions:** 53 raw (52 unique after dedup) (Critical: 2, Major: 3, Minor:
+13, Trivial: 34)
+
+**Patterns Identified:**
+
+1. SonarCloud replaceAll re-flag: R3 rejected 37 replaceAll items as "no
+   semantic benefit." R4 re-flagged 28. Fixed this round to clear persistent
+   noise and prevent infinite review loops on cosmetic items.
+   - Lesson: When SonarCloud will re-flag the same items every round, fix them
+     even if cosmetic — the review cycle cost exceeds the change cost.
+2. Cognitive complexity regression: ratchet-baselines.js crept from 15→16 after
+   R3's reduction (24→15). Extracted `getBaselines` and `persistBaselines`.
+   route-lifecycle-gaps.js at 19 — extracted `buildLearning` helper.
+3. Data validation gaps: generateFlaggedSection still called `e.files.join()`
+   without Array guard and `e.total` without Number.isFinite.
+   generateSystemsTable had unguarded sub-scores
+   (capture/storage/recall/action).
+4. CI blocker on single-letter vars: `const r` in composite.test.js and
+   wave6-alerts.test.js triggered patterns:check blocking violation.
+5. Pre-existing test failure: wave6-alerts.test.js `checkCommitPatterns` test
+   expects `sessionEndPct: 50` but implementation returns 0 when `fired: false`.
+
+**Resolution:**
+
+- Fixed: 37 items
+- Deferred: 0 items
+- Rejected: 15 items (2 R3 dedup, 13 over-engineering/false-positive)
+
+**Rejected Items:**
+
+- POSIX path redaction (R3 dedup — R3 deliberately removed this regex)
+- OS temp directory for tests (R3 dedup — tests need repo boundary compat)
+- Symlink security in run-alerts.js (isSafeToWrite guard already at L515)
+- mkdirSync in test helper (parent dir always exists)
+- stderr JSON fallback (child process outputs JSON to stdout only)
+- Recompute totals (stored total is authoritative)
+- File read try/catch (over-engineering readJsonl callers)
+- Normalize rotation results (over-engineering internal returns)
+- Guard require() in loop (Node caches modules)
+- chmod test scripts (node invoked directly, not via shebang)
+- Skip tests when fixtures missing (silent skip hides problems)
+- Capture test output (adds complexity for marginal debugging)
+- Set.has x2 (SonarCloud FP — string.includes(), not array)
+- json parameter design smell (simple boolean in 6-line function)
+
+**Key Learnings:**
+
+- SonarCloud cosmetic items that persist across rounds should be fixed even if
+  the change is purely mechanical. The review overhead of re-triaging them every
+  round exceeds the 5-minute fix.
+- Complexity extractions can regress if the function is subsequently modified
+  without re-checking complexity. Consider adding complexity to CI gates.
+
+---
+
+#### Review #357: PR #431 R3 — Robustness, Complexity & Propagation Fixes (2026-03-13)
+
+**Source:** Qodo / SonarCloud / Gemini **PR/Branch:** #431 plan-implementation
+**Suggestions:** 26 consolidated (Critical: 2, Major: 8, Minor: 14, Trivial: 2)
+
+**Patterns Identified:**
+
+1. Over-redacting regex in sanitizeError: `/\/[^\s]*\/[^\s]+/g` matched any
+   path-like string (URLs, API paths), destroying useful debug context.
+   - Root cause: Overly broad catch-all added to complement Windows path
+     redaction
+   - Prevention: Canonical sanitizeError should only redact known-sensitive
+     prefixes (/home, /Users, C:\Users), not arbitrary unix paths
+   - Propagation: Fixed in 8 files (canonical + 7 fallback copies)
+2. Cognitive complexity in new scripts: ratchet-baselines.js (24→15) and
+   verify-enforcement.js (16→15) exceeded SonarCloud threshold.
+   - Root cause: Single functions doing too much — iteration + mutation +
+     reporting
+   - Prevention: Extract helpers when function has >2 concerns
+3. Pre-existing test failure: verify-enforcement tests created temp scripts in
+   os.tmpdir() but runEnforcementTest enforces repo boundary check.
+   - Root cause: Test helper didn't account for the security boundary
+   - Fix: Create temp dirs inside project root (.tmp/) instead
+
+**Resolution:**
+
+- Fixed: 16 items
+- Deferred: 0 items
+- Rejected: 10 items (3 already-fixed, 7 no-value-add)
+
+**Rejected Items:**
+
+- Exemptions schema (already handled at check-pattern-compliance.js:49)
+- Baseline schema breaks (file retains `checks` key, IDs match violation IDs)
+- Unguarded baseline overwrite (already uses safeWriteFileSync)
+- sanitizeError fallbacks (R2 fixed — full 5-replace chain present)
+- Symlink validation in run-alerts.js (BASELINE_PATH is hardcoded internal)
+- json parameter design smell (simple boolean in 7-line function)
+- Missing CLI validation (internal script)
+- replaceAll x37 (all regex with /g flag — no semantic benefit)
+- Set.has x2 (SonarCloud FP — string.includes(), not array)
+- structuredClone (JSON roundtrip is intentional serialization validation)
+
+**Key Learnings:**
+
+- When sanitizing errors, only redact known-sensitive path prefixes. A catch-all
+  unix path regex destroys useful diagnostic info (API paths, URLs).
+- Test helpers must respect the same security boundaries as production code.
+  When scripts enforce repo-root containment, test fixtures must live inside the
+  repo.
 
 ---

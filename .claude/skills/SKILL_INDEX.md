@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 2.4 **Last Updated**: 2026-03-10 **Total Skills**: 66
+**Version**: 2.5 **Last Updated**: 2026-03-13 **Total Skills**: 67
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -16,7 +16,7 @@ Quick reference for all available Claude Code skills organized by category.
 
 ## Categories
 
-### Audit & Code Quality (23 skills)
+### Audit & Code Quality (24 skills)
 
 | Skill                             | Description                                                                     |
 | --------------------------------- | ------------------------------------------------------------------------------- |
@@ -44,6 +44,7 @@ Quick reference for all available Claude Code skills organized by category.
 | `/doc-ecosystem-audit`            | Documentation ecosystem diagnostic (16 categories, 5 domains, A-F scoring)      |
 | `/script-ecosystem-audit`         | Script infrastructure diagnostic (18 categories, 5 domains, A-F scoring)        |
 | `/comprehensive-ecosystem-audit`  | Run all 8 ecosystem audits in staged waves with unified report                  |
+| `/data-effectiveness-audit`       | Lifecycle scoring audit for data system effectiveness (C/S/R/A, 0-12)           |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues (replaces sonarcloud-sprint) |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                                            |
 
@@ -162,6 +163,7 @@ Quick reference for all available Claude Code skills organized by category.
 | Script infra health    | `/script-ecosystem-audit`                     |
 | All ecosystems at once | `/comprehensive-ecosystem-audit`              |
 | Audit system health    | `/audit-health`                               |
+| Data effectiveness     | `/data-effectiveness-audit`                   |
 
 ---
 
