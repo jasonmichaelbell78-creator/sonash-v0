@@ -3742,6 +3742,91 @@ function checkEnforcementVerification() {
 }
 
 // ============================================================================
+// PENDING REFINEMENTS (Automation Gap Closure)
+// ============================================================================
+
+/**
+ * Check for pending refinements that need fix-or-DEBT resolution.
+ * Reads pending-refinements.jsonl and surfaces items with generated code.
+ * Items surfaced 3+ times auto-escalate to S1 DEBT creation.
+ */
+function checkPendingRefinements() {
+  console.error("  Checking pending refinements...");
+
+  const pendingPath = path.join(ROOT_DIR, ".claude", "state", "pending-refinements.jsonl");
+  const lines = safeReadLines(pendingPath);
+
+  ensureCategory("pending-refinements", "Pending Refinements (Fix-or-DEBT)");
+
+  if (lines.length === 0) return;
+
+  const entries = lines.map((l) => safeParse(l)).filter(Boolean);
+  if (entries.length === 0) return;
+
+  // Increment surfaced_count for each entry
+  const updatedEntries = [];
+  const escalated = [];
+
+  for (const entry of entries) {
+    const surfacedCount = (typeof entry.surfaced_count === "number" ? entry.surfaced_count : 0) + 1;
+    const updated = { ...entry, surfaced_count: surfacedCount };
+
+    if (surfacedCount >= 3) {
+      // Auto-escalate: create DEBT item at S1 with 7-day deadline
+      escalated.push(updated);
+    } else {
+      updatedEntries.push(updated);
+    }
+  }
+
+  // Surface remaining pending items as alerts
+  for (const entry of updatedEntries) {
+    addAlert(
+      "pending-refinements",
+      "warning",
+      `Pending refinement: ${entry.pattern || "(unknown)"} [${entry.route_type}] — surfaced ${entry.surfaced_count}x`,
+      {
+        id: entry.id,
+        confidence: entry.confidence,
+        reason: entry.reason,
+        generated_code: entry.generated_code,
+        surfaced_count: entry.surfaced_count,
+      },
+      "Resolve via /alerts: approve, edit+approve, or DEBT"
+    );
+  }
+
+  // Report escalated items
+  for (const entry of escalated) {
+    addAlert(
+      "pending-refinements",
+      "critical",
+      `Auto-escalated to S1 DEBT (surfaced ${entry.surfaced_count}x without action): ${entry.pattern || "(unknown)"}`,
+      { id: entry.id, escalated: true },
+      "DEBT item auto-created in MASTER_DEBT.jsonl with 7-day deadline"
+    );
+  }
+
+  // Write back updated entries (minus escalated ones)
+  try {
+    if (isSafeToWrite(pendingPath)) {
+      const updatedContent =
+        updatedEntries.map((e) => JSON.stringify(e)).join("\n") +
+        (updatedEntries.length > 0 ? "\n" : "");
+      fs.writeFileSync(pendingPath, updatedContent, "utf-8");
+    }
+  } catch {
+    // Non-fatal: don't block alerts on write failure
+  }
+
+  addContext("pending-refinements", {
+    totalPending: entries.length,
+    active: updatedEntries.length,
+    escalatedToDebt: escalated.length,
+  });
+}
+
+// ============================================================================
 // SUPPRESSION FILTER (W3)
 // ============================================================================
 
@@ -4058,6 +4143,7 @@ function main() {
   ensureCategory("review-archive", "Review Archive Health");
   ensureCategory("crossdoc", "Cross-Document Dependencies");
   ensureCategory("velocity-regression", "Velocity Regression");
+  ensureCategory("pending-refinements", "Pending Refinements (Fix-or-DEBT)");
 
   if (isFullMode) {
     ensureCategory("docs", "Documentation Health");
@@ -4085,6 +4171,9 @@ function main() {
     ensureCategory("commit-patterns", "Commit Patterns");
     ensureCategory("enforcement-verification", "Enforcement Verification");
   }
+
+  // Always check pending refinements — fix-or-DEBT must not be skippable
+  checkPendingRefinements();
 
   // Filter suppressed alerts (W3)
   filterSuppressedAlerts();
