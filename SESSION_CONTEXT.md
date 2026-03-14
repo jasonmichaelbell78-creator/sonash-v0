@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 7.6 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 7.7 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-13 (Session #217)
+2026-03-14 (Session #218)
 
 ## Purpose
 
@@ -29,11 +29,12 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-13 **Branch**: `plan-implementation` **Working
-On**: Session #218 — Meta Pipeline alignment (4 plans sequenced, SWS
-forward-compat, CI guardrail gaps, ROADMAP updated)
+**Last Checkpoint**: 2026-03-14 **Branch**: `plan-implementation` **Working
+On**: Session #218 — Automation Gap Closure (9 tasks, 10 commits, all tests
+passing)
 
-**Uncommitted Work**: None
+**Uncommitted Work**: State files (learning-routes.jsonl,
+known-debt-baseline.json, review-metrics.jsonl)
 
 ---
 
@@ -49,18 +50,26 @@ forward-compat, CI guardrail gaps, ROADMAP updated)
 
 ## Recent Session Summaries
 
-**Session #218** (META PIPELINE ALIGNMENT):
+**Session #218** (AUTOMATION GAP CLOSURE — FULL IMPLEMENTATION):
 
-- **ROADMAP updated**: 4-plan Meta Pipeline as P0 blocking chain (Tooling → Code
-  Quality → Data Effectiveness → SWS → all other work)
-- **Cross-plan analysis**: 4 agents analyzed all plans in parallel, identified
-  gaps in CI ownership, guardrail coverage, SWS forward-compatibility
-- **Plans amended**: All 3 pre-SWS plans updated with SWS forward-compat
-  requirements (Zod schemas, JSONL-first, declarative config, changelogs)
-- **Code Quality CI gaps**: 19 fix-without-guardrail gaps identified and added
-  to plan (Step 0 for CI-on-main, missing CI enforcement steps, per-WS gaps)
-- **LSP configured**: Native typescript-language-server via `.lsp.json`,
-  CLAUDE.md updated with LSP preference over Grep
+- **9 tasks executed** via subagent-driven development: design spec → plan → all
+  code implemented, tested, committed (10 commits on plan-implementation)
+- **21 scaffolded routes promoted**: 0 remain at "scaffolded" — 28 refined
+  (low-confidence → pending fix-or-DEBT), 3 enforced (high-confidence)
+- **5 scripts wired to session-start**: route-lifecycle-gaps, route-enforcement-
+  gaps, refine-scaffolds (NEW), verify-enforcement, ratchet-baselines
+  --check-only
+- **New files**: confidence-classifier.js (5 classification rules),
+  refine-scaffolds.js (scaffolded→enforced/refined pipeline)
+- **Modified**: session-start.js (+107 lines), run-alerts.js
+  (+checkPendingRefinements with fix-or-DEBT gate + escalation at 3+),
+  learning-router.js (dedup guard for refined/deferred), learning-route.ts
+  ("deferred" in Zod enum), ratchet-baselines.js (--check-only flag)
+- **Testing**: 1308/1308 tests passing (3 full runs), 0 schema validation
+  errors, 28:28 refined↔pending cross-reference verified
+- **Design spec**:
+  `docs/superpowers/specs/2026-03-14-automation-gap-closure-design.md`
+- **Plan**: `docs/superpowers/plans/2026-03-14-automation-gap-closure.md`
 
 **Session #217** (DATA EFFECTIVENESS AUDIT — DEEP PLAN):
 
@@ -87,65 +96,56 @@ forward-compat, CI guardrail gaps, ROADMAP updated)
 - New scripts: compute-changelog-metrics.js, validate-jsonl-schemas.js,
   test-semgrep-rules.js
 
-**Session #215** (HOOK SYSTEMS MINI-AUDIT):
-
-- Pre-commit/pre-push mini-audit: 10 categories, 35 decisions, 6 learnings
-- Implementation plan approved: 8 waves — COMPLETE (shipped in PR #427)
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
 ## Quick Status
 
-| Item                              | Status   | Progress                            |
-| --------------------------------- | -------- | ----------------------------------- |
-| **PR Review Ecosystem v2**        | SHIPPED  | v1.0 tagged/pushed                  |
-| **Skill Quality Framework**       | COMPLETE | All 4 deliverables                  |
-| **Data Effectiveness Audit**      | PLANNED  | 35 decisions, 11 waves, approved    |
-| **System-Wide Standardization**   | PLANNED  | PLAN.md v1.1 approved, 92 decisions |
-| **Operational Visibility Sprint** | BLOCKED  | ~75% (paused for overhaul)          |
-| **PR #411 Review (9 rounds)**     | COMPLETE | 135 fixed/415 total                 |
-| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                        |
-| Track B: Dev Dashboard MVP        | Paused   | ~10%                                |
-| M1.5 - Quick Wins                 | Paused   | ~20%                                |
-| M1.6 - Admin Panel + UX           | Paused   | ~75%                                |
+| Item                              | Status   | Progress                                    |
+| --------------------------------- | -------- | ------------------------------------------- |
+| **PR Review Ecosystem v2**        | SHIPPED  | v1.0 tagged/pushed                          |
+| **Skill Quality Framework**       | COMPLETE | All 4 deliverables                          |
+| **Data Effectiveness Audit**      | ACTIVE   | Automation Gap Closure shipped (PR pending) |
+| **System-Wide Standardization**   | PLANNED  | PLAN.md v1.1 approved, 92 decisions         |
+| **Operational Visibility Sprint** | BLOCKED  | ~75% (paused for overhaul)                  |
+| **PR #411 Review (9 rounds)**     | COMPLETE | 135 fixed/415 total                         |
+| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                                |
+| Track B: Dev Dashboard MVP        | Paused   | ~10%                                        |
+| M1.5 - Quick Wins                 | Paused   | ~20%                                        |
+| M1.6 - Admin Panel + UX           | Paused   | ~75%                                        |
 
-**Current Branch**: `tooling-code-plan`
+**Current Branch**: `plan-implementation`
 
-**Test Status**: All tests passing (3,646 total, 3,645 pass, 1 skipped, 0 fail)
+**Test Status**: All tests passing (1,308 total, 1,308 pass, 0 fail)
 
 ---
 
 ## Next Session Goals
 
-### Immediate Priority — Deep Plan Execution Order
+### Immediate Priority
 
-Execute these 4 approved plans **one by one**, in this order:
-
-1. **Data Effectiveness Audit** (35 decisions, 11 waves)
+1. **PR for Automation Gap Closure** — push plan-implementation, create PR #432
+2. **Data Effectiveness Audit — remaining waves** — Automation Gap Closure was
+   the first deliverable; remaining waves (lifecycle scoring, CLAUDE.md
+   annotations, ecosystem-health dimension) still pending
    - `.planning/learnings-effectiveness-audit/PLAN.md`
-   - State: `.claude/state/deep-plan.state.json`
-2. **Tooling & Infrastructure Audit** (30 decisions)
+3. **Tooling & Infrastructure Audit** (30 decisions)
    - `.planning/tooling-audit/PLAN.md`
-3. **Code Quality Overhaul** (26 decisions)
+4. **Code Quality Overhaul** (26 decisions)
    - `.planning/code-quality-overhaul/PLAN.md`
-4. **System-Wide Standardization** (92 decisions)
+5. **System-Wide Standardization** (92 decisions)
    - `.planning/system-wide-standardization/PLAN.md`
 
 **Also pending:** Planning landscape Wave 5 (canonicalization).
-
-**See**:
-[.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for
-archived v1.0 milestone
 
 ---
 
 ## Pending PR Reviews
 
-**Status**: PR #429 created (this session). Pending review feedback.
+**Status**: PR #431 merged. Automation Gap Closure PR pending creation.
 
-**Last Processed**: 2026-03-13 (Session #217: PR #429 created)
+**Last Processed**: 2026-03-14 (Session #218)
 
 ---
 
@@ -212,6 +212,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                          |
 | ------- | ---------- | ---------------------------------------------------------------- |
+| 7.7     | 2026-03-14 | Session #218 — Automation Gap Closure full implementation        |
 | 7.6     | 2026-03-13 | Session #217 — Data Effectiveness Audit deep-plan (35 decisions) |
 | 7.5     | 2026-03-12 | Session #216 — PR #427/#428 batch retro, 17 action items         |
 | 7.4     | 2026-03-10 | Session #214 — Phases 3-7 done, 3,640 tests, 8 commits           |
