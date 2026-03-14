@@ -234,9 +234,9 @@ function reportRegressions(result, baselineData, currentCounts) {
 
 function run(argv) {
   const args = argv || process.argv.slice(2);
-  const dryRun = args.includes("--dry-run");
-  const jsonOut = args.includes("--json");
   const checkOnly = args.includes("--check-only");
+  const dryRun = args.includes("--dry-run") || checkOnly;
+  const jsonOut = args.includes("--json");
 
   const baselineData = readBaselines();
   const currentCounts = getCurrentViolations();

@@ -56,7 +56,21 @@ function isRotationGap(pattern) {
  */
 function matchesVerifiedPattern(pattern, vpPatterns) {
   const lower = (pattern || "").toLowerCase();
-  return vpPatterns.some((vp) => lower.includes(vp) || vp.includes(lower));
+  return vpPatterns.some((vp) => lower.includes(vp));
+}
+
+// Module-level cache for verified patterns (loaded once per process)
+let _vpCache = null;
+
+/**
+ * Get cached verified patterns (loads once, reuses thereafter).
+ * @returns {string[]}
+ */
+function getCachedVerifiedPatterns() {
+  if (_vpCache === null) {
+    _vpCache = loadVerifiedPatterns();
+  }
+  return _vpCache;
 }
 
 /**
@@ -100,7 +114,7 @@ function classify(entry) {
 
   // Rule 2: code + matches verified-pattern → high
   if (type === "code") {
-    const vpPatterns = loadVerifiedPatterns();
+    const vpPatterns = getCachedVerifiedPatterns();
     if (matchesVerifiedPattern(pattern, vpPatterns)) {
       return {
         confidence: "high",
