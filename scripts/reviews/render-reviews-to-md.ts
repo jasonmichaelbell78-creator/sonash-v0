@@ -38,7 +38,7 @@ const sanitizeErrorMod = require(sanitizeErrorPath) as {
 const sanitizeError: (error: unknown) => string =
   sanitizeErrorMod.sanitizeError ??
   sanitizeErrorMod.default?.sanitizeError ??
-  ((err: unknown) => (err instanceof Error ? err.message : String(err)));
+  (() => "[Unknown error]");
 
 // Import read-jsonl (CJS)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -109,6 +109,7 @@ export interface RenderableReview {
 function parseRecords(rawRecords: Record<string, unknown>[]): RenderableReview[] {
   const results: RenderableReview[] = [];
   for (const raw of rawRecords) {
+    if (raw == null || typeof raw !== "object" || Array.isArray(raw)) continue;
     const id = raw.id;
     const date = raw.date;
     if (id == null || date == null) continue;
@@ -346,6 +347,10 @@ function extractPreservedSections(filePath: string): PreservedSections {
     if (idx !== -1 && idx < headerEnd) {
       headerEnd = idx;
     }
+    // Also check if marker is at the very beginning of the file
+    if (content.startsWith(marker) && 0 < headerEnd) {
+      headerEnd = 0;
+    }
   }
   const header = content.slice(0, headerEnd).trimEnd();
 
@@ -355,6 +360,11 @@ function extractPreservedSections(filePath: string): PreservedSections {
     const idx = content.indexOf(`\n${marker}`);
     if (idx !== -1) {
       footerStart = idx;
+      break;
+    }
+    // Also check if marker is at the very beginning of the file
+    if (content.startsWith(marker) && footerStart === -1) {
+      footerStart = 0;
       break;
     }
   }
@@ -426,12 +436,21 @@ export function renderReviews(
     }
   }
 
-  const inputPath =
-    options?.inputPath ??
-    path.join(projectRoot, ".claude", "state", "reviews.jsonl");
-  const outputPath =
-    options?.outputPath ??
-    path.join(projectRoot, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+  if (options?.filterPr != null && !Number.isFinite(options.filterPr)) {
+    return { success: false, recordCount: 0, outputPath: null, error: "filterPr must be a number" };
+  }
+  if (options?.lastN != null && (!Number.isFinite(options.lastN) || options.lastN <= 0)) {
+    return { success: false, recordCount: 0, outputPath: null, error: "lastN must be a positive number" };
+  }
+
+  const inputPath = path.resolve(
+    projectRoot,
+    options?.inputPath ?? path.join(".claude", "state", "reviews.jsonl")
+  );
+  const outputPath = path.resolve(
+    projectRoot,
+    options?.outputPath ?? path.join("docs", "AI_REVIEW_LEARNINGS_LOG.md")
+  );
 
   // Read raw JSONL (lenient — no schema validation, accepts pre-migration records)
   const rawRecords = readJsonl(inputPath, { safe: true, quiet: true });

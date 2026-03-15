@@ -211,6 +211,14 @@ function readReviewsJsonl() {
         result.parseErrors.push({ line: i + 1, raw: trimmed.slice(0, 80) });
         continue;
       }
+      const id = parsed.id;
+      const idOk =
+        (typeof id === "number" && Number.isFinite(id)) ||
+        (typeof id === "string" && id.trim().length > 0);
+      if (!idOk) {
+        result.parseErrors.push({ line: i + 1, raw: trimmed.slice(0, 80) });
+        continue;
+      }
       result.records.push(parsed);
     } catch {
       result.parseErrors.push({ line: i + 1, raw: trimmed.slice(0, 80) });

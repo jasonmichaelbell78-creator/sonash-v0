@@ -561,13 +561,25 @@ try {
   if (err.status === 1) {
     // Validation issues — surface as blocking warning
     console.error("⚠️ Review lifecycle validation issues found:");
-    const output = err.stdout ? err.stdout.toString() : err.stderr ? err.stderr.toString() : "Unknown validation issue";
-    console.error(sanitizeInput ? sanitizeInput(output.split("\n").slice(0, 5).join("\n")) : output.split("\n")[0]);
+    const stderrText = err.stderr ? err.stderr.toString() : "";
+    const stdoutText = err.stdout ? err.stdout.toString() : "";
+    let findings = null;
+    try {
+      findings = JSON.parse((stderrText || stdoutText || "").trim());
+    } catch { findings = null; }
+    if (Array.isArray(findings) && findings.length > 0) {
+      const summary = findings.slice(0, 3).map((f) => `[${f.severity}] ${f.description}`).join("\n");
+      console.error(sanitizeInput ? sanitizeInput(summary) : summary);
+    } else {
+      const output = stdoutText || stderrText || "Unknown validation issue";
+      console.error(sanitizeInput ? sanitizeInput(output.split("\n").slice(0, 5).join("\n")) : output.split("\n")[0]);
+    }
     warnings++;
   } else if (err.status === 2) {
     // I/O error — surface as error
     const sanitized = sanitizeError ? sanitizeError(err) : "[review lifecycle error]";
-    console.error("❌ Review lifecycle error: " + sanitizeInput(String(sanitized).split("\n")[0]));
+    const line0 = String(sanitized).split("\n")[0];
+    console.error("❌ Review lifecycle error: " + (sanitizeInput ? sanitizeInput(line0) : line0));
     warnings++;
   } else {
     // Other/unexpected error

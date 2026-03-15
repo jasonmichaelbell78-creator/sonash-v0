@@ -95,9 +95,9 @@ function logStep(step, msg) {
  */
 function loadReviews() {
   try {
-    if (!fs.existsSync(REVIEWS_JSONL)) return [];
     return readJsonl(REVIEWS_JSONL, { safe: true, quiet: true });
   } catch (err) {
+    if (err && typeof err === "object" && err.code === "ENOENT") return [];
     throw new Error(`Failed to read reviews.jsonl: ${sanitizeError(err)}`);
   }
 }
@@ -331,12 +331,18 @@ function runArchive() {
     return { archived: 0, remaining: records.length };
   }
 
-  // Sort by numeric id to ensure correct archival order
+  // Sort by date (primary) then ID (secondary) for correct archival order
   const ordered = [...records].sort((a, b) => {
-    const aId = typeof a.id === "number" ? a.id : Number.POSITIVE_INFINITY;
-    const bId = typeof b.id === "number" ? b.id : Number.POSITIVE_INFINITY;
-    if (aId !== bId) return aId - bId;
-    return String(a.date || "").localeCompare(String(b.date || ""));
+    const aDate = typeof a.date === "string" ? Date.parse(a.date) : NaN;
+    const bDate = typeof b.date === "string" ? Date.parse(b.date) : NaN;
+    const aHasDate = Number.isFinite(aDate);
+    const bHasDate = Number.isFinite(bDate);
+    if (aHasDate && bHasDate && aDate !== bDate) return aDate - bDate;
+    if (aHasDate !== bHasDate) return aHasDate ? -1 : 1;
+    const aId = typeof a.id === "number" && Number.isFinite(a.id) ? a.id : NaN;
+    const bId = typeof b.id === "number" && Number.isFinite(b.id) ? b.id : NaN;
+    if (Number.isFinite(aId) && Number.isFinite(bId) && aId !== bId) return aId - bId;
+    return String(a.id ?? "").localeCompare(String(b.id ?? ""));
   });
   const toKeep = ordered.slice(-KEEP_NEWEST);
   const toArchive = ordered.slice(0, ordered.length - KEEP_NEWEST);
@@ -361,6 +367,9 @@ function runArchive() {
   const tmpArchive = REVIEWS_ARCHIVE_JSONL + ".tmp." + process.pid;
 
   // Step 1: Write archive entries to temp file (durable staging artifact)
+  if (!isSafeToWrite(tmpArchive)) {
+    throw new Error("Refusing to write: symlink detected at archive temp path");
+  }
   safeWriteFileSync(tmpArchive, archiveLines, "utf8");
 
   // Step 2: Atomically update reviews.jsonl with kept entries only
@@ -423,7 +432,7 @@ function runValidate() {
   }
 
   try {
-    const result = execFileSync("node", [CHECK_ARCHIVE_SCRIPT, "--json"], {
+    const result = execFileSync(process.execPath, [CHECK_ARCHIVE_SCRIPT, "--json"], {
       cwd: ROOT,
       encoding: "utf8",
       timeout: 30_000,
@@ -613,7 +622,9 @@ function main() {
     log(`  RENDER:   ${renderStatus}${renderCount}`);
 
     // Exit code based on validation
-    if (!validateResult.valid) {
+    if (validateResult.valid) {
+      // All checks passed — exit code stays 0
+    } else {
       process.exitCode = 1;
     }
   } catch (err) {
