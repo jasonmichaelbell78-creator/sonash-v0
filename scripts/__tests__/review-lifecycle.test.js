@@ -313,7 +313,7 @@ describe("sync dedup logic", () => {
     if (tempDir) cleanTempDir(tempDir);
   });
 
-  it("should detect existing IDs correctly", () => {
+  it("should detect existing IDs correctly (all coerced to strings)", () => {
     const records = [
       { id: 1, date: "2026-01-01", title: "First" },
       { id: 5, date: "2026-01-05", title: "Fifth" },
@@ -324,15 +324,20 @@ describe("sync dedup logic", () => {
     const { loadExistingIds } = require(path.resolve(projectRoot, "scripts", "review-lifecycle.js"));
     const ids = loadExistingIds(records);
 
-    assert.ok(ids.has(1));
-    assert.ok(ids.has(5));
+    // All IDs stored as strings
+    assert.ok(ids.has("1"));
+    assert.ok(ids.has("5"));
     assert.ok(ids.has("retro-100"));
-    assert.ok(!ids.has(2));
-    assert.ok(!ids.has(99));
+    assert.ok(!ids.has("2"));
+    assert.ok(!ids.has("99"));
+    // Numeric lookup should NOT match (type-safe)
+    assert.ok(!ids.has(1), "numeric 1 should not match string '1'");
   });
 
-  it("should filter out already-synced reviews", () => {
-    const existingIds = new Set([1, 2, 3]);
+  it("should filter out already-synced reviews (string-normalized comparison)", () => {
+    // Simulate what the orchestrator does: loadExistingIds returns string Set,
+    // and the filter uses String(r.id)
+    const existingIds = new Set(["1", "2", "3"]);
     const mdReviews = [
       { id: 1, title: "Existing" },
       { id: 2, title: "Existing" },
@@ -340,7 +345,7 @@ describe("sync dedup logic", () => {
       { id: 5, title: "New" },
     ];
 
-    const missing = mdReviews.filter((r) => !existingIds.has(r.id));
+    const missing = mdReviews.filter((r) => !existingIds.has(String(r.id)));
 
     assert.equal(missing.length, 2);
     assert.equal(missing[0].id, 4);

@@ -104,13 +104,15 @@ function loadReviews() {
 
 /**
  * Load existing review IDs from JSONL for dedup during sync.
- * Returns Set of id values (numbers and strings).
+ * Returns Set of string-coerced id values for type-safe comparison.
+ * Both numeric IDs (e.g. 42) and string IDs (e.g. "retro-100") are
+ * stored as strings so lookup works regardless of the caller's type.
  */
 function loadExistingIds(records) {
   const ids = new Set();
   for (const rec of records) {
     if (rec.id !== undefined && rec.id !== null) {
-      ids.add(typeof rec.id === "number" ? rec.id : String(rec.id));
+      ids.add(String(rec.id));
     }
   }
   return ids;
@@ -219,15 +221,15 @@ function parseMarkdownReviews(content) {
 function runSync() {
   logStep("SYNC", "Parsing markdown reviews...");
 
-  if (!fs.existsSync(LEARNINGS_LOG)) {
-    logStep("SYNC", "AI_REVIEW_LEARNINGS_LOG.md not found - skipping sync");
-    return { synced: 0, total: 0 };
-  }
-
+  // Read directly with try/catch (avoids existsSync race condition)
   let content;
   try {
     content = fs.readFileSync(LEARNINGS_LOG, "utf8");
   } catch (err) {
+    if (err.code === "ENOENT") {
+      logStep("SYNC", "AI_REVIEW_LEARNINGS_LOG.md not found - skipping sync");
+      return { synced: 0, total: 0 };
+    }
     throw new Error(`Failed to read learnings log: ${sanitizeError(err)}`);
   }
 
@@ -235,8 +237,8 @@ function runSync() {
   const existingRecords = loadReviews();
   const existingIds = loadExistingIds(existingRecords);
 
-  // Filter to reviews not already in JSONL
-  const missing = mdReviews.filter((r) => !existingIds.has(r.id));
+  // Filter to reviews not already in JSONL (compare as strings for type safety)
+  const missing = mdReviews.filter((r) => !existingIds.has(String(r.id)));
 
   logStep("SYNC", `Markdown reviews: ${mdReviews.length}, JSONL existing: ${existingIds.size}, new: ${missing.length}`);
 
@@ -255,10 +257,12 @@ function runSync() {
     throw new Error("Refusing to write: symlink detected at reviews.jsonl");
   }
 
-  // Ensure state directory exists
+  // Ensure state directory exists (recursive: true is idempotent — no existsSync needed)
   const stateDir = pathMod.dirname(REVIEWS_JSONL);
-  if (!fs.existsSync(stateDir)) {
+  try {
     fs.mkdirSync(stateDir, { recursive: true });
+  } catch (mkdirErr) {
+    throw new Error(`Failed to create state directory: ${sanitizeError(mkdirErr)}`);
   }
 
   // Append new entries
@@ -323,40 +327,49 @@ function runArchive() {
   const keepLines = toKeep.map((r) => JSON.stringify(r)).join("\n") + "\n";
   const tmpArchive = REVIEWS_ARCHIVE_JSONL + ".tmp." + process.pid;
 
+  // Step 1: Write archive entries to temp file (durable staging artifact)
+  safeWriteFileSync(tmpArchive, archiveLines, "utf8");
+
+  // Step 2: Atomically update reviews.jsonl with kept entries only
   try {
-    // Step 1: Write archive entries to temp file
-    safeWriteFileSync(tmpArchive, archiveLines, "utf8");
-
-    // Step 2: Atomically update reviews.jsonl with kept entries only
-    try {
-      safeAtomicWriteSync(REVIEWS_JSONL, keepLines, { encoding: "utf8" });
-    } catch (writeErr) {
-      // Rollback: delete temp archive file
-      try {
-        fs.rmSync(tmpArchive, { force: true });
-      } catch { /* best-effort cleanup */ }
-      throw new Error(`Failed to update reviews.jsonl during archive: ${sanitizeError(writeErr)}`);
-    }
-
-    // Step 3: Append temp contents to reviews-archive.jsonl
-    try {
-      safeAppendFileSync(REVIEWS_ARCHIVE_JSONL, archiveLines);
-    } catch (appendErr) {
-      // Non-fatal warning: reviews.jsonl is already updated
-      logStep("ARCHIVE", `WARNING: Failed to append to archive file: ${sanitizeError(appendErr)}`);
-    }
-
-    // Step 4: Clean up temp
+    safeAtomicWriteSync(REVIEWS_JSONL, keepLines, { encoding: "utf8" });
+  } catch (writeErr) {
+    // Rollback: delete temp archive file since reviews.jsonl wasn't modified
     try {
       fs.rmSync(tmpArchive, { force: true });
     } catch { /* best-effort cleanup */ }
-  } catch (err) {
-    // Ensure temp cleanup on any error
-    try {
-      fs.rmSync(tmpArchive, { force: true });
-    } catch { /* best-effort cleanup */ }
-    throw err;
+    throw new Error(`Failed to update reviews.jsonl during archive: ${sanitizeError(writeErr)}`);
   }
+
+  // Step 3: Read temp file back and append to reviews-archive.jsonl
+  // Reading from temp (not in-memory) ensures crash recovery: if process died
+  // between step 2 and step 3, temp file is the recovery artifact.
+  let stagedContent;
+  try {
+    stagedContent = fs.readFileSync(tmpArchive, "utf8");
+  } catch (readErr) {
+    // Temp file lost between step 2 and step 3 — data loss scenario
+    throw new Error(
+      `CRITICAL: reviews.jsonl already trimmed but temp archive unreadable. ` +
+      `Recovery: check ${tmpArchive} — ${sanitizeError(readErr)}`
+    );
+  }
+
+  try {
+    safeAppendFileSync(REVIEWS_ARCHIVE_JSONL, stagedContent);
+  } catch (appendErr) {
+    // FATAL: reviews.jsonl already trimmed, archive append failed.
+    // Leave temp file in place as crash-recovery artifact.
+    throw new Error(
+      `CRITICAL: Archive append failed after reviews.jsonl was trimmed. ` +
+      `Recovery artifact preserved at: ${tmpArchive} — ${sanitizeError(appendErr)}`
+    );
+  }
+
+  // Step 4: Clean up temp only AFTER archive append succeeded
+  try {
+    fs.rmSync(tmpArchive, { force: true });
+  } catch { /* best-effort cleanup */ }
 
   logStep("ARCHIVE", `Archived ${toArchive.length} entries to reviews-archive.jsonl`);
   return { archived: toArchive.length, remaining: toKeep.length };
@@ -409,9 +422,13 @@ function runValidate() {
 
     return { valid: false, findings };
   } catch (err) {
-    // execFileSync throws on non-zero exit
+    // Exit code 2 = unrecoverable script error — check FIRST before parsing output
+    if (err.status === 2) {
+      throw new Error(`check-review-archive.js failed: ${sanitizeError(err)}`);
+    }
+
+    // execFileSync throws on non-zero exit (code 1 = findings)
     if (err.stdout) {
-      // The script exited with code 1 (findings) or 2 (error)
       let findings = [];
       try {
         findings = JSON.parse(err.stdout.toString().trim());
@@ -425,11 +442,6 @@ function runValidate() {
           logStep("VALIDATE", `  [${f.severity}] ${f.description}`);
         }
         return { valid: false, findings };
-      }
-
-      // Exit code 2 = script error
-      if (err.status === 2) {
-        throw new Error(`check-review-archive.js failed: ${sanitizeError(err)}`);
       }
     }
 
@@ -451,7 +463,7 @@ function runValidate() {
       }
     }
 
-    // Unrecoverable error
+    // Unrecoverable error (no parseable findings)
     throw new Error(`check-review-archive.js failed: ${sanitizeError(err)}`);
   }
 }
@@ -459,7 +471,27 @@ function runValidate() {
 // ── STEP 4: RENDER ────────────────────────────────────────────────────────
 
 /**
+ * Resolve the tsx CLI entry point from node_modules.
+ * Uses require.resolve to find the installed tsx package, avoiding shell: true.
+ */
+function resolveTsxCli() {
+  try {
+    return require.resolve("tsx/cli");
+  } catch {
+    // Fallback: resolve relative to project root
+    const fallback = pathMod.join(ROOT, "node_modules", "tsx", "dist", "cli.mjs");
+    try {
+      fs.accessSync(fallback);
+      return fallback;
+    } catch {
+      throw new Error("tsx CLI not found — install tsx: npm install tsx");
+    }
+  }
+}
+
+/**
  * RENDER step: run render-reviews-to-md.ts via tsx to regenerate markdown.
+ * Uses node + tsx CLI entry point directly (no shell: true needed).
  * Returns { success: boolean, recordCount: number | null }.
  */
 function runRender() {
@@ -470,13 +502,14 @@ function runRender() {
     return { success: true, recordCount: null };
   }
 
+  const tsxCli = resolveTsxCli();
+
   try {
-    const result = execFileSync("npx", ["tsx", RENDER_SCRIPT], {
+    const result = execFileSync(process.execPath, [tsxCli, RENDER_SCRIPT], {
       cwd: ROOT,
       encoding: "utf8",
       timeout: 30_000,
       stdio: ["pipe", "pipe", "pipe"],
-      shell: true,
     });
 
     // Parse output for record count
@@ -489,8 +522,8 @@ function runRender() {
     logStep("RENDER", `Rendered ${recordCount !== null ? recordCount + " records" : "successfully"}`);
     return { success: true, recordCount };
   } catch (err) {
-    const stderr = err.stderr ? err.stderr.toString().trim() : "";
-    const stdout = err.stdout ? err.stdout.toString().trim() : "";
+    const stderr = err.stderr ? sanitizeError(err.stderr.toString().trim()) : "";
+    const stdout = err.stdout ? sanitizeError(err.stdout.toString().trim()) : "";
     throw new Error(`render-reviews-to-md.ts failed: ${sanitizeError(err)}${stderr ? " | " + stderr : ""}${stdout ? " | " + stdout : ""}`);
   }
 }
