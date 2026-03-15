@@ -43,8 +43,7 @@ implementation begins. Phase 0 of each deep-plan consults the knowledge base
 (D75):
 
 - `.planning/system-wide-standardization/` — all artifacts from this overhaul
-- `.planning/system-wide-standardization/reference/framework-repo/` — 68
-  decisions, 42 gaps
+- _Framework repo archived (Q33)_ — 68 decisions, 42 gaps (consumed into CANON)
 - PR Review v2 patterns (`.planning/milestones/v1.0-ROADMAP.md`)
 - Prior ecosystem deep-plan decisions (accumulated as we go)
 - `.canon/changelog.jsonl` — cross-ecosystem impact log

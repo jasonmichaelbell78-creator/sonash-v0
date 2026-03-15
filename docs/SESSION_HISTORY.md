@@ -33,7 +33,7 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 - Deep-plan complete: 35 decisions, 11 waves, XL effort
 - Critical reframe (D8/D9): Learnings → AUTOMATED ENFORCEMENT
-- Artifacts: `.planning/learnings-effectiveness-audit/`
+- Artifacts: `.planning/system-wide-standardization/learnings-effectiveness-audit/`
 
 ### Session #215 (2026-03-11)
 

@@ -325,7 +325,7 @@ Re-run scoring to confirm improvements:
 | Artifact                                                      | Purpose             |
 | ------------------------------------------------------------- | ------------------- |
 | `.claude/state/lifecycle-scores.jsonl`                        | Updated scores      |
-| `.planning/learnings-effectiveness-audit/LIFECYCLE_SCORES.md` | Generated dashboard |
+| `.planning/system-wide-standardization/learnings-effectiveness-audit/LIFECYCLE_SCORES.md` | Generated dashboard |
 | `.claude/state/learning-routes.jsonl`                         | Routing decisions   |
 | `.claude/tmp/data-effectiveness-audit-report-{date}.md`       | Session report      |
 

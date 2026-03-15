@@ -114,5 +114,5 @@ gets its own deep-plan later.
 | Discovery Record         | `.planning/system-wide-standardization/DISCOVERY_RECORD.md`                                       | 14 questions, 11 decisions, vision      |
 | Agent Research (9 files) | `.planning/system-wide-standardization/reference/agent-research/`                                 | 2.2MB raw findings                      |
 | Sonash Planning Docs     | `.planning/system-wide-standardization/reference/sonash-source/`                                  | 7 key docs from ecosystem v2            |
-| Framework Repo (full)    | `.planning/system-wide-standardization/reference/framework-repo/`                                 | 68 decisions, 42 gaps, 10-phase plan    |
+| Framework Repo (full)    | _Archived (Q33 — redundant with CANON decisions)_                                                 | 68 decisions, 42 gaps, 10-phase plan    |
 | Ecosystem Mapping        | `.planning/system-wide-standardization/reference/agent-research/ecosystem-mapping-inventory.json` | 500+ components mapped to 13 ecosystems |

@@ -110,9 +110,9 @@ From Tier 2 Domain 9 analysis:
 From Tier 2 Domains 11-12:
 
 1. **Knowledge base not ready**:
-   `.planning/system-wide-standardization/reference/framework-repo/` exists but
-   is at v0.1.0/C+ (incomplete). No navigation index. Agent-research reference
-   material missing.
+   `.planning/system-wide-standardization/reference/framework-repo/` was archived
+   (per Q33 — redundant with CANON decisions). No navigation index. Agent-research
+   reference material missing.
 2. **No rollback procedure**: If Checkpoint #1 reveals CANON is fundamentally
    flawed, there's no defined rollback path, cost estimate, or exit ramp.
 3. **Retroactive compliance**: When CANON schemas change mid-execution, no
