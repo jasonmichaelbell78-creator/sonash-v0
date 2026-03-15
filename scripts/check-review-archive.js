@@ -698,7 +698,7 @@ function main() {
       if (activeMatch) {
         const claimedActive = Number.parseInt(activeMatch[1], 10);
         // Count reviews in the markdown by heading
-        const headingRegex = /^#{2,4}\s+Review\s+#(\d+)/gm;
+        const headingRegex = /^#{2,4}\s+Review\s+#?(\d+)/gm;
         let headingCount = 0;
         while (headingRegex.exec(logContent) !== null) {
           headingCount++;
