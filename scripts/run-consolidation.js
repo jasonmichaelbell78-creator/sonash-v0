@@ -565,7 +565,12 @@ function appendToCodePatterns(recurringPatterns, categories, consolidationNumber
     return { added: 0 };
   }
 
-  let content = readFileSync(CODE_PATTERNS_FILE, "utf8");
+  let content;
+  try {
+    content = readFileSync(CODE_PATTERNS_FILE, "utf8");
+  } catch (err) {
+    throw new Error(`Failed to read CODE_PATTERNS.md: ${sanitizeError(err)}`);
+  }
   const { patternsByCategory, newPatterns } = filterNewPatterns(
     categories,
     content.toLowerCase()
@@ -583,6 +588,10 @@ function appendToCodePatterns(recurringPatterns, categories, consolidationNumber
   const tmpPath = CODE_PATTERNS_FILE + ".consolidation.tmp";
   if (!isSafeToWrite(tmpPath)) {
     throw new Error("Refusing to write CODE_PATTERNS.md: symlink detected at tmp path");
+  }
+  // Re-check target right before rename (TOCTOU: safeRename silently returns on symlink)
+  if (!isSafeToWrite(CODE_PATTERNS_FILE)) {
+    throw new Error("Refusing to write CODE_PATTERNS.md: symlink detected at target path");
   }
   safeWriteFileSync(tmpPath, content, "utf8");
   safeRename(tmpPath, CODE_PATTERNS_FILE);
