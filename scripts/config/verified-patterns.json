@@ -358,7 +358,6 @@
     "logical-or-numeric-fallback": [
       "dedup-multi-pass.js",
       "sync-sonarcloud.js",
-      "run-consolidation.js",
       "run-consolidation.js"
     ],
     "unbounded-query": [

@@ -294,10 +294,8 @@ export function renderAllRecords(records: RenderableReview[]): string {
 
   // Retrospectives section
   if (retros.length > 0) {
-    parts.push("## Retrospectives\n");
     const retroSections = retros.map((r) => renderRetroRecord(r));
-    parts.push(retroSections.join("\n---\n\n"));
-    parts.push("\n");
+    parts.push("## Retrospectives\n", retroSections.join("\n---\n\n"), "\n");
   }
 
   // Active Reviews section
@@ -360,7 +358,7 @@ function extractPreservedSections(filePath: string): PreservedSections {
       break;
     }
   }
-  const footer = footerStart !== -1 ? content.slice(footerStart).trimStart() : "";
+  const footer = footerStart === -1 ? "" : content.slice(footerStart).trimStart();
 
   return { header, footer };
 }
@@ -375,15 +373,13 @@ function assembleDocument(
   const parts: string[] = [];
 
   if (preserved.header) {
-    parts.push(preserved.header);
-    parts.push(""); // blank line separator
+    parts.push(preserved.header, ""); // blank line separator
   }
 
   parts.push(renderedEntries.trim());
 
   if (preserved.footer) {
-    parts.push(""); // blank line separator
-    parts.push(preserved.footer);
+    parts.push("", preserved.footer); // blank line separator
   }
 
   return parts.join("\n") + "\n";
@@ -416,6 +412,20 @@ export function renderReviews(
     stdout?: boolean;
   }
 ): RenderResult {
+  // Path traversal guard for API callers (CLI has its own guard)
+  if (options?.inputPath) {
+    const relInput = path.relative(projectRoot, path.resolve(projectRoot, options.inputPath));
+    if (/^\.\.(?:[\\/]|$)/.test(relInput)) {
+      return { success: false, recordCount: 0, outputPath: null, error: "Input path outside project root" };
+    }
+  }
+  if (options?.outputPath) {
+    const relOutput = path.relative(projectRoot, path.resolve(projectRoot, options.outputPath));
+    if (/^\.\.(?:[\\/]|$)/.test(relOutput)) {
+      return { success: false, recordCount: 0, outputPath: null, error: "Output path outside project root" };
+    }
+  }
+
   const inputPath =
     options?.inputPath ??
     path.join(projectRoot, ".claude", "state", "reviews.jsonl");

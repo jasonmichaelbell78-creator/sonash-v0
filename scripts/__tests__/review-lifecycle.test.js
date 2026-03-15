@@ -248,7 +248,7 @@ describe("archive file operations", () => {
     // Oldest should be in archive
     assert.equal(toArchive[0].id, 1);
     // Newest should be kept
-    assert.equal(toKeep[toKeep.length - 1].id, 35);
+    assert.equal(toKeep.at(-1).id, 35);
   });
 
   it("should write archive entries as valid JSONL", () => {

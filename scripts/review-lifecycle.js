@@ -111,6 +111,7 @@ function loadReviews() {
 function loadExistingIds(records) {
   const ids = new Set();
   for (const rec of records) {
+    if (!rec || typeof rec !== "object") continue;
     if (rec.id !== undefined && rec.id !== null) {
       ids.add(String(rec.id));
     }
@@ -139,13 +140,13 @@ function parseMarkdownReviews(content) {
     if (inFence) continue;
 
     // Match #### Review #N or ### Review #N or ## Review #N
-    const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/);
+    const headerMatch = /^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/.exec(line);
     if (headerMatch) {
       if (current) reviews.push(current);
 
       const id = Number.parseInt(headerMatch[1], 10);
       const titleAndDate = headerMatch[2].trim();
-      const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
+      const dateMatch = /\((\d{4}-\d{2}-\d{2})\)\s*$/.exec(titleAndDate);
       const date = dateMatch ? dateMatch[1] : "unknown";
       const title = dateMatch
         ? titleAndDate.slice(0, titleAndDate.lastIndexOf("(")).trim()
@@ -179,7 +180,7 @@ function parseMarkdownReviews(content) {
     const raw = review._rawLines.join("\n");
 
     // Source
-    const sourceMatch = raw.match(/\*\*Source:\*\*\s*([^\n*]+)/);
+    const sourceMatch = /\*\*Source:\*\*\s*([^\n*]+)/.exec(raw);
     if (sourceMatch) {
       const src = sourceMatch[1].toLowerCase().trim();
       const parts = [];
@@ -191,21 +192,21 @@ function parseMarkdownReviews(content) {
     }
 
     // PR number — handles "PR #N", "PR: #N", "**PR:** #N", "**PR:** #N"
-    const prMatch = raw.match(/PR[*]*:?\*{0,2}\s*#(\d+)/i);
+    const prMatch = /PR[*]*:?\*{0,2}\s*#(\d+)/i.exec(raw);
     if (prMatch) review.pr = Number.parseInt(prMatch[1], 10);
 
     // Fixed / Deferred / Rejected counts — handles "Fixed: N", "**Fixed:** N"
-    const fixedMatch = raw.match(/Fixed\*{0,2}:\*{0,2}\s*(\d+)/i);
+    const fixedMatch = /Fixed\*{0,2}:\*{0,2}\s*(\d+)/i.exec(raw);
     if (fixedMatch) review.fixed = Number.parseInt(fixedMatch[1], 10);
 
-    const deferredMatch = raw.match(/Deferred\*{0,2}:\*{0,2}\s*(\d+)/i);
+    const deferredMatch = /Deferred\*{0,2}:\*{0,2}\s*(\d+)/i.exec(raw);
     if (deferredMatch) review.deferred = Number.parseInt(deferredMatch[1], 10);
 
-    const rejectedMatch = raw.match(/Rejected\*{0,2}:\*{0,2}\s*(\d+)/i);
+    const rejectedMatch = /Rejected\*{0,2}:\*{0,2}\s*(\d+)/i.exec(raw);
     if (rejectedMatch) review.rejected = Number.parseInt(rejectedMatch[1], 10);
 
     // Total — handles "Total: N", "**Total:** N", "N total", "N items"
-    const totalMatch = raw.match(/Total\*{0,2}:\*{0,2}\s*(\d+)/i) || raw.match(/(\d+)\s+(?:total|items)/i);
+    const totalMatch = /Total\*{0,2}:\*{0,2}\s*(\d+)/i.exec(raw) || /(\d+)\s+(?:total|items)/i.exec(raw);
     if (totalMatch) review.total = Number.parseInt(totalMatch[1], 10);
 
     delete review._rawLines;
@@ -303,10 +304,15 @@ function runArchive() {
     return { archived: 0, remaining: records.length };
   }
 
-  // Determine which entries to archive vs keep
-  // Keep the newest KEEP_NEWEST entries, archive the rest
-  const toKeep = records.slice(-KEEP_NEWEST);
-  const toArchive = records.slice(0, records.length - KEEP_NEWEST);
+  // Sort by numeric id to ensure correct archival order
+  const ordered = [...records].sort((a, b) => {
+    const aId = typeof a.id === "number" ? a.id : Number.POSITIVE_INFINITY;
+    const bId = typeof b.id === "number" ? b.id : Number.POSITIVE_INFINITY;
+    if (aId !== bId) return aId - bId;
+    return String(a.date || "").localeCompare(String(b.date || ""));
+  });
+  const toKeep = ordered.slice(-KEEP_NEWEST);
+  const toArchive = ordered.slice(0, ordered.length - KEEP_NEWEST);
 
   logStep("ARCHIVE", `Archiving ${toArchive.length} entries, keeping ${toKeep.length} newest`);
 
@@ -519,7 +525,7 @@ function runRender() {
       recordCount = Number.parseInt(countMatch[1], 10);
     }
 
-    logStep("RENDER", `Rendered ${recordCount !== null ? recordCount + " records" : "successfully"}`);
+    logStep("RENDER", recordCount === null ? "Rendered successfully" : `Rendered ${recordCount} records`);
     return { success: true, recordCount };
   } catch (err) {
     const stderr = err.stderr ? sanitizeError(err.stderr.toString().trim()) : "";
@@ -573,8 +579,11 @@ function main() {
     log(`Lifecycle complete in ${elapsed}ms`);
     log(`  SYNC:     ${syncResult.synced} new entries (${syncResult.total} total)`);
     log(`  ARCHIVE:  ${archiveResult.archived} archived (${archiveResult.remaining} remaining)`);
-    log(`  VALIDATE: ${validateResult.valid ? "PASS" : `FAIL (${validateResult.findings.length} findings)`}`);
-    log(`  RENDER:   ${renderResult.success ? "OK" : "FAILED"}${renderResult.recordCount !== null ? ` (${renderResult.recordCount} records)` : ""}`);
+    const validateMsg = validateResult.valid ? "PASS" : "FAIL (" + validateResult.findings.length + " findings)";
+    log(`  VALIDATE: ${validateMsg}`);
+    const renderStatus = renderResult.success ? "OK" : "FAILED";
+    const renderCount = renderResult.recordCount !== null ? " (" + renderResult.recordCount + " records)" : "";
+    log(`  RENDER:   ${renderStatus}${renderCount}`);
 
     // Exit code based on validation
     if (!validateResult.valid) {

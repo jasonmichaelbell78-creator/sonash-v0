@@ -206,7 +206,12 @@ function readReviewsJsonl() {
     const trimmed = lines[i].trim();
     if (!trimmed) continue;
     try {
-      result.records.push(JSON.parse(trimmed));
+      const parsed = JSON.parse(trimmed);
+      if (parsed == null || typeof parsed !== "object" || Array.isArray(parsed)) {
+        result.parseErrors.push({ line: i + 1, raw: trimmed.slice(0, 80) });
+        continue;
+      }
+      result.records.push(parsed);
     } catch {
       result.parseErrors.push({ line: i + 1, raw: trimmed.slice(0, 80) });
     }
@@ -406,7 +411,7 @@ function main() {
       addFinding(
         "S1",
         "jsonl-parse-error",
-        `Line ${pe.line} is not valid JSON: ${pe.raw}`,
+        `Line ${pe.line} is not valid JSON: ${sanitizeError(pe.raw)}`,
         "Fix or remove the malformed line from reviews.jsonl"
       );
     }
@@ -419,7 +424,7 @@ function main() {
     const record = records[i];
     const missing = REQUIRED_FIELDS.filter((f) => record[f] === undefined || record[f] === null);
     if (missing.length > 0) {
-      const idLabel = record.id !== undefined ? `id=${record.id}` : `line ${i + 1}`;
+      const idLabel = record.id === undefined ? `line ${i + 1}` : `id=${record.id}`;
       // Retrospective entries (type="retrospective") have a different schema —
       // they may lack title. Only require id and date for retrospectives.
       if (record.type === "retrospective") {
@@ -510,7 +515,7 @@ function main() {
     const sortedIds = [...numericIds].sort((a, b) => a - b);
     // nosemgrep: sonash.correctness.no-unchecked-array-access
     const minId = sortedIds[0];
-    const maxId = sortedIds[sortedIds.length - 1];
+    const maxId = sortedIds.at(-1);
     const span = maxId - minId + 1;
 
     if (!Number.isFinite(span) || span <= 0 || span > MAX_GAP_SCAN_SPAN) {
@@ -618,14 +623,7 @@ function main() {
   // ──────────────────────────────────────────────────────────────
   if (!jsonMode) console.log("5. Consolidation State:");
 
-  if (!existsSync(CONSOLIDATION_JSON)) {
-    addFinding(
-      "S2",
-      "consolidation-missing",
-      "consolidation.json does not exist",
-      "Create .claude/state/consolidation.json with lastConsolidatedReview and consolidationNumber"
-    );
-  } else {
+  if (existsSync(CONSOLIDATION_JSON)) {
     try {
       const cState = JSON.parse(readFileSync(CONSOLIDATION_JSON, "utf8"));
       const lastConsolidated = cState.lastConsolidatedReview;
@@ -635,7 +633,7 @@ function main() {
       // Use sorted array instead of Math.max(...) to avoid call stack overflow on large sets
       const sortedNumericIds = [...numericIds].sort((a, b) => a - b);
       const jsonlMaxNumericId = sortedNumericIds.length > 0
-        ? sortedNumericIds[sortedNumericIds.length - 1]
+        ? sortedNumericIds.at(-1)
         : 0;
 
       if (typeof lastConsolidated !== "number" || !Number.isFinite(lastConsolidated)) {
@@ -679,6 +677,13 @@ function main() {
         "Fix or regenerate consolidation.json"
       );
     }
+  } else {
+    addFinding(
+      "S2",
+      "consolidation-missing",
+      "consolidation.json does not exist",
+      "Create .claude/state/consolidation.json with lastConsolidatedReview and consolidationNumber"
+    );
   }
   if (!jsonMode) console.log();
 
@@ -687,9 +692,7 @@ function main() {
   // ──────────────────────────────────────────────────────────────
   if (!jsonMode) console.log("6. Rendered View Accuracy:");
 
-  if (!existsSync(LEARNINGS_LOG)) {
-    ok("No rendered markdown view found (optional check)");
-  } else {
+  if (existsSync(LEARNINGS_LOG)) {
     try {
       const logContent = readFileSync(LEARNINGS_LOG, "utf8");
 
@@ -703,15 +706,15 @@ function main() {
         while (headingRegex.exec(logContent) !== null) {
           headingCount++;
         }
-        if (claimedActive !== headingCount) {
+        if (claimedActive === headingCount) {
+          ok(`Rendered view: ${claimedActive} active reviews matches heading count`);
+        } else {
           addFinding(
             "S3",
             "rendered-view-drift",
             `Rendered view claims ${claimedActive} active reviews but has ${headingCount} headings`,
             "Re-render the markdown view from JSONL source"
           );
-        } else {
-          ok(`Rendered view: ${claimedActive} active reviews matches heading count`);
         }
       }
 
@@ -727,7 +730,7 @@ function main() {
             .map((m) => Number.parseInt(m[1], 10))
             .filter((n) => Number.isFinite(n))
             .sort((a, b) => a - b);
-          const mdNumber = mdNumbers.length > 0 ? mdNumbers[mdNumbers.length - 1] : null;
+          const mdNumber = mdNumbers.length > 0 ? mdNumbers.at(-1) : null;
           if (mdNumber !== null && mdNumber !== stateNumber) {
             addFinding(
               "S3",
@@ -748,6 +751,8 @@ function main() {
         console.log(`  WARN: Could not read rendered view: ${sanitizeError(err)}`);
       }
     }
+  } else {
+    ok("No rendered markdown view found (optional check)");
   }
   if (!jsonMode) console.log();
 
@@ -785,9 +790,7 @@ function outputFindings() {
   }
 
   // Always write findings to stderr as JSON (for programmatic consumption by orchestrator)
-  if (findings.length > 0) {
-    process.stderr.write(JSON.stringify(findings) + "\n");
-  }
+  process.stderr.write(JSON.stringify(findings) + "\n");
 
   // Exit code: 0 if no findings, 1 if any findings exist (T11: fail loud, fail early)
   process.exitCode = findings.length > 0 ? 1 : 0;

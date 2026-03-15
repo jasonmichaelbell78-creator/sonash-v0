@@ -550,7 +550,7 @@ try {
 // Review lifecycle orchestrator (sync, archive, rotate, validate, render)
 try {
   execFileSync(process.execPath, [
-    path.join(__dirname, "..", "scripts", "review-lifecycle.js")
+    path.join(projectDir, "scripts", "review-lifecycle.js")
   ], {
     cwd: projectDir,
     stdio: "pipe",
@@ -561,7 +561,8 @@ try {
   if (err.status === 1) {
     // Validation issues — surface as blocking warning
     console.error("⚠️ Review lifecycle validation issues found:");
-    console.error(err.stdout ? err.stdout.toString() : err.stderr ? err.stderr.toString() : "Unknown validation issue");
+    const output = err.stdout ? err.stdout.toString() : err.stderr ? err.stderr.toString() : "Unknown validation issue";
+    console.error(sanitizeInput ? sanitizeInput(output.split("\n").slice(0, 5).join("\n")) : output.split("\n")[0]);
     warnings++;
   } else if (err.status === 2) {
     // I/O error — surface as error
