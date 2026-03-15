@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 7.9 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-15 (Session #220)
+2026-03-15 (Session #221)
 
 ## Purpose
 
@@ -30,9 +30,9 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-03-15 **Branch**: `plan-implementation` **Working
-On**: Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical)
+On**: Session #221 — SWS Phase 0 Complete + Convergence Loop Skill
 
-**Uncommitted Work**: State files (learning-routes.jsonl, review-metrics.jsonl)
+**Uncommitted Work**: None (all committed)
 
 ---
 
@@ -47,6 +47,31 @@ On**: Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical)
 ---
 
 ## Recent Session Summaries
+
+**Session #221** (SWS PHASE 0 COMPLETE + CONVERGENCE LOOP SKILL):
+
+- **Hook error investigation**: Identified 3 CLI errors — semgrep plugin (missing
+  binary), hookify (disabled but hooks running), qodo-skills (missing script).
+  Uninstalled all 3 + deleted stale caches. Serena fully removed (hook, config,
+  process, directories). session-start.js stderr→stdout fix.
+- **SWS decisions Q34-Q39**: Canon enforcement model (progressive + acknowledgment-
+  gated), no silent fails, no orphans, skill-audit pipeline, decision recall
+  mechanism, T25 tenet (discovery phases SHOULD use convergence loops)
+- **Decision recall mechanism (Q38)**: 154 items tagged across 3-pass convergence
+  loop. DECISIONS_BY_PHASE.md + decisions-phase-map.json created. PLAN-v3.md
+  mandatory gate added.
+- **Phase 0 Step 0.1**: convergence-loop skill v1.1 created via /skill-creator
+  (17 discovery decisions) + /skill-audit (27 audit decisions, 72→85/100).
+  6 composable behaviors, 3 presets, T20 tally, graduated convergence.
+- **Skill-audit v3.3**: Category 11 (T25 convergence loop integration), self-
+  application in Phase 2, opportunities section MUST-present fix.
+- **Skill-creator**: 4 gap fixes (agent dispatch, example, schema, resume)
+- **Phase 0 Steps 0.2-0.7**: All mechanical steps complete (CLAUDE.md already
+  correct, 3 child plans consolidated, framework-repo archived 314 files,
+  coordination.json updated, 5 OV items extracted to SWS)
+- **Phase 0 Step 0.3**: First convergence-loop real test — 23 PR #427 claims
+  verified (standard preset, 3 passes, 5 agents). 6 corrections applied.
+- **7 commits, all pushed**
 
 **Session #220** (REVIEW LIFECYCLE PIPELINE OVERHAUL — JSONL-CANONICAL):
 
@@ -92,8 +117,8 @@ On**: Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical)
 | **Skill Quality Framework**       | COMPLETE | All 4 deliverables                          |
 | **Data Effectiveness Audit**      | 95% DONE | 10/11 waves delivered (PRs #431, #432)      |
 | **Review Lifecycle Overhaul**     | COMPLETE | JSONL-canonical, orchestrator, migration done |
-| **System-Wide Standardization**   | ACTIVE   | PLAN-v3.md approved, 92+33 decisions, Phase 4 |
-| **Operational Visibility Sprint** | BLOCKED  | ~75% (paused for overhaul)                  |
+| **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE, 39 reeval decisions, ready for Phase 1 |
+| **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)        |
 | **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                                |
 | Track B: Dev Dashboard MVP        | Paused   | ~10%                                        |
 | M1.5 - Quick Wins                 | Paused   | ~20%                                        |
@@ -103,24 +128,27 @@ On**: Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical)
 
 **Test Status**: All tests passing (3,776 total, 3,775 pass, 0 fail, 1 skipped)
 
+**Plugins**: semgrep, hookify, qodo-skills UNINSTALLED (Session #221 — broken hooks). Serena fully removed.
+
 ---
 
 ## Next Session Goals
 
 ### Immediate Priority
 
-1. **Review lifecycle PR** — create PR for review lifecycle overhaul (15 commits
-   on plan-implementation), process code review feedback
-2. **DE cleanup** — Wave 8 REFERENCE.md + `/skill-audit` on
+1. **Phase 1: CANON Foundation** — SWS Phase 0 complete. Begin Phase 1 (schema
+   definitions, migration mechanics, enforcement system). Read PLAN-v3.md
+   Section 5 + DECISIONS_BY_PHASE.md Phase 1 section (60+ decisions to recall).
+2. **Skill-audit Phase 5 self-audit deferred items** — convergence-loop skill
+   audit self-audit complete but skill-creator SKILL.md validation phase update
+   (Q14) still pending.
+3. **DE cleanup** — Wave 8 REFERENCE.md + `/skill-audit` on
    `data-effectiveness-audit` skill
-3. **Phase 0 execution** — Start with Step 0.1 (`/convergence-loop` skill via
-   `/skill-creator` → `/skill-audit`)
-4. **Meta-Pipeline Integration Deep-Plan** — Step 2.0 deep-plan for Tooling↔CQ
-   integration layer (gates, forward-findings, SWS additions)
+4. **PR for Session #221 work** — 7 commits on plan-implementation since PR #434
+   merge. Create PR when ready.
 
-**Also pending:** Planning landscape Wave 5 (canonicalization), sws-cleanup
-branch deletion, review lifecycle S3 cosmetic fixes (rendered view header
-metadata drift).
+**Also pending:** Planning landscape Wave 5 (canonicalization), review lifecycle
+S3 cosmetic fixes.
 
 ---
 
@@ -195,6 +223,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                          |
 | ------- | ---------- | ---------------------------------------------------------------- |
+| 8.0     | 2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop skill, 7 commits |
 | 7.9     | 2026-03-15 | Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical) |
 | 7.8     | 2026-03-15 | Session #219 — SWS PLAN-v3.md convergence loop rebuild           |
 | 7.7     | 2026-03-14 | Session #218 — Automation Gap Closure full implementation        |

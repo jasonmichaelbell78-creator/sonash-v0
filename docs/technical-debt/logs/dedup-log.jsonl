@@ -1309,6 +1309,8 @@
 {"pass":1,"type":"exact_match","kept":"audit:process::validation::audit-schema-duplication","removed":"audit:process::validation::audit-schema-duplication","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:process-.claude/settings.json-continue-on-error-usage","removed":"audit:process::.claude/settings.json::continue-on-error-usage","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:process-scripts/debt/resolve-item.js-execsync-string-interpolation","removed":"audit:process::scripts/debt/resolve-item.js::execsync-string-interpolation","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:hash-U2Vzc2lvbi1z","removed":"audit:hash-U2Vzc2lvbi1z","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:hash-RHVwbGljYXRl","removed":"audit:hash-RHVwbGljYXRl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-RmlyZWJhc2Ug","removed":"audit:hash-RmlyZWJhc2Ug","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Q0kgcnVucyBm","removed":"audit:hash-Q0kgcnVucyBm","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-U29uYXJDbG91","removed":"audit:hash-U29uYXJDbG91","reason":"identical content hash"}
@@ -1323,6 +1325,7 @@
 {"pass":1,"type":"exact_match","kept":"audit:hash-Tm8gb3B0aW1p","removed":"audit:hash-Tm8gb3B0aW1p","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-TWlzc2luZyBr","removed":"audit:hash-TWlzc2luZyBr","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Rm9ybSB2YWxp","removed":"audit:hash-Rm9ybSB2YWxp","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:hash-TWlzc2luZyBD","removed":"audit:hash-TWlzc2luZyBD","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Tm8gdmlzdWFs","removed":"audit:hash-Tm8gdmlzdWFs","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Q292ZXJhZ2Ug","removed":"audit:hash-Q292ZXJhZ2Ug","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-TGltaXRlZCBz","removed":"audit:hash-TGltaXRlZCBz","reason":"identical content hash"}
@@ -1337,6 +1340,7 @@
 {"pass":1,"type":"exact_match","kept":"audit:hash-TGF6eSBsb2Fk","removed":"audit:hash-TGF6eSBsb2Fk","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-VXBncmFkZSBG","removed":"audit:hash-VXBncmFkZSBG","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-QWRkIGNvbXBv","removed":"audit:hash-QWRkIGNvbXBv","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:hash-QUlfV09SS0ZM","removed":"audit:hash-QUlfV09SS0ZM","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-U2VjdXJpdHkg","removed":"audit:hash-U2VjdXJpdHkg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Q3Jvc3MtcmVm","removed":"audit:hash-Q3Jvc3MtcmVm","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-UHJlLWNvbW1p","removed":"audit:hash-UHJlLWNvbW1p","reason":"identical content hash"}
@@ -1359,6 +1363,7 @@
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-.claude/skills/doc-optimizer/SKILL.md-duplicated-return-protocol","removed":"audit:hash-ZG9jLW9wdGlt","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-QXVkaXQgc2tp","removed":"audit:hash-QXVkaXQgc2tp","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-session-start.js-sequential-execsync","removed":"audit:hash-U2Vzc2lvblN0","reason":"identical content hash"}
+{"pass":1,"type":"exact_match","kept":"audit:hash-UG9zdFRvb2xV","removed":"audit:hash-UG9zdFRvb2xV","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:hash-Y29tcGFjdGlv","removed":"audit:hash-Y29tcGFjdGlv","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-agent-trigger-enforcer.js-require-config-overhead","removed":"audit:hash-YWdlbnQtdHJp","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:ai-optimization-large-context-warning.js-full-file-read-for-line-count","removed":"audit:hash-bGFyZ2UtY29u","reason":"identical content hash"}
@@ -1699,7 +1704,6 @@
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-016","removed":"audit:hash-Y2hlY2stcGF0","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-017","removed":"audit:hash-UGxheXdyaWdo","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-018","removed":"audit:hash-RGVwbG95IHdv","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-020","removed":"audit:hash-U2Vzc2lvbi1z","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-021","removed":"audit:hash-OCBza2lsbHMg","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-022","removed":"audit:hash-YWdncmVnYXRl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-024","removed":"audit:hash-Q2xvdWQgRnVu","reason":"identical content hash"}
@@ -1709,7 +1713,6 @@
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-031","removed":"audit:hash-UkVBRE1FIGFn","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-032","removed":"audit:hash-UkVBRE1FIEdy","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-033","removed":"audit:hash-REVWRUxPUE1F","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-034","removed":"audit:hash-RHVwbGljYXRl","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-035","removed":"audit:hash-RE9DVU1FTlRB","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-036","removed":"audit:hash-Uk9BRE1BUC5t","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-038","removed":"audit:hash-ZnJhbWVyLW1v","reason":"identical content hash"}
@@ -1718,9 +1721,7 @@
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-043","removed":"audit:hash-TW9vZFNwYXJr","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-049","removed":"audit:hash-UHJldmlldyBk","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-050","removed":"audit:hash-MTgxIEVTTGlu","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-051","removed":"audit:hash-UG9zdFRvb2xV","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-052","removed":"audit:hash-RGV2IHNlcnZl","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-053","removed":"audit:hash-QUlfV09SS0ZM","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-054","removed":"audit:hash-LmNsYXVkZS9z","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-055","removed":"audit:hash-c2V0dGluZ3Mu","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-056","removed":"audit:hash-Z2V0RnVuY3Rp","reason":"identical content hash"}
@@ -1754,7 +1755,6 @@
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-093","removed":"audit:hash-X2FwcENoZWNr","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-094","removed":"audit:hash-VHdvIHBhcmFs","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-095","removed":"audit:hash-QWRtaW4gcGFz","reason":"identical content hash"}
-{"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-096","removed":"audit:hash-TWlzc2luZyBD","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-098","removed":"audit:hash-UmF0ZSBsaW1p","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-099","removed":"audit:hash-TW9iaWxlIGJs","reason":"identical content hash"}
 {"pass":1,"type":"exact_match","kept":"audit:comprehensive-2026-02-22:COMP-100","removed":"audit:hash-c2VhcmNoVXNl","reason":"identical content hash"}
