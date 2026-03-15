@@ -333,14 +333,14 @@ function runArchive() {
 
   // Sort by date (primary) then ID (secondary) for correct archival order
   const ordered = [...records].sort((a, b) => {
-    const aDate = typeof a.date === "string" ? Date.parse(a.date) : NaN;
-    const bDate = typeof b.date === "string" ? Date.parse(b.date) : NaN;
-    const aHasDate = Number.isFinite(aDate);
-    const bHasDate = Number.isFinite(bDate);
-    if (aHasDate && bHasDate && aDate !== bDate) return aDate - bDate;
-    if (aHasDate !== bHasDate) return aHasDate ? -1 : 1;
-    const aId = typeof a.id === "number" && Number.isFinite(a.id) ? a.id : NaN;
-    const bId = typeof b.id === "number" && Number.isFinite(b.id) ? b.id : NaN;
+    const aDate = typeof a.date === "string" ? Date.parse(a.date) : Number.NaN;
+    const bDate = typeof b.date === "string" ? Date.parse(b.date) : Number.NaN;
+    // Undated records sort as OLDEST (archive first) via NEGATIVE_INFINITY
+    const aSortDate = Number.isFinite(aDate) ? aDate : Number.NEGATIVE_INFINITY;
+    const bSortDate = Number.isFinite(bDate) ? bDate : Number.NEGATIVE_INFINITY;
+    if (aSortDate !== bSortDate) return aSortDate - bSortDate;
+    const aId = typeof a.id === "number" && Number.isFinite(a.id) ? a.id : Number.NaN;
+    const bId = typeof b.id === "number" && Number.isFinite(b.id) ? b.id : Number.NaN;
     if (Number.isFinite(aId) && Number.isFinite(bId) && aId !== bId) return aId - bId;
     return String(a.id ?? "").localeCompare(String(b.id ?? ""));
   });

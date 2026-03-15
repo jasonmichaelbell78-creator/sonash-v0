@@ -364,7 +364,31 @@ function writeForwardFindings(allFindings) {
   const critical = allFindings.filter((f) => f.severity === "S0" || f.severity === "S1");
   if (critical.length === 0) return;
 
-  const lines = critical.map((f) =>
+  // Deduplicate: read existing forward-findings and build a Set of known keys
+  const existingKeys = new Set();
+  try {
+    if (existsSync(FORWARD_FINDINGS_JSONL)) {
+      const existing = readFileSync(FORWARD_FINDINGS_JSONL, "utf8").replaceAll("\r\n", "\n");
+      for (const line of existing.trim().split("\n")) {
+        if (!line.trim()) continue;
+        try {
+          const entry = JSON.parse(line);
+          existingKeys.add(`${entry.severity}::${entry.pattern}`);
+        } catch {
+          // Skip malformed lines
+        }
+      }
+    }
+  } catch {
+    // If we can't read existing file, proceed without dedup (first run)
+  }
+
+  const newFindings = critical.filter(
+    (f) => !existingKeys.has(`${f.severity}::${f.description}`)
+  );
+  if (newFindings.length === 0) return;
+
+  const lines = newFindings.map((f) =>
     JSON.stringify({
       source_plan: "review-lifecycle",
       finding_type: "gap",

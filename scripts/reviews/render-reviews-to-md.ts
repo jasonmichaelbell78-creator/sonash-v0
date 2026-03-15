@@ -122,6 +122,10 @@ function parseRecords(rawRecords: Record<string, unknown>[]): RenderableReview[]
 
 // ─── Rendering helpers ───────────────────────────────────────────────────
 
+/** Normalize severity cell: render finite numbers, "-" for anything else. */
+const sevCell = (v: unknown): string =>
+  typeof v === "number" && Number.isFinite(v) ? String(v) : "-";
+
 /** Collapse multiline text to single safe inline string. */
 const safeInline = (s: string): string =>
   s
@@ -183,7 +187,7 @@ export function renderReviewRecord(record: RenderableReview): string {
       "",
       "| Critical | Major | Minor | Trivial |",
       "|----------|-------|-------|---------|",
-      `| ${sb.critical} | ${sb.major} | ${sb.minor} | ${sb.trivial} |`,
+      `| ${sevCell(sb.critical)} | ${sevCell(sb.major)} | ${sevCell(sb.minor)} | ${sevCell(sb.trivial)} |`,
       ""
     );
   } else if (
@@ -197,7 +201,7 @@ export function renderReviewRecord(record: RenderableReview): string {
       "",
       "| Critical | Major | Minor | Trivial |",
       "|----------|-------|-------|---------|",
-      `| ${flatCrit ?? "-"} | ${flatMajor ?? "-"} | ${flatMinor ?? "-"} | ${flatTrivial ?? "-"} |`,
+      `| ${sevCell(flatCrit)} | ${sevCell(flatMajor)} | ${sevCell(flatMinor)} | ${sevCell(flatTrivial)} |`,
       ""
     );
   }
