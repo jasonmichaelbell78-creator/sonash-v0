@@ -2,9 +2,11 @@
 name: skill-audit
 description: >-
   Interactive behavioral quality audit for individual skills. Evaluates against
-  10 quality categories to surface attention management issues and produce
-  actionable decisions. Includes self-audit verification that all decisions were
-  actually implemented. Produces a decision record and updated skill files.
+  11 quality categories (including T25 convergence loop integration) to surface
+  attention management issues and produce actionable decisions. Includes
+  self-audit verification that all decisions were actually implemented. Uses
+  convergence loops in its own discovery phase. Produces a decision record and
+  updated skill files.
 ---
 
 <!-- prettier-ignore-start -->
@@ -64,7 +66,7 @@ gap through guided decisions with the user.
 
 ```
 Phase 1: Preparation    → Validate target, read skill + standards, initialize state
-Phase 2: Category Audit → 10 categories, interactive, decisions saved per category
+Phase 2: Category Audit → 11 categories (incl. T25), interactive, decisions saved per category
 Phase 2.5: Operational Deps → Scripts, hooks, data files, npm scripts, state files
 Phase 3: Crosscheck     → Verify skill-creator + ecosystem impact + adjacent contracts
 Phase 4: Implementation → Apply decisions (priority order, batch related changes)
@@ -101,8 +103,13 @@ Categories: 10 | Estimated decisions: [N]
 
 ## Phase 2: Category Audit (Interactive, MUST)
 
-> Read `.claude/skills/skill-audit/REFERENCE.md` for the 10 category
+> Read `.claude/skills/skill-audit/REFERENCE.md` for the 11 category
 > definitions, question banks, scoring rubrics, and presentation format.
+> Category 11 (Convergence Loop Integration) evaluates T25 compliance.
+
+**Self-application (T25):** Skill-audit's own discovery (this phase) SHOULD use
+a `quick` convergence loop: Pass 1 audits all categories, Pass 2 verifies
+findings are accurate and nothing was missed. Present T20 tally before Phase 3.
 
 ### Interactive Flow (MUST)
 
@@ -148,15 +155,15 @@ interactive flow. The rewrite conclusion does not change the process.
 
 ### Mid-Audit Check (MUST — after Category 5)
 
-"Mid-audit status: Score [N/50], [M] decisions across 5 categories. Top concern:
+"Mid-audit status: Score [N/55], [M] decisions across 5 categories. Top concern:
 [lowest-scoring category]."
 
 **Scope explosion guard:** If 3+ categories below 4/10: "Multiple categories
 show fundamental issues. Continue auditing, or pivot to `/skill-creator`?"
 
-### After Category 10 (MUST)
+### After Category 11 (MUST)
 
-"Are there quality concerns the 10 categories didn't surface?" Add user findings
+"Are there quality concerns the 11 categories didn't surface?" Add user findings
 as additional decisions.
 
 ### Phase 2 Completion (MUST)
@@ -347,6 +354,7 @@ Files modified: [list] | Skill-creator gaps: [N]
 
 | Version | Date       | Description                                                             |
 | ------- | ---------- | ----------------------------------------------------------------------- |
+| 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2   |
 | 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping |
 | 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts    |
 | 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.           |
