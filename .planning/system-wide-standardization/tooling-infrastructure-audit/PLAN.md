@@ -43,8 +43,9 @@ Pre-commit timing additions MUST use Node.js (`Date.now()`), not bash-specific
 
 ### Cross-Impact Changelog (SWS T18, D72)
 
-Create `.planning/system-wide-standardization/tooling-infrastructure-audit/CHANGELOG.jsonl` tracking
-cross-ecosystem impacts using D72 schema:
+Create
+`.planning/system-wide-standardization/tooling-infrastructure-audit/CHANGELOG.jsonl`
+tracking cross-ecosystem impacts using D72 schema:
 `{timestamp, ecosystem, change, affects, type?, decision_ref?, files_changed?}`.
 Key cross-impacts to track: agent deletions affecting CLAUDE.md, MCP removal
 affecting checkpoint skill, Serena removal affecting hooks.
@@ -69,10 +70,10 @@ This ensures new workflow additions cannot use unpinned tag references.
 1. **`.qodo.yaml`** — Qodo review bot configuration with category suppressions
 2. **`.github/workflows/bundle-size.yml`** — compressed-size-action workflow
 3. **`commitlint.config.js`** — commitlint configuration
-4. **`.planning/system-wide-standardization/tooling-infrastructure-audit/npm-script-audit.md`** — audit
-   results for ~140 scripts
-5. **`.planning/system-wide-standardization/tooling-infrastructure-audit/skill-orphan-scan.md`** — orphan
-   skill findings
+4. **`.planning/system-wide-standardization/tooling-infrastructure-audit/npm-script-audit.md`**
+   — audit results for ~140 scripts
+5. **`.planning/system-wide-standardization/tooling-infrastructure-audit/skill-orphan-scan.md`**
+   — orphan skill findings
 
 ### Modified Files (25+)
 

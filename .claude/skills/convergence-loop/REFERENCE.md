@@ -17,13 +17,14 @@ For Corrected: include original and corrected text.
 analysis. Catches stale or fabricated claims early.
 
 **Agent instruction:**
+
 > You are a verification agent in a convergence loop. Your role is to verify
-> claims against their cited source material.
-> Read the cited source for each claim in your slice. For each: does the source
-> actually say what the claim says? Report using the required output format.
-> Confirmed (source matches), Corrected (source says something different —
-> provide correct version), Extended (source says more than claimed), New
-> (source contains relevant information not captured in any claim).
+> claims against their cited source material. Read the cited source for each
+> claim in your slice. For each: does the source actually say what the claim
+> says? Report using the required output format. Confirmed (source matches),
+> Corrected (source says something different — provide correct version),
+> Extended (source says more than claimed), New (source contains relevant
+> information not captured in any claim).
 
 **When to use:** First pass of `standard` and `thorough` presets. Any time
 claims reference specific files, documents, or data.
@@ -34,13 +35,13 @@ claims reference specific files, documents, or data.
 look for problems, gaps, and uncovered areas.
 
 **Agent instruction:**
+
 > You are a discovery agent in a convergence loop. Your role is to find issues
-> the existing claims MISSED.
-> Review your domain slice. You have the existing claims for context, but your
-> PRIMARY goal is to find things the claims MISSED. Look for: uncovered files,
-> undocumented behaviors, edge cases, contradictions, patterns that should be
-> flagged but aren't. Report using the required output format. New findings
-> separately from confirmations.
+> the existing claims MISSED. Review your domain slice. You have the existing
+> claims for context, but your PRIMARY goal is to find things the claims MISSED.
+> Look for: uncovered files, undocumented behaviors, edge cases, contradictions,
+> patterns that should be flagged but aren't. Report using the required output
+> format. New findings separately from confirmations.
 
 **When to use:** Early passes in `thorough` preset. When the claims set might be
 incomplete (e.g., initial audit findings, first-draft diagnoses).
@@ -51,13 +52,14 @@ incomplete (e.g., initial audit findings, first-draft diagnoses).
 what's already claimed, not finding new things.
 
 **Agent instruction:**
+
 > You are a verification agent in a convergence loop. Your role is to confirm or
-> correct existing claims for accuracy.
-> Verify each claim in your slice against the codebase/documentation. Report
-> using the required output format. Confirmed (claim is accurate as stated),
-> Corrected (claim is inaccurate — provide correction with evidence), Extended
-> (claim is accurate but incomplete — provide additions). You ALSO receive prior
-> pass corrections — verify those corrections are themselves correct.
+> correct existing claims for accuracy. Verify each claim in your slice against
+> the codebase/documentation. Report using the required output format. Confirmed
+> (claim is accurate as stated), Corrected (claim is inaccurate — provide
+> correction with evidence), Extended (claim is accurate but incomplete —
+> provide additions). You ALSO receive prior pass corrections — verify those
+> corrections are themselves correct.
 
 **When to use:** Middle passes. The workhorse behavior for convergence.
 
@@ -68,28 +70,30 @@ ONLY the claims and source material — no prior pass results, no corrections, n
 tallies.
 
 **Agent instruction:**
-> You are a fresh-eyes verification agent in a convergence loop. Your role is to
-> independently verify claims with ZERO prior context.
-> You are verifying these claims with NO prior context. You do not know what
-> previous passes found. Read the claims, check them against reality, report
-> using the required output format. If your findings match the current claims
-> set exactly, convergence is confirmed.
 
-**When to use:** Final pass. The gold standard — if fresh-eyes finds nothing new,
-the claims are trustworthy.
+> You are a fresh-eyes verification agent in a convergence loop. Your role is to
+> independently verify claims with ZERO prior context. You are verifying these
+> claims with NO prior context. You do not know what previous passes found. Read
+> the claims, check them against reality, report using the required output
+> format. If your findings match the current claims set exactly, convergence is
+> confirmed.
+
+**When to use:** Final pass. The gold standard — if fresh-eyes finds nothing
+new, the claims are trustworthy.
 
 ### write-then-verify
 
-**Purpose:** Produce an output artifact and verify it in the same pass. Used when
-the convergence loop's purpose is to CREATE something accurate, not just verify
-existing claims.
+**Purpose:** Produce an output artifact and verify it in the same pass. Used
+when the convergence loop's purpose is to CREATE something accurate, not just
+verify existing claims.
 
 **Agent instruction:**
+
 > You are a write-then-verify agent in a convergence loop. Your role is to
-> produce output and then have it independently verified.
-> Phase A: Write/produce the requested output based on the claims and source
-> material. Phase B: A DIFFERENT agent verifies the output against the claims
-> and sources. Report using the required output format.
+> produce output and then have it independently verified. Phase A: Write/produce
+> the requested output based on the claims and source material. Phase B: A
+> DIFFERENT agent verifies the output against the claims and sources. Report
+> using the required output format.
 
 **When to use:** Plan writing, document generation, migration scripts — any task
 where the loop produces an artifact.
@@ -100,16 +104,16 @@ where the loop produces an artifact.
 new full pass. Avoids wasting a full pass on known fixes.
 
 **Agent instruction:**
-> You are a fix-and-re-verify agent in a convergence loop. Your role is to
-> apply corrections and verify they are themselves correct.
-> These corrections were found earlier in this pass: [corrections]. Apply them
-> to the claims set. Now verify the CORRECTED claims — are the fixes themselves
-> correct? Report using the required output format. Confirmed (fix is good),
-> Corrected (fix was wrong — provide better fix). This does NOT count as a new
-> pass.
 
-**When to use:** When a pass finds <5 corrections that are clearly fixable.
-If corrections are numerous or complex, prefer a new full pass.
+> You are a fix-and-re-verify agent in a convergence loop. Your role is to apply
+> corrections and verify they are themselves correct. These corrections were
+> found earlier in this pass: [corrections]. Apply them to the claims set. Now
+> verify the CORRECTED claims — are the fixes themselves correct? Report using
+> the required output format. Confirmed (fix is good), Corrected (fix was wrong
+> — provide better fix). This does NOT count as a new pass.
+
+**When to use:** When a pass finds <5 corrections that are clearly fixable. If
+corrections are numerous or complex, prefer a new full pass.
 
 ---
 
@@ -183,6 +187,7 @@ need extra scrutiny.
 ### custom
 
 Caller defines their own slicing. Provide a JSON mapping:
+
 ```json
 {
   "agent_1": { "label": "Phase 0 claims", "filter": "claims 1-12" },
@@ -301,21 +306,21 @@ Max passes: 3
 **Summary:**
 
 | Pass | Behavior | Agents | Confirmed | Corrected | Extended | New | Graduated |
-|------|----------|--------|-----------|-----------|----------|-----|-----------|
+| ---- | -------- | ------ | --------- | --------- | -------- | --- | --------- |
 | 1    | ...      | ...    | ...       | ...       | ...      | ... | ...       |
 
 **Convergence:** {ACHIEVED at Pass N / NOT ACHIEVED after N passes}
 
 **Claims Delta:**
 
-| # | Claim | Status | Original | After | Evidence | Pass |
-|---|-------|--------|----------|-------|----------|------|
-| 1 | ...   | CORRECTED | "was X" | "is Y" | file:line | 2 |
+| #   | Claim | Status    | Original | After  | Evidence  | Pass |
+| --- | ----- | --------- | -------- | ------ | --------- | ---- |
+| 1   | ...   | CORRECTED | "was X"  | "is Y" | file:line | 2    |
 
 **Unresolved** (if any):
 
-| # | Claim | Issue | Agent Positions |
-|---|-------|-------|-----------------|
+| #   | Claim | Issue | Agent Positions |
+| --- | ----- | ----- | --------------- |
 
 ---
 
@@ -323,10 +328,10 @@ Max passes: 3
 
 ### /skill-creator Integration (Q14)
 
-**Validation phase** (Phase 5): After writing SKILL.md, run a `quick` convergence
-loop on the skill's claims (does it do what it says?). Two agents verify: one
-checks SKILL.md internal consistency, one checks against REFERENCE.md and
-codebase reality.
+**Validation phase** (Phase 5): After writing SKILL.md, run a `quick`
+convergence loop on the skill's claims (does it do what it says?). Two agents
+verify: one checks SKILL.md internal consistency, one checks against
+REFERENCE.md and codebase reality.
 
 **Planning phase** (Phase 3): Add question to discovery: "Does this skill's
 workflow involve claims verification, multi-agent discovery, or iterative
@@ -338,8 +343,8 @@ refinement? If yes, design convergence-loop integration."
 should it use convergence loops? If it has a discovery phase, T25 says yes."
 
 **Implementation quality**: If skill uses convergence loops, check: Does it
-follow the T20 tally? Does it have min 2 passes? Does it gate convergence
-with user approval?
+follow the T20 tally? Does it have min 2 passes? Does it gate convergence with
+user approval?
 
 **Self-application**: Skill-audit's OWN discovery phase MUST use a `quick`
 convergence loop to verify its findings before presenting to user.
@@ -368,7 +373,12 @@ convergence loop to verify its findings before presenting to user.
       "tally": { "confirmed": 18, "corrected": 3, "extended": 2, "new": 1 },
       "graduated": 15,
       "corrections": [
-        { "claim_id": "C3", "original": "...", "corrected": "...", "evidence": "file:line" }
+        {
+          "claim_id": "C3",
+          "original": "...",
+          "corrected": "...",
+          "evidence": "file:line"
+        }
       ],
       "timestamp": "2026-03-15T20:00:00Z"
     }
@@ -396,6 +406,7 @@ a `custom_instructions` string. This is appended to the behavior's standard
 prompt template.
 
 **Usage:**
+
 ```
 custom_instructions: "When checking security claims, also verify CVE references
 against the NVD database. Flag any claims referencing CVEs older than 2 years."
@@ -407,6 +418,7 @@ without modifying the core behavior.
 
 **When to use:** When the standard behavior prompts are too generic for the
 domain. Common customizations:
+
 - Security audits: CVE verification, OWASP reference checking
 - Performance claims: benchmark methodology verification
 - Architecture claims: dependency graph validation

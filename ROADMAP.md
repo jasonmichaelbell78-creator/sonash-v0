@@ -237,7 +237,8 @@ flowchart TD
 - **Rationale:** Clean tooling before quality fixes, quality fixes before data
   pipelines, data pipelines before ecosystem standardization. Each plan builds
   on the prior's output.
-- **Plans:** `.planning/system-wide-standardization/tooling-infrastructure-audit/`,
+- **Plans:**
+  `.planning/system-wide-standardization/tooling-infrastructure-audit/`,
   `.planning/system-wide-standardization/code-quality-overhaul/`,
   `.planning/system-wide-standardization/learnings-effectiveness-audit/`,
   `.planning/system-wide-standardization/`
@@ -305,10 +306,10 @@ Planned | 🟣 Research
 
 > **📋 SWS Phase 3 Extraction (Session #219)**
 >
-> 5 framework/infrastructure items moved to SWS Phase 3 ecosystems (per Q24):
-> D2 (pre-commit optimization) -> Hooks, D4 (CI gates) -> CI/CD,
-> D10 (script test coverage) -> Scripts, E1 (warning collector) -> Hooks,
-> E2 (session health JSON) -> Sessions. Sprint remains as app-level work.
+> 5 framework/infrastructure items moved to SWS Phase 3 ecosystems (per Q24): D2
+> (pre-commit optimization) -> Hooks, D4 (CI gates) -> CI/CD, D10 (script test
+> coverage) -> Scripts, E1 (warning collector) -> Hooks, E2 (session health
+> JSON) -> Sessions. Sprint remains as app-level work.
 
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
@@ -480,7 +481,8 @@ demoted to S1 in Session #179 — they are code quality, not critical.
 #### Phase 1 - Quick Wins
 
 - [ ] **D1:** Pin Firebase CLI version (30min) [DEBT-0399]
-- [ ] **D2:** Optimize pre-commit hook (2hr) [DEBT-0397] - Target: ~50s → <15s — **Moved to SWS Phase 3 (Hooks ecosystem)**
+- [ ] **D2:** Optimize pre-commit hook (2hr) [DEBT-0397] - Target: ~50s → <15s —
+      **Moved to SWS Phase 3 (Hooks ecosystem)**
   - [x] **D2.1:** Skip tests for doc-only commits (10min) - ✅ Session #113
   - [ ] **D2.2:** Remove duplicate test run from pre-push (done) - ✅ Session
         #113
@@ -531,7 +533,8 @@ demoted to S1 in Session #179 — they are code quality, not critical.
 - [ ] DEBT-0935: No offline write queue - journal entries lost (S1,
       lib/firestore-service.ts)
 
-- [ ] **E1:** Warning collector hook (2hr) - Feed B11 Warnings Tab — **Moved to SWS Phase 3 (Hooks ecosystem)**
+- [ ] **E1:** Warning collector hook (2hr) - Feed B11 Warnings Tab — **Moved to
+      SWS Phase 3 (Hooks ecosystem)**
 - [ ] **E2:** Session health summary (1hr) - JSON output for Dashboard [depends:
       E1] — **Moved to SWS Phase 3 (Sessions ecosystem)**
 - [ ] **E3:** Auto-escalation system (2hr) - Age-based issue alerts [depends:

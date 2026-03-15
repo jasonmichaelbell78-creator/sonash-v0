@@ -359,16 +359,17 @@ T25, all discovery phases SHOULD use convergence loops.
 
 ### Evaluation Criteria
 
-- **Appropriateness check** — does this skill have a discovery phase, multi-agent
-  verification, or iterative refinement? If yes, T25 says it SHOULD use
-  convergence loops.
+- **Appropriateness check** — does this skill have a discovery phase,
+  multi-agent verification, or iterative refinement? If yes, T25 says it SHOULD
+  use convergence loops.
 - **Implementation quality** (if convergence loops are used):
   - Minimum 2 passes? (MUST per `/convergence-loop` SKILL.md)
   - T20 tally format (Confirmed/Corrected/Extended/New)? (MUST)
   - User gate before convergence declaration? (MUST)
   - State persistence between passes? (MUST)
   - Graduated convergence (per-claim, not all-or-nothing)? (SHOULD)
-- **Missing integration** — skill has discovery/verification but uses single-pass
+- **Missing integration** — skill has discovery/verification but uses
+  single-pass
 
 ### Common Findings
 
@@ -380,18 +381,18 @@ T25, all discovery phases SHOULD use convergence loops.
 
 ### Scoring Guide
 
-| Score | Criteria                                                        |
-| ----- | --------------------------------------------------------------- |
-| 9-10  | Convergence loops used appropriately, follows all MUST rules    |
-| 7-8   | Convergence loops present with minor deviations from standard   |
-| 5-6   | Has discovery phase, convergence loop partially implemented     |
-| 3-4   | Has discovery phase, no convergence loop, single-pass           |
-| 1-2   | Multi-agent verification with no convergence mechanics at all   |
-| N/A   | Skill has no discovery/verification phase (score excluded)      |
+| Score | Criteria                                                      |
+| ----- | ------------------------------------------------------------- |
+| 9-10  | Convergence loops used appropriately, follows all MUST rules  |
+| 7-8   | Convergence loops present with minor deviations from standard |
+| 5-6   | Has discovery phase, convergence loop partially implemented   |
+| 3-4   | Has discovery phase, no convergence loop, single-pass         |
+| 1-2   | Multi-agent verification with no convergence mechanics at all |
+| N/A   | Skill has no discovery/verification phase (score excluded)    |
 
 **N/A handling:** If a skill has no discovery, verification, or iterative
-refinement phase, score this category as N/A and exclude from the total.
-Adjust overall scoring denominator accordingly (100 -> 90 for 10 categories).
+refinement phase, score this category as N/A and exclude from the total. Adjust
+overall scoring denominator accordingly (100 -> 90 for 10 categories).
 
 ---
 

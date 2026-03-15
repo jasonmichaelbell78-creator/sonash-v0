@@ -57,7 +57,12 @@ try {
 
 let safeWriteFileSync, safeAppendFileSync, safeAtomicWriteSync, isSafeToWrite;
 try {
-  ({ safeWriteFileSync, safeAppendFileSync, safeAtomicWriteSync, isSafeToWrite } = require("./lib/safe-fs"));
+  ({
+    safeWriteFileSync,
+    safeAppendFileSync,
+    safeAtomicWriteSync,
+    isSafeToWrite,
+  } = require("./lib/safe-fs"));
 } catch (err) {
   console.error("safe-fs unavailable:", sanitizeError(err));
   process.exit(2);
@@ -206,34 +211,46 @@ function parseMarkdownReviews(content) {
     if (rejectedMatch) review.rejected = Number.parseInt(rejectedMatch[1], 10);
 
     // Total — handles "Total: N", "**Total:** N", "N total", "N items"
-    const totalMatch = /Total\*{0,2}:\*{0,2}\s*(\d+)/i.exec(raw) || /(\d+)\s+(?:total|items)/i.exec(raw);
+    const totalMatch =
+      /Total\*{0,2}:\*{0,2}\s*(\d+)/i.exec(raw) || /(\d+)\s+(?:total|items)/i.exec(raw);
     if (totalMatch) review.total = Number.parseInt(totalMatch[1], 10);
 
     // Patterns — extract from "**Key Patterns:**" or "**Patterns:**" sections
     // Handles: "- **pattern-name**: description" and "- pattern description"
     const patternLines = review._rawLines.filter((l) => {
       const t = l.trim();
-      return (t.startsWith("- **") && t.includes("**:")) ||
-        (t.startsWith("- ") && t.length > 20 && t.length < 200);
+      return (
+        (t.startsWith("- **") && t.includes("**:")) ||
+        (t.startsWith("- ") && t.length > 20 && t.length < 200)
+      );
     });
     if (patternLines.length > 0) {
-      review.patterns = patternLines.map((l) => {
-        const boldMatch = /- \*\*([^*]+)\*\*:?\s*(.*)/.exec(l.trim());
-        return boldMatch ? boldMatch[1].trim() : l.trim().slice(2).trim();
-      }).filter((p) => p.length > 0).slice(0, 15);
+      review.patterns = patternLines
+        .map((l) => {
+          const boldMatch = /- \*\*([^*]+)\*\*:?\s*(.*)/.exec(l.trim());
+          return boldMatch ? boldMatch[1].trim() : l.trim().slice(2).trim();
+        })
+        .filter((p) => p.length > 0)
+        .slice(0, 15);
     }
 
     // Learnings — extract from "**Takeaway:**", "**Lesson:**", or post-pattern bullets
     const learningLines = review._rawLines.filter((l) => {
       const t = l.trim();
-      return (t.startsWith("**Takeaway:**") || t.startsWith("**Lesson:**") ||
-        (t.startsWith("- ") && t.length > 30 && t.length < 300 && !t.startsWith("- **")));
+      return (
+        t.startsWith("**Takeaway:**") ||
+        t.startsWith("**Lesson:**") ||
+        (t.startsWith("- ") && t.length > 30 && t.length < 300 && !t.startsWith("- **"))
+      );
     });
     if (learningLines.length > 0) {
-      review.learnings = learningLines.map((l) => {
-        const prefixMatch = /\*\*(Takeaway|Lesson):\*\*\s*(.+)/.exec(l.trim());
-        return prefixMatch ? prefixMatch[2].trim() : l.trim().slice(2).trim();
-      }).filter((le) => le.length > 0).slice(0, 7);
+      review.learnings = learningLines
+        .map((l) => {
+          const prefixMatch = /\*\*(Takeaway|Lesson):\*\*\s*(.+)/.exec(l.trim());
+          return prefixMatch ? prefixMatch[2].trim() : l.trim().slice(2).trim();
+        })
+        .filter((le) => le.length > 0)
+        .slice(0, 7);
     }
 
     delete review._rawLines;
@@ -268,7 +285,10 @@ function runSync() {
   // Filter to reviews not already in JSONL (compare as strings for type safety)
   const missing = mdReviews.filter((r) => !existingIds.has(String(r.id)));
 
-  logStep("SYNC", `Markdown reviews: ${mdReviews.length}, JSONL existing: ${existingIds.size}, new: ${missing.length}`);
+  logStep(
+    "SYNC",
+    `Markdown reviews: ${mdReviews.length}, JSONL existing: ${existingIds.size}, new: ${missing.length}`
+  );
 
   if (missing.length === 0) {
     logStep("SYNC", "No new reviews to sync");
@@ -301,7 +321,10 @@ function runSync() {
     throw new Error(`Failed to append to reviews.jsonl: ${sanitizeError(err)}`);
   }
 
-  logStep("SYNC", `Appended ${missing.length} entries (IDs: ${missing.map((r) => "#" + r.id).join(", ")})`);
+  logStep(
+    "SYNC",
+    `Appended ${missing.length} entries (IDs: ${missing.map((r) => "#" + r.id).join(", ")})`
+  );
   return { synced: missing.length, total: existingIds.size + missing.length };
 }
 
@@ -379,7 +402,9 @@ function runArchive() {
     // Rollback: delete temp archive file since reviews.jsonl wasn't modified
     try {
       fs.rmSync(tmpArchive, { force: true });
-    } catch { /* best-effort cleanup */ }
+    } catch {
+      /* best-effort cleanup */
+    }
     throw new Error(`Failed to update reviews.jsonl during archive: ${sanitizeError(writeErr)}`);
   }
 
@@ -393,7 +418,7 @@ function runArchive() {
     // Temp file lost between step 2 and step 3 — data loss scenario
     throw new Error(
       `CRITICAL: reviews.jsonl already trimmed but temp archive unreadable. ` +
-      `Recovery: check ${tmpArchive} — ${sanitizeError(readErr)}`
+        `Recovery: check ${tmpArchive} — ${sanitizeError(readErr)}`
     );
   }
 
@@ -404,14 +429,16 @@ function runArchive() {
     // Leave temp file in place as crash-recovery artifact.
     throw new Error(
       `CRITICAL: Archive append failed after reviews.jsonl was trimmed. ` +
-      `Recovery artifact preserved at: ${tmpArchive} — ${sanitizeError(appendErr)}`
+        `Recovery artifact preserved at: ${tmpArchive} — ${sanitizeError(appendErr)}`
     );
   }
 
   // Step 4: Clean up temp only AFTER archive append succeeded
   try {
     fs.rmSync(tmpArchive, { force: true });
-  } catch { /* best-effort cleanup */ }
+  } catch {
+    /* best-effort cleanup */
+  }
 
   logStep("ARCHIVE", `Archived ${toArchive.length} entries to reviews-archive.jsonl`);
   return { archived: toArchive.length, remaining: toKeep.length };
@@ -474,7 +501,9 @@ function runValidate() {
       let findings = [];
       try {
         findings = JSON.parse(err.stdout.toString().trim());
-      } catch { /* not JSON output */ }
+      } catch {
+        /* not JSON output */
+      }
 
       if (findings.length > 0) {
         const s0Count = findings.filter((f) => f.severity === "S0").length;
@@ -492,7 +521,9 @@ function runValidate() {
       let stderrFindings = [];
       try {
         stderrFindings = JSON.parse(err.stderr.toString().trim());
-      } catch { /* not JSON */ }
+      } catch {
+        /* not JSON */
+      }
 
       if (stderrFindings.length > 0) {
         const s0Count = stderrFindings.filter((f) => f.severity === "S0").length;
@@ -561,12 +592,17 @@ function runRender() {
       recordCount = Number.parseInt(countMatch[1], 10);
     }
 
-    logStep("RENDER", recordCount === null ? "Rendered successfully" : `Rendered ${recordCount} records`);
+    logStep(
+      "RENDER",
+      recordCount === null ? "Rendered successfully" : `Rendered ${recordCount} records`
+    );
     return { success: true, recordCount };
   } catch (err) {
     const stderr = err.stderr ? sanitizeError(err.stderr.toString().trim()) : "";
     const stdout = err.stdout ? sanitizeError(err.stdout.toString().trim()) : "";
-    throw new Error(`render-reviews-to-md.ts failed: ${sanitizeError(err)}${stderr ? " | " + stderr : ""}${stdout ? " | " + stdout : ""}`);
+    throw new Error(
+      `render-reviews-to-md.ts failed: ${sanitizeError(err)}${stderr ? " | " + stderr : ""}${stdout ? " | " + stdout : ""}`
+    );
   }
 }
 
@@ -615,10 +651,13 @@ function main() {
     log(`Lifecycle complete in ${elapsed}ms`);
     log(`  SYNC:     ${syncResult.synced} new entries (${syncResult.total} total)`);
     log(`  ARCHIVE:  ${archiveResult.archived} archived (${archiveResult.remaining} remaining)`);
-    const validateMsg = validateResult.valid ? "PASS" : "FAIL (" + validateResult.findings.length + " findings)";
+    const validateMsg = validateResult.valid
+      ? "PASS"
+      : "FAIL (" + validateResult.findings.length + " findings)";
     log(`  VALIDATE: ${validateMsg}`);
     const renderStatus = renderResult.success ? "OK" : "FAILED";
-    const renderCount = renderResult.recordCount !== null ? " (" + renderResult.recordCount + " records)" : "";
+    const renderCount =
+      renderResult.recordCount !== null ? " (" + renderResult.recordCount + " records)" : "";
     log(`  RENDER:   ${renderStatus}${renderCount}`);
 
     // Exit code based on validation

@@ -1390,7 +1390,7 @@
 | DEBT-45526 | Hook bypass threshold: cc overridden 30+ times in 14 days | cc | 0 | process | E2 |
 | DEBT-45527 | Hook bypass threshold: cc overridden 31+ times in 14 days | cc | 0 | process | E2 |
 
-## S2 - Medium (3388)
+## S2 - Medium (3389)
 
 | ID | Title | File | Line | Category | Effort |
 |---|---|---|---|---|---|
@@ -4782,6 +4782,7 @@
 | DEBT-45522 | Pre-push SonarCloud lint script for new files | scripts/ | 0 | engineering-productivity | E1 |
 | DEBT-45528 | log-override.js generates duplicate DEBT entries with cas... | scripts/log-override.js | 0 | process | E1 |
 | DEBT-45529 | Sacred-path drift: Shadow-Append Registry should be autho... | .planning/system-wide-standardization/PLAN-v2.md | 606 | refactoring | E1 |
+| DEBT-45530 | 3 learning-route entries have _repair_needed due to missi... | .claude/state/learning-routes.jsonl | 1 | process | E1 |
 
 ## S3 - Low (3622)
 

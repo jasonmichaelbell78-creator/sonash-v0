@@ -18,11 +18,9 @@ const os = require("node:os");
 const projectRoot = path.resolve(__dirname, "..", "..");
 
 // Import the module under test
-const {
-  parseMarkdownReviews,
-  ARCHIVE_THRESHOLD,
-  KEEP_NEWEST,
-} = require(path.resolve(projectRoot, "scripts", "review-lifecycle.js"));
+const { parseMarkdownReviews, ARCHIVE_THRESHOLD, KEEP_NEWEST } = require(
+  path.resolve(projectRoot, "scripts", "review-lifecycle.js")
+);
 
 // Import read-jsonl for verification
 const readJsonl = require(path.resolve(projectRoot, "scripts", "lib", "read-jsonl.js"));
@@ -321,7 +319,9 @@ describe("sync dedup logic", () => {
     ];
 
     // Import loadExistingIds
-    const { loadExistingIds } = require(path.resolve(projectRoot, "scripts", "review-lifecycle.js"));
+    const { loadExistingIds } = require(
+      path.resolve(projectRoot, "scripts", "review-lifecycle.js")
+    );
     const ids = loadExistingIds(records);
 
     // All IDs stored as strings
@@ -407,7 +407,19 @@ describe("JSONL round-trip integrity", () => {
     const review = reviews[0];
 
     // Check all expected fields exist
-    const expectedFields = ["id", "date", "title", "source", "pr", "patterns", "fixed", "deferred", "rejected", "total", "learnings"];
+    const expectedFields = [
+      "id",
+      "date",
+      "title",
+      "source",
+      "pr",
+      "patterns",
+      "fixed",
+      "deferred",
+      "rejected",
+      "total",
+      "learnings",
+    ];
     for (const field of expectedFields) {
       assert.ok(field in review, `Missing field: ${field}`);
     }

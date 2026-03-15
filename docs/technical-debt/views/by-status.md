@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2060)
+## NEW (2061)
 
 | ID | Title | Severity | Category |
 |---|---|---|---|
@@ -657,6 +657,7 @@
 | DEBT-45522 | Pre-push SonarCloud lint script for new files | S2 | engineering-productivity |
 | DEBT-45528 | log-override.js generates duplicate DEBT entries with cas... | S2 | process |
 | DEBT-45529 | Sacred-path drift: Shadow-Append Registry should be autho... | S2 | refactoring |
+| DEBT-45530 | 3 learning-route entries have _repair_needed due to missi... | S2 | process |
 | DEBT-0001 | Make action buttons customizable by user (save preference... | S3 | code-quality |
 | DEBT-2443 | PLAN_MAP.md version history table | S3 | code-quality |
 | DEBT-2447 | check-review-triggers.sh - Dead shell script for multi-AI... | S3 | code-quality |

@@ -517,9 +517,9 @@ try {
 } catch (error) {
   const exitCode = error.status || 1;
   if (exitCode >= 2) {
-    console.log(`🔍 Patterns: ❌ failed (exit ${exitCode})`);
+    console.error(`🔍 Patterns: ❌ failed (exit ${exitCode})`);
   } else {
-    console.log("🔍 Patterns: ⚠️ violations detected — npm run patterns:check-all");
+    console.warn("🔍 Patterns: ⚠️ violations detected — npm run patterns:check-all");
   }
   warnings++;
 }
@@ -538,20 +538,18 @@ try {
 } catch (error) {
   const exitCode = error.status || 1;
   if (exitCode >= 2) {
-    console.log(`🔍 Consolidation: ❌ failed (exit ${exitCode})`);
+    console.error(`🔍 Consolidation: ❌ failed (exit ${exitCode})`);
     warnings++;
   } else if (exitCode === 1) {
     const stdout = (error.stdout || "").toString().trim();
     if (stdout) console.log(stdout);
-    console.log("🔍 Consolidation: ⚠️ exit code 1 (unexpected for --auto)");
+    console.warn("🔍 Consolidation: ⚠️ exit code 1 (unexpected for --auto)");
   }
 }
 
 // Review lifecycle orchestrator (sync, archive, rotate, validate, render)
 try {
-  execFileSync(process.execPath, [
-    path.join(projectDir, "scripts", "review-lifecycle.js")
-  ], {
+  execFileSync(process.execPath, [path.join(projectDir, "scripts", "review-lifecycle.js")], {
     cwd: projectDir,
     stdio: "pipe",
     timeout: 30000,
@@ -560,30 +558,39 @@ try {
 } catch (err) {
   if (err.status === 1) {
     // Validation issues — surface as blocking warning
-    console.log("⚠️ Review lifecycle validation issues found:");
+    console.warn("⚠️ Review lifecycle validation issues found:");
     const stderrText = err.stderr ? err.stderr.toString() : "";
     const stdoutText = err.stdout ? err.stdout.toString() : "";
     let findings = null;
     try {
       findings = JSON.parse((stderrText || stdoutText || "").trim());
-    } catch { findings = null; }
+    } catch {
+      findings = null;
+    }
     if (Array.isArray(findings) && findings.length > 0) {
-      const summary = findings.slice(0, 3).map((f) => `[${f.severity}] ${f.description}`).join("\n");
-      console.log(sanitizeInput ? sanitizeInput(summary) : summary);
+      const summary = findings
+        .slice(0, 3)
+        .map((f) => `[${f.severity}] ${f.description}`)
+        .join("\n");
+      console.warn(sanitizeInput ? sanitizeInput(summary) : summary);
     } else {
       const output = stdoutText || stderrText || "Unknown validation issue";
-      console.log(sanitizeInput ? sanitizeInput(output.split("\n").slice(0, 5).join("\n")) : output.split("\n")[0]);
+      console.warn(
+        sanitizeInput
+          ? sanitizeInput(output.split("\n").slice(0, 5).join("\n"))
+          : output.split("\n")[0]
+      );
     }
     warnings++;
   } else if (err.status === 2) {
     // I/O error — surface as error
     const sanitized = sanitizeError ? sanitizeError(err) : "[review lifecycle error]";
     const line0 = String(sanitized).split("\n")[0];
-    console.log("❌ Review lifecycle error: " + (sanitizeInput ? sanitizeInput(line0) : line0));
+    console.error("❌ Review lifecycle error: " + (sanitizeInput ? sanitizeInput(line0) : line0));
     warnings++;
   } else {
     // Other/unexpected error
-    console.log("   ⚠️ Review lifecycle: unexpected exit code " + (err.status || "unknown"));
+    console.warn("   ⚠️ Review lifecycle: unexpected exit code " + (err.status || "unknown"));
     warnings++;
   }
 }
@@ -719,7 +726,7 @@ try {
   }
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
-  console.log(`📊 TDMS: ❌ metrics read failed: ${msg}`);
+  console.error(`📊 TDMS: ❌ metrics read failed: ${msg}`);
   warnings++;
 }
 

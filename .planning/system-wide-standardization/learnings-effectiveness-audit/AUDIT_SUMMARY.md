@@ -207,10 +207,10 @@ ecosystem-health → 11 checkers → 9 categories → 14 dimensions →
 
 ### Documentation (3 new)
 
-| File                                                          | Purpose                        | Wave |
-| ------------------------------------------------------------- | ------------------------------ | ---- |
-| `docs/agent_docs/POSITIVE_PATTERNS.md`                        | 25 positive templates (S1-S25) | W3   |
-| `docs/agent_docs/PRE_GENERATION_CHECKLIST.md`                 | Behavioral pre-write checklist | W3   |
+| File                                                                                      | Purpose                        | Wave |
+| ----------------------------------------------------------------------------------------- | ------------------------------ | ---- |
+| `docs/agent_docs/POSITIVE_PATTERNS.md`                                                    | 25 positive templates (S1-S25) | W3   |
+| `docs/agent_docs/PRE_GENERATION_CHECKLIST.md`                                             | Behavioral pre-write checklist | W3   |
 | `.planning/system-wide-standardization/learnings-effectiveness-audit/LIFECYCLE_SCORES.md` | Generated dashboard            | W5   |
 
 ### Test Files (8 new, 137+ tests)
@@ -347,6 +347,7 @@ node scripts/ratchet-baselines.js --dry-run
 ---
 
 _Generated as part of the Data Effectiveness Audit, Waves 0-10._ _Plan:
-`.planning/system-wide-standardization/learnings-effectiveness-audit/PLAN.md`_ _Decisions:
-`.planning/system-wide-standardization/learnings-effectiveness-audit/DECISIONS.md`_ _Scores:
-`.claude/state/lifecycle-scores.jsonl`_
+`.planning/system-wide-standardization/learnings-effectiveness-audit/PLAN.md`_
+_Decisions:
+`.planning/system-wide-standardization/learnings-effectiveness-audit/DECISIONS.md`_
+_Scores: `.claude/state/lifecycle-scores.jsonl`_

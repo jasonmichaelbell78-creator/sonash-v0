@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2060
+**Items Needing Verification:** 2061
 
 This queue contains items with status=NEW that require verification.
 Review items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -660,6 +660,7 @@ Review items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45522 | Pre-push SonarCloud lint script for new files | S2 | scripts/ | 0 |
 | DEBT-45528 | log-override.js generates duplicate DEBT entries with cas... | S2 | scripts/log-override.js | 0 |
 | DEBT-45529 | Sacred-path drift: Shadow-Append Registry should be autho... | S2 | .planning/system-wide-standardization/PLAN-v2.md | 606 |
+| DEBT-45530 | 3 learning-route entries have _repair_needed due to missi... | S2 | .claude/state/learning-routes.jsonl | 1 |
 | DEBT-0001 | Make action buttons customizable by user (save preference... | S3 | components/notebook/features/quick-actions-fab.tsx | 0 |
 | DEBT-2443 | PLAN_MAP.md version history table | S3 | docs/PLAN_MAP.md | 0 |
 | DEBT-2447 | check-review-triggers.sh - Dead shell script for multi-AI... | S3 | scripts/check-review-triggers.sh | 0 |

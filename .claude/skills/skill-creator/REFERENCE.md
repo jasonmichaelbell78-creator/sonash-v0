@@ -75,8 +75,9 @@ Workflow structure, phase design, output artifacts.
 - "If this skill uses state files: what happens on re-invocation with existing
   state? MUST define resume behavior (detect existing state → present status →
   offer continue/restart)." (S27)
-- "Does this skill's workflow involve claims verification, multi-agent discovery,
-  or iterative refinement? If yes, design convergence-loop integration per T25."
+- "Does this skill's workflow involve claims verification, multi-agent
+  discovery, or iterative refinement? If yes, design convergence-loop
+  integration per T25."
 
 ### Category 3: Attention & Prompt Engineering
 

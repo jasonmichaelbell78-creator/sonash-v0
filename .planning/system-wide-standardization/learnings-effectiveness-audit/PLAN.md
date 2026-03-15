@@ -91,8 +91,9 @@ standard contract for all SWS health checkers.
 
 ### Cross-Impact Changelog (SWS T18, D72)
 
-Create `.planning/system-wide-standardization/learnings-effectiveness-audit/CHANGELOG.jsonl` tracking all
-cross-ecosystem impacts using D72 schema:
+Create
+`.planning/system-wide-standardization/learnings-effectiveness-audit/CHANGELOG.jsonl`
+tracking all cross-ecosystem impacts using D72 schema:
 `{timestamp, ecosystem, change, affects, type?, decision_ref?, files_changed?}`.
 
 ### Ownership Declaration (SWS T16)
@@ -483,7 +484,8 @@ _Estimated: 90-120 min | Files: 10-15_
 Per D4/D5/D24: Apply lifecycle scoring to every data system identified in
 DIAGNOSIS.md.
 
-**Create:** `.planning/system-wide-standardization/learnings-effectiveness-audit/LIFECYCLE_SCORES.md`
+**Create:**
+`.planning/system-wide-standardization/learnings-effectiveness-audit/LIFECYCLE_SCORES.md`
 
 Score each of the 40+ data files across all 12 capture categories:
 

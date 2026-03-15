@@ -43,8 +43,9 @@ config to determine the current threshold.
 
 ### Cross-Impact Changelog (SWS T18, D72)
 
-Create `.planning/system-wide-standardization/code-quality-overhaul/CHANGELOG.jsonl` tracking
-cross-ecosystem impacts using D72 schema:
+Create
+`.planning/system-wide-standardization/code-quality-overhaul/CHANGELOG.jsonl`
+tracking cross-ecosystem impacts using D72 schema:
 `{timestamp, ecosystem, change, affects, type?, decision_ref?, files_changed?}`.
 
 ### Forward Findings (SWS T13, T14)
@@ -252,8 +253,8 @@ these rather than re-discovering them.
    `.truncation-guard.json`
 6. **`scripts/validators/check-truncation-guard.js`** — Truncation check
    (post-write + pre-commit)
-7. **`.planning/system-wide-standardization/code-quality-overhaul/research/`** — Convergence loop artifacts
-   (JSONL per pass)
+7. **`.planning/system-wide-standardization/code-quality-overhaul/research/`** —
+   Convergence loop artifacts (JSONL per pass)
 8. **Research loop iteration artifacts** — `findings.N.jsonl`, `triage.N.jsonl`,
    `changes.N.jsonl`, `verify.N.jsonl` per workstream
 
@@ -510,8 +511,8 @@ are themselves complex), loop back.
 7. **Extracted function quality:** New helper functions must have descriptive
    names, single responsibility, and their own CC≤15/cognitive≤15
 8. **Convergence proof:** Loop artifacts in
-   `.planning/system-wide-standardization/code-quality-overhaul/research/ws4/` show iteration-over-iteration
-   decrease to zero
+   `.planning/system-wide-standardization/code-quality-overhaul/research/ws4/`
+   show iteration-over-iteration decrease to zero
 
 **Done when:** Zero complexity warnings. Both rules at 15. Full suite green.
 Every refactored function tested. Convergence proven via artifacts. **Depends
@@ -1016,13 +1017,13 @@ node scripts/debt/generate-views.js
 
 Check ALL planning files for references to issues we just fixed:
 
-| Location                                                    | What to Check                                                                 |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `.planning/system-wide-standardization/DISCOVERY_RECORD.md` | References to ESLint warnings, complexity, orphans — update as resolved       |
-| `.planning/system-wide-standardization/tooling-infrastructure-audit/PLAN.md`            | Plan 1 Step 5 references to sonash plugin — note that API migration completed |
-| `.claude/state/task-mini-audit-hook-systems.state.json`     | Hook audit decisions referencing propagation/complexity — note as implemented |
-| `.planning/system-wide-standardization/code-quality-overhaul/DIAGNOSIS.md`              | Update current state metrics at top — before/after                            |
-| Any other `.planning/` docs                                 | Search for stale metric references (2,124 warnings, 358 CC, etc.)             |
+| Location                                                                     | What to Check                                                                 |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `.planning/system-wide-standardization/DISCOVERY_RECORD.md`                  | References to ESLint warnings, complexity, orphans — update as resolved       |
+| `.planning/system-wide-standardization/tooling-infrastructure-audit/PLAN.md` | Plan 1 Step 5 references to sonash plugin — note that API migration completed |
+| `.claude/state/task-mini-audit-hook-systems.state.json`                      | Hook audit decisions referencing propagation/complexity — note as implemented |
+| `.planning/system-wide-standardization/code-quality-overhaul/DIAGNOSIS.md`   | Update current state metrics at top — before/after                            |
+| Any other `.planning/` docs                                                  | Search for stale metric references (2,124 warnings, 358 CC, etc.)             |
 
 ### 10e: Future ROADMAP items
 

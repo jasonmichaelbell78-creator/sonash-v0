@@ -355,7 +355,7 @@ Files modified: [list] | Skill-creator gaps: [N]
 
 | Version | Date       | Description                                                             |
 | ------- | ---------- | ----------------------------------------------------------------------- |
-| 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2   |
+| 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2     |
 | 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping |
 | 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts    |
 | 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.           |
