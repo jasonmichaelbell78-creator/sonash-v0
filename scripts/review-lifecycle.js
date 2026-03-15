@@ -215,9 +215,26 @@ function parseMarkdownReviews(content) {
       /Total\*{0,2}:\*{0,2}\s*(\d+)/i.exec(raw) || /(\d+)\s+(?:total|items)/i.exec(raw);
     if (totalMatch) review.total = Number.parseInt(totalMatch[1], 10);
 
-    // Patterns — extract from "**Key Patterns:**" or "**Patterns:**" sections
-    // Handles: "- **pattern-name**: description" and "- pattern description"
-    const patternLines = review._rawLines.filter((l) => {
+    // Patterns — extract only from "**Key Patterns:**" or "**Patterns:**" sections
+    // Constrained to section boundaries to avoid misclassifying data from other sections
+    const lines = review._rawLines;
+    const idxPatterns = lines.findIndex((l) =>
+      /^\s*\*\*(Key Patterns|Patterns):\*\*\s*$/i.test(l.trim())
+    );
+    const idxNextAfterPatterns =
+      idxPatterns >= 0
+        ? lines
+            .slice(idxPatterns + 1)
+            .findIndex((l) => /^\s*\*\*[^*]+:\*\*/.test(l.trim()) || /^\s*##+\s+/.test(l.trim()))
+        : -1;
+    const patternWindow =
+      idxPatterns >= 0
+        ? lines.slice(
+            idxPatterns + 1,
+            idxNextAfterPatterns >= 0 ? idxPatterns + 1 + idxNextAfterPatterns : undefined
+          )
+        : [];
+    const patternLines = patternWindow.filter((l) => {
       const t = l.trim();
       return (
         (t.startsWith("- **") && t.includes("**:")) ||
@@ -234,8 +251,24 @@ function parseMarkdownReviews(content) {
         .slice(0, 15);
     }
 
-    // Learnings — extract from "**Takeaway:**", "**Lesson:**", or post-pattern bullets
-    const learningLines = review._rawLines.filter((l) => {
+    // Learnings — extract only from "**Takeaway:**", "**Lesson:**", or "**Learnings:**" sections
+    const idxLearnings = lines.findIndex((l) =>
+      /^\s*\*\*(Takeaway|Lesson|Learnings):\*\*/i.test(l.trim())
+    );
+    const idxNextAfterLearnings =
+      idxLearnings >= 0
+        ? lines
+            .slice(idxLearnings + 1)
+            .findIndex((l) => /^\s*\*\*[^*]+:\*\*/.test(l.trim()) || /^\s*##+\s+/.test(l.trim()))
+        : -1;
+    const learningWindow =
+      idxLearnings >= 0
+        ? lines.slice(
+            idxLearnings,
+            idxNextAfterLearnings >= 0 ? idxLearnings + 1 + idxNextAfterLearnings : undefined
+          )
+        : [];
+    const learningLines = learningWindow.filter((l) => {
       const t = l.trim();
       return (
         t.startsWith("**Takeaway:**") ||
@@ -321,10 +354,10 @@ function runSync() {
     throw new Error(`Failed to append to reviews.jsonl: ${sanitizeError(err)}`);
   }
 
-  logStep(
-    "SYNC",
-    `Appended ${missing.length} entries (IDs: ${missing.map((r) => "#" + r.id).join(", ")})`
-  );
+  const idList = missing.map((r) => "#" + r.id);
+  const shown = idList.slice(0, 25).join(", ");
+  const more = idList.length > 25 ? `, +${idList.length - 25} more` : "";
+  logStep("SYNC", `Appended ${missing.length} entries (IDs: ${shown}${more})`);
   return { synced: missing.length, total: existingIds.size + missing.length };
 }
 
@@ -418,7 +451,7 @@ function runArchive() {
     // Temp file lost between step 2 and step 3 — data loss scenario
     throw new Error(
       `CRITICAL: reviews.jsonl already trimmed but temp archive unreadable. ` +
-        `Recovery: check ${tmpArchive} — ${sanitizeError(readErr)}`
+        `Recovery: check reviews-archive.jsonl.tmp.${process.pid} — ${sanitizeError(readErr)}`
     );
   }
 
@@ -429,7 +462,7 @@ function runArchive() {
     // Leave temp file in place as crash-recovery artifact.
     throw new Error(
       `CRITICAL: Archive append failed after reviews.jsonl was trimmed. ` +
-        `Recovery artifact preserved at: ${tmpArchive} — ${sanitizeError(appendErr)}`
+        `Recovery artifact preserved at reviews-archive.jsonl.tmp.${process.pid} — ${sanitizeError(appendErr)}`
     );
   }
 
@@ -661,9 +694,7 @@ function main() {
     log(`  RENDER:   ${renderStatus}${renderCount}`);
 
     // Exit code based on validation
-    if (validateResult.valid) {
-      // All checks passed — exit code stays 0
-    } else {
+    if (!validateResult.valid) {
       process.exitCode = 1;
     }
   } catch (err) {

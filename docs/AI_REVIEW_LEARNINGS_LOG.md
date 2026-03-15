@@ -888,6 +888,30 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review 496: Qodo R2 — log injection, section-scoped parsing, forward-findings dedup (2026-03-15)
+
+**Date:** 2026-03-15 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 8     | 0        | 3        |
+
+**Severity Breakdown (all items):**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 4     | 4     | 1       |
+
+**Learnings:**
+
+- sanitizeInput always has fallback in session-start.js — remove dead ternary branches to eliminate false-positive injection paths
+- Markdown parser extracting patterns/learnings must be scoped to section boundaries, not full-file filter
+- forward-findings writer had key mismatch (description vs pattern) AND lacked within-batch dedup — both caused duplicates
+- maxBuffer needed for piped subprocess calls to prevent ERR_CHILD_PROCESS_STDIO_MAXBUFFER
+- Error messages should use relative filenames, not full absolute paths, to avoid internal path exposure
+
+---
+
 ### Review 495: Qodo R1 — Prettier CI, stderr routing, data quality fixes (2026-03-15)
 
 **Date:** 2026-03-15 | **Source:** qodo
@@ -904,11 +928,16 @@ deduplicated, non-overlapping ranges):
 
 **Learnings:**
 
-- Prettier formatting must be checked before CI push — 43 files failed format:check
-- console.log for errors/warnings masks failures in CI stderr detection — use console.warn/console.error
-- JSONL data entries need complete recommendation fields and valid file paths, not sentinels like `:multiple`
-- Retro render script produces 0/0/0 when retro JSONL lacks explicit fixed/rejected/deferred fields
-- Duplicate JSONL entries (rev-485 appended twice) indicate append-without-dedup gap in write-review-record
+- Prettier formatting must be checked before CI push — 43 files failed
+  format:check
+- console.log for errors/warnings masks failures in CI stderr detection — use
+  console.warn/console.error
+- JSONL data entries need complete recommendation fields and valid file paths,
+  not sentinels like `:multiple`
+- Retro render script produces 0/0/0 when retro JSONL lacks explicit
+  fixed/rejected/deferred fields
+- Duplicate JSONL entries (rev-485 appended twice) indicate append-without-dedup
+  gap in write-review-record
 
 ---
 

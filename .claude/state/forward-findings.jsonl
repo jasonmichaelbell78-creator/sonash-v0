@@ -1,3 +1,1 @@
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"consolidation.json lastConsolidatedReview (#497) exceeds JSONL max ID (#484)","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-15T11:56:57.750Z"}
-{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"consolidation.json lastConsolidatedReview (#497) exceeds JSONL max ID (#484)","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-15T12:00:17.434Z"}
-{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"consolidation.json lastConsolidatedReview (#497) exceeds JSONL max ID (#484)","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-15T12:02:02.572Z"}

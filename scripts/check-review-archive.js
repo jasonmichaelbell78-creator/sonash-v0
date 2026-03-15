@@ -383,7 +383,17 @@ function writeForwardFindings(allFindings) {
     // If we can't read existing file, proceed without dedup (first run)
   }
 
-  const newFindings = critical.filter((f) => !existingKeys.has(`${f.severity}::${f.description}`));
+  // Deduplicate within the batch itself before checking existing keys
+  const batchKeys = new Set();
+  const uniqueCritical = critical.filter((f) => {
+    const key = `${f.severity}::${f.description}`;
+    if (batchKeys.has(key)) return false;
+    batchKeys.add(key);
+    return true;
+  });
+  const newFindings = uniqueCritical.filter(
+    (f) => !existingKeys.has(`${f.severity}::${f.description}`)
+  );
   if (newFindings.length === 0) return;
 
   const lines = newFindings.map((f) =>

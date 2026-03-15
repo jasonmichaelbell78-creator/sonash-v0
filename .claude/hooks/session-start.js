@@ -553,6 +553,8 @@ try {
     cwd: projectDir,
     stdio: "pipe",
     timeout: 30000,
+    maxBuffer: 10 * 1024 * 1024,
+    encoding: "utf8",
   });
   console.log("🔍 Review lifecycle: ✓ complete");
 } catch (err) {
@@ -572,21 +574,17 @@ try {
         .slice(0, 3)
         .map((f) => `[${f.severity}] ${f.description}`)
         .join("\n");
-      console.warn(sanitizeInput ? sanitizeInput(summary) : summary);
+      console.warn(sanitizeInput(summary));
     } else {
       const output = stdoutText || stderrText || "Unknown validation issue";
-      console.warn(
-        sanitizeInput
-          ? sanitizeInput(output.split("\n").slice(0, 5).join("\n"))
-          : output.split("\n")[0]
-      );
+      console.warn(sanitizeInput(output.split("\n").slice(0, 5).join("\n")));
     }
     warnings++;
   } else if (err.status === 2) {
     // I/O error — surface as error
     const sanitized = sanitizeError ? sanitizeError(err) : "[review lifecycle error]";
     const line0 = String(sanitized).split("\n")[0];
-    console.error("❌ Review lifecycle error: " + (sanitizeInput ? sanitizeInput(line0) : line0));
+    console.error("❌ Review lifecycle error: " + sanitizeInput(line0));
     warnings++;
   } else {
     // Other/unexpected error
