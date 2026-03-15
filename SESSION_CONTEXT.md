@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 7.8 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 7.9 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-15 (Session #219)
+2026-03-15 (Session #220)
 
 ## Purpose
 
@@ -30,7 +30,7 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-03-15 **Branch**: `plan-implementation` **Working
-On**: Session #219 — SWS PLAN-v3.md convergence loop rebuild + deep-plan Phase 4
+On**: Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical)
 
 **Uncommitted Work**: State files (learning-routes.jsonl, review-metrics.jsonl)
 
@@ -48,46 +48,37 @@ On**: Session #219 — SWS PLAN-v3.md convergence loop rebuild + deep-plan Phase
 
 ## Recent Session Summaries
 
+**Session #220** (REVIEW LIFECYCLE PIPELINE OVERHAUL — JSONL-CANONICAL):
+
+- **T3 convergence loop**: 2 passes, 6 agents — 7 confirmed, 2 corrected,
+  2 extended, 2 new findings. 7 verified root causes identified.
+- **Deep-plan**: 20 decisions across 3 batches, SWS alignment verified
+- **9-step execution** via subagent-driven development with per-step spec
+  review + code quality review (15 commits)
+- **Architecture change**: JSONL is now canonical source of truth. Markdown
+  (`AI_REVIEW_LEARNINGS_LOG.md`) is a generated view. Single orchestrator
+  (`review-lifecycle.js`) replaces 3 scattered session-start calls.
+- **Root causes fixed**: RC-1 (no enforcement gate), RC-2 (archive reactive),
+  RC-3 (consolidation state ordering), RC-4 (sync doesn't consult archives),
+  RC-5 (concurrent writes), RC-6 (archive duplicates), RC-7 (orphaned renderer)
+- **New files**: `review-lifecycle.js` (orchestrator), tests (24 tests)
+- **Migration**: 382 reviews migrated to JSONL, 10 markdown archives moved to
+  legacy folder, 4 deprecated scripts archived
+- **Testing**: 3,775/3,776 tests passing (1 skipped), 0 fail
+
 **Session #219** (SWS PLAN-v3.md — 5-PASS CONVERGENCE LOOP REBUILD):
 
 - **PLAN-v3.md complete**: 2,467-line restructure of SWS from 21-step sequential
   to 6-phase phased approach. 5-pass convergence loop, 9 internal loops, 20+
   verification agents
-- **Pass 1**: Content Inventory — 84 V1 + 32 V2 blocks cataloged
-- **Pass 2**: Disposition Mapping — 15 orphaned V1 blocks discovered via
-  deliberate disagreement detection, all restored
-- **Pass 3**: Write — 60/60 verification checks passed
-- **Pass 4**: Cross-Cutting Verification — 3 fixes (effort estimates, v0.4.0,
-  Mermaid labels)
-- **Pass 5**: Fresh-Eyes — zero corrections, convergence confirmed
-- **Phase 4 approval revisions**: DE recognized as 95% complete (verified
-  against actual files), meta-pipeline reduced to 2 child plans (Tooling + CQ),
-  `/skill-creator` → `/skill-audit` canonical flow added
-- **PR #433**: Created, R1 review processed (9 fixed, 1 deferred DEBT-45529,
-  2 rejected), merged
-- **Convergence-loop memory**: 6 new patterns added (multi-pass orchestration,
-  disagreement detection, source verification, fresh-eyes gate, write-then-
-  verify, fix-and-re-verify)
-- **Files migrated**: 5 files from sws-cleanup worktree → plan-implementation
-  (worktree deleted, branch retained)
+- **PR #433**: Created, R1 review processed, merged
+- **Convergence-loop memory**: 6 new patterns added
 
 **Session #218** (AUTOMATION GAP CLOSURE — FULL IMPLEMENTATION):
 
-- **9 tasks executed** via subagent-driven development: design spec → plan → all
-  code implemented, tested, committed (10 commits on plan-implementation)
-- **21 scaffolded routes promoted**: 0 remain at "scaffolded" — 28 refined
-  (low-confidence → pending fix-or-DEBT), 3 enforced (high-confidence)
-- **5 scripts wired to session-start**: route-lifecycle-gaps, route-enforcement-
-  gaps, refine-scaffolds (NEW), verify-enforcement, ratchet-baselines
-  --check-only
-- **New files**: confidence-classifier.js, refine-scaffolds.js
+- **9 tasks executed** via subagent-driven development (10 commits)
+- **21 scaffolded routes promoted**: 0 remain at "scaffolded"
 - **Testing**: 1308/1308 tests passing
-
-**Session #217** (DATA EFFECTIVENESS AUDIT — DEEP PLAN):
-
-- **Deep-plan complete**: 35 decisions, 11 waves, XL effort
-- **Critical reframe (D8/D9)**: Learnings → AUTOMATED ENFORCEMENT
-- **Artifacts**: `.planning/learnings-effectiveness-audit/`
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -100,9 +91,9 @@ On**: Session #219 — SWS PLAN-v3.md convergence loop rebuild + deep-plan Phase
 | **PR Review Ecosystem v2**        | SHIPPED  | v1.0 tagged/pushed                          |
 | **Skill Quality Framework**       | COMPLETE | All 4 deliverables                          |
 | **Data Effectiveness Audit**      | 95% DONE | 10/11 waves delivered (PRs #431, #432)      |
+| **Review Lifecycle Overhaul**     | COMPLETE | JSONL-canonical, orchestrator, migration done |
 | **System-Wide Standardization**   | ACTIVE   | PLAN-v3.md approved, 92+33 decisions, Phase 4 |
 | **Operational Visibility Sprint** | BLOCKED  | ~75% (paused for overhaul)                  |
-| **PR #411 Review (9 rounds)**     | COMPLETE | 135 fixed/415 total                         |
 | **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                                |
 | Track B: Dev Dashboard MVP        | Paused   | ~10%                                        |
 | M1.5 - Quick Wins                 | Paused   | ~20%                                        |
@@ -110,7 +101,7 @@ On**: Session #219 — SWS PLAN-v3.md convergence loop rebuild + deep-plan Phase
 
 **Current Branch**: `plan-implementation`
 
-**Test Status**: All tests passing (1,308 total, 1,308 pass, 0 fail)
+**Test Status**: All tests passing (3,776 total, 3,775 pass, 0 fail, 1 skipped)
 
 ---
 
@@ -118,8 +109,8 @@ On**: Session #219 — SWS PLAN-v3.md convergence loop rebuild + deep-plan Phase
 
 ### Immediate Priority
 
-1. **SWS deep-plan Handoff** — complete Phase 4 approval + Handoff routing
-   (execution approach decision). PLAN-v3.md is approved with revisions.
+1. **Review lifecycle PR** — create PR for review lifecycle overhaul (15 commits
+   on plan-implementation), process code review feedback
 2. **DE cleanup** — Wave 8 REFERENCE.md + `/skill-audit` on
    `data-effectiveness-audit` skill
 3. **Phase 0 execution** — Start with Step 0.1 (`/convergence-loop` skill via
@@ -128,15 +119,16 @@ On**: Session #219 — SWS PLAN-v3.md convergence loop rebuild + deep-plan Phase
    integration layer (gates, forward-findings, SWS additions)
 
 **Also pending:** Planning landscape Wave 5 (canonicalization), sws-cleanup
-branch deletion.
+branch deletion, review lifecycle S3 cosmetic fixes (rendered view header
+metadata drift).
 
 ---
 
 ## Pending PR Reviews
 
-**Status**: PR #433 merged (SWS PLAN-v3.md). No pending reviews.
+**Status**: No pending reviews. Review lifecycle overhaul not yet PR'd.
 
-**Last Processed**: 2026-03-15 (Session #219)
+**Last Processed**: 2026-03-15 (Session #220)
 
 ---
 
@@ -203,6 +195,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                          |
 | ------- | ---------- | ---------------------------------------------------------------- |
+| 7.9     | 2026-03-15 | Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical) |
 | 7.8     | 2026-03-15 | Session #219 — SWS PLAN-v3.md convergence loop rebuild           |
 | 7.7     | 2026-03-14 | Session #218 — Automation Gap Closure full implementation        |
 | 7.6     | 2026-03-13 | Session #217 — Data Effectiveness Audit deep-plan (35 decisions) |
