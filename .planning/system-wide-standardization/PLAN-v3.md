@@ -2114,6 +2114,23 @@ committed and tagged.
 These concerns span multiple phases and require consistent handling throughout
 execution.
 
+### Decision Recall Mechanism (Q38 — Session #221)
+
+**MANDATORY GATE:** Before planning ANY phase, read the decisions-by-phase index:
+- **Human-readable:** `DECISIONS_BY_PHASE.md` (this directory)
+- **Machine-readable:** `decisions-phase-map.json` (this directory)
+
+The deep-plan skill MUST present all tagged decisions for the target phase before
+discovery questions begin. After the plan is drafted, a convergence loop
+verification pass MUST cross-check that all tagged decisions appear in the plan.
+
+**Additional Session #221 cross-cutting decisions:**
+- **Q34**: Progressive canon enforcement with acknowledgment-gating (soft → hard)
+- **Q35**: No silent fails — all hooks/scripts/processes surface failures visibly
+- **Q36**: No orphan processes/files — proactive discovery mechanism required
+- **Q37**: Skill-audit-first pipeline — update skill-audit before updating skills
+- **Q38**: This mechanism — 4-layer decision recall guarantee
+
 ### Forward-Findings Pipeline (Q30, Q31)
 
 Cross-plan knowledge transfer via a unified intake file. Tooling and Code
