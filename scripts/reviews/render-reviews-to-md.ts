@@ -35,9 +35,10 @@ const sanitizeErrorMod = require(sanitizeErrorPath) as {
   sanitizeError: (error: unknown) => string;
   default?: { sanitizeError: (error: unknown) => string };
 };
-const sanitizeError =
+const sanitizeError: (error: unknown) => string =
   sanitizeErrorMod.sanitizeError ??
-  (sanitizeErrorMod.default && sanitizeErrorMod.default.sanitizeError);
+  sanitizeErrorMod.default?.sanitizeError ??
+  ((err: unknown) => (err instanceof Error ? err.message : String(err)));
 
 // Import read-jsonl (CJS)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -96,11 +97,8 @@ interface RenderableReview {
   // Retrospective-specific fields
   rounds?: number | null;
   totalItems?: number | null;
-  churnChains?: number | null;
-  automationCandidates?: string[] | null;
   skillsToUpdate?: string[] | null;
   processImprovements?: string[] | null;
-  sourceBreakdown?: string | null;
 }
 
 /**
@@ -207,7 +205,7 @@ export function renderReviewRecord(record: RenderableReview): string {
   if (record.patterns != null && record.patterns.length > 0) {
     lines.push("**Patterns:**", "");
     for (const pattern of record.patterns) {
-      lines.push(`- ${safeInline(pattern)}`);
+      lines.push(`- ${safeInline(String(pattern))}`);
     }
     lines.push("");
   }
@@ -216,7 +214,7 @@ export function renderReviewRecord(record: RenderableReview): string {
   if (record.learnings != null && record.learnings.length > 0) {
     lines.push("**Learnings:**", "");
     for (const learning of record.learnings) {
-      lines.push(`- ${safeInline(learning)}`);
+      lines.push(`- ${safeInline(String(learning))}`);
     }
     lines.push("");
   }
@@ -254,7 +252,7 @@ export function renderRetroRecord(record: RenderableReview): string {
   if (record.processImprovements != null && record.processImprovements.length > 0) {
     lines.push("**Process Improvements:**", "");
     for (const item of record.processImprovements) {
-      lines.push(`- ${safeInline(item)}`);
+      lines.push(`- ${safeInline(String(item))}`);
     }
     lines.push("");
   }
@@ -263,7 +261,7 @@ export function renderRetroRecord(record: RenderableReview): string {
   if (record.skillsToUpdate != null && record.skillsToUpdate.length > 0) {
     lines.push("**Skills to Update:**", "");
     for (const item of record.skillsToUpdate) {
-      lines.push(`- ${safeInline(item)}`);
+      lines.push(`- ${safeInline(String(item))}`);
     }
     lines.push("");
   }
@@ -272,7 +270,7 @@ export function renderRetroRecord(record: RenderableReview): string {
   if (record.learnings != null && record.learnings.length > 0) {
     lines.push("**Learnings:**", "");
     for (const learning of record.learnings) {
-      lines.push(`- ${safeInline(learning)}`);
+      lines.push(`- ${safeInline(String(learning))}`);
     }
     lines.push("");
   }
@@ -445,19 +443,19 @@ export function renderReviews(
     return { success: true, recordCount: records.length, outputPath: null };
   }
 
-  // Extract preserved sections from existing file
-  const preserved = extractPreservedSections(outputPath);
-
-  // Assemble full document
-  const fullDocument = assembleDocument(preserved, renderedEntries);
-
-  // Security check before writing
+  // Security check before reading or writing the output path
   const absOutputPath = path.resolve(outputPath);
   if (!isSafeToWrite(absOutputPath)) {
     const errMsg = "Refusing to write to symlinked path";
     console.error(`[render-reviews-to-md] ${errMsg}`);
     return { success: false, recordCount: records.length, outputPath: absOutputPath, error: errMsg };
   }
+
+  // Extract preserved sections from existing file
+  const preserved = extractPreservedSections(outputPath);
+
+  // Assemble full document
+  const fullDocument = assembleDocument(preserved, renderedEntries);
 
   // Ensure output directory exists
   const outDir = path.dirname(absOutputPath);
@@ -492,10 +490,22 @@ if (require.main === module) {
     if (args[i] === "--stdout") {
       stdout = true;
     } else if (args[i] === "--input" && i + 1 < args.length) {
-      inputPath = path.resolve(projectRoot, args[i + 1]);
+      const resolvedInput = path.resolve(projectRoot, args[i + 1]);
+      const relInput = path.relative(projectRoot, resolvedInput);
+      if (/^\.\.(?:[\\/]|$)/.test(relInput)) {
+        console.error("--input must be within the project root");
+        process.exit(1);
+      }
+      inputPath = resolvedInput;
       i++;
     } else if (args[i] === "--output" && i + 1 < args.length) {
-      outputPath = path.resolve(projectRoot, args[i + 1]);
+      const resolvedOutput = path.resolve(projectRoot, args[i + 1]);
+      const relOutput = path.relative(projectRoot, resolvedOutput);
+      if (/^\.\.(?:[\\/]|$)/.test(relOutput)) {
+        console.error("--output must be within the project root");
+        process.exit(1);
+      }
+      outputPath = resolvedOutput;
       i++;
     } else if (args[i] === "--filter-pr" && i + 1 < args.length) {
       filterPr = Number.parseInt(args[i + 1], 10);

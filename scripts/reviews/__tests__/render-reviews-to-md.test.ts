@@ -1,35 +1,14 @@
 /**
  * Unit tests for render-reviews-to-md.ts
  *
- * Tests the renderReviewRecord() and renderReviewsToMarkdown() functions.
- * Uses inline test data matching the ReviewRecord schema.
+ * Tests the renderReviewRecord() and renderAllRecords() functions.
+ * Uses inline test data matching the RenderableReview interface.
  */
 
 import assert from "node:assert/strict";
 import { test, describe } from "node:test";
-import * as fs from "node:fs";
-import * as path from "node:path";
 
-// Walk up from __dirname until we find package.json
-function findProjectRoot(startDir: string): string {
-  let dir = startDir;
-  for (;;) {
-    if (fs.existsSync(path.join(dir, "package.json"))) return dir;
-    const parent = path.dirname(dir);
-    if (parent === dir) throw new Error("Could not find project root");
-    dir = parent;
-  }
-}
-
-const PROJECT_ROOT = findProjectRoot(__dirname);
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { renderReviewRecord, renderReviewsToMarkdown } = require(
-  path.resolve(PROJECT_ROOT, "scripts/reviews/dist/render-reviews-to-md.js")
-) as {
-  renderReviewRecord: (record: Record<string, unknown>) => string;
-  renderReviewsToMarkdown: (records: Array<Record<string, unknown>>) => string;
-};
+import { renderReviewRecord, renderAllRecords } from "../render-reviews-to-md";
 
 // =========================================================
 // Test fixtures
@@ -39,10 +18,8 @@ function makeFullRecord(overrides: Record<string, unknown> = {}): Record<string,
   return {
     id: "rev-1",
     date: "2026-02-28",
-    schema_version: 1,
     completeness: "full",
     completeness_missing: [],
-    origin: { type: "pr-review", tool: "test" },
     title: "Test Review",
     pr: 399,
     source: "manual",
@@ -61,10 +38,8 @@ function makePartialRecord(overrides: Record<string, unknown> = {}): Record<stri
   return {
     id: "rev-2",
     date: "2026-02-27",
-    schema_version: 1,
     completeness: "partial",
     completeness_missing: ["severity_breakdown", "learnings"],
-    origin: { type: "pr-review", tool: "test" },
     title: "Partial Review",
     pr: 400,
     source: "automated",
@@ -80,7 +55,6 @@ function makeStubRecord(overrides: Record<string, unknown> = {}): Record<string,
   return {
     id: "rev-3",
     date: "2026-02-26",
-    schema_version: 1,
     completeness: "stub",
     completeness_missing: [
       "title",
@@ -93,7 +67,6 @@ function makeStubRecord(overrides: Record<string, unknown> = {}): Record<string,
       "patterns",
       "learnings",
     ],
-    origin: { type: "backfill", tool: "test" },
     ...overrides,
   };
 }
@@ -172,10 +145,11 @@ describe("renderReviewRecord", () => {
   });
 });
 
-describe("renderReviewsToMarkdown", () => {
+describe("renderAllRecords", () => {
   test("empty array produces 'No reviews found' message", () => {
-    const md = renderReviewsToMarkdown([]);
-    assert.equal(md, "No reviews found.\n");
+    const md = renderAllRecords([]);
+    assert.ok(md.includes("## Active Reviews"), "Should have Active Reviews heading");
+    assert.ok(md.includes("_No reviews found._"), "Should have no-reviews message");
   });
 
   test("multiple records render in order", () => {
@@ -184,7 +158,9 @@ describe("renderReviewsToMarkdown", () => {
       makePartialRecord({ id: "rev-2", title: "Second Review" }),
     ];
 
-    const md = renderReviewsToMarkdown(records);
+    const md = renderAllRecords(records);
+
+    assert.ok(md.includes("## Active Reviews"), "Should have Active Reviews heading");
 
     const firstIdx = md.indexOf("First Review");
     const secondIdx = md.indexOf("Second Review");
@@ -197,7 +173,7 @@ describe("renderReviewsToMarkdown", () => {
   });
 
   test("single record renders without separator", () => {
-    const md = renderReviewsToMarkdown([makeFullRecord()]);
+    const md = renderAllRecords([makeFullRecord()]);
     // Split by --- and check we only have the record, not multiple separators
     const parts = md.split("\n---\n");
     assert.equal(parts.length, 1, "Single record should not have separator");
@@ -206,7 +182,7 @@ describe("renderReviewsToMarkdown", () => {
 
 describe("CLI filtering", () => {
   // These tests verify the filter logic works correctly by testing the
-  // renderReviewsToMarkdown function with pre-filtered data (simulating CLI behavior)
+  // renderAllRecords function with pre-filtered data (simulating CLI behavior)
 
   test("--filter-pr filters correctly", () => {
     const records = [
@@ -217,7 +193,7 @@ describe("CLI filtering", () => {
 
     // Simulate --filter-pr 399
     const filtered = records.filter((r) => r.pr === 399);
-    const md = renderReviewsToMarkdown(filtered);
+    const md = renderAllRecords(filtered);
 
     assert.ok(md.includes("rev-1"), "Should include rev-1 (pr 399)");
     assert.ok(!md.includes("rev-2"), "Should not include rev-2 (pr 400)");
@@ -233,7 +209,7 @@ describe("CLI filtering", () => {
 
     // Simulate --last 2
     const lastTwo = records.slice(-2);
-    const md = renderReviewsToMarkdown(lastTwo);
+    const md = renderAllRecords(lastTwo);
 
     assert.ok(!md.includes("rev-1"), "Should not include first record");
     assert.ok(md.includes("rev-2"), "Should include second record");
