@@ -550,52 +550,49 @@ function updateVersionHistory(content, newPatterns, consolidationNumber, range, 
  * - Checks each pattern against existing content to avoid duplicates
  * - Appends to the correct category section
  * - Updates version history
- * Non-fatal: logs a warning if the update fails.
+ *
+ * RC-3 fix: Write errors now PROPAGATE so consolidation state doesn't advance
+ * when CODE_PATTERNS.md fails to write. File-not-found is still safe to skip
+ * (the file may not exist yet), but write failures are fatal to the caller.
  */
 function appendToCodePatterns(recurringPatterns, categories, consolidationNumber, range, today) {
-  try {
-    if (!existsSync(CODE_PATTERNS_FILE)) {
-      log("  ⚠️ CODE_PATTERNS.md not found, skipping auto-update", c.yellow);
-      return { added: 0 };
-    }
-    if (!isSafeToWrite(CODE_PATTERNS_FILE)) {
-      log("  ⚠️ Refusing to write: symlink detected at CODE_PATTERNS.md", c.yellow);
-      return { added: 0 };
-    }
-
-    let content = readFileSync(CODE_PATTERNS_FILE, "utf8");
-    const { patternsByCategory, newPatterns } = filterNewPatterns(
-      categories,
-      content.toLowerCase()
-    );
-
-    if (newPatterns.length === 0) {
-      log("  ℹ️ No new patterns to add to CODE_PATTERNS.md (all already documented)", c.cyan);
-      return { added: 0 };
-    }
-
-    content = insertPatternsIntoSections(content, patternsByCategory, consolidationNumber, range);
-    content = updateVersionHistory(content, newPatterns, consolidationNumber, range, today);
-
-    // Atomic write
-    const tmpPath = CODE_PATTERNS_FILE + ".consolidation.tmp";
-    if (!isSafeToWrite(tmpPath)) {
-      log("  ⚠️ Refusing to write: symlink at tmp path", c.yellow);
-      return { added: 0 };
-    }
-    safeWriteFileSync(tmpPath, content, "utf8");
-    safeRename(tmpPath, CODE_PATTERNS_FILE);
-
-    log(`  ✅ CODE_PATTERNS.md: added ${newPatterns.length} new patterns`, c.green);
-    for (const p of newPatterns) {
-      log(`     + ${p.pattern} (${p.count}x, Reviews #${p.reviews.join(", #")})`, c.green);
-    }
-
-    return { added: newPatterns.length };
-  } catch (err) {
-    log(`  ⚠️ Failed to update CODE_PATTERNS.md: ${sanitizeError(err)}`, c.yellow);
+  if (!existsSync(CODE_PATTERNS_FILE)) {
+    log("  ⚠️ CODE_PATTERNS.md not found, skipping auto-update", c.yellow);
     return { added: 0 };
   }
+  if (!isSafeToWrite(CODE_PATTERNS_FILE)) {
+    log("  ⚠️ Refusing to write: symlink detected at CODE_PATTERNS.md", c.yellow);
+    return { added: 0 };
+  }
+
+  let content = readFileSync(CODE_PATTERNS_FILE, "utf8");
+  const { patternsByCategory, newPatterns } = filterNewPatterns(
+    categories,
+    content.toLowerCase()
+  );
+
+  if (newPatterns.length === 0) {
+    log("  ℹ️ No new patterns to add to CODE_PATTERNS.md (all already documented)", c.cyan);
+    return { added: 0 };
+  }
+
+  content = insertPatternsIntoSections(content, patternsByCategory, consolidationNumber, range);
+  content = updateVersionHistory(content, newPatterns, consolidationNumber, range, today);
+
+  // Atomic write — errors propagate (RC-3: must succeed before state advances)
+  const tmpPath = CODE_PATTERNS_FILE + ".consolidation.tmp";
+  if (!isSafeToWrite(tmpPath)) {
+    throw new Error("Refusing to write CODE_PATTERNS.md: symlink detected at tmp path");
+  }
+  safeWriteFileSync(tmpPath, content, "utf8");
+  safeRename(tmpPath, CODE_PATTERNS_FILE);
+
+  log(`  ✅ CODE_PATTERNS.md: added ${newPatterns.length} new patterns`, c.green);
+  for (const p of newPatterns) {
+    log(`     + ${p.pattern} (${p.count}x, Reviews #${p.reviews.join(", #")})`, c.green);
+  }
+
+  return { added: newPatterns.length };
 }
 
 // =============================================================================
@@ -666,7 +663,7 @@ function appendConsolidationToMarkdown(newNumber, minId, maxId, today, recurring
 }
 
 // =============================================================================
-// APPLY: Update state atomically (JSON write, no markdown regex)
+// APPLY: Write CODE_PATTERNS first, then advance state (RC-3 ordering fix)
 // =============================================================================
 
 function applyConsolidation(state, reviews, recurringPatterns, categories) {
@@ -681,7 +678,37 @@ function applyConsolidation(state, reviews, recurringPatterns, categories) {
   const newNumber = state.consolidationNumber + 1;
   const today = new Date().toISOString().split("T")[0];
 
-  // Atomically update state
+  log(`\n${c.bold}Applying consolidation...${c.reset}`, c.green);
+
+  // Generate rule suggestions for compliance checker
+  generateRuleSuggestions(recurringPatterns, { start: minId, end: maxId });
+
+  // RC-3 fix: Write CODE_PATTERNS.md FIRST, BEFORE advancing state.
+  // If this fails, the consolidation counter stays put so patterns aren't lost.
+  let codePatResult;
+  try {
+    codePatResult = appendToCodePatterns(
+      recurringPatterns,
+      categories,
+      newNumber,
+      { start: minId, end: maxId },
+      today
+    );
+  } catch (err) {
+    log(
+      `\n❌ CODE_PATTERNS.md write failed — consolidation state NOT advanced.`,
+      c.red
+    );
+    log(
+      `   Fix the write error and re-run: npm run consolidation:run -- --apply`,
+      c.red
+    );
+    log(`   Error: ${sanitizeError(err)}`, c.red);
+    process.exitCode = 2;
+    return false;
+  }
+
+  // CODE_PATTERNS succeeded (or was a no-op) — now safe to advance state
   const newState = {
     lastConsolidatedReview: maxId,
     consolidationNumber: newNumber,
@@ -690,28 +717,15 @@ function applyConsolidation(state, reviews, recurringPatterns, categories) {
   };
   writeState(newState);
 
-  // Append consolidation record to markdown
+  // Append consolidation record to markdown (non-fatal)
   appendConsolidationToMarkdown(newNumber, minId, maxId, today, recurringPatterns);
 
-  log(`\n${c.bold}Applying consolidation...${c.reset}`, c.green);
   log(
     `  ✅ Consolidation #${newNumber}: Reviews #${minId}-#${maxId} (${reviews.length} reviews)`,
     c.green
   );
   log(`  ✅ State updated in consolidation.json`, c.green);
   log(`  ✅ Next consolidation due after ${THRESHOLD} more reviews`, c.green);
-
-  // Generate rule suggestions for compliance checker
-  generateRuleSuggestions(recurringPatterns, { start: minId, end: maxId });
-
-  // Auto-update CODE_PATTERNS.md with new patterns
-  const codePatResult = appendToCodePatterns(
-    recurringPatterns,
-    categories,
-    newNumber,
-    { start: minId, end: maxId },
-    today
-  );
 
   if (autoMode) {
     const parts = [
