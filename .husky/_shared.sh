@@ -61,7 +61,8 @@ require_skip_reason() {
   esac
 }
 
-# Initialize fnm so node/npm/npx are available in this shell context
+# Initialize fnm so node/npm/npx are available in this shell context (C6-G3)
+# Computes fnm/node env once; sourcing scripts reuse the result throughout
 _shared_init_fnm() {
   if command -v fnm > /dev/null 2>&1; then
     # Prefer POSIX output where supported; fall back to bash (POSIX-compatible exports)
