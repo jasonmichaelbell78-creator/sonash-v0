@@ -15,7 +15,7 @@
  *   5. Checks consolidation status
  *
  * === v1/v2 Script Status (INTG-06) ===
- * sync-reviews-to-jsonl.js: v1 (bridges legacy markdown, v2 writes JSONL-first)
+ * review-lifecycle.js: v2 orchestrator (sync, archive, rotate, validate, render)
  * run-consolidation.js: v1 (no full v2 replacement yet)
  * check-pattern-compliance.js: v1 (pre-commit gate, v2 partial overlap)
  * promote-patterns.js: v2 wrapper (calls scripts/reviews/lib/promote-patterns.ts)
@@ -547,33 +547,44 @@ try {
   }
 }
 
-// Sync reviews from markdown → JSONL (v1 — bridges legacy markdown, v2 writes JSONL-first)
+// Review lifecycle orchestrator (sync, archive, rotate, validate, render)
 try {
-  execFileSync("npm", ["run", "reviews:sync", "--", "--apply"], {
+  execFileSync(process.execPath, [
+    path.join(projectDir, "scripts", "review-lifecycle.js")
+  ], {
     cwd: projectDir,
     stdio: "pipe",
-    timeout: 15000,
+    timeout: 30000,
   });
-} catch {
-  // Non-fatal: session-begin will retry
-}
-
-// Auto-archive: move old reviews from active log to archive files when threshold exceeded
-try {
-  const archiveOutput = execFileSync(process.execPath, ["scripts/archive-reviews.js", "--auto"], {
-    cwd: projectDir,
-    encoding: "utf8",
-    stdio: "pipe",
-    timeout: 15000,
-  });
-  if (archiveOutput.trim()) {
-    console.log(archiveOutput.trim());
-  }
-} catch (archiveErr) {
-  // Non-fatal: log failures but don't block session start
-  const archiveMsg = archiveErr instanceof Error ? archiveErr.message : String(archiveErr);
-  if (archiveMsg && !archiveMsg.includes("exit code 0")) {
-    console.log("   ⚠️ Auto-archive: " + archiveMsg.split("\n")[0]);
+  console.log("🔍 Review lifecycle: ✓ complete");
+} catch (err) {
+  if (err.status === 1) {
+    // Validation issues — surface as blocking warning
+    console.error("⚠️ Review lifecycle validation issues found:");
+    const stderrText = err.stderr ? err.stderr.toString() : "";
+    const stdoutText = err.stdout ? err.stdout.toString() : "";
+    let findings = null;
+    try {
+      findings = JSON.parse((stderrText || stdoutText || "").trim());
+    } catch { findings = null; }
+    if (Array.isArray(findings) && findings.length > 0) {
+      const summary = findings.slice(0, 3).map((f) => `[${f.severity}] ${f.description}`).join("\n");
+      console.error(sanitizeInput ? sanitizeInput(summary) : summary);
+    } else {
+      const output = stdoutText || stderrText || "Unknown validation issue";
+      console.error(sanitizeInput ? sanitizeInput(output.split("\n").slice(0, 5).join("\n")) : output.split("\n")[0]);
+    }
+    warnings++;
+  } else if (err.status === 2) {
+    // I/O error — surface as error
+    const sanitized = sanitizeError ? sanitizeError(err) : "[review lifecycle error]";
+    const line0 = String(sanitized).split("\n")[0];
+    console.error("❌ Review lifecycle error: " + (sanitizeInput ? sanitizeInput(line0) : line0));
+    warnings++;
+  } else {
+    // Other/unexpected error
+    console.log("   ⚠️ Review lifecycle: unexpected exit code " + (err.status || "unknown"));
+    warnings++;
   }
 }
 
@@ -655,54 +666,6 @@ try {
 } catch (err) {
   // Non-fatal: commit log sync failure doesn't block session start
   console.warn("Commit log sync failed:", err instanceof Error ? err.message : String(err));
-}
-
-// Archive health check: rotate reviews.jsonl when it exceeds 50 entries (OPT #74)
-try {
-  const reviewsPath = path.join(projectDir, ".claude", "state", "reviews.jsonl");
-  let reviewContent;
-  try {
-    reviewContent = fs.readFileSync(reviewsPath, "utf8");
-  } catch {
-    reviewContent = null;
-  }
-  if (reviewContent !== null) {
-    const reviewCount = reviewContent.trim().split("\n").filter(Boolean).length;
-    if (reviewCount > 50) {
-      try {
-        const { archiveRotateJsonl } = require("./lib/rotate-state.js");
-        const result = archiveRotateJsonl(reviewsPath, 50, 30);
-        if (result.rotated) {
-          console.log(
-            `   🔄 reviews.jsonl rotated: ${result.before} → ${result.after} entries (${result.archived} archived)`
-          );
-          // Re-sync from markdown source immediately after rotation to prevent
-          // data loss. Without this, the audit checkers see only 30 entries until
-          // session-begin runs reviews:sync. (PEA-501, PR #379 ecosystem audit)
-          try {
-            execFileSync("npm", ["run", "reviews:sync", "--", "--apply"], {
-              cwd: projectDir,
-              stdio: "inherit",
-              timeout: 15000,
-            });
-          } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
-            console.warn(
-              `   ⚠️ reviews:sync failed after rotation, will retry in session-begin: ${msg}`
-            );
-          }
-        }
-      } catch {
-        // Fallback: warn if rotation fails
-        console.log(
-          `   ⚠️ Archive recommended: ${reviewCount} reviews in reviews.jsonl (threshold: 50)`
-        );
-        warnings++;
-      }
-    }
-  }
-} catch {
-  // Non-fatal
 }
 
 // Rotate other state logs with archive-on-rotation (Findings 3, 6)

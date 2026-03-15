@@ -153,8 +153,8 @@ Tracks consolidation status (last consolidated review, number, and date).
 
 ### `reviews.jsonl`
 
-**Writers:** `sync-reviews-to-jsonl.js` **Readers:** `run-consolidation.js`,
-`promote-patterns.js`, `session-start.js`, `alerts/run-alerts.js`
+**Writers:** `review-lifecycle.js`, `write-review-record.ts` **Readers:** `run-consolidation.js`,
+`promote-patterns.js`, `session-start.js`, `alerts/run-alerts.js`, `render-reviews-to-md.ts`
 
 Append-only log of PR reviews and retrospectives. Two entry types:
 

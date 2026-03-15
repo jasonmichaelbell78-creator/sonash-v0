@@ -15,11 +15,11 @@
 
 This plan implements the System-Wide Standardization overhaul: a phased
 transformation of 18 ecosystems from their current maturity levels to target
-levels. SWS is a **meta-plan** — it coordinates three child plans (Tooling
-Infrastructure, Code Quality Overhaul, Data Effectiveness) and defines the
-cross-cutting infrastructure, sequencing, and gates that bind them together. The
-child plans are execution appendices; SWS owns the structure, not their internal
-content.
+levels. SWS is a **meta-plan** — it coordinates two child plans (Tooling
+Infrastructure, Code Quality Overhaul) and defines the cross-cutting
+infrastructure, sequencing, and gates that bind them together. Data Effectiveness
+(Plan 3) is 95% complete and operates independently. The child plans are
+execution appendices; SWS owns the structure, not their internal content.
 
 **Structure:** 6 phases replace the original 21-step sequential model [Q1]:
 
@@ -27,7 +27,7 @@ content.
 | ----- | --------------------------- | ----------------------------------------------- |
 | 0     | Pre-Requisites              | Skill builds, bug fixes, folder cleanup          |
 | 1     | CANON Foundation            | Schemas, migration mechanics, testing, views     |
-| 2     | Meta-Pipeline Execution     | 3 child plans (overlapping with gates)           |
+| 2     | Meta-Pipeline Execution     | 2 child plans (overlapping with gate) + integration deep-plan |
 | 3     | Ecosystem Standardization   | 18 ecosystems in dependency order                |
 | 4     | L4 Testing                  | Comprehensive test coverage across all systems   |
 | 5     | Final Verification          | End-to-end convergence audit                     |
@@ -39,7 +39,7 @@ content.
 | Complexity   | XL                                                                                    |
 | Sessions     | ~60-90 (down from 80-130 — child plans reduce per-ecosystem work)                     |
 | Waves        | 6 phases, child plans add ~30 internal waves                                          |
-| Deliverables | CANON infrastructure, 3 child plan outputs, 18 standardized ecosystems, L4 test suite |
+| Deliverables | CANON infrastructure, 2 child plan outputs (DE already complete), 18 standardized ecosystems, L4 test suite |
 
 **Key references:** D67 (locked sequence), D49 (CANON enforcement), D9 (16-item
 checklist), D81-D83 (audit framework), T1-T24 (core tenets), Q1-Q33
@@ -345,18 +345,24 @@ skill defines HOW.
 
 **Implementation:**
 
-- Create `.claude/skills/convergence-loop/SKILL.md` with agent prompt templates,
-  tally formats, convergence decision logic, domain slicing patterns
+- Use `/skill-creator` to build `.claude/skills/convergence-loop/SKILL.md` with
+  agent prompt templates, tally formats, convergence decision logic, domain
+  slicing patterns
 - Skill takes: claims set + domain slicing strategy as input
 - Skill outputs: verified claims set + convergence report
 - Integration targets (high-value): deep-plan Phase 0, all 9+ audit skills, code
   review, /systematic-debugging, doc-code sync, plan self-audit
 - Integration targets (medium): test generation, migration verification, PR
   review processing
+- After creation, run `/skill-audit` to validate quality and behavioral
+  correctness
 
-**Done when:** Skill exists, is registered in skill registry, and has been
-validated by running it against the DIAGNOSIS-v2.md claims (meta-test: the skill
-verifies the document that motivated its creation).
+**Canonical skill creation flow (applies to ALL skill builds in SWS):**
+`/skill-creator` → `/skill-audit`. No skill ships without both steps.
+
+**Done when:** Skill exists, passes `/skill-audit`, is registered in skill
+registry, and has been validated by running it against the DIAGNOSIS-v2.md claims
+(meta-test: the skill verifies the document that motivated its creation).
 
 ### Step 0.2: Fix CLAUDE.md Annotation Bugs
 
@@ -704,16 +710,34 @@ All of the following must pass before Phase 2 begins:
 
 ## Section 6: Phase 2 — Meta-Pipeline Execution
 
-**Complexity:** XL | **Sessions:** 11-20 | **Waves:** 3 child plans (overlapping
-per Q2) | **Deliverables:** Per child plan appendices
+**Complexity:** XL | **Sessions:** 11-20 | **Waves:** 2 child plans (overlapping
+per Q2) + integration deep-plan | **Deliverables:** Per child plan appendices
 
-Per Q2 — overlapping with gates. Each child plan has its own PLAN.md as an
-execution appendix. This section defines the gates between them and any
-SWS-level additions not in the original child plans.
+Per Q2 — overlapping with gates. Two child plans (Tooling Infrastructure, Code
+Quality Overhaul) have their own PLAN.md as execution appendices. Data
+Effectiveness (Plan 3) is **95% complete** (10/11 waves delivered — see
+"Completed: Data Effectiveness" below) and is NOT part of the meta-pipeline
+execution sequence.
 
 SWS is a meta-plan — Phase 2 references child plans, does NOT absorb their
 content. Only SWS-level additions, remediation directives, and inter-plan gates
 are specified here.
+
+---
+
+### Step 2.0: Meta-Pipeline Integration Deep-Plan
+
+Before executing child plans, run `/deep-plan` on the meta-pipeline integration
+layer. The original child plans were deep-planned individually, but the
+integration concerns (gates, forward-findings pipeline, SWS-level additions,
+overlap rules) were never formally deep-planned as a unit.
+
+**Scope:** How Tooling and Code Quality connect — gate definitions, forward-
+findings schema, overlap sequencing, and SWS-level addition placement. NOT the
+internal content of either child plan.
+
+**Done when:** Integration deep-plan complete with decisions recorded. Gate
+definitions refined. Forward-findings pipeline design confirmed.
 
 ---
 
@@ -805,49 +829,36 @@ Execute the Code Quality plan as-written, with these SWS-level additions:
   point prevents schema coupling between plans.
 
 **Done when:** All 12 CQ plan steps complete. All SWS-level additions
-implemented. Forward-findings intake operational. Gate checklist below passes.
-
-**CQ → DE Gate (per Q2, Q28):**
-
-Before Data Effectiveness can begin new work (already-implemented portions
-continue operating):
-
-- [ ] Zero ESLint warnings (2,124 → 0)
-- [ ] Ratchet baselines established for all quality metrics
-- [ ] Complexity violations remediated (358+ → within thresholds)
-- [ ] All new validators passing in pre-commit
-- [ ] CQ findings written to `forward-findings.jsonl`
+implemented. Forward-findings intake operational. CQ findings written to
+`forward-findings.jsonl`.
 
 ---
 
-### Step 2.3: Data Effectiveness (Plan 3)
+### Completed: Data Effectiveness (Plan 3)
 
-**Appendix:** `learnings-effectiveness-audit/PLAN.md` (10 waves, 11 steps)
-**Decisions:** D149-D183 (per Q3 absorption numbering)
-**Complexity:** XL | **Sessions:** 6-10 | **Waves:** 10
+**Status:** 95% complete (10/11 waves delivered). NOT part of meta-pipeline
+execution — already implemented across PRs #431 and #432.
 
-**Note:** Partially implemented (Automation Gap Closure PR #431 + follow-up).
-Remaining waves execute after CQ→DE gate passes.
+**Appendix:** `learnings-effectiveness-audit/PLAN.md` (D149-D183)
 
-**Overlap start:** Already-implemented portions (router, scaffolding, wiring)
-continue operating. New waves begin after CQ→DE gate.
+**What was delivered:**
+- Waves 0-7, 9-10 fully implemented with all deliverables verified in codebase
+- Learning-to-automation router (`scripts/lib/learning-router.js`)
+- Lifecycle scoring (`lifecycle-scores.jsonl`, 20 systems scored)
+- Enforcement pipeline (`verify-enforcement.js`, `ratchet-baselines.js`)
+- CLAUDE.md annotations, POSITIVE_PATTERNS.md, PRE_GENERATION_CHECKLIST.md
+- Data effectiveness health checker, ecosystem-health integration
+- Automation Gap Closure (PR #432): confidence-classifier, refine-scaffolds,
+  session-start wiring
 
-Execute the Data Effectiveness plan as-written, with these SWS-level additions:
+**Remaining cleanup (Wave 8 partial):**
+- `data-effectiveness-audit` REFERENCE.md companion file
+- `/skill-audit` confirmation on the `data-effectiveness-audit` skill
 
-**Cross-plan additions:**
-
-- **Q31 (forward-findings consumption):** DE produces findings to
-  `forward-findings.jsonl` AND consumes from it. The learning-router reads
-  `forward-findings.jsonl` as an intake source alongside its existing
-  event-driven inputs. This is the missing glue between plans — without it,
-  Tooling and CQ findings never reach DE's learning-to-enforcement pipeline.
-- **Q30 (schema contract):** Learning-router schema contract defined by CANON
-  Phase 1 schemas. CQ patterns enter through `forward-findings.jsonl`, not
-  direct `learning-routes.jsonl` writes. Schema fields: `source_plan`,
-  `finding_type`, `pattern`, `severity`, `target_ecosystem`, `timestamp`.
-
-**Done when:** All 10 waves complete. Lifecycle scores for 40+ systems.
-Learning-to-automation pipeline fully operational. Forward-findings consumed.
+**Forward-findings integration (Q30/Q31):** DE's existing `learning-router.js`
+will consume from `forward-findings.jsonl` once Tooling and CQ begin producing
+findings. This wiring is a CANON Phase 1 schema deliverable (Step 1.1), not a
+DE execution task.
 
 ---
 
@@ -2105,27 +2116,28 @@ execution.
 
 ### Forward-Findings Pipeline (Q30, Q31)
 
-Cross-plan knowledge transfer via a unified intake file. All child plans
-(Tooling, Code Quality, Data Effectiveness) write findings to a single intake
-point. The learning-router consumes from there and routes to enforcement.
+Cross-plan knowledge transfer via a unified intake file. Tooling and Code
+Quality write findings to a single intake point. DE's existing learning-router
+(already operational) consumes from there and routes to enforcement.
 
 **Flow:**
 
 ```
                     ┌──────────────────┐
                     │  Tooling Plan    │──┐
-                    └──────────────────┘  │
-                    ┌──────────────────┐  │     ┌───────────────────────┐
-                    │ Code Quality Plan│──┼────→│ forward-findings.jsonl│
-                    └──────────────────┘  │     └───────────┬───────────┘
-                    ┌──────────────────┐  │                 │
-                    │ Data Effective.  │──┘                 ▼
-                    └──────────────────┘         ┌───────────────────┐
-                                                 │ learning-router.js│
-                    ┌──────────────────┐          └─────────┬─────────┘
-                    │ Ecosystem-*      │──────────→         │
-                    │ (Phase 3 work)   │                    ▼
-                    └──────────────────┘         ┌───────────────────────┐
+                    └──────────────────┘  │     ┌───────────────────────┐
+                    ┌──────────────────┐  ├────→│ forward-findings.jsonl│
+                    │ Code Quality Plan│──┘     └───────────┬───────────┘
+                    └──────────────────┘                    │
+                                                            ▼
+                    ┌──────────────────┐         ┌───────────────────┐
+                    │ Ecosystem-*      │────────→│ learning-router.js│
+                    │ (Phase 3 work)   │         │ (DE — already     │
+                    └──────────────────┘         │  operational)     │
+                                                 └─────────┬─────────┘
+                                                           │
+                                                           ▼
+                                                 ┌───────────────────────┐
                                                  │ learning-routes.jsonl │
                                                  └───────────┬───────────┘
                                                              │
@@ -2140,7 +2152,7 @@ point. The learning-router consumes from there and routes to enforcement.
 
 ```json
 {
-  "source_plan": "tooling | code-quality | data-effectiveness | ecosystem-*",
+  "source_plan": "tooling | code-quality | ecosystem-*",
   "finding_type": "pattern | violation | gap | enhancement",
   "pattern": "description of what was found",
   "severity": "S0 | S1 | S2 | S3",
@@ -2159,43 +2171,41 @@ point. The learning-router consumes from there and routes to enforcement.
 
 ### Meta-Pipeline Gates (Q2, Q28)
 
-The three child plans execute in overlapping sequence with pass/fail gates
-between them. Gates are defined as step prerequisites and done-when criteria
-(per Q28 — inline in plan, not standalone documents).
+Two child plans execute in overlapping sequence with a pass/fail gate between
+them. Data Effectiveness is already complete and operates independently — its
+learning-router consumes forward-findings as they arrive. Gates are defined as
+step prerequisites and done-when criteria (per Q28 — inline in plan, not
+standalone documents).
 
 **Gate diagram:**
 
 ```
-Phase 1 (CANON Schemas — Step 1.2)
+Phase 1 (CANON Schemas — Step 1.1)
     │
     │  schemas published
     ▼
-┌─────────┐                ┌──────────────┐               ┌───────────────────┐
-│ Tooling │───gate A──────→│ Code Quality │───gate B─────→│ Data Effectiveness│
-│ Plan    │                │ Plan         │               │ Plan              │
-│ (2.1)   │                │ (2.2)        │               │ (2.3)             │
-└────┬────┘                └──────┬───────┘               └────────┬──────────┘
-     │                            │                                │
-     │  overlap allowed:          │  overlap allowed:              │
-     │  CQ Phase 0 starts         │  DE Phase 0 starts             │
-     │  while Tooling finishes    │  while CQ finishes             │
-     └────────────────────────────┘────────────────────────────────┘
+┌─────────┐                ┌──────────────┐
+│ Tooling │───Gate A──────→│ Code Quality │
+│ Plan    │                │ Plan         │
+│ (2.1)   │                │ (2.2)        │
+└────┬────┘                └──────┬───────┘
+     │                            │
+     │  overlap allowed:          │          ┌───────────────────┐
+     │  CQ Phase 0 starts         │          │ Data Effectiveness│
+     │  while Tooling finishes    │          │ (ALREADY COMPLETE)│
+     └────────────────────────────┘          │ consumes findings │
+                                             └───────────────────┘
 ```
 
 **Gate A (Tooling → Code Quality):** Pass/fail checklist defined in Step 2.1
 done-when criteria. Core requirements: script audit complete, ratchet engine
 extracted to `scripts/lib/`, enforcement manifest template validated.
 
-**Gate B (Code Quality → Data Effectiveness):** Pass/fail checklist defined in
-Step 2.2 done-when criteria. Core requirements: L3 test coverage across all
-ecosystems, patterns:check severity rationalized, code quality baseline
-established.
-
 **Overlap rules (per Q2):**
 
-- The next plan MAY begin its Phase 0 (research/deep-plan) while the prior plan
-  finishes its final wave
-- The next plan MUST NOT begin implementation until the gate passes
+- CQ MAY begin its Phase 0 (research/deep-plan) while Tooling finishes its final
+  wave
+- CQ MUST NOT begin implementation until Gate A passes
 - Gate pass is recorded in `.canon/changelog.jsonl` with type `gate-pass`
 
 ### Shadow-Append Registry (Q21, T21)
@@ -2244,7 +2254,7 @@ not commitments.
 | ----- | ---- | ---------- | -------- | ----- | ---------------- |
 | 0 | Prerequisites | M | 3-5 | 2 | /convergence-loop skill, folder consolidation, CLAUDE.md fixes, framework-repo archived, completed work verified |
 | 1 | CANON Foundation | L | 6-10 | 4 | CANON P1 schemas, P2 lifecycle declarations, P3 enforcement manifests, P4 governance rules, CANON v0.1.0 |
-| 2 | Meta-Pipeline | XL | 11-20 | 6+ | Tooling plan executed (script audit, ratchet engine), CQ plan executed (L3 tests, patterns rationalized), DE plan executed (learning pipeline), 3 gate passes |
+| 2 | Meta-Pipeline | L | 8-15 | 4+ | Integration deep-plan, Tooling plan executed (script audit, ratchet engine), CQ plan executed (L3 tests, patterns rationalized), 1 gate pass (DE already complete) |
 | 3 | Ecosystem Standardization | XL | 20-30 | 18 | All 18 ecosystems at target maturity, per-ecosystem deep-plans, health checkers, enforcement manifests, CANON v0.2.0→v0.4.0, Checkpoints at 3.7 and 3.12 |
 | 4 | L4 Testing | L | 6-10 | 3 | L4 test suite, coverage report, regression baseline, ratchet configuration, chaos/failure tests |
 | 5 | Final Verification | M | 3-5 | 2 | Final audit report, maturity scorecard, CAPTURE_MANIFEST consumed, CANON v1.0.0 |
@@ -2287,13 +2297,14 @@ flowchart TD
     end
 
     subgraph P2["Phase 2: Meta-Pipeline"]
+        S2_0["2.0 Integration Deep-Plan"]
         S2_1["2.1 Tooling Infrastructure"]
         S2_2["2.2 Code Quality"]
-        S2_3["2.3 Data Effectiveness"]
+        S2_DE["DE (already complete)"]
+        S2_0 --> S2_1
         S2_1 -- "Gate A" --> S2_2
-        S2_2 -- "Gate B" --> S2_3
         S2_1 -. "CQ Phase 0 overlap" .-> S2_2
-        S2_2 -. "DE Phase 0 overlap" .-> S2_3
+        S2_2 -. "findings flow" .-> S2_DE
     end
 
     subgraph P3["Phase 3: Ecosystem Standardization"]
@@ -2399,12 +2410,14 @@ Per Q27 — all child plans physically consolidated under
 | ---- | ---- | --------- | ------ |
 | Tooling Infrastructure | `.planning/system-wide-standardization/tooling-infrastructure-audit/PLAN.md` | D93-D122 | Execution appendix for Phase 2 Step 2.1 |
 | Code Quality Overhaul | `.planning/system-wide-standardization/code-quality-overhaul/PLAN.md` | D123-D148 | Execution appendix for Phase 2 Step 2.2 |
-| Data Effectiveness | `.planning/system-wide-standardization/learnings-effectiveness-audit/PLAN.md` | D149-D183 | Execution appendix for Phase 2 Step 2.3 |
+| Data Effectiveness | `.planning/system-wide-standardization/learnings-effectiveness-audit/PLAN.md` | D149-D183 | **95% complete** — 10/11 waves delivered (PRs #431, #432). Remaining: Wave 8 REFERENCE.md + skill-audit |
 
-Child plan PLAN.md files are execution appendices — they contain wave-level
+Tooling and CQ PLAN.md files are execution appendices — they contain wave-level
 implementation detail that the meta-plan (this document) references but does not
 absorb. The meta-plan defines sequencing, gates, and cross-plan concerns. The
-child plans define internal wave structure and per-wave deliverables.
+child plans define internal wave structure and per-wave deliverables. Data
+Effectiveness operates independently — its infrastructure is already live and
+consumes forward-findings as they arrive.
 
 ### Appendix B: GAP-ANALYSIS Resolution Map
 

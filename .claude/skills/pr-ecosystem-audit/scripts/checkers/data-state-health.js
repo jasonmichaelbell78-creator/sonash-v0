@@ -56,13 +56,14 @@ function run(ctx) {
 // ── Category 5: State File Consistency ─────────────────────────────────────
 
 /**
- * Run `sync-reviews-to-jsonl --check` and return 0 (pass) or 1 (fail).
+ * Run `review-lifecycle.js --validate` and return 0 (pass) or 1 (fail).
+ * (Previously ran sync-reviews-to-jsonl.js --check, migrated in Task 7)
  */
 function runSyncCheck(rootDir) {
   try {
     execFileSync(
       process.execPath,
-      [path.join(rootDir, "scripts", "sync-reviews-to-jsonl.js"), "--check"],
+      [path.join(rootDir, "scripts", "review-lifecycle.js"), "--validate"],
       {
         cwd: rootDir,
         encoding: "utf8",
@@ -74,7 +75,7 @@ function runSyncCheck(rootDir) {
   } catch (err) {
     const stderr = err.stderr ? String(err.stderr).trim() : "";
     if (stderr) {
-      console.error(`  [info] Sync check stderr: ${stderr.slice(0, 200)}`);
+      console.error(`  [info] Lifecycle validate stderr: ${stderr.slice(0, 200)}`);
     }
     return 1;
   }

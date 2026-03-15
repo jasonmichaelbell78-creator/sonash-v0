@@ -3820,6 +3820,7 @@ function checkPendingRefinements() {
   // Review #432 R2: Truncate pattern/reason to prevent sensitive data leakage in logs
   const truncate = (s, max = 80) => {
     // Review #432 R4: Strip control characters (ANSI escapes, terminal injection)
+    // eslint-disable-next-line no-control-regex
     const str = String(s || "").replace(/[\x00-\x1f\x7f]/g, "");
     return str.length > max ? str.slice(0, max) + "..." : str;
   };

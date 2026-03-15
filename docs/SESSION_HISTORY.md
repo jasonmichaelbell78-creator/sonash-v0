@@ -27,6 +27,14 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #217 (2026-03-13)
+
+**Focus**: Data Effectiveness Audit — Deep Plan
+
+- Deep-plan complete: 35 decisions, 11 waves, XL effort
+- Critical reframe (D8/D9): Learnings → AUTOMATED ENFORCEMENT
+- Artifacts: `.planning/learnings-effectiveness-audit/`
+
 ### Session #215 (2026-03-11)
 
 **Focus**: Hook Systems Mini-Audit — 10 categories, 35 decisions, 6 learnings
