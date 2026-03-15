@@ -8,13 +8,13 @@
 import assert from "node:assert/strict";
 import { test, describe } from "node:test";
 
-import { renderReviewRecord, renderAllRecords } from "../render-reviews-to-md";
+import { renderReviewRecord, renderAllRecords, type RenderableReview } from "../render-reviews-to-md";
 
 // =========================================================
 // Test fixtures
 // =========================================================
 
-function makeFullRecord(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+function makeFullRecord(overrides: Partial<RenderableReview> = {}): RenderableReview {
   return {
     id: "rev-1",
     date: "2026-02-28",
@@ -34,7 +34,7 @@ function makeFullRecord(overrides: Record<string, unknown> = {}): Record<string,
   };
 }
 
-function makePartialRecord(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+function makePartialRecord(overrides: Partial<RenderableReview> = {}): RenderableReview {
   return {
     id: "rev-2",
     date: "2026-02-27",
@@ -51,7 +51,7 @@ function makePartialRecord(overrides: Record<string, unknown> = {}): Record<stri
   };
 }
 
-function makeStubRecord(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+function makeStubRecord(overrides: Partial<RenderableReview> = {}): RenderableReview {
   return {
     id: "rev-3",
     date: "2026-02-26",

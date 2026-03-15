@@ -69,7 +69,7 @@ function findProjectRoot(startDir: string): string {
 // The canonical .claude/state/reviews.jsonl uses a pre-migration format
 // without schema_version/completeness/origin. We parse leniently.
 
-interface RenderableReview {
+export interface RenderableReview {
   id: string | number;
   date: string;
   title?: string | null;
