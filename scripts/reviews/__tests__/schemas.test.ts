@@ -43,6 +43,7 @@ const {
   DeferredItemRecord,
   InvocationRecord,
   WarningRecord,
+  LearningRouteRecord,
   SCHEMA_MAP,
 } = require(path.join(distSchemasPath, "index.js")) as {
   BaseRecord: { parse: (v: unknown) => unknown; safeParse: (v: unknown) => { success: boolean } };
@@ -63,6 +64,10 @@ const {
   };
   WarningRecord: {
     parse: (v: unknown) => unknown;
+    safeParse: (v: unknown) => { success: boolean };
+  };
+  LearningRouteRecord: {
+    parse: (v: unknown) => { status: string };
     safeParse: (v: unknown) => { success: boolean };
   };
   SCHEMA_MAP: Record<string, { safeParse: (v: unknown) => { success: boolean } }>;
@@ -503,5 +508,66 @@ describe("SCHEMA_MAP", () => {
   test("invocations key maps to InvocationRecord", () => {
     const r = validBase({ skill: "pr-review", type: "skill", success: true });
     assert.equal(SCHEMA_MAP.invocations.safeParse(r).success, true);
+  });
+});
+
+// =========================================================
+// 10. learning-route.ts — LearningRouteRecord
+// =========================================================
+
+function validLearningRoute(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    id: "lr-001",
+    date: "2026-03-14",
+    schema_version: 1,
+    completeness: "full",
+    origin: { type: "manual", session: "test", tool: "test" },
+    learning: {
+      type: "code",
+      pattern: "test-pattern",
+      source: "test-source",
+      severity: "medium",
+    },
+    route: "verified-pattern",
+    scaffold: "scripts/config/verified-patterns.json",
+    status: "scaffolded",
+    enforcement_test: null,
+    metrics: { violations_before: null, violations_after: null },
+    ...overrides,
+  };
+}
+
+describe("LearningRouteRecord", () => {
+  test("accepts all valid status values", () => {
+    for (const status of ["scaffolded", "refined", "enforced", "verified"] as const) {
+      assert.equal(LearningRouteRecord.safeParse(validLearningRoute({ status })).success, true);
+    }
+  });
+
+  test("accepts 'deferred' as a valid status", () => {
+    const result = LearningRouteRecord.safeParse(validLearningRoute({ status: "deferred" }));
+    assert.equal(result.success, true);
+    if (result.success) {
+      assert.equal((result as { success: true; data: { status: string } }).data.status, "deferred");
+    }
+  });
+
+  test("rejects unknown status value", () => {
+    assert.equal(
+      LearningRouteRecord.safeParse(validLearningRoute({ status: "pending" })).success,
+      false
+    );
+  });
+
+  test("rejects missing required learning fields", () => {
+    const bad = validLearningRoute({ learning: { type: "code" } });
+    assert.equal(LearningRouteRecord.safeParse(bad).success, false);
+  });
+
+  test("rejects empty scaffold path", () => {
+    assert.equal(
+      LearningRouteRecord.safeParse(validLearningRoute({ scaffold: "" })).success,
+      false
+    );
   });
 });

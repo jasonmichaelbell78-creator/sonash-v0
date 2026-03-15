@@ -27,6 +27,13 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #215 (2026-03-11)
+
+**Focus**: Hook Systems Mini-Audit — 10 categories, 35 decisions, 6 learnings
+
+- Pre-commit/pre-push mini-audit: 10 categories, 35 decisions, 6 learnings
+- Implementation plan approved: 8 waves — COMPLETE (shipped in PR #427)
+
 ### Session #216 (2026-03-12)
 
 **Focus**: PR #427/#428 Batch Retro — 17 action items implemented, retro

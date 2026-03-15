@@ -37,6 +37,32 @@ try {
   isSafeToWrite = () => false;
 }
 
+// Safe filesystem helpers (Review #432 R2: use safeWriteFileSync for symlink protection)
+let safeWriteFileSync;
+try {
+  ({ safeWriteFileSync } = require(
+    path.join(__dirname, "..", "..", "..", "..", "scripts", "lib", "safe-fs.js")
+  ));
+} catch {
+  // Fallback: use isSafeToWrite + fs.writeFileSync
+  safeWriteFileSync = (filePath, data, options) => {
+    if (!isSafeToWrite(path.resolve(filePath))) {
+      throw new Error(`Refusing to write to symlinked path: ${path.basename(filePath)}`);
+    }
+    fs.writeFileSync(path.resolve(filePath), data, options);
+  };
+}
+
+// Error sanitization (Review #432 R2: sanitize errors before logging)
+let sanitizeError;
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "..", "..", "..", "scripts", "lib", "security-helpers.js")
+  ));
+} catch {
+  sanitizeError = () => "error (details redacted — security-helpers unavailable)";
+}
+
 // Find project root (where claude.md is)
 // Review #214: Use platform-agnostic root detection
 // OD-A: Use claude.md as root marker — package.json can exist in subdirs like .claude/
@@ -3742,6 +3768,116 @@ function checkEnforcementVerification() {
 }
 
 // ============================================================================
+// PENDING REFINEMENTS (Automation Gap Closure)
+// ============================================================================
+
+/**
+ * Check for pending refinements that need fix-or-DEBT resolution.
+ * Reads pending-refinements.jsonl and surfaces items with generated code.
+ * Items surfaced 3+ times auto-escalate to S1 DEBT creation.
+ */
+function checkPendingRefinements() {
+  console.error("  Checking pending refinements...");
+
+  const pendingPath = path.join(ROOT_DIR, ".claude", "state", "pending-refinements.jsonl");
+  const lines = safeReadLines(pendingPath);
+
+  ensureCategory("pending-refinements", "Pending Refinements (Fix-or-DEBT)");
+
+  if (lines.length === 0) return;
+
+  const entries = lines.map((l) => safeParse(l)).filter(Boolean);
+  if (entries.length === 0) return;
+
+  // Increment surfaced_count for each entry
+  const updatedEntries = [];
+  const escalated = [];
+
+  for (const entry of entries) {
+    // Skip entries without actionable generated_code
+    if (typeof entry.generated_code !== "string" || !entry.generated_code.trim()) {
+      updatedEntries.push(entry);
+      continue;
+    }
+
+    // Don't re-increment already-escalated items
+    if (entry.escalated) {
+      escalated.push(entry);
+      continue;
+    }
+
+    const surfacedCount = (typeof entry.surfaced_count === "number" ? entry.surfaced_count : 0) + 1;
+    const updated = { ...entry, surfaced_count: surfacedCount };
+
+    if (surfacedCount >= 3) {
+      escalated.push({ ...updated, escalated: true });
+    } else {
+      updatedEntries.push(updated);
+    }
+  }
+
+  // Surface remaining pending items as alerts
+  // Review #432 R2: Truncate pattern/reason to prevent sensitive data leakage in logs
+  const truncate = (s, max = 80) => {
+    // Review #432 R4: Strip control characters (ANSI escapes, terminal injection)
+    const str = String(s || "").replace(/[\x00-\x1f\x7f]/g, "");
+    return str.length > max ? str.slice(0, max) + "..." : str;
+  };
+  for (const entry of updatedEntries) {
+    if (typeof entry.generated_code !== "string" || !entry.generated_code.trim()) continue;
+    addAlert(
+      "pending-refinements",
+      "warning",
+      `Pending refinement: ${truncate(entry.pattern, 60)} [${entry.route_type}] — surfaced ${entry.surfaced_count}x`,
+      {
+        id: entry.id,
+        confidence: entry.confidence,
+        reason: truncate(entry.reason),
+        has_generated_code: true,
+        surfaced_count: entry.surfaced_count,
+      },
+      "Resolve via /alerts: approve, edit+approve, or DEBT"
+    );
+  }
+
+  // Report escalated items (kept in queue until resolved via /alerts or /add-debt)
+  for (const entry of escalated) {
+    addAlert(
+      "pending-refinements",
+      "critical",
+      `S1 DEBT candidate (surfaced ${entry.surfaced_count}x without action): ${truncate(entry.pattern || "(unknown)", 60)}`,
+      { id: entry.id, escalated: true },
+      "Create S1 DEBT item via /add-debt with 7-day deadline"
+    );
+  }
+
+  // Write back all entries (both active and escalated remain tracked)
+  const allTracked = [...updatedEntries, ...escalated];
+  try {
+    const updatedContent =
+      allTracked.map((e) => JSON.stringify(e)).join("\n") + (allTracked.length > 0 ? "\n" : "");
+    safeWriteFileSync(pendingPath, updatedContent, { encoding: "utf-8" });
+    // Review #432 R4: Audit trail for pending-refinements write
+    console.error(
+      `[run-alerts] Wrote ${allTracked.length} entries to pending-refinements.jsonl ` +
+        `(${updatedEntries.length} active, ${escalated.length} escalated) by=cli at ${new Date().toISOString()}`
+    );
+  } catch (err) {
+    console.error(
+      `[run-alerts] Failed to persist pending-refinements.jsonl — escalation counts will not be saved: ${sanitizeError(err)}`
+    );
+  }
+
+  addContext("pending-refinements", {
+    totalPending: allTracked.length,
+    active: updatedEntries.filter(
+      (e) => typeof e.generated_code === "string" && e.generated_code.trim()
+    ).length,
+    escalatedToDebt: escalated.length,
+  });
+}
+
+// ============================================================================
 // SUPPRESSION FILTER (W3)
 // ============================================================================
 
@@ -4058,6 +4194,7 @@ function main() {
   ensureCategory("review-archive", "Review Archive Health");
   ensureCategory("crossdoc", "Cross-Document Dependencies");
   ensureCategory("velocity-regression", "Velocity Regression");
+  ensureCategory("pending-refinements", "Pending Refinements (Fix-or-DEBT)");
 
   if (isFullMode) {
     ensureCategory("docs", "Documentation Health");
@@ -4085,6 +4222,9 @@ function main() {
     ensureCategory("commit-patterns", "Commit Patterns");
     ensureCategory("enforcement-verification", "Enforcement Verification");
   }
+
+  // Always check pending refinements — fix-or-DEBT must not be skippable
+  checkPendingRefinements();
 
   // Filter suppressed alerts (W3)
   filterSuppressedAlerts();

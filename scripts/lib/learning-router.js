@@ -387,7 +387,12 @@ function route(learning, options) {
       };
     }
 
-    if (existingStatus === "enforced" || existingStatus === "scaffolded") {
+    if (
+      existingStatus === "enforced" ||
+      existingStatus === "scaffolded" ||
+      existingStatus === "refined" ||
+      existingStatus === "deferred"
+    ) {
       process.stderr.write(
         `[learning-router] INFO: Skipping pattern "${safePat(learning.pattern)}" — enforcement already in pipeline (status: ${safePat(existingStatus)})\n`
       );

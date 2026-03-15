@@ -3,13 +3,18 @@
   "updated": "2026-03-14",
   "baselines": {
     "raw-error-message": {
-      "baseline": 3,
+      "baseline": 0,
       "recorded": "2026-03-14",
       "ratchet_history": [
         {
           "date": "2026-03-14",
           "from": 5,
           "to": 3
+        },
+        {
+          "date": "2026-03-14",
+          "from": 3,
+          "to": 0
         }
       ]
     }

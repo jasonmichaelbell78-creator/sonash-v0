@@ -28,6 +28,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 let isSafeToWrite, sanitizeInput;
+let sanitizeError;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
 } catch {
@@ -43,7 +44,6 @@ try {
       .slice(0, 500);
   /* eslint-enable no-control-regex */
 }
-
 // Detect environment (remote/local)
 const isRemote = process.env.CLAUDE_CODE_REMOTE === "true";
 const envType = isRemote ? "remote" : "local";
@@ -597,6 +597,53 @@ try {
     warnings++;
   }
 }
+
+// ─── Enforcement pipeline: discover gaps → refine → verify → ratchet ───
+// (Automation Gap Closure spec: 2026-03-14)
+
+// Lazy-load sanitizeError for pipeline error handling
+if (!sanitizeError) {
+  try {
+    ({ sanitizeError } = require(path.join(projectDir, "scripts", "lib", "security-helpers.js")));
+  } catch {
+    sanitizeError = () => "error (details redacted)";
+  }
+}
+
+/**
+ * Execute a pipeline script with sanitized error logging.
+ * @param {string[]} scriptArgs - Args for execFileSync (script path + flags)
+ * @param {string} description - Label for warning output
+ * @param {number} timeout - Timeout in ms
+ */
+function executePipelineScript(scriptArgs, description, timeout) {
+  try {
+    execFileSync(process.execPath, scriptArgs, {
+      cwd: projectDir,
+      stdio: ["ignore", "ignore", "pipe"],
+      timeout,
+    });
+  } catch (err) {
+    const sanitized = sanitizeError(err);
+    console.log("   ⚠️ " + description + ": " + sanitizeInput(String(sanitized).split("\n")[0]));
+    warnings++;
+  }
+}
+
+// 1. Route lifecycle gaps (discover new gaps → scaffolded entries)
+executePipelineScript(["scripts/route-lifecycle-gaps.js"], "Lifecycle gaps", 15000);
+
+// 2. Route enforcement gaps (discover CLAUDE.md gaps → scaffolded entries)
+executePipelineScript(["scripts/route-enforcement-gaps.js"], "Enforcement gaps", 15000);
+
+// 3. Refine scaffolded entries (scaffolded → enforced or refined)
+executePipelineScript(["scripts/refine-scaffolds.js"], "Scaffold refinement", 20000);
+
+// 4. Verify enforced entries (enforced → verified, or flag for repair)
+executePipelineScript(["scripts/verify-enforcement.js"], "Enforcement verify", 30000);
+
+// 5. Ratchet baselines (tighten thresholds on improvement, check-only mode)
+executePipelineScript(["scripts/ratchet-baselines.js", "--check-only"], "Ratchet baselines", 20000);
 
 // Sync commit log from git history (fills gaps when commit-tracker hook misses)
 try {

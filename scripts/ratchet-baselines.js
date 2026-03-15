@@ -30,13 +30,8 @@ try {
   };
 }
 
-// Import safeWriteFileSync with fallback (symlink-guarded writes)
-let safeWriteFileSync;
-try {
-  ({ safeWriteFileSync } = require(path.join(__dirname, "lib", "safe-fs.js")));
-} catch {
-  safeWriteFileSync = (filePath, data, options) => fs.writeFileSync(filePath, data, options);
-}
+// Import safeWriteFileSync (core dependency — must be present)
+const { safeWriteFileSync } = require(path.join(__dirname, "lib", "safe-fs.js"));
 
 const ROOT = path.join(__dirname, "..");
 const BASELINE_PATH = path.join(ROOT, ".claude", "state", "known-debt-baseline.json");
@@ -234,7 +229,8 @@ function reportRegressions(result, baselineData, currentCounts) {
 
 function run(argv) {
   const args = argv || process.argv.slice(2);
-  const dryRun = args.includes("--dry-run");
+  const checkOnly = args.includes("--check-only");
+  const dryRun = args.includes("--dry-run") || checkOnly;
   const jsonOut = args.includes("--json");
 
   const baselineData = readBaselines();
@@ -254,8 +250,17 @@ function run(argv) {
   }
 
   if (result.regressions.length > 0) {
+    if (checkOnly) {
+      // Report regressions to stderr but exit 0 (session-start context)
+      console.error(
+        `[ratchet] ${result.regressions.length} regression(s) detected (check-only mode, not blocking)`
+      );
+      return result;
+    }
     process.exit(1);
   }
+
+  return result;
 }
 
 // Run if invoked directly

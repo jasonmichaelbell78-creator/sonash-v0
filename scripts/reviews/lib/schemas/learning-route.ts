@@ -16,7 +16,7 @@ export const LearningInput = z.object({
 /**
  * Learning route record — tracks the lifecycle from discovery to enforcement.
  *
- * Status lifecycle: scaffolded -> refined -> enforced -> verified
+ * Status lifecycle: scaffolded -> refined -> enforced -> verified (or deferred via DEBT)
  *
  * Data flow:
  *   Writer:    learning-router
@@ -29,8 +29,13 @@ export const LearningRouteRecord = BaseRecord.extend({
   learning: LearningInput,
   route: z.enum(["verified-pattern", "hook-gate", "lint-rule", "claude-md-annotation"]),
   scaffold: z.string().min(1).describe("Path to the scaffold target file"),
-  status: z.enum(["scaffolded", "refined", "enforced", "verified"]),
+  status: z.enum(["scaffolded", "refined", "enforced", "verified", "deferred"]),
   enforcement_test: z.string().nullable().default(null).describe("Path to the enforcement test"),
+  pending_enforcement_test: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("Placeholder path for the planned enforcement test (set during promotion)"),
   metrics: z
     .object({
       violations_before: z.number().int().nonnegative().nullable().default(null),
