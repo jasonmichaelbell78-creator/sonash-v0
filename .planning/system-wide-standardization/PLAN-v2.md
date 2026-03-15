@@ -69,8 +69,8 @@ work begins. Silent failures are S0 severity. Warnings that persist 3+ sessions
 without action auto-escalate to DEBT (per escalation pattern from Automation Gap
 Closure). **No passive surfacing of information — all data surfaces MUST require
 action or acknowledgment.** Unacknowledged warnings become wallpaper and are
-treated as bugs. \_Previous: "errors block, they don't whisper" — no escalation,
-no passive surfacing prohibition.*
+treated as bugs. _Previous: "errors block, they don't whisper" — no escalation,
+no passive surfacing prohibition._
 
 ### New Tenets
 

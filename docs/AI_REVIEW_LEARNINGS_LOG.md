@@ -903,6 +903,28 @@ rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
 
 ## Active Reviews
 
+### Review #478: PR #433 R1 — Mixed (Qodo Compliance + Qodo Suggestions + Gemini) (2026-03-15)
+
+_PII path redaction in conversation transcript, T11 auto-DEBT contradiction,
+Mermaid graph label alignment, doc header compliance, formatting fixes._
+
+**Items:** 12 total (9 fixed, 2 rejected, 1 deferred DEBT-45529)
+
+**Key patterns:**
+- **PII in transcripts:** Raw conversation transcripts contain local filesystem
+  paths with usernames. Must redact before committing to repo.
+- **Tenet contradiction:** T11 said "auto-escalate to DEBT" which contradicts
+  the project's "no automatic DEBT" requirement. Fixed to require interactive
+  user confirmation.
+- **Document assembly artifacts:** When assembling multi-part documents from
+  parallel agents, leftover "Part N ends here" comments and incorrect
+  cross-references can slip through. Verification passes catch these.
+- **Mermaid graph drift:** Dependency graph labels can drift from actual step
+  descriptions when written by separate agents. Cross-reference verification
+  (Pass 4) is essential.
+
+---
+
 ### Review #477: PR #432 R4 — Mixed (Qodo Compliance + CodeQL + CI + SonarCloud + Qodo Suggestions) (2026-03-14)
 
 _Terminal injection in truncate, CodeQL process.env leak, schema field

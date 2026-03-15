@@ -77,7 +77,9 @@ These tenets carry forward from DECISIONS.md without modification:
 **T7. platform_agnostic_by_default** (strengthened)
 
 All CANON artifacts, scripts, and tooling MUST work identically across
-platforms. Node.js over bash. `path.posix` for paths. LF line endings.
+platforms. Node.js over bash. Use Node's `path` utilities (`path.join`,
+`path.normalize`, `path.resolve`) — avoid hard-coded path separators. LF line
+endings.
 **Enforcement:** Pre-commit hook rejects bash-only scripts and backslash paths.
 
 _Previous: advisory only, no enforcement mechanism._
@@ -103,7 +105,9 @@ prohibition)
 
 Failures MUST block, not warn. Pre-commit catches before PR. Session-start
 surfaces before work begins. Silent failures are S0 severity. Warnings that
-persist 3+ sessions without action auto-escalate to DEBT (per escalation
+persist 3+ sessions without action MUST escalate to an interactive, blocking
+decision point (fix now vs create DEBT) with explicit user confirmation before
+any DEBT entry is created (per escalation
 pattern from Automation Gap Closure). **No passive surfacing of information —
 all data surfaces MUST require action or acknowledgment.** Unacknowledged
 warnings become wallpaper and are treated as bugs.
@@ -698,8 +702,6 @@ All of the following must pass before Phase 2 begins:
 
 ---
 
-_Part 1 ends here. Phases 2-5, Appendices, and Plan Quality Checklist are in
-Part 2 (`_v3_part2.md`)._
 ## Section 6: Phase 2 — Meta-Pipeline Execution
 
 **Complexity:** XL | **Sessions:** 11-20 | **Waves:** 3 child plans (overlapping
@@ -2134,7 +2136,7 @@ point. The learning-router consumes from there and routes to enforcement.
                                                  └───────────────────────┘
 ```
 
-**Schema** (defined in CANON Phase 1, Step 1.2):
+**Schema** (defined in CANON Phase 1, Step 1.1):
 
 ```json
 {
@@ -2266,12 +2268,12 @@ ecosystem N. Within the meta-pipeline (Phase 2), overlap is permitted per Q2
 flowchart TD
     subgraph P0["Phase 0: Prerequisites"]
         S0_1["0.1 /convergence-loop"]
-        S0_2["0.2 Folder consolidation"]
-        S0_3["0.3 CLAUDE.md fixes"]
-        S0_4["0.4 Zod 4 directive"]
-        S0_5["0.5 Framework-repo archive"]
-        S0_6["0.6 Verify completed work"]
-        S0_7["0.7 G9 extract"]
+        S0_2["0.2 Fix CLAUDE.md annotation bugs"]
+        S0_3["0.3 Verify Hooks PR #427"]
+        S0_4["0.4 Folder consolidation"]
+        S0_5["0.5 Archive framework-repo"]
+        S0_6["0.6 Update coordination.json"]
+        S0_7["0.7 OV extraction"]
         S0_1 --> S0_2 --> S0_3 --> S0_4 --> S0_5 --> S0_6 --> S0_7
     end
 
