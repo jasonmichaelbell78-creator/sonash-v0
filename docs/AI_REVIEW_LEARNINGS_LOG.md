@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.100 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.101 **Created:** 2026-01-02 **Last Updated:**
 2026-03-14
 
 ## Purpose
@@ -32,6 +32,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.61    | 2026-03-14               | Review #477: PR #432 R4 — Mixed (Qodo+CodeQL+CI+SonarCloud). Terminal injection (control char strip), CodeQL process.env contradiction resolved (by=cli), schema field alignment (\_pending_test→pending_enforcement_test), write audit trail, safe error.code access. 6 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.60    | 2026-03-14               | Review #476: PR #432 R3 — Mixed (Qodo+CI+SonarCloud). Cache retry bug (re-throw after log), alert truncation consistency, existsSync TOCTOU removal, audit trail actor context. 6 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.59    | 2026-03-07               | Review #459: PR #420 R2 — Mixed (Gemini+Qodo+Semgrep). claude.md case mismatch (Linux CI), warned-files schema fix (timestamps→counts), failedCheck field, skill-registry generator fix (description: >-), process.execPath propagation (4x), swallowed catch debuggability (2x). 7 fixed, 6 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.58    | 2026-03-07               | Review #458: PR #420 R1 — Mixed (SonarCloud+Semgrep+Qodo+CI). Path containment bypass (realpathSync+path.relative), CC reduction (main→3 funcs), lazy projectDir eval, token redaction, broken archive links (7), missing Version History section. 8 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -901,6 +902,45 @@ rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
 ---
 
 ## Active Reviews
+
+### Review #477: PR #432 R4 — Mixed (Qodo Compliance + CodeQL + CI + SonarCloud + Qodo Suggestions) (2026-03-14)
+
+_Terminal injection in truncate, CodeQL process.env leak, schema field
+alignment, audit trail for writes, safe error.code access, doc linter fixes._
+
+**Source:** Qodo Compliance (3), CodeQL (1), CI (1), SonarCloud (1), Qodo
+Suggestions (3) **Items:** 9 raw → 8 unique (6 fixed, 0 deferred, 2 rejected, 1
+stale auto-reject) **Severity:** 0C / 2M / 4m / 2T
+
+**Key Patterns:**
+
+1. **Terminal/ANSI injection via control characters** — `truncate()` only did
+   length-based truncation, not content sanitization. Added
+   `replace(/[\x00-\x1f\x7f]/g, "")` to strip control chars before truncating.
+2. **CodeQL vs reviewer contradiction** — R3 Qodo Compliance asked for actor
+   context (`process.env.USER`), R4 CodeQL flagged it as sensitive data leakage.
+   Resolution: replace with generic `by=cli` since these are CLI scripts with no
+   user identity concept.
+3. **Schema/code field name mismatch** — `refine-scaffolds.js` wrote
+   `_pending_test` but schema had no such field. Renamed to
+   `pending_enforcement_test` and added to LearningRouteRecord schema.
+
+**Rejections:**
+
+- Log sensitivity (`promotedIds`/`refinedIds`) — IDs are auto-generated `lr-NNN`
+  identifiers, not sensitive data.
+- Retry backoff for `getCachedVerifiedPatterns` — single-invocation CLI script,
+  no hot loop scenario possible.
+
+**Process Learnings:**
+
+- When one reviewer asks you to add something (actor context) and another
+  reviewer flags it (sensitive data), resolve the contradiction rather than
+  ping-ponging. Generic markers (`cli`, `system`) satisfy both.
+- **Score:** 7/10 — Good R4. CodeQL contradiction with R3 was instructive. Stale
+  SonarCloud item correctly identified.
+
+---
 
 ### Review #476: PR #432 R3 — Mixed (Qodo Compliance + CI + SonarCloud + Qodo Suggestions) (2026-03-14)
 

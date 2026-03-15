@@ -57,7 +57,8 @@ function readJsonl(filePath) {
   try {
     content = fs.readFileSync(filePath, "utf-8");
   } catch (error) {
-    if (error.code === "ENOENT") {
+    const code = error && typeof error === "object" && "code" in error ? error.code : undefined;
+    if (code === "ENOENT") {
       return [];
     }
     throw error;
@@ -215,7 +216,7 @@ function run(options = {}) {
         status: "enforced",
         enforcement_test: null,
         metrics: null,
-        _pending_test: buildEnforcementTestPath(entry.id),
+        pending_enforcement_test: buildEnforcementTestPath(entry.id),
         refined_at: new Date().toISOString(),
         classification: {
           confidence: classification.confidence,
@@ -256,11 +257,11 @@ function run(options = {}) {
       return { success: false, promoted, refined, skipped };
     }
 
-    // Audit trail: log state mutation (Review #432 R2, actor context R3)
+    // Audit trail: log state mutation (Review #432 R2, R4: removed process.env per CodeQL)
     console.error(
       `[refine-scaffolds] Wrote ${updatedEntries.length} entries to ${path.basename(routesPath)} ` +
         `(promoted=${promoted}, refined=${refined}, skipped=${skipped}) ` +
-        `by=${process.env.USER || process.env.USERNAME || "unknown"} at ${new Date().toISOString()}`
+        `by=cli at ${new Date().toISOString()}`
     );
 
     // Routes persisted — now safe to append pending entries

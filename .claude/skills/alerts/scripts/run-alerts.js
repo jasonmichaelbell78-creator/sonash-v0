@@ -3819,7 +3819,8 @@ function checkPendingRefinements() {
   // Surface remaining pending items as alerts
   // Review #432 R2: Truncate pattern/reason to prevent sensitive data leakage in logs
   const truncate = (s, max = 80) => {
-    const str = String(s || "");
+    // Review #432 R4: Strip control characters (ANSI escapes, terminal injection)
+    const str = String(s || "").replace(/[\x00-\x1f\x7f]/g, "");
     return str.length > max ? str.slice(0, max) + "..." : str;
   };
   for (const entry of updatedEntries) {
@@ -3856,6 +3857,11 @@ function checkPendingRefinements() {
     const updatedContent =
       allTracked.map((e) => JSON.stringify(e)).join("\n") + (allTracked.length > 0 ? "\n" : "");
     safeWriteFileSync(pendingPath, updatedContent, { encoding: "utf-8" });
+    // Review #432 R4: Audit trail for pending-refinements write
+    console.error(
+      `[run-alerts] Wrote ${allTracked.length} entries to pending-refinements.jsonl ` +
+        `(${updatedEntries.length} active, ${escalated.length} escalated) by=cli at ${new Date().toISOString()}`
+    );
   } catch (err) {
     console.error(
       `[run-alerts] Failed to persist pending-refinements.jsonl — escalation counts will not be saved: ${sanitizeError(err)}`

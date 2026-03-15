@@ -31,6 +31,11 @@ export const LearningRouteRecord = BaseRecord.extend({
   scaffold: z.string().min(1).describe("Path to the scaffold target file"),
   status: z.enum(["scaffolded", "refined", "enforced", "verified", "deferred"]),
   enforcement_test: z.string().nullable().default(null).describe("Path to the enforcement test"),
+  pending_enforcement_test: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("Placeholder path for the planned enforcement test (set during promotion)"),
   metrics: z
     .object({
       violations_before: z.number().int().nonnegative().nullable().default(null),

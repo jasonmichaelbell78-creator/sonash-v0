@@ -1,10 +1,15 @@
 # Automation Gap Closure — Design Spec
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-03-14
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
+
+## Purpose
+
+Design specification for closing automation gaps identified by the Data
+Effectiveness Audit (PR #431).
 
 **Date:** 2026-03-14 **Status:** APPROVED **Context:** Data Effectiveness Audit
 (PR #431) left 21 scaffolded routes unrefined, 5 scripts unwired, and a "hybrid"
@@ -352,3 +357,12 @@ version:
 | 9   | Nit      | `verified-patterns.json` schema differs from scaffold output                                                     | Added note: use VP schema (`id, anti_pattern, ...`), not scaffold schema                          |
 | 10  | Nit      | `route_type` omits `lint-rule`                                                                                   | Added `lint-rule` to enum                                                                         |
 | 11  | Nit      | Success criterion 1 misleading about full lifecycle timing                                                       | Added clarifying note about enforced→verified timing                                              |
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                       |
+| ------- | ---------- | --------------------------------------------- |
+| 1.1     | 2026-03-14 | Add Purpose/Version History sections (linter) |
+| 1.0     | 2026-03-14 | Initial design spec                           |

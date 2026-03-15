@@ -159,10 +159,13 @@ describe("refine-scaffolds: high-confidence entry", () => {
       "enforcement_test should be null initially"
     );
     assert.strictEqual(enforced0.metrics, null, "metrics should be null initially");
-    assert.ok(enforced0._pending_test, "should have _pending_test placeholder");
+    assert.ok(
+      enforced0.pending_enforcement_test,
+      "should have pending_enforcement_test placeholder"
+    );
   });
 
-  it("_pending_test is a sanitized placeholder path string", () => {
+  it("pending_enforcement_test is a sanitized placeholder path string", () => {
     const entry = makeScaffoldedEntry({
       id: "high-conf-002",
       learning: {
@@ -178,9 +181,9 @@ describe("refine-scaffolds: high-confidence entry", () => {
 
     const updatedEntries = readJsonl(routesPath) as Array<Record<string, unknown>>;
     const enforced = updatedEntries[0] as unknown as Record<string, unknown>;
-    assert.ok(typeof enforced._pending_test === "string");
-    assert.match(enforced._pending_test as string, /tests\/enforcement\//);
-    assert.match(enforced._pending_test as string, /high-conf-002/);
+    assert.ok(typeof enforced.pending_enforcement_test === "string");
+    assert.match(enforced.pending_enforcement_test as string, /tests\/enforcement\//);
+    assert.match(enforced.pending_enforcement_test as string, /high-conf-002/);
   });
 
   it("enforcement_test and metrics are null for newly promoted entries", () => {

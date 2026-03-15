@@ -1,8 +1,11 @@
 # Pre-Generation Behavioral Checklist
 
-**Document Version:** 1.0 **Last Updated:** 2026-03-13 **Status:** ACTIVE
-**Purpose:** Behavioral guardrails for patterns that cannot be fully automated.
-Each item has a proxy metric for measurement.
+**Document Version:** 1.1 **Last Updated:** 2026-03-14 **Status:** ACTIVE
+
+## Purpose
+
+Behavioral guardrails for patterns that cannot be fully automated. Each item has
+a proxy metric for measurement.
 
 > Reference this checklist before generating code, scripts, or skill files.
 > Items derive from CLAUDE.md Section 4 behavioral guardrails.
@@ -84,3 +87,12 @@ Each item has a proxy metric for measurement.
 | Safe fs usage           | raw-fs-in-new-code | patterns:check     | 0 (absolute) |
 | Error handling          | unguarded-reads    | patterns:check     | 0 (absolute) |
 | Test before commit      | commit-no-test     | pre-commit hook    | 0 (absolute) |
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                       |
+| ------- | ---------- | --------------------------------------------- |
+| 1.1     | 2026-03-14 | Add Purpose/Version History sections (linter) |
+| 1.0     | 2026-03-13 | Initial release                               |
