@@ -566,7 +566,7 @@ try {
     warnings++;
   } else if (err.status === 2) {
     // I/O error — surface as error
-    const sanitized = sanitizeError ? sanitizeError(err) : (err instanceof Error ? err.message : String(err));
+    const sanitized = sanitizeError ? sanitizeError(err) : "[review lifecycle error]";
     console.error("❌ Review lifecycle error: " + sanitizeInput(String(sanitized).split("\n")[0]));
     warnings++;
   } else {

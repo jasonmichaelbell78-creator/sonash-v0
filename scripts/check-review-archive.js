@@ -61,7 +61,7 @@ let safeAppendFileSync;
 try {
   ({ safeAppendFileSync } = require("./lib/safe-fs"));
 } catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
+  const msg = sanitizeError ? sanitizeError(err) : "[load error]";
   console.error("Failed to load safe-fs:", msg);
   process.exit(2);
 }

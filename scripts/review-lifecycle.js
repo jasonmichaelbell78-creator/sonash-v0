@@ -209,6 +209,33 @@ function parseMarkdownReviews(content) {
     const totalMatch = /Total\*{0,2}:\*{0,2}\s*(\d+)/i.exec(raw) || /(\d+)\s+(?:total|items)/i.exec(raw);
     if (totalMatch) review.total = Number.parseInt(totalMatch[1], 10);
 
+    // Patterns — extract from "**Key Patterns:**" or "**Patterns:**" sections
+    // Handles: "- **pattern-name**: description" and "- pattern description"
+    const patternLines = review._rawLines.filter((l) => {
+      const t = l.trim();
+      return (t.startsWith("- **") && t.includes("**:")) ||
+        (t.startsWith("- ") && t.length > 20 && t.length < 200);
+    });
+    if (patternLines.length > 0) {
+      review.patterns = patternLines.map((l) => {
+        const boldMatch = /- \*\*([^*]+)\*\*:?\s*(.*)/.exec(l.trim());
+        return boldMatch ? boldMatch[1].trim() : l.trim().slice(2).trim();
+      }).filter((p) => p.length > 0).slice(0, 15);
+    }
+
+    // Learnings — extract from "**Takeaway:**", "**Lesson:**", or post-pattern bullets
+    const learningLines = review._rawLines.filter((l) => {
+      const t = l.trim();
+      return (t.startsWith("**Takeaway:**") || t.startsWith("**Lesson:**") ||
+        (t.startsWith("- ") && t.length > 30 && t.length < 300 && !t.startsWith("- **")));
+    });
+    if (learningLines.length > 0) {
+      review.learnings = learningLines.map((l) => {
+        const prefixMatch = /\*\*(Takeaway|Lesson):\*\*\s*(.+)/.exec(l.trim());
+        return prefixMatch ? prefixMatch[2].trim() : l.trim().slice(2).trim();
+      }).filter((le) => le.length > 0).slice(0, 7);
+    }
+
     delete review._rawLines;
   }
 
