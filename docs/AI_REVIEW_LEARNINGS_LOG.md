@@ -1,6 +1,7 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.99 **Created:** 2026-01-02 **Last Updated:** 2026-03-12
+**Document Version:** 17.100 **Created:** 2026-01-02 **Last Updated:**
+2026-03-14
 
 ## Purpose
 
@@ -31,6 +32,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.60    | 2026-03-14               | Review #476: PR #432 R3 — Mixed (Qodo+CI+SonarCloud). Cache retry bug (re-throw after log), alert truncation consistency, existsSync TOCTOU removal, audit trail actor context. 6 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.59    | 2026-03-07               | Review #459: PR #420 R2 — Mixed (Gemini+Qodo+Semgrep). claude.md case mismatch (Linux CI), warned-files schema fix (timestamps→counts), failedCheck field, skill-registry generator fix (description: >-), process.execPath propagation (4x), swallowed catch debuggability (2x). 7 fixed, 6 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.58    | 2026-03-07               | Review #458: PR #420 R1 — Mixed (SonarCloud+Semgrep+Qodo+CI). Path containment bypass (realpathSync+path.relative), CC reduction (main→3 funcs), lazy projectDir eval, token redaction, broken archive links (7), missing Version History section. 8 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 17.57    | 2026-02-24               | PR #388 Final Retrospective: 7 rounds, 144 items, ~4.5 avoidable. Supersedes R1-R4 retro. Large PR scope #1 driver (4x recommended). Propagation partially automated (9x). Stale reviewer pattern new.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -899,6 +901,44 @@ rounds. Previous retro action items: 4 checked (3 verified, 1 advisory-only).
 ---
 
 ## Active Reviews
+
+### Review #476: PR #432 R3 — Mixed (Qodo Compliance + CI + SonarCloud + Qodo Suggestions) (2026-03-14)
+
+_Cache retry bug, alert truncation consistency, TOCTOU race, audit trail actor
+context, Prettier formatting._
+
+**Source:** Qodo Compliance (3), CI (1), SonarCloud (1), Qodo Suggestions (3)
+**Items:** 7 total (6 fixed, 0 deferred, 1 rejected) **Severity:** 0C / 2M / 3m
+/ 2T
+
+**Key Patterns:**
+
+1. **Inner try/catch masks failure from outer cache** — `loadVerifiedPatterns()`
+   swallowed errors and returned `[]`, so `getCachedVerifiedPatterns()` couldn't
+   distinguish "file not found" from "file is empty." Fix: re-throw after
+   logging, let cache layer handle retry semantics.
+2. **Inconsistent truncation across severity levels** — Warning alerts truncated
+   `entry.pattern` but critical alerts did not. Same function scope, same data,
+   different treatment. Always apply consistent sanitization regardless of
+   severity.
+3. **`existsSync` TOCTOU in cache logic** — Used to infer load success, but file
+   could be deleted between check and read. Removed entirely by switching to
+   try/catch flow.
+
+**Rejections:**
+
+- Substring match risk (`lower.includes(vp)`) — by-design. Verified-patterns
+  contain short curated strings meant for broad matching. Added documentation
+  comment to clarify intent.
+
+**Process Learnings:**
+
+- When R2 introduces a caching layer with retry semantics, verify that the
+  underlying function actually propagates errors (doesn't swallow them).
+- **Score:** 8/10 — Clean round. All items valid, one clarification-only reject.
+  Qodo Compliance and Suggestions converged on the same truncation issue.
+
+---
 
 ### Review #475: PR #430 R2 — Qodo (2026-03-13)
 
@@ -2317,8 +2357,9 @@ PR #415 introduces a new category: **planning artifact PRs**. Key learnings:
 
 #### Review #363: PR #432 R2 — Safe Writes, Error Sanitization, Fail-Fast Appends (2026-03-14)
 
-**Source:** Qodo (Compliance Guide + Code Suggestions + PR Comments) **PR/Branch:** PR #432 /
-plan-implementation **Suggestions:** 10 total (Major: 3, Minor: 6, Trivial: 1)
+**Source:** Qodo (Compliance Guide + Code Suggestions + PR Comments)
+**PR/Branch:** PR #432 / plan-implementation **Suggestions:** 10 total (Major:
+3, Minor: 6, Trivial: 1)
 
 **Patterns Identified:**
 
@@ -2330,8 +2371,8 @@ plan-implementation **Suggestions:** 10 total (Major: 3, Minor: 6, Trivial: 1)
    - Prevention: New file writes must use safe-fs helpers; propagation sweep
      catches stragglers
 2. **Silent failures in append loops mask state inconsistency**: When
-   `appendJsonl()` failed silently inside a loop, `refine-scaffolds.js`
-   returned `success: true` despite pending-refinements.jsonl being incomplete.
+   `appendJsonl()` failed silently inside a loop, `refine-scaffolds.js` returned
+   `success: true` despite pending-refinements.jsonl being incomplete.
    - Root cause: Catch-and-continue pattern without tracking failure count
    - Prevention: Track failures and return `success: false` when any append
      fails
@@ -2343,8 +2384,8 @@ plan-implementation **Suggestions:** 10 total (Major: 3, Minor: 6, Trivial: 1)
    - Prevention: Use `undefined` sentinel + existence check to allow retry
 
 **Applied:** All 3 patterns. Fixed 9 items, rejected 1 (prototype pollution via
-JSON.parse+spread is a false positive — JSON.parse creates regular own properties,
-not prototype chain modifications).
+JSON.parse+spread is a false positive — JSON.parse creates regular own
+properties, not prototype chain modifications).
 
 ---
 

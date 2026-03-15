@@ -256,10 +256,11 @@ function run(options = {}) {
       return { success: false, promoted, refined, skipped };
     }
 
-    // Audit trail: log state mutation (Review #432 R2)
+    // Audit trail: log state mutation (Review #432 R2, actor context R3)
     console.error(
       `[refine-scaffolds] Wrote ${updatedEntries.length} entries to ${path.basename(routesPath)} ` +
-        `(promoted=${promoted}, refined=${refined}, skipped=${skipped}) at ${new Date().toISOString()}`
+        `(promoted=${promoted}, refined=${refined}, skipped=${skipped}) ` +
+        `by=${process.env.USER || process.env.USERNAME || "unknown"} at ${new Date().toISOString()}`
     );
 
     // Routes persisted — now safe to append pending entries

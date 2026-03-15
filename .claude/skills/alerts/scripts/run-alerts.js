@@ -3844,7 +3844,7 @@ function checkPendingRefinements() {
     addAlert(
       "pending-refinements",
       "critical",
-      `S1 DEBT candidate (surfaced ${entry.surfaced_count}x without action): ${entry.pattern || "(unknown)"}`,
+      `S1 DEBT candidate (surfaced ${entry.surfaced_count}x without action): ${truncate(entry.pattern || "(unknown)", 60)}`,
       { id: entry.id, escalated: true },
       "Create S1 DEBT item via /add-debt with 7-day deadline"
     );

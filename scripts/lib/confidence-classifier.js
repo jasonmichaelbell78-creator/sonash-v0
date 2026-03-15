@@ -35,9 +35,12 @@ function loadVerifiedPatterns() {
     return data.patterns.map((p) => (p.anti_pattern || "").toLowerCase()).filter(Boolean);
   } catch (err) {
     // Review #432 R2: Log VP load failure for diagnostics (silent return [] masked classification errors)
+    // Review #432 R3: Re-throw so getCachedVerifiedPatterns can distinguish failure from empty
     const code = err && typeof err === "object" && "code" in err ? err.code : "UNKNOWN";
-    console.error(`[confidence-classifier] Warning: failed to load verified-patterns.json (${code}) — Rule 2 matching disabled`);
-    return [];
+    console.error(
+      `[confidence-classifier] Warning: failed to load verified-patterns.json (${code}) — Rule 2 matching disabled`
+    );
+    throw err;
   }
 }
 
@@ -53,6 +56,9 @@ function isRotationGap(pattern) {
 
 /**
  * Check if a pattern string matches an existing verified-pattern anti-pattern.
+ * Substring match is intentional — verified-patterns.json contains short, curated
+ * anti_pattern strings (e.g. "hardcoded secret", "missing rate limit") designed
+ * for broad matching against longer pattern descriptions.
  * @param {string} pattern
  * @param {string[]} vpPatterns - Lowercased verified-pattern anti_pattern strings
  * @returns {boolean}
@@ -65,19 +71,25 @@ function matchesVerifiedPattern(pattern, vpPatterns) {
 // Module-level cache for verified patterns
 // Review #432 R2: Use sentinel to distinguish "never loaded" from "loaded empty",
 // allowing retry after transient load failure while caching successful empty results
-let _vpCache = undefined;
+// Review #432 R3: Wrap load in try/catch so parse/read errors aren't cached as success;
+// removes existsSync TOCTOU race (items #6, #7)
+let _vpCache;
 let _vpLoadFailed = false;
 
 /**
  * Get cached verified patterns. On successful load (even if empty), caches permanently.
- * On load failure, allows one retry per call until a successful load occurs.
+ * On load failure, allows retry until a successful load occurs.
  * @returns {string[]}
  */
 function getCachedVerifiedPatterns() {
   if (_vpCache === undefined || _vpLoadFailed) {
-    _vpCache = loadVerifiedPatterns();
-    // If we got results, mark success; if empty but file exists, also success
-    _vpLoadFailed = _vpCache.length === 0 && !fs.existsSync(VP_PATH);
+    try {
+      _vpCache = loadVerifiedPatterns();
+      _vpLoadFailed = false;
+    } catch {
+      _vpCache = [];
+      _vpLoadFailed = true;
+    }
   }
   return _vpCache;
 }
