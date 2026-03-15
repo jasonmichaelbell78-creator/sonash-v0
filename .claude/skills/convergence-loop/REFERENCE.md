@@ -319,7 +319,7 @@ Max passes: 3
 
 ---
 
-## 6. Integration Notes
+## 5b. Integration Notes
 
 ### /skill-creator Integration (Q14)
 
