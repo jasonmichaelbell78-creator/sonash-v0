@@ -64,10 +64,18 @@ debt items (if deferred), state file.
 
 ## Warm-Up (MUST — before Step 1)
 
+**State file lookup (MUST for R2+):** Before displaying the warm-up, read prior
+round state files to get accurate counts. Check for state files in descending
+round order: `.claude/state/task-pr-review-{pr}-r{N}.state.json` where N < current
+round. Extract `total`, `fixed`, `deferred`, `rejected` from each.
+
 ```
 PR Review: #{pr} Round {round}
 Source: [CodeRabbit/Qodo/SonarCloud/Mixed]
-[If R2+: Previous round fixed N, deferred M, rejected K]
+[If R2+: Previous rounds from state files:
+  R1: fixed N, deferred M, rejected K
+  R2: fixed N, deferred M, rejected K
+  ...]
 Ready to receive review feedback. Paste it below.
 ```
 
@@ -317,11 +325,15 @@ Key Decisions:
 **Commit (MUST):** Prefix `fix:` or `docs:`. Body: reference review source.
 Separate commits for Critical fixes.
 
+**Persist state file (MUST):** After commit, write the round's state file to
+`.claude/state/task-pr-review-{pr}-r{round}.state.json` with the schema shown in
+Compaction Resilience. This is the source of truth for future rounds' warm-up.
+
 **Handoff:** "Run `/pr-retro --pr {N}` to analyze review cycle efficiency."
 
 **Feedback (MAY):** "Was this review process effective? Patterns to capture?"
 
-**Done when:** Summary shown, committed, handoff offered.
+**Done when:** Summary shown, committed, state file written, handoff offered.
 
 ---
 
@@ -338,6 +350,31 @@ State file: `.claude/state/task-pr-review-{pr}-r{round}.state.json`. Updated
 after each step. On `--resume`, read state and skip completed steps. Retained
 after completion as review record.
 
+**State file schema (MUST persist after Step 8):**
+
+```json
+{
+  "pr": 432,
+  "round": 3,
+  "review_number": 476,
+  "source": "mixed",
+  "total": 7,
+  "fixed": 6,
+  "deferred": 0,
+  "rejected": 1,
+  "severity": { "critical": 0, "major": 2, "minor": 3, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_sha": "32d52dcf",
+  "completed_at": "2026-03-14T23:55:00Z"
+}
+```
+
+**Why:** Warm-Up for R2+ reads prior round state files to show accurate
+previous-round counts. Without persisted state, context clearing or compaction
+loses this data and warm-up shows inaccurate or missing counts. The state file
+is the source of truth for cross-round history within a PR.
+
 ## Integration
 
 **Upstream:** Manual invocation only (user pastes feedback). **Downstream:**
@@ -350,6 +387,7 @@ after completion as review record.
 
 | Version | Date       | Description                                                                                                                                                                                                |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.3     | 2026-03-14 | State file persistence: Warm-Up reads prior round state files for accurate counts across compaction/clear. Step 8 writes state file. Schema documented in Compaction Resilience.                            |
 | 4.2     | 2026-03-13 | D26 backward flow: Step 1 retro pattern check reads last 3 retros' action_items[], flags repeat patterns, auto-elevates to MAJOR.                                                                          |
 | 4.1     | 2026-03-11 | Retro PRs #420/#424/#426: Step 0 (size advisory + first-scan batch), Step 2 (cross-round dedup + stale HEAD + prior rejection), Step 4 (propagation sweep strengthened), Step 6 (data completeness check). |
 | 4.0     | 2026-03-07 | Full rewrite from skill-audit (49 decisions). 8 sequential steps, pre-checks extracted, MUST/SHOULD/MAY, compaction, guard rails, routing.                                                                 |
