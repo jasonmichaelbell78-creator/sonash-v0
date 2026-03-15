@@ -317,11 +317,11 @@
       "lines": 729
     },
     {
-      "path": "scripts/run-consolidation.v1.js",
+      "path": "scripts/archive/run-consolidation.v1.js",
       "lines": 825
     },
     {
-      "path": "scripts/sync-reviews-to-jsonl.v1.js",
+      "path": "scripts/archive/sync-reviews-to-jsonl.v1.js",
       "lines": 1109
     }
   ]

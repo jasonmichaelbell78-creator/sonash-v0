@@ -345,7 +345,7 @@
     ],
     "session-id-no-validation": ["state-manager.js", "unify-findings.js"],
     "path-join-without-containment": ["check-hook-health.js", "validate-templates.js"],
-    "jsonl-parse-no-try-catch": ["transform-jsonl-schema.js", "sync-reviews-to-jsonl.js"],
+    "jsonl-parse-no-try-catch": ["transform-jsonl-schema.js"],
     "unsafe-interpolation": ["pattern-compliance-audit.yml"],
     "happy-path-only": [
       "users-tab.tsx",
@@ -359,7 +359,7 @@
       "dedup-multi-pass.js",
       "sync-sonarcloud.js",
       "run-consolidation.js",
-      "sync-reviews-to-jsonl.js"
+      "run-consolidation.js"
     ],
     "unbounded-query": [
       "admin-crud-table.tsx",
