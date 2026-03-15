@@ -30,18 +30,18 @@
  */
 
 // pattern-compliance: fs/path imports guarded by try/catch (CLAUDE.md Section 5)
-let existsSync, readFileSync, lstatSync, mkdirSync;
+let existsSync, readFileSync, mkdirSync;
 try {
-  ({ existsSync, readFileSync, lstatSync, mkdirSync } = require("node:fs"));
+  ({ existsSync, readFileSync, mkdirSync } = require("node:fs"));
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
   console.error("Failed to load node:fs:", msg);
   process.exit(2);
 }
 
-let join, resolve, dirname;
+let join, dirname;
 try {
-  ({ join, resolve, dirname } = require("node:path"));
+  ({ join, dirname } = require("node:path"));
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
   console.error("Failed to load node:path:", msg);
@@ -195,22 +195,18 @@ function nextISOWeek(weekStr) {
 function readReviewsJsonl() {
   const result = { records: [], parseErrors: [] };
 
-  try {
-    const content = readFileSync(REVIEWS_JSONL, "utf8").replaceAll("\r\n", "\n");
-    const lines = content.trim().split("\n");
+  // readFileSync throws on I/O failure — caller handles via try/catch
+  const content = readFileSync(REVIEWS_JSONL, "utf8").replaceAll("\r\n", "\n");
+  const lines = content.trim().split("\n");
 
-    for (let i = 0; i < lines.length; i++) {
-      const trimmed = lines[i].trim();
-      if (!trimmed) continue;
-      try {
-        result.records.push(JSON.parse(trimmed));
-      } catch {
-        result.parseErrors.push({ line: i + 1, raw: trimmed.slice(0, 80) });
-      }
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (!trimmed) continue;
+    try {
+      result.records.push(JSON.parse(trimmed));
+    } catch {
+      result.parseErrors.push({ line: i + 1, raw: trimmed.slice(0, 80) });
     }
-  } catch (err) {
-    // File read failure is a fatal error — caller must handle
-    throw err;
   }
 
   return result;
@@ -364,10 +360,9 @@ function writeForwardFindings(allFindings) {
   );
 
   try {
-    const absPath = resolve(FORWARD_FINDINGS_JSONL);
-    // Ensure directory exists
-    mkdirSync(dirname(absPath), { recursive: true });
-    safeAppendFileSync(absPath, lines.join("\n") + "\n");
+    // Ensure directory exists (FORWARD_FINDINGS_JSONL is already absolute via join)
+    mkdirSync(dirname(FORWARD_FINDINGS_JSONL), { recursive: true });
+    safeAppendFileSync(FORWARD_FINDINGS_JSONL, lines.join("\n") + "\n");
   } catch (err) {
     // Forward-findings write failure is non-fatal but must be reported
     console.error("Failed to write forward-findings:", sanitizeError(err));
@@ -634,7 +629,11 @@ function main() {
       const consolidationNumber = cState.consolidationNumber;
 
       // Cross-check: lastConsolidatedReview should not exceed the max numeric ID in JSONL
-      const jsonlMaxNumericId = numericIds.size > 0 ? Math.max(...numericIds) : 0;
+      // Use sorted array instead of Math.max(...) to avoid call stack overflow on large sets
+      const sortedNumericIds = [...numericIds].sort((a, b) => a - b);
+      const jsonlMaxNumericId = sortedNumericIds.length > 0
+        ? sortedNumericIds[sortedNumericIds.length - 1]
+        : 0;
 
       if (typeof lastConsolidated !== "number" || !Number.isFinite(lastConsolidated)) {
         addFinding(
@@ -643,7 +642,14 @@ function main() {
           "consolidation.json lastConsolidatedReview is not a valid number",
           "Fix lastConsolidatedReview to be the numeric ID of the last consolidated review"
         );
-      } else if (lastConsolidated > jsonlMaxNumericId && jsonlMaxNumericId > 0) {
+      } else if (jsonlMaxNumericId === 0) {
+        addFinding(
+          "S2",
+          "consolidation-no-numeric-ids",
+          "JSONL contains no numeric IDs — cannot validate consolidation counter",
+          "Verify JSONL format or set lastConsolidatedReview to 0"
+        );
+      } else if (lastConsolidated > jsonlMaxNumericId) {
         addFinding(
           "S1",
           "consolidation-ahead",
@@ -716,8 +722,9 @@ function main() {
           ];
           const mdNumbers = consolidationMatches
             .map((m) => Number.parseInt(m[1], 10))
-            .filter((n) => Number.isFinite(n));
-          const mdNumber = mdNumbers.length > 0 ? Math.max(...mdNumbers) : null;
+            .filter((n) => Number.isFinite(n))
+            .sort((a, b) => a - b);
+          const mdNumber = mdNumbers.length > 0 ? mdNumbers[mdNumbers.length - 1] : null;
           if (mdNumber !== null && mdNumber !== stateNumber) {
             addFinding(
               "S3",
