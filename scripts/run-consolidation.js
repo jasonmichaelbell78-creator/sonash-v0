@@ -571,10 +571,7 @@ function appendToCodePatterns(recurringPatterns, categories, consolidationNumber
   } catch (err) {
     throw new Error(`Failed to read CODE_PATTERNS.md: ${sanitizeError(err)}`);
   }
-  const { patternsByCategory, newPatterns } = filterNewPatterns(
-    categories,
-    content.toLowerCase()
-  );
+  const { patternsByCategory, newPatterns } = filterNewPatterns(categories, content.toLowerCase());
 
   if (newPatterns.length === 0) {
     log("  ℹ️ No new patterns to add to CODE_PATTERNS.md (all already documented)", c.cyan);
@@ -704,14 +701,8 @@ function applyConsolidation(state, reviews, recurringPatterns, categories) {
       today
     );
   } catch (err) {
-    log(
-      `\n❌ CODE_PATTERNS.md write failed — consolidation state NOT advanced.`,
-      c.red
-    );
-    log(
-      `   Fix the write error and re-run: npm run consolidation:run -- --apply`,
-      c.red
-    );
+    log(`\n❌ CODE_PATTERNS.md write failed — consolidation state NOT advanced.`, c.red);
+    log(`   Fix the write error and re-run: npm run consolidation:run -- --apply`, c.red);
     log(`   Error: ${sanitizeError(err)}`, c.red);
     process.exitCode = 2;
     return false;

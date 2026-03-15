@@ -8,7 +8,11 @@
 import assert from "node:assert/strict";
 import { test, describe } from "node:test";
 
-import { renderReviewRecord, renderAllRecords, type RenderableReview } from "../render-reviews-to-md";
+import {
+  renderReviewRecord,
+  renderAllRecords,
+  type RenderableReview,
+} from "../render-reviews-to-md";
 
 // =========================================================
 // Test fixtures

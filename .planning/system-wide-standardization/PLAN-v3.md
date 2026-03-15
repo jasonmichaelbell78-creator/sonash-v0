@@ -17,28 +17,29 @@ This plan implements the System-Wide Standardization overhaul: a phased
 transformation of 18 ecosystems from their current maturity levels to target
 levels. SWS is a **meta-plan** — it coordinates two child plans (Tooling
 Infrastructure, Code Quality Overhaul) and defines the cross-cutting
-infrastructure, sequencing, and gates that bind them together. Data Effectiveness
-(Plan 3) is 95% complete and operates independently. The child plans are
-execution appendices; SWS owns the structure, not their internal content.
+infrastructure, sequencing, and gates that bind them together. Data
+Effectiveness (Plan 3) is 95% complete and operates independently. The child
+plans are execution appendices; SWS owns the structure, not their internal
+content.
 
 **Structure:** 6 phases replace the original 21-step sequential model [Q1]:
 
-| Phase | Name                        | Purpose                                         |
-| ----- | --------------------------- | ----------------------------------------------- |
-| 0     | Pre-Requisites              | Skill builds, bug fixes, folder cleanup          |
-| 1     | CANON Foundation            | Schemas, migration mechanics, testing, views     |
-| 2     | Meta-Pipeline Execution     | 2 child plans (overlapping with gate) + integration deep-plan |
-| 3     | Ecosystem Standardization   | 18 ecosystems in dependency order                |
-| 4     | L4 Testing                  | Comprehensive test coverage across all systems   |
-| 5     | Final Verification          | End-to-end convergence audit                     |
+| Phase | Name                      | Purpose                                                       |
+| ----- | ------------------------- | ------------------------------------------------------------- |
+| 0     | Pre-Requisites            | Skill builds, bug fixes, folder cleanup                       |
+| 1     | CANON Foundation          | Schemas, migration mechanics, testing, views                  |
+| 2     | Meta-Pipeline Execution   | 2 child plans (overlapping with gate) + integration deep-plan |
+| 3     | Ecosystem Standardization | 18 ecosystems in dependency order                             |
+| 4     | L4 Testing                | Comprehensive test coverage across all systems                |
+| 5     | Final Verification        | End-to-end convergence audit                                  |
 
 **Effort Estimate (CANON composite per Q17):**
 
-| Metric       | Value                                                                                 |
-| ------------ | ------------------------------------------------------------------------------------- |
-| Complexity   | XL                                                                                    |
-| Sessions     | ~60-90 (down from 80-130 — child plans reduce per-ecosystem work)                     |
-| Waves        | 6 phases, child plans add ~30 internal waves                                          |
+| Metric       | Value                                                                                                       |
+| ------------ | ----------------------------------------------------------------------------------------------------------- |
+| Complexity   | XL                                                                                                          |
+| Sessions     | ~60-90 (down from 80-130 — child plans reduce per-ecosystem work)                                           |
+| Waves        | 6 phases, child plans add ~30 internal waves                                                                |
 | Deliverables | CANON infrastructure, 2 child plan outputs (DE already complete), 18 standardized ecosystems, L4 test suite |
 
 **Key references:** D67 (locked sequence), D49 (CANON enforcement), D9 (16-item
@@ -79,8 +80,8 @@ These tenets carry forward from DECISIONS.md without modification:
 All CANON artifacts, scripts, and tooling MUST work identically across
 platforms. Node.js over bash. Use Node's `path` utilities (`path.join`,
 `path.normalize`, `path.resolve`) — avoid hard-coded path separators. LF line
-endings.
-**Enforcement:** Pre-commit hook rejects bash-only scripts and backslash paths.
+endings. **Enforcement:** Pre-commit hook rejects bash-only scripts and
+backslash paths.
 
 _Previous: advisory only, no enforcement mechanism._
 
@@ -107,10 +108,10 @@ Failures MUST block, not warn. Pre-commit catches before PR. Session-start
 surfaces before work begins. Silent failures are S0 severity. Warnings that
 persist 3+ sessions without action MUST escalate to an interactive, blocking
 decision point (fix now vs create DEBT) with explicit user confirmation before
-any DEBT entry is created (per escalation
-pattern from Automation Gap Closure). **No passive surfacing of information —
-all data surfaces MUST require action or acknowledgment.** Unacknowledged
-warnings become wallpaper and are treated as bugs.
+any DEBT entry is created (per escalation pattern from Automation Gap Closure).
+**No passive surfacing of information — all data surfaces MUST require action or
+acknowledgment.** Unacknowledged warnings become wallpaper and are treated as
+bugs.
 
 _Previous: "errors block, they don't whisper" — no escalation, no passive
 surfacing prohibition._
@@ -156,15 +157,15 @@ Test assertions must be meaningful (not `expect(result).toBeDefined()`).
 
 ### Directive: Zod 4 Only (per Q32)
 
-All schemas use Zod 4 syntax. No Zod 3 compatibility shims. Enforced
-immediately across all plans. Zod 4 is already installed (v4.3.5) — no
-migration needed [Q16].
+All schemas use Zod 4 syntax. No Zod 3 compatibility shims. Enforced immediately
+across all plans. Zod 4 is already installed (v4.3.5) — no migration needed
+[Q16].
 
 ### Directive: Composite Effort Estimates (per Q17)
 
 No hours-based estimates anywhere in the project. All effort uses CANON
-composite: complexity (S/M/L/XL) + sessions + waves + deliverables. This
-applies to the meta-plan and all child plans.
+composite: complexity (S/M/L/XL) + sessions + waves + deliverables. This applies
+to the meta-plan and all child plans.
 
 ---
 
@@ -313,9 +314,9 @@ should note the activation point for its born-compliant gate.
 
 ### 10. Checkpoint Concrete Metrics (D69, D67)
 
-Each checkpoint has quantitative pass/fail criteria defined in its phase section.
-Checkpoints are NOT subjective assessments — they are measurable gates. If
-metrics aren't met, the checkpoint fails and iteration is required before
+Each checkpoint has quantitative pass/fail criteria defined in its phase
+section. Checkpoints are NOT subjective assessments — they are measurable gates.
+If metrics aren't met, the checkpoint fails and iteration is required before
 proceeding.
 
 The phased structure defines checkpoints at:
@@ -361,8 +362,8 @@ skill defines HOW.
 `/skill-creator` → `/skill-audit`. No skill ships without both steps.
 
 **Done when:** Skill exists, passes `/skill-audit`, is registered in skill
-registry, and has been validated by running it against the DIAGNOSIS-v2.md claims
-(meta-test: the skill verifies the document that motivated its creation).
+registry, and has been validated by running it against the DIAGNOSIS-v2.md
+claims (meta-test: the skill verifies the document that motivated its creation).
 
 ### Step 0.2: Fix CLAUDE.md Annotation Bugs
 
@@ -514,10 +515,11 @@ Create `.canon/` at repo root with foundational schemas and configuration.
 **Configuration to create:**
 
 - Shadow-append registry [Q21] — which JSONL files are sacred sources (append-
-  only, never overwritten). Initial list: `docs/technical-debt/raw/deduped.jsonl`,
-  `docs/technical-debt/MASTER_DEBT.jsonl`, `.claude/state/learning-routes.jsonl`,
-  `.claude/state/forward-findings.jsonl`, `.claude/state/pending-refinements.jsonl`,
-  and all `changelog.jsonl` files
+  only, never overwritten). Initial list:
+  `docs/technical-debt/raw/deduped.jsonl`,
+  `docs/technical-debt/MASTER_DEBT.jsonl`,
+  `.claude/state/learning-routes.jsonl`, `.claude/state/forward-findings.jsonl`,
+  `.claude/state/pending-refinements.jsonl`, and all `changelog.jsonl` files
 - Scope manifests per plan [Q21] — design-time collision detection listing which
   JSONL files each plan writes to
 
@@ -577,8 +579,8 @@ CANON to be the exemplar ecosystem.
   `.canon/scripts/__tests__/`)
 - Tests MUST be robust — semantic, functional verification [T24]. No
   `expect(result).toBeDefined()` placeholder assertions. Test actual behavior:
-  schema validation rejects bad input, generators produce correct output,
-  health checker scores match expected values.
+  schema validation rejects bad input, generators produce correct output, health
+  checker scores match expected values.
 - Integration test: full roundtrip (write JSONL -> generate views -> validate ->
   verify generated output matches source)
 - Error path tests: malformed JSONL handling, missing files, schema version
@@ -625,8 +627,8 @@ Restored from V1 Step 1i — CANON must eat its own dog food.
 
 Run CANON through its own 16-item checklist. CANON must score L5 on all
 applicable items — it is the exemplar. The 16 checklist items (D9): Zod schemas,
-JSONL storage, generated views, health monitoring, enforcement manifest, testing,
-documentation, state persistence, error handling, naming compliance,
+JSONL storage, generated views, health monitoring, enforcement manifest,
+testing, documentation, state persistence, error handling, naming compliance,
 configuration, lifecycle hooks, versioning, inter-ecosystem contracts,
 rollback/recovery, deprecation policy.
 
@@ -744,8 +746,8 @@ definitions refined. Forward-findings pipeline design confirmed.
 ### Step 2.1: Tooling Infrastructure (Plan 1)
 
 **Appendix:** `tooling-infrastructure-audit/PLAN.md` (9 steps, 4 waves)
-**Decisions:** D93-D122 (per Q3 absorption numbering)
-**Complexity:** XL | **Sessions:** 8-12 | **Waves:** 4
+**Decisions:** D93-D122 (per Q3 absorption numbering) **Complexity:** XL |
+**Sessions:** 8-12 | **Waves:** 4
 
 Execute the Tooling plan as-written, with these SWS-level additions:
 
@@ -754,16 +756,16 @@ Execute the Tooling plan as-written, with these SWS-level additions:
 - **Q29 (ratchet extraction):** During Step 7 (npm Script Audit), extract
   `ratchet-baselines.js` engine to `scripts/lib/ratchet-engine.js`. Keep
   metric-specific logic in calling scripts. Both CQ and DE consume the shared
-  utility. This is textbook shared infrastructure — generic engine (read baseline
-  → compare → update), only metric definitions differ.
+  utility. This is textbook shared infrastructure — generic engine (read
+  baseline → compare → update), only metric definitions differ.
 - **Q22 (script fixes):** During Step 7, fix G8 (`scan-changelog.js` path
   inconsistency) and G10 (`generate-doc-index.js` filename mismatch).
 - **Q12 (skill cleanup):** During Step 4 (Agent Cleanup), handle skill
   invocation cleanup. Deferred from Skills ecosystem scope — Tooling plan runs
   first and handles this.
-- **Q13 (severity mapping):** During Step 5 (ESLint), rationalize
-  severity→stage mapping for `patterns:check`. Severity and enforcement stage are
-  currently conflated — this rationalization is a Tooling concern.
+- **Q13 (severity mapping):** During Step 5 (ESLint), rationalize severity→stage
+  mapping for `patterns:check`. Severity and enforcement stage are currently
+  conflated — this rationalization is a Tooling concern.
 - **Q10 (auto-DEBT tiers):** Implement differentiated auto-DEBT remediation
   during the relevant Tooling steps.
 
@@ -777,10 +779,10 @@ Two tiers, differentiated by invocation model:
     threshold breach
   - `escalate-deferred.js` — silently escalates deferred items to DEBT
   - Remediation: These MUST NOT create DEBT entries without interactive gate +
-    user confirmation. Add hard block requiring explicit user approval before any
-    DEBT modification.
-- **Tier 2 — Confirmation Step** (semi-auto — user invokes, but DEBT creation
-  is a side-effect without explicit approval):
+    user confirmation. Add hard block requiring explicit user approval before
+    any DEBT modification.
+- **Tier 2 — Confirmation Step** (semi-auto — user invokes, but DEBT creation is
+  a side-effect without explicit approval):
   - `intake-audit.js` — user invokes audit, DEBT created as side-effect
   - `sync-sonarcloud.js` — user invokes sync, DEBT created as side-effect
   - `intake-pr-deferred.js` — user invokes PR processing, deferred items created
@@ -808,8 +810,8 @@ Before Code Quality can begin implementation (Phase 0 research may overlap):
 ### Step 2.2: Code Quality Overhaul (Plan 2)
 
 **Appendix:** `code-quality-overhaul/PLAN.md` (12 steps, 12 waves)
-**Decisions:** D123-D148 (per Q3 absorption numbering)
-**Complexity:** XL | **Sessions:** 10-15 | **Waves:** 12
+**Decisions:** D123-D148 (per Q3 absorption numbering) **Complexity:** XL |
+**Sessions:** 10-15 | **Waves:** 12
 
 **Overlap start:** May begin Phase 0 (research/deep-plan) while Tooling
 completes its final wave (documentation). Must not begin implementation until
@@ -819,14 +821,14 @@ Execute the Code Quality plan as-written, with these SWS-level additions:
 
 **Cross-plan additions:**
 
-- **Q23 (L3 testing scope):** L3 testing is delivered as part of CQ scope.
-  Wave 12 (Final Audit) includes test coverage verification. L4 testing is a
-  separate planned phase (Phase 4) — not vague future, but planned now and
-  scheduled later per user directive.
+- **Q23 (L3 testing scope):** L3 testing is delivered as part of CQ scope. Wave
+  12 (Final Audit) includes test coverage verification. L4 testing is a separate
+  planned phase (Phase 4) — not vague future, but planned now and scheduled
+  later per user directive.
 - **Q30 (forward-findings producer):** CQ findings write to
-  `forward-findings.jsonl` (per unified intake). Schema from CANON Phase 1
-  (Step 1.1). CQ does not need to know DE's internal schema — single intake
-  point prevents schema coupling between plans.
+  `forward-findings.jsonl` (per unified intake). Schema from CANON Phase 1 (Step
+  1.1). CQ does not need to know DE's internal schema — single intake point
+  prevents schema coupling between plans.
 
 **Done when:** All 12 CQ plan steps complete. All SWS-level additions
 implemented. Forward-findings intake operational. CQ findings written to
@@ -842,6 +844,7 @@ execution — already implemented across PRs #431 and #432.
 **Appendix:** `learnings-effectiveness-audit/PLAN.md` (D149-D183)
 
 **What was delivered:**
+
 - Waves 0-7, 9-10 fully implemented with all deliverables verified in codebase
 - Learning-to-automation router (`scripts/lib/learning-router.js`)
 - Lifecycle scoring (`lifecycle-scores.jsonl`, 20 systems scored)
@@ -852,13 +855,14 @@ execution — already implemented across PRs #431 and #432.
   session-start wiring
 
 **Remaining cleanup (Wave 8 partial):**
+
 - `data-effectiveness-audit` REFERENCE.md companion file
 - `/skill-audit` confirmation on the `data-effectiveness-audit` skill
 
 **Forward-findings integration (Q30/Q31):** DE's existing `learning-router.js`
 will consume from `forward-findings.jsonl` once Tooling and CQ begin producing
-findings. This wiring is a CANON Phase 1 schema deliverable (Step 1.1), not a
-DE execution task.
+findings. This wiring is a CANON Phase 1 schema deliverable (Step 1.1), not a DE
+execution task.
 
 ---
 
@@ -881,14 +885,14 @@ Every ecosystem standardization follows this 4-step process:
    knowledge base (D75): `.planning/system-wide-standardization/` artifacts,
    prior ecosystem deep-plan decisions, `.canon/changelog.jsonl`. Minimum 5+
    design decisions triggers full deep-plan per T23.
-2. **Execute** — implement standardization per deep-plan output. Each
-   ecosystem completes with: 16-item checklist scorecard (each item completed
-   or formally deferred with justification per D54), health checker(s) passing,
-   tests passing (existing + new), changelog entries for cross-ecosystem
-   impacts (T18).
+2. **Execute** — implement standardization per deep-plan output. Each ecosystem
+   completes with: 16-item checklist scorecard (each item completed or formally
+   deferred with justification per D54), health checker(s) passing, tests
+   passing (existing + new), changelog entries for cross-ecosystem impacts
+   (T18).
 3. **Verify** — `/convergence-loop` on claims about completion (T20). Multi-
-   agent, multi-angle verification. Convergence = no material corrections AND
-   no unexplored angles. Minimum 2 passes.
+   agent, multi-angle verification. Convergence = no material corrections AND no
+   unexplored angles. Minimum 2 passes.
 4. **Declare** — CANON ecosystem declaration with health checker. File
    assessment in `.canon/ecosystems/{id}/assessment.jsonl`. Activate
    born-compliant gate (D26) — new artifacts must meet the ecosystem's standard
@@ -936,8 +940,8 @@ Phase 1 schemas are in place.
 
 - Amendment protocol for tenets and directives — versioned changes with
   rationale, archived old wording
-- JSONL→MD sync enforcement in pre-commit (R16) — source JSONL and generated
-  MD views must stay in sync
+- JSONL→MD sync enforcement in pre-commit (R16) — source JSONL and generated MD
+  views must stay in sync
 - Tenet evidence backfill integration (R10) — all tenets receive evidence
   references from ecosystem standardization work
 
@@ -951,15 +955,15 @@ Phase 1 schemas are in place.
 
 **Effort:** L (6-10 sessions — 62+ skills) | **CANON composite:** Complexity L,
 Sessions 6-10, Waves TBD (deep-plan output), Deliverables: schema, health
-checker, lifecycle, born-compliant gate
-**Depends on:** Phase 1 (CANON schemas in place)
+checker, lifecycle, born-compliant gate **Depends on:** Phase 1 (CANON schemas
+in place)
 
 Per D37, the Skills ecosystem is a daily tool touching many systems. Skill-audit
 skill (`.claude/skills/skill-audit/`) drives per-skill assessment (directive
 #20).
 
-**Modification per Q12:** Skill invocation cleanup is deferred to Tooling
-(Step 2.1, Plan 1). This step focuses on skill metadata, lifecycle, and health
+**Modification per Q12:** Skill invocation cleanup is deferred to Tooling (Step
+2.1, Plan 1). This step focuses on skill metadata, lifecycle, and health
 infrastructure — not invocation mechanics.
 
 **Pre-implementation:**
@@ -999,18 +1003,18 @@ gate active, health checker passing. 16-item checklist scorecard reviewed.
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: schemas, enforcement manifest, contracts, health
-checker
-**Depends on:** Step 3.1 (Skills — skill validation gates)
+checker **Depends on:** Step 3.1 (Skills — skill validation gates)
 
 Per D36, Hooks is the enforcement infrastructure. Strong operational automation
 exists (`.husky/pre-commit` at ~350 lines, `.husky/pre-push`, `.claude/hooks/`).
 Delta is mainly Zod schemas + formalized contracts + versioning.
 
 **Modification per Q7:** Phase 0 Step 0.3 verifies Hooks PR #427 with
-`/convergence-loop` before this step begins. Any issues found become
-remediation items here.
+`/convergence-loop` before this step begins. Any issues found become remediation
+items here.
 
 **OV items per Q24:**
+
 - D2 (pre-commit optimization) — extracted from Operational Visibility sprint
 - E1 (warning collector hook) — extracted from Operational Visibility sprint
 
@@ -1042,8 +1046,8 @@ reviewed.
 #### Step 3.3: PR Review — CANON Pilot (L4 → L5)
 
 **Effort:** S (1-2 sessions) | **CANON composite:** Complexity S, Sessions 1-2,
-Waves 1, Deliverables: L5 assessment, CANON validation report
-**Depends on:** Step 3.2 (Hooks)
+Waves 1, Deliverables: L5 assessment, CANON validation report **Depends on:**
+Step 3.2 (Hooks)
 
 PR Review is the reference implementation (D33). Already at L4 with 56 test
 files, 10 health checkers, multi-mechanism enforcement. This is the first
@@ -1072,8 +1076,8 @@ v0.2.0.
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: folder standards, dependency system, born-compliant
-template
-**Depends on:** Step 3.3 (Checkpoint — CANON validated via PR Review pilot)
+template **Depends on:** Step 3.3 (Checkpoint — CANON validated via PR Review
+pilot)
 
 Per D65 and directive #32, Docs establishes folder structure, file placement
 standards, document dependency maps, and master lists BEFORE any further
@@ -1127,8 +1131,8 @@ configuration, and inter-ecosystem test contracts.
 
 **Modification per Q23:** L3 testing is delivered during Phase 2 (Code Quality
 plan). This step focuses on L4 infrastructure — enforcement manifest, schemas,
-contracts. L4 testing scope (comprehensive, automated, regression-proof) for
-ALL ecosystems is Phase 4 — planned now, scheduled later.
+contracts. L4 testing scope (comprehensive, automated, regression-proof) for ALL
+ecosystems is Phase 4 — planned now, scheduled later.
 
 **Pre-implementation:**
 
@@ -1164,14 +1168,14 @@ schemas validate test config. 16-item checklist reviewed.
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: session schemas, lifecycle, state persistence, health
-checker
-**Depends on:** Step 3.5 (Testing — test infrastructure)
+checker **Depends on:** Step 3.5 (Testing — test infrastructure)
 
 Per D35, Sessions is cross-cutting infrastructure. Every ecosystem depends on
 session state being reliable. Schemas + JSONL + monitoring gives reliability
 layer.
 
 **OV items per Q24:**
+
 - E1 (warning collector) — feeds into session-start surfacing
 - E2 (session health JSON) — extracted from Operational Visibility sprint
 
@@ -1261,8 +1265,8 @@ ecosystems with confidence.
 
 **Effort:** XL-partial (6-10 sessions for this stage) | **CANON composite:**
 Complexity XL-partial, Sessions 6-10, Waves TBD, Deliverables: schemas for all
-TDMS data, monitoring, race condition fix
-**Depends on:** Step 3.7 (Priority Tier Checkpoint passed)
+TDMS data, monitoring, race condition fix **Depends on:** Step 3.7 (Priority
+Tier Checkpoint passed)
 
 Per D34 and directive #19, TDMS is critical and targets L5 across three stages.
 Stage 1 focuses on Zod schemas + monitoring for 37 scripts in `scripts/debt/`.
@@ -1304,14 +1308,14 @@ per D54).
 
 **Effort:** L (6-10 sessions — 300+ scripts) | **CANON composite:** Complexity
 L, Sessions 6-10, Waves TBD, Deliverables: script standards, dead code audit,
-health checker
-**Depends on:** Step 3.8 (TDMS Stage 1 — learnings from 37-script
+health checker **Depends on:** Step 3.8 (TDMS Stage 1 — learnings from 37-script
 standardization)
 
 Per D39, the script infrastructure has 300+ scripts with inconsistent patterns.
 TDMS learnings from Step 3.8 directly inform this step.
 
 **OV item per Q24:**
+
 - D10 (script test coverage) — extracted from Operational Visibility sprint
 
 **Pre-implementation:**
@@ -1346,13 +1350,14 @@ checklist reviewed.
 #### Step 3.10: CI/CD (L1 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
-Waves TBD, Deliverables: workflow catalog, schemas, health checker
-**Depends on:** Step 3.9 (Scripts — pipeline scripts standardized)
+Waves TBD, Deliverables: workflow catalog, schemas, health checker **Depends
+on:** Step 3.9 (Scripts — pipeline scripts standardized)
 
 Per D41 and D66, CI/CD covers build/deploy pipelines beyond local gates. Staged
 L1→L2→L3.
 
 **OV item per Q24:**
+
 - D4 (CI gates) — extracted from Operational Visibility sprint
 
 **Pre-implementation:**
@@ -1386,13 +1391,13 @@ D4 implemented. 16-item checklist reviewed.
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: alert schemas, enforcement manifest, meta-health
-checker
-**Depends on:** Step 3.10 (CI/CD — pipeline monitoring feeds alerts)
+checker **Depends on:** Step 3.10 (CI/CD — pipeline monitoring feeds alerts)
 
 Per D38, Alerts has 36 categories, scoring, benchmarks, trend tracking. Staged
 L2→L3→L4.
 
 **CAPTURE_MANIFEST consumption per Q26:**
+
 - Consume CAPTURE_MANIFEST Entry 1 (41 audit ecosystem issues) — executor
   triages items during deep-plan. Items are design decisions for the Alerts
   deep-plan, not pre-absorbed into SWS scope.
@@ -1429,9 +1434,8 @@ manifest active. CAPTURE_MANIFEST Entry 1 items triaged and dispositioned.
 
 **CHECKPOINT: Data infrastructure standardized** (D67)
 
-After Alerts reaches L4, all data-tier ecosystems are standardized: TDMS
-Stage 1 (L3), Scripts (L3), CI/CD (L3), Alerts (L4). Ready for process-tier
-ecosystems.
+After Alerts reaches L4, all data-tier ecosystems are standardized: TDMS Stage 1
+(L3), Scripts (L3), CI/CD (L3), Alerts (L4). Ready for process-tier ecosystems.
 
 **Checkpoint Validation — Concrete Metrics:**
 
@@ -1446,8 +1450,8 @@ All of the following must pass:
    `status: "completed"` and accurate `current_level` values.
 4. **Contract integrity:** All inter-ecosystem contracts declared in Steps
    3.1-3.11 have both sides implemented (no dangling contract references).
-5. **Changelog audit:** `.canon/changelog.jsonl` entries for Steps 3.1-3.11
-   are complete and cross-referenceable against git history.
+5. **Changelog audit:** `.canon/changelog.jsonl` entries for Steps 3.1-3.11 are
+   complete and cross-referenceable against git history.
 6. **TDMS integration:** All migration findings from data-tier work either
    resolved or tracked in MASTER_DEBT with source `canon-migration`.
 7. **Schema coverage:** All 10 ecosystems have Zod 4 schemas covering their
@@ -1464,8 +1468,8 @@ All of the following must pass:
 #### Step 3.13: Analytics (L1 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
-Waves TBD, Deliverables: metric catalog, aggregation layer, dashboards
-**Depends on:** Step 3.12 (Data Tier Checkpoint passed)
+Waves TBD, Deliverables: metric catalog, aggregation layer, dashboards **Depends
+on:** Step 3.12 (Data Tier Checkpoint passed)
 
 Per D42, metrics and trend data are scattered across health checkers and audit
 outputs. No unified analytics layer.
@@ -1493,8 +1497,8 @@ operational, dashboards generated. 16-item checklist reviewed.
 #### Step 3.14: Agents (L2 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
-Waves TBD, Deliverables: agent schemas, lifecycle, invocation tracking
-**Depends on:** Step 3.12 (Data Tier Checkpoint — benefits from Skills L3)
+Waves TBD, Deliverables: agent schemas, lifecycle, invocation tracking **Depends
+on:** Step 3.12 (Data Tier Checkpoint — benefits from Skills L3)
 
 Per D50, 35 agent definitions with structured patterns. Invocation tracking via
 JSONL exists.
@@ -1606,8 +1610,8 @@ reviewed.
 
 **Effort:** XL-partial (6-10 sessions) | **CANON composite:** Complexity
 XL-partial, Sessions 6-10, Waves TBD, Deliverables: enforcement manifest,
-comprehensive tests, enforcement gates
-**Depends on:** Step 3.16 (Archival/Rotation — archival patterns for TDMS data)
+comprehensive tests, enforcement gates **Depends on:** Step 3.16
+(Archival/Rotation — archival patterns for TDMS data)
 
 Second TDMS stage. All process-layer patterns now established. Focus on
 enforcement manifest and testing.
@@ -1626,8 +1630,8 @@ enforcement manifest and testing.
 - Address any findings from Stage 1 that were deferred
 - Enforcement gates active in pre-commit/pre-push
 
-**Done when:** TDMS at L4, enforcement operational, comprehensive tests
-passing. 16-item checklist scorecard (some items deferred to Stage 3).
+**Done when:** TDMS at L4, enforcement operational, comprehensive tests passing.
+16-item checklist scorecard (some items deferred to Stage 3).
 
 ---
 
@@ -1635,12 +1639,11 @@ passing. 16-item checklist scorecard (some items deferred to Stage 3).
 
 **Effort:** L (6-10 sessions) | **CANON composite:** Complexity L, Sessions
 6-10, Waves TBD, Deliverables: input pipelines, dedupe automation, health
-checker
-**Depends on:** Step 3.17 (TDMS Stage 2 — debt pipeline standardized)
+checker **Depends on:** Step 3.17 (TDMS Stage 2 — debt pipeline standardized)
 
 Per D46 and directive #21, the Roadmap & Execution ecosystem is the HUB. All
-input pipelines now standardized after prior steps. Critical gap: non-debt
-input pipelines are missing (directive #21, Idea #26).
+input pipelines now standardized after prior steps. Critical gap: non-debt input
+pipelines are missing (directive #21, Idea #26).
 
 **Pre-implementation:**
 
@@ -1684,8 +1687,7 @@ input pipelines are missing (directive #21, Idea #26).
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: connection point contracts, boundary tests, health
-checker
-**Depends on:** Step 3.18 (Roadmap — work item tracking for app-layer)
+checker **Depends on:** Step 3.18 (Roadmap — work item tracking for app-layer)
 
 Per D52 and directive #23, app-layer planning differs from process ecosystems.
 Focus on CONNECTION POINTS between process ecosystems and the app layer. Adapted
@@ -1763,8 +1765,8 @@ formalized, boundary tests in place. Adapted 16-item checklist reviewed.
 #### Step 3.21: Docs Verification Pass
 
 **Effort:** S (1-2 sessions) | **CANON composite:** Complexity S, Sessions 1-2,
-Waves 1, Deliverables: consistency audit, updated index
-**Depends on:** Step 3.20 (all 18 ecosystems standardized)
+Waves 1, Deliverables: consistency audit, updated index **Depends on:** Step
+3.20 (all 18 ecosystems standardized)
 
 Per D67, this is a meta-check: are all 18 ecosystems' docs consistent? Staleness
 audit across all documentation produced during Steps 3.1-3.20.
@@ -1786,8 +1788,7 @@ updated.
 
 **Effort:** XL-final (6-10 sessions) | **CANON composite:** Complexity XL-final,
 Sessions 6-10, Waves TBD, Deliverables: L5 canonization, full contract suite,
-schema versioning
-**Depends on:** Step 3.21 (all docs verified)
+schema versioning **Depends on:** Step 3.21 (all docs verified)
 
 **CHECKPOINT: Full system overhaul complete** (D67)
 
@@ -1795,6 +1796,7 @@ Final TDMS stage. All other ecosystems standardized. TDMS reaches L5 — fully
 canonized.
 
 **CAPTURE_MANIFEST consumption per Q26:**
+
 - Consume CAPTURE_MANIFEST Entry 3 (20-domain test structure) — executor
   incorporates into TDMS testing.
 
@@ -1840,14 +1842,14 @@ Run comprehensive audit (D83): Tier 1 + Tier 2 + Tier 3 (summary) + Tier 4
 
 **If checkpoint passes:** Promote CANON to v1.0.0 (D76).
 
-**Done when:** TDMS at L5, CANON at v1.0.0, overhaul complete, all ecosystems
-at target maturity. Full 16-item checklist, comprehensive overhaul audit, user
+**Done when:** TDMS at L5, CANON at v1.0.0, overhaul complete, all ecosystems at
+target maturity. Full 16-item checklist, comprehensive overhaul audit, user
 review.
 
 ### Step 3.22 Audit
 
-Tier 1 (full) + Tier 2 (full) + Tier 3 (summary) + Tier 4 (full) —
-comprehensive overhaul completion validation (D83).
+Tier 1 (full) + Tier 2 (full) + Tier 3 (summary) + Tier 4 (full) — comprehensive
+overhaul completion validation (D83).
 
 ### Phase 3 Completion — CANON v0.4.0
 
@@ -1884,8 +1886,8 @@ cross-boundary validated).
    a structured report.
 2. **Gap identification:** Compare each ecosystem's test inventory against L4
    requirements. L4 requires:
-   - Integration tests across ecosystem boundaries (e.g., TDMS changes
-     propagate correctly to health checkers)
+   - Integration tests across ecosystem boundaries (e.g., TDMS changes propagate
+     correctly to health checkers)
    - Regression tests for every enforcement gate (pre-commit, pre-push, CI)
    - Performance benchmarks for scripts that run in hooks or CI
    - Chaos/failure-mode tests for state recovery (T9 crash-proof)
@@ -1907,7 +1909,8 @@ testing. This is the bulk of Phase 4 work.
 
 **Test categories (all required for L4):**
 
-1. **Integration tests** — Verify behavior across ecosystem boundaries. Examples:
+1. **Integration tests** — Verify behavior across ecosystem boundaries.
+   Examples:
    - CANON schema change propagates correctly to all consuming ecosystems
    - Forward-findings pipeline delivers findings from source plan to
      learning-router to enforcement pipeline
@@ -1915,8 +1918,8 @@ testing. This is the bulk of Phase 4 work.
      overwrite a sacred JSONL file
    - Health checker results feed into ecosystem maturity scorecard
 
-2. **Regression tests** — For every enforcement gate (pre-commit hooks,
-   pre-push hooks, CI checks, patterns:check rules):
+2. **Regression tests** — For every enforcement gate (pre-commit hooks, pre-push
+   hooks, CI checks, patterns:check rules):
    - Verify gate blocks on known-bad input
    - Verify gate passes on known-good input
    - Verify gate error messages are actionable (not cryptic)
@@ -1951,8 +1954,8 @@ For each ecosystem (priority order):
 ```
 
 **Done when:** All 18 ecosystems have L4 test coverage. CI runs the full suite.
-No ecosystem has untested enforcement gates. Chaos tests cover all state-recovery
-scenarios identified in T9.
+No ecosystem has untested enforcement gates. Chaos tests cover all
+state-recovery scenarios identified in T9.
 
 **Audit:** Tier 1 + Tier 2 — test quality, coverage completeness, no gaps in
 enforcement gate testing.
@@ -2013,8 +2016,8 @@ quantitative claim the plan makes.
 **Audit tiers (restored from V1 D83):**
 
 - **Tier 1 (full):** Code review of all artifacts created/modified during SWS
-- **Tier 2 (full):** Cross-reference validation — every reference resolves, every
-  contract has both sides, every schema has consumers
+- **Tier 2 (full):** Cross-reference validation — every reference resolves,
+  every contract has both sides, every schema has consumers
 - **Tier 3 (summary):** Architecture-level validation — ecosystem boundaries
   clean, no circular dependencies, data flow consistent
 - **Tier 4 (full):** Quantitative metrics audit — every checkpoint metric
@@ -2029,8 +2032,8 @@ either passes or fails with specific evidence.
    level as defined in DECISIONS.md assessment table. Verified by running all 18
    health checkers and comparing output against target levels.
 
-2. **Health universal green:** All 18 ecosystem health checkers passing with zero
-   failures and zero warnings. Any warning or failure is a blocking issue.
+2. **Health universal green:** All 18 ecosystem health checkers passing with
+   zero failures and zero warnings. Any warning or failure is a blocking issue.
 
 3. **Changelog completeness:** `.canon/changelog.jsonl` covers all plan phases
    and steps, cross-referenceable against `git log` output. No undocumented
@@ -2045,18 +2048,17 @@ either passes or fails with specific evidence.
 
 5. **TDMS clean:** All `canon-migration` source items in MASTER_DEBT.jsonl
    either resolved (status: `resolved`) or explicitly accepted as ongoing debt
-   with justification recorded in the `rationale` field. Zero items in
-   `open` status with `canon-migration` source.
+   with justification recorded in the `rationale` field. Zero items in `open`
+   status with `canon-migration` source.
 
 6. **Schema integrity:** All JSONL files across all ecosystems validate against
    their declared Zod schema versions. Verified by: running schema validation
-   script against every `.jsonl` file in the repository. Zero validation
-   errors.
+   script against every `.jsonl` file in the repository. Zero validation errors.
 
 7. **Archive integrity:** All migrated source files properly archived in
    `.archive/` with provenance metadata. No stale pre-migration files remain in
-   the active tree. Verified by: scanning active tree for files that should
-   have been archived (matched against migration manifest).
+   the active tree. Verified by: scanning active tree for files that should have
+   been archived (matched against migration manifest).
 
 8. **Knowledge capture:** Learnings from all phases captured in changelog.
    Maintenance patterns documented for ongoing operations. Verified by: each
@@ -2079,8 +2081,8 @@ justification). Convergence report published with evidence for each metric.
 ### Step 5.2: CAPTURE_MANIFEST Consumption
 
 Consume CAPTURE_MANIFEST Entry 2 (ecosystem audit expansion — 3 new audit skills
-designed during discovery). Verify these audit skills were created during Phase 3
-ecosystem work.
+designed during discovery). Verify these audit skills were created during Phase
+3 ecosystem work.
 
 **Validation:**
 
@@ -2113,6 +2115,29 @@ committed and tagged.
 
 These concerns span multiple phases and require consistent handling throughout
 execution.
+
+### Decision Recall Mechanism (Q38 — Session #221)
+
+**MANDATORY GATE:** Before planning ANY phase, read the decisions-by-phase
+index:
+
+- **Human-readable:** `DECISIONS_BY_PHASE.md` (this directory)
+- **Machine-readable:** `decisions-phase-map.json` (this directory)
+
+The deep-plan skill MUST present all tagged decisions for the target phase
+before discovery questions begin. After the plan is drafted, a convergence loop
+verification pass MUST cross-check that all tagged decisions appear in the plan.
+
+**Additional Session #221 cross-cutting decisions:**
+
+- **Q34**: Progressive canon enforcement with acknowledgment-gating (soft →
+  hard)
+- **Q35**: No silent fails — all hooks/scripts/processes surface failures
+  visibly
+- **Q36**: No orphan processes/files — proactive discovery mechanism required
+- **Q37**: Skill-audit-first pipeline — update skill-audit before updating
+  skills
+- **Q38**: This mechanism — 4-layer decision recall guarantee
 
 ### Forward-Findings Pipeline (Q30, Q31)
 
@@ -2216,14 +2241,14 @@ enforced by automation.
 
 **Sacred JSONL files (append-only, never overwritten):**
 
-| File | Purpose |
-| ---- | ------- |
-| `docs/technical-debt/raw/deduped.jsonl` | TDMS deduplicated source of truth |
-| `docs/technical-debt/MASTER_DEBT.jsonl` | TDMS master debt registry |
-| `.claude/state/learning-routes.jsonl` | Learning-to-enforcement routing |
-| `.claude/state/forward-findings.jsonl` | Cross-plan finding intake (new) |
-| `.claude/state/pending-refinements.jsonl` | Deferred refinement queue |
-| All `changelog.jsonl` files | Per-ecosystem change logs |
+| File                                      | Purpose                           |
+| ----------------------------------------- | --------------------------------- |
+| `docs/technical-debt/raw/deduped.jsonl`   | TDMS deduplicated source of truth |
+| `docs/technical-debt/MASTER_DEBT.jsonl`   | TDMS master debt registry         |
+| `.claude/state/learning-routes.jsonl`     | Learning-to-enforcement routing   |
+| `.claude/state/forward-findings.jsonl`    | Cross-plan finding intake (new)   |
+| `.claude/state/pending-refinements.jsonl` | Deferred refinement queue         |
+| All `changelog.jsonl` files               | Per-ecosystem change logs         |
 
 **Regenerable views (may be overwritten because they are generated from sacred
 sources):**
@@ -2244,21 +2269,21 @@ sources):**
 
 ## Section 11: Effort Summary
 
-Per Q17 — CANON composite standard: complexity + sessions + waves + deliverables.
-No hours-based estimates anywhere in the project. These are planning estimates,
-not commitments.
+Per Q17 — CANON composite standard: complexity + sessions + waves +
+deliverables. No hours-based estimates anywhere in the project. These are
+planning estimates, not commitments.
 
 **Session size definitions:** S = 1-2 sessions, M = 3-5, L = 6-10, XL = 11-20.
 
-| Phase | Name | Complexity | Sessions | Waves | Key Deliverables |
-| ----- | ---- | ---------- | -------- | ----- | ---------------- |
-| 0 | Prerequisites | M | 3-5 | 2 | /convergence-loop skill, folder consolidation, CLAUDE.md fixes, framework-repo archived, completed work verified |
-| 1 | CANON Foundation | L | 6-10 | 4 | CANON P1 schemas, P2 lifecycle declarations, P3 enforcement manifests, P4 governance rules, CANON v0.1.0 |
-| 2 | Meta-Pipeline | L | 8-15 | 4+ | Integration deep-plan, Tooling plan executed (script audit, ratchet engine), CQ plan executed (L3 tests, patterns rationalized), 1 gate pass (DE already complete) |
-| 3 | Ecosystem Standardization | XL | 20-30 | 18 | All 18 ecosystems at target maturity, per-ecosystem deep-plans, health checkers, enforcement manifests, CANON v0.2.0→v0.4.0, Checkpoints at 3.7 and 3.12 |
-| 4 | L4 Testing | L | 6-10 | 3 | L4 test suite, coverage report, regression baseline, ratchet configuration, chaos/failure tests |
-| 5 | Final Verification | M | 3-5 | 2 | Final audit report, maturity scorecard, CAPTURE_MANIFEST consumed, CANON v1.0.0 |
-| | **Total** | | **~50-80** | **35+** | |
+| Phase | Name                      | Complexity | Sessions   | Waves   | Key Deliverables                                                                                                                                                   |
+| ----- | ------------------------- | ---------- | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0     | Prerequisites             | M          | 3-5        | 2       | /convergence-loop skill, folder consolidation, CLAUDE.md fixes, framework-repo archived, completed work verified                                                   |
+| 1     | CANON Foundation          | L          | 6-10       | 4       | CANON P1 schemas, P2 lifecycle declarations, P3 enforcement manifests, P4 governance rules, CANON v0.1.0                                                           |
+| 2     | Meta-Pipeline             | L          | 8-15       | 4+      | Integration deep-plan, Tooling plan executed (script audit, ratchet engine), CQ plan executed (L3 tests, patterns rationalized), 1 gate pass (DE already complete) |
+| 3     | Ecosystem Standardization | XL         | 20-30      | 18      | All 18 ecosystems at target maturity, per-ecosystem deep-plans, health checkers, enforcement manifests, CANON v0.2.0→v0.4.0, Checkpoints at 3.7 and 3.12           |
+| 4     | L4 Testing                | L          | 6-10       | 3       | L4 test suite, coverage report, regression baseline, ratchet configuration, chaos/failure tests                                                                    |
+| 5     | Final Verification        | M          | 3-5        | 2       | Final audit report, maturity scorecard, CAPTURE_MANIFEST consumed, CANON v1.0.0                                                                                    |
+|       | **Total**                 |            | **~50-80** | **35+** |                                                                                                                                                                    |
 
 **Interleaving guidance (V1 D71):** Standardization and project work are
 interleaved in the same sessions as needed. If 3+ sessions pass with no
@@ -2352,8 +2377,8 @@ flowchart TD
 - **Phase 1 CANON P2-P4 runs as a parallel track** — CANON declarations (P2),
   enforcement (P3), and governance (P4) continue during Phase 3 as ecosystems
   are standardized
-- **Checkpoints at 3.7 and 3.12** — mandatory convergence-loop verification
-  with CANON version bumps
+- **Checkpoints at 3.7 and 3.12** — mandatory convergence-loop verification with
+  CANON version bumps
 - **Phase 4 requires all of Phase 3** — cannot test what has not been built
 - **Phase 5 is the final gate** — CANON v1.0.0 promotion
 
@@ -2365,37 +2390,38 @@ Adapted from V1's 14-item checklist for V3's phased structure.
 
 - [x] **Summary present** — Section 1 (2-3 sentence overview of phased plan)
 - [x] **Decision references** — DECISIONS.md (92 decisions, 19 tenets) and
-  DECISIONS-reeval.md (33 Q-decisions) both referenced with specific Q/D numbers
-  throughout
+      DECISIONS-reeval.md (33 Q-decisions) both referenced with specific Q/D
+      numbers throughout
 - [x] **Files to create/modify listed** — per phase, each step specifies files
-  with exact paths and purpose
+      with exact paths and purpose
 - [x] **"Done when" criteria per phase** — every step has explicit, measurable
-  completion criteria (not vague aspirations)
+      completion criteria (not vague aspirations)
 - [x] **Phase dependency markers** — Section 12 dependency graph shows all
-  inter-phase dependencies with gate requirements
+      inter-phase dependencies with gate requirements
 - [x] **Audit checkpoints** — Checkpoints at Steps 3.7, 3.12, and Phase 5 with
-  per-step audit tiers (Tier 1-4 as appropriate per D83)
+      per-step audit tiers (Tier 1-4 as appropriate per D83)
 - [x] **Effort estimates (CANON composite)** — Section 11 table with complexity,
-  sessions, waves, and deliverables per Q17
+      sessions, waves, and deliverables per Q17
 - [x] **Parallelization guidance** — Research overlap only (D63), meta-pipeline
-  overlap with gates (Q2), no parallel implementation tracks
+      overlap with gates (Q2), no parallel implementation tracks
 - [x] **Rollback protocol** — git-revert + pre-migration tags at each phase
-  boundary (V1.1 amendment preserved)
+      boundary (V1.1 amendment preserved)
 - [x] **Schema versioning** — additive changes within minor versions, breaking
-  changes require major version bump with migration script (V1.1 amendment
-  preserved)
+      changes require major version bump with migration script (V1.1 amendment
+      preserved)
 - [x] **Migration validation protocol** — fix-or-defer at user discretion,
-  archive to `.archive/` with provenance, xref mapping in changelog (V1.1
-  amendment preserved)
+      archive to `.archive/` with provenance, xref mapping in changelog (V1.1
+      amendment preserved)
 - [x] **Regression checks** — per-phase regression verification via L4 test
-  suite (Phase 4) and per-step audit tiers
+      suite (Phase 4) and per-step audit tiers
 - [x] **Born-compliant timing** — new ecosystems created during standardization
-  are born at target maturity level, not retrofitted (V1.1 amendment preserved)
+      are born at target maturity level, not retrofitted (V1.1 amendment
+      preserved)
 - [x] **Concrete checkpoint metrics** — 8 quantitative pass/fail gates at
-  Checkpoint #FINAL (Section 9 Step 5.1), intermediate checkpoints at 3.7 and
-  3.12
-- [x] **Cross-phase concerns documented** — Section 10 covers
-  forward-findings pipeline, meta-pipeline gates, and shadow-append registry
+      Checkpoint #FINAL (Section 9 Step 5.1), intermediate checkpoints at 3.7
+      and 3.12
+- [x] **Cross-phase concerns documented** — Section 10 covers forward-findings
+      pipeline, meta-pipeline gates, and shadow-append registry
 
 ---
 
@@ -2406,11 +2432,11 @@ Adapted from V1's 14-item checklist for V3's phased structure.
 Per Q27 — all child plans physically consolidated under
 `.planning/system-wide-standardization/` via `git mv` (not symlinks).
 
-| Plan | Path | Decisions | Status |
-| ---- | ---- | --------- | ------ |
-| Tooling Infrastructure | `.planning/system-wide-standardization/tooling-infrastructure-audit/PLAN.md` | D93-D122 | Execution appendix for Phase 2 Step 2.1 |
-| Code Quality Overhaul | `.planning/system-wide-standardization/code-quality-overhaul/PLAN.md` | D123-D148 | Execution appendix for Phase 2 Step 2.2 |
-| Data Effectiveness | `.planning/system-wide-standardization/learnings-effectiveness-audit/PLAN.md` | D149-D183 | **95% complete** — 10/11 waves delivered (PRs #431, #432). Remaining: Wave 8 REFERENCE.md + skill-audit |
+| Plan                   | Path                                                                          | Decisions | Status                                                                                                  |
+| ---------------------- | ----------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------- |
+| Tooling Infrastructure | `.planning/system-wide-standardization/tooling-infrastructure-audit/PLAN.md`  | D93-D122  | Execution appendix for Phase 2 Step 2.1                                                                 |
+| Code Quality Overhaul  | `.planning/system-wide-standardization/code-quality-overhaul/PLAN.md`         | D123-D148 | Execution appendix for Phase 2 Step 2.2                                                                 |
+| Data Effectiveness     | `.planning/system-wide-standardization/learnings-effectiveness-audit/PLAN.md` | D149-D183 | **95% complete** — 10/11 waves delivered (PRs #431, #432). Remaining: Wave 8 REFERENCE.md + skill-audit |
 
 Tooling and CQ PLAN.md files are execution appendices — they contain wave-level
 implementation detail that the meta-plan (this document) references but does not
@@ -2423,60 +2449,60 @@ consumes forward-findings as they arrive.
 
 All 11 hard blockers from GAP-ANALYSIS.md resolved by this plan:
 
-| GAP | Description | Resolution | Plan Location |
-| --- | ----------- | ---------- | ------------- |
-| G1 | Migration mechanics unspecified | Step 1.2 — CANON schema definitions include migration mechanics | Phase 1 |
-| G2 | Checkpoint tags undefined | Descoped per Q20 — state files approach is working, git tags add no value | -- |
-| G3 | Supersession enforcement missing | CANON Phase 3 enforcement manifests per Q19 | Phase 3 (via Phase 1 Step 1.4) |
-| G4 | Ecosystem tagging undefined | CANON Phase 2 lifecycle declarations per Q19 | Phase 3 (via Phase 1 Step 1.3) |
-| G5 | PR creep guard missing | Per-ecosystem deep-plan for Hooks (ecosystem 3.2) | Phase 3 |
-| G6 | Non-truncation validation absent | CQ Plan Wave 6 — validation infrastructure | Phase 2 Step 2.2 |
-| G7 | Dependency graph outdated | Replaced by meta-pipeline gates (Q28) — Section 12 | Phase 2 + Section 12 |
-| G8 | Script path inconsistency | Tooling Plan script audit Step 7 per Q22 | Phase 2 Step 2.1 |
-| G9 | Operational visibility mixed scope | Extract 5 framework items to SWS per Q24 | Phase 0 Step 0.7 |
-| G10 | Filename mismatch in scripts | Tooling Plan script audit Step 7 per Q22 | Phase 2 Step 2.1 |
-| G11 | Planning migration scope unclear | Selective migration per Q25 — tenets + directives to `.canon/`, rest stays | Phase 3 CANON P2 |
+| GAP | Description                        | Resolution                                                                 | Plan Location                  |
+| --- | ---------------------------------- | -------------------------------------------------------------------------- | ------------------------------ |
+| G1  | Migration mechanics unspecified    | Step 1.2 — CANON schema definitions include migration mechanics            | Phase 1                        |
+| G2  | Checkpoint tags undefined          | Descoped per Q20 — state files approach is working, git tags add no value  | --                             |
+| G3  | Supersession enforcement missing   | CANON Phase 3 enforcement manifests per Q19                                | Phase 3 (via Phase 1 Step 1.4) |
+| G4  | Ecosystem tagging undefined        | CANON Phase 2 lifecycle declarations per Q19                               | Phase 3 (via Phase 1 Step 1.3) |
+| G5  | PR creep guard missing             | Per-ecosystem deep-plan for Hooks (ecosystem 3.2)                          | Phase 3                        |
+| G6  | Non-truncation validation absent   | CQ Plan Wave 6 — validation infrastructure                                 | Phase 2 Step 2.2               |
+| G7  | Dependency graph outdated          | Replaced by meta-pipeline gates (Q28) — Section 12                         | Phase 2 + Section 12           |
+| G8  | Script path inconsistency          | Tooling Plan script audit Step 7 per Q22                                   | Phase 2 Step 2.1               |
+| G9  | Operational visibility mixed scope | Extract 5 framework items to SWS per Q24                                   | Phase 0 Step 0.7               |
+| G10 | Filename mismatch in scripts       | Tooling Plan script audit Step 7 per Q22                                   | Phase 2 Step 2.1               |
+| G11 | Planning migration scope unclear   | Selective migration per Q25 — tenets + directives to `.canon/`, rest stays | Phase 3 CANON P2               |
 
 ### Appendix C: Material Risk Disposition
 
 All 16 material risks tracked and resolved:
 
-| Risk | Description | Disposition | Resolution Location |
-| ---- | ----------- | ----------- | ------------------- |
-| R1 | Cross-cutting impact map missing | Forward-findings pipeline (Q30-Q31) | Section 10 |
-| R2 | Naming convention undefined | Per-ecosystem deep-plan concern (T13) | Phase 3 per-ecosystem |
-| R3 | Pilot validation gate absent | Step 3.3 (PR Review ecosystem) IS the pilot — Checkpoint 3.7 validates | Phase 3 Checkpoint 3.7 |
-| R4 | Room-for-growth gate undefined | T6 enforcement via CANON Phase 3 enforcement manifests | Phase 1 Step 1.4 |
-| R5 | Health checker migration path unclear | Per-ecosystem during Phase 3 standardization | Phase 3 per-ecosystem |
-| R6 | Audit skill integration undefined | Step 3.15 (Audits ecosystem) | Phase 3 |
-| R7 | Agent-research folder disposition | Archived with framework-repo (Q33), git history preserves | Phase 0 Step 0.5 |
-| R8 | Interactive audit process undefined | T15 enforced via skill audit standards | Phase 2 Step 2.1 |
-| R9 | Amendment protocol missing | CANON Phase 4 governance rules | Phase 1 Step 1.5 |
-| R10 | Tenet evidence backfill needed | CANON Phase 4 governance rules | Phase 1 Step 1.5 |
-| R11 | Hardcoded counts brittle | Replaced by dynamic queries in restructured plan | All phases |
-| R12 | Reading-order hierarchy unclear | Per-ecosystem deep-plan concern | Phase 3 per-ecosystem |
-| R13 | Overlap enforcement undefined | Scope manifests per Q21 — design-time collision detection | Section 10 (Shadow-Append) |
-| R14 | Deletions clause missing | Addressed in restructured plan — full restructure per Q1 | All phases |
-| R15 | Checklist adaptation undefined | Universal via CANON Phase 3 enforcement manifests | Phase 1 Step 1.4 |
-| R16 | JSONL-to-MD sync fragile | CANON Phase 4 governance rules + shadow-append protection | Phase 1 Step 1.5 + Section 10 |
+| Risk | Description                           | Disposition                                                            | Resolution Location           |
+| ---- | ------------------------------------- | ---------------------------------------------------------------------- | ----------------------------- |
+| R1   | Cross-cutting impact map missing      | Forward-findings pipeline (Q30-Q31)                                    | Section 10                    |
+| R2   | Naming convention undefined           | Per-ecosystem deep-plan concern (T13)                                  | Phase 3 per-ecosystem         |
+| R3   | Pilot validation gate absent          | Step 3.3 (PR Review ecosystem) IS the pilot — Checkpoint 3.7 validates | Phase 3 Checkpoint 3.7        |
+| R4   | Room-for-growth gate undefined        | T6 enforcement via CANON Phase 3 enforcement manifests                 | Phase 1 Step 1.4              |
+| R5   | Health checker migration path unclear | Per-ecosystem during Phase 3 standardization                           | Phase 3 per-ecosystem         |
+| R6   | Audit skill integration undefined     | Step 3.15 (Audits ecosystem)                                           | Phase 3                       |
+| R7   | Agent-research folder disposition     | Archived with framework-repo (Q33), git history preserves              | Phase 0 Step 0.5              |
+| R8   | Interactive audit process undefined   | T15 enforced via skill audit standards                                 | Phase 2 Step 2.1              |
+| R9   | Amendment protocol missing            | CANON Phase 4 governance rules                                         | Phase 1 Step 1.5              |
+| R10  | Tenet evidence backfill needed        | CANON Phase 4 governance rules                                         | Phase 1 Step 1.5              |
+| R11  | Hardcoded counts brittle              | Replaced by dynamic queries in restructured plan                       | All phases                    |
+| R12  | Reading-order hierarchy unclear       | Per-ecosystem deep-plan concern                                        | Phase 3 per-ecosystem         |
+| R13  | Overlap enforcement undefined         | Scope manifests per Q21 — design-time collision detection              | Section 10 (Shadow-Append)    |
+| R14  | Deletions clause missing              | Addressed in restructured plan — full restructure per Q1               | All phases                    |
+| R15  | Checklist adaptation undefined        | Universal via CANON Phase 3 enforcement manifests                      | Phase 1 Step 1.4              |
+| R16  | JSONL-to-MD sync fragile              | CANON Phase 4 governance rules + shadow-append protection              | Phase 1 Step 1.5 + Section 10 |
 
 ### Appendix D: Contradiction Resolution
 
-| Issue | Description | Resolution |
-| ----- | ----------- | ---------- |
-| C1 | Version trajectory assumed Zod 3-to-4 migration needed | Obsolete per Q16 — Zod 4 already installed (v4.3.5). No migration needed. |
-| C2 | Effort estimates used hours-based model inconsistently | Replaced with CANON composite estimates per Q17 — complexity + sessions + waves + deliverables. No hours anywhere. |
-| C3 | Wrong decision reference (D-number pointed to wrong decision) | Fixes itself per Q18 — full restructure (Q1) means old references do not carry forward into V3. |
+| Issue | Description                                                   | Resolution                                                                                                         |
+| ----- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| C1    | Version trajectory assumed Zod 3-to-4 migration needed        | Obsolete per Q16 — Zod 4 already installed (v4.3.5). No migration needed.                                          |
+| C2    | Effort estimates used hours-based model inconsistently        | Replaced with CANON composite estimates per Q17 — complexity + sessions + waves + deliverables. No hours anywhere. |
+| C3    | Wrong decision reference (D-number pointed to wrong decision) | Fixes itself per Q18 — full restructure (Q1) means old references do not carry forward into V3.                    |
 
 ---
 
 ## Section 15: Version History
 
-| Version | Date | Description |
-| ------- | ---- | ----------- |
-| 1.0 | 2026-03-04 | Initial 21-step sequential plan. 92 decisions, 19 tenets, 41 directives from deep-plan Phase 3. |
-| 1.1 | 2026-03-04 | Amended with 21 review decisions: rollback protocol (git-revert + tags), schema versioning strategy, migration validation protocol (fix-or-defer, archive to `.archive/`, xref mapping), per-phase regression checks, born-compliant timing clarification, concrete checkpoint metrics (4 checkpoints with quantitative gates). |
-| 2.0 | 2026-03-14 | Rejected draft — phased restructure that lost V1 detail. Orphaned 15 content blocks including checkpoint metrics, per-step audit tiers, cross-cutting infrastructure, effort sizing, and parallelization guidance. Diagnosed in DIAGNOSIS-v2.md. |
-| 3.0 | 2026-03-15 | Full restructure with V1 detail restored and 33 Q-decisions applied. 6 phases (0-5) replace 21 sequential steps. 15 orphaned content blocks restored with full detail. CANON composite estimates replace hours-based. Meta-pipeline gates replace linear dependency chain. Child plans consolidated under `.planning/system-wide-standardization/`. All GAP-ANALYSIS items (G1-G11), material risks (R1-R16), and contradictions (C1-C3) resolved inline. |
+| Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0     | 2026-03-04 | Initial 21-step sequential plan. 92 decisions, 19 tenets, 41 directives from deep-plan Phase 3.                                                                                                                                                                                                                                                                                                                                                           |
+| 1.1     | 2026-03-04 | Amended with 21 review decisions: rollback protocol (git-revert + tags), schema versioning strategy, migration validation protocol (fix-or-defer, archive to `.archive/`, xref mapping), per-phase regression checks, born-compliant timing clarification, concrete checkpoint metrics (4 checkpoints with quantitative gates).                                                                                                                           |
+| 2.0     | 2026-03-14 | Rejected draft — phased restructure that lost V1 detail. Orphaned 15 content blocks including checkpoint metrics, per-step audit tiers, cross-cutting infrastructure, effort sizing, and parallelization guidance. Diagnosed in DIAGNOSIS-v2.md.                                                                                                                                                                                                          |
+| 3.0     | 2026-03-15 | Full restructure with V1 detail restored and 33 Q-decisions applied. 6 phases (0-5) replace 21 sequential steps. 15 orphaned content blocks restored with full detail. CANON composite estimates replace hours-based. Meta-pipeline gates replace linear dependency chain. Child plans consolidated under `.planning/system-wide-standardization/`. All GAP-ANALYSIS items (G1-G11), material risks (R1-R16), and contradictions (C1-C3) resolved inline. |
 
 <!-- END PLAN-v3.md Part 3 -->

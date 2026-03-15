@@ -1,169 +1,100 @@
 {
-  "task": "Deep Plan: System-Wide Standardization — Ecosystem Mapping",
+  "task": "System-Wide Standardization — Meta-Plan Execution",
   "topic": "system-wide-standardization",
-  "status": "phase_1b_complete",
-  "current_batch": "Phase 1b COMPLETE — D77-D92 locked. Back-of-house process + audit framework + audit fixes defined. 92 total decisions.",
-  "total_batches_so_far": "4 + 4T + 5A + 5B + 5C + 5D + 6 + 7 + 7b(Phase1b)",
-  "estimated_remaining_batches": "Phase 2 (DECISIONS.md + Audit 1), Phase 3 (PLAN.md + Audit 2), Phase 4 (approval), Handoff",
+  "status": "phase_0_in_progress",
+  "current_phase": "Phase 0 (Pre-Requisites)",
+  "current_step": "Step 0.1 complete. Steps 0.2-0.7 in progress.",
+  "plan_version": "PLAN-v3.md (approved, in execution)",
   "total_ecosystems": 18,
   "total_decisions": 92,
-  "total_tenets": 19,
+  "total_tenets": 24,
   "total_directives": 41,
   "total_ideas": 45,
   "artifacts": {
+    "plan": ".planning/system-wide-standardization/PLAN-v3.md",
+    "plan_superseded": [
+      ".planning/system-wide-standardization/PLAN.md",
+      ".planning/system-wide-standardization/PLAN-v2.md"
+    ],
     "diagnosis": ".planning/system-wide-standardization/DIAGNOSIS.md",
-    "decisions": null,
-    "plan": null,
+    "diagnosis_v2": ".planning/system-wide-standardization/DIAGNOSIS-v2.md",
+    "decisions": ".planning/system-wide-standardization/DECISIONS.md",
+    "decisions_reeval": ".planning/system-wide-standardization/DECISIONS-reeval.md",
+    "decisions_by_phase": ".planning/system-wide-standardization/DECISIONS_BY_PHASE.md",
+    "decisions_phase_map": ".planning/system-wide-standardization/decisions-phase-map.json",
+    "discovery_record": ".planning/system-wide-standardization/DISCOVERY_RECORD.md",
+    "gap_analysis": ".planning/system-wide-standardization/GAP-ANALYSIS.md",
+    "capture_manifest": ".planning/system-wide-standardization/CAPTURE_MANIFEST.md",
     "tenets_jsonl": ".canon/tenets.jsonl (to be created — first CANON artifact)",
     "tenets_md": ".canon/tenets.md (to be generated from tenets.jsonl)"
   },
-  "phase_0_outcomes": {
-    "diagnosis_confirmed": true,
-    "user_approved_all_responses": true,
-    "ecosystem_count_revised": "13 ecosystems + CANON as Ecosystem Zero (meta-system)",
-    "cross_cutting_subsystems_revised": 13,
-    "cross_cutting_list": [
-      "Testing",
-      "Dashboards/Health",
-      "JSONL Storage",
-      "Schema Validation",
-      "State Management",
-      "Documentation",
-      "Enforcement/Gates",
-      "Analytics/Metrics",
-      "Archival/Rotation",
-      "Versioning/Migration",
-      "Error Handling/Logging",
-      "Naming Conventions",
-      "Lifecycle Management"
+  "child_plans": {
+    "note": "After Step 0.4 folder consolidation, all child plans live under .planning/system-wide-standardization/",
+    "current_paths": {
+      "tooling_infrastructure": ".planning/tooling-infrastructure-audit/",
+      "code_quality": ".planning/code-quality-overhaul/",
+      "data_effectiveness": ".planning/learnings-effectiveness-audit/"
+    },
+    "post_consolidation_paths": {
+      "tooling_infrastructure": ".planning/system-wide-standardization/tooling-infrastructure-audit/",
+      "code_quality": ".planning/system-wide-standardization/code-quality-overhaul/",
+      "data_effectiveness": ".planning/system-wide-standardization/learnings-effectiveness-audit/"
+    },
+    "status": {
+      "tooling_infrastructure": "Execution appendix for Phase 2 Step 2.1 (D93-D122)",
+      "code_quality": "Execution appendix for Phase 2 Step 2.2 (D123-D148)",
+      "data_effectiveness": "95% complete — 10/11 waves delivered (D149-D183). Independent operation."
+    }
+  },
+  "phase_0_progress": {
+    "step_0_1": {
+      "name": "Build /convergence-loop Skill",
+      "status": "COMPLETE"
+    },
+    "step_0_2": {
+      "name": "Fix CLAUDE.md Annotation Bugs",
+      "status": "PENDING"
+    },
+    "step_0_3": {
+      "name": "Verify Hooks PR #427",
+      "status": "PENDING",
+      "depends_on": "Step 0.1"
+    },
+    "step_0_4": {
+      "name": "Folder Consolidation",
+      "status": "PENDING"
+    },
+    "step_0_5": {
+      "name": "Archive Framework-Repo",
+      "status": "PENDING"
+    },
+    "step_0_6": {
+      "name": "Update coordination.json",
+      "status": "IN_PROGRESS"
+    },
+    "step_0_7": {
+      "name": "Operational Visibility Extraction",
+      "status": "PENDING"
+    }
+  },
+  "execution_model": {
+    "approach": "Sequential implementation + parallel research overlap",
+    "sequence": "6 phases (0-5), 18 ecosystems in dependency order within Phase 3",
+    "checkpoints": [
+      "Phase 1 gate: CANON schemas exist and validate",
+      "Phase 3 Checkpoint 3.7: Core infrastructure complete (6 ecosystems)",
+      "Phase 3 Checkpoint 3.12: Data infrastructure standardized (4 additional)",
+      "Phase 5: End-to-end convergence audit"
     ]
   },
-  "batch_5d_research": {
-    "description": "4 ecosystems from original DIAGNOSIS.md assessed in Batch 5D",
-    "status": "COMPLETE — research done, Q&A done, decisions locked (D50-D54)",
-    "ecosystems": [
-      {
-        "name": "Agents",
-        "original_diagnosis_number": 6,
-        "status": "assessed_D50",
-        "result": "L2→L3, M effort",
-        "note": "35 agent definitions, invocation tracking via agent-invocations.jsonl"
-      },
-      {
-        "name": "Audits",
-        "original_diagnosis_number": 9,
-        "status": "assessed_D51",
-        "result": "L3→L4 with L5 pathway, M effort",
-        "note": "22 quality + 7 ecosystem audit skills, results in history JSONL"
-      },
-      {
-        "name": "Frontend/App",
-        "original_diagnosis_number": 11,
-        "status": "assessed_D52",
-        "result": "L2→L3 adapted, M effort",
-        "note": "Next.js 16, React 19, Tailwind 4 — connection points to process ecosystems are priority"
-      },
-      {
-        "name": "Firebase/Backend",
-        "original_diagnosis_number": 12,
-        "status": "assessed_D53",
-        "result": "L1→L3 staged adapted, M-L effort",
-        "note": "Cloud Functions, Firestore, Auth, Storage rules — biggest maturity gap"
-      }
-    ]
-  },
-  "batch_5d_qa": {
-    "status": "COMPLETE — all 5 decisions locked",
-    "decisions_recorded": [
-      {
-        "id": "D50",
-        "topic": "Agents maturity",
-        "result": "L2→L3 (accepted recommendation)"
-      },
-      {
-        "id": "D51",
-        "topic": "Audits maturity",
-        "result": "L3→L4 with L5 pathway built in (user elevated)"
-      },
-      {
-        "id": "D52",
-        "topic": "Frontend/App maturity",
-        "result": "L2→L3 adapted (user insight: connection points priority)"
-      },
-      {
-        "id": "D53",
-        "topic": "Firebase/Backend maturity",
-        "result": "L1→L3 staged adapted (accepted recommendation)"
-      },
-      {
-        "id": "D54",
-        "topic": "Checklist adaptation",
-        "result": "Formalized per-ecosystem mapping (user directive: rigidity + adaptability)"
-      }
-    ],
-    "user_insights_captured": [
-      "App-layer planning differs from process ecosystems — connections between layers are priority",
-      "Operational sprint has health monitoring overlap — needs reconciliation",
-      "Planning docs must evolve — additions AND deletions as plans execute",
-      "Audits L5 pathway must be designed in during L4, not bolted on",
-      "Formalize adaptability: rigidity when necessary, flexibility earned through justification"
-    ],
-    "completed_at": "2026-03-03T18:40:00Z"
-  },
-  "batch_6_progress": {
-    "status": "COMPLETE — D56-D67 locked. Sequential sequence finalized.",
-    "decisions_locked": [
-      "D56",
-      "D57",
-      "D58",
-      "D59",
-      "D60",
-      "D61",
-      "D62-superseded",
-      "D63",
-      "D64",
-      "D65",
-      "D66",
-      "D67"
-    ],
-    "evolution": [
-      "D56-D62: Initial wave-based parallel approach proposed",
-      "Deep research: 13 agents mapped all 18 ecosystems at file-level",
-      "User pushback: parallel tracks may just be time-saving, not quality-serving",
-      "D63: Wave model REPLACED with sequential-first + research overlap",
-      "D64: T18 changelog-driven traceability added as new tenet",
-      "D65: Docs elevated to position #5 (user directive)",
-      "D66: CI/CD restored to sequence at position #10 (was accidentally dropped)",
-      "D67: Final 21-step sequence locked (18 ecosystems, TDMS staged x3, Docs verification pass)"
-    ],
-    "key_user_directives": [
-      "Skills at #2 — daily tool, touches everything",
-      "Sequential over parallel — learning transfer matters more than speed",
-      "Changelogs standardized as tenet T18",
-      "Docs at #5 — too much content to defer, born-compliant docs for all future ecosystems",
-      "Research overlap is the only approved parallelism"
-    ],
-    "user_questions_resolved": [
-      "Q62: Concrete parallel groupings → RESOLVED: replaced with sequential model (D63)",
-      "Q63: Are parallel tracks truly right? → NO, sequential-first with research overlap",
-      "Q64: Where does docs maintenance burden go? → Position #5, not CANON",
-      "Q65: Missing 18th ecosystem? → CI/CD restored at position #10"
-    ]
-  },
-  "session_corrections": [
-    "Question format quality: Q46-Q49 lacked options/pros/cons/recommendations. Fixed going forward.",
-    "Decision record lag: DISCOVERY_RECORD not continuously updated. Backfill in progress, continuous updates mandated.",
-    "Ecosystem count: Revised from 14 to 18 total. 4 ecosystems from original DIAGNOSIS were never assessed.",
-    "End-of-process audit: User confirmed audit will happen after plan is set, not before."
-  ],
-  "resume_instructions": "92 TOTAL DECISIONS. 18 TENETS. 41 DIRECTIVES. ALL DISCOVERY COMPLETE (Batches 1-7 + Phase 1b).\n\nBATCH 6 COMPLETE (D56-D67): Sequential execution sequence LOCKED.\n\nKEY BATCH 6 EVOLUTION:\n  - Started with wave-based parallel approach (D56-D62)\n  - Deep research: 13 agents mapped all 18 ecosystems at file-level dependency maps\n  - User challenged fundamental assumptions: parallel tracks sacrifice learning for speed\n  - D62 SUPERSEDED by D63: Sequential-first with research overlap\n  - D64: T18 changelog-driven traceability added as new tenet (user directive)\n  - D65: Docs elevated to position #5 (user directive)\n  - D66: CI/CD restored at position #10 (was accidentally dropped)\n  - D67: Final 21-step sequence locked\n\nFINAL SEQUENCE (21 steps, 18 ecosystems):\n  #1 CANON (L0->L5, L) — Foundation\n  #2 Skills (L1->L3, L) — Daily tool, skill-audit canonized\n  #3 Hooks (L3->L4, M) — Enforcement infra\n  #4 PR Review (L4->L5, S) — CANON pilot, CHECKPOINT\n  #5 Docs (L2->L3, M) — Folder structure, placement standards, dependency maps\n  #6 Testing (L3->L4, M) — Test infrastructure\n  #7 Sessions (L1->L3, M) — State management\n  #8 TDMS L2->L3 (XL-partial) — First stage, Zod schemas + monitoring\n  #9 Scripts (L2->L3, L) — Script standards, informed by TDMS\n  #10 CI/CD (L1->L3, M) — Build/deploy pipelines\n  #11 Alerts (L2->L4, M) — Monitoring layer\n  #12 Analytics (L1->L3, M) — Aggregation layer\n  #13 Agents (L2->L3, M) — Agent definitions\n  #14 Audits (L3->L4+L5path, M) — All audits are skills\n  #15 Archival/Rotation (L3->L4, M) — Lifecycle patterns\n  #16 TDMS L3->L4 (XL-partial) — Second stage, enforcement\n  #17 Roadmap & Execution (L2->L3, L) — Hub ecosystem, automated intake\n  #18 Frontend/App (L2->L3, M) — App-layer connections\n  #19 Firebase/Backend (L1->L3, M-L) — App-layer connections\n  #20 Docs verification pass (S) — Consistency meta-check\n  #21 TDMS L4->L5 (XL-final) — Final canonization\n\nCHECKPOINTS: After #4 (framework validation), #7 (core infra complete), #15 (process layer complete), #21 (full overhaul complete).\n\nEXECUTION MODEL: Sequential implementation + parallel research overlap (research N+1 while implementing N). No parallel implementation tracks.\n\nDISCOVERY_RECORD needs update with D55-D67 + T18.\n\nBATCH 7 COMPLETE (D68-D76): Edge cases resolved.\n  D68: Skip & Return on stalls (changelog documents gaps)\n  D69: Checklist addressed + user review as exit criteria\n  D70: Track-CANON in ROADMAP + dedupe on add\n  D71: Interleaved work + 3-session nudge\n  D72: Extensible-core changelog schema (mirrors D22)\n  D73: Grand Plan reassessment at #8 + pre-checks #1-#7 (explicit task)\n  D74: Contracts defined per-ecosystem, CANON defines format\n  D75: Knowledge base from all prior research for every Phase 0\n  D76: Learning capture DURING builds (non-negotiable) + checkpoint versioning\n\nPHASE 1b COMPLETE (D77-D83): Back-of-house process + audit framework.\n  D77: Decomposed JSONL suite (decisions/tenets/directives/ideas/changelog.jsonl + coordination.json)\n  D78: Git + tagged checkpoints + MCP memory for safety\n  D79: JSONL source + scripted MD generation (generate-discovery-record.js)\n  D80: Always full suite for all ecosystem deep-plans (no lightweight tier)\n  D81: 16-domain audit framework across 3 tiers (core + analytical + ecosystem-reusable)\n  D82: Interactive audit process (T15)\n  D83: Audit twice — after DECISIONS.md and after PLAN.md\n\nNEXT: Phase 2 (DECISIONS.md compilation + Audit 1: domains 1-3, 6, 8). Then Phase 3 (PLAN.md + Audit 2). Then Phase 4 (approval). Then Handoff.\n\nDISCOVERY_RECORD needs full regeneration with D1-D83 + T1-T18. Ideally via the new generate-discovery-record.js script (D79).\n\nNOTE: D77 calls for decomposing state.json into JSONL suite. This migration should happen BEFORE Phase 2 so DECISIONS.md is generated from the new JSONL source, not manually compiled from the old state.json.",
-  "updated": "2026-03-04T01:30:00.000Z",
   "source_files": {
     "decisions": "decisions.jsonl",
     "tenets": "tenets.jsonl",
     "directives": "directives.jsonl",
     "ideas": "ideas.jsonl",
-    "changelog": "changelog.jsonl (empty until implementation starts)"
+    "changelog": "changelog.jsonl"
   },
-  "migration_note": "Decomposed from .claude/state/deep-plan.state.json per D77. JSONL files are now the canonical source. deep-plan.state.json is retained as backup but no longer the primary source of truth."
+  "migration_note": "Decomposed from .claude/state/deep-plan.state.json per D77. JSONL files are now the canonical source.",
+  "updated": "2026-03-15T00:00:00.000Z",
+  "resume_instructions": "PLAN-v3.md is the active plan (approved, in execution). Phase 0 (Pre-Requisites) is in progress — Step 0.1 (/convergence-loop skill) complete. Steps 0.2-0.7 pending. After Phase 0, proceed to Phase 1 (CANON Foundation). See PLAN-v3.md for full phase/step details. DECISIONS-reeval.md contains re-evaluation decisions (Q1-Q33) alongside the original DECISIONS.md. DECISIONS_BY_PHASE.md and decisions-phase-map.json map decisions to plan phases."
 }

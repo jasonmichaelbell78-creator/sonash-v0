@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 2.0
-**Last Updated:** 2026-03-06
+**Document Version:** 2.1
+**Last Updated:** 2026-03-15
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -352,9 +352,54 @@ scoring guidance.
 
 ---
 
+## Category 11: Convergence Loop Integration (T25)
+
+**Purpose:** Does the skill use convergence loops where appropriate? Per tenet
+T25, all discovery phases SHOULD use convergence loops.
+
+### Evaluation Criteria
+
+- **Appropriateness check** — does this skill have a discovery phase,
+  multi-agent verification, or iterative refinement? If yes, T25 says it SHOULD
+  use convergence loops.
+- **Implementation quality** (if convergence loops are used):
+  - Minimum 2 passes? (MUST per `/convergence-loop` SKILL.md)
+  - T20 tally format (Confirmed/Corrected/Extended/New)? (MUST)
+  - User gate before convergence declaration? (MUST)
+  - State persistence between passes? (MUST)
+  - Graduated convergence (per-claim, not all-or-nothing)? (SHOULD)
+- **Missing integration** — skill has discovery/verification but uses
+  single-pass
+
+### Common Findings
+
+- Skill has discovery phase but no convergence loop (most common gap)
+- Convergence loop present but only 1 pass (violates minimum)
+- No T20 tally — findings just listed without categorization
+- No user gate — auto-declares convergence without confirmation
+- Single-pass audit followed by "verify" that's really just re-reading output
+
+### Scoring Guide
+
+| Score | Criteria                                                      |
+| ----- | ------------------------------------------------------------- |
+| 9-10  | Convergence loops used appropriately, follows all MUST rules  |
+| 7-8   | Convergence loops present with minor deviations from standard |
+| 5-6   | Has discovery phase, convergence loop partially implemented   |
+| 3-4   | Has discovery phase, no convergence loop, single-pass         |
+| 1-2   | Multi-agent verification with no convergence mechanics at all |
+| N/A   | Skill has no discovery/verification phase (score excluded)    |
+
+**N/A handling:** If a skill has no discovery, verification, or iterative
+refinement phase, score this category as N/A and exclude from the total. Adjust
+overall scoring denominator accordingly (100 -> 90 for 10 categories).
+
+---
+
 ## Overall Scoring
 
-Sum individual category scores for an overall quality score out of 100.
+Sum individual category scores for an overall quality score out of 110 (or 100
+if Category 11 is N/A).
 
 | Range | Rating    | Action                                      |
 | ----- | --------- | ------------------------------------------- |

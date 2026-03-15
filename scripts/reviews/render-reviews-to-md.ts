@@ -128,10 +128,7 @@ const sevCell = (v: unknown): string =>
 
 /** Collapse multiline text to single safe inline string. */
 const safeInline = (s: string): string =>
-  s
-    .replaceAll(/\r?\n/g, " ")
-    .replaceAll(/\s+/g, " ")
-    .trim();
+  s.replaceAll(/\r?\n/g, " ").replaceAll(/\s+/g, " ").trim();
 
 /**
  * Render a single review record as a markdown section.
@@ -190,12 +187,7 @@ export function renderReviewRecord(record: RenderableReview): string {
       `| ${sevCell(sb.critical)} | ${sevCell(sb.major)} | ${sevCell(sb.minor)} | ${sevCell(sb.trivial)} |`,
       ""
     );
-  } else if (
-    flatCrit != null ||
-    flatMajor != null ||
-    flatMinor != null ||
-    flatTrivial != null
-  ) {
+  } else if (flatCrit != null || flatMajor != null || flatMinor != null || flatTrivial != null) {
     lines.push(
       "**Severity Breakdown:**",
       "",
@@ -380,10 +372,7 @@ function extractPreservedSections(filePath: string): PreservedSections {
 /**
  * Assemble the full markdown document from preserved sections and regenerated entries.
  */
-function assembleDocument(
-  preserved: PreservedSections,
-  renderedEntries: string
-): string {
+function assembleDocument(preserved: PreservedSections, renderedEntries: string): string {
   const parts: string[] = [];
 
   if (preserved.header) {
@@ -430,13 +419,23 @@ export function renderReviews(
   if (options?.inputPath) {
     const relInput = path.relative(projectRoot, path.resolve(projectRoot, options.inputPath));
     if (/^\.\.(?:[\\/]|$)/.test(relInput)) {
-      return { success: false, recordCount: 0, outputPath: null, error: "Input path outside project root" };
+      return {
+        success: false,
+        recordCount: 0,
+        outputPath: null,
+        error: "Input path outside project root",
+      };
     }
   }
   if (options?.outputPath) {
     const relOutput = path.relative(projectRoot, path.resolve(projectRoot, options.outputPath));
     if (/^\.\.(?:[\\/]|$)/.test(relOutput)) {
-      return { success: false, recordCount: 0, outputPath: null, error: "Output path outside project root" };
+      return {
+        success: false,
+        recordCount: 0,
+        outputPath: null,
+        error: "Output path outside project root",
+      };
     }
   }
 
@@ -444,7 +443,12 @@ export function renderReviews(
     return { success: false, recordCount: 0, outputPath: null, error: "filterPr must be a number" };
   }
   if (options?.lastN != null && (!Number.isFinite(options.lastN) || options.lastN <= 0)) {
-    return { success: false, recordCount: 0, outputPath: null, error: "lastN must be a positive number" };
+    return {
+      success: false,
+      recordCount: 0,
+      outputPath: null,
+      error: "lastN must be a positive number",
+    };
   }
 
   const inputPath = path.resolve(
@@ -481,7 +485,12 @@ export function renderReviews(
   if (!isSafeToWrite(absOutputPath)) {
     const errMsg = "Refusing to write to symlinked path";
     console.error(`[render-reviews-to-md] ${errMsg}`);
-    return { success: false, recordCount: records.length, outputPath: absOutputPath, error: errMsg };
+    return {
+      success: false,
+      recordCount: records.length,
+      outputPath: absOutputPath,
+      error: errMsg,
+    };
   }
 
   // Extract preserved sections from existing file
@@ -500,7 +509,12 @@ export function renderReviews(
   } catch (err: unknown) {
     const errMsg = sanitizeError(err);
     console.error(`[render-reviews-to-md] Write failed: ${errMsg}`);
-    return { success: false, recordCount: records.length, outputPath: absOutputPath, error: errMsg };
+    return {
+      success: false,
+      recordCount: records.length,
+      outputPath: absOutputPath,
+      error: errMsg,
+    };
   }
 
   return { success: true, recordCount: records.length, outputPath: absOutputPath };

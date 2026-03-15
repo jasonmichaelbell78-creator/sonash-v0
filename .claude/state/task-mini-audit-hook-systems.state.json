@@ -74,7 +74,7 @@
       "category": "1-override-audit-trail",
       "finding": "Override data never consumed by improvement pipeline",
       "decision": "accept",
-      "action": "Wire override frequency into both session-start AND /alerts — threshold 10 bypasses per check in 7 days",
+      "action": "Wire override frequency into /alerts (threshold 10 bypasses per check in 7 days). Session-begin hook anomaly gate (Section 7b) covers override trends at session start separately. [CORRECTED Session #221: original said session-start AND /alerts, implementation is /alerts + session-begin]",
       "confidence": "high",
       "timestamp": "2026-03-11T15:52:00.000Z"
     },
@@ -101,7 +101,7 @@
       "category": "2-warning-aggregation",
       "finding": "Warnings are generic — no file names, pattern types, or progression context",
       "decision": "accept",
-      "action": "Enrich warning payloads from check-propagation.js and check-triggers.js with top 3 affected files and pattern name",
+      "action": "Enrich warning payloads in .husky/pre-push shell wrappers (not in check scripts themselves) with top 3 specific files/patterns via --files and --pattern flags to append-hook-warning.js. [CORRECTED Session #221: enrichment in pre-push wrappers, not check-propagation.js/check-triggers.js]",
       "confidence": "high",
       "timestamp": "2026-03-11T15:57:00.000Z"
     },
@@ -149,7 +149,7 @@
       "category": "3-learnings-improvement-loop",
       "finding": "PR retro learnings delayed — same recommendation 5 times before action, no escalation trigger",
       "decision": "accept",
-      "action": "Add escalation rule to pr-retro skill: 3+ occurrences of same recommendation → auto-tag CRITICAL and add to session action items",
+      "action": "Add escalation rule to pr-retro skill: 3+ occurrences of same recommendation → auto-tag CRITICAL + add to session action items (must resolve this session). Not auto-DEBT — DEBT routing is downstream via Step 6 if needed. [CORRECTED Session #221: auto-CRITICAL, not auto-DEBT]",
       "confidence": "high",
       "timestamp": "2026-03-11T16:06:00.000Z"
     },
@@ -250,7 +250,7 @@
       "category": "6-code-quality-duplication",
       "finding": "STAGED_FILES computed 3x identically in pre-commit (lines 172, 299, 338)",
       "decision": "accept",
-      "action": "Compute once after fnm init, reuse variable throughout pre-commit",
+      "action": "Compute fnm/node env once via _shared_init_fnm() in _shared.sh, reuse throughout pre-commit and pre-push. C6-G3 annotation added to _shared.sh. [CORRECTED Session #221: was in _shared.sh not inline in pre-commit, annotation was missing]",
       "confidence": "high",
       "timestamp": "2026-03-11T16:32:00.000Z"
     },
@@ -268,7 +268,7 @@
       "category": "7-gate-effectiveness",
       "finding": "Code-reviewer gate has no timestamp validation — stale entries from days ago pass the check (HIGH)",
       "decision": "accept",
-      "action": "Option A: Parse JSONL, extract most recent code-reviewer timestamp, verify within 4 hours. Preserves historical data for analytics.",
+      "action": "Parse agent-invocations.jsonl, extract most recent code-reviewer timestamp, verify within 4-hour window (time-based, not commit-based). Blocks push if no recent code-reviewer run. [CORRECTED Session #221: time-based window, not commit count]",
       "confidence": "high",
       "timestamp": "2026-03-11T16:35:00.000Z"
     },
@@ -331,7 +331,7 @@
       "category": "9-trigger-system",
       "finding": "Security trigger blocks on filenames not content — 100% false positive rate, 10 bypasses in 30 days",
       "decision": "accept",
-      "action": "Tighten security trigger: check changed line content (like security-check.js) OR exclude test files and docs from filename pattern matching.",
+      "action": "Tighten security trigger: exclude test files, docs, scripts, hooks, husky, node_modules, .jsonl from filename pattern matching (path exclusion, not content inspection). Broader than original decision — reduces false positives. [CORRECTED Session #221: path exclusion only, broader than specified]",
       "confidence": "high",
       "timestamp": "2026-03-11T16:44:00.000Z"
     },
@@ -522,5 +522,14 @@
         "timestamp": "2026-03-11T17:30:00.000Z"
       }
     ]
+  },
+  "convergence_loop": {
+    "session": 221,
+    "preset": "standard",
+    "passes": 3,
+    "result": "CONVERGED",
+    "confidence": "HIGH",
+    "corrections": 6,
+    "summary": "23 claims verified. 17 confirmed as-is. 3 extended (implementation variations). 2 corrected (C1-G1 location, C6-G3 annotation). 1 mechanism correction (C7-G1 time vs commits). All corrections applied to decision records."
   }
 }

@@ -322,12 +322,12 @@ Re-run scoring to confirm improvements:
 
 ## Output Artifacts
 
-| Artifact                                                      | Purpose             |
-| ------------------------------------------------------------- | ------------------- |
-| `.claude/state/lifecycle-scores.jsonl`                        | Updated scores      |
-| `.planning/learnings-effectiveness-audit/LIFECYCLE_SCORES.md` | Generated dashboard |
-| `.claude/state/learning-routes.jsonl`                         | Routing decisions   |
-| `.claude/tmp/data-effectiveness-audit-report-{date}.md`       | Session report      |
+| Artifact                                                                                  | Purpose             |
+| ----------------------------------------------------------------------------------------- | ------------------- |
+| `.claude/state/lifecycle-scores.jsonl`                                                    | Updated scores      |
+| `.planning/system-wide-standardization/learnings-effectiveness-audit/LIFECYCLE_SCORES.md` | Generated dashboard |
+| `.claude/state/learning-routes.jsonl`                                                     | Routing decisions   |
+| `.claude/tmp/data-effectiveness-audit-report-{date}.md`                                   | Session report      |
 
 ## Integration
 

@@ -63,14 +63,14 @@ boundaries, crashes, and network failures. All state files MUST have Zod schemas
 (new immediately, existing 42 incrementally per Q8). State recovery is tested,
 not assumed. _Previous: no schema requirement, no testing requirement._
 
-**T11. fail_loud_fail_early** (strengthened + merged with T*new_9) Failures MUST
-block, not warn. Pre-commit catches before PR. Session-start surfaces before
-work begins. Silent failures are S0 severity. Warnings that persist 3+ sessions
-without action auto-escalate to DEBT (per escalation pattern from Automation Gap
-Closure). **No passive surfacing of information — all data surfaces MUST require
-action or acknowledgment.** Unacknowledged warnings become wallpaper and are
-treated as bugs. _Previous: "errors block, they don't whisper" — no escalation,
-no passive surfacing prohibition._
+**T11. fail_loud_fail_early** (strengthened + merged with T\*new*9) Failures
+MUST block, not warn. Pre-commit catches before PR. Session-start surfaces
+before work begins. Silent failures are S0 severity. Warnings that persist 3+
+sessions without action auto-escalate to DEBT (per escalation pattern from
+Automation Gap Closure). **No passive surfacing of information — all data
+surfaces MUST require action or acknowledgment.** Unacknowledged warnings become
+wallpaper and are treated as bugs. \_Previous: "errors block, they don't
+whisper" — no escalation, no passive surfacing prohibition.*
 
 ### New Tenets
 

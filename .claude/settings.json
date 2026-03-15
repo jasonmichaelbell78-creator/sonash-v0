@@ -26,12 +26,6 @@
           },
           {
             "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/stop-serena-dashboard.js",
-            "statusMessage": "Checking for Serena dashboard on port 24282...",
-            "continueOnError": true
-          },
-          {
-            "type": "command",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/gsd-check-update.js",
             "statusMessage": "Checking for GSD updates...",
             "continueOnError": true

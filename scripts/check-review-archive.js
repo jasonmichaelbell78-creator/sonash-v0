@@ -92,8 +92,8 @@ const KNOWN_SKIPPED_IDS = new Set([
   460,
   461, 463, 464, 466, 467,
   // #441-#451, #458-#459, #462, #465, #468-#469, #477-#479: Collision renumbering artifacts from old sync script (discovered during JSONL-canonical migration)
-  441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451,
-  458, 459, 462, 465, 468, 469, 477, 478, 479,
+  441,
+  442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 458, 459, 462, 465, 468, 469, 477, 478, 479,
 ]);
 
 // Known-duplicate review IDs: IDs that legitimately appear multiple times in JSONL
@@ -383,7 +383,15 @@ function writeForwardFindings(allFindings) {
     // If we can't read existing file, proceed without dedup (first run)
   }
 
-  const newFindings = critical.filter(
+  // Deduplicate within the batch itself before checking existing keys
+  const batchKeys = new Set();
+  const uniqueCritical = critical.filter((f) => {
+    const key = `${f.severity}::${f.description}`;
+    if (batchKeys.has(key)) return false;
+    batchKeys.add(key);
+    return true;
+  });
+  const newFindings = uniqueCritical.filter(
     (f) => !existingKeys.has(`${f.severity}::${f.description}`)
   );
   if (newFindings.length === 0) return;
@@ -420,7 +428,12 @@ function main() {
   if (!jsonMode) console.log("1. JSONL Integrity:");
 
   if (!existsSync(REVIEWS_JSONL)) {
-    addFinding("S0", "jsonl-missing", "reviews.jsonl does not exist", "Create .claude/state/reviews.jsonl or run migration");
+    addFinding(
+      "S0",
+      "jsonl-missing",
+      "reviews.jsonl does not exist",
+      "Create .claude/state/reviews.jsonl or run migration"
+    );
     // Cannot proceed without JSONL — output findings and exit
     outputFindings();
     return;
@@ -430,7 +443,12 @@ function main() {
   try {
     data = readReviewsJsonl();
   } catch (err) {
-    addFinding("S0", "jsonl-unreadable", `reviews.jsonl cannot be read: ${sanitizeError(err)}`, "Check file permissions and encoding");
+    addFinding(
+      "S0",
+      "jsonl-unreadable",
+      `reviews.jsonl cannot be read: ${sanitizeError(err)}`,
+      "Check file permissions and encoding"
+    );
     outputFindings();
     return;
   }
@@ -460,7 +478,9 @@ function main() {
       // Retrospective entries (type="retrospective") have a different schema —
       // they may lack title. Only require id and date for retrospectives.
       if (record.type === "retrospective") {
-        const retroMissing = ["id", "date"].filter((f) => record[f] === undefined || record[f] === null);
+        const retroMissing = ["id", "date"].filter(
+          (f) => record[f] === undefined || record[f] === null
+        );
         if (retroMissing.length > 0) {
           addFinding(
             "S1",
@@ -664,9 +684,7 @@ function main() {
       // Cross-check: lastConsolidatedReview should not exceed the max numeric ID in JSONL
       // Use sorted array instead of Math.max(...) to avoid call stack overflow on large sets
       const sortedNumericIds = [...numericIds].sort((a, b) => a - b);
-      const jsonlMaxNumericId = sortedNumericIds.length > 0
-        ? sortedNumericIds.at(-1)
-        : 0;
+      const jsonlMaxNumericId = sortedNumericIds.length > 0 ? sortedNumericIds.at(-1) : 0;
 
       if (typeof lastConsolidated !== "number" || !Number.isFinite(lastConsolidated)) {
         addFinding(
@@ -690,7 +708,9 @@ function main() {
           "Either add missing reviews to JSONL or correct consolidation.json"
         );
       } else {
-        ok(`Consolidation counter: lastConsolidated=#${lastConsolidated}, consolidationNumber=#${consolidationNumber}`);
+        ok(
+          `Consolidation counter: lastConsolidated=#${lastConsolidated}, consolidationNumber=#${consolidationNumber}`
+        );
       }
 
       if (typeof consolidationNumber !== "number" || !Number.isFinite(consolidationNumber)) {
