@@ -30,6 +30,7 @@ export default [
       ".claude/hooks/backup/**",
       ".claude/state/**",
       "docs/archive/**",
+      "scripts/archive/**",
       "eslint-plugin-sonash/**",
       "scripts/reviews/dist/**",
       "tests/semgrep/**",
