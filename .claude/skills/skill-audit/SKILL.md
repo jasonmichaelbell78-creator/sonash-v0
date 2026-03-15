@@ -136,8 +136,9 @@ interactive flow. The rewrite conclusion does not change the process.
    multiple options (with pros/cons per option) or single fix (one
    recommendation). Use multi-option mode when genuine alternatives exist.
 7. Cover EVERY con and gap — each MUST have at least one suggestion
-8. Present opportunities (MAY) — value-add ideas beyond fixing problems. Only
-   when genuinely useful. Each gets recommendation + rationale.
+8. Present opportunities section (MUST present, MAY populate) — value-add ideas
+   beyond fixing problems. If genuine ideas exist, present with recommendation +
+   rationale. If none: state "Opportunities: None for this category."
 9. Collect decisions — accept/modify/reject/alternatives via conversational Q&A.
    NEVER use AskUserQuestion — present findings and collect decisions through
    normal conversation. **Delegation:** if user says "you decide," accept all

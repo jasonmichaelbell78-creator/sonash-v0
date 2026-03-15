@@ -7,17 +7,23 @@ templates, agent prompt templates, and example configurations.
 
 ## 1. Behavior Definitions
 
+**Required output format (all behaviors):** Agents MUST report findings as:
+`[CLAIM_ID] [STATUS: Confirmed|Corrected|Extended|New] [EVIDENCE: brief citation]`
+For Corrected: include original and corrected text.
+
 ### source-check (Loop 0)
 
 **Purpose:** Verify claims against their cited source material before any
 analysis. Catches stale or fabricated claims early.
 
 **Agent instruction:**
+> You are a verification agent in a convergence loop. Your role is to verify
+> claims against their cited source material.
 > Read the cited source for each claim in your slice. For each: does the source
-> actually say what the claim says? Report: Confirmed (source matches),
-> Corrected (source says something different — provide correct version),
-> Extended (source says more than claimed), New (source contains relevant
-> information not captured in any claim).
+> actually say what the claim says? Report using the required output format.
+> Confirmed (source matches), Corrected (source says something different —
+> provide correct version), Extended (source says more than claimed), New
+> (source contains relevant information not captured in any claim).
 
 **When to use:** First pass of `standard` and `thorough` presets. Any time
 claims reference specific files, documents, or data.
@@ -28,10 +34,13 @@ claims reference specific files, documents, or data.
 look for problems, gaps, and uncovered areas.
 
 **Agent instruction:**
+> You are a discovery agent in a convergence loop. Your role is to find issues
+> the existing claims MISSED.
 > Review your domain slice. You have the existing claims for context, but your
 > PRIMARY goal is to find things the claims MISSED. Look for: uncovered files,
 > undocumented behaviors, edge cases, contradictions, patterns that should be
-> flagged but aren't. Report new findings separately from confirmations.
+> flagged but aren't. Report using the required output format. New findings
+> separately from confirmations.
 
 **When to use:** Early passes in `thorough` preset. When the claims set might be
 incomplete (e.g., initial audit findings, first-draft diagnoses).
@@ -42,11 +51,13 @@ incomplete (e.g., initial audit findings, first-draft diagnoses).
 what's already claimed, not finding new things.
 
 **Agent instruction:**
-> Verify each claim in your slice against the codebase/documentation. For each:
-> Confirmed (claim is accurate as stated), Corrected (claim is inaccurate —
-> provide correction with evidence), Extended (claim is accurate but incomplete —
-> provide additions). You ALSO receive prior pass corrections — verify those
-> corrections are themselves correct.
+> You are a verification agent in a convergence loop. Your role is to confirm or
+> correct existing claims for accuracy.
+> Verify each claim in your slice against the codebase/documentation. Report
+> using the required output format. Confirmed (claim is accurate as stated),
+> Corrected (claim is inaccurate — provide correction with evidence), Extended
+> (claim is accurate but incomplete — provide additions). You ALSO receive prior
+> pass corrections — verify those corrections are themselves correct.
 
 **When to use:** Middle passes. The workhorse behavior for convergence.
 
@@ -57,10 +68,12 @@ ONLY the claims and source material — no prior pass results, no corrections, n
 tallies.
 
 **Agent instruction:**
+> You are a fresh-eyes verification agent in a convergence loop. Your role is to
+> independently verify claims with ZERO prior context.
 > You are verifying these claims with NO prior context. You do not know what
 > previous passes found. Read the claims, check them against reality, report
-> your findings using the T20 tally format. If your findings match the current
-> claims set exactly, convergence is confirmed.
+> using the required output format. If your findings match the current claims
+> set exactly, convergence is confirmed.
 
 **When to use:** Final pass. The gold standard — if fresh-eyes finds nothing new,
 the claims are trustworthy.
@@ -72,9 +85,11 @@ the convergence loop's purpose is to CREATE something accurate, not just verify
 existing claims.
 
 **Agent instruction:**
+> You are a write-then-verify agent in a convergence loop. Your role is to
+> produce output and then have it independently verified.
 > Phase A: Write/produce the requested output based on the claims and source
 > material. Phase B: A DIFFERENT agent verifies the output against the claims
-> and sources. Report any discrepancies as Corrected or Extended.
+> and sources. Report using the required output format.
 
 **When to use:** Plan writing, document generation, migration scripts — any task
 where the loop produces an artifact.
@@ -85,10 +100,13 @@ where the loop produces an artifact.
 new full pass. Avoids wasting a full pass on known fixes.
 
 **Agent instruction:**
+> You are a fix-and-re-verify agent in a convergence loop. Your role is to
+> apply corrections and verify they are themselves correct.
 > These corrections were found earlier in this pass: [corrections]. Apply them
 > to the claims set. Now verify the CORRECTED claims — are the fixes themselves
-> correct? Report: Confirmed (fix is good), Corrected (fix was wrong — provide
-> better fix). This does NOT count as a new pass.
+> correct? Report using the required output format. Confirmed (fix is good),
+> Corrected (fix was wrong — provide better fix). This does NOT count as a new
+> pass.
 
 **When to use:** When a pass finds <5 corrections that are clearly fixable.
 If corrections are numerous or complex, prefer a new full pass.
@@ -325,3 +343,71 @@ with user approval?
 
 **Self-application**: Skill-audit's OWN discovery phase MUST use a `quick`
 convergence loop to verify its findings before presenting to user.
+
+---
+
+## 6. State File Schema
+
+**Path:** `.claude/state/convergence-loop-{topic}.state.json`
+
+```json
+{
+  "topic": "verify-diagnosis-v2",
+  "status": "in_progress",
+  "preset": "standard",
+  "sequence": ["source-check", "verification", "fresh-eyes"],
+  "max_passes": 3,
+  "agents": 4,
+  "slicing": "doc-by-section",
+  "input_claims_count": 24,
+  "confidence": null,
+  "passes": [
+    {
+      "number": 1,
+      "behavior": "source-check",
+      "tally": { "confirmed": 18, "corrected": 3, "extended": 2, "new": 1 },
+      "graduated": 15,
+      "corrections": [
+        { "claim_id": "C3", "original": "...", "corrected": "...", "evidence": "file:line" }
+      ],
+      "timestamp": "2026-03-15T20:00:00Z"
+    }
+  ],
+  "current_pass": {
+    "number": 2,
+    "behavior": "verification",
+    "agent_outputs": ["full output from each agent..."],
+    "started": "2026-03-15T20:15:00Z"
+  },
+  "graduated_claims": ["C1", "C2", "C4", "C5"],
+  "unconverged_claims": ["C3", "C7"],
+  "disagreements": [],
+  "created": "2026-03-15T19:45:00Z",
+  "updated": "2026-03-15T20:15:00Z"
+}
+```
+
+---
+
+## 7. Prompt Customization Hook
+
+Callers can inject domain-specific instructions into agent prompts by providing
+a `custom_instructions` string. This is appended to the behavior's standard
+prompt template.
+
+**Usage:**
+```
+custom_instructions: "When checking security claims, also verify CVE references
+against the NVD database. Flag any claims referencing CVEs older than 2 years."
+```
+
+The custom instructions are appended AFTER the standard behavior prompt and
+BEFORE the output format requirement. This allows callers to add domain context
+without modifying the core behavior.
+
+**When to use:** When the standard behavior prompts are too generic for the
+domain. Common customizations:
+- Security audits: CVE verification, OWASP reference checking
+- Performance claims: benchmark methodology verification
+- Architecture claims: dependency graph validation
+- Documentation claims: cross-reference checking against specific standards

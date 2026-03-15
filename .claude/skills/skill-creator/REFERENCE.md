@@ -70,6 +70,13 @@ Workflow structure, phase design, output artifacts.
 - "What's the estimated complexity? (Simple: <50 lines, Standard: 50-200,
   Complex: 200-300)"
 - "Does the skill need companion files (REFERENCE.md, scripts, assets)?"
+- "If this skill dispatches agents: what Agent tool parameters are needed?
+  (subagent_type, prompt template, isolation mode). Document in SKILL.md." (S24)
+- "If this skill uses state files: what happens on re-invocation with existing
+  state? MUST define resume behavior (detect existing state → present status →
+  offer continue/restart)." (S27)
+- "Does this skill's workflow involve claims verification, multi-agent discovery,
+  or iterative refinement? If yes, design convergence-loop integration per T25."
 
 ### Category 3: Attention & Prompt Engineering
 
@@ -129,6 +136,9 @@ non-negotiable; SHOULD items may be skipped with documented rationale.
 7. SHOULD: Parallel execution has dependency constraints documented
 8. MUST: Cross-references resolve to existing skills/scripts
 9. SHOULD: No duplicated boilerplate (use shared templates)
+10. SHOULD: Quick-start example (5-8 lines) showing minimal invocation (S25)
+11. MUST (if state files): State file schema in REFERENCE.md (per Q8) (S26)
+12. MUST (if state files): Resume detection on re-invocation (S27)
 
 ### Behavioral Quality
 
