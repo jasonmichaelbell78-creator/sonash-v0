@@ -29,16 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-15 **Branch**: `plan-implementation` **Working
-On**: Session #222 — CL Integration + debt-runner Skill
+**Last Checkpoint**: 2026-03-16 **Branch**: `plan-implementation` **Working
+On**: Session #223 — Skill-audit create-audit + Agent Environment Deep-Plan
 
-**Uncommitted Work**: debt-runner skill + session-end artifacts
+**Uncommitted Work**: SESSION_CONTEXT.md update + deep-plan artifacts
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 223 (since Jan 1, 2026)
+**Current Session Count**: 224 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,6 +47,28 @@ On**: Session #222 — CL Integration + debt-runner Skill
 ---
 
 ## Recent Session Summaries
+
+**Session #223** (SKILL-AUDIT CREATE-AUDIT + AGENT ENVIRONMENT DEEP-PLAN):
+
+- **skill-audit on create-audit** (75→88/110): 44 decisions (32 accepted, 12
+  rejected) across 11 categories. Key changes: convergence loop MUST on Phase
+  2.2 discovery, evidence-based self-audit with grep proof + T20 tally, skill-
+  audit promoted to Phase 5 validation gate, Type 3/4 templates added, guard
+  rails extracted to REFERENCE.md.
+- **Cross-skill fixes from audit**: skill-creator (3 gaps: cross-batch revision,
+  post-discovery prompt, evidence self-check), SKILL_STANDARDS.md (standardized
+  self-audit section for all skills), convergence-loop (SHOULD→MUST for
+  discovery phases per USER-REQ-4).
+- **Agent environment deep-plan** (21 decisions): 5-phase plan for comprehensive
+  agent ecosystem overhaul. Research (CL-driven, 4 parallel streams), audit
+  creation (hybrid via /create-audit), audit execution, interactive
+  improvements, process integration. 3 Agent Teams planned: research-team (4
+  members), audit-team (2 members), improvement-team (3 members).
+- **Agent Teams elevated**: Feature enabled but never used. Plan includes first
+  real Agent Teams usage with hybrid persistence model and token monitoring
+  pipeline (statusline + session-end + alerts).
+- **Replaces PLAN-v3 Step 3.14** with coverage audit to ensure nothing missed.
+- **2 commits, all pushed**
 
 **Session #222** (CONVERGENCE-LOOP INTEGRATION + DEBT-RUNNER SKILL):
 
@@ -129,6 +151,7 @@ On**: Session #222 — CL Integration + debt-runner Skill
 | **Skill Quality Framework**       | COMPLETE | All 4 deliverables                                   |
 | **Data Effectiveness Audit**      | 95% DONE | 10/11 waves delivered (PRs #431, #432)               |
 | **Review Lifecycle Overhaul**     | COMPLETE | JSONL-canonical, orchestrator, migration done        |
+| **Agent Environment Analysis**    | PLANNED  | Deep-plan complete (21 decisions), Phase 1 next      |
 | **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE + CL integration, ready for Phase 1 |
 | **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                  |
 | **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                                         |
@@ -149,17 +172,19 @@ hooks). Serena fully removed.
 
 ### Immediate Priority
 
-1. **Phase 1: CANON Foundation** — SWS Phase 0 fully complete (CL integration
+1. **Agent Environment Analysis Phase 1** — Execute the deep-plan from Session
+   #223. Start by fetching TeamCreate/SendMessage tool schemas, spawn research-
+   team, run Steps 1.1-1.4 in parallel. Plan at
+   `.planning/agent-environment-analysis/PLAN.md` (21 decisions).
+2. **Phase 1: CANON Foundation** — SWS Phase 0 fully complete (CL integration
    done, phase self-audit protocol added). Begin Phase 1 (schema definitions,
    migration mechanics, enforcement system). Read PLAN-v3.md Section 5 +
    DECISIONS_BY_PHASE.md Phase 1 section (60+ decisions to recall).
-2. **Run /debt-runner** — new skill created this session. First real test on the
+3. **Run /debt-runner** — new skill created Session #222. First real test on the
    8382-item debt corpus. Start with `health` mode, then `verify` on S0.
-3. **DE cleanup** — Wave 8 REFERENCE.md + `/skill-audit` on
-   `data-effectiveness-audit` skill
 
-**Also pending:** Planning landscape Wave 5 (canonicalization), review lifecycle
-S3 cosmetic fixes.
+**Also pending:** DE cleanup (Wave 8 REFERENCE.md + skill-audit), planning
+landscape Wave 5 (canonicalization), review lifecycle S3 cosmetic fixes.
 
 ---
 
@@ -234,6 +259,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                                |
 | ------- | ---------- | ---------------------------------------------------------------------- |
+| 8.2     | 2026-03-16 | Session #223 — skill-audit create-audit, agent environment deep-plan   |
 | 8.1     | 2026-03-15 | Session #222 — CL integration, debt-runner skill, 3 skill audits       |
 | 8.0     | 2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop skill, 7 commits |
 | 7.9     | 2026-03-15 | Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical)    |
