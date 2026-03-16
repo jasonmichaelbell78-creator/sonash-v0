@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2061
+**Items Needing Verification:** 2064
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -661,6 +661,8 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45528 | log-override.js generates duplicate DEBT entries with cas...    | S2       | scripts/log-override.js                                                          | 0         |
 | DEBT-45529 | Sacred-path drift: Shadow-Append Registry should be autho...    | S2       | .planning/system-wide-standardization/PLAN-v2.md                                 | 606       |
 | DEBT-45530 | 3 learning-route entries have \_repair_needed due to missi...   | S2       | .claude/state/learning-routes.jsonl                                              | 1         |
+| DEBT-45531 | Learning routes with \_repair_needed: missing enforcement ...   | S2       | .claude/state/learning-routes.jsonl                                              | 1         |
+| DEBT-45532 | Duplicate JSONL records with same content_hash in normali...    | S2       | docs/technical-debt/raw/normalized-all.jsonl                                     | 1027      |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |
@@ -2075,5 +2077,6 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)     | S3       | package.json                                                                     | 142       |
 | DEBT-11354 | Migrate test runner from node --test + c8 to vitest             | S3       | package.json                                                                     | 11        |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance        | S3       | scripts/append-hook-warning.js                                                   | 69        |
+| DEBT-45533 | Report headers typed as code-smell + non-canonical file p...    | S3       | docs/technical-debt/raw/normalized-all.jsonl                                     | 1035      |
 | DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |

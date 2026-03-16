@@ -268,7 +268,7 @@
 | DEBT-10931 | Shell script hooks may be redundant with Node.js versions         | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-10933 | Filesystem MCP server configured but noted as unused              | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (4634)
+## code-quality (4636)
 
 | ID         | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | ---------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -3380,6 +3380,7 @@
 | DEBT-11291 | Upgrade recharts from 2.x to 3.x (1 major version behind)       | S2       | package.json                                                                                                                                                                | 0    |
 | DEBT-11293 | Evaluate ESLint 10 upgrade (9.39.3 -> 10.0.2)                   | S2       | package.json                                                                                                                                                                | 0    |
 | DEBT-11306 | safeReadFile silently swallows errors without context           | S2       | .claude/skills/hook-ecosystem-audit/scripts/checkers/code-quality-security.js                                                                                               | 35   |
+| DEBT-45532 | Duplicate JSONL records with same content_hash in normali...    | S2       | docs/technical-debt/raw/normalized-all.jsonl                                                                                                                                | 1027 |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 0    |
 | DEBT-0554  | Prefer `String#replaceAll()` over `String#replace()`.           | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
 | DEBT-0555  | Visible, non-interactive elements with click handlers mus...    | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
@@ -4905,6 +4906,7 @@
 | DEBT-11328 | CRLF-unsafe .split(newline) in multiple scripts testFn bl...    | S3       | scripts/check-session-gaps.js                                                                                                                                               | 38   |
 | DEBT-11333 | Improve template literal cross-boundary pattern detection...    | S3       | eslint-plugin-sonash/rules/no-unbounded-regex.js                                                                                                                            | 0    |
 | DEBT-11334 | Extend no-math-max-spread to catch filtered/mapped spread...    | S3       | eslint-plugin-sonash/rules/no-math-max-spread.js                                                                                                                            | 0    |
+| DEBT-45533 | Report headers typed as code-smell + non-canonical file p...    | S3       | docs/technical-debt/raw/normalized-all.jsonl                                                                                                                                | 1035 |
 | DEBT-1293  | Security risk: Client-side filtering of sensitive data          | S0       | hooks/use-journal.ts                                                                                                                                                        | 174  |
 
 ## documentation (982)
@@ -6310,7 +6312,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (721)
+## process (722)
 
 | ID         | Title                                                         | Severity | File                                                                    | Line |
 | ---------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6674,6 +6676,7 @@
 | DEBT-11330 | Auto-increment review numbers from JSONL max to prevent c...  | S2       | scripts/sync-reviews-to-jsonl.js                                        | 1    |
 | DEBT-45528 | log-override.js generates duplicate DEBT entries with cas...  | S2       | scripts/log-override.js                                                 | 0    |
 | DEBT-45530 | 3 learning-route entries have \_repair_needed due to missi... | S2       | .claude/state/learning-routes.jsonl                                     | 1    |
+| DEBT-45531 | Learning routes with \_repair_needed: missing enforcement ... | S2       | .claude/state/learning-routes.jsonl                                     | 1    |
 | DEBT-0811  | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
 | DEBT-0812  | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
 | DEBT-0813  | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |

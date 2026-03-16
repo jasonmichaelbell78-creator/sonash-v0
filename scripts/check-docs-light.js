@@ -615,7 +615,8 @@ function findMarkdownFiles(dir, files = []) {
       entry === "views" || // Auto-generated debt views
       entry === "dataconnect-generated" || // Auto-generated Firebase code
       entry === "plans" || // Legacy planning docs
-      entry === "templates" // Templates have intentional placeholder links
+      entry === "templates" || // Templates have intentional placeholder links
+      entry === "consolidation-output" // Generated consolidation output - exempt from doc standards
     ) {
       continue;
     }

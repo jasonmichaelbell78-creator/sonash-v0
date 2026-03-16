@@ -111,12 +111,17 @@ Failure modes, edge cases, recovery.
 - "Does the skill need a disengagement protocol (clean exit)?"
 - "What if the user's request turns out to need a different tool entirely?"
 - "Are there phase gates (must complete X before Y)?"
+- "Guard rail checklist: does the skill need scope explosion handling, time/
+  attention budget, or recovery from partial execution?" (SA session-begin
+  audit)
 
 ### Category 6: UX & Interactivity
 
 User experience, progress, feedback loops.
 
 - "Is this interactive (multi-step user decisions) or autonomous?"
+- "Where should the user make decisions vs the AI acting autonomously? Identify
+  specific decision points." (SA session-begin audit)
 - "Does it need progress indicators? Warm-up? Closure signal?"
 - "What approval format? (accept/modify/reject, free-form, delegation)"
 - "Does the user need an effort estimate before starting?"

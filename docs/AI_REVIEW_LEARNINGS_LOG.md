@@ -32,6 +32,8 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.63    | 2026-03-16               | Review #479: PR #443 R2 — Qodo. Relative link depth fix (../../ → ../../../) in session-begin SKILL+REFERENCE, session counter off-by-one. 2 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 17.62    | 2026-03-16               | Review #478: PR #443 R1 — Mixed (Doc Lint CI+Qodo Compliance+Qodo Reviewer+CI Failure). Invocation schema consistency (duration_ms/error fields). 3 fixed, 3 deferred (DEBT-45531/45532/45533), 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.61    | 2026-03-14               | Review #477: PR #432 R4 — Mixed (Qodo+CodeQL+CI+SonarCloud). Terminal injection (control char strip), CodeQL process.env contradiction resolved (by=cli), schema field alignment (\_pending_test→pending_enforcement_test), write audit trail, safe error.code access. 6 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.60    | 2026-03-14               | Review #476: PR #432 R3 — Mixed (Qodo+CI+SonarCloud). Cache retry bug (re-throw after log), alert truncation consistency, existsSync TOCTOU removal, audit trail actor context. 6 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.59    | 2026-03-07               | Review #459: PR #420 R2 — Mixed (Gemini+Qodo+Semgrep). claude.md case mismatch (Linux CI), warned-files schema fix (timestamps→counts), failedCheck field, skill-registry generator fix (description: >-), process.execPath propagation (4x), swallowed catch debuggability (2x). 7 fixed, 6 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -291,7 +293,7 @@ improvements made.
 | 1.42     | 2026-01-04               | Review #46: Symlink protection, realpath hardening, buffer overflow, jq/awk fixes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 1.41     | 2026-01-04               | Review #45: TOCTOU fix, error.message handling, path containment, tier matching, PR spam                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 1.40     | 2026-01-03               | CONSOLIDATION #3: Reviews #31-40 → claude.md v2.7 (14 patterns added)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| 1.39-1.0 | 2026-01-02 to 2026-01-03 | Reviews #1-40 (see [archive](./archive/REVIEWS_1-40.md))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 1.39-1.0 | 2026-01-02 to 2026-01-03 | Reviews #1-40 (see [archive](./archive/reviews-markdown-legacy/REVIEWS_1-40.md))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 </details>
 
@@ -301,12 +303,12 @@ improvements made.
 
 This log uses a tiered structure to optimize context consumption:
 
-| Tier  | Content                                                                                                                                                                                                                                                                                                                                                                                    | When to Read                  | Size        |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------- | ----------- |
-| **1** | [claude.md](../CLAUDE.md)                                                                                                                                                                                                                                                                                                                                                                  | Always (in AI context)        | ~115 lines  |
-| **2** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)                                                                                                                                                                                                                                                                                                                                          | When investigating violations | ~612 lines  |
-| **3** | Active Reviews (below)                                                                                                                                                                                                                                                                                                                                                                     | Deep investigation            | ~2400 lines |
-| **4** | Archive ([#1-40](./archive/REVIEWS_1-40.md), [#42-138](./archive/REVIEWS_42-138.md), [#139-195](./archive/REVIEWS_139-195.md), [#196-259](./archive/REVIEWS_196-259.md), [#260-299](./archive/REVIEWS_260-299.md), [#300-341](./archive/REVIEWS_300-341.md), [#342-383](./archive/REVIEWS_342-383.md), [#384-423](./archive/REVIEWS_384-423.md), [#424-457](./archive/REVIEWS_424-457.md)) | Historical research           | ~8000 lines |
+| Tier  | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | When to Read                  | Size        |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------- | ----------- |
+| **1** | [claude.md](../CLAUDE.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Always (in AI context)        | ~115 lines  |
+| **2** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | When investigating violations | ~612 lines  |
+| **3** | Active Reviews (below)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Deep investigation            | ~2400 lines |
+| **4** | Archive ([#1-40](./archive/reviews-markdown-legacy/REVIEWS_1-40.md), [#42-138](./archive/reviews-markdown-legacy/REVIEWS_42-138.md), [#139-195](./archive/reviews-markdown-legacy/REVIEWS_139-195.md), [#196-259](./archive/reviews-markdown-legacy/REVIEWS_196-259.md), [#260-299](./archive/reviews-markdown-legacy/REVIEWS_260-299.md), [#300-341](./archive/reviews-markdown-legacy/REVIEWS_300-341.md), [#342-383](./archive/reviews-markdown-legacy/REVIEWS_342-383.md), [#384-423](./archive/reviews-markdown-legacy/REVIEWS_384-423.md), [#424-457](./archive/reviews-markdown-legacy/REVIEWS_424-457.md)) | Historical research           | ~8000 lines |
 
 **Read Tier 3 only when:**
 
@@ -812,55 +814,55 @@ deduplicated, non-overlapping ranges):
 ### Archive 1: Reviews #1-40
 
 - **Archive location:**
-  [docs/archive/REVIEWS_1-40.md](./archive/REVIEWS_1-40.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_1-40.md](./archive/reviews-markdown-legacy/REVIEWS_1-40.md)
 - **Status:** 40 reviews archived.
 
 ### Archive 2: Reviews #42-138
 
 - **Archive location:**
-  [docs/archive/REVIEWS_42-138.md](./archive/REVIEWS_42-138.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_42-138.md](./archive/reviews-markdown-legacy/REVIEWS_42-138.md)
 - **Status:** 40 reviews archived.
 
 ### Archive 3: Reviews #139-195
 
 - **Archive location:**
-  [docs/archive/REVIEWS_139-195.md](./archive/REVIEWS_139-195.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_139-195.md](./archive/reviews-markdown-legacy/REVIEWS_139-195.md)
 - **Status:** 40 reviews archived.
 
 ### Archive 4: Reviews #196-259
 
 - **Archive location:**
-  [docs/archive/REVIEWS_196-259.md](./archive/REVIEWS_196-259.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_196-259.md](./archive/reviews-markdown-legacy/REVIEWS_196-259.md)
 - **Status:** 40 reviews archived.
 
 ### Archive 5: Reviews #260-299
 
 - **Archive location:**
-  [docs/archive/REVIEWS_260-299.md](./archive/REVIEWS_260-299.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_260-299.md](./archive/reviews-markdown-legacy/REVIEWS_260-299.md)
 - **Status:** 40 reviews archived.
 
 ### Archive 6: Reviews #300-341
 
 - **Archive location:**
-  [docs/archive/REVIEWS_300-341.md](./archive/REVIEWS_300-341.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_300-341.md](./archive/reviews-markdown-legacy/REVIEWS_300-341.md)
 - **Status:** 40 reviews archived.
 
 ### Archive 7: Reviews #342-383
 
 - **Archive location:**
-  [docs/archive/REVIEWS_342-383.md](./archive/REVIEWS_342-383.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_342-383.md](./archive/reviews-markdown-legacy/REVIEWS_342-383.md)
 - **Status:** 40 reviews + 11 retrospectives archived.
 
 ### Archive 8: Reviews #384-423
 
 - **Archive location:**
-  [docs/archive/REVIEWS_384-423.md](./archive/REVIEWS_384-423.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_384-423.md](./archive/reviews-markdown-legacy/REVIEWS_384-423.md)
 - **Status:** 40 reviews + 9 retrospectives archived.
 
 ### Archive 9: Reviews #424-457
 
 - **Archive location:**
-  [docs/archive/REVIEWS_424-457.md](./archive/REVIEWS_424-457.md)
+  [docs/archive/reviews-markdown-legacy/REVIEWS_424-457.md](./archive/reviews-markdown-legacy/REVIEWS_424-457.md)
 - **Status:** 20 reviews archived. Access archives only for historical
   investigation of specific patterns.
 
@@ -888,120 +890,13 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review 473: Qodo R6 — diminishing returns, JSONL data normalization (2026-03-08)
+### Review 473: PR #427 R1 — Mixed (SonarCloud + Semgrep + CI + Qodo) (2026-03-11)
 
-**Date:** 2026-03-08 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 2     | 0        | 8        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 7     | 2       |
-
-**Learnings:**
-
-- Fixed: 2 items (rev-436 completeness, `""` → `null` x7 entries x2 files)
-- Rejected: 8 items (3 repeats, 5 pre-existing/over-engineering)
-- After 5+ rounds, most new items are repeat FPs or diminishing-value hardening
-- Consider merging PR after R5 when fix rate drops below 30%
-- JSONL empty fields should use `null` not `""` for consistency
-
----
-
-### Review 474: Qodo R5 — eval input validation, maxBuffer, TDMS provenance (2026-03-08)
-
-**Date:** 2026-03-08 | **Source:** qodo
+**Date:** 2026-03-11 | **Source:** sonarcloud+ci
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 10    | 5     | 0        | 5        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 6     | 2       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: R4 added capture-before-eval but not content validation.
-- Prevention: Any eval of external command output should validate content.
-- Root cause: `/add-debt` skill doesn't inject `"source"` field
-- Prevention: Check field parity with existing entries when appending JSONL.
-- Fixed: 5 items (+ propagation to 12 TDMS entries across 2 files)
-
----
-
-### Review 470: SonarCloud R2-2 — ReDoS regex simplification + CI exec blocker (2026-03-09)
-
-**Date:** 2026-03-09 | **PR:** #393 | **Source:** sonarcloud+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 8     | 0        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 8     | 24    | 5       |
-
-**Patterns:**
-
-- check-propagationjs
-- audit-skill-templates
-- pr-review-skillmd
-- reviewssync-script
-- large-pr-scope-remains-the-1-systemic-driver
-- propagation-is-the-persistent-2-driver
-- pr-390-shows-small-prs-work
-- r1-review-quality-improving
-- pr-scope-discipline-paid-off
-- propagation-automation-is-production-validated
-- qodo-batch-rejection-saves-investigation-time
-- cross-platform-path-normalization-is-now-the-1-recurring-pat
-- jsonl-data-quality-inflates-review-metrics
-- zero-avoidable-rounds-from-unimplemented-retro-items
-- propagation-check
-- qodo-compliance-repeat-rejection
-- focused-pr-scope-continues-to-pay-off
-- propagation-discipline-held
-- multi-source-convergence-is-high-signal
-- tdms-data-quality-is-the-remaining-systemic-issue
-- fixtemplate-45-is-production-validated
-- safe-fsjs-received-substantive-security-fixes
-- sonarcloud-0-fp-rate
-- qodo-compliance-fp-rate-remains-high-50
-- test-production-regex-sync-is-a-new-pattern
-- unused-import-cleanup-11-files
-
-**Learnings:**
-
-- SonarCloud Security Hotspots + CI | **Round:** R2-2
-- Fixed: 8 items (1 CI blocker + 7 S5852 regex simplifications across 8 files)
-- Rejected: 3 items (S1523 string literal FP, S2245 test PRNG FP, S5443 test
-- Two-strikes rule works well for test isolation patterns — simple string
-- None. Clean forward progression.
-- Add quoted-value secret redaction edge case tests. Pattern:
-
----
-
-### Review 471: Qodo R2-3 — error handling, duplicate detection, cross-platform (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 9     | 0        | 4        |
+| 0     | 0     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -1009,39 +904,19 @@ deduplicated, non-overlapping ranges):
 | -------- | ----- | ----- | ------- |
 | 0        | 0     | 0     | 0       |
 
-**Learnings:**
+**Patterns:**
 
-- Qodo Compliance + Code Suggestions | **Round:** R2-3
-- Fixed: 9 items (across 17 files with propagation)
-- Rejected: 4 items (CI step dedupe, registry sort, checker validation,
-- Duplicate category keys across checkers are a silent data-clobbering risk —
-- Cross-platform test portability: always use `os.tmpdir()` instead of `/tmp`
-
----
-
-### Review 472: Mixed (Qodo + SonarCloud) R1 — ecosystem expansion test infrastructure (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** sonarcloud+qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 197   | 197   | 3        | 6        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+- cc-double-counting-in-check-ccjs
+- generatewarnings-data-loss
+- cyclomatic-gate-true-mask
+- cjs-parse-fallback
+- score
 
 **Learnings:**
 
-- Qodo/CodeRabbit + SonarCloud | **Round:** R1 (3
-- Fixed: 197 items across 60+ files
-- Deferred: 3 items (cognitive complexity refactors — architectural)
-- Rejected: 6 items (test fixture passwords, safe Math.random, bounded regex)
-- When mocking via mutable function refs, give the DEFAULT value a matching
-- Broad `catch {}` in test setup hides real failures — always catch specific
-- SonarCloud S2068 (hard-coded passwords) is a known FP for test fixtures that
+- SonarCloud hotspots (6) + code smells (16), Semgrep (1), CI (1 + 127
+- First-scan volume on large PRs (247 files) produces significant reviewer
+- CC refactoring (extracting helpers) is mechanical but high-value — reduces
 
 ---
 
@@ -1102,6 +977,35 @@ deduplicated, non-overlapping ranges):
 - Root cause: Original fallback only truncated, didn't sanitize
 - Prevention: Propagation sweep caught all 6 instances (2 flagged + 4 found)
 - Root cause: nosemgrep comments copied from community rule, not updated for
+
+---
+
+### Review 355: PR #428 R1 — ESLint v10 Contradiction, Phantom Corruption, Doc Lint (2026-03-12)
+
+**Date:** 2026-03-12 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 0     | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
+
+**Patterns:**
+
+- ai-hallucination-in-planning-docs
+- forward-referencing-non-existent-software
+- worktree-compatibility
+- doc-lint-as-automated-quality-gate
+
+**Learnings:**
+
+- Doc Lint, Qodo, Gemini, CI **Items:** 10 total (10 fixed, 0
+- Plan referenced "ESLint v10
+- Missing Purpose/Scope,
 
 ---
 
@@ -1182,26 +1086,6 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 54    | 54    | 0        | 0        |
 
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 8     | 21    | 23      |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Schema refactored without updating all consumers
-- Prevention: Schema migration checklist — grep all consumers before shipping
-- Root cause: Ad-hoc regex instead of using existing validatePathInDir helper
-- Prevention: Always use security-helpers.js for path validation
-- Root cause: Copy-paste fallbacks diverged from canonical implementation
-- Prevention: All fallbacks must match the 5-replace canonical pattern
-
 ---
 
 ### Review 357: PR #431 R3 — Robustness, Complexity & Propagation Fixes (2026-03-13)
@@ -1212,26 +1096,64 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 16    | 16    | 0        | 10       |
 
+---
+
+### Review 474: PR #430 R1 — Mixed (Qodo + Gemini + CI) (2026-03-13)
+
+**Date:** 2026-03-13 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 2     | 0     | 0        | 0        |
+
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 2        | 8     | 14    | 2       |
+| 0        | 0     | 0     | 0       |
 
 **Patterns:**
 
-- root-cause
-- prevention
-- propagation
+- case-sensitive-file-links
+- flawed-ci-grep-exit-logic
+- append-only-metrics-without-dedup
+- score
 
 **Learnings:**
 
-- Root cause: Overly broad catch-all added to complement Windows path
-- Prevention: Canonical sanitizeError should only redact known-sensitive
-- Propagation: Fixed in 8 files (canonical + 7 fallback copies)
-- Root cause: Single functions doing too much — iteration + mutation +
-- Prevention: Extract helpers when function has >2 concerns
-- Root cause: Test helper didn't account for the security boundary
+- Qodo PR Reviewer (3 items + 3 suggestions), Gemini Code Assist (2),
+- ESLint 1324 warnings — pre-existing across 100+ files, none introduced by
+- Multi-source convergence (Qodo + Gemini both flagged casing + grep logic)
+
+---
+
+### Review 475: PR #430 R2 — Qodo (2026-03-13)
+
+**Date:** 2026-03-13 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
+
+**Patterns:**
+
+- pre-commit-hook-overwrites-manual-edits
+- archive-jsonl-duplication
+- jsonl-records-with-nullzero-fields
+- score
+
+**Learnings:**
+
+- Qodo Bug (1), Qodo Compliance (1), Qodo Suggestions (7) **Items:** 9
+- PATH binary hijack (.lsp.json) — standard `$PATH` tool invocation, not a
+- Preserve metrics history — R1 dedup removed only duplicate entries (same PR
+- When editing auto-generated files, always check for pre-commit hooks that
 
 ---
 
@@ -1314,24 +1236,6 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 37    | 37    | 0        | 15       |
 
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 3     | 0     | 34      |
-
-**Patterns:**
-
-- lesson
-
-**Learnings:**
-
-- Lesson: When SonarCloud will re-flag the same items every round, fix them
-- Rejected: 15 items (2 R3 dedup, 13 over-engineering/false-positive)
-- POSIX path redaction (R3 dedup — R3 deliberately removed this regex)
-- OS temp directory for tests (R3 dedup — tests need repo boundary compat)
-- Symlink security in run-alerts.js (isSafeToWrite guard already at L515)
-
 ---
 
 ### Review 359: PR #431 R5 — Backup Safety, Nullish Coalescing & Error Context (2026-03-14)
@@ -1340,22 +1244,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 11    | 0        | 7        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 9     | 7       |
-
-**Learnings:**
-
-- Fixed: 11 items across 9 files
-- Rejected: 7 items (5 cross-round dedup from R3/R4, 1 architectural, 1 FP)
-- Symlink overwrite risk (R4 dedup — isSafeToWrite guard at L515)
-- Set.has x2 (R4 dedup — string.includes(), not array)
-- Unix path redaction (R3+R4 dedup — deliberately removed in R3)
-- Type-dependent design (R4 dedup — simple boolean in 6-line function)
+| 18    | 11    | 0        | 7        |
 
 ---
 
@@ -1365,22 +1254,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 14    | 14    | 0        | 6        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 12    | 7       |
-
-**Learnings:**
-
-- Fixed: 14 items across 8 files
-- Rejected: 6 items (3 cross-round dedup R4+R5, 1 architectural, 2
-- Set.has for tableContent (R4+R5 dedup — string.includes(), not array)
-- Set.has for antiPatternSection (R4+R5 dedup — string.includes(), not array)
-- Type-dependent design (R4+R5 dedup — simple boolean in 6-line function)
-- No JSONL schema validation (architectural — downstream has Number.isFinite and
+| 20    | 14    | 0        | 6        |
 
 ---
 
@@ -1392,20 +1266,15 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 17    | 6     | 0        | 11       |
 
-**Severity Breakdown:**
+---
 
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 9     | 7       |
+### Review 485: PR #436 R1 — Qodo + Gemini + CI (2026-03-15)
 
-**Learnings:**
+**Date:** 2026-03-15 | **PR:** #436 | **Source:** qodo+ci
 
-- Fixed: 6 items across 5 files
-- Rejected: 11 items (4 cross-round dedup R4-R6, 1 intentional TODO scaffold, 6
-- Set.has for tableContent (R4+R5+R6 dedup — string.includes())
-- Set.has for antiPatternSection (R4+R5+R6 dedup — string.includes())
-- Type-dependent design (R4+R5+R6 dedup — simple boolean)
-- OS temp dir for test (R3+R4 dedup — repo boundary needed)
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 0     | 0        | 0        |
 
 ## Key Patterns
 
@@ -2147,8 +2016,8 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
   Snapshot Alignment): Informational "verify this" advisories with no specific
   code change requested. Data files are auto-generated by pipeline scripts.
 - **Missing actor context in JSONL** (Qodo compliance): Health snapshots are
-  automated system measurements, not user-action audit trails. Actor context
-  is not applicable to automated health checks.
+  automated system measurements, not user-action audit trails. Actor context is
+  not applicable to automated health checks.
 - **Table formatting suggestion** (Qodo): Subsumed by Prettier fix — Prettier
   auto-pads markdown table columns, making the manual formatting suggestion
   redundant.
@@ -2157,7 +2026,7 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
 
 - Auto-generated markdown files (TDMS views) should be included in Prettier
   formatting runs before pushing to avoid CI failures on generated content.
-- Documentation code examples should follow the same patterns as production
-  code (file-read-in-try/catch) to avoid review noise.
+- Documentation code examples should follow the same patterns as production code
+  (file-read-in-try/catch) to avoid review noise.
 
 ---
