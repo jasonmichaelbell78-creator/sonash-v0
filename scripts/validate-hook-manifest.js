@@ -77,6 +77,7 @@ function extractBashCheckIds(content, hookType) {
     if (content.includes("validate-schema.js --staged-only")) ids.push("debt-schema");
     if (content.includes("jsonl-sync") || content.includes("JSONL→MD sync")) ids.push("jsonl-md-sync");
   } else if (hookType === "pre-push") {
+    if (content.includes("escalation-gate") && content.includes("hook-warnings.json")) ids.push("escalation-gate");
     if (content.includes("deps:circular")) ids.push("circular-deps");
     if (content.includes("check-pattern-compliance.js") && content.includes("push diff")) ids.push("pattern-compliance-push");
     if (content.includes("code-reviewer") && content.includes("agent-invocations.jsonl")) ids.push("code-reviewer-gate");

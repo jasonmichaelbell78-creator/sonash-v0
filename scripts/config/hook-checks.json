@@ -4,6 +4,36 @@
   "generated": "2026-03-16",
   "checks": [
     {
+      "id": "escalation-gate",
+      "name": "Escalation Gate",
+      "description": "Blocks push when unacknowledged error-level warnings exist in hook-warnings.json",
+      "hook": "pre-push",
+      "wave": 0,
+      "command": "inline Node.js",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "warnings",
+      "exit_codes": {"0": "pass", "1": "unacknowledged-errors"},
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 5000,
+      "dependencies": {"binary": null, "fallback_on_missing": null},
+      "writes_to": [],
+      "reads_from": [".claude/hook-warnings.json", ".claude/state/hook-warnings-ack.json"],
+      "warning_type": "escalation",
+      "actions": {
+        "investigate": "cat .claude/hook-warnings.json | node -e \"const w=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); (w.warnings||[]).filter(e=>e.severity==='error').forEach(e=>console.log(e.type+': '+e.message))\"",
+        "fix": null,
+        "defer": null
+      },
+      "category": "compliance",
+      "owner": "pre-push",
+      "test_command": null,
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
       "id": "secrets-scan",
       "name": "Secrets Scan",
       "description": "Scans staged files for leaked secrets using gitleaks",

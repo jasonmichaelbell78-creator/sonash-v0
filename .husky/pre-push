@@ -12,10 +12,84 @@ add_exit_trap "rm -f '$CHECKS_TMPFILE'"
 
 _shared_init_fnm
 
+# --- SKIP_CHECKS consolidation (mirrors pre-commit pattern) ---
+# Map individual SKIP_ env vars to SKIP_CHECKS for is_skipped() usage
+for _sk in WARNINGS:warnings PROPAGATION:propagation CC:cc COG_CC:cog-cc TRIGGERS:triggers REVIEWER:reviewer; do
+  _var="SKIP_${_sk%%:*}"; _name="${_sk#*:}"
+  eval "_val=\${$_var:-}"
+  [ "$_val" = "1" ] && SKIP_CHECKS="${SKIP_CHECKS:+$SKIP_CHECKS,}$_name"
+done
+
 # Log append-hook-warning output instead of silencing (C7-G5)
 HOOK_OUTPUT_LOG="$(git rev-parse --show-toplevel 2>/dev/null || echo .)/.git/hook-output.log"
 
 echo "🚀 Running pre-push checks..."
+
+# ── Wave 0: Escalation gate — block on unacknowledged error-level warnings (D4) ──
+CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
+if [ "${CI:-}" = "true" ]; then
+  echo "  ⏭️  Escalation gate skipped (CI environment)"
+  CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#CHECK_START_NS} -gt 10 ]; then
+    CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 ))
+  else
+    CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 ))
+  fi
+  echo "escalation-gate|skip|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+else
+  ESCALATION_OUTPUT=$(node -e "
+    const fs = require('fs');
+    const warningsPath = '.claude/hook-warnings.json';
+    const ackPath = '.claude/state/hook-warnings-ack.json';
+    try {
+      if (!fs.existsSync(warningsPath)) process.exit(0);
+      const w = JSON.parse(fs.readFileSync(warningsPath, 'utf8'));
+      let ack = {};
+      try { ack = JSON.parse(fs.readFileSync(ackPath, 'utf8')).acknowledged || {}; } catch {}
+      const errors = (w.warnings || []).filter(e => {
+        if (e.severity !== 'error') return false;
+        const ackTime = ack[e.type];
+        if (!ackTime) return true;
+        return new Date(e.timestamp) > new Date(ackTime);
+      });
+      if (errors.length > 0) {
+        errors.forEach(e => console.error('  ❌ ' + e.type + ': ' + e.message));
+        process.exit(1);
+      }
+    } catch (err) {
+      // If warnings file is corrupt, don't block
+      process.exit(0);
+    }
+  " 2>&1)
+  GATE_EXIT=$?
+  CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#CHECK_START_NS} -gt 10 ]; then
+    CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 ))
+  else
+    CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 ))
+  fi
+
+  if [ "$GATE_EXIT" -ne 0 ]; then
+    echo "❌ PUSH BLOCKED: Unacknowledged error-level warnings" >&2
+    echo "$ESCALATION_OUTPUT" >&2
+    echo "" >&2
+    echo "   Fix the underlying issues, or:" >&2
+    echo "   Skip: SKIP_WARNINGS=1 SKIP_REASON=\"...\" git push" >&2
+
+    if is_skipped "warnings"; then
+      require_skip_reason "SKIP_WARNINGS=1"
+      node scripts/log-override.js --quick --check=escalation-gate --reason="$SKIP_REASON" \
+        || echo "⚠️ Override log failed" >&2
+      echo "escalation-gate|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    else
+      echo "escalation-gate|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+      exit 1
+    fi
+  else
+    echo "  ✅ No unacknowledged error-level warnings"
+    echo "escalation-gate|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  fi
+fi
 
 # 1. Tests already run in pre-commit (Quick Win - Session #113)
 # Removed duplicate test run - saves 50-60s per push
