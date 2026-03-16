@@ -4,7 +4,8 @@ description: >-
   Structured workflow for creating or updating skills — from discovery through
   validation and audit. Produces structurally correct, behaviorally effective
   skill packages (SKILL.md + companions) using deep-plan-style discovery with
-  skill-specific question categories.
+  skill-specific question categories and convergence-loop verification of
+  codebase claims.
 ---
 
 # Skill Creator
@@ -210,6 +211,12 @@ conventions into the skill.
 **Data standards:** If skill produces data files, SHOULD use JSONL as canonical
 format with .md for human readability.
 
+**Convergence-loop integration (SHOULD):** If Phase 2 discovery identified a
+discovery or verification phase in the skill being created (T25 question), wire
+convergence-loop programmatic mode into that phase. Reference
+`/convergence-loop` SKILL.md "Programmatic Mode" section for the integration
+contract.
+
 ### 4.4 Write Companions (SHOULD)
 
 Extract to REFERENCE.md if SKILL.md approaches 300 lines. Move examples,
@@ -224,11 +231,16 @@ templates, question banks to companion files.
 1. Run `npm run skills:validate` (MUST) — structural check
 2. Walk the content checklist from REFERENCE.md (MUST) — for each unchecked
    item, either address it or document why not applicable
-3. Verify line count under 300 (MUST)
-4. Verify cross-references resolve (SHOULD)
+3. **Convergence-loop verify** (MUST for Complex, SHOULD for Standard) — verify
+   created skill's codebase claims (neighbors, integration points, existing
+   patterns) via convergence-loop quick preset. Skip if skill makes no codebase
+   claims. **If claims are wrong:** fix in created skill files (Phase 4
+   re-entry) before continuing validation.
+4. Verify line count under 300 (MUST)
+5. Verify cross-references resolve (SHOULD)
 
 **Done when:** `skills:validate` passes, behavioral checklist addressed, under
-300 lines.
+300 lines, codebase claims verified.
 
 ---
 
@@ -265,30 +277,10 @@ behavioral quality that structural validation cannot catch.
 - **Disengagement:** If user stops mid-skill, save state, list files created,
   offer cleanup (delete partial work or keep for later)
 
-## Anti-Patterns (MUST avoid)
+## Anti-Patterns
 
-1. Monolithic SKILL.md over 300 lines without companions
-2. Generic `[TODO]` or `[placeholder]` text — use guided prompts
-3. Duplicating CLAUDE.md conventions into skill files
-4. All instructions at same volume (no MUST/SHOULD/MAY distinction)
-5. No skip conditions on optional steps
-6. Using AskUserQuestion for interactive decisions — use conversational Q&A
-   (deep-plan style: present in batches, collect decisions via conversation)
-7. Audit-type skills without separate self-audit AND verification phases —
-   self-audit checks process quality, verification re-runs to confirm fixes
-8. Presenting suggestions without multi-option format when genuine alternatives
-   exist — each option needs description, pros/cons, and a recommendation
-9. Script-dependent skills without failure handling — if a skill runs external
-   scripts, MUST handle non-zero exit, malformed output, and timeouts
-10. Interactive skills with large item sets without batch management — if a
-    skill could present >20 interactive items, MUST include delegation protocol
-    ("you decide"), severity-based filtering ("skip remaining INFO"), and batch
-    actions
-11. Skills without invocation tracking — all skills SHOULD log invocations via
-    `write-invocation.js` in their closure phase for usage analysis
-12. Interactive skills without correction protocol — if user corrects
-    presentation format, MUST re-present in exact original format, never
-    summarize or truncate
+> Read REFERENCE.md "Anti-Patterns" section for the full 12-item list of common
+> skill creation mistakes (MUST check during Phase 4 Build).
 
 ## Compaction Resilience
 
@@ -303,8 +295,11 @@ behavioral quality that structural validation cannot catch.
 ## Integration
 
 - **Neighbors:** `/skill-audit` (audit created skill), `/skill-ecosystem-audit`
-  (check all skills), `/create-audit` (audit-specific scaffolding)
-- **References:** [SKILL_STANDARDS.md](../_shared/SKILL_STANDARDS.md),
+  (check all skills), `/create-audit` (audit-specific scaffolding),
+  `/convergence-loop` (Phase 4.3: wire into created skill if T25 applies; Phase
+  5: verify created skill's codebase claims)
+- **References:** [SKILL_STANDARDS.md](../_shared/SKILL_STANDARDS.md) (Phase 5
+  content checklist),
   [SKILL_AGENT_POLICY.md](../../../docs/agent_docs/SKILL_AGENT_POLICY.md)
 - **Handoff:** State file documents intent + discovery decisions for skill-audit
 
@@ -312,10 +307,12 @@ behavioral quality that structural validation cannot catch.
 
 ## Version History
 
-| Version | Date       | Description                                                        |
-| ------- | ---------- | ------------------------------------------------------------------ |
-| 3.0     | 2026-03-08 | Full rewrite from 52-decision audit (48/100 -> target 82/100)      |
-| 2.2     | 2026-03-07 | SC-1..5: operational deps, compaction MUST, scope, recommendations |
-| 2.1     | 2026-03-06 | Add interactive design, verification phase, UX                     |
-| 2.0     | 2026-02-28 | Add attention management, behavioral quality, guards               |
-| 1.0     | 2026-02-25 | Initial implementation (Anthropic skill, Apache 2.0)               |
+| Version | Date       | Description                                                                          |
+| ------- | ---------- | ------------------------------------------------------------------------------------ |
+| 3.2     | 2026-03-15 | Skill-audit: CL verify MUST for Complex, reorder Phase 5, anti-patterns to REFERENCE |
+| 3.1     | 2026-03-15 | Convergence-loop integration: Phase 4.3 build + Phase 5 verify                       |
+| 3.0     | 2026-03-08 | Full rewrite from 52-decision audit (48/100 -> target 82/100)                        |
+| 2.2     | 2026-03-07 | SC-1..5: operational deps, compaction MUST, scope, recommendations                   |
+| 2.1     | 2026-03-06 | Add interactive design, verification phase, UX                                       |
+| 2.0     | 2026-02-28 | Add attention management, behavioral quality, guards                                 |
+| 1.0     | 2026-02-25 | Initial implementation (Anthropic skill, Apache 2.0)                                 |

@@ -247,9 +247,9 @@ Other skills reference this skill's workflow without invoking
 convergence status, and confidence score. The calling skill resumes its workflow
 with the corrected claims.
 
-**Note:** Integration with calling skills is deferred to Phase 3 ecosystem
-standardization (per user decision, Session #221). Until then, this section
-serves as the contract specification that calling skills will implement.
+**Note:** Integration with `/deep-plan` and `/skill-creator` complete (Session
+#222). Remaining callers (audit skills, `/systematic-debugging`) will integrate
+during Phase 3 ecosystem standardization.
 
 Skills that SHOULD integrate (per T25 — discovery phases):
 

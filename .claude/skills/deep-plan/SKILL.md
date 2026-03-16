@@ -3,8 +3,9 @@ name: deep-plan
 description: >-
   Structured discovery-first planning for complex tasks. Ask exhaustive
   categorized questions, build a standalone decision record, then produce a
-  step-by-step implementation plan with audit checkpoints for user approval
-  before any code is written.
+  step-by-step implementation plan with audit checkpoints and convergence-loop
+  verification of diagnosis and plan claims for user approval before any code is
+  written.
 ---
 
 <!-- prettier-ignore-start -->
@@ -117,7 +118,14 @@ reference actual patterns, not generic placeholders.
    references — plans MUST NOT assume future/unreleased software exists. Use
    "preparation" language ("prepare for eventual vN") not imperative ("migrate
    to vN").
-7. Present DIAGNOSIS.md to user for review (MUST)
+7. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for S/M) —
+   if DIAGNOSIS.md makes 5+ claims about codebase state (claims = testable
+   assertions about codebase state, per `/convergence-loop` SKILL.md), verify
+   via convergence-loop quick preset. Wrong diagnosis cascades through the
+   entire plan. **If claims are wrong:** correct DIAGNOSIS.md and re-verify
+   before presenting. See `/convergence-loop` SKILL.md "Programmatic Mode" for
+   the integration contract.
+8. Present DIAGNOSIS.md to user for review (MUST)
 
 **If misaligned with ROADMAP:** Present the conflict to the user. Options: (1)
 proceed with acknowledgment, (2) reframe to align, (3) abort. Do NOT silently
@@ -234,7 +242,12 @@ Before presenting the plan, verify decisions→plan fidelity:
 1. **Decision coverage** (MUST) — every DECISIONS.md entry maps to a plan step
 2. **Quality checklist** (MUST) — see checklist in REFERENCE.md
 3. **Artifact consistency** (MUST) — DIAGNOSIS.md findings addressed by plan
-4. **Signal** (MUST) — "Self-audit: N/N decisions covered, checklist PASS"
+4. **Convergence-loop verify plan** (MUST for L/XL plans, SHOULD for S/M) —
+   verify plan's codebase assumptions (file paths, existing patterns,
+   integration points) via convergence-loop quick preset. Plans built on wrong
+   assumptions waste implementation effort. **If assumptions are wrong:** fix
+   plan steps before presenting for approval.
+5. **Signal** (MUST) — "Self-audit: N/N decisions covered, checklist PASS"
 
 ### Finding Presentation (MUST)
 
@@ -310,6 +323,19 @@ Capture in state file `process_feedback` field.
 
 ---
 
+## Integration
+
+- **Neighbors:** `/convergence-loop` (Phase 0 diagnosis verify + Phase 3.5 plan
+  verify), `EnterPlanMode` (lighter alternative for 3-4 decisions),
+  `/gsd:new-project` (heavier alternative for multi-phase roadmaps),
+  `/skill-creator` (consumes deep-plan patterns for skill-type plans)
+- **References:** [REFERENCE.md](./REFERENCE.md) (question categories,
+  templates, routing table, state schema)
+- **Handoff:** DECISIONS.md + PLAN.md consumed by execution approach
+  (subagent/GSD/manual)
+
+---
+
 ## Guard Rails
 
 - **Contradictions:** If user answers conflict with earlier decisions, flag
@@ -326,14 +352,16 @@ Capture in state file `process_feedback` field.
 
 ## Version History
 
-| Version | Date       | Description                                            |
-| ------- | ---------- | ------------------------------------------------------ |
-| 3.1     | 2026-03-12 | Add code-state verification requirement to Phase 0     |
-|         |            | (UNVERIFIED flag, version validation). PR #428 retro.  |
-| 3.0     | 2026-03-07 | Skill audit (29 decisions): self-audit phase, warm-up  |
-|         |            | routing guide, input/output spec, MUST/SHOULD/MAY,     |
-|         |            | invocation tracking, phase markers, mid-discovery      |
-| 2.0     | 2026-03-01 | Rewrite from 64-decision audit: Phase 0, no caps,      |
-|         |            | standalone DECISIONS.md, audit checkpoints, handoff    |
-|         |            | routing, compaction resilience, guard rails, REFERENCE |
-| 1.0     | 2026-02-25 | Initial implementation                                 |
+| Version | Date       | Description                                                                              |
+| ------- | ---------- | ---------------------------------------------------------------------------------------- |
+| 3.3     | 2026-03-15 | Skill-audit: CL MUST for L/XL, verify-before-present, Integration section, failure paths |
+| 3.2     | 2026-03-15 | Convergence-loop integration: Phase 0 diagnosis + 3.5 self-audit                         |
+| 3.1     | 2026-03-12 | Add code-state verification requirement to Phase 0                                       |
+|         |            | (UNVERIFIED flag, version validation). PR #428 retro.                                    |
+| 3.0     | 2026-03-07 | Skill audit (29 decisions): self-audit phase, warm-up                                    |
+|         |            | routing guide, input/output spec, MUST/SHOULD/MAY,                                       |
+|         |            | invocation tracking, phase markers, mid-discovery                                        |
+| 2.0     | 2026-03-01 | Rewrite from 64-decision audit: Phase 0, no caps,                                        |
+|         |            | standalone DECISIONS.md, audit checkpoints, handoff                                      |
+|         |            | routing, compaction resilience, guard rails, REFERENCE                                   |
+| 1.0     | 2026-02-25 | Initial implementation                                                                   |

@@ -77,7 +77,10 @@ Workflow structure, phase design, output artifacts.
   offer continue/restart)." (S27)
 - "Does this skill's workflow involve claims verification, multi-agent
   discovery, or iterative refinement? If yes, design convergence-loop
-  integration per T25."
+  integration per T25." **If yes:** add a convergence-loop verify step to the
+  skill's discovery or validation phase. Example: `/deep-plan` uses it in Phase
+  0 to verify DIAGNOSIS.md claims; `/skill-creator` uses it in Phase 5 to verify
+  created skill's codebase claims.
 
 ### Category 3: Attention & Prompt Engineering
 
@@ -251,3 +254,32 @@ Path: `.claude/state/skill-creator.state.json`
   "updated": "ISO timestamp"
 }
 ```
+
+---
+
+## Anti-Patterns (MUST avoid)
+
+Common mistakes when creating skills. Check this list during Phase 4 (Build).
+
+1. Monolithic SKILL.md over 300 lines without companions
+2. Generic `[TODO]` or `[placeholder]` text — use guided prompts
+3. Duplicating CLAUDE.md conventions into skill files
+4. All instructions at same volume (no MUST/SHOULD/MAY distinction)
+5. No skip conditions on optional steps
+6. Using AskUserQuestion for interactive decisions — use conversational Q&A
+   (deep-plan style: present in batches, collect decisions via conversation)
+7. Audit-type skills without separate self-audit AND verification phases —
+   self-audit checks process quality, verification re-runs to confirm fixes
+8. Presenting suggestions without multi-option format when genuine alternatives
+   exist — each option needs description, pros/cons, and a recommendation
+9. Script-dependent skills without failure handling — if a skill runs external
+   scripts, MUST handle non-zero exit, malformed output, and timeouts
+10. Interactive skills with large item sets without batch management — if a
+    skill could present >20 interactive items, MUST include delegation protocol
+    ("you decide"), severity-based filtering ("skip remaining INFO"), and batch
+    actions
+11. Skills without invocation tracking — all skills SHOULD log invocations via
+    `write-invocation.js` in their closure phase for usage analysis
+12. Interactive skills without correction protocol — if user corrects
+    presentation format, MUST re-present in exact original format, never
+    summarize or truncate

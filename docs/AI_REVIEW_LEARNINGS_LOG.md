@@ -874,7 +874,7 @@ deduplicated, non-overlapping ranges):
 
 | Fixed | Rejected | Deferred |
 | ----- | -------- | -------- |
-| 127   | 15       | 1        |
+| 0     | 0        | 0        |
 
 ---
 
@@ -884,62 +884,9 @@ deduplicated, non-overlapping ranges):
 
 | Fixed | Rejected | Deferred |
 | ----- | -------- | -------- |
-| 10    | 0        | 0        |
+| 0     | 0        | 0        |
 
 ## Active Reviews
-
-### Review 496: Qodo R2 — log injection, section-scoped parsing, forward-findings dedup (2026-03-15)
-
-**Date:** 2026-03-15 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 8     | 0        | 3        |
-
-**Severity Breakdown (all items):**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 4     | 4     | 1       |
-
-**Learnings:**
-
-- sanitizeInput always has fallback in session-start.js — remove dead ternary branches to eliminate false-positive injection paths
-- Markdown parser extracting patterns/learnings must be scoped to section boundaries, not full-file filter
-- forward-findings writer had key mismatch (description vs pattern) AND lacked within-batch dedup — both caused duplicates
-- maxBuffer needed for piped subprocess calls to prevent ERR_CHILD_PROCESS_STDIO_MAXBUFFER
-- Error messages should use relative filenames, not full absolute paths, to avoid internal path exposure
-
----
-
-### Review 495: Qodo R1 — Prettier CI, stderr routing, data quality fixes (2026-03-15)
-
-**Date:** 2026-03-15 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 8     | 1        | 0        |
-
-**Severity Breakdown (all items):**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 2     | 5     | 1       |
-
-**Learnings:**
-
-- Prettier formatting must be checked before CI push — 43 files failed
-  format:check
-- console.log for errors/warnings masks failures in CI stderr detection — use
-  console.warn/console.error
-- JSONL data entries need complete recommendation fields and valid file paths,
-  not sentinels like `:multiple`
-- Retro render script produces 0/0/0 when retro JSONL lacks explicit
-  fixed/rejected/deferred fields
-- Duplicate JSONL entries (rev-485 appended twice) indicate append-without-dedup
-  gap in write-review-record
-
----
 
 ### Review 473: Qodo R6 — diminishing returns, JSONL data normalization (2026-03-08)
 
@@ -949,7 +896,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 10    | 2     | 0        | 8        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -973,7 +920,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 10    | 5     | 0        | 5        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1002,7 +949,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 7     | 8     | 0        | 3        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1056,7 +1003,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 9     | 9     | 0        | 4        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1080,7 +1027,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 197   | 197   | 3        | 6        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1106,7 +1053,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 21    | 18    | 0        | 2        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1136,7 +1083,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 25    | 20    | 0        | 5        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1166,7 +1113,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 45    | 45    | 0        | 0        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1199,7 +1146,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 23    | 20    | 0        | 3        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1235,7 +1182,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 54    | 54    | 0        | 0        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1265,7 +1212,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 16    | 16    | 0        | 10       |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1296,7 +1243,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 15    | 12    | 1        | 3        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1322,7 +1269,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 0     | 0     | 0        | 0        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1345,7 +1292,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 0     | 0     | 0        | 0        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1367,7 +1314,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 37    | 37    | 0        | 15       |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1395,7 +1342,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 11    | 11    | 0        | 7        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1420,7 +1367,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 14    | 14    | 0        | 6        |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -1445,7 +1392,7 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 17    | 6     | 0        | 11       |
 
-**Severity Breakdown (all items):**
+**Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
@@ -2173,5 +2120,44 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
 - Test helpers must respect the same security boundaries as production code.
   When scripts enforce repo-root containment, test fixtures must live inside the
   repo.
+
+---
+
+### Review #485: PR #436 R1 — Qodo + Gemini + CI (2026-03-15)
+
+**PR:** #436 | **Round:** R1 | **Source:** Mixed (Qodo, Gemini, CI)
+
+**Items:** 7 total (2 fixed, 0 deferred, 5 rejected)
+
+**Severity Breakdown:** 0 Critical, 1 Major, 4 Minor, 2 Trivial
+
+**Fixes Applied:**
+
+- **REFERENCE.md try/catch wrapping** (Gemini, MAJOR): Wrapped file read in
+  debt-runner REFERENCE.md example script with try/catch per CODE_PATTERNS.md
+  file-read-in-try/catch rule. Even documentation examples should demonstrate
+  correct patterns.
+- **Prettier formatting** (CI, MAJOR): Ran Prettier on 15 files that failed CI
+  formatting check. Includes auto-generated TDMS view files and skill
+  documentation.
+
+**Rejections:**
+
+- **3 Qodo advisory focus areas** (Data Consistency, Lifecycle Integrity,
+  Snapshot Alignment): Informational "verify this" advisories with no specific
+  code change requested. Data files are auto-generated by pipeline scripts.
+- **Missing actor context in JSONL** (Qodo compliance): Health snapshots are
+  automated system measurements, not user-action audit trails. Actor context
+  is not applicable to automated health checks.
+- **Table formatting suggestion** (Qodo): Subsumed by Prettier fix — Prettier
+  auto-pads markdown table columns, making the manual formatting suggestion
+  redundant.
+
+**Key Learnings:**
+
+- Auto-generated markdown files (TDMS views) should be included in Prettier
+  formatting runs before pushing to avoid CI failures on generated content.
+- Documentation code examples should follow the same patterns as production
+  code (file-read-in-try/catch) to avoid review noise.
 
 ---

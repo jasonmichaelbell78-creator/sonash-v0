@@ -304,6 +304,40 @@ At the end of each ecosystem step (before exit criteria sign-off):
 This is separate from checkpoint validation. Checkpoints validate strategic
 progress; regression checks validate that nothing broke.
 
+### 8b. Convergence-Loop Phase Self-Audit (T20, T25)
+
+At the end of each phase (after regression check, before proceeding to next
+phase), run a `/convergence-loop` self-audit to verify that all "Done when"
+criteria were actually met — not just claimed met. This catches gaps like
+integration targets listed but never wired in, or exit criteria narrower than
+the step's stated scope.
+
+**Protocol:**
+
+1. **Collect claims** — gather all "Done when" criteria from the phase's steps,
+   plus any integration targets listed in step implementation notes
+2. **Run convergence-loop** — quick preset for phases with <10 claims, standard
+   preset for phases with 10+ claims
+3. **Present results** — user reviews convergence report before phase is
+   declared complete
+4. **Remediate** — any failed claims must be fixed or explicitly deferred with
+   justification before the next phase begins
+
+**Phase-specific guidance:**
+
+| Phase   | Claims Source                      | Preset   | Mid-Phase Audit? |
+| ------- | ---------------------------------- | -------- | ---------------- |
+| Phase 0 | 7 steps, ~7 "Done when" criteria   | quick    | No               |
+| Phase 1 | 6 steps, ~6 criteria + schemas     | standard | No               |
+| Phase 2 | 2 child plans, meta-pipeline gates | standard | After Step 2.1   |
+| Phase 3 | 18 ecosystems, 3 checkpoints       | thorough | At 3.7 and 3.12  |
+| Phase 4 | 3 steps, test coverage metrics     | standard | No               |
+| Phase 5 | Final audit — IS the convergence   | N/A      | N/A              |
+
+Phase 3 is the largest and gets mid-phase convergence audits at both existing
+checkpoints (3.7 and 3.12), in addition to the end-of-phase audit. Phase 5 is
+itself a convergence audit (Step 5.1) so no separate self-audit needed.
+
 ### 9. Born-Compliant Timing (D26)
 
 Born-compliant gates (new artifacts must meet the ecosystem's standard) activate
