@@ -50,8 +50,8 @@ Full procedure:
 ## Anti-Pattern Awareness
 
 For the full anti-pattern list, see **CLAUDE.md Section 5** and
-[CODE_PATTERNS.md](../../docs/agent_docs/CODE_PATTERNS.md) (lines 1-60 for quick
-reference).
+[CODE_PATTERNS.md](../../../docs/agent_docs/CODE_PATTERNS.md) (lines 1-60 for
+quick reference).
 
 Key patterns to keep in mind:
 
@@ -95,5 +95,5 @@ Key dependencies to verify (automated by `npm run crossdoc:check`):
 - `MASTER_DEBT.jsonl` <-> ROADMAP.md (tech debt section current)
 - Audit findings <-> `MASTER_DEBT.jsonl` (new findings consolidated)
 
-See [DOCUMENT_DEPENDENCIES.md](../../docs/DOCUMENT_DEPENDENCIES.md) for full
+See [DOCUMENT_DEPENDENCIES.md](../../../docs/DOCUMENT_DEPENDENCIES.md) for full
 matrix.

@@ -97,10 +97,11 @@ SESSION_CONTEXT.md if prior session missed `/session-end`.
 
 ### 2.1 Load Session Context (MUST)
 
-- Read [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md) — status, blockers, goals
+- Read [SESSION_CONTEXT.md](../../../SESSION_CONTEXT.md) — status, blockers,
+  goals
 - Increment session counter (MUST — verify not already incremented first)
 - Output: "Session #N started on [branch]"
-- Read [ROADMAP.md](../../ROADMAP.md) lines 1-100 (Active Sprint only)
+- Read [ROADMAP.md](../../../ROADMAP.md) lines 1-100 (Active Sprint only)
 
 ### 2.2 Branch Validation (MUST)
 
@@ -203,7 +204,7 @@ for individual decision. **No warnings:** Skip silently.
 
 ### 4.3 Technical Debt Snapshot (SHOULD)
 
-Read [Technical Debt INDEX](../../docs/technical-debt/INDEX.md). Note S0/S1
+Read [Technical Debt INDEX](../../../docs/technical-debt/INDEX.md). Note S0/S1
 counts for the summary.
 
 ---

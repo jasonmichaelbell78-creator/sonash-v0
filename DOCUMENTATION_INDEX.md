@@ -110,7 +110,7 @@ _Essential project-level documentation_
 | [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓2 ↑9      | 2026-03-14    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-03-16    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑17    | 2026-03-15    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓19 ↑17    | 2026-03-15    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-03-12    |
 
 ### Core Documentation (Tier 2)
@@ -157,7 +157,7 @@ _AI agent reference docs_
 | Document                                                                                     | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)                      | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-02-23    |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓6 ↑2      | 2026-03-14    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓7 ↑2      | 2026-03-14    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md)          | Detailed guidance for preventing loss of important decisions... | ↓2 ↑0      | 2026-02-23    |
 | [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)                | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-28    |
 | [Positive Pattern Templates](docs/agent_docs/POSITIVE_PATTERNS.md)                           | The RIGHT way to do things. Reference this BEFORE writing co... | ↓0 ↑0      | 2026-03-14    |
@@ -353,8 +353,8 @@ _Claude Code skills_
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-03-10    |
-| [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T...   | ↓1 ↑0      | 2026-03-16    |
-| [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑1      | 2026-03-16    |
+| [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T...   | ↓1 ↑2      | 2026-03-16    |
+| [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑4      | 2026-03-16    |
 | [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-03-10    |
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-03-14    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
@@ -429,7 +429,7 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-23    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓4 ↑4      | 2026-03-15    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-16    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-12    |
 | [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-15    |
 
@@ -1001,7 +1001,7 @@ _Reference_
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-23    |
 | [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-16    |
-| [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-03-12    |
+| [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓3 ↑1      | 2026-03-12    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-23    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-07    |
 | [PR Workflow Checklist - MANDATORY FOR ALL PHASES](docs/PR_WORKFLOW_CHECKLIST.md) | -                                                                 | ↓4 ↑3      | 2026-02-23    |
@@ -1038,7 +1038,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-23    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-03-16    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-03-16    |
 
 ### scripts (Tier 4)
 
@@ -1062,11 +1062,11 @@ _Auto-generated debt dashboards_
 
 | Document                                                                     | Description                    | References | Last Modified |
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-15    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-15    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-15    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-16    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-16    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-16    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-15    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-16    |
 
 ---
 
@@ -1078,7 +1078,7 @@ Documents that are linked to most frequently:
 
 | Document                                                                                                | Inbound Links | Referenced By                                       |
 | ------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------- |
-| [SoNash Product Roadmap](ROADMAP.md)                                                                    | 18            | AI_WORKFLOW, ARCHITECTURE, CLAUDE +15 more          |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                    | 19            | SKILL, AI_WORKFLOW, ARCHITECTURE +16 more           |
 | [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                      | 13            | AI_WORKFLOW, README, README +10 more                |
 | [Multi-AI Audit Shared Template Base](docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md)           | 13            | AUDIT_STANDARDS, README, README +10 more            |
 | [Security &amp; Privacy Guide](docs/SECURITY.md)                                                        | 12            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +9 more      |
@@ -1088,15 +1088,15 @@ Documents that are linked to most frequently:
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                          | 10            | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +7 more |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                  | 8             | AI_WORKFLOW, README, SESSION_CONTEXT +5 more        |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                  | 8             | SKILL, SKILL, SKILL +5 more                         |
+| [Session Context](SESSION_CONTEXT.md)                                                                   | 7             | SKILL, AI_WORKFLOW, CLAUDE +4 more                  |
 | [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                       | 7             | SKILL, AI_WORKFLOW, DOCUMENT_DEPENDENCIES +4 more   |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                  | 7             | ARCHITECTURE, DEVELOPMENT, README +4 more           |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                      | 7             | REFERENCE, CLAUDE, README +4 more                   |
 | [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)       | 7             | README, COORDINATOR, README +4 more                 |
 | [\[Project Name\] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md) | 7             | README, COORDINATOR, README +4 more                 |
 | [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)      | 7             | README, COORDINATOR, README +4 more                 |
 | [\[Project Name\] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)       | 7             | FIREBASE_CHANGE_POLICY, README, COORDINATOR +4 more |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                        | 7             | SKILL, SKILL, DOCUMENTATION_STANDARDS +4 more       |
-| [Session Context](SESSION_CONTEXT.md)                                                                   | 6             | AI_WORKFLOW, CLAUDE, ROADMAP +3 more                |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                      | 6             | CLAUDE, README, AI_REVIEW_LEARNINGS_LOG +3 more     |
 | [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                            | 5             | REFERENCE, SKILL, SLASH_COMMANDS_REFERENCE +2 more  |
 
 ### Most Linking Documents (Outbound Links)
