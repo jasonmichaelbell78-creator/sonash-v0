@@ -1,0 +1,920 @@
+{
+  "schema_version": 1,
+  "description": "Hook check contract registry — canonical declaration of all pre-commit and pre-push checks",
+  "generated": "2026-03-16",
+  "checks": [
+    {
+      "id": "secrets-scan",
+      "name": "Secrets Scan",
+      "description": "Scans staged files for leaked secrets using gitleaks",
+      "hook": "pre-commit",
+      "wave": 0,
+      "command": "gitleaks protect --staged -c .gitleaks.toml --no-banner",
+      "flags": ["--staged", "--no-banner"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "gitleaks",
+      "exit_codes": {
+        "0": "pass",
+        "1": "secrets detected — violation",
+        "other": "gitleaks error — blocks commit"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 10000,
+      "dependencies": {
+        "binary": "gitleaks",
+        "fallback_on_missing": "warn"
+      },
+      "writes_to": [],
+      "reads_from": [".gitleaks.toml"],
+      "warning_type": null,
+      "actions": {
+        "investigate": "gitleaks detect --source . --verbose",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=secrets-scan"
+      },
+      "category": "security",
+      "owner": "pre-commit",
+      "test_command": "gitleaks detect --source . --no-banner",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "eslint",
+      "name": "ESLint",
+      "description": "Runs ESLint linting on the entire project in parallel with tests",
+      "hook": "pre-commit",
+      "wave": 1,
+      "command": "npm run lint",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass",
+        "1": "lint errors — violation"
+      },
+      "condition": null,
+      "parallel_group": "lint-test",
+      "timeout_ms": 30000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [],
+      "warning_type": null,
+      "actions": {
+        "investigate": "npm run lint",
+        "fix": "npm run lint -- --fix",
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=eslint"
+      },
+      "category": "quality",
+      "owner": "pre-commit",
+      "test_command": "npm run lint",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "tests",
+      "name": "Tests",
+      "description": "Runs npm test in parallel with ESLint; skips for doc-only changes",
+      "hook": "pre-commit",
+      "wave": 1,
+      "command": "npm test",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "tests",
+      "exit_codes": {
+        "0": "pass",
+        "1": "test failure — violation"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "^(package\\.json|package-lock\\.json|pnpm-lock\\.yaml|yarn\\.lock|tsconfig.*\\.json|next\\.config\\.(js|mjs|ts)|\\.husky/|\\.github/)",
+        "diff_filter": "ACM",
+        "skip_when": "doc-only changes (docs/, .claude/, md/mdx/txt/png/jpg/jpeg/gif/svg/jsonl)"
+      },
+      "parallel_group": "lint-test",
+      "timeout_ms": 60000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [],
+      "warning_type": null,
+      "actions": {
+        "investigate": "npm test -- --verbose",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=tests"
+      },
+      "category": "testing",
+      "owner": "pre-commit",
+      "test_command": "npm test",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "lint-staged",
+      "name": "Lint-Staged (Auto-format)",
+      "description": "Auto-formats staged files with Prettier via lint-staged",
+      "hook": "pre-commit",
+      "wave": 2,
+      "command": "npx --no-install lint-staged --no-stash",
+      "flags": ["--no-install", "--no-stash"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass — files formatted",
+        "1": "lint-staged failure — violation"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 30000,
+      "dependencies": {
+        "binary": "lint-staged",
+        "fallback_on_missing": "warn"
+      },
+      "writes_to": [],
+      "reads_from": [],
+      "warning_type": null,
+      "actions": {
+        "investigate": "npx --no-install lint-staged --no-stash --debug",
+        "fix": "npx prettier --write .",
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=lint-staged"
+      },
+      "category": "quality",
+      "owner": "pre-commit",
+      "test_command": null,
+      "sws_tenets": ["T8"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "pattern-compliance",
+      "name": "Pattern Compliance",
+      "description": "Checks staged files for critical pattern violations (security, anti-patterns)",
+      "hook": "pre-commit",
+      "wave": 3,
+      "command": "node scripts/check-pattern-compliance.js --staged",
+      "flags": ["--staged"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "patterns",
+      "exit_codes": {
+        "0": "pass (may have warnings)",
+        "1": "critical violations — violation",
+        "2": "check errored — non-blocking"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 10000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [".claude/state/warned-files.json"],
+      "reads_from": ["scripts/config/ai-patterns.json", ".claude/state/warned-files.json"],
+      "warning_type": null,
+      "actions": {
+        "investigate": "node scripts/check-pattern-compliance.js --all --verbose",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=pattern-compliance"
+      },
+      "category": "compliance",
+      "owner": "pre-commit",
+      "test_command": "npm run patterns:check",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "audit-s0s1",
+      "name": "Audit S0/S1 Validation",
+      "description": "Validates that S0/S1 audit findings have proper verification_steps",
+      "hook": "pre-commit",
+      "wave": 4,
+      "command": "node scripts/validate-audit.js <file> --strict-s0s1",
+      "flags": ["--strict-s0s1"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "audit",
+      "exit_codes": {
+        "0": "pass",
+        "1": "S0/S1 validation failure — violation"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "docs/audits/.*\\.jsonl$",
+        "diff_filter": "ACM"
+      },
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["scripts/config/audit-schema.json"],
+      "warning_type": null,
+      "actions": {
+        "investigate": "node scripts/validate-audit.js <file> --strict-s0s1",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=audit-s0s1"
+      },
+      "category": "compliance",
+      "owner": "pre-commit",
+      "test_command": null,
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "skill-validation",
+      "name": "Skill Configuration Validation",
+      "description": "Validates skill/command .md files when skill files are staged",
+      "hook": "pre-commit",
+      "wave": 6,
+      "command": "npm run skills:validate",
+      "flags": [],
+      "blocking": "warn",
+      "escalation_blocking": true,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass (may have warnings)"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "\\.(claude)/(skills|commands)/.*\\.md$",
+        "diff_filter": "ACM"
+      },
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["scripts/config/skill-registry.json", "scripts/config/skill-config.json"],
+      "warning_type": "skill",
+      "actions": {
+        "investigate": "npm run skills:validate",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=skill-validation"
+      },
+      "category": "quality",
+      "owner": "pre-commit",
+      "test_command": "npm run skills:validate",
+      "sws_tenets": ["T8"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "cross-doc-deps",
+      "name": "Cross-Document Dependencies",
+      "description": "Checks that cross-document references (links, includes) resolve correctly",
+      "hook": "pre-commit",
+      "wave": 7,
+      "command": "node scripts/check-cross-doc-deps.js --trivial",
+      "flags": ["--trivial"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "cross-doc",
+      "exit_codes": {
+        "0": "pass",
+        "1": "broken dependencies — violation"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["scripts/config/doc-dependencies.json"],
+      "warning_type": null,
+      "actions": {
+        "investigate": "npm run crossdoc:check",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=cross-doc-deps"
+      },
+      "category": "docs",
+      "owner": "pre-commit",
+      "test_command": "npm run crossdoc:check",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "doc-index",
+      "name": "Documentation Index Auto-Update",
+      "description": "Auto-regenerates and stages DOCUMENTATION_INDEX.md when .md files change",
+      "hook": "pre-commit",
+      "wave": 8,
+      "command": "npm run docs:index",
+      "flags": [],
+      "blocking": "auto-fix",
+      "escalation_blocking": false,
+      "skip_flag": "doc-index",
+      "exit_codes": {
+        "0": "pass — index regenerated and staged",
+        "1": "generation failed — non-blocking, original preserved"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "\\.md$",
+        "diff_filter": "ADM"
+      },
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": ["DOCUMENTATION_INDEX.md"],
+      "reads_from": [],
+      "warning_type": null,
+      "actions": {
+        "investigate": "npm run docs:index",
+        "fix": "npm run docs:index",
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=doc-index"
+      },
+      "category": "docs",
+      "owner": "pre-commit",
+      "test_command": "npm run docs:index",
+      "sws_tenets": ["T8"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "doc-headers",
+      "name": "Document Header Validation",
+      "description": "Validates that newly added .md files have required headers",
+      "hook": "pre-commit",
+      "wave": 9,
+      "command": "node scripts/check-doc-headers.js",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "doc-header",
+      "exit_codes": {
+        "0": "pass",
+        "1": "missing headers — violation"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "\\.md$",
+        "diff_filter": "A"
+      },
+      "parallel_group": null,
+      "timeout_ms": 10000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["scripts/config/doc-header-config.json"],
+      "warning_type": null,
+      "actions": {
+        "investigate": "node scripts/check-doc-headers.js",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=doc-headers"
+      },
+      "category": "docs",
+      "owner": "pre-commit",
+      "test_command": "node scripts/check-doc-headers.js",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "agent-compliance",
+      "name": "Agent Compliance",
+      "description": "Checks if code was changed without agent review (non-blocking unless STRICT_AGENT_CHECK)",
+      "hook": "pre-commit",
+      "wave": 10,
+      "command": "node scripts/check-agent-compliance.js",
+      "flags": [],
+      "blocking": "warn",
+      "escalation_blocking": true,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass (may have warnings)"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 10000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [".claude/state/agent-invocations.jsonl"],
+      "warning_type": "agent",
+      "actions": {
+        "investigate": "node scripts/check-agent-compliance.js --strict",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=agent-compliance"
+      },
+      "category": "compliance",
+      "owner": "pre-commit",
+      "test_command": "node scripts/check-agent-compliance.js",
+      "sws_tenets": ["T8"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "debt-schema",
+      "name": "Technical Debt Schema Validation",
+      "description": "Validates MASTER_DEBT.jsonl schema for changed lines when debt file is staged",
+      "hook": "pre-commit",
+      "wave": 11,
+      "command": "node scripts/debt/validate-schema.js --staged-only",
+      "flags": ["--staged-only"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "debt",
+      "exit_codes": {
+        "0": "pass",
+        "1": "schema violations — violation"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "docs/technical-debt/MASTER_DEBT\\.jsonl$",
+        "diff_filter": "ACM"
+      },
+      "parallel_group": null,
+      "timeout_ms": 10000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["scripts/config/audit-schema.json", "docs/technical-debt/MASTER_DEBT.jsonl"],
+      "warning_type": null,
+      "actions": {
+        "investigate": "node scripts/debt/validate-schema.js --staged-only",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=debt-schema"
+      },
+      "category": "compliance",
+      "owner": "pre-commit",
+      "test_command": "node scripts/debt/validate-schema.js",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "jsonl-md-sync",
+      "name": "JSONL-MD Sync Validation",
+      "description": "Warns when planning JSONL changed but no MD files are staged (missing regeneration)",
+      "hook": "pre-commit",
+      "wave": 12,
+      "command": "inline bash check (no external script)",
+      "flags": [],
+      "blocking": "warn",
+      "escalation_blocking": true,
+      "skip_flag": "jsonl-sync",
+      "exit_codes": {
+        "0": "pass or warning issued"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "\\.planning/.*\\.jsonl$",
+        "diff_filter": "ACM"
+      },
+      "parallel_group": null,
+      "timeout_ms": 5000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [],
+      "warning_type": "jsonl-sync",
+      "actions": {
+        "investigate": "node scripts/planning/generate-discovery-record.js && node scripts/planning/generate-decisions.js",
+        "fix": "node scripts/planning/generate-discovery-record.js && node scripts/planning/generate-decisions.js",
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=jsonl-md-sync"
+      },
+      "category": "docs",
+      "owner": "pre-commit",
+      "test_command": null,
+      "sws_tenets": ["T8"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "circular-deps",
+      "name": "Circular Dependency Check",
+      "description": "Detects circular dependencies in the codebase using madge",
+      "hook": "pre-push",
+      "wave": 1,
+      "command": "npm run deps:circular",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass",
+        "1": "circular dependencies detected — violation"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 30000,
+      "dependencies": {
+        "binary": "madge",
+        "fallback_on_missing": "block"
+      },
+      "writes_to": [],
+      "reads_from": [],
+      "warning_type": null,
+      "actions": {
+        "investigate": "npm run deps:circular",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=circular-deps"
+      },
+      "category": "quality",
+      "owner": "pre-push",
+      "test_command": "npm run deps:circular",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "pattern-compliance-push",
+      "name": "Pattern Compliance (Push Diff)",
+      "description": "Checks pattern compliance on files in the push diff only (catches review fix commits)",
+      "hook": "pre-push",
+      "wave": 2,
+      "command": "node scripts/check-pattern-compliance.js",
+      "flags": [],
+      "blocking": "warn",
+      "escalation_blocking": true,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass",
+        "1": "pattern issues — warning"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "\\.(js|mjs)$",
+        "diff_filter": "ACMR"
+      },
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["scripts/config/ai-patterns.json"],
+      "warning_type": "patterns",
+      "actions": {
+        "investigate": "npm run patterns:check",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=pattern-compliance-push"
+      },
+      "category": "compliance",
+      "owner": "pre-push",
+      "test_command": "npm run patterns:check",
+      "sws_tenets": ["T8"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "code-reviewer-gate",
+      "name": "Code-Reviewer Gate",
+      "description": "Blocks push if scripts/.claude/hooks/.husky/ changed without code-reviewer invocation in last 4 hours",
+      "hook": "pre-push",
+      "wave": 3,
+      "command": "inline node check (reads agent-invocations.jsonl)",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "SKIP_REVIEWER",
+      "exit_codes": {
+        "0": "pass — reviewer invoked or no script changes",
+        "1": "reviewer not invoked — violation"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "^(scripts/|\\.claude/hooks/|\\.husky/)",
+        "diff_filter": "ACMR"
+      },
+      "parallel_group": null,
+      "timeout_ms": 10000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [".claude/state/agent-invocations.jsonl"],
+      "warning_type": "reviewer",
+      "actions": {
+        "investigate": "node -e \"const lines = require('fs').readFileSync('.claude/state/agent-invocations.jsonl','utf8').trim().split('\\n'); lines.slice(-5).forEach(l => console.log(l));\"",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=code-reviewer-gate"
+      },
+      "category": "compliance",
+      "owner": "pre-push",
+      "test_command": null,
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "propagation",
+      "name": "Propagation Check",
+      "description": "Detects functions modified in some files but not propagated to duplicate copies",
+      "hook": "pre-push",
+      "wave": 4,
+      "command": "node scripts/check-propagation.js --blocking",
+      "flags": ["--blocking"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "SKIP_PROPAGATION",
+      "exit_codes": {
+        "0": "pass (may have warnings)",
+        "1": "propagation misses — violation"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [],
+      "warning_type": "propagation",
+      "actions": {
+        "investigate": "node scripts/check-propagation.js --blocking --verbose",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=propagation"
+      },
+      "category": "quality",
+      "owner": "pre-push",
+      "test_command": "node scripts/check-propagation.js",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "hook-tests",
+      "name": "Hook Test Suite",
+      "description": "Runs hook health test suite when .claude/hooks/ JS files changed in push diff",
+      "hook": "pre-push",
+      "wave": 5,
+      "command": "npm run hooks:test",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass",
+        "1": "hook tests failed — violation"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "^\\.claude/hooks/.*\\.js$",
+        "diff_filter": "ACMR"
+      },
+      "parallel_group": null,
+      "timeout_ms": 30000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [".claude/hooks/"],
+      "warning_type": "hook-tests",
+      "actions": {
+        "investigate": "npm run hooks:test",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=hook-tests"
+      },
+      "category": "testing",
+      "owner": "pre-push",
+      "test_command": "npm run hooks:test",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "security-check",
+      "name": "Security Pattern Check",
+      "description": "Scans added lines in push diff for security violations (diff-only mode)",
+      "hook": "pre-push",
+      "wave": 6,
+      "command": "node scripts/security-check.js --file <tmpfile> --blocking",
+      "flags": ["--file", "--blocking"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass (may have MEDIUM/LOW warnings)",
+        "1": "CRITICAL/HIGH violations — violation"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "\\.(js|jsx|ts|tsx|mjs)$",
+        "diff_filter": "ACMR"
+      },
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [],
+      "warning_type": "security",
+      "actions": {
+        "investigate": "npm run security:check",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=security-check"
+      },
+      "category": "security",
+      "owner": "pre-push",
+      "test_command": "npm run security:check",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "type-check",
+      "name": "TypeScript Type Check",
+      "description": "Runs tsc --noEmit to verify type safety (parallel with CC checks)",
+      "hook": "pre-push",
+      "wave": 7,
+      "command": "npx tsc --noEmit",
+      "flags": ["--noEmit"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass",
+        "1": "type errors — violation"
+      },
+      "condition": null,
+      "parallel_group": "type-cc-checks",
+      "timeout_ms": 60000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["tsconfig.json"],
+      "warning_type": null,
+      "actions": {
+        "investigate": "npx tsc --noEmit",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=type-check"
+      },
+      "category": "quality",
+      "owner": "pre-push",
+      "test_command": "npx tsc --noEmit",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "cyclomatic-cc",
+      "name": "Cyclomatic Complexity",
+      "description": "Checks cyclomatic complexity (CC <= 15) on JS files in push diff via ESLint complexity rule",
+      "hook": "pre-push",
+      "wave": 7,
+      "command": "npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- <files>",
+      "flags": ["--no-config-lookup", "--rule", "--parser-options"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "SKIP_CC",
+      "exit_codes": {
+        "0": "pass",
+        "1": "complexity violations (CC > 15) — violation"
+      },
+      "condition": {
+        "type": "staged_files_match",
+        "pattern": "\\.(js|mjs)$",
+        "diff_filter": "ACMR"
+      },
+      "parallel_group": "type-cc-checks",
+      "timeout_ms": 30000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [],
+      "warning_type": null,
+      "actions": {
+        "investigate": "npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- <files>",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=cyclomatic-cc"
+      },
+      "category": "quality",
+      "owner": "pre-push",
+      "test_command": null,
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "cognitive-cc",
+      "name": "Cognitive Complexity",
+      "description": "Checks cognitive complexity (CC <= 15) using custom check-cc.js with baseline suppression",
+      "hook": "pre-push",
+      "wave": 7,
+      "command": "node scripts/check-cc.js",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "SKIP_COG_CC",
+      "exit_codes": {
+        "0": "pass",
+        "1": "complexity violations (CC > 15) — violation",
+        "2": "check errored — non-blocking"
+      },
+      "condition": null,
+      "parallel_group": "type-cc-checks",
+      "timeout_ms": 30000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [".claude/state/known-debt-baseline.json", "scripts/check-cc.js"],
+      "warning_type": null,
+      "actions": {
+        "investigate": "node scripts/check-cc.js --verbose",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=cognitive-cc"
+      },
+      "category": "quality",
+      "owner": "pre-push",
+      "test_command": "node scripts/check-cc.js",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "npm-audit",
+      "name": "npm Security Audit",
+      "description": "Runs npm audit for high/critical vulnerabilities (non-blocking warning)",
+      "hook": "pre-push",
+      "wave": 8,
+      "command": "npm audit --audit-level=high",
+      "flags": ["--audit-level=high"],
+      "blocking": "warn",
+      "escalation_blocking": true,
+      "skip_flag": null,
+      "exit_codes": {
+        "0": "pass — no high/critical vulnerabilities",
+        "1": "vulnerabilities found — warning (non-blocking)"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["package-lock.json"],
+      "warning_type": "audit",
+      "actions": {
+        "investigate": "npm audit",
+        "fix": "npm audit fix",
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=npm-audit"
+      },
+      "category": "security",
+      "owner": "pre-push",
+      "test_command": "npm audit --audit-level=high",
+      "sws_tenets": ["T8"],
+      "added": "2026-03-16"
+    },
+    {
+      "id": "triggers",
+      "name": "Event-Based Triggers",
+      "description": "Checks event-based triggers: security_audit, consolidation, skill_validation (blocking for security)",
+      "hook": "pre-push",
+      "wave": 9,
+      "command": "npm run triggers:check",
+      "flags": [],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "SKIP_TRIGGERS",
+      "exit_codes": {
+        "0": "pass (may have warnings)",
+        "1": "blocking trigger(s) activated — violation"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 15000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": ["scripts/config/agent-triggers.json"],
+      "warning_type": "trigger",
+      "actions": {
+        "investigate": "npm run triggers:check",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=triggers"
+      },
+      "category": "compliance",
+      "owner": "pre-push",
+      "test_command": "npm run triggers:check",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-16"
+    }
+  ]
+}
