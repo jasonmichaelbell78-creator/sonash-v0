@@ -296,8 +296,8 @@ behavioral quality that structural validation cannot catch.
 
 - **Neighbors:** `/skill-audit` (audit created skill), `/skill-ecosystem-audit`
   (check all skills), `/create-audit` (audit-specific scaffolding),
-  `/convergence-loop` (Phase 4.3: wire into created skill if T25 applies;
-  Phase 5: verify created skill's codebase claims)
+  `/convergence-loop` (Phase 4.3: wire into created skill if T25 applies; Phase
+  5: verify created skill's codebase claims)
 - **References:** [SKILL_STANDARDS.md](../_shared/SKILL_STANDARDS.md) (Phase 5
   content checklist),
   [SKILL_AGENT_POLICY.md](../../../docs/agent_docs/SKILL_AGENT_POLICY.md)
@@ -307,12 +307,12 @@ behavioral quality that structural validation cannot catch.
 
 ## Version History
 
-| Version | Date       | Description                                                        |
-| ------- | ---------- | ------------------------------------------------------------------ |
+| Version | Date       | Description                                                                          |
+| ------- | ---------- | ------------------------------------------------------------------------------------ |
 | 3.2     | 2026-03-15 | Skill-audit: CL verify MUST for Complex, reorder Phase 5, anti-patterns to REFERENCE |
-| 3.1     | 2026-03-15 | Convergence-loop integration: Phase 4.3 build + Phase 5 verify     |
-| 3.0     | 2026-03-08 | Full rewrite from 52-decision audit (48/100 -> target 82/100)      |
-| 2.2     | 2026-03-07 | SC-1..5: operational deps, compaction MUST, scope, recommendations |
-| 2.1     | 2026-03-06 | Add interactive design, verification phase, UX                     |
-| 2.0     | 2026-02-28 | Add attention management, behavioral quality, guards               |
-| 1.0     | 2026-02-25 | Initial implementation (Anthropic skill, Apache 2.0)               |
+| 3.1     | 2026-03-15 | Convergence-loop integration: Phase 4.3 build + Phase 5 verify                       |
+| 3.0     | 2026-03-08 | Full rewrite from 52-decision audit (48/100 -> target 82/100)                        |
+| 2.2     | 2026-03-07 | SC-1..5: operational deps, compaction MUST, scope, recommendations                   |
+| 2.1     | 2026-03-06 | Add interactive design, verification phase, UX                                       |
+| 2.0     | 2026-02-28 | Add attention management, behavioral quality, guards                                 |
+| 1.0     | 2026-02-25 | Initial implementation (Anthropic skill, Apache 2.0)                                 |

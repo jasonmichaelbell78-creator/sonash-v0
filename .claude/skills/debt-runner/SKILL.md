@@ -4,15 +4,15 @@ description: >-
   Interactive TDMS orchestrator with 7 modes — verify, sync, plan, health,
   dedup, validate, cleanup. Convergence-loop verified at every stage. Owns
   remediation plan artifacts. Never writes MASTER_DEBT.jsonl directly — all
-  mutations go through staging with CL verification before applying via
-  existing intake/resolve scripts.
+  mutations go through staging with CL verification before applying via existing
+  intake/resolve scripts.
 ---
 
 # Debt Runner
 
 Interactive orchestrator for the Technical Debt Management System. Sequences
-existing TDMS scripts, applies convergence-loop verification at every stage,
-and owns the remediation plan artifact.
+existing TDMS scripts, applies convergence-loop verification at every stage, and
+owns the remediation plan artifact.
 
 ## Critical Rules (MUST follow)
 
@@ -83,9 +83,9 @@ debt-runner. Last mode: [mode], step [N]. Continue? [Y/restart]"
 Present before the menu:
 
 - Current debt stats (S0-S3 counts)
-- Effort estimates per mode: verify (~10min S0, ~30min all), sync (~5min +
-  CL), plan (~15min), health (~5min), dedup (~20min), validate (~10min),
-  cleanup (~10min)
+- Effort estimates per mode: verify (~10min S0, ~30min all), sync (~5min + CL),
+  plan (~15min), health (~5min), dedup (~20min), validate (~10min), cleanup
+  (~10min)
 - Resume status if applicable
 - Pending staging files if any
 
@@ -280,14 +280,14 @@ Archive resolved items, clear false positives, regenerate views.
   `[script]`..." After completion, print result summary. Prevents user
   uncertainty during long operations.
 - **Retro prompt (SHOULD):** On session exit (not per-mode), prompt: "Any modes
-  that produced unexpected results? Any scripts that need attention?" Capture
-  in state file `process_feedback`.
+  that produced unexpected results? Any scripts that need attention?" Capture in
+  state file `process_feedback`.
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                        |
-| ------- | ---------- | -------------------------------------------------- |
+| Version | Date       | Description                                                                              |
+| ------- | ---------- | ---------------------------------------------------------------------------------------- |
 | 1.1     | 2026-03-15 | Skill-audit: warm-up, resume, delegation, empty-result, staging cleanup, retro, progress |
-| 1.0     | 2026-03-15 | Initial creation via /skill-creator (22 decisions) |
+| 1.0     | 2026-03-15 | Initial creation via /skill-creator (22 decisions)                                       |

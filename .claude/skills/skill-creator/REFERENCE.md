@@ -78,9 +78,9 @@ Workflow structure, phase design, output artifacts.
 - "Does this skill's workflow involve claims verification, multi-agent
   discovery, or iterative refinement? If yes, design convergence-loop
   integration per T25." **If yes:** add a convergence-loop verify step to the
-  skill's discovery or validation phase. Example: `/deep-plan` uses it in
-  Phase 0 to verify DIAGNOSIS.md claims; `/skill-creator` uses it in Phase 5
-  to verify created skill's codebase claims.
+  skill's discovery or validation phase. Example: `/deep-plan` uses it in Phase
+  0 to verify DIAGNOSIS.md claims; `/skill-creator` uses it in Phase 5 to verify
+  created skill's codebase claims.
 
 ### Category 3: Attention & Prompt Engineering
 

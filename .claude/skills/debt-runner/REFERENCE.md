@@ -1,11 +1,9 @@
 # Debt Runner Reference
 
-**Document Version:** 1.0
-**Last Updated:** 2026-03-15
-**Status:** ACTIVE
+**Document Version:** 1.0 **Last Updated:** 2026-03-15 **Status:** ACTIVE
 
-Companion file for debt-runner SKILL.md. Contains per-mode script sequences,
-CL domain slicing templates, staging/plan schemas, and state file schema.
+Companion file for debt-runner SKILL.md. Contains per-mode script sequences, CL
+domain slicing templates, staging/plan schemas, and state file schema.
 
 ---
 
@@ -149,7 +147,11 @@ Agent checks: same file? same issue? different manifestation?
 ### staging/dedup-merges.jsonl
 
 ```json
-{"target": "DEBT-0042", "merge_from": ["DEBT-0500", "DEBT-0501"], "reason": "Same TODO in same file, different extraction sources"}
+{
+  "target": "DEBT-0042",
+  "merge_from": ["DEBT-0500", "DEBT-0501"],
+  "reason": "Same TODO in same file, different extraction sources"
+}
 ```
 
 ### staging/validate-fixes.jsonl
@@ -195,11 +197,16 @@ Path: `.claude/state/debt-runner.state.json`
   "severity_filter": ["S0", "S1"],
   "current_step": 3,
   "cl_passes": [
-    {"pass": 1, "behavior": "source-check", "confirmed": 28, "corrected": 3, "extended": 1, "new": 0}
+    {
+      "pass": 1,
+      "behavior": "source-check",
+      "confirmed": 28,
+      "corrected": 3,
+      "extended": 1,
+      "new": 0
+    }
   ],
-  "staging_files": [
-    "docs/technical-debt/staging/verify-corrections.jsonl"
-  ],
+  "staging_files": ["docs/technical-debt/staging/verify-corrections.jsonl"],
   "plan_path": null,
   "mutations_pending": 4,
   "last_sync_check": "2026-03-15T14:00:00Z",
@@ -215,10 +222,13 @@ Path: `.claude/state/debt-runner.state.json`
 # Item counts by severity
 node -e "
 const fs = require('fs');
-const lines = fs.readFileSync('docs/technical-debt/MASTER_DEBT.jsonl','utf8').trim().split('\n');
-const counts = {S0:0,S1:0,S2:0,S3:0};
-lines.forEach(l => { try { const d=JSON.parse(l); counts[d.severity]=(counts[d.severity]||0)+1; } catch(e){} });
-console.log(JSON.stringify({...counts, total: lines.length}));
+let counts = {S0:0,S1:0,S2:0,S3:0, total: 0};
+try {
+  const lines = fs.readFileSync('docs/technical-debt/MASTER_DEBT.jsonl','utf8').trim().split('\n');
+  counts.total = lines.length;
+  lines.forEach(l => { try { const d=JSON.parse(l); if(d.severity) counts[d.severity]=(counts[d.severity]||0)+1; } catch(e){} });
+} catch (e) { /* file not found is not an error for this stats script */ }
+console.log(JSON.stringify(counts));
 "
 
 # Pending staging files

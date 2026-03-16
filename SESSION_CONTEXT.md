@@ -55,8 +55,8 @@ On**: Session #222 — CL Integration + debt-runner Skill
   Step 0.1 "Done when" criteria only validated the skill itself, not consumer
   adoption.
 - **Convergence-loop integrated** into skill-creator (Phase 4.3 build + Phase 5
-  verify) and deep-plan (Phase 0 diagnosis verify + Phase 3.5 plan verify).
-  Both upgraded to MUST for L/XL tasks.
+  verify) and deep-plan (Phase 0 diagnosis verify + Phase 3.5 plan verify). Both
+  upgraded to MUST for L/XL tasks.
 - **PLAN-v3.md Section 8b**: Per-phase convergence-loop self-audit protocol
   added — every phase gets CL self-audit at completion, Phase 3 gets mid-phase
   audits at checkpoints 3.7 and 3.12.
@@ -66,9 +66,9 @@ On**: Session #222 — CL Integration + debt-runner Skill
 - **skill-audit on deep-plan** (93/110): 6 decisions — CL MUST for L/XL,
   verify-before-present ordering, Integration section added, failure paths
 - **debt-runner skill created** via /skill-creator (22 discovery decisions): 7-
-  mode interactive TDMS orchestrator with CL verification at every stage.
-  Modes: verify, sync, plan, health, dedup, validate, cleanup. Staging
-  architecture for safe MASTER_DEBT mutations.
+  mode interactive TDMS orchestrator with CL verification at every stage. Modes:
+  verify, sync, plan, health, dedup, validate, cleanup. Staging architecture for
+  safe MASTER_DEBT mutations.
 - **skill-audit on debt-runner** (93/110): 8 decisions — warm-up, resume entry,
   delegation protocol, empty-result short-circuit, staging cleanup, retro
 - **2 commits (1 pushed, 1 pending)**
@@ -123,18 +123,18 @@ On**: Session #222 — CL Integration + debt-runner Skill
 
 ## Quick Status
 
-| Item                              | Status   | Progress                                                 |
-| --------------------------------- | -------- | -------------------------------------------------------- |
-| **PR Review Ecosystem v2**        | SHIPPED  | v1.0 tagged/pushed                                       |
-| **Skill Quality Framework**       | COMPLETE | All 4 deliverables                                       |
-| **Data Effectiveness Audit**      | 95% DONE | 10/11 waves delivered (PRs #431, #432)                   |
-| **Review Lifecycle Overhaul**     | COMPLETE | JSONL-canonical, orchestrator, migration done            |
-| **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE + CL integration, ready for Phase 1     |
-| **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                      |
-| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                                             |
-| Track B: Dev Dashboard MVP        | Paused   | ~10%                                                     |
-| M1.5 - Quick Wins                 | Paused   | ~20%                                                     |
-| M1.6 - Admin Panel + UX           | Paused   | ~75%                                                     |
+| Item                              | Status   | Progress                                             |
+| --------------------------------- | -------- | ---------------------------------------------------- |
+| **PR Review Ecosystem v2**        | SHIPPED  | v1.0 tagged/pushed                                   |
+| **Skill Quality Framework**       | COMPLETE | All 4 deliverables                                   |
+| **Data Effectiveness Audit**      | 95% DONE | 10/11 waves delivered (PRs #431, #432)               |
+| **Review Lifecycle Overhaul**     | COMPLETE | JSONL-canonical, orchestrator, migration done        |
+| **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE + CL integration, ready for Phase 1 |
+| **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                  |
+| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                                         |
+| Track B: Dev Dashboard MVP        | Paused   | ~10%                                                 |
+| M1.5 - Quick Wins                 | Paused   | ~20%                                                 |
+| M1.6 - Admin Panel + UX           | Paused   | ~75%                                                 |
 
 **Current Branch**: `plan-implementation`
 
@@ -153,8 +153,8 @@ hooks). Serena fully removed.
    done, phase self-audit protocol added). Begin Phase 1 (schema definitions,
    migration mechanics, enforcement system). Read PLAN-v3.md Section 5 +
    DECISIONS_BY_PHASE.md Phase 1 section (60+ decisions to recall).
-2. **Run /debt-runner** — new skill created this session. First real test on
-   the 8382-item debt corpus. Start with `health` mode, then `verify` on S0.
+2. **Run /debt-runner** — new skill created this session. First real test on the
+   8382-item debt corpus. Start with `health` mode, then `verify` on S0.
 3. **DE cleanup** — Wave 8 REFERENCE.md + `/skill-audit` on
    `data-effectiveness-audit` skill
 

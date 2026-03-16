@@ -4,8 +4,8 @@ description: >-
   Structured discovery-first planning for complex tasks. Ask exhaustive
   categorized questions, build a standalone decision record, then produce a
   step-by-step implementation plan with audit checkpoints and convergence-loop
-  verification of diagnosis and plan claims for user approval before any code
-  is written.
+  verification of diagnosis and plan claims for user approval before any code is
+  written.
 ---
 
 <!-- prettier-ignore-start -->
@@ -118,13 +118,13 @@ reference actual patterns, not generic placeholders.
    references — plans MUST NOT assume future/unreleased software exists. Use
    "preparation" language ("prepare for eventual vN") not imperative ("migrate
    to vN").
-7. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for
-   S/M) — if DIAGNOSIS.md makes 5+ claims about codebase state (claims =
-   testable assertions about codebase state, per `/convergence-loop` SKILL.md),
-   verify via convergence-loop quick preset. Wrong diagnosis cascades through
-   the entire plan. **If claims are wrong:** correct DIAGNOSIS.md and
-   re-verify before presenting. See `/convergence-loop` SKILL.md "Programmatic
-   Mode" for the integration contract.
+7. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for S/M) —
+   if DIAGNOSIS.md makes 5+ claims about codebase state (claims = testable
+   assertions about codebase state, per `/convergence-loop` SKILL.md), verify
+   via convergence-loop quick preset. Wrong diagnosis cascades through the
+   entire plan. **If claims are wrong:** correct DIAGNOSIS.md and re-verify
+   before presenting. See `/convergence-loop` SKILL.md "Programmatic Mode" for
+   the integration contract.
 8. Present DIAGNOSIS.md to user for review (MUST)
 
 **If misaligned with ROADMAP:** Present the conflict to the user. Options: (1)
@@ -352,16 +352,16 @@ Capture in state file `process_feedback` field.
 
 ## Version History
 
-| Version | Date       | Description                                            |
-| ------- | ---------- | ------------------------------------------------------ |
+| Version | Date       | Description                                                                              |
+| ------- | ---------- | ---------------------------------------------------------------------------------------- |
 | 3.3     | 2026-03-15 | Skill-audit: CL MUST for L/XL, verify-before-present, Integration section, failure paths |
-| 3.2     | 2026-03-15 | Convergence-loop integration: Phase 0 diagnosis + 3.5 self-audit |
-| 3.1     | 2026-03-12 | Add code-state verification requirement to Phase 0     |
-|         |            | (UNVERIFIED flag, version validation). PR #428 retro.  |
-| 3.0     | 2026-03-07 | Skill audit (29 decisions): self-audit phase, warm-up  |
-|         |            | routing guide, input/output spec, MUST/SHOULD/MAY,     |
-|         |            | invocation tracking, phase markers, mid-discovery      |
-| 2.0     | 2026-03-01 | Rewrite from 64-decision audit: Phase 0, no caps,      |
-|         |            | standalone DECISIONS.md, audit checkpoints, handoff    |
-|         |            | routing, compaction resilience, guard rails, REFERENCE |
-| 1.0     | 2026-02-25 | Initial implementation                                 |
+| 3.2     | 2026-03-15 | Convergence-loop integration: Phase 0 diagnosis + 3.5 self-audit                         |
+| 3.1     | 2026-03-12 | Add code-state verification requirement to Phase 0                                       |
+|         |            | (UNVERIFIED flag, version validation). PR #428 retro.                                    |
+| 3.0     | 2026-03-07 | Skill audit (29 decisions): self-audit phase, warm-up                                    |
+|         |            | routing guide, input/output spec, MUST/SHOULD/MAY,                                       |
+|         |            | invocation tracking, phase markers, mid-discovery                                        |
+| 2.0     | 2026-03-01 | Rewrite from 64-decision audit: Phase 0, no caps,                                        |
+|         |            | standalone DECISIONS.md, audit checkpoints, handoff                                      |
+|         |            | routing, compaction resilience, guard rails, REFERENCE                                   |
+| 1.0     | 2026-02-25 | Initial implementation                                                                   |

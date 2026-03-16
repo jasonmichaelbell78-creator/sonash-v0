@@ -318,14 +318,14 @@ the step's stated scope.
    plus any integration targets listed in step implementation notes
 2. **Run convergence-loop** — quick preset for phases with <10 claims, standard
    preset for phases with 10+ claims
-3. **Present results** — user reviews convergence report before phase is declared
-   complete
+3. **Present results** — user reviews convergence report before phase is
+   declared complete
 4. **Remediate** — any failed claims must be fixed or explicitly deferred with
    justification before the next phase begins
 
 **Phase-specific guidance:**
 
-| Phase   | Claims Source                       | Preset   | Mid-Phase Audit? |
+| Phase   | Claims Source                      | Preset   | Mid-Phase Audit? |
 | ------- | ---------------------------------- | -------- | ---------------- |
 | Phase 0 | 7 steps, ~7 "Done when" criteria   | quick    | No               |
 | Phase 1 | 6 steps, ~6 criteria + schemas     | standard | No               |
