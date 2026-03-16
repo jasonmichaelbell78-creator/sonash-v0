@@ -251,6 +251,26 @@ Skills that involve multi-step interaction SHOULD include:
 
 ---
 
+## Self-Audit at Completion
+
+Skills that produce output artifacts SHOULD include a self-audit step before
+declaring completion. The canonical pattern (derived from `skill-audit` Phase
+5):
+
+1. **Re-read all modified/created files** (MUST) — do NOT rely on memory
+2. **Grep-based proof** (MUST) — for each accepted decision or required output,
+   grep the file for a keyword proving implementation. Cite the result. If grep
+   finds nothing, the item is MISSING — not PASS.
+3. **T20 tally** (SHOULD) — categorize verification results: Confirmed
+   (implemented as expected), Corrected (differs from plan), Extended (beyond
+   plan), New (unmapped content)
+4. **"Done when" gate** (MUST) — self-audit must pass before closure phase
+
+For skills with >15 decisions or outputs, dispatch an independent
+`code-reviewer` agent for cross-verification.
+
+---
+
 ## Quality Checklist (for skill-creator)
 
 ### Structural Quality

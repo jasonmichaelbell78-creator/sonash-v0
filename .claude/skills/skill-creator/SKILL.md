@@ -138,11 +138,15 @@ hook, script, CLAUDE.md entry, or agent — present the reframe before proceedin
 5. **Batch 4-6 related questions** — group by category, critical first
 6. **Inter-batch synthesis** — summarize learnings before next batch
 7. **State inferences explicitly** — "Based on Q3, inferring X for Q7"
-8. **Save decisions after every batch** (MUST) — persist to state file
+8. **Save decisions with rationale after every batch** (MUST) — persist to state
+   file, include WHY per decision
 9. **Show progress** — "Batch 2 of ~3. N decisions captured."
 10. **Multi-agent exploration** (SHOULD for Complex) — dispatch Explore agents
     to scan the codebase for relevant patterns before presenting questions.
     Findings inform defaults and recommendations.
+11. **Cross-batch revision** (MUST) — if a later batch answer conflicts with an
+    earlier decision, present the conflict and allow revision. Update state file
+    with the revised decision.
 
 **Delegation:** If user says "you decide," accept recommended defaults. Document
 each delegated decision with rationale.
@@ -153,7 +157,11 @@ said X, but this implies Y. Which takes priority?"
 **Mid-discovery check (MUST after batch 2):** "Discovery progress: N questions,
 M decisions. Estimated ~K more. Continue or scope-reduce?"
 
-**Done when:** All 6 categories covered, no remaining ambiguity.
+**Post-discovery prompt (MUST):** "Discovery complete. Anything the questions
+didn't cover, or concerns before we plan?"
+
+**Done when:** All 6 categories covered, no remaining ambiguity, user confirms
+nothing missing.
 
 ---
 
@@ -238,9 +246,13 @@ templates, question banks to companion files.
    re-entry) before continuing validation.
 4. Verify line count under 300 (MUST)
 5. Verify cross-references resolve (SHOULD)
+6. **Evidence-based self-check** (MUST) — re-read all created files. For each
+   planning decision from Phase 3, grep the output file for a keyword proving
+   implementation. Decisions with no grep match are MISSING — fix before
+   proceeding to Phase 6. See SKILL_STANDARDS.md "Self-Audit at Completion."
 
 **Done when:** `skills:validate` passes, behavioral checklist addressed, under
-300 lines, codebase claims verified.
+300 lines, codebase claims verified, all decisions grep-verified.
 
 ---
 

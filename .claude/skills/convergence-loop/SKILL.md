@@ -251,11 +251,12 @@ with the corrected claims.
 #222). Remaining callers (audit skills, `/systematic-debugging`) will integrate
 during Phase 3 ecosystem standardization.
 
-Skills that SHOULD integrate (per T25 — discovery phases):
+Skills that MUST integrate (per T25 — discovery phases):
 
 - `/deep-plan` — discovery phase
 - `/skill-audit` — discovery phase
 - `/skill-creator` — validation phase + planning prompt
+- `/create-audit` — codebase exploration phase
 - All audit skills — discovery phase
 - `/systematic-debugging` — hypothesis generation
 

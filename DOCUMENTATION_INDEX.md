@@ -107,7 +107,7 @@ _Essential project-level documentation_
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓2 ↑9      | 2026-03-14    |
-| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-03-12    |
+| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-03-16    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-05    |
 | [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑17    | 2026-03-15    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-03-12    |
@@ -297,8 +297,8 @@ _Claude Code skills_
 | [content-research-writer](.claude/skills/content-research-writer/SKILL.md)                                                          | This skill acts as your writing partner, helping you researc...   | ↓0 ↑1      | 2026-02-24    |
 | [Convergence Loop — Reference](.claude/skills/convergence-loop/REFERENCE.md)                                                        | Verify claims against their cited source material before any      | ↓0 ↑0      | 2026-03-15    |
 | [convergence-loop](.claude/skills/convergence-loop/SKILL.md)                                                                        | Verify claims about reality through multi-pass agent loops w...   | ↓0 ↑0      | 2026-03-15    |
-| [Create Audit — Reference](.claude/skills/create-audit/REFERENCE.md)                                                                | {description of when to use this template}                        | ↓0 ↑0      | 2026-03-09    |
-| [create-audit](.claude/skills/create-audit/SKILL.md)                                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑1      | 2026-03-09    |
+| [Create Audit — Reference](.claude/skills/create-audit/REFERENCE.md)                                                                | {what this category evaluates}                                    | ↓0 ↑1      | 2026-03-09    |
+| [create-audit](.claude/skills/create-audit/SKILL.md)                                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-09    |
 | [Creation Log: Systematic Debugging Skill](.claude/skills/systematic-debugging/CREATION-LOG.md)                                     | Reference example of extracting, structuring, and bulletproo...   | ↓0 ↑0      | 2026-01-12    |
 | [Data Analysis Patterns for Market Research](.claude/skills/market-research-reports/references/data_analysis_patterns.md)           | Templates and frameworks for conducting rigorous market anal...   | ↓0 ↑0      | 2026-01-12    |
 | [data-effectiveness-audit](.claude/skills/data-effectiveness-audit/SKILL.md)                                                        | Systematic audit of all data systems to identify write-only ...   | ↓0 ↑0      | 2026-03-15    |
@@ -353,12 +353,12 @@ _Claude Code skills_
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-03-10    |
 | [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T...   | ↓1 ↑0      | 2026-03-16    |
-| [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑1      | 2026-03-12    |
+| [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑1      | 2026-03-16    |
 | [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-03-10    |
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-03-14    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
 | [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑0      | 2026-03-15    |
-| [Skill Creator Reference](.claude/skills/skill-creator/REFERENCE.md)                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-15    |
+| [Skill Creator Reference](.claude/skills/skill-creator/REFERENCE.md)                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-16    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-03-14    |
 | [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                                                        | <!-- prettier-ignore-start -->                                    | ↓5 ↑0      | 2026-03-12    |
 | [skill-audit](.claude/skills/skill-audit/SKILL.md)                                                                                  | Interactive, category-by-category behavioral quality audit f...   | ↓0 ↑0      | 2026-03-15    |
@@ -989,7 +989,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-23    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-15    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-16    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-03-12    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-23    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-07    |
@@ -1027,7 +1027,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-02-23    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-03-15    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓6 ↑8      | 2026-03-16    |
 
 ### scripts (Tier 4)
 
@@ -1086,7 +1086,7 @@ Documents that are linked to most frequently:
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                        | 7             | SKILL, SKILL, DOCUMENTATION_STANDARDS +4 more       |
 | [Session Context](SESSION_CONTEXT.md)                                                                   | 6             | AI_WORKFLOW, CLAUDE, ROADMAP +3 more                |
 | [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                      | 6             | CLAUDE, README, AI_REVIEW_LEARNINGS_LOG +3 more     |
-| [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                            | 5             | SKILL, SKILL, SLASH_COMMANDS_REFERENCE +2 more      |
+| [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                            | 5             | REFERENCE, SKILL, SLASH_COMMANDS_REFERENCE +2 more  |
 
 ### Most Linking Documents (Outbound Links)
 
