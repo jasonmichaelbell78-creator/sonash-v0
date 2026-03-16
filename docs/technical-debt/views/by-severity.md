@@ -1390,7 +1390,7 @@
 | DEBT-45526 | Hook bypass threshold: cc overridden 30+ times in 14 days     | cc                                                                                                                                                 | 0    | process                  | E2        |
 | DEBT-45527 | Hook bypass threshold: cc overridden 31+ times in 14 days     | cc                                                                                                                                                 | 0    | process                  | E2        |
 
-## S2 - Medium (3389)
+## S2 - Medium (3391)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4783,8 +4783,10 @@
 | DEBT-45528 | log-override.js generates duplicate DEBT entries with cas...      | scripts/log-override.js                                                                                                                                                     | 0         | process                  | E1        |
 | DEBT-45529 | Sacred-path drift: Shadow-Append Registry should be autho...      | .planning/system-wide-standardization/PLAN-v2.md                                                                                                                            | 606       | refactoring              | E1        |
 | DEBT-45530 | 3 learning-route entries have \_repair_needed due to missi...     | .claude/state/learning-routes.jsonl                                                                                                                                         | 1         | process                  | E1        |
+| DEBT-45531 | Learning routes with \_repair_needed: missing enforcement ...     | .claude/state/learning-routes.jsonl                                                                                                                                         | 1         | process                  | E1        |
+| DEBT-45532 | Duplicate JSONL records with same content_hash in normali...      | docs/technical-debt/raw/normalized-all.jsonl                                                                                                                                | 1027      | code-quality             | E1        |
 
-## S3 - Low (3622)
+## S3 - Low (3623)
 
 | ID         | Title                                                           | File                                                                                             | Line      | Category                 | Effort    |
 | ---------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------- | ------------------------ | --------- |
@@ -8410,3 +8412,4 @@
 | DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)     | package.json                                                                                     | 142       | refactoring              | E0        |
 | DEBT-11354 | Migrate test runner from node --test + c8 to vitest             | package.json                                                                                     | 11        | refactoring              | E3        |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance        | scripts/append-hook-warning.js                                                                   | 69        | performance              | E1        |
+| DEBT-45533 | Report headers typed as code-smell + non-canonical file p...    | docs/technical-debt/raw/normalized-all.jsonl                                                     | 1035      | code-quality             | E1        |

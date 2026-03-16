@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2061)
+## NEW (2064)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -658,6 +658,8 @@
 | DEBT-45528 | log-override.js generates duplicate DEBT entries with cas...    | S2       | process                  |
 | DEBT-45529 | Sacred-path drift: Shadow-Append Registry should be autho...    | S2       | refactoring              |
 | DEBT-45530 | 3 learning-route entries have \_repair_needed due to missi...   | S2       | process                  |
+| DEBT-45531 | Learning routes with \_repair_needed: missing enforcement ...   | S2       | process                  |
+| DEBT-45532 | Duplicate JSONL records with same content_hash in normali...    | S2       | code-quality             |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |
@@ -2072,6 +2074,7 @@
 | DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)     | S3       | refactoring              |
 | DEBT-11354 | Migrate test runner from node --test + c8 to vitest             | S3       | refactoring              |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance        | S3       | performance              |
+| DEBT-45533 | Report headers typed as code-smell + non-canonical file p...    | S3       | code-quality             |
 | DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 
