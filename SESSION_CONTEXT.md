@@ -30,9 +30,9 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-03-15 **Branch**: `plan-implementation` **Working
-On**: Session #221 — SWS Phase 0 Complete + Convergence Loop Skill
+On**: Session #222 — CL Integration + debt-runner Skill
 
-**Uncommitted Work**: None (all committed)
+**Uncommitted Work**: debt-runner skill + session-end artifacts
 
 ---
 
@@ -47,6 +47,31 @@ On**: Session #221 — SWS Phase 0 Complete + Convergence Loop Skill
 ---
 
 ## Recent Session Summaries
+
+**Session #222** (CONVERGENCE-LOOP INTEGRATION + DEBT-RUNNER SKILL):
+
+- **Phase 0 gap found**: convergence-loop integration targets (deep-plan,
+  skill-creator) listed in PLAN-v3.md Step 0.1 but never wired in. Root cause:
+  Step 0.1 "Done when" criteria only validated the skill itself, not consumer
+  adoption.
+- **Convergence-loop integrated** into skill-creator (Phase 4.3 build + Phase 5
+  verify) and deep-plan (Phase 0 diagnosis verify + Phase 3.5 plan verify).
+  Both upgraded to MUST for L/XL tasks.
+- **PLAN-v3.md Section 8b**: Per-phase convergence-loop self-audit protocol
+  added — every phase gets CL self-audit at completion, Phase 3 gets mid-phase
+  audits at checkpoints 3.7 and 3.12.
+- **skill-audit on skill-creator** (94/110): 8 decisions — CL verify MUST for
+  Complex, Phase 5 reordered, anti-patterns moved to REFERENCE.md (332→318
+  lines)
+- **skill-audit on deep-plan** (93/110): 6 decisions — CL MUST for L/XL,
+  verify-before-present ordering, Integration section added, failure paths
+- **debt-runner skill created** via /skill-creator (22 discovery decisions): 7-
+  mode interactive TDMS orchestrator with CL verification at every stage.
+  Modes: verify, sync, plan, health, dedup, validate, cleanup. Staging
+  architecture for safe MASTER_DEBT mutations.
+- **skill-audit on debt-runner** (93/110): 8 decisions — warm-up, resume entry,
+  delegation protocol, empty-result short-circuit, staging cleanup, retro
+- **2 commits (1 pushed, 1 pending)**
 
 **Session #221** (SWS PHASE 0 COMPLETE + CONVERGENCE LOOP SKILL):
 
@@ -92,20 +117,6 @@ On**: Session #221 — SWS Phase 0 Complete + Convergence Loop Skill
   legacy folder, 4 deprecated scripts archived
 - **Testing**: 3,775/3,776 tests passing (1 skipped), 0 fail
 
-**Session #219** (SWS PLAN-v3.md — 5-PASS CONVERGENCE LOOP REBUILD):
-
-- **PLAN-v3.md complete**: 2,467-line restructure of SWS from 21-step sequential
-  to 6-phase phased approach. 5-pass convergence loop, 9 internal loops, 20+
-  verification agents
-- **PR #433**: Created, R1 review processed, merged
-- **Convergence-loop memory**: 6 new patterns added
-
-**Session #218** (AUTOMATION GAP CLOSURE — FULL IMPLEMENTATION):
-
-- **9 tasks executed** via subagent-driven development (10 commits)
-- **21 scaffolded routes promoted**: 0 remain at "scaffolded"
-- **Testing**: 1308/1308 tests passing
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
@@ -118,7 +129,7 @@ On**: Session #221 — SWS Phase 0 Complete + Convergence Loop Skill
 | **Skill Quality Framework**       | COMPLETE | All 4 deliverables                                       |
 | **Data Effectiveness Audit**      | 95% DONE | 10/11 waves delivered (PRs #431, #432)                   |
 | **Review Lifecycle Overhaul**     | COMPLETE | JSONL-canonical, orchestrator, migration done            |
-| **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE, 39 reeval decisions, ready for Phase 1 |
+| **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE + CL integration, ready for Phase 1     |
 | **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                      |
 | **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                                             |
 | Track B: Dev Dashboard MVP        | Paused   | ~10%                                                     |
@@ -138,16 +149,14 @@ hooks). Serena fully removed.
 
 ### Immediate Priority
 
-1. **Phase 1: CANON Foundation** — SWS Phase 0 complete. Begin Phase 1 (schema
-   definitions, migration mechanics, enforcement system). Read PLAN-v3.md
-   Section 5 + DECISIONS_BY_PHASE.md Phase 1 section (60+ decisions to recall).
-2. **Skill-audit Phase 5 self-audit deferred items** — convergence-loop skill
-   audit self-audit complete but skill-creator SKILL.md validation phase update
-   (Q14) still pending.
+1. **Phase 1: CANON Foundation** — SWS Phase 0 fully complete (CL integration
+   done, phase self-audit protocol added). Begin Phase 1 (schema definitions,
+   migration mechanics, enforcement system). Read PLAN-v3.md Section 5 +
+   DECISIONS_BY_PHASE.md Phase 1 section (60+ decisions to recall).
+2. **Run /debt-runner** — new skill created this session. First real test on
+   the 8382-item debt corpus. Start with `health` mode, then `verify` on S0.
 3. **DE cleanup** — Wave 8 REFERENCE.md + `/skill-audit` on
    `data-effectiveness-audit` skill
-4. **PR for Session #221 work** — 7 commits on plan-implementation since PR #434
-   merge. Create PR when ready.
 
 **Also pending:** Planning landscape Wave 5 (canonicalization), review lifecycle
 S3 cosmetic fixes.
@@ -225,6 +234,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                                |
 | ------- | ---------- | ---------------------------------------------------------------------- |
+| 8.1     | 2026-03-15 | Session #222 — CL integration, debt-runner skill, 3 skill audits       |
 | 8.0     | 2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop skill, 7 commits |
 | 7.9     | 2026-03-15 | Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical)    |
 | 7.8     | 2026-03-15 | Session #219 — SWS PLAN-v3.md convergence loop rebuild                 |
