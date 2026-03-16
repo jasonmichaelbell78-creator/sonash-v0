@@ -61,6 +61,151 @@ require_skip_reason() {
   esac
 }
 
+# Generate end-of-hook summary from checks temp file (Wave 3, D6/D7/D11/D29)
+# Usage: generate_hook_summary <hook_name> <checks_tmpfile> <fd_num>
+# Requires HOOK_START_NS to be set in the calling scope
+generate_hook_summary() {
+  _hook_name="$1"
+  _tmpfile="$2"
+  _fd="$3"  # 3 for pre-commit, 2 for pre-push
+
+  if [ ! -f "$_tmpfile" ] || [ ! -s "$_tmpfile" ]; then
+    return 0
+  fi
+
+  _total=0; _passed=0; _warned=0; _failed=0; _skipped=0; _autofixed=0
+  _warn_checks=""; _fail_checks=""
+
+  while IFS='|' read -r _id _status _dur; do
+    _total=$((_total + 1))
+    case "$_status" in
+      pass) _passed=$((_passed + 1)) ;;
+      skip) _skipped=$((_skipped + 1)) ;;
+      warn) _warned=$((_warned + 1)); _warn_checks="$_warn_checks $_id" ;;
+      fail) _failed=$((_failed + 1)); _fail_checks="$_fail_checks $_id" ;;
+      auto-fix) _autofixed=$((_autofixed + 1)) ;;
+    esac
+  done < "$_tmpfile"
+
+  # Calculate total duration
+  HOOK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#HOOK_START_NS} -gt 10 ]; then
+    TOTAL_MS=$(( (HOOK_END_NS - HOOK_START_NS) / 1000000 ))
+  else
+    TOTAL_MS=$(( (HOOK_END_NS - HOOK_START_NS) * 1000 ))
+  fi
+  TOTAL_SEC=$(echo "scale=1; $TOTAL_MS / 1000" | bc 2>/dev/null || echo "${TOTAL_MS}ms")
+
+  if [ "$_warned" -eq 0 ] && [ "$_failed" -eq 0 ]; then
+    # D29: Simple success line
+    echo "✅ ${_hook_name}: ${_passed}/${_total} passed (${TOTAL_SEC}s)" >&"$_fd"
+  else
+    # D29: Full summary on warn/fail
+    echo "" >&"$_fd"
+    echo "┌─ ${_hook_name} Summary ────────────────────────────┐" >&"$_fd"
+    while IFS='|' read -r _id _status _dur; do
+      case "$_status" in
+        pass)    _icon="✅" ;;
+        skip)    _icon="⏭️ " ;;
+        warn)    _icon="⚠️ " ;;
+        fail)    _icon="❌" ;;
+        auto-fix) _icon="🔧" ;;
+        *)       _icon="  " ;;
+      esac
+      # Format duration
+      if [ "$_dur" -gt 1000 ] 2>/dev/null; then
+        _dur_fmt="$(echo "scale=1; $_dur / 1000" | bc 2>/dev/null || echo "${_dur}ms")s"
+      else
+        _dur_fmt="${_dur}ms"
+      fi
+      printf "│ %s %-25s %-8s %8s │\n" "$_icon" "$_id" "$_status" "$_dur_fmt" >&"$_fd"
+    done < "$_tmpfile"
+    echo "├──────────────────────────────────────────────────┤" >&"$_fd"
+    echo "│ ${_passed} passed, ${_warned} warning(s), ${_failed} failed (${TOTAL_SEC}s)" >&"$_fd"
+
+    # D10/D31: Show actions for warn/fail checks
+    if [ -n "$_warn_checks" ] || [ -n "$_fail_checks" ]; then
+      echo "├─ Actions ────────────────────────────────────────┤" >&"$_fd"
+      for _cid in $_warn_checks $_fail_checks; do
+        # Read actions from manifest
+        _actions=$(node -e "
+          try {
+            const m = require('./scripts/config/hook-checks.json');
+            const c = m.checks.find(x => x.id === '$_cid');
+            if (c && c.actions) {
+              if (c.actions.fix) console.log('  Fix: ' + c.actions.fix);
+              console.log('  Investigate: ' + (c.actions.investigate || 'N/A'));
+              console.log('  Defer: ' + (c.actions.defer || 'N/A'));
+            }
+          } catch {}
+        " 2>/dev/null)
+        if [ -n "$_actions" ]; then
+          echo "│ ⚠️  ${_cid}:" >&"$_fd"
+          echo "$_actions" | while read -r _line; do
+            echo "│   $_line" >&"$_fd"
+          done
+        fi
+      done
+    fi
+    echo "└──────────────────────────────────────────────────┘" >&"$_fd"
+  fi
+}
+
+# Write hook-runs.jsonl entry (D6, D20, D21)
+# Usage: write_hook_runs_jsonl <hook_name_lowercase> <checks_tmpfile> <total_ms>
+write_hook_runs_jsonl() {
+  _wr_hook="$1"
+  _wr_tmpfile="$2"
+  _wr_total_ms="$3"
+
+  node -e "
+    const fs = require('fs');
+    const path = require('path');
+    const runsPath = path.join('.claude', 'state', 'hook-runs.jsonl');
+
+    // Read checks from temp file
+    let lines = [];
+    try {
+      lines = fs.readFileSync('$_wr_tmpfile', 'utf-8').trim().split('\n').filter(Boolean);
+    } catch {}
+    const checks = lines.map(l => {
+      const [id, status, dur] = l.split('|');
+      return { id, status, duration_ms: parseInt(dur) || 0 };
+    });
+
+    const entry = {
+      hook: '$_wr_hook',
+      timestamp: new Date().toISOString(),
+      branch: '$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)',
+      commit: '$(git rev-parse --short HEAD 2>/dev/null || echo unknown)',
+      total_checks: checks.length,
+      checks: checks,
+      total_duration_ms: $_wr_total_ms,
+      outcome: checks.some(c => c.status === 'fail') ? 'fail' : checks.some(c => c.status === 'warn') ? 'warn' : 'pass',
+      skipped_checks: checks.filter(c => c.status === 'skip').map(c => c.id),
+      warnings: checks.filter(c => c.status === 'warn').length,
+      errors: checks.filter(c => c.status === 'fail').length
+    };
+
+    // Ensure directory exists
+    const dir = path.dirname(runsPath);
+    if (!fs.existsSync(dir)) { fs.mkdirSync(dir, { recursive: true }); }
+
+    // Rotation: keep 100 of 200 entries (D21)
+    let existing = [];
+    try {
+      existing = fs.readFileSync(runsPath, 'utf-8').trim().split('\n').filter(Boolean);
+    } catch {}
+
+    if (existing.length >= 200) {
+      existing = existing.slice(-100);
+    }
+
+    existing.push(JSON.stringify(entry));
+    fs.writeFileSync(runsPath, existing.join('\n') + '\n');
+  " 2>/dev/null || true
+}
+
 # Initialize fnm so node/npm/npx are available in this shell context (C6-G3)
 # Computes fnm/node env once; sourcing scripts reuse the result throughout
 _shared_init_fnm() {
