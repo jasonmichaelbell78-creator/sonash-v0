@@ -1,404 +1,278 @@
 ---
 name: session-begin
-description: Complete verification steps before starting any work session
+description: >-
+  Pre-flight checklist for work sessions — loads context, runs health scripts,
+  surfaces warnings, and gates on acknowledgment before work begins.
 ---
 
-# Session Begin Checklist
+# Session Begin Pre-Flight
 
-**⚠️ IMPORTANT - Duplicate Detection:**
+Pre-flight checklist that orients the session: loads context, validates
+environment, runs health scripts, surfaces warnings, and hands off to the user
+with a goal-selection prompt.
 
-Before proceeding with the full checklist, check if this session was already
-started:
+**Time budget:** Session-begin SHOULD complete in under 5 minutes. If script
+issues or staleness require extended remediation, present findings and defer
+fixes to user decision.
 
-1. **Read the current conversation context** - Have I already completed this
-   checklist in the current conversation?
-2. **Check SESSION_CONTEXT.md timestamp** - Was "Last Updated" modified today?
-   - **Note**: Field stores date only (YYYY-MM-DD), not time. Sub-day duplicate
-     detection relies on conversation context check (#1) and session counter
-     check (#3).
-3. **Check session counter** - Did I already increment the session counter
-   earlier in this conversation?
+## Critical Rules (MUST follow)
 
-**If ANY of these are true:**
+1. **Duplicate detection first** — MUST check before any action (see below).
+2. **Never double-increment** — MUST verify the session counter wasn't already
+   incremented in this conversation or after compaction before incrementing.
+3. **Announce session number** — MUST output "Session #N started on [branch]"
+   after incrementing.
+4. **Script failures escalate to user** — MUST present failures with options
+   (fix now / defer / ignore). Do not decide unilaterally.
+5. **Stale docs are a user decision** — MUST present discrepancies and ask
+   "Update now or defer?" Do not auto-fix.
+6. **Scope explosion guard** — if 3+ scripts failed or 3+ actionable findings
+   surfaced, MUST present a triage list before acting on any.
 
-- ✅ Session is already active
-- ⚠️ DO NOT re-run the checklist
-- ⚠️ DO NOT re-increment the session counter
-- ⚠️ DO NOT re-run startup scripts
-- 💬 Example response: "Session #35 already active (started earlier in this
-  conversation). Checklist completed earlier. What would you like to work on?"
+## Duplicate Detection (MUST — before anything)
 
-**If ALL are false:**
+Check all three:
 
-- ✅ This is a new session
-- ✅ Proceed with full checklist below
+1. Have I already completed this checklist in the current conversation?
+2. Was SESSION_CONTEXT.md "Last Updated" modified today? (date-only field —
+   sub-day relies on checks #1 and #3)
+3. Did I already increment the session counter in this conversation?
 
----
-
-Before starting any work, complete these verification steps:
+**If ANY true:** "Session #N already active. What would you like to work on?"
+**If ALL false:** Proceed with full checklist.
 
 ## When to Use
 
-- Tasks related to session-begin
+- Start of every AI work session
 - User explicitly invokes `/session-begin`
 
 ## When NOT to Use
 
-- When the task doesn't match this skill's scope -- check related skills
-- When a more specialized skill exists for the specific task
+- Mid-session health check → `/alerts`
+- Session closure → `/session-end`
+- State snapshot → `/checkpoint`
+- Already ran this session → duplicate detection catches it
 
-## 0. Secrets Decryption Check (REMOTE SESSIONS)
+## Hook Boundary
 
-**Check if MCP tokens need decrypting:**
+The **SessionStart hook** handles: consolidation, cross-session validation,
+dependency install, build. This skill handles: context loading, counter
+increment, script health checks, warning gates, goal selection. If the hook
+already completed a step (check its output), skip it.
+
+---
+
+## Warm-Up (MUST — first output after duplicate detection passes)
+
+"Starting Session #N pre-flight on [branch]. Will load context, run 9 health
+scripts, and surface any warnings."
+
+---
+
+## Phase 1: Environment Setup (MUST)
+
+### 1.1 Secrets Decryption Check (SHOULD — remote sessions only)
 
 ```bash
-# Check secrets status
 if [ -f ".env.local.encrypted" ] && [ ! -f ".env.local" ]; then
-  echo "⚠️ Encrypted secrets found but not decrypted"
+  echo "Encrypted secrets found but not decrypted"
 fi
 ```
 
-**If secrets need decrypting:**
+If secrets need decrypting: ask user for passphrase, run:
+`echo "<passphrase>" | node scripts/secrets/decrypt-secrets.js --stdin` Verify
+`.env.local` exists. Never store or log the passphrase.
 
-1. **Ask the user for their passphrase** - Example: "Your MCP tokens need
-   decrypting. What's your passphrase?"
-2. **Run the decrypt command** using stdin (avoids shell history exposure):
-   ```bash
-   echo "<user_passphrase>" | node scripts/secrets/decrypt-secrets.js --stdin
-   ```
-3. **Verify success** - Check that `.env.local` now exists with tokens
-4. **Never store or log the passphrase** - Only use it for the decrypt command
+If already decrypted or no encrypted file: skip.
 
-**Security note:** Using `--stdin` with echo pipe is safer than env vars, which
-can leak to shell history and process listings.
+### 1.2 Cross-Session Validation (handled by hook)
 
-**If secrets are already decrypted or no encrypted file exists:**
-
-- Skip this step and continue to Context Loading
+Handled by SessionStart hook. **If "Cross-Session Warning" appears:** check
+`git status`, `git log --oneline -5`, run `npm run hooks:health`. Update
+SESSION_CONTEXT.md if prior session missed `/session-end`.
 
 ---
 
-## 0b. Cross-Session Validation (AUTOMATIC)
+## Phase 2: Context Loading (MUST)
 
-Handled by SessionStart hook. **If you see a "Cross-Session Warning":** check
-`git status`, `git log --oneline -5`, and run `npm run hooks:health`. Update
-SESSION_CONTEXT.md if prior session missed /session-end.
+### 2.1 Load Session Context (MUST)
 
----
+- Read [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md) — status, blockers, goals
+- Increment session counter (MUST — verify not already incremented first)
+- Output: "Session #N started on [branch]"
+- Read [ROADMAP.md](../../ROADMAP.md) lines 1-100 (Active Sprint only)
 
-## 0c. Episodic Memory Search (RECOMMENDED)
+### 2.2 Branch Validation (MUST)
 
-Search past conversations for relevant context using episodic memory. This helps
-recover decisions, solutions, and patterns from previous sessions.
+Verify SESSION_CONTEXT.md's documented branch matches
+`git branch --show-current`. If mismatch, warn user before proceeding.
 
-**Use `mcp__plugin_episodic-memory_episodic-memory__search` with these
-queries:**
-
-```javascript
-// Search for context on current work
-search({ query: ["current branch/feature name", "decisions"] });
-
-// Search for past errors if debugging
-search({ query: "error message or pattern" });
-
-// Search for established patterns
-search({ query: ["component/module name", "patterns"] });
-```
-
-**When to search:**
-
-| Situation             | Query Example                               |
-| --------------------- | ------------------------------------------- |
-| Starting feature work | `["feature-name", "decisions", "approach"]` |
-| Debugging an error    | `"TypeError: Cannot read property"`         |
-| Code review prep      | `["module-name", "review", "patterns"]`     |
-| Resuming paused work  | `["branch-name", "context", "next steps"]`  |
-
-**Tips:**
-
-- Single string = semantic search (fuzzy, meaning-based)
-- Array of 2-5 terms = AND search (all terms must match)
-- Use `limit: 5` for focused results, `limit: 20` for broader search
-- Current conversation is NOT indexed yet (only previous sessions)
-
-**Summarize findings** for the user if relevant context is found.
-
----
-
-## 1. Context Loading (MANDATORY)
-
-- [ ] Read [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md) - Current status,
-      active blockers, next goals
-- [ ] Increment session counter in
-      [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md)
-- [ ] Read [ROADMAP.md](../../ROADMAP.md) lines 1-100 (Active Sprint section
-      only — use offset/limit)
-
-## 1b. Session Gap Detection (AUTOMATIC - Session #138)
-
-Automated via `npm run session:gaps` (run in Section 7). Compares
-commit-log.jsonl against SESSION_CONTEXT.md.
-
-**If gaps are detected:** Run `npm run session:gaps:fix`, review suggestions,
-and add to SESSION_CONTEXT.md. See `scripts/check-session-gaps.js` for details.
-
-## 1c. Stale Documentation Check (MANDATORY)
-
-**Documentation often drifts from reality.** Before trusting any status in docs,
-verify against actual commits:
+### 2.3 Stale Documentation Check (MUST)
 
 ```bash
-# Check recent commits to see actual work done
 git log --oneline -30
-
-# Check commits since last documented session date
-git log --oneline --since="YYYY-MM-DD"
 ```
 
-**Compare commits against documented status:**
+Compare commits against ROADMAP.md Active Sprint checkboxes. If discrepancies
+found, present them: "Docs appear stale: [specifics]. Update now or defer?"
 
-1. Look for PR/feature commits (e.g., "feat:", "fix:", "refactor:")
-2. Cross-reference with ROADMAP.md Active Sprint checkboxes
-3. If commits show work done but docs show incomplete → **UPDATE THE DOCS**
+Let the user decide. Do not auto-update.
 
-**Common discrepancies to check:**
+### 2.4 Session Gap Detection (handled by scripts)
 
-- Sprint track items: Check commits against Active Sprint checkboxes in
-  ROADMAP.md
-- Session counter: Check AI_REVIEW_LEARNINGS_LOG.md version history for session
-  numbers
-- Test counts: Run `npm test` to verify actual vs documented
+Automated via `npm run session:gaps` in Phase 3. If gaps detected, run
+`npm run session:gaps:fix` and present suggestions.
 
-**If docs are stale:**
+### 2.5 Consolidation Status (handled by hook)
 
-1. Update the stale document with correct status
-2. Note which sessions failed to update docs
-3. Commit the corrections before proceeding
-
-## 2. Consolidation Status Check
-
-Fully automated by SessionStart hook (`run-consolidation.js --auto`). If it
-failed (check SessionStart output), run:
+Automated by SessionStart hook. If it failed (check hook output), run:
 `node scripts/run-consolidation.js --apply`
 
-## 3. Documentation & Planning Awareness
+---
 
-- [ ] Read [ROADMAP.md](../../ROADMAP.md) Active Sprint section (first ~100
-      lines — use offset/limit) for current work
-- [ ] Note: Archive files in `docs/archive/` are excluded from linting
-- [ ] Completed plans are archived to `docs/archive/completed-plans/`
-- [ ] Reference: INTEGRATED_IMPROVEMENT_PLAN.md is ✅ COMPLETE (archived
-      2026-01-14)
+## Phase 3: Health Scripts (MUST)
 
-## 4. Skill Selection (BEFORE starting work)
-
-```
-DECISION TREE:
-├─ New project/domain? → Use '/find-skills' to discover capabilities
-├─ Bug/Error? → Use 'systematic-debugging' skill FIRST
-├─ Writing code? → Use 'code-reviewer' agent AFTER completion
-├─ Security work? → Use 'security-auditor' agent
-├─ UI/Frontend? → Use 'frontend-design' skill
-├─ Complex task? → Check available skills with /skills
-└─ Multi-step task? → Use TodoWrite to track progress
-```
-
-## 5. Code Review Handling Procedures
-
-When receiving code review feedback (CodeRabbit, Qodo, etc.):
-
-1. **ALWAYS use `/pr-review` skill** - Never process review feedback without
-   invoking the full protocol. Skipping the protocol causes cascading issues in
-   subsequent rounds (CC regressions, propagation misses, missing learning log
-   entries). Evidence: PR #379 R8-R9 skipped protocol, causing 2 avoidable
-   cleanup rounds.
-2. **Analyze ALL suggestions** - Read through every comment multiple times
-3. **Create TodoWrite checklist** - Track each suggestion as a task
-4. **Address systematically** - Don't skip items; mark as resolved or note why
-   skipped
-5. **Verify CI impact** - Check if changes affect workflows (ci.yml,
-   docs-lint.yml)
-6. **Test after changes** - Run `npm test` and `npm run lint` before committing
-
-## 6. Anti-Pattern Awareness
-
-**Before writing code**, scan claude.md Section 4 "Critical Anti-Patterns" and
-read [CODE_PATTERNS.md](../../docs/agent_docs/CODE_PATTERNS.md) lines 1-60
-(Quick Reference section only — use offset/limit). Key patterns:
-
-- **Read before edit** - Always read files before attempting to edit
-- **Regex performance** - Avoid greedy `.*` in patterns; use bounded
-  `[\s\S]{0,N}?`
-- **ESLint flat config** - Spread plugin configs, don't use directly
-- **Path-based filtering** - Add pathFilter for directory-specific patterns
-- **Archive exclusions** - Historical docs should be excluded from strict
-  linting
-
-## 6b. Velocity & Task Dependencies (RECOMMENDED)
-
-**Show recent velocity and available tasks:**
+**Output:** "Running 9 health scripts..."
 
 ```bash
-# Show velocity summary (if data exists)
-node scripts/velocity/generate-report.js 2>/dev/null || true
-
-# Show dependency-resolved available tasks
-node scripts/tasks/resolve-dependencies.js 2>/dev/null || true
-```
-
-Share the output with the user at session start so they can see:
-
-- Recent velocity trend and sprint burn-down
-- Which tasks are unblocked and ready to work on
-
-## 7. Session Start Scripts (AUTO-RUN)
-
-**Execute these scripts automatically** when processing this command:
-
-```bash
-# Surface known anti-patterns (errors should be visible, not suppressed)
 npm run patterns:check
-
-# Check if multi-AI review thresholds reached
 npm run review:check
-
-# Surface past lessons relevant to current work
 npm run lessons:surface
-
-# Check for undocumented sessions (Layer D - compaction gap detector)
 npm run session:gaps
-
-# Check ROADMAP hygiene (unarchived completed items, sync issues)
 npm run roadmap:hygiene
-
-# Check review JSONL sync and auto-repair drift (Session #166)
 npm run reviews:sync -- --apply
-
-# Check review archive health (heading format, gaps, duplicates — Session #162)
 npm run reviews:check-archive
-
-# Check if active reviews exceed threshold (>20) and suggest archival
-# If overdue, suggest: npm run reviews:archive -- --apply
 npm run reviews:archive
-
-# Surface hook health trends (overrides, failures, agent invocations)
 npm run hooks:analytics -- --since=$(date -d '7 days ago' +%Y-%m-%d)
 ```
 
-**Important**: These scripts are **required**. If any script fails:
+**After all scripts:** "Scripts complete: N passed, M failed, K warnings."
 
-1. Note the error in session summary
-2. Investigate if it's a real issue vs missing script
-3. If script missing, note it as "N/A" in audit
+**If any script fails (MUST):** Present to user: "Script X failed: [error]. Fix
+now / Defer / Ignore?" Do not silently decide.
 
-**Record results in session audit** - these must be marked as "Ran" or "Failed
-(reason)" in `/session-end` audit.
+**Record results** — these must be marked as "Ran" or "Failed (reason)" in
+`/session-end` audit.
 
-## 7b. Hook Anomaly Gate (MUST — L3)
+### 3.1 Cross-Document Dependency Check (SHOULD)
 
-After running session scripts, check for hook system anomalies. **If any
-threshold is breached, warn the user before proceeding.**
-
-**Data sources** (best-effort — skip any that don't exist):
-
-1. **Override trend:** Read `.claude/state/override-log.jsonl`. Count overrides
-   in last 7 days vs previous 7 days. If current week is 50%+ higher and at
-   least 5 more overrides → warn.
-2. **Hook warnings:** Read `.claude/state/hook-warnings-log.jsonl`. If 10+
-   warnings in last 7 days → warn.
-3. **Health grade drop:** Read `.claude/state/health-score-log.jsonl`. Compare
-   last two entries. If grade dropped 2+ levels (e.g. B→D) → warn.
-
-**Output format** (only show if anomalies found):
-
-```
-⚠️ Hook anomalies detected:
-  - Override trend: 18 this week vs 8 last week (+125%)
-  - Hook warnings: 14 in last 7 days (threshold: 10)
-  - Health grade: B → D (2-grade drop)
-  Recommend: /alerts --full for details
+```bash
+npm run crossdoc:check
 ```
 
-**If no anomalies:** Skip silently. Do not output "no anomalies found."
+### 3.2 Velocity & Task Dependencies (SHOULD)
 
-## 7c. Warning Acknowledgment Gate (MUST — L1)
+```bash
+node scripts/velocity/generate-report.js 2>/dev/null || true
+node scripts/tasks/resolve-dependencies.js 2>/dev/null || true
+```
 
-Read `.claude/hook-warnings.json`. If unacknowledged warnings exist (warnings
-added since `lastCleared`), present them and require acknowledgment before
-proceeding:
+---
+
+## Phase 4: Warning Gates (MUST)
+
+### 4.1 Hook Anomaly Gate (MUST)
+
+Check for anomalies (best-effort — skip files that don't exist):
+
+1. **Override trend:** Read `.claude/override-log.jsonl`. Count overrides in
+   last 7 days vs previous 7 days. If 50%+ higher and 5+ more → warn.
+2. **Hook warnings:** Read `.claude/state/hook-warnings-log.jsonl`. If 10+ in
+   last 7 days → warn.
+3. **Health grade drop:** Read `.claude/state/health-score-log.jsonl`. If grade
+   dropped 2+ levels → warn.
+
+If anomalies found, present and recommend `/alerts --full`. If none: skip
+silently.
+
+### 4.2 Warning Acknowledgment Gate (MUST)
+
+Read `.claude/hook-warnings.json`. If unacknowledged warnings exist (added since
+`lastCleared`):
 
 ```
-⚠️ Unacknowledged hook warnings (N):
-  1. [WARNING] propagation: writeFileSync without symlink guard (5 occurrences)
-  2. [ERROR] cognitive-complexity: 12 overrides in 7 days (auto-escalated)
+Unacknowledged hook warnings (N):
+  1. [type] message (occurrences)
+  2. ...
 
   Acknowledge all? [Y] or review individually? [R]
 ```
 
-**If "Y":** Record acknowledgment timestamp in `hook-warnings.json`, proceed.
-**If "R":** Present each warning for individual decision (acknowledge/fix now).
+**Y:** Record timestamp in `hook-warnings.json`, proceed. **R:** Present each
+for individual decision. **No warnings:** Skip silently.
 
-**If no warnings:** Skip silently.
+### 4.3 Technical Debt Snapshot (SHOULD)
 
-## 8. Technical Debt Awareness (NEW - Session #98)
-
-**Check current technical debt status:**
-
-- [ ] Read [Technical Debt INDEX](../../docs/technical-debt/INDEX.md) for
-      prioritized tech debt
-- [ ] Note any S0/S1 items that should be addressed this session
-- [ ] Check if any items from previous session need updating
-
-**Key tracking documents:**
-
-| Document                       | Purpose                                    |
-| ------------------------------ | ------------------------------------------ |
-| `docs/technical-debt/INDEX.md` | Single source of truth for all tech debt   |
-| `AUDIT_TRACKER.md`             | Audit completion and threshold tracking    |
-| `ROADMAP.md` Track D           | Performance-critical items for this sprint |
-
-**After resolving tech debt items:**
-
-1. Mark item as resolved in `docs/technical-debt/MASTER_DEBT.jsonl`
-2. Update ROADMAP.md if item was in a sprint track
-3. Note in session summary
-
-## 9. Cross-Document Dependency Check
-
-**Before starting work**, verify cross-document consistency:
-
-```bash
-# Check cross-document dependencies
-npm run crossdoc:check
-```
-
-**Key dependencies to verify:**
-
-- ROADMAP.md ↔ SESSION_CONTEXT.md (priorities match)
-- `MASTER_DEBT.jsonl` ↔ ROADMAP.md (tech debt section current)
-- Audit findings ↔ `MASTER_DEBT.jsonl` (new findings consolidated)
-
-**See:** [DOCUMENT_DEPENDENCIES.md](../../docs/DOCUMENT_DEPENDENCIES.md) for
-full dependency matrix.
-
-## 10. Incident Documentation Reminder
-
-**After encountering any significant errors or issues:**
-
-- Document the issue in
-  [AI_REVIEW_LEARNINGS_LOG.md](../../docs/AI_REVIEW_LEARNINGS_LOG.md)
-- Use the standard "Review #XX" format
-- Include: cause, fix, pattern identified, prevention steps
-- This builds institutional knowledge for future sessions
+Read [Technical Debt INDEX](../../docs/technical-debt/INDEX.md). Note S0/S1
+counts for the summary.
 
 ---
 
-Ready to begin session. What would you like to work on?
+## Phase 5: Summary & Goal Selection (MUST)
+
+### Summary Template
+
+Present using this format:
+
+```
+Session #N — Pre-Flight Summary
+Branch: [branch]
+
+| Script | Status |
+|--------|--------|
+| patterns:check | Pass/Fail |
+| review:check | Pass/Warn |
+| ... | ... |
+
+Warnings: N acknowledged | Tech Debt: N S0, M S1
+Next Goals (from SESSION_CONTEXT.md):
+  1. [goal 1]
+  2. [goal 2]
+  3. [goal 3]
+```
+
+### Goal Selection (MUST)
+
+After the summary: "Which goal would you like to focus on, or something else?"
+Reference the surfaced goals — do not use a generic open-ended prompt.
+
+### Closure Signal (MUST)
+
+"Session #N pre-flight complete. [N] scripts ran, [M] warnings acknowledged.
+Ready to work."
+
+**Done when:** Session counter incremented, context loaded, all scripts ran (or
+failures escalated to user), warnings acknowledged, goal selected.
+
+---
+
+## Guard Rails
+
+- **Scope explosion:** If 3+ scripts failed or 3+ findings surfaced, present a
+  triage list: "Multiple issues found. Which to address now vs defer?" Do not
+  auto-fix multiple issues.
+- **Disengagement:** If user says "skip" or "let's work" mid-checklist, stop
+  immediately. Present what's completed vs remaining. Proceed to goal selection.
+- **Compaction recovery:** If compaction occurs mid-session-begin, re-read
+  SESSION_CONTEXT.md. If counter was already incremented, do not re-increment.
+  Resume from the last unfinished phase.
+
+---
+
+## Integration
+
+- **Neighbors:** `session-end` (receives session context), `checkpoint`
+  (mid-session state), `alerts` (detailed health drill-down)
+- **Handoff to session-end:** SESSION_CONTEXT.md updated with session number and
+  current work. Script results marked as "Ran" or "Failed."
+- **Reference material:** See [REFERENCE.md](./REFERENCE.md) for skill routing,
+  code review procedures, and anti-pattern guidance.
 
 ---
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-02-25 | Initial implementation |
+| Version | Date       | Description                                    |
+| ------- | ---------- | ---------------------------------------------- |
+| 2.0     | 2026-03-16 | Skill-audit rewrite: 31 decisions, 51→73 score |
+| 1.0     | 2026-02-25 | Initial implementation                         |

@@ -184,28 +184,32 @@ chip (WIP) │ └── ui/ # shadcn components └── public/ └── ima
 
 ## Project Status
 
-**Last Updated:** March 11, 2026 **Overall Progress:** ~15% **Current Focus:**
-🔧 System-Wide Standardization + 🚀 Operational Visibility
+**Last Updated:** March 16, 2026 **Overall Progress:** ~15% **Current Focus:**
+🔧 1. Tooling & Infrastructure
 
 ### Milestone Status
 
-| Milestone                   | Status      | Progress |
-| --------------------------- | ----------- | -------- |
-| M1 - Foundation             | ✅ Complete | 100%     |
-| Integrated Improvement Plan | ✅ Complete | 100%     |
-| 🚀 Operational Visibility   | ⏸️ ACTIVE   | 25%      |
-| M1.5 - Quick Wins           | ⏸️ Paused   | 20%      |
-| M1.6 - Admin Panel + UX     | ⏸️ Paused   | 75%      |
-| M2 - Architecture           | ⏸️ Optional | 0%       |
-| M3 - Meetings               | 📋 Planned  | 0%       |
-| M4 - Expansion              | 📋 Planned  | 0%       |
-| M4.5 - Security & Privacy   | 📋 Planned  | 0%       |
-| M5 - Offline + Steps        | 📋 Planned  | 0%       |
-| M6 - Journaling + Safety    | 📋 Planned  | 0%       |
-| M7 - Fellowship Suite       | 📋 Planned  | 0%       |
-| M8 - Speakers               | 📋 Planned  | 0%       |
-| M9 - Native App             | 📋 Planned  | 0%       |
-| M10 - Monetization + Future | 🔬 Research | 0%       |
+| Milestone                         | Status      | Progress |
+| --------------------------------- | ----------- | -------- |
+| M1 - Foundation                   | ✅ Complete | 100%     |
+| Integrated Improvement Plan       | ✅ Complete | 100%     |
+| 🔧 1. Tooling & Infrastructure    | ⏸️ ACTIVE   | 0%       |
+| 🔧 2. Code Quality Overhaul       | ⏸️ BLOCKED  | 0%       |
+| 🔧 3. Data Effectiveness          | ⏸️ BLOCKED  | 0%       |
+| 🔧 4. System-Wide Standardization | ⏸️ BLOCKED  | 0%       |
+| 🚀 Operational Visibility         | ⏸️ BLOCKED  | 25%      |
+| M1.5 - Quick Wins                 | ⏸️ Paused   | 20%      |
+| M1.6 - Admin Panel + UX           | ⏸️ Paused   | 75%      |
+| M2 - Architecture                 | ⏸️ Optional | 0%       |
+| M3 - Meetings                     | 📋 Planned  | 0%       |
+| M4 - Expansion                    | 📋 Planned  | 0%       |
+| M4.5 - Security & Privacy         | 📋 Planned  | 0%       |
+| M5 - Offline + Steps              | 📋 Planned  | 0%       |
+| M6 - Journaling + Safety          | 📋 Planned  | 0%       |
+| M7 - Fellowship Suite             | 📋 Planned  | 0%       |
+| M8 - Speakers                     | 📋 Planned  | 0%       |
+| M9 - Native App                   | 📋 Planned  | 0%       |
+| M10 - Monetization + Future       | 🔬 Research | 0%       |
 
 ### Recent Completions
 
@@ -214,7 +218,7 @@ chip (WIP) │ └── ui/ # shadcn components └── public/ └── ima
 
 ### Current Sprint
 
-- 🔄 🚀 Operational Visibility (25%)
+- 🔄 🔧 1. Tooling & Infrastructure (0%)
 
 See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
 
