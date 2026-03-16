@@ -502,6 +502,8 @@ const hasPatternWarnings = patternWarnings.length > 0;
 if (misses.length === 0 && !hasPatternWarnings) {
   if (total > 0) {
     console.log(`  ✅ Propagation check passed (${total} functions, no duplicates missed)`);
+  } else {
+    console.log("  ✅ Propagation check passed");
   }
   process.exit(0);
 }

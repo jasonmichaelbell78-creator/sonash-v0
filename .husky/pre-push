@@ -48,7 +48,7 @@ if [ -n "${push_diff_files:-}" ]; then
     echo "  Fix issues or run: npm run patterns:check"
     # C2-G1: Extract top 3 affected files for enriched warning
     _pat_files=$(printf '%s\n' "$pattern_output" | grep -oE '📄 [^ ]+' | sed 's/📄 //' | head -3 | tr '\n' ',' | sed 's/,$//')
-    node scripts/append-hook-warning.js --hook=pre-push --type=patterns --severity=warning --message="Pattern compliance issues in pushed files" --action="npm run patterns:check" --files="${_pat_files:-unknown}" --pattern="check-pattern-compliance" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=patterns --severity=warning --message="Pattern compliance issues in pushed files" --action="npm run patterns:check" --files="${_pat_files:-unknown}" --pattern="check-pattern-compliance" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: pattern compliance" >&2
   else
     echo "  ✅ Pattern compliance passed (push diff)"
   fi
@@ -87,7 +87,7 @@ if [ -n "${script_changes:-}" ]; then
     require_skip_reason "SKIP_REVIEWER=1"
     echo "  ⚠️ Bypassed with SKIP_REVIEWER=1"
     node scripts/log-override.js --quick --check=reviewer --reason="$SKIP_REASON" 2>/dev/null || true
-    node scripts/append-hook-warning.js --hook=pre-push --type=reviewer --severity=warning --message="Code-reviewer bypassed for script changes" --action="Run code-reviewer agent" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=reviewer --severity=warning --message="Code-reviewer bypassed for script changes" --action="Run code-reviewer agent" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: code-reviewer bypass" >&2
   else
     echo "  ✅ Code-reviewer was invoked for script changes"
   fi
@@ -116,12 +116,12 @@ if [ "$prop_exit" -ne 0 ]; then
   # C2-G1: Extract top 3 affected files and pattern name for enriched warning
   _prop_files=$(printf '%s\n' "$prop_output" | grep -E '^\s+- ' | sed 's/^\s*- //' | head -3 | tr '\n' ',' | sed 's/,$//')
   _prop_pattern=$(printf '%s\n' "$prop_output" | grep -oE 'Pattern: [^ ]+' | head -1 | sed 's/Pattern: //')
-  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=warning --message="Propagation check bypassed" --action="Review duplicate functions" --files="${_prop_files:-unknown}" --pattern="${_prop_pattern:-propagation}" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
+  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=warning --message="Propagation check bypassed" --action="Review duplicate functions" --files="${_prop_files:-unknown}" --pattern="${_prop_pattern:-propagation}" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: propagation bypass" >&2
 elif echo "$prop_output" | grep -q "⚠️"; then
   printf '%s\n' "$prop_output"
   _prop_files=$(printf '%s\n' "$prop_output" | grep -E '^\s+- ' | sed 's/^\s*- //' | head -3 | tr '\n' ',' | sed 's/,$//')
   _prop_pattern=$(printf '%s\n' "$prop_output" | grep -oE 'Pattern: [^ ]+' | head -1 | sed 's/Pattern: //')
-  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=info --message="Propagation warnings found in pushed code" --action="Review duplicate functions" --files="${_prop_files:-unknown}" --pattern="${_prop_pattern:-propagation}" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
+  node scripts/append-hook-warning.js --hook=pre-push --type=propagation --severity=info --message="Propagation warnings found in pushed code" --action="Review duplicate functions" --files="${_prop_files:-unknown}" --pattern="${_prop_pattern:-propagation}" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: propagation warnings" >&2
 elif echo "$prop_output" | grep -q "✅"; then
   printf '%s\n' "$prop_output"
 fi
@@ -143,7 +143,7 @@ if [ -n "${hook_changes:-}" ]; then
     printf '%s\n' "$hook_test_output" | grep -E "✗|FAIL|Failed" | head -10
     echo ""
     echo "  Fix hook tests before pushing. Run: npm run hooks:test"
-    node scripts/append-hook-warning.js --hook=pre-push --type=hook-tests --severity=warning --message="Hook tests failed" --action="npm run hooks:test" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=hook-tests --severity=warning --message="Hook tests failed" --action="npm run hooks:test" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: hook tests" >&2
     exit 1
   fi
   echo "  ✅ Hook tests passed"
@@ -191,7 +191,7 @@ else
     exit 1
   elif echo "$out" | grep -q "MEDIUM\|LOW"; then
     echo "  ⚠️ Security warnings in new code (not blocking) - review recommended"
-    node scripts/append-hook-warning.js --hook=pre-push --type=security --severity=warning --message="Security warnings (MEDIUM/LOW) found in pushed code" --action="npm run security:check" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=security --severity=warning --message="Security warnings (MEDIUM/LOW) found in pushed code" --action="npm run security:check" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: security warnings" >&2
   else
     echo "  ✅ Security check passed (new code only)"
   fi
@@ -341,9 +341,13 @@ if [ "$audit_exit" -ne 0 ]; then
   if echo "$audit_output" | grep -q "vulnerabilities"; then
     echo "  ⚠️ Security vulnerabilities found (not blocking - run: npm audit)"
     echo "$audit_output" | grep -E "high|critical|vulnerabilities" | head -5
-    node scripts/append-hook-warning.js --hook=pre-push --type=audit --severity=warning --message="npm audit found security vulnerabilities" --action="npm audit" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
+    node scripts/append-hook-warning.js --hook=pre-push --type=audit --severity=warning --message="npm audit found security vulnerabilities" --action="npm audit" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: npm audit" >&2
   else
     echo "  ⚠️ npm audit check skipped (network or registry issue)"
+    node scripts/append-hook-warning.js --hook=pre-push --type=network-error --severity=info \
+      --message="npm audit skipped — network unavailable" \
+      --action="Check network connectivity and retry" \
+      || echo "⚠️ npm audit skipped — network unavailable" >&2
   fi
 else
   echo "  ✅ No high/critical vulnerabilities"
@@ -376,7 +380,7 @@ else
       first_warning_one_line=$(printf '%s' "$first_warning" | tr '\n\r' '  ' | sed 's/[[:space:]]\{1,\}/ /g; s/^ *//; s/ *$//')
       # Review #214: Only create alert if we have a non-empty message
       if [ -n "$first_warning_one_line" ]; then
-        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning_one_line" >> "$HOOK_OUTPUT_LOG" 2>&1 || true
+        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning_one_line" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: trigger warning" >&2
       fi
     else
       echo "  ✅ No blocking triggers"

@@ -124,6 +124,7 @@ function rotateSizeBasedIfNeeded() {
     console.log(`Override log rotated to ${path.basename(backupFile)}`);
   } catch {
     // Best-effort — never block logging on rotation failure
+    console.error("⚠️ Override log size-based rotation failed");
   }
 }
 
@@ -137,6 +138,7 @@ function rotateEntryBasedIfNeeded() {
     }
   } catch {
     // Non-fatal: rotation failure should not block override logging
+    console.error("⚠️ Override log entry-based rotation failed");
   }
 }
 
@@ -261,8 +263,10 @@ function checkBypassDebtThreshold(check) {
       }
     }
     console.log(`  📋 Auto-generated DEBT entry: ${check} bypassed ${count}x in 14 days`);
+    console.error(`⚠️ Auto-generated DEBT entry for check: ${check}`);
   } catch {
     // Best-effort — never block hooks
+    console.error(`⚠️ Auto-DEBT creation failed for check: ${check}`);
   }
 }
 

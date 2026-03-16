@@ -72,8 +72,14 @@ function countRecentOccurrences(type, sinceDaysAgo) {
     const logPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
     try {
       const st = fs.lstatSync(logPath);
-      if (st.isSymbolicLink()) return 0;
-      if (st.size > 2 * 1024 * 1024) return 0;
+      if (st.isSymbolicLink()) {
+        console.error("⚠️ hook-warnings-log.jsonl is a symlink — skipping occurrence count");
+        return 0;
+      }
+      if (st.size > 2 * 1024 * 1024) {
+        console.error("⚠️ hook-warnings-log.jsonl exceeds 2MB size guard — skipping occurrence count");
+        return 0;
+      }
     } catch {
       return 0;
     }
@@ -103,8 +109,14 @@ function countOccurrencesSince(type, sinceTimestamp) {
     const logPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
     try {
       const st = fs.lstatSync(logPath);
-      if (st.isSymbolicLink()) return 0;
-      if (st.size > 2 * 1024 * 1024) return 0;
+      if (st.isSymbolicLink()) {
+        console.error("⚠️ hook-warnings-log.jsonl is a symlink — skipping occurrence-since-ack count");
+        return 0;
+      }
+      if (st.size > 2 * 1024 * 1024) {
+        console.error("⚠️ hook-warnings-log.jsonl exceeds 2MB size guard — skipping occurrence-since-ack count");
+        return 0;
+      }
     } catch {
       return 0;
     }

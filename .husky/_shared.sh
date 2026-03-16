@@ -72,5 +72,7 @@ _shared_init_fnm() {
       return 0
     fi
     eval "$FNM_ENV"
+  else
+    echo "⚠️ fnm not available — using system Node.js" >&2
   fi
 }

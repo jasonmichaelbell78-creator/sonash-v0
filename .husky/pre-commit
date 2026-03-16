@@ -101,6 +101,10 @@ if command -v gitleaks > /dev/null 2>&1; then
   fi
 else
   echo "  ⏭️ gitleaks not installed (install: winget install Gitleaks.Gitleaks)"
+  node scripts/append-hook-warning.js --hook=pre-commit --type=missing-tool --severity=warning \
+    --message="gitleaks not installed — secrets scan skipped" \
+    --action="Install: winget install Gitleaks.Gitleaks" \
+    || echo "⚠️ gitleaks not installed — secrets scan skipped" >&3
 fi
 
 # --- Wave 1: ESLint + Tests in parallel ---
@@ -192,6 +196,10 @@ if npm list lint-staged --depth=0 > /dev/null 2>&1; then
 else
   echo "  ⚠️ lint-staged not installed - run 'npm ci' to enable auto-formatting"
   echo "  ⏭️ Skipping lint-staged (devDependency missing from node_modules)"
+  node scripts/append-hook-warning.js --hook=pre-commit --type=missing-tool --severity=warning \
+    --message="lint-staged not installed — auto-formatting skipped" \
+    --action="Install: npm install -D lint-staged" \
+    || echo "⚠️ lint-staged not installed — auto-formatting skipped" >&3
 fi
 
 # 3. Run pattern compliance check on staged files (blocks on critical violations)
@@ -278,7 +286,7 @@ if printf '%s\n' "$STAGED_FILES" | grep -Eq '\.(claude)/(skills|commands)/.*\.md
   if echo "$skills_output" | grep -q "❌ ERROR"; then
     echo "  ⚠️ Skill validation issues found (not blocking - run: npm run skills:validate)"
     printf '%s\n' "$skills_output" | grep -E "^📄|^   ❌" | head -10
-    node scripts/append-hook-warning.js --hook=pre-commit --type=skill --severity=warning --message="Skill validation issues found" --action="npm run skills:validate" || true
+    node scripts/append-hook-warning.js --hook=pre-commit --type=skill --severity=warning --message="Skill validation issues found" --action="npm run skills:validate" || echo "⚠️ Warning write failed: skill validation" >&3
   else
     echo "  ✅ Skill validation passed"
   fi
@@ -353,7 +361,7 @@ else
   agent_output=$(node scripts/check-agent-compliance.js 2>&1) || true
   if echo "$agent_output" | grep -q "⚠️"; then
     echo "  ⚠️ Agent compliance: code changed without agent review"
-    node scripts/append-hook-warning.js --hook=pre-commit --type=agent --severity=warning --message="Agent compliance warnings - code changed without agent review" --action="Use code-reviewer agent for modified code" || true
+    node scripts/append-hook-warning.js --hook=pre-commit --type=agent --severity=warning --message="Agent compliance warnings - code changed without agent review" --action="Use code-reviewer agent for modified code" || echo "⚠️ Warning write failed: agent compliance" >&3
   fi
 fi
 
@@ -389,7 +397,7 @@ else
       echo "  ⚠️ Planning JSONL changed but no MD files staged — did you forget to regenerate?" >&3
       echo "    node scripts/planning/generate-discovery-record.js" >&3
       echo "    node scripts/planning/generate-decisions.js" >&3
-      node scripts/append-hook-warning.js --hook=pre-commit --type=jsonl-sync --severity=warning --message="Planning JSONL changed without MD regeneration" --action="Run generation scripts" || true
+      node scripts/append-hook-warning.js --hook=pre-commit --type=jsonl-sync --severity=warning --message="Planning JSONL changed without MD regeneration" --action="Run generation scripts" || echo "⚠️ Warning write failed: JSONL-MD sync" >&3
     else
       echo "  ✅ Planning JSONL + MD both staged"
     fi
