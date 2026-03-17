@@ -28,7 +28,10 @@ const EXCLUDE_PATTERNS = /\.(test|spec)\.(ts|tsx|js|jsx)$|__tests__|node_modules
 let input = "";
 process.stdin.setEncoding("utf8");
 process.stdin.on("error", () => process.exit(0));
+// Timeout: if no stdin received within 3s, exit cleanly (test runner/CI)
+const stdinTimeout = setTimeout(() => process.exit(0), 3000);
 process.stdin.on("data", (chunk) => {
+  clearTimeout(stdinTimeout);
   input += chunk;
   if (input.length > 1024 * 1024) process.exit(0);
 });

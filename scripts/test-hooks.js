@@ -425,6 +425,12 @@ const HOOK_TESTS = {
     skipTests: true,
     tests: [],
   },
+  // Agent compliance hook — reads JSON from stdin, no "ok" output on empty input
+  "pre-commit-agent-compliance.js": {
+    description: "Agent compliance gate for git commit",
+    skipBasicExecution: true,
+    tests: [],
+  },
   // GSD framework hooks — read JSON from stdin, no "ok" output on empty input
   "gsd-check-update.js": {
     description: "GSD update check hook",
