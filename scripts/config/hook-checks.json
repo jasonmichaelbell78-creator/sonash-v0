@@ -200,7 +200,7 @@
         "2": "check errored — non-blocking"
       },
       "condition": null,
-      "parallel_group": null,
+      "parallel_group": "compliance-checks",
       "timeout_ms": 10000,
       "dependencies": {
         "binary": null,
@@ -240,7 +240,7 @@
         "pattern": "docs/audits/.*\\.jsonl$",
         "diff_filter": "ACM"
       },
-      "parallel_group": null,
+      "parallel_group": "compliance-checks",
       "timeout_ms": 15000,
       "dependencies": {
         "binary": null,
@@ -279,7 +279,7 @@
         "pattern": "\\.(claude)/(skills|commands)/.*\\.md$",
         "diff_filter": "ACM"
       },
-      "parallel_group": null,
+      "parallel_group": "compliance-checks",
       "timeout_ms": 15000,
       "dependencies": {
         "binary": null,
@@ -315,7 +315,7 @@
         "1": "broken dependencies — violation"
       },
       "condition": null,
-      "parallel_group": null,
+      "parallel_group": "doc-checks",
       "timeout_ms": 15000,
       "dependencies": {
         "binary": null,
@@ -395,7 +395,7 @@
         "pattern": "\\.md$",
         "diff_filter": "A"
       },
-      "parallel_group": null,
+      "parallel_group": "doc-checks",
       "timeout_ms": 10000,
       "dependencies": {
         "binary": null,
