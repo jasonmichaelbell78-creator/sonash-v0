@@ -224,12 +224,12 @@ try {
     const doAppendAndRotate = () => {
       fs.appendFileSync(invocationsPath, JSON.stringify(persistEntry) + "\n");
 
-      // Rotate when file gets large (keep 60 of last 100 entries, only when > 64KB)
+      // D5c: Rotate when file gets large (keep last 100 entries, trigger at > 32KB)
       if (rotateJsonl) {
         try {
           const { size } = fs.lstatSync(invocationsPath);
-          if (size > 64 * 1024) {
-            rotateJsonl(invocationsPath, 100, 60);
+          if (size > 32 * 1024) {
+            rotateJsonl(invocationsPath, 100, 100);
           }
         } catch {
           // Non-fatal

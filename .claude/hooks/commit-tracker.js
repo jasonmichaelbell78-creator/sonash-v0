@@ -181,16 +181,51 @@ function logCommitFailure(command) {
     const dir = path.dirname(commitFailuresLog);
     fs.mkdirSync(dir, { recursive: true });
     if (!isSafeToWrite(commitFailuresLog)) return;
+
+    // D5b: Capture branch name (best-effort)
+    let branchName = "unknown";
+    try {
+      branchName = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]) || "unknown";
+    } catch {
+      // Non-critical — use default
+    }
+
+    // D5b: Capture first 5 lines of hook output (best-effort)
+    let hookOutputExcerpt = "";
+    try {
+      const hookLogPath = path.join(projectDir, ".git", "hook-output.log");
+      if (fs.existsSync(hookLogPath) && !fs.lstatSync(hookLogPath).isSymbolicLink()) {
+        const stats = fs.statSync(hookLogPath);
+        // Only read if fresh (<60s old) and non-empty
+        if (stats.size > 0 && Date.now() - stats.mtimeMs < 60000) {
+          const content = fs.readFileSync(hookLogPath, "utf8").trim();
+          hookOutputExcerpt = content.split("\n").slice(0, 5).join("\n");
+        }
+      }
+    } catch {
+      // Non-critical — excerpt is best-effort
+    }
+
     const entry = {
       timestamp: new Date().toISOString(),
       command: sanitizeInput((command || "").slice(0, 200)).replace(
         /(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*)\S+/gi,
         "[REDACTED]"
       ),
+      branch: branchName,
       failedCheck: "pre-commit",
       session: getSessionCounter(),
+      hook_output_excerpt: sanitizeInput(hookOutputExcerpt.slice(0, 500)),
     };
     fs.appendFileSync(commitFailuresLog, JSON.stringify(entry) + "\n");
+
+    // D5b: Rotation — keep 50 entries max
+    try {
+      const { rotateJsonl } = require("./lib/rotate-state.js");
+      rotateJsonl(commitFailuresLog, 50, 50);
+    } catch {
+      // Non-critical — rotation failure doesn't block
+    }
   } catch (error) {
     // Non-critical — log for debuggability but don't break the hook
     console.error(

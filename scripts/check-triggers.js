@@ -308,9 +308,7 @@ function main() {
     const displayReason = reason.length > 200 ? reason.slice(0, 200) + "..." : reason;
     console.log(`   Reason: ${displayReason}`);
 
-    // Log the override for accountability — structured audit entry
-    // Using execFileSync to prevent command injection from SKIP_REASON
-    let logDestination = "none";
+    // Single owner: log-override.js (D13). Stderr fallback if it fails.
     try {
       const { execFileSync } = require("node:child_process");
       execFileSync(
@@ -321,94 +319,11 @@ function main() {
           stdio: "inherit",
         }
       );
-      logDestination = "script";
-    } catch (error_) {
-      // Inline fallback: write structured audit entry directly
-      // Log primary failure for debugging (stderr only, not persisted)
-      console.error(
-        `   [debug] Primary logger failed: ${(error_ instanceof Error ? error_?.message : String(error_)) ?? "unknown"}`
-      );
-      try {
-        // Truncate reason to prevent accidental secret persistence (max 200 chars)
-        const safeReason = reason.length > 200 ? reason.slice(0, 200) + "..." : reason;
-        const auditEntry = {
-          timestamp: new Date().toISOString(),
-          check: "triggers",
-          reason: safeReason,
-          // Log operator identity without PII — use hashed username
-          user: (() => {
-            const raw = process.env.USER || process.env.USERNAME || "unknown";
-            if (raw === "unknown") return raw;
-            const { createHash } = require("node:crypto");
-            return `user-${createHash("sha256").update(raw).digest("hex").slice(0, 8)}`;
-          })(),
-          git_branch: (() => {
-            try {
-              const res = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
-                encoding: "utf-8",
-                timeout: 3000,
-                stdio: ["ignore", "pipe", "ignore"],
-              });
-              if (res.error || res.status !== 0) return "unknown";
-              return res.stdout?.trim() || "unknown";
-            } catch {
-              return "unknown";
-            }
-          })(),
-          outcome: "skipped",
-        };
-        const gitRoot = (() => {
-          try {
-            return resolveGitRoot();
-          } catch {
-            return process.cwd();
-          }
-        })();
-        const logDir = path.join(gitRoot, ".claude");
-        // Symlink guard: reject symlinked .claude directory before creating/writing
-        if (fs.existsSync(logDir) && fs.lstatSync(logDir).isSymbolicLink()) {
-          throw new Error("symlink detected on log directory");
-        }
-        fs.mkdirSync(logDir, { recursive: true });
-        const logPath = path.join(logDir, "override-log.jsonl");
-        // Symlink guard: prevent writing through symlinks (SEC-001)
-        const realLogDir = fs.realpathSync(logDir);
-        const rel = path.relative(realLogDir, logPath);
-        if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
-          throw new Error("symlink/path traversal detected on directory");
-        }
-        if (fs.existsSync(logPath) && fs.lstatSync(logPath).isSymbolicLink()) {
-          throw new Error("symlink detected on log file");
-        }
-        // Atomic open+chmod+write via file descriptor to eliminate TOCTOU race
-        const fd = fs.openSync(logPath, "a", 0o600);
-        try {
-          const st = fs.fstatSync(fd);
-          if (!st.isFile()) {
-            throw new Error("override log target is not a regular file");
-          }
-          fs.fchmodSync(fd, 0o600);
-          fs.writeSync(fd, JSON.stringify(auditEntry) + "\n", undefined, "utf-8");
-        } finally {
-          fs.closeSync(fd);
-        }
-        logDestination = "file";
-      } catch (error_) {
-        // Both paths failed — warn but don't block
-        console.error(
-          `   [debug] Fallback logger failed: ${(error_ instanceof Error ? error_?.message : String(error_)) ?? "unknown"}`
-        );
-      }
+      console.log("   (Override logged for audit trail)\n");
+    } catch {
+      console.error("⚠️ Override log failed for check: triggers");
+      console.log("   ⚠️  WARNING: Override audit log write failed — entry not persisted\n");
     }
-    let logMessage;
-    if (logDestination === "script") {
-      logMessage = "   (Override logged for audit trail)\n";
-    } else if (logDestination === "file") {
-      logMessage = "   (Override persisted to .claude/override-log.jsonl via fallback)\n";
-    } else {
-      logMessage = "   ⚠️  WARNING: Override audit log write failed — entry not persisted\n";
-    }
-    console.log(logMessage);
 
     process.exit(0);
   }
