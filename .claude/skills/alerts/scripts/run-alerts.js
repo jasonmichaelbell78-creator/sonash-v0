@@ -2730,6 +2730,14 @@ function checkHookCompleteness() {
   const manifestPath = path.join(ROOT_DIR, "scripts", "config", "hook-checks.json");
 
   // --- 1. Read hook-runs.jsonl ---
+  // Size guard — skip if file is too large
+  try {
+    const runsStat = fs.statSync(hookRunsPath);
+    if (runsStat.size > 2 * 1024 * 1024) {
+      // File too large — skip completeness check
+      return;
+    }
+  } catch {}
   const runLines = safeReadLines(hookRunsPath);
   const allRuns = runLines.map((l) => safeParse(l)).filter(Boolean);
 
@@ -2752,8 +2760,9 @@ function checkHookCompleteness() {
     if (stat.size <= MAX_FILE_SIZE) {
       manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
     }
-  } catch {
-    // manifest missing or invalid — skip manifest-based checks
+  } catch (err) {
+    // manifest missing or invalid — log for debuggability
+    console.error("checkHookCompleteness: manifest read failed:", err instanceof Error ? err.message : String(err));
   }
 
   const now = Date.now();
@@ -2840,14 +2849,15 @@ function checkHookCompleteness() {
         : "info";
     const sortedSkips = highSkipChecks.sort((a, b) => b.skipPct - a.skipPct);
     const topSkip = sortedSkips.length > 0 ? sortedSkips[0] : null;
-    if (!topSkip) return;
-    addAlert(
-      "hook-completeness",
-      severity,
-      `${highSkipChecks.length} check(s) skipped >50% of runs in last 7 days`,
-      `Worst: "${topSkip.id}" skipped ${topSkip.skipPct}% (${topSkip.skipped}/${topSkip.total})`,
-      "Review SKIP_CHECKS usage — frequent skips may indicate false positives or misconfiguration"
-    );
+    if (topSkip) {
+      addAlert(
+        "hook-completeness",
+        severity,
+        `${highSkipChecks.length} check(s) skipped >50% of runs in last 7 days`,
+        `Worst: "${topSkip.id}" skipped ${topSkip.skipPct}% (${topSkip.skipped}/${topSkip.total})`,
+        "Review SKIP_CHECKS usage — frequent skips may indicate false positives or misconfiguration"
+      );
+    }
   }
 
   // --- 5. Duration trends: flag checks with >50% avg duration increase vs prior 7 days ---
@@ -2899,14 +2909,15 @@ function checkHookCompleteness() {
         : "info";
     const sortedRegressions = durationRegressions.sort((a, b) => b.pctIncrease - a.pctIncrease);
     const worst = sortedRegressions.length > 0 ? sortedRegressions[0] : null;
-    if (!worst) return;
-    addAlert(
-      "hook-completeness",
-      severity,
-      `${durationRegressions.length} check(s) with >50% avg duration increase vs prior 7 days`,
-      `Worst: "${worst.id}" ${worst.prevAvgMs}ms -> ${worst.currentAvgMs}ms (+${worst.pctIncrease}%)`,
-      "Investigate slow checks — may indicate new code complexity or environmental issues"
-    );
+    if (worst) {
+      addAlert(
+        "hook-completeness",
+        severity,
+        `${durationRegressions.length} check(s) with >50% avg duration increase vs prior 7 days`,
+        `Worst: "${worst.id}" ${worst.prevAvgMs}ms -> ${worst.currentAvgMs}ms (+${worst.pctIncrease}%)`,
+        "Investigate slow checks — may indicate new code complexity or environmental issues"
+      );
+    }
   }
 
   // All clear

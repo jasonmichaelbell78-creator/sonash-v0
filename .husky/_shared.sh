@@ -201,7 +201,6 @@ write_hook_runs_jsonl() {
       timestamp: new Date().toISOString(),
       branch: git(['rev-parse', '--abbrev-ref', 'HEAD']),
       commit: git(['rev-parse', '--short', 'HEAD']),
-      user: git(['config', 'user.name']),
       total_checks: checks.length,
       checks: checks,
       total_duration_ms: parseInt(process.env._WR_TOTAL_MS || '0') || 0,
@@ -211,10 +210,11 @@ write_hook_runs_jsonl() {
       errors: checks.filter(c => c.status === 'fail').length
     };
 
-    // Symlink guard (PR #444 R1 fix #10)
+    // Symlink guard (PR #444 R1 fix #10, R2 fix #7: reject non-file targets)
     try {
       const st = fs.lstatSync(runsPath);
-      if (st.isSymbolicLink()) { process.exit(0); }
+      if (st.isSymbolicLink()) process.exit(0);
+      if (!st.isFile()) process.exit(0);
     } catch (e) { if (e.code !== 'ENOENT') process.exit(0); }
 
     // Ensure directory exists

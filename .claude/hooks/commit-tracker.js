@@ -201,10 +201,9 @@ function logCommitFailure(command) {
         if (!path.isAbsolute(gitDir)) gitDir = path.join(projectDir, gitDir);
       } catch { gitDir = path.join(projectDir, ".git"); }
       const hookLogPath = path.join(gitDir, "hook-output.log");
-      if (fs.existsSync(hookLogPath) && !fs.lstatSync(hookLogPath).isSymbolicLink()) {
-        const stats = fs.statSync(hookLogPath);
-        // Only read if fresh (<60s old) and non-empty
-        if (stats.size > 0 && Date.now() - stats.mtimeMs < 60000) {
+      const stats = fs.lstatSync(hookLogPath);
+        // Only read if regular file, non-empty, within size cap (256KB), and fresh (<60s old)
+        if (stats.isFile() && stats.size > 0 && stats.size <= 256 * 1024 && Date.now() - stats.mtimeMs < 60000) {
           const content = fs.readFileSync(hookLogPath, "utf8").trim();
           hookOutputExcerpt = content.split("\n").slice(0, 5).join("\n");
           // Sanitize sensitive content from hook output — PR #444 R1 fix #12
@@ -212,7 +211,6 @@ function logCommitFailure(command) {
             .replace(/(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|password\s*=\s*|secret\s*=\s*)\S+/gi, "[REDACTED]")
             .replace(/\/[A-Za-z]:[\\\/]Users[\\\/]\w+/g, "[USER_PATH]");
         }
-      }
     } catch {
       // Non-critical — excerpt is best-effort
     }

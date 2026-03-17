@@ -712,22 +712,32 @@ function regenerateHookWarnings() {
     }
   }
 
-  // Compute occurrence counts from full JSONL
+  // Pre-compute counts in one pass (O(n) vs O(n*m)) — PR #444 R2 fix #9
+  const typeTotals = Object.create(null);
+  const typeSinceAckTotals = Object.create(null);
+  for (const x of entries) {
+    const type = x?.type;
+    if (typeof type !== "string" || !type) continue;
+    typeTotals[type] = (typeTotals[type] || 0) + 1;
+    const xTime = new Date(x.timestamp).getTime();
+    if (Number.isNaN(xTime)) continue;
+    const ackTimeRaw = ack.acknowledged?.[type] || ack.lastCleared || null;
+    if (ackTimeRaw) {
+      const ackMs = new Date(ackTimeRaw).getTime();
+      if (!Number.isNaN(ackMs) && xTime > ackMs) {
+        typeSinceAckTotals[type] = (typeSinceAckTotals[type] || 0) + 1;
+      }
+    } else {
+      typeSinceAckTotals[type] = (typeSinceAckTotals[type] || 0) + 1;
+    }
+  }
+
+  // Compute occurrence counts from pre-computed maps
   const warningsList = [...seen.values()].map((e) => {
-    const total = entries.filter((x) => x.type === e.type).length;
-    const sinceAck = ack.acknowledged[e.type]
-      ? entries.filter(
-          (x) =>
-            x.type === e.type &&
-            new Date(x.timestamp).getTime() > new Date(ack.acknowledged[e.type]).getTime()
-        ).length
-      : ack.lastCleared
-        ? entries.filter(
-            (x) =>
-              x.type === e.type &&
-              new Date(x.timestamp).getTime() > new Date(ack.lastCleared).getTime()
-          ).length
-        : total;
+    const total = typeTotals[e.type] || 0;
+    const sinceAck = (ack.acknowledged?.[e.type] || ack.lastCleared)
+      ? (typeSinceAckTotals[e.type] || 0)
+      : total;
     return {
       hook: sanitizeInput(String(e.hook || "")),
       type: sanitizeInput(String(e.type || "")),

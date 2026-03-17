@@ -44,13 +44,21 @@ else
     try {
       if (!fs.existsSync(warningsPath)) process.exit(0);
       const w = JSON.parse(fs.readFileSync(warningsPath, 'utf8'));
-      let ack = {};
-      try { ack = JSON.parse(fs.readFileSync(ackPath, 'utf8')).acknowledged || {}; } catch {}
+      let ack = { acknowledged: {}, lastCleared: null };
+      try {
+        const parsedAck = JSON.parse(fs.readFileSync(ackPath, 'utf8'));
+        if (parsedAck && typeof parsedAck === 'object') {
+          ack.acknowledged = parsedAck.acknowledged || {};
+          ack.lastCleared = parsedAck.lastCleared || null;
+        }
+      } catch {}
       const errors = (w.warnings || []).filter(e => {
         if (e.severity !== 'error') return false;
-        const ackTime = ack[e.type];
-        if (!ackTime) return true;
-        return new Date(e.timestamp) > new Date(ackTime);
+        const entryTime = new Date(e.timestamp).getTime();
+        const ackTime = ack.acknowledged[e.type];
+        if (ackTime && entryTime <= new Date(ackTime).getTime()) return false;
+        if (ack.lastCleared && entryTime <= new Date(ack.lastCleared).getTime()) return false;
+        return true;
       });
       if (errors.length > 0) {
         errors.forEach(e => console.error('  ❌ ' + e.type + ': ' + e.message));
