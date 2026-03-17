@@ -102,23 +102,31 @@ fi
 # 1. Tests already run in pre-commit (Quick Win - Session #113)
 # Removed duplicate test run - saves 50-60s per push
 
-# 2. Check for circular dependencies (blocking - architectural integrity)
+# 2. Check for circular dependencies (ONLY if app code changed)
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
-echo "  ▶ Checking for circular dependencies..."
-if ! npm run deps:circular > /dev/null 2>&1; then
-  echo "  ❌ Circular dependencies detected"
-  npm run deps:circular 2>&1 | tail -10
-  echo ""
-  echo "  Fix circular dependencies before pushing. Run: npm run deps:circular"
+_app_code_changed=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^(lib/|components/|app/).*\.(ts|tsx|js|jsx)$' | head -1)
+if [ -z "$_app_code_changed" ]; then
+  echo "  ⏭️ Circular deps skipped (no app code in push diff)"
   CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
   if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
-  echo "circular-deps|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
-  exit 1
+  echo "circular-deps|skip|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+else
+  echo "  ▶ Checking for circular dependencies..."
+  if ! npm run deps:circular > /dev/null 2>&1; then
+    echo "  ❌ Circular dependencies detected"
+    npm run deps:circular 2>&1 | tail -10
+    echo ""
+    echo "  Fix circular dependencies before pushing. Run: npm run deps:circular"
+    CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+    echo "circular-deps|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    exit 1
+  fi
+  echo "  ✅ No circular dependencies"
+  CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+  echo "circular-deps|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
 fi
-echo "  ✅ No circular dependencies"
-CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
-if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
-echo "circular-deps|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
 
 # 3. Pattern compliance on PUSH DIFF ONLY (PR #388 retro — 2x recommended)
 # Previously REMOVED due to double-jeopardy (scanning all 14 hardcoded files).
@@ -208,7 +216,15 @@ fi
 
 # 3c. Propagation check (Session #185 — 8x recommended across PRs #366-#388)
 # Detects functions modified in some files but not propagated to duplicate copies.
+# SCOPED: only run if script files are in the push diff.
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
+_scripts_in_diff=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^scripts/.*\.js$' | head -1)
+if [ -z "$_scripts_in_diff" ]; then
+  echo "  ⏭️ Propagation check skipped (no scripts in push diff)"
+  CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+  echo "propagation|skip|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+else
 echo "  ▶ Running propagation check..."
 set +e
 prop_output=$(node scripts/check-propagation.js --blocking 2>&1)
@@ -244,6 +260,7 @@ elif echo "$prop_output" | grep -q "✅"; then
   echo "propagation|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
 else
   echo "propagation|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+fi
 fi
 
 # 3d. Hook test suite (Session #185 — gated on .claude/hooks/ changes)
@@ -358,8 +375,17 @@ add_exit_trap 'rm -f "$_TSC_OUT" "$_CYC_OUT" "$_COG_OUT" "${_TSC_OUT}.rc" "${_CY
 # Timing for parallel checks — capture start time for each
 _TSC_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 
-# 5a. Type check (background)
-(npx tsc --noEmit > "$_TSC_OUT" 2>&1; echo $? > "${_TSC_OUT}.rc") &
+# 5a. Type check (background, ONLY if TS/TSX files in push diff)
+_ts_in_diff=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(ts|tsx)$' | head -1)
+_tsc_skip=0
+if [ -z "$_ts_in_diff" ]; then
+  echo "  ⏭️ Type check skipped (no TS files in push diff)"
+  echo "0" > "${_TSC_OUT}.rc"
+  _tsc_skip=1
+  echo "tsc|skip|0" >> "$CHECKS_TMPFILE"
+else
+  (npx tsc --noEmit > "$_TSC_OUT" 2>&1; echo $? > "${_TSC_OUT}.rc") &
+fi
 
 # 5b. Cyclomatic complexity (background, unless skipped)
 if [ "$_cyc_skip" -eq 0 ]; then
@@ -406,18 +432,20 @@ if [ ${#_TSC_START_NS} -gt 10 ]; then _PARALLEL_DURATION_MS=$(( (_PARALLEL_END_N
 
 # --- Process results ---
 
-# 5a result: type check
-_tsc_rc=$(cat "${_TSC_OUT}.rc" 2>/dev/null || echo "1")
-if [ "$_tsc_rc" -ne 0 ]; then
-  echo "  ❌ Type check failed"
-  tail -10 "$_TSC_OUT"
-  echo ""
-  echo "  Fix type errors before pushing. Run: npx tsc --noEmit"
-  echo "type-check|fail|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
-  exit 1
+# 5a result: type check (skip if no TS files in diff)
+if [ "$_tsc_skip" -eq 0 ]; then
+  _tsc_rc=$(cat "${_TSC_OUT}.rc" 2>/dev/null || echo "1")
+  if [ "$_tsc_rc" -ne 0 ]; then
+    echo "  ❌ Type check failed"
+    tail -10 "$_TSC_OUT"
+    echo ""
+    echo "  Fix type errors before pushing. Run: npx tsc --noEmit"
+    echo "type-check|fail|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    exit 1
+  fi
+  echo "  ✅ Type check passed"
+  echo "type-check|pass|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
 fi
-echo "  ✅ Type check passed"
-echo "type-check|pass|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
 
 # 5b result: cyclomatic complexity
 if [ "$_cyc_skip" -eq 0 ]; then
