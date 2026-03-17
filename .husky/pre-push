@@ -592,6 +592,9 @@ fi
 # --- End-of-hook summary + hook-runs.jsonl (Wave 3: D6, D7, D11, D12, D29) ---
 generate_hook_summary "Pre-push" "$CHECKS_TMPFILE" 2
 
+# Enhanced report with scope + remediation (Session #226)
+node scripts/hook-report.js "Pre-push" "$CHECKS_TMPFILE" --persist 2>&1 || true
+
 # Write hook-runs.jsonl (D6, D20, D21) — TOTAL_MS set by generate_hook_summary
 write_hook_runs_jsonl "pre-push" "$CHECKS_TMPFILE" "$TOTAL_MS"
 
