@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-disable complexity */
+/* global __dirname */
 /**
  * hook-report.js — Post-hook summary report with remediation suggestions.
  *
@@ -15,6 +17,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeAtomicWriteSync } = require("./lib/safe-fs");
 
 const ROOT = path.join(__dirname, "..");
 
@@ -163,11 +166,12 @@ function statusIcon(status) {
 function generateReport(hookName, checksFile, persist) {
   let lines;
   try {
-    lines = fs
-      .readFileSync(checksFile, "utf8")
-      .trim()
-      .split("\n")
-      .filter(Boolean);
+    const stat = fs.statSync(checksFile);
+    if (stat.size > 1024 * 100) {
+      console.error("Checks file too large, skipping report:", checksFile);
+      process.exit(0);
+    }
+    lines = fs.readFileSync(checksFile, "utf8").trim().split("\n").filter(Boolean);
   } catch {
     console.error("Could not read checks file:", checksFile);
     process.exit(0);
@@ -194,9 +198,7 @@ function generateReport(hookName, checksFile, persist) {
   report.push(
     `\u250C\u2500 ${hookName} Report \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510`
   );
-  report.push(
-    "\u2502 Status  Check                     Scope                Duration \u2502"
-  );
+  report.push("\u2502 Status  Check                     Scope                Duration \u2502");
   report.push(
     "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
   );
@@ -217,25 +219,18 @@ function generateReport(hookName, checksFile, persist) {
   );
 
   // Remediation section for failures/warnings
-  const actionable = checks.filter(
-    (c) => c.status === "fail" || c.status === "warn"
-  );
+  const actionable = checks.filter((c) => c.status === "fail" || c.status === "warn");
   if (actionable.length > 0) {
     report.push(
       "\u251C\u2500 Remediation \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
     );
     for (const c of actionable) {
       const remed = REMEDIATIONS[c.id];
-      report.push(
-        `\u2502 ${statusIcon(c.status)} ${c.id} (${c.status})`
-      );
+      report.push(`\u2502 ${statusIcon(c.status)} ${c.id} (${c.status})`);
       if (remed) {
-        if (remed.fix)
-          report.push(`\u2502   Fix: ${remed.fix}`);
-        if (remed.investigate)
-          report.push(`\u2502   Investigate: ${remed.investigate}`);
-        if (remed.defer)
-          report.push(`\u2502   Defer: ${remed.defer}`);
+        if (remed.fix) report.push(`\u2502   Fix: ${remed.fix}`);
+        if (remed.investigate) report.push(`\u2502   Investigate: ${remed.investigate}`);
+        if (remed.defer) report.push(`\u2502   Defer: ${remed.defer}`);
       } else {
         report.push(`\u2502   See hook output above for details`);
       }
@@ -251,12 +246,7 @@ function generateReport(hookName, checksFile, persist) {
 
   // Persist if requested
   if (persist) {
-    const reportPath = path.join(
-      ROOT,
-      ".claude",
-      "state",
-      "last-hook-report.md"
-    );
+    const reportPath = path.join(ROOT, ".claude", "state", "last-hook-report.md");
     const md = [
       `# ${hookName} Report`,
       `**Date:** ${new Date().toISOString()}`,
@@ -271,7 +261,9 @@ function generateReport(hookName, checksFile, persist) {
       );
     }
     md.push("");
-    md.push(`**Total:** ${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`);
+    md.push(
+      `**Total:** ${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`
+    );
 
     if (actionable.length > 0) {
       md.push("");
@@ -281,8 +273,7 @@ function generateReport(hookName, checksFile, persist) {
         md.push(`### ${c.id} (${c.status})`);
         if (remed) {
           if (remed.fix) md.push(`- **Fix:** \`${remed.fix}\``);
-          if (remed.investigate)
-            md.push(`- **Investigate:** \`${remed.investigate}\``);
+          if (remed.investigate) md.push(`- **Investigate:** \`${remed.investigate}\``);
           if (remed.defer) md.push(`- **Defer:** \`${remed.defer}\``);
         }
       }
@@ -290,7 +281,7 @@ function generateReport(hookName, checksFile, persist) {
 
     try {
       fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-      fs.writeFileSync(reportPath, md.join("\n") + "\n");
+      safeAtomicWriteSync(reportPath, md.join("\n") + "\n", "utf-8");
     } catch {
       // Non-critical — don't block
     }
