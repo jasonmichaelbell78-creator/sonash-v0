@@ -1,130 +1,82 @@
 {
-  "topic": "data-effectiveness-audit",
-  "outputDir": ".planning/learnings-effectiveness-audit/",
-  "startedAt": "2026-03-13T01:15:00.000Z",
-  "currentPhase": "approved",
+  "task": "Deep Plan: GitHub Optimization",
+  "topic": "github-optimization-plan",
+  "outputDir": ".planning/github-optimization-plan/",
+  "startedAt": "2026-03-17T12:00:00Z",
+  "currentPhase": "phase_3",
   "phaseStatus": {
     "warmup": "complete",
     "phase0": "complete-approved",
     "phase1": "complete",
-    "phase1b": "complete-skipped",
+    "phase1b": "complete",
     "phase2": "complete",
-    "phase3": "complete",
-    "phase3.5": "complete-pass",
-    "phase4": "approved",
-    "handoff": "pending-execution"
+    "phase3": "in-progress",
+    "phase3.5": "pending",
+    "phase4": "pending",
+    "handoff": "pending"
   },
-  "overarchingPrinciples": [
-    "No passive surfacing — all data surfaces must require action",
-    "AUTOMATION ALWAYS — manual processes are a bug, not a feature",
-    "Warnings are calls to action, not informational — deferrals are last resort",
-    "CRITICAL REFRAME (D8/D9): User orchestrates, AI writes/reviews code. Learnings must become AUTOMATED ENFORCEMENT (hooks, gates, checks), not human-facing surfaces.",
-    "Actionable = results. Not acknowledgment, not informational surfacing.",
-    "No deferrals unless user explicitly asks (D18).",
-    "AI-optimized — all formats, scoring, and outputs optimized for AI consumption (D24/D25/D30)."
-  ],
   "decisions": [
-    { "id": "D1", "choice": "Keep .planning/learnings-effectiveness-audit/ directory as-is" },
+    { "id": "D1", "choice": "Fix CI as Wave 0 before full execution" },
+    { "id": "D2", "choice": "5 waves (0-4), called waves" },
+    { "id": "D3", "choice": "Planning worktree for plans, feature branch for implementation" },
+    { "id": "D4", "choice": "Single PR, no reduction in thoroughness" },
+    { "id": "D5", "choice": "4-bucket code scanning approach as own wave with subsections" },
+    { "id": "D6", "choice": "Apache 2.0 license" },
+    { "id": "D7", "choice": "OIDC deferred to DEBT" },
+    { "id": "D8", "choice": "SonarCloud intentionally toggled, optimize both configs separately" },
+    { "id": "D9", "choice": "Strict SHA pinning — all actions with version comments" },
+    { "id": "D10", "choice": "Enable secret scanning + push protection" },
+    { "id": "D11", "choice": "Timeouts: 10/20/30 min by job type" },
+    { "id": "D12", "choice": "Cancel-in-progress for CI, not deploy" },
+    { "id": "D13", "choice": "Path filtering on CI, CodeQL, Semgrep for docs-only changes" },
     {
-      "id": "D2",
-      "choice": "All tooling/infrastructure data + opportunities section. Exclude app code."
+      "id": "D14",
+      "choice": "Full ruleset hardening: status checks, linear history, block force push/deletion"
     },
-    {
-      "id": "D3",
-      "choice": "Standalone skill + health integration. Skill is byproduct. Results/changes are deliverable."
-    },
-    {
-      "id": "D4",
-      "choice": "4-stage lifecycle: Capture/Storage/Recall/Action (0-3 each, 0-12 total). Action=3 = AUTOMATED ENFORCEMENT."
-    },
-    { "id": "D5", "choice": "EVERYTHING — leave no stone unturned" },
-    {
-      "id": "D6",
-      "choice": "Wire retros.jsonl + invocations.jsonl. Delete enforcement-manifest.jsonl + dedup-log.jsonl."
-    },
-    { "id": "D7", "choice": "Populate pattern_recurrence at creation time. Auto-escalate at >=3." },
-    { "id": "D8", "choice": "REFRAMED — enforce at CODE CREATION time, not review time." },
-    {
-      "id": "D9",
-      "choice": "REFRAMED — learnings → automated enforcement pipeline, not human acknowledgment."
-    },
-    {
-      "id": "D10",
-      "choice": "Restructure CLAUDE.md. Config stays. Automatable rules → hooks/scripts."
-    },
-    {
-      "id": "D11",
-      "choice": "Tiered rotation (30d/90d/never) + unified rotation script via session-start."
-    },
-    { "id": "D12", "choice": "Wire review-metrics.jsonl into /alerts AND pr-retro." },
-    {
-      "id": "D13",
-      "choice": "Route by pattern type: code → verified-patterns+lint, process → hook gate, behavioral → different."
-    },
-    { "id": "D14", "choice": "Hybrid: AI identifies + categorizes, script scaffolds, AI refines." },
     {
       "id": "D15",
-      "choice": "Proxy metrics for measurement, AI self-check prompt for prevention."
+      "choice": "Delete 4 duplicate environments, keep Production + Preview + copilot"
     },
-    { "id": "D16", "choice": "8 checker domains. Plan covers same domains as audit skill." },
+    { "id": "D16", "choice": "All community health files" },
+    { "id": "D17", "choice": "StepSecurity deferred" },
+    { "id": "D18", "choice": "Codecov with ratcheting thresholds" },
+    { "id": "D19", "choice": "Release Please with Conventional Commits" },
+    { "id": "D20", "choice": "Delete stale environments via API" },
+    { "id": "D21", "choice": "Refresh + path-scoped Copilot instructions" },
+    { "id": "D22", "choice": "Bug report + feature request + config.yml issue templates" },
     {
-      "id": "D17",
-      "choice": "Replace learning-effectiveness checker with lifecycle scoring + Data Effectiveness dimension."
+      "id": "D23",
+      "choice": "docs/GITHUB_GUIDE.md for solo dev, 9 sections, requires web research"
     },
-    { "id": "D18", "choice": "No deferral unless user explicitly asks." },
-    {
-      "id": "D19",
-      "choice": "Annotate CLAUDE.md rules with enforcement status. Don't delete content."
-    },
-    { "id": "D20", "choice": "Opportunities = all gaps. Audit itself must produce opportunities." },
-    { "id": "D21", "choice": "data-effectiveness-audit skill name." },
-    { "id": "D22", "choice": "Shared library: scripts/lib/learning-router.js." },
-    { "id": "D23", "choice": "Wave-based execution, dependency-ordered, one commit per wave." },
     {
       "id": "D24",
-      "choice": "Scoring rubric: 0=none, 1=manual, 2=semi-auto, 3=fully automated. AI-optimized."
+      "choice": "Fix Prettier + investigate test failures, fallback to Prettier-only"
     },
     {
       "id": "D25",
-      "choice": "JSONL tiers: 30d operational, 90d historical, never metrics. Delete 2 orphans."
+      "choice": "Required checks: Lint/TypeCheck/Test, Build, Dependency Review, CodeQL"
     },
+    { "id": "D26", "choice": "Resolve Dependabot alerts in Wave 0 (verify if already fixed)" },
+    { "id": "D27", "choice": "Socket.dev as guided manual install in Wave 4" },
+    { "id": "D28", "choice": "9 sections for GitHub Guide" },
+    { "id": "D29", "choice": "GitHub PVR for vulnerability reporting" },
     {
-      "id": "D26",
-      "choice": "Wire: retros→pr-review, invocations→session-end, review-metrics→alerts+pr-retro."
-    },
-    {
-      "id": "D27",
-      "choice": "Defense in depth: positive templates + verification agent + behavioral checklist."
-    },
-    {
-      "id": "D28",
-      "choice": "Absolute thresholds for security, ratcheting baselines for everything else."
-    },
-    {
-      "id": "D29",
-      "choice": "Event-driven routing via shared library. Router IS the aggregation."
-    },
-    { "id": "D30", "choice": "Per-type scaffolding templates. Trackable + actionable." },
-    { "id": "D31", "choice": "Tests + metrics for enforcement verification." },
-    {
-      "id": "D32",
-      "choice": "Immediate enforcement. No warning mode. Fix gate if false positives."
-    },
-    {
-      "id": "D33",
-      "choice": "Periodic + trigger-based audit runs. Warnings without action = useless."
-    },
-    { "id": "D34", "choice": "Verify existing enforcement works. If insufficient, widen scope." },
-    { "id": "D35", "choice": "15% weight for Data Effectiveness dimension in ecosystem-health." }
+      "id": "D30",
+      "choice": "Add Codecov, Socket.dev, OpenSSF Scorecard, Release Please. Defer StepSecurity, Bundle Analysis."
+    }
   ],
-  "batchNumber": 6,
-  "questionCount": 35,
-  "decisionCount": 35,
-  "selfAudit": "35/35 decisions covered. PASS.",
+  "batchNumber": 4,
+  "questionCount": 29,
+  "decisionCount": 30,
   "artifacts": {
-    "diagnosis": ".planning/learnings-effectiveness-audit/DIAGNOSIS.md",
-    "decisions": ".planning/learnings-effectiveness-audit/DECISIONS.md",
-    "plan": ".planning/learnings-effectiveness-audit/PLAN.md"
+    "diagnosis": ".planning/github-optimization-plan/DIAGNOSIS.md",
+    "decisions": ".planning/github-optimization-plan/DECISIONS.md",
+    "plan": null
   },
-  "resumeInstructions": "APPROVED. Ready for wave-based execution. 11 waves, XL effort. Artifacts in .planning/learnings-effectiveness-audit/."
+  "previousTopic": {
+    "topic": "data-effectiveness-audit",
+    "status": "approved-pending-execution",
+    "artifacts": ".planning/learnings-effectiveness-audit/"
+  },
+  "updated": "2026-03-17T13:00:00Z"
 }
