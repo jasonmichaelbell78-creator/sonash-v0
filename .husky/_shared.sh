@@ -210,7 +210,17 @@ write_hook_runs_jsonl() {
       errors: checks.filter(c => c.status === 'fail').length
     };
 
-    // Symlink guard (PR #444 R1 fix #10, R2 fix #7: reject non-file targets)
+    // Symlink guard — check parent directories too (PR #444 R3 fix #2)
+    for (const dir of [path.dirname(runsPath), path.dirname(path.dirname(runsPath))]) {
+      try {
+        const dst = fs.lstatSync(dir);
+        if (dst.isSymbolicLink()) process.exit(0);
+      } catch (e) {
+        if (e.code !== 'ENOENT') process.exit(0);
+      }
+    }
+
+    // Check the file itself (PR #444 R1 fix #10, R2 fix #7: reject non-file targets)
     try {
       const st = fs.lstatSync(runsPath);
       if (st.isSymbolicLink()) process.exit(0);

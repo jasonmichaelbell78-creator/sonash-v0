@@ -2737,7 +2737,7 @@ function checkHookCompleteness() {
       // File too large — skip completeness check
       return;
     }
-  } catch {}
+  } catch { /* statSync failure — proceed without size guard, safeReadLines handles gracefully */ }
   const runLines = safeReadLines(hookRunsPath);
   const allRuns = runLines.map((l) => safeParse(l)).filter(Boolean);
 
@@ -2762,7 +2762,7 @@ function checkHookCompleteness() {
     }
   } catch (err) {
     // manifest missing or invalid — log for debuggability
-    console.error("checkHookCompleteness: manifest read failed:", err instanceof Error ? err.message : String(err));
+    console.error("checkHookCompleteness: manifest read failed:", sanitizeError(err));
   }
 
   const now = Date.now();

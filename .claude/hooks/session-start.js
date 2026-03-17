@@ -693,12 +693,21 @@ function regenerateHookWarnings() {
 
   // Filter to unacknowledged entries (entries newer than the per-type ack or lastCleared)
   const unacked = entries.filter((e) => {
+    if (!e || typeof e !== "object") return false;
+    if (typeof e.type !== "string" || !e.type) return false;
     const entryTime = new Date(e.timestamp).getTime();
+    if (Number.isNaN(entryTime)) return false;
     // Check per-type acknowledgment
     const ackTime = ack.acknowledged[e.type];
-    if (ackTime && entryTime <= new Date(ackTime).getTime()) return false;
+    if (ackTime) {
+      const ackMs = new Date(ackTime).getTime();
+      if (!Number.isNaN(ackMs) && entryTime <= ackMs) return false;
+    }
     // Check lastCleared (bulk clear)
-    if (ack.lastCleared && entryTime <= new Date(ack.lastCleared).getTime()) return false;
+    if (ack.lastCleared) {
+      const clearedMs = new Date(ack.lastCleared).getTime();
+      if (!Number.isNaN(clearedMs) && entryTime <= clearedMs) return false;
+    }
     return true;
   });
 
@@ -724,7 +733,10 @@ function regenerateHookWarnings() {
     const ackTimeRaw = ack.acknowledged?.[type] || ack.lastCleared || null;
     if (ackTimeRaw) {
       const ackMs = new Date(ackTimeRaw).getTime();
-      if (!Number.isNaN(ackMs) && xTime > ackMs) {
+      if (Number.isNaN(ackMs)) {
+        // Invalid ack timestamp -> treat as unacked
+        typeSinceAckTotals[type] = (typeSinceAckTotals[type] || 0) + 1;
+      } else if (xTime > ackMs) {
         typeSinceAckTotals[type] = (typeSinceAckTotals[type] || 0) + 1;
       }
     } else {

@@ -209,7 +209,7 @@ function logCommitFailure(command) {
           // Sanitize sensitive content from hook output — PR #444 R1 fix #12
           hookOutputExcerpt = hookOutputExcerpt
             .replace(/(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|password\s*=\s*|secret\s*=\s*)\S+/gi, "[REDACTED]")
-            .replace(/\/[A-Za-z]:[\\\/]Users[\\\/]\w+/g, "[USER_PATH]");
+            .replace(/\/[A-Za-z]:[/\\]Users[/\\]\w+/g, "[USER_PATH]");
         }
     } catch {
       // Non-critical — excerpt is best-effort
