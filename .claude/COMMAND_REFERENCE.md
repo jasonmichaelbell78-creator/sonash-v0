@@ -23,6 +23,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/audit-process`                  | Multi-stage automation/process audit                              |
 | `/audit-refactoring`              | Single-session refactoring audit                                  |
 | `/audit-security`                 | Single-session security audit                                     |
+| `/audit-agent-quality`            | Hybrid agent audit — structural + behavioral review               |
 | `/audit-enhancements`             | Comprehensive enhancement audit                                   |
 | `/audit-engineering-productivity` | Engineering productivity audit                                    |
 | `/audit-ai-optimization`          | AI optimization audit                                             |
