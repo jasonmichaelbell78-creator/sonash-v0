@@ -89,7 +89,12 @@ echo "🔍 Running pre-commit checks..."
 # --- Wave 0: Secrets scan (fast, ~1s) ---
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Scanning for secrets (gitleaks)..."
-if command -v gitleaks > /dev/null 2>&1; then
+if is_skipped "gitleaks"; then
+  require_skip_reason "SKIP_CHECKS includes gitleaks"
+  node scripts/log-override.js --quick --check=gitleaks --reason="$SKIP_REASON" || true
+  echo "  ⏭️  Secrets scan skipped (SKIP_CHECKS)"
+  echo "secrets-scan|skip|0" >> "$CHECKS_TMPFILE"
+elif command -v gitleaks > /dev/null 2>&1; then
   gitleaks_exit=0
   gitleaks protect --staged -c .gitleaks.toml --no-banner || gitleaks_exit=$?
   if [ "$gitleaks_exit" -eq 1 ]; then
@@ -395,9 +400,9 @@ fi
 if [ "$RUN_SKILLS" -eq 1 ]; then
   SKILLS_RC=$(cat "${SKILLS_TMP}.rc" 2>/dev/null || echo "0")
   CHECK_DURATION_MS=$(cat "${SKILLS_TMP}.dur" 2>/dev/null || echo "0")
-  if echo "$(cat "$SKILLS_TMP" 2>/dev/null)" | grep -q "❌ ERROR"; then
+  if [ "$SKILLS_RC" != "0" ] || echo "$(cat "$SKILLS_TMP" 2>/dev/null)" | grep -q "❌ ERROR"; then
     echo "  ⚠️ Skill validation issues found (not blocking - run: npm run skills:validate)"
-    cat "$SKILLS_TMP" | grep -E "^📄|^   ❌" | head -10
+    cat "$SKILLS_TMP" 2>/dev/null | grep -E "^📄|^   ❌" | head -10
     node scripts/append-hook-warning.js --hook=pre-commit --type=skill --severity=warning --message="Skill validation issues found" --action="npm run skills:validate" || echo "⚠️ Warning write failed: skill validation" >&3
     echo "skill-validation|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else

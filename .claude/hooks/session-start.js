@@ -729,14 +729,14 @@ function regenerateHookWarnings() {
           ).length
         : total;
     return {
-      hook: e.hook,
-      type: e.type,
-      severity: e.severity,
-      message: e.message,
-      action: e.action || null,
+      hook: sanitizeInput(String(e.hook || "")),
+      type: sanitizeInput(String(e.type || "")),
+      severity: sanitizeInput(String(e.severity || "")),
+      message: sanitizeInput(String(e.message || "")),
+      action: e.action ? sanitizeInput(String(e.action)) : null,
       timestamp: e.timestamp,
-      ...(e.files ? { files: e.files } : {}),
-      ...(e.pattern ? { pattern: e.pattern } : {}),
+      ...(e.files ? { files: Array.isArray(e.files) ? e.files.map(f => sanitizeInput(String(f))) : [] } : {}),
+      ...(e.pattern ? { pattern: sanitizeInput(String(e.pattern)) } : {}),
       occurrences: total,
       occurrences_since_ack: sinceAck,
     };

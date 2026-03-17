@@ -94,11 +94,17 @@ generate_hook_summary() {
   else
     TOTAL_MS=$(( (HOOK_END_NS - HOOK_START_NS) * 1000 ))
   fi
-  TOTAL_SEC=$(echo "scale=1; $TOTAL_MS / 1000" | bc 2>/dev/null || echo "${TOTAL_MS}ms")
+  # Format total duration — avoid "mss" bug when bc unavailable (PR #444 R1 fix #6)
+  _bc_result=$(echo "scale=1; $TOTAL_MS / 1000" | bc 2>/dev/null || echo "")
+  if [ -n "$_bc_result" ]; then
+    TOTAL_FMT="${_bc_result}s"
+  else
+    TOTAL_FMT="${TOTAL_MS}ms"
+  fi
 
   if [ "$_warned" -eq 0 ] && [ "$_failed" -eq 0 ]; then
     # D29: Simple success line
-    echo "✅ ${_hook_name}: ${_passed}/${_total} passed (${TOTAL_SEC}s)" >&"$_fd"
+    echo "✅ ${_hook_name}: ${_passed}/${_total} passed (${TOTAL_FMT})" >&"$_fd"
   else
     # D29: Full summary on warn/fail
     echo "" >&"$_fd"
@@ -112,16 +118,21 @@ generate_hook_summary() {
         auto-fix) _icon="🔧" ;;
         *)       _icon="  " ;;
       esac
-      # Format duration
+      # Format duration — avoid "mss" bug (PR #444 R1 fix #6)
       if [ "$_dur" -gt 1000 ] 2>/dev/null; then
-        _dur_fmt="$(echo "scale=1; $_dur / 1000" | bc 2>/dev/null || echo "${_dur}ms")s"
+        _bc_dur=$(echo "scale=1; $_dur / 1000" | bc 2>/dev/null || echo "")
+        if [ -n "$_bc_dur" ]; then
+          _dur_fmt="${_bc_dur}s"
+        else
+          _dur_fmt="${_dur}ms"
+        fi
       else
         _dur_fmt="${_dur}ms"
       fi
       printf "│ %s %-25s %-8s %8s │\n" "$_icon" "$_id" "$_status" "$_dur_fmt" >&"$_fd"
     done < "$_tmpfile"
     echo "├──────────────────────────────────────────────────┤" >&"$_fd"
-    echo "│ ${_passed} passed, ${_warned} warning(s), ${_failed} failed (${TOTAL_SEC}s)" >&"$_fd"
+    echo "│ ${_passed} passed, ${_warned} warning(s), ${_failed} failed (${TOTAL_FMT})" >&"$_fd"
 
     # D10/D31: Show actions for warn/fail checks
     if [ -n "$_warn_checks" ] || [ -n "$_fail_checks" ]; then
@@ -158,38 +169,56 @@ write_hook_runs_jsonl() {
   _wr_tmpfile="$2"
   _wr_total_ms="$3"
 
+  # Pass shell variables via env vars to avoid injection (PR #444 R1 fix #1)
+  _WR_HOOK="$_wr_hook" \
+  _WR_TMPFILE="$_wr_tmpfile" \
+  _WR_TOTAL_MS="$_wr_total_ms" \
   node -e "
     const fs = require('fs');
     const path = require('path');
+    const { spawnSync } = require('child_process');
     const runsPath = path.join('.claude', 'state', 'hook-runs.jsonl');
+
+    const git = (args) => {
+      try {
+        const res = spawnSync('git', args, { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 3000 });
+        return (res.status === 0 && res.stdout) ? res.stdout.trim() : 'unknown';
+      } catch { return 'unknown'; }
+    };
 
     // Read checks from temp file
     let lines = [];
     try {
-      lines = fs.readFileSync('$_wr_tmpfile', 'utf-8').trim().split('\n').filter(Boolean);
+      lines = fs.readFileSync(process.env._WR_TMPFILE || '', 'utf-8').trim().split('\n').filter(Boolean);
     } catch {}
     const checks = lines.map(l => {
-      const [id, status, dur] = l.split('|');
-      return { id, status, duration_ms: parseInt(dur) || 0 };
-    });
+      const parts = l.replace(/\r/g, '').split('|');
+      return { id: parts[0] || '', status: parts[1] || 'unknown', duration_ms: parseInt(parts[2]) || 0 };
+    }).filter(c => c.id);
 
     const entry = {
-      hook: '$_wr_hook',
+      hook: process.env._WR_HOOK || 'unknown',
       timestamp: new Date().toISOString(),
-      branch: '$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)',
-      commit: '$(git rev-parse --short HEAD 2>/dev/null || echo unknown)',
+      branch: git(['rev-parse', '--abbrev-ref', 'HEAD']),
+      commit: git(['rev-parse', '--short', 'HEAD']),
+      user: git(['config', 'user.name']),
       total_checks: checks.length,
       checks: checks,
-      total_duration_ms: $_wr_total_ms,
+      total_duration_ms: parseInt(process.env._WR_TOTAL_MS || '0') || 0,
       outcome: checks.some(c => c.status === 'fail') ? 'fail' : checks.some(c => c.status === 'warn') ? 'warn' : 'pass',
       skipped_checks: checks.filter(c => c.status === 'skip').map(c => c.id),
       warnings: checks.filter(c => c.status === 'warn').length,
       errors: checks.filter(c => c.status === 'fail').length
     };
 
+    // Symlink guard (PR #444 R1 fix #10)
+    try {
+      const st = fs.lstatSync(runsPath);
+      if (st.isSymbolicLink()) { process.exit(0); }
+    } catch (e) { if (e.code !== 'ENOENT') process.exit(0); }
+
     // Ensure directory exists
-    const dir = path.dirname(runsPath);
-    if (!fs.existsSync(dir)) { fs.mkdirSync(dir, { recursive: true }); }
+    try { fs.mkdirSync(path.dirname(runsPath), { recursive: true }); } catch {}
 
     // Rotation: keep 100 of 200 entries (D21)
     let existing = [];

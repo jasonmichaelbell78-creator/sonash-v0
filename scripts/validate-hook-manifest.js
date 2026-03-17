@@ -255,16 +255,16 @@ function validate() {
         errors.push(`Check '${check.id}': missing required field '${field}'`);
       }
     }
-    // Validate blocking enum
-    if (check.blocking && !["block", "warn", "auto-fix"].includes(check.blocking)) {
+    // Validate blocking enum (treat empty string / non-string as invalid)
+    if (typeof check.blocking !== "string" || !["block", "warn", "auto-fix"].includes(check.blocking)) {
       errors.push(`Check '${check.id}': invalid blocking value '${check.blocking}' (must be block|warn|auto-fix)`);
     }
     // Validate hook enum
-    if (check.hook && !["pre-commit", "pre-push"].includes(check.hook)) {
+    if (typeof check.hook !== "string" || !["pre-commit", "pre-push"].includes(check.hook)) {
       errors.push(`Check '${check.id}': invalid hook value '${check.hook}' (must be pre-commit|pre-push)`);
     }
     // Validate category enum
-    if (check.category && !["security", "quality", "compliance", "docs", "testing"].includes(check.category)) {
+    if (typeof check.category !== "string" || !["security", "quality", "compliance", "docs", "testing"].includes(check.category)) {
       errors.push(`Check '${check.id}': invalid category '${check.category}'`);
     }
   }

@@ -67,6 +67,8 @@ scripts/suggested-patterns.json
 .claude/state/consolidation.json
 .claude/state/alerts-baseline.json
 .claude/state/agent-invocations.jsonl
+.claude/state/hook-runs.jsonl
+.claude/state/commit-failures.jsonl
 
 # SonarQube/SonarCloud analysis data (large generated files - use CI artifacts instead)
 docs/analysis/sonarqube-issues-*.json

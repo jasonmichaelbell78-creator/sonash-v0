@@ -21,6 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 let isSafeToWrite, gitExec, projectDir, sanitizeInput;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
@@ -193,13 +194,23 @@ function logCommitFailure(command) {
     // D5b: Capture first 5 lines of hook output (best-effort)
     let hookOutputExcerpt = "";
     try {
-      const hookLogPath = path.join(projectDir, ".git", "hook-output.log");
+      // Use git rev-parse to find git-dir (works with worktrees) — PR #444 R1 fix #7
+      let gitDir;
+      try {
+        gitDir = execFileSync("git", ["rev-parse", "--git-dir"], { encoding: "utf-8", cwd: projectDir }).trim();
+        if (!path.isAbsolute(gitDir)) gitDir = path.join(projectDir, gitDir);
+      } catch { gitDir = path.join(projectDir, ".git"); }
+      const hookLogPath = path.join(gitDir, "hook-output.log");
       if (fs.existsSync(hookLogPath) && !fs.lstatSync(hookLogPath).isSymbolicLink()) {
         const stats = fs.statSync(hookLogPath);
         // Only read if fresh (<60s old) and non-empty
         if (stats.size > 0 && Date.now() - stats.mtimeMs < 60000) {
           const content = fs.readFileSync(hookLogPath, "utf8").trim();
           hookOutputExcerpt = content.split("\n").slice(0, 5).join("\n");
+          // Sanitize sensitive content from hook output — PR #444 R1 fix #12
+          hookOutputExcerpt = hookOutputExcerpt
+            .replace(/(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|password\s*=\s*|secret\s*=\s*)\S+/gi, "[REDACTED]")
+            .replace(/\/[A-Za-z]:[\\\/]Users[\\\/]\w+/g, "[USER_PATH]");
         }
       }
     } catch {

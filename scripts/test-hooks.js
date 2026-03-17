@@ -626,7 +626,8 @@ function runTests() {
       }
     }
   } catch (err) {
-    const errorMsg = err instanceof Error ? err.message : String(err);
+    const { sanitizeError } = require("./lib/sanitize-error.js");
+    const errorMsg = sanitizeError(err);
     recordResult(stats, "hook-checks.json", "Manifest validation", false, errorMsg);
   }
   log(""); // Blank line

@@ -2838,7 +2838,9 @@ function checkHookCompleteness() {
       highSkipChecks.length >= BENCHMARKS.hook_completeness.high_skip_checks.poor
         ? "warning"
         : "info";
-    const topSkip = highSkipChecks.sort((a, b) => b.skipPct - a.skipPct)[0];
+    const sortedSkips = highSkipChecks.sort((a, b) => b.skipPct - a.skipPct);
+    const topSkip = sortedSkips.length > 0 ? sortedSkips[0] : null;
+    if (!topSkip) return;
     addAlert(
       "hook-completeness",
       severity,
@@ -2895,7 +2897,9 @@ function checkHookCompleteness() {
       durationRegressions.length >= BENCHMARKS.hook_completeness.duration_regressions.poor
         ? "warning"
         : "info";
-    const worst = durationRegressions.sort((a, b) => b.pctIncrease - a.pctIncrease)[0];
+    const sortedRegressions = durationRegressions.sort((a, b) => b.pctIncrease - a.pctIncrease);
+    const worst = sortedRegressions.length > 0 ? sortedRegressions[0] : null;
+    if (!worst) return;
     addAlert(
       "hook-completeness",
       severity,

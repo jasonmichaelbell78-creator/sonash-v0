@@ -277,8 +277,8 @@ function readAckState() {
   try {
     const parsed = JSON.parse(fs.readFileSync(ackPath, "utf8"));
     return {
-      acknowledged: parsed && typeof parsed.acknowledged === "object" ? parsed.acknowledged : {},
-      lastCleared: parsed && parsed.lastCleared ? parsed.lastCleared : null,
+      acknowledged: typeof parsed?.acknowledged === "object" ? parsed.acknowledged : {},
+      lastCleared: parsed?.lastCleared ? parsed.lastCleared : null,
     };
   } catch {
     return { acknowledged: {}, lastCleared: null };
