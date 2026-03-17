@@ -1,8 +1,8 @@
 # AI Context & Rules for SoNash
 
 <!-- prettier-ignore-start -->
-**Document Version:** 5.5
-**Last Updated:** 2026-03-13
+**Document Version:** 5.6
+**Last Updated:** 2026-03-17
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -69,6 +69,31 @@ Section 8).
    session-end), it must require the user to acknowledge or act on it.
    Unacknowledged warnings become wallpaper.
    `[BEHAVIORAL: no automated enforcement]`
+7. **Never push to remote without explicit approval.** `git commit` is fine
+   autonomously. `git push` requires the user to say "push" or "push it." Do
+   not push as part of a commit flow, PR creation, or session-end unless
+   explicitly asked. `[BEHAVIORAL: no automated enforcement]`
+8. **Respect the declared platform and shell.** The system prompt declares the
+   OS and shell. Do not assume Linux-only tools, paths, or syntax. When in
+   doubt, check the system prompt before generating shell commands.
+   `[BEHAVIORAL: no automated enforcement]`
+9. **On pre-commit hook failure, use `/pre-commit-fixer`.** Do not manually
+   retry or guess at fixes. The skill handles ESLint, pattern compliance, doc
+   headers, cross-doc deps, and index staleness. After 2 fixer attempts, ask
+   the user. `[BEHAVIORAL: no automated enforcement]`
+10. **Keep question batches concise.** When asking clarifying questions, batch
+    in groups of 5-8 maximum unless the user has requested exhaustive
+    questioning (e.g., via `/deep-plan`).
+    `[BEHAVIORAL: no automated enforcement]`
+11. **Verify no untracked files before PR or branch completion.** Run
+    `git status` and confirm no generated or untracked files are missing before
+    creating a PR, finishing a branch, or running `/session-end`.
+    `[BEHAVIORAL: no automated enforcement]`
+12. **Verify file state against the filesystem, not documentation.** Never
+    trust docs, memory, or conversation history about what files exist or
+    contain. Run `ls`, `cat`, `git status`, or use the Read tool to confirm
+    before asserting file state as fact.
+    `[BEHAVIORAL: no automated enforcement]`
 
 ## 5. Critical Anti-Patterns
 
@@ -180,6 +205,7 @@ Evidence-Based).
 
 | Version | Date       | Changes                               |
 | ------- | ---------- | ------------------------------------- |
+| 5.6     | 2026-03-17 | Add 6 behavioral guardrails from /insights (7-12) |
 | 5.5     | 2026-03-13 | Enforcement annotations on all rules  |
 | 5.4     | 2026-03-13 | Add LSP code navigation preference    |
 | 5.3     | 2026-03-05 | Add behavioral guardrails (Section 4) |

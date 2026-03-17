@@ -8,20 +8,27 @@
 
 ## Summary
 
-Add 5 behavioral guardrails to CLAUDE.md Section 4 (items 7-11) addressing push
-control, platform awareness, pre-commit recovery, question batching, and pre-PR
-verification. Clean up ~25 stale one-off permissions from settings.local.json.
+Add 6 behavioral guardrails to CLAUDE.md Section 4 (items 7-12) addressing push
+control, platform awareness, pre-commit recovery, question batching, pre-PR
+verification, and filesystem state verification. Clean up ~25 stale one-off
+permissions from settings.local.json at work locale.
 
-**Decisions:** See DECISIONS.md (16 decisions) **Effort Estimate:** S (~1-2
-hours) **Execution:** Single commit on `plan-implementation` branch
+**Decisions:** See DECISIONS.md (16 decisions + D17 from home insights merge)
+**Effort Estimate:** S (~1-2 hours across two sessions)
+
+## Execution Split
+
+- **Tonight (home locale):** Step 1 (CLAUDE.md — universal, shared via git)
+- **Tomorrow (work locale):** Step 2 (settings.local.json — locale-specific)
+  + Step 3 (audit both)
 
 ## Files to Create/Modify
 
 ### Modified Files (2)
 
-1. **`CLAUDE.md`** — Add 5 new behavioral guardrails (items 7-11) to Section 4
+1. **`CLAUDE.md`** — Add 6 new behavioral guardrails (items 7-12) to Section 4
 2. **`.claude/settings.local.json`** — Remove ~25 stale one-off SKIP\_\* push
-   permissions (WORK-LOCALE ONLY)
+   permissions (WORK-LOCALE ONLY — execute at work tomorrow)
 
 ---
 
@@ -51,21 +58,29 @@ item 6:
     `git status` and confirm no generated or untracked files are missing before
     creating a PR, finishing a branch, or running `/session-end`.
     `[BEHAVIORAL: no automated enforcement]`
+12. **Verify file state against the filesystem, not documentation.** Never
+    trust docs, memory, or conversation history about what files exist or
+    contain. Run `ls`, `cat`, `git status`, or use the Read tool to confirm
+    before asserting file state as fact.
+    `[BEHAVIORAL: no automated enforcement]`
 ```
 
 Update CLAUDE.md version to 5.6, update date to execution date, add version
 history entry:
 
 ```markdown
-| 5.6 | YYYY-MM-DD | Add 5 behavioral guardrails from /insights report (7-11) |
+| 5.6 | YYYY-MM-DD | Add 6 behavioral guardrails from /insights report (7-12) |
 ```
 
-**Done when:** CLAUDE.md Section 4 has 11 items. Version is 5.6. **Depends on:**
+**Done when:** CLAUDE.md Section 4 has 12 items. Version is 5.6. **Depends on:**
 None
+
+**Execute tonight (home locale).** Shared via git — work locale gets it via
+pull.
 
 ---
 
-## Step 2: Clean Up settings.local.json (WORK-LOCALE ONLY)
+## Step 2: Clean Up settings.local.json (WORK-LOCALE ONLY — TOMORROW)
 
 Remove all one-off SKIP\_\* push permission lines. These are stale artifacts
 from past sessions that reference specific PRs, specific error messages, or
@@ -102,20 +117,24 @@ specific skip reasons.
 
 **Done when:** settings.local.json has ~35-40 permission lines (down from 67).
 No lines reference specific PR numbers or SKIP_REASON strings. **Depends on:**
-None
+Step 1 must be committed and pushed first (so work locale can pull).
+
+**Execute at work locale tomorrow.** This file is locale-specific and not in git.
 
 ---
 
-## Step 3: Audit Checkpoint
+## Step 3: Audit Checkpoint (TOMORROW — after Step 2)
 
 Review both changed files for correctness:
 
-- CLAUDE.md: verify 11 items in Section 4, version bumped, no formatting issues
+- CLAUDE.md: verify 12 items in Section 4, version bumped, no formatting issues
 - settings.local.json: verify valid JSON, no accidentally removed generic
   permissions
 
 **Done when:** Both files pass validation. JSON is parseable. Markdown renders
 correctly. **Depends on:** Steps 1-2
+
+**Execute at work locale tomorrow** — after Step 2, audit both files together.
 
 ---
 
