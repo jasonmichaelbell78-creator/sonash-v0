@@ -157,6 +157,15 @@ implementation steps
 
 ## State File Schema
 
+**File naming:** `.claude/state/deep-plan.<topic-slug>.state.json`
+
+Each plan gets its own state file keyed by topic slug (lowercase, hyphens for
+spaces/special chars). Examples:
+
+- `deep-plan.github-optimization.state.json`
+- `deep-plan.insight-report-work.state.json`
+- `deep-plan.data-effectiveness-audit.state.json`
+
 ```json
 {
   "task": "Deep Plan: [feature name]",
