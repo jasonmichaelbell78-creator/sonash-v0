@@ -614,6 +614,179 @@ try {
   }
 }
 
+// =============================================================================
+// D16: Regenerate hook-warnings.json from canonical JSONL + ack state
+// =============================================================================
+
+const stateDir = path.join(projectDir, ".claude", "state");
+
+/**
+ * Regenerate hook-warnings.json from the canonical JSONL source + ack state.
+ * hook-warnings-log.jsonl is the single source of truth (D16).
+ * hook-warnings-ack.json holds acknowledgment state (D30).
+ * hook-warnings.json becomes a regenerated view: { warnings: [...] }
+ *
+ * @returns {object[]} The list of current (unacknowledged, deduplicated) warnings
+ */
+function regenerateHookWarnings() {
+  const warningsLogPath = path.join(stateDir, "hook-warnings-log.jsonl");
+  const ackPath = path.join(stateDir, "hook-warnings-ack.json");
+  const warningsPath = path.join(projectDir, ".claude", "hook-warnings.json");
+
+  // Read canonical JSONL
+  let entries = [];
+  try {
+    const st = fs.lstatSync(warningsLogPath);
+    if (st.isSymbolicLink()) {
+      console.error("session-start: hook-warnings-log.jsonl is a symlink — skipping regeneration");
+      return [];
+    }
+    if (st.size > 2 * 1024 * 1024) {
+      console.error("session-start: hook-warnings-log.jsonl exceeds 2MB — skipping regeneration");
+      return [];
+    }
+    const content = fs.readFileSync(warningsLogPath, "utf8").trim();
+    if (content) {
+      entries = content
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => {
+          try {
+            return JSON.parse(line);
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean);
+    }
+  } catch (err) {
+    if (err && err.code !== "ENOENT") {
+      console.error(
+        "session-start: failed to read hook-warnings-log.jsonl: " +
+          sanitizeInput(err instanceof Error ? err.message : String(err))
+      );
+    }
+    // No JSONL data — write empty warnings file
+    try {
+      if (isSafeToWrite(warningsPath)) {
+        fs.writeFileSync(warningsPath, JSON.stringify({ warnings: [] }, null, 2) + "\n");
+      }
+    } catch {
+      /* best-effort */
+    }
+    return [];
+  }
+
+  // Read ack state
+  let ack = { acknowledged: {}, lastCleared: null };
+  try {
+    ack = JSON.parse(fs.readFileSync(ackPath, "utf8"));
+    if (!ack || typeof ack !== "object") {
+      ack = { acknowledged: {}, lastCleared: null };
+    }
+    if (!ack.acknowledged || typeof ack.acknowledged !== "object") {
+      ack.acknowledged = {};
+    }
+  } catch {
+    // No ack file yet — use defaults
+  }
+
+  // Filter to unacknowledged entries (entries newer than the per-type ack or lastCleared)
+  const unacked = entries.filter((e) => {
+    const entryTime = new Date(e.timestamp).getTime();
+    // Check per-type acknowledgment
+    const ackTime = ack.acknowledged[e.type];
+    if (ackTime && entryTime <= new Date(ackTime).getTime()) return false;
+    // Check lastCleared (bulk clear)
+    if (ack.lastCleared && entryTime <= new Date(ack.lastCleared).getTime()) return false;
+    return true;
+  });
+
+  // Deduplicate by (hook, type, message) — keep most recent
+  const seen = new Map();
+  for (const e of unacked) {
+    const key = `${e.hook}|${e.type}|${e.message}`;
+    const existing = seen.get(key);
+    if (!existing || new Date(e.timestamp).getTime() > new Date(existing.timestamp).getTime()) {
+      seen.set(key, e);
+    }
+  }
+
+  // Compute occurrence counts from full JSONL
+  const warningsList = [...seen.values()].map((e) => {
+    const total = entries.filter((x) => x.type === e.type).length;
+    const sinceAck = ack.acknowledged[e.type]
+      ? entries.filter(
+          (x) =>
+            x.type === e.type &&
+            new Date(x.timestamp).getTime() > new Date(ack.acknowledged[e.type]).getTime()
+        ).length
+      : ack.lastCleared
+        ? entries.filter(
+            (x) =>
+              x.type === e.type &&
+              new Date(x.timestamp).getTime() > new Date(ack.lastCleared).getTime()
+          ).length
+        : total;
+    return {
+      hook: e.hook,
+      type: e.type,
+      severity: e.severity,
+      message: e.message,
+      action: e.action || null,
+      timestamp: e.timestamp,
+      ...(e.files ? { files: e.files } : {}),
+      ...(e.pattern ? { pattern: e.pattern } : {}),
+      occurrences: total,
+      occurrences_since_ack: sinceAck,
+    };
+  });
+
+  // Cap at 50, most recent first
+  warningsList.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+  const capped = warningsList.slice(0, 50);
+
+  // Write regenerated view (D9: JSON is the format, purely { warnings: [...] })
+  const output = { warnings: capped };
+  try {
+    if (isSafeToWrite(warningsPath)) {
+      const tmpPath = `${warningsPath}.tmp`;
+      if (isSafeToWrite(tmpPath)) {
+        fs.writeFileSync(tmpPath, JSON.stringify(output, null, 2) + "\n");
+        try {
+          fs.rmSync(warningsPath, { force: true });
+        } catch {
+          /* best-effort */
+        }
+        fs.renameSync(tmpPath, warningsPath);
+      }
+    }
+  } catch (err) {
+    console.error(
+      "session-start: failed to regenerate hook-warnings.json: " +
+        sanitizeInput(err instanceof Error ? err.message : String(err))
+    );
+  }
+
+  return capped;
+}
+
+// Regenerate hook-warnings.json from canonical JSONL before any display/pipeline
+const currentWarnings = regenerateHookWarnings();
+if (currentWarnings.length > 0) {
+  const errorCount = currentWarnings.filter((w) => w.severity === "error").length;
+  const warnCount = currentWarnings.filter((w) => w.severity === "warning").length;
+  const parts = [];
+  if (errorCount > 0) parts.push(`${errorCount} error(s)`);
+  if (warnCount > 0) parts.push(`${warnCount} warning(s)`);
+  console.log(`Hook warnings: ${parts.join(", ")} (${currentWarnings.length} total)`);
+  warnings += errorCount;
+} else {
+  console.log("Hook warnings: none");
+}
+
 // ─── Enforcement pipeline: discover gaps → refine → verify → ratchet ───
 // (Automation Gap Closure spec: 2026-03-14)
 

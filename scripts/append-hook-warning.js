@@ -141,14 +141,17 @@ function countOccurrencesSince(type, sinceTimestamp) {
 /**
  * Read existing warnings file or create empty structure
  * Pattern #70: Skip existsSync, use try/catch alone (race condition safe)
+ * D16/D30: hook-warnings.json is a cache view — no ack/cleared fields
  */
 function readWarnings() {
   try {
     const content = fs.readFileSync(WARNINGS_FILE, "utf8");
-    return JSON.parse(content);
+    const parsed = JSON.parse(content);
+    // Normalize: only keep warnings array (D16: ack state lives in hook-warnings-ack.json)
+    return { warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [] };
   } catch {
     // File doesn't exist or can't be read - return empty structure
-    return { warnings: [], lastCleared: null };
+    return { warnings: [] };
   }
 }
 
@@ -266,6 +269,22 @@ function writeAuditTrail(entry) {
   }
 }
 
+/**
+ * Read acknowledgment state from dedicated ack file (D30)
+ */
+function readAckState() {
+  const ackPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-ack.json");
+  try {
+    const parsed = JSON.parse(fs.readFileSync(ackPath, "utf8"));
+    return {
+      acknowledged: parsed && typeof parsed.acknowledged === "object" ? parsed.acknowledged : {},
+      lastCleared: parsed && parsed.lastCleared ? parsed.lastCleared : null,
+    };
+  } catch {
+    return { acknowledged: {}, lastCleared: null };
+  }
+}
+
 function appendWarning(hook, type, severity, message, action = null, files = null, pattern = null) {
   const data = readWarnings();
   if (isDuplicateWarning(data, hook, type, message)) return;
@@ -273,7 +292,9 @@ function appendWarning(hook, type, severity, message, action = null, files = nul
   const priorOccurrences = countRecentOccurrences(type);
   const occurrences = priorOccurrences + 1; // include this warning
   const effectiveSeverity = escalateSeverity(severity, occurrences);
-  const lastAck = data.acknowledged?.[type] || null;
+  // D30: Read ack state from dedicated file, not from hook-warnings.json
+  const ackState = readAckState();
+  const lastAck = ackState.acknowledged[type] || null;
   const priorSinceAck = lastAck ? countOccurrencesSince(type, lastAck) : priorOccurrences;
   const sinceAck = priorSinceAck + 1; // include this warning
   const fileList = parseFileList(files);
@@ -301,15 +322,31 @@ function appendWarning(hook, type, severity, message, action = null, files = nul
 
 /**
  * Clear warnings (called at session start or when surfaced)
- * C2-G3: Preserves acknowledged map across clears
+ * D30: Acknowledgment state written to hook-warnings-ack.json (not hook-warnings.json)
+ * hook-warnings.json is cleared to empty warnings array (cache view)
  */
 function clearWarnings() {
-  const existing = readWarnings();
-  writeWarnings({
-    warnings: [],
-    lastCleared: new Date().toISOString(),
-    acknowledged: existing.acknowledged || {},
-  });
+  // Write empty cache view
+  writeWarnings({ warnings: [] });
+
+  // Update ack state file with lastCleared timestamp (D30)
+  const ackPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-ack.json");
+  try {
+    const ackState = readAckState();
+    ackState.lastCleared = new Date().toISOString();
+    const ackTmp = `${ackPath}.tmp`;
+    if (isSafeToWrite(ackPath) && isSafeToWrite(ackTmp)) {
+      safeWriteFileSync(ackTmp, JSON.stringify(ackState, null, 2) + "\n");
+      try {
+        fs.rmSync(ackPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      safeRenameSync(ackTmp, ackPath);
+    }
+  } catch {
+    // Best-effort — don't block on ack state write failure
+  }
 }
 
 // Main
