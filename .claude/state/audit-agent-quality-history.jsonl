@@ -1,0 +1,1 @@
+{"date":"2026-03-17","agents_total":36,"agents_audited":36,"ecosystem_grade":"F","mean_score":51,"post_improvement_mean":54,"structural_findings":59,"behavioral_findings":36,"decisions":{"improve":6,"skip":18,"flag_upstream":12},"top_gap":"code-patterns","cl_corrections":4,"categories":13}

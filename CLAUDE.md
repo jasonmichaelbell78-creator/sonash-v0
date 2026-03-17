@@ -129,17 +129,19 @@ LSP tools over Grep for symbol lookups:**
 
 ### PRE-TASK (before starting work) `[BEHAVIORAL: no automated enforcement]`
 
-| Trigger                       | Action                       | Tool  |
-| ----------------------------- | ---------------------------- | ----- |
-| Thorough planning requested   | `deep-plan` skill            | Skill |
-| Bug/error/unexpected behavior | `systematic-debugging`       | Skill |
-| Exploring unfamiliar code     | `Explore` agent              | Task  |
-| Multi-step implementation     | `Plan` agent                 | Task  |
-| Multi-file feature (3+ files) | Development team             | Team  |
-| Security/auth (no S0/S1)      | `security-auditor` agent     | Task  |
-| New documentation             | `documentation-expert` agent | Task  |
-| UI/frontend work              | `frontend-design` skill      | Skill |
-| New UI feature                | Generate `.protocol.json`    | Write |
+| Trigger                       | Action                                  | Tool  |
+| ----------------------------- | --------------------------------------- | ----- |
+| Thorough planning requested   | `deep-plan` skill                       | Skill |
+| Bug/error/unexpected behavior | `systematic-debugging`                  | Skill |
+| Exploring unfamiliar code     | `Explore` agent                         | Task  |
+| Multi-step implementation     | `Plan` agent                            | Task  |
+| Multi-file feature (3+ files) | Development team                        | Team  |
+| Multi-phase project           | `/gsd:new-project` or `/gsd:plan-phase` | Skill |
+| Security/auth (no S0/S1)      | `security-auditor` agent                | Task  |
+| New documentation             | `documentation-expert` agent            | Task  |
+| React/frontend component work | `frontend-developer` agent              | Task  |
+| UI/frontend design            | `frontend-design` skill                 | Skill |
+| New UI feature                | Generate `.protocol.json`               | Write |
 
 ### POST-TASK (before committing) `[GATE: pre-commit hook + code-reviewer]`
 

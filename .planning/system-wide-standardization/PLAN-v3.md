@@ -1537,28 +1537,51 @@ on:** Step 3.12 (Data Tier Checkpoint — benefits from Skills L3)
 Per D50, 35 agent definitions with structured patterns. Invocation tracking via
 JSONL exists.
 
+**Status: MOSTLY COMPLETE (Sessions #225-226)**
+
+Executed via Agent Environment Analysis plan
+(`.planning/agent-environment-analysis/PLAN.md`, 28 decisions). 5 phases + audit
+checkpoint completed across 2 sessions.
+
 **Pre-implementation:**
 
-1. Deep-plan for Agents ecosystem
-2. Register in `.canon/ecosystems.jsonl`
+1. ~~Deep-plan for Agents ecosystem~~ ✅ Done (Session #225, Phase 1-2)
+2. Register in `.canon/ecosystems.jsonl` — NOT DONE (deferred)
 
 **Implementation:**
 
-- Zod 4 schemas for agent definitions and invocation records
-- Formalize agent lifecycle: definition, invocation, monitoring, deprecation
-- Health checker for agent ecosystem
-- Inter-ecosystem contracts: Agents ↔ Skills (agent-skill boundary), Agents ↔
-  Sessions (agent invocation within sessions)
-- Canonize agent invocation JSONL format
+- ~~Zod 4 schemas for agent definitions and invocation records~~ ⚠️ PARTIAL —
+  invocation schema extended (agent_name, model fields added, Session #226).
+  Agent frontmatter Zod schema NOT built (Decision #22, deferred).
+- ~~Formalize agent lifecycle: definition, invocation, monitoring, deprecation~~
+  ⚠️ PARTIAL — definition/invocation/monitoring covered. Deprecation policy NOT
+  written.
+- ~~Health checker for agent ecosystem~~ ✅ Done — `/audit-agent-quality` skill
+  created (Phase 2) and run on all 36 agents (Phase 3). 13 categories, Stage 4
+  built-in optimization.
+- ~~Inter-ecosystem contracts: Agents ↔ Skills, Agents ↔ Sessions~~ ✅ Done —
+  audit category 8 (integration surface), agent compliance hook
+  (`pre-commit-agent-compliance.js`), CLAUDE.md Section 7 updated.
+- ~~Canonize agent invocation JSONL format~~ ✅ Done — schema at
+  `scripts/reviews/lib/schemas/invocation.ts` extended with agent fields.
 
-**Key existing files:**
+**Remaining gaps (2):**
 
-- Agent definitions throughout `.claude/skills/` (agent subagent_type
-  references)
-- Agent invocation tracking JSONL
+- [ ] Agent frontmatter Zod schema file (`schemas/agents/agent.schema.ts`)
+- [ ] Deprecation lifecycle policy (`.canon/agents-deprecation-policy.md`)
 
-**Done when:** Agents at L3, definitions schema-validated, invocation tracking
-canonized. 16-item checklist reviewed.
+**Key deliverables:**
+
+- Audit report: `docs/audits/single-session/agent-quality/audit-2026-03-17/`
+- Audit skill: `.claude/skills/audit-agent-quality/` (v1.2, 13 categories)
+- Decisions: `.planning/agent-environment-analysis/DECISIONS.md` (28 decisions)
+- 6 agents improved: code-reviewer, security-auditor, frontend-developer,
+  documentation-expert, test-engineer, dependency-manager
+- Agent compliance hook: `.claude/hooks/pre-commit-agent-compliance.js`
+- Invocation tracking: extended schema supports `type: "agent"`
+
+**Done when:** Remaining 2 gaps closed (Zod schema + deprecation policy), then
+16-item checklist reviewed.
 
 ---
 

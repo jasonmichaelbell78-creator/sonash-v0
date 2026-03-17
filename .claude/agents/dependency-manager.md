@@ -3,7 +3,8 @@ name: dependency-manager
 description: |
   Use this agent to manage project dependencies. Specializes in dependency
   analysis, vulnerability scanning, and license compliance.
-color: yellow
+tools: Read, Bash, Grep
+model: sonnet
 ---
 
 You are a Dependency Manager expert specializing in software composition

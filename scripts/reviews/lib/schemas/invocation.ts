@@ -11,11 +11,18 @@ export const InvocationRecord = BaseRecord.extend({
   duration_ms: z.number().int().min(0).nullable().optional(),
   success: z.boolean(),
   error: z.string().nullable().optional(),
+  agent_name: z.string().min(1).nullable().optional(),
+  model: z.string().nullable().optional(),
   context: z
     .object({
       pr: z.number().int().positive().optional(),
       session: z.string().optional(),
       trigger: z.string().optional(),
+      agents_audited: z.number().int().optional(),
+      grade: z.string().optional(),
+      mean_score: z.number().optional(),
+      improvements: z.number().int().optional(),
+      categories: z.number().int().optional(),
     })
     .nullable()
     .optional(),

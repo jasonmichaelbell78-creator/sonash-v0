@@ -156,6 +156,35 @@ complements other agents.
 | 3-4   | Too generic or too coupled to work in a team                       |
 | 1-2   | Not team-compatible (e.g., overlaps with every potential teammate) |
 
+### Category 12: Reference Code Patterns (Weight: 5%)
+
+**What it evaluates:** Whether the agent includes embedded code examples,
+templates, or patterns that improve output quality for its domain.
+
+| Score | Criteria                                                                      |
+| ----- | ----------------------------------------------------------------------------- |
+| 9-10  | Comprehensive project-specific patterns (correct idioms, anti-patterns shown) |
+| 7-8   | Good code examples covering main use cases                                    |
+| 5-6   | Some code examples but generic (not project-specific)                         |
+| 3-4   | No code examples but domain would clearly benefit from them                   |
+| 1-2   | No code examples AND agent produces code as output (critical gap)             |
+| N/A   | Agent does not produce or evaluate code (score excluded from composite)       |
+
+### Category 13: Script Automation (Weight: 5%)
+
+**What it evaluates:** Whether the agent leverages executable scripts (via Bash
+tool) as part of its workflow — linters, validators, test runners, state
+management tools, or custom project scripts.
+
+| Score | Criteria                                                                   |
+| ----- | -------------------------------------------------------------------------- |
+| 9-10  | Runs project-specific scripts that automate key workflow steps             |
+| 7-8   | Runs standard CLI tools (eslint, jest, git) as part of structured workflow |
+| 5-6   | Has Bash tool but only uses it for basic commands (ls, cat)                |
+| 3-4   | Has Bash tool but no script execution instructions in prompt               |
+| 1-2   | No Bash tool AND workflow would clearly benefit from script automation     |
+| N/A   | Agent's purpose doesn't benefit from script execution (score excluded)     |
+
 ---
 
 ## Scoring Formula
@@ -163,10 +192,13 @@ complements other agents.
 **Per-agent composite (0-100):**
 
 ```
-score = (C1 * 0.15) + (C2 * 0.10) + (C3 * 0.10) + (C4 * 0.05) +
-        (C5 * 0.10) + (C6 * 0.05) + (C7 * 0.05) + (C8 * 0.10) +
-        (C9 * 0.10) + (C10 * 0.10) + (C11 * 0.10)
+score = (C1 * 0.13) + (C2 * 0.08) + (C3 * 0.08) + (C4 * 0.05) +
+        (C5 * 0.08) + (C6 * 0.05) + (C7 * 0.05) + (C8 * 0.08) +
+        (C9 * 0.08) + (C10 * 0.08) + (C11 * 0.08) +
+        (C12 * 0.08) + (C13 * 0.08)
 
+# 13 categories, weights rebalanced to sum to 1.0
+# C12/C13 can be N/A — if excluded, redistribute weight proportionally
 # Each category scored 0-10, then weighted and multiplied by 10
 ```
 
