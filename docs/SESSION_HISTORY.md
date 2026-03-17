@@ -27,6 +27,19 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #220 (2026-03-15)
+
+**Focus**: Review Lifecycle Pipeline Overhaul — JSONL-Canonical
+
+- T3 convergence loop: 2 passes, 6 agents — 7 confirmed, 2 corrected, 2
+  extended, 2 new findings. 7 verified root causes identified.
+- Deep-plan: 20 decisions across 3 batches, SWS alignment verified
+- 9-step execution via subagent-driven development (15 commits)
+- Architecture: JSONL is now canonical source of truth. Markdown is generated.
+- Root causes fixed: RC-1 through RC-7
+- Migration: 382 reviews migrated to JSONL, 10 archives moved to legacy
+- Testing: 3,775/3,776 tests passing
+
 ### Session #217 (2026-03-13)
 
 **Focus**: Data Effectiveness Audit — Deep Plan
