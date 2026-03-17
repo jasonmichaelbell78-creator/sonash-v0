@@ -213,6 +213,11 @@ const BENCHMARKS = {
   crossdoc: {
     issues: { good: 0, average: 1, poor: 3 },
   },
+  hook_completeness: {
+    missing_checks: { good: 0, average: 1, poor: 3 },
+    high_skip_checks: { good: 0, average: 1, poor: 3 },
+    duration_regressions: { good: 0, average: 1, poor: 3 },
+  },
 };
 
 // ============================================================================
@@ -2715,6 +2720,226 @@ function checkHookHealth() {
 }
 
 // ============================================================================
+// HOOK COMPLETENESS (D25 — check coverage, skip frequency, duration trends)
+// ============================================================================
+
+function checkHookCompleteness() {
+  console.error("  Checking hook completeness...");
+
+  const hookRunsPath = path.join(ROOT_DIR, ".claude", "state", "hook-runs.jsonl");
+  const manifestPath = path.join(ROOT_DIR, "scripts", "config", "hook-checks.json");
+
+  // --- 1. Read hook-runs.jsonl ---
+  const runLines = safeReadLines(hookRunsPath);
+  const allRuns = runLines.map((l) => safeParse(l)).filter(Boolean);
+
+  if (allRuns.length === 0) {
+    addAlert(
+      "hook-completeness",
+      "info",
+      "No hook-runs data yet — completeness checks will activate after first hook run",
+      "hook-runs.jsonl is written at the end of each pre-commit/pre-push hook invocation",
+      null
+    );
+    addContext("hook-completeness", { no_data: true, label: "Hook Completeness" });
+    return;
+  }
+
+  // --- 2. Read manifest for registered checks ---
+  let manifest = null;
+  try {
+    const stat = fs.statSync(manifestPath);
+    if (stat.size <= MAX_FILE_SIZE) {
+      manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    }
+  } catch {
+    // manifest missing or invalid — skip manifest-based checks
+  }
+
+  const now = Date.now();
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const cutoff7d = now - 7 * DAY_MS;
+  const cutoff14d = now - 14 * DAY_MS;
+
+  // Filter runs to last 7 days and prior 7 days
+  const runs7d = allRuns.filter((r) => {
+    const t = new Date(r.timestamp).getTime();
+    return !Number.isNaN(t) && t > cutoff7d;
+  });
+  const runsPrev7d = allRuns.filter((r) => {
+    const t = new Date(r.timestamp).getTime();
+    return !Number.isNaN(t) && t > cutoff14d && t <= cutoff7d;
+  });
+
+  // --- 3. Check coverage: manifest checks vs. hook-runs entries ---
+  const missingChecks = [];
+  if (manifest && Array.isArray(manifest.checks) && runs7d.length > 0) {
+    // Collect all check IDs that appeared in runs from last 7 days
+    const seenCheckIds = new Set();
+    for (const run of runs7d) {
+      if (Array.isArray(run.checks)) {
+        for (const c of run.checks) {
+          if (c.id) seenCheckIds.add(c.id);
+        }
+      }
+    }
+
+    // Compare against manifest
+    for (const check of manifest.checks) {
+      if (!seenCheckIds.has(check.id)) {
+        missingChecks.push(check.id);
+      }
+    }
+  }
+
+  if (missingChecks.length > 0) {
+    const severity =
+      missingChecks.length >= BENCHMARKS.hook_completeness.missing_checks.poor
+        ? "error"
+        : missingChecks.length >= BENCHMARKS.hook_completeness.missing_checks.average
+          ? "warning"
+          : "info";
+    addAlert(
+      "hook-completeness",
+      severity,
+      `${missingChecks.length} manifest-registered check(s) not seen in hook-runs in last 7 days`,
+      `Missing: ${missingChecks.slice(0, 5).join(", ")}${missingChecks.length > 5 ? ` (+${missingChecks.length - 5} more)` : ""}`,
+      "Verify these checks are active in .husky/pre-commit or .husky/pre-push"
+    );
+  }
+
+  // --- 4. Skip frequency: flag checks skipped >50% of runs in last 7 days ---
+  const checkRunCounts = Object.create(null); // { checkId: { total: N, skipped: N } }
+  for (const run of runs7d) {
+    if (Array.isArray(run.checks)) {
+      for (const c of run.checks) {
+        if (!c.id) continue;
+        if (!checkRunCounts[c.id]) checkRunCounts[c.id] = { total: 0, skipped: 0 };
+        checkRunCounts[c.id].total++;
+        if (c.status === "skip") {
+          checkRunCounts[c.id].skipped++;
+        }
+      }
+    }
+  }
+
+  const highSkipChecks = [];
+  for (const [checkId, counts] of Object.entries(checkRunCounts)) {
+    if (counts.total >= 2) {
+      const skipPct = Math.round((counts.skipped / counts.total) * 100);
+      if (skipPct > 50) {
+        highSkipChecks.push({ id: checkId, skipPct, total: counts.total, skipped: counts.skipped });
+      }
+    }
+  }
+
+  if (highSkipChecks.length > 0) {
+    const severity =
+      highSkipChecks.length >= BENCHMARKS.hook_completeness.high_skip_checks.poor
+        ? "warning"
+        : "info";
+    const topSkip = highSkipChecks.sort((a, b) => b.skipPct - a.skipPct)[0];
+    addAlert(
+      "hook-completeness",
+      severity,
+      `${highSkipChecks.length} check(s) skipped >50% of runs in last 7 days`,
+      `Worst: "${topSkip.id}" skipped ${topSkip.skipPct}% (${topSkip.skipped}/${topSkip.total})`,
+      "Review SKIP_CHECKS usage — frequent skips may indicate false positives or misconfiguration"
+    );
+  }
+
+  // --- 5. Duration trends: flag checks with >50% avg duration increase vs prior 7 days ---
+  const durationRegressions = [];
+  if (runsPrev7d.length > 0) {
+    // Build avg duration maps for current and prior 7 days
+    const buildDurationMap = (runs) => {
+      const map = Object.create(null); // { checkId: [durations] }
+      for (const run of runs) {
+        if (Array.isArray(run.checks)) {
+          for (const c of run.checks) {
+            if (!c.id || typeof c.duration_ms !== "number" || c.status === "skip") continue;
+            if (!map[c.id]) map[c.id] = [];
+            map[c.id].push(c.duration_ms);
+          }
+        }
+      }
+      return map;
+    };
+
+    const currentDurations = buildDurationMap(runs7d);
+    const prevDurations = buildDurationMap(runsPrev7d);
+
+    for (const [checkId, currentTimes] of Object.entries(currentDurations)) {
+      const prevTimes = prevDurations[checkId];
+      if (!prevTimes || prevTimes.length === 0) continue;
+
+      const currentAvg = currentTimes.reduce((a, b) => a + b, 0) / currentTimes.length;
+      const prevAvg = prevTimes.reduce((a, b) => a + b, 0) / prevTimes.length;
+
+      if (prevAvg > 0) {
+        const pctIncrease = Math.round(((currentAvg - prevAvg) / prevAvg) * 100);
+        if (pctIncrease > 50) {
+          durationRegressions.push({
+            id: checkId,
+            currentAvgMs: Math.round(currentAvg),
+            prevAvgMs: Math.round(prevAvg),
+            pctIncrease,
+          });
+        }
+      }
+    }
+  }
+
+  if (durationRegressions.length > 0) {
+    const severity =
+      durationRegressions.length >= BENCHMARKS.hook_completeness.duration_regressions.poor
+        ? "warning"
+        : "info";
+    const worst = durationRegressions.sort((a, b) => b.pctIncrease - a.pctIncrease)[0];
+    addAlert(
+      "hook-completeness",
+      severity,
+      `${durationRegressions.length} check(s) with >50% avg duration increase vs prior 7 days`,
+      `Worst: "${worst.id}" ${worst.prevAvgMs}ms -> ${worst.currentAvgMs}ms (+${worst.pctIncrease}%)`,
+      "Investigate slow checks — may indicate new code complexity or environmental issues"
+    );
+  }
+
+  // All clear
+  if (
+    missingChecks.length === 0 &&
+    highSkipChecks.length === 0 &&
+    durationRegressions.length === 0
+  ) {
+    addAlert(
+      "hook-completeness",
+      "info",
+      "Hook completeness healthy — all manifest checks running, no excessive skips or duration regressions",
+      `${runs7d.length} hook runs analyzed from last 7 days`,
+      null
+    );
+  }
+
+  // --- 6. Context ---
+  addContext("hook-completeness", {
+    benchmarks: BENCHMARKS.hook_completeness,
+    totals: {
+      hook_runs_7d: runs7d.length,
+      hook_runs_prev_7d: runsPrev7d.length,
+      manifest_checks: manifest && Array.isArray(manifest.checks) ? manifest.checks.length : 0,
+      missing_checks: missingChecks.length,
+      high_skip_checks: highSkipChecks.length,
+      duration_regressions: durationRegressions.length,
+    },
+    details: {
+      missing_checks: missingChecks,
+      high_skip_checks: highSkipChecks,
+      duration_regressions: durationRegressions,
+    },
+  });
+}
+
+// ============================================================================
 // NEW CHECKERS — Category A: State File Checkers (W2)
 // ============================================================================
 
@@ -4012,6 +4237,7 @@ function computeHealthScore() {
     session: 0.03,
     "agent-compliance": 0.04,
     "hook-health": 0.03,
+    "hook-completeness": 0.02,
     // New state (8%)
     "session-state": 0.03,
     "pattern-hotspots": 0.03,
@@ -4135,6 +4361,7 @@ function main() {
   checkSkipAbuse();
   checkTestResults();
   checkHookHealth();
+  checkHookCompleteness();
   // New limited-mode checkers (A1, A2, A5)
   checkSessionState();
   checkPatternHotspots();
@@ -4188,6 +4415,7 @@ function main() {
   ensureCategory("skip-abuse", "Skip Abuse");
   ensureCategory("test-results", "Test Results");
   ensureCategory("hook-health", "Hook Health");
+  ensureCategory("hook-completeness", "Hook Completeness");
   ensureCategory("session-state", "Session State");
   ensureCategory("pattern-hotspots", "Pattern Hotspots");
   ensureCategory("context-usage", "Context Usage");
