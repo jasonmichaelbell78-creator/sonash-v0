@@ -50,7 +50,7 @@ process.stdin.on("end", () => {
     // Get staged files
     let stagedFiles = [];
     try {
-      const output = execSync("git diff --cached --name-only --diff-filter=ACM", {
+      const output = execSync("git diff --cached --name-only --diff-filter=ACM --", {
         cwd: ROOT,
         encoding: "utf8",
         timeout: 15000,
