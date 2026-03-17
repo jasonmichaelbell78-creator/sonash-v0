@@ -2,7 +2,7 @@
 
 **Document Version**: 8.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-15 (Session #221)
+2026-03-16 (Session #224)
 
 ## Purpose
 
@@ -30,15 +30,15 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-03-16 **Branch**: `plan-implementation` **Working
-On**: Session #223 — Skill-audit create-audit + Agent Environment Deep-Plan
+On**: Session #224 — Pre-Commit/Pre-Push Hook System Overhaul
 
-**Uncommitted Work**: SESSION_CONTEXT.md update + deep-plan artifacts
+**Uncommitted Work**: None (all 9 waves committed)
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 223 (since Jan 1, 2026)
+**Current Session Count**: 224 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,26 +48,44 @@ On**: Session #223 — Skill-audit create-audit + Agent Environment Deep-Plan
 
 ## Recent Session Summaries
 
+**Session #224** (PRE-COMMIT/PRE-PUSH HOOK SYSTEM OVERHAUL):
+
+- **Deep-plan** (33 questions, 44 decisions): 7-agent parallel discovery with
+  convergence loops — pre-commit explorer, pre-push explorer, warning-infra
+  explorer, Claude Code hooks explorer, skip-reason/SWS explorer, ground-truth
+  verifier, execution verifier. DIAGNOSIS mapped 36 findings across 14 of 19
+  SWS tenets.
+- **10-wave execution** (W0-W9), 9 commits:
+  - W0: Verified mini-audit mechanisms. CC baseline NEVER ACTIVATED (schema
+    mismatch) — fixed and established (176 files, 359 violations baselined)
+  - W1: Hook contract manifest v1 (`hook-checks.json`, 25 checks). CANON
+    artifact for SWS Phase 1.
+  - W2: Eliminated all 10 silent failure paths (gitleaks, lint-staged, fnm,
+    npm audit, 5x `|| true` replaced, log rotation, auto-DEBT visibility)
+  - W3: End-of-hook summary (per-check table + tiered actions on warn/fail,
+    success line on pass) + `hook-runs.jsonl` with per-check timing
+  - W4: Escalation gate in pre-push (error warnings block, session-begin ack,
+    SKIP_WARNINGS bypass, CI=true bypass)
+  - W5: Data store fixes (commit-failures.jsonl wired, rotation on
+    agent-invocations, check-triggers.js fallback writer removed)
+  - W6: Pre-commit parallelization (~3-4s savings, compliance + doc groups)
+  - W7: Source-of-truth (JSONL canonical, hook-warnings.json regenerated from
+    JSONL at session-start, separate ack state file)
+  - W8: /Alerts hook completeness dimension, analytics --since default,
+    L3→L4 maturity checklist
+  - W9: 3-tier verification (unit 13/13, integration 4/4, sweep 26/26)
+- **SWS tenet alignment**: 14 of 19 tenets addressed. T7 (bash→Node) and T18
+  (changelog) deferred to CANON/D36.
+- **New artifacts**: hook-checks.json (CANON), hook-runs.jsonl, hook-warnings-
+  ack.json, validate-hook-manifest.js, MATURITY.md
+- **9 commits, pending push**
+
 **Session #223** (SKILL-AUDIT CREATE-AUDIT + AGENT ENVIRONMENT DEEP-PLAN):
 
 - **skill-audit on create-audit** (75→88/110): 44 decisions (32 accepted, 12
-  rejected) across 11 categories. Key changes: convergence loop MUST on Phase
-  2.2 discovery, evidence-based self-audit with grep proof + T20 tally, skill-
-  audit promoted to Phase 5 validation gate, Type 3/4 templates added, guard
-  rails extracted to REFERENCE.md.
-- **Cross-skill fixes from audit**: skill-creator (3 gaps: cross-batch revision,
-  post-discovery prompt, evidence self-check), SKILL_STANDARDS.md (standardized
-  self-audit section for all skills), convergence-loop (SHOULD→MUST for
-  discovery phases per USER-REQ-4).
+  rejected) across 11 categories.
 - **Agent environment deep-plan** (21 decisions): 5-phase plan for comprehensive
-  agent ecosystem overhaul. Research (CL-driven, 4 parallel streams), audit
-  creation (hybrid via /create-audit), audit execution, interactive
-  improvements, process integration. 3 Agent Teams planned: research-team (4
-  members), audit-team (2 members), improvement-team (3 members).
-- **Agent Teams elevated**: Feature enabled but never used. Plan includes first
-  real Agent Teams usage with hybrid persistence model and token monitoring
-  pipeline (statusline + session-end + alerts).
-- **Replaces PLAN-v3 Step 3.14** with coverage audit to ensure nothing missed.
+  agent ecosystem overhaul.
 - **2 commits, all pushed**
 
 **Session #222** (CONVERGENCE-LOOP INTEGRATION + DEBT-RUNNER SKILL):
@@ -121,24 +139,6 @@ On**: Session #223 — Skill-audit create-audit + Agent Environment Deep-Plan
   verified (standard preset, 3 passes, 5 agents). 6 corrections applied.
 - **7 commits, all pushed**
 
-**Session #220** (REVIEW LIFECYCLE PIPELINE OVERHAUL — JSONL-CANONICAL):
-
-- **T3 convergence loop**: 2 passes, 6 agents — 7 confirmed, 2 corrected, 2
-  extended, 2 new findings. 7 verified root causes identified.
-- **Deep-plan**: 20 decisions across 3 batches, SWS alignment verified
-- **9-step execution** via subagent-driven development with per-step spec
-  review + code quality review (15 commits)
-- **Architecture change**: JSONL is now canonical source of truth. Markdown
-  (`AI_REVIEW_LEARNINGS_LOG.md`) is a generated view. Single orchestrator
-  (`review-lifecycle.js`) replaces 3 scattered session-start calls.
-- **Root causes fixed**: RC-1 (no enforcement gate), RC-2 (archive reactive),
-  RC-3 (consolidation state ordering), RC-4 (sync doesn't consult archives),
-  RC-5 (concurrent writes), RC-6 (archive duplicates), RC-7 (orphaned renderer)
-- **New files**: `review-lifecycle.js` (orchestrator), tests (24 tests)
-- **Migration**: 382 reviews migrated to JSONL, 10 markdown archives moved to
-  legacy folder, 4 deprecated scripts archived
-- **Testing**: 3,775/3,776 tests passing (1 skipped), 0 fail
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
@@ -154,7 +154,7 @@ On**: Session #223 — Skill-audit create-audit + Agent Environment Deep-Plan
 | **Agent Environment Analysis**    | PLANNED  | Deep-plan complete (21 decisions), Phase 1 next      |
 | **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE + CL integration, ready for Phase 1 |
 | **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                  |
-| **Pre-Commit Overhaul**           | COMPLETE | All 8 phases                                         |
+| **Pre-Commit/Push Overhaul**      | COMPLETE | 10 waves, 44 decisions, 14 SWS tenets addressed     |
 | Track B: Dev Dashboard MVP        | Paused   | ~10%                                                 |
 | M1.5 - Quick Wins                 | Paused   | ~20%                                                 |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%                                                 |
@@ -172,19 +172,19 @@ hooks). Serena fully removed.
 
 ### Immediate Priority
 
-1. **Agent Environment Analysis Phase 1** — Execute the deep-plan from Session
-   #223. Start by fetching TeamCreate/SendMessage tool schemas, spawn research-
-   team, run Steps 1.1-1.4 in parallel. Plan at
-   `.planning/agent-environment-analysis/PLAN.md` (21 decisions).
-2. **Phase 1: CANON Foundation** — SWS Phase 0 fully complete (CL integration
-   done, phase self-audit protocol added). Begin Phase 1 (schema definitions,
-   migration mechanics, enforcement system). Read PLAN-v3.md Section 5 +
-   DECISIONS_BY_PHASE.md Phase 1 section (60+ decisions to recall).
-3. **Run /debt-runner** — new skill created Session #222. First real test on the
-   8382-item debt corpus. Start with `health` mode, then `verify` on S0.
+1. **Register hook-checks.json in CANON** — Schema from Session #224 (D14) is a
+   CANON artifact. Must be registered when Phase 1 starts. See memory:
+   `project_hook_contract_canon.md`.
+2. **Agent Environment Analysis Phase 1** — Execute deep-plan from Session #223.
+   Plan at `.planning/agent-environment-analysis/PLAN.md` (21 decisions).
+3. **Phase 1: CANON Foundation** — SWS Phase 0 complete. Begin Phase 1 (schema
+   definitions, migration mechanics, enforcement system). Read PLAN-v3.md
+   Section 5 + DECISIONS_BY_PHASE.md Phase 1 section (60+ decisions to recall).
+4. **Run /debt-runner** — First real test on the 8382-item debt corpus.
 
 **Also pending:** DE cleanup (Wave 8 REFERENCE.md + skill-audit), planning
-landscape Wave 5 (canonicalization), review lifecycle S3 cosmetic fixes.
+landscape Wave 5 (canonicalization), update /hook-ecosystem-audit skill with
+5-layer discovery pattern from Session #224.
 
 ---
 
@@ -259,6 +259,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                                |
 | ------- | ---------- | ---------------------------------------------------------------------- |
+| 8.3     | 2026-03-16 | Session #224 — Pre-commit/pre-push hook system overhaul (10 waves)     |
 | 8.2     | 2026-03-16 | Session #223 — skill-audit create-audit, agent environment deep-plan   |
 | 8.1     | 2026-03-15 | Session #222 — CL integration, debt-runner skill, 3 skill audits       |
 | 8.0     | 2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop skill, 7 commits |

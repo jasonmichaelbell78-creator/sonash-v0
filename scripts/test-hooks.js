@@ -603,6 +603,35 @@ function runTests() {
     log(""); // Blank line between hooks
   }
 
+  // --- Hook Contract Manifest Validation (Wave 1, D24) ---
+  log("📄 hook-checks.json (manifest)", "yellow");
+  try {
+    const { validate } = require("./validate-hook-manifest");
+    const manifestResult = validate();
+    recordResult(
+      stats,
+      "hook-checks.json",
+      "Manifest validation",
+      manifestResult.passed,
+      manifestResult.errors.length > 0 ? manifestResult.errors.join("; ") : ""
+    );
+    if (manifestResult.passed) {
+      log(`  ${manifestResult.summary}`, "green");
+    } else {
+      log(`  ${manifestResult.summary}`, "red");
+    }
+    if (manifestResult.warnings.length > 0) {
+      for (const w of manifestResult.warnings) {
+        log(`  ⚠️  ${w}`, "yellow");
+      }
+    }
+  } catch (err) {
+    const { sanitizeError } = require("./lib/sanitize-error.js");
+    const errorMsg = sanitizeError(err);
+    recordResult(stats, "hook-checks.json", "Manifest validation", false, errorMsg);
+  }
+  log(""); // Blank line
+
   // Summary
   log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "blue");
   log("  📊 TEST SUMMARY", "blue");

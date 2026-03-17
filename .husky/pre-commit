@@ -14,6 +14,11 @@ exec > "$HOOK_OUTPUT_LOG" 2>&1
 # Source shared hook infrastructure (add_exit_trap, is_skipped, require_skip_reason, _shared_init_fnm)
 . "$(dirname "$0")/_shared.sh"
 
+# --- Wave 3: Timing infrastructure (D6, D7) ---
+HOOK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
+CHECKS_TMPFILE=$(mktemp)
+add_exit_trap "rm -f '$CHECKS_TMPFILE'"
+
 # Display log on failure so developers see what went wrong (Gemini review #379)
 # Capture exit code before chain runs; display log to stderr on failure
 add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ] && [ -f "$HOOK_OUTPUT_LOG" ]; then exec 1>/dev/null; printf "\n--- PRE-COMMIT HOOK FAILED ---\n" >&2; cat "$HOOK_OUTPUT_LOG" >&2; printf "--- END OF LOGS ---\n" >&2; fi'
@@ -82,8 +87,14 @@ STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || ec
 echo "🔍 Running pre-commit checks..."
 
 # --- Wave 0: Secrets scan (fast, ~1s) ---
+CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Scanning for secrets (gitleaks)..."
-if command -v gitleaks > /dev/null 2>&1; then
+if is_skipped "gitleaks"; then
+  require_skip_reason "SKIP_CHECKS includes gitleaks"
+  node scripts/log-override.js --quick --check=gitleaks --reason="$SKIP_REASON" || true
+  echo "  ⏭️  Secrets scan skipped (SKIP_CHECKS)"
+  echo "secrets-scan|skip|0" >> "$CHECKS_TMPFILE"
+elif command -v gitleaks > /dev/null 2>&1; then
   gitleaks_exit=0
   gitleaks protect --staged -c .gitleaks.toml --no-banner || gitleaks_exit=$?
   if [ "$gitleaks_exit" -eq 1 ]; then
@@ -91,16 +102,30 @@ if command -v gitleaks > /dev/null 2>&1; then
     echo ""
     echo "  Remove secrets before committing. Run: gitleaks detect --source ."
     echo "  If false positive, add to .gitleaks.toml allowlist."
+    CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+    echo "secrets-scan|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     exit 1
   elif [ "$gitleaks_exit" -ne 0 ]; then
     echo "  ❌ gitleaks encountered an error (exit $gitleaks_exit) — scan could not be completed" >&2
     echo "  Fix gitleaks/config before committing. Override: SKIP_CHECKS=\"gitleaks\" SKIP_REASON=\"reason\" git commit ..." >&2
+    CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+    echo "secrets-scan|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     exit "$gitleaks_exit"
   else
     echo "  ✅ No secrets detected"
+    CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+    echo "secrets-scan|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   fi
 else
   echo "  ⏭️ gitleaks not installed (install: winget install Gitleaks.Gitleaks)"
+  node scripts/append-hook-warning.js --hook=pre-commit --type=missing-tool --severity=warning \
+    --message="gitleaks not installed — secrets scan skipped" \
+    --action="Install: winget install Gitleaks.Gitleaks" \
+    || echo "⚠️ gitleaks not installed — secrets scan skipped" >&3
+  echo "secrets-scan|skip|0" >> "$CHECKS_TMPFILE"
 fi
 
 # --- Wave 1: ESLint + Tests in parallel ---
@@ -113,6 +138,7 @@ TEST_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
 add_exit_trap 'rm -f "$TEST_TMPFILE" 2>/dev/null'
 
 # --- Start ESLint in background ---
+ESLINT_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Running ESLint..."
 (npm run lint > "$ESLINT_TMPFILE" 2>&1; echo $? > "${ESLINT_TMPFILE}.exit") &
 PID_LINT=$!
@@ -121,6 +147,7 @@ PID_LINT=$!
 RUN_TESTS=0
 SKIP_TEST_REASON=""
 PID_TEST=""
+TEST_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 
 if is_skipped tests; then
   node scripts/log-override.js --quick --check=tests --reason="$SKIP_REASON" 2>/dev/null || true
@@ -148,79 +175,199 @@ fi
 
 # --- Wait for ESLint ---
 wait $PID_LINT 2>/dev/null || true
+ESLINT_END_NS=$(date +%s%N 2>/dev/null || date +%s)
 LINT_EXIT=$(cat "${ESLINT_TMPFILE}.exit" 2>/dev/null || echo "1")
 rm -f "${ESLINT_TMPFILE}.exit" 2>/dev/null
+if [ ${#ESLINT_START_NS} -gt 10 ]; then ESLINT_DURATION_MS=$(( (ESLINT_END_NS - ESLINT_START_NS) / 1000000 )); else ESLINT_DURATION_MS=$(( (ESLINT_END_NS - ESLINT_START_NS) * 1000 )); fi
 if [ "$LINT_EXIT" -ne 0 ]; then
   echo "  ❌ ESLint has errors"
   tail -20 "$ESLINT_TMPFILE"
   echo ""
   echo "  Fix errors before committing. Run: npm run lint"
+  echo "eslint|fail|${ESLINT_DURATION_MS}" >> "$CHECKS_TMPFILE"
   # Kill test if still running
   [ -n "$PID_TEST" ] && kill $PID_TEST 2>/dev/null || true
   exit 1
 fi
 echo "  ✅ ESLint passed"
+echo "eslint|pass|${ESLINT_DURATION_MS}" >> "$CHECKS_TMPFILE"
 
 # --- Wait for tests ---
 if [ "$RUN_TESTS" -eq 1 ] && [ -n "$PID_TEST" ]; then
   wait $PID_TEST 2>/dev/null || true
+  TEST_END_NS=$(date +%s%N 2>/dev/null || date +%s)
   TEST_EXIT=$(cat "${TEST_TMPFILE}.exit" 2>/dev/null || echo "1")
   rm -f "${TEST_TMPFILE}.exit" 2>/dev/null
+  if [ ${#TEST_START_NS} -gt 10 ]; then TEST_DURATION_MS=$(( (TEST_END_NS - TEST_START_NS) / 1000000 )); else TEST_DURATION_MS=$(( (TEST_END_NS - TEST_START_NS) * 1000 )); fi
   if [ "$TEST_EXIT" -ne 0 ]; then
     echo "  ❌ Tests failed"
     tail -10 "$TEST_TMPFILE"
     echo ""
     echo "  Fix tests before committing. Run: npm test"
+    echo "tests|fail|${TEST_DURATION_MS}" >> "$CHECKS_TMPFILE"
     exit 1
   fi
   echo "  ✅ Tests passed"
+  echo "tests|pass|${TEST_DURATION_MS}" >> "$CHECKS_TMPFILE"
 elif [ -n "$SKIP_TEST_REASON" ]; then
   echo "  ⏭️ Skipping tests ($SKIP_TEST_REASON)"
+  echo "tests|skip|0" >> "$CHECKS_TMPFILE"
 fi
 
 
 # 2. Auto-format staged files with lint-staged (Prettier)
 # Automatically formats staged files - no manual intervention needed
+CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Running lint-staged (auto-format)..."
 # Check if lint-staged is installed as devDependency (security: --no-install prevents supply chain attacks)
 if npm list lint-staged --depth=0 > /dev/null 2>&1; then
   if ! npx --no-install lint-staged --no-stash; then
     echo "  ❌ Lint-staged failed"
+    CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+    echo "lint-staged|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     exit 1
   fi
   echo "  ✅ Lint-staged passed (files formatted)"
+  CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+  echo "lint-staged|auto-fix|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
 else
   echo "  ⚠️ lint-staged not installed - run 'npm ci' to enable auto-formatting"
   echo "  ⏭️ Skipping lint-staged (devDependency missing from node_modules)"
+  node scripts/append-hook-warning.js --hook=pre-commit --type=missing-tool --severity=warning \
+    --message="lint-staged not installed — auto-formatting skipped" \
+    --action="Install: npm install -D lint-staged" \
+    || echo "⚠️ lint-staged not installed — auto-formatting skipped" >&3
+  echo "lint-staged|skip|0" >> "$CHECKS_TMPFILE"
 fi
 
-# 3. Run pattern compliance check on staged files (blocks on critical violations)
-# Override with: SKIP_CHECKS="patterns" SKIP_REASON="reason" git commit ...
+# ── Parallel compliance checks (D18) ──
+# pattern-compliance + audit-s0s1 + skill-validation
+# These have NO shared state and can run in parallel.
+
+PATTERNS_TMP=$(mktemp)
+AUDIT_TMP=$(mktemp)
+SKILLS_TMP=$(mktemp)
+add_exit_trap "rm -f '$PATTERNS_TMP' '${PATTERNS_TMP}.rc' '${PATTERNS_TMP}.dur' '$AUDIT_TMP' '${AUDIT_TMP}.rc' '${AUDIT_TMP}.dur' '$SKILLS_TMP' '${SKILLS_TMP}.rc' '${SKILLS_TMP}.dur'"
+
+# --- Determine which compliance checks to run vs skip/skip-condition ---
+
+# Pattern compliance: always runs unless skipped
+RUN_PATTERNS=1
 if is_skipped patterns; then
+  RUN_PATTERNS=0
   node scripts/log-override.js --quick --check=pattern-compliance --reason="$SKIP_REASON" 2>/dev/null || true
   echo "  ⏭️ Skipping pattern compliance (skipped via SKIP_CHECKS)"
+  echo "pattern-compliance|skip|0" >> "$CHECKS_TMPFILE"
+fi
+
+# Audit S0/S1: conditional on audit JSONL files staged
+RUN_AUDIT=0
+if is_skipped audit; then
+  node scripts/log-override.js --quick --check=audit-s0s1 --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "  ⏭️ Skipping audit validation (skipped via SKIP_CHECKS)"
+  echo "audit-s0s1|skip|0" >> "$CHECKS_TMPFILE"
 else
-  echo "  ▶ Running pattern compliance..."
-  PATTERN_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
-  add_exit_trap 'rm -f "$PATTERN_TMPFILE" 2>/dev/null'
-  node scripts/check-pattern-compliance.js --staged > "$PATTERN_TMPFILE" 2>&1
-  PATTERN_EXIT=$?
+  STAGED_AUDIT_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -E "docs/audits/.*\.jsonl$" || true)
+  if [ -n "$STAGED_AUDIT_FILES" ]; then
+    RUN_AUDIT=1
+  else
+    echo "audit-s0s1|skip|0" >> "$CHECKS_TMPFILE"
+  fi
+fi
+
+# Skill validation: conditional on skill/command files staged
+RUN_SKILLS=0
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '\.(claude)/(skills|commands)/.*\.md$'; then
+  RUN_SKILLS=1
+else
+  echo "skill-validation|skip|0" >> "$CHECKS_TMPFILE"
+fi
+
+# --- Launch parallel checks ---
+echo "  ▶ Running compliance checks (parallel)..."
+
+PATTERNS_PID=""
+AUDIT_PID=""
+SKILLS_PID=""
+
+if [ "$RUN_PATTERNS" -eq 1 ]; then
+  (
+    _start=$(date +%s%N 2>/dev/null || date +%s)
+    node scripts/check-pattern-compliance.js --staged > "$PATTERNS_TMP" 2>&1
+    echo $? > "${PATTERNS_TMP}.rc"
+    _end=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#_start} -gt 10 ]; then echo $(( (_end - _start) / 1000000 )) > "${PATTERNS_TMP}.dur"; else echo $(( (_end - _start) * 1000 )) > "${PATTERNS_TMP}.dur"; fi
+  ) &
+  PATTERNS_PID=$!
+fi
+
+if [ "$RUN_AUDIT" -eq 1 ]; then
+  (
+    _start=$(date +%s%N 2>/dev/null || date +%s)
+    # Write staged audit files to temp, validate each
+    _audit_list=$(mktemp)
+    echo "$STAGED_AUDIT_FILES" > "$_audit_list"
+    _afail=0
+    while IFS= read -r audit_file || [ -n "$audit_file" ]; do
+      [ -z "$audit_file" ] && continue
+      audit_out="$(node scripts/validate-audit.js "$audit_file" --strict-s0s1 2>&1)"
+      audit_code=$?
+      if [ "$audit_code" -ne 0 ]; then
+        _afail=1
+        echo "  ❌ S0/S1 validation failed: $audit_file"
+        printf '%s\n' "$audit_out" | grep -E "^   ❌|BLOCKING" | head -5
+      fi
+    done < "$_audit_list"
+    rm -f "$_audit_list"
+    echo $_afail > "${AUDIT_TMP}.rc"
+    _end=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#_start} -gt 10 ]; then echo $(( (_end - _start) / 1000000 )) > "${AUDIT_TMP}.dur"; else echo $(( (_end - _start) * 1000 )) > "${AUDIT_TMP}.dur"; fi
+  ) > "$AUDIT_TMP" 2>&1 &
+  AUDIT_PID=$!
+fi
+
+if [ "$RUN_SKILLS" -eq 1 ]; then
+  (
+    _start=$(date +%s%N 2>/dev/null || date +%s)
+    npm run skills:validate > "$SKILLS_TMP" 2>&1
+    echo $? > "${SKILLS_TMP}.rc"
+    _end=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#_start} -gt 10 ]; then echo $(( (_end - _start) / 1000000 )) > "${SKILLS_TMP}.dur"; else echo $(( (_end - _start) * 1000 )) > "${SKILLS_TMP}.dur"; fi
+  ) &
+  SKILLS_PID=$!
+fi
+
+# Wait for all launched checks
+[ -n "$PATTERNS_PID" ] && wait $PATTERNS_PID 2>/dev/null || true
+[ -n "$AUDIT_PID" ] && wait $AUDIT_PID 2>/dev/null || true
+[ -n "$SKILLS_PID" ] && wait $SKILLS_PID 2>/dev/null || true
+
+# --- Process pattern-compliance results ---
+if [ "$RUN_PATTERNS" -eq 1 ]; then
+  PATTERN_EXIT=$(cat "${PATTERNS_TMP}.rc" 2>/dev/null || echo "1")
+  CHECK_DURATION_MS=$(cat "${PATTERNS_TMP}.dur" 2>/dev/null || echo "0")
   if [ "$PATTERN_EXIT" -eq 1 ]; then
     echo "  ❌ Pattern compliance: critical violations found"
-    cat "$PATTERN_TMPFILE"
+    cat "$PATTERNS_TMP"
     echo ""
     echo "  Fix critical violations before committing."
+    echo "pattern-compliance|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     exit 1
   elif [ "$PATTERN_EXIT" -eq 2 ]; then
     echo "  ⚠️ Pattern compliance check errored (non-blocking)"
-    tail -5 "$PATTERN_TMPFILE"
+    tail -5 "$PATTERNS_TMP"
+    echo "pattern-compliance|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else
     # Exit 0: no critical violations (may have warnings)
-    if grep -q "⚠️" "$PATTERN_TMPFILE" 2>/dev/null; then
+    if grep -q "⚠️" "$PATTERNS_TMP" 2>/dev/null; then
       echo "  ✅ Pattern compliance passed (with warnings)"
-      cat "$PATTERN_TMPFILE"
+      cat "$PATTERNS_TMP"
+      echo "pattern-compliance|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     else
       echo "  ✅ Pattern compliance passed"
+      echo "pattern-compliance|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     fi
   fi
 fi
@@ -229,83 +376,145 @@ fi
 # Pre-push already blocks on propagation misses; this non-blocking duplicate
 # was noise (13 of 32 warning-log entries). Rely on pre-push gate.
 
-# 4. Audit file S0/S1 validation (BLOCKING - Session #98)
-# Validates that S0/S1 findings have proper verification_steps
-# Override with: SKIP_CHECKS="audit" SKIP_REASON="reason" git commit ...
-if ! is_skipped audit; then
-  STAGED_AUDIT_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -E "docs/audits/.*\.jsonl$" || true)
-  if [ -n "$STAGED_AUDIT_FILES" ]; then
-    echo "  ▶ Validating audit S0/S1 compliance..."
-    # POSIX-compatible: Write to temp file, read with while loop
-    # Review #204: Pipe creates subshell where variable changes don't propagate
-    # Chain with existing EXIT trap instead of overwriting
-    AUDIT_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
-    add_exit_trap 'rm -f "$AUDIT_TMPFILE" 2>/dev/null'
-    echo "$STAGED_AUDIT_FILES" > "$AUDIT_TMPFILE"
-    AUDIT_FAILED=0
-    while IFS= read -r audit_file || [ -n "$audit_file" ]; do
-      [ -z "$audit_file" ] && continue
-      audit_out="$(node scripts/validate-audit.js "$audit_file" --strict-s0s1 2>&1)"
-      audit_code=$?
-      if [ "$audit_code" -ne 0 ]; then
-        AUDIT_FAILED=1
-        echo "  ❌ S0/S1 validation failed: $audit_file"
-        printf '%s\n' "$audit_out" | grep -E "^   ❌|BLOCKING" | head -5
-      fi
-    done < "$AUDIT_TMPFILE"
-    rm -f "$AUDIT_TMPFILE"
-    if [ "$AUDIT_FAILED" -eq 1 ]; then
-      echo ""
-      echo "  Fix S0/S1 violations or downgrade severity. Run:"
-      echo "    node scripts/validate-audit.js <file> --strict-s0s1"
-      echo "  Override: SKIP_CHECKS=\"audit\" SKIP_REASON=\"reason\" git commit ..."
-      exit 1
-    fi
-    echo "  ✅ Audit S0/S1 validation passed"
+# --- Process audit-s0s1 results ---
+if [ "$RUN_AUDIT" -eq 1 ]; then
+  AUDIT_EXIT=$(cat "${AUDIT_TMP}.rc" 2>/dev/null || echo "0")
+  CHECK_DURATION_MS=$(cat "${AUDIT_TMP}.dur" 2>/dev/null || echo "0")
+  if [ "$AUDIT_EXIT" -ne 0 ]; then
+    cat "$AUDIT_TMP"
+    echo ""
+    echo "  Fix S0/S1 violations or downgrade severity. Run:"
+    echo "    node scripts/validate-audit.js <file> --strict-s0s1"
+    echo "  Override: SKIP_CHECKS=\"audit\" SKIP_REASON=\"reason\" git commit ..."
+    echo "audit-s0s1|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    exit 1
   fi
-else
-  node scripts/log-override.js --quick --check=audit-s0s1 --reason="$SKIP_REASON" 2>/dev/null || true
-  echo "  ⏭️ Skipping audit validation (skipped via SKIP_CHECKS)"
+  echo "  ✅ Audit S0/S1 validation passed"
+  echo "audit-s0s1|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
 fi
 
 # 5. CANON schema validation — REMOVED (C7-G3)
 # Fires ~1-2% of commits, non-blocking, CI validates the same thing. Rely on CI.
 
-# 6. Skill configuration validation (non-blocking, when skill files modified)
-if printf '%s\n' "$STAGED_FILES" | grep -Eq '\.(claude)/(skills|commands)/.*\.md$'; then
-  echo "  ▶ Validating skill configurations..."
-  skills_output=$(npm run skills:validate 2>&1)
-  if echo "$skills_output" | grep -q "❌ ERROR"; then
+# --- Process skill-validation results ---
+if [ "$RUN_SKILLS" -eq 1 ]; then
+  SKILLS_RC=$(cat "${SKILLS_TMP}.rc" 2>/dev/null || echo "0")
+  CHECK_DURATION_MS=$(cat "${SKILLS_TMP}.dur" 2>/dev/null || echo "0")
+  if [ "$SKILLS_RC" != "0" ] || echo "$(cat "$SKILLS_TMP" 2>/dev/null)" | grep -q "❌ ERROR"; then
     echo "  ⚠️ Skill validation issues found (not blocking - run: npm run skills:validate)"
-    printf '%s\n' "$skills_output" | grep -E "^📄|^   ❌" | head -10
-    node scripts/append-hook-warning.js --hook=pre-commit --type=skill --severity=warning --message="Skill validation issues found" --action="npm run skills:validate" || true
+    cat "$SKILLS_TMP" 2>/dev/null | grep -E "^📄|^   ❌" | head -10
+    node scripts/append-hook-warning.js --hook=pre-commit --type=skill --severity=warning --message="Skill validation issues found" --action="npm run skills:validate" || echo "⚠️ Warning write failed: skill validation" >&3
+    echo "skill-validation|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else
     echo "  ✅ Skill validation passed"
+    echo "skill-validation|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   fi
 fi
 
-# 7. Cross-document dependency check (BLOCKING - Session #69)
-# Override with: SKIP_CHECKS="cross-doc" SKIP_REASON="reason" git commit ...
+# ── Parallel doc checks (D18) ──
+# cross-doc-deps + doc-headers run in parallel
+# doc-index (auto-fix) runs SEQUENTIALLY after, because it modifies staged files
+
+CROSSDOC_TMP=$(mktemp)
+DOCHEADERS_TMP=$(mktemp)
+add_exit_trap "rm -f '$CROSSDOC_TMP' '${CROSSDOC_TMP}.rc' '${CROSSDOC_TMP}.dur' '$DOCHEADERS_TMP' '${DOCHEADERS_TMP}.rc' '${DOCHEADERS_TMP}.dur'"
+
+# --- Determine which doc checks to run vs skip/skip-condition ---
+
+RUN_CROSSDOC=1
 if is_skipped cross-doc; then
+  RUN_CROSSDOC=0
   node scripts/log-override.js --quick --check=cross-doc-deps --reason="$SKIP_REASON" 2>/dev/null || true
   echo "  ⏭️ Skipping cross-doc dependency check (skipped via SKIP_CHECKS)"
+  echo "cross-doc-deps|skip|0" >> "$CHECKS_TMPFILE"
+fi
+
+RUN_DOCHEADERS=0
+if is_skipped doc-header; then
+  node scripts/log-override.js --quick --check=doc-header --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "doc-headers|skip|0" >> "$CHECKS_TMPFILE"
 else
-  echo "  ▶ Checking cross-document dependencies..."
-  if ! node scripts/check-cross-doc-deps.js --trivial; then
+  NEW_MD_FILES=$(git diff --cached --name-only --diff-filter=A | grep -E '\.md$' || true)
+  if [ -n "$NEW_MD_FILES" ]; then
+    RUN_DOCHEADERS=1
+  else
+    echo "doc-headers|skip|0" >> "$CHECKS_TMPFILE"
+  fi
+fi
+
+# --- Launch parallel doc checks ---
+CROSSDOC_PID=""
+DOCHEADERS_PID=""
+
+if [ "$RUN_CROSSDOC" -eq 1 ] || [ "$RUN_DOCHEADERS" -eq 1 ]; then
+  echo "  ▶ Running doc checks (parallel)..."
+fi
+
+if [ "$RUN_CROSSDOC" -eq 1 ]; then
+  (
+    _start=$(date +%s%N 2>/dev/null || date +%s)
+    node scripts/check-cross-doc-deps.js --trivial > "$CROSSDOC_TMP" 2>&1
+    echo $? > "${CROSSDOC_TMP}.rc"
+    _end=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#_start} -gt 10 ]; then echo $(( (_end - _start) / 1000000 )) > "${CROSSDOC_TMP}.dur"; else echo $(( (_end - _start) * 1000 )) > "${CROSSDOC_TMP}.dur"; fi
+  ) &
+  CROSSDOC_PID=$!
+fi
+
+if [ "$RUN_DOCHEADERS" -eq 1 ]; then
+  (
+    _start=$(date +%s%N 2>/dev/null || date +%s)
+    node scripts/check-doc-headers.js > "$DOCHEADERS_TMP" 2>&1
+    echo $? > "${DOCHEADERS_TMP}.rc"
+    _end=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#_start} -gt 10 ]; then echo $(( (_end - _start) / 1000000 )) > "${DOCHEADERS_TMP}.dur"; else echo $(( (_end - _start) * 1000 )) > "${DOCHEADERS_TMP}.dur"; fi
+  ) &
+  DOCHEADERS_PID=$!
+fi
+
+# Wait for parallel doc checks
+[ -n "$CROSSDOC_PID" ] && wait $CROSSDOC_PID 2>/dev/null || true
+[ -n "$DOCHEADERS_PID" ] && wait $DOCHEADERS_PID 2>/dev/null || true
+
+# --- Process cross-doc-deps results ---
+if [ "$RUN_CROSSDOC" -eq 1 ]; then
+  CROSSDOC_EXIT=$(cat "${CROSSDOC_TMP}.rc" 2>/dev/null || echo "1")
+  CHECK_DURATION_MS=$(cat "${CROSSDOC_TMP}.dur" 2>/dev/null || echo "0")
+  if [ "$CROSSDOC_EXIT" -ne 0 ]; then
     echo "  ❌ Cross-document dependency check failed"
+    cat "$CROSSDOC_TMP"
     echo ""
     echo "  Fix dependencies before committing. Run: npm run crossdoc:check"
     echo "  Override: SKIP_CHECKS=\"cross-doc\" SKIP_REASON=\"reason\" git commit ..."
+    echo "cross-doc-deps|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     exit 1
   fi
   echo "  ✅ Cross-document dependencies satisfied"
+  echo "cross-doc-deps|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+fi
+
+# --- Process doc-headers results ---
+if [ "$RUN_DOCHEADERS" -eq 1 ]; then
+  DOCHEADERS_EXIT=$(cat "${DOCHEADERS_TMP}.rc" 2>/dev/null || echo "1")
+  CHECK_DURATION_MS=$(cat "${DOCHEADERS_TMP}.dur" 2>/dev/null || echo "0")
+  if [ "$DOCHEADERS_EXIT" -ne 0 ]; then
+    echo "  ❌ Document header validation failed"
+    cat "$DOCHEADERS_TMP"
+    echo "doc-headers|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    exit 1
+  fi
+  echo "  ✅ Document headers validated"
+  echo "doc-headers|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
 fi
 
 # 8. Documentation Index auto-update (AUTO-FIX - Session #103, fixed #149)
+# SEQUENTIAL — modifies staged files, cannot run in parallel with other checks
 # Override with: SKIP_CHECKS="doc-index" SKIP_REASON="reason" git commit ...
+CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 if is_skipped doc-index; then
   node scripts/log-override.js --quick --check=doc-index --reason="$SKIP_REASON" 2>/dev/null || true
   echo "  ⏭️ Skipping doc index check (skipped via SKIP_CHECKS)"
+  echo "doc-index|skip|0" >> "$CHECKS_TMPFILE"
 else
   CHANGED_MD_FILES=$(git diff --cached --name-only --diff-filter=ADM | grep -E '\.md$' || true)
   if [ -n "$CHANGED_MD_FILES" ]; then
@@ -317,50 +526,57 @@ else
       npx prettier --write DOCUMENTATION_INDEX.md > /dev/null 2>&1 || echo "  ⚠️ Prettier formatting failed for DOCUMENTATION_INDEX.md (non-blocking)"
       git add DOCUMENTATION_INDEX.md
       echo "  ✅ Documentation index updated and staged"
+      CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+      if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+      echo "doc-index|auto-fix|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     else
       # Restore original on failure — no partial/broken index gets committed
       if [ -f DOCUMENTATION_INDEX.md.bak ]; then
         mv DOCUMENTATION_INDEX.md.bak DOCUMENTATION_INDEX.md
       fi
       echo "  ⚠️ Documentation index generation failed, original preserved (non-blocking)"
+      CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+      if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+      echo "doc-index|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     fi
     rm -f DOCUMENTATION_INDEX.md.bak 2>/dev/null || true
-  fi
-fi
-
-# 9. Document header validation for NEW docs (BLOCKING - Session #115)
-# Override with: SKIP_CHECKS="doc-header" SKIP_REASON="reason" git commit ...
-if is_skipped doc-header; then
-  node scripts/log-override.js --quick --check=doc-header --reason="$SKIP_REASON" 2>/dev/null || true
-else
-  NEW_MD_FILES=$(git diff --cached --name-only --diff-filter=A | grep -E '\.md$' || true)
-  if [ -n "$NEW_MD_FILES" ]; then
-    echo "  ▶ Validating new document headers..."
-    if ! node scripts/check-doc-headers.js; then
-      exit 1
-    fi
-    echo "  ✅ Document headers validated"
+  else
+    echo "doc-index|skip|0" >> "$CHECKS_TMPFILE"
   fi
 fi
 
 # 10. Agent compliance check (non-blocking, single-line summary)
+CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Checking agent compliance..."
 if [ -n "${STRICT_AGENT_CHECK:-}" ]; then
   if ! node scripts/check-agent-compliance.js --strict 2>&1; then
+    CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+    echo "agent-compliance|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     exit 1
   fi
+  CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+  echo "agent-compliance|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
 else
   agent_output=$(node scripts/check-agent-compliance.js 2>&1) || true
+  CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
   if echo "$agent_output" | grep -q "⚠️"; then
     echo "  ⚠️ Agent compliance: code changed without agent review"
-    node scripts/append-hook-warning.js --hook=pre-commit --type=agent --severity=warning --message="Agent compliance warnings - code changed without agent review" --action="Use code-reviewer agent for modified code" || true
+    node scripts/append-hook-warning.js --hook=pre-commit --type=agent --severity=warning --message="Agent compliance warnings - code changed without agent review" --action="Use code-reviewer agent for modified code" || echo "⚠️ Warning write failed: agent compliance" >&3
+    echo "agent-compliance|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  else
+    echo "agent-compliance|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   fi
 fi
 
 # 11. Technical debt schema validation (BLOCKING - TDMS Phase 7)
 # Override with: SKIP_CHECKS="debt" SKIP_REASON="reason" git commit ...
+CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 if is_skipped debt; then
   node scripts/log-override.js --quick --check=debt-schema --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "debt-schema|skip|0" >> "$CHECKS_TMPFILE"
 else
   if printf '%s\n' "$STAGED_FILES" | grep -q "docs/technical-debt/MASTER_DEBT.jsonl"; then
     echo "  ▶ Validating technical debt schema (changed lines)..."
@@ -371,9 +587,17 @@ else
       echo "  Fix schema issues before committing. Run:"
       echo "    node scripts/debt/validate-schema.js --staged-only"
       echo "  Override: SKIP_CHECKS=\"debt\" SKIP_REASON=\"reason\" git commit ..."
+      CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+      if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+      echo "debt-schema|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
       exit 1
     fi
     echo "  ✅ Technical debt schema passed"
+    CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+    echo "debt-schema|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  else
+    echo "debt-schema|skip|0" >> "$CHECKS_TMPFILE"
   fi
 fi
 
@@ -381,23 +605,39 @@ fi
 # Warns when planning JSONL changed but no MD files are staged.
 # Full content comparison deferred to batch gate (formatter rewrites MD after generation).
 # Override with: SKIP_CHECKS="jsonl-sync" SKIP_REASON="reason" git commit ...
+CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 if is_skipped jsonl-sync; then
   node scripts/log-override.js --quick --check=jsonl-sync --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "jsonl-md-sync|skip|0" >> "$CHECKS_TMPFILE"
 else
   if printf '%s\n' "$STAGED_FILES" | grep -qE '\.planning/.*\.jsonl$'; then
     if ! printf '%s\n' "$STAGED_FILES" | grep -qE '\.planning/.*\.(md|MD)$'; then
       echo "  ⚠️ Planning JSONL changed but no MD files staged — did you forget to regenerate?" >&3
       echo "    node scripts/planning/generate-discovery-record.js" >&3
       echo "    node scripts/planning/generate-decisions.js" >&3
-      node scripts/append-hook-warning.js --hook=pre-commit --type=jsonl-sync --severity=warning --message="Planning JSONL changed without MD regeneration" --action="Run generation scripts" || true
+      node scripts/append-hook-warning.js --hook=pre-commit --type=jsonl-sync --severity=warning --message="Planning JSONL changed without MD regeneration" --action="Run generation scripts" || echo "⚠️ Warning write failed: JSONL-MD sync" >&3
+      CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+      if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+      echo "jsonl-md-sync|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     else
       echo "  ✅ Planning JSONL + MD both staged"
+      CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+      if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+      echo "jsonl-md-sync|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     fi
+  else
+    echo "jsonl-md-sync|skip|0" >> "$CHECKS_TMPFILE"
   fi
 fi
 
 # 13. Test coverage warning — REMOVED (C7-G4)
 # Redundant with CI test registry (hardcoded, less accurate). CI is authoritative.
+
+# --- End-of-hook summary + hook-runs.jsonl (Wave 3: D6, D7, D11, D12, D29) ---
+generate_hook_summary "Pre-commit" "$CHECKS_TMPFILE" 3
+
+# Write hook-runs.jsonl (D6, D20, D21) — TOTAL_MS set by generate_hook_summary
+write_hook_runs_jsonl "pre-commit" "$CHECKS_TMPFILE" "$TOTAL_MS"
 
 echo ""
 echo "✅ All pre-commit checks passed - commit allowed"

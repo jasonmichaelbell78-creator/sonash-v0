@@ -61,6 +61,190 @@ require_skip_reason() {
   esac
 }
 
+# Generate end-of-hook summary from checks temp file (Wave 3, D6/D7/D11/D29)
+# Usage: generate_hook_summary <hook_name> <checks_tmpfile> <fd_num>
+# Requires HOOK_START_NS to be set in the calling scope
+generate_hook_summary() {
+  _hook_name="$1"
+  _tmpfile="$2"
+  _fd="$3"  # 3 for pre-commit, 2 for pre-push
+
+  if [ ! -f "$_tmpfile" ] || [ ! -s "$_tmpfile" ]; then
+    return 0
+  fi
+
+  _total=0; _passed=0; _warned=0; _failed=0; _skipped=0; _autofixed=0
+  _warn_checks=""; _fail_checks=""
+
+  while IFS='|' read -r _id _status _dur; do
+    _total=$((_total + 1))
+    case "$_status" in
+      pass) _passed=$((_passed + 1)) ;;
+      skip) _skipped=$((_skipped + 1)) ;;
+      warn) _warned=$((_warned + 1)); _warn_checks="$_warn_checks $_id" ;;
+      fail) _failed=$((_failed + 1)); _fail_checks="$_fail_checks $_id" ;;
+      auto-fix) _autofixed=$((_autofixed + 1)) ;;
+    esac
+  done < "$_tmpfile"
+
+  # Calculate total duration
+  HOOK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#HOOK_START_NS} -gt 10 ]; then
+    TOTAL_MS=$(( (HOOK_END_NS - HOOK_START_NS) / 1000000 ))
+  else
+    TOTAL_MS=$(( (HOOK_END_NS - HOOK_START_NS) * 1000 ))
+  fi
+  # Format total duration — avoid "mss" bug when bc unavailable (PR #444 R1 fix #6)
+  _bc_result=$(echo "scale=1; $TOTAL_MS / 1000" | bc 2>/dev/null || echo "")
+  if [ -n "$_bc_result" ]; then
+    TOTAL_FMT="${_bc_result}s"
+  else
+    TOTAL_FMT="${TOTAL_MS}ms"
+  fi
+
+  if [ "$_warned" -eq 0 ] && [ "$_failed" -eq 0 ]; then
+    # D29: Simple success line
+    echo "✅ ${_hook_name}: ${_passed}/${_total} passed (${TOTAL_FMT})" >&"$_fd"
+  else
+    # D29: Full summary on warn/fail
+    echo "" >&"$_fd"
+    echo "┌─ ${_hook_name} Summary ────────────────────────────┐" >&"$_fd"
+    while IFS='|' read -r _id _status _dur; do
+      case "$_status" in
+        pass)    _icon="✅" ;;
+        skip)    _icon="⏭️ " ;;
+        warn)    _icon="⚠️ " ;;
+        fail)    _icon="❌" ;;
+        auto-fix) _icon="🔧" ;;
+        *)       _icon="  " ;;
+      esac
+      # Format duration — avoid "mss" bug (PR #444 R1 fix #6)
+      if [ "$_dur" -gt 1000 ] 2>/dev/null; then
+        _bc_dur=$(echo "scale=1; $_dur / 1000" | bc 2>/dev/null || echo "")
+        if [ -n "$_bc_dur" ]; then
+          _dur_fmt="${_bc_dur}s"
+        else
+          _dur_fmt="${_dur}ms"
+        fi
+      else
+        _dur_fmt="${_dur}ms"
+      fi
+      printf "│ %s %-25s %-8s %8s │\n" "$_icon" "$_id" "$_status" "$_dur_fmt" >&"$_fd"
+    done < "$_tmpfile"
+    echo "├──────────────────────────────────────────────────┤" >&"$_fd"
+    echo "│ ${_passed} passed, ${_warned} warning(s), ${_failed} failed (${TOTAL_FMT})" >&"$_fd"
+
+    # D10/D31: Show actions for warn/fail checks
+    if [ -n "$_warn_checks" ] || [ -n "$_fail_checks" ]; then
+      echo "├─ Actions ────────────────────────────────────────┤" >&"$_fd"
+      for _cid in $_warn_checks $_fail_checks; do
+        # Read actions from manifest
+        _actions=$(node -e "
+          try {
+            const m = require('./scripts/config/hook-checks.json');
+            const c = m.checks.find(x => x.id === '$_cid');
+            if (c && c.actions) {
+              if (c.actions.fix) console.log('  Fix: ' + c.actions.fix);
+              console.log('  Investigate: ' + (c.actions.investigate || 'N/A'));
+              console.log('  Defer: ' + (c.actions.defer || 'N/A'));
+            }
+          } catch {}
+        " 2>/dev/null)
+        if [ -n "$_actions" ]; then
+          echo "│ ⚠️  ${_cid}:" >&"$_fd"
+          echo "$_actions" | while read -r _line; do
+            echo "│   $_line" >&"$_fd"
+          done
+        fi
+      done
+    fi
+    echo "└──────────────────────────────────────────────────┘" >&"$_fd"
+  fi
+}
+
+# Write hook-runs.jsonl entry (D6, D20, D21)
+# Usage: write_hook_runs_jsonl <hook_name_lowercase> <checks_tmpfile> <total_ms>
+write_hook_runs_jsonl() {
+  _wr_hook="$1"
+  _wr_tmpfile="$2"
+  _wr_total_ms="$3"
+
+  # Pass shell variables via env vars to avoid injection (PR #444 R1 fix #1)
+  _WR_HOOK="$_wr_hook" \
+  _WR_TMPFILE="$_wr_tmpfile" \
+  _WR_TOTAL_MS="$_wr_total_ms" \
+  node -e "
+    const fs = require('fs');
+    const path = require('path');
+    const { spawnSync } = require('child_process');
+    const runsPath = path.join('.claude', 'state', 'hook-runs.jsonl');
+
+    const git = (args) => {
+      try {
+        const res = spawnSync('git', args, { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 3000 });
+        return (res.status === 0 && res.stdout) ? res.stdout.trim() : 'unknown';
+      } catch { return 'unknown'; }
+    };
+
+    // Read checks from temp file
+    let lines = [];
+    try {
+      lines = fs.readFileSync(process.env._WR_TMPFILE || '', 'utf-8').trim().split('\n').filter(Boolean);
+    } catch {}
+    const checks = lines.map(l => {
+      const parts = l.replace(/\r/g, '').split('|');
+      return { id: parts[0] || '', status: parts[1] || 'unknown', duration_ms: parseInt(parts[2]) || 0 };
+    }).filter(c => c.id);
+
+    const entry = {
+      hook: process.env._WR_HOOK || 'unknown',
+      timestamp: new Date().toISOString(),
+      branch: git(['rev-parse', '--abbrev-ref', 'HEAD']),
+      commit: git(['rev-parse', '--short', 'HEAD']),
+      total_checks: checks.length,
+      checks: checks,
+      total_duration_ms: parseInt(process.env._WR_TOTAL_MS || '0') || 0,
+      outcome: checks.some(c => c.status === 'fail') ? 'fail' : checks.some(c => c.status === 'warn') ? 'warn' : 'pass',
+      skipped_checks: checks.filter(c => c.status === 'skip').map(c => c.id),
+      warnings: checks.filter(c => c.status === 'warn').length,
+      errors: checks.filter(c => c.status === 'fail').length
+    };
+
+    // Symlink guard — check parent directories too (PR #444 R3 fix #2)
+    for (const dir of [path.dirname(runsPath), path.dirname(path.dirname(runsPath))]) {
+      try {
+        const dst = fs.lstatSync(dir);
+        if (dst.isSymbolicLink()) process.exit(0);
+      } catch (e) {
+        if (e.code !== 'ENOENT') process.exit(0);
+      }
+    }
+
+    // Check the file itself (PR #444 R1 fix #10, R2 fix #7: reject non-file targets)
+    try {
+      const st = fs.lstatSync(runsPath);
+      if (st.isSymbolicLink()) process.exit(0);
+      if (!st.isFile()) process.exit(0);
+    } catch (e) { if (e.code !== 'ENOENT') process.exit(0); }
+
+    // Ensure directory exists
+    try { fs.mkdirSync(path.dirname(runsPath), { recursive: true }); } catch {}
+
+    // Rotation: keep 100 of 200 entries (D21)
+    let existing = [];
+    try {
+      existing = fs.readFileSync(runsPath, 'utf-8').trim().split('\n').filter(Boolean);
+    } catch {}
+
+    if (existing.length >= 200) {
+      existing = existing.slice(-100);
+    }
+
+    existing.push(JSON.stringify(entry));
+    fs.writeFileSync(runsPath, existing.join('\n') + '\n');
+  " 2>/dev/null || true
+}
+
 # Initialize fnm so node/npm/npx are available in this shell context (C6-G3)
 # Computes fnm/node env once; sourcing scripts reuse the result throughout
 _shared_init_fnm() {
@@ -72,5 +256,7 @@ _shared_init_fnm() {
       return 0
     fi
     eval "$FNM_ENV"
+  else
+    echo "⚠️ fnm not available — using system Node.js" >&2
   fi
 }

@@ -575,7 +575,8 @@ function printReport(violations, totalFunctions, parseErrors, fileCount) {
 function readBaseline() {
   try {
     const data = JSON.parse(readFileSync(BASELINE_PATH, "utf-8"));
-    return data?.checks?.["cognitive-complexity"] || {};
+    // Support both legacy "checks" key and canonical "baselines" key
+    return data?.baselines?.["cognitive-complexity"] || data?.checks?.["cognitive-complexity"] || {};
   } catch {
     return {};
   }
@@ -600,7 +601,11 @@ function writeBaseline(allResults) {
   }
 
   data.generated = new Date().toISOString();
-  data.checks["cognitive-complexity"] = ccByFile;
+  // Write to "baselines" key (canonical) for consistency with other baseline entries
+  if (!data.baselines) data.baselines = {};
+  data.baselines["cognitive-complexity"] = ccByFile;
+  // Remove legacy "checks" key if it exists to avoid confusion
+  if (data.checks?.["cognitive-complexity"]) delete data.checks["cognitive-complexity"];
   safeWriteFileSync(BASELINE_PATH, JSON.stringify(data, null, 2) + "\n");
   console.log(`[check-cc] Baseline updated: ${Object.keys(ccByFile).length} file(s) recorded.`);
 }

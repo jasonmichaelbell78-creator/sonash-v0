@@ -21,10 +21,9 @@ Every item is either fixed or tracked — no silent dismissals.
 3. **ALWAYS create learning entry FIRST** — before fixing any items.
 4. **ALWAYS read files before editing** — no blind edits.
 5. **ALWAYS verify fixes** — re-read modified files after applying changes.
-6. **NEVER dismiss as "pre-existing"** — present the user with two options: (a)
-   **Fix now** with an effort estimate (e.g., "3 files, ~10 min" or "47
-   instances, ~2 hours with agents"), or (b) **Create a DEBT item** via
-   `/add-debt`. The user decides which path — never auto-dismiss.
+6. **NEVER dismiss as "pre-existing"** — every pre-existing item MUST get a
+   Defer/Act Score (DAS) block and explicit user choice. See Step 2 for the DAS
+   framework. Never auto-decide on DAS 3-4 items. Never skip the DAS block.
 7. **Propagation is MANDATORY** — after fixing a pattern-based issue, grep the
    entire codebase for the same pattern and fix ALL instances in one commit.
 
@@ -159,12 +158,47 @@ trivial). Estimated effort: [small <=5 | medium 6-15 | large 16-30 | XL 30+]."
 
 **Origin (MUST):**
 
-| Origin                    | Action                                       |
-| ------------------------- | -------------------------------------------- |
-| **This-PR**               | MUST fix                                     |
-| **Pre-existing, fixable** | Fix now (< 5 min)                            |
-| **Pre-existing, complex** | Track via `/add-debt` with DEBT-XXXX ID      |
-| **Architectural**         | Present to user with impact + recommendation |
+| Origin            | Action                                       |
+| ----------------- | -------------------------------------------- |
+| **This-PR**       | MUST fix — no DAS needed                     |
+| **Pre-existing**  | Score with DAS, present choice block to user |
+| **Architectural** | Present to user with impact + recommendation |
+
+### Defer/Act Score (DAS) — MUST for all pre-existing items
+
+Three dimensions, each scored 0-2. Replaces time-based effort estimates.
+
+| Dimension      | 0 (Act now)                                        | 1 (Gray zone)                                | 2 (Defer)                                     |
+| -------------- | -------------------------------------------------- | -------------------------------------------- | --------------------------------------------- |
+| **Signal**     | Multi-source OR repeat finding from prior PR       | Single source, first occurrence              | Single source, low confidence (<60)           |
+| **Dependency** | Blocks CI/PRs OR fix stays within PR-changed files | Doesn't block, no other workstream covers it | Another workstream already plans this fix     |
+| **Risk**       | Fix is isolated, tests exist                       | Fix touches shared code, tests exist         | Fix requires cross-system changes or no tests |
+
+**DAS = Signal + Dependency + Risk** (range 0-6)
+
+| Score | Action                                                              |
+| ----- | ------------------------------------------------------------------- |
+| 0-2   | **Recommend act** — present choice, auto-accept if user delegates   |
+| 3-4   | **User decides** — MUST wait for explicit choice, never auto-decide |
+| 5-6   | **Recommend defer** — present choice, auto-accept if user delegates |
+
+**Required format block (MUST appear for every pre-existing item):**
+
+```
+[PRE-EXISTING] {title}
+  Signal:     {0|1|2} — {reason}
+  Dependency: {0|1|2} — {reason}
+  Risk:       {0|1|2} — {reason}
+  DAS:        {N}/6 → {Recommend act | User decides | Recommend defer}
+  ▶ [A] Fix now  [B] Defer to DEBT  [C] Need more context
+```
+
+**Enforcement:** If a pre-existing item appears in the triage table without a
+DAS block, the triage is incomplete. Step 7 verification MUST check that
+pre-existing item count matches DAS block count.
+
+**Delegation:** If user says "you decide on clear items," auto-accept
+recommendations for DAS 0-2 and 5-6. DAS 3-4 items MUST always be presented.
 
 **Cross-round dedup (MUST for R2+):** Before investigating any item, check prior
 round dispositions for the same PR. Auto-reject items that match a prior
@@ -238,7 +272,7 @@ C+M fixes. N remaining. Continue?" Progress: every 5 fixes show "N of M (X%)."
 
 Every non-fixed item MUST have a disposition:
 
-- **Deferred:** DEBT ID via `/add-debt` + justification
+- **Deferred:** DEBT ID via `/add-debt` + DAS score justification
 - **Rejected:** Specific technical justification (not "seems fine")
 - **Architectural:** User-approved disposition
 
@@ -246,11 +280,16 @@ Every non-fixed item MUST have a disposition:
 MINOR>S2, TRIVIAL>S3. See
 [reference/TDMS_INTEGRATION.md](reference/TDMS_INTEGRATION.md).
 
-**Approval gate (MUST):** Present deferred items for approval: "Deferring N
-items to TDMS: [list]. Approve? [Y/modify]"
+**DAS compliance (MUST):** Every deferred pre-existing item must have a DAS
+block from Step 2 with user-approved disposition. Deferrals without DAS blocks
+are process violations.
 
-**Delegation:** User says "you decide" → accept recommendations, record as
-`delegated-accept`. **Contradictions:** Defer to user except safety items.
+**Approval gate (MUST):** Present deferred items for approval: "Deferring N
+items to TDMS: [list with DAS scores]. Approve? [Y/modify]"
+
+**Delegation:** User says "you decide" → auto-accept DAS 0-2 (act) and DAS 5-6
+(defer) recommendations. DAS 3-4 items MUST still be presented. Record as
+`delegated-accept`.
 
 **Done when:** All items have dispositions, deferred items approved.
 
@@ -288,7 +327,9 @@ rejected, deferred, source). Missing either artifact causes data gaps in
 1. **Count check:** fixed + deferred + rejected = total parsed items
 2. **No orphans:** every item from Step 1 has a disposition
 3. **TDMS sync:** every deferred item has a DEBT-XXXX ID
-4. **Learning entry:** complete (not `#TBD`)
+4. **DAS compliance:** pre-existing item count matches DAS block count (no
+   skipped blocks). All DAS 3-4 items have explicit user choice recorded.
+5. **Learning entry:** complete (not `#TBD`)
 
 If any check fails, fix before continuing. **Done when:** All 4 checks pass.
 
@@ -387,6 +428,7 @@ is the source of truth for cross-round history within a PR.
 
 | Version | Date       | Description                                                                                                                                                                                                |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.4     | 2026-03-16 | DAS framework: Replace time-based defer heuristic with Signal/Dependency/Risk scoring. Required format block for all pre-existing items. Step 7 DAS compliance check.                                      |
 | 4.3     | 2026-03-14 | State file persistence: Warm-Up reads prior round state files for accurate counts across compaction/clear. Step 8 writes state file. Schema documented in Compaction Resilience.                           |
 | 4.2     | 2026-03-13 | D26 backward flow: Step 1 retro pattern check reads last 3 retros' action_items[], flags repeat patterns, auto-elevates to MAJOR.                                                                          |
 | 4.1     | 2026-03-11 | Retro PRs #420/#424/#426: Step 0 (size advisory + first-scan batch), Step 2 (cross-round dedup + stale HEAD + prior rejection), Step 4 (propagation sweep strengthened), Step 6 (data completeness check). |

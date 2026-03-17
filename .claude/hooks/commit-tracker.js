@@ -21,6 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 let isSafeToWrite, gitExec, projectDir, sanitizeInput;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
@@ -181,16 +182,59 @@ function logCommitFailure(command) {
     const dir = path.dirname(commitFailuresLog);
     fs.mkdirSync(dir, { recursive: true });
     if (!isSafeToWrite(commitFailuresLog)) return;
+
+    // D5b: Capture branch name (best-effort)
+    let branchName = "unknown";
+    try {
+      branchName = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]) || "unknown";
+    } catch {
+      // Non-critical — use default
+    }
+
+    // D5b: Capture first 5 lines of hook output (best-effort)
+    let hookOutputExcerpt = "";
+    try {
+      // Use git rev-parse to find git-dir (works with worktrees) — PR #444 R1 fix #7
+      let gitDir;
+      try {
+        gitDir = execFileSync("git", ["rev-parse", "--git-dir"], { encoding: "utf-8", cwd: projectDir }).trim();
+        if (!path.isAbsolute(gitDir)) gitDir = path.join(projectDir, gitDir);
+      } catch { gitDir = path.join(projectDir, ".git"); }
+      const hookLogPath = path.join(gitDir, "hook-output.log");
+      const stats = fs.lstatSync(hookLogPath);
+        // Only read if regular file, non-empty, within size cap (256KB), and fresh (<60s old)
+        if (stats.isFile() && stats.size > 0 && stats.size <= 256 * 1024 && Date.now() - stats.mtimeMs < 60000) {
+          const content = fs.readFileSync(hookLogPath, "utf8").trim();
+          hookOutputExcerpt = content.split("\n").slice(0, 5).join("\n");
+          // Sanitize sensitive content from hook output — PR #444 R1 fix #12
+          hookOutputExcerpt = hookOutputExcerpt
+            .replace(/(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|password\s*=\s*|secret\s*=\s*)\S+/gi, "[REDACTED]")
+            .replace(/\/[A-Za-z]:[/\\]Users[/\\]\w+/g, "[USER_PATH]");
+        }
+    } catch {
+      // Non-critical — excerpt is best-effort
+    }
+
     const entry = {
       timestamp: new Date().toISOString(),
       command: sanitizeInput((command || "").slice(0, 200)).replace(
         /(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*)\S+/gi,
         "[REDACTED]"
       ),
+      branch: branchName,
       failedCheck: "pre-commit",
       session: getSessionCounter(),
+      hook_output_excerpt: sanitizeInput(hookOutputExcerpt.slice(0, 500)),
     };
     fs.appendFileSync(commitFailuresLog, JSON.stringify(entry) + "\n");
+
+    // D5b: Rotation — keep 50 entries max
+    try {
+      const { rotateJsonl } = require("./lib/rotate-state.js");
+      rotateJsonl(commitFailuresLog, 50, 50);
+    } catch {
+      // Non-critical — rotation failure doesn't block
+    }
   } catch (error) {
     // Non-critical — log for debuggability but don't break the hook
     console.error(

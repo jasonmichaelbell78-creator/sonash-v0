@@ -11,8 +11,8 @@
  * - Threshold-based recommendations
  *
  * Usage:
- *   npm run hooks:analytics
- *   npm run hooks:analytics -- --since=2026-02-14
+ *   npm run hooks:analytics                          # defaults to --since=2026-03-12 (post pre-existing ban)
+ *   npm run hooks:analytics -- --since=2026-02-14    # override the default cutoff
  *   npm run hooks:analytics -- --json
  *   npm run hooks:analytics -- --check=cross-doc
  */
@@ -60,12 +60,21 @@ function safeReadJsonl(filePath) {
   }
 }
 
+// Default --since cutoff: PR #427 merge date when "pre-existing" skip reason was banned.
+// Entries before this date used "pre-existing" as a skip reason and pollute analytics.
+const DEFAULT_SINCE = "2026-03-12";
+
 function parseArgs() {
-  const args = { since: null, json: false, check: null };
+  const args = { since: null, json: false, check: null, sinceIsDefault: false };
   for (const arg of process.argv.slice(2)) {
     if (arg === "--json") args.json = true;
     else if (arg.startsWith("--since=")) args.since = arg.split("=").slice(1).join("=");
     else if (arg.startsWith("--check=")) args.check = arg.split("=").slice(1).join("=");
+  }
+  // Apply default --since when not explicitly provided
+  if (!args.since) {
+    args.since = DEFAULT_SINCE;
+    args.sinceIsDefault = true;
   }
   return args;
 }
@@ -160,6 +169,7 @@ function buildRecommendations(overridesByCheck, failuresByCheck, overrides, fals
 function printTextReport(data) {
   const {
     period,
+    sinceIsDefault,
     overrides,
     overridesByCheck,
     failures,
@@ -172,6 +182,12 @@ function printTextReport(data) {
 
   console.log(`\nHook & Agent Analytics (${period})`);
   console.log("=".repeat(60));
+
+  if (sinceIsDefault) {
+    console.log(
+      `  Note: Filtering from ${DEFAULT_SINCE} (post pre-existing ban). Use --since=<date> to override.`
+    );
+  }
 
   console.log(`\nOverrides: ${overrides.length} total`);
   for (const [check, entries] of sortedEntries(overridesByCheck)) {
@@ -239,7 +255,8 @@ function main() {
     console.log(
       JSON.stringify(
         {
-          period: args.since || "all-time",
+          period: args.since,
+          since_is_default: args.sinceIsDefault,
           overrides: {
             total: overrides.length,
             by_check: Object.fromEntries(
@@ -267,7 +284,8 @@ function main() {
   }
 
   printTextReport({
-    period: args.since ? `since ${args.since}` : "all time",
+    period: `since ${args.since}`,
+    sinceIsDefault: args.sinceIsDefault,
     overrides,
     overridesByCheck,
     failures,
