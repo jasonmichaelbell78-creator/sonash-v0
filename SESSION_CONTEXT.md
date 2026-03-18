@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.0 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.4 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-17 (Session #225)
+2026-03-18 (Session #226)
 
 ## Purpose
 
@@ -29,16 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-16 **Branch**: `plan-implementation` **Working
-On**: Session #224 — Pre-Commit/Pre-Push Hook System Overhaul
+**Last Checkpoint**: 2026-03-18 **Branch**: `feat/github-optimization` **Working
+On**: Session #226 — GitHub Optimization Plan (Waves 0-2 complete)
 
-**Uncommitted Work**: None (all 9 waves committed)
+**Uncommitted Work**: None (pushed to remote)
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 225 (since Jan 1, 2026)
+**Current Session Count**: 226 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,6 +47,77 @@ On**: Session #224 — Pre-Commit/Pre-Push Hook System Overhaul
 ---
 
 ## Recent Session Summaries
+
+**Session #226** (GITHUB OPTIMIZATION PLAN — WAVES 0-2):
+
+- **Branch**: `feat/github-optimization` (off main, pushed to remote) <<<<<<<
+  Updated upstream
+- **Plan**: `.planning/github-optimization-plan/` (PLAN.md, DECISIONS.md,
+  DIAGNOSIS.md — 30 decisions)
+- **Wave 0 (Emergency Triage)**: Prettier fix (19 files), coverage upload
+  condition (`always()` → `success()`), cleanup-branches.yml counter bug (pipe-
+  subshell → here-string), Dependabot alerts resolved (next 16.1.7, fast-xml-
+  parser 5.5.6, @tootallnate/once 3.0.1, flatted 3.4.0+). Tests: 3775/3776 pass,
+  0 fail.
+- **Wave 1 (Security Hardening)**: SHA-pinned all actions across 16 workflows (9
+  action types, outdated versions upgraded). Permissions blocks on all 16
+  =======
+- **Plan**: `.planning/github-optimization-plan/` (PLAN.md, DECISIONS.md,
+  DIAGNOSIS.md — 30 decisions)
+- **Wave 0 (Emergency Triage)**: Prettier fix (19 files), coverage upload
+  condition (`always()` → `success()`), cleanup-branches.yml counter bug (pipe-
+  subshell → here-string), Dependabot alerts resolved (next 16.1.7, fast-xml-
+  parser 5.5.6, @tootallnate/once 3.0.1, flatted 3.4.0+). Tests: 3775/3776 pass,
+  0 fail.
+- **Wave 1 (Security Hardening)**: SHA-pinned all actions across 16 workflows (9
+  action types, outdated versions upgraded). Permissions blocks on all 16
+  > > > > > > > Stashed changes workflows. SECURITY.md created. Step 1.3 (Secret
+  > > > > > > > Scanning + Push Protection) is MANUAL — do in GitHub Settings.
+- **Wave 2 (Workflow Optimization)**: Timeouts on all jobs (10/20/30 min tiers),
+  concurrency groups on 11 workflows, path filtering on CI/CodeQL/Semgrep,
+  <<<<<<< Updated upstream Dependabot trigger fix, Semgrep pip cache, ruleset
+  hardened (5 rules), 4 stale environments deleted. Step 2.8 (NEXT*PUBLIC*\*
+  secrets → variables) is MANUAL.
+- **Bug found**: `commit-tracker.js:reportCommitFailure()` was dead code —
+  called after `process.exit(0)` in the failed-commit branch. Fixed (moved call
+  before exit). BUT the deeper issue remains: **PostToolUse hook console.error()
+  output gets buried in collapsed Bash output in Claude Code UI — the user is
+  never prompted about remediation.** This needs a mechanism that forces the AI
+  to surface hook failure reports and ask the user, not just stderr output that
+  collapses. Investigate: could the hook output via stdout (system-reminder
+  style) instead of stderr? Or use a Notification hook? This is the unresolved
+  gap from the hook overhaul (PR #444).
+- **2 commits pushed**: Waves 0-2 commit + commit-tracker.js fix
+
+**Remaining (Waves 3-4):**
+
+======= Dependabot trigger fix, Semgrep pip cache, ruleset hardened (5 rules), 4
+stale environments deleted. Step 2.8 (NEXT*PUBLIC*\* secrets → variables) is
+MANUAL.
+
+- **Bug found**: `commit-tracker.js:reportCommitFailure()` was dead code —
+  called after `process.exit(0)` in the failed-commit branch. Fixed (moved call
+  before exit). BUT the deeper issue remains: **PostToolUse hook console.error()
+  output gets buried in collapsed Bash output in Claude Code UI — the user is
+  never prompted about remediation.** This needs a mechanism that forces the AI
+  to surface hook failure reports and ask the user, not just stderr output that
+  collapses. Investigate: could the hook output via stdout (system-reminder
+  style) instead of stderr? Or use a Notification hook? This is the unresolved
+  gap from the hook overhaul (PR #444).
+- **2 commits pushed**: Waves 0-2 commit + commit-tracker.js fix
+
+**Remaining (Waves 3-4):**
+
+> > > > > > > Stashed changes
+
+- Wave 3: Code scanning remediation (Semgrep rule tuning, real security fixes,
+  false positive dismissals, defer 48 to DEBT)
+- Wave 4: Ecosystem expansion (LICENSE, community health files, Copilot
+  instructions, Codecov, OpenSSF Scorecard, Release Please, GitHub Guide)
+  <<<<<<< Updated upstream
+- # Manual: Secret Scanning + Push Protection, NEXT*PUBLIC*\* secrets → variables
+- Manual: Secret Scanning + Push Protection, NEXT*PUBLIC*\* secrets → variables
+  > > > > > > > Stashed changes
 
 **Session #224** (PRE-COMMIT/PRE-PUSH HOOK SYSTEM OVERHAUL):
 
@@ -155,11 +226,16 @@ On**: Session #224 — Pre-Commit/Pre-Push Hook System Overhaul
 | **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE + CL integration, ready for Phase 1 |
 | **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                  |
 | **Pre-Commit/Push Overhaul**      | COMPLETE | 10 waves, 44 decisions, 14 SWS tenets addressed      |
-| Track B: Dev Dashboard MVP        | Paused   | ~10%                                                 |
-| M1.5 - Quick Wins                 | Paused   | ~20%                                                 |
-| M1.6 - Admin Panel + UX           | Paused   | ~75%                                                 |
 
-**Current Branch**: `plan-implementation`
+<<<<<<< Updated upstream | **GitHub Optimization Plan** | ACTIVE | Waves 0-2
+done, Waves 3-4 remaining | ======= | **GitHub Optimization Plan** | ACTIVE |
+Waves 0-2 done, Waves 3-4 remaining |
+
+> > > > > > > Stashed changes | Track B: Dev Dashboard MVP | Paused | ~10% | |
+> > > > > > > M1.5 - Quick Wins | Paused | ~20% | | M1.6 - Admin Panel + UX |
+> > > > > > > Paused | ~75% |
+
+**Current Branch**: `feat/github-optimization` (implementation branch off main)
 
 **Test Status**: All tests passing (3,776 total, 3,775 pass, 0 fail, 1 skipped)
 
@@ -172,19 +248,26 @@ hooks). Serena fully removed.
 
 ### Immediate Priority
 
-1. **Register hook-checks.json in CANON** — Schema from Session #224 (D14) is a
-   CANON artifact. Must be registered when Phase 1 starts. See memory:
-   `project_hook_contract_canon.md`.
-2. **Agent Environment Analysis Phase 1** — Execute deep-plan from Session #223.
-   Plan at `.planning/agent-environment-analysis/PLAN.md` (21 decisions).
-3. **Phase 1: CANON Foundation** — SWS Phase 0 complete. Begin Phase 1 (schema
-   definitions, migration mechanics, enforcement system). Read PLAN-v3.md
-   Section 5 + DECISIONS_BY_PHASE.md Phase 1 section (60+ decisions to recall).
-4. **Run /debt-runner** — First real test on the 8382-item debt corpus.
+1. **GitHub Optimization Waves 3-4** — Continue on `feat/github-optimization`.
+   Plan: `.planning/github-optimization-plan/PLAN.md`. Wave 3 = code scanning
+   remediation. Wave 4 = ecosystem expansion (LICENSE, community files, etc).
+2. **Fix hook failure surfacing** — `commit-tracker.js` reportCommitFailure()
+   control flow fixed but output still buried in collapsed Bash output. Need
+   mechanism to surface pre-commit/pre-push failure reports as visible prompts.
+   Investigate stdout vs stderr, Notification hooks, or system-reminder style.
+3. **Manual GitHub steps** — Enable Secret Scanning + Push Protection (Settings
+   <<<<<<< Updated upstream → Code security), move NEXT*PUBLIC*\* from secrets
+   to variables. ======= → Code security), move NEXT*PUBLIC*\* from secrets to
+   variables.
+   > > > > > > > Stashed changes
 
-**Also pending:** DE cleanup (Wave 8 REFERENCE.md + skill-audit), planning
-landscape Wave 5 (canonicalization), update /hook-ecosystem-audit skill with
-5-layer discovery pattern from Session #224.
+### After GitHub Optimization
+
+4. **Register hook-checks.json in CANON** — Schema from Session #224 (D14).
+5. **Agent Environment Analysis Phase 1** — Plan at
+   `.planning/agent-environment-analysis/PLAN.md` (21 decisions).
+6. **Phase 1: CANON Foundation** — SWS Phase 0 complete.
+7. **Run /debt-runner** — First real test on 8382-item debt corpus.
 
 ---
 
@@ -229,7 +312,7 @@ unblocked.
 
 ### Stack
 
-- Next.js 16.1.6, React 19.2.3, TypeScript 5.x
+- Next.js 16.1.7, React 19.2.3, TypeScript 5.x
 - Tailwind CSS v4, Framer Motion 12
 - Firebase (Auth, Firestore, Functions, App Check)
 
@@ -257,28 +340,39 @@ npm run docs:check   # Documentation linting
 
 ## Version History
 
-| Version | Date       | Changes                                                                |
-| ------- | ---------- | ---------------------------------------------------------------------- |
-| 8.3     | 2026-03-16 | Session #224 — Pre-commit/pre-push hook system overhaul (10 waves)     |
-| 8.2     | 2026-03-16 | Session #223 — skill-audit create-audit, agent environment deep-plan   |
-| 8.1     | 2026-03-15 | Session #222 — CL integration, debt-runner skill, 3 skill audits       |
-| 8.0     | 2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop skill, 7 commits |
-| 7.9     | 2026-03-15 | Session #220 — Review Lifecycle Pipeline Overhaul (JSONL-canonical)    |
-| 7.8     | 2026-03-15 | Session #219 — SWS PLAN-v3.md convergence loop rebuild                 |
-| 7.7     | 2026-03-14 | Session #218 — Automation Gap Closure full implementation              |
-| 7.6     | 2026-03-13 | Session #217 — Data Effectiveness Audit deep-plan (35 decisions)       |
-| 7.5     | 2026-03-12 | Session #216 — PR #427/#428 batch retro, 17 action items               |
-| 7.4     | 2026-03-10 | Session #214 — Phases 3-7 done, 3,640 tests, 8 commits                 |
-| 7.3     | 2026-03-10 | Session #213 — PR #424 merged, branch cleanup                          |
-| 7.2     | 2026-03-09 | Session #212 — Phase 1 committed, Phase 2 done (52 decisions)          |
-| 7.1     | 2026-03-09 | Session #211 — deep-plan ecosystem expansion (33 decisions)            |
-| 7.0     | 2026-03-07 | Session #209 — skill-audit session-end full rewrite                    |
-| 6.9     | 2026-03-06 | Session #207 — Alerts full + health C->A (92/100)                      |
-| 6.8     | 2026-03-05 | Session #206 — PR #417 R1-R3 review complete                           |
-| 6.7     | 2026-03-05 | Session #205 — All retro action items implemented                      |
-| 6.6     | 2026-03-04 | Session #202 — Deep-plan complete, PLAN.md v1.1                        |
-| 6.5     | 2026-03-02 | Session #200 — PR #411 review R1-R9 complete                           |
-| 6.4     | 2026-03-01 | Session #199 — v1.0 milestone shipped/archived                         |
-| 6.3     | 2026-03-01 | Session #197 updates                                                   |
+| Version | Date | Changes |
+| ------- | ---- | ------- |
+
+<<<<<<< Updated upstream | 8.4 | 2026-03-18 | Session #226 — GitHub optimization
+Waves 0-2, commit-tracker fix | ======= | 8.4 | 2026-03-18 | Session #226 —
+GitHub optimization Waves 0-2, commit-tracker fix |
+
+> > > > > > > Stashed changes | 8.3 | 2026-03-16 | Session #224 —
+> > > > > > > Pre-commit/pre-push hook system overhaul (10 waves) | | 8.2 |
+> > > > > > > 2026-03-16 | Session #223 — skill-audit create-audit, agent
+> > > > > > > environment deep-plan | | 8.1 | 2026-03-15 | Session #222 — CL
+> > > > > > > integration, debt-runner skill, 3 skill audits | | 8.0 |
+> > > > > > > 2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop
+> > > > > > > skill, 7 commits | | 7.9 | 2026-03-15 | Session #220 — Review
+> > > > > > > Lifecycle Pipeline Overhaul (JSONL-canonical) | | 7.8 | 2026-03-15
+> > > > > > > | Session #219 — SWS PLAN-v3.md convergence loop rebuild | | 7.7 |
+> > > > > > > 2026-03-14 | Session #218 — Automation Gap Closure full
+> > > > > > > implementation | | 7.6 | 2026-03-13 | Session #217 — Data
+> > > > > > > Effectiveness Audit deep-plan (35 decisions) | | 7.5 | 2026-03-12
+> > > > > > > | Session #216 — PR #427/#428 batch retro, 17 action items | | 7.4
+> > > > > > > | 2026-03-10 | Session #214 — Phases 3-7 done, 3,640 tests, 8
+> > > > > > > commits | | 7.3 | 2026-03-10 | Session #213 — PR #424 merged,
+> > > > > > > branch cleanup | | 7.2 | 2026-03-09 | Session #212 — Phase 1
+> > > > > > > committed, Phase 2 done (52 decisions) | | 7.1 | 2026-03-09 |
+> > > > > > > Session #211 — deep-plan ecosystem expansion (33 decisions) | |
+> > > > > > > 7.0 | 2026-03-07 | Session #209 — skill-audit session-end full
+> > > > > > > rewrite | | 6.9 | 2026-03-06 | Session #207 — Alerts full + health
+> > > > > > > C->A (92/100) | | 6.8 | 2026-03-05 | Session #206 — PR #417 R1-R3
+> > > > > > > review complete | | 6.7 | 2026-03-05 | Session #205 — All retro
+> > > > > > > action items implemented | | 6.6 | 2026-03-04 | Session #202 —
+> > > > > > > Deep-plan complete, PLAN.md v1.1 | | 6.5 | 2026-03-02 | Session
+> > > > > > > #200 — PR #411 review R1-R9 complete | | 6.4 | 2026-03-01 |
+> > > > > > > Session #199 — v1.0 milestone shipped/archived | | 6.3 |
+> > > > > > > 2026-03-01 | Session #197 updates |
 
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)
