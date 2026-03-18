@@ -100,6 +100,7 @@ serviceAccountKey.json
 .claude/state/hook-warnings-log.jsonl
 .claude/state/pr-ecosystem-audit.jsonl
 .claude/state/code-reviewer-session.json
+.claude/state/last-hook-report.md*
 
 # Claude Code session runtime data (per-session, not tracked)
 .claude/tmp/
@@ -137,6 +138,18 @@ nul
 # Raw agent research transcripts (contain PII: local paths, session IDs)
 .planning/**/agent-research/*.txt
 .planning/**/agent-research/*.json
+
+# GSD (Get Shit Done) plugin — local-only files
+.claude/agents/gsd-*.md
+.claude/commands/gsd/
+.claude/get-shit-done/
+.claude/gsd-file-manifest.json
+.claude/hooks/gsd-*.js
+.claude/package.json
+.claude/.claude/
+
+# Consolidation output (local-only)
+consolidation-output/
 
 # Git worktrees (isolated workspaces, never commit)
 .worktrees/

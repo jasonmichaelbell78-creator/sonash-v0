@@ -4,6 +4,7 @@ name: Auto-merge Dependabot
 
 on:
   pull_request:
+    branches: ["main"]
 
 permissions:
   contents: write
@@ -12,6 +13,7 @@ permissions:
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - name: Fetch Dependabot metadata

@@ -15,11 +15,7 @@
  */
 
 const fs = require("node:fs");
-const path = require("node:path");
-const { safeAtomicWriteSync } = require("./lib/safe-fs");
 const { sanitizeError } = require("./lib/sanitize-error");
-
-const ROOT = path.join(__dirname, "..");
 
 // Check scope metadata — which checks run on what
 const CHECK_SCOPES = {
@@ -124,22 +120,11 @@ function statusIcon(status) {
   }
 }
 
-function getResultLabel(failed, warned) {
-  if (failed > 0) return "FAILED";
-  if (warned > 0) return "WARNING";
-  return "PASSED";
-}
-
 const BOX_INNER = 61;
 const boxedLine = (content) => {
   const s = String(content).slice(0, BOX_INNER);
   return `\u2502 ${s.padEnd(BOX_INNER)} \u2502`;
 };
-
-const escCell = (v) =>
-  String(v ?? "")
-    .replaceAll("|", String.raw`\|`)
-    .replaceAll("\n", " ");
 
 const VALID_STATUSES = new Set(["pass", "skip", "warn", "fail", "auto-fix"]);
 
@@ -231,55 +216,7 @@ function buildConsoleReport(hookName, checks, counts) {
   return { report, actionable };
 }
 
-function buildMdRemediation(actionable) {
-  const lines = ["", "## Remediation"];
-  for (const c of actionable) {
-    const remed = REMEDIATIONS[c.id];
-    lines.push(`### ${c.id} (${c.status})`);
-    if (remed) {
-      if (remed.fix) lines.push(`- **Fix:** \`${remed.fix}\``);
-      if (remed.investigate) lines.push(`- **Investigate:** \`${remed.investigate}\``);
-      if (remed.defer) lines.push(`- **Defer:** \`${remed.defer}\``);
-    }
-  }
-  return lines;
-}
-
-function buildMarkdownReport(hookName, checks, counts, actionable) {
-  const { passed, warned, failed, skipped, totalMs } = counts;
-  const md = [
-    `# ${hookName} Report`,
-    `**Date:** ${new Date().toISOString()}`,
-    `**Result:** ${getResultLabel(failed, warned)}`,
-    "",
-    "| Check | Status | Scope | Duration |",
-    "|-------|--------|-------|----------|",
-  ];
-  for (const c of checks) {
-    md.push(
-      `| ${escCell(c.description || c.id)} | ${escCell(c.status)} | ${escCell(c.scope)} | ${escCell(formatDuration(c.duration))} |`
-    );
-  }
-  md.push(
-    "",
-    `**Total:** ${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`
-  );
-
-  if (actionable.length > 0) md.push(...buildMdRemediation(actionable));
-
-  return md;
-}
-
-function persistReport(reportPath, md) {
-  try {
-    fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-    safeAtomicWriteSync(reportPath, md.join("\n") + "\n", "utf8");
-  } catch (err) {
-    console.error("hook-report: persist failed:", sanitizeError(err));
-  }
-}
-
-function generateReport(hookName, checksFile, persist) {
+function generateReport(hookName, checksFile) {
   let lines;
   try {
     const stat = fs.statSync(checksFile);
@@ -298,21 +235,15 @@ function generateReport(hookName, checksFile, persist) {
 
   const checks = parseChecks(lines);
   const counts = countStatuses(checks);
-  const { report, actionable } = buildConsoleReport(hookName, checks, counts);
+  const { report } = buildConsoleReport(hookName, checks, counts);
 
   console.error(report.join("\n"));
-
-  if (persist) {
-    const reportPath = path.join(ROOT, ".claude", "state", "last-hook-report.md");
-    const md = buildMarkdownReport(hookName, checks, counts, actionable);
-    persistReport(reportPath, md);
-  }
 }
 
 // CLI
 const args = process.argv.slice(2);
 if (args.length < 2) {
-  console.error("Usage: node scripts/hook-report.js <hook-name> <checks-tmpfile> [--persist]");
-  process.exit(0);
+  console.error("Usage: node scripts/hook-report.js <hook-name> <checks-tmpfile>");
+  process.exit(1);
 }
-generateReport(args[0], args[1], args.includes("--persist"));
+generateReport(args[0], args[1]);

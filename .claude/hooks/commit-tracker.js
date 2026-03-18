@@ -197,20 +197,42 @@ function logCommitFailure(command) {
       // Use git rev-parse to find git-dir (works with worktrees) — PR #444 R1 fix #7
       let gitDir;
       try {
-        gitDir = execFileSync("git", ["rev-parse", "--git-dir"], { encoding: "utf-8", cwd: projectDir }).trim();
+        gitDir = execFileSync("git", ["rev-parse", "--git-dir"], {
+          encoding: "utf-8",
+          cwd: projectDir,
+        }).trim();
         if (!path.isAbsolute(gitDir)) gitDir = path.join(projectDir, gitDir);
-      } catch { gitDir = path.join(projectDir, ".git"); }
+      } catch {
+        gitDir = path.join(projectDir, ".git");
+      }
       const hookLogPath = path.join(gitDir, "hook-output.log");
       const stats = fs.lstatSync(hookLogPath);
-        // Only read if regular file, non-empty, within size cap (256KB), and fresh (<60s old)
-        if (stats.isFile() && stats.size > 0 && stats.size <= 256 * 1024 && Date.now() - stats.mtimeMs < 60000) {
-          const content = fs.readFileSync(hookLogPath, "utf8").trim();
-          hookOutputExcerpt = content.split("\n").slice(0, 5).join("\n");
-          // Sanitize sensitive content from hook output — PR #444 R1 fix #12
-          hookOutputExcerpt = hookOutputExcerpt
-            .replace(/(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|password\s*=\s*|secret\s*=\s*)\S+/gi, "[REDACTED]")
-            .replace(/\/[A-Za-z]:[/\\]Users[/\\]\w+/g, "[USER_PATH]");
-        }
+      // Only read if regular file, non-empty, within size cap (256KB), and fresh (<60s old)
+      if (
+        stats.isFile() &&
+        stats.size > 0 &&
+        stats.size <= 256 * 1024 &&
+        Date.now() - stats.mtimeMs < 60000
+      ) {
+        const content = fs.readFileSync(hookLogPath, "utf8").trim();
+        hookOutputExcerpt = content.split("\n").slice(0, 5).join("\n");
+        // Sanitize sensitive content from hook output — PR #444 R1 fix #12
+        // Strip ANSI escape sequences first
+        hookOutputExcerpt = hookOutputExcerpt
+          .replace(/\u001B\[[0-?]*[ -/]*[@-~]/g, "")
+          .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
+        // Redact secrets
+        hookOutputExcerpt = hookOutputExcerpt
+          .replace(
+            /(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|password\s*=\s*|secret\s*=\s*|Bearer\s+)\S+/gi,
+            "[REDACTED]"
+          )
+          // Windows paths: C:\Users\<name>\...
+          .replace(/[A-Za-z]:[\\/](?:Users|Documents and Settings)[\\/][^\\/\s\n]+/g, "[USER_PATH]")
+          // POSIX paths: /home/<name>/... and /Users/<name>/...
+          .replace(/\/(?:home|Users)\/[^/\s\n]+/g, "[USER_PATH]")
+          .slice(0, 2000);
+      }
     } catch {
       // Non-critical — excerpt is best-effort
     }
@@ -286,6 +308,8 @@ function main() {
     // or hook re-invocations. These are low-frequency and acceptable noise.
     // DS-5: Log commit failures so alerts checker can track them
     logCommitFailure(command);
+    // Surface pre-commit hook output so the user sees what failed
+    reportCommitFailure();
     console.log("ok");
     process.exit(0);
   }
@@ -351,7 +375,11 @@ function main() {
 
   // --- Commit failure reporting (merged from commit-failure-reporter.js) ---
   // If the commit command failed, surface pre-commit hook output
-  reportCommitFailure();
+  try {
+    reportCommitFailure();
+  } catch (err) {
+    console.error("commit-tracker: reportCommitFailure failed:", err instanceof Error ? err.message : String(err));
+  }
 
   console.log("ok");
   process.exit(0);

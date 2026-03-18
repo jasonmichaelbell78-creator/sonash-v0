@@ -576,7 +576,9 @@ function readBaseline() {
   try {
     const data = JSON.parse(readFileSync(BASELINE_PATH, "utf-8"));
     // Support both legacy "checks" key and canonical "baselines" key
-    return data?.baselines?.["cognitive-complexity"] || data?.checks?.["cognitive-complexity"] || {};
+    return (
+      data?.baselines?.["cognitive-complexity"] || data?.checks?.["cognitive-complexity"] || {}
+    );
   } catch {
     return {};
   }

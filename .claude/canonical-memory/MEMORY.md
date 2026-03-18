@@ -32,9 +32,9 @@
 - [Agent teams learnings](feedback_agent_teams_learnings.md) — Explore agents
   are read-only, role separation, return protocol. _(unverified — verify at work
   locale)_
-- [Stale reviews dist](feedback_stale_reviews_dist.md) — SCHEMA_MAP test
+- [Stale reviews dist](feedback_stale_reviews_dist.md) — SCHEMA*MAP test
   failures mean scripts/reviews/dist is stale. Fix: `npm run reviews:generate`.
-  _(unverified)_
+  *(unverified)\_
 
 ## Project
 

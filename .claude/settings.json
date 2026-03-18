@@ -130,6 +130,11 @@
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/commit-tracker.js $ARGUMENTS",
             "statusMessage": "Tracking commits...",
             "continueOnError": true
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/ensure-fnm.sh node -e \"console.error('TEST-EXIT2: PostToolUse stderr with exit code 2 works if you see this.'); process.exit(2)\"",
+            "continueOnError": true
           }
         ]
       },

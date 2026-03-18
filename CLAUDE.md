@@ -93,6 +93,12 @@ Section 8).
     docs, memory, or conversation history about what files exist or contain. Run
     `ls`, `cat`, `git status`, or use the Read tool to confirm before asserting
     file state as fact. `[BEHAVIORAL: no automated enforcement]`
+13. **After every `git commit` or `git push`, review the hook summary output.**
+    Check the Bash output for warnings or failures in the pre-commit/pre-push
+    report. If any exist, present them to the user with remediation options
+    (fix, defer, acknowledge) before continuing other work. Hook data persists
+    in `hook-runs.jsonl` and `hook-warnings-log.jsonl` for `/alerts` and
+    `/pr-retro`. `[BEHAVIORAL: no automated enforcement]`
 
 ## 5. Critical Anti-Patterns
 

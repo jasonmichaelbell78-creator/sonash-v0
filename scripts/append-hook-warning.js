@@ -77,7 +77,9 @@ function countRecentOccurrences(type, sinceDaysAgo) {
         return 0;
       }
       if (st.size > 2 * 1024 * 1024) {
-        console.error("⚠️ hook-warnings-log.jsonl exceeds 2MB size guard — skipping occurrence count");
+        console.error(
+          "⚠️ hook-warnings-log.jsonl exceeds 2MB size guard — skipping occurrence count"
+        );
         return 0;
       }
     } catch {
@@ -110,11 +112,15 @@ function countOccurrencesSince(type, sinceTimestamp) {
     try {
       const st = fs.lstatSync(logPath);
       if (st.isSymbolicLink()) {
-        console.error("⚠️ hook-warnings-log.jsonl is a symlink — skipping occurrence-since-ack count");
+        console.error(
+          "⚠️ hook-warnings-log.jsonl is a symlink — skipping occurrence-since-ack count"
+        );
         return 0;
       }
       if (st.size > 2 * 1024 * 1024) {
-        console.error("⚠️ hook-warnings-log.jsonl exceeds 2MB size guard — skipping occurrence-since-ack count");
+        console.error(
+          "⚠️ hook-warnings-log.jsonl exceeds 2MB size guard — skipping occurrence-since-ack count"
+        );
         return 0;
       }
     } catch {

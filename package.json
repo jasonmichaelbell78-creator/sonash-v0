@@ -208,6 +208,7 @@
     "unified": "^11.0.5"
   },
   "overrides": {
-    "fast-xml-parser": "5.4.2"
+    "fast-xml-parser": "5.5.6",
+    "@tootallnate/once": "3.0.1"
   }
 }

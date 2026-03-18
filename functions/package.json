@@ -28,5 +28,9 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.0"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "fast-xml-parser": "5.5.6",
+    "@tootallnate/once": "3.0.1"
+  }
 }

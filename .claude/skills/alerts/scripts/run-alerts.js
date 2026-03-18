@@ -2737,7 +2737,9 @@ function checkHookCompleteness() {
       // File too large — skip completeness check
       return;
     }
-  } catch { /* statSync failure — proceed without size guard, safeReadLines handles gracefully */ }
+  } catch {
+    /* statSync failure — proceed without size guard, safeReadLines handles gracefully */
+  }
   const runLines = safeReadLines(hookRunsPath);
   const allRuns = runLines.map((l) => safeParse(l)).filter(Boolean);
 

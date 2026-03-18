@@ -747,9 +747,8 @@ function regenerateHookWarnings() {
   // Compute occurrence counts from pre-computed maps
   const warningsList = [...seen.values()].map((e) => {
     const total = typeTotals[e.type] || 0;
-    const sinceAck = (ack.acknowledged?.[e.type] || ack.lastCleared)
-      ? (typeSinceAckTotals[e.type] || 0)
-      : total;
+    const sinceAck =
+      (ack.acknowledged?.[e.type] || ack.lastCleared) ? (typeSinceAckTotals[e.type] || 0) : total;
     return {
       hook: sanitizeInput(String(e.hook || "")),
       type: sanitizeInput(String(e.type || "")),
@@ -757,7 +756,9 @@ function regenerateHookWarnings() {
       message: sanitizeInput(String(e.message || "")),
       action: e.action ? sanitizeInput(String(e.action)) : null,
       timestamp: e.timestamp,
-      ...(e.files ? { files: Array.isArray(e.files) ? e.files.map(f => sanitizeInput(String(f))) : [] } : {}),
+      ...(e.files
+        ? { files: Array.isArray(e.files) ? e.files.map((f) => sanitizeInput(String(f))) : [] }
+        : {}),
       ...(e.pattern ? { pattern: sanitizeInput(String(e.pattern)) } : {}),
       occurrences: total,
       occurrences_since_ack: sinceAck,
@@ -765,9 +766,7 @@ function regenerateHookWarnings() {
   });
 
   // Cap at 50, most recent first
-  warningsList.sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
+  warningsList.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   const capped = warningsList.slice(0, 50);
 
   // Write regenerated view (D9: JSON is the format, purely { warnings: [...] })
