@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.102 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.103 **Created:** 2026-01-02 **Last Updated:**
 2026-03-18
 
 ## Purpose
@@ -32,6 +32,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.103   | 2026-03-18               | Review #487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud). 19 fixes: ESLint CJS config for __dirname, no-control-regex block disable, CLI path traversal guard, Promise.allSettled, NaN→Number.NaN propagation, CC reductions. 8 auto-rejected (R1 stale repeats). |
 | 17.102   | 2026-03-18               | Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud). 47 fixes: propagation grep false-positive, migration archived-file fallback, timestamp string→Date.parse (4 files), review_rounds mutation bug, semgrep over-suppression, 9 CC reductions, 4 security hardening, @ts-nocheck removal. 2 rejected. |
 | 17.63    | 2026-03-16               | Review #479: PR #443 R2 — Qodo. Relative link depth fix (../../ → ../../../) in session-begin SKILL+REFERENCE, session counter off-by-one. 2 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 17.62    | 2026-03-16               | Review #478: PR #443 R1 — Mixed (Doc Lint CI+Qodo Compliance+Qodo Reviewer+CI Failure). Invocation schema consistency (duration_ms/error fields). 3 fixed, 3 deferred (DEBT-45531/45532/45533), 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -2031,6 +2032,58 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
   formatting runs before pushing to avoid CI failures on generated content.
 - Documentation code examples should follow the same patterns as production code
   (file-read-in-try/catch) to avoid review noise.
+
+---
+
+### Review #487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**PR:** #448 | **Round:** R2 | **Source:** Mixed (CI/ESLint, Qodo Compliance +
+Suggestions, SonarCloud)
+
+**Items:** 19 fixed, 0 deferred, 8 rejected (5 R1-stale Qodo repeats, 3
+repeat-rejected from R1)
+
+**Severity Breakdown:** 0 Critical, 2 Major, 9 Minor, 8 Trivial
+
+**Fixes Applied:**
+
+- **ESLint __dirname no-undef** (CI, MAJOR): CJS files under `scripts/` were
+  configured as ESM in eslint.config.mjs, excluding `__dirname` from globals.
+  Added CJS override for `scripts/**/__tests__/**/*.js` and
+  `migrate-ecosystem-v2.js`.
+- **ESLint no-control-regex** (CI, MAJOR): `eslint-disable-next-line` doesn't
+  span multi-line chained calls. Changed to block disable/enable.
+- **CLI path traversal** (Qodo compliance, MINOR): Added path containment
+  filter on `--staged-files` CLI override.
+- **source_pr NaN guard** (Qodo compliance, MINOR): Added `Number.isFinite` +
+  `Number.isInteger` + positive check.
+- **Promise.allSettled** (Qodo suggestion, MINOR): Prevents single file error
+  from aborting entire cleanup batch.
+- **Quadratic dedup** (Qodo suggestion, MINOR): Pre-built Map index for O(N)
+  dedup instead of O(N*M) findIndex.
+- **NaN → Number.NaN** (SonarCloud, TRIVIAL): 7 instances across 4 files.
+- **CC reductions** (SonarCloud, MINOR): check-docs-light, review-lifecycle,
+  migrate-ecosystem-v2 — extracted helpers.
+- **Various** (TRIVIAL): replaceAll, null guard, comment detection, hard-coded
+  version, fallback violation IDs.
+
+**Rejections:**
+
+- **Qodo items 1-5** (R1 stale): Already fixed in R1 commit `7f9c51ee`. Qodo
+  reviewed original diff, not HEAD after R1.
+- **Audit trails** (repeat from R1 #25): Same rejection — local CLI scripts.
+- **retro-config Set conversion** (repeat from R1 #23): String.includes, not
+  array.
+
+**Key Learnings:**
+
+- `eslint-disable-next-line` only suppresses the immediately following line.
+  For multi-line chained expressions, use block `eslint-disable`/`eslint-enable`.
+- ESLint CJS vs ESM sourceType must match the actual module format. Files using
+  `require()` and `__dirname` need `sourceType: "commonjs"` regardless of their
+  directory.
+- When adding passthrough for non-PR entries in dedup, update tests that
+  expected those entries to be dropped.
 
 ---
 

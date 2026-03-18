@@ -507,8 +507,8 @@ function buildLatestMetricsMap(metrics) {
   for (const entry of metrics) {
     if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") continue;
     const existing = latestByPr.get(entry.pr);
-    const entryTime = typeof entry.timestamp === "string" ? Date.parse(entry.timestamp) : NaN;
-    const existingTime = existing && typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : NaN;
+    const entryTime = typeof entry.timestamp === "string" ? Date.parse(entry.timestamp) : Number.NaN;
+    const existingTime = existing && typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : Number.NaN;
     const entryScore = Number.isFinite(entryTime) ? entryTime : -Infinity;
     const existingScore = Number.isFinite(existingTime) ? existingTime : -Infinity;
 
@@ -575,38 +575,34 @@ function runCrossDbValidation() {
  * Version History:
  *   v1.0 2026-03-18 — Initial implementation
  */
+/** Check a single record for disposition integrity. Returns violation or null. */
+function checkDisposition(rec) {
+  if (!rec || typeof rec !== "object") return null;
+  const total = typeof rec.total === "number" ? rec.total : 0;
+  if (total <= 0) return null;
+
+  const fixed = typeof rec.fixed === "number" ? rec.fixed : 0;
+  const deferred = typeof rec.deferred === "number" ? rec.deferred : 0;
+  const rejected = typeof rec.rejected === "number" ? rec.rejected : 0;
+  const dispositionSum = fixed + deferred + rejected;
+  const base = {
+    id: rec.id ?? null,
+    pr: typeof rec.pr === "number" ? rec.pr : null,
+    total, fixed, deferred, rejected,
+  };
+
+  if (dispositionSum === 0) return base;
+  if (dispositionSum !== total) return { ...base, reason: "sum_mismatch" };
+  return null;
+}
+
 function validateDispositions(records) {
   const items = records || loadReviews();
   const violations = [];
 
   for (const rec of items) {
-    if (!rec || typeof rec !== "object") continue;
-    const total = typeof rec.total === "number" ? rec.total : 0;
-    if (total <= 0) continue;
-
-    const fixed = typeof rec.fixed === "number" ? rec.fixed : 0;
-    const deferred = typeof rec.deferred === "number" ? rec.deferred : 0;
-    const rejected = typeof rec.rejected === "number" ? rec.rejected : 0;
-    const dispositionSum = fixed + deferred + rejected;
-
-    if (dispositionSum === 0) {
-      violations.push({
-        id: rec.id,
-        total,
-        fixed,
-        deferred,
-        rejected,
-      });
-    } else if (dispositionSum !== total) {
-      violations.push({
-        id: rec.id,
-        total,
-        fixed,
-        deferred,
-        rejected,
-        reason: "sum_mismatch",
-      });
-    }
+    const v = checkDisposition(rec);
+    if (v) violations.push(v);
   }
 
   return { violations };
@@ -696,12 +692,19 @@ function runValidate() {
 
   // ── Phase 3: Disposition integrity (Item #14) ─────────────────────────
   const dispResult = validateDispositions();
-  const dispFindings = dispResult.violations.map((v) => ({
-    severity: "S2",
-    category: "disposition-integrity",
-    description: `Data integrity violation: record ${v.id} has total=${v.total} but no dispositions (fixed=${v.fixed}, deferred=${v.deferred}, rejected=${v.rejected})`,
-    fix: "Add disposition counts or set total to 0 if no items were reviewed",
-  }));
+  const dispFindings = dispResult.violations.map((v) => {
+    const id = typeof v.id === "string" && v.id.trim() ? v.id : "unknown-id";
+    const base = `Data integrity violation: record ${id} has total=${v.total} (fixed=${v.fixed}, deferred=${v.deferred}, rejected=${v.rejected})`;
+    const description = v.reason === "sum_mismatch"
+      ? `${base} but dispositions do not sum to total`
+      : `${base} but no dispositions were recorded`;
+    return {
+      severity: "S2",
+      category: "disposition-integrity",
+      description,
+      fix: "Add disposition counts or set total to 0 if no items were reviewed",
+    };
+  });
 
   if (dispFindings.length > 0) {
     logStep("VALIDATE", `Disposition check: ${dispFindings.length} violation(s)`);

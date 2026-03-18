@@ -139,6 +139,65 @@ function safeAppend(filePath, lines) {
   fs.appendFileSync(filePath, content);
 }
 
+/** Check if a record has real review data. */
+function hasRealData(r) {
+  return (r.total ?? 0) > 0 || (r.fixed ?? 0) > 0;
+}
+
+/** Migrate reviews from ecosystem-v2 to state. Returns { normalized, noPrCount }. */
+function migrateReviews(apply) {
+  console.log("--- Reviews Migration ---");
+  const reviewSource = findSourceFile(ECO_V2_REVIEWS);
+  if (!reviewSource) {
+    console.error(`  ERROR: No source file found at ${ECO_V2_REVIEWS} (or archived variant)`);
+    process.exit(1);
+  }
+  console.log(`  Source: ${path.basename(reviewSource)}`);
+  const ecoReviews = readJsonl(reviewSource);
+  const stateIds = new Set(readJsonl(STATE_REVIEWS).map((r) => String(r.id)));
+
+  const candidates = ecoReviews.filter((r) => hasRealData(r) && r.pr != null && !stateIds.has(String(r.id)));
+  const noPrCount = ecoReviews.filter((r) => hasRealData(r) && r.pr == null && !stateIds.has(String(r.id))).length;
+  const normalized = candidates.map(normalizeReviewRecord);
+
+  console.log(`  ecosystem-v2: ${ecoReviews.length} records`);
+  console.log(`  Candidates: ${candidates.length} | Skipped (no PR): ${noPrCount} | Stubs: ${ecoReviews.length - candidates.length - noPrCount}`);
+
+  if (apply) {
+    safeAppend(STATE_REVIEWS, normalized);
+    console.log(`  ✓ Appended ${normalized.length} records`);
+  } else {
+    console.log(`  [DRY RUN] Would append ${normalized.length} records`);
+  }
+  return { normalized, noPrCount };
+}
+
+/** Migrate retros from ecosystem-v2 to state. Returns candidate count. */
+function migrateRetros(apply) {
+  console.log("\n--- Retros Migration ---");
+  const retroSource = findSourceFile(ECO_V2_RETROS);
+  if (!retroSource) {
+    console.warn("  WARNING: No retro source file found — skipping");
+    return 0;
+  }
+  const ecoRetros = readJsonl(retroSource);
+  let stateRetros = [];
+  try { stateRetros = readJsonl(STATE_RETROS); } catch { /* may not exist */ }
+
+  const retroStateIds = new Set(stateRetros.map((r) => String(r.id)));
+  const retroCandidates = ecoRetros.filter((r) => !retroStateIds.has(String(r.id)));
+
+  console.log(`  ecosystem-v2: ${ecoRetros.length} | state: ${stateRetros.length} | candidates: ${retroCandidates.length}`);
+
+  if (apply && retroCandidates.length > 0) {
+    safeAppend(STATE_RETROS, retroCandidates);
+    console.log(`  ✓ Appended ${retroCandidates.length} records`);
+  } else if (retroCandidates.length > 0) {
+    console.log(`  [DRY RUN] Would append ${retroCandidates.length} records`);
+  }
+  return retroCandidates.length;
+}
+
 function main() {
   const args = new Set(process.argv.slice(2));
   const dryRun = args.has("--dry-run");
@@ -151,98 +210,12 @@ function main() {
 
   console.log(`\n=== Review Pipeline Migration (${dryRun ? "DRY RUN" : "APPLY"}) ===\n`);
 
-  // --- REVIEWS ---
-  console.log("--- Reviews Migration ---");
-  const reviewSource = findSourceFile(ECO_V2_REVIEWS);
-  if (!reviewSource) {
-    console.error(`  ERROR: No source file found at ${ECO_V2_REVIEWS} (or archived variant)`);
-    process.exit(1);
-  }
-  console.log(`  Source: ${path.basename(reviewSource)}`);
-  const ecoReviews = readJsonl(reviewSource);
-  const stateReviews = readJsonl(STATE_REVIEWS);
-  const stateIds = new Set(stateReviews.map((r) => String(r.id)));
-
-  console.log(`  ecosystem-v2: ${ecoReviews.length} records`);
-  console.log(`  .claude/state: ${stateReviews.length} records`);
-
-  // Filter: real data only (total > 0 or fixed > 0), with PR, no ID conflicts
-  const candidates = ecoReviews.filter((r) => {
-    const total = r.total ?? 0;
-    const fixed = r.fixed ?? 0;
-    return (total > 0 || fixed > 0) && r.pr != null && !stateIds.has(String(r.id));
-  });
-
-  // Also recover records without PR but with real data (as separate category)
-  const noPrRecords = ecoReviews.filter((r) => {
-    const total = r.total ?? 0;
-    const fixed = r.fixed ?? 0;
-    return (total > 0 || fixed > 0) && r.pr == null && !stateIds.has(String(r.id));
-  });
-
-  console.log(`  Candidates (real + PR + no conflict): ${candidates.length}`);
-  console.log(`  Skipped (no PR, real data): ${noPrRecords.length}`);
-  console.log(`  Skipped (stubs): ${ecoReviews.length - candidates.length - noPrRecords.length}`);
-
-  // Normalize and prepare
-  const normalized = candidates.map(normalizeReviewRecord);
-
-  // Summary by PR
-  const prMap = {};
-  for (const r of normalized) {
-    if (!prMap[r.pr]) prMap[r.pr] = { count: 0, totalItems: 0 };
-    prMap[r.pr].count++;
-    prMap[r.pr].totalItems += r.total;
-  }
-
-  console.log(`\n  PRs to recover (${Object.keys(prMap).length}):`);
-  const sortedPrs = Object.keys(prMap).map(Number).sort((a, b) => a - b);
-  for (const pr of sortedPrs) {
-    const { count, totalItems } = prMap[pr];
-    console.log(`    PR #${pr}: ${count} records, ${totalItems} total items`);
-  }
-
-  if (apply) {
-    safeAppend(STATE_REVIEWS, normalized);
-    console.log(`\n  ✓ Appended ${normalized.length} records to ${STATE_REVIEWS}`);
-  } else {
-    console.log(`\n  [DRY RUN] Would append ${normalized.length} records to ${STATE_REVIEWS}`);
-  }
-
-  // --- RETROS ---
-  console.log("\n--- Retros Migration ---");
-  const retroSource = findSourceFile(ECO_V2_RETROS);
-  if (!retroSource) {
-    console.warn("  WARNING: No retro source file found — skipping retro migration");
-  }
-  const ecoRetros = retroSource ? readJsonl(retroSource) : [];
-
-  let stateRetros = [];
-  try {
-    stateRetros = readJsonl(STATE_RETROS);
-  } catch {
-    // File may not exist yet
-  }
-
-  const retroStateIds = new Set(stateRetros.map((r) => String(r.id)));
-
-  console.log(`  ecosystem-v2: ${ecoRetros.length} records`);
-  console.log(`  .claude/state: ${stateRetros.length} records`);
-
-  // Filter: no ID conflicts
-  const retroCandidates = ecoRetros.filter((r) => !retroStateIds.has(String(r.id)));
-  console.log(`  Candidates (no conflict): ${retroCandidates.length}`);
-
-  if (apply && retroCandidates.length > 0) {
-    safeAppend(STATE_RETROS, retroCandidates);
-    console.log(`  ✓ Appended ${retroCandidates.length} records to ${STATE_RETROS}`);
-  } else if (retroCandidates.length > 0) {
-    console.log(`  [DRY RUN] Would append ${retroCandidates.length} records to ${STATE_RETROS}`);
-  }
+  const { normalized, noPrCount } = migrateReviews(apply);
+  const retroCount = migrateRetros(apply);
 
   console.log("\n=== Migration Summary ===");
-  console.log(`  Reviews: ${normalized.length} recovered (${noPrRecords.length} pr-less skipped)`);
-  console.log(`  Retros: ${retroCandidates.length} recovered`);
+  console.log(`  Reviews: ${normalized.length} recovered (${noPrCount} pr-less skipped)`);
+  console.log(`  Retros: ${retroCount} recovered`);
   if (dryRun) {
     console.log("\n  Run with --apply to execute migration.");
   } else {

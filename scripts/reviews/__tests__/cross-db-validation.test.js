@@ -70,8 +70,8 @@ function isValidMetricsEntry(entry) {
  */
 function isNewerEntry(candidate, existing) {
   if (!existing) return true;
-  const candidateTime = typeof candidate.timestamp === "string" ? Date.parse(candidate.timestamp) : NaN;
-  const existingTime = typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : NaN;
+  const candidateTime = typeof candidate.timestamp === "string" ? Date.parse(candidate.timestamp) : Number.NaN;
+  const existingTime = typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : Number.NaN;
   return Number.isFinite(candidateTime) && (!Number.isFinite(existingTime) || candidateTime > existingTime);
 }
 

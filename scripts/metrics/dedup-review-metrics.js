@@ -38,7 +38,7 @@ try {
 } catch {
   sanitizeError = (err) => {
     const msg = err instanceof Error ? err.message : String(err);
-    return msg.replace(/[A-Z]:\\[^\s]+|\/[^\s]*\/[^\s]+/gi, "[PATH]");
+    return msg.replaceAll(/[A-Z]:\\[^\s]+|\/[^\s]*\/[^\s]+/gi, "[PATH]");
   };
 }
 
@@ -89,13 +89,17 @@ function reconcileRoundCounts(latestByPr, reviewCountsByPr) {
 function dedupMetrics(metricsEntries, reviewCountsByPr) {
   // Group by PR, keeping only the latest entry (by timestamp)
   const latestByPr = new Map();
+  const passthrough = [];
 
   for (const entry of metricsEntries) {
-    if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") continue;
+    if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") {
+      if (entry) passthrough.push(entry);
+      continue;
+    }
     const existing = latestByPr.get(entry.pr);
 
-    const entryTime = entry.timestamp ? new Date(entry.timestamp).getTime() : NaN;
-    const existingTime = existing?.timestamp ? new Date(existing.timestamp).getTime() : NaN;
+    const entryTime = entry.timestamp ? new Date(entry.timestamp).getTime() : Number.NaN;
+    const existingTime = existing?.timestamp ? new Date(existing.timestamp).getTime() : Number.NaN;
     const entryHasTime = Number.isFinite(entryTime);
     const existingHasTime = Number.isFinite(existingTime);
     const shouldReplace = !existing || (entryHasTime && (!existingHasTime || entryTime > existingTime));
@@ -110,7 +114,7 @@ function dedupMetrics(metricsEntries, reviewCountsByPr) {
     ? reconcileRoundCounts(latestByPr, reviewCountsByPr)
     : 0;
 
-  const deduped = [...latestByPr.values()];
+  const deduped = [...latestByPr.values(), ...passthrough];
   const removedCount = metricsEntries.length - deduped.length;
 
   return { deduped, removedCount, updatedRounds };

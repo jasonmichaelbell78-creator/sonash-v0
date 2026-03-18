@@ -146,8 +146,9 @@ describe("dedupMetrics (Item #8)", () => {
     ];
 
     const { deduped } = dedupMetrics(entries);
-    assert.equal(deduped.length, 1, "Should only keep the valid entry");
-    assert.equal(deduped[0].pr, 100);
+    // Valid PR entry + 2 passthrough entries (no PR, string PR) — null is filtered
+    assert.equal(deduped.length, 3, "Should keep valid entry + passthrough non-PR entries");
+    assert.ok(deduped.some((e) => e.pr === 100), "Should include the valid PR entry");
   });
 
   test("functional test with temp JSONL files", () => {

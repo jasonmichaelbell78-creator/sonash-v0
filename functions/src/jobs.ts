@@ -605,14 +605,18 @@ async function processStoragePages(
       const chunk = files.slice(i, i + PROCESS_CONCURRENCY);
       checked += chunk.length;
 
-      const chunkResults = await Promise.all(
+      const chunkResults = await Promise.allSettled(
         chunk.map((file) =>
           processStorageFile(file, existingUserIds, db, () => { errors++; })
         )
       );
 
       for (const r of chunkResults) {
-        if (r.deleted) deleted++;
+        if (r.status === "fulfilled") {
+          if (r.value.deleted) deleted++;
+        } else {
+          errors++;
+        }
       }
     }
 

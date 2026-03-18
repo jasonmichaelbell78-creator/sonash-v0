@@ -135,7 +135,12 @@ function getStagedFiles() {
     return override
       .split(/\s+/)
       .filter(Boolean)
-      .map((f) => f.replaceAll("\\", "/"));
+      .map((f) => f.replaceAll("\\", "/"))
+      .filter((f) => {
+        // Block path traversal in CLI-provided paths
+        const rel = path.relative(".", f);
+        return !(/^\.\.(?:[\\/]|$)/.test(rel)) && !path.isAbsolute(f);
+      });
   }
 
   try {
@@ -270,7 +275,7 @@ function runCheck(options = {}) {
       baseDir = process.cwd();
     }
   }
-  const stagedFiles = getStagedFiles();
+  const stagedFiles = Array.isArray(options.stagedFiles) ? options.stagedFiles : getStagedFiles();
 
   // Filter to JS/TS files only
   const jsStaged = stagedFiles.filter((f) => JS_EXTENSIONS.has(path.extname(f)));

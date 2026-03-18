@@ -402,30 +402,24 @@ function validateFileLinks(links, docPath) {
 /**
  * Check a single link for case mismatches. Returns warning string or null.
  */
-function checkLinkCasing(link, docDir, getActualEntries) {
+/** Resolve a link target to a decoded, validated relative path. Returns null if invalid. */
+function resolveLinkPath(link, docDir) {
   if (link.isAnchor) return null;
-
   const [filePath] = link.target.split("#");
   if (!filePath) return null;
 
   let decodedPath;
-  try {
-    decodedPath = decodeURIComponent(filePath);
-  } catch {
-    decodedPath = filePath;
-  }
-
+  try { decodedPath = decodeURIComponent(filePath); } catch { decodedPath = filePath; }
   if (isAbsolute(decodedPath)) return null;
 
-  const absolutePath = join(docDir, decodedPath);
-
   let targetExists = false;
-  try {
-    targetExists = existsSync(absolutePath);
-  } catch {
-    targetExists = false;
-  }
-  if (!targetExists) return null;
+  try { targetExists = existsSync(join(docDir, decodedPath)); } catch { /* race */ }
+  return targetExists ? decodedPath : null;
+}
+
+function checkLinkCasing(link, docDir, getActualEntries) {
+  const decodedPath = resolveLinkPath(link, docDir);
+  if (!decodedPath) return null;
 
   const segments = decodedPath.split(/[\\/]/).filter(Boolean);
   let currentDir = docDir;

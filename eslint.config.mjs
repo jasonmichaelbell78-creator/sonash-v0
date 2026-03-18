@@ -96,6 +96,20 @@ export default [
       "@typescript-eslint/no-require-imports": "off",
     },
   },
+  // CJS scripts under scripts/ that use require() and __dirname
+  {
+    files: [
+      "scripts/**/__tests__/**/*.js",
+      "scripts/reviews/migrate-ecosystem-v2.js",
+    ],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: globals.node,
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
   // CC error-level for husky hooks (replaces standalone CC check in pre-commit)
   // .claude/hooks/ stays at "warn" due to 10 pre-existing violations
   {

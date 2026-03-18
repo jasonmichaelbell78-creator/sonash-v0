@@ -284,24 +284,25 @@ function appendMetrics(entries) {
   let needsRewrite = false;
   const toAppend = [];
 
+  // Pre-build index for O(N) dedup instead of O(N*M)
+  const existingIndexByPr = new Map();
+  for (let i = 0; i < existing.length; i++) {
+    const e = existing[i];
+    if (!e || typeof e.pr !== "number" || !e.timestamp) continue;
+    const t = new Date(e.timestamp).getTime();
+    if (!Number.isFinite(t)) continue;
+    existingIndexByPr.set(e.pr, { idx: i, time: t });
+  }
+
   for (const newEntry of entries) {
-    const newTimeRaw = newEntry.timestamp ? new Date(newEntry.timestamp).getTime() : NaN;
+    const newTimeRaw = newEntry.timestamp ? new Date(newEntry.timestamp).getTime() : Number.NaN;
     const newTime = Number.isFinite(newTimeRaw) ? newTimeRaw : Date.now();
 
-    // Find existing entry for this PR
-    const existingIdx = existing.findIndex((e) => {
-      if (e.pr !== newEntry.pr) return false;
-      if (!e.timestamp) return false;
+    const existingInfo = existingIndexByPr.get(newEntry.pr);
+    const isRecentDuplicate = existingInfo && Math.abs(newTime - existingInfo.time) < ONE_HOUR_MS;
 
-      const existingTime = new Date(e.timestamp).getTime();
-      if (!Number.isFinite(existingTime)) return false;
-
-      return Math.abs(newTime - existingTime) < ONE_HOUR_MS;
-    });
-
-    if (existingIdx >= 0) {
-      // Update in-place instead of appending
-      existing[existingIdx] = newEntry;
+    if (isRecentDuplicate) {
+      existing[existingInfo.idx] = newEntry;
       needsRewrite = true;
       console.log(`  PR #${newEntry.pr}: updated existing entry (dedup guard)`);
     } else {

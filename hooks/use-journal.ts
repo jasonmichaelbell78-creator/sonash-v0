@@ -70,10 +70,12 @@ export const getRelativeDateLabel = (dateString: string) => {
 // Replaces hand-rolled regex sanitizer (CodeQL: incomplete-multi-character-sanitization,
 // bad-tag-filter, incomplete-url-scheme-check).
 function sanitizeForSearch(text: string): string {
+  const raw = String(text ?? "");
+  if (!raw) return "";
   // DOMPurify with empty ALLOWED_TAGS strips all HTML, returning text-only content.
   // This handles script/style removal, event handler stripping, and all edge cases
   // that regex-based approaches miss.
-  const clean = DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
+  const clean = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [] });
   // Normalize whitespace after sanitization
   return clean.replace(/\s+/g, " ").trim();
 }

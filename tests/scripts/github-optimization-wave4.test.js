@@ -40,7 +40,7 @@ function assertFileExists(relPath) {
  * Returns the content between --- delimiters
  */
 function extractYamlFrontMatter(content) {
-  const normalized = content.replace(/\r\n/g, "\n");
+  const normalized = content.replaceAll(/\r\n/g, "\n");
   const match = normalized.match(/^---\n([\s\S]*?)\n---/);
   return match ? match[1] : null;
 }
@@ -632,7 +632,13 @@ describe('4.8: Release Please', () => {
       }
       const manifest = JSON.parse(content);
       assert.ok(manifest['.'], 'Should have root entry');
-      assert.equal(manifest['.'], '0.1.0', 'Should match package.json version');
+      let pkg;
+      try {
+        pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+      } catch (err) {
+        assert.fail(`Failed to read package.json: ${err}`);
+      }
+      assert.equal(manifest['.'], pkg.version, 'Should match package.json version');
     });
   });
 });

@@ -44,7 +44,7 @@ function findActiveEcosystemV2Reference(line) {
   if (!hasRef) return null;
 
   const trimmed = line.trim();
-  if (trimmed.startsWith("//") || trimmed.startsWith("*")) return null;
+  if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*") || trimmed.startsWith("*/")) return null;
 
   return trimmed;
 }
