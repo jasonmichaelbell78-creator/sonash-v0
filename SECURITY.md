@@ -6,6 +6,11 @@
 
 # Security Policy
 
+## Purpose
+
+Security policy for SoNash — vulnerability reporting, supported versions,
+and security measures implemented in the application.
+
 ## Supported Versions
 
 | Version | Supported          |
@@ -50,3 +55,9 @@ This application implements the following security measures:
   is released. We ask that reporters refrain from public disclosure until this
   period has elapsed or until a fix has been made available, whichever comes
   first.
+
+## Version History
+
+| Version | Date       | Changes                  |
+| ------- | ---------- | ------------------------ |
+| 1.0     | 2026-03-17 | Initial security policy  |
