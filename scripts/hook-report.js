@@ -141,6 +141,8 @@ const escCell = (v) =>
     .replaceAll("|", String.raw`\|`)
     .replaceAll("\n", " ");
 
+const VALID_STATUSES = new Set(["pass", "skip", "warn", "fail", "auto-fix"]);
+
 function parseChecks(lines) {
   return lines
     .map((line) => {
@@ -149,7 +151,8 @@ function parseChecks(lines) {
         .split("|")
         .map((p) => p.trim());
       if (parts.length < 2) return null;
-      const [id, status, duration] = parts;
+      const [id, rawStatus, duration] = parts;
+      const status = VALID_STATUSES.has(rawStatus) ? rawStatus : "warn";
       const meta = CHECK_SCOPES[id] || {
         scope: "unknown",
         description: id,
@@ -198,10 +201,16 @@ function buildConsoleReport(hookName, checks, counts) {
     "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524",
   ];
 
+  const sanitizeCell = (v, maxLen) =>
+    String(v ?? "")
+      .replaceAll(/\p{C}+/gu, " ")
+      .replaceAll("\n", " ")
+      .slice(0, maxLen);
+
   for (const c of checks) {
     const icon = statusIcon(c.status);
-    const name = (c.description || c.id).substring(0, 23).padEnd(23);
-    const scope = (c.scope || "").substring(0, 18).padEnd(18);
+    const name = sanitizeCell(c.description || c.id, 23).padEnd(23);
+    const scope = sanitizeCell(c.scope || "", 18).padEnd(18);
     const dur = formatDuration(c.duration).padStart(8);
     report.push(`\u2502 ${icon} ${name}  ${scope}  ${dur} \u2502`);
   }

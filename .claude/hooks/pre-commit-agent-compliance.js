@@ -39,8 +39,11 @@ function getStagedFiles() {
       }
     );
     return output.trim().split("\n").filter(Boolean);
-  } catch {
-    return null; // Can't determine — caller should allow
+  } catch (err) {
+    process.stderr.write(
+      `agent-compliance: getStagedFiles failed (${sanitizeError(err)}), allowing\n`
+    );
+    return null;
   }
 }
 

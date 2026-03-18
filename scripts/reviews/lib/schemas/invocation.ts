@@ -16,13 +16,13 @@ export const InvocationRecord = BaseRecord.extend({
   context: z
     .object({
       pr: z.number().int().positive().optional(),
-      session: z.string().min(1).optional(),
-      trigger: z.string().min(1).optional(),
-      agents_audited: z.number().int().min(0).optional(),
-      grade: z.string().min(1).optional(),
-      mean_score: z.number().min(0).max(100).optional(),
-      improvements: z.number().int().min(0).optional(),
-      categories: z.number().int().min(0).optional(),
+      session: z.string().min(1).nullable().optional(),
+      trigger: z.string().min(1).nullable().optional(),
+      agents_audited: z.number().int().min(0).nullable().optional(),
+      grade: z.string().min(1).nullable().optional(),
+      mean_score: z.number().min(0).max(100).nullable().optional(),
+      improvements: z.number().int().min(0).nullable().optional(),
+      categories: z.number().int().min(0).nullable().optional(),
     })
     .nullable()
     .optional(),
