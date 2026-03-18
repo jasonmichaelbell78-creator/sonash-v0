@@ -280,7 +280,10 @@ function generateReport(hookName, checksFile, persist) {
     }
     lines = fs.readFileSync(checksFile, "utf8").trim().split("\n").filter(Boolean);
   } catch (err) {
-    console.error("Could not read checks file:", checksFile, sanitizeError(err));
+    const safeFile = String(checksFile)
+      .replaceAll(/\p{C}+/gu, " ")
+      .slice(0, 300);
+    console.error("Could not read checks file:", safeFile, sanitizeError(err));
     process.exit(0);
   }
 

@@ -31,7 +31,7 @@ function getStagedFiles() {
   try {
     const output = execFileSync(
       "git",
-      ["diff", "--cached", "--name-only", "--diff-filter=ACM", "--"],
+      ["diff", "--cached", "--name-only", "--diff-filter=ACMR", "--"],
       {
         cwd: ROOT,
         encoding: "utf8",
@@ -51,7 +51,7 @@ function getInvokedAgents() {
     const state = JSON.parse(readFileSync(statePath, "utf8"));
     if (!Array.isArray(state.agentsInvoked)) return [];
     return state.agentsInvoked
-      .map((a) => (a && typeof a.agent === "string" ? a.agent : null))
+      .map((a) => (a && typeof a.agent === "string" ? a.agent.trim().toLowerCase() : null))
       .filter(Boolean);
   } catch {
     return [];
@@ -91,7 +91,10 @@ function reportAndBlock(issues) {
 let input = "";
 process.stdin.setEncoding("utf8");
 process.stdin.on("error", (err) => {
-  process.stderr.write(`agent-compliance: stdin error (${sanitizeError(err)}), allowing\n`);
+  const safeErr = String(sanitizeError(err))
+    .replaceAll(/\p{C}+/gu, " ")
+    .slice(0, 500);
+  process.stderr.write(`agent-compliance: stdin error (${safeErr}), allowing\n`);
   process.exit(0);
 });
 const stdinTimeout = setTimeout(() => {
@@ -130,7 +133,10 @@ process.stdin.on("end", () => {
 
     reportAndBlock(issues);
   } catch (err) {
-    process.stderr.write(`agent-compliance: unexpected error (${sanitizeError(err)}), allowing\n`);
+    const safeErr = String(sanitizeError(err))
+      .replaceAll(/\p{C}+/gu, " ")
+      .slice(0, 500);
+    process.stderr.write(`agent-compliance: unexpected error (${safeErr}), allowing\n`);
     process.exit(0);
   }
 });
