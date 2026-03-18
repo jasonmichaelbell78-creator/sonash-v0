@@ -137,13 +137,16 @@ const boxedLine = (content) => {
 
 const escCell = (v) =>
   String(v ?? "")
-    .replaceAll("|", "\\|")
+    .replaceAll("|", String.raw`\|`)
     .replaceAll("\n", " ");
 
 function parseChecks(lines) {
   return lines
     .map((line) => {
-      const parts = line.replaceAll("\r", "").split("|");
+      const parts = line
+        .replaceAll("\r", "")
+        .split("|")
+        .map((p) => p.trim());
       if (parts.length < 2) return null;
       const [id, status, duration] = parts;
       const meta = CHECK_SCOPES[id] || {
@@ -164,11 +167,32 @@ function countStatuses(checks) {
   return { passed, warned, failed, skipped, totalMs };
 }
 
+function buildConsoleRemediation(actionable) {
+  const lines = [
+    "\u251C\u2500 Remediation \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524",
+  ];
+  for (const c of actionable) {
+    const remed = REMEDIATIONS[c.id];
+    lines.push(boxedLine(`${statusIcon(c.status)} ${c.id} (${c.status})`));
+    if (remed) {
+      if (remed.fix) lines.push(boxedLine(`  Fix: ${remed.fix}`));
+      if (remed.investigate) lines.push(boxedLine(`  Investigate: ${remed.investigate}`));
+      if (remed.defer) lines.push(boxedLine(`  Defer: ${remed.defer}`));
+    } else {
+      lines.push(boxedLine("  See hook output above for details"));
+    }
+  }
+  return lines;
+}
+
 function buildConsoleReport(hookName, checks, counts) {
   const { passed, warned, failed, skipped, totalMs } = counts;
+  const safeHookName = String(hookName ?? "")
+    .replaceAll("\n", " ")
+    .slice(0, 24);
   const report = [
     "",
-    `\u250C\u2500 ${hookName} Report \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510`,
+    `\u250C\u2500 ${safeHookName} Report \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510`,
     "\u2502 Status  Check                     Scope                Duration \u2502",
     "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524",
   ];
@@ -181,38 +205,34 @@ function buildConsoleReport(hookName, checks, counts) {
     report.push(`\u2502 ${icon} ${name}  ${scope}  ${dur} \u2502`);
   }
 
+  const summary = `${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`;
   report.push(
-    "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
-  );
-  report.push(
-    boxedLine(
-      `${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`
-    )
+    "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524",
+    boxedLine(summary)
   );
 
   const actionable = checks.filter((c) => c.status === "fail" || c.status === "warn");
-  if (actionable.length > 0) {
-    report.push(
-      "\u251C\u2500 Remediation \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
-    );
-    for (const c of actionable) {
-      const remed = REMEDIATIONS[c.id];
-      report.push(boxedLine(`${statusIcon(c.status)} ${c.id} (${c.status})`));
-      if (remed) {
-        if (remed.fix) report.push(boxedLine(`  Fix: ${remed.fix}`));
-        if (remed.investigate) report.push(boxedLine(`  Investigate: ${remed.investigate}`));
-        if (remed.defer) report.push(boxedLine(`  Defer: ${remed.defer}`));
-      } else {
-        report.push(boxedLine("  See hook output above for details"));
-      }
-    }
-  }
+  if (actionable.length > 0) report.push(...buildConsoleRemediation(actionable));
 
   report.push(
     "\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518"
   );
 
   return { report, actionable };
+}
+
+function buildMdRemediation(actionable) {
+  const lines = ["", "## Remediation"];
+  for (const c of actionable) {
+    const remed = REMEDIATIONS[c.id];
+    lines.push(`### ${c.id} (${c.status})`);
+    if (remed) {
+      if (remed.fix) lines.push(`- **Fix:** \`${remed.fix}\``);
+      if (remed.investigate) lines.push(`- **Investigate:** \`${remed.investigate}\``);
+      if (remed.defer) lines.push(`- **Defer:** \`${remed.defer}\``);
+    }
+  }
+  return lines;
 }
 
 function buildMarkdownReport(hookName, checks, counts, actionable) {
@@ -235,18 +255,7 @@ function buildMarkdownReport(hookName, checks, counts, actionable) {
     `**Total:** ${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`
   );
 
-  if (actionable.length > 0) {
-    md.push("", "## Remediation");
-    for (const c of actionable) {
-      const remed = REMEDIATIONS[c.id];
-      md.push(`### ${c.id} (${c.status})`);
-      if (remed) {
-        if (remed.fix) md.push(`- **Fix:** \`${remed.fix}\``);
-        if (remed.investigate) md.push(`- **Investigate:** \`${remed.investigate}\``);
-        if (remed.defer) md.push(`- **Defer:** \`${remed.defer}\``);
-      }
-    }
-  }
+  if (actionable.length > 0) md.push(...buildMdRemediation(actionable));
 
   return md;
 }
@@ -255,8 +264,8 @@ function persistReport(reportPath, md) {
   try {
     fs.mkdirSync(path.dirname(reportPath), { recursive: true });
     safeAtomicWriteSync(reportPath, md.join("\n") + "\n", "utf8");
-  } catch {
-    // Non-critical — don't block
+  } catch (err) {
+    console.error("hook-report: persist failed:", err instanceof Error ? err.message : String(err));
   }
 }
 

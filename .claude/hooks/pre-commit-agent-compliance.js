@@ -97,6 +97,10 @@ const stdinTimeout = setTimeout(() => {
   process.stderr.write("agent-compliance: stdin timeout, allowing\n");
   process.exit(0);
 }, 3000);
+const overallTimeout = setTimeout(() => {
+  process.stderr.write("agent-compliance: overall timeout, allowing\n");
+  process.exit(0);
+}, 15000);
 process.stdin.on("data", (chunk) => {
   clearTimeout(stdinTimeout);
   input += chunk;
@@ -106,6 +110,8 @@ process.stdin.on("data", (chunk) => {
   }
 });
 process.stdin.on("end", () => {
+  clearTimeout(stdinTimeout);
+  clearTimeout(overallTimeout);
   try {
     const data = JSON.parse(input);
     const command = (data.tool_input && data.tool_input.command) || "";
@@ -123,7 +129,9 @@ process.stdin.on("end", () => {
 
     reportAndBlock(issues);
   } catch (err) {
-    process.stderr.write(`agent-compliance: unexpected error (${err instanceof Error ? err.message : String(err)}), allowing\n`);
+    process.stderr.write(
+      `agent-compliance: unexpected error (${err instanceof Error ? err.message : String(err)}), allowing\n`
+    );
     process.exit(0);
   }
 });
