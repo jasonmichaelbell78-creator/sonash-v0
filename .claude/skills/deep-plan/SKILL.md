@@ -164,8 +164,10 @@ surfaced and resolved with the user.
    obvious, state "Based on your answer to Q3, I'm inferring X for Q7" rather
    than silently skipping.
 8. **Save decisions after every batch** (MUST) — persist to
-   `.claude/state/deep-plan.state.json` with task name, current batch number,
-   all decisions so far, and timestamp.
+   `.claude/state/deep-plan.<topic-slug>.state.json` with task name, current
+   batch number, all decisions so far, and timestamp. Each plan gets its own
+   state file keyed by topic slug (e.g.,
+   `deep-plan.github-optimization.state.json`).
 9. **Show progress** — "Batch 2 of ~3 complete. 12 decisions captured so far."
 
 ### Mid-Discovery Check (MUST — after batch 2)
@@ -311,15 +313,20 @@ Capture in state file `process_feedback` field.
 
 ## Compaction Resilience
 
-- **State file:** `.claude/state/deep-plan.state.json` — update after every
-  batch, decision record, and plan completion
-- **Recovery:** On resume, read state file, skip completed phases
-- **Topic validation:** If state file topic differs from current invocation, ask
-  user: "Start fresh or resume [old-topic]?"
-- **Resume:** Re-invoke `/deep-plan <same-topic>` to trigger recovery
+- **State file:** `.claude/state/deep-plan.<topic-slug>.state.json` — each plan
+  gets its own state file keyed by topic slug. Update after every batch,
+  decision record, and plan completion.
+- **Recovery:** On resume, read the topic-specific state file, skip completed
+  phases
+- **Topic matching:** State file name is derived from the topic argument
+  (lowercase, hyphens for spaces/special chars). If no matching state file
+  exists, start fresh.
+- **Resume:** Re-invoke `/deep-plan <same-topic>` to trigger recovery from the
+  matching state file
 - **Artifacts as checkpoints:** DIAGNOSIS.md, DECISIONS.md, PLAN.md persist even
   if state file is lost
-- **Cleanup:** `rm .claude/state/deep-plan.state.json`
+- **Cleanup:** `rm .claude/state/deep-plan.<topic-slug>.state.json`
+- **List active plans:** `ls .claude/state/deep-plan.*.state.json`
 
 ---
 

@@ -51,6 +51,11 @@
             "type": "command",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/block-push-to-main.js",
             "statusMessage": "Checking push target..."
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/pre-commit-agent-compliance.js",
+            "statusMessage": "Checking agent compliance..."
           }
         ]
       }

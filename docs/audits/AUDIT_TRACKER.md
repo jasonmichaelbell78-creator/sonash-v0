@@ -111,6 +111,12 @@ triggers.
 | 2026-01-17 | Single-Claude  | 353             | 248           | 12 (2 S1, 7 S2, 3 S3) (report archived)                                                                       | ⚠️ (single)     |
 | 2026-01-08 | Multi-AI (#37) | Full codebase   | All TS/TSX    | 20 (CANON-PERF.jsonl)                                                                                         | ✅              |
 
+### Agent Quality Audits (`/audit-agent-quality`)
+
+| Date | Session | Agents Covered | Findings | Reset Threshold                                    |
+| ---- | ------- | -------------- | -------- | -------------------------------------------------- |
+| —    | —       | —              | —        | 50 commits to `.claude/agents/` OR new agent added |
+
 ### Refactoring Audits (`/audit-refactoring`)
 
 | Date       | Session       | Commits Covered | Files Covered | Findings                                                                                                      | Reset Threshold |

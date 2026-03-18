@@ -87,6 +87,15 @@
       "Phase 5: End-to-end convergence audit"
     ]
   },
+  "pending_canon_artifacts": [
+    {
+      "file": "scripts/config/hook-checks.json",
+      "source_decision": "hook-system-overhaul/D14",
+      "target_step": "Phase 1 Step 1.1 (.canon/ecosystems.jsonl)",
+      "description": "Hook contract manifest v1 — declarative registry of all 25 pre-commit/pre-push checks. Register as CANON artifact when ecosystem registry is created.",
+      "added_session": 225
+    }
+  ],
   "source_files": {
     "decisions": "decisions.jsonl",
     "tenets": "tenets.jsonl",
