@@ -1,7 +1,7 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.101 **Created:** 2026-01-02 **Last Updated:**
-2026-03-14
+**Document Version:** 17.102 **Created:** 2026-01-02 **Last Updated:**
+2026-03-18
 
 ## Purpose
 
@@ -32,6 +32,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.102   | 2026-03-18               | Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud). 47 fixes: propagation grep false-positive, migration archived-file fallback, timestamp string→Date.parse (4 files), review_rounds mutation bug, semgrep over-suppression, 9 CC reductions, 4 security hardening, @ts-nocheck removal. 2 rejected. |
 | 17.63    | 2026-03-16               | Review #479: PR #443 R2 — Qodo. Relative link depth fix (../../ → ../../../) in session-begin SKILL+REFERENCE, session counter off-by-one. 2 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 17.62    | 2026-03-16               | Review #478: PR #443 R1 — Mixed (Doc Lint CI+Qodo Compliance+Qodo Reviewer+CI Failure). Invocation schema consistency (duration_ms/error fields). 3 fixed, 3 deferred (DEBT-45531/45532/45533), 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.61    | 2026-03-14               | Review #477: PR #432 R4 — Mixed (Qodo+CodeQL+CI+SonarCloud). Terminal injection (control char strip), CodeQL process.env contradiction resolved (by=cli), schema field alignment (\_pending_test→pending_enforcement_test), write audit trail, safe error.code access. 6 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -2030,6 +2031,78 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
   formatting runs before pushing to avoid CI failures on generated content.
 - Documentation code examples should follow the same patterns as production code
   (file-read-in-try/catch) to avoid review noise.
+
+---
+
+### Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)
+
+**PR:** #448 | **Round:** R1 | **Source:** Mixed (Qodo 22, Gemini 4, SonarCloud
+33)
+
+**Items:** 49 total (47 fixed, 0 deferred, 2 rejected)
+
+**Severity Breakdown:** 0 Critical, 8 Major, 14 Minor, 27 Trivial
+
+**Fixes Applied:**
+
+- **Propagation check false-positive** (Qodo, MAJOR): Pre-commit grep
+  `"propagation miss"` matched success message `"no propagation misses"`.
+  Changed to `"Propagation miss:"` to match only real miss lines.
+- **Migration script silent no-op** (Qodo, MAJOR): `migrate-ecosystem-v2.js`
+  read non-existent files, `readJsonl()` returned `[]` silently. Added
+  `findSourceFile()` fallback to `.archived-*` variants + exit non-zero if
+  neither exists.
+- **review_rounds never updated** (Qodo suggestion, MAJOR): `dedupMetrics()`
+  set `jsonl_review_records` but never actually wrote to `review_rounds`. Added
+  missing assignment.
+- **Timestamp string comparison** (Qodo suggestion, MAJOR): 4 files used
+  `entry.timestamp > existing.timestamp` (string comparison). Replaced with
+  `Date.parse()` numeric comparison in `dedup-review-metrics.js`,
+  `review-churn-tracker.js`, `review-lifecycle.js`, `cross-db-validation.test`.
+- **Semgrep over-suppression** (Qodo, MAJOR): `no-unchecked-array-access` rule
+  suppressed `$ARR[0]` inside any `.map/.filter/.forEach` callback regardless
+  of whether `$ARR` was the iterated element. Removed 10 broad suppressions.
+- **Disposition validation order** (Qodo suggestion, MAJOR): Moved
+  `validateDispositionIntegrity` after `ReviewRecord.parse()` to validate on
+  canonical typed data, preventing string-bypass.
+- **Security: scorecard permissions** (SonarCloud, MINOR): Replaced `read-all`
+  with specific `contents: read`.
+- **Security: path traversal** (Qodo suggestion, HIGH): 3 files using
+  `startsWith(root + path.sep)` → `path.relative()` + regex test.
+- **Security: symlink guards** (Qodo suggestion/compliance): Added to
+  `readExistingMetrics()` and both write paths in `migrate-ecosystem-v2.js`.
+- **CC reduction** (SonarCloud, 9 functions): Extracted helpers in `jobs.ts`,
+  `check-docs-light.js`, `check-propagation-staged.js`,
+  `dedup-review-metrics.js`, `review-churn-tracker.js`, `review-lifecycle.js`,
+  `migrate-ecosystem-v2.js`, `cross-db-validation.test.js`,
+  `pipeline-consistency.test.js`.
+- **Style fixes** (SonarCloud/Qodo): @ts-nocheck removal, CRLF normalization,
+  Set conversions, String.raw, replaceAll, unused variable removal, try/catch
+  wrapping in test files.
+
+**Rejections:**
+
+- **Audit Trails - actor identity** (Qodo compliance): Local CLI validation
+  scripts — not production services. Actor identity not applicable.
+- **Secure Logging - path leakage** (Qodo compliance): Reviewer acknowledged
+  "appears safe for a dev tool." Already uses sanitizeError.
+
+**Key Learnings:**
+
+- Grep patterns in hooks must account for success messages containing the
+  failure substring (e.g., "no propagation misses" matches "propagation miss").
+  Use specific prefixes like `"Propagation miss:"` instead.
+- Migration/recovery scripts must fail loudly when source files are missing.
+  Silent `[]` returns on read errors make no-ops look like success.
+- String timestamp comparison (`a > b`) works for ISO-8601 in many cases but
+  fails for mixed formats, missing values, or non-ISO strings. Always use
+  `Date.parse()` for robustness.
+- Semgrep `pattern-not-inside` with `$X.map(...)` suppresses ALL `$ARR[0]`
+  inside the callback, not just accesses on the iterated element. Unrelated
+  property access (`item.parts[0]`) becomes a false negative.
+- When multiple npm dependencies are broken (hermes-parser, oxlint), the
+  pre-commit hook blocks all commits. The ESLint check now supports
+  `is_skipped eslint` for this scenario.
 
 ---
 
