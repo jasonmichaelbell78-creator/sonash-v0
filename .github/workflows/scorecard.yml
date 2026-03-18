@@ -24,6 +24,7 @@ jobs:
   analysis:
     name: Scorecard Analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       # Needed for Code Scanning upload
       security-events: write

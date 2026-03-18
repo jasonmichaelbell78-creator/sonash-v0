@@ -105,6 +105,9 @@ jobs:
       - name: Pattern test suite
         run: npx vitest run tests/pattern-compliance.test.js
 
+      - name: GitHub optimization wave tests
+        run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
+
       - name: Documentation check
         # Non-blocking: templates/stubs have expected issues, active docs are clean
         continue-on-error: true

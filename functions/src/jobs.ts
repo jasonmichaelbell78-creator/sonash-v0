@@ -658,8 +658,8 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
     logSecurityEvent(
       "JOB_FAILURE",
       "cleanupOrphanedStorageFiles",
-      `Error cleaning storage: ${error}`,
-      { severity: "ERROR", metadata: { error: String(error) }, captureToSentry: true }
+      `Error cleaning storage: ${sanitizeErrorMessage(error instanceof Error ? error.message : String(error))}`,
+      { severity: "ERROR", metadata: { error: sanitizeErrorMessage(error instanceof Error ? error.message : String(error)) }, captureToSentry: true }
     );
     throw error;
   }
@@ -1099,7 +1099,7 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
         deleted++;
       } catch (error) {
         errors++;
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage = sanitizeErrorMessage(error instanceof Error ? error.message : String(error));
         logSecurityEvent(
           "JOB_FAILURE",
           "hardDeleteSoftDeletedUsers",
