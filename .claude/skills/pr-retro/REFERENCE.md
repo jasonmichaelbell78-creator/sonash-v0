@@ -1,7 +1,7 @@
 # PR Retro — Reference
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.3
+**Document Version:** 1.4
 **Last Updated:** 2026-03-18
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -301,6 +301,11 @@ For each accepted action item with a verify command:
 - [ ] Every verify command is a real, runnable shell command (not a description)
 - [ ] Commands target specific files/patterns (not generic `grep` with no path)
 - [ ] Commands would actually fail if the change wasn't made
+- [ ] Verify commands must be executable (exit 0 on success, exit 1 on failure)
+  and test actual behavior, not string presence. A `grep -c` that only confirms
+  a string exists in a file is NOT a valid verify command. Valid verify commands
+  execute the feature (run a script, parse a config, invoke an API) and validate
+  the output or exit code reflects correct behavior.
 
 ### 4. Data Integrity (were artifacts saved correctly?)
 
@@ -602,6 +607,7 @@ compatibility, but `action_items` is the authoritative tracking field.
 
 | Version | Date       | Changes                                                          |
 | ------- | ---------- | ---------------------------------------------------------------- |
+| 1.4     | 2026-03-18 | Verification criteria: require functional verify commands (exit 0/1), reject grep-based string checks. |
 | 1.3     | 2026-03-18 | Align step references with SKILL.md v4.7 renumbering. Fix override-log path. |
 | 1.2     | 2026-03-18 | Add Cat7 sections: deliverable verification detail, data enrichment, implementation detail, cross-skill integration. |
 | 1.1     | 2026-03-13 | Add D7 pattern_recurrence population rules, D26 override audit cross-reference, verification stage criteria |

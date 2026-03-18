@@ -1,6 +1,6 @@
 # Qodo PR-Agent Configuration
 # Created: 2026-02-17
-# Updated: 2026-02-27 (PR #396 retro — add TOCTOU + S4036 suppressions)
+# Updated: 2026-03-18 (PR #447 retro — add CJS, repeat-rejection, .claude config, R-style suppressions)
 # Purpose: Suppress recurring false-positive review items that add noise
 # without actionable value. Each suppression has evidence from PR retros.
 
@@ -88,6 +88,30 @@ When reviewing files in scripts/ or .claude/hooks/:
     hooks. Upstream (Claude Code) controls the payload structure and size.
     Hooks receive trusted, bounded input.
     (Rejected in PR #423 R4)
+
+15. Do NOT flag "CJS module format" or suggest converting CommonJS scripts
+    to ESM. Files under scripts/*.js intentionally use CommonJS (require/
+    module.exports). This is the project's established module format for
+    CLI tooling and is not a deficiency.
+    (Pattern observed across PRs #420-#447 — CJS is intentional)
+
+16. Do NOT re-raise items that have been rejected 3+ times across different
+    PR review rounds with the same rationale. Repeat-rejection items (same
+    rule category, same justification across 3+ rounds) are verified false
+    positives. Check prior round state files and retro JSONL before raising.
+    (Pattern codified from PR #447 retro analysis)
+
+17. Do NOT flag "local config exposure" or "sensitive file access" for files
+    under the .claude/ directory (.claude/hooks/, .claude/skills/,
+    .claude/state/). These are local AI agent configuration files, not
+    secrets or credentials. They are version-controlled intentionally.
+    (Rejected across PRs #423-#447 — .claude/ is project config)
+
+18. Do NOT flag function signature style complaints (e.g., "R-style naming",
+    "unconventional parameter patterns", "non-standard function signatures")
+    on utility functions in scripts/lib/. These follow the project's
+    established conventions for CLI helper libraries.
+    (Rejected in PRs #432-#447 — project convention, not deficiency)
 """
 
 [pr_code_suggestions]

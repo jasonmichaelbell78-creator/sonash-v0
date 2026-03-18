@@ -232,6 +232,7 @@ function buildNewItem(parsed, type, effort) {
     created: new Date().toISOString().split("T")[0],
     verified_by: null,
     resolution: null,
+    source_pr: null,
   };
 }
 

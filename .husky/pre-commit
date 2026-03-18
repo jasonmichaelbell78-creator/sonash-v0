@@ -382,9 +382,29 @@ if [ "$RUN_PATTERNS" -eq 1 ]; then
   fi
 fi
 
-# 3b. Propagation check — REMOVED (C7-G2)
-# Pre-push already blocks on propagation misses; this non-blocking duplicate
-# was noise (13 of 32 warning-log entries). Rely on pre-push gate.
+# 3b. Propagation-audit check (non-blocking, warns on security pattern siblings)
+# Reinstated as security-pattern-specific check (retro item #1).
+# Different from pre-push propagation: this checks security patterns in staged
+# files vs unstaged siblings in the same directory.
+CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
+if is_skipped propagation-staged; then
+  node scripts/log-override.js --quick --check=propagation-staged --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "  ⏭️ Skipping propagation-staged (skipped via SKIP_CHECKS)"
+  echo "propagation-staged|skip|0" >> "$CHECKS_TMPFILE"
+else
+  prop_staged_output=$(node scripts/check-propagation-staged.js 2>&1) || true
+  CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
+  if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
+  if echo "$prop_staged_output" | grep -q "propagation miss"; then
+    echo "  ⚠️ Security pattern propagation misses detected (non-blocking)"
+    echo "$prop_staged_output" | grep "Propagation miss:" | head -5
+    node scripts/append-hook-warning.js --hook=pre-commit --type=propagation-staged --severity=warning --message="Security pattern propagation misses in staged files" --action="Review sibling files for same security patterns" || echo "⚠️ Warning write failed: propagation-staged" >&3
+    echo "propagation-staged|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  else
+    echo "  ✅ No security pattern propagation misses"
+    echo "propagation-staged|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  fi
+fi
 
 # --- Process audit-s0s1 results ---
 if [ "$RUN_AUDIT" -eq 1 ]; then

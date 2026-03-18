@@ -7,7 +7,7 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.7
+**Document Version:** 4.8
 **Last Updated:** 2026-03-18
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -223,6 +223,31 @@ Effort | Verify Command). User: accept all, modify, reject individual.
 **6.2 Implement:** Every approved item this session. After each, run verify:
 `[DONE]` or `[BLOCKED]` (explain, ask user).
 
+**Verify command quality (MUST):** Verify commands MUST be functional tests that
+run the feature and confirm output, not grep-based string checks. A verify
+command that only checks if a string exists in a file is NOT sufficient -- it
+must execute the feature and validate behavior. Good verify commands exit 0 on
+success and exit 1 on failure.
+
+**Examples -- good vs bad verify commands:**
+
+```
+BAD:  grep -c "source_pr" scripts/debt/intake-pr-deferred.js
+      (only proves a string exists, not that the feature works)
+
+GOOD: node scripts/debt/intake-pr-deferred.js --pr 999 --file test.js \
+        --title "test" --severity S2 --dry-run 2>&1 | grep -q "source_pr"
+      (runs the actual feature and validates output)
+
+BAD:  grep -c "watchlist" .claude/config/high-churn-watchlist.json
+      (only proves the file contains a word)
+
+GOOD: node -e "const w=JSON.parse(require('fs').readFileSync(
+        '.claude/config/high-churn-watchlist.json','utf8'));
+        process.exit(w.files.length>=3 && w.refactor_candidates.length>=3?0:1)"
+      (parses the JSON, validates structure, exits with meaningful code)
+```
+
 > See REFERENCE.md Section: Implementation Detail for DEBT/TDMS rules, repeat
 > offender protocol, state tracking, checklist template.
 
@@ -313,6 +338,7 @@ Next: /pr-retro for more missing retros
 
 | Version | Date       | Description                                                    |
 | ------- | ---------- | -------------------------------------------------------------- |
+| 4.8     | 2026-03-18 | Step 6: Require functional verify commands, not grep-based string checks. Good/bad examples added. |
 | 4.7     | 2026-03-18 | Audit v2: 33 decisions. Renumber, reorder save-after-impl, extract to REF. |
 | 4.6     | 2026-03-18 | Deliverable verification via convergence-loop.                 |
 | 4.5     | 2026-03-18 | Hook health enrichment.                                        |

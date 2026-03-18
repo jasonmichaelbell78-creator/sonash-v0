@@ -38,6 +38,7 @@ const { execFileSync } = require("node:child_process");
 const ROOT = pathMod.join(__dirname, "..");
 const REVIEWS_JSONL = pathMod.join(ROOT, ".claude", "state", "reviews.jsonl");
 const REVIEWS_ARCHIVE_JSONL = pathMod.join(ROOT, ".claude", "state", "reviews-archive.jsonl");
+const REVIEW_METRICS_JSONL = pathMod.join(ROOT, ".claude", "state", "review-metrics.jsonl");
 const LEARNINGS_LOG = pathMod.join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const RENDER_SCRIPT = pathMod.join(ROOT, "scripts", "reviews", "render-reviews-to-md.ts");
 const CHECK_ARCHIVE_SCRIPT = pathMod.join(ROOT, "scripts", "check-review-archive.js");
@@ -480,8 +481,125 @@ function runArchive() {
 // ── STEP 3: VALIDATE ──────────────────────────────────────────────────────
 
 /**
- * VALIDATE step: run check-review-archive.js and report findings.
+ * Cross-database validation: checks that reviews.jsonl record counts per PR
+ * match review_rounds in review-metrics.jsonl.
+ *
+ * Returns { mismatches: Array<{pr, metricsRounds, jsonlRecords}> }.
+ *
+ * Added: Session #218 — Retro action item #3 (cross-database consistency).
+ * Version History:
+ *   v1.0 2026-03-18 — Initial implementation
+ */
+function runCrossDbValidation() {
+  logStep("VALIDATE", "Running cross-database consistency check...");
+
+  const reviews = loadReviews();
+
+  // Load review-metrics.jsonl
+  let metrics;
+  try {
+    metrics = readJsonl(REVIEW_METRICS_JSONL, { safe: true, quiet: true });
+  } catch (err) {
+    logStep("VALIDATE", `Cannot read review-metrics.jsonl: ${sanitizeError(err)}`);
+    return { mismatches: [] };
+  }
+
+  if (metrics.length === 0) {
+    logStep("VALIDATE", "No metrics entries found - skipping cross-db check");
+    return { mismatches: [] };
+  }
+
+  // Count reviews.jsonl records per PR
+  const reviewCountsByPr = new Map();
+  for (const rec of reviews) {
+    if (rec && typeof rec === "object" && typeof rec.pr === "number" && rec.pr > 0) {
+      reviewCountsByPr.set(rec.pr, (reviewCountsByPr.get(rec.pr) || 0) + 1);
+    }
+  }
+
+  // Build metrics map: PR -> latest review_rounds value
+  // (use latest entry per PR since there may be duplicates)
+  const metricsRoundsByPr = new Map();
+  for (const entry of metrics) {
+    if (entry && typeof entry === "object" && typeof entry.pr === "number") {
+      const existing = metricsRoundsByPr.get(entry.pr);
+      if (!existing || (entry.timestamp && (!existing.timestamp || entry.timestamp > existing.timestamp))) {
+        metricsRoundsByPr.set(entry.pr, entry);
+      }
+    }
+  }
+
+  // Compare: for PRs present in both, check if review_rounds matches record count
+  const mismatches = [];
+  for (const [pr, metricsEntry] of metricsRoundsByPr) {
+    const jsonlCount = reviewCountsByPr.get(pr);
+    if (jsonlCount === undefined) continue; // PR not in reviews.jsonl — skip
+    const metricsRounds = typeof metricsEntry.review_rounds === "number" ? metricsEntry.review_rounds : 0;
+
+    if (metricsRounds !== jsonlCount) {
+      mismatches.push({ pr, metricsRounds, jsonlRecords: jsonlCount });
+      logStep(
+        "VALIDATE",
+        `  PR #${pr}: metrics says ${metricsRounds} rounds, JSONL has ${jsonlCount} records`
+      );
+    }
+  }
+
+  if (mismatches.length === 0) {
+    logStep("VALIDATE", "Cross-database consistency: OK (all matching PRs agree)");
+  } else {
+    logStep("VALIDATE", `Cross-database consistency: ${mismatches.length} mismatch(es) found`);
+  }
+
+  return { mismatches };
+}
+
+/**
+ * Disposition integrity validation: flags records where total > 0 but
+ * fixed + deferred + rejected == 0.
+ *
+ * Returns { violations: Array<{id, total, fixed, deferred, rejected}> }.
+ *
+ * Added: Session #218 — Retro action item #14 (total-vs-dispositions rule).
+ * Version History:
+ *   v1.0 2026-03-18 — Initial implementation
+ */
+function validateDispositions(records) {
+  const items = records || loadReviews();
+  const violations = [];
+
+  for (const rec of items) {
+    if (!rec || typeof rec !== "object") continue;
+    const total = typeof rec.total === "number" ? rec.total : 0;
+    if (total <= 0) continue;
+
+    const fixed = typeof rec.fixed === "number" ? rec.fixed : 0;
+    const deferred = typeof rec.deferred === "number" ? rec.deferred : 0;
+    const rejected = typeof rec.rejected === "number" ? rec.rejected : 0;
+    const dispositionSum = fixed + deferred + rejected;
+
+    if (dispositionSum === 0) {
+      violations.push({
+        id: rec.id,
+        total,
+        fixed,
+        deferred,
+        rejected,
+      });
+    }
+  }
+
+  return { violations };
+}
+
+/**
+ * VALIDATE step: run check-review-archive.js, cross-database consistency,
+ * and disposition integrity checks. Aggregates all findings.
  * Returns { valid: boolean, findings: Array }.
+ *
+ * Version History:
+ *   v1.0 2026-02-10 — Initial implementation (archive check only)
+ *   v2.0 2026-03-18 — Add cross-db validation (#3) and disposition check (#14)
  */
 function runValidate() {
   logStep("VALIDATE", "Running review archive health check...");
@@ -491,87 +609,102 @@ function runValidate() {
     return { valid: true, findings: [] };
   }
 
+  // ── Phase 1: Archive health check (existing) ──────────────────────────
+  let archiveFindings = [];
   try {
     const result = execFileSync(process.execPath, [CHECK_ARCHIVE_SCRIPT, "--json"], {
       cwd: ROOT,
       encoding: "utf8",
       timeout: 30_000,
-      // Capture both stdout and stderr
       stdio: ["pipe", "pipe", "pipe"],
     });
 
-    // Parse JSON output from stdout
-    let findings = [];
     try {
-      findings = JSON.parse(result.trim());
+      archiveFindings = JSON.parse(result.trim());
     } catch {
       // If stdout isn't valid JSON, no findings
     }
-
-    if (findings.length === 0) {
-      logStep("VALIDATE", "All checks passed");
-      return { valid: true, findings: [] };
-    }
-
-    // Report findings
-    const s0Count = findings.filter((f) => f.severity === "S0").length;
-    const s1Count = findings.filter((f) => f.severity === "S1").length;
-    logStep("VALIDATE", `${findings.length} finding(s): S0=${s0Count} S1=${s1Count}`);
-
-    for (const f of findings) {
-      logStep("VALIDATE", `  [${f.severity}] ${f.description}`);
-    }
-
-    return { valid: false, findings };
   } catch (err) {
-    // Exit code 2 = unrecoverable script error — check FIRST before parsing output
     if (err.status === 2) {
       throw new Error(`check-review-archive.js failed: ${sanitizeError(err)}`);
     }
 
     // execFileSync throws on non-zero exit (code 1 = findings)
+    let parsed = false;
     if (err.stdout) {
-      let findings = [];
       try {
-        findings = JSON.parse(err.stdout.toString().trim());
+        archiveFindings = JSON.parse(err.stdout.toString().trim());
+        if (archiveFindings.length > 0) parsed = true;
       } catch {
         /* not JSON output */
       }
-
-      if (findings.length > 0) {
-        const s0Count = findings.filter((f) => f.severity === "S0").length;
-        const s1Count = findings.filter((f) => f.severity === "S1").length;
-        logStep("VALIDATE", `${findings.length} finding(s): S0=${s0Count} S1=${s1Count}`);
-        for (const f of findings) {
-          logStep("VALIDATE", `  [${f.severity}] ${f.description}`);
-        }
-        return { valid: false, findings };
-      }
     }
 
-    // If stderr has structured findings (the script writes to stderr too)
-    if (err.stderr) {
-      let stderrFindings = [];
+    if (!parsed && err.stderr) {
       try {
-        stderrFindings = JSON.parse(err.stderr.toString().trim());
+        archiveFindings = JSON.parse(err.stderr.toString().trim());
+        if (archiveFindings.length > 0) parsed = true;
       } catch {
         /* not JSON */
       }
-
-      if (stderrFindings.length > 0) {
-        const s0Count = stderrFindings.filter((f) => f.severity === "S0").length;
-        const s1Count = stderrFindings.filter((f) => f.severity === "S1").length;
-        logStep("VALIDATE", `${stderrFindings.length} finding(s): S0=${s0Count} S1=${s1Count}`);
-        for (const f of stderrFindings) {
-          logStep("VALIDATE", `  [${f.severity}] ${f.description}`);
-        }
-        return { valid: false, findings: stderrFindings };
-      }
     }
 
-    // Unrecoverable error (no parseable findings)
-    throw new Error(`check-review-archive.js failed: ${sanitizeError(err)}`);
+    if (!parsed) {
+      throw new Error(`check-review-archive.js failed: ${sanitizeError(err)}`);
+    }
   }
+
+  if (archiveFindings.length > 0) {
+    const s0 = archiveFindings.filter((f) => f.severity === "S0").length;
+    const s1 = archiveFindings.filter((f) => f.severity === "S1").length;
+    logStep("VALIDATE", `Archive check: ${archiveFindings.length} finding(s): S0=${s0} S1=${s1}`);
+    for (const f of archiveFindings) {
+      logStep("VALIDATE", `  [${f.severity}] ${f.description}`);
+    }
+  } else {
+    logStep("VALIDATE", "Archive check: all checks passed");
+  }
+
+  // ── Phase 2: Cross-database consistency (Item #3) ─────────────────────
+  const crossDbResult = runCrossDbValidation();
+  const crossDbFindings = crossDbResult.mismatches.map((m) => ({
+    severity: "S2",
+    category: "cross-db-mismatch",
+    description: `PR #${m.pr}: metrics says ${m.metricsRounds} rounds, JSONL has ${m.jsonlRecords} records`,
+    fix: "Update review-metrics.jsonl or investigate missing/extra review records",
+  }));
+
+  // ── Phase 3: Disposition integrity (Item #14) ─────────────────────────
+  const dispResult = validateDispositions();
+  const dispFindings = dispResult.violations.map((v) => ({
+    severity: "S2",
+    category: "disposition-integrity",
+    description: `Data integrity violation: record ${v.id} has total=${v.total} but no dispositions (fixed=${v.fixed}, deferred=${v.deferred}, rejected=${v.rejected})`,
+    fix: "Add disposition counts or set total to 0 if no items were reviewed",
+  }));
+
+  if (dispFindings.length > 0) {
+    logStep("VALIDATE", `Disposition check: ${dispFindings.length} violation(s)`);
+    // Only log first 10 to avoid noise
+    for (const f of dispFindings.slice(0, 10)) {
+      logStep("VALIDATE", `  [${f.severity}] ${f.description}`);
+    }
+    if (dispFindings.length > 10) {
+      logStep("VALIDATE", `  ... and ${dispFindings.length - 10} more`);
+    }
+  } else {
+    logStep("VALIDATE", "Disposition check: all records consistent");
+  }
+
+  // ── Aggregate all findings ─────────────────────────────────────────────
+  const allFindings = [...archiveFindings, ...crossDbFindings, ...dispFindings];
+
+  if (allFindings.length === 0) {
+    logStep("VALIDATE", "All validation checks passed");
+    return { valid: true, findings: [] };
+  }
+
+  return { valid: false, findings: allFindings };
 }
 
 // ── STEP 4: RENDER ────────────────────────────────────────────────────────
@@ -717,6 +850,9 @@ module.exports = {
   runArchive,
   runValidate,
   runRender,
+  // New validation functions (Session #218)
+  runCrossDbValidation,
+  validateDispositions,
   // Constants for testing
   ARCHIVE_THRESHOLD,
   KEEP_NEWEST,

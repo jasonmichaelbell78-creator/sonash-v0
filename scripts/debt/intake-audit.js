@@ -428,6 +428,7 @@ function validateAndNormalize(item, sourceFile) {
     created: new Date().toISOString().split("T")[0],
     verified_by: typeof mappedItem.verified_by === "string" ? mappedItem.verified_by : null,
     resolution: null,
+    source_pr: mappedItem.source_pr != null ? Number(mappedItem.source_pr) : null,
   };
 
   // Generate content hash
