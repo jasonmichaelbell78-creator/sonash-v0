@@ -412,8 +412,13 @@ function resolveLinkPath(link, docDir) {
   try { decodedPath = decodeURIComponent(filePath); } catch { decodedPath = filePath; }
   if (isAbsolute(decodedPath)) return null;
 
+  // Prevent path traversal outside docDir
+  const resolvedTarget = resolve(docDir, decodedPath);
+  const rel = relative(docDir, resolvedTarget);
+  if (/^\.\.(?:[\\/]|$)/.test(rel)) return null;
+
   let targetExists = false;
-  try { targetExists = existsSync(join(docDir, decodedPath)); } catch { /* race */ }
+  try { targetExists = existsSync(resolvedTarget); } catch { /* race */ }
   return targetExists ? decodedPath : null;
 }
 

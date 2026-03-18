@@ -47,7 +47,8 @@ function sanitizeError(error) {
     .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
     .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
     .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-    .replaceAll(/\/[^\s]*\/[^\s]+/g, "[PATH]");
+    .replaceAll(/\/[^\s]*\/[^\s]+/g, "[PATH]")
+    .replaceAll(/(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|Bearer\s+)\S+/gi, "[REDACTED]");
 }
 
 // ---------------------------------------------------------------------------
@@ -275,7 +276,15 @@ function runCheck(options = {}) {
       baseDir = process.cwd();
     }
   }
-  const stagedFiles = Array.isArray(options.stagedFiles) ? options.stagedFiles : getStagedFiles();
+  const stagedFilesRaw = Array.isArray(options.stagedFiles) ? options.stagedFiles : getStagedFiles();
+  const stagedFiles = stagedFilesRaw
+    .map((f) => String(f).replaceAll("\\", "/"))
+    .filter((f) => {
+      if (path.isAbsolute(f)) return false;
+      const resolved = path.resolve(baseDir, f);
+      const rel = path.relative(baseDir, resolved);
+      return !(/^\.\.(?:[\\/]|$)/.test(rel));
+    });
 
   // Filter to JS/TS files only
   const jsStaged = stagedFiles.filter((f) => JS_EXTENSIONS.has(path.extname(f)));

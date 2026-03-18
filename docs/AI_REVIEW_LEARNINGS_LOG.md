@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.103 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.104 **Created:** 2026-01-02 **Last Updated:**
 2026-03-18
 
 ## Purpose
@@ -32,6 +32,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.104   | 2026-03-18               | Review #488: PR #448 R3 — Mixed (Qodo+SonarCloud). 10 fixes: resolveLinkPath path traversal, options.stagedFiles validation, DOMPurify FORBID_CONTENTS, churn-tracker latest-index, numeric normalization, CC reductions, token redaction. 8 repeat-rejected. |
 | 17.103   | 2026-03-18               | Review #487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud). 19 fixes: ESLint CJS config for __dirname, no-control-regex block disable, CLI path traversal guard, Promise.allSettled, NaN→Number.NaN propagation, CC reductions. 8 auto-rejected (R1 stale repeats). |
 | 17.102   | 2026-03-18               | Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud). 47 fixes: propagation grep false-positive, migration archived-file fallback, timestamp string→Date.parse (4 files), review_rounds mutation bug, semgrep over-suppression, 9 CC reductions, 4 security hardening, @ts-nocheck removal. 2 rejected. |
 | 17.63    | 2026-03-16               | Review #479: PR #443 R2 — Qodo. Relative link depth fix (../../ → ../../../) in session-begin SKILL+REFERENCE, session counter off-by-one. 2 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -2032,6 +2033,49 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
   formatting runs before pushing to avoid CI failures on generated content.
 - Documentation code examples should follow the same patterns as production code
   (file-read-in-try/catch) to avoid review noise.
+
+---
+
+### Review #488: PR #448 R3 — Mixed (Qodo+SonarCloud) (2026-03-18)
+
+**PR:** #448 | **Round:** R3 | **Source:** Mixed (Qodo Compliance + Suggestions,
+SonarCloud)
+
+**Items:** 10 fixed, 0 deferred, 8 rejected (repeat from R1/R2)
+
+**Severity Breakdown:** 0 Critical, 1 Major, 5 Minor, 4 Trivial
+
+**Fixes Applied:**
+
+- **resolveLinkPath path traversal** (Qodo compliance, MAJOR): Added
+  `path.relative` + `..` regex check before `existsSync` to prevent probing
+  files outside docDir.
+- **options.stagedFiles validation** (Qodo suggestion, MINOR): Added path
+  containment filter on programmatic override, matching CLI validation.
+- **DOMPurify FORBID_CONTENTS** (Qodo suggestion, MINOR): Added
+  `FORBID_CONTENTS: ["script", "style"]` — ALLOWED_TAGS:[] alone doesn't strip
+  script/style tag contents.
+- **churn-tracker latest-index** (Qodo suggestion, MINOR): Index now keeps only
+  the entry with the latest timestamp per PR, preventing stale-entry updates.
+- **Numeric normalization** (Qodo suggestion, MINOR): Migration script now uses
+  `toNonNegInt()` helper for all numeric fields.
+- **CC reductions** (SonarCloud): Extracted `processFileChunk` (jobs.ts) and
+  `writeMetrics` (churn-tracker).
+- **Token redaction** (Qodo compliance, TRIVIAL): Added GitHub/API token
+  patterns to sanitizeError in check-propagation-staged.
+- **Misc** (TRIVIAL): yamlHasKey null guard, wave4 regex→string literal.
+
+**Rejections (8):** 7× retro-config "should be Set" (string.includes, not
+array — repeat from R1+R2), 1× Audit Trails (repeat — local CLI scripts).
+
+**Key Learnings:**
+
+- DOMPurify `ALLOWED_TAGS: []` strips tags but preserves their text content,
+  including `<script>` body. Use `FORBID_CONTENTS` to remove content too.
+- When building a dedup index from existing entries, keep only the latest per
+  key — otherwise out-of-order entries cause the wrong record to be updated.
+- Path traversal guards must be applied at EVERY entry point for a path (CLI
+  args, programmatic override, link resolution), not just the most obvious one.
 
 ---
 

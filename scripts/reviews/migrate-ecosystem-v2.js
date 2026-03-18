@@ -89,6 +89,19 @@ function findSourceFile(basePath) {
  * Normalize an ecosystem-v2 review record to match state schema.
  * Extracts severity_breakdown into top-level fields.
  */
+/** Coerce to non-negative integer, defaulting to fallback. */
+function toNonNegInt(v, fallback = 0) {
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : fallback;
+}
+
+/** Validate PR number: positive integer or null. */
+function normalizePr(raw) {
+  if (raw === null || raw === undefined) return null;
+  const n = typeof raw === "number" ? raw : Number(raw);
+  return Number.isFinite(n) && Number.isInteger(n) && n > 0 ? n : null;
+}
+
 function normalizeReviewRecord(eco) {
   const sev = eco.severity_breakdown || {};
   return {
@@ -102,16 +115,16 @@ function normalizeReviewRecord(eco) {
       : { type: "migration", tool: "migrate-ecosystem-v2" },
     title: eco.title || "",
     source: eco.source || "manual",
-    pr: eco.pr ?? null,
+    pr: normalizePr(eco.pr),
     patterns: Array.isArray(eco.patterns) ? eco.patterns : [],
-    fixed: eco.fixed ?? 0,
-    deferred: eco.deferred ?? 0,
-    rejected: eco.rejected ?? 0,
-    critical: sev.critical ?? 0,
-    major: sev.major ?? 0,
-    minor: sev.minor ?? 0,
-    trivial: sev.trivial ?? 0,
-    total: eco.total ?? 0,
+    fixed: toNonNegInt(eco.fixed),
+    deferred: toNonNegInt(eco.deferred),
+    rejected: toNonNegInt(eco.rejected),
+    critical: toNonNegInt(sev.critical),
+    major: toNonNegInt(sev.major),
+    minor: toNonNegInt(sev.minor),
+    trivial: toNonNegInt(sev.trivial),
+    total: toNonNegInt(eco.total),
     learnings: Array.isArray(eco.learnings) ? eco.learnings : [],
   };
 }

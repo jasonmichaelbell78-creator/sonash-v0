@@ -40,7 +40,7 @@ function assertFileExists(relPath) {
  * Returns the content between --- delimiters
  */
 function extractYamlFrontMatter(content) {
-  const normalized = content.replaceAll(/\r\n/g, "\n");
+  const normalized = content.replaceAll("\r\n", "\n");
   const match = normalized.match(/^---\n([\s\S]*?)\n---/);
   return match ? match[1] : null;
 }
@@ -50,6 +50,7 @@ function extractYamlFrontMatter(content) {
  * Simple line-based check (not a full YAML parser)
  */
 function yamlHasKey(content, key) {
+  if (typeof content !== 'string') return false;
   const lines = content.split('\n');
   return lines.some((line) => {
     const trimmed = line.trim();

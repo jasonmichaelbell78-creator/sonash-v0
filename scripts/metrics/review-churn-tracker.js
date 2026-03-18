@@ -275,6 +275,22 @@ function validateWriteTarget() {
   return true;
 }
 
+/** Write metrics: rewrite if entries were updated in-place, append otherwise. */
+function writeMetrics(existing, toAppend, needsRewrite) {
+  try {
+    if (needsRewrite) {
+      const all = [...existing, ...toAppend];
+      const content = all.map((e) => JSON.stringify(e)).join("\n") + "\n";
+      safeAtomicWriteSync(METRICS_FILE, content, { encoding: "utf8" });
+    } else if (toAppend.length > 0) {
+      const lines = toAppend.map((e) => JSON.stringify(e)).join("\n") + "\n";
+      safeWriteFileSync(METRICS_FILE, lines, { encoding: "utf8", flag: "a" });
+    }
+  } catch (err) {
+    console.error(`Failed to write metrics file: ${sanitizeError(err)}`);
+  }
+}
+
 function appendMetrics(entries) {
   if (!validateWriteTarget()) return;
 
@@ -291,7 +307,10 @@ function appendMetrics(entries) {
     if (!e || typeof e.pr !== "number" || !e.timestamp) continue;
     const t = new Date(e.timestamp).getTime();
     if (!Number.isFinite(t)) continue;
-    existingIndexByPr.set(e.pr, { idx: i, time: t });
+    const prev = existingIndexByPr.get(e.pr);
+    if (!prev || t > prev.time) {
+      existingIndexByPr.set(e.pr, { idx: i, time: t });
+    }
   }
 
   for (const newEntry of entries) {
@@ -310,20 +329,7 @@ function appendMetrics(entries) {
     }
   }
 
-  try {
-    if (needsRewrite) {
-      // Rewrite the entire file with updated entries + new appends
-      const all = [...existing, ...toAppend];
-      const content = all.map((e) => JSON.stringify(e)).join("\n") + "\n";
-      safeAtomicWriteSync(METRICS_FILE, content, { encoding: "utf8" });
-    } else if (toAppend.length > 0) {
-      // Simple append (no duplicates found)
-      const lines = toAppend.map((e) => JSON.stringify(e)).join("\n") + "\n";
-      safeWriteFileSync(METRICS_FILE, lines, { encoding: "utf8", flag: "a" });
-    }
-  } catch (err) {
-    console.error(`Failed to write metrics file: ${sanitizeError(err)}`);
-  }
+  writeMetrics(existing, toAppend, needsRewrite);
 }
 
 /**

@@ -39,6 +39,7 @@ function assertFileExists(relPath) {
  * Helper: parse YAML-like content for key presence (line-based)
  */
 function yamlHasKey(content, key) {
+  if (typeof content !== "string") return false;
   const lines = content.split("\n");
   return lines.some((line) => {
     const trimmed = line.trim();

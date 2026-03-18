@@ -581,6 +581,29 @@ export const scheduledCleanupOldDailyLogs = onSchedule(
 // Backward-compatible export for existing admin triggers
 export const scheduledCleanupOldSessions = scheduledCleanupOldDailyLogs;
 
+/** Process a chunk of files concurrently. Returns { deleted, errors }. */
+async function processFileChunk(
+  chunk: File[],
+  existingUserIds: Set<string>,
+  db: FirebaseFirestore.Firestore
+): Promise<{ deleted: number; errors: number }> {
+  let deleted = 0;
+  let errors = 0;
+  const results = await Promise.allSettled(
+    chunk.map((file) =>
+      processStorageFile(file, existingUserIds, db, () => { errors++; })
+    )
+  );
+  for (const r of results) {
+    if (r.status === "fulfilled") {
+      if (r.value.deleted) deleted++;
+    } else {
+      errors++;
+    }
+  }
+  return { deleted, errors };
+}
+
 /** Process storage pages with pagination and concurrent file processing. */
 async function processStoragePages(
   bucket: ReturnType<ReturnType<typeof admin.storage>["bucket"]>,
@@ -604,20 +627,9 @@ async function processStoragePages(
     for (let i = 0; i < files.length; i += PROCESS_CONCURRENCY) {
       const chunk = files.slice(i, i + PROCESS_CONCURRENCY);
       checked += chunk.length;
-
-      const chunkResults = await Promise.allSettled(
-        chunk.map((file) =>
-          processStorageFile(file, existingUserIds, db, () => { errors++; })
-        )
-      );
-
-      for (const r of chunkResults) {
-        if (r.status === "fulfilled") {
-          if (r.value.deleted) deleted++;
-        } else {
-          errors++;
-        }
-      }
+      const result = await processFileChunk(chunk, existingUserIds, db);
+      deleted += result.deleted;
+      errors += result.errors;
     }
 
     prevPageToken = pageToken;
