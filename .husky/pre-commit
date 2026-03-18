@@ -139,7 +139,7 @@ add_exit_trap 'rm -f "$TEST_TMPFILE" 2>/dev/null'
 
 # --- Start ESLint in background (STAGED FILES ONLY) ---
 ESLINT_START_NS=$(date +%s%N 2>/dev/null || date +%s)
-STAGED_JS=$(printf '%s\n' "$STAGED_FILES" | grep -E '\.(js|jsx|ts|tsx|mjs)$')
+STAGED_JS=$(printf '%s\n' "$STAGED_FILES" | grep -E '\.(js|jsx|ts|tsx|mjs)$' || true)
 if [ -z "$STAGED_JS" ]; then
   echo "  ⏭️ ESLint skipped (no JS/TS files staged)"
   echo "0" > "${ESLINT_TMPFILE}.exit"
