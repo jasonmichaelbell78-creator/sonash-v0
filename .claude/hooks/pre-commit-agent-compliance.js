@@ -17,6 +17,7 @@ const { readFileSync, existsSync } = require("node:fs");
 const { join } = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { projectDir } = require("./lib/git-utils");
+const { sanitizeError } = require("../../scripts/lib/sanitize-error");
 
 const ROOT = projectDir;
 
@@ -90,7 +91,7 @@ function reportAndBlock(issues) {
 let input = "";
 process.stdin.setEncoding("utf8");
 process.stdin.on("error", (err) => {
-  process.stderr.write(`agent-compliance: stdin error (${err.message}), allowing\n`);
+  process.stderr.write(`agent-compliance: stdin error (${sanitizeError(err)}), allowing\n`);
   process.exit(0);
 });
 const stdinTimeout = setTimeout(() => {
@@ -129,9 +130,7 @@ process.stdin.on("end", () => {
 
     reportAndBlock(issues);
   } catch (err) {
-    process.stderr.write(
-      `agent-compliance: unexpected error (${err instanceof Error ? err.message : String(err)}), allowing\n`
-    );
+    process.stderr.write(`agent-compliance: unexpected error (${sanitizeError(err)}), allowing\n`);
     process.exit(0);
   }
 });

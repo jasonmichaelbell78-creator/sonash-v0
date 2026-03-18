@@ -17,6 +17,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeAtomicWriteSync } = require("./lib/safe-fs");
+const { sanitizeError } = require("./lib/sanitize-error");
 
 const ROOT = path.join(__dirname, "..");
 
@@ -265,7 +266,7 @@ function persistReport(reportPath, md) {
     fs.mkdirSync(path.dirname(reportPath), { recursive: true });
     safeAtomicWriteSync(reportPath, md.join("\n") + "\n", "utf8");
   } catch (err) {
-    console.error("hook-report: persist failed:", err instanceof Error ? err.message : String(err));
+    console.error("hook-report: persist failed:", sanitizeError(err));
   }
 }
 
@@ -278,8 +279,8 @@ function generateReport(hookName, checksFile, persist) {
       process.exit(0);
     }
     lines = fs.readFileSync(checksFile, "utf8").trim().split("\n").filter(Boolean);
-  } catch {
-    console.error("Could not read checks file:", checksFile);
+  } catch (err) {
+    console.error("Could not read checks file:", checksFile, sanitizeError(err));
     process.exit(0);
   }
 
