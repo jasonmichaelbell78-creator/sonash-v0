@@ -6,8 +6,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.4
-**Last Updated:** 2026-03-13
+**Document Version:** 4.5
+**Last Updated:** 2026-03-18
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -154,6 +154,35 @@ being retro'd:
 If the file doesn't exist or no matching entry found, note "No review-metrics
 data available for this PR" and continue.
 
+### 1.3c Hook Health Enrichment (SHOULD)
+
+Read `.claude/state/hook-runs.jsonl` and filter entries where `branch` matches
+the PR branch name and `timestamp` falls within the PR's development period
+(first commit to merge date).
+
+1. **Hook runs:** Read `hook-runs.jsonl`. Each line has `hook`, `timestamp`,
+   `branch`, `checks` (array of `{id, status, duration}`), `outcome`,
+   `total_ms`. Filter to matching branch + date range.
+2. **Hook warnings:** Read `.claude/state/hook-warnings-log.jsonl`. Each line
+   has `timestamp`, `hook`, `type`, `severity`, `message`, `action`. Filter to
+   the same date range.
+3. **Check overrides:** Read `.claude/state/override-log.jsonl`. Each line has
+   `timestamp`, `check`, `reason`. Filter to the same date range.
+4. **Extract and display:**
+   - Pre-commit pass rate during PR development
+   - Pre-push pass rate during PR development
+   - Most common warning types
+   - Any check overrides (`SKIP_*`) used and their reasons
+   - Total hook run count and average duration
+5. **Use this data to:**
+   - Inform churn analysis in Step 2 (frequent hook failures = quality issues)
+   - Flag if override count is unusually high (compare to 5-PR average from
+     recent entries across all branches)
+   - Include in the JSONL record's `metrics` field as `hook_health`
+
+If files don't exist or no matching entries found, note "No hook data available
+for this PR's development period" and continue.
+
 ### 1.4 Check Previous Retros + Build Pattern Recurrence Map (MUST)
 
 Read last 3-5 retros from `retros.jsonl`. For each retro's `action_items` array
@@ -226,6 +255,9 @@ Save state. If user declines, exit gracefully.
    this session. The `metrics.pattern_recurrence` field in the JSONL record MUST
    reflect the highest recurrence count found.
 4. **Rejection analysis** — group by reason, check false-positive rate by source
+5. **Hook health correlation** — correlate hook failures/overrides with review
+   round counts. High override rate + many review rounds = quality shortcuts
+   that backfired.
 
 Present intermediate summary: "Analysis complete: N findings identified across M
 categories. Ready for interactive walkthrough."
@@ -452,14 +484,15 @@ Next: Run /pr-retro to check for more missing retros
 
 ## CROSS-SKILL INTEGRATION
 
-| Finding Type             | Action             | Target                        |
-| ------------------------ | ------------------ | ----------------------------- |
-| New automation candidate | Add pattern rule   | `check-pattern-compliance.js` |
-| New fix template needed  | Add template       | `FIX_TEMPLATES.md`            |
-| Pre-push check missing   | Add to Step 0.5    | `pr-review SKILL.md`          |
-| Recurring noise (Qodo)   | Add suppression    | `.qodo/pr-agent.toml`         |
-| Recurring noise (Gemini) | Add to Do NOT Flag | `.gemini/styleguide.md`       |
-| Systemic issue           | Create DEBT        | TDMS via `/add-debt`          |
+| Finding Type             | Action               | Target                        |
+| ------------------------ | -------------------- | ----------------------------- |
+| New automation candidate | Add pattern rule     | `check-pattern-compliance.js` |
+| New fix template needed  | Add template         | `FIX_TEMPLATES.md`            |
+| Pre-push check missing   | Add to Step 0.5      | `pr-review SKILL.md`          |
+| Recurring noise (Qodo)   | Add suppression      | `.qodo/pr-agent.toml`         |
+| Recurring noise (Gemini) | Add to Do NOT Flag   | `.gemini/styleguide.md`       |
+| Systemic issue           | Create DEBT          | TDMS via `/add-debt`          |
+| Hook override abuse      | Review skip patterns | `override-log.jsonl`          |
 
 **Session integration:** `/session-end` verifies TDMS entries. `/session-begin`
 checks open retro DEBT items. `/pr-review` checks pre-push recommendations.
@@ -468,16 +501,17 @@ checks open retro DEBT items. `/pr-review` checks pre-push recommendations.
 
 ## Version History
 
-| Version | Date       | Description                                                                                                                                    |
-| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| 4.4     | 2026-03-13 | D12: Add Step 1.3b — review-metrics.jsonl enrichment for churn quantification in retro analysis.                                               |
-| 4.3     | 2026-03-13 | D7: pattern_recurrence populated at creation time from prior retros, auto-escalate >=3 to CRITICAL. Step 1.4 + 2.3 + REFERENCE.md updated.     |
-| 4.2     | 2026-03-11 | Step 6 hard gate: implement=MUST not DEFAULT, DEBT only on explicit user request, implementation checklist + gate check before Step 7.         |
-| 4.1     | 2026-03-09 | Step 6 rewrite: default=implement now, DEBT=explicit only. Source: batch retro PRs #417-#423.                                                  |
-| 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch retros, verification protocol, compaction resilience, routing. Source: skill-audit 37 decisions. |
-| 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                                            |
-| 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items                                                                                        |
-| 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter                                                                                          |
-| 3.0     | 2026-02-26 | Add Patterns 12-13. Source: PR #393/#394 retros.                                                                                               |
+| Version | Date       | Description                                                                                                                                           |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.5     | 2026-03-18 | Add Step 1.3c — hook health enrichment from hook-runs/warnings/override JSONL. Hook-churn correlation in Step 2. Override abuse in integration table. |
+| 4.4     | 2026-03-13 | D12: Add Step 1.3b — review-metrics.jsonl enrichment for churn quantification in retro analysis.                                                      |
+| 4.3     | 2026-03-13 | D7: pattern_recurrence populated at creation time from prior retros, auto-escalate >=3 to CRITICAL. Step 1.4 + 2.3 + REFERENCE.md updated.            |
+| 4.2     | 2026-03-11 | Step 6 hard gate: implement=MUST not DEFAULT, DEBT only on explicit user request, implementation checklist + gate check before Step 7.                |
+| 4.1     | 2026-03-09 | Step 6 rewrite: default=implement now, DEBT=explicit only. Source: batch retro PRs #417-#423.                                                         |
+| 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch retros, verification protocol, compaction resilience, routing. Source: skill-audit 37 decisions.        |
+| 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                                                   |
+| 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items                                                                                               |
+| 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter                                                                                                 |
+| 3.0     | 2026-02-26 | Add Patterns 12-13. Source: PR #393/#394 retros.                                                                                                      |
 
 > Older version history archived in [ARCHIVE.md](ARCHIVE.md).
