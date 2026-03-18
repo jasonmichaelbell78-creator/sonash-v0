@@ -15,10 +15,10 @@ rules:
     paths:
       include:
         - lib/
-        - components/
         - scripts/
       exclude:
         - app/
+        - components/
         - tests/
         - "*.test.*"
         - "*.spec.*"

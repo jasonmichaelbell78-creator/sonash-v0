@@ -42,6 +42,12 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+      # Group all GitHub Actions updates to reduce PR noise
+      actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
     labels:
       - "ci"
     commit-message:

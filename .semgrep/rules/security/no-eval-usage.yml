@@ -3,25 +3,30 @@ rules:
     languages: [javascript, typescript]
     severity: ERROR
     message: >-
-      eval() or Function() constructor detected. These execute arbitrary code
-      and enable injection attacks. Use safer alternatives like JSON.parse() for
-      data or explicit function references for dynamic dispatch.
+      eval() or string-based setTimeout/setInterval detected. These execute
+      arbitrary code and enable injection attacks. Use safer alternatives like
+      JSON.parse() for data, explicit function references for dynamic dispatch,
+      or arrow functions for setTimeout/setInterval callbacks.
     metadata:
       category: security
       code-pattern-ref: "Shell interpolation"
       confidence: HIGH
       cwe: "CWE-95: Eval Injection"
-    patterns:
-      - pattern-either:
-          - pattern: eval(...)
+    pattern-either:
+      # eval() is always dangerous
+      - pattern: eval(...)
+      # Only flag setTimeout/setInterval when the callback is a string literal
+      # (the actual security risk). Function references are safe.
+      - patterns:
           - pattern: setTimeout($CB, ...)
+          - metavariable-regex:
+              metavariable: $CB
+              regex: "^['\"].*"
+      - patterns:
           - pattern: setInterval($CB, ...)
-      - pattern-not: setTimeout(($ARGS) => {...}, ...)
-      - pattern-not: setTimeout(($ARGS) => $RET, ...)
-      - pattern-not: setTimeout(function (...) {...}, ...)
-      - pattern-not: setInterval(($ARGS) => {...}, ...)
-      - pattern-not: setInterval(($ARGS) => $RET, ...)
-      - pattern-not: setInterval(function (...) {...}, ...)
+          - metavariable-regex:
+              metavariable: $CB
+              regex: "^['\"].*"
     paths:
       exclude:
         - node_modules/

@@ -16,22 +16,34 @@ rules:
           - pattern-not: await fetch(...)
           - pattern-not: void fetch(...)
           - pattern-not: return fetch(...)
+          - pattern-not: $X = await fetch(...)
+          - pattern-not: $X = fetch(...).then(...)
+          - pattern-not: $X = fetch(...).catch(...)
+          - pattern-not-inside: $X = await fetch(...)
       - patterns:
           - pattern: $OBJ.json();
           - pattern-not: await $OBJ.json()
           - pattern-not: return $OBJ.json()
+          - pattern-not: $X = await $OBJ.json()
+          - pattern-not-inside: $X = await $OBJ.json()
       - patterns:
           - pattern: fs.promises.$METHOD(...);
           - pattern-not: await fs.promises.$METHOD(...)
           - pattern-not: return fs.promises.$METHOD(...)
+          - pattern-not: $X = await fs.promises.$METHOD(...)
+          - pattern-not-inside: $X = await fs.promises.$METHOD(...)
       - patterns:
           - pattern: $OBJ.writeFile(...);
           - pattern-not: await $OBJ.writeFile(...)
           - pattern-not: return $OBJ.writeFile(...)
+          - pattern-not: $X = await $OBJ.writeFile(...)
+          - pattern-not-inside: $X = await $OBJ.writeFile(...)
       - patterns:
           - pattern: $OBJ.readFile(...);
           - pattern-not: await $OBJ.readFile(...)
           - pattern-not: return $OBJ.readFile(...)
+          - pattern-not: $X = await $OBJ.readFile(...)
+          - pattern-not-inside: $X = await $OBJ.readFile(...)
     paths:
       exclude:
         - tests/

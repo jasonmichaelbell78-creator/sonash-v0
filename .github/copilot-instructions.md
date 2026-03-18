@@ -1,7 +1,7 @@
 # Copilot Instructions - SoNash Recovery Notebook
 
 **Repository:** sonash-v0  
-**Last Updated:** December 21, 2025
+**Last Updated:** March 18, 2026
 
 ## Project Overview
 
@@ -43,17 +43,17 @@ npm run test:coverage
 npm run test:build
 ```
 
-**Test Status:** 77/91 passing (14 failures are in logger tests due to mock
-issues - NOT blocking for CI)
+**Test Status:** ~3776 tests across infrastructure, scripts, hooks, and
+application test suites. Tests use Node's built-in test runner with TypeScript
+compilation via `tsconfig.test.json`.
 
 **Known Issues:**
 
-- 2 Firebase initialization tests fail without emulator setup (expected, safe to
-  ignore)
-- 12 logger tests fail due to mock.calls being undefined (known issue, not
-  critical)
+- Firebase initialization tests require emulator setup (expected, safe to ignore
+  in CI without emulators)
 - Tests MUST have Firebase env vars set (see package.json test script for
   required vars)
+- Some health-check tests depend on filesystem state and may skip gracefully
 
 ### Linting
 
@@ -62,9 +62,8 @@ issues - NOT blocking for CI)
 npm run lint
 ```
 
-**Expected Warnings:** ESLint shows ~115 warnings (mostly
-@typescript-eslint/no-explicit-any and unused vars). **6 ERRORS in
-compact-meeting-countdown.tsx must be fixed before merging.**
+**Expected:** ESLint should pass clean in CI. Run `npm run lint:fast` (oxlint)
+for a quick correctness pre-check before the full ESLint pass.
 
 **Type Check:**
 
@@ -184,25 +183,29 @@ req/min) → Audit Logging
 
 ## Common Issues & Fixes
 
-1. **ESLint errors in compact-meeting-countdown.tsx**: 6 errors - move
-   `updateTimeUntil` function before the useEffect that calls it
-2. **Tests fail**: ALWAYS run `npm test` (not `node --test`) - requires
+1. **Tests fail**: ALWAYS run `npm test` (not `node --test`) - requires
    TypeScript compilation first via `test:build`
-3. **Node engine warnings in functions/**: Safe to ignore - functions work with
+2. **Node engine warnings in functions/**: Safe to ignore - functions work with
    Node 20+ despite requiring Node 22
-4. **Firebase test failures**: Expected without emulator - tests need mock env
+3. **Firebase test failures**: Expected without emulator - tests need mock env
    vars (see package.json)
+4. **Pattern compliance failures**: Run `npm run patterns:check` to see what
+   code patterns need fixing before committing
+5. **Stale dist-tests/**: If tests behave unexpectedly, delete `dist-tests/` and
+   re-run `npm run test:build`
 
 ## Validation Steps
 
 Before submitting a PR:
 
-1. **Lint:** `npm run lint` - Fix all errors, warnings acceptable
-2. **Type Check:** `npx tsc --noEmit` - Must pass with no errors
-3. **Tests:** `npm test` - 77+ tests passing (14 logger failures acceptable)
-4. **Build:** `npm run build` - Must complete (fonts are self-hosted)
-5. **Functions:** `cd functions && npm run build` - Must compile
-6. **Manual Test:** Start dev server, verify app loads and basic functionality
+1. **Lint:** `npm run lint` - Must pass clean (errors and warnings)
+2. **Format:** `npm run format:check` - Prettier formatting enforced
+3. **Type Check:** `npx tsc --noEmit` - Must pass with no errors
+4. **Tests:** `npm test` - All tests passing
+5. **Pattern Check:** `npm run patterns:check` - Code pattern compliance
+6. **Build:** `npm run build` - Must complete (fonts are self-hosted)
+7. **Functions:** `cd functions && npm run build` - Must compile
+8. **Manual Test:** Start dev server, verify app loads and basic functionality
    works
 
 ## Quick Reference

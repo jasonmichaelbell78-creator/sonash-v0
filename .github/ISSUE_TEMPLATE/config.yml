@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: App Check Re-enablement Tracker
+    url: https://github.com/jasonmichaelbell78-creator/sonash-v0/blob/main/.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md
+    about: Track the Firebase App Check re-enablement process (blocked on Firebase support)
+  - name: Security Policy
+    url: https://github.com/jasonmichaelbell78-creator/sonash-v0/blob/main/SECURITY.md
+    about: Report security vulnerabilities privately

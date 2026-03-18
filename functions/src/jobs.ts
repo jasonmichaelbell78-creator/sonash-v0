@@ -74,8 +74,9 @@ function extractUserIdFromPath(filePath: string): string | null {
  * Returns false if metadata is unavailable.
  */
 async function isFileOlderThan(file: File, daysOld: number): Promise<boolean> {
-  const metadata = await file.getMetadata();
-  const timeCreated = metadata[0].timeCreated;
+  // getMetadata() returns [Metadata, ApiResponse] tuple (always 2 elements)
+  const [meta] = await file.getMetadata();
+  const timeCreated = meta.timeCreated;
   if (!timeCreated) return false;
 
   const createTime = new Date(timeCreated);

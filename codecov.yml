@@ -1,0 +1,38 @@
+# Codecov configuration
+# Purpose: Configure code coverage reporting thresholds and behavior
+# Docs: https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  status:
+    project:
+      default:
+        # Match the CI threshold (65% line coverage)
+        target: 65%
+        threshold: 2%
+        informational: false
+    patch:
+      default:
+        # New code should have reasonable coverage
+        target: 70%
+        informational: true
+
+  # Paths to ignore in coverage reports
+  ignore:
+    - "dist-tests/**"
+    - "scripts/**"
+    - "docs/**"
+    - ".claude/**"
+    - "**/*.test.ts"
+    - "**/*.test.js"
+    - "functions/lib/**"
+
+comment:
+  # Post coverage summary on PRs
+  layout: "reach,diff,flags,files"
+  behavior: default
+  require_changes: true
+
+# Version History
+# | Version | Date       | Changes         |
+# | ------- | ---------- | --------------- |
+# | 1.0     | 2026-03-18 | Initial release |
