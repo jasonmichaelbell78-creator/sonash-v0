@@ -217,12 +217,21 @@ function logCommitFailure(command) {
         const content = fs.readFileSync(hookLogPath, "utf8").trim();
         hookOutputExcerpt = content.split("\n").slice(0, 5).join("\n");
         // Sanitize sensitive content from hook output — PR #444 R1 fix #12
+        // Strip ANSI escape sequences first
+        hookOutputExcerpt = hookOutputExcerpt
+          .replace(/\u001B\[[0-?]*[ -/]*[@-~]/g, "")
+          .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
+        // Redact secrets
         hookOutputExcerpt = hookOutputExcerpt
           .replace(
-            /(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|password\s*=\s*|secret\s*=\s*)\S+/gi,
+            /(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|password\s*=\s*|secret\s*=\s*|Bearer\s+)\S+/gi,
             "[REDACTED]"
           )
-          .replace(/\/[A-Za-z]:[/\\]Users[/\\]\w+/g, "[USER_PATH]");
+          // Windows paths: C:\Users\<name>\...
+          .replace(/[A-Za-z]:[\\/](?:Users|Documents and Settings)[\\/][^\\/\s\n]+/g, "[USER_PATH]")
+          // POSIX paths: /home/<name>/... and /Users/<name>/...
+          .replace(/\/(?:home|Users)\/[^/\s\n]+/g, "[USER_PATH]")
+          .slice(0, 2000);
       }
     } catch {
       // Non-critical — excerpt is best-effort
@@ -366,7 +375,11 @@ function main() {
 
   // --- Commit failure reporting (merged from commit-failure-reporter.js) ---
   // If the commit command failed, surface pre-commit hook output
-  reportCommitFailure();
+  try {
+    reportCommitFailure();
+  } catch (err) {
+    console.error("commit-tracker: reportCommitFailure failed:", err instanceof Error ? err.message : String(err));
+  }
 
   console.log("ok");
   process.exit(0);

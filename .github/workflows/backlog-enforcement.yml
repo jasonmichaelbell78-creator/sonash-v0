@@ -8,10 +8,7 @@ on:
     - cron: "0 9 * * 1"
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pull-requests: write
-  issues: write
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -22,6 +19,10 @@ jobs:
     name: Check Backlog Health
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout repository
@@ -121,6 +122,8 @@ jobs:
     name: Check Security Patterns
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository

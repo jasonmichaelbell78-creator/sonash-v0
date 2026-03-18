@@ -748,7 +748,7 @@ function regenerateHookWarnings() {
   const warningsList = [...seen.values()].map((e) => {
     const total = typeTotals[e.type] || 0;
     const sinceAck =
-      ack.acknowledged?.[e.type] || ack.lastCleared ? typeSinceAckTotals[e.type] || 0 : total;
+      (ack.acknowledged?.[e.type] || ack.lastCleared) ? (typeSinceAckTotals[e.type] || 0) : total;
     return {
       hook: sanitizeInput(String(e.hook || "")),
       type: sanitizeInput(String(e.type || "")),

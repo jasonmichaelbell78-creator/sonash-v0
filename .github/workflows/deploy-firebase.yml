@@ -11,9 +11,7 @@ on:
   #   types: [opened, synchronize, reopened]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  checks: write
+permissions: {}
 
 concurrency:
   group: preview-deploy-${{ github.event.pull_request.number || github.ref }}

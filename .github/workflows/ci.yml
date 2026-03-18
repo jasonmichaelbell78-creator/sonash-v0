@@ -22,9 +22,7 @@ on:
       - "CODE_OF_CONDUCT.md"
       - "SECURITY.md"
 
-permissions:
-  contents: read
-  checks: write
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -35,6 +33,9 @@ jobs:
     name: Lint, Type Check & Test
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      checks: write
 
     steps:
       - name: Checkout code
@@ -178,6 +179,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: lint-typecheck-test
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code
