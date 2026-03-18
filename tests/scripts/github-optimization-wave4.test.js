@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GitHub Optimization Wave 4 - Functional Tests
  *
@@ -41,7 +40,8 @@ function assertFileExists(relPath) {
  * Returns the content between --- delimiters
  */
 function extractYamlFrontMatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  const normalized = content.replace(/\r\n/g, "\n");
+  const match = normalized.match(/^---\n([\s\S]*?)\n---/);
   return match ? match[1] : null;
 }
 
@@ -484,8 +484,8 @@ describe('4.7: OpenSSF Scorecard', () => {
     assert.ok(content.includes('sarif'));
   });
 
-  it('has read-all default permissions', () => {
-    assert.ok(content.includes('permissions: read-all'));
+  it('has restrictive default permissions', () => {
+    assert.ok(content.includes('contents: read'), 'Should declare contents: read permission');
   });
 
   it('has Purpose header in comments', () => {
@@ -553,30 +553,53 @@ describe('4.8: Release Please', () => {
     });
 
     it('is valid JSON', () => {
-      const content = fs.readFileSync(configPath, 'utf8');
+      let content;
+      try {
+        content = fs.readFileSync(configPath, 'utf8');
+      } catch (err) {
+        assert.fail(`Failed to read ${configPath}: ${err}`);
+      }
       assert.doesNotThrow(() => JSON.parse(content), 'Should be valid JSON');
     });
 
     it('has packages configuration', () => {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      let content;
+      try {
+        content = fs.readFileSync(configPath, 'utf8');
+      } catch (err) {
+        assert.fail(`Failed to read ${configPath}: ${err}`);
+      }
+      const config = JSON.parse(content);
       assert.ok(config.packages, 'Should have packages key');
       assert.ok(config.packages['.'], 'Should have root package config');
     });
 
     it('has release-type node', () => {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      let content;
+      try {
+        content = fs.readFileSync(configPath, 'utf8');
+      } catch (err) {
+        assert.fail(`Failed to read ${configPath}: ${err}`);
+      }
+      const config = JSON.parse(content);
       assert.equal(config.packages['.']['release-type'], 'node');
     });
 
     it('has changelog sections', () => {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      let content;
+      try {
+        content = fs.readFileSync(configPath, 'utf8');
+      } catch (err) {
+        assert.fail(`Failed to read ${configPath}: ${err}`);
+      }
+      const config = JSON.parse(content);
       const sections = config.packages['.']['changelog-sections'];
       assert.ok(Array.isArray(sections), 'changelog-sections should be array');
       assert.ok(sections.length >= 5, 'Should have at least 5 sections');
 
-      const types = sections.map((s) => s.type);
-      assert.ok(types.includes('feat'), 'Should have feat section');
-      assert.ok(types.includes('fix'), 'Should have fix section');
+      const types = new Set(sections.map((s) => s.type));
+      assert.ok(types.has('feat'), 'Should have feat section');
+      assert.ok(types.has('fix'), 'Should have fix section');
     });
   });
 
@@ -591,12 +614,23 @@ describe('4.8: Release Please', () => {
     });
 
     it('is valid JSON', () => {
-      const content = fs.readFileSync(manifestPath, 'utf8');
+      let content;
+      try {
+        content = fs.readFileSync(manifestPath, 'utf8');
+      } catch (err) {
+        assert.fail(`Failed to read ${manifestPath}: ${err}`);
+      }
       assert.doesNotThrow(() => JSON.parse(content), 'Should be valid JSON');
     });
 
     it('has root version matching package.json', () => {
-      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      let content;
+      try {
+        content = fs.readFileSync(manifestPath, 'utf8');
+      } catch (err) {
+        assert.fail(`Failed to read ${manifestPath}: ${err}`);
+      }
+      const manifest = JSON.parse(content);
       assert.ok(manifest['.'], 'Should have root entry');
       assert.equal(manifest['.'], '0.1.0', 'Should match package.json version');
     });

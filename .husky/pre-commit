@@ -140,7 +140,13 @@ add_exit_trap 'rm -f "$TEST_TMPFILE" 2>/dev/null'
 # --- Start ESLint in background (STAGED FILES ONLY) ---
 ESLINT_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 STAGED_JS=$(printf '%s\n' "$STAGED_FILES" | grep -E '\.(js|jsx|ts|tsx|mjs)$' || true)
-if [ -z "$STAGED_JS" ]; then
+if is_skipped eslint; then
+  node scripts/log-override.js --quick --check=eslint --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "  ⏭️ Skipping ESLint (skipped via SKIP_CHECKS)"
+  echo "0" > "${ESLINT_TMPFILE}.exit"
+  echo "eslint|skip|0" >> "$CHECKS_TMPFILE"
+  PID_LINT=""
+elif [ -z "$STAGED_JS" ]; then
   echo "  ⏭️ ESLint skipped (no JS/TS files staged)"
   echo "0" > "${ESLINT_TMPFILE}.exit"
   echo "eslint|skip|0" >> "$CHECKS_TMPFILE"
@@ -395,7 +401,7 @@ else
   prop_staged_output=$(node scripts/check-propagation-staged.js 2>&1) || true
   CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
   if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
-  if echo "$prop_staged_output" | grep -q "propagation miss"; then
+  if echo "$prop_staged_output" | grep -q "Propagation miss:"; then
     echo "  ⚠️ Security pattern propagation misses detected (non-blocking)"
     echo "$prop_staged_output" | grep "Propagation miss:" | head -5
     node scripts/append-hook-warning.js --hook=pre-commit --type=propagation-staged --severity=warning --message="Security pattern propagation misses in staged files" --action="Review sibling files for same security patterns" || echo "⚠️ Warning write failed: propagation-staged" >&3

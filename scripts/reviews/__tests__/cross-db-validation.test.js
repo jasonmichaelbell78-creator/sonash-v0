@@ -49,6 +49,60 @@ function findProjectRoot(startDir) {
 const ROOT = findProjectRoot(__dirname);
 const readJsonl = require("../../lib/read-jsonl");
 
+// ── Pure logic helpers (extracted for cognitive complexity) ─────────────────
+
+/**
+ * Returns true if the record is a valid review with a positive numeric PR.
+ */
+function isValidReviewRecord(rec) {
+  return rec && typeof rec === "object" && typeof rec.pr === "number" && rec.pr > 0;
+}
+
+/**
+ * Returns true if the entry is a valid metrics object with a numeric PR.
+ */
+function isValidMetricsEntry(entry) {
+  return entry && typeof entry === "object" && typeof entry.pr === "number";
+}
+
+/**
+ * Returns true if `candidate` should replace `existing` as the latest entry.
+ */
+function isNewerEntry(candidate, existing) {
+  if (!existing) return true;
+  const candidateTime = typeof candidate.timestamp === "string" ? Date.parse(candidate.timestamp) : NaN;
+  const existingTime = typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : NaN;
+  return Number.isFinite(candidateTime) && (!Number.isFinite(existingTime) || candidateTime > existingTime);
+}
+
+/**
+ * Count reviews.jsonl records per PR.
+ */
+function buildReviewCounts(reviews) {
+  const reviewCountsByPr = new Map();
+  for (const rec of reviews) {
+    if (isValidReviewRecord(rec)) {
+      reviewCountsByPr.set(rec.pr, (reviewCountsByPr.get(rec.pr) || 0) + 1);
+    }
+  }
+  return reviewCountsByPr;
+}
+
+/**
+ * Build metrics map: PR -> latest metrics entry.
+ */
+function buildMetricsMap(metrics) {
+  const metricsRoundsByPr = new Map();
+  for (const entry of metrics) {
+    if (!isValidMetricsEntry(entry)) continue;
+    const existing = metricsRoundsByPr.get(entry.pr);
+    if (isNewerEntry(entry, existing)) {
+      metricsRoundsByPr.set(entry.pr, entry);
+    }
+  }
+  return metricsRoundsByPr;
+}
+
 // ── Pure logic test (algorithm validation) ────────────────────────────────
 
 /**
@@ -56,27 +110,8 @@ const readJsonl = require("../../lib/read-jsonl");
  * arbitrary data. Mirrors runCrossDbValidation() from review-lifecycle.js.
  */
 function crossDbCheck(reviews, metrics) {
-  // Count reviews.jsonl records per PR
-  const reviewCountsByPr = new Map();
-  for (const rec of reviews) {
-    if (rec && typeof rec === "object" && typeof rec.pr === "number" && rec.pr > 0) {
-      reviewCountsByPr.set(rec.pr, (reviewCountsByPr.get(rec.pr) || 0) + 1);
-    }
-  }
-
-  // Build metrics map: PR -> latest review_rounds value
-  const metricsRoundsByPr = new Map();
-  for (const entry of metrics) {
-    if (entry && typeof entry === "object" && typeof entry.pr === "number") {
-      const existing = metricsRoundsByPr.get(entry.pr);
-      if (
-        !existing ||
-        (entry.timestamp && (!existing.timestamp || entry.timestamp > existing.timestamp))
-      ) {
-        metricsRoundsByPr.set(entry.pr, entry);
-      }
-    }
-  }
+  const reviewCountsByPr = buildReviewCounts(reviews);
+  const metricsRoundsByPr = buildMetricsMap(metrics);
 
   // Compare
   const mismatches = [];

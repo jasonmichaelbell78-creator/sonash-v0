@@ -145,7 +145,7 @@ describe("dedupMetrics (Item #8)", () => {
       null,
     ];
 
-    const { deduped, removedCount } = dedupMetrics(entries);
+    const { deduped } = dedupMetrics(entries);
     assert.equal(deduped.length, 1, "Should only keep the valid entry");
     assert.equal(deduped[0].pr, 100);
   });
@@ -194,7 +194,7 @@ describe("dedupMetrics (Item #8)", () => {
 
     const final = JSON.parse(afterLines[0]);
     assert.equal(final.pr, 999);
-    assert.equal(final.review_rounds, 1);
+    assert.equal(final.review_rounds, 3, "review_rounds should be updated from JSONL count");
     assert.equal(final.jsonl_review_records, 3);
   });
 });

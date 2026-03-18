@@ -59,6 +59,33 @@ function readJsonl(filePath) {
 }
 
 /**
+ * Find source file, falling back to the latest .archived-* variant.
+ * Returns null if neither exists.
+ */
+function findSourceFile(basePath) {
+  try {
+    if (fs.existsSync(basePath)) return basePath;
+  } catch { /* race condition */ }
+
+  // Look for archived variants
+  const dir = path.dirname(basePath);
+  const base = path.basename(basePath);
+  let entries;
+  try {
+    entries = fs.readdirSync(dir);
+  } catch {
+    return null;
+  }
+
+  const archived = entries
+    .filter((e) => e.startsWith(base + ".archived-"))
+    .sort()
+    .pop(); // Latest archived version
+
+  return archived ? path.join(dir, archived) : null;
+}
+
+/**
  * Normalize an ecosystem-v2 review record to match state schema.
  * Extracts severity_breakdown into top-level fields.
  */
@@ -67,10 +94,16 @@ function normalizeReviewRecord(eco) {
   return {
     id: eco.id,
     date: eco.date || "unknown",
+    schema_version: typeof eco.schema_version === "number" ? eco.schema_version : 1,
+    completeness: eco.completeness || "full",
+    completeness_missing: Array.isArray(eco.completeness_missing) ? eco.completeness_missing : [],
+    origin: eco.origin && typeof eco.origin === "object"
+      ? eco.origin
+      : { type: "migration", tool: "migrate-ecosystem-v2" },
     title: eco.title || "",
     source: eco.source || "manual",
     pr: eco.pr ?? null,
-    patterns: eco.patterns || [],
+    patterns: Array.isArray(eco.patterns) ? eco.patterns : [],
     fixed: eco.fixed ?? 0,
     deferred: eco.deferred ?? 0,
     rejected: eco.rejected ?? 0,
@@ -79,14 +112,37 @@ function normalizeReviewRecord(eco) {
     minor: sev.minor ?? 0,
     trivial: sev.trivial ?? 0,
     total: eco.total ?? 0,
-    learnings: eco.learnings || [],
+    learnings: Array.isArray(eco.learnings) ? eco.learnings : [],
   };
 }
 
+/** Ensure directory exists and file is not a symlink, then append lines. */
+function safeAppend(filePath, lines) {
+  const dir = path.dirname(filePath);
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch { /* existsSync race */ }
+
+  try {
+    if (fs.lstatSync(filePath).isSymbolicLink()) {
+      console.error(`  ERROR: ${path.basename(filePath)} is a symlink — refusing to write`);
+      process.exit(2);
+    }
+  } catch (e) {
+    const code = e && typeof e === "object" && "code" in e ? e.code : null;
+    if (code !== "ENOENT") throw e;
+  }
+
+  const content = lines.map((r) => JSON.stringify(r)).join("\n") + "\n";
+  fs.appendFileSync(filePath, content);
+}
+
 function main() {
-  const args = process.argv.slice(2);
-  const dryRun = args.includes("--dry-run");
-  const apply = args.includes("--apply");
+  const args = new Set(process.argv.slice(2));
+  const dryRun = args.has("--dry-run");
+  const apply = args.has("--apply");
 
   if (!dryRun && !apply) {
     console.error("Usage: node migrate-ecosystem-v2.js --dry-run | --apply");
@@ -97,7 +153,13 @@ function main() {
 
   // --- REVIEWS ---
   console.log("--- Reviews Migration ---");
-  const ecoReviews = readJsonl(ECO_V2_REVIEWS);
+  const reviewSource = findSourceFile(ECO_V2_REVIEWS);
+  if (!reviewSource) {
+    console.error(`  ERROR: No source file found at ${ECO_V2_REVIEWS} (or archived variant)`);
+    process.exit(1);
+  }
+  console.log(`  Source: ${path.basename(reviewSource)}`);
+  const ecoReviews = readJsonl(reviewSource);
   const stateReviews = readJsonl(STATE_REVIEWS);
   const stateIds = new Set(stateReviews.map((r) => String(r.id)));
 
@@ -141,9 +203,7 @@ function main() {
   }
 
   if (apply) {
-    // Append normalized records to state
-    const appendLines = normalized.map((r) => JSON.stringify(r)).join("\n") + "\n";
-    fs.appendFileSync(STATE_REVIEWS, appendLines);
+    safeAppend(STATE_REVIEWS, normalized);
     console.log(`\n  ✓ Appended ${normalized.length} records to ${STATE_REVIEWS}`);
   } else {
     console.log(`\n  [DRY RUN] Would append ${normalized.length} records to ${STATE_REVIEWS}`);
@@ -151,7 +211,11 @@ function main() {
 
   // --- RETROS ---
   console.log("\n--- Retros Migration ---");
-  const ecoRetros = readJsonl(ECO_V2_RETROS);
+  const retroSource = findSourceFile(ECO_V2_RETROS);
+  if (!retroSource) {
+    console.warn("  WARNING: No retro source file found — skipping retro migration");
+  }
+  const ecoRetros = retroSource ? readJsonl(retroSource) : [];
 
   let stateRetros = [];
   try {
@@ -170,13 +234,7 @@ function main() {
   console.log(`  Candidates (no conflict): ${retroCandidates.length}`);
 
   if (apply && retroCandidates.length > 0) {
-    // Create state retros file if needed
-    const retroDir = path.dirname(STATE_RETROS);
-    if (!fs.existsSync(retroDir)) {
-      fs.mkdirSync(retroDir, { recursive: true });
-    }
-    const retroLines = retroCandidates.map((r) => JSON.stringify(r)).join("\n") + "\n";
-    fs.appendFileSync(STATE_RETROS, retroLines);
+    safeAppend(STATE_RETROS, retroCandidates);
     console.log(`  ✓ Appended ${retroCandidates.length} records to ${STATE_RETROS}`);
   } else if (retroCandidates.length > 0) {
     console.log(`  [DRY RUN] Would append ${retroCandidates.length} records to ${STATE_RETROS}`);

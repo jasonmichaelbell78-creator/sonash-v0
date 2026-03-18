@@ -28,7 +28,8 @@ const PROJECT_ROOT = findProjectRoot(__dirname);
 // SEC-008: Verify resolved path is within project root
 function assertWithinRoot(filePath: string, root: string): void {
   const resolved = path.resolve(filePath);
-  if (!resolved.startsWith(root + path.sep) && resolved !== root) {
+  const rel = path.relative(root, resolved);
+  if (/^\.\.(?:[\\/]|$)/.test(rel)) {
     throw new Error(`Path traversal blocked: ${resolved} is outside ${root}`);
   }
 }

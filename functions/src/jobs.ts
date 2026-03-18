@@ -581,6 +581,49 @@ export const scheduledCleanupOldDailyLogs = onSchedule(
 // Backward-compatible export for existing admin triggers
 export const scheduledCleanupOldSessions = scheduledCleanupOldDailyLogs;
 
+/** Process storage pages with pagination and concurrent file processing. */
+async function processStoragePages(
+  bucket: ReturnType<ReturnType<typeof admin.storage>["bucket"]>,
+  existingUserIds: Set<string>,
+  db: FirebaseFirestore.Firestore
+): Promise<{ checked: number; deleted: number; errors: number }> {
+  let checked = 0;
+  let deleted = 0;
+  let errors = 0;
+  let pageToken: string | undefined;
+  let prevPageToken: string | undefined;
+  const PROCESS_CONCURRENCY = 10;
+
+  do {
+    const [files, nextQuery] = await bucket.getFiles({
+      prefix: "user-uploads/",
+      maxResults: 500,
+      pageToken,
+    });
+
+    for (let i = 0; i < files.length; i += PROCESS_CONCURRENCY) {
+      const chunk = files.slice(i, i + PROCESS_CONCURRENCY);
+      checked += chunk.length;
+
+      const chunkResults = await Promise.all(
+        chunk.map((file) =>
+          processStorageFile(file, existingUserIds, db, () => { errors++; })
+        )
+      );
+
+      for (const r of chunkResults) {
+        if (r.deleted) deleted++;
+      }
+    }
+
+    prevPageToken = pageToken;
+    pageToken = nextQuery?.pageToken;
+    if (pageToken && pageToken === prevPageToken) break;
+  } while (pageToken);
+
+  return { checked, deleted, errors };
+}
+
 /**
  * A11: Cleanup Orphaned Storage Files
  * Removes Storage files not referenced by Firestore documents
@@ -612,41 +655,10 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
     const existingUserIds = new Set(userRefs.map((ref) => ref.id));
 
     // SCALABILITY: Paginate storage listing to prevent OOM on large file sets
-    let pageToken: string | undefined;
-    let prevPageToken: string | undefined;
-
-    do {
-      const [files, nextQuery] = await bucket.getFiles({
-        prefix: "user-uploads/",
-        maxResults: 500,
-        pageToken,
-      });
-
-      // Review #195: Process files concurrently in batches to prevent timeouts
-      const PROCESS_CONCURRENCY = 10;
-
-      for (let i = 0; i < files.length; i += PROCESS_CONCURRENCY) {
-        const chunk = files.slice(i, i + PROCESS_CONCURRENCY);
-        checked += chunk.length;
-
-        const chunkResults = await Promise.all(
-          chunk.map((file) =>
-            processStorageFile(file, existingUserIds, db, () => {
-              errors++;
-            })
-          )
-        );
-
-        for (const r of chunkResults) {
-          if (r.deleted) deleted++;
-        }
-      }
-
-      // SAFETY: Prevent infinite loop if pageToken doesn't change
-      prevPageToken = pageToken;
-      pageToken = nextQuery?.pageToken;
-      if (pageToken && pageToken === prevPageToken) break;
-    } while (pageToken);
+    const result = await processStoragePages(bucket, existingUserIds, db);
+    checked = result.checked;
+    deleted = result.deleted;
+    errors = result.errors;
 
     logSecurityEvent(
       "JOB_SUCCESS",

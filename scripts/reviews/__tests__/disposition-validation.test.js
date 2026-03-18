@@ -49,7 +49,8 @@ const distPath = path.join(ROOT, "scripts", "reviews", "dist", "write-review-rec
 // SEC-008: Verify resolved path is within project root
 function assertWithinRoot(filePath, root) {
   const resolved = path.resolve(filePath);
-  if (!resolved.startsWith(root + path.sep) && resolved !== root) {
+  const rel = path.relative(root, resolved);
+  if (/^\.\.(?:[\\/]|$)/.test(rel)) {
     throw new Error(`Path traversal blocked: ${resolved} is outside ${root}`);
   }
 }
@@ -145,9 +146,9 @@ describe("validateDispositions from review-lifecycle.js (Item #14)", () => {
     const result = validateDispositions(records);
     assert.equal(result.violations.length, 2, "Should flag rev-2 and rev-4");
 
-    const violationIds = result.violations.map((v) => v.id);
-    assert.ok(violationIds.includes("rev-2"));
-    assert.ok(violationIds.includes("rev-4"));
+    const violationIds = new Set(result.violations.map((v) => v.id));
+    assert.ok(violationIds.has("rev-2"));
+    assert.ok(violationIds.has("rev-4"));
   });
 
   test("handles null and invalid records gracefully", () => {

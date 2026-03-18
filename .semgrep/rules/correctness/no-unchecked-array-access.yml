@@ -58,21 +58,6 @@ rules:
       # Safe: regex match null-check — if (m) { m[0] }
       - pattern-not-inside: |
           if ($ARR) { ... }
-      # Safe: inside .map() callback (iterating means element exists)
-      - pattern-not-inside: $X.map((...) => { ... })
-      - pattern-not-inside: $X.map((...) => ...)
-      # Safe: inside .filter() callback
-      - pattern-not-inside: $X.filter((...) => { ... })
-      - pattern-not-inside: $X.filter((...) => ...)
-      # Safe: inside .forEach() callback
-      - pattern-not-inside: $X.forEach((...) => { ... })
-      - pattern-not-inside: $X.forEach((...) => ...)
-      # Safe: inside .find() callback
-      - pattern-not-inside: $X.find((...) => { ... })
-      - pattern-not-inside: $X.find((...) => ...)
-      # Safe: inside .reduce() callback
-      - pattern-not-inside: $X.reduce((...) => { ... }, ...)
-      - pattern-not-inside: $X.reduce((...) => ..., ...)
       # Safe: OR-fallback pattern (arr[0] || default)
       - pattern-not-inside: $ARR[0] || ...
     paths:

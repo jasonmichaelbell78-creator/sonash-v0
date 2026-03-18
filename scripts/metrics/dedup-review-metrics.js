@@ -36,7 +36,10 @@ let sanitizeError;
 try {
   ({ sanitizeError } = require("../lib/security-helpers"));
 } catch {
-  sanitizeError = (err) => (err instanceof Error ? err.message : String(err));
+  sanitizeError = (err) => {
+    const msg = err instanceof Error ? err.message : String(err);
+    return msg.replace(/[A-Z]:\\[^\s]+|\/[^\s]*\/[^\s]+/gi, "[PATH]");
+  };
 }
 
 let readJsonl;
@@ -69,6 +72,20 @@ const dryRun = process.argv.includes("--dry-run");
  * @param {Map<number, number>} [reviewCountsByPr] - PR -> record count from reviews.jsonl
  * @returns {{ deduped: object[], removedCount: number, updatedRounds: number }}
  */
+/** Reconcile review_rounds from JSONL record counts. Returns number of updated entries. */
+function reconcileRoundCounts(latestByPr, reviewCountsByPr) {
+  let updated = 0;
+  for (const [pr, entry] of latestByPr) {
+    const jsonlCount = reviewCountsByPr.get(pr);
+    if (typeof jsonlCount === "number" && jsonlCount > 0 && entry.review_rounds !== jsonlCount) {
+      entry.review_rounds = jsonlCount;
+      entry.jsonl_review_records = jsonlCount;
+      updated++;
+    }
+  }
+  return updated;
+}
+
 function dedupMetrics(metricsEntries, reviewCountsByPr) {
   // Group by PR, keeping only the latest entry (by timestamp)
   const latestByPr = new Map();
@@ -77,27 +94,21 @@ function dedupMetrics(metricsEntries, reviewCountsByPr) {
     if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") continue;
     const existing = latestByPr.get(entry.pr);
 
-    if (
-      !existing ||
-      (entry.timestamp && (!existing.timestamp || entry.timestamp > existing.timestamp))
-    ) {
+    const entryTime = entry.timestamp ? new Date(entry.timestamp).getTime() : NaN;
+    const existingTime = existing?.timestamp ? new Date(existing.timestamp).getTime() : NaN;
+    const entryHasTime = Number.isFinite(entryTime);
+    const existingHasTime = Number.isFinite(existingTime);
+    const shouldReplace = !existing || (entryHasTime && (!existingHasTime || entryTime > existingTime));
+
+    if (shouldReplace) {
       latestByPr.set(entry.pr, { ...entry });
     }
   }
 
   // Update review_rounds from reviews.jsonl if available
-  let updatedRounds = 0;
-  if (reviewCountsByPr) {
-    for (const [pr, entry] of latestByPr) {
-      const jsonlCount = reviewCountsByPr.get(pr);
-      if (typeof jsonlCount === "number" && jsonlCount > 0) {
-        if (entry.review_rounds !== jsonlCount) {
-          entry.jsonl_review_records = jsonlCount;
-          updatedRounds++;
-        }
-      }
-    }
-  }
+  const updatedRounds = reviewCountsByPr
+    ? reconcileRoundCounts(latestByPr, reviewCountsByPr)
+    : 0;
 
   const deduped = [...latestByPr.values()];
   const removedCount = metricsEntries.length - deduped.length;
@@ -155,7 +166,8 @@ function main() {
   const dupPrs = [...prCounts.entries()].filter(([, c]) => c > 1);
   if (dupPrs.length > 0) {
     console.log(`Duplicated PRs: ${dupPrs.length}`);
-    for (const [pr, count] of dupPrs.sort((a, b) => b[1] - a[1])) {
+    dupPrs.sort((a, b) => b[1] - a[1]);
+    for (const [pr, count] of dupPrs) {
       console.log(`  PR #${pr}: ${count} entries`);
     }
   } else {

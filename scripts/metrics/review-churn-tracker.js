@@ -213,6 +213,8 @@ function analyzePr(prNumber, owner, repo) {
  */
 function readExistingMetrics() {
   try {
+    if (existsSync(METRICS_FILE) && lstatSync(METRICS_FILE).isSymbolicLink()) return [];
+
     const content = readFileSync(METRICS_FILE, "utf8");
     const lines = content.split("\n");
     const items = [];
@@ -241,11 +243,11 @@ function readExistingMetrics() {
  *   v1.0 2026-02-26 - Initial implementation (blind append)
  *   v2.0 2026-03-18 - Add dedup guard: update-in-place for recent entries (retro item #8)
  */
-function appendMetrics(entries) {
-  // Refuse if state directory is a symlink
+/** Validate state directory and metrics file are safe to write. Returns false if unsafe. */
+function validateWriteTarget() {
   if (existsSync(STATE_DIR) && lstatSync(STATE_DIR).isSymbolicLink()) {
     console.error("Error: state directory is a symlink — refusing to write");
-    return;
+    return false;
   }
 
   try {
@@ -254,23 +256,27 @@ function appendMetrics(entries) {
     }
   } catch (err) {
     console.error(`Failed to create state directory: ${sanitizeError(err)}`);
-    return;
+    return false;
   }
 
-  // Verify target is not a symlink (prevent symlink-clobber attacks)
   try {
     if (lstatSync(METRICS_FILE).isSymbolicLink()) {
       console.error("Error: review-metrics.jsonl is a symlink — refusing to write");
-      return;
+      return false;
     }
   } catch (err) {
     const code = err && typeof err === "object" && "code" in err ? err.code : null;
     if (code !== "ENOENT") {
       console.error(`Failed to check metrics file: ${sanitizeError(err)}`);
-      return;
+      return false;
     }
-    // ENOENT is fine — file doesn't exist yet
   }
+
+  return true;
+}
+
+function appendMetrics(entries) {
+  if (!validateWriteTarget()) return;
 
   // Dedup guard: read existing entries and check for recent duplicates
   const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -279,13 +285,18 @@ function appendMetrics(entries) {
   const toAppend = [];
 
   for (const newEntry of entries) {
-    const now = newEntry.timestamp ? new Date(newEntry.timestamp).getTime() : Date.now();
+    const newTimeRaw = newEntry.timestamp ? new Date(newEntry.timestamp).getTime() : NaN;
+    const newTime = Number.isFinite(newTimeRaw) ? newTimeRaw : Date.now();
+
     // Find existing entry for this PR
     const existingIdx = existing.findIndex((e) => {
       if (e.pr !== newEntry.pr) return false;
       if (!e.timestamp) return false;
-      const entryTime = new Date(e.timestamp).getTime();
-      return Number.isFinite(entryTime) && Math.abs(now - entryTime) < ONE_HOUR_MS;
+
+      const existingTime = new Date(e.timestamp).getTime();
+      if (!Number.isFinite(existingTime)) return false;
+
+      return Math.abs(newTime - existingTime) < ONE_HOUR_MS;
     });
 
     if (existingIdx >= 0) {

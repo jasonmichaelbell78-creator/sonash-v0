@@ -27,15 +27,25 @@ describe("Item #7: High-Churn Watchlist", () => {
   const watchlistPath = path.join(ROOT, ".claude/config/high-churn-watchlist.json");
 
   it("watchlist JSON file exists and is parseable", () => {
-    assert.ok(fs.existsSync(watchlistPath), `Watchlist file must exist at ${watchlistPath}`);
-    const raw = fs.readFileSync(watchlistPath, "utf8");
+    let raw: string;
+    try {
+      raw = fs.readFileSync(watchlistPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${watchlistPath}: ${err}`);
+    }
     // This will throw if invalid JSON — functional test, not string check
     const parsed = JSON.parse(raw);
     assert.ok(typeof parsed === "object" && parsed !== null, "Parsed result must be an object");
   });
 
   it("watchlist has required top-level fields with correct types", () => {
-    const watchlist = JSON.parse(fs.readFileSync(watchlistPath, "utf8"));
+    let raw: string;
+    try {
+      raw = fs.readFileSync(watchlistPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${watchlistPath}: ${err}`);
+    }
+    const watchlist = JSON.parse(raw);
 
     // Verify structure — not just that keys exist, but that they have correct types
     assert.ok(typeof watchlist.description === "string", "description must be a string");
@@ -61,7 +71,13 @@ describe("Item #7: High-Churn Watchlist", () => {
   });
 
   it("every watchlist file exists on the filesystem", () => {
-    const watchlist = JSON.parse(fs.readFileSync(watchlistPath, "utf8"));
+    let raw: string;
+    try {
+      raw = fs.readFileSync(watchlistPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${watchlistPath}: ${err}`);
+    }
+    const watchlist = JSON.parse(raw);
     for (const filePath of watchlist.files) {
       const absPath = path.join(ROOT, filePath);
       assert.ok(
@@ -72,7 +88,13 @@ describe("Item #7: High-Churn Watchlist", () => {
   });
 
   it("every refactor_candidate references a file in the files array", () => {
-    const watchlist = JSON.parse(fs.readFileSync(watchlistPath, "utf8"));
+    let raw: string;
+    try {
+      raw = fs.readFileSync(watchlistPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${watchlistPath}: ${err}`);
+    }
+    const watchlist = JSON.parse(raw);
     const fileSet = new Set(watchlist.files);
     for (const candidate of watchlist.refactor_candidates) {
       assert.ok(typeof candidate.file === "string", "candidate.file must be a string");
@@ -90,7 +112,12 @@ describe("Item #7: High-Churn Watchlist", () => {
 
   it("pr-review SKILL.md Step 0 references the watchlist", () => {
     const skillPath = path.join(ROOT, ".claude/skills/pr-review/SKILL.md");
-    const content = fs.readFileSync(skillPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(skillPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${skillPath}: ${err}`);
+    }
     // Verify the reference is in the Step 0 section specifically
     const step0Match = content.indexOf("## Step 0:");
     const step1Match = content.indexOf("## Step 1:");
@@ -118,7 +145,12 @@ describe("Item #13: TDMS source_pr field", () => {
     // Functional test: read the script, extract the newItem construction,
     // verify source_pr is set from parsed.pr
     const scriptPath = path.join(ROOT, "scripts/debt/intake-pr-deferred.js");
-    const content = fs.readFileSync(scriptPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(scriptPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${scriptPath}: ${err}`);
+    }
 
     // Verify the field is in the newItem object construction (not just anywhere in the file)
     const newItemStart = content.indexOf("const newItem = {");
@@ -137,7 +169,12 @@ describe("Item #13: TDMS source_pr field", () => {
 
   it("intake-manual.js sets source_pr to null (no PR context)", () => {
     const scriptPath = path.join(ROOT, "scripts/debt/intake-manual.js");
-    const content = fs.readFileSync(scriptPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(scriptPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${scriptPath}: ${err}`);
+    }
 
     // Verify source_pr: null is in the buildNewItem function's return object
     const buildFnStart = content.indexOf("function buildNewItem");
@@ -153,7 +190,12 @@ describe("Item #13: TDMS source_pr field", () => {
 
   it("intake-audit.js propagates source_pr from input or defaults to null", () => {
     const scriptPath = path.join(ROOT, "scripts/debt/intake-audit.js");
-    const content = fs.readFileSync(scriptPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(scriptPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${scriptPath}: ${err}`);
+    }
 
     // Verify source_pr is in the normalized object within validateAndNormalize
     const normStart = content.indexOf("const normalized = {");
@@ -173,7 +215,12 @@ describe("Item #13: TDMS source_pr field", () => {
 
   it("validate-schema.js accepts source_pr as valid optional field", () => {
     const scriptPath = path.join(ROOT, "scripts/debt/validate-schema.js");
-    const content = fs.readFileSync(scriptPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(scriptPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${scriptPath}: ${err}`);
+    }
 
     // Verify the validator has source_pr validation logic
     assert.ok(
@@ -195,7 +242,12 @@ describe("Item #13: TDMS source_pr field", () => {
   it("validate-schema.js accepts items without source_pr (backward compat)", () => {
     // Functional test: simulate what the validator does with an item missing source_pr
     const scriptPath = path.join(ROOT, "scripts/debt/validate-schema.js");
-    const content = fs.readFileSync(scriptPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(scriptPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${scriptPath}: ${err}`);
+    }
 
     // Extract the validation condition for source_pr
     // The validator uses: if (item.source_pr !== undefined && item.source_pr !== null)
@@ -208,7 +260,12 @@ describe("Item #13: TDMS source_pr field", () => {
 
   it("add-debt SKILL.md documents source_pr field", () => {
     const skillPath = path.join(ROOT, ".claude/skills/add-debt/SKILL.md");
-    const content = fs.readFileSync(skillPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(skillPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${skillPath}: ${err}`);
+    }
 
     // Verify the field appears in the Common Fields table
     const commonFieldsStart = content.indexOf("## Common Fields");
@@ -233,7 +290,12 @@ describe("Item #13: TDMS source_pr field", () => {
 describe("pr-retro: Functional verify command requirement", () => {
   it("SKILL.md Step 6 requires functional verify commands", () => {
     const skillPath = path.join(ROOT, ".claude/skills/pr-retro/SKILL.md");
-    const content = fs.readFileSync(skillPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(skillPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${skillPath}: ${err}`);
+    }
 
     // Verify the requirement is in Step 6 specifically
     const step6Start = content.indexOf("## STEP 6:");
@@ -244,7 +306,7 @@ describe("pr-retro: Functional verify command requirement", () => {
     const step6Content = content.substring(step6Start, step7Start);
 
     // Check for the key requirement text (normalize whitespace for line-wrapped markdown)
-    const step6Normalized = step6Content.replace(/\s+/g, " ");
+    const step6Normalized = step6Content.replaceAll(/\s+/g, " ");
     assert.ok(
       step6Normalized.includes("functional tests"),
       "Step 6 must mention functional tests requirement"
@@ -267,7 +329,12 @@ describe("pr-retro: Functional verify command requirement", () => {
 
   it("REFERENCE.md verification criteria require functional tests", () => {
     const refPath = path.join(ROOT, ".claude/skills/pr-retro/REFERENCE.md");
-    const content = fs.readFileSync(refPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(refPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${refPath}: ${err}`);
+    }
 
     // Verify the requirement is in the verification criteria section
     const verifySection = content.indexOf("Verify command quality check:");
@@ -291,7 +358,12 @@ describe("pr-retro: Functional verify command requirement", () => {
 
   it("SKILL.md version history reflects the update", () => {
     const skillPath = path.join(ROOT, ".claude/skills/pr-retro/SKILL.md");
-    const content = fs.readFileSync(skillPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(skillPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${skillPath}: ${err}`);
+    }
 
     const versionStart = content.indexOf("## Version History");
     assert.ok(versionStart >= 0, "Version History section must exist");
@@ -311,7 +383,12 @@ describe("pr-retro: Functional verify command requirement", () => {
 
   it("REFERENCE.md version history reflects the update", () => {
     const refPath = path.join(ROOT, ".claude/skills/pr-retro/REFERENCE.md");
-    const content = fs.readFileSync(refPath, "utf8");
+    let content: string;
+    try {
+      content = fs.readFileSync(refPath, "utf8");
+    } catch (err) {
+      assert.fail(`Failed to read ${refPath}: ${err}`);
+    }
 
     const versionStart = content.indexOf("## Version History");
     assert.ok(versionStart >= 0, "Version History section must exist");

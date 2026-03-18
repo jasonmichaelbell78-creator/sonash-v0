@@ -213,14 +213,14 @@ function safeAccessInsideMap(arr) {
   return arr.map((item) => item.split(",")[0]);
 }
 
-function safeAccessInsideFilter(arr) {
-  // ok: sonash.correctness.no-unchecked-array-access
+function unsafeAccessInsideFilter(arr) {
+  // ruleid: sonash.correctness.no-unchecked-array-access
   return arr.filter((item) => item.parts[0] === "valid");
 }
 
-function safeAccessInsideForEach(arr) {
-  // ok: sonash.correctness.no-unchecked-array-access
+function unsafeAccessInsideForEach(arr) {
   arr.forEach((item) => {
+    // ruleid: sonash.correctness.no-unchecked-array-access
     console.log(item.values[0]);
   });
 }

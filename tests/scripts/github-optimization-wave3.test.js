@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GitHub Optimization Wave 3 - Code Scanning Remediation Tests
  *
@@ -136,7 +135,7 @@ describe("3.1b: no-eval-usage rule tuning", () => {
       "Should use metavariable-regex to restrict to string-literal callbacks"
     );
     assert.ok(
-      yamlContains(content, "regex:") && yamlContains(content, "['\\\""),
+      yamlContains(content, "regex:") && yamlContains(content, String.raw`['\"`),
       "Should match string literals starting with quote characters"
     );
   });
@@ -230,21 +229,6 @@ describe("3.1d: no-unchecked-array-access rule tuning", () => {
     );
   });
 
-  it("has .map() callback guard pattern", () => {
-    const content = readFile(rulePath);
-    assert.ok(yamlContains(content, "$X.map("), "Should have .map() guard pattern");
-  });
-
-  it("has .filter() callback guard pattern", () => {
-    const content = readFile(rulePath);
-    assert.ok(yamlContains(content, "$X.filter("), "Should have .filter() guard pattern");
-  });
-
-  it("has .forEach() callback guard pattern", () => {
-    const content = readFile(rulePath);
-    assert.ok(yamlContains(content, "$X.forEach("), "Should have .forEach() guard pattern");
-  });
-
   it("has OR-fallback guard pattern", () => {
     const content = readFile(rulePath);
     assert.ok(yamlContains(content, "$ARR[0] || ..."), "Should have OR-fallback guard");
@@ -331,11 +315,11 @@ describe("3.2a: DOMPurify migration", () => {
   it("does NOT contain hand-rolled regex sanitizer patterns", () => {
     const content = readFile(hookPath);
     assert.ok(
-      !yamlContains(content, "/<script\\b"),
+      !yamlContains(content, String.raw`/<script\b`),
       "Should not have hand-rolled script tag regex"
     );
     assert.ok(
-      !yamlContains(content, "/<style\\b"),
+      !yamlContains(content, String.raw`/<style\b`),
       "Should not have hand-rolled style tag regex"
     );
     assert.ok(
@@ -351,7 +335,7 @@ describe("3.2a: DOMPurify migration", () => {
   it("isomorphic-dompurify is listed in package.json dependencies", () => {
     const pkg = JSON.parse(readFile("package.json"));
     assert.ok(
-      pkg.dependencies && pkg.dependencies["isomorphic-dompurify"],
+      pkg.dependencies?.["isomorphic-dompurify"],
       "isomorphic-dompurify should be in dependencies"
     );
   });
@@ -360,7 +344,7 @@ describe("3.2a: DOMPurify migration", () => {
     const content = readFile(hookPath);
     // Should still have whitespace normalization after DOMPurify
     assert.ok(
-      yamlContains(content, '.replace(/\\s+/g, " ")'),
+      yamlContains(content, String.raw`.replace(/\s+/g, " ")`),
       "Should normalize whitespace after sanitization"
     );
     assert.ok(yamlContains(content, ".trim()"), "Should trim the result");
@@ -469,16 +453,6 @@ describe("3.3: Semgrep test annotation files", () => {
     assert.ok(
       yamlContains(content, "safeAccessRegexMatch"),
       "Should have regex match guard test"
-    );
-    // Should have map callback guard test
-    assert.ok(
-      yamlContains(content, "safeAccessInsideMap"),
-      "Should have map callback guard test"
-    );
-    // Should have filter callback guard test
-    assert.ok(
-      yamlContains(content, "safeAccessInsideFilter"),
-      "Should have filter callback guard test"
     );
     // Should have OR fallback guard test
     assert.ok(

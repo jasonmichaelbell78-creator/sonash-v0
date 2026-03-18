@@ -490,12 +490,40 @@ function runArchive() {
  * Version History:
  *   v1.0 2026-03-18 — Initial implementation
  */
+/** Count reviews per PR from reviews.jsonl records. */
+function countReviewsByPr(reviews) {
+  const counts = new Map();
+  for (const rec of reviews) {
+    if (rec && typeof rec === "object" && typeof rec.pr === "number" && rec.pr > 0) {
+      counts.set(rec.pr, (counts.get(rec.pr) || 0) + 1);
+    }
+  }
+  return counts;
+}
+
+/** Build map of PR -> latest metrics entry by timestamp. */
+function buildLatestMetricsMap(metrics) {
+  const latestByPr = new Map();
+  for (const entry of metrics) {
+    if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") continue;
+    const existing = latestByPr.get(entry.pr);
+    const entryTime = typeof entry.timestamp === "string" ? Date.parse(entry.timestamp) : NaN;
+    const existingTime = existing && typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : NaN;
+    const entryScore = Number.isFinite(entryTime) ? entryTime : -Infinity;
+    const existingScore = Number.isFinite(existingTime) ? existingTime : -Infinity;
+
+    if (!existing || entryScore > existingScore) {
+      latestByPr.set(entry.pr, entry);
+    }
+  }
+  return latestByPr;
+}
+
 function runCrossDbValidation() {
   logStep("VALIDATE", "Running cross-database consistency check...");
 
   const reviews = loadReviews();
 
-  // Load review-metrics.jsonl
   let metrics;
   try {
     metrics = readJsonl(REVIEW_METRICS_JSONL, { safe: true, quiet: true });
@@ -509,32 +537,15 @@ function runCrossDbValidation() {
     return { mismatches: [] };
   }
 
-  // Count reviews.jsonl records per PR
-  const reviewCountsByPr = new Map();
-  for (const rec of reviews) {
-    if (rec && typeof rec === "object" && typeof rec.pr === "number" && rec.pr > 0) {
-      reviewCountsByPr.set(rec.pr, (reviewCountsByPr.get(rec.pr) || 0) + 1);
-    }
-  }
+  const reviewCountsByPr = countReviewsByPr(reviews);
+  const metricsRoundsByPr = buildLatestMetricsMap(metrics);
 
-  // Build metrics map: PR -> latest review_rounds value
-  // (use latest entry per PR since there may be duplicates)
-  const metricsRoundsByPr = new Map();
-  for (const entry of metrics) {
-    if (entry && typeof entry === "object" && typeof entry.pr === "number") {
-      const existing = metricsRoundsByPr.get(entry.pr);
-      if (!existing || (entry.timestamp && (!existing.timestamp || entry.timestamp > existing.timestamp))) {
-        metricsRoundsByPr.set(entry.pr, entry);
-      }
-    }
-  }
-
-  // Compare: for PRs present in both, check if review_rounds matches record count
   const mismatches = [];
   for (const [pr, metricsEntry] of metricsRoundsByPr) {
     const jsonlCount = reviewCountsByPr.get(pr);
-    if (jsonlCount === undefined) continue; // PR not in reviews.jsonl — skip
-    const metricsRounds = typeof metricsEntry.review_rounds === "number" ? metricsEntry.review_rounds : 0;
+    if (jsonlCount === undefined) continue;
+    const metricsRounds = metricsEntry?.review_rounds;
+    if (!Number.isFinite(metricsRounds)) continue;
 
     if (metricsRounds !== jsonlCount) {
       mismatches.push({ pr, metricsRounds, jsonlRecords: jsonlCount });
@@ -586,6 +597,15 @@ function validateDispositions(records) {
         deferred,
         rejected,
       });
+    } else if (dispositionSum !== total) {
+      violations.push({
+        id: rec.id,
+        total,
+        fixed,
+        deferred,
+        rejected,
+        reason: "sum_mismatch",
+      });
     }
   }
 
@@ -634,7 +654,7 @@ function runValidate() {
     if (err.stdout) {
       try {
         archiveFindings = JSON.parse(err.stdout.toString().trim());
-        if (archiveFindings.length > 0) parsed = true;
+        parsed = true;
       } catch {
         /* not JSON output */
       }
@@ -643,7 +663,7 @@ function runValidate() {
     if (!parsed && err.stderr) {
       try {
         archiveFindings = JSON.parse(err.stderr.toString().trim());
-        if (archiveFindings.length > 0) parsed = true;
+        parsed = true;
       } catch {
         /* not JSON */
       }

@@ -233,8 +233,43 @@ function fileContainsPattern(filePath, regex) {
  * @param {string} [options.baseDir] - Project root directory
  * @returns {{ warnings: Array<{pattern: string, stagedFile: string, siblingFile: string}>, stagedCount: number }}
  */
+/**
+ * Check a staged file against security patterns and find unstaged siblings with the same pattern.
+ */
+function checkStagedFilePatterns(absStaged, stagedFile, baseDir, stagedSet, warnings) {
+  for (const pattern of SECURITY_PATTERNS) {
+    if (!fileContainsPattern(absStaged, pattern.regex)) continue;
+
+    const siblings = getSiblingFiles(stagedFile, baseDir);
+
+    for (const sibling of siblings) {
+      if (stagedSet.has(sibling)) continue;
+
+      const absSibling = path.resolve(baseDir, sibling);
+      if (fileContainsPattern(absSibling, pattern.regex)) {
+        warnings.push({
+          pattern: pattern.label,
+          patternId: pattern.id,
+          stagedFile,
+          siblingFile: sibling,
+        });
+      }
+    }
+  }
+}
+
 function runCheck(options = {}) {
-  const baseDir = options.baseDir || process.cwd();
+  let baseDir = options.baseDir;
+  if (!baseDir) {
+    try {
+      baseDir = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+        encoding: "utf8",
+        timeout: 5000,
+      }).trim();
+    } catch {
+      baseDir = process.cwd();
+    }
+  }
   const stagedFiles = getStagedFiles();
 
   // Filter to JS/TS files only
@@ -250,29 +285,7 @@ function runCheck(options = {}) {
 
   for (const stagedFile of jsStaged) {
     const absStaged = path.resolve(baseDir, stagedFile);
-
-    // Check which security patterns this staged file contains
-    for (const pattern of SECURITY_PATTERNS) {
-      if (!fileContainsPattern(absStaged, pattern.regex)) continue;
-
-      // This staged file has the pattern. Check siblings.
-      const siblings = getSiblingFiles(stagedFile, baseDir);
-
-      for (const sibling of siblings) {
-        // Skip if sibling is also staged
-        if (stagedSet.has(sibling)) continue;
-
-        const absSibling = path.resolve(baseDir, sibling);
-        if (fileContainsPattern(absSibling, pattern.regex)) {
-          warnings.push({
-            pattern: pattern.label,
-            patternId: pattern.id,
-            stagedFile,
-            siblingFile: sibling,
-          });
-        }
-      }
-    }
+    checkStagedFilePatterns(absStaged, stagedFile, baseDir, stagedSet, warnings);
   }
 
   return { warnings, stagedCount: jsStaged.length };

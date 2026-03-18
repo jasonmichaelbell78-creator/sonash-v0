@@ -92,11 +92,9 @@ module.exports = { doOtherStuff };
 `
       );
 
-      // Compute repo-relative paths
+      // Compute repo-relative path for staged file A (file B is the unstaged sibling)
       const relA = path.relative(PROJECT_ROOT, fileA).replaceAll("\\", "/");
-      const relB = path.relative(PROJECT_ROOT, fileB).replaceAll("\\", "/");
 
-      // Stage only file A, file B is the unstaged sibling
       const result = runScript(["--staged-files", relA, "--verbose"]);
 
       // Should detect that scriptB.js also has sanitizeError but isn't staged
@@ -306,12 +304,12 @@ if (isSafeToWrite(target)) { fs.writeFileSync(target, content); }
     it("SECURITY_PATTERNS includes expected patterns", () => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { SECURITY_PATTERNS } = require(SCRIPT_PATH);
-      const ids = SECURITY_PATTERNS.map((p: { id: string }) => p.id);
-      assert.ok(ids.includes("sanitize-error"), "Should include sanitize-error pattern");
-      assert.ok(ids.includes("safe-write"), "Should include safe-write pattern");
-      assert.ok(ids.includes("symlink-guard"), "Should include symlink-guard pattern");
-      assert.ok(ids.includes("lstat-guard"), "Should include lstat-guard pattern");
-      assert.ok(ids.includes("path-containment"), "Should include path-containment pattern");
+      const ids = new Set(SECURITY_PATTERNS.map((p: { id: string }) => p.id));
+      assert.ok(ids.has("sanitize-error"), "Should include sanitize-error pattern");
+      assert.ok(ids.has("safe-write"), "Should include safe-write pattern");
+      assert.ok(ids.has("symlink-guard"), "Should include symlink-guard pattern");
+      assert.ok(ids.has("lstat-guard"), "Should include lstat-guard pattern");
+      assert.ok(ids.has("path-containment"), "Should include path-containment pattern");
     });
   });
 });

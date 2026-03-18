@@ -34,6 +34,21 @@ const ROOT = findProjectRoot(__dirname);
 const CANONICAL_REVIEWS = path.join(".claude", "state", "reviews.jsonl");
 const CANONICAL_RETROS = path.join(".claude", "state", "retros.jsonl");
 
+/**
+ * Checks whether a non-comment line references an ecosystem-v2 JSONL path.
+ * Returns the trimmed line if it does, or null if not.
+ */
+function findActiveEcosystemV2Reference(line) {
+  const hasRef =
+    line.includes("ecosystem-v2/reviews.jsonl") || line.includes("ecosystem-v2/retros.jsonl");
+  if (!hasRef) return null;
+
+  const trimmed = line.trim();
+  if (trimmed.startsWith("//") || trimmed.startsWith("*")) return null;
+
+  return trimmed;
+}
+
 describe("Review pipeline path consistency", () => {
   test("write-review-record.ts writes to canonical reviews path", () => {
     const content = fs.readFileSync(
@@ -147,18 +162,11 @@ describe("Review pipeline path consistency", () => {
 
     for (const file of files) {
       const content = fs.readFileSync(path.join(reviewDir, file), "utf8");
-      if (content.includes("ecosystem-v2/reviews.jsonl") || content.includes("ecosystem-v2/retros.jsonl")) {
-        // Only flag if it's a WRITE operation (not a comment or import)
-        const lines = content.split("\n");
-        for (const line of lines) {
-          if (line.includes("ecosystem-v2/reviews.jsonl") || line.includes("ecosystem-v2/retros.jsonl")) {
-            if (!line.trim().startsWith("//") && !line.trim().startsWith("*")) {
-              assert.fail(
-                `${file} still references ecosystem-v2 JSONL in active code: ${line.trim()}`
-              );
-            }
-          }
-        }
+      const activeRef = content.split("\n").map(findActiveEcosystemV2Reference).find(Boolean);
+      if (activeRef) {
+        assert.fail(
+          `${file} still references ecosystem-v2 JSONL in active code: ${activeRef}`
+        );
       }
     }
   });

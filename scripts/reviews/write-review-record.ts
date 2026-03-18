@@ -126,10 +126,10 @@ export function writeReviewRecord(
     id: data.id ?? getNextReviewId(projectRoot),
   };
 
-  // Disposition integrity check (before schema validation to fail fast)
-  validateDispositionIntegrity(recordData);
-
   const validated = ReviewRecord.parse(recordData);
+
+  // Disposition integrity check on validated (canonical) values
+  validateDispositionIntegrity(validated as unknown as Record<string, unknown>);
 
   // Append to JSONL file
   appendRecord(filePath, validated, ReviewRecord);
