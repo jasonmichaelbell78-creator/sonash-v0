@@ -300,7 +300,7 @@ function generateReport(hookName, checksFile, persist) {
   const counts = countStatuses(checks);
   const { report, actionable } = buildConsoleReport(hookName, checks, counts);
 
-  console.error(report.join("\n"));
+  console.log(report.join("\n"));
 
   if (persist) {
     const reportPath = path.join(ROOT, ".claude", "state", "last-hook-report.md");

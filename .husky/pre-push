@@ -99,6 +99,16 @@ else
   fi
 fi
 
+# ── Rebase detection — skip code-analysis gates when no content changed ──
+_REBASE_ONLY=0
+if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+  _rebase_content_diff=$(git diff --stat @{u} HEAD 2>/dev/null)
+  if [ -z "$_rebase_content_diff" ]; then
+    _REBASE_ONLY=1
+    echo "  ℹ️  Rebase-only push detected (no content changes vs upstream) — skipping code analysis"
+  fi
+fi
+
 # 1. Tests already run in pre-commit (Quick Win - Session #113)
 # Removed duplicate test run - saves 50-60s per push
 
@@ -146,6 +156,10 @@ fi
 # Previously REMOVED due to double-jeopardy (scanning all 14 hardcoded files).
 # Re-enabled in diff-only mode: only checks files actually in the push diff.
 # This catches patterns in review fix commits that may bypass pre-commit.
+if [ "$_REBASE_ONLY" = "1" ]; then
+  echo "  ⏭️ Pattern compliance skipped (rebase-only push, no content changes)"
+  echo "pattern-compliance-push|skip|0" >> "$CHECKS_TMPFILE"
+else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Checking pattern compliance (push diff only)..."
 set +e
@@ -177,9 +191,14 @@ else
   echo "  ⏭️ No JS files in push diff"
   echo "pattern-compliance-push|skip|0" >> "$CHECKS_TMPFILE"
 fi
+fi
 
 # 3b. Code-reviewer gate for script changes (Session #151)
 # If scripts/.claude/hooks/.husky/ changed, check if code-reviewer ran this session
+if [ "$_REBASE_ONLY" = "1" ]; then
+  echo "  ⏭️ Code-reviewer gate skipped (rebase-only push, no content changes)"
+  echo "code-reviewer-gate|skip|0" >> "$CHECKS_TMPFILE"
+else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Checking code-reviewer coverage for script changes..."
 set +e
@@ -227,10 +246,15 @@ else
   echo "  ✅ No script changes (code-reviewer gate skipped)"
   echo "code-reviewer-gate|skip|0" >> "$CHECKS_TMPFILE"
 fi
+fi
 
 # 3c. Propagation check (Session #185 — 8x recommended across PRs #366-#388)
 # Detects functions modified in some files but not propagated to duplicate copies.
 # SCOPED: only run if script files are in the push diff.
+if [ "$_REBASE_ONLY" = "1" ]; then
+  echo "  ⏭️ Propagation check skipped (rebase-only push, no content changes)"
+  echo "propagation|skip|0" >> "$CHECKS_TMPFILE"
+else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 _scripts_in_diff=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^scripts/.*\.js$' | head -1)
 if [ -z "$_scripts_in_diff" ]; then
@@ -276,9 +300,14 @@ else
   echo "propagation|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
 fi
 fi
+fi
 
 # 3d. Hook test suite (Session #185 — gated on .claude/hooks/ changes)
 # Only runs when hook files are modified in the push diff.
+if [ "$_REBASE_ONLY" = "1" ]; then
+  echo "  ⏭️ Hook test suite skipped (rebase-only push, no content changes)"
+  echo "hook-tests|skip|0" >> "$CHECKS_TMPFILE"
+else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 set +e
 hook_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^\.claude/hooks/.*\.js$' | head -10)
@@ -307,11 +336,16 @@ else
   echo "  ✅ No hook changes (hook test gate skipped)"
   echo "hook-tests|skip|0" >> "$CHECKS_TMPFILE"
 fi
+fi
 
 # 4. Security pattern check (diff-only mode: only flag violations in ADDED lines)
 # Hook-quality fix: Previously scanned entire files, catching pre-existing violations
 # that weren't introduced by the current commits. Now uses --diff-only to only check
 # lines that were actually added in the push.
+if [ "$_REBASE_ONLY" = "1" ]; then
+  echo "  ⏭️ Security pattern check skipped (rebase-only push, no content changes)"
+  echo "security-check|skip|0" >> "$CHECKS_TMPFILE"
+else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Running security pattern check (diff-only)..."
 set +e
@@ -360,9 +394,16 @@ else
     echo "security-check|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   fi
 fi
+fi
 
 # 5. Parallel type + complexity checks (C8-G1)
 # Run tsc, cyclomatic CC, and cognitive CC concurrently for ~5-8s savings
+if [ "$_REBASE_ONLY" = "1" ]; then
+  echo "  ⏭️ Type + complexity checks skipped (rebase-only push, no content changes)"
+  echo "tsc|skip|0" >> "$CHECKS_TMPFILE"
+  echo "cyclomatic-cc|skip|0" >> "$CHECKS_TMPFILE"
+  echo "cognitive-cc|skip|0" >> "$CHECKS_TMPFILE"
+else
 echo "  ▶ Running type + complexity checks in parallel..."
 
 # Handle skip flags before launching parallel jobs
@@ -527,6 +568,7 @@ if [ "$_cog_skip" -eq 0 ] && [ -f scripts/check-cc.js ]; then
   fi
 elif [ "$_cog_skip" -eq 0 ]; then
   echo "cognitive-cc|skip|0" >> "$CHECKS_TMPFILE"
+fi
 fi
 
 # 6. Security audit (non-blocking warning, ~3-8s)

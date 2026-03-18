@@ -50,8 +50,7 @@ On**: Session #226 — GitHub Optimization Plan (Waves 0-2 complete)
 
 **Session #226** (GITHUB OPTIMIZATION PLAN — WAVES 0-2):
 
-- **Branch**: `feat/github-optimization` (off main, pushed to remote) <<<<<<<
-  Updated upstream
+- **Branch**: `feat/github-optimization` (off main, pushed to remote)
 - **Plan**: `.planning/github-optimization-plan/` (PLAN.md, DECISIONS.md,
   DIAGNOSIS.md — 30 decisions)
 - **Wave 0 (Emergency Triage)**: Prettier fix (19 files), coverage upload
@@ -61,23 +60,13 @@ On**: Session #226 — GitHub Optimization Plan (Waves 0-2 complete)
   0 fail.
 - **Wave 1 (Security Hardening)**: SHA-pinned all actions across 16 workflows (9
   action types, outdated versions upgraded). Permissions blocks on all 16
-  =======
-- **Plan**: `.planning/github-optimization-plan/` (PLAN.md, DECISIONS.md,
-  DIAGNOSIS.md — 30 decisions)
-- **Wave 0 (Emergency Triage)**: Prettier fix (19 files), coverage upload
-  condition (`always()` → `success()`), cleanup-branches.yml counter bug (pipe-
-  subshell → here-string), Dependabot alerts resolved (next 16.1.7, fast-xml-
-  parser 5.5.6, @tootallnate/once 3.0.1, flatted 3.4.0+). Tests: 3775/3776 pass,
-  0 fail.
-- **Wave 1 (Security Hardening)**: SHA-pinned all actions across 16 workflows (9
-  action types, outdated versions upgraded). Permissions blocks on all 16
-  > > > > > > > Stashed changes workflows. SECURITY.md created. Step 1.3 (Secret
-  > > > > > > > Scanning + Push Protection) is MANUAL — do in GitHub Settings.
+  workflows. SECURITY.md created. Step 1.3 (Secret Scanning + Push Protection)
+  is MANUAL — do in GitHub Settings.
 - **Wave 2 (Workflow Optimization)**: Timeouts on all jobs (10/20/30 min tiers),
   concurrency groups on 11 workflows, path filtering on CI/CodeQL/Semgrep,
-  <<<<<<< Updated upstream Dependabot trigger fix, Semgrep pip cache, ruleset
-  hardened (5 rules), 4 stale environments deleted. Step 2.8 (NEXT*PUBLIC*\*
-  secrets → variables) is MANUAL.
+  Dependabot trigger fix, Semgrep pip cache, ruleset hardened (5 rules), 4 stale
+  environments deleted. Step 2.8 (NEXT_PUBLIC\_\* secrets → variables) is
+  MANUAL.
 - **Bug found**: `commit-tracker.js:reportCommitFailure()` was dead code —
   called after `process.exit(0)` in the failed-commit branch. Fixed (moved call
   before exit). BUT the deeper issue remains: **PostToolUse hook console.error()
@@ -90,34 +79,12 @@ On**: Session #226 — GitHub Optimization Plan (Waves 0-2 complete)
 - **2 commits pushed**: Waves 0-2 commit + commit-tracker.js fix
 
 **Remaining (Waves 3-4):**
-
-======= Dependabot trigger fix, Semgrep pip cache, ruleset hardened (5 rules), 4
-stale environments deleted. Step 2.8 (NEXT*PUBLIC*\* secrets → variables) is
-MANUAL.
-
-- **Bug found**: `commit-tracker.js:reportCommitFailure()` was dead code —
-  called after `process.exit(0)` in the failed-commit branch. Fixed (moved call
-  before exit). BUT the deeper issue remains: **PostToolUse hook console.error()
-  output gets buried in collapsed Bash output in Claude Code UI — the user is
-  never prompted about remediation.** This needs a mechanism that forces the AI
-  to surface hook failure reports and ask the user, not just stderr output that
-  collapses. Investigate: could the hook output via stdout (system-reminder
-  style) instead of stderr? Or use a Notification hook? This is the unresolved
-  gap from the hook overhaul (PR #444).
-- **2 commits pushed**: Waves 0-2 commit + commit-tracker.js fix
-
-**Remaining (Waves 3-4):**
-
-> > > > > > > Stashed changes
 
 - Wave 3: Code scanning remediation (Semgrep rule tuning, real security fixes,
   false positive dismissals, defer 48 to DEBT)
 - Wave 4: Ecosystem expansion (LICENSE, community health files, Copilot
   instructions, Codecov, OpenSSF Scorecard, Release Please, GitHub Guide)
-  <<<<<<< Updated upstream
-- # Manual: Secret Scanning + Push Protection, NEXT*PUBLIC*\* secrets → variables
-- Manual: Secret Scanning + Push Protection, NEXT*PUBLIC*\* secrets → variables
-  > > > > > > > Stashed changes
+- Manual: Secret Scanning + Push Protection, NEXT_PUBLIC\_\* secrets → variables
 
 **Session #224** (PRE-COMMIT/PRE-PUSH HOOK SYSTEM OVERHAUL):
 
@@ -227,13 +194,9 @@ MANUAL.
 | **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                  |
 | **Pre-Commit/Push Overhaul**      | COMPLETE | 10 waves, 44 decisions, 14 SWS tenets addressed      |
 
-<<<<<<< Updated upstream | **GitHub Optimization Plan** | ACTIVE | Waves 0-2
-done, Waves 3-4 remaining | ======= | **GitHub Optimization Plan** | ACTIVE |
-Waves 0-2 done, Waves 3-4 remaining |
-
-> > > > > > > Stashed changes | Track B: Dev Dashboard MVP | Paused | ~10% | |
-> > > > > > > M1.5 - Quick Wins | Paused | ~20% | | M1.6 - Admin Panel + UX |
-> > > > > > > Paused | ~75% |
+| **GitHub Optimization Plan** | ACTIVE | Waves 0-2 done, Waves 3-4 remaining |
+| Track B: Dev Dashboard MVP | Paused | ~10% | | M1.5 - Quick Wins | Paused |
+~20% | | M1.6 - Admin Panel + UX | Paused | ~75% |
 
 **Current Branch**: `feat/github-optimization` (implementation branch off main)
 
@@ -256,10 +219,7 @@ hooks). Serena fully removed.
    mechanism to surface pre-commit/pre-push failure reports as visible prompts.
    Investigate stdout vs stderr, Notification hooks, or system-reminder style.
 3. **Manual GitHub steps** — Enable Secret Scanning + Push Protection (Settings
-   <<<<<<< Updated upstream → Code security), move NEXT*PUBLIC*\* from secrets
-   to variables. ======= → Code security), move NEXT*PUBLIC*\* from secrets to
-   variables.
-   > > > > > > > Stashed changes
+   → Code security), move NEXT_PUBLIC\_\* from secrets to variables.
 
 ### After GitHub Optimization
 
@@ -343,36 +303,12 @@ npm run docs:check   # Documentation linting
 | Version | Date | Changes |
 | ------- | ---- | ------- |
 
-<<<<<<< Updated upstream | 8.4 | 2026-03-18 | Session #226 — GitHub optimization
-Waves 0-2, commit-tracker fix | ======= | 8.4 | 2026-03-18 | Session #226 —
-GitHub optimization Waves 0-2, commit-tracker fix |
-
-> > > > > > > Stashed changes | 8.3 | 2026-03-16 | Session #224 —
-> > > > > > > Pre-commit/pre-push hook system overhaul (10 waves) | | 8.2 |
-> > > > > > > 2026-03-16 | Session #223 — skill-audit create-audit, agent
-> > > > > > > environment deep-plan | | 8.1 | 2026-03-15 | Session #222 — CL
-> > > > > > > integration, debt-runner skill, 3 skill audits | | 8.0 |
-> > > > > > > 2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop
-> > > > > > > skill, 7 commits | | 7.9 | 2026-03-15 | Session #220 — Review
-> > > > > > > Lifecycle Pipeline Overhaul (JSONL-canonical) | | 7.8 | 2026-03-15
-> > > > > > > | Session #219 — SWS PLAN-v3.md convergence loop rebuild | | 7.7 |
-> > > > > > > 2026-03-14 | Session #218 — Automation Gap Closure full
-> > > > > > > implementation | | 7.6 | 2026-03-13 | Session #217 — Data
-> > > > > > > Effectiveness Audit deep-plan (35 decisions) | | 7.5 | 2026-03-12
-> > > > > > > | Session #216 — PR #427/#428 batch retro, 17 action items | | 7.4
-> > > > > > > | 2026-03-10 | Session #214 — Phases 3-7 done, 3,640 tests, 8
-> > > > > > > commits | | 7.3 | 2026-03-10 | Session #213 — PR #424 merged,
-> > > > > > > branch cleanup | | 7.2 | 2026-03-09 | Session #212 — Phase 1
-> > > > > > > committed, Phase 2 done (52 decisions) | | 7.1 | 2026-03-09 |
-> > > > > > > Session #211 — deep-plan ecosystem expansion (33 decisions) | |
-> > > > > > > 7.0 | 2026-03-07 | Session #209 — skill-audit session-end full
-> > > > > > > rewrite | | 6.9 | 2026-03-06 | Session #207 — Alerts full + health
-> > > > > > > C->A (92/100) | | 6.8 | 2026-03-05 | Session #206 — PR #417 R1-R3
-> > > > > > > review complete | | 6.7 | 2026-03-05 | Session #205 — All retro
-> > > > > > > action items implemented | | 6.6 | 2026-03-04 | Session #202 —
-> > > > > > > Deep-plan complete, PLAN.md v1.1 | | 6.5 | 2026-03-02 | Session
-> > > > > > > #200 — PR #411 review R1-R9 complete | | 6.4 | 2026-03-01 |
-> > > > > > > Session #199 — v1.0 milestone shipped/archived | | 6.3 |
-> > > > > > > 2026-03-01 | Session #197 updates |
+| 8.4 | 2026-03-18 | Session #226 — GitHub optimization Waves 0-2,
+commit-tracker fix | | 8.3 | 2026-03-16 | Session #224 — Pre-commit/pre-push
+hook system overhaul (10 waves) | | 8.2 | 2026-03-16 | Session #223 —
+skill-audit create-audit, agent environment deep-plan | | 8.1 | 2026-03-15 |
+Session #222 — CL integration, debt-runner skill, 3 skill audits | | 8.0 |
+2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop skill, 7
+commits |
 
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)

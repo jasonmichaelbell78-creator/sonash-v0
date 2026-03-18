@@ -565,10 +565,51 @@ function runFrustrationDetection() {
   }
 }
 
+// === HOOK REPORT SURFACING ===
+function runHookReportSurfacing() {
+  const reportPath = path.join(CLAUDE_DIR, "state", "last-hook-report.md");
+  const ackedPath = reportPath + ".acked";
+  try {
+    if (!fs.existsSync(reportPath)) return;
+    if (fs.lstatSync(reportPath).isSymbolicLink()) return;
+    const stat = fs.statSync(reportPath);
+    if (stat.size > 50 * 1024 || stat.size === 0) {
+      try {
+        fs.unlinkSync(reportPath);
+      } catch {
+        /* cleanup */
+      }
+      return;
+    }
+    const content = fs.readFileSync(reportPath, "utf8");
+    const hasActionable = /\| (?:warn|fail) \|/i.test(content);
+    if (hasActionable) {
+      stdoutParts.push(
+        "HOOK REPORT: A pre-commit/pre-push report requires attention. " +
+          "Read .claude/state/last-hook-report.md and present the warnings/failures to the user. " +
+          "Ask them to acknowledge or choose remediation before continuing."
+      );
+    }
+    // Move to .acked to prevent re-surfacing (keep for audit trail)
+    try {
+      if (isSafeToWrite(ackedPath)) fs.renameSync(reportPath, ackedPath);
+    } catch {
+      try {
+        if (isSafeToWrite(reportPath)) fs.unlinkSync(reportPath);
+      } catch {
+        /* cleanup */
+      }
+    }
+  } catch {
+    /* non-blocking */
+  }
+}
+
 // === MAIN ===
 function main() {
   runGuardrails();
   runFrustrationDetection();
+  runHookReportSurfacing();
   runAlerts();
   runAnalyze();
   runSessionEnd();
