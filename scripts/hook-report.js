@@ -244,6 +244,6 @@ function generateReport(hookName, checksFile) {
 const args = process.argv.slice(2);
 if (args.length < 2) {
   console.error("Usage: node scripts/hook-report.js <hook-name> <checks-tmpfile>");
-  process.exit(0);
+  process.exit(1);
 }
 generateReport(args[0], args[1]);
