@@ -6,7 +6,7 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.5
+**Document Version:** 4.6
 **Last Updated:** 2026-03-18
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -110,6 +110,87 @@ all missing]"
 If multiple selected, run as batch retro (see REFERENCE.md: Batch Retro Scope).
 
 **Dashboard mode ends here — do NOT continue to Steps 1-7.**
+
+---
+
+## STEP 0.5: DELIVERABLE VERIFICATION (MUST for PRs with 3+ commits or files)
+
+> Uses `/convergence-loop` (standard preset) to verify that PR deliverables were
+> actually completed — not just claimed. Catches "phantom completions" where
+> work appears done in the PR but isn't wired or functional in the codebase.
+
+**Skip condition:** PRs with fewer than 3 commits AND fewer than 3 files changed
+(trivial fixes, doc-only PRs). Note skip in output and proceed to Step 1.
+
+**For batch retros:** Run sequentially per PR (not parallelized).
+
+### 0.5.1 Extract Claimed Deliverables (MUST)
+
+Pull intent from ALL available sources:
+
+1. **PR body** — `gh pr view <PR#> --json body,title,commits,files`
+2. **Commit messages** — extract task descriptions from conventional commit
+   subjects and bodies
+3. **Referenced PLAN.md** — if the PR body or commits reference a
+   `.planning/*/PLAN.md`, read it and extract the plan's deliverables/steps that
+   map to this PR
+4. **SESSION_CONTEXT.md goals** — check if the PR's session is referenced in
+   session goals or quick status tables
+5. **ROADMAP.md items** — if the PR references roadmap items, extract expected
+   outcomes
+
+Build a **claims list**: each claim is a testable assertion about what the PR
+was supposed to deliver. Format: `"<deliverable> — source: <where found>"`.
+
+If fewer than 3 claims extracted, note "Insufficient claims for convergence loop
+— skipping verification" and proceed to Step 1.
+
+### 0.5.2 Run Convergence Loop (MUST)
+
+Invoke `/convergence-loop` with:
+
+- **Preset:** `standard` (source-check → verification → fresh-eyes)
+- **Claims:** The claims list from 0.5.1
+- **Domain slicing:** Per-claim (each claim gets its own verification thread)
+- **Agent prompt customization:** "Verify this PR deliverable claim against the
+  current codebase. Check that the described feature/fix/change actually exists,
+  is wired correctly, and functions as described. Look for: missing imports,
+  dead code paths, untested functions, config not connected, files referenced
+  but not created."
+
+### 0.5.3 Process Results (MUST)
+
+For each claim in the convergence output:
+
+| CL Status                                | Retro Treatment                 |
+| ---------------------------------------- | ------------------------------- |
+| **Confirmed** (HIGH confidence)          | Note as verified, no finding    |
+| **Corrected** (claim was wrong/partial)  | AUTO-FINDING: CRITICAL severity |
+| **Extended** (claim true but incomplete) | AUTO-FINDING: HIGH severity     |
+| **Unverified** (insufficient evidence)   | AUTO-FINDING: CRITICAL severity |
+
+Auto-findings from this step:
+
+- Severity: **CRITICAL** for unverified/corrected, **HIGH** for extended
+- Category: `phantom-completion`
+- Auto-injected into Step 3 findings walkthrough (presented first, before
+  review-cycle findings)
+- Include the CL evidence and agent reasoning in the finding detail
+
+### 0.5.4 Present Verification Summary (MUST)
+
+```
+PR #NNN Deliverable Verification:
+  Claims extracted: N (from: PR body, PLAN.md, commits, ...)
+  Verified: M | Unverified: K | Partial: J
+  CL confidence: HIGH/MEDIUM/LOW
+  Auto-findings generated: X (K CRITICAL, J HIGH)
+
+Proceed to review data gathering? [Y/n]
+```
+
+Save state. If unverified count > 0, warn: "This PR has unverified deliverables
+that will appear as CRITICAL findings in the walkthrough."
 
 ---
 
@@ -493,6 +574,7 @@ Next: Run /pr-retro to check for more missing retros
 | Recurring noise (Gemini) | Add to Do NOT Flag   | `.gemini/styleguide.md`       |
 | Systemic issue           | Create DEBT          | TDMS via `/add-debt`          |
 | Hook override abuse      | Review skip patterns | `override-log.jsonl`          |
+| Phantom completion       | Verify + fix gaps    | Codebase via convergence-loop |
 
 **Session integration:** `/session-end` verifies TDMS entries. `/session-begin`
 checks open retro DEBT items. `/pr-review` checks pre-push recommendations.
@@ -501,17 +583,18 @@ checks open retro DEBT items. `/pr-review` checks pre-push recommendations.
 
 ## Version History
 
-| Version | Date       | Description                                                                                                                                           |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 4.5     | 2026-03-18 | Add Step 1.3c — hook health enrichment from hook-runs/warnings/override JSONL. Hook-churn correlation in Step 2. Override abuse in integration table. |
-| 4.4     | 2026-03-13 | D12: Add Step 1.3b — review-metrics.jsonl enrichment for churn quantification in retro analysis.                                                      |
-| 4.3     | 2026-03-13 | D7: pattern_recurrence populated at creation time from prior retros, auto-escalate >=3 to CRITICAL. Step 1.4 + 2.3 + REFERENCE.md updated.            |
-| 4.2     | 2026-03-11 | Step 6 hard gate: implement=MUST not DEFAULT, DEBT only on explicit user request, implementation checklist + gate check before Step 7.                |
-| 4.1     | 2026-03-09 | Step 6 rewrite: default=implement now, DEBT=explicit only. Source: batch retro PRs #417-#423.                                                         |
-| 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch retros, verification protocol, compaction resilience, routing. Source: skill-audit 37 decisions.        |
-| 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                                                   |
-| 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items                                                                                               |
-| 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter                                                                                                 |
-| 3.0     | 2026-02-26 | Add Patterns 12-13. Source: PR #393/#394 retros.                                                                                                      |
+| Version | Date       | Description                                                                                                                                                              |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 4.6     | 2026-03-18 | Add Step 0.5 — deliverable verification via convergence-loop. Catches phantom completions (claimed-done but unwired work). CRITICAL auto-findings for unverified claims. |
+| 4.5     | 2026-03-18 | Add Step 1.3c — hook health enrichment from hook-runs/warnings/override JSONL. Hook-churn correlation in Step 2. Override abuse in integration table.                    |
+| 4.4     | 2026-03-13 | D12: Add Step 1.3b — review-metrics.jsonl enrichment for churn quantification in retro analysis.                                                                         |
+| 4.3     | 2026-03-13 | D7: pattern_recurrence populated at creation time from prior retros, auto-escalate >=3 to CRITICAL. Step 1.4 + 2.3 + REFERENCE.md updated.                               |
+| 4.2     | 2026-03-11 | Step 6 hard gate: implement=MUST not DEFAULT, DEBT only on explicit user request, implementation checklist + gate check before Step 7.                                   |
+| 4.1     | 2026-03-09 | Step 6 rewrite: default=implement now, DEBT=explicit only. Source: batch retro PRs #417-#423.                                                                            |
+| 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch retros, verification protocol, compaction resilience, routing. Source: skill-audit 37 decisions.                           |
+| 3.3     | 2026-02-28 | Add JSONL dual-write in Step 4, invocation tracking                                                                                                                      |
+| 3.2     | 2026-02-27 | Add Step 5.0: Gemini styleguide sync for rejected items                                                                                                                  |
+| 3.1     | 2026-02-27 | Add retro baseline (PR >= 395) to dashboard D3 filter                                                                                                                    |
+| 3.0     | 2026-02-26 | Add Patterns 12-13. Source: PR #393/#394 retros.                                                                                                                         |
 
 > Older version history archived in [ARCHIVE.md](ARCHIVE.md).

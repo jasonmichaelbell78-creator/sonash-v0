@@ -107,7 +107,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓2 ↑9      | 2026-03-17    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓2 ↑9      | 2026-03-18    |
 | [Security Policy](SECURITY.md)                          | \| Version \| Supported \|                                       | ↓0 ↑0      | 2026-03-18    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-03-16    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-05    |
@@ -346,7 +346,7 @@ _Claude Code skills_
 | [PR Review Pre-Checks](.claude/skills/pr-review/reference/PRE_CHECKS.md)                                                            | <!-- prettier-ignore-start -->                                    | ↓0 ↑1      | 2026-03-13    |
 | [PR Review Skill — Archive](.claude/skills/pr-review/ARCHIVE.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-03-06    |
 | [pr-ecosystem-audit](.claude/skills/pr-ecosystem-audit/SKILL.md)                                                                    | Deep diagnostic of the entire PR review ecosystem — from ski...   | ↓0 ↑0      | 2026-03-10    |
-| [pr-retro](.claude/skills/pr-retro/SKILL.md)                                                                                        | Analyze the review cycle for completed PRs and produce an \*\*... | ↓0 ↑1      | 2026-03-14    |
+| [pr-retro](.claude/skills/pr-retro/SKILL.md)                                                                                        | Analyze the review cycle for completed PRs and produce an \*\*... | ↓0 ↑1      | 2026-03-18    |
 | [pr-review](.claude/skills/pr-review/SKILL.md)                                                                                      | Process external code review feedback into fixes, deferrals,...   | ↓0 ↑4      | 2026-03-16    |
 | [pre-commit-fixer](.claude/skills/pre-commit-fixer/SKILL.md)                                                                        | Eliminate the context-heavy fix-commit-retry loop that happe...   | ↓0 ↑0      | 2026-02-24    |
 | [Pressure Test 1: Emergency Production Fix](.claude/skills/systematic-debugging/test-pressure-1.md)                                 | -                                                                 | ↓0 ↑0      | 2026-01-12    |
