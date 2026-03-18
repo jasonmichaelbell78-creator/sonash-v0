@@ -68,24 +68,32 @@ function extractBashCheckIds(content, hookType) {
     if (content.includes("npm test")) ids.push("tests");
     if (content.includes("lint-staged")) ids.push("lint-staged");
     if (content.includes("check-pattern-compliance.js --staged")) ids.push("pattern-compliance");
-    if (content.includes("validate-audit.js") && content.includes("--strict-s0s1")) ids.push("audit-s0s1");
+    if (content.includes("validate-audit.js") && content.includes("--strict-s0s1"))
+      ids.push("audit-s0s1");
     if (content.includes("skills:validate")) ids.push("skill-validation");
     if (content.includes("check-cross-doc-deps.js")) ids.push("cross-doc-deps");
-    if (content.includes("docs:index") || content.includes("Documentation Index auto-update")) ids.push("doc-index");
+    if (content.includes("docs:index") || content.includes("Documentation Index auto-update"))
+      ids.push("doc-index");
     if (content.includes("check-doc-headers.js")) ids.push("doc-headers");
     if (content.includes("check-agent-compliance.js")) ids.push("agent-compliance");
     if (content.includes("validate-schema.js --staged-only")) ids.push("debt-schema");
-    if (content.includes("jsonl-sync") || content.includes("JSONL→MD sync")) ids.push("jsonl-md-sync");
+    if (content.includes("jsonl-sync") || content.includes("JSONL→MD sync"))
+      ids.push("jsonl-md-sync");
   } else if (hookType === "pre-push") {
-    if (content.includes("escalation-gate") && content.includes("hook-warnings.json")) ids.push("escalation-gate");
+    if (content.includes("escalation-gate") && content.includes("hook-warnings.json"))
+      ids.push("escalation-gate");
     if (content.includes("deps:circular")) ids.push("circular-deps");
-    if (content.includes("check-pattern-compliance.js") && content.includes("push diff")) ids.push("pattern-compliance-push");
-    if (content.includes("code-reviewer") && content.includes("agent-invocations.jsonl")) ids.push("code-reviewer-gate");
+    if (content.includes("check-pattern-compliance.js") && content.includes("push diff"))
+      ids.push("pattern-compliance-push");
+    if (content.includes("code-reviewer") && content.includes("agent-invocations.jsonl"))
+      ids.push("code-reviewer-gate");
     if (content.includes("check-propagation.js")) ids.push("propagation");
     if (content.includes("hooks:test")) ids.push("hook-tests");
-    if (content.includes("security-check.js") && content.includes("--blocking")) ids.push("security-check");
+    if (content.includes("security-check.js") && content.includes("--blocking"))
+      ids.push("security-check");
     if (content.includes("tsc --noEmit")) ids.push("type-check");
-    if (content.includes("complexity:") || content.includes("Cyclomatic complexity")) ids.push("cyclomatic-cc");
+    if (content.includes("complexity:") || content.includes("Cyclomatic complexity"))
+      ids.push("cyclomatic-cc");
     if (content.includes("check-cc.js")) ids.push("cognitive-cc");
     if (content.includes("npm audit")) ids.push("npm-audit");
     if (content.includes("triggers:check")) ids.push("triggers");
@@ -149,20 +157,38 @@ function validate() {
   const warnings = [];
 
   // --- 1. Read manifest ---
-  const manifestResult = safeReadFile(MANIFEST_PATH, "Hook manifest (scripts/config/hook-checks.json)");
+  const manifestResult = safeReadFile(
+    MANIFEST_PATH,
+    "Hook manifest (scripts/config/hook-checks.json)"
+  );
   if (!manifestResult.success) {
-    return { passed: false, errors: [manifestResult.error], warnings: [], summary: "Hook manifest not found" };
+    return {
+      passed: false,
+      errors: [manifestResult.error],
+      warnings: [],
+      summary: "Hook manifest not found",
+    };
   }
 
   let manifest;
   try {
     manifest = JSON.parse(manifestResult.content);
   } catch (err) {
-    return { passed: false, errors: [`Invalid JSON in hook manifest: ${sanitizeError(err)}`], warnings: [], summary: "Hook manifest is invalid JSON" };
+    return {
+      passed: false,
+      errors: [`Invalid JSON in hook manifest: ${sanitizeError(err)}`],
+      warnings: [],
+      summary: "Hook manifest is invalid JSON",
+    };
   }
 
   if (!manifest.checks || !Array.isArray(manifest.checks)) {
-    return { passed: false, errors: ["Manifest missing 'checks' array"], warnings: [], summary: "Hook manifest has invalid structure" };
+    return {
+      passed: false,
+      errors: ["Manifest missing 'checks' array"],
+      warnings: [],
+      summary: "Hook manifest has invalid structure",
+    };
   }
 
   // --- 2. Read hook files ---
@@ -195,7 +221,9 @@ function validate() {
   }
 
   // --- 4. Bi-directional validation: manifest -> bash ---
-  const preCommitManifestIds = manifest.checks.filter((c) => c.hook === "pre-commit").map((c) => c.id);
+  const preCommitManifestIds = manifest.checks
+    .filter((c) => c.hook === "pre-commit")
+    .map((c) => c.id);
   const prePushManifestIds = manifest.checks.filter((c) => c.hook === "pre-push").map((c) => c.id);
 
   const preCommitBashIds = preCommitResult.success
@@ -248,7 +276,16 @@ function validate() {
   }
 
   // --- 7. Validate required fields ---
-  const requiredFields = ["id", "name", "description", "hook", "command", "blocking", "category", "owner"];
+  const requiredFields = [
+    "id",
+    "name",
+    "description",
+    "hook",
+    "command",
+    "blocking",
+    "category",
+    "owner",
+  ];
   for (const check of manifest.checks) {
     for (const field of requiredFields) {
       if (check[field] === undefined || check[field] === null) {
@@ -256,15 +293,25 @@ function validate() {
       }
     }
     // Validate blocking enum (treat empty string / non-string as invalid)
-    if (typeof check.blocking !== "string" || !["block", "warn", "auto-fix"].includes(check.blocking)) {
-      errors.push(`Check '${check.id}': invalid blocking value '${check.blocking}' (must be block|warn|auto-fix)`);
+    if (
+      typeof check.blocking !== "string" ||
+      !["block", "warn", "auto-fix"].includes(check.blocking)
+    ) {
+      errors.push(
+        `Check '${check.id}': invalid blocking value '${check.blocking}' (must be block|warn|auto-fix)`
+      );
     }
     // Validate hook enum
     if (typeof check.hook !== "string" || !["pre-commit", "pre-push"].includes(check.hook)) {
-      errors.push(`Check '${check.id}': invalid hook value '${check.hook}' (must be pre-commit|pre-push)`);
+      errors.push(
+        `Check '${check.id}': invalid hook value '${check.hook}' (must be pre-commit|pre-push)`
+      );
     }
     // Validate category enum
-    if (typeof check.category !== "string" || !["security", "quality", "compliance", "docs", "testing"].includes(check.category)) {
+    if (
+      typeof check.category !== "string" ||
+      !["security", "quality", "compliance", "docs", "testing"].includes(check.category)
+    ) {
       errors.push(`Check '${check.id}': invalid category '${check.category}'`);
     }
   }

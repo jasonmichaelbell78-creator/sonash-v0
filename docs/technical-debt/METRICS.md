@@ -28,52 +28,52 @@ distribution.
 
 ## Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Items | 8385 |
-| Open Items | 7404 |
-| Resolved | 483 |
-| False Positives | 498 |
-| Resolution Rate | 6% |
+| Metric          | Value |
+| --------------- | ----- |
+| Total Items     | 8385  |
+| Open Items      | 7404  |
+| Resolved        | 483   |
+| False Positives | 498   |
+| Resolution Rate | 6%    |
 
 ---
 
 ## By Status
 
-| Status | Count |
-|--------|-------|
-| NEW | 2064 |
-| VERIFIED | 5340 |
-| IN_PROGRESS | 0 |
-| RESOLVED | 483 |
-| FALSE_POSITIVE | 498 |
+| Status         | Count |
+| -------------- | ----- |
+| NEW            | 2064  |
+| VERIFIED       | 5340  |
+| IN_PROGRESS    | 0     |
+| RESOLVED       | 483   |
+| FALSE_POSITIVE | 498   |
 
 ---
 
 ## By Severity
 
-| Severity | Count | % of Total |
-|----------|-------|------------|
-| S0 (Critical) | 32 | 0% |
-| S1 (High) | 1339 | 16% |
-| S2 (Medium) | 3391 | 40% |
-| S3 (Low) | 3623 | 43% |
+| Severity      | Count | % of Total |
+| ------------- | ----- | ---------- |
+| S0 (Critical) | 32    | 0%         |
+| S1 (High)     | 1339  | 16%        |
+| S2 (Medium)   | 3391  | 40%        |
+| S3 (Low)      | 3623  | 43%        |
 
 ---
 
 ## By Category
 
-| Category | Count |
-|----------|-------|
-| code-quality | 4636 |
-| documentation | 982 |
-| security | 722 |
-| process | 722 |
-| refactoring | 668 |
-| ai-optimization | 254 |
-| performance | 179 |
-| enhancements | 154 |
-| engineering-productivity | 68 |
+| Category                 | Count |
+| ------------------------ | ----- |
+| code-quality             | 4636  |
+| documentation            | 982   |
+| security                 | 722   |
+| process                  | 722   |
+| refactoring              | 668   |
+| ai-optimization          | 254   |
+| performance              | 179   |
+| enhancements             | 154   |
+| engineering-productivity | 68    |
 
 ---
 
@@ -81,29 +81,48 @@ distribution.
 
 ### S0 Critical Alerts (19)
 
-- **DEBT-0853**: App Check disabled on all production Cloud Functions (functions/src/index.ts:0)
-- **DEBT-0855**: App Check disabled on all Cloud Functions and client init di (functions/src/index.ts:0)
+- **DEBT-0853**: App Check disabled on all production Cloud Functions
+  (functions/src/index.ts:0)
+- **DEBT-0855**: App Check disabled on all Cloud Functions and client init di
+  (functions/src/index.ts:0)
 - **DEBT-0864**: Re-enable App Check on Cloud Functions (lib/firebase.ts:45)
-- **DEBT-1293**: Security risk: Client-side filtering of sensitive data (hooks/use-journal.ts:174)
-- **DEBT-1878**: CI gap: pull_request_target security vulnerability allows un (.github/workflows/deploy-firebase.yml:7)
-- **DEBT-2121**: Security: Potential command injection in resolve-item.js exe (scripts/debt/resolve-item.js:21)
-- **DEBT-4399**: Review this potentially hard-coded password. (lib/utils/errors.ts:69)
-- **DEBT-4400**: Review this potentially hard-coded password. (lib/utils/errors.ts:71)
-- **DEBT-4401**: Review this potentially hard-coded password. (tests/utils/logger.test.ts:96)
-- **DEBT-4402**: Review this potentially hard-coded password. (tests/utils/logger.test.ts:130)
+- **DEBT-1293**: Security risk: Client-side filtering of sensitive data
+  (hooks/use-journal.ts:174)
+- **DEBT-1878**: CI gap: pull_request_target security vulnerability allows un
+  (.github/workflows/deploy-firebase.yml:7)
+- **DEBT-2121**: Security: Potential command injection in resolve-item.js exe
+  (scripts/debt/resolve-item.js:21)
+- **DEBT-4399**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:69)
+- **DEBT-4400**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:71)
+- **DEBT-4401**: Review this potentially hard-coded password.
+  (tests/utils/logger.test.ts:96)
+- **DEBT-4402**: Review this potentially hard-coded password.
+  (tests/utils/logger.test.ts:130)
 
 ### S1 High Priority Alerts (1250)
 
-- **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe (app/meetings/all/page.tsx:164)
-- **DEBT-0003**: Provide a compare function to avoid sorting elements alphabe (components/notebook/pages/resources-page.tsx:306)
-- **DEBT-0004**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/hooks/session-start.sh:264)
-- **DEBT-0005**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/hooks/pattern-check.sh:89)
-- **DEBT-0006**: Use '[[' instead of '[' for conditional tests. The '[[' cons (scripts/check-review-triggers.sh:44)
-- **DEBT-0007**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:7)
-- **DEBT-0008**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/skills/artifacts-builder/scripts/init-artifact.sh:11)
-- **DEBT-0009**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/skills/systematic-debugging/find-polluter.sh:8)
-- **DEBT-0010**: Exporting mutable 'let' binding, use 'const' instead. (lib/firebase.ts:137)
-- **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr (lib/db/meetings.ts:21)
+- **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
+  (app/meetings/all/page.tsx:164)
+- **DEBT-0003**: Provide a compare function to avoid sorting elements alphabe
+  (components/notebook/pages/resources-page.tsx:306)
+- **DEBT-0004**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/hooks/session-start.sh:264)
+- **DEBT-0005**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/hooks/pattern-check.sh:89)
+- **DEBT-0006**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (scripts/check-review-triggers.sh:44)
+- **DEBT-0007**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:7)
+- **DEBT-0008**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/skills/artifacts-builder/scripts/init-artifact.sh:11)
+- **DEBT-0009**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/skills/systematic-debugging/find-polluter.sh:8)
+- **DEBT-0010**: Exporting mutable 'let' binding, use 'const' instead.
+  (lib/firebase.ts:137)
+- **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity fr
+  (lib/db/meetings.ts:21)
 
 _...and 1240 more S1 items_
 
@@ -111,39 +130,39 @@ _...and 1240 more S1 items_
 
 ## Health Metrics
 
-| Metric | Value |
-|--------|-------|
-| Verification Queue | 2064 items |
-| Avg Age (Open Items) | 32 days |
-| Oldest Item Age | 46 days |
-| Oldest Item | DEBT-0002 |
+| Metric               | Value      |
+| -------------------- | ---------- |
+| Verification Queue   | 2064 items |
+| Avg Age (Open Items) | 32 days    |
+| Oldest Item Age      | 46 days    |
+| Oldest Item          | DEBT-0002  |
 
 ---
 
 ## Data Sources
 
-| Source | Count |
-|--------|-------|
-| audit | 2868 |
-| sonarcloud | 2562 |
-| unknown | 762 |
-| dec-2025-report | 641 |
-| review | 623 |
-| sonarcloud-paste | 286 |
-| context | 252 |
-| roadmap | 172 |
-| manual | 81 |
-| intake | 64 |
-| pr-deferred | 26 |
-| pr-review | 16 |
-| session | 8 |
-| pr-review-366-r2 | 6 |
-| code-comment | 5 |
-| alerts-self-audit-2026-02-16 | 4 |
-| session-180 | 4 |
-| over-engineering-research | 2 |
-| qodo | 2 |
-| pr-retro-batch-420-424-426 | 1 |
+| Source                       | Count |
+| ---------------------------- | ----- |
+| audit                        | 2868  |
+| sonarcloud                   | 2562  |
+| unknown                      | 762   |
+| dec-2025-report              | 641   |
+| review                       | 623   |
+| sonarcloud-paste             | 286   |
+| context                      | 252   |
+| roadmap                      | 172   |
+| manual                       | 81    |
+| intake                       | 64    |
+| pr-deferred                  | 26    |
+| pr-review                    | 16    |
+| session                      | 8     |
+| pr-review-366-r2             | 6     |
+| code-comment                 | 5     |
+| alerts-self-audit-2026-02-16 | 4     |
+| session-180                  | 4     |
+| over-engineering-research    | 2     |
+| qodo                         | 2     |
+| pr-retro-batch-420-424-426   | 1     |
 
 ---
 

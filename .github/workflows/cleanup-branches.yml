@@ -14,8 +14,9 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
@@ -38,7 +39,7 @@ jobs:
           SKIPPED=0
           FAILED=0
 
-          echo "$MERGED" | while IFS= read -r branch; do
+          while IFS= read -r branch; do
             # Skip empty lines
             [ -z "$branch" ] && continue
             # Trim whitespace
@@ -73,7 +74,7 @@ jobs:
               echo "    Failed to delete $branch"
               FAILED=$((FAILED + 1))
             fi
-          done
+          done <<< "$MERGED"
 
           echo ""
           echo "Summary: $DELETED deleted, $SKIPPED skipped, $FAILED failed"

@@ -233,3 +233,8 @@
 {"pr":431,"title":"feat: Data Effectiveness Audit — learning-to-automation pipeline (35 decisions, 11 waves)","total_commits":13,"fix_commits":10,"fix_ratio":0.77,"review_rounds":1,"timestamp":"2026-03-15T13:25:02.252Z"}
 {"pr":430,"title":"feat: Meta Pipeline sequencing, LSP config, SWS forward-compatibility alignment","total_commits":4,"fix_commits":2,"fix_ratio":0.5,"review_rounds":1,"timestamp":"2026-03-15T13:25:03.042Z"}
 {"pr":429,"title":"docs: Data Effectiveness Audit Deep Plan (35 Decisions), PR #427/#428 Retro Actions, Session #217 End","total_commits":6,"fix_commits":5,"fix_ratio":0.83,"review_rounds":1,"timestamp":"2026-03-15T13:25:03.817Z"}
+{"pr":445,"title":"feat: Planning artifacts, agent infrastructure, memory system, and CLAUDE.md v5.6","total_commits":19,"fix_commits":14,"fix_ratio":0.74,"review_rounds":1,"timestamp":"2026-03-18T01:43:28.176Z"}
+{"pr":444,"title":"feat: Pre-commit/pre-push hook system overhaul — 10 waves, 44 decisions, 14 SWS tenets","total_commits":14,"fix_commits":7,"fix_ratio":0.5,"review_rounds":1,"timestamp":"2026-03-18T01:43:29.073Z"}
+{"pr":443,"title":"feat: Session #223 — skill-audit create-audit + agent environment deep-plan","total_commits":7,"fix_commits":3,"fix_ratio":0.43,"review_rounds":0,"timestamp":"2026-03-18T01:43:30.181Z"}
+{"pr":442,"title":"chore(deps): bump ajv from 8.17.1 to 8.18.0 in /scripts/mcp","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-18T01:43:30.922Z"}
+{"pr":441,"title":"chore(deps): bump hono from 4.11.3 to 4.12.8 in /scripts/mcp","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-18T01:43:31.736Z"}
