@@ -1,5 +1,5 @@
 ---
-name: Deep-plan discovery process for hook audits
+name: feedback_deep_plan_hook_discovery_process
 description:
   5-layer multi-agent discovery for hook/infrastructure deep-plans — subsystem
   explorers, warning infra, skip reasons, ground-truth, execution verification

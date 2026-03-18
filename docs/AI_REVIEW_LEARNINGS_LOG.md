@@ -875,8 +875,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Rounds:** 5 | **Total Items:** 139
 
 | Fixed | Rejected | Deferred |
-| ----- | -------- | -------- |
-| 0     | 0        | 0        |
+|-------|----------|----------|
+| 0 | 0 | 0 |
 
 ---
 
@@ -885,8 +885,10 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #428 | **Rounds:** 1 | **Total Items:** 10
 
 | Fixed | Rejected | Deferred |
-| ----- | -------- | -------- |
-| 0     | 0        | 0        |
+|-------|----------|----------|
+| 0 | 0 | 0 |
+
+
 
 ## Active Reviews
 
@@ -895,14 +897,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-11 | **Source:** sonarcloud+ci
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+|-------|-------|----------|----------|
+| 0 | 0 | 0 | 0 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+|----------|-------|-------|---------|
+| 0 | 0 | 0 | 0 |
 
 **Patterns:**
 
@@ -925,14 +927,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 21    | 18    | 0        | 2        |
+|-------|-------|----------|----------|
+| 21 | 18 | 0 | 2 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 6     | 8     | 3       |
+|----------|-------|-------|---------|
+| 1 | 6 | 8 | 3 |
 
 **Patterns:**
 
@@ -955,14 +957,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 25    | 20    | 0        | 5        |
+|-------|-------|----------|----------|
+| 25 | 20 | 0 | 5 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 11    | 8     | 4       |
+|----------|-------|-------|---------|
+| 2 | 11 | 8 | 4 |
 
 **Patterns:**
 
@@ -985,14 +987,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **Source:** qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 0     | 0        | 0        |
+|-------|-------|----------|----------|
+| 10 | 0 | 0 | 0 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+|----------|-------|-------|---------|
+| 0 | 0 | 0 | 0 |
 
 **Patterns:**
 
@@ -1014,14 +1016,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 45    | 45    | 0        | 0        |
+|-------|-------|----------|----------|
+| 45 | 45 | 0 | 0 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+|----------|-------|-------|---------|
+| 0 | 0 | 0 | 0 |
 
 **Patterns:**
 
@@ -1047,14 +1049,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 23    | 20    | 0        | 3        |
+|-------|-------|----------|----------|
+| 23 | 20 | 0 | 3 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 6     | 12    | 5       |
+|----------|-------|-------|---------|
+| 0 | 6 | 12 | 5 |
 
 **Patterns:**
 
@@ -1083,8 +1085,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 54    | 54    | 0        | 0        |
+|-------|-------|----------|----------|
+| 54 | 54 | 0 | 0 |
 
 ---
 
@@ -1093,8 +1095,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 16    | 16    | 0        | 10       |
+|-------|-------|----------|----------|
+| 16 | 16 | 0 | 10 |
 
 ---
 
@@ -1103,14 +1105,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 2     | 0     | 0        | 0        |
+|-------|-------|----------|----------|
+| 2 | 0 | 0 | 0 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+|----------|-------|-------|---------|
+| 0 | 0 | 0 | 0 |
 
 **Patterns:**
 
@@ -1132,14 +1134,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+|-------|-------|----------|----------|
+| 0 | 0 | 0 | 0 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+|----------|-------|-------|---------|
+| 0 | 0 | 0 | 0 |
 
 **Patterns:**
 
@@ -1162,14 +1164,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **PR:** #429 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 15    | 12    | 1        | 3        |
+|-------|-------|----------|----------|
+| 15 | 12 | 1 | 3 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 5     | 6     | 0       |
+|----------|-------|-------|---------|
+| 1 | 5 | 6 | 0 |
 
 **Learnings:**
 
@@ -1188,14 +1190,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** manual
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+|-------|-------|----------|----------|
+| 0 | 0 | 0 | 0 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+|----------|-------|-------|---------|
+| 0 | 0 | 0 | 0 |
 
 **Learnings:**
 
@@ -1211,14 +1213,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** manual
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+|-------|-------|----------|----------|
+| 0 | 0 | 0 | 0 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+|----------|-------|-------|---------|
+| 0 | 0 | 0 | 0 |
 
 **Learnings:**
 
@@ -1233,8 +1235,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-14 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 37    | 37    | 0        | 15       |
+|-------|-------|----------|----------|
+| 37 | 37 | 0 | 15 |
 
 ---
 
@@ -1243,8 +1245,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-14 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 11    | 0        | 7        |
+|-------|-------|----------|----------|
+| 18 | 11 | 0 | 7 |
 
 ---
 
@@ -1253,8 +1255,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-14 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 14    | 0        | 6        |
+|-------|-------|----------|----------|
+| 20 | 14 | 0 | 6 |
 
 ---
 
@@ -1263,8 +1265,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-14 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 17    | 6     | 0        | 11       |
+|-------|-------|----------|----------|
+| 17 | 6 | 0 | 11 |
 
 ---
 
@@ -1273,8 +1275,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-15 | **PR:** #436 | **Source:** qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
+|-------|-------|----------|----------|
+| 7 | 0 | 0 | 0 |
 
 ## Key Patterns
 
@@ -2030,3 +2032,4 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
   (file-read-in-try/catch) to avoid review noise.
 
 ---
+

@@ -1,5 +1,5 @@
 ---
-name: SWS Session #221 Decisions (Q34-Q38)
+name: sws_session221_decisions
 description:
   5 cross-cutting SWS decisions — canon enforcement, no silent fails, no
   orphans, skill-audit pipeline, decision recall. Check before any SWS phase.

@@ -1,5 +1,5 @@
 ---
-name: Never reject review items as pre-existing
+name: feedback_no_preexisting_rejection
 description:
   Pre-existing is not a valid rejection reason in PR reviews — always present
   fix-or-DEBT options to the user

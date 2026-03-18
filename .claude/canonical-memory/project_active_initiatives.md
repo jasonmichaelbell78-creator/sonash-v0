@@ -11,9 +11,9 @@ status: active
   next. State: `.claude/state/deep-plan-sws-reeval.state.json`
 - **Hook System Overhaul:** COMPLETE (Session #224, 10 waves). hook-checks.json
   pending CANON registration in SWS Phase 1.
-- **Agent Environment Analysis:** PLANNED — deep-plan done (21 decisions), Phase
-  1 execution next. Plan: `.planning/agent-environment-analysis/PLAN.md`
-- **Memory System Audit:** ACTIVE — Steps 4-5 in progress. Plan:
+- **Agent Environment Analysis:** Phases 1-3 DONE, Phase 4 next. Plan:
+  `.planning/agent-environment-analysis/PLAN.md`
+- **Memory System Audit:** ACTIVE — Steps 8-10 in progress. Plan:
   `.planning/memory-system-audit/PLAN.md`
 - **Operational Visibility Sprint:** ~75% — 5 remaining items moved to SWS Phase
   3

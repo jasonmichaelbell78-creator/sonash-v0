@@ -1,5 +1,5 @@
 ---
-name: pr-review must use state files for cross-round data
+name: feedback_pr_review_state_files
 description:
   pr-review skill must persist previous round counts in state files so
   compaction/clear doesn't lose them

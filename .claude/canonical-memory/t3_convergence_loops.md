@@ -1,5 +1,5 @@
 ---
-name: T3 Convergence Loops — Tenet + Skill Decision
+name: t3_convergence_loops
 description:
   T3 is dual-form — CANON tenet (when/why) plus /convergence-loop skill (how).
   Must exist before CANON phase.
@@ -20,8 +20,3 @@ corrections + no unexplored angles. All corrections must cite evidence.
 **Architecture:** One skill, many callers. High-value: deep-plan Phase 0, audit
 skills, code review, /systematic-debugging, doc-code sync. Medium-value: test
 generation, migration verification, PR review processing.
-
-**Advanced patterns** (from 5-pass PLAN-v3.md rebuild): pass-per-concern
-orchestration, deliberate disagreement detection, Loop 0 source verification,
-fresh-eyes final gate, write-then-verify variant, fix-and-re-verify within pass.
-Details belong in `/convergence-loop` skill spec.
