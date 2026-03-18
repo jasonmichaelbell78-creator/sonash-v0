@@ -111,7 +111,7 @@ rejections, auto-detect repeat items (same rule ID + file = repeat-rejected).
 
 **Retro Pattern Check (SHOULD — D26 backward flow):**
 
-1. Read `.claude/state/retros.jsonl` (last 3 entries — if file exists)
+1. Read `docs/reviews/retros.jsonl` (last 3 entries — if file exists)
 2. For each retro entry, extract `action_items[]` array
 3. For each action item where `status !== 'complete'`:
    - Check if the current PR's changed files overlap with the action item's
