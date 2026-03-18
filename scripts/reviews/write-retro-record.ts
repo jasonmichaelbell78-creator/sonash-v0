@@ -46,7 +46,7 @@ export function writeRetroRecord(
   const validated = RetroRecord.parse(recordData);
 
   // Resolve target file
-  const filePath = path.resolve(projectRoot, "data/ecosystem-v2/retros.jsonl");
+  const filePath = path.resolve(projectRoot, ".claude/state/retros.jsonl");
 
   // Write using appendRecord (handles locking, symlink guard, mkdir)
   appendRecord(filePath, validated, RetroRecord);

@@ -63,7 +63,7 @@ Ecosystem audit -- `/pr-ecosystem-audit`
 gh pr list --state merged --limit 100 --json number,title,mergedAt,author
 ```
 **D2.** Search `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`,
-`docs/reviews/retros.jsonl` for existing retros.
+`.claude/state/retros.jsonl` for existing retros.
 **D3.** Skip: PR# < 395, zero review entries, bot PRs (`[bot]`, `chore(deps)`,
 `build(deps)`, `Bump `).
 **D4.** Count review rounds per missing PR.
@@ -129,7 +129,7 @@ Save state. Warn if unverified > 0.
 ## STEP 2: GATHER REVIEW DATA (MUST)
 
 **2.1** Search `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`,
-`docs/reviews/reviews.jsonl`. Read EVERY entry. Check CLAUDE.md Section 5+6.
+`.claude/state/reviews.jsonl`. Read EVERY entry. Check CLAUDE.md Section 5+6.
 
 **2.2** Per round: number, date, source, items by severity, fixed/deferred/
 rejected, pattern categories, files modified, new issues from prior fixes.

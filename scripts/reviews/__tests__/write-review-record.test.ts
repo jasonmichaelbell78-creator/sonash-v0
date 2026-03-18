@@ -77,7 +77,7 @@ let tmpDir: string;
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "write-review-test-"));
   // Create the data directory structure
-  fs.mkdirSync(path.join(tmpDir, "data", "ecosystem-v2"), { recursive: true });
+  fs.mkdirSync(path.join(tmpDir, ".claude", "state"), { recursive: true });
   // Create a package.json so findProjectRoot works
   fs.writeFileSync(path.join(tmpDir, "package.json"), "{}");
 });
@@ -98,7 +98,7 @@ describe("writeReviewRecord", () => {
     assert.equal(result.id, "rev-1");
     assert.equal(result.pr, 999);
 
-    const filePath = path.join(tmpDir, "data", "ecosystem-v2", "reviews.jsonl");
+    const filePath = path.join(tmpDir, ".claude", "state", "reviews.jsonl");
     assert.ok(fs.existsSync(filePath), "reviews.jsonl should be created");
 
     const content = fs.readFileSync(filePath, "utf8").trim();
@@ -122,7 +122,7 @@ describe("writeReviewRecord", () => {
     );
 
     // File should not be created
-    const filePath = path.join(tmpDir, "data", "ecosystem-v2", "reviews.jsonl");
+    const filePath = path.join(tmpDir, ".claude", "state", "reviews.jsonl");
     assert.ok(!fs.existsSync(filePath), "reviews.jsonl should not be created on failure");
   });
 
@@ -130,7 +130,7 @@ describe("writeReviewRecord", () => {
     writeReviewRecord(tmpDir, makeFullRecord({ id: "rev-1" }));
     writeReviewRecord(tmpDir, makeFullRecord({ id: "rev-2", pr: 1000 }));
 
-    const filePath = path.join(tmpDir, "data", "ecosystem-v2", "reviews.jsonl");
+    const filePath = path.join(tmpDir, ".claude", "state", "reviews.jsonl");
     const lines = fs.readFileSync(filePath, "utf8").trim().split("\n");
     assert.equal(lines.length, 2);
 
@@ -144,7 +144,7 @@ describe("writeReviewRecord", () => {
 describe("getNextReviewId", () => {
   test("auto-ID assignment reads existing file and increments", () => {
     // Write two records manually
-    const filePath = path.join(tmpDir, "data", "ecosystem-v2", "reviews.jsonl");
+    const filePath = path.join(tmpDir, ".claude", "state", "reviews.jsonl");
     const rec1 = JSON.stringify(makeFullRecord({ id: "rev-3" }));
     const rec2 = JSON.stringify(makeFullRecord({ id: "rev-7" }));
     fs.writeFileSync(filePath, rec1 + "\n" + rec2 + "\n");
@@ -154,7 +154,7 @@ describe("getNextReviewId", () => {
   });
 
   test("empty file produces rev-1 as first ID", () => {
-    const filePath = path.join(tmpDir, "data", "ecosystem-v2", "reviews.jsonl");
+    const filePath = path.join(tmpDir, ".claude", "state", "reviews.jsonl");
     fs.writeFileSync(filePath, "");
 
     const nextId = getNextReviewId(tmpDir);
@@ -168,7 +168,7 @@ describe("getNextReviewId", () => {
 
   test("auto-assigns ID when data has no id field", () => {
     // Write a seed record
-    const filePath = path.join(tmpDir, "data", "ecosystem-v2", "reviews.jsonl");
+    const filePath = path.join(tmpDir, ".claude", "state", "reviews.jsonl");
     fs.writeFileSync(filePath, JSON.stringify(makeFullRecord({ id: "rev-5" })) + "\n");
 
     const data = makeFullRecord();
@@ -185,7 +185,7 @@ describe("CLI entry point", () => {
 
     // Create a temp project root with proper structure for CLI test
     const cliTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "write-review-cli-"));
-    fs.mkdirSync(path.join(cliTmpDir, "data", "ecosystem-v2"), { recursive: true });
+    fs.mkdirSync(path.join(cliTmpDir, ".claude", "state"), { recursive: true });
     fs.writeFileSync(path.join(cliTmpDir, "package.json"), "{}");
 
     // We need to copy safe-fs.js for the CLI to work, create a scripts/lib structure

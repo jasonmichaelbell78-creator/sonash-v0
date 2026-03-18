@@ -5,7 +5,7 @@
  *   npx tsc && node dist/write-review-record.js --data '{"pr":399,...}'
  *
  * Validates input against ReviewRecord schema, auto-assigns ID if missing,
- * and appends to data/ecosystem-v2/reviews.jsonl.
+ * and appends to .claude/state/reviews.jsonl (canonical source).
  */
 
 import * as fs from "node:fs";
@@ -33,7 +33,7 @@ function findProjectRoot(startDir: string): string {
  * Returns "rev-1" if the file is empty or missing.
  */
 export function getNextReviewId(projectRoot: string): string {
-  const filePath = path.join(projectRoot, "data", "ecosystem-v2", "reviews.jsonl");
+  const filePath = path.join(projectRoot, ".claude", "state", "reviews.jsonl");
 
   let content: string;
   try {
@@ -85,7 +85,7 @@ export function writeReviewRecord(
   projectRoot: string,
   data: Record<string, unknown>
 ): ReturnType<typeof ReviewRecord.parse> {
-  const filePath = path.join(projectRoot, "data", "ecosystem-v2", "reviews.jsonl");
+  const filePath = path.join(projectRoot, ".claude", "state", "reviews.jsonl");
 
   const recordData: Record<string, unknown> = {
     ...data,
