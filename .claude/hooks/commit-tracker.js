@@ -299,6 +299,8 @@ function main() {
     // or hook re-invocations. These are low-frequency and acceptable noise.
     // DS-5: Log commit failures so alerts checker can track them
     logCommitFailure(command);
+    // Surface pre-commit hook output so the user sees what failed
+    reportCommitFailure();
     console.log("ok");
     process.exit(0);
   }
