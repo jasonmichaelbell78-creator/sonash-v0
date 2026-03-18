@@ -14,8 +14,8 @@ the home locale, commit to git for cross-locale sync. Deletes 5 stale files,
 compresses 4, creates 11 new memories, standardizes all frontmatter, rewrites
 MEMORY.md index, and validates with recall testing.
 
-**Decisions:** See DECISIONS.md (18 decisions)
-**Effort Estimate:** M (40-60 min)
+**Decisions:** See DECISIONS.md (18 decisions) **Effort Estimate:** M (40-60
+min)
 
 ---
 
@@ -107,8 +107,8 @@ modification times), keep that one, delete the other.
 
 ## Step 2: Compress and Standardize Surviving Files
 
-Apply D16 (frontmatter standard) and D17 (12-15 line target) to all 10
-surviving files.
+Apply D16 (frontmatter standard) and D17 (12-15 line target) to all 10 surviving
+files.
 
 ### Frontmatter Standard (D16)
 
@@ -119,31 +119,30 @@ Every memory file must have:
 name: <concise name>
 description: <12-18 words with trigger keywords, per D12>
 type: <user | feedback | project | reference>
-status: <active | completed | stale>
+status: <active | completed | stale | unverified>
 ---
 ```
 
 ### Files to Compress
 
-| File | Current | Target | Action |
-|------|---------|--------|--------|
-| `t3_convergence_loops.md` | 160 | ~15 | Heavy compress. Keep: dual-form decision, tenet wording summary, pointer to /convergence-loop skill. Drop: integration targets table, advanced patterns, session evidence (all belong in the skill). |
-| `feedback_convergence_loops_mandatory.md` | 23 | ~15 | Compress the 5-point failure cascade to 2 key bullets. Keep: rule, why, how to apply. |
-| `feedback_deep_plan_hook_discovery_process.md` | 20 | ~15 | Compress 5-layer list. Keep: pattern name, 5 layers as single-line each, when to apply. |
-| `sws_session221_decisions.md` | 20 | ~15 | Compress Q34-Q38 to single-line summaries. Keep: decision labels, key constraint per decision. |
-| `project_hook_contract_canon.md` | 17 | ~15 | Trim 2 lines. Tighten "How to apply" list. |
+| File                                           | Current | Target | Action                                                                                                                                                                                               |
+| ---------------------------------------------- | ------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `t3_convergence_loops.md`                      | 160     | ~15    | Heavy compress. Keep: dual-form decision, tenet wording summary, pointer to /convergence-loop skill. Drop: integration targets table, advanced patterns, session evidence (all belong in the skill). |
+| `feedback_convergence_loops_mandatory.md`      | 23      | ~15    | Compress the 5-point failure cascade to 2 key bullets. Keep: rule, why, how to apply.                                                                                                                |
+| `feedback_deep_plan_hook_discovery_process.md` | 20      | ~15    | Compress 5-layer list. Keep: pattern name, 5 layers as single-line each, when to apply.                                                                                                              |
+| `sws_session221_decisions.md`                  | 20      | ~15    | Compress Q34-Q38 to single-line summaries. Keep: decision labels, key constraint per decision.                                                                                                       |
+| `project_hook_contract_canon.md`               | 17      | ~15    | Trim 2 lines. Tighten "How to apply" list.                                                                                                                                                           |
 
 ### Files — Status Field Only
 
-| File | Action |
-|------|--------|
+| File                                   | Action                              |
+| -------------------------------------- | ----------------------------------- |
 | `feedback_no_preexisting_rejection.md` | Add `status: active` to frontmatter |
-| `feedback_pr_review_state_files.md` | Add `status: active` to frontmatter |
-| `feedback_sws_is_meta_plan.md` | Add `status: active` to frontmatter |
+| `feedback_pr_review_state_files.md`    | Add `status: active` to frontmatter |
+| `feedback_sws_is_meta_plan.md`         | Add `status: active` to frontmatter |
 
 **Done when:** All 10 files have standard frontmatter with status field, all
-compressed files are ≤15 lines.
-**Depends on:** Step 1
+compressed files are ≤15 lines. **Depends on:** Step 1
 
 ---
 
@@ -154,17 +153,16 @@ reference files created in Step 4, then delete.
 
 **Content mapping:**
 
-| pipeline-notes.md Section | Destination |
-|--------------------------|-------------|
-| Multi-AI Audit Pipeline (JSONL processing, ESM/CJS split, intermediate files) | `reference_ai_capabilities.md` |
-| Compaction-Resilient State Persistence (7-layer system) | `reference_ai_capabilities.md` |
-| Pre-commit Hook Chain (multi-stage order, skip vars) | Stays in `project_hook_contract_canon.md` as a pointer |
-| Agent Context Overflow Prevention (return protocol, wave chunking) | `reference_ai_capabilities.md` |
-| Eval Template Regex | `reference_documentation_standards.md` |
+| pipeline-notes.md Section                                                     | Destination                                            |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Multi-AI Audit Pipeline (JSONL processing, ESM/CJS split, intermediate files) | `reference_ai_capabilities.md`                         |
+| Compaction-Resilient State Persistence (7-layer system)                       | `reference_ai_capabilities.md`                         |
+| Pre-commit Hook Chain (multi-stage order, skip vars)                          | Stays in `project_hook_contract_canon.md` as a pointer |
+| Agent Context Overflow Prevention (return protocol, wave chunking)            | `reference_ai_capabilities.md`                         |
+| Eval Template Regex                                                           | `reference_documentation_standards.md`                 |
 
 **Done when:** All pipeline-notes.md content accounted for in destination files,
-original file deleted. 9 files remain.
-**Depends on:** Step 1
+original file deleted. 9 files remain. **Depends on:** Step 1
 
 ---
 
@@ -180,7 +178,9 @@ size target (≤15 lines).
 ```yaml
 ---
 name: Communication preferences
-description: Response style, question batching, delegation, push confirmation, two-locale workflow awareness
+description:
+  Response style, question batching, delegation, push confirmation, two-locale
+  workflow awareness
 type: user
 status: active
 ---
@@ -196,7 +196,9 @@ jason/unrestricted).
 ```yaml
 ---
 name: Technical expertise profile
-description: Deep Node.js/scripting expertise, Firebase comfortable, frontend less familiar, solo developer
+description:
+  Deep Node.js/scripting expertise, Firebase comfortable, frontend less
+  familiar, solo developer
 type: user
 status: active
 ---
@@ -211,7 +213,9 @@ avoid judgment.
 ```yaml
 ---
 name: Decision delegation patterns
-description: What decisions user delegates vs retains — naming delegate, architecture retain, security retain
+description:
+  What decisions user delegates vs retains — naming delegate, architecture
+  retain, security retain
 type: user
 status: active
 ---
@@ -228,7 +232,9 @@ Body: Catalog from session patterns — naming (delegate), file locations
 ```yaml
 ---
 name: External system URLs and pointers
-description: GitHub, SonarCloud, Firebase console, deployment URLs, dashboard locations for quick lookup
+description:
+  GitHub, SonarCloud, Firebase console, deployment URLs, dashboard locations for
+  quick lookup
 type: reference
 status: active
 ---
@@ -243,7 +249,9 @@ during execution research.
 ```yaml
 ---
 name: Documentation format standards
-description: Doc headers, prettier-ignore blocks, version history tables, DOCUMENTATION_INDEX auto-generation
+description:
+  Doc headers, prettier-ignore blocks, version history tables,
+  DOCUMENTATION_INDEX auto-generation
 type: reference
 status: active
 ---
@@ -258,7 +266,9 @@ template regex (`/## .*Prompt/`).
 ```yaml
 ---
 name: TDMS pipeline reference
-description: MASTER_DEBT.jsonl location, intake/resolve/dedup chain, DEBT-XXXXX ID format, generate-views overwrite risk
+description:
+  MASTER_DEBT.jsonl location, intake/resolve/dedup chain, DEBT-XXXXX ID format,
+  generate-views overwrite risk
 type: reference
 status: active
 ---
@@ -273,7 +283,9 @@ format, ID format, key scripts.
 ```yaml
 ---
 name: Claude Code capabilities and limitations
-description: MCP servers available, agent constraints, worktree behavior, compaction resilience layers, context overflow prevention
+description:
+  MCP servers available, agent constraints, worktree behavior, compaction
+  resilience layers, context overflow prevention
 type: reference
 status: active
 ---
@@ -290,7 +302,9 @@ agents are read-only, agent return protocol, worktree behavior.
 ```yaml
 ---
 name: Recurring code review corrections
-description: Patterns that recur in PR reviews — fix-or-DEBT always, description quality, review bot sequencing
+description:
+  Patterns that recur in PR reviews — fix-or-DEBT always, description quality,
+  review bot sequencing
 type: feedback
 status: active
 ---
@@ -305,7 +319,9 @@ memory), PR description quality, review bot awareness.
 ```yaml
 ---
 name: Execution failure recovery patterns
-description: Stop-and-ask on failure, no blind retries, verify diagnosis before acting, no brute-force
+description:
+  Stop-and-ask on failure, no blind retries, verify diagnosis before acting, no
+  brute-force
 type: feedback
 status: active
 ---
@@ -322,7 +338,9 @@ destructive shortcuts.
 ```yaml
 ---
 name: Active initiatives and dependencies
-description: SWS re-evaluation active, hook overhaul active, planning audit Wave 5 pending, what blocks what
+description:
+  SWS re-evaluation active, hook overhaul active, planning audit Wave 5 pending,
+  what blocks what
 type: project
 status: active
 ---
@@ -336,7 +354,9 @@ SESSION_CONTEXT.md, and .planning/ directories during execution.
 ```yaml
 ---
 name: Cross-locale configuration
-description: Work (jbell) vs home (jason) locale differences — shared via git, memory locale-specific, canonical set committed
+description:
+  Work (jbell) vs home (jason) locale differences — shared via git, memory
+  locale-specific, canonical set committed
 type: project
 status: active
 ---
@@ -347,9 +367,8 @@ locale-specific (memory directory, .claude/settings.json). Canonical memory set
 committed to repo for sync (per D15 amendment).
 
 **Done when:** 11 new files created, all with standard frontmatter, all ≤15
-lines.
-**Depends on:** Steps 1-3 (pipeline-notes.md redistribution must happen first
-for reference_tdms_systems and reference_ai_capabilities content)
+lines. **Depends on:** Steps 1-3 (pipeline-notes.md redistribution must happen
+first for reference_tdms_systems and reference_ai_capabilities content)
 
 ---
 
@@ -357,19 +376,18 @@ for reference_tdms_systems and reference_ai_capabilities content)
 
 Three work-locale files have value but can't be read from home:
 
-| Work-Locale File | Action |
-|-----------------|--------|
+| Work-Locale File                               | Action                                                                                                                                                                      |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `feedback_agent_teams_learnings.md` (28 lines) | Merge D3 content (explore-agents-readonly) + compress to ≤15 lines. Recreate in canonical set based on DIAGNOSIS description + D3 merge. **Verify content at work locale.** |
-| `feedback_stale_reviews_dist.md` | Include in canonical set. Content: "SCHEMA_MAP test failures mean scripts/reviews/dist is stale — rebuild with npm run reviews:generate." **Verify at work locale.** |
-| `project_agent_env_analysis.md` | Include in canonical set with updated description (D4: Phase 3 done). **Verify at work locale.** |
+| `feedback_stale_reviews_dist.md`               | Include in canonical set. Content: "SCHEMA_MAP test failures mean scripts/reviews/dist is stale — rebuild with npm run reviews:generate." **Verify at work locale.**        |
+| `project_agent_env_analysis.md`                | Include in canonical set with updated description (D4: Phase 3 done). **Verify at work locale.**                                                                            |
 
 **Approach:** Create best-effort canonical versions from DIAGNOSIS descriptions.
 Mark with `status: unverified` in frontmatter. When at work locale, read the
 actual files, correct content if needed, flip status to `active`.
 
-**Done when:** 3 work-locale files created in canonical set with `status:
-unverified`.
-**Depends on:** Step 4
+**Done when:** 3 work-locale files created in canonical set with
+`status: unverified`. **Depends on:** Step 4
 
 ---
 
@@ -384,20 +402,24 @@ description.
 # Auto Memory - sonash-v0
 
 ## User
+
 - [Communication preferences](user_communication_preferences.md) — ...
 - [Expertise profile](user_expertise_profile.md) — ...
 - [Decision authority](user_decision_authority.md) — ...
 
 ## Feedback
+
 - [Convergence loops mandatory](feedback_convergence_loops_mandatory.md) — ...
 - [No pre-existing rejection](feedback_no_preexisting_rejection.md) — ...
 - ...
 
 ## Project
+
 - [Active initiatives](project_active_initiatives.md) — ...
 - ...
 
 ## Reference
+
 - [External systems](reference_external_systems.md) — ...
 - ...
 ```
@@ -407,8 +429,8 @@ Discipline, Critical Bug, etc.) into the appropriate memory files. MEMORY.md
 becomes an INDEX ONLY — no memory content directly in the index.
 
 **Done when:** MEMORY.md is index-only, every memory file has an entry with
-12-18 word description, organized by type. No inline content remains.
-**Depends on:** Steps 4-5 (all files must exist first)
+12-18 word description, organized by type. No inline content remains. **Depends
+on:** Steps 4-5 (all files must exist first)
 
 ---
 
@@ -420,10 +442,10 @@ can access it for comparison.
 1. Copy the entire memory directory to a git-tracked location (e.g.,
    `.claude/canonical-memory/`)
 2. Commit to `plan-implementation` branch with message indicating DRAFT status
-3. Push to remote
+3. Ask for explicit approval to push; only push after approval
 
-**Done when:** Draft canonical set committed and pushed.
-**Depends on:** Step 6
+**Done when:** Draft canonical set committed; push completed after explicit
+approval. **Depends on:** Step 6
 
 ---
 
@@ -443,23 +465,23 @@ takes shape.
 
 ### 8b: Verify Work-Locale-Only Files
 
-Three files were created from DIAGNOSIS descriptions (Step 5) with `status:
-unverified`:
+Three files were created from DIAGNOSIS descriptions (Step 5) with
+`status: unverified`:
 
-| File | Verification |
-|------|-------------|
+| File                                | Verification                                                                                                                           |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `feedback_agent_teams_learnings.md` | Read actual work-locale file. Compare with canonical draft. Correct content, incorporate D3 merge (explore-agents-readonly folded in). |
-| `feedback_stale_reviews_dist.md` | Read actual work-locale file. Confirm still applicable (session-start still doesn't build reviews/dist). |
-| `project_agent_env_analysis.md` | Read actual work-locale file. Apply D4 update (Phase 3 done). Verify current project status. |
+| `feedback_stale_reviews_dist.md`    | Read actual work-locale file. Confirm still applicable (session-start still doesn't build reviews/dist).                               |
+| `project_agent_env_analysis.md`     | Read actual work-locale file. Apply D4 update (Phase 3 done). Verify current project status.                                           |
 
 ### 8c: Handle Work-Locale Stale Files
 
 Per DIAGNOSIS, the work locale has files to clean up:
 
-| File | Action |
-|------|--------|
-| `project_lsp_setup.md` | Delete (D1) — obsolete |
-| `feedback_lsp_not_grep.md` | Delete (D2) — redundant with CLAUDE.md |
+| File                                  | Action                                          |
+| ------------------------------------- | ----------------------------------------------- |
+| `project_lsp_setup.md`                | Delete (D1) — obsolete                          |
+| `feedback_lsp_not_grep.md`            | Delete (D2) — redundant with CLAUDE.md          |
 | `feedback_explore_agents_readonly.md` | Delete (D3) — merged into agent_teams_learnings |
 
 ### 8d: Produce Final Canonical Set
@@ -472,8 +494,8 @@ Per DIAGNOSIS, the work locale has files to clean up:
 6. Delete any leftover work-locale-only files that weren't folded in
 
 **Done when:** Both locales have identical, verified memory sets. All files have
-`status: active`. Git has the final canonical version.
-**Depends on:** Step 7 + physical access to work locale
+`status: active`. Git has the final canonical version. **Depends on:** Step 7 +
+physical access to work locale
 
 ---
 
@@ -499,8 +521,8 @@ the verified, complete set.
 7. "What's the TDMS pipeline order?" → should trigger reference_tdms_systems
 8. "How should I format this doc header?" → should trigger
    reference_documentation_standards
-9. "Should I use MCP memory for this?" → should NOT trigger any memory (D14:
-   MCP ignored)
+9. "Should I use MCP memory for this?" → should NOT trigger any memory (D14: MCP
+   ignored)
 10. "What external dashboards should I check?" → should trigger
     reference_external_systems
 
@@ -524,8 +546,7 @@ Run code-reviewer agent on all new/modified memory files. Check:
 - No orphaned entries (every MEMORY.md entry points to existing file)
 - Both locales have identical file sets
 
-**Done when:** All checks pass.
-**Depends on:** Steps 8-9
+**Done when:** All checks pass. **Depends on:** Steps 8-9
 
 ---
 

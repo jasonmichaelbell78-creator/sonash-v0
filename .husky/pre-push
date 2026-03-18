@@ -104,7 +104,21 @@ fi
 
 # 2. Check for circular dependencies (ONLY if app code changed)
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
-_app_code_changed=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^(lib/|components/|app/).*\.(ts|tsx|js|jsx)$' | head -1)
+# Determine base ref with fallback (Qodo bug #3)
+_base_ref=""
+if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+  _base_ref="@{u}"
+elif git rev-parse --verify origin/main >/dev/null 2>&1; then
+  _base_ref="origin/main"
+elif git rev-parse --verify origin/master >/dev/null 2>&1; then
+  _base_ref="origin/master"
+fi
+if [ -z "$_base_ref" ]; then
+  # No base ref — run check unconditionally (safer than skipping)
+  _app_code_changed="forced"
+else
+  _app_code_changed=$(git diff --name-only --diff-filter=ACMR "$_base_ref"...HEAD 2>/dev/null | grep -E '^(lib/|components/|app/).*\.(ts|tsx|js|jsx)$' | head -1)
+fi
 if [ -z "$_app_code_changed" ]; then
   echo "  ⏭️ Circular deps skipped (no app code in push diff)"
   CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
@@ -376,7 +390,21 @@ add_exit_trap 'rm -f "$_TSC_OUT" "$_CYC_OUT" "$_COG_OUT" "${_TSC_OUT}.rc" "${_CY
 _TSC_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 
 # 5a. Type check (background, ONLY if TS/TSX files in push diff)
-_ts_in_diff=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(ts|tsx)$' | head -1)
+# Determine base ref with fallback (Qodo bug #3)
+_tsc_base_ref=""
+if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+  _tsc_base_ref="@{u}"
+elif git rev-parse --verify origin/main >/dev/null 2>&1; then
+  _tsc_base_ref="origin/main"
+elif git rev-parse --verify origin/master >/dev/null 2>&1; then
+  _tsc_base_ref="origin/master"
+fi
+if [ -z "$_tsc_base_ref" ]; then
+  # No base ref — run check unconditionally (safer than skipping)
+  _ts_in_diff="forced"
+else
+  _ts_in_diff=$(git diff --name-only --diff-filter=ACMR "$_tsc_base_ref"...HEAD 2>/dev/null | grep -E '\.(ts|tsx)$' | head -1)
+fi
 _tsc_skip=0
 if [ -z "$_ts_in_diff" ]; then
   echo "  ⏭️ Type check skipped (no TS files in push diff)"

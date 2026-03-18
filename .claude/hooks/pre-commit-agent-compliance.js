@@ -15,9 +15,10 @@
 
 const { readFileSync, existsSync } = require("node:fs");
 const { join } = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
+const { projectDir } = require("./lib/git-utils");
 
-const ROOT = join(__dirname, "../..");
+const ROOT = projectDir;
 
 // File patterns that require agent review
 const CODE_PATTERNS = /\.(ts|tsx|js|jsx)$/;
@@ -27,11 +28,15 @@ const EXCLUDE_PATTERNS = /\.(test|spec)\.(ts|tsx|js|jsx)$|__tests__|node_modules
 
 function getStagedFiles() {
   try {
-    const output = execSync("git diff --cached --name-only --diff-filter=ACM --", {
-      cwd: ROOT,
-      encoding: "utf8",
-      timeout: 15000,
-    });
+    const output = execFileSync(
+      "git",
+      ["diff", "--cached", "--name-only", "--diff-filter=ACM", "--"],
+      {
+        cwd: ROOT,
+        encoding: "utf8",
+        timeout: 15000,
+      }
+    );
     return output.trim().split("\n").filter(Boolean);
   } catch {
     return null; // Can't determine — caller should allow
@@ -40,7 +45,7 @@ function getStagedFiles() {
 
 function getInvokedAgents() {
   const statePath = join(ROOT, ".claude/hooks/.session-agents.json");
-  if (!existsSync(statePath)) return null;
+  if (!existsSync(statePath)) return [];
   try {
     const state = JSON.parse(readFileSync(statePath, "utf8"));
     if (!Array.isArray(state.agentsInvoked)) return [];
@@ -48,7 +53,7 @@ function getInvokedAgents() {
       .map((a) => (a && typeof a.agent === "string" ? a.agent : null))
       .filter(Boolean);
   } catch {
-    return null;
+    return [];
   }
 }
 
@@ -84,12 +89,21 @@ function reportAndBlock(issues) {
 // --- Main: stdin reader ---
 let input = "";
 process.stdin.setEncoding("utf8");
-process.stdin.on("error", () => process.exit(0));
-const stdinTimeout = setTimeout(() => process.exit(0), 3000);
+process.stdin.on("error", (err) => {
+  process.stderr.write(`agent-compliance: stdin error (${err.message}), allowing\n`);
+  process.exit(0);
+});
+const stdinTimeout = setTimeout(() => {
+  process.stderr.write("agent-compliance: stdin timeout, allowing\n");
+  process.exit(0);
+}, 3000);
 process.stdin.on("data", (chunk) => {
   clearTimeout(stdinTimeout);
   input += chunk;
-  if (input.length > 1024 * 1024) process.exit(0);
+  if (input.length > 1024 * 1024) {
+    process.stderr.write("agent-compliance: stdin size limit exceeded, allowing\n");
+    process.exit(0);
+  }
 });
 process.stdin.on("end", () => {
   try {
@@ -103,13 +117,13 @@ process.stdin.on("end", () => {
     if (!stagedFiles) process.exit(0);
 
     const invokedAgents = getInvokedAgents();
-    if (!invokedAgents) process.exit(0);
 
     const issues = checkCompliance(stagedFiles, invokedAgents);
     if (issues.length === 0) process.exit(0);
 
     reportAndBlock(issues);
-  } catch {
+  } catch (err) {
+    process.stderr.write(`agent-compliance: unexpected error (${err instanceof Error ? err.message : String(err)}), allowing\n`);
     process.exit(0);
   }
 });

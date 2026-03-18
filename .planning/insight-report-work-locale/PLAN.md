@@ -20,7 +20,7 @@ permissions from settings.local.json at work locale.
 
 - **Tonight (home locale):** Step 1 (CLAUDE.md — universal, shared via git)
 - **Tomorrow (work locale):** Step 2 (settings.local.json — locale-specific)
-  + Step 3 (audit both)
+  - Step 3 (audit both)
 
 ## Files to Create/Modify
 
@@ -58,11 +58,10 @@ item 6:
     `git status` and confirm no generated or untracked files are missing before
     creating a PR, finishing a branch, or running `/session-end`.
     `[BEHAVIORAL: no automated enforcement]`
-12. **Verify file state against the filesystem, not documentation.** Never
-    trust docs, memory, or conversation history about what files exist or
-    contain. Run `ls`, `cat`, `git status`, or use the Read tool to confirm
-    before asserting file state as fact.
-    `[BEHAVIORAL: no automated enforcement]`
+12. **Verify file state against the filesystem, not documentation.** Never trust
+    docs, memory, or conversation history about what files exist or contain. Run
+    `ls`, `cat`, `git status`, or use the Read tool to confirm before asserting
+    file state as fact. `[BEHAVIORAL: no automated enforcement]`
 ```
 
 Update CLAUDE.md version to 5.6, update date to execution date, add version
@@ -119,7 +118,8 @@ specific skip reasons.
 No lines reference specific PR numbers or SKIP_REASON strings. **Depends on:**
 Step 1 must be committed and pushed first (so work locale can pull).
 
-**Execute at work locale tomorrow.** This file is locale-specific and not in git.
+**Execute at work locale tomorrow.** This file is locale-specific and not in
+git.
 
 ---
 

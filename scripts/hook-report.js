@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable complexity */
 /* global __dirname */
 /**
  * hook-report.js — Post-hook summary report with remediation suggestions.
@@ -28,67 +27,28 @@ const CHECK_SCOPES = {
   eslint: { scope: "staged", description: "ESLint code quality" },
   tests: { scope: "staged (if code)", description: "Test suite" },
   "lint-staged": { scope: "staged", description: "Prettier auto-format" },
-  "pattern-compliance": {
-    scope: "staged",
-    description: "SoNash pattern compliance",
-  },
+  "pattern-compliance": { scope: "staged", description: "SoNash pattern compliance" },
   "cross-doc": { scope: "staged", description: "Cross-document dependencies" },
   "doc-header": { scope: "staged", description: "Document header validation" },
-  "agent-compliance": {
-    scope: "session",
-    description: "Agent invocation compliance",
-  },
+  "agent-compliance": { scope: "session", description: "Agent invocation compliance" },
   "debt-schema": { scope: "staged", description: "TDMS schema validation" },
   "jsonl-md-sync": { scope: "staged", description: "JSONL/MD sync check" },
   "doc-index": { scope: "staged", description: "Documentation index staleness" },
 
   // Pre-push checks
-  "escalation-gate": {
-    scope: "global",
-    description: "Unacknowledged error warnings",
-  },
-  "circular-deps": {
-    scope: "push diff (app code)",
-    description: "Circular dependency detection",
-  },
-  "pattern-check": {
-    scope: "push diff",
-    description: "Pattern compliance (push)",
-  },
-  "code-reviewer": {
-    scope: "push diff (scripts)",
-    description: "Code reviewer coverage",
-  },
-  propagation: {
-    scope: "push diff (scripts)",
-    description: "Function propagation check",
-  },
-  "hook-tests": {
-    scope: "push diff (hooks)",
-    description: "Hook test suite",
-  },
-  "security-patterns": {
-    scope: "push diff",
-    description: "Security pattern check",
-  },
-  "type-check": {
-    scope: "push diff (TS)",
-    description: "TypeScript type check",
-  },
-  "cyclomatic-cc": {
-    scope: "push diff (JS)",
-    description: "Cyclomatic complexity",
-  },
-  "cognitive-cc": {
-    scope: "push diff (JS)",
-    description: "Cognitive complexity",
-  },
+  "escalation-gate": { scope: "global", description: "Unacknowledged error warnings" },
+  "circular-deps": { scope: "push diff (app code)", description: "Circular dependency detection" },
+  "pattern-check": { scope: "push diff", description: "Pattern compliance (push)" },
+  "code-reviewer": { scope: "push diff (scripts)", description: "Code reviewer coverage" },
+  propagation: { scope: "push diff (scripts)", description: "Function propagation check" },
+  "hook-tests": { scope: "push diff (hooks)", description: "Hook test suite" },
+  "security-patterns": { scope: "push diff", description: "Security pattern check" },
+  "type-check": { scope: "push diff (TS)", description: "TypeScript type check" },
+  "cyclomatic-cc": { scope: "push diff (JS)", description: "Cyclomatic complexity" },
+  "cognitive-cc": { scope: "push diff (JS)", description: "Cognitive complexity" },
   tsc: { scope: "push diff (TS)", description: "TypeScript compilation" },
   "security-audit": { scope: "push diff", description: "Security audit" },
-  triggers: {
-    scope: "push diff",
-    description: "Event-based trigger check",
-  },
+  triggers: { scope: "push diff", description: "Event-based trigger check" },
 };
 
 // Remediation suggestions per check
@@ -141,7 +101,7 @@ const REMEDIATIONS = {
 };
 
 function formatDuration(ms) {
-  const num = parseInt(ms, 10) || 0;
+  const num = Number.parseInt(ms, 10) || 0;
   if (num > 1000) return (num / 1000).toFixed(1) + "s";
   return num + "ms";
 }
@@ -163,6 +123,143 @@ function statusIcon(status) {
   }
 }
 
+function getResultLabel(failed, warned) {
+  if (failed > 0) return "FAILED";
+  if (warned > 0) return "WARNING";
+  return "PASSED";
+}
+
+const BOX_INNER = 61;
+const boxedLine = (content) => {
+  const s = String(content).slice(0, BOX_INNER);
+  return `\u2502 ${s.padEnd(BOX_INNER)} \u2502`;
+};
+
+const escCell = (v) =>
+  String(v ?? "")
+    .replaceAll("|", "\\|")
+    .replaceAll("\n", " ");
+
+function parseChecks(lines) {
+  return lines
+    .map((line) => {
+      const parts = line.replaceAll("\r", "").split("|");
+      if (parts.length < 2) return null;
+      const [id, status, duration] = parts;
+      const meta = CHECK_SCOPES[id] || {
+        scope: "unknown",
+        description: id,
+      };
+      return { id, status, duration: Number.parseInt(duration, 10) || 0, ...meta };
+    })
+    .filter(Boolean);
+}
+
+function countStatuses(checks) {
+  const passed = checks.filter((c) => c.status === "pass").length;
+  const warned = checks.filter((c) => c.status === "warn").length;
+  const failed = checks.filter((c) => c.status === "fail").length;
+  const skipped = checks.filter((c) => c.status === "skip").length;
+  const totalMs = checks.reduce((sum, c) => sum + c.duration, 0);
+  return { passed, warned, failed, skipped, totalMs };
+}
+
+function buildConsoleReport(hookName, checks, counts) {
+  const { passed, warned, failed, skipped, totalMs } = counts;
+  const report = [
+    "",
+    `\u250C\u2500 ${hookName} Report \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510`,
+    "\u2502 Status  Check                     Scope                Duration \u2502",
+    "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524",
+  ];
+
+  for (const c of checks) {
+    const icon = statusIcon(c.status);
+    const name = (c.description || c.id).substring(0, 23).padEnd(23);
+    const scope = (c.scope || "").substring(0, 18).padEnd(18);
+    const dur = formatDuration(c.duration).padStart(8);
+    report.push(`\u2502 ${icon} ${name}  ${scope}  ${dur} \u2502`);
+  }
+
+  report.push(
+    "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
+  );
+  report.push(
+    boxedLine(
+      `${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`
+    )
+  );
+
+  const actionable = checks.filter((c) => c.status === "fail" || c.status === "warn");
+  if (actionable.length > 0) {
+    report.push(
+      "\u251C\u2500 Remediation \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
+    );
+    for (const c of actionable) {
+      const remed = REMEDIATIONS[c.id];
+      report.push(boxedLine(`${statusIcon(c.status)} ${c.id} (${c.status})`));
+      if (remed) {
+        if (remed.fix) report.push(boxedLine(`  Fix: ${remed.fix}`));
+        if (remed.investigate) report.push(boxedLine(`  Investigate: ${remed.investigate}`));
+        if (remed.defer) report.push(boxedLine(`  Defer: ${remed.defer}`));
+      } else {
+        report.push(boxedLine("  See hook output above for details"));
+      }
+    }
+  }
+
+  report.push(
+    "\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518"
+  );
+
+  return { report, actionable };
+}
+
+function buildMarkdownReport(hookName, checks, counts, actionable) {
+  const { passed, warned, failed, skipped, totalMs } = counts;
+  const md = [
+    `# ${hookName} Report`,
+    `**Date:** ${new Date().toISOString()}`,
+    `**Result:** ${getResultLabel(failed, warned)}`,
+    "",
+    "| Check | Status | Scope | Duration |",
+    "|-------|--------|-------|----------|",
+  ];
+  for (const c of checks) {
+    md.push(
+      `| ${escCell(c.description || c.id)} | ${escCell(c.status)} | ${escCell(c.scope)} | ${escCell(formatDuration(c.duration))} |`
+    );
+  }
+  md.push(
+    "",
+    `**Total:** ${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`
+  );
+
+  if (actionable.length > 0) {
+    md.push("", "## Remediation");
+    for (const c of actionable) {
+      const remed = REMEDIATIONS[c.id];
+      md.push(`### ${c.id} (${c.status})`);
+      if (remed) {
+        if (remed.fix) md.push(`- **Fix:** \`${remed.fix}\``);
+        if (remed.investigate) md.push(`- **Investigate:** \`${remed.investigate}\``);
+        if (remed.defer) md.push(`- **Defer:** \`${remed.defer}\``);
+      }
+    }
+  }
+
+  return md;
+}
+
+function persistReport(reportPath, md) {
+  try {
+    fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+    safeAtomicWriteSync(reportPath, md.join("\n") + "\n", "utf8");
+  } catch {
+    // Non-critical — don't block
+  }
+}
+
 function generateReport(hookName, checksFile, persist) {
   let lines;
   try {
@@ -177,114 +274,16 @@ function generateReport(hookName, checksFile, persist) {
     process.exit(0);
   }
 
-  const checks = lines.map((line) => {
-    const [id, status, duration] = line.replace(/\r/g, "").split("|");
-    const meta = CHECK_SCOPES[id] || {
-      scope: "unknown",
-      description: id,
-    };
-    return { id, status, duration: parseInt(duration, 10) || 0, ...meta };
-  });
+  const checks = parseChecks(lines);
+  const counts = countStatuses(checks);
+  const { report, actionable } = buildConsoleReport(hookName, checks, counts);
 
-  const passed = checks.filter((c) => c.status === "pass").length;
-  const warned = checks.filter((c) => c.status === "warn").length;
-  const failed = checks.filter((c) => c.status === "fail").length;
-  const skipped = checks.filter((c) => c.status === "skip").length;
-  const totalMs = checks.reduce((sum, c) => sum + c.duration, 0);
+  console.error(report.join("\n"));
 
-  // Always show the table
-  const report = [];
-  report.push("");
-  report.push(
-    `\u250C\u2500 ${hookName} Report \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510`
-  );
-  report.push("\u2502 Status  Check                     Scope                Duration \u2502");
-  report.push(
-    "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
-  );
-
-  for (const c of checks) {
-    const icon = statusIcon(c.status);
-    const name = (c.description || c.id).substring(0, 23).padEnd(23);
-    const scope = (c.scope || "").substring(0, 18).padEnd(18);
-    const dur = formatDuration(c.duration).padStart(8);
-    report.push(`\u2502 ${icon} ${name}  ${scope}  ${dur} \u2502`);
-  }
-
-  report.push(
-    "\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
-  );
-  report.push(
-    `\u2502 ${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)}) \u2502`
-  );
-
-  // Remediation section for failures/warnings
-  const actionable = checks.filter((c) => c.status === "fail" || c.status === "warn");
-  if (actionable.length > 0) {
-    report.push(
-      "\u251C\u2500 Remediation \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
-    );
-    for (const c of actionable) {
-      const remed = REMEDIATIONS[c.id];
-      report.push(`\u2502 ${statusIcon(c.status)} ${c.id} (${c.status})`);
-      if (remed) {
-        if (remed.fix) report.push(`\u2502   Fix: ${remed.fix}`);
-        if (remed.investigate) report.push(`\u2502   Investigate: ${remed.investigate}`);
-        if (remed.defer) report.push(`\u2502   Defer: ${remed.defer}`);
-      } else {
-        report.push(`\u2502   See hook output above for details`);
-      }
-    }
-  }
-
-  report.push(
-    "\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518"
-  );
-
-  const output = report.join("\n");
-  console.error(output);
-
-  // Persist if requested
   if (persist) {
     const reportPath = path.join(ROOT, ".claude", "state", "last-hook-report.md");
-    const md = [
-      `# ${hookName} Report`,
-      `**Date:** ${new Date().toISOString()}`,
-      `**Result:** ${failed > 0 ? "FAILED" : warned > 0 ? "WARNING" : "PASSED"}`,
-      "",
-      "| Check | Status | Scope | Duration |",
-      "|-------|--------|-------|----------|",
-    ];
-    for (const c of checks) {
-      md.push(
-        `| ${c.description || c.id} | ${c.status} | ${c.scope} | ${formatDuration(c.duration)} |`
-      );
-    }
-    md.push("");
-    md.push(
-      `**Total:** ${passed} passed, ${warned} warned, ${failed} failed, ${skipped} skipped (${formatDuration(totalMs)})`
-    );
-
-    if (actionable.length > 0) {
-      md.push("");
-      md.push("## Remediation");
-      for (const c of actionable) {
-        const remed = REMEDIATIONS[c.id];
-        md.push(`### ${c.id} (${c.status})`);
-        if (remed) {
-          if (remed.fix) md.push(`- **Fix:** \`${remed.fix}\``);
-          if (remed.investigate) md.push(`- **Investigate:** \`${remed.investigate}\``);
-          if (remed.defer) md.push(`- **Defer:** \`${remed.defer}\``);
-        }
-      }
-    }
-
-    try {
-      fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-      safeAtomicWriteSync(reportPath, md.join("\n") + "\n", "utf-8");
-    } catch {
-      // Non-critical — don't block
-    }
+    const md = buildMarkdownReport(hookName, checks, counts, actionable);
+    persistReport(reportPath, md);
   }
 }
 
