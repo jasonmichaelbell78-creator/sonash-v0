@@ -345,7 +345,7 @@ describe("3.2a: DOMPurify migration", () => {
     const content = readFile(hookPath);
     // Should still have whitespace normalization after DOMPurify
     assert.ok(
-      yamlContains(content, String.raw`.replace(/\s+/g, " ")`),
+      yamlContains(content, String.raw`.replaceAll(/\s+/g, " ")`),
       "Should normalize whitespace after sanitization"
     );
     assert.ok(yamlContains(content, ".trim()"), "Should trim the result");

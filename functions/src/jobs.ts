@@ -590,13 +590,18 @@ async function processFileChunk(
   let deleted = 0;
   let errors = 0;
   const results = await Promise.allSettled(
-    chunk.map((file) =>
-      processStorageFile(file, existingUserIds, db, () => { errors++; })
-    )
+    chunk.map(async (file) => {
+      try {
+        return await processStorageFile(file, existingUserIds, db, () => {});
+      } catch {
+        return { deleted: false, errored: true };
+      }
+    })
   );
   for (const r of results) {
     if (r.status === "fulfilled") {
       if (r.value.deleted) deleted++;
+      if ("errored" in r.value && r.value.errored) errors++;
     } else {
       errors++;
     }

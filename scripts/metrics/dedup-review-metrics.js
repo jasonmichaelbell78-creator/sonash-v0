@@ -37,8 +37,9 @@ try {
   ({ sanitizeError } = require("../lib/security-helpers"));
 } catch {
   sanitizeError = (err) => {
-    const msg = err instanceof Error ? err.message : String(err);
-    return msg.replaceAll(/[A-Z]:\\[^\s]+|\/[^\s]*\/[^\s]+/gi, "[PATH]");
+    const name = err instanceof Error ? err.name : "Error";
+    const code = err && typeof err === "object" && "code" in err ? String(err.code) : null;
+    return code ? `${name} (${code})` : name;
   };
 }
 

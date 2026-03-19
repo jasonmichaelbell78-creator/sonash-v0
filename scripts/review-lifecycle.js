@@ -544,8 +544,10 @@ function runCrossDbValidation() {
   for (const [pr, metricsEntry] of metricsRoundsByPr) {
     const jsonlCount = reviewCountsByPr.get(pr);
     if (jsonlCount === undefined) continue;
-    const metricsRounds = metricsEntry?.review_rounds;
-    if (!Number.isFinite(metricsRounds)) continue;
+    const rawRounds = metricsEntry?.review_rounds;
+    const coerced = typeof rawRounds === "number" ? rawRounds : Number(rawRounds);
+    if (!Number.isFinite(coerced)) continue;
+    const metricsRounds = Math.max(0, Math.trunc(coerced));
 
     if (metricsRounds !== jsonlCount) {
       mismatches.push({ pr, metricsRounds, jsonlRecords: jsonlCount });

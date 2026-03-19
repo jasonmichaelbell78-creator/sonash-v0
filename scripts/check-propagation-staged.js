@@ -40,15 +40,15 @@ const path = require("node:path");
 // ---------------------------------------------------------------------------
 // Sanitize error helper (inline — CLAUDE.md Section 5: sanitizeError pattern)
 // ---------------------------------------------------------------------------
-function sanitizeError(error) {
-  const message = error instanceof Error ? error.message : String(error);
-  return message
-    .replaceAll(/C:\\Users\\[^\\\s]+/gi, "[USER_PATH]")
-    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-    .replaceAll(/\/[^\s]*\/[^\s]+/g, "[PATH]")
-    .replaceAll(/(?:ghp_|github_pat_|glpat-|sk-|token\s*=\s*|Bearer\s+)\S+/gi, "[REDACTED]");
+let sanitizeError;
+try {
+  sanitizeError = require("./lib/sanitize-error");
+} catch {
+  sanitizeError = (err) => {
+    const name = err instanceof Error ? err.name : "Error";
+    const code = err && typeof err === "object" && "code" in err ? String(err.code) : null;
+    return code ? `${name} (${code})` : name;
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -283,7 +283,14 @@ function runCheck(options = {}) {
       if (path.isAbsolute(f)) return false;
       const resolved = path.resolve(baseDir, f);
       const rel = path.relative(baseDir, resolved);
-      return !(/^\.\.(?:[\\/]|$)/.test(rel));
+      if (/^\.\.(?:[\\/]|$)/.test(rel)) return false;
+      // Reject symlinks to prevent reading outside the repo via link targets
+      try {
+        if (lstatSync(resolved).isSymbolicLink()) return false;
+      } catch {
+        return false;
+      }
+      return true;
     });
 
   // Filter to JS/TS files only

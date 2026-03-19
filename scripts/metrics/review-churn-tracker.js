@@ -291,6 +291,22 @@ function writeMetrics(existing, toAppend, needsRewrite) {
   }
 }
 
+/** Build PR → {idx, time} index from existing entries, keeping only the latest per PR. */
+function buildExistingIndex(existing) {
+  const index = new Map();
+  for (let i = 0; i < existing.length; i++) {
+    const e = existing[i];
+    if (!e || typeof e.pr !== "number" || !e.timestamp) continue;
+    const t = new Date(e.timestamp).getTime();
+    if (!Number.isFinite(t)) continue;
+    const prev = index.get(e.pr);
+    if (!prev || t > prev.time) {
+      index.set(e.pr, { idx: i, time: t });
+    }
+  }
+  return index;
+}
+
 function appendMetrics(entries) {
   if (!validateWriteTarget()) return;
 
@@ -300,18 +316,7 @@ function appendMetrics(entries) {
   let needsRewrite = false;
   const toAppend = [];
 
-  // Pre-build index for O(N) dedup instead of O(N*M)
-  const existingIndexByPr = new Map();
-  for (let i = 0; i < existing.length; i++) {
-    const e = existing[i];
-    if (!e || typeof e.pr !== "number" || !e.timestamp) continue;
-    const t = new Date(e.timestamp).getTime();
-    if (!Number.isFinite(t)) continue;
-    const prev = existingIndexByPr.get(e.pr);
-    if (!prev || t > prev.time) {
-      existingIndexByPr.set(e.pr, { idx: i, time: t });
-    }
-  }
+  const existingIndexByPr = buildExistingIndex(existing);
 
   for (const newEntry of entries) {
     const newTimeRaw = newEntry.timestamp ? new Date(newEntry.timestamp).getTime() : Number.NaN;

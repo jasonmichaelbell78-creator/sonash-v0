@@ -131,7 +131,14 @@ function normalizeReviewRecord(eco) {
 
 /** Ensure directory exists and file is not a symlink, then append lines. */
 function safeAppend(filePath, lines) {
-  const dir = path.dirname(filePath);
+  const resolved = path.resolve(filePath);
+  const rel = path.relative(ROOT, resolved);
+  if (/^\.\.(?:[\\/]|$)/.test(rel)) {
+    console.error(`  ERROR: Refusing to write outside repo root: ${resolved}`);
+    process.exit(2);
+  }
+
+  const dir = path.dirname(resolved);
   try {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });

@@ -32,6 +32,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.105   | 2026-03-18               | Review #489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud). 10 fixes: security scan exclusions for test files, symlink staged filter, deterministic error counting, safeAppend root containment, shared sanitizeError, CC extraction. 7 repeat-rejected. |
 | 17.104   | 2026-03-18               | Review #488: PR #448 R3 — Mixed (Qodo+SonarCloud). 10 fixes: resolveLinkPath path traversal, options.stagedFiles validation, DOMPurify FORBID_CONTENTS, churn-tracker latest-index, numeric normalization, CC reductions, token redaction. 8 repeat-rejected. |
 | 17.103   | 2026-03-18               | Review #487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud). 19 fixes: ESLint CJS config for __dirname, no-control-regex block disable, CLI path traversal guard, Promise.allSettled, NaN→Number.NaN propagation, CC reductions. 8 auto-rejected (R1 stale repeats). |
 | 17.102   | 2026-03-18               | Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud). 47 fixes: propagation grep false-positive, migration archived-file fallback, timestamp string→Date.parse (4 files), review_rounds mutation bug, semgrep over-suppression, 9 CC reductions, 4 security hardening, @ts-nocheck removal. 2 rejected. |
@@ -2033,6 +2034,40 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
   formatting runs before pushing to avoid CI failures on generated content.
 - Documentation code examples should follow the same patterns as production code
   (file-read-in-try/catch) to avoid review noise.
+
+---
+
+### Review #489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**PR:** #448 | **Round:** R4 | **Source:** Mixed (CI/Security, Qodo, SonarCloud)
+
+**Items:** 10 fixed, 0 deferred, 7 rejected (repeat from R1/R2/R3)
+
+**Severity Breakdown:** 0 Critical, 1 Major, 5 Minor, 4 Trivial
+
+**Fixes Applied:**
+
+- **Security scan exclusions** (CI, MAJOR): Added wave test files to SEC-002
+  exclude list and test files to SEC-008 exclude.
+- **Symlink staged filter** (Qodo, MINOR): lstatSync rejection in staged filter.
+- **Deterministic error counting** (Qodo, MINOR): Return-value-based errors in
+  processFileChunk instead of mutable callback.
+- **safeAppend root containment** (Qodo, MINOR): path.relative traversal check.
+- **Shared sanitizeError** (Qodo, TRIVIAL): Import from scripts/lib/ instead of
+  inline duplicate.
+- **sanitizeError fallback** (MINOR): Reduced to name+code only.
+- **review_rounds normalize** (Qodo, TRIVIAL): String coercion + truncation.
+- **CC extraction** (SonarCloud): buildExistingIndex from appendMetrics.
+- **Misc** (TRIVIAL): DOMPurify String()+RETURN_DOM, replaceAll propagation.
+
+**Rejections (7):** retro-config "should be Set" (repeat R1-R3 — string.includes).
+
+**Key Learnings:**
+
+- Security scan regex detectors false-positive on test files that assert
+  security patterns exist in rule definitions. Add test exclusions.
+- When changing .replace() to .replaceAll() in source, update test assertions
+  that check for the method name as a string literal.
 
 ---
 
