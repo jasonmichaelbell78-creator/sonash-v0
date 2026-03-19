@@ -87,6 +87,19 @@ function reconcileRoundCounts(latestByPr, reviewCountsByPr) {
   return updated;
 }
 
+/**
+ * Determine if a new entry should replace the existing one for the same PR.
+ * Prefers entries with valid timestamps, and among those, the most recent.
+ */
+function shouldReplaceEntry(existing, entry) {
+  if (!existing) return true;
+  const entryTime = entry.timestamp ? new Date(entry.timestamp).getTime() : Number.NaN;
+  const existingTime = existing.timestamp ? new Date(existing.timestamp).getTime() : Number.NaN;
+  const entryHasTime = Number.isFinite(entryTime);
+  const existingHasTime = Number.isFinite(existingTime);
+  return entryHasTime && (!existingHasTime || entryTime > existingTime);
+}
+
 function dedupMetrics(metricsEntries, reviewCountsByPr) {
   // Group by PR, keeping only the latest entry (by timestamp)
   const latestByPr = new Map();
@@ -97,16 +110,7 @@ function dedupMetrics(metricsEntries, reviewCountsByPr) {
       if (entry) passthrough.push(entry);
       continue;
     }
-    const existing = latestByPr.get(entry.pr);
-
-    const entryTime = entry.timestamp ? new Date(entry.timestamp).getTime() : Number.NaN;
-    const existingTime = existing?.timestamp ? new Date(existing.timestamp).getTime() : Number.NaN;
-    const entryHasTime = Number.isFinite(entryTime);
-    const existingHasTime = Number.isFinite(existingTime);
-    const shouldReplace =
-      !existing || (entryHasTime && (!existingHasTime || entryTime > existingTime));
-
-    if (shouldReplace) {
+    if (shouldReplaceEntry(latestByPr.get(entry.pr), entry)) {
       latestByPr.set(entry.pr, { ...entry });
     }
   }

@@ -2300,269 +2300,177 @@ function checkRoadmapValidation() {
 // HOOK HEALTH (Limited mode — deep analysis of failures, overrides, false positives)
 // ============================================================================
 
-function checkHookHealth() {
-  console.error("  Checking hook health...");
-
-  const now = Date.now();
-  const DAY_MS = 24 * 60 * 60 * 1000;
-  const cutoff7d = now - 7 * DAY_MS;
-  const cutoff24h = now - DAY_MS;
-
-  // --- 1. Parse hook-warnings-log.jsonl (permanent audit trail of hook warnings) ---
-  const warningsLogPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
-  const warningLines = safeReadLines(warningsLogPath);
-  const allWarnings = warningLines.map((l) => safeParse(l)).filter(Boolean);
-
-  const warnings7d = allWarnings.filter((w) => {
-    const t = new Date(w.timestamp).getTime();
-    return !isNaN(t) && t > cutoff7d;
+/**
+ * Filter JSONL entries to those within a time window.
+ */
+function filterByTimestamp(entries, cutoff) {
+  return entries.filter((e) => {
+    const t = new Date(e.timestamp).getTime();
+    return !isNaN(t) && t > cutoff;
   });
-  const warnings24h = allWarnings.filter((w) => {
-    const t = new Date(w.timestamp).getTime();
-    return !isNaN(t) && t > cutoff24h;
-  });
+}
 
-  // Group by hook:type for frequency analysis
-  const warningsByType = Object.create(null);
-  for (const w of warnings7d) {
-    const key = `${w.hook || "unknown"}:${w.type || "unknown"}`;
-    if (!warningsByType[key]) warningsByType[key] = [];
-    warningsByType[key].push(w);
+/**
+ * Group entries by a key extractor function.
+ */
+function groupByKey(entries, keyFn) {
+  const groups = Object.create(null);
+  for (const entry of entries) {
+    const key = keyFn(entry);
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(entry);
   }
+  return groups;
+}
 
-  // --- 2. Parse override-log.jsonl (SKIP_* audit trail) ---
-  const overrideLogPath = path.join(ROOT_DIR, ".claude", "override-log.jsonl");
-  const overrideLines = safeReadLines(overrideLogPath);
-  const allOverrides = overrideLines.map((l) => safeParse(l)).filter(Boolean);
-
-  const overrides7d = allOverrides.filter((o) => {
-    const t = new Date(o.timestamp).getTime();
-    return !isNaN(t) && t > cutoff7d;
-  });
-  const overrides24h = allOverrides.filter((o) => {
-    const t = new Date(o.timestamp).getTime();
-    return !isNaN(t) && t > cutoff24h;
-  });
-
-  // Group overrides by check type
-  const overridesByCheck = Object.create(null);
-  for (const o of overrides7d) {
-    const key = String(o.check || "unknown");
-    if (!overridesByCheck[key]) overridesByCheck[key] = [];
-    overridesByCheck[key].push(o);
-  }
-
-  // C2-G4: Hook-warning-trends — week-over-week comparison
-  const twoWeeksAgo = now - 14 * DAY_MS;
-  const warningsPrevWeek = allWarnings.filter((w) => {
-    const t = new Date(w.timestamp).getTime();
-    return !isNaN(t) && t > twoWeeksAgo && t <= cutoff7d;
-  });
-  const warningTrend = {
-    current_week: warnings7d.length,
-    previous_week: warningsPrevWeek.length,
-  };
-  if (warningsPrevWeek.length > 0) {
-    warningTrend.change_pct = Math.round(
-      ((warnings7d.length - warningsPrevWeek.length) / warningsPrevWeek.length) * 100
-    );
-  }
-  // Alert on significant increase (>50% or 5+ more than last week)
-  if (warningTrend.change_pct > 50 && warnings7d.length - warningsPrevWeek.length >= 5) {
-    addAlert(
-      "hook-health",
-      "warning",
-      `Hook warnings trending up: ${warnings7d.length} this week vs ${warningsPrevWeek.length} last week (+${warningTrend.change_pct}%)`,
-      `Top warning type: ${(() => {
-        const sorted = Object.entries(warningsByType).sort((a, b) => b[1].length - a[1].length);
-        return sorted.length > 0 ? sorted[0][0] : "none";
-      })()}`,
-      "Review hook-warnings-log.jsonl for recurring patterns"
-    );
-  }
-
-  // --- 2b. Parse commit-failures.jsonl (persistent pre-commit failure log) ---
-  const failuresLogPath = path.join(ROOT_DIR, ".claude", "state", "commit-failures.jsonl");
-  const failureLines = safeReadLines(failuresLogPath);
-  const allFailures = failureLines.map((l) => safeParse(l)).filter(Boolean);
-
-  const failures7d = allFailures.filter((f) => {
-    const t = new Date(f.timestamp).getTime();
-    return !isNaN(t) && t > cutoff7d;
-  });
-  const failures24h = allFailures.filter((f) => {
-    const t = new Date(f.timestamp).getTime();
-    return !isNaN(t) && t > cutoff24h;
-  });
-
-  // Group failures by check type
-  const failuresByCheck = Object.create(null);
-  for (const f of failures7d) {
-    const key = String(f.failedCheck || "unknown");
-    if (!failuresByCheck[key]) failuresByCheck[key] = [];
-    failuresByCheck[key].push(f);
-  }
-
-  // Find top failed check
-  let topFailedCheck = null;
-  let topFailedCount = 0;
-  for (const [check, entries] of Object.entries(failuresByCheck)) {
-    if (entries.length > topFailedCount) {
-      topFailedCount = entries.length;
-      topFailedCheck = check;
+/**
+ * Find the entry with the most occurrences in a grouped map.
+ * Returns { key, count } or { key: null, count: 0 }.
+ */
+function findTopEntry(grouped) {
+  let topKey = null;
+  let topCount = 0;
+  for (const [key, entries] of Object.entries(grouped)) {
+    if (entries.length > topCount) {
+      topCount = entries.length;
+      topKey = key;
     }
   }
+  return { key: topKey, count: topCount };
+}
 
-  // --- 3. Parse .git/hook-output.log (most recent pre-commit result) ---
+/**
+ * Parse the last pre-commit hook output log for check results.
+ */
+function parseLastHookOutput() {
   const hookOutputPath = path.join(ROOT_DIR, ".git", "hook-output.log");
-  let lastHookResult = { passed: null, failedChecks: [], passedChecks: [], timestamp: null };
+  const defaultResult = {
+    passed: null,
+    failedChecks: [],
+    passedChecks: [],
+    skippedChecks: [],
+    timestamp: null,
+  };
   try {
     const stat = fs.statSync(hookOutputPath);
     if (stat.size > 2 * 1024 * 1024) {
-      lastHookResult = {
-        passed: null,
-        failedChecks: [],
-        passedChecks: [],
-        skippedChecks: [],
-        timestamp: stat.mtime.toISOString(),
-      };
-    } else {
-      const hookOutput = fs.readFileSync(hookOutputPath, "utf8");
-      const passed = hookOutput.includes("All pre-commit checks passed");
-      const failedChecks = [];
-      const passedChecks = [];
-
-      // Extract check results from output
-      const checkPatterns = [
-        {
-          name: "gitleaks",
-          pass: /\b(no secrets detected|no leaks found|found 0 leaks)\b/i,
-          fail: /(?:\bsecrets detected\b|(?<!no\s)\bleaks found\b|\bfound\s+(?!0\b)\d+\s+leaks\b)/i,
-        },
-        { name: "ESLint", pass: /ESLint passed/i, fail: /ESLint has errors/i },
-        { name: "lint-staged", pass: /Lint-staged passed/i, fail: /Lint-staged failed/i },
-        {
-          name: "pattern-compliance",
-          pass: /Pattern compliance passed/i,
-          fail: /Pattern compliance failed/i,
-        },
-        { name: "tests", pass: /Tests passed/i, fail: /Tests failed/i },
-        {
-          name: "cross-doc-deps",
-          pass: /Cross-document dependencies satisfied/i,
-          fail: /Cross-document dependency check failed/i,
-        },
-        {
-          name: "doc-index",
-          pass: /Documentation index updated/i,
-          fail: /Documentation index generation failed/i,
-        },
-        {
-          name: "doc-headers",
-          pass: /Document headers validated/i,
-          fail: /Document headers.*(failed|error)|check-doc-headers.*(failed|error)/i,
-        },
-        {
-          name: "audit-s0s1",
-          pass: /Audit S0\/S1 validation passed/i,
-          fail: /S0\/S1 validation failed/i,
-        },
-        {
-          name: "debt-schema",
-          pass: /Technical debt schema passed/i,
-          fail: /Technical debt schema validation failed/i,
-        },
-        {
-          name: "agent-compliance",
-          pass: /Agent compliance check passed/i,
-          fail: /Agent compliance.*failed/i,
-        },
-      ];
-
-      for (const cp of checkPatterns) {
-        if (cp.fail.test(hookOutput)) failedChecks.push(cp.name);
-        else if (cp.pass.test(hookOutput)) passedChecks.push(cp.name);
-      }
-
-      // Detect skipped checks
-      const skippedChecks = [];
-      for (const skipMatch of hookOutput.matchAll(/Skipping\s+([^\r\n(]+)/g)) {
-        const name = skipMatch[1].trim();
-        if (name) skippedChecks.push(name);
-      }
-
-      lastHookResult = {
-        passed,
-        failedChecks,
-        passedChecks,
-        skippedChecks,
-        timestamp: stat.mtime.toISOString(),
-      };
+      return { ...defaultResult, timestamp: stat.mtime.toISOString() };
     }
-  } catch {
-    // No hook output log available
-  }
+    const hookOutput = fs.readFileSync(hookOutputPath, "utf8");
+    const passed = hookOutput.includes("All pre-commit checks passed");
+    const failedChecks = [];
+    const passedChecks = [];
 
-  // --- 4. Analyze git log for commit noise (chore: update hook/state commits) ---
-  let noiseCommits7d = 0;
-  let totalCommits7d = 0;
+    const checkPatterns = [
+      {
+        name: "gitleaks",
+        pass: /\b(no secrets detected|no leaks found|found 0 leaks)\b/i,
+        fail: /(?:\bsecrets detected\b|(?<!no\s)\bleaks found\b|\bfound\s+(?!0\b)\d+\s+leaks\b)/i,
+      },
+      { name: "ESLint", pass: /ESLint passed/i, fail: /ESLint has errors/i },
+      { name: "lint-staged", pass: /Lint-staged passed/i, fail: /Lint-staged failed/i },
+      {
+        name: "pattern-compliance",
+        pass: /Pattern compliance passed/i,
+        fail: /Pattern compliance failed/i,
+      },
+      { name: "tests", pass: /Tests passed/i, fail: /Tests failed/i },
+      {
+        name: "cross-doc-deps",
+        pass: /Cross-document dependencies satisfied/i,
+        fail: /Cross-document dependency check failed/i,
+      },
+      {
+        name: "doc-index",
+        pass: /Documentation index updated/i,
+        fail: /Documentation index generation failed/i,
+      },
+      {
+        name: "doc-headers",
+        pass: /Document headers validated/i,
+        fail: /Document headers.*(failed|error)|check-doc-headers.*(failed|error)/i,
+      },
+      {
+        name: "audit-s0s1",
+        pass: /Audit S0\/S1 validation passed/i,
+        fail: /S0\/S1 validation failed/i,
+      },
+      {
+        name: "debt-schema",
+        pass: /Technical debt schema passed/i,
+        fail: /Technical debt schema validation failed/i,
+      },
+      {
+        name: "agent-compliance",
+        pass: /Agent compliance check passed/i,
+        fail: /Agent compliance.*failed/i,
+      },
+    ];
+
+    for (const cp of checkPatterns) {
+      if (cp.fail.test(hookOutput)) failedChecks.push(cp.name);
+      else if (cp.pass.test(hookOutput)) passedChecks.push(cp.name);
+    }
+
+    const skippedChecks = [];
+    for (const skipMatch of hookOutput.matchAll(/Skipping\s+([^\r\n(]+)/g)) {
+      const name = skipMatch[1].trim();
+      if (name) skippedChecks.push(name);
+    }
+
+    return {
+      passed,
+      failedChecks,
+      passedChecks,
+      skippedChecks,
+      timestamp: stat.mtime.toISOString(),
+    };
+  } catch {
+    return defaultResult;
+  }
+}
+
+/**
+ * Analyze git log for commit noise (chore: update hook/state commits).
+ */
+function analyzeCommitNoise(cutoff7d) {
   try {
     const since7d = new Date(cutoff7d).toISOString().split("T")[0];
     const logResult = runCommandSafe("git", ["log", "--oneline", `--since=${since7d}`], {
       timeout: 10000,
     });
     const logLines = (logResult.output || "").trim().split("\n").filter(Boolean);
-    totalCommits7d = logLines.length;
     const noisePattern = /\bchore:.*(?:update (?:hook|fetch)|rotate|housekeeping.*state)/i;
-    noiseCommits7d = logLines.filter((l) => noisePattern.test(l)).length;
+    return {
+      total: logLines.length,
+      noise: logLines.filter((l) => noisePattern.test(l)).length,
+    };
   } catch {
-    // git log failure is non-fatal
+    return { total: 0, noise: 0 };
   }
+}
 
-  // --- 5. Compute metrics ---
-  const warningsCount7d = warnings7d.length;
-  const failureRate7d = warningsCount7d;
+/**
+ * Generate hook-health alerts based on computed metrics.
+ */
+function generateHookHealthAlerts(metrics) {
+  const {
+    lastHookResult,
+    failureRate7d,
+    overrideRate7d,
+    falsePositiveRatio,
+    noiseRatio,
+    noiseCommits7d,
+    totalCommits7d,
+    topWarningType,
+    topWarningCount,
+    topOverriddenCheck,
+    topOverriddenCount,
+    commitFailureCount7d,
+    topFailedCheck,
+    topFailedCount,
+  } = metrics;
 
-  const _errorsCount7d = warnings7d.filter((w) => {
-    const sev = String(w.severity || "").toLowerCase();
-    return sev === "error";
-  }).length;
-  const overrideRate7d = overrides7d.length;
-
-  // False-positive indicator: high override-to-warning ratio suggests checks are too aggressive
-  const falsePositiveRatio =
-    failureRate7d === 0
-      ? overrideRate7d > 0
-        ? 100
-        : 0
-      : Math.round((overrideRate7d / failureRate7d) * 100);
-
-  // Noise ratio: % of commits that are hook state housekeeping
-  const noiseRatio = totalCommits7d > 0 ? Math.round((noiseCommits7d / totalCommits7d) * 100) : 0;
-
-  // Most-overridden check (likely false-positive candidate)
-  let topOverriddenCheck = null;
-  let topOverriddenCount = 0;
-  for (const [check, entries] of Object.entries(overridesByCheck)) {
-    if (entries.length > topOverriddenCount) {
-      topOverriddenCount = entries.length;
-      topOverriddenCheck = check;
-    }
-  }
-
-  // Most-warned hook:type combo
-  let topWarningType = null;
-  let topWarningCount = 0;
-  for (const [type, entries] of Object.entries(warningsByType)) {
-    if (entries.length > topWarningCount) {
-      topWarningCount = entries.length;
-      topWarningType = type;
-    }
-  }
-
-  // --- 6. Generate alerts based on benchmarks ---
-
-  // Last hook run failed
   if (lastHookResult.passed === false) {
     const failList = lastHookResult.failedChecks.join(", ") || "unknown checks";
     addAlert(
@@ -2574,7 +2482,6 @@ function checkHookHealth() {
     );
   }
 
-  // High warning volume (7d)
   if (failureRate7d >= BENCHMARKS.hook_health.warnings_7d.poor) {
     addAlert(
       "hook-health",
@@ -2593,7 +2500,6 @@ function checkHookHealth() {
     );
   }
 
-  // High override rate
   if (overrideRate7d >= BENCHMARKS.hook_health.overrides_7d.poor) {
     addAlert(
       "hook-health",
@@ -2604,7 +2510,6 @@ function checkHookHealth() {
     );
   }
 
-  // High false-positive ratio
   if (overrideRate7d >= 3 && falsePositiveRatio >= BENCHMARKS.hook_health.false_positive_pct.poor) {
     addAlert(
       "hook-health",
@@ -2615,7 +2520,6 @@ function checkHookHealth() {
     );
   }
 
-  // Commit noise
   if (noiseRatio >= BENCHMARKS.hook_health.noise_ratio.poor) {
     addAlert(
       "hook-health",
@@ -2634,8 +2538,6 @@ function checkHookHealth() {
     );
   }
 
-  // Commit failures (from commit-failures.jsonl)
-  const commitFailureCount7d = failures7d.length;
   if (commitFailureCount7d >= BENCHMARKS.hook_health.commit_failures_7d.poor) {
     addAlert(
       "hook-health",
@@ -2654,7 +2556,6 @@ function checkHookHealth() {
     );
   }
 
-  // Repeated failure on same check (3+ times in 7d suggests rule needs review)
   if (topFailedCount >= 3) {
     addAlert(
       "hook-health",
@@ -2665,7 +2566,6 @@ function checkHookHealth() {
     );
   }
 
-  // All clear
   if (
     failureRate7d === 0 &&
     overrideRate7d === 0 &&
@@ -2681,17 +2581,108 @@ function checkHookHealth() {
       null
     );
   }
+}
 
-  // --- 7. Rate and context ---
-  const warningRating = rateLowerBetter(failureRate7d, BENCHMARKS.hook_health.warnings_7d);
-  const overrideRating = rateLowerBetter(overrideRate7d, BENCHMARKS.hook_health.overrides_7d);
-  const noiseRating = rateLowerBetter(noiseRatio, BENCHMARKS.hook_health.noise_ratio);
+function checkHookHealth() {
+  console.error("  Checking hook health...");
 
-  const commitFailureRating = rateLowerBetter(
-    commitFailureCount7d,
-    BENCHMARKS.hook_health.commit_failures_7d
+  const now = Date.now();
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const cutoff7d = now - 7 * DAY_MS;
+  const cutoff24h = now - DAY_MS;
+
+  // --- 1. Parse hook-warnings-log.jsonl ---
+  const warningsLogPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
+  const allWarnings = safeReadLines(warningsLogPath)
+    .map((l) => safeParse(l))
+    .filter(Boolean);
+  const warnings7d = filterByTimestamp(allWarnings, cutoff7d);
+  const warnings24h = filterByTimestamp(allWarnings, cutoff24h);
+  const warningsByType = groupByKey(
+    warnings7d,
+    (w) => `${w.hook || "unknown"}:${w.type || "unknown"}`
   );
 
+  // --- 2. Parse override-log.jsonl ---
+  const overrideLogPath = path.join(ROOT_DIR, ".claude", "override-log.jsonl");
+  const allOverrides = safeReadLines(overrideLogPath)
+    .map((l) => safeParse(l))
+    .filter(Boolean);
+  const overrides7d = filterByTimestamp(allOverrides, cutoff7d);
+  const overrides24h = filterByTimestamp(allOverrides, cutoff24h);
+  const overridesByCheck = groupByKey(overrides7d, (o) => String(o.check || "unknown"));
+
+  // C2-G4: Hook-warning-trends — week-over-week comparison
+  const twoWeeksAgo = now - 14 * DAY_MS;
+  const warningsPrevWeek = allWarnings.filter((w) => {
+    const t = new Date(w.timestamp).getTime();
+    return !isNaN(t) && t > twoWeeksAgo && t <= cutoff7d;
+  });
+  if (warningsPrevWeek.length > 0) {
+    const changePct = Math.round(
+      ((warnings7d.length - warningsPrevWeek.length) / warningsPrevWeek.length) * 100
+    );
+    if (changePct > 50 && warnings7d.length - warningsPrevWeek.length >= 5) {
+      const topType = findTopEntry(warningsByType);
+      addAlert(
+        "hook-health",
+        "warning",
+        `Hook warnings trending up: ${warnings7d.length} this week vs ${warningsPrevWeek.length} last week (+${changePct}%)`,
+        `Top warning type: ${topType.key || "none"}`,
+        "Review hook-warnings-log.jsonl for recurring patterns"
+      );
+    }
+  }
+
+  // --- 2b. Parse commit-failures.jsonl ---
+  const failuresLogPath = path.join(ROOT_DIR, ".claude", "state", "commit-failures.jsonl");
+  const allFailures = safeReadLines(failuresLogPath)
+    .map((l) => safeParse(l))
+    .filter(Boolean);
+  const failures7d = filterByTimestamp(allFailures, cutoff7d);
+  const failures24h = filterByTimestamp(allFailures, cutoff24h);
+  const failuresByCheck = groupByKey(failures7d, (f) => String(f.failedCheck || "unknown"));
+  const topFailed = findTopEntry(failuresByCheck);
+
+  // --- 3. Parse hook-output.log ---
+  const lastHookResult = parseLastHookOutput();
+
+  // --- 4. Commit noise ---
+  const commits = analyzeCommitNoise(cutoff7d);
+
+  // --- 5. Compute metrics ---
+  const failureRate7d = warnings7d.length;
+  const overrideRate7d = overrides7d.length;
+  const falsePositiveRatio =
+    failureRate7d === 0
+      ? overrideRate7d > 0
+        ? 100
+        : 0
+      : Math.round((overrideRate7d / failureRate7d) * 100);
+  const noiseRatio = commits.total > 0 ? Math.round((commits.noise / commits.total) * 100) : 0;
+  const topOverridden = findTopEntry(overridesByCheck);
+  const topWarning = findTopEntry(warningsByType);
+  const commitFailureCount7d = failures7d.length;
+
+  // --- 6. Generate alerts ---
+  generateHookHealthAlerts({
+    lastHookResult,
+    failureRate7d,
+    overrideRate7d,
+    falsePositiveRatio,
+    noiseRatio,
+    noiseCommits7d: commits.noise,
+    totalCommits7d: commits.total,
+    topWarningType: topWarning.key,
+    topWarningCount: topWarning.count,
+    topOverriddenCheck: topOverridden.key,
+    topOverriddenCount: topOverridden.count,
+    commitFailureCount7d,
+    topFailedCheck: topFailed.key,
+    topFailedCount: topFailed.count,
+  });
+
+  // --- 7. Rate and context ---
   addContext("hook-health", {
     benchmarks: {
       warnings_7d: BENCHMARKS.hook_health.warnings_7d,
@@ -2701,10 +2692,13 @@ function checkHookHealth() {
       commit_failures_7d: BENCHMARKS.hook_health.commit_failures_7d,
     },
     ratings: {
-      warnings: warningRating,
-      overrides: overrideRating,
-      noise: noiseRating,
-      commit_failures: commitFailureRating,
+      warnings: rateLowerBetter(failureRate7d, BENCHMARKS.hook_health.warnings_7d),
+      overrides: rateLowerBetter(overrideRate7d, BENCHMARKS.hook_health.overrides_7d),
+      noise: rateLowerBetter(noiseRatio, BENCHMARKS.hook_health.noise_ratio),
+      commit_failures: rateLowerBetter(
+        commitFailureCount7d,
+        BENCHMARKS.hook_health.commit_failures_7d
+      ),
     },
     totals: {
       warnings_24h: warnings24h.length,
@@ -2712,16 +2706,16 @@ function checkHookHealth() {
       overrides_24h: overrides24h.length,
       overrides_7d: overrideRate7d,
       false_positive_pct: falsePositiveRatio,
-      noise_commits_7d: noiseCommits7d,
-      total_commits_7d: totalCommits7d,
+      noise_commits_7d: commits.noise,
+      total_commits_7d: commits.total,
       noise_ratio: noiseRatio,
-      top_warning_type: topWarningType,
-      top_overridden_check: topOverriddenCheck,
+      top_warning_type: topWarning.key,
+      top_overridden_check: topOverridden.key,
       last_hook_passed: lastHookResult.passed,
       last_hook_failed_checks: lastHookResult.failedChecks,
       failure_count_7d: commitFailureCount7d,
       failure_count_24h: failures24h.length,
-      top_failed_check: topFailedCheck,
+      top_failed_check: topFailed.key,
       failures_by_check: failuresByCheck,
     },
   });
@@ -2731,6 +2725,181 @@ function checkHookHealth() {
 // HOOK COMPLETENESS (D25 — check coverage, skip frequency, duration trends)
 // ============================================================================
 
+/**
+ * Collect all check IDs seen in a set of hook runs.
+ * @param {object[]} runs - Hook run records
+ * @returns {Set<string>}
+ */
+function collectSeenCheckIds(runs) {
+  const seenCheckIds = new Set();
+  for (const run of runs) {
+    if (Array.isArray(run.checks)) {
+      for (const c of run.checks) {
+        if (c.id) seenCheckIds.add(c.id);
+      }
+    }
+  }
+  return seenCheckIds;
+}
+
+/**
+ * Find manifest checks missing from recent hook runs.
+ * @param {object|null} manifest - Parsed hook-checks.json
+ * @param {object[]} runs7d - Runs from last 7 days
+ * @returns {string[]} - Missing check IDs
+ */
+function findMissingChecks(manifest, runs7d) {
+  if (!manifest || !Array.isArray(manifest.checks) || runs7d.length === 0) return [];
+  const seenCheckIds = collectSeenCheckIds(runs7d);
+  return manifest.checks.filter((c) => !seenCheckIds.has(c.id)).map((c) => c.id);
+}
+
+/**
+ * Alert for missing manifest checks.
+ */
+function alertMissingChecks(missingChecks) {
+  if (missingChecks.length === 0) return;
+  const severity =
+    missingChecks.length >= BENCHMARKS.hook_completeness.missing_checks.poor
+      ? "error"
+      : missingChecks.length >= BENCHMARKS.hook_completeness.missing_checks.average
+        ? "warning"
+        : "info";
+  addAlert(
+    "hook-completeness",
+    severity,
+    `${missingChecks.length} manifest-registered check(s) not seen in hook-runs in last 7 days`,
+    `Missing: ${missingChecks.slice(0, 5).join(", ")}${missingChecks.length > 5 ? ` (+${missingChecks.length - 5} more)` : ""}`,
+    "Verify these checks are active in .husky/pre-commit or .husky/pre-push"
+  );
+}
+
+/**
+ * Compute per-check run/skip counts from runs.
+ * @returns {Object<string, {total: number, skipped: number}>}
+ */
+function computeCheckRunCounts(runs) {
+  const counts = Object.create(null);
+  for (const run of runs) {
+    if (Array.isArray(run.checks)) {
+      for (const c of run.checks) {
+        if (!c.id) continue;
+        if (!counts[c.id]) counts[c.id] = { total: 0, skipped: 0 };
+        counts[c.id].total++;
+        if (c.status === "skip") counts[c.id].skipped++;
+      }
+    }
+  }
+  return counts;
+}
+
+/**
+ * Find checks with high skip frequency (>50%).
+ */
+function findHighSkipChecks(runs7d) {
+  const checkRunCounts = computeCheckRunCounts(runs7d);
+  const highSkipChecks = [];
+  for (const [checkId, counts] of Object.entries(checkRunCounts)) {
+    if (counts.total >= 2) {
+      const skipPct = Math.round((counts.skipped / counts.total) * 100);
+      if (skipPct > 50) {
+        highSkipChecks.push({ id: checkId, skipPct, total: counts.total, skipped: counts.skipped });
+      }
+    }
+  }
+  return highSkipChecks;
+}
+
+/**
+ * Alert for checks with high skip frequency.
+ */
+function alertHighSkipChecks(highSkipChecks) {
+  if (highSkipChecks.length === 0) return;
+  const severity =
+    highSkipChecks.length >= BENCHMARKS.hook_completeness.high_skip_checks.poor
+      ? "warning"
+      : "info";
+  const sortedSkips = highSkipChecks.sort((a, b) => b.skipPct - a.skipPct);
+  const topSkip = sortedSkips[0];
+  if (topSkip) {
+    addAlert(
+      "hook-completeness",
+      severity,
+      `${highSkipChecks.length} check(s) skipped >50% of runs in last 7 days`,
+      `Worst: "${topSkip.id}" skipped ${topSkip.skipPct}% (${topSkip.skipped}/${topSkip.total})`,
+      "Review SKIP_CHECKS usage — frequent skips may indicate false positives or misconfiguration"
+    );
+  }
+}
+
+/**
+ * Build a map of check ID -> array of durations from runs.
+ */
+function buildDurationMap(runs) {
+  const map = Object.create(null);
+  for (const run of runs) {
+    if (Array.isArray(run.checks)) {
+      for (const c of run.checks) {
+        if (!c.id || typeof c.duration_ms !== "number" || c.status === "skip") continue;
+        if (!map[c.id]) map[c.id] = [];
+        map[c.id].push(c.duration_ms);
+      }
+    }
+  }
+  return map;
+}
+
+/**
+ * Find checks with >50% average duration increase between two periods.
+ */
+function findDurationRegressions(runs7d, runsPrev7d) {
+  if (runsPrev7d.length === 0) return [];
+  const currentDurations = buildDurationMap(runs7d);
+  const prevDurations = buildDurationMap(runsPrev7d);
+  const regressions = [];
+
+  for (const [checkId, currentTimes] of Object.entries(currentDurations)) {
+    const prevTimes = prevDurations[checkId];
+    if (!prevTimes || prevTimes.length === 0) continue;
+    const currentAvg = currentTimes.reduce((a, b) => a + b, 0) / currentTimes.length;
+    const prevAvg = prevTimes.reduce((a, b) => a + b, 0) / prevTimes.length;
+    if (prevAvg > 0) {
+      const pctIncrease = Math.round(((currentAvg - prevAvg) / prevAvg) * 100);
+      if (pctIncrease > 50) {
+        regressions.push({
+          id: checkId,
+          currentAvgMs: Math.round(currentAvg),
+          prevAvgMs: Math.round(prevAvg),
+          pctIncrease,
+        });
+      }
+    }
+  }
+  return regressions;
+}
+
+/**
+ * Alert for duration regressions.
+ */
+function alertDurationRegressions(durationRegressions) {
+  if (durationRegressions.length === 0) return;
+  const severity =
+    durationRegressions.length >= BENCHMARKS.hook_completeness.duration_regressions.poor
+      ? "warning"
+      : "info";
+  const sortedRegressions = durationRegressions.sort((a, b) => b.pctIncrease - a.pctIncrease);
+  const worst = sortedRegressions[0];
+  if (worst) {
+    addAlert(
+      "hook-completeness",
+      severity,
+      `${durationRegressions.length} check(s) with >50% avg duration increase vs prior 7 days`,
+      `Worst: "${worst.id}" ${worst.prevAvgMs}ms -> ${worst.currentAvgMs}ms (+${worst.pctIncrease}%)`,
+      "Investigate slow checks — may indicate new code complexity or environmental issues"
+    );
+  }
+}
+
 function checkHookCompleteness() {
   console.error("  Checking hook completeness...");
 
@@ -2738,18 +2907,15 @@ function checkHookCompleteness() {
   const manifestPath = path.join(ROOT_DIR, "scripts", "config", "hook-checks.json");
 
   // --- 1. Read hook-runs.jsonl ---
-  // Size guard — skip if file is too large
   try {
     const runsStat = fs.statSync(hookRunsPath);
-    if (runsStat.size > 2 * 1024 * 1024) {
-      // File too large — skip completeness check
-      return;
-    }
+    if (runsStat.size > 2 * 1024 * 1024) return;
   } catch {
-    /* statSync failure — proceed without size guard, safeReadLines handles gracefully */
+    /* statSync failure — proceed without size guard */
   }
-  const runLines = safeReadLines(hookRunsPath);
-  const allRuns = runLines.map((l) => safeParse(l)).filter(Boolean);
+  const allRuns = safeReadLines(hookRunsPath)
+    .map((l) => safeParse(l))
+    .filter(Boolean);
 
   if (allRuns.length === 0) {
     addAlert(
@@ -2771,7 +2937,6 @@ function checkHookCompleteness() {
       manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
     }
   } catch (err) {
-    // manifest missing or invalid — log for debuggability
     console.error("checkHookCompleteness: manifest read failed:", sanitizeError(err));
   }
 
@@ -2780,7 +2945,6 @@ function checkHookCompleteness() {
   const cutoff7d = now - 7 * DAY_MS;
   const cutoff14d = now - 14 * DAY_MS;
 
-  // Filter runs to last 7 days and prior 7 days
   const runs7d = allRuns.filter((r) => {
     const t = new Date(r.timestamp).getTime();
     return !Number.isNaN(t) && t > cutoff7d;
@@ -2790,145 +2954,17 @@ function checkHookCompleteness() {
     return !Number.isNaN(t) && t > cutoff14d && t <= cutoff7d;
   });
 
-  // --- 3. Check coverage: manifest checks vs. hook-runs entries ---
-  const missingChecks = [];
-  if (manifest && Array.isArray(manifest.checks) && runs7d.length > 0) {
-    // Collect all check IDs that appeared in runs from last 7 days
-    const seenCheckIds = new Set();
-    for (const run of runs7d) {
-      if (Array.isArray(run.checks)) {
-        for (const c of run.checks) {
-          if (c.id) seenCheckIds.add(c.id);
-        }
-      }
-    }
+  // --- 3. Coverage ---
+  const missingChecks = findMissingChecks(manifest, runs7d);
+  alertMissingChecks(missingChecks);
 
-    // Compare against manifest
-    for (const check of manifest.checks) {
-      if (!seenCheckIds.has(check.id)) {
-        missingChecks.push(check.id);
-      }
-    }
-  }
+  // --- 4. Skip frequency ---
+  const highSkipChecks = findHighSkipChecks(runs7d);
+  alertHighSkipChecks(highSkipChecks);
 
-  if (missingChecks.length > 0) {
-    const severity =
-      missingChecks.length >= BENCHMARKS.hook_completeness.missing_checks.poor
-        ? "error"
-        : missingChecks.length >= BENCHMARKS.hook_completeness.missing_checks.average
-          ? "warning"
-          : "info";
-    addAlert(
-      "hook-completeness",
-      severity,
-      `${missingChecks.length} manifest-registered check(s) not seen in hook-runs in last 7 days`,
-      `Missing: ${missingChecks.slice(0, 5).join(", ")}${missingChecks.length > 5 ? ` (+${missingChecks.length - 5} more)` : ""}`,
-      "Verify these checks are active in .husky/pre-commit or .husky/pre-push"
-    );
-  }
-
-  // --- 4. Skip frequency: flag checks skipped >50% of runs in last 7 days ---
-  const checkRunCounts = Object.create(null); // { checkId: { total: N, skipped: N } }
-  for (const run of runs7d) {
-    if (Array.isArray(run.checks)) {
-      for (const c of run.checks) {
-        if (!c.id) continue;
-        if (!checkRunCounts[c.id]) checkRunCounts[c.id] = { total: 0, skipped: 0 };
-        checkRunCounts[c.id].total++;
-        if (c.status === "skip") {
-          checkRunCounts[c.id].skipped++;
-        }
-      }
-    }
-  }
-
-  const highSkipChecks = [];
-  for (const [checkId, counts] of Object.entries(checkRunCounts)) {
-    if (counts.total >= 2) {
-      const skipPct = Math.round((counts.skipped / counts.total) * 100);
-      if (skipPct > 50) {
-        highSkipChecks.push({ id: checkId, skipPct, total: counts.total, skipped: counts.skipped });
-      }
-    }
-  }
-
-  if (highSkipChecks.length > 0) {
-    const severity =
-      highSkipChecks.length >= BENCHMARKS.hook_completeness.high_skip_checks.poor
-        ? "warning"
-        : "info";
-    const sortedSkips = highSkipChecks.sort((a, b) => b.skipPct - a.skipPct);
-    const topSkip = sortedSkips.length > 0 ? sortedSkips[0] : null;
-    if (topSkip) {
-      addAlert(
-        "hook-completeness",
-        severity,
-        `${highSkipChecks.length} check(s) skipped >50% of runs in last 7 days`,
-        `Worst: "${topSkip.id}" skipped ${topSkip.skipPct}% (${topSkip.skipped}/${topSkip.total})`,
-        "Review SKIP_CHECKS usage — frequent skips may indicate false positives or misconfiguration"
-      );
-    }
-  }
-
-  // --- 5. Duration trends: flag checks with >50% avg duration increase vs prior 7 days ---
-  const durationRegressions = [];
-  if (runsPrev7d.length > 0) {
-    // Build avg duration maps for current and prior 7 days
-    const buildDurationMap = (runs) => {
-      const map = Object.create(null); // { checkId: [durations] }
-      for (const run of runs) {
-        if (Array.isArray(run.checks)) {
-          for (const c of run.checks) {
-            if (!c.id || typeof c.duration_ms !== "number" || c.status === "skip") continue;
-            if (!map[c.id]) map[c.id] = [];
-            map[c.id].push(c.duration_ms);
-          }
-        }
-      }
-      return map;
-    };
-
-    const currentDurations = buildDurationMap(runs7d);
-    const prevDurations = buildDurationMap(runsPrev7d);
-
-    for (const [checkId, currentTimes] of Object.entries(currentDurations)) {
-      const prevTimes = prevDurations[checkId];
-      if (!prevTimes || prevTimes.length === 0) continue;
-
-      const currentAvg = currentTimes.reduce((a, b) => a + b, 0) / currentTimes.length;
-      const prevAvg = prevTimes.reduce((a, b) => a + b, 0) / prevTimes.length;
-
-      if (prevAvg > 0) {
-        const pctIncrease = Math.round(((currentAvg - prevAvg) / prevAvg) * 100);
-        if (pctIncrease > 50) {
-          durationRegressions.push({
-            id: checkId,
-            currentAvgMs: Math.round(currentAvg),
-            prevAvgMs: Math.round(prevAvg),
-            pctIncrease,
-          });
-        }
-      }
-    }
-  }
-
-  if (durationRegressions.length > 0) {
-    const severity =
-      durationRegressions.length >= BENCHMARKS.hook_completeness.duration_regressions.poor
-        ? "warning"
-        : "info";
-    const sortedRegressions = durationRegressions.sort((a, b) => b.pctIncrease - a.pctIncrease);
-    const worst = sortedRegressions.length > 0 ? sortedRegressions[0] : null;
-    if (worst) {
-      addAlert(
-        "hook-completeness",
-        severity,
-        `${durationRegressions.length} check(s) with >50% avg duration increase vs prior 7 days`,
-        `Worst: "${worst.id}" ${worst.prevAvgMs}ms -> ${worst.currentAvgMs}ms (+${worst.pctIncrease}%)`,
-        "Investigate slow checks — may indicate new code complexity or environmental issues"
-      );
-    }
-  }
+  // --- 5. Duration trends ---
+  const durationRegressions = findDurationRegressions(runs7d, runsPrev7d);
+  alertDurationRegressions(durationRegressions);
 
   // All clear
   if (

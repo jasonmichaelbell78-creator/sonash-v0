@@ -561,6 +561,36 @@ function runDefinedTestCases(stats, hookFile, hookPath, testDef) {
   }
 }
 
+// Hook Contract Manifest Validation helper
+function runManifestValidation(stats) {
+  log("📄 hook-checks.json (manifest)", "yellow");
+  try {
+    const { validate } = require("./validate-hook-manifest");
+    const manifestResult = validate();
+    recordResult(
+      stats,
+      "hook-checks.json",
+      "Manifest validation",
+      manifestResult.passed,
+      manifestResult.errors.length > 0 ? manifestResult.errors.join("; ") : ""
+    );
+    if (manifestResult.passed) {
+      log(`  ${manifestResult.summary}`, "green");
+    } else {
+      log(`  ${manifestResult.summary}`, "red");
+    }
+    if (manifestResult.warnings.length > 0) {
+      for (const w of manifestResult.warnings) {
+        log(`  ⚠️  ${w}`, "yellow");
+      }
+    }
+  } catch (err) {
+    const { sanitizeError } = require("./lib/sanitize-error.js");
+    const errorMsg = sanitizeError(err);
+    recordResult(stats, "hook-checks.json", "Manifest validation", false, errorMsg);
+  }
+}
+
 // Main test runner
 function runTests() {
   log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "blue");
@@ -610,32 +640,7 @@ function runTests() {
   }
 
   // --- Hook Contract Manifest Validation (Wave 1, D24) ---
-  log("📄 hook-checks.json (manifest)", "yellow");
-  try {
-    const { validate } = require("./validate-hook-manifest");
-    const manifestResult = validate();
-    recordResult(
-      stats,
-      "hook-checks.json",
-      "Manifest validation",
-      manifestResult.passed,
-      manifestResult.errors.length > 0 ? manifestResult.errors.join("; ") : ""
-    );
-    if (manifestResult.passed) {
-      log(`  ${manifestResult.summary}`, "green");
-    } else {
-      log(`  ${manifestResult.summary}`, "red");
-    }
-    if (manifestResult.warnings.length > 0) {
-      for (const w of manifestResult.warnings) {
-        log(`  ⚠️  ${w}`, "yellow");
-      }
-    }
-  } catch (err) {
-    const { sanitizeError } = require("./lib/sanitize-error.js");
-    const errorMsg = sanitizeError(err);
-    recordResult(stats, "hook-checks.json", "Manifest validation", false, errorMsg);
-  }
+  runManifestValidation(stats);
   log(""); // Blank line
 
   // Summary
