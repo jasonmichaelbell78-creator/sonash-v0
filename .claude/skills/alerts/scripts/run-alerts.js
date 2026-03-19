@@ -85,6 +85,14 @@ function findProjectRoot() {
 
 const ROOT_DIR = findProjectRoot();
 const args = process.argv.slice(2);
+const validFlags = ["--limited", "--full"];
+const unknownFlags = args.filter((a) => a.startsWith("--") && !validFlags.includes(a));
+if (unknownFlags.length > 0) {
+  console.error(
+    `Unknown flag(s): ${unknownFlags.join(", ")}\nUsage: node run-alerts.js [--limited|--full]`
+  );
+  process.exit(1);
+}
 const isFullMode = args.includes("--full");
 
 // ============================================================================
@@ -4228,10 +4236,26 @@ function appendHealthScoreLog() {
       summary: results.summary,
       categoryScores,
     });
-    if (isSafeToWrite(logPath)) {
-      fs.appendFileSync(logPath, entry + "\n");
-    } else {
-      console.error(`  [warn] Symlink guard blocked write to ${path.basename(logPath)}`);
+    const tmpPath = `${logPath}.${process.pid}.tmp`;
+    try {
+      let existing = "";
+      if (fs.existsSync(logPath)) {
+        existing = fs.readFileSync(logPath, "utf8");
+      }
+      if (!isSafeToWrite(tmpPath)) return;
+      fs.writeFileSync(tmpPath, existing + entry + "\n");
+      fs.renameSync(tmpPath, logPath);
+    } catch (renameErr) {
+      try {
+        fs.copyFileSync(tmpPath, logPath);
+        try {
+          fs.unlinkSync(tmpPath);
+        } catch {
+          /* ignore */
+        }
+      } catch {
+        /* ignore — original appendFileSync was best-effort too */
+      }
     }
   } catch (err) {
     console.error(`  [warn] Failed to append health score log: ${safeErrorMsg(err)}`);

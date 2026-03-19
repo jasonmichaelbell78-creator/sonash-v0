@@ -264,6 +264,9 @@ failures escalated to user), warnings acknowledged, goal selected.
 
 - **Neighbors:** `session-end` (receives session context), `checkpoint`
   (mid-session state), `alerts` (detailed health drill-down)
+  - Note: `/alerts` uses `.claude/tmp/alerts-progress-{date}.json` for
+    compaction resilience. If this file exists and is <2h old, alerts will offer
+    to resume a previous session.
 - **Handoff to session-end:** SESSION_CONTEXT.md updated with session number and
   current work. Script results marked as "Ran" or "Failed."
 - **Reference material:** See [REFERENCE.md](./REFERENCE.md) for skill routing,

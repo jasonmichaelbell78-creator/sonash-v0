@@ -1,8 +1,8 @@
 # Claude Code Command Reference (Index)
 
 <!-- prettier-ignore-start -->
-**Version:** 5.7
-**Last Updated:** 2026-03-10
+**Version:** 5.8
+**Last Updated:** 2026-03-19
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 

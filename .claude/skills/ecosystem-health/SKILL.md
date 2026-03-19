@@ -49,7 +49,10 @@ D#31). Audited by `/health-ecosystem-audit` D4: Consumer Integration (D#47).
 
 ## When NOT to Use
 
-- For quick alert triage: use `/alerts` instead
+- For quick alert triage: use `/alerts` instead. `/alerts` is a lightweight
+  health signal (18 categories, 15-30s). `/ecosystem-health` is the full
+  interactive dashboard (8 weighted categories, 10-15min). Use `/alerts` for
+  quick warnings; `/ecosystem-health` for deep triage.
 - For auditing the health infrastructure itself (checkers, scoring logic, data
   pipelines): use `/health-ecosystem-audit`. This skill _uses_ the health
   infrastructure; that skill _audits_ it.
