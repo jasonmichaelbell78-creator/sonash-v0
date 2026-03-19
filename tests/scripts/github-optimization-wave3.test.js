@@ -76,12 +76,18 @@ describe("3.1a: no-direct-firestore-write rule tuning", () => {
     const content = readFile(rulePath);
     assert.ok(yamlContains(content, "journal"), "Should reference journal collection");
     assert.ok(yamlContains(content, "daily_logs"), "Should reference daily_logs collection");
-    assert.ok(yamlContains(content, "inventoryEntries"), "Should reference inventoryEntries collection");
+    assert.ok(
+      yamlContains(content, "inventoryEntries"),
+      "Should reference inventoryEntries collection"
+    );
   });
 
   it("uses metavariable-regex for collection filtering", () => {
     const content = readFile(rulePath);
-    assert.ok(yamlContains(content, "metavariable-regex"), "Should use metavariable-regex for collection matching");
+    assert.ok(
+      yamlContains(content, "metavariable-regex"),
+      "Should use metavariable-regex for collection matching"
+    );
     assert.ok(
       yamlContains(content, "journal|daily_logs|inventoryEntries"),
       "Should have regex matching all three protected collections"
@@ -205,10 +211,7 @@ describe("3.1d: no-unchecked-array-access rule tuning", () => {
 
   it("scopes to functions/src/ only (not scripts/)", () => {
     const content = readFile(rulePath);
-    assert.ok(
-      yamlContains(content, "- functions/src/"),
-      "Should include functions/src/"
-    );
+    assert.ok(yamlContains(content, "- functions/src/"), "Should include functions/src/");
     // scripts/ should NOT be in include section
     const lines = content.split("\n");
     let inInclude = false;
@@ -404,10 +407,7 @@ describe("3.2c: account-linking.ts error sanitization", () => {
 
   it("uses error code as internal message instead", () => {
     const content = readFile(filePath);
-    assert.ok(
-      yamlContains(content, "Auth error:"),
-      "Should use safe Auth error: prefix with code"
-    );
+    assert.ok(yamlContains(content, "Auth error:"), "Should use safe Auth error: prefix with code");
   });
 
   it("still provides userMessage from the error map", () => {
@@ -451,15 +451,9 @@ describe("3.3: Semgrep test annotation files", () => {
     const content = readFile("tests/semgrep/test-correctness.ts");
     assert.ok(content, "test-correctness.ts should be readable");
     // Should have regex match guard test
-    assert.ok(
-      yamlContains(content, "safeAccessRegexMatch"),
-      "Should have regex match guard test"
-    );
+    assert.ok(yamlContains(content, "safeAccessRegexMatch"), "Should have regex match guard test");
     // Should have OR fallback guard test
-    assert.ok(
-      yamlContains(content, "safeAccessOrFallback"),
-      "Should have OR fallback guard test"
-    );
+    assert.ok(yamlContains(content, "safeAccessOrFallback"), "Should have OR fallback guard test");
   });
 
   it("test-correctness.ts has assigned-await floating promise tests", () => {
@@ -539,13 +533,7 @@ describe("3.5: TypeScript compilation checks", () => {
       yamlContains(content, "export function generateSearchableText"),
       "Should export generateSearchableText"
     );
-    assert.ok(
-      yamlContains(content, "export function generateTags"),
-      "Should export generateTags"
-    );
-    assert.ok(
-      yamlContains(content, "export function useJournal"),
-      "Should export useJournal hook"
-    );
+    assert.ok(yamlContains(content, "export function generateTags"), "Should export generateTags");
+    assert.ok(yamlContains(content, "export function useJournal"), "Should export useJournal hook");
   });
 });
