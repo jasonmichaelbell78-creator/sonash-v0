@@ -8,6 +8,9 @@
     { "source": "^coverage/", "flags": "" },
     { "source": "^dist/", "flags": "" },
     { "source": "^\\.git/", "flags": "" },
+    { "source": "^\\.claude/", "flags": "" },
+    { "source": "^\\.planning/", "flags": "" },
+    { "source": "^docs/audits/", "flags": "" },
     { "source": "DOCUMENTATION_INDEX\\.md$", "flags": "" },
     { "source": "(?:^|\\/)archive(?:\\/|$)", "flags": "i" },
     { "source": "package-lock\\.json", "flags": "" }

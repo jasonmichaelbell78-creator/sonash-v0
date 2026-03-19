@@ -345,8 +345,16 @@ function checkDependencies() {
   const passed = [];
 
   for (const rule of dependencyRules) {
-    // Check if trigger matches any staged file
-    if (!matchesTrigger(stagedFiles, rule.trigger)) {
+    // If rule has excludePattern, filter out internal/implementation files before matching
+    // excludePattern comes from trusted config (doc-dependencies.json), not user input
+    let effectiveStagedFiles = stagedFiles;
+    if (rule.excludePattern) {
+      const excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
+      effectiveStagedFiles = stagedFiles.filter((f) => !excludeRe.test(f.replace(/\\/g, "/")));
+    }
+
+    // Check if trigger matches any staged file (after exclusions)
+    if (!matchesTrigger(effectiveStagedFiles, rule.trigger)) {
       logVerbose(`Rule skipped (no trigger match): ${rule.trigger}`);
       continue;
     }
@@ -357,6 +365,11 @@ function checkDependencies() {
     // e.g., gitFilter: "AD" means only fire when files are Added or Deleted, not Modified
     if (rule.gitFilter) {
       let filteredFiles = getStagedFilesFiltered(rule.gitFilter);
+      // Apply excludePattern to filtered files as well
+      if (rule.excludePattern) {
+        const excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
+        filteredFiles = filteredFiles.filter((f) => !excludeRe.test(f.replace(/\\/g, "/")));
+      }
       // If rule has filePattern, further filter to only matching file names
       // filePattern comes from trusted config (doc-dependencies.json), not user input
       if (rule.filePattern) {
