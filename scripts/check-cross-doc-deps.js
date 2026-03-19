@@ -350,7 +350,7 @@ function checkDependencies() {
     let effectiveStagedFiles = stagedFiles;
     if (rule.excludePattern) {
       const excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
-      effectiveStagedFiles = stagedFiles.filter((f) => !excludeRe.test(f.replace(/\\/g, "/")));
+      effectiveStagedFiles = stagedFiles.filter((f) => !excludeRe.test(f.replaceAll("\\", "/")));
     }
 
     // Check if trigger matches any staged file (after exclusions)
@@ -368,7 +368,7 @@ function checkDependencies() {
       // Apply excludePattern to filtered files as well
       if (rule.excludePattern) {
         const excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
-        filteredFiles = filteredFiles.filter((f) => !excludeRe.test(f.replace(/\\/g, "/")));
+        filteredFiles = filteredFiles.filter((f) => !excludeRe.test(f.replaceAll("\\", "/")));
       }
       // If rule has filePattern, further filter to only matching file names
       // filePattern comes from trusted config (doc-dependencies.json), not user input

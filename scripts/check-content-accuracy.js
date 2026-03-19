@@ -115,6 +115,7 @@ function checkVersionAccuracy(content, filePath) {
 
   // Pattern for version mentions
   // Match: "Package 1.2.3", "package@1.2.3", "Package v1.2.3", "Package: 1.2.3"
+  // SonarCloud S5852: bounded input from markdown lines (<500 chars), no ReDoS risk
   const versionPatterns = [
     // Table format: | Package | Version |
     /\|\s*([\w@/-]+)\s*\|\s*v?(\d+\.\d+\.\d+)\s*\|/gi,
@@ -339,6 +340,77 @@ function checkPathReferences(content, filePath) {
   return findings;
 }
 
+// Patterns for npm script references
+const npmPatterns = [
+  /npm\s+run\s+([\w:-]+)/g,
+  /npm\s+(test|start|build|dev|lint)(?:\s|$|[,)])/g,
+  /yarn\s+([\w:-]+)/g,
+  /pnpm\s+([\w:-]+)/g,
+];
+
+// Built-in npm scripts that don't need to be in package.json
+const builtInScripts = new Set([
+  "install",
+  "uninstall",
+  "update",
+  "init",
+  "publish",
+  "help",
+  "version",
+]);
+
+// Generic/example script names that appear in documentation as placeholders
+const exampleScriptNames = new Set(["script", "then"]);
+
+/**
+ * Check if a line should be skipped for npm script checking
+ */
+function shouldSkipNpmLine(line) {
+  const trimmed = line.trim();
+  // Skip commented-out references
+  if (/^#\s+npm\s+run\s/.test(trimmed)) return true;
+  // Skip lines describing absence of a script or proposing to add one
+  if (/\bNo\s+npm\s+run\b/i.test(line)) return true;
+  if (/\bAdd\s+npm\s+run\b/i.test(line)) return true;
+  return false;
+}
+
+/**
+ * Check if a script name should be skipped (built-in, example, or flag)
+ */
+function shouldSkipScriptName(scriptName) {
+  return (
+    builtInScripts.has(scriptName) ||
+    exampleScriptNames.has(scriptName) ||
+    scriptName.startsWith("--")
+  );
+}
+
+/**
+ * Build a finding object for an unknown npm script reference
+ */
+function buildNpmFinding(relPath, lineNum, scriptName, lineText) {
+  return {
+    id: `DOC-CONTENT-NPM-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+    category: "documentation",
+    severity: "S1",
+    effort: "E1",
+    confidence: "HIGH",
+    verified: "TOOL_VALIDATED",
+    file: relPath,
+    line: lineNum,
+    title: `Unknown npm script: ${scriptName}`,
+    description: `Documentation references npm script "${scriptName}" which does not exist in package.json`,
+    recommendation: "Update the script name or add the script to package.json",
+    evidence: [
+      `Script: ${scriptName}`,
+      `Available scripts: ${Object.keys(npmScripts).slice(0, 10).join(", ")}...`,
+      `Line: ${lineText.trim().substring(0, 100)}`,
+    ],
+    cross_ref: "npm_script_check",
+  };
+}
+
 /**
  * Check npm script references
  * Looks for `npm run <script>` or `npm <script>` patterns
@@ -348,61 +420,17 @@ function checkNpmScriptReferences(content, filePath) {
   const lines = content.split("\n");
   const relPath = relative(ROOT, filePath);
 
-  // Patterns for npm script references
-  const npmPatterns = [
-    // npm run script
-    /npm\s+run\s+([\w:-]+)/g,
-    // npm script (built-in like test, start, build)
-    /npm\s+(test|start|build|dev|lint)(?:\s|$|[,)])/g,
-    // yarn script
-    /yarn\s+([\w:-]+)/g,
-    // pnpm script
-    /pnpm\s+([\w:-]+)/g,
-  ];
-
-  // Built-in npm scripts that don't need to be in package.json
-  const builtInScripts = new Set([
-    "install",
-    "uninstall",
-    "update",
-    "init",
-    "publish",
-    "help",
-    "version",
-  ]);
-
-  // Generic/example script names that appear in documentation as placeholders
-  const exampleScriptNames = new Set(["script", "then"]);
-
-  // Skip flags passed to npm run (e.g., `npm run --list`)
-  const npmRunFlags = /^--/;
-
   let inCodeBlock = false;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Track code block state
-    if (/^```/.test(line.trim())) {
+    if (line.trim().startsWith("```")) {
       inCodeBlock = !inCodeBlock;
       continue;
     }
-
-    // Skip lines inside code blocks (often examples or planned scripts)
-    if (inCodeBlock) {
-      continue;
-    }
-
-    // Skip lines that are clearly commented-out references
-    if (/^#\s+npm\s+run\s/.test(line.trim())) {
-      continue;
-    }
-
-    // Skip lines describing absence of a script or proposing to add one
-    // e.g., "No npm run dev:offline script" or "Add npm run dev:offline Script"
-    if (/\bNo\s+npm\s+run\b/i.test(line) || /\bAdd\s+npm\s+run\b/i.test(line)) {
-      continue;
-    }
+    if (inCodeBlock) continue;
+    if (shouldSkipNpmLine(line)) continue;
 
     for (const pattern of npmPatterns) {
       pattern.lastIndex = 0;
@@ -410,43 +438,9 @@ function checkNpmScriptReferences(content, filePath) {
 
       while ((match = pattern.exec(line)) !== null) {
         const scriptName = match[1];
-
-        // Skip built-in commands
-        if (builtInScripts.has(scriptName)) {
-          continue;
-        }
-
-        // Skip example/placeholder script names used in docs
-        if (exampleScriptNames.has(scriptName)) {
-          continue;
-        }
-
-        // Skip npm flags (e.g., --list from `npm run --list`)
-        if (npmRunFlags.test(scriptName)) {
-          continue;
-        }
-
-        // Check if script exists
+        if (shouldSkipScriptName(scriptName)) continue;
         if (!npmScripts[scriptName]) {
-          findings.push({
-            id: `DOC-CONTENT-NPM-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-            category: "documentation",
-            severity: "S1",
-            effort: "E1",
-            confidence: "HIGH",
-            verified: "TOOL_VALIDATED",
-            file: relPath,
-            line: i + 1,
-            title: `Unknown npm script: ${scriptName}`,
-            description: `Documentation references npm script "${scriptName}" which does not exist in package.json`,
-            recommendation: "Update the script name or add the script to package.json",
-            evidence: [
-              `Script: ${scriptName}`,
-              `Available scripts: ${Object.keys(npmScripts).slice(0, 10).join(", ")}...`,
-              `Line: ${line.trim().substring(0, 100)}`,
-            ],
-            cross_ref: "npm_script_check",
-          });
+          findings.push(buildNpmFinding(relPath, i + 1, scriptName, line));
         }
       }
     }

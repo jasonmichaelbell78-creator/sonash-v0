@@ -504,8 +504,10 @@ if [ "$_cyc_skip" -eq 0 ] && [ -f scripts/check-cyclomatic-cc.js ]; then
     echo "  ✅ Cyclomatic complexity passed (CC ≤15, baseline-aware)"
     echo "cyclomatic-cc|pass|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else
-    echo "  ⚠️ Cyclomatic CC check errored (exit $_cyc_rc), continuing"
-    echo "cyclomatic-cc|warn|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    echo "  ❌ Cyclomatic CC check errored (exit $_cyc_rc)"
+    echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
+    echo "cyclomatic-cc|fail|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    exit 1
   fi
 elif [ "$_cyc_skip" -eq 0 ]; then
   echo "cyclomatic-cc|skip|0" >> "$CHECKS_TMPFILE"

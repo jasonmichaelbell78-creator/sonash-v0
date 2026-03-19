@@ -4274,6 +4274,7 @@ function appendHealthScoreLog() {
       summary: results.summary,
       categoryScores,
     });
+    if (!isSafeToWrite(logPath)) return;
     const tmpPath = `${logPath}.${process.pid}.tmp`;
     try {
       let existing = "";
@@ -4285,6 +4286,7 @@ function appendHealthScoreLog() {
       fs.renameSync(tmpPath, logPath);
     } catch (renameErr) {
       try {
+        if (!isSafeToWrite(logPath)) return;
         fs.copyFileSync(tmpPath, logPath);
         try {
           fs.unlinkSync(tmpPath);

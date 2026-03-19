@@ -25,7 +25,7 @@ let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
 } catch {
-  isSafeToWrite = () => true;
+  isSafeToWrite = () => false;
 }
 let sanitizeInput;
 try {

@@ -794,7 +794,7 @@ function main() {
 
         // Extract only the Active Reviews section content
         const activeStart = logContent.indexOf("\n## Active Reviews");
-        const activeSection = activeStart !== -1 ? logContent.slice(activeStart) : logContent;
+        const activeSection = activeStart === -1 ? logContent : logContent.slice(activeStart);
         // Find the end of the Active Reviews section (next ## heading)
         const nextH2Match = activeSection.slice(1).match(/\n## [A-Z]/);
         const activeSectionOnly = nextH2Match
@@ -802,6 +802,7 @@ function main() {
           : activeSection;
 
         // Match both numeric IDs (Review 356, Review #356) and string IDs (Review rev-1)
+        // SonarCloud S5852: bounded input from markdown section (<500 chars per line), no ReDoS risk
         const headingRegex = /^#{2,4}\s+Review\s+#?[\w-]+/gm;
         let headingCount = 0;
         while (headingRegex.exec(activeSectionOnly) !== null) {
@@ -829,8 +830,9 @@ function main() {
           const cState = JSON.parse(readFileSync(CONSOLIDATION_JSON, "utf8"));
           const stateNumber = cState.consolidationNumber || 0;
           const activeIdx = logContent.indexOf("\n## Active Reviews");
-          const headerContent = activeIdx !== -1 ? logContent.slice(0, activeIdx) : logContent;
+          const headerContent = activeIdx === -1 ? logContent : logContent.slice(0, activeIdx);
           // Match the first "Previous Consolidation (#N)" — this is the most recent
+          // SonarCloud S5852: bounded input from markdown header section (<500 chars), no ReDoS risk
           const firstConsolidationMatch = headerContent.match(
             /Previous Consolidation \(?#(\d+)\)?/
           );

@@ -63,6 +63,69 @@ function checkStateFile(skillName) {
   }
 }
 
+/** No-result constant for version history lookups */
+const NO_HISTORY_RESULT = { found: false, date: null, description: null };
+
+/**
+ * Find the latest match in a section using a regex pattern.
+ * @param {string} section - Text to search
+ * @param {RegExp} pattern - Must have /g flag; groups: [1]=date, [2]=description
+ * @returns {{ date: string|null, desc: string|null }}
+ */
+function findLatestMatch(section, pattern) {
+  pattern.lastIndex = 0;
+  let match;
+  let latestDate = null;
+  let latestDesc = null;
+
+  while ((match = pattern.exec(section)) !== null) {
+    const date = match[1];
+    const desc = match[2].trim();
+    if (!latestDate || date > latestDate) {
+      latestDate = date;
+      latestDesc = desc;
+    }
+  }
+  return { date: latestDate, desc: latestDesc };
+}
+
+/**
+ * Check if a broad audit match should be skipped (self-audit or checkpoint without skill-audit).
+ * @param {string} desc - The description text
+ * @returns {boolean}
+ */
+function isBroadAuditFalsePositive(desc) {
+  const isSkillAudit = /skill[- ]?audit/i.test(desc);
+  if (/\bself[- ]audit\b/i.test(desc) && !isSkillAudit) return true;
+  if (/\baudit checkpoint/i.test(desc) && !isSkillAudit) return true;
+  return false;
+}
+
+/**
+ * Find the latest broad "audit" match, filtering false positives.
+ * @param {string} section
+ * @returns {{ date: string|null, desc: string|null }}
+ */
+function findLatestBroadAudit(section) {
+  // SonarCloud S5852: bounded input from markdown table rows (<500 chars), no ReDoS risk
+  const broadPattern = /\|\s*[\d.]+\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.*?\baudit\b.*?)\s*\|/gi;
+  broadPattern.lastIndex = 0;
+  let match;
+  let latestDate = null;
+  let latestDesc = null;
+
+  while ((match = broadPattern.exec(section)) !== null) {
+    const desc = match[2].trim();
+    if (isBroadAuditFalsePositive(desc)) continue;
+    const date = match[1];
+    if (!latestDate || date > latestDate) {
+      latestDate = date;
+      latestDesc = desc;
+    }
+  }
+  return { date: latestDate, desc: latestDesc };
+}
+
 /**
  * Search SKILL.md version history for audit entries.
  * @param {string} skillName
@@ -71,64 +134,28 @@ function checkStateFile(skillName) {
 function checkVersionHistory(skillName) {
   const skillPath = path.join(SKILLS_DIR, skillName, "SKILL.md");
   try {
-    if (!fs.existsSync(skillPath)) {
-      return { found: false, date: null, description: null };
-    }
+    if (!fs.existsSync(skillPath)) return NO_HISTORY_RESULT;
     const content = fs.readFileSync(skillPath, "utf8");
 
-    // Find Version History section
     const vhMatch = content.match(/## Version History[\s\S]*?\|[\s\S]*?\|/);
-    if (!vhMatch) {
-      return { found: false, date: null, description: null };
-    }
+    if (!vhMatch) return NO_HISTORY_RESULT;
 
     const vhSection = content.slice(content.indexOf("## Version History"));
 
-    // Match table rows and find audit entries (case-insensitive)
+    // SonarCloud S5852: bounded input from markdown table rows (<500 chars), no ReDoS risk
     const auditPattern =
-      /\|\s*[\d.]+\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.*?[Ss]kill[- ]?audit.*?)\s*\|/gi;
-    let match;
-    let latestDate = null;
-    let latestDesc = null;
+      /\|\s*[\d.]+\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.*?skill[- ]?audit.*?)\s*\|/gi;
+    let { date: latestDate, desc: latestDesc } = findLatestMatch(vhSection, auditPattern);
 
-    // Reset lastIndex for safety with /g flag
-    auditPattern.lastIndex = 0;
-    while ((match = auditPattern.exec(vhSection)) !== null) {
-      const date = match[1];
-      const desc = match[2].trim();
-      if (!latestDate || date > latestDate) {
-        latestDate = date;
-        latestDesc = desc;
-      }
-    }
-
-    // Also check for entries with just "audit" keyword (broader match)
+    // Fall back to broader "audit" keyword match
     if (!latestDate) {
-      const broadPattern = /\|\s*[\d.]+\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.*?\baudit\b.*?)\s*\|/gi;
-      broadPattern.lastIndex = 0;
-      while ((match = broadPattern.exec(vhSection)) !== null) {
-        const date = match[1];
-        const desc = match[2].trim();
-        // Skip entries that are about "audit-" prefixed features or self-audit phases
-        if (/\bself[- ]audit\b/i.test(desc) && !/skill[- ]?audit/i.test(desc)) {
-          continue;
-        }
-        if (/\baudit checkpoint/i.test(desc) && !/skill[- ]?audit/i.test(desc)) {
-          continue;
-        }
-        if (!latestDate || date > latestDate) {
-          latestDate = date;
-          latestDesc = desc;
-        }
-      }
+      ({ date: latestDate, desc: latestDesc } = findLatestBroadAudit(vhSection));
     }
 
-    if (latestDate) {
-      return { found: true, date: latestDate, description: latestDesc };
-    }
-    return { found: false, date: null, description: null };
+    if (latestDate) return { found: true, date: latestDate, description: latestDesc };
+    return NO_HISTORY_RESULT;
   } catch {
-    return { found: false, date: null, description: null };
+    return NO_HISTORY_RESULT;
   }
 }
 
@@ -166,68 +193,67 @@ function rpad(str, width) {
   return " ".repeat(width - str.length) + str;
 }
 
-// ---- Main ----
-function main() {
-  const skills = getSkillNames();
-  const rows = [];
+// ---- Table formatting ----
+const COL_WIDTHS = { name: 32, date: 12, days: 6, state: 6, vh: 8, dec: 5, score: 5 };
 
-  let audited = 0;
-  let withState = 0;
-  let withHistory = 0;
+/**
+ * Format a table row from column values.
+ */
+function formatRow(row) {
+  return `${pad(row.name, COL_WIDTHS.name)} | ${pad(row.lastDate, COL_WIDTHS.date)} | ${rpad(row.days, COL_WIDTHS.days)} | ${pad(row.stateFile, COL_WIDTHS.state)} | ${pad(row.versionHistory, COL_WIDTHS.vh)} | ${rpad(row.decisions, COL_WIDTHS.dec)} | ${rpad(row.score, COL_WIDTHS.score)}`;
+}
 
-  for (const name of skills) {
-    const state = checkStateFile(name);
-    const history = checkVersionHistory(name);
+/**
+ * Build a separator line.
+ */
+function separatorLine() {
+  return `${"-".repeat(COL_WIDTHS.name)} | ${"-".repeat(COL_WIDTHS.date)} | ${"-".repeat(COL_WIDTHS.days)} | ${"-".repeat(COL_WIDTHS.state)} | ${"-".repeat(COL_WIDTHS.vh)} | ${"-".repeat(COL_WIDTHS.dec)} | ${"-".repeat(COL_WIDTHS.score)}`;
+}
 
-    const lastDate = state.date || history.date || null;
-    const days = lastDate ? daysSince(lastDate) : null;
-    const hasAudit = state.exists || history.found;
+/**
+ * Build a row object from skill audit data.
+ */
+function buildRow(name, state, history) {
+  const lastDate = state.date || history.date || null;
+  const days = lastDate ? daysSince(lastDate) : null;
+  return {
+    name,
+    lastDate: lastDate || "-",
+    days: days === null ? "-" : String(days),
+    stateFile: state.exists ? "YES" : "NO",
+    versionHistory: history.found ? "YES" : "NO",
+    decisions: state.decisions === null ? "-" : String(state.decisions),
+    score: state.score === null ? "-" : String(state.score),
+    hasAudit: state.exists || history.found,
+  };
+}
 
-    if (hasAudit) audited++;
-    if (state.exists) withState++;
-    if (history.found) withHistory++;
-
-    rows.push({
-      name,
-      lastDate: lastDate || "-",
-      days: days !== null ? String(days) : "-",
-      stateFile: state.exists ? "YES" : "NO",
-      versionHistory: history.found ? "YES" : "NO",
-      decisions: state.decisions !== null ? String(state.decisions) : "-",
-      score: state.score !== null ? String(state.score) : "-",
-    });
-  }
-
-  // Print header
-  const nameW = 32;
-  const dateW = 12;
-  const daysW = 6;
-  const stateW = 6;
-  const vhW = 8;
-  const decW = 5;
-  const scoreW = 5;
-
+/**
+ * Print the table and summary.
+ */
+function printReport(rows, skills, audited, withState, withHistory) {
+  const totalW = Object.values(COL_WIDTHS).reduce((a, b) => a + b, 0) + 18;
   console.log("");
   console.log("Skill Audit Status Report");
-  console.log("=".repeat(nameW + dateW + daysW + stateW + vhW + decW + scoreW + 18));
+  console.log("=".repeat(totalW));
   console.log(
-    `${pad("Skill", nameW)} | ${pad("Last Audit", dateW)} | ${rpad("Days", daysW)} | ${pad("State", stateW)} | ${pad("History", vhW)} | ${rpad("Dec", decW)} | ${rpad("Score", scoreW)}`
+    formatRow({
+      name: "Skill",
+      lastDate: "Last Audit",
+      days: "Days",
+      stateFile: "State",
+      versionHistory: "History",
+      decisions: "Dec",
+      score: "Score",
+    })
   );
-  console.log(
-    `${"-".repeat(nameW)} | ${"-".repeat(dateW)} | ${"-".repeat(daysW)} | ${"-".repeat(stateW)} | ${"-".repeat(vhW)} | ${"-".repeat(decW)} | ${"-".repeat(scoreW)}`
-  );
+  console.log(separatorLine());
 
   for (const row of rows) {
-    console.log(
-      `${pad(row.name, nameW)} | ${pad(row.lastDate, dateW)} | ${rpad(row.days, daysW)} | ${pad(row.stateFile, stateW)} | ${pad(row.versionHistory, vhW)} | ${rpad(row.decisions, decW)} | ${rpad(row.score, scoreW)}`
-    );
+    console.log(formatRow(row));
   }
 
-  console.log(
-    `${"-".repeat(nameW)} | ${"-".repeat(dateW)} | ${"-".repeat(daysW)} | ${"-".repeat(stateW)} | ${"-".repeat(vhW)} | ${"-".repeat(decW)} | ${"-".repeat(scoreW)}`
-  );
-
-  // Summary
+  console.log(separatorLine());
   console.log("");
   console.log(`Total skills: ${skills.length}`);
   console.log(
@@ -235,7 +261,6 @@ function main() {
   );
   console.log(`Not audited: ${skills.length - audited}`);
 
-  // Flag skills needing audit (>30 days or never)
   const stale = rows.filter((r) => r.days === "-" || Number(r.days) > 30);
   if (stale.length > 0) {
     console.log("");
@@ -245,8 +270,29 @@ function main() {
       console.log(`  - ${s.name} (${reason})`);
     }
   }
-
   console.log("");
+}
+
+// ---- Main ----
+function main() {
+  const skills = getSkillNames();
+  const rows = [];
+  let audited = 0;
+  let withState = 0;
+  let withHistory = 0;
+
+  for (const name of skills) {
+    const state = checkStateFile(name);
+    const history = checkVersionHistory(name);
+    const row = buildRow(name, state, history);
+
+    if (row.hasAudit) audited++;
+    if (state.exists) withState++;
+    if (history.found) withHistory++;
+    rows.push(row);
+  }
+
+  printReport(rows, skills, audited, withState, withHistory);
 }
 
 main();

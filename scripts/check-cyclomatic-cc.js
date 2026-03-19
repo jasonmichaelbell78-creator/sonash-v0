@@ -28,23 +28,20 @@
  */
 
 const { readFileSync, existsSync, statSync } = require("node:fs");
-const { execFileSync, execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 const { join, relative, isAbsolute, extname } = require("node:path");
 
 const ROOT = join(__dirname, "..");
 
 // ---------------------------------------------------------------------------
-// Sanitize error helper (inline to avoid CJS/ESM import issues)
+// Error sanitization — use shared lib, with minimal fallback
 // Pattern: sanitize-error.js — never log raw error.message
 // ---------------------------------------------------------------------------
-function sanitizeError(error) {
-  const message = error instanceof Error ? error.message : String(error);
-  return message
-    .replaceAll(/C:\\Users\\[^\\\s]+/gi, "[USER_PATH]")
-    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-    .replaceAll(/\/[^\s]*\/[^\s]+/g, "[PATH]");
+let sanitizeError;
+try {
+  ({ sanitizeError } = require("./lib/sanitize-error"));
+} catch {
+  sanitizeError = (err) => String(err);
 }
 
 // ---------------------------------------------------------------------------
@@ -74,9 +71,10 @@ let safeWriteFileSync;
 try {
   ({ safeWriteFileSync } = require("./lib/safe-fs"));
 } catch {
-  // Fallback: direct write (no symlink guard)
-  const fs = require("node:fs");
-  safeWriteFileSync = (p, data) => fs.writeFileSync(p, data, "utf-8");
+  safeWriteFileSync = () => {
+    console.error("[check-cyc-cc] safe-fs unavailable — cannot write baseline");
+    process.exit(2);
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -194,78 +192,87 @@ function filterJsFiles(files) {
 // ---------------------------------------------------------------------------
 const BATCH_SIZE = 30; // Avoid command-line length limits on Windows
 
-function runEslintBatch(filePaths) {
-  // Quote file paths for shell safety, then build command string
-  // Use execSync because execFileSync + npx on Windows doesn't reliably
-  // capture stdout on non-zero exit (ESLint exits 1 when violations found)
-  const quotedFiles = filePaths.map((f) => `"${f.replaceAll("\\", "/")}"`).join(" ");
-  const cmd = `npx eslint --no-config-lookup --rule "complexity: [error, ${THRESHOLD}]" --parser-options=ecmaVersion:2025 --format=json -- ${quotedFiles}`;
+/**
+ * Extract a violation record from an ESLint complexity message.
+ * Returns null if the message is not a complexity violation above threshold.
+ */
+function parseComplexityMessage(msg, filePath) {
+  if (msg.ruleId !== "complexity") return null;
 
-  let output;
+  const ccMatch = msg.message.match(/complexity of (\d+)/);
+  const cc = ccMatch ? Number.parseInt(ccMatch[1], 10) : 0;
+  if (cc <= THRESHOLD) return null;
+
+  const nameMatch = msg.message.match(
+    /(?:Function|Method|Arrow function|Generator function)\s+'([^']+)'/
+  );
+  const name = nameMatch ? nameMatch[1] : "(anonymous)";
+
+  return { file: filePath, line: msg.line || 0, name, cc };
+}
+
+/**
+ * Parse ESLint JSON results into violation records.
+ */
+function parseEslintJsonResults(results) {
+  const violations = [];
+  for (const fileResult of results) {
+    if (!fileResult.messages || fileResult.messages.length === 0) continue;
+
+    const filePath = relative(ROOT, fileResult.filePath).replaceAll("\\", "/");
+    for (const msg of fileResult.messages) {
+      const violation = parseComplexityMessage(msg, filePath);
+      if (violation) violations.push(violation);
+    }
+  }
+  return violations;
+}
+
+/**
+ * Run ESLint on a batch of files and return violations.
+ */
+function runEslintBatch(filePaths) {
+  const eslintArgs = [
+    "--no-config-lookup",
+    "--rule",
+    `complexity: [error, ${THRESHOLD}]`,
+    "--parser-options=ecmaVersion:2025",
+    "--format=json",
+    "--",
+    ...filePaths.map((f) => f.replaceAll("\\", "/")),
+  ];
+
+  // Resolve the ESLint binary directly (avoids npx shell wrapper + Windows .cmd issues).
+  const eslintPkgDir = join(require.resolve("eslint", { paths: [ROOT] }), "..", "..");
+  const eslintBin = join(eslintPkgDir, "bin", "eslint.js");
+
+  let output = "";
   try {
-    output = execSync(cmd, {
+    output = execFileSync(process.execPath, [eslintBin, ...eslintArgs], {
       encoding: "utf-8",
       timeout: 120000,
       cwd: ROOT,
       maxBuffer: 10 * 1024 * 1024,
     });
   } catch (err) {
-    // ESLint exits non-zero when it finds violations — that's expected
-    if (err.stdout) {
+    if (err && typeof err.stdout === "string" && err.stdout.length > 0) {
       output = err.stdout;
-    } else if (err.stderr && !err.stdout) {
-      // Real error — could be ESLint config issue
-      console.error("[check-cyc-cc] ESLint error:", sanitizeError(err));
-      return [];
     } else {
-      output = "";
+      console.error("[check-cyc-cc] ESLint error:", sanitizeError(err));
+      return { violations: null, error: sanitizeError(err) };
     }
   }
 
-  // Parse ESLint JSON output
-  const violations = [];
   try {
     const results = JSON.parse(output);
-    for (const fileResult of results) {
-      if (!fileResult.messages || fileResult.messages.length === 0) continue;
-
-      // Convert absolute path back to relative
-      const filePath = relative(ROOT, fileResult.filePath).replaceAll("\\", "/");
-
-      for (const msg of fileResult.messages) {
-        if (msg.ruleId !== "complexity") continue;
-
-        // Extract CC value from message: "... has a complexity of N."
-        const ccMatch = msg.message.match(/complexity of (\d+)/);
-        const cc = ccMatch ? Number.parseInt(ccMatch[1], 10) : 0;
-
-        // Extract function name from message
-        const nameMatch = msg.message.match(
-          /(?:Function|Method|Arrow function|Generator function)\s+'([^']+)'/
-        );
-        const name = nameMatch ? nameMatch[1] : "(anonymous)";
-
-        if (cc > THRESHOLD) {
-          violations.push({
-            file: filePath,
-            line: msg.line || 0,
-            name,
-            cc,
-          });
-        }
-      }
-    }
+    return { violations: parseEslintJsonResults(results), error: null };
   } catch {
-    // JSON parse failed — fall back to text parsing
-    const textViolations = parseTextOutput(output);
-    violations.push(...textViolations);
+    return { violations: parseTextOutput(output), error: null };
   }
-
-  return violations;
 }
 
 function runEslintComplexity(files) {
-  if (files.length === 0) return { violations: [], rawOutput: "" };
+  if (files.length === 0) return { violations: [], error: null };
 
   const allViolations = [];
   const absolutePaths = files.map((f) => join(ROOT, f));
@@ -273,11 +280,14 @@ function runEslintComplexity(files) {
   // Batch to avoid command-line length limits
   for (let i = 0; i < absolutePaths.length; i += BATCH_SIZE) {
     const batch = absolutePaths.slice(i, i + BATCH_SIZE);
-    const batchViolations = runEslintBatch(batch);
-    allViolations.push(...batchViolations);
+    const result = runEslintBatch(batch);
+    if (result.error) {
+      return { violations: null, error: result.error };
+    }
+    allViolations.push(...result.violations);
   }
 
-  return { violations: allViolations, rawOutput: "" };
+  return { violations: allViolations, error: null };
 }
 
 /**
@@ -415,7 +425,12 @@ function main() {
 
   console.log(`[check-cyc-cc] Checking ${jsFiles.length} file(s)...`);
 
-  const { violations } = runEslintComplexity(jsFiles);
+  const { violations, error } = runEslintComplexity(jsFiles);
+
+  if (error) {
+    console.error(`[check-cyc-cc] Fatal ESLint error: ${error}`);
+    process.exit(2);
+  }
 
   if (UPDATE_BASELINE) {
     writeBaseline(violations);

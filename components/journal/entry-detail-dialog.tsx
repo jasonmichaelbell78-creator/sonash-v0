@@ -268,18 +268,14 @@ export function EntryDetailDialog({ entry, onClose }: Readonly<EntryDetailDialog
   if (!entry) return null;
 
   return (
+    // eslint-disable-next-line sonash/no-div-onclick-no-role -- modal backdrop dismiss, keyboard handled by close button
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      role="button"
-      tabIndex={0}
       onClick={onClose}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") onClose();
-      }}
     >
+      {/* eslint-disable-next-line sonash/no-div-onclick-no-role -- stopPropagation on dialog content, not interactive */}
       <div
         className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6 space-y-4"
-        role="presentation"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b pb-4">
