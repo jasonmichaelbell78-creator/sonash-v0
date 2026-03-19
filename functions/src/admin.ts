@@ -595,6 +595,7 @@ async function estimateUserSubcollections(
   const estimates = Object.values(subcollectionCounts)
     .filter((counts) => counts.length > 0)
     .map((counts) => {
+      // eslint-disable-next-line sonash/no-unsafe-division -- guarded by .filter(counts => counts.length > 0) above
       const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
       return Math.round(avg * userCount);
     });
@@ -2164,8 +2165,7 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
 
     // Remove internal sorting field before returning
     const limitedResults: JobRunHistoryResponse[] = results.slice(0, safeLimit).map((r) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured to strip internal field before returning
-      const { _startTimeMillis, ...rest } = r;
+      const { _startTimeMillis: _, ...rest } = r;
       return rest;
     });
 

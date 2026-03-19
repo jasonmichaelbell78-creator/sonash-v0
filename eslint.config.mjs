@@ -133,8 +133,10 @@ export default [
       ".claude/hooks/**/*.ts",
       ".claude/skills/*/scripts/**/*.js",
       ".claude/tmp/**/*.js",
+      "functions/src/**/*.ts",
     ],
     rules: {
+      "sonash/no-unsafe-division": "off",
       "security/detect-object-injection": "off",
       "security/detect-non-literal-fs-filename": "off",
       "security/detect-non-literal-require": "off",

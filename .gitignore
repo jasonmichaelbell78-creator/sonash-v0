@@ -153,3 +153,4 @@ consolidation-output/
 
 # Git worktrees (isolated workspaces, never commit)
 .worktrees/
+functions/.next/

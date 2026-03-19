@@ -39,7 +39,7 @@ On**: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves
 
 ## Session Tracking
 
-**Current Session Count**: 228 (since Jan 1, 2026)
+**Current Session Count**: 229 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,6 +48,26 @@ On**: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves
 ---
 
 ## Recent Session Summaries
+
+**Session #229** (HOUSECLEANING + STATUSLINE/AUTORESEARCH RESEARCH):
+
+- **Branch**: `housecleaning`
+- **Housecleaning**: ESLint config updates, admin.ts cleanup, gitignore
+  additions, state file updates, test-registry entry
+- **Statusline research**: Surveyed 23+ GitHub repos for Claude Code statusline
+  customization. Top picks: moon1ite (tool/agent activity), SaharCarmel (AI
+  summaries + mock detection), claude-lens (pace sustainability), ccstatusline
+  (widget-rich), claudia-statusline (SQLite persistence + compaction detection).
+  Mapped SoNash-specific widgets: debt ticker (metrics.json), hook health
+  (hook-runs.jsonl), health grade (health-score-log.jsonl), session counter, git
+  dirty count, pace sparkline.
+- **Autoresearch analysis**: Analyzed karpathy/autoresearch (43K stars) —
+  autonomous experiment loop pattern. Identified 4 SoNash adaptations: (A)
+  script quality optimization via patterns:check metric, (B) debt resolution
+  sprints via TDMS counts, (C) performance tuning via Lighthouse/bundle size,
+  (D) doc accuracy via docs:accuracy findings. Key pattern: single metric +
+  single file + fast feedback + git commit/reset as experiment tracking.
+- **No implementation yet** — research phase only, ready to pick up.
 
 **Session #227** (PIPELINE FRACTURE FIX + BULK RETRO + GITHUB WAVES 3-4):
 
@@ -253,6 +273,15 @@ hooks). Serena fully removed.
    mechanism to surface pre-commit/pre-push failure reports as visible prompts.
 3. **Move NEXT_PUBLIC\_\* from secrets to variables** — Deferred from GitHub
    optimization. Manual GitHub Settings + deploy-firebase.yml update.
+
+### Research to Pick Up
+
+4. **Statusline implementation** — Research complete (23+ repos surveyed). Next:
+   choose a base (ccstatusline or claudia-statusline), add SoNash-specific
+   widgets (debt ticker, hook health, health grade). See Session #229 summary.
+5. **Autoresearch-style experiment loop** — Pattern mapped to 4 SoNash domains.
+   Next: build a skill that runs autonomous improvement loops against a single
+   metric (start with script quality via `patterns:check`). See Session #229.
 
 ### After Merge
 

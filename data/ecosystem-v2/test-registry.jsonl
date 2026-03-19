@@ -479,6 +479,7 @@
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"crossdoc:check","description":"npm run crossdoc:check"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"skills:audit","description":"npm run skills:audit"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"docs:audit","description":"npm run docs:audit"}
+{"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"skills:audit-status","description":"npm run skills:audit-status"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"skills:validate","description":"npm run skills:validate"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"skills:verify-usage","description":"npm run skills:verify-usage"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"skills:registry","description":"npm run skills:registry"}
