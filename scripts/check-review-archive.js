@@ -68,6 +68,7 @@ try {
 
 const ROOT = join(__dirname, "..");
 const REVIEWS_JSONL = join(ROOT, ".claude", "state", "reviews.jsonl");
+const REVIEWS_ARCHIVE_JSONL = join(ROOT, ".claude", "state", "reviews-archive.jsonl");
 const CONSOLIDATION_JSON = join(ROOT, ".claude", "state", "consolidation.json");
 const FORWARD_FINDINGS_JSONL = join(ROOT, ".claude", "state", "forward-findings.jsonl");
 const LEARNINGS_LOG = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
@@ -554,12 +555,42 @@ function main() {
   if (!jsonMode) console.log("3. Coverage Gaps (numeric IDs):");
 
   // Extract only numeric IDs (skip string IDs like "retro-427")
+  // Include both active reviews and archived reviews to avoid false gap reports
   const numericIds = new Set();
   for (const record of records) {
     const id = record.id;
     if (typeof id === "number" && Number.isFinite(id)) {
       numericIds.add(id);
     }
+  }
+
+  // Also include archived review IDs so archived records don't appear as gaps
+  let archivedCount = 0;
+  try {
+    if (existsSync(REVIEWS_ARCHIVE_JSONL)) {
+      const archiveContent = readFileSync(REVIEWS_ARCHIVE_JSONL, "utf8").replaceAll("\r\n", "\n");
+      for (const line of archiveContent.trim().split("\n")) {
+        if (!line.trim()) continue;
+        try {
+          const parsed = JSON.parse(line);
+          if (
+            parsed &&
+            typeof parsed === "object" &&
+            typeof parsed.id === "number" &&
+            Number.isFinite(parsed.id)
+          ) {
+            if (!numericIds.has(parsed.id)) {
+              numericIds.add(parsed.id);
+              archivedCount++;
+            }
+          }
+        } catch {
+          // Skip malformed archive lines — not this check's concern
+        }
+      }
+    }
+  } catch {
+    // Archive read failure is non-fatal for gap checking
   }
 
   if (numericIds.size > 0) {
@@ -606,16 +637,21 @@ function main() {
       }
 
       if (trulyMissing.length === 0 && knownSkipped.length === 0) {
-        ok(`Complete coverage: #${minId}-#${maxId} (${numericIds.size} numeric reviews)`);
-      } else if (trulyMissing.length === 0) {
+        const archiveNote = archivedCount > 0 ? `, ${archivedCount} archived` : "";
         ok(
-          `Full coverage: #${minId}-#${maxId} (${numericIds.size} reviews, ${knownSkipped.length} known-skipped)`
+          `Complete coverage: #${minId}-#${maxId} (${numericIds.size} numeric reviews${archiveNote})`
+        );
+      } else if (trulyMissing.length === 0) {
+        const archiveNote = archivedCount > 0 ? `, ${archivedCount} archived` : "";
+        ok(
+          `Full coverage: #${minId}-#${maxId} (${numericIds.size} reviews, ${knownSkipped.length} known-skipped${archiveNote})`
         );
       }
 
       if (!jsonMode) {
+        const archiveNote = archivedCount > 0 ? `, ${archivedCount} archived` : "";
         console.log(
-          `    Total range: #${minId}-#${maxId} (${numericIds.size} found, ${knownSkipped.length} skipped, ${trulyMissing.length} missing)`
+          `    Total range: #${minId}-#${maxId} (${numericIds.size} found, ${knownSkipped.length} skipped, ${trulyMissing.length} missing${archiveNote})`
         );
       }
     }
@@ -749,13 +785,26 @@ function main() {
       const logContent = readFileSync(LEARNINGS_LOG, "utf8");
 
       // Check: "Active reviews" claimed count vs actual heading count in rendered view
+      // Only count headings within the "## Active Reviews" section (between
+      // "## Active Reviews" and the next ## heading like "## Key Patterns"),
+      // excluding old manual review entries in other sections.
       const activeMatch = logContent.match(/\| Active reviews \|\s*(\d+)/);
       if (activeMatch) {
         const claimedActive = Number.parseInt(activeMatch[1], 10);
-        // Count reviews in the markdown by heading
-        const headingRegex = /^#{2,4}\s+Review\s+#?(\d+)/gm;
+
+        // Extract only the Active Reviews section content
+        const activeStart = logContent.indexOf("\n## Active Reviews");
+        const activeSection = activeStart !== -1 ? logContent.slice(activeStart) : logContent;
+        // Find the end of the Active Reviews section (next ## heading)
+        const nextH2Match = activeSection.slice(1).match(/\n## [A-Z]/);
+        const activeSectionOnly = nextH2Match
+          ? activeSection.slice(0, nextH2Match.index + 1)
+          : activeSection;
+
+        // Match both numeric IDs (Review 356, Review #356) and string IDs (Review rev-1)
+        const headingRegex = /^#{2,4}\s+Review\s+#?[\w-]+/gm;
         let headingCount = 0;
-        while (headingRegex.exec(logContent) !== null) {
+        while (headingRegex.exec(activeSectionOnly) !== null) {
           headingCount++;
         }
         if (claimedActive === headingCount) {
@@ -770,20 +819,25 @@ function main() {
         }
       }
 
-      // Check consolidation number in rendered view vs state file
+      // Check consolidation number in rendered view vs state file.
+      // Only check the FIRST consolidation entry in the header (most recent),
+      // not the max across all entries, because the document contains
+      // historical consolidation records from a pre-migration numbering
+      // system that used different numbers.
       if (existsSync(CONSOLIDATION_JSON)) {
         try {
           const cState = JSON.parse(readFileSync(CONSOLIDATION_JSON, "utf8"));
           const stateNumber = cState.consolidationNumber || 0;
-          const consolidationMatches = [
-            ...logContent.matchAll(/(?:Previous )?Consolidation \(?#(\d+)\)?/g),
-          ];
-          const mdNumbers = consolidationMatches
-            .map((m) => Number.parseInt(m[1], 10))
-            .filter((n) => Number.isFinite(n))
-            .sort((a, b) => a - b);
-          const mdNumber = mdNumbers.length > 0 ? mdNumbers.at(-1) : null;
-          if (mdNumber !== null && mdNumber !== stateNumber) {
+          const activeIdx = logContent.indexOf("\n## Active Reviews");
+          const headerContent = activeIdx !== -1 ? logContent.slice(0, activeIdx) : logContent;
+          // Match the first "Previous Consolidation (#N)" — this is the most recent
+          const firstConsolidationMatch = headerContent.match(
+            /Previous Consolidation \(?#(\d+)\)?/
+          );
+          const mdNumber = firstConsolidationMatch
+            ? Number.parseInt(firstConsolidationMatch[1], 10)
+            : null;
+          if (mdNumber !== null && Number.isFinite(mdNumber) && mdNumber !== stateNumber) {
             addFinding(
               "S3",
               "rendered-consolidation-drift",

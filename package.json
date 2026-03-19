@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit",
     "start": "next start",
     "test": "npm run test:build && cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\" \"scripts/health/**/*.test.js\"",
-    "test:build": "tsc -p tsconfig.test.json && tsc-alias -p tsconfig.test.json",
+    "test:build": "node -e \"require('fs').rmSync('dist-tests',{recursive:true,force:true})\" && tsc -p tsconfig.test.json && tsc-alias -p tsconfig.test.json",
     "test:coverage": "npm run test:build && c8 --reporter=text --reporter=html cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\" \"scripts/health/**/*.test.js\"",
     "test:health": "node --test \"scripts/health/checkers/__tests__/**/*.test.*\" \"scripts/health/lib/__tests__/**/*.test.*\"",
     "test:hooks": "npm run test:build && node --test \"dist-tests/tests/hooks/**/*.test.js\"",
