@@ -92,8 +92,8 @@ writeFileSync(targetPath, content, {
 
 ### Reading Files
 
-- [ ] **Try/catch required**: All `readFileSync` must be in try/catch — [ESLint:
-      sonash/no-unguarded-file-read] [Semgrep:
+- [ ] **#3 Try/catch required**: All `readFileSync` must be in try/catch —
+      [ESLint: sonash/no-unguarded-file-read] [Semgrep:
       sonash.correctness.file-read-without-try-catch]
 - [ ] **Path validation**: Validate path is within allowed directory first —
       [ESLint: sonash/no-path-startswith] [ESLint: sonash/no-empty-path-check]
@@ -221,8 +221,8 @@ content += `## ${escapeMd(userTitle, 120)}\n`;
 
 - [ ] **#34 No absolute paths**: Use `path.relative()` before logging — [Manual
       review only]
-- [ ] **Sanitize errors**: Use `sanitizeError()` for error messages — [ESLint:
-      sonash/no-raw-error-log]
+- [ ] **#1 Sanitize errors**: Use `sanitizeError()` for error messages —
+      [ESLint: sonash/no-raw-error-log]
 - [ ] **No credentials**: Never log tokens, passwords, keys — [ESLint:
       sonash/no-hardcoded-secrets]
 - [ ] **Length limits**: Cap log messages to prevent DoS — [Manual review only]
@@ -233,7 +233,7 @@ content += `## ${escapeMd(userTitle, 120)}\n`;
 
 ### Checking Path is Within Directory
 
-- [ ] **#17, #18 Path traversal**: Use regex `/^\.\.(?:[\\/]|$)/` — [ESLint:
+- [ ] **#2, #17, #18 Path traversal**: Use regex `/^\.\.(?:[\\/]|$)/` — [ESLint:
       sonash/no-path-startswith] [Semgrep: sonash.security.taint-path-traversal]
 - [ ] **#41 Absolute check**: Also check `path.isAbsolute(rel)` — [ESLint:
       sonash/no-empty-path-check]
@@ -310,8 +310,9 @@ execSync(`git add ${userPath}`); // Command injection risk!
 
 ### Regular Expressions
 
-- [ ] **exec() loops with /g flag**: Global flag REQUIRED when using exec() in
-      while loops — [Semgrep: sonash.correctness.regex-without-lastindex-reset]
+- [ ] **#4 exec() loops with /g flag**: Global flag REQUIRED when using exec()
+      in while loops — [Semgrep:
+      sonash.correctness.regex-without-lastindex-reset]
 - [ ] **Regex state leak**: Reset lastIndex before each iteration — [Semgrep:
       sonash.correctness.regex-without-lastindex-reset]
 - [ ] **ReDoS protection**: Add heuristic detection for user-provided patterns —
@@ -334,6 +335,12 @@ while ((match = pattern.exec(str)) !== null) {
   /* infinite! */
 }
 ```
+
+### Test Mocking
+
+- [ ] **#5 Mock httpsCallable, not Firestore**: Tests must mock `httpsCallable`
+      wrappers, NOT direct Firestore writes — bypasses App Check, rate limits,
+      and validation — [ESLint: sonash/no-test-mock-firestore]
 
 ### Symlink Guard Checklist
 

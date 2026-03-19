@@ -345,7 +345,7 @@ const ANTI_PATTERNS = [
     pattern: /startsWith\s*\(\s*['"`]\.\.['"`]\s*\)/g,
     message: 'Simple ".." check has false positives (e.g., "..hidden.md")',
     fix: "Use: /^\\.\\.(?:[\\\\/]|$)/.test(rel)",
-    review: "#18, #53",
+    review: "Pattern #2, #18, #53",
     fileTypes: [".js", ".ts"],
     // NOTE: Do NOT exclude files even if they use path.relative() first.
     // path.relative() CAN return just ".." (no separator) for parent directories.
@@ -368,7 +368,7 @@ const ANTI_PATTERNS = [
       /res\.(?:json|send|status\s*\([^)]*\)\s*\.json)\s*\(\s*\{[\s\S]{0,300}?(?:error|err|e|exception)\.(?:message|stack|toString\s*\()/g,
     message: "Exposing raw error messages/stack traces to clients",
     fix: 'Return sanitized error messages (e.g., "An error occurred"), log full details server-side',
-    review: "Security Standards",
+    review: "Pattern #1, Security Standards",
     fileTypes: [".js", ".ts"],
   },
   {
@@ -465,7 +465,7 @@ const ANTI_PATTERNS = [
     // - phase-complete-check.js: L290 has .replace(/\\/g, '/').split('/').includes('..')
     pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
-  // readfilesync-without-try: REMOVED (92 exclusions = pattern unfit for purpose)
+  // readfilesync-without-try (Pattern #3): REMOVED (92 exclusions = pattern unfit for purpose)
   // ESLint sonash/no-unguarded-file-read handles this with AST-level try/catch awareness
   {
     id: "auto-mode-slice-truncation",
@@ -488,7 +488,7 @@ const ANTI_PATTERNS = [
   },
   // empty-path-not-rejected: MIGRATED to ESLint sonash/no-empty-path-check (AST-based)
 
-  // test-mock-firestore-directly: MIGRATED to ESLint sonash/no-test-mock-firestore (AST-based)
+  // test-mock-firestore-directly (Pattern #5): MIGRATED to ESLint sonash/no-test-mock-firestore (AST-based)
 
   // --- New patterns from PR Review Churn Analysis (Session #151) ---
   // These patterns were identified from top 20 Qodo findings across 259 reviews
@@ -527,7 +527,7 @@ const ANTI_PATTERNS = [
     pattern: /while\s*\(\s*\(\s*\w+\s*=\s*(?:\w+)\.exec\s*\([^)]+\)\s*\)/g,
     message: "exec() in while loop requires /g flag - without it, infinite loop",
     fix: "Ensure regex has /g flag, or use String.prototype.matchAll() instead",
-    review: "#13, #14, Session #151 analysis",
+    review: "Pattern #4, #13, #14, Session #151 analysis",
     fileTypes: [".js", ".ts"],
     pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|inline-patterns|check-pattern-sync)\.js$/,
     pathExcludeList: verifiedPatterns["exec-without-global"] || [],

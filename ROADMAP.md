@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.26
-**Last Updated:** 2026-03-04
+**Document Version:** 3.27
+**Last Updated:** 2026-03-19
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -417,7 +417,7 @@ demoted to S1 in Session #179 — they are code quality, not critical.
 - [ ] **B9:** Override Audit Tab (1hr) [depends: B4]
 - [ ] **B10:** System Health Tab (3hr) **NEW - Process Audit Integration**
       [depends: B4]
-  - Pattern compliance status (93 violations baseline)
+  - Pattern compliance status (0 violations — zero baseline achieved)
   - CI gate status, script test coverage
   - Pre-commit timing, agent compliance
 - [ ] **B11:** Warnings Resolution Tab (3hr) **NEW - Session #101** [depends:
@@ -1205,7 +1205,8 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 16. **AUTO-005: Remove CI continue-on-error Flags** (S effort, Medium ROI)
     - [ ] Fix Prettier baseline (run `npm run format`)
-    - [ ] Fix knip baseline (7 unused deps)
+    - [x] Fix knip baseline (7 unused deps) - ✅ Zero unused deps (housecleaning
+          Wave 1)
     - [ ] Remove all `continue-on-error: true` flags
     - **Verification:** CI blocks on formatting/linting issues
 
@@ -1669,8 +1670,8 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
     3. Script validation pre-commit hook checking for cross-platform patterns
   - **Priority:** P2 - Add to CI when cross-platform issues become frequent
 - ⏳ **knip** - Unused export detection (`npm run deps:unused`)
-  - Currently: baseline documented, not blocking
-  - Future: Add to CI with allow-list
+  - Currently: zero unused deps (cleaned in housecleaning Wave 1)
+  - Future: Add to CI with allow-list to maintain zero baseline
 - ⏳ **ESLint Import Boundary Rules**
   - Prerequisite: Feature folder refactoring (below)
   - Enforce import restrictions between feature domains
@@ -1930,18 +1931,12 @@ These pre-existing issues were identified during PR review CI:
   `components/providers/error-boundary.tsx`
   - **Priority:** P3 - Code style
   - **Effort:** 10 minutes
-- ⏳ **Pattern Compliance - Dev Utility Scripts** (Review #136)
-  - **Issue:** 79 pattern violations in development/migration scripts
-  - **Files:** `scripts/ai-review.js`, `scripts/assign-review-tier.js`,
-    `scripts/check-docs-light.js`, `scripts/check-document-sync.js`,
-    `scripts/normalize-canon-ids.js`, `scripts/validate-audit.js`, and others
-  - **Patterns:** Unsafe `error.message` access, `readFileSync` without
-    try/catch, `startsWith()` path validation, Windows path issues
-  - **Current State:** Excluded via `GLOBAL_EXCLUDE` in
-    `check-pattern-compliance.js`
-  - **Priority:** P4 - Low priority (dev tools, rarely run)
-  - **Effort:** 4-6 hours (fix all 79 violations incrementally)
-  - **Approach:** Fix during related maintenance work, not dedicated sprint
+- ✅ **Pattern Compliance - Dev Utility Scripts** (Review #136) - **RESOLVED**
+  - ~~**Issue:** 79 pattern violations in development/migration scripts~~
+  - **Resolved:** Housecleaning Wave 3 fixed all blocking pattern violations (72
+    blocking → 0). `npm run patterns:check-all` now reports 0 critical/high
+    violations.
+  - **Remaining:** 2 MEDIUM CRLF warnings (informational only)
 
 ---
 
@@ -2003,7 +1998,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 
 > **Source:** Lighthouse integration planning session (Session #66)
 > **Prerequisite:** PERF-001/PERF-002 from M1.5 complete **Spec:**
-> [LIGHTHOUSE_INTEGRATION_PLAN.md](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)
+> [LIGHTHOUSE_INTEGRATION_PLAN.md](docs/plans/LIGHTHOUSE_INTEGRATION_PLAN.md)
 
 - ⏳ **PERF-003: Historical Score Tracking** (M effort)
   - Store Lighthouse scores in Firestore or flat files
@@ -3164,6 +3159,7 @@ trigger matrix and cross-document update rules, see
 
 | Version | Session | Changes                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 3.27    | #229    | Housecleaning Wave 4-5: marked knip baseline clean, pattern compliance resolved (79→0), updated stale baselines (93 violations→0, knip 7→0), moved 3 misplaced docs, updated Lighthouse plan path reference                                                                                                                                                                    |
 | 3.22    | #142    | Moved Agile Process, Process & Tooling Improvements to DEVELOPMENT.md; trimmed Update Triggers and AI Instructions sections to summaries with links                                                                                                                                                                                                                            |
 | 3.21    | #141    | Track T Phase 1 COMPLETE: `/test-suite` skill with 27 feature protocols, 5-phase pipeline (smoke/feature/security/performance/report), Firebase Preview Channels, dual browser support (Playwright MCP + Chrome Extension); added TESTING_USER_MANUAL.md references to all core docs; updated cross-document sync triggers for test protocols                                  |
 | 3.20    | #140    | Completed date-to-session migration: converted all remaining inline dates to session references; replaced Version History Date column with Session column; removed inline dates from completed items; npm audit fix (brace-expansion vuln); cleaned up stale .bak file                                                                                                         |
