@@ -150,6 +150,7 @@ function checkPackageJsonCoverage(rootDir, scriptFiles) {
   // Check which scripts are reachable
   let totalScripts = 0;
   let reachableScripts = 0;
+  let unreachableFindingCount = 0;
 
   for (const sf of scriptFiles) {
     // Skip test files and __tests__ directories
@@ -167,7 +168,7 @@ function checkPackageJsonCoverage(rootDir, scriptFiles) {
       reachableScripts++;
     } else {
       findings.push({
-        id: "SIA-300",
+        id: `SIA-300-${++unreachableFindingCount}`,
         category: "package_json_coverage",
         domain: DOMAIN,
         severity: "info",
@@ -213,6 +214,7 @@ function checkCrossScriptDependencies(rootDir, scriptFiles) {
 
   let totalDeps = 0;
   let validDeps = 0;
+  let brokenDepFindingCount = 0;
 
   for (const sf of scriptFiles) {
     const allRefs = [...sf.content.matchAll(requirePattern), ...sf.content.matchAll(importPattern)];
@@ -261,7 +263,7 @@ function checkCrossScriptDependencies(rootDir, scriptFiles) {
         validDeps++;
       } else {
         findings.push({
-          id: "SIA-310",
+          id: `SIA-310-${++brokenDepFindingCount}`,
           category: "cross_script_dependencies",
           domain: DOMAIN,
           severity: "warning",
@@ -321,6 +323,7 @@ function checkSharedLibUtilization(rootDir, scriptFiles) {
 
   let applicableScripts = 0;
   let utilizingScripts = 0;
+  let libFindingCount = 0;
 
   for (const sf of scriptFiles) {
     // Skip lib/ files themselves
@@ -353,7 +356,7 @@ function checkSharedLibUtilization(rootDir, scriptFiles) {
         utilizingScripts++;
       } else {
         findings.push({
-          id: "SIA-320",
+          id: `SIA-320-${++libFindingCount}`,
           category: "shared_lib_utilization",
           domain: DOMAIN,
           severity: "info",

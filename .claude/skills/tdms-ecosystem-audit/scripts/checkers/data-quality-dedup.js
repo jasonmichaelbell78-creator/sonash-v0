@@ -446,6 +446,7 @@ function checkSchemaCompliance(rootDir) {
 
   const totalItems = parsed.items.length + parsed.parseErrors.length;
   let validItems = 0;
+  let verificationFindingCount = 0;
 
   for (let idx = 0; idx < parsed.items.length; idx++) {
     const item = parsed.items[idx];
@@ -549,7 +550,7 @@ function checkSchemaCompliance(rootDir) {
       ) {
         itemValid = false;
         findings.push({
-          id: "TDMS-D2-119",
+          id: `TDMS-D2-119-${++verificationFindingCount}`,
           category: "schema_compliance",
           domain: DOMAIN,
           severity: "error",
@@ -643,6 +644,7 @@ function checkContentHashIntegrity(rootDir) {
   // Sample up to 100 random items
   const sampled = sampleItems(itemsWithHash, 100);
   let matchingHashes = 0;
+  let hashMismatchFindingCount = 0;
 
   // Canonical fields for hash computation:
   // We use id, title, severity, category, source_id — sorted keys, JSON-stringified
@@ -696,7 +698,7 @@ function checkContentHashIntegrity(rootDir) {
         matchingHashes++;
       } else {
         findings.push({
-          id: "TDMS-D2-122",
+          id: `TDMS-D2-122-${++hashMismatchFindingCount}`,
           category: "content_hash_integrity",
           domain: DOMAIN,
           severity: "warning",
@@ -864,6 +866,8 @@ function checkIdUniquenessReferential(rootDir) {
 
   // Cross-check LEGACY_ID_MAPPING.json if it exists
   let badLegacyMaps = 0;
+  let legacyBadFindingCount = 0;
+  let legacyMissingFindingCount = 0;
   const legacyMap = safeParseJson(legacyMapPath);
   if (legacyMap && typeof legacyMap === "object") {
     const mapEntries = Object.entries(legacyMap);
@@ -872,7 +876,7 @@ function checkIdUniquenessReferential(rootDir) {
         badLegacyMaps++;
         if (badLegacyMaps <= 10) {
           findings.push({
-            id: "TDMS-D2-134",
+            id: `TDMS-D2-134-${++legacyBadFindingCount}`,
             category: "id_uniqueness_referential",
             domain: DOMAIN,
             severity: "warning",
@@ -889,7 +893,7 @@ function checkIdUniquenessReferential(rootDir) {
         badLegacyMaps++;
         if (badLegacyMaps <= 20) {
           findings.push({
-            id: "TDMS-D2-135",
+            id: `TDMS-D2-135-${++legacyMissingFindingCount}`,
             category: "id_uniqueness_referential",
             domain: DOMAIN,
             severity: "warning",
