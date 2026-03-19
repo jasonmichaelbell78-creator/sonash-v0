@@ -139,7 +139,10 @@
       "reconcile-roadmap.js",
       "ai-pattern-checks.js",
       "search-capabilities.js",
-      "validate-skill-config.js"
+      "validate-skill-config.js",
+      "build-enforcement-manifest.ts",
+      "verify-enforcement-manifest.ts",
+      "positive-patterns-coverage.test.js"
     ],
     "write-without-symlink-guard": [
       "state-utils.js",
@@ -344,8 +347,18 @@
       "verify-enforcement.test.js"
     ],
     "session-id-no-validation": ["state-manager.js", "unify-findings.js"],
-    "path-join-without-containment": ["check-hook-health.js", "validate-templates.js"],
-    "jsonl-parse-no-try-catch": ["transform-jsonl-schema.js"],
+    "path-join-without-containment": [
+      "check-hook-health.js",
+      "validate-templates.js",
+      "pipeline-consistency.test.js"
+    ],
+    "jsonl-parse-no-try-catch": [
+      "transform-jsonl-schema.js",
+      "dedup-review-metrics.test.js",
+      "review-lifecycle.test.js",
+      "rotate-jsonl.test.js",
+      "check-backlog-health.test.ts"
+    ],
     "unsafe-interpolation": ["pattern-compliance-audit.yml"],
     "happy-path-only": [
       "users-tab.tsx",
@@ -412,6 +425,15 @@
     ],
     "for-file-iteration": ["find-polluter.sh"],
     "no-raw-fs-write": ["run-alerts.js", "seed-commit-log.js"],
-    "exec-without-global-flag": ["generate-test-registry.js"]
+    "exec-without-global-flag": ["generate-test-registry.js"],
+    "banned-direct-firestore-write": [
+      "auth-context.tsx",
+      "glossary.ts",
+      "library.ts",
+      "quotes.ts",
+      "slogans.ts",
+      "sober-living.ts",
+      "users.ts"
+    ]
   }
 }

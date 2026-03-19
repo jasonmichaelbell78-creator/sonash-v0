@@ -1322,6 +1322,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:app|components|pages|lib)\//,
     pathExclude: /(?:^|[\\/])functions\//,
+    pathExcludeList: verifiedPatterns["banned-direct-firestore-write"] || [],
   },
   {
     id: "banned-moment-import",
@@ -1618,7 +1619,15 @@ function getFilesToCheck() {
   if (ALL) {
     const files = [];
     const extensions = new Set([".sh", ".yml", ".yaml", ".js", ".ts", ".tsx", ".jsx"]);
-    const ignoreDirs = new Set(["node_modules", ".next", "dist", "dist-tests", ".git", "coverage"]);
+    const ignoreDirs = new Set([
+      "node_modules",
+      ".next",
+      "out",
+      "dist",
+      "dist-tests",
+      ".git",
+      "coverage",
+    ]);
 
     function walk(dir) {
       try {
