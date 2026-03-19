@@ -1,4 +1,5 @@
 {"path":"scripts/health/checkers/__tests__/code-quality.test.js","source_type":"test_file","type":"unit","owner":"health","target":"code-quality","description":"unit test for code-quality"}
+{"path":"scripts/health/checkers/__tests__/data-effectiveness.test.js","source_type":"test_file","type":"unit","owner":"health","target":"data-effectiveness","description":"unit test for data-effectiveness"}
 {"path":"scripts/health/checkers/__tests__/debt-health.test.js","source_type":"test_file","type":"unit","owner":"health","target":"debt-health","description":"unit test for debt-health"}
 {"path":"scripts/health/checkers/__tests__/documentation.test.js","source_type":"test_file","type":"unit","owner":"health","target":"documentation","description":"unit test for documentation"}
 {"path":"scripts/health/checkers/__tests__/ecosystem-integration.test.js","source_type":"test_file","type":"unit","owner":"health","target":"ecosystem-integration","description":"unit test for ecosystem-integration"}
@@ -20,11 +21,14 @@
 {"path":"scripts/reviews/__tests__/backfill-reviews.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"backfill-reviews","description":"unit test for backfill-reviews"}
 {"path":"scripts/reviews/__tests__/build-enforcement-manifest.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"build-enforcement-manifest","description":"unit test for build-enforcement-manifest"}
 {"path":"scripts/reviews/__tests__/completeness.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"completeness","description":"unit test for completeness"}
+{"path":"scripts/reviews/__tests__/cross-db-validation.test.js","source_type":"test_file","type":"unit","owner":"reviews","target":"cross-db-validation","description":"unit test for cross-db-validation"}
 {"path":"scripts/reviews/__tests__/dedup-debt.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"dedup-debt","description":"unit test for dedup-debt"}
+{"path":"scripts/reviews/__tests__/disposition-validation.test.js","source_type":"test_file","type":"unit","owner":"reviews","target":"disposition-validation","description":"unit test for disposition-validation"}
 {"path":"scripts/reviews/__tests__/enforcement-manifest.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"enforcement-manifest","description":"unit test for enforcement-manifest"}
 {"path":"scripts/reviews/__tests__/generate-claude-antipatterns.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"generate-claude-antipatterns","description":"unit test for generate-claude-antipatterns"}
 {"path":"scripts/reviews/__tests__/generate-fix-template-stubs.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"generate-fix-template-stubs","description":"unit test for generate-fix-template-stubs"}
 {"path":"scripts/reviews/__tests__/parse-review.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"parse-review","description":"unit test for parse-review"}
+{"path":"scripts/reviews/__tests__/pipeline-consistency.test.js","source_type":"test_file","type":"unit","owner":"reviews","target":"pipeline-consistency","description":"unit test for pipeline-consistency"}
 {"path":"scripts/reviews/__tests__/promote-patterns.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"promote-patterns","description":"unit test for promote-patterns"}
 {"path":"scripts/reviews/__tests__/promotion-pipeline.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"promotion-pipeline","description":"unit test for promotion-pipeline"}
 {"path":"scripts/reviews/__tests__/read-write-jsonl.test.ts","source_type":"test_file","type":"unit","owner":"reviews","target":"read-write-jsonl","description":"unit test for read-write-jsonl"}
@@ -91,8 +95,10 @@
 {"path":"tests/scripts/debt/validate-schema.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"validate-schema","description":"unit test for validate-schema"}
 {"path":"tests/scripts/debt/verify-resolutions.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"verify-resolutions","description":"unit test for verify-resolutions"}
 {"path":"tests/scripts/lib/ai-pattern-checks.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"ai-pattern-checks","description":"unit test for ai-pattern-checks"}
+{"path":"tests/scripts/lib/confidence-classifier.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"confidence-classifier","description":"unit test for confidence-classifier"}
 {"path":"tests/scripts/lib/generate-content-hash.property.test.ts","source_type":"test_file","type":"property","owner":"shared-lib","target":"generate-content-hash","description":"property test for generate-content-hash"}
 {"path":"tests/scripts/lib/generate-content-hash.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"generate-content-hash","description":"unit test for generate-content-hash"}
+{"path":"tests/scripts/lib/learning-router.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"learning-router","description":"unit test for learning-router"}
 {"path":"tests/scripts/lib/normalize-category.property.test.ts","source_type":"test_file","type":"property","owner":"shared-lib","target":"normalize-category","description":"property test for normalize-category"}
 {"path":"tests/scripts/lib/normalize-category.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"normalize-category","description":"unit test for normalize-category"}
 {"path":"tests/scripts/lib/normalize-file-path.property.test.ts","source_type":"test_file","type":"property","owner":"shared-lib","target":"normalize-file-path","description":"property test for normalize-file-path"}
@@ -130,6 +136,7 @@
 {"path":"tests/scripts/secrets/decrypt-secrets.test.ts","source_type":"test_file","type":"unit","owner":"secrets","target":"decrypt-secrets","description":"unit test for decrypt-secrets"}
 {"path":"tests/scripts/secrets/encrypt-secrets.test.ts","source_type":"test_file","type":"unit","owner":"secrets","target":"encrypt-secrets","description":"unit test for encrypt-secrets"}
 {"path":"tests/scripts/config/load-config.test.ts","source_type":"test_file","type":"unit","owner":"config","target":"load-config","description":"unit test for load-config"}
+{"path":"tests/scripts/config/retro-config-changes.test.ts","source_type":"test_file","type":"unit","owner":"config","target":"retro-config-changes","description":"unit test for retro-config-changes"}
 {"path":"tests/scripts/tasks/resolve-dependencies.test.ts","source_type":"test_file","type":"unit","owner":"tasks","target":"resolve-dependencies","description":"unit test for resolve-dependencies"}
 {"path":"tests/scripts/metrics/review-churn-tracker.test.ts","source_type":"test_file","type":"unit","owner":"metrics","target":"review-churn-tracker","description":"unit test for review-churn-tracker"}
 {"path":"tests/scripts/health/run-ecosystem-health.test.ts","source_type":"test_file","type":"unit","owner":"health","target":"run-ecosystem-health","description":"unit test for run-ecosystem-health"}
@@ -148,12 +155,17 @@
 {"path":"tests/scripts/aggregate-audit-findings.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"aggregate-audit-findings","description":"unit test for aggregate-audit-findings"}
 {"path":"tests/scripts/analyze-learning-effectiveness.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"analyze-learning-effectiveness","description":"unit test for analyze-learning-effectiveness"}
 {"path":"tests/scripts/append-hook-warning.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"append-hook-warning","description":"unit test for append-hook-warning"}
+{"path":"tests/scripts/archive/archive-reviews.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"archive-reviews","description":"unit test for archive-reviews"}
+{"path":"tests/scripts/archive/sync-reviews-to-jsonl.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"sync-reviews-to-jsonl","description":"unit test for sync-reviews-to-jsonl"}
+{"path":"tests/scripts/archive/v1-parity-consolidation.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"v1-parity-consolidation","description":"unit test for v1-parity-consolidation"}
+{"path":"tests/scripts/archive/v1-parity-sync-reviews.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"v1-parity-sync-reviews","description":"unit test for v1-parity-sync-reviews"}
 {"path":"tests/scripts/archive-doc.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"archive-doc","description":"unit test for archive-doc"}
-{"path":"tests/scripts/archive-reviews.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"archive-reviews","description":"unit test for archive-reviews"}
 {"path":"tests/scripts/assign-review-tier.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"assign-review-tier","description":"unit test for assign-review-tier"}
 {"path":"tests/scripts/audit-s0-promotions.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"audit-s0-promotions","description":"unit test for audit-s0-promotions"}
 {"path":"tests/scripts/check-agent-compliance.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-agent-compliance","description":"unit test for check-agent-compliance"}
 {"path":"tests/scripts/check-backlog-health.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-backlog-health","description":"unit test for check-backlog-health"}
+{"path":"tests/scripts/check-case-sensitivity.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-case-sensitivity","description":"unit test for check-case-sensitivity"}
+{"path":"tests/scripts/check-cc-gate.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-cc-gate","description":"unit test for check-cc-gate"}
 {"path":"tests/scripts/check-content-accuracy.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-content-accuracy","description":"unit test for check-content-accuracy"}
 {"path":"tests/scripts/check-cross-doc-deps.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-cross-doc-deps","description":"unit test for check-cross-doc-deps"}
 {"path":"tests/scripts/check-doc-headers.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-doc-headers","description":"unit test for check-doc-headers"}
@@ -164,6 +176,8 @@
 {"path":"tests/scripts/check-hook-health.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-hook-health","description":"unit test for check-hook-health"}
 {"path":"tests/scripts/check-pattern-compliance.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-pattern-compliance","description":"unit test for check-pattern-compliance"}
 {"path":"tests/scripts/check-pattern-sync.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-pattern-sync","description":"unit test for check-pattern-sync"}
+{"path":"tests/scripts/check-pending-refinements.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-pending-refinements","description":"unit test for check-pending-refinements"}
+{"path":"tests/scripts/check-propagation-staged.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-propagation-staged","description":"unit test for check-propagation-staged"}
 {"path":"tests/scripts/check-propagation.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-propagation","description":"unit test for check-propagation"}
 {"path":"tests/scripts/check-review-archive.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-review-archive","description":"unit test for check-review-archive"}
 {"path":"tests/scripts/check-review-needed.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-review-needed","description":"unit test for check-review-needed"}
@@ -178,6 +192,8 @@
 {"path":"tests/scripts/generate-documentation-index.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"generate-documentation-index","description":"unit test for generate-documentation-index"}
 {"path":"tests/scripts/generate-fix-template-stubs.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"generate-fix-template-stubs","description":"unit test for generate-fix-template-stubs"}
 {"path":"tests/scripts/generate-skill-registry.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"generate-skill-registry","description":"unit test for generate-skill-registry"}
+{"path":"tests/scripts/github-optimization-wave3.test.js","source_type":"test_file","type":"unit","owner":"scripts","target":"github-optimization-wave3","description":"unit test for github-optimization-wave3"}
+{"path":"tests/scripts/github-optimization-wave4.test.js","source_type":"test_file","type":"unit","owner":"scripts","target":"github-optimization-wave4","description":"unit test for github-optimization-wave4"}
 {"path":"tests/scripts/hook-analytics.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"hook-analytics","description":"unit test for hook-analytics"}
 {"path":"tests/scripts/hook-continueOnError.test.js","source_type":"test_file","type":"unit","owner":"scripts","target":"hook-continueOnError","description":"unit test for hook-continueOnError"}
 {"path":"tests/scripts/lighthouse-audit.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"lighthouse-audit","description":"unit test for lighthouse-audit"}
@@ -187,8 +203,11 @@
 {"path":"tests/scripts/pattern-compliance.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"pattern-compliance","description":"unit test for pattern-compliance"}
 {"path":"tests/scripts/phase-complete-check.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"phase-complete-check","description":"unit test for phase-complete-check"}
 {"path":"tests/scripts/promote-patterns.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"promote-patterns","description":"unit test for promote-patterns"}
+{"path":"tests/scripts/ratchet-baselines.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"ratchet-baselines","description":"unit test for ratchet-baselines"}
+{"path":"tests/scripts/refine-scaffolds.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"refine-scaffolds","description":"unit test for refine-scaffolds"}
 {"path":"tests/scripts/repair-archives.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"repair-archives","description":"unit test for repair-archives"}
 {"path":"tests/scripts/reset-audit-triggers.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"reset-audit-triggers","description":"unit test for reset-audit-triggers"}
+{"path":"tests/scripts/retro-action-items.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"retro-action-items","description":"unit test for retro-action-items"}
 {"path":"tests/scripts/run-consolidation.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"run-consolidation","description":"unit test for run-consolidation"}
 {"path":"tests/scripts/safe-fs.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"safe-fs","description":"unit test for safe-fs"}
 {"path":"tests/scripts/search-capabilities.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"search-capabilities","description":"unit test for search-capabilities"}
@@ -197,11 +216,8 @@
 {"path":"tests/scripts/session-end-commit.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"session-end-commit","description":"unit test for session-end-commit"}
 {"path":"tests/scripts/suggest-pattern-automation.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"suggest-pattern-automation","description":"unit test for suggest-pattern-automation"}
 {"path":"tests/scripts/surface-lessons-learned.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"surface-lessons-learned","description":"unit test for surface-lessons-learned"}
-{"path":"tests/scripts/sync-reviews-to-jsonl.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"sync-reviews-to-jsonl","description":"unit test for sync-reviews-to-jsonl"}
 {"path":"tests/scripts/test-hooks.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"test-hooks","description":"unit test for test-hooks"}
 {"path":"tests/scripts/update-readme-status.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"update-readme-status","description":"unit test for update-readme-status"}
-{"path":"tests/scripts/v1-parity-consolidation.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"v1-parity-consolidation","description":"unit test for v1-parity-consolidation"}
-{"path":"tests/scripts/v1-parity-sync-reviews.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"v1-parity-sync-reviews","description":"unit test for v1-parity-sync-reviews"}
 {"path":"tests/scripts/validate-audit-s0s1.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"validate-audit-s0s1","description":"unit test for validate-audit-s0s1"}
 {"path":"tests/scripts/validate-audit.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"validate-audit","description":"unit test for validate-audit"}
 {"path":"tests/scripts/validate-canon-schema.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"validate-canon-schema","description":"unit test for validate-canon-schema"}
@@ -363,6 +379,7 @@
 {"path":".claude/skills/add-debt/SKILL.md","source_type":"skill_command","type":"skill","owner":"add-debt","target":"add-debt","description":"Skill: add-debt"}
 {"path":".claude/skills/alerts/SKILL.md","source_type":"skill_command","type":"skill","owner":"alerts","target":"alerts","description":"Skill: alerts"}
 {"path":".claude/skills/artifacts-builder/SKILL.md","source_type":"skill_command","type":"skill","owner":"artifacts-builder","target":"artifacts-builder","description":"Skill: artifacts-builder"}
+{"path":".claude/skills/audit-agent-quality/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-agent-quality","target":"audit-agent-quality","description":"Skill: audit-agent-quality"}
 {"path":".claude/skills/audit-aggregator/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-aggregator","target":"audit-aggregator","description":"Skill: audit-aggregator"}
 {"path":".claude/skills/audit-ai-optimization/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-ai-optimization","target":"audit-ai-optimization","description":"Skill: audit-ai-optimization"}
 {"path":".claude/skills/audit-code/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-code","target":"audit-code","description":"Skill: audit-code"}
@@ -379,7 +396,10 @@
 {"path":".claude/skills/code-reviewer/SKILL.md","source_type":"skill_command","type":"skill","owner":"code-reviewer","target":"code-reviewer","description":"Skill: code-reviewer"}
 {"path":".claude/skills/comprehensive-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"comprehensive-ecosystem-audit","target":"comprehensive-ecosystem-audit","description":"Skill: comprehensive-ecosystem-audit"}
 {"path":".claude/skills/content-research-writer/SKILL.md","source_type":"skill_command","type":"skill","owner":"content-research-writer","target":"content-research-writer","description":"Skill: content-research-writer"}
+{"path":".claude/skills/convergence-loop/SKILL.md","source_type":"skill_command","type":"skill","owner":"convergence-loop","target":"convergence-loop","description":"Skill: convergence-loop"}
 {"path":".claude/skills/create-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"create-audit","target":"create-audit","description":"Skill: create-audit"}
+{"path":".claude/skills/data-effectiveness-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"data-effectiveness-audit","target":"data-effectiveness-audit","description":"Skill: data-effectiveness-audit"}
+{"path":".claude/skills/debt-runner/SKILL.md","source_type":"skill_command","type":"skill","owner":"debt-runner","target":"debt-runner","description":"Skill: debt-runner"}
 {"path":".claude/skills/decrypt-secrets/SKILL.md","source_type":"skill_command","type":"skill","owner":"decrypt-secrets","target":"decrypt-secrets","description":"Skill: decrypt-secrets"}
 {"path":".claude/skills/deep-plan/SKILL.md","source_type":"skill_command","type":"skill","owner":"deep-plan","target":"deep-plan","description":"Skill: deep-plan"}
 {"path":".claude/skills/developer-growth-analysis/SKILL.md","source_type":"skill_command","type":"skill","owner":"developer-growth-analysis","target":"developer-growth-analysis","description":"Skill: developer-growth-analysis"}
@@ -409,7 +429,6 @@
 {"path":".claude/skills/skill-creator/SKILL.md","source_type":"skill_command","type":"skill","owner":"skill-creator","target":"skill-creator","description":"Skill: skill-creator"}
 {"path":".claude/skills/skill-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"skill-ecosystem-audit","target":"skill-ecosystem-audit","description":"Skill: skill-ecosystem-audit"}
 {"path":".claude/skills/sonarcloud/SKILL.md","source_type":"skill_command","type":"skill","owner":"sonarcloud","target":"sonarcloud","description":"Skill: sonarcloud"}
-{"path":".claude/skills/sprint/SKILL.md","source_type":"skill_command","type":"skill","owner":"sprint","target":"sprint","description":"Skill: sprint"}
 {"path":".claude/skills/system-test/SKILL.md","source_type":"skill_command","type":"skill","owner":"system-test","target":"system-test","description":"Skill: system-test"}
 {"path":".claude/skills/systematic-debugging/SKILL.md","source_type":"skill_command","type":"skill","owner":"systematic-debugging","target":"systematic-debugging","description":"Skill: systematic-debugging"}
 {"path":".claude/skills/task-next/SKILL.md","source_type":"skill_command","type":"skill","owner":"task-next","target":"task-next","description":"Skill: task-next"}
@@ -450,8 +469,10 @@
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"patterns:sync","description":"npm run patterns:sync"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"patterns:fp-report","description":"npm run patterns:fp-report"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"test:patterns","description":"npm run test:patterns"}
+{"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:lifecycle","description":"npm run reviews:lifecycle"}
+{"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:validate","description":"npm run reviews:validate"}
+{"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:render","description":"npm run reviews:render"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:sync","description":"npm run reviews:sync"}
-{"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:sync:v1","description":"npm run reviews:sync:v1"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:check-archive","description":"npm run reviews:check-archive"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:archive","description":"npm run reviews:archive"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:repair","description":"npm run reviews:repair"}
@@ -499,22 +520,25 @@
 {"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"11:Pattern compliance check (PR - no relevant files changed)","description":"CI step: Pattern compliance check (PR - no relevant files changed)"}
 {"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"12:Pattern compliance check (push to main)","description":"CI step: Pattern compliance check (push to main)"}
 {"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"13:Pattern test suite","description":"CI step: Pattern test suite"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"14:Documentation check","description":"CI step: Documentation check"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"15:Validate CANON schema","description":"CI step: Validate CANON schema"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"16:Validate audit files","description":"CI step: Validate audit files"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"17:Validate technical debt schema","description":"CI step: Validate technical debt schema"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"18:Check ROADMAP debt references","description":"CI step: Check ROADMAP debt references"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"19:Verify technical debt views current","description":"CI step: Verify technical debt views current"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"20:Type check","description":"CI step: Type check"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"21:Run tests with coverage","description":"CI step: Run tests with coverage"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"22:Enforce coverage thresholds","description":"CI step: Enforce coverage thresholds"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"23:Check test coverage completeness","description":"CI step: Check test coverage completeness"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"24:Upload coverage report","description":"CI step: Upload coverage report"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"25:Checkout code","description":"CI step: Checkout code"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"26:Setup Node.js","description":"CI step: Setup Node.js"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"27:Install dependencies","description":"CI step: Install dependencies"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"28:Build application","description":"CI step: Build application"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"14:GitHub optimization wave tests","description":"CI step: GitHub optimization wave tests"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"15:Documentation check","description":"CI step: Documentation check"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"16:Validate CANON schema","description":"CI step: Validate CANON schema"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"17:Validate audit files","description":"CI step: Validate audit files"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"18:Validate technical debt schema","description":"CI step: Validate technical debt schema"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"19:Check ROADMAP debt references","description":"CI step: Check ROADMAP debt references"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"20:Verify technical debt views current","description":"CI step: Verify technical debt views current"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"21:Type check","description":"CI step: Type check"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"22:Run tests with coverage","description":"CI step: Run tests with coverage"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"23:Enforce coverage thresholds","description":"CI step: Enforce coverage thresholds"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"24:Check test coverage completeness","description":"CI step: Check test coverage completeness"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"25:Upload coverage to Codecov","description":"CI step: Upload coverage to Codecov"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"26:Upload coverage report","description":"CI step: Upload coverage report"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"27:Checkout code","description":"CI step: Checkout code"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"28:Setup Node.js","description":"CI step: Setup Node.js"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"29:Install dependencies","description":"CI step: Install dependencies"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"30:Build application","description":"CI step: Build application"}
 {"path":"scripts/health/checkers/code-quality.js","source_type":"health_checker","type":"checker","owner":"health","target":"code-quality","description":"Health checker: code-quality"}
+{"path":"scripts/health/checkers/data-effectiveness.js","source_type":"health_checker","type":"checker","owner":"health","target":"data-effectiveness","description":"Health checker: data-effectiveness"}
 {"path":"scripts/health/checkers/debt-health.js","source_type":"health_checker","type":"checker","owner":"health","target":"debt-health","description":"Health checker: debt-health"}
 {"path":"scripts/health/checkers/documentation.js","source_type":"health_checker","type":"checker","owner":"health","target":"documentation","description":"Health checker: documentation"}
 {"path":"scripts/health/checkers/ecosystem-integration.js","source_type":"health_checker","type":"checker","owner":"health","target":"ecosystem-integration","description":"Health checker: ecosystem-integration"}

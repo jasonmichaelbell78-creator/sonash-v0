@@ -148,12 +148,7 @@ export default [
   // Tests naturally use dynamic paths, object indexing, non-literal require,
   // child_process for integration tests, etc. These are not security risks.
   {
-    files: [
-      "tests/**",
-      "**/*.test.*",
-      "**/__tests__/**",
-      ".claude/skills/*/scripts/__tests__/**",
-    ],
+    files: ["tests/**", "**/*.test.*", "**/__tests__/**", ".claude/skills/*/scripts/__tests__/**"],
     rules: {
       "security/detect-non-literal-fs-filename": "off",
       "security/detect-object-injection": "off",
@@ -278,11 +273,7 @@ export default [
     },
   },
   {
-    files: [
-      "tests/**",
-      "**/*.test.*",
-      "**/__tests__/**",
-    ],
+    files: ["tests/**", "**/*.test.*", "**/__tests__/**"],
     linterOptions: { reportUnusedDisableDirectives: "off" },
     rules: {
       complexity: "off",

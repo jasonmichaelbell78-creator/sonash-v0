@@ -107,7 +107,7 @@ The F-prefix collides because both systems use "F1", "F2", etc.
 
 Adopt a **milestone-scoped identifier** to avoid ambiguity:
 
-```
+```text
 Format: M{milestone}-{type}{number}: {Name}
 
 Types:
