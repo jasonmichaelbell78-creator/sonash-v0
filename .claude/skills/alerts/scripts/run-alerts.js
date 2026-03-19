@@ -1644,7 +1644,7 @@ function checkSkipAbuse() {
   }
 
   // C4-G3: Bypass budget — current week vs 4-week rolling average
-  const fourWeeksAgo = new Date(now.getTime() - 28 * DAY_MS);
+  const fourWeeksAgo = new Date(now - 28 * DAY_MS);
   const overrides4w = entries.filter((e) => {
     if (!e.timestamp) return false;
     const t = new Date(e.timestamp).getTime();
@@ -3494,8 +3494,10 @@ function checkReviewChurn() {
  */
 function checkBacklogHealth() {
   checkNpmScript("backlog-health", "Backlog Health", ["backlog:check"], (output, result) => {
-    const issueMatch = output.match(/(\d+)\s+(?:issue|problem|warning)/i);
-    const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
+    // Count actual finding lines (indented "- " items under BLOCKERS/WARNINGS sections)
+    // Avoids cross-line regex matching DEBT IDs adjacent to section headers
+    const findingLines = (output.match(/^\s{2,}-\s+\S/gm) || []).length;
+    const issues = findingLines > 0 ? findingLines : result.success ? 0 : 1;
 
     if (issues > BENCHMARKS.backlog_health.issues.poor) {
       addAlert(
@@ -3677,7 +3679,7 @@ function checkReviewArchive() {
     "Review Archive Health",
     ["reviews:check-archive"],
     (output, result) => {
-      const issueMatch = output.match(/(\d+)\s+issue\(s\)\s+found/i);
+      const issueMatch = output.match(/(\d+)\s+finding\(s\)/i);
       const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
 
       if (!result.success && !issueMatch) {
