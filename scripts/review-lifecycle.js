@@ -507,13 +507,21 @@ function buildLatestMetricsMap(metrics) {
   for (const entry of metrics) {
     if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") continue;
     const existing = latestByPr.get(entry.pr);
-    const entryTime = typeof entry.timestamp === "string" ? Date.parse(entry.timestamp) : Number.NaN;
-    const existingTime = existing && typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : Number.NaN;
+    const entryTime =
+      typeof entry.timestamp === "string" ? Date.parse(entry.timestamp) : Number.NaN;
+    const existingTime =
+      existing && typeof existing.timestamp === "string"
+        ? Date.parse(existing.timestamp)
+        : Number.NaN;
     const entryScore = Number.isFinite(entryTime) ? entryTime : -Infinity;
     const existingScore = Number.isFinite(existingTime) ? existingTime : -Infinity;
 
     // last-wins tiebreaker when both timestamps are invalid
-    if (!existing || entryScore > existingScore || (entryScore === -Infinity && existingScore === -Infinity)) {
+    if (
+      !existing ||
+      entryScore > existingScore ||
+      (entryScore === -Infinity && existingScore === -Infinity)
+    ) {
       latestByPr.set(entry.pr, entry);
     }
   }
@@ -562,7 +570,12 @@ function runCrossDbValidation() {
   // Also flag PRs present in JSONL but missing from metrics
   for (const [pr, jsonlCount] of reviewCountsByPr) {
     if (!metricsRoundsByPr.has(pr)) {
-      mismatches.push({ pr, metricsRounds: 0, jsonlRecords: jsonlCount, reason: "missing_metrics" });
+      mismatches.push({
+        pr,
+        metricsRounds: 0,
+        jsonlRecords: jsonlCount,
+        reason: "missing_metrics",
+      });
       logStep("VALIDATE", `  PR #${pr}: metrics missing entry, JSONL has ${jsonlCount} records`);
     }
   }
@@ -605,7 +618,10 @@ function checkDisposition(rec) {
   const base = {
     id: rec.id ?? null,
     pr: typeof rec.pr === "number" ? rec.pr : null,
-    total, fixed, deferred, rejected,
+    total,
+    fixed,
+    deferred,
+    rejected,
   };
 
   if (dispositionSum === 0) return base;
@@ -712,9 +728,10 @@ function runValidate() {
   const dispFindings = dispResult.violations.map((v) => {
     const id = typeof v.id === "string" && v.id.trim() ? v.id : "unknown-id";
     const base = `Data integrity violation: record ${id} has total=${v.total} (fixed=${v.fixed}, deferred=${v.deferred}, rejected=${v.rejected})`;
-    const description = v.reason === "sum_mismatch"
-      ? `${base} but dispositions do not sum to total`
-      : `${base} but no dispositions were recorded`;
+    const description =
+      v.reason === "sum_mismatch"
+        ? `${base} but dispositions do not sum to total`
+        : `${base} but no dispositions were recorded`;
     return {
       severity: "S2",
       category: "disposition-integrity",

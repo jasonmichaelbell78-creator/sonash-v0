@@ -1,8 +1,8 @@
 ---
 name: feedback_agent_teams_learnings
 description:
-  Agent teams operational learnings — Explore read-only, idle floods, token cost,
-  team sizing, subagent rules
+  Agent teams operational learnings — Explore read-only, idle floods, token
+  cost, team sizing, subagent rules
 type: feedback
 status: active
 ---
@@ -20,6 +20,7 @@ research-team):
    Otherwise subagents (cheaper).
 6. **One team per session.** No nested teams. Lead is fixed. No /resume for
    teams.
+
 - **Why:** First-hand experience. These patterns prevent token waste and failed
   file writes.
 - **Apply:** Before dispatching agents, verify tool access matches the task.

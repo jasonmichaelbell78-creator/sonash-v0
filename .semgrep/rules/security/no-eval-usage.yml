@@ -21,12 +21,12 @@ rules:
           - pattern: setTimeout($CB, ...)
           - metavariable-regex:
               metavariable: $CB
-              regex: "^['\"].*"
+              regex: '^[''"].*'
       - patterns:
           - pattern: setInterval($CB, ...)
           - metavariable-regex:
               metavariable: $CB
-              regex: "^['\"].*"
+              regex: '^[''"].*'
     paths:
       exclude:
         - node_modules/

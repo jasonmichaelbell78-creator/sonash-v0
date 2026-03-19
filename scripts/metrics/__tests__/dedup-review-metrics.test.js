@@ -141,14 +141,22 @@ describe("dedupMetrics (Item #8)", () => {
     const entries = [
       { pr: 100, title: "Valid", review_rounds: 1, timestamp: "2026-03-18T01:00:00Z" },
       { title: "No PR", review_rounds: 1, timestamp: "2026-03-18T02:00:00Z" },
-      { pr: "not-a-number", title: "String PR", review_rounds: 1, timestamp: "2026-03-18T03:00:00Z" },
+      {
+        pr: "not-a-number",
+        title: "String PR",
+        review_rounds: 1,
+        timestamp: "2026-03-18T03:00:00Z",
+      },
       null,
     ];
 
     const { deduped } = dedupMetrics(entries);
     // Valid PR entry + 2 passthrough entries (no PR, string PR) — null is filtered
     assert.equal(deduped.length, 3, "Should keep valid entry + passthrough non-PR entries");
-    assert.ok(deduped.some((e) => e.pr === 100), "Should include the valid PR entry");
+    assert.ok(
+      deduped.some((e) => e.pr === 100),
+      "Should include the valid PR entry"
+    );
   });
 
   test("functional test with temp JSONL files", () => {

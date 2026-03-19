@@ -380,7 +380,10 @@ function main() {
   try {
     reportCommitFailure();
   } catch (err) {
-    console.error("commit-tracker: reportCommitFailure failed:", err instanceof Error ? err.message : String(err));
+    console.error(
+      "commit-tracker: reportCommitFailure failed:",
+      err instanceof Error ? err.message : String(err)
+    );
   }
 
   console.log("ok");

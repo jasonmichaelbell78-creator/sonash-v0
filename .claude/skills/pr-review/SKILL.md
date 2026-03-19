@@ -82,12 +82,13 @@ Ready to receive review feedback. Paste it below.
 
 ## Step 0: Pre-Checks (MUST — before parsing)
 
-**High-churn watchlist (SHOULD):** Read `.claude/config/high-churn-watchlist.json`
-and cross-reference against the PR's changed files. If any watchlist files are
-modified, flag them prominently: "High-churn file detected: {file} — this file
-has appeared in {N}+ PRs' fix rounds. Apply extra scrutiny to changes in this
-file and verify no regressions." Review the `refactor_candidates` entries for
-context on why the file attracts churn.
+**High-churn watchlist (SHOULD):** Read
+`.claude/config/high-churn-watchlist.json` and cross-reference against the PR's
+changed files. If any watchlist files are modified, flag them prominently:
+"High-churn file detected: {file} — this file has appeared in {N}+ PRs' fix
+rounds. Apply extra scrutiny to changes in this file and verify no regressions."
+Review the `refactor_candidates` entries for context on why the file attracts
+churn.
 
 **PR size advisory (MUST):** Check file count before starting review:
 
@@ -135,8 +136,8 @@ Security Threat Model Checklist:
 ```
 
 Each item should be marked as: N/A (not applicable to this PR), Clear (reviewed,
-no risk), or Flag (risk identified — must address before proceeding). If any item
-is flagged, it becomes a CRITICAL-severity item in Step 2 triage.
+no risk), or Flag (risk identified — must address before proceeding). If any
+item is flagged, it becomes a CRITICAL-severity item in Step 2 triage.
 
 ---
 
@@ -468,7 +469,7 @@ is the source of truth for cross-round history within a PR.
 
 | Version | Date       | Description                                                                                                                                                                                                |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 4.6     | 2026-03-18 | Step 0: Add high-churn watchlist check from `.claude/config/high-churn-watchlist.json`. Flag files with disproportionate review churn for extra scrutiny.                                                   |
+| 4.6     | 2026-03-18 | Step 0: Add high-churn watchlist check from `.claude/config/high-churn-watchlist.json`. Flag files with disproportionate review churn for extra scrutiny.                                                  |
 | 4.5     | 2026-03-18 | Step 0: Add Security Threat Model checklist (conditional on scripts/hooks/security files), Large PR Advisory at >40 files with Qodo suppression cross-reference. From PR #447 retro items #5 and #6.       |
 | 4.4     | 2026-03-16 | DAS framework: Replace time-based defer heuristic with Signal/Dependency/Risk scoring. Required format block for all pre-existing items. Step 7 DAS compliance check.                                      |
 | 4.3     | 2026-03-14 | State file persistence: Warm-Up reads prior round state files for accurate counts across compaction/clear. Step 8 writes state file. Schema documented in Compaction Resilience.                           |

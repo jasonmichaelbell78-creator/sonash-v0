@@ -129,7 +129,7 @@ cycles:
   hardening (structured logging, secret rotation, RBAC, rate limiting) for
   offline CLI dev tools under `scripts/`. These are internal automation scripts,
   not production services.
-- **CJS module format on scripts/*.js** — Do NOT flag CommonJS module format
+- **CJS module format on scripts/\*.js** — Do NOT flag CommonJS module format
   (require/module.exports) or suggest converting to ESM on intentional CommonJS
   scripts under `scripts/`. CJS is the project's established format for CLI
   tooling.
@@ -138,8 +138,8 @@ cycles:
   verified false positives. Check prior round context before raising.
 - **Local config exposure on .claude/ files** — Do NOT flag "sensitive file
   access" or "local config exposure" for files under `.claude/` (.claude/hooks/,
-  .claude/skills/, .claude/state/). These are local AI agent configuration files,
-  not secrets or credentials. They are version-controlled intentionally.
+  .claude/skills/, .claude/state/). These are local AI agent configuration
+  files, not secrets or credentials. They are version-controlled intentionally.
 - **R-style function signature complaints** — Do NOT flag function signature
   style complaints (e.g., "R-style naming", "unconventional parameter patterns")
   on utility functions in `scripts/lib/`. These follow the project's established

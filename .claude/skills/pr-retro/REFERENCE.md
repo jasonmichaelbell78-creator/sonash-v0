@@ -53,24 +53,24 @@ Your decision? [default: A]
 
 Required fields for `write-retro-record.js`:
 
-| Field                | Type         | Description                                                                |
-| -------------------- | ------------ | -------------------------------------------------------------------------- |
-| pr                   | number       | PR number                                                                  |
-| date                 | string       | YYYY-MM-DD                                                                 |
-| schema_version       | number       | Always 1                                                                   |
-| completeness         | string       | "full" or "partial"                                                        |
-| completeness_missing | string[]     | Missing sections if partial                                                |
-| origin               | object       | `{type: "pr-retro", pr: N, tool: "write-retro-record.ts"}`                 |
-| session              | number\|null | Session number                                                             |
-| top_wins             | string[]     | Top things that went well                                                  |
-| top_misses           | string[]     | Top things that went wrong                                                 |
-| process_changes      | string[]     | Recommended process changes                                                |
-| action_items         | object[]     | Per-item tracking: `{title, status, verify_cmd, implemented_in, severity}` |
-| score                | number       | 1-10 overall efficiency                                                    |
-| metrics              | object       | `{total_findings: N, fix_rate: 0.8, pattern_recurrence: N}` — see below    |
-| process_feedback     | string\|null | User feedback on the retro process (learning loop)                         |
+| Field                    | Type         | Description                                                                                                                                |
+| ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| pr                       | number       | PR number                                                                                                                                  |
+| date                     | string       | YYYY-MM-DD                                                                                                                                 |
+| schema_version           | number       | Always 1                                                                                                                                   |
+| completeness             | string       | "full" or "partial"                                                                                                                        |
+| completeness_missing     | string[]     | Missing sections if partial                                                                                                                |
+| origin                   | object       | `{type: "pr-retro", pr: N, tool: "write-retro-record.ts"}`                                                                                 |
+| session                  | number\|null | Session number                                                                                                                             |
+| top_wins                 | string[]     | Top things that went well                                                                                                                  |
+| top_misses               | string[]     | Top things that went wrong                                                                                                                 |
+| process_changes          | string[]     | Recommended process changes                                                                                                                |
+| action_items             | object[]     | Per-item tracking: `{title, status, verify_cmd, implemented_in, severity}`                                                                 |
+| score                    | number       | 1-10 overall efficiency                                                                                                                    |
+| metrics                  | object       | `{total_findings: N, fix_rate: 0.8, pattern_recurrence: N}` — see below                                                                    |
+| process_feedback         | string\|null | User feedback on the retro process (learning loop)                                                                                         |
 | deliverable_verification | object\|null | `{ claims: N, verified: M, unverified: K, confidence: "HIGH/MEDIUM/LOW", t20_tally: { confirmed: N, corrected: M, extended: K, new: J } }` |
-| metrics.hook_health  | object\|null | `{ pre_commit_pass_rate: 0.95, pre_push_pass_rate: 0.90, overrides: N, top_warning: "type", total_runs: N, avg_duration_ms: N }` |
+| metrics.hook_health      | object\|null | `{ pre_commit_pass_rate: 0.95, pre_push_pass_rate: 0.90, overrides: N, top_warning: "type", total_runs: N, avg_duration_ms: N }`           |
 
 **`metrics.pattern_recurrence` population (D7):**
 
@@ -302,10 +302,10 @@ For each accepted action item with a verify command:
 - [ ] Commands target specific files/patterns (not generic `grep` with no path)
 - [ ] Commands would actually fail if the change wasn't made
 - [ ] Verify commands must be executable (exit 0 on success, exit 1 on failure)
-  and test actual behavior, not string presence. A `grep -c` that only confirms
-  a string exists in a file is NOT a valid verify command. Valid verify commands
-  execute the feature (run a script, parse a config, invoke an API) and validate
-  the output or exit code reflects correct behavior.
+      and test actual behavior, not string presence. A `grep -c` that only
+      confirms a string exists in a file is NOT a valid verify command. Valid
+      verify commands execute the feature (run a script, parse a config, invoke
+      an API) and validate the output or exit code reflects correct behavior.
 
 ### 4. Data Integrity (were artifacts saved correctly?)
 
@@ -456,17 +456,17 @@ deliverable is unverified but review data shows it was reviewed and approved):
 
 **Field mappings:**
 
-| Source Field     | Usage                                                       |
-| ---------------- | ----------------------------------------------------------- |
-| `fix_ratio`      | Percentage of commits that were fixes -- churn indicator    |
-| `review_rounds`  | Total review rounds -- cross-validate with gathered data    |
-| `total_commits`  | Total commit count for the PR                               |
-| `fix_commits`    | Number of fix commits -- compare to total for fix overhead  |
+| Source Field    | Usage                                                      |
+| --------------- | ---------------------------------------------------------- |
+| `fix_ratio`     | Percentage of commits that were fixes -- churn indicator   |
+| `review_rounds` | Total review rounds -- cross-validate with gathered data   |
+| `total_commits` | Total commit count for the PR                              |
+| `fix_commits`   | Number of fix commits -- compare to total for fix overhead |
 
 **How to use this data:**
 
-- Inform churn analysis in Step 3 (quantitative backing for "too many rounds"
-  or high fix ratios)
+- Inform churn analysis in Step 3 (quantitative backing for "too many rounds" or
+  high fix ratios)
 - Set baseline for "was this PR unusually churny?" (compare to average across
   last 5 PRs in the file)
 - Include in the JSONL record's `metrics` field
@@ -478,11 +478,11 @@ data available for this PR" and continue.
 
 **Sources:**
 
-| File                              | Fields per line                                                            |
-| --------------------------------- | -------------------------------------------------------------------------- |
-| `.claude/state/hook-runs.jsonl`   | `hook`, `timestamp`, `branch`, `checks` (array of `{id, status, duration}`), `outcome`, `total_ms` |
-| `.claude/state/hook-warnings-log.jsonl` | `timestamp`, `hook`, `type`, `severity`, `message`, `action`         |
-| `.claude/override-log.jsonl`      | `timestamp`, `check`, `reason`                                             |
+| File                                    | Fields per line                                                                                    |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `.claude/state/hook-runs.jsonl`         | `hook`, `timestamp`, `branch`, `checks` (array of `{id, status, duration}`), `outcome`, `total_ms` |
+| `.claude/state/hook-warnings-log.jsonl` | `timestamp`, `hook`, `type`, `severity`, `message`, `action`                                       |
+| `.claude/override-log.jsonl`            | `timestamp`, `check`, `reason`                                                                     |
 
 **NOTE:** The override log path is `.claude/override-log.jsonl` (NOT
 `.claude/state/override-log.jsonl`).
@@ -495,14 +495,14 @@ data available for this PR" and continue.
 
 **Field mappings for extraction:**
 
-| Metric                  | Source                       | Calculation                                |
-| ----------------------- | ---------------------------- | ------------------------------------------ |
-| Pre-commit pass rate    | `hook-runs.jsonl`            | Count `outcome=pass` where `hook=pre-commit` / total pre-commit runs |
-| Pre-push pass rate      | `hook-runs.jsonl`            | Count `outcome=pass` where `hook=pre-push` / total pre-push runs |
-| Most common warning     | `hook-warnings-log.jsonl`    | Group by `type`, pick highest count        |
-| Override count          | `.claude/override-log.jsonl` | Count entries in date range                |
-| Total hook runs         | `hook-runs.jsonl`            | Count all entries in date range            |
-| Avg hook duration       | `hook-runs.jsonl`            | Mean of `total_ms` across all entries      |
+| Metric               | Source                       | Calculation                                                          |
+| -------------------- | ---------------------------- | -------------------------------------------------------------------- |
+| Pre-commit pass rate | `hook-runs.jsonl`            | Count `outcome=pass` where `hook=pre-commit` / total pre-commit runs |
+| Pre-push pass rate   | `hook-runs.jsonl`            | Count `outcome=pass` where `hook=pre-push` / total pre-push runs     |
+| Most common warning  | `hook-warnings-log.jsonl`    | Group by `type`, pick highest count                                  |
+| Override count       | `.claude/override-log.jsonl` | Count entries in date range                                          |
+| Total hook runs      | `hook-runs.jsonl`            | Count all entries in date range                                      |
+| Avg hook duration    | `hook-runs.jsonl`            | Mean of `total_ms` across all entries                                |
 
 **How to use this data:**
 
@@ -605,10 +605,10 @@ compatibility, but `action_items` is the authoritative tracking field.
 
 ## Version History
 
-| Version | Date       | Changes                                                          |
-| ------- | ---------- | ---------------------------------------------------------------- |
-| 1.4     | 2026-03-18 | Verification criteria: require functional verify commands (exit 0/1), reject grep-based string checks. |
-| 1.3     | 2026-03-18 | Align step references with SKILL.md v4.7 renumbering. Fix override-log path. |
+| Version | Date       | Changes                                                                                                              |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| 1.4     | 2026-03-18 | Verification criteria: require functional verify commands (exit 0/1), reject grep-based string checks.               |
+| 1.3     | 2026-03-18 | Align step references with SKILL.md v4.7 renumbering. Fix override-log path.                                         |
 | 1.2     | 2026-03-18 | Add Cat7 sections: deliverable verification detail, data enrichment, implementation detail, cross-skill integration. |
-| 1.1     | 2026-03-13 | Add D7 pattern_recurrence population rules, D26 override audit cross-reference, verification stage criteria |
-| 1.0     | 2026-03-06 | Initial extraction from SKILL.md v4.0 — templates, schemas, patterns, batch scope |
+| 1.1     | 2026-03-13 | Add D7 pattern_recurrence population rules, D26 override audit cross-reference, verification stage criteria          |
+| 1.0     | 2026-03-06 | Initial extraction from SKILL.md v4.0 — templates, schemas, patterns, batch scope                                    |

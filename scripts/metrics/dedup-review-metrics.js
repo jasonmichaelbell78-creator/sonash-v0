@@ -103,7 +103,8 @@ function dedupMetrics(metricsEntries, reviewCountsByPr) {
     const existingTime = existing?.timestamp ? new Date(existing.timestamp).getTime() : Number.NaN;
     const entryHasTime = Number.isFinite(entryTime);
     const existingHasTime = Number.isFinite(existingTime);
-    const shouldReplace = !existing || (entryHasTime && (!existingHasTime || entryTime > existingTime));
+    const shouldReplace =
+      !existing || (entryHasTime && (!existingHasTime || entryTime > existingTime));
 
     if (shouldReplace) {
       latestByPr.set(entry.pr, { ...entry });
@@ -111,9 +112,7 @@ function dedupMetrics(metricsEntries, reviewCountsByPr) {
   }
 
   // Update review_rounds from reviews.jsonl if available
-  const updatedRounds = reviewCountsByPr
-    ? reconcileRoundCounts(latestByPr, reviewCountsByPr)
-    : 0;
+  const updatedRounds = reviewCountsByPr ? reconcileRoundCounts(latestByPr, reviewCountsByPr) : 0;
 
   const deduped = [...latestByPr.values(), ...passthrough];
   const removedCount = metricsEntries.length - deduped.length;

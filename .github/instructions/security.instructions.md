@@ -13,7 +13,8 @@ Scoped guidance for AI assistance in security-sensitive paths: `functions/src/`,
   App Check is enabled (currently disabled pending Firebase support resolution)
 - Never write directly to `journal`, `daily_logs`, or `inventoryEntries`
   collections from client code - always use Cloud Functions
-- All callable functions must validate auth: `if (!context.auth) throw new HttpsError('unauthenticated')`
+- All callable functions must validate auth:
+  `if (!context.auth) throw new HttpsError('unauthenticated')`
 - Rate limiting: handle 429 errors gracefully in client callers
 - Input validation: use Zod schemas from `functions/src/schemas.ts`
 - Never log raw `error.message` - use `scripts/lib/sanitize-error.js` pattern
@@ -22,7 +23,8 @@ Scoped guidance for AI assistance in security-sensitive paths: `functions/src/`,
 
 - Rules must enforce owner-only access: `request.auth.uid == userId`
 - Always validate data types and field presence in write rules
-- Deploy rules together with functions: `firebase deploy --only functions,firestore:rules`
+- Deploy rules together with functions:
+  `firebase deploy --only functions,firestore:rules`
 - Test rule changes against `tests/` before deploying
 
 ### Authentication (`lib/auth/`, `lib/firebase.ts`)

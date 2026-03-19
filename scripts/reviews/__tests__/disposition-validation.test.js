@@ -86,9 +86,7 @@ let tmpDir;
 
 describe("validateDispositions from review-lifecycle.js (Item #14)", () => {
   test("flags record with total=5 but all dispositions zero", () => {
-    const records = [
-      { id: "rev-1", total: 5, fixed: 0, deferred: 0, rejected: 0 },
-    ];
+    const records = [{ id: "rev-1", total: 5, fixed: 0, deferred: 0, rejected: 0 }];
 
     const result = validateDispositions(records);
 
@@ -98,36 +96,28 @@ describe("validateDispositions from review-lifecycle.js (Item #14)", () => {
   });
 
   test("does not flag record with total=5 and valid dispositions", () => {
-    const records = [
-      { id: "rev-1", total: 5, fixed: 3, deferred: 1, rejected: 1 },
-    ];
+    const records = [{ id: "rev-1", total: 5, fixed: 3, deferred: 1, rejected: 1 }];
 
     const result = validateDispositions(records);
     assert.equal(result.violations.length, 0, "Should find no violations");
   });
 
   test("does not flag record with total=0", () => {
-    const records = [
-      { id: "rev-1", total: 0, fixed: 0, deferred: 0, rejected: 0 },
-    ];
+    const records = [{ id: "rev-1", total: 0, fixed: 0, deferred: 0, rejected: 0 }];
 
     const result = validateDispositions(records);
     assert.equal(result.violations.length, 0, "total=0 is not a violation");
   });
 
   test("does not flag record with total missing (undefined)", () => {
-    const records = [
-      { id: "rev-1", fixed: 0, deferred: 0, rejected: 0 },
-    ];
+    const records = [{ id: "rev-1", fixed: 0, deferred: 0, rejected: 0 }];
 
     const result = validateDispositions(records);
     assert.equal(result.violations.length, 0, "Missing total is not a violation");
   });
 
   test("flags record where only total is set, dispositions are undefined", () => {
-    const records = [
-      { id: "rev-1", total: 10 },
-    ];
+    const records = [{ id: "rev-1", total: 10 }];
 
     const result = validateDispositions(records);
     assert.equal(result.violations.length, 1, "Missing dispositions with total > 0 is a violation");
@@ -159,18 +149,14 @@ describe("validateDispositions from review-lifecycle.js (Item #14)", () => {
   });
 
   test("counts deferred-only as valid", () => {
-    const records = [
-      { id: "rev-1", total: 5, fixed: 0, deferred: 5, rejected: 0 },
-    ];
+    const records = [{ id: "rev-1", total: 5, fixed: 0, deferred: 5, rejected: 0 }];
 
     const result = validateDispositions(records);
     assert.equal(result.violations.length, 0, "Deferred-only is valid");
   });
 
   test("counts rejected-only as valid", () => {
-    const records = [
-      { id: "rev-1", total: 5, fixed: 0, deferred: 0, rejected: 5 },
-    ];
+    const records = [{ id: "rev-1", total: 5, fixed: 0, deferred: 0, rejected: 5 }];
 
     const result = validateDispositions(records);
     assert.equal(result.violations.length, 0, "Rejected-only is valid");

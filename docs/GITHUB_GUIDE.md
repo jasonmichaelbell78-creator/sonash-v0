@@ -80,12 +80,12 @@ ownership for:
 
 Directory: `.github/ISSUE_TEMPLATE/`
 
-| Template              | File                  | Purpose                     |
-| --------------------- | --------------------- | --------------------------- |
-| Bug Report            | `bug_report.md`       | Structured bug reports      |
-| Feature Request       | `feature_request.md`  | Feature proposals           |
-| App Check Re-enable   | (linked via config)   | Firebase App Check tracker  |
-| Blank Issue           | (enabled in config)   | Freeform issues             |
+| Template            | File                 | Purpose                    |
+| ------------------- | -------------------- | -------------------------- |
+| Bug Report          | `bug_report.md`      | Structured bug reports     |
+| Feature Request     | `feature_request.md` | Feature proposals          |
+| App Check Re-enable | (linked via config)  | Firebase App Check tracker |
+| Blank Issue         | (enabled in config)  | Freeform issues            |
 
 Configuration in `config.yml` enables blank issues and links to the App Check
 re-enablement tracker and Security Policy.
@@ -94,9 +94,9 @@ re-enablement tracker and Security Policy.
 
 File: `.github/pull_request_template.md`
 
-Sections: What Changed, Why This Change, How It Works, Testing Done, Screenshots,
-Related Issues, Technical Debt (TDMS integration), Breaking Changes, Risks &
-Rollback, Pre-Merge Checklist.
+Sections: What Changed, Why This Change, How It Works, Testing Done,
+Screenshots, Related Issues, Technical Debt (TDMS integration), Breaking
+Changes, Risks & Rollback, Pre-Merge Checklist.
 
 PR titles follow conventional commits: `<type>(<scope>): <description>`
 
@@ -153,10 +153,10 @@ status, architecture patterns, and validation steps.
 
 Directory: `.github/instructions/`
 
-| File                          | Scope                              |
-| ----------------------------- | ---------------------------------- |
-| `security.instructions.md`   | Security paths (functions, rules)  |
-| `tests.instructions.md`      | Test paths (tests/, *.test.*)      |
+| File                       | Scope                             |
+| -------------------------- | --------------------------------- |
+| `security.instructions.md` | Security paths (functions, rules) |
+| `tests.instructions.md`    | Test paths (tests/, _.test._)     |
 
 These provide context-aware guidance when Copilot operates in specific areas of
 the codebase.
@@ -165,6 +165,6 @@ the codebase.
 
 ## Version History
 
-| Version | Date       | Changes                                       |
-| ------- | ---------- | --------------------------------------------- |
-| 1.0     | 2026-03-18 | Initial release (GitHub Optimization Wave 4)  |
+| Version | Date       | Changes                                      |
+| ------- | ---------- | -------------------------------------------- |
+| 1.0     | 2026-03-18 | Initial release (GitHub Optimization Wave 4) |

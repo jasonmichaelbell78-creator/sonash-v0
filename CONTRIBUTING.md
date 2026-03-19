@@ -8,8 +8,8 @@
 
 ## Purpose
 
-Guidelines for contributing to SoNash. We welcome bug reports, feature
-requests, documentation improvements, and code contributions.
+Guidelines for contributing to SoNash. We welcome bug reports, feature requests,
+documentation improvements, and code contributions.
 
 ## Getting Started
 
@@ -54,8 +54,7 @@ npm run build         # Must complete successfully
 
 ## Submitting a Pull Request
 
-1. Fill out the
-   [PR template](.github/pull_request_template.md) completely.
+1. Fill out the [PR template](.github/pull_request_template.md) completely.
 2. Use conventional commit format for the PR title:
    `<type>(<scope>): <description>` (e.g., `feat(auth): add password reset`).
 3. Ensure CI passes on your PR before requesting review.
@@ -63,16 +62,16 @@ npm run build         # Must complete successfully
 
 ### PR Types
 
-| Type       | Description                        |
-| ---------- | ---------------------------------- |
-| `feat`     | New feature                        |
-| `fix`      | Bug fix                            |
-| `docs`     | Documentation only                 |
+| Type       | Description                            |
+| ---------- | -------------------------------------- |
+| `feat`     | New feature                            |
+| `fix`      | Bug fix                                |
+| `docs`     | Documentation only                     |
 | `refactor` | Code restructuring, no behavior change |
-| `test`     | Adding or updating tests           |
-| `chore`    | Maintenance, dependencies, CI      |
-| `perf`     | Performance improvement            |
-| `style`    | Formatting, whitespace             |
+| `test`     | Adding or updating tests               |
+| `chore`    | Maintenance, dependencies, CI          |
+| `perf`     | Performance improvement                |
+| `style`    | Formatting, whitespace                 |
 
 ## Reporting Bugs
 
@@ -82,19 +81,17 @@ details.
 
 ## Requesting Features
 
-Use the
-[feature request template](.github/ISSUE_TEMPLATE/feature_request.md) on
+Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md) on
 GitHub. Describe the problem you are trying to solve and your proposed solution.
 
 ## Security Vulnerabilities
 
-Do **not** open a public issue. See [`SECURITY.md`](SECURITY.md) for
-responsible disclosure instructions via GitHub Private Vulnerability Reporting.
+Do **not** open a public issue. See [`SECURITY.md`](SECURITY.md) for responsible
+disclosure instructions via GitHub Private Vulnerability Reporting.
 
 ## Code of Conduct
 
-All contributors must follow our
-[Code of Conduct](CODE_OF_CONDUCT.md).
+All contributors must follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -103,6 +100,6 @@ By contributing, you agree that your contributions will be licensed under the
 
 ## Version History
 
-| Version | Date       | Changes              |
-| ------- | ---------- | -------------------- |
+| Version | Date       | Changes                    |
+| ------- | ---------- | -------------------------- |
 | 1.0     | 2026-03-18 | Initial contribution guide |

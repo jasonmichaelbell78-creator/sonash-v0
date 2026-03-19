@@ -274,10 +274,7 @@ if (isSafeToWrite(target)) { fs.writeFileSync(target, content); }
       );
 
       // Write a markdown file with the pattern text (should be ignored)
-      fs.writeFileSync(
-        fileB,
-        `# Docs\nUse sanitizeError( for all error handling.\n`
-      );
+      fs.writeFileSync(fileB, `# Docs\nUse sanitizeError( for all error handling.\n`);
 
       const relA = path.relative(PROJECT_ROOT, fileA).replaceAll("\\", "/");
 

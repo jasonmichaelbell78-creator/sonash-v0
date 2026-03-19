@@ -70,9 +70,14 @@ function isValidMetricsEntry(entry) {
  */
 function isNewerEntry(candidate, existing) {
   if (!existing) return true;
-  const candidateTime = typeof candidate.timestamp === "string" ? Date.parse(candidate.timestamp) : Number.NaN;
-  const existingTime = typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : Number.NaN;
-  return Number.isFinite(candidateTime) && (!Number.isFinite(existingTime) || candidateTime > existingTime);
+  const candidateTime =
+    typeof candidate.timestamp === "string" ? Date.parse(candidate.timestamp) : Number.NaN;
+  const existingTime =
+    typeof existing.timestamp === "string" ? Date.parse(existing.timestamp) : Number.NaN;
+  return (
+    Number.isFinite(candidateTime) &&
+    (!Number.isFinite(existingTime) || candidateTime > existingTime)
+  );
 }
 
 /**
@@ -143,9 +148,36 @@ describe("Cross-database validation (Item #3)", () => {
   test("detects mismatch: 3 review records vs metrics claiming 1 round", () => {
     // Create 3 review records for PR #999
     const reviews = [
-      { id: "rev-1", date: "2026-03-18", pr: 999, title: "PR #999 R1", total: 5, fixed: 3, deferred: 1, rejected: 1 },
-      { id: "rev-2", date: "2026-03-18", pr: 999, title: "PR #999 R2", total: 3, fixed: 2, deferred: 1, rejected: 0 },
-      { id: "rev-3", date: "2026-03-18", pr: 999, title: "PR #999 R3", total: 2, fixed: 2, deferred: 0, rejected: 0 },
+      {
+        id: "rev-1",
+        date: "2026-03-18",
+        pr: 999,
+        title: "PR #999 R1",
+        total: 5,
+        fixed: 3,
+        deferred: 1,
+        rejected: 1,
+      },
+      {
+        id: "rev-2",
+        date: "2026-03-18",
+        pr: 999,
+        title: "PR #999 R2",
+        total: 3,
+        fixed: 2,
+        deferred: 1,
+        rejected: 0,
+      },
+      {
+        id: "rev-3",
+        date: "2026-03-18",
+        pr: 999,
+        title: "PR #999 R3",
+        total: 2,
+        fixed: 2,
+        deferred: 0,
+        rejected: 0,
+      },
     ];
 
     // Create metrics entry claiming only 1 round
@@ -167,9 +199,7 @@ describe("Cross-database validation (Item #3)", () => {
       { id: "rev-2", date: "2026-03-18", pr: 100, title: "PR #100 R2", total: 3, fixed: 3 },
     ];
 
-    const metrics = [
-      { pr: 100, review_rounds: 2, timestamp: "2026-03-18T00:00:00Z" },
-    ];
+    const metrics = [{ pr: 100, review_rounds: 2, timestamp: "2026-03-18T00:00:00Z" }];
 
     const result = crossDbCheck(reviews, metrics);
     assert.equal(result.mismatches.length, 0, "Should find no mismatches");
@@ -177,9 +207,7 @@ describe("Cross-database validation (Item #3)", () => {
 
   test("skips PRs only in metrics (not in reviews)", () => {
     const reviews = [];
-    const metrics = [
-      { pr: 500, review_rounds: 3, timestamp: "2026-03-18T00:00:00Z" },
-    ];
+    const metrics = [{ pr: 500, review_rounds: 3, timestamp: "2026-03-18T00:00:00Z" }];
 
     const result = crossDbCheck(reviews, metrics);
     assert.equal(result.mismatches.length, 0, "Should skip PRs not in reviews");
@@ -235,9 +263,7 @@ describe("Cross-database validation (Item #3)", () => {
       { id: "rev-3", date: "2026-03-18", pr: 400, title: "Has PR" },
     ];
 
-    const metrics = [
-      { pr: 400, review_rounds: 1, timestamp: "2026-03-18T00:00:00Z" },
-    ];
+    const metrics = [{ pr: 400, review_rounds: 1, timestamp: "2026-03-18T00:00:00Z" }];
 
     const result = crossDbCheck(reviews, metrics);
     assert.equal(result.mismatches.length, 0, "Only PR #400 matches, count=1 matches rounds=1");
@@ -247,9 +273,36 @@ describe("Cross-database validation (Item #3)", () => {
     // Write temp reviews.jsonl
     const reviewsPath = path.join(tmpDir, "reviews.jsonl");
     const reviewRecords = [
-      { id: "rev-1", date: "2026-03-18", pr: 999, title: "PR #999 R1", total: 5, fixed: 3, deferred: 1, rejected: 1 },
-      { id: "rev-2", date: "2026-03-18", pr: 999, title: "PR #999 R2", total: 3, fixed: 2, deferred: 1, rejected: 0 },
-      { id: "rev-3", date: "2026-03-18", pr: 999, title: "PR #999 R3", total: 2, fixed: 2, deferred: 0, rejected: 0 },
+      {
+        id: "rev-1",
+        date: "2026-03-18",
+        pr: 999,
+        title: "PR #999 R1",
+        total: 5,
+        fixed: 3,
+        deferred: 1,
+        rejected: 1,
+      },
+      {
+        id: "rev-2",
+        date: "2026-03-18",
+        pr: 999,
+        title: "PR #999 R2",
+        total: 3,
+        fixed: 2,
+        deferred: 1,
+        rejected: 0,
+      },
+      {
+        id: "rev-3",
+        date: "2026-03-18",
+        pr: 999,
+        title: "PR #999 R3",
+        total: 2,
+        fixed: 2,
+        deferred: 0,
+        rejected: 0,
+      },
     ];
     fs.writeFileSync(reviewsPath, reviewRecords.map((r) => JSON.stringify(r)).join("\n") + "\n");
 

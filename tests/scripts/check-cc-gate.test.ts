@@ -132,7 +132,8 @@ describe("check-cc.js pre-push gate", () => {
 
       // Should have fail path for CC violations
       assert.ok(
-        content.includes("cognitive-cc|fail") || content.includes("Cognitive complexity violations"),
+        content.includes("cognitive-cc|fail") ||
+          content.includes("Cognitive complexity violations"),
         "pre-push hook should have failure handling for CC violations"
       );
     });

@@ -45,14 +45,17 @@ function readJsonl(filePath) {
   try {
     const content = fs.readFileSync(filePath, "utf8").trim();
     if (!content) return [];
-    return content.split("\n").map((line, idx) => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        console.warn(`  Skipping malformed line ${idx + 1} in ${path.basename(filePath)}`);
-        return null;
-      }
-    }).filter(Boolean);
+    return content
+      .split("\n")
+      .map((line, idx) => {
+        try {
+          return JSON.parse(line);
+        } catch {
+          console.warn(`  Skipping malformed line ${idx + 1} in ${path.basename(filePath)}`);
+          return null;
+        }
+      })
+      .filter(Boolean);
   } catch {
     return [];
   }
@@ -65,7 +68,9 @@ function readJsonl(filePath) {
 function findSourceFile(basePath) {
   try {
     if (fs.existsSync(basePath)) return basePath;
-  } catch { /* race condition */ }
+  } catch {
+    /* race condition */
+  }
 
   // Look for archived variants
   const dir = path.dirname(basePath);
@@ -110,9 +115,10 @@ function normalizeReviewRecord(eco) {
     schema_version: typeof eco.schema_version === "number" ? eco.schema_version : 1,
     completeness: eco.completeness || "full",
     completeness_missing: Array.isArray(eco.completeness_missing) ? eco.completeness_missing : [],
-    origin: eco.origin && typeof eco.origin === "object"
-      ? eco.origin
-      : { type: "migration", tool: "migrate-ecosystem-v2" },
+    origin:
+      eco.origin && typeof eco.origin === "object"
+        ? eco.origin
+        : { type: "migration", tool: "migrate-ecosystem-v2" },
     title: eco.title || "",
     source: eco.source || "manual",
     pr: normalizePr(eco.pr),
@@ -143,7 +149,9 @@ function safeAppend(filePath, lines) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-  } catch { /* existsSync race */ }
+  } catch {
+    /* existsSync race */
+  }
 
   try {
     if (fs.lstatSync(resolved).isSymbolicLink()) {
@@ -176,12 +184,18 @@ function migrateReviews(apply) {
   const ecoReviews = readJsonl(reviewSource);
   const stateIds = new Set(readJsonl(STATE_REVIEWS).map((r) => String(r.id)));
 
-  const candidates = ecoReviews.filter((r) => hasRealData(r) && r.pr != null && !stateIds.has(String(r.id)));
-  const noPrCount = ecoReviews.filter((r) => hasRealData(r) && r.pr == null && !stateIds.has(String(r.id))).length;
+  const candidates = ecoReviews.filter(
+    (r) => hasRealData(r) && r.pr != null && !stateIds.has(String(r.id))
+  );
+  const noPrCount = ecoReviews.filter(
+    (r) => hasRealData(r) && r.pr == null && !stateIds.has(String(r.id))
+  ).length;
   const normalized = candidates.map(normalizeReviewRecord);
 
   console.log(`  ecosystem-v2: ${ecoReviews.length} records`);
-  console.log(`  Candidates: ${candidates.length} | Skipped (no PR): ${noPrCount} | Stubs: ${ecoReviews.length - candidates.length - noPrCount}`);
+  console.log(
+    `  Candidates: ${candidates.length} | Skipped (no PR): ${noPrCount} | Stubs: ${ecoReviews.length - candidates.length - noPrCount}`
+  );
 
   if (apply) {
     safeAppend(STATE_REVIEWS, normalized);
@@ -202,12 +216,18 @@ function migrateRetros(apply) {
   }
   const ecoRetros = readJsonl(retroSource);
   let stateRetros = [];
-  try { stateRetros = readJsonl(STATE_RETROS); } catch { /* may not exist */ }
+  try {
+    stateRetros = readJsonl(STATE_RETROS);
+  } catch {
+    /* may not exist */
+  }
 
   const retroStateIds = new Set(stateRetros.map((r) => String(r.id)));
   const retroCandidates = ecoRetros.filter((r) => !retroStateIds.has(String(r.id)));
 
-  console.log(`  ecosystem-v2: ${ecoRetros.length} | state: ${stateRetros.length} | candidates: ${retroCandidates.length}`);
+  console.log(
+    `  ecosystem-v2: ${ecoRetros.length} | state: ${stateRetros.length} | candidates: ${retroCandidates.length}`
+  );
 
   if (apply && retroCandidates.length > 0) {
     safeAppend(STATE_RETROS, retroCandidates);

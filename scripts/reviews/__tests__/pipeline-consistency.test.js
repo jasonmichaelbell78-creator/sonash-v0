@@ -44,7 +44,13 @@ function findActiveEcosystemV2Reference(line) {
   if (!hasRef) return null;
 
   const trimmed = line.trim();
-  if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*") || trimmed.startsWith("*/")) return null;
+  if (
+    trimmed.startsWith("//") ||
+    trimmed.startsWith("*") ||
+    trimmed.startsWith("/*") ||
+    trimmed.startsWith("*/")
+  )
+    return null;
 
   return trimmed;
 }
@@ -58,7 +64,7 @@ describe("Review pipeline path consistency", () => {
 
     assert.ok(
       content.includes('".claude", "state", "reviews.jsonl"') ||
-      content.includes(".claude/state/reviews.jsonl"),
+        content.includes(".claude/state/reviews.jsonl"),
       "write-review-record.ts must write to .claude/state/reviews.jsonl"
     );
 
@@ -86,15 +92,12 @@ describe("Review pipeline path consistency", () => {
   });
 
   test("review-lifecycle.js reads from canonical reviews path", () => {
-    const content = fs.readFileSync(
-      path.join(ROOT, "scripts/review-lifecycle.js"),
-      "utf8"
-    );
+    const content = fs.readFileSync(path.join(ROOT, "scripts/review-lifecycle.js"), "utf8");
 
     assert.ok(
       content.includes('".claude", "state", "reviews.jsonl"') ||
-      content.includes(".claude/state/reviews.jsonl") ||
-      content.includes('"reviews.jsonl"'),
+        content.includes(".claude/state/reviews.jsonl") ||
+        content.includes('"reviews.jsonl"'),
       "review-lifecycle.js must read from .claude/state/reviews.jsonl"
     );
   });
@@ -107,7 +110,7 @@ describe("Review pipeline path consistency", () => {
 
     assert.ok(
       content.includes('".claude", "state", "reviews.jsonl"') ||
-      content.includes(".claude/state/reviews.jsonl"),
+        content.includes(".claude/state/reviews.jsonl"),
       "render-reviews-to-md.ts must read from .claude/state/reviews.jsonl"
     );
 
@@ -153,20 +156,21 @@ describe("Review pipeline path consistency", () => {
   test("no active scripts reference ecosystem-v2/reviews.jsonl as write target", () => {
     // Scan all .ts and .js files in scripts/reviews/ (excluding archive, tests, migration)
     const reviewDir = path.join(ROOT, "scripts/reviews");
-    const files = fs.readdirSync(reviewDir).filter(
-      (f) => (f.endsWith(".ts") || f.endsWith(".js")) &&
-             !f.includes("backfill") &&
-             !f.includes("migrate-ecosystem") &&
-             !f.startsWith(".")
-    );
+    const files = fs
+      .readdirSync(reviewDir)
+      .filter(
+        (f) =>
+          (f.endsWith(".ts") || f.endsWith(".js")) &&
+          !f.includes("backfill") &&
+          !f.includes("migrate-ecosystem") &&
+          !f.startsWith(".")
+      );
 
     for (const file of files) {
       const content = fs.readFileSync(path.join(reviewDir, file), "utf8");
       const activeRef = content.split("\n").map(findActiveEcosystemV2Reference).find(Boolean);
       if (activeRef) {
-        assert.fail(
-          `${file} still references ecosystem-v2 JSONL in active code: ${activeRef}`
-        );
+        assert.fail(`${file} still references ecosystem-v2 JSONL in active code: ${activeRef}`);
       }
     }
   });
