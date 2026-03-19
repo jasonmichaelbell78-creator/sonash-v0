@@ -213,7 +213,9 @@ function analyzePr(prNumber, owner, repo) {
  */
 function readExistingMetrics() {
   try {
-    if (existsSync(METRICS_FILE) && lstatSync(METRICS_FILE).isSymbolicLink()) return [];
+    // Single lstatSync call avoids TOCTOU between existsSync and lstatSync
+    const st = lstatSync(METRICS_FILE);
+    if (!st.isFile() || st.isSymbolicLink()) return [];
 
     const content = readFileSync(METRICS_FILE, "utf8");
     const lines = content.split("\n");
@@ -296,9 +298,9 @@ function buildExistingIndex(existing) {
   const index = new Map();
   for (let i = 0; i < existing.length; i++) {
     const e = existing[i];
-    if (!e || typeof e.pr !== "number" || !e.timestamp) continue;
-    const t = new Date(e.timestamp).getTime();
-    if (!Number.isFinite(t)) continue;
+    if (!e || typeof e.pr !== "number") continue;
+    const tRaw = e.timestamp ? new Date(e.timestamp).getTime() : Number.NaN;
+    const t = Number.isFinite(tRaw) ? tRaw : 0;
     const prev = index.get(e.pr);
     if (!prev || t > prev.time) {
       index.set(e.pr, { idx: i, time: t });

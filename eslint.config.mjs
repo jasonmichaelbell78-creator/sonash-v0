@@ -33,6 +33,7 @@ export default [
       "scripts/archive/**",
       "eslint-plugin-sonash/**",
       "scripts/reviews/dist/**",
+      "scripts/tests/**",
       "tests/semgrep/**",
       ".temp-test-*/**",
       ".planning/**",

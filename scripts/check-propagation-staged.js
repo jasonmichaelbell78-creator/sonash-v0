@@ -46,7 +46,10 @@ try {
 } catch {
   sanitizeError = (err) => {
     const name = err instanceof Error ? err.name : "Error";
-    const code = err && typeof err === "object" && "code" in err ? String(err.code) : null;
+    let code = null;
+    try {
+      code = err && typeof err === "object" && "code" in err ? String(err.code) : null;
+    } catch { code = null; }
     return code ? `${name} (${code})` : name;
   };
 }

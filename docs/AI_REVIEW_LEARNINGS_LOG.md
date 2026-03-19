@@ -2037,6 +2037,28 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
 
 ---
 
+### Review #490: PR #448 R5 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**PR:** #448 | **Round:** R5 | **Source:** Mixed (CI/ESLint, Qodo, SonarCloud)
+
+**Items:** 11 fixed, 0 deferred, 7 rejected (repeat R1-R4)
+
+**Fixes:** ESLint ignore for `scripts/tests/` (CI compiled output), coerceInt
+helper for disposition validation, bidirectional cross-db check,
+safeAppend TOCTOU fix, buildExistingIndex missing-timestamp handling,
+sanitizeError fallback robustness, buildLatestMetricsMap tiebreaker.
+
+**Rejections (7):** retro-config "should be Set" (repeat R1-R4).
+
+**Key Learnings:**
+
+- CI build steps (`test:build`) may produce compiled JS output that ESLint
+  scans. If compiled output redeclares globals, add the output path to ignores.
+- Validation helpers that treat non-numeric values as 0 silently skip integrity
+  violations. Use explicit coercion with `Number()` + `Number.isFinite()`.
+
+---
+
 ### Review #489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
 
 **PR:** #448 | **Round:** R4 | **Source:** Mixed (CI/Security, Qodo, SonarCloud)

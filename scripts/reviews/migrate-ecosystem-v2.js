@@ -146,8 +146,8 @@ function safeAppend(filePath, lines) {
   } catch { /* existsSync race */ }
 
   try {
-    if (fs.lstatSync(filePath).isSymbolicLink()) {
-      console.error(`  ERROR: ${path.basename(filePath)} is a symlink — refusing to write`);
+    if (fs.lstatSync(resolved).isSymbolicLink()) {
+      console.error(`  ERROR: ${path.basename(resolved)} is a symlink — refusing to write`);
       process.exit(2);
     }
   } catch (e) {
@@ -156,7 +156,7 @@ function safeAppend(filePath, lines) {
   }
 
   const content = lines.map((r) => JSON.stringify(r)).join("\n") + "\n";
-  fs.appendFileSync(filePath, content);
+  fs.appendFileSync(resolved, content);
 }
 
 /** Check if a record has real review data. */

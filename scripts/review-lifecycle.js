@@ -512,7 +512,8 @@ function buildLatestMetricsMap(metrics) {
     const entryScore = Number.isFinite(entryTime) ? entryTime : -Infinity;
     const existingScore = Number.isFinite(existingTime) ? existingTime : -Infinity;
 
-    if (!existing || entryScore > existingScore) {
+    // last-wins tiebreaker when both timestamps are invalid
+    if (!existing || entryScore > existingScore || (entryScore === -Infinity && existingScore === -Infinity)) {
       latestByPr.set(entry.pr, entry);
     }
   }
@@ -558,6 +559,14 @@ function runCrossDbValidation() {
     }
   }
 
+  // Also flag PRs present in JSONL but missing from metrics
+  for (const [pr, jsonlCount] of reviewCountsByPr) {
+    if (!metricsRoundsByPr.has(pr)) {
+      mismatches.push({ pr, metricsRounds: 0, jsonlRecords: jsonlCount, reason: "missing_metrics" });
+      logStep("VALIDATE", `  PR #${pr}: metrics missing entry, JSONL has ${jsonlCount} records`);
+    }
+  }
+
   if (mismatches.length === 0) {
     logStep("VALIDATE", "Cross-database consistency: OK (all matching PRs agree)");
   } else {
@@ -578,14 +587,20 @@ function runCrossDbValidation() {
  *   v1.0 2026-03-18 — Initial implementation
  */
 /** Check a single record for disposition integrity. Returns violation or null. */
+/** Coerce value to non-negative integer, defaulting to 0. */
+function coerceInt(v) {
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
+}
+
 function checkDisposition(rec) {
   if (!rec || typeof rec !== "object") return null;
-  const total = typeof rec.total === "number" ? rec.total : 0;
+  const total = coerceInt(rec.total);
   if (total <= 0) return null;
 
-  const fixed = typeof rec.fixed === "number" ? rec.fixed : 0;
-  const deferred = typeof rec.deferred === "number" ? rec.deferred : 0;
-  const rejected = typeof rec.rejected === "number" ? rec.rejected : 0;
+  const fixed = coerceInt(rec.fixed);
+  const deferred = coerceInt(rec.deferred);
+  const rejected = coerceInt(rec.rejected);
   const dispositionSum = fixed + deferred + rejected;
   const base = {
     id: rec.id ?? null,
