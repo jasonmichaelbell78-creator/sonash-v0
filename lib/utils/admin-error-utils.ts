@@ -31,6 +31,7 @@ export function redactSensitive(text: string | null | undefined): string {
   // Phone regex: handles formats like (555) 123-4567, 555-123-4567, +1 555 123 4567
   // Requires at least one separator to reduce false positives on arbitrary 10-digit numbers
   const redactedPhone = redactedEmail.replace(
+    // eslint-disable-next-line security/detect-unsafe-regex -- bounded groups with no overlapping quantifiers, runs on short error strings
     /(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]+)\d{3}[-.\s]?\d{4}/g,
     "[redacted-phone]"
   );

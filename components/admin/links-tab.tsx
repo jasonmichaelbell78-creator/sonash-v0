@@ -249,7 +249,7 @@ export default function LinksTab() {
                   type="number"
                   value={formData.order}
                   onChange={(e) =>
-                    setFormData({ ...formData, order: Number.parseInt(e.target.value) || 0 })
+                    setFormData({ ...formData, order: Number.parseInt(e.target.value, 10) || 0 })
                   }
                 />
               </div>

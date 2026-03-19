@@ -273,7 +273,12 @@ export default function CompactMeetingCountdown() {
   return (
     <>
       <div
+        role="button"
+        tabIndex={0}
         onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") handleClick();
+        }}
         className="flex flex-col items-end gap-0.5 text-amber-900 hover:text-amber-700 transition-colors cursor-pointer group"
       >
         <div className="flex items-center gap-1.5">

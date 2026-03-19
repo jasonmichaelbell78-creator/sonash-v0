@@ -305,6 +305,7 @@ const EVENT_TYPE_CATEGORIES = [
 
 type TypeFilterId = (typeof EVENT_TYPE_CATEGORIES)[number]["id"];
 
+// eslint-disable-next-line complexity -- admin log viewer with many filter/state branches
 export function LogsTab() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [gcpLinks, setGcpLinks] = useState<LogsResponse["gcpLinks"] | null>(null);

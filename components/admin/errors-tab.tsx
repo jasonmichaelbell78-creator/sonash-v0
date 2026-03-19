@@ -240,8 +240,8 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: Readonly<ErrorRowP
                 <div>
                   <h4 className="text-sm font-semibold text-amber-900 mb-2">Possible causes</h4>
                   <ul className="list-disc list-inside space-y-1">
-                    {knowledge.possibleCauses.map((cause, index) => (
-                      <li key={`${cause}-${index}`} className="text-sm text-amber-700">
+                    {knowledge.possibleCauses.map((cause) => (
+                      <li key={cause} className="text-sm text-amber-700">
                         {cause}
                       </li>
                     ))}
@@ -257,8 +257,8 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: Readonly<ErrorRowP
                     Suggested remediations
                   </h4>
                   <ol className="list-decimal list-inside space-y-1">
-                    {knowledge.remediations.map((step, index) => (
-                      <li key={`${step}-${index}`} className="text-sm text-amber-700">
+                    {knowledge.remediations.map((step) => (
+                      <li key={step} className="text-sm text-amber-700">
                         {step}
                       </li>
                     ))}
@@ -324,6 +324,7 @@ function UserActivityModal({
     const requestId = ++requestIdRef.current;
     let isMounted = true;
 
+    // eslint-disable-next-line complexity -- error analysis aggregation requires multiple conditional branches
     async function loadData() {
       setLoading(true);
       setError(null);
@@ -799,6 +800,7 @@ function ExportDropdown({ issues, loading }: Readonly<ExportDropdownProps>) {
               >
                 {(Object.keys(TIMEFRAME_LABELS) as TimeframePreset[]).map((preset) => (
                   <option key={preset} value={preset}>
+                    {/* eslint-disable-next-line security/detect-object-injection -- preset from Object.keys iteration */}
                     {TIMEFRAME_LABELS[preset]}
                   </option>
                 ))}

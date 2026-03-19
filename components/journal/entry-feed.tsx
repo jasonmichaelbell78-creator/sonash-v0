@@ -52,6 +52,7 @@ const INVENTORY_FIELDS = ["resentments", "dishonesty", "apologies", "successes"]
  */
 function matchInventoryEntry(entry: JournalEntry, query: string): boolean {
   const data = (entry as InventoryEntry).data;
+  // eslint-disable-next-line security/detect-object-injection -- field from INVENTORY_FIELDS constant tuple
   return INVENTORY_FIELDS.some((field) => data?.[field]?.toLowerCase().includes(query) || false);
 }
 
@@ -133,8 +134,8 @@ function GratitudeDetail({ data }: Readonly<{ data: GratitudeEntry["data"] }>) {
     <div>
       <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
       <ul className="list-disc pl-5">
-        {data.items.map((item: string, i: number) => (
-          <li key={`gratitude-${i}-${item}`}>{item}</li>
+        {data.items.map((item: string) => (
+          <li key={`gratitude-${item}`}>{item}</li>
         ))}
       </ul>
     </div>
@@ -277,7 +278,9 @@ export function EntryFeed({ entries, filter }: Readonly<EntryFeedProps>) {
     const groups: { [key: string]: JournalEntry[] } = {};
     filteredEntries.forEach((entry) => {
       const dateKey = entry.dateLabel; // Use pre-computed label
+      // eslint-disable-next-line security/detect-object-injection -- dateKey from entry.dateLabel (date string)
       if (!groups[dateKey]) groups[dateKey] = [];
+      // eslint-disable-next-line security/detect-object-injection -- dateKey from entry.dateLabel (date string)
       groups[dateKey].push(entry);
     });
     return groups;
@@ -340,10 +343,16 @@ export function EntryFeed({ entries, filter }: Readonly<EntryFeedProps>) {
       {selectedEntry && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          role="button"
+          tabIndex={0}
           onClick={() => setSelectedEntry(null)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") setSelectedEntry(null);
+          }}
         >
           <div
             className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6 space-y-4"
+            role="presentation"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b pb-4">

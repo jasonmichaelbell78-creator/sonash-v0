@@ -19,6 +19,7 @@ export function GratitudeForm({ onClose, onSuccess }: Readonly<GratitudeFormProp
 
   const handleItemChange = (index: number, value: string) => {
     const newItems = [...items];
+    // eslint-disable-next-line security/detect-object-injection -- index is a controlled numeric parameter
     newItems[index] = value;
     setItems(newItems);
   };
@@ -78,7 +79,8 @@ export function GratitudeForm({ onClose, onSuccess }: Readonly<GratitudeFormProp
               I am grateful for...
             </span>
 
-            {items.map((item, index) => (
+            {items.map((_item, index) => (
+              // eslint-disable-next-line sonash/no-index-key -- fixed 3-item form, no reordering
               <div key={`gratitude-input-${index}`} className="flex gap-2 items-center">
                 <span className="font-handlee text-[var(--journal-text)]/50 w-6 text-right">
                   {index + 1}.

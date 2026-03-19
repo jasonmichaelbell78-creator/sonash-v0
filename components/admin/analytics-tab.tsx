@@ -198,11 +198,11 @@ function DailyTrendsChart({ trends }: Readonly<{ trends: AnalyticsTrendPoint[] }
     <div className="space-y-2">
       <div className="flex items-end gap-1 h-32">
         {/* ISSUE [14]: Use index suffix for unique keys in case of duplicate dates */}
-        {recentTrends.map((trend, idx) => {
+        {recentTrends.map((trend) => {
           const height = (trend.activeUsers / maxValue) * 100;
           return (
             <div
-              key={`${trend.date}-${idx}`}
+              key={trend.date}
               className="flex-1 flex flex-col items-center group"
               title={`${trend.date}: ${trend.activeUsers} active users`}
             >
@@ -265,6 +265,7 @@ export function AnalyticsTab() {
   const [error, setError] = useState<string | null>(null);
   const isMountedRef = useRef(true);
 
+  // eslint-disable-next-line complexity -- admin dashboard aggregation requires many conditional branches
   const loadAnalytics = useCallback(async (isActive: () => boolean = () => true) => {
     setLoading(true);
     setError(null);

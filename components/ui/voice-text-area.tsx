@@ -38,7 +38,9 @@ export const VoiceTextArea = React.forwardRef<HTMLTextAreaElement, VoiceTextArea
 
             // Build transcript from results
             for (let i = event.resultIndex; i < event.results.length; ++i) {
+              // eslint-disable-next-line security/detect-object-injection -- i is numeric loop index
               if (event.results[i].isFinal) {
+                // eslint-disable-next-line security/detect-object-injection -- i is numeric loop index
                 finalTranscript += event.results[i][0].transcript + " ";
               }
             }

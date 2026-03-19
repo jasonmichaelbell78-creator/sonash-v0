@@ -37,6 +37,7 @@ const emptyStateContent = {
 };
 
 export function EmptyState({ type, action }: Readonly<EmptyStateProps>) {
+  // eslint-disable-next-line security/detect-object-injection -- type is typed EmptyStateType prop
   const content = emptyStateContent[type];
   const Icon = content.icon;
 

@@ -55,6 +55,7 @@ export function ProfileProvider({ children, user }: Readonly<ProfileProviderProp
     const keysB = Object.keys(b) as Array<keyof UserProfile>;
 
     if (keysA.length !== keysB.length) return false;
+    // eslint-disable-next-line security/detect-object-injection -- key from Object.keys() iteration on typed UserProfile
     return keysA.every((key) => a[key] === b[key]);
   };
 

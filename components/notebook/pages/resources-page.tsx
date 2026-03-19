@@ -59,8 +59,8 @@ function parseTime(timeStr: string): number {
 function parse12HourTime(timeStr: string): number {
   const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
   if (!match) return -1;
-  let h = Number.parseInt(match[1]);
-  const m = Number.parseInt(match[2]);
+  let h = Number.parseInt(match[1], 10);
+  const m = Number.parseInt(match[2], 10);
   const p = match[3].toUpperCase();
   if (p === "PM" && h !== 12) h += 12;
   if (p === "AM" && h === 12) h = 0;
@@ -100,6 +100,7 @@ function getHomeGenderBadgeClasses(gender: string): string {
     Men: "border-blue-200 bg-blue-50 text-blue-700",
     Women: "border-pink-200 bg-pink-50 text-pink-700",
   };
+  // eslint-disable-next-line security/detect-object-injection -- gender from data model, lookup in local constant map
   return styleMap[gender] || "border-purple-200 bg-purple-50 text-purple-700";
 }
 
@@ -108,6 +109,7 @@ function getHomeGenderBadgeClasses(gender: string): string {
  */
 function getGenderAbbreviation(gender: string): string {
   const abbrevMap: Record<string, string> = { Men: "M", Women: "W" };
+  // eslint-disable-next-line security/detect-object-injection -- gender from data model, lookup in local constant map
   return abbrevMap[gender] || "C";
 }
 

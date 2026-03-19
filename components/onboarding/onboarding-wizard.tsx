@@ -471,6 +471,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                       className="text-center"
                     >
                       {(() => {
+                        // eslint-disable-next-line security/detect-object-injection -- tourSlide is numeric state controlled by useState
                         const slide = tourSlides[tourSlide];
                         const Icon = slide.icon;
                         return (
@@ -509,9 +510,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
                 {/* Dots indicator */}
                 <div className="flex justify-center gap-2">
-                  {tourSlides.map((_, i) => (
+                  {tourSlides.map((slide, i) => (
                     <button
-                      key={tourSlides[i].title}
+                      key={slide.title}
                       onClick={() => setTourSlide(i)}
                       className={`w-2 h-2 rounded-full transition-colors ${
                         tourSlide === i ? "bg-stone-800" : "bg-stone-300"

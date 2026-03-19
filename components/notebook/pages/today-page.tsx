@@ -18,6 +18,7 @@ import { DailyQuoteCard } from "../features/daily-quote-card";
 import { RecoveryNotepad } from "../features/recovery-notepad";
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown";
 import { db } from "@/lib/firebase";
+import type { DocumentSnapshot } from "firebase/firestore";
 import { TodayPageSkeleton } from "./today-page-skeleton";
 import { QuickActionsFab } from "../features/quick-actions-fab";
 import { EnhancedMoodSelector } from "../features/enhanced-mood-selector";
@@ -461,6 +462,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
   // Handler for HALT check toggle
   const handleHaltToggle = (key: "hungry" | "angry" | "lonely" | "tired") => {
+    // eslint-disable-next-line security/detect-object-injection -- key is typed "hungry"|"angry"|"lonely"|"tired"
     setHaltCheck((prev) => ({ ...prev, [key]: !prev[key] }));
     setHaltSubmitted(false); // Reset submitted state when user changes selection
   };
@@ -498,6 +500,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         lonely: "reach out to a friend",
         tired: "rest and recharge",
       };
+      // eslint-disable-next-line security/detect-object-injection -- item from Object.entries filter on typed HALT keys
       const tips = checkedItems.map((item) => suggestions[item]).join(", ");
       toast.success(`HALT check complete! Remember to ${tips}.`);
 
@@ -541,7 +544,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
   // Handler for Firestore snapshot updates (extracted to reduce nesting)
   const handleSnapshotUpdate = useCallback(
-    (docSnap: any, isMounted: boolean) => {
+    (docSnap: DocumentSnapshot, isMounted: boolean) => {
       if (!isMounted) return; // Guard against late callbacks
 
       if (docSnap.exists()) {
@@ -1042,6 +1045,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                     <input
                       type="checkbox"
                       id={`halt-${key}`}
+                      // eslint-disable-next-line security/detect-object-injection -- key is typed HALT key from .map()
                       checked={haltCheck[key]}
                       onChange={() => handleHaltToggle(key)}
                       className="mt-1 w-5 h-5 text-blue-600 rounded border-amber-300 focus:ring-blue-500 cursor-pointer"
@@ -1054,6 +1058,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                         <span>{icon}</span>
                         <span>{label}</span>
                       </label>
+                      {/* eslint-disable-next-line security/detect-object-injection -- key is typed HALT key from .map() */}
                       {haltCheck[key] && (
                         <p className="text-sm text-blue-700 italic mt-1 font-body">💡 {tip}</p>
                       )}

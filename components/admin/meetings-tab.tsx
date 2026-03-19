@@ -30,6 +30,7 @@ function handleCoordinateChange(
 ): void {
   const parsedValue = value === "" ? undefined : Number.parseFloat(value);
   const otherField = field === "lat" ? "lng" : "lat";
+  // eslint-disable-next-line security/detect-object-injection -- otherField is "lat"|"lng" computed from typed param
   const otherValue = formData.coordinates?.[otherField];
 
   // If both cleared (or other is 0 default), remove coordinates object

@@ -32,6 +32,7 @@ export function Timeline({ filter }: Readonly<{ filter?: string | null }>) {
     });
 
     if (!filter) return recentEntries;
+    // eslint-disable-next-line security/detect-object-injection -- filter is a typed FilterTab value
     const targetTypes = filterMapping[filter];
     if (!targetTypes) return recentEntries;
     return recentEntries.filter((e) => targetTypes.includes(e.type));
@@ -42,7 +43,9 @@ export function Timeline({ filter }: Readonly<{ filter?: string | null }>) {
     const groups: Record<string, JournalEntry[]> = {};
     filteredEntries.forEach((entry) => {
       const label = getRelativeDateLabel(entry.dateLabel);
+      // eslint-disable-next-line security/detect-object-injection -- label from getRelativeDateLabel (computed string)
       if (!groups[label]) groups[label] = [];
+      // eslint-disable-next-line security/detect-object-injection -- label from getRelativeDateLabel (computed string)
       groups[label].push(entry);
     });
     return groups;
@@ -78,6 +81,7 @@ export function Timeline({ filter }: Readonly<{ filter?: string | null }>) {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-8 pb-20">
       {sortedGroupKeys.map((label) => {
+        // eslint-disable-next-line security/detect-object-injection -- label from Object.keys iteration
         const entries = groupedEntries[label];
         return (
           <div key={label} className="relative">

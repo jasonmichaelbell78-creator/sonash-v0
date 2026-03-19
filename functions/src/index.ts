@@ -396,6 +396,7 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(async (req
           return Object.entries(data as Record<string, unknown>).reduce(
             (acc: Record<string, unknown>, [key, value]) => {
               if (value !== undefined) {
+                // eslint-disable-next-line security/detect-object-injection -- key from Object.entries iteration
                 acc[key] = sanitizeData(value, seen, depth + 1);
               }
               return acc;
@@ -483,6 +484,7 @@ interface MigrationData {
  * 5. Batch writes for atomicity
  * 6. Audit logging
  */
+// eslint-disable-next-line complexity -- migration with multi-collection transfer, validation, and rollback
 export const migrateAnonymousUserData = onCall<MigrationData>(async (request) => {
   const { data, auth } = request;
 
@@ -692,6 +694,7 @@ export const migrateAnonymousUserData = onCall<MigrationData>(async (request) =>
     let committedBatches = 0;
     try {
       for (let i = 0; i < batches.length; i++) {
+        // eslint-disable-next-line security/detect-object-injection -- i is numeric loop index
         await batches[i].commit();
         committedBatches++;
       }

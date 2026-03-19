@@ -90,6 +90,7 @@ function sanitizeForSearch(text: string): string {
 
 // Generate searchable text from entry data for full-text search
 // SECURITY: All text is sanitized to prevent stored XSS if rendered in admin panels
+// eslint-disable-next-line complexity -- type-based switch with many journal entry types
 export function generateSearchableText(
   type: JournalEntryType,
   data: Record<string, unknown>
@@ -228,7 +229,9 @@ function groupEntriesByDate(entries: JournalEntry[]): Record<string, JournalEntr
     }
 
     const label = getRelativeDateLabel(dateLabel);
+    // eslint-disable-next-line security/detect-object-injection -- label from getRelativeDateLabel (computed string)
     if (!groups[label]) groups[label] = [];
+    // eslint-disable-next-line security/detect-object-injection -- label from getRelativeDateLabel (computed string)
     groups[label].push(entry);
   }
 
@@ -264,6 +267,7 @@ export function useJournal() {
     }
 
     if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: reset state when user signs out
       setJournalLoading(false);
       setEntries([]);
       setGroupedEntries({});

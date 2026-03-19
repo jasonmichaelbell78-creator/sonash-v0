@@ -412,6 +412,7 @@ function StateDisplay({
     green: "bg-green-50 rounded-lg border border-green-200 p-6 text-center text-green-700",
     red: "bg-red-50 rounded-lg border border-red-200 p-6 text-center text-red-700",
   };
+  // eslint-disable-next-line security/detect-object-injection -- bgClass is typed union "amber"|"green"|"red"
   return <div className={bgClasses[bgClass]}>{emptyMessage}</div>;
 }
 
@@ -710,6 +711,7 @@ function formatBytes(bytes: number): string {
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
+  // eslint-disable-next-line security/detect-object-injection -- i is computed from Math.floor, indexes a local constant array
   return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
 }
 

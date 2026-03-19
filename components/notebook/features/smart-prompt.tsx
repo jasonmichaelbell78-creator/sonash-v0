@@ -50,6 +50,7 @@ export function SmartPrompt({ type, message, action, onDismiss }: Readonly<Smart
     },
   };
 
+  // eslint-disable-next-line security/detect-object-injection -- type is typed SmartPromptType union
   const style = styles[type];
 
   return (

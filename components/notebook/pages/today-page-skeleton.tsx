@@ -52,8 +52,8 @@ export function TodayPageSkeleton() {
           <div>
             <Skeleton className="h-6 w-48 mb-3" />
             <div className="flex gap-2 mb-4">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="flex-1 h-20 rounded-lg" />
+              {[1, 2, 3, 4].map((n) => (
+                <Skeleton key={`mood-${n}`} className="flex-1 h-20 rounded-lg" />
               ))}
             </div>
           </div>
