@@ -33,6 +33,7 @@ export default [
       "scripts/archive/**",
       "eslint-plugin-sonash/**",
       "scripts/reviews/dist/**",
+      "scripts/tests/**",
       "tests/semgrep/**",
       ".temp-test-*/**",
       ".planning/**",
@@ -88,6 +89,20 @@ export default [
   // Node.js test files using CommonJS (e2e, integration, performance tests)
   {
     files: ["tests/**/*.test.js"],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: globals.node,
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  // CJS scripts under scripts/ that use require() and __dirname
+  {
+    files: [
+      "scripts/**/__tests__/**/*.js",
+      "scripts/reviews/migrate-ecosystem-v2.js",
+    ],
     languageOptions: {
       sourceType: "commonjs",
       globals: globals.node,

@@ -181,6 +181,15 @@ function validateItem(item, lineNum) {
     );
   }
 
+  // Validate source_pr field when present (optional — null, undefined, or positive integer)
+  if (item.source_pr !== undefined && item.source_pr !== null) {
+    if (typeof item.source_pr !== "number" || !Number.isInteger(item.source_pr) || item.source_pr < 1) {
+      warnings.push(
+        `Line ${lineNum}: Invalid source_pr: "${item.source_pr}" (expected positive integer or null)`
+      );
+    }
+  }
+
   // Check for duplicate detection fields
   if (!item.content_hash) {
     warnings.push(`Line ${lineNum}: Missing content_hash (needed for deduplication)`);

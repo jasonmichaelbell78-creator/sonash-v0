@@ -200,6 +200,37 @@ function safeAccessExistenceCheck(arr) {
   }
 }
 
+function safeAccessRegexMatch(str) {
+  const m = str.match(/(\d+)/);
+  // ok: sonash.correctness.no-unchecked-array-access
+  if (m) {
+    return m[0];
+  }
+}
+
+function safeAccessInsideMap(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  return arr.map((item) => item.split(",")[0]);
+}
+
+function unsafeAccessInsideFilter(arr) {
+  // ruleid: sonash.correctness.no-unchecked-array-access
+  return arr.filter((item) => item.parts[0] === "valid");
+}
+
+function unsafeAccessInsideForEach(arr) {
+  arr.forEach((item) => {
+    // ruleid: sonash.correctness.no-unchecked-array-access
+    console.log(item.values[0]);
+  });
+}
+
+function safeAccessOrFallback(arr) {
+  // ok: sonash.correctness.no-unchecked-array-access
+  const val = arr[0] || "default";
+  return val;
+}
+
 // =============================================================================
 // sonash.correctness.no-floating-promise (additional guard pattern tests)
 // =============================================================================
@@ -232,4 +263,18 @@ async function tryCatchPromise() {
 function thenCatchPromise() {
   // ok: sonash.correctness.no-floating-promise
   fetch("/api/data").then(handle).catch(handleError);
+}
+
+async function assignedAwaitedFetch() {
+  // ok: sonash.correctness.no-floating-promise
+  const response = await fetch("/api/data");
+  // ok: sonash.correctness.no-floating-promise
+  const data = await response.json();
+  return data;
+}
+
+async function letAssignedFetch() {
+  // ok: sonash.correctness.no-floating-promise
+  let response = await fetch("/api/data");
+  return response;
 }

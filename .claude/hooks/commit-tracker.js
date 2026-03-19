@@ -217,10 +217,12 @@ function logCommitFailure(command) {
         const content = fs.readFileSync(hookLogPath, "utf8").trim();
         hookOutputExcerpt = content.split("\n").slice(0, 5).join("\n");
         // Sanitize sensitive content from hook output — PR #444 R1 fix #12
-        // Strip ANSI escape sequences first
+        // Strip ANSI escape sequences and control characters
+        /* eslint-disable no-control-regex -- intentional control char stripping for sanitization */
         hookOutputExcerpt = hookOutputExcerpt
           .replace(/\u001B\[[0-?]*[ -/]*[@-~]/g, "")
           .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
+        /* eslint-enable no-control-regex */
         // Redact secrets
         hookOutputExcerpt = hookOutputExcerpt
           .replace(

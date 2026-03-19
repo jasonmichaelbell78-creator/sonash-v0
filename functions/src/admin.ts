@@ -3619,8 +3619,8 @@ export const adminGetRateLimitStatus = onCall(async (request) => {
       }
 
       // Parse the key to determine type
-      const keyParts = doc.id.split(":");
-      const type = keyParts[0] || "unknown";
+      // split(":") always returns >= 1 element; fallback guards undefined
+      const type = doc.id.split(":")[0] || "unknown";
 
       // Create Date and validate it can be serialized
       // Out-of-range timestamps can cause toISOString() to throw

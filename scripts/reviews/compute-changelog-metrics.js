@@ -14,8 +14,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "../..");
-const RETROS = path.join(ROOT, "data/ecosystem-v2/retros.jsonl");
-const REVIEWS = path.join(ROOT, "data/ecosystem-v2/reviews.jsonl");
+const RETROS = path.join(ROOT, ".claude/state/retros.jsonl");
+const REVIEWS = path.join(ROOT, ".claude/state/reviews.jsonl");
 
 function readJsonl(fp) {
   try {

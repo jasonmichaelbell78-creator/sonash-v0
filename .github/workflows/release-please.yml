@@ -1,0 +1,36 @@
+# Release Please - Automated release management
+# Purpose: Creates release PRs and GitHub releases based on conventional commits
+# Docs: https://github.com/googleapis/release-please-action
+#
+# Version History
+# | Version | Date       | Changes         |
+# | ------- | ---------- | --------------- |
+# | 1.0     | 2026-03-18 | Initial release |
+
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  release-please:
+    name: Create Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Run Release Please
+        uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.2.0
+        with:
+          config-file: .github/release-please-config.json
+          manifest-file: .release-please-manifest.json

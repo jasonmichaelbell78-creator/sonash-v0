@@ -54,6 +54,19 @@ Closes # Related to #
 
 Resolves: <!-- DEBT-XXXX, DEBT-YYYY or "none" -->
 
+## Breaking Changes
+
+<!-- If this PR introduces breaking changes, describe them here -->
+<!-- Include: what breaks, who is affected, and migration steps -->
+
+- [ ] No breaking changes
+- [ ] Breaking changes documented above
+
+## Risks & Rollback
+
+<!-- What could go wrong? How would you roll back if needed? -->
+<!-- Example: "Rollback: revert this PR. No data migration needed." -->
+
 ## Pre-Merge Checklist
 
 - [ ] All tests passing

@@ -14,12 +14,12 @@
  * npm script: npm run metrics:review-churn
  */
 
-import { mkdirSync, existsSync, lstatSync } from "node:fs";
+import { mkdirSync, existsSync, lstatSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { sanitizeError } from "../lib/sanitize-error.js";
-import { safeWriteFileSync } from "../lib/safe-fs.js";
+import { safeWriteFileSync, safeAtomicWriteSync } from "../lib/safe-fs.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -205,13 +205,51 @@ function analyzePr(prNumber, owner, repo) {
 }
 
 /**
- * Append metrics to JSONL file
+ * Read existing metrics entries from JSONL file.
+ * Returns empty array if file doesn't exist or is unreadable.
+ *
+ * Version History:
+ *   v1.0 2026-03-18 - Added for dedup guard (retro item #8)
  */
-function appendMetrics(entries) {
-  // Refuse if state directory is a symlink
+function readExistingMetrics() {
+  try {
+    // Single lstatSync call avoids TOCTOU between existsSync and lstatSync
+    const st = lstatSync(METRICS_FILE);
+    if (!st.isFile() || st.isSymbolicLink()) return [];
+
+    const content = readFileSync(METRICS_FILE, "utf8");
+    const lines = content.split("\n");
+    const items = [];
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      try {
+        items.push(JSON.parse(trimmed));
+      } catch {
+        // Skip malformed lines
+      }
+    }
+    return items;
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Append metrics to JSONL file with dedup guard.
+ *
+ * Before appending, checks if each PR already has a recent entry (within 1 hour).
+ * If so, updates the existing entry in-place instead of appending a duplicate.
+ *
+ * Version History:
+ *   v1.0 2026-02-26 - Initial implementation (blind append)
+ *   v2.0 2026-03-18 - Add dedup guard: update-in-place for recent entries (retro item #8)
+ */
+/** Validate state directory and metrics file are safe to write. Returns false if unsafe. */
+function validateWriteTarget() {
   if (existsSync(STATE_DIR) && lstatSync(STATE_DIR).isSymbolicLink()) {
     console.error("Error: state directory is a symlink — refusing to write");
-    return;
+    return false;
   }
 
   try {
@@ -220,31 +258,85 @@ function appendMetrics(entries) {
     }
   } catch (err) {
     console.error(`Failed to create state directory: ${sanitizeError(err)}`);
-    return;
+    return false;
   }
 
-  // Verify target is not a symlink (prevent symlink-clobber attacks)
   try {
     if (lstatSync(METRICS_FILE).isSymbolicLink()) {
       console.error("Error: review-metrics.jsonl is a symlink — refusing to write");
-      return;
+      return false;
     }
   } catch (err) {
     const code = err && typeof err === "object" && "code" in err ? err.code : null;
     if (code !== "ENOENT") {
       console.error(`Failed to check metrics file: ${sanitizeError(err)}`);
-      return;
+      return false;
     }
-    // ENOENT is fine — file doesn't exist yet
   }
 
-  const lines = entries.map((e) => JSON.stringify(e)).join("\n") + "\n";
+  return true;
+}
 
+/** Write metrics: rewrite if entries were updated in-place, append otherwise. */
+function writeMetrics(existing, toAppend, needsRewrite) {
   try {
-    safeWriteFileSync(METRICS_FILE, lines, { encoding: "utf8", flag: "a" });
+    if (needsRewrite) {
+      const all = [...existing, ...toAppend];
+      const content = all.map((e) => JSON.stringify(e)).join("\n") + "\n";
+      safeAtomicWriteSync(METRICS_FILE, content, { encoding: "utf8" });
+    } else if (toAppend.length > 0) {
+      const lines = toAppend.map((e) => JSON.stringify(e)).join("\n") + "\n";
+      safeWriteFileSync(METRICS_FILE, lines, { encoding: "utf8", flag: "a" });
+    }
   } catch (err) {
     console.error(`Failed to write metrics file: ${sanitizeError(err)}`);
   }
+}
+
+/** Build PR → {idx, time} index from existing entries, keeping only the latest per PR. */
+function buildExistingIndex(existing) {
+  const index = new Map();
+  for (let i = 0; i < existing.length; i++) {
+    const e = existing[i];
+    if (!e || typeof e.pr !== "number") continue;
+    const tRaw = e.timestamp ? new Date(e.timestamp).getTime() : Number.NaN;
+    const t = Number.isFinite(tRaw) ? tRaw : 0;
+    const prev = index.get(e.pr);
+    if (!prev || t > prev.time) {
+      index.set(e.pr, { idx: i, time: t });
+    }
+  }
+  return index;
+}
+
+function appendMetrics(entries) {
+  if (!validateWriteTarget()) return;
+
+  // Dedup guard: read existing entries and check for recent duplicates
+  const ONE_HOUR_MS = 60 * 60 * 1000;
+  const existing = readExistingMetrics();
+  let needsRewrite = false;
+  const toAppend = [];
+
+  const existingIndexByPr = buildExistingIndex(existing);
+
+  for (const newEntry of entries) {
+    const newTimeRaw = newEntry.timestamp ? new Date(newEntry.timestamp).getTime() : Number.NaN;
+    const newTime = Number.isFinite(newTimeRaw) ? newTimeRaw : Date.now();
+
+    const existingInfo = existingIndexByPr.get(newEntry.pr);
+    const isRecentDuplicate = existingInfo && Math.abs(newTime - existingInfo.time) < ONE_HOUR_MS;
+
+    if (isRecentDuplicate) {
+      existing[existingInfo.idx] = newEntry;
+      needsRewrite = true;
+      console.log(`  PR #${newEntry.pr}: updated existing entry (dedup guard)`);
+    } else {
+      toAppend.push(newEntry);
+    }
+  }
+
+  writeMetrics(existing, toAppend, needsRewrite);
 }
 
 /**

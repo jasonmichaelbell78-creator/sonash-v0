@@ -30,16 +30,22 @@
   Stop-diagnose-confirm before retrying. No blind retries or destructive
   shortcuts.
 - [Agent teams learnings](feedback_agent_teams_learnings.md) — Explore agents
-  are read-only, role separation, return protocol. _(unverified — verify at work
-  locale)_
-- [Stale reviews dist](feedback_stale_reviews_dist.md) — SCHEMA*MAP test
-  failures mean scripts/reviews/dist is stale. Fix: `npm run reviews:generate`.
-  *(unverified)\_
+  are read-only, idle floods, token cost 3-7x, team sizing, subagent vs team
+  rules.
+- [Stale reviews dist](feedback_stale_reviews_dist.md) — SCHEMA_MAP test
+  failures mean scripts/reviews/dist is stale. Fix: tsc rebuild or
+  reviews:generate.
+- [Verify not grep](feedback_verify_not_grep.md) — Retro verification must use
+  functional tests not grep. Grep confirms strings exist, not that features
+  work.
+- [Parallel agents for impl](feedback_parallel_agents_for_impl.md) — Use
+  parallel agents with convergence loops for implementation, not single-threaded
+  work.
 
 ## Project
 
-- [Active initiatives](project_active_initiatives.md) — SWS re-evaluation
-  active, hook overhaul complete, memory audit active, what blocks what.
+- [Active initiatives](project_active_initiatives.md) — SWS active, hooks
+  complete, agent env Phases 1-3 done, memory audit active, what blocks what.
 - [Cross-locale config](project_cross_locale_config.md) — Shared via git
   (CLAUDE.md, .planning/) vs locale-specific (memory). Sync via repo commit.
 - [Hook contract CANON](project_hook_contract_canon.md) — hook-checks.json
@@ -49,8 +55,8 @@
   decision recall.
 - [T3 convergence loops](t3_convergence_loops.md) — Dual-form: CANON tenet
   (when/why) + /convergence-loop skill (how). Must exist before CANON phase.
-- [Agent env analysis](project_agent_env_analysis.md) — Deep-plan complete,
-  Phase 1 execution next. Capability mapping for agents. _(unverified)_
+- [Agent env analysis](project_agent_env_analysis.md) — Phases 1-3 done, Phase
+  4 improvements next. All 5 phases must complete before SWS Phase 1.
 
 ## Reference
 
@@ -59,8 +65,8 @@
 - [Documentation standards](reference_documentation_standards.md) — Doc headers,
   prettier-ignore blocks, version tables, docs:index generation, eval template
   regex.
-- [TDMS systems](reference_tdms_systems.md) — Tech debt pipeline: intake → dedup
-  → views. MASTER_DEBT overwrite hazard. DEBT-XXXXX ID format.
+- [TDMS systems](reference_tdms_systems.md) — Tech debt pipeline: intake, dedup,
+  views. MASTER_DEBT overwrite hazard. DEBT-XXXXX ID format.
 - [AI capabilities](reference_ai_capabilities.md) — MCP servers (memory,
   sonarcloud), agent constraints, compaction resilience, context overflow
   prevention.

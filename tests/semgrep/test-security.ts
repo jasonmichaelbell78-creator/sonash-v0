@@ -92,16 +92,35 @@ function safePathRead(req) {
 
 // =============================================================================
 // sonash.security.no-direct-firestore-write
+// Now only flags writes to protected collections: journal, daily_logs, inventoryEntries
 // =============================================================================
 
 // ruleid: sonash.security.no-direct-firestore-write
-import { setDoc, doc } from "firebase/firestore";
+setDoc(doc(db, "journal", entryId), entryData);
 
 // ruleid: sonash.security.no-direct-firestore-write
-import { addDoc, collection } from "firebase/firestore";
+addDoc(collection(db, "daily_logs"), logData);
 
-// ok: sonash.security.no-direct-firestore-write
+// ruleid: sonash.security.no-direct-firestore-write
+updateDoc(doc(db, "inventoryEntries", itemId), updates);
+
+// ruleid: sonash.security.no-direct-firestore-write
+deleteDoc(doc(db, "journal", entryId));
+
+// ok: sonash.security.no-direct-firestore-write — non-protected collection
+setDoc(doc(db, "meetings", meetingId), meetingData);
+
+// ok: sonash.security.no-direct-firestore-write — non-protected collection
+addDoc(collection(db, "quotes"), quoteData);
+
+// ok: sonash.security.no-direct-firestore-write — non-protected collection
+updateDoc(doc(db, "users", userId), profileData);
+
+// ok: sonash.security.no-direct-firestore-write — read-only operations
 import { getDoc, doc } from "firebase/firestore";
+
+// ok: sonash.security.no-direct-firestore-write — import of write functions is fine
+import { setDoc, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 
 // =============================================================================
 // sonash.security.no-hardcoded-secrets
@@ -118,16 +137,29 @@ const apiKey2 = process.env.API_KEY;
 
 // =============================================================================
 // sonash.security.no-eval-usage
+// Now only flags eval() and string-literal setTimeout/setInterval
 // =============================================================================
 
 // ruleid: sonash.security.no-eval-usage
 eval("alert('xss')");
 
-// ruleid: sonash.security.no-eval-usage
+// ruleid: sonash.security.no-eval-constructor
 new Function("return 1")();
 
 // ok: sonash.security.no-eval-usage
 JSON.parse('{"safe": true}');
+
+// ok: sonash.security.no-eval-usage — function reference is safe
+setTimeout(myCallback, 1000);
+
+// ok: sonash.security.no-eval-usage — function reference is safe
+setInterval(pollStatus, 5000);
+
+// ok: sonash.security.no-eval-usage — arrow function is safe
+setTimeout(() => doWork(), 1000);
+
+// ok: sonash.security.no-eval-usage — arrow function is safe
+setInterval(() => refresh(), 5000);
 
 // =============================================================================
 // sonash.security.no-innerhtml-assignment

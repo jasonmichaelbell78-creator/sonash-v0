@@ -74,8 +74,9 @@ function extractUserIdFromPath(filePath: string): string | null {
  * Returns false if metadata is unavailable.
  */
 async function isFileOlderThan(file: File, daysOld: number): Promise<boolean> {
-  const metadata = await file.getMetadata();
-  const timeCreated = metadata[0].timeCreated;
+  // getMetadata() returns [Metadata, ApiResponse] tuple (always 2 elements)
+  const [meta] = await file.getMetadata();
+  const timeCreated = meta.timeCreated;
   if (!timeCreated) return false;
 
   const createTime = new Date(timeCreated);
@@ -580,6 +581,70 @@ export const scheduledCleanupOldDailyLogs = onSchedule(
 // Backward-compatible export for existing admin triggers
 export const scheduledCleanupOldSessions = scheduledCleanupOldDailyLogs;
 
+/** Process a chunk of files concurrently. Returns { deleted, errors }. */
+async function processFileChunk(
+  chunk: File[],
+  existingUserIds: Set<string>,
+  db: FirebaseFirestore.Firestore
+): Promise<{ deleted: number; errors: number }> {
+  let deleted = 0;
+  let errors = 0;
+  const results = await Promise.allSettled(
+    chunk.map(async (file) => {
+      try {
+        return await processStorageFile(file, existingUserIds, db, () => {});
+      } catch {
+        return { deleted: false, errored: true };
+      }
+    })
+  );
+  for (const r of results) {
+    if (r.status === "fulfilled") {
+      if (r.value.deleted) deleted++;
+      if ("errored" in r.value && r.value.errored) errors++;
+    } else {
+      errors++;
+    }
+  }
+  return { deleted, errors };
+}
+
+/** Process storage pages with pagination and concurrent file processing. */
+async function processStoragePages(
+  bucket: ReturnType<ReturnType<typeof admin.storage>["bucket"]>,
+  existingUserIds: Set<string>,
+  db: FirebaseFirestore.Firestore
+): Promise<{ checked: number; deleted: number; errors: number }> {
+  let checked = 0;
+  let deleted = 0;
+  let errors = 0;
+  let pageToken: string | undefined;
+  let prevPageToken: string | undefined;
+  const PROCESS_CONCURRENCY = 10;
+
+  do {
+    const [files, nextQuery] = await bucket.getFiles({
+      prefix: "user-uploads/",
+      maxResults: 500,
+      pageToken,
+    });
+
+    for (let i = 0; i < files.length; i += PROCESS_CONCURRENCY) {
+      const chunk = files.slice(i, i + PROCESS_CONCURRENCY);
+      checked += chunk.length;
+      const result = await processFileChunk(chunk, existingUserIds, db);
+      deleted += result.deleted;
+      errors += result.errors;
+    }
+
+    prevPageToken = pageToken;
+    pageToken = nextQuery?.pageToken;
+    if (pageToken && pageToken === prevPageToken) break;
+  } while (pageToken);
+
+  return { checked, deleted, errors };
+}
+
 /**
  * A11: Cleanup Orphaned Storage Files
  * Removes Storage files not referenced by Firestore documents
@@ -611,41 +676,10 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
     const existingUserIds = new Set(userRefs.map((ref) => ref.id));
 
     // SCALABILITY: Paginate storage listing to prevent OOM on large file sets
-    let pageToken: string | undefined;
-    let prevPageToken: string | undefined;
-
-    do {
-      const [files, nextQuery] = await bucket.getFiles({
-        prefix: "user-uploads/",
-        maxResults: 500,
-        pageToken,
-      });
-
-      // Review #195: Process files concurrently in batches to prevent timeouts
-      const PROCESS_CONCURRENCY = 10;
-
-      for (let i = 0; i < files.length; i += PROCESS_CONCURRENCY) {
-        const chunk = files.slice(i, i + PROCESS_CONCURRENCY);
-        checked += chunk.length;
-
-        const chunkResults = await Promise.all(
-          chunk.map((file) =>
-            processStorageFile(file, existingUserIds, db, () => {
-              errors++;
-            })
-          )
-        );
-
-        for (const r of chunkResults) {
-          if (r.deleted) deleted++;
-        }
-      }
-
-      // SAFETY: Prevent infinite loop if pageToken doesn't change
-      prevPageToken = pageToken;
-      pageToken = nextQuery?.pageToken;
-      if (pageToken && pageToken === prevPageToken) break;
-    } while (pageToken);
+    const result = await processStoragePages(bucket, existingUserIds, db);
+    checked = result.checked;
+    deleted = result.deleted;
+    errors = result.errors;
 
     logSecurityEvent(
       "JOB_SUCCESS",
@@ -657,8 +691,8 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
     logSecurityEvent(
       "JOB_FAILURE",
       "cleanupOrphanedStorageFiles",
-      `Error cleaning storage: ${error}`,
-      { severity: "ERROR", metadata: { error: String(error) }, captureToSentry: true }
+      `Error cleaning storage: ${sanitizeErrorMessage(error instanceof Error ? error.message : String(error))}`,
+      { severity: "ERROR", metadata: { error: sanitizeErrorMessage(error instanceof Error ? error.message : String(error)) }, captureToSentry: true }
     );
     throw error;
   }
@@ -1098,7 +1132,7 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
         deleted++;
       } catch (error) {
         errors++;
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage = sanitizeErrorMessage(error instanceof Error ? error.message : String(error));
         logSecurityEvent(
           "JOB_FAILURE",
           "hardDeleteSoftDeletedUsers",

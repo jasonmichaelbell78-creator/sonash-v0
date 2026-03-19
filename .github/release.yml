@@ -3,6 +3,13 @@
 # Docs: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
 changelog:
   categories:
+    - title: "Breaking Changes"
+      labels:
+        - "breaking"
+        - "breaking-change"
+    - title: "Security"
+      labels:
+        - "security"
     - title: "Features"
       labels:
         - "feature"
@@ -11,6 +18,14 @@ changelog:
       labels:
         - "bug"
         - "fix"
+    - title: "Refactoring"
+      labels:
+        - "refactor"
+        - "refactoring"
+    - title: "Testing"
+      labels:
+        - "testing"
+        - "test"
     - title: "Infrastructure & CI"
       labels:
         - "ci"

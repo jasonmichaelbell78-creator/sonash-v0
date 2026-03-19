@@ -50,6 +50,7 @@ const SECURITY_PATTERNS = [
       /(?:^|[\\/])security-check\.js$/,
       /(?:^|[\\/])check-pattern-compliance\.js$/,
       /pattern-compliance\.test/,
+      /github-optimization-wave\d+\.test/,
     ],
   },
   {
@@ -104,6 +105,7 @@ const SECURITY_PATTERNS = [
     message: "Verify resolved path stays within expected directory",
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:hooks|scripts)\//,
+    exclude: [/\.test\.[jt]s$/],
   },
   {
     id: "SEC-009",

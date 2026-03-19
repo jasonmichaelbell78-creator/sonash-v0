@@ -5,7 +5,7 @@
  *   npx tsc && node dist/write-review-record.js --data '{"pr":399,...}'
  *
  * Validates input against ReviewRecord schema, auto-assigns ID if missing,
- * and appends to data/ecosystem-v2/reviews.jsonl.
+ * and appends to .claude/state/reviews.jsonl (canonical source).
  */
 
 import * as fs from "node:fs";
@@ -33,7 +33,7 @@ function findProjectRoot(startDir: string): string {
  * Returns "rev-1" if the file is empty or missing.
  */
 export function getNextReviewId(projectRoot: string): string {
-  const filePath = path.join(projectRoot, "data", "ecosystem-v2", "reviews.jsonl");
+  const filePath = path.join(projectRoot, ".claude", "state", "reviews.jsonl");
 
   let content: string;
   try {
@@ -71,21 +71,55 @@ function parseRevNumber(line: string): number {
 }
 
 /**
+ * Validate disposition integrity: if total > 0, at least one of
+ * fixed/deferred/rejected must be non-zero.
+ *
+ * @throws Error if total > 0 but all dispositions are zero
+ *
+ * Added: Session #218 -- Retro action item #14
+ * Version History:
+ *   v1.0 2026-03-18 -- Initial implementation
+ */
+export function validateDispositionIntegrity(data: Record<string, unknown>): void {
+  const total = typeof data.total === "number" ? data.total : 0;
+  if (total <= 0) return;
+
+  const fixed = typeof data.fixed === "number" ? data.fixed : 0;
+  const deferred = typeof data.deferred === "number" ? data.deferred : 0;
+  const rejected = typeof data.rejected === "number" ? data.rejected : 0;
+  const dispositionSum = fixed + deferred + rejected;
+
+  if (dispositionSum === 0) {
+    throw new Error(
+      `Disposition integrity violation: total=${total} but fixed=${fixed}, ` +
+        `deferred=${deferred}, rejected=${rejected} (all zero). ` +
+        `Records with total > 0 must have at least one disposition count > 0.`
+    );
+  }
+}
+
+/**
  * Write a validated ReviewRecord to reviews.jsonl.
  *
  * If data has no `id` field, auto-assigns the next rev-N ID.
  * Validates against ReviewRecord schema before writing.
- * Throws ZodError on validation failure.
+ * Also validates disposition integrity (total vs fixed+deferred+rejected).
+ * Throws ZodError on schema validation failure.
+ * Throws Error on disposition integrity violation.
  *
  * @param projectRoot - Absolute path to project root
  * @param data - Record data (id optional -- will be auto-assigned)
  * @returns The validated record that was written
+ *
+ * Version History:
+ *   v1.0 2026-02-28 -- Initial implementation
+ *   v1.1 2026-03-18 -- Add disposition integrity validation (item #14)
  */
 export function writeReviewRecord(
   projectRoot: string,
   data: Record<string, unknown>
 ): ReturnType<typeof ReviewRecord.parse> {
-  const filePath = path.join(projectRoot, "data", "ecosystem-v2", "reviews.jsonl");
+  const filePath = path.join(projectRoot, ".claude", "state", "reviews.jsonl");
 
   const recordData: Record<string, unknown> = {
     ...data,
@@ -93,6 +127,9 @@ export function writeReviewRecord(
   };
 
   const validated = ReviewRecord.parse(recordData);
+
+  // Disposition integrity check on validated (canonical) values
+  validateDispositionIntegrity(validated as unknown as Record<string, unknown>);
 
   // Append to JSONL file
   appendRecord(filePath, validated, ReviewRecord);

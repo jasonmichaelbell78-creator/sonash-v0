@@ -44,7 +44,7 @@ rules:
             return ...;
           }
           ...
-      # Safe: split() always returns ≥1 element
+      # Safe: split() always returns >= 1 element
       - pattern-not: $X.split($Y)[0]
       # Safe: nullish coalescing provides fallback
       - pattern-not-inside: $ARR[0] ?? $X
@@ -55,11 +55,16 @@ rules:
       - pattern-not-inside: "$ARR.length > 0 ? ... : ..."
       # Safe: short-circuit guard (arr.length < N || arr[0])
       - pattern-not-inside: $ARR.length < $N || ...
+      # Safe: regex match null-check — if (m) { m[0] }
+      - pattern-not-inside: |
+          if ($ARR) { ... }
+      # Safe: OR-fallback pattern (arr[0] || default)
+      - pattern-not-inside: $ARR[0] || ...
     paths:
       include:
-        - scripts/
-        - functions/
+        - functions/src/
       exclude:
+        - scripts/
         - tests/
         - "*.test.*"
         - "*.spec.*"

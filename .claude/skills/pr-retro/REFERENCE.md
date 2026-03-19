@@ -1,8 +1,8 @@
 # PR Retro — Reference
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
-**Last Updated:** 2026-03-13
+**Document Version:** 1.4
+**Last Updated:** 2026-03-18
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -15,7 +15,7 @@ under 300 lines.
 ## Finding Presentation Template
 
 MUST use this template for every finding in the interactive walkthrough (Step
-3).
+4).
 
 ```
 ---
@@ -69,6 +69,8 @@ Required fields for `write-retro-record.js`:
 | score                | number       | 1-10 overall efficiency                                                    |
 | metrics              | object       | `{total_findings: N, fix_rate: 0.8, pattern_recurrence: N}` — see below    |
 | process_feedback     | string\|null | User feedback on the retro process (learning loop)                         |
+| deliverable_verification | object\|null | `{ claims: N, verified: M, unverified: K, confidence: "HIGH/MEDIUM/LOW", t20_tally: { confirmed: N, corrected: M, extended: K, new: J } }` |
+| metrics.hook_health  | object\|null | `{ pre_commit_pass_rate: 0.95, pre_push_pass_rate: 0.90, overrides: N, top_warning: "type", total_runs: N, avg_duration_ms: N }` |
 
 **`metrics.pattern_recurrence` population (D7):**
 
@@ -132,8 +134,8 @@ each step completion. Non-negotiable for long-running interactive sessions.
 
 When multiple PRs are selected (USER-REQ-1):
 
-- **Individual retros per PR** — each PR gets its own data gathering (Step 1),
-  churn analysis (Step 2), and JSONL record (Step 4)
+- **Individual retros per PR** — each PR gets its own data gathering (Step 2),
+  churn analysis (Step 3), and JSONL record (Step 8)
 - **Single interactive walkthrough** — findings from all PRs are presented in
   one walkthrough, grouped by PR but in a continuous flow
 - **One cross-PR systemic analysis** — runs once across the entire batch, not
@@ -148,7 +150,7 @@ Patterns observed across multiple PRs. Reference during Step 2 analysis.
 
 ## Override Audit Cross-Reference (D26 data flow — ls-006)
 
-During Step 2 (churn analysis), read `.claude/state/override-log.jsonl` to
+During Step 3 (churn analysis), read `.claude/override-log.jsonl` to
 cross-reference override patterns with PR review rounds:
 
 1. Filter override entries for the PR being analyzed (match by date range or
@@ -241,6 +243,8 @@ Patterns 1-5 are archived in [ARCHIVE.md](ARCHIVE.md).
 
 ## Verification Stage Criteria (Step 7)
 
+> Referenced from SKILL.md Step 7.
+
 The final verification stage audits BOTH the retro output AND the skill process
 itself. Present results to the user grouped by section, flagging any failures.
 
@@ -248,7 +252,7 @@ itself. Present results to the user grouped by section, flagging any failures.
 
 **Interactive Workflow:**
 
-- [ ] Warm-up summary was presented (Step 1.5) and user confirmed proceed
+- [ ] Warm-up summary was presented (Step 3) and user confirmed proceed
 - [ ] Every finding was presented individually (not batched except Low-severity
   > 15 threshold) with the REFERENCE.md template format
 - [ ] Every finding decision was saved to state file after collection
@@ -267,7 +271,7 @@ itself. Present results to the user grouped by section, flagging any failures.
 - [ ] Action item approval gate (Step 6.1) was presented as a batch table
 - [ ] User explicitly approved/modified/rejected each item (not auto-accepted)
 - [ ] TDMS entries created for all approved items via `/add-debt`
-- [ ] Repeat offenders flagged with escalation (Step 6.3)
+- [ ] Repeat offenders flagged with escalation (Step 6.2)
 
 ### 2. Mandatory Section Checks (is the retro complete?)
 
@@ -297,6 +301,11 @@ For each accepted action item with a verify command:
 - [ ] Every verify command is a real, runnable shell command (not a description)
 - [ ] Commands target specific files/patterns (not generic `grep` with no path)
 - [ ] Commands would actually fail if the change wasn't made
+- [ ] Verify commands must be executable (exit 0 on success, exit 1 on failure)
+  and test actual behavior, not string presence. A `grep -c` that only confirms
+  a string exists in a file is NOT a valid verify command. Valid verify commands
+  execute the feature (run a script, parse a config, invoke an API) and validate
+  the output or exit code reflects correct behavior.
 
 ### 4. Data Integrity (were artifacts saved correctly?)
 
@@ -331,4 +340,275 @@ Overall: [PASS / FAIL with N issues]
 [List each failure with resolution options]
 ```
 
-If any failures: resolve interactively before proceeding to Step 8.
+If any failures: resolve interactively before proceeding to Step 8 (save).
+
+---
+
+## Deliverable Verification Detail
+
+> Extracted from SKILL.md Step 1. Full procedural detail for the convergence
+> loop that catches "phantom completions."
+
+### Claim Extraction Sources
+
+Pull intent from ALL available sources (do not skip any):
+
+1. **PR body** -- `gh pr view <PR#> --json body,title,commits,files`
+2. **Commit messages** -- extract task descriptions from conventional commit
+   subjects and bodies
+3. **Referenced PLAN.md** -- if the PR body or commits reference a
+   `.planning/*/PLAN.md`, read it and extract the plan's deliverables/steps that
+   map to this PR
+4. **SESSION_CONTEXT.md goals** -- check if the PR's session is referenced in
+   session goals or quick status tables
+5. **ROADMAP.md items** -- if the PR references roadmap items, extract expected
+   outcomes
+
+Build a **claims list**: each claim is a testable assertion about what the PR
+was supposed to deliver. Format: `"<deliverable> -- source: <where found>"`.
+
+### Convergence-Loop Configuration
+
+- **Preset:** `standard` (source-check -> verification -> fresh-eyes)
+- **Claims:** The claims list from extraction above
+- **Domain slicing:** Per-claim (each claim gets its own verification thread)
+- **Agent prompt:** "Verify this PR deliverable claim against the current
+  codebase. Check that the described feature/fix/change actually exists, is
+  wired correctly, and functions as described. Look for: missing imports, dead
+  code paths, untested functions, config not connected, files referenced but not
+  created. Start verification from files changed in the PR, but follow
+  references outward -- if a changed file imports from or references a file that
+  should exist but doesn't, flag it."
+
+### CL Result Processing
+
+| CL Status                                | Retro Treatment                 |
+| ---------------------------------------- | ------------------------------- |
+| **Confirmed** (HIGH confidence)          | Note as verified, no finding    |
+| **Corrected** (claim was wrong/partial)  | AUTO-FINDING: CRITICAL severity |
+| **Extended** (claim true but incomplete) | AUTO-FINDING: HIGH severity     |
+| **Unverified** (insufficient evidence)   | AUTO-FINDING: CRITICAL severity |
+
+Auto-findings from deliverable verification:
+
+- Severity: **CRITICAL** for unverified/corrected, **HIGH** for extended
+- Category: `phantom-completion`
+- Auto-injected into Step 4 findings walkthrough (presented first, before
+  review-cycle findings)
+- Include the CL evidence and agent reasoning in the finding detail
+
+### Verification Summary Template
+
+```
+PR #NNN Deliverable Verification:
+  Claims extracted: N (from: PR body, PLAN.md, commits, ...)
+  Verified: M | Unverified: K | Partial: J
+  CL confidence: HIGH/MEDIUM/LOW
+  Auto-findings generated: X (K CRITICAL, J HIGH)
+
+Proceed to review data gathering? [Y/n]
+```
+
+### Skip Conditions
+
+PRs with fewer than 3 commits AND fewer than 3 files changed (trivial fixes,
+doc-only PRs). Note skip in output and proceed to Step 2.
+
+If fewer than 3 claims extracted, note "Insufficient claims for convergence loop
+-- skipping verification" and proceed to Step 2.
+
+### Cost Warnings
+
+- **>10 claims:** Warn about token cost before running the convergence loop.
+  "This PR has N claims -- convergence-loop verification will consume
+  significant tokens. Proceed? [Y/n]"
+- **Batch retro with >3 PRs:** Warn about sequential CL cost. "Running
+  deliverable verification sequentially for N PRs will consume significant
+  tokens. Proceed with all, select subset, or skip? [all/select/skip]"
+
+### Contradiction Protocol
+
+When convergence-loop results conflict with review data (e.g., CL says a
+deliverable is unverified but review data shows it was reviewed and approved):
+
+1. Note the conflict explicitly in the finding
+2. Present both data sources to the user
+3. Ask the user which source is authoritative for this specific claim
+4. Record the resolution in the state file
+
+---
+
+## Data Enrichment
+
+> Extracted from SKILL.md Step 2.4. How to read and use review metrics and hook
+> health data during data gathering.
+
+### Review Metrics Enrichment
+
+**Source:** `.claude/state/review-metrics.jsonl`
+
+**How to read:**
+
+1. Search for entry where `pr` matches the current PR number
+2. Use the latest entry if duplicates exist for the same PR number
+3. If found, extract: `fix_ratio`, `review_rounds`, `total_commits`,
+   `fix_commits`
+
+**Field mappings:**
+
+| Source Field     | Usage                                                       |
+| ---------------- | ----------------------------------------------------------- |
+| `fix_ratio`      | Percentage of commits that were fixes -- churn indicator    |
+| `review_rounds`  | Total review rounds -- cross-validate with gathered data    |
+| `total_commits`  | Total commit count for the PR                               |
+| `fix_commits`    | Number of fix commits -- compare to total for fix overhead  |
+
+**How to use this data:**
+
+- Inform churn analysis in Step 3 (quantitative backing for "too many rounds"
+  or high fix ratios)
+- Set baseline for "was this PR unusually churny?" (compare to average across
+  last 5 PRs in the file)
+- Include in the JSONL record's `metrics` field
+
+If the file doesn't exist or no matching entry found, note "No review-metrics
+data available for this PR" and continue.
+
+### Hook Health Enrichment
+
+**Sources:**
+
+| File                              | Fields per line                                                            |
+| --------------------------------- | -------------------------------------------------------------------------- |
+| `.claude/state/hook-runs.jsonl`   | `hook`, `timestamp`, `branch`, `checks` (array of `{id, status, duration}`), `outcome`, `total_ms` |
+| `.claude/state/hook-warnings-log.jsonl` | `timestamp`, `hook`, `type`, `severity`, `message`, `action`         |
+| `.claude/override-log.jsonl`      | `timestamp`, `check`, `reason`                                             |
+
+**NOTE:** The override log path is `.claude/override-log.jsonl` (NOT
+`.claude/state/override-log.jsonl`).
+
+**How to read:**
+
+1. Filter entries where `branch` matches the PR branch name and `timestamp`
+   falls within the PR's development period (first commit to merge date)
+2. For hook-warnings and override-log, filter to the same date range
+
+**Field mappings for extraction:**
+
+| Metric                  | Source                       | Calculation                                |
+| ----------------------- | ---------------------------- | ------------------------------------------ |
+| Pre-commit pass rate    | `hook-runs.jsonl`            | Count `outcome=pass` where `hook=pre-commit` / total pre-commit runs |
+| Pre-push pass rate      | `hook-runs.jsonl`            | Count `outcome=pass` where `hook=pre-push` / total pre-push runs |
+| Most common warning     | `hook-warnings-log.jsonl`    | Group by `type`, pick highest count        |
+| Override count          | `.claude/override-log.jsonl` | Count entries in date range                |
+| Total hook runs         | `hook-runs.jsonl`            | Count all entries in date range            |
+| Avg hook duration       | `hook-runs.jsonl`            | Mean of `total_ms` across all entries      |
+
+**How to use this data:**
+
+- Inform churn analysis in Step 3 (frequent hook failures = quality issues)
+- Flag if override count is unusually high (compare to 5-PR average from recent
+  entries across all branches)
+- Include in the JSONL record's `metrics` field as `hook_health`
+
+If files don't exist or no matching entries found, note "No hook data available
+for this PR's development period" and continue.
+
+---
+
+## Implementation Detail
+
+> Extracted from SKILL.md Step 6. Rules for the blocking implementation gate.
+
+### DEBT/TDMS Rules
+
+**DEBT is NOT an option unless the user explicitly requests it.** Do not offer
+"defer to DEBT" as a choice. Do not create TDMS entries unless the user says
+words like "defer", "create DEBT", or "add to TDMS."
+
+If an item is complex, the options are:
+
+1. **Implement now** -- do the work during this retro session
+2. **Plan it** -- add to `SESSION_CONTEXT.md` next goals or `ROADMAP.md`
+
+Filing into TDMS where it gets lost is NOT a default option.
+
+### Repeat Offender Handling
+
+Same action item appearing in 2+ retros without implementation:
+
+- These get **highest priority** in the implementation queue
+- Implement NOW during this retro -- do not defer
+- If genuinely blocked, explain the blocker and ask the user
+- Do not auto-defer repeat offenders under any circumstances
+
+### Implementation Checklist Template
+
+Present after all items are addressed:
+
+```
+Action Item Status:
+  [DONE] #1 -- description (verify: passed)
+  [DONE] #2 -- description (verify: passed)
+  [BLOCKED] #3 -- description (reason: X, user decision: Y)
+```
+
+### Gate Check Logic
+
+**Gate check:** If ANY item is not `[DONE]` or explicitly resolved by the user,
+do NOT proceed to Step 7. Ask the user how to handle remaining items.
+
+Items may only be resolved as:
+
+- `[DONE]` -- implemented and verify command passed
+- `[BLOCKED]` -- user explicitly acknowledged blocker and chose resolution
+
+### State File Tracking for Action Items
+
+After each item implementation, update the state file's `finding_decisions`
+entry with:
+
+- `implementation_status`: `"implemented"`, `"blocked"`, `"deferred"`, or
+  `"rejected"`
+- `verify_result`: `"pass"`, `"fail"`, or `"skipped"`
+
+When writing the JSONL record in Step 8, populate the `action_items` array with
+per-item `{title, status, verify_cmd, implemented_in}` from the state file. The
+`process_changes` field continues to hold string descriptions for backward
+compatibility, but `action_items` is the authoritative tracking field.
+
+---
+
+## Cross-Skill Integration
+
+> Extracted from SKILL.md. Maps finding types to downstream actions and target
+> files.
+
+| Finding Type             | Action               | Target                        |
+| ------------------------ | -------------------- | ----------------------------- |
+| New automation candidate | Add pattern rule     | `check-pattern-compliance.js` |
+| New fix template needed  | Add template         | `FIX_TEMPLATES.md`            |
+| Pre-push check missing   | Add to Step 0.5      | `pr-review SKILL.md`          |
+| Recurring noise (Qodo)   | Add suppression      | `.qodo/pr-agent.toml`         |
+| Recurring noise (Gemini) | Add to Do NOT Flag   | `.gemini/styleguide.md`       |
+| Systemic issue           | Create DEBT          | TDMS via `/add-debt`          |
+| Hook override abuse      | Review skip patterns | `override-log.jsonl`          |
+| Phantom completion       | Verify + fix gaps    | Codebase via convergence-loop |
+
+### Session Integration Notes
+
+- `/session-end` verifies TDMS entries created during the retro
+- `/session-begin` checks open retro DEBT items from prior sessions
+- `/pr-review` checks pre-push recommendations generated by retro findings
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                                          |
+| ------- | ---------- | ---------------------------------------------------------------- |
+| 1.4     | 2026-03-18 | Verification criteria: require functional verify commands (exit 0/1), reject grep-based string checks. |
+| 1.3     | 2026-03-18 | Align step references with SKILL.md v4.7 renumbering. Fix override-log path. |
+| 1.2     | 2026-03-18 | Add Cat7 sections: deliverable verification detail, data enrichment, implementation detail, cross-skill integration. |
+| 1.1     | 2026-03-13 | Add D7 pattern_recurrence population rules, D26 override audit cross-reference, verification stage criteria |
+| 1.0     | 2026-03-06 | Initial extraction from SKILL.md v4.0 — templates, schemas, patterns, batch scope |

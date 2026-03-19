@@ -30,6 +30,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { collection, query, orderBy, onSnapshot, limit } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
+import DOMPurify from "isomorphic-dompurify";
 import { db } from "@/lib/firebase";
 import { JournalEntry, JournalEntryType } from "@/types/journal";
 import { QUERY_LIMITS } from "@/lib/constants";
@@ -65,23 +66,26 @@ export const getRelativeDateLabel = (dateString: string) => {
 };
 
 // Sanitize text to prevent XSS in searchable content
-// Strips HTML tags and dangerous characters while preserving readable text
+// Uses DOMPurify with no allowed tags to produce clean plain text.
+// Replaces hand-rolled regex sanitizer (CodeQL: incomplete-multi-character-sanitization,
+// bad-tag-filter, incomplete-url-scheme-check).
 function sanitizeForSearch(text: string): string {
-  return (
-    text
-      // Remove script/style blocks first (so their contents are removed too)
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
-      // Remove remaining HTML tags
-      .replace(/<[^>]*>/g, "")
-      // Remove potentially dangerous patterns (event handlers, javascript:, data:)
-      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, "")
-      .replace(/javascript:/gi, "")
-      .replace(/data:text\/html/gi, "")
-      // Normalize whitespace
-      .replace(/\s+/g, " ")
-      .trim()
+  const raw = String(text ?? "");
+  if (!raw) return "";
+  // DOMPurify with empty ALLOWED_TAGS strips all HTML, returning text-only content.
+  // This handles script/style removal, event handler stripping, and all edge cases
+  // that regex-based approaches miss.
+  const clean = String(
+    DOMPurify.sanitize(raw, {
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: [],
+      FORBID_CONTENTS: ["script", "style"],
+      RETURN_DOM: false,
+      RETURN_DOM_FRAGMENT: false,
+    }),
   );
+  // Normalize whitespace after sanitization
+  return clean.replaceAll(/\s+/g, " ").trim();
 }
 
 // Generate searchable text from entry data for full-text search

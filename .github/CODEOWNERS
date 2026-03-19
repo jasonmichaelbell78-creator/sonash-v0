@@ -1,0 +1,17 @@
+# CODEOWNERS - Automatic review assignment
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Each line is a file pattern followed by one or more owners.
+# Order matters: later rules take precedence over earlier ones.
+
+# Default: all files
+* @jasonmichaelbell78-creator
+
+# CI/CD workflows - require owner review for pipeline changes
+.github/workflows/ @jasonmichaelbell78-creator
+
+# Cloud Functions - security-sensitive backend code
+functions/src/ @jasonmichaelbell78-creator
+
+# Firestore security rules - critical access control
+firestore.rules @jasonmichaelbell78-creator

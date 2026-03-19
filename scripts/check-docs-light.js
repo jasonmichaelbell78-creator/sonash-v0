@@ -388,6 +388,99 @@ function validateFileLinks(links, docPath) {
 }
 
 /**
+ * Validate case-sensitivity of internal file link references.
+ *
+ * On case-insensitive filesystems (Windows, macOS default), existsSync will
+ * return true even when the casing doesn't match the actual filename on disk.
+ * This check uses readdirSync to get the real filesystem casing and compares
+ * it against the referenced path segments.
+ *
+ * @param {Array} links - Extracted links
+ * @param {string} docPath - Path to the document being checked
+ * @returns {Array<string>} - List of warnings for case mismatches
+ */
+/**
+ * Check a single link for case mismatches. Returns warning string or null.
+ */
+/** Resolve a link target to a decoded, validated relative path. Returns null if invalid. */
+function resolveLinkPath(link, docDir) {
+  if (link.isAnchor) return null;
+  const [filePath] = link.target.split("#");
+  if (!filePath) return null;
+
+  let decodedPath;
+  try { decodedPath = decodeURIComponent(filePath); } catch { decodedPath = filePath; }
+  if (isAbsolute(decodedPath)) return null;
+
+  // Prevent path traversal outside docDir
+  const resolvedTarget = resolve(docDir, decodedPath);
+  const rel = relative(docDir, resolvedTarget);
+  if (/^\.\.(?:[\\/]|$)/.test(rel)) return null;
+
+  let targetExists = false;
+  try { targetExists = existsSync(resolvedTarget); } catch { /* race */ }
+  return targetExists ? decodedPath : null;
+}
+
+function checkLinkCasing(link, docDir, getActualEntries) {
+  const decodedPath = resolveLinkPath(link, docDir);
+  if (!decodedPath) return null;
+
+  const segments = decodedPath.split(/[\\/]/).filter(Boolean);
+  let currentDir = docDir;
+
+  for (const segment of segments) {
+    if (segment === "..") break;
+    if (segment === ".") continue;
+
+    const entries = getActualEntries(currentDir);
+    if (!entries) break;
+
+    const actualEntry = entries.find(
+      (e) => e.toLowerCase() === segment.toLowerCase()
+    );
+
+    if (actualEntry && actualEntry !== segment) {
+      return (
+        `Line ${link.line}: Case mismatch in link "${link.target}" — ` +
+        `referenced "${segment}" but actual filename is "${actualEntry}"`
+      );
+    }
+
+    currentDir = join(currentDir, segment);
+  }
+
+  return null;
+}
+
+function validateCaseSensitivity(links, docPath) {
+  const caseWarnings = [];
+  const docDir = dirname(docPath);
+
+  // Cache directory listings to avoid repeated readdirSync calls
+  const dirCache = new Map();
+
+  function getActualEntries(dirPath) {
+    if (dirCache.has(dirPath)) return dirCache.get(dirPath);
+    try {
+      const entries = readdirSync(dirPath);
+      dirCache.set(dirPath, entries);
+      return entries;
+    } catch {
+      dirCache.set(dirPath, null);
+      return null;
+    }
+  }
+
+  for (const link of links) {
+    const mismatch = checkLinkCasing(link, docDir, getActualEntries);
+    if (mismatch) caseWarnings.push(mismatch);
+  }
+
+  return caseWarnings;
+}
+
+/**
  * Validate anchor links within the same document
  * @param {Array} links - Extracted links
  * @param {Array} headings - Extracted headings
@@ -583,7 +676,10 @@ function lintDocument(filePath) {
   // Check 5: File links
   errors.push(...validateFileLinks(links, filePath));
 
-  // Check 6: Anchor links (warning only, as emoji handling is imperfect)
+  // Check 6: Case-sensitivity of file references (warning — cross-platform safety)
+  warnings.push(...validateCaseSensitivity(links, filePath));
+
+  // Check 7: Anchor links (warning only, as emoji handling is imperfect)
   const anchorErrors = validateAnchorLinks(links, headings);
   if (anchorErrors.length <= 3) {
     warnings.push(...anchorErrors);

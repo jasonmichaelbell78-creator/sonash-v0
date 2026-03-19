@@ -82,6 +82,13 @@ Ready to receive review feedback. Paste it below.
 
 ## Step 0: Pre-Checks (MUST — before parsing)
 
+**High-churn watchlist (SHOULD):** Read `.claude/config/high-churn-watchlist.json`
+and cross-reference against the PR's changed files. If any watchlist files are
+modified, flag them prominently: "High-churn file detected: {file} — this file
+has appeared in {N}+ PRs' fix rounds. Apply extra scrutiny to changes in this
+file and verify no regressions." Review the `refactor_candidates` entries for
+context on why the file attracts churn.
+
 **PR size advisory (MUST):** Check file count before starting review:
 
 ```bash
@@ -91,12 +98,45 @@ gh pr view {PR} --json files --jq '.files | length'
 If >50 changed files: "This PR has N files. Large PRs produce noisy review
 cycles. Consider splitting before review. Continue anyway? [Y/split]"
 
+**Large PR Advisory (MUST — >40 files):** If the PR has >40 changed files,
+display the following advisory before proceeding:
+
+> "Large PR ({N} files) — expect SonarCloud first-scan volume. Recommend
+> batch-acknowledgment for known false-positive categories before detailed
+> triage."
+
+Reference the suppression categories defined in `.qodo/pr-agent.toml` and
+`.gemini/styleguide.md` for batch-acknowledgment. Known false-positive
+categories include: CJS module format, repeat-rejection items, local config
+exposure on `.claude/` files, and R-style function signature complaints. Apply
+these suppressions before individual item triage to reduce noise.
+
 **First-scan detection (MUST for R1):** If SonarCloud items >100 on R1, most are
 likely first-scan noise on new files (not bugs introduced by the PR). Offer
 batch acknowledgment: "SonarCloud flagged N items on R1. This appears to be
 first-scan volume on new files. Batch-acknowledge known-safe patterns (S5852,
 S4036, S106 in scripts/tests)? [Y/review individually]" Apply existing
 suppression patterns, triage only remaining items individually.
+
+**Security Threat Model (MUST — conditional):** When the PR touches files under
+`scripts/`, `.claude/hooks/`, or other security-related paths (auth, crypto,
+validation, sanitization), the reviewer MUST populate the following threat model
+checklist before proceeding to Step 1. This ensures security-relevant changes
+receive structured threat analysis rather than ad-hoc review.
+
+```
+Security Threat Model Checklist:
+- [ ] Injection vectors: shell injection, SQL injection, log injection, terminal escape injection
+- [ ] TOCTOU race conditions: time-of-check vs time-of-use on file operations or state checks
+- [ ] Symlink/path traversal risks: symlink following, directory traversal via ../ or encoded variants
+- [ ] Sanitization boundaries: where untrusted input enters, where sanitization occurs, where output exits
+- [ ] PII/credential exposure: error messages, logs, API responses, or config files leaking sensitive data
+- [ ] Control character risks: terminal escape sequences, null bytes, unicode direction overrides in output
+```
+
+Each item should be marked as: N/A (not applicable to this PR), Clear (reviewed,
+no risk), or Flag (risk identified — must address before proceeding). If any item
+is flagged, it becomes a CRITICAL-severity item in Step 2 triage.
 
 ---
 
@@ -428,6 +468,8 @@ is the source of truth for cross-round history within a PR.
 
 | Version | Date       | Description                                                                                                                                                                                                |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.6     | 2026-03-18 | Step 0: Add high-churn watchlist check from `.claude/config/high-churn-watchlist.json`. Flag files with disproportionate review churn for extra scrutiny.                                                   |
+| 4.5     | 2026-03-18 | Step 0: Add Security Threat Model checklist (conditional on scripts/hooks/security files), Large PR Advisory at >40 files with Qodo suppression cross-reference. From PR #447 retro items #5 and #6.       |
 | 4.4     | 2026-03-16 | DAS framework: Replace time-based defer heuristic with Signal/Dependency/Risk scoring. Required format block for all pre-existing items. Step 7 DAS compliance check.                                      |
 | 4.3     | 2026-03-14 | State file persistence: Warm-Up reads prior round state files for accurate counts across compaction/clear. Step 8 writes state file. Schema documented in Compaction Resilience.                           |
 | 4.2     | 2026-03-13 | D26 backward flow: Step 1 retro pattern check reads last 3 retros' action_items[], flags repeat patterns, auto-elevates to MAJOR.                                                                          |

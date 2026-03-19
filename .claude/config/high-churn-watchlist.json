@@ -1,0 +1,27 @@
+{
+  "description": "Files that attract disproportionate review churn. When modified, trigger extra scrutiny in /pr-review.",
+  "files": [
+    ".claude/hooks/session-start.js",
+    ".claude/skills/alerts/scripts/run-alerts.js",
+    "scripts/review-lifecycle.js"
+  ],
+  "threshold_prs": 4,
+  "last_updated": "2026-03-18",
+  "refactor_candidates": [
+    {
+      "file": ".claude/hooks/session-start.js",
+      "reason": "Master orchestrator with too many responsibilities — appeared in 5 PRs' fix rounds",
+      "recommendation": "Split into session-init.js (env setup) and session-checks.js (health/validation)"
+    },
+    {
+      "file": ".claude/skills/alerts/scripts/run-alerts.js",
+      "reason": "Alert pipeline handling safety + truncation + injection in one file — appeared in 4 PRs",
+      "recommendation": "Extract sanitization logic to shared helper"
+    },
+    {
+      "file": "scripts/review-lifecycle.js",
+      "reason": "4-step pipeline in one file — appeared in 3 PRs' fix rounds",
+      "recommendation": "Already partially modular — extract SYNC and RENDER steps to separate files"
+    }
+  ]
+}

@@ -1,30 +1,63 @@
 rules:
+  # Flags direct Firestore writes to protected collections only.
+  # Per CLAUDE.md Section 2: journal, daily_logs, inventoryEntries must use
+  # Cloud Functions (httpsCallable). Other collections are allowed client-side.
   - id: sonash.security.no-direct-firestore-write
     languages: [javascript, typescript]
     severity: ERROR
     message: >-
-      Direct Firestore write detected in app code. All writes to journal,
-      daily_logs, and inventoryEntries collections MUST go through Cloud
-      Functions (httpsCallable). Direct writes bypass security rules, App Check,
-      and rate limiting.
+      Direct Firestore write to a protected collection (journal, daily_logs, or
+      inventoryEntries) detected in app code. All writes to these collections
+      MUST go through Cloud Functions (httpsCallable). Direct writes bypass
+      security rules, App Check, and rate limiting.
     metadata:
       category: security
       code-pattern-ref: "Dev data client-only"
       confidence: HIGH
       cwe: "CWE-284: Improper Access Control"
     pattern-either:
-      - pattern: |
-          import { ..., setDoc, ... } from "firebase/firestore"
-      - pattern: |
-          import { ..., addDoc, ... } from "firebase/firestore"
-      - pattern: |
-          import { ..., updateDoc, ... } from "firebase/firestore"
-      - pattern: |
-          import { ..., deleteDoc, ... } from "firebase/firestore"
-      - pattern: setDoc($REF, ...)
-      - pattern: addDoc($REF, ...)
-      - pattern: updateDoc($REF, ...)
-      - pattern: deleteDoc($REF, ...)
+      # Match doc/collection references containing protected collection names
+      - patterns:
+          - pattern: setDoc(doc($DB, $PATH, ...), ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: ".*(journal|daily_logs|inventoryEntries).*"
+      - patterns:
+          - pattern: addDoc(collection($DB, $PATH, ...), ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: ".*(journal|daily_logs|inventoryEntries).*"
+      - patterns:
+          - pattern: updateDoc(doc($DB, $PATH, ...), ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: ".*(journal|daily_logs|inventoryEntries).*"
+      - patterns:
+          - pattern: deleteDoc(doc($DB, $PATH, ...), ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: ".*(journal|daily_logs|inventoryEntries).*"
+      # Also match string literal paths passed to doc()/collection() helpers
+      - patterns:
+          - pattern: setDoc($REF, ...)
+          - metavariable-regex:
+              metavariable: $REF
+              regex: ".*(journal|daily_logs|inventoryEntries).*"
+      - patterns:
+          - pattern: addDoc($REF, ...)
+          - metavariable-regex:
+              metavariable: $REF
+              regex: ".*(journal|daily_logs|inventoryEntries).*"
+      - patterns:
+          - pattern: updateDoc($REF, ...)
+          - metavariable-regex:
+              metavariable: $REF
+              regex: ".*(journal|daily_logs|inventoryEntries).*"
+      - patterns:
+          - pattern: deleteDoc($REF, ...)
+          - metavariable-regex:
+              metavariable: $REF
+              regex: ".*(journal|daily_logs|inventoryEntries).*"
     paths:
       include:
         - app/

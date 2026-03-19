@@ -1,9 +1,8 @@
 ---
-name: SWS is a meta-plan — coordinates child plans, does not absorb them
+name: feedback_sws_is_meta_plan
 description:
-  SWS (System-Wide Standardization) is a plan to BUILD OTHER PLANS. Child plans
-  are reference material, not content to absorb. User corrected this
-  misunderstanding emphatically.
+  SWS is a meta-plan that builds other plans. Child plans are reference material,
+  not content to absorb.
 type: feedback
 status: active
 ---

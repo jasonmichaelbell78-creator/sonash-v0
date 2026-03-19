@@ -234,6 +234,7 @@ Example:
     verified_by: null,
     resolution: null,
     pr_number: Number.parseInt(parsed.pr, 10),
+    source_pr: Number.parseInt(parsed.pr, 10),
   };
 
   // Generate content hash

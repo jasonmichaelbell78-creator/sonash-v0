@@ -119,9 +119,11 @@ function mapErrorToUserMessage(error: AuthError): LinkError {
     recoverable: false,
   };
 
+  // Use error code as internal message instead of raw error.message to avoid
+  // leaking internal details (CWE-209). The userMessage has the safe description.
   return {
     code,
-    message: error.message,
+    message: `Auth error: ${code}`,
     userMessage: mapped.message,
     recoverable: mapped.recoverable,
   };

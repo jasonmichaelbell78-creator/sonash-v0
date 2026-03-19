@@ -1,5 +1,5 @@
 ---
-name: Convergence loops are mandatory — never default to single-pass
+name: feedback_convergence_loops_mandatory
 description:
   Every pass of significant work must loop internally until converged. User
   corrected 4+ times. Shortcuts cascade.

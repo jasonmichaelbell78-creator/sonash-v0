@@ -78,7 +78,7 @@ describe("writeRetroRecord", () => {
     assert.equal(result.id, "retro-pr-100");
     assert.equal(result.pr, 100);
 
-    const filePath = path.join(tmpDir, "data/ecosystem-v2/retros.jsonl");
+    const filePath = path.join(tmpDir, ".claude/state/retros.jsonl");
     assert.ok(fs.existsSync(filePath), "retros.jsonl should be created");
 
     const content = fs.readFileSync(filePath, "utf8").trim();
@@ -107,7 +107,7 @@ describe("writeRetroRecord", () => {
     );
 
     // File should not exist since write failed
-    const filePath = path.join(tmpDir, "data/ecosystem-v2/retros.jsonl");
+    const filePath = path.join(tmpDir, ".claude/state/retros.jsonl");
     assert.ok(!fs.existsSync(filePath), "retros.jsonl should not be created on failure");
   });
 
@@ -124,7 +124,7 @@ describe("writeRetroRecord", () => {
     writeRetroRecord(tmpDir, makeValidRetroData({ id: "retro-pr-1", pr: 1 }));
     writeRetroRecord(tmpDir, makeValidRetroData({ id: "retro-pr-2", pr: 2 }));
 
-    const filePath = path.join(tmpDir, "data/ecosystem-v2/retros.jsonl");
+    const filePath = path.join(tmpDir, ".claude/state/retros.jsonl");
     const lines = fs.readFileSync(filePath, "utf8").trim().split("\n");
     assert.equal(lines.length, 2, "should have 2 records");
 
@@ -138,7 +138,7 @@ describe("writeRetroRecord", () => {
     const data = makeValidRetroData();
     writeRetroRecord(tmpDir, data);
 
-    const dirPath = path.join(tmpDir, "data/ecosystem-v2");
-    assert.ok(fs.existsSync(dirPath), "data/ecosystem-v2 directory should be created");
+    const dirPath = path.join(tmpDir, ".claude/state");
+    assert.ok(fs.existsSync(dirPath), ".claude/state directory should be created");
   });
 });

@@ -17,7 +17,7 @@ const path = require("node:path");
 
 const SCRIPT_DIR = __dirname;
 const ROOT = path.resolve(SCRIPT_DIR, "../..");
-const DATA_DIR = path.join(ROOT, "data/ecosystem-v2");
+const DATA_DIR = path.join(ROOT, ".claude/state");
 const DIST_SCHEMAS = path.join(SCRIPT_DIR, "dist/lib/schemas/index.js");
 
 // Parse args
