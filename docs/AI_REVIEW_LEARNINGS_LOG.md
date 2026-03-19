@@ -32,10 +32,10 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 17.105   | 2026-03-18               | Review #489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud). 10 fixes: security scan exclusions for test files, symlink staged filter, deterministic error counting, safeAppend root containment, shared sanitizeError, CC extraction. 7 repeat-rejected. |
-| 17.104   | 2026-03-18               | Review #488: PR #448 R3 — Mixed (Qodo+SonarCloud). 10 fixes: resolveLinkPath path traversal, options.stagedFiles validation, DOMPurify FORBID_CONTENTS, churn-tracker latest-index, numeric normalization, CC reductions, token redaction. 8 repeat-rejected. |
-| 17.103   | 2026-03-18               | Review #487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud). 19 fixes: ESLint CJS config for __dirname, no-control-regex block disable, CLI path traversal guard, Promise.allSettled, NaN→Number.NaN propagation, CC reductions. 8 auto-rejected (R1 stale repeats). |
-| 17.102   | 2026-03-18               | Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud). 47 fixes: propagation grep false-positive, migration archived-file fallback, timestamp string→Date.parse (4 files), review_rounds mutation bug, semgrep over-suppression, 9 CC reductions, 4 security hardening, @ts-nocheck removal. 2 rejected. |
+| 17.105   | 2026-03-18               | Review #489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud). 10 fixes: security scan exclusions for test files, symlink staged filter, deterministic error counting, safeAppend root containment, shared sanitizeError, CC extraction. 7 repeat-rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 17.104   | 2026-03-18               | Review #488: PR #448 R3 — Mixed (Qodo+SonarCloud). 10 fixes: resolveLinkPath path traversal, options.stagedFiles validation, DOMPurify FORBID_CONTENTS, churn-tracker latest-index, numeric normalization, CC reductions, token redaction. 8 repeat-rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 17.103   | 2026-03-18               | Review #487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud). 19 fixes: ESLint CJS config for \_\_dirname, no-control-regex block disable, CLI path traversal guard, Promise.allSettled, NaN→Number.NaN propagation, CC reductions. 8 auto-rejected (R1 stale repeats).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 17.102   | 2026-03-18               | Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud). 47 fixes: propagation grep false-positive, migration archived-file fallback, timestamp string→Date.parse (4 files), review_rounds mutation bug, semgrep over-suppression, 9 CC reductions, 4 security hardening, @ts-nocheck removal. 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.63    | 2026-03-16               | Review #479: PR #443 R2 — Qodo. Relative link depth fix (../../ → ../../../) in session-begin SKILL+REFERENCE, session counter off-by-one. 2 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 17.62    | 2026-03-16               | Review #478: PR #443 R1 — Mixed (Doc Lint CI+Qodo Compliance+Qodo Reviewer+CI Failure). Invocation schema consistency (duration_ms/error fields). 3 fixed, 3 deferred (DEBT-45531/45532/45533), 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.61    | 2026-03-14               | Review #477: PR #432 R4 — Mixed (Qodo+CodeQL+CI+SonarCloud). Terminal injection (control char strip), CodeQL process.env contradiction resolved (by=cli), schema field alignment (\_pending_test→pending_enforcement_test), write audit trail, safe error.code access. 6 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -879,8 +879,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Rounds:** 5 | **Total Items:** 139
 
 | Fixed | Rejected | Deferred |
-|-------|----------|----------|
-| 0 | 0 | 0 |
+| ----- | -------- | -------- |
+| 0     | 0        | 0        |
 
 ---
 
@@ -889,10 +889,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #428 | **Rounds:** 1 | **Total Items:** 10
 
 | Fixed | Rejected | Deferred |
-|-------|----------|----------|
-| 0 | 0 | 0 |
-
-
+| ----- | -------- | -------- |
+| 0     | 0        | 0        |
 
 ## Active Reviews
 
@@ -901,14 +899,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-11 | **Source:** sonarcloud+ci
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 0 | 0 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 0 | 0 | 0 | 0 |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
 
 **Patterns:**
 
@@ -931,14 +929,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 21 | 18 | 0 | 2 |
+| ----- | ----- | -------- | -------- |
+| 21    | 18    | 0        | 2        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 1 | 6 | 8 | 3 |
+| -------- | ----- | ----- | ------- |
+| 1        | 6     | 8     | 3       |
 
 **Patterns:**
 
@@ -961,14 +959,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 25 | 20 | 0 | 5 |
+| ----- | ----- | -------- | -------- |
+| 25    | 20    | 0        | 5        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 2 | 11 | 8 | 4 |
+| -------- | ----- | ----- | ------- |
+| 2        | 11    | 8     | 4       |
 
 **Patterns:**
 
@@ -991,14 +989,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **Source:** qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 10 | 0 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 10    | 0     | 0        | 0        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 0 | 0 | 0 | 0 |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
 
 **Patterns:**
 
@@ -1020,14 +1018,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 45 | 45 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 45    | 45    | 0        | 0        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 0 | 0 | 0 | 0 |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
 
 **Patterns:**
 
@@ -1053,14 +1051,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 23 | 20 | 0 | 3 |
+| ----- | ----- | -------- | -------- |
+| 23    | 20    | 0        | 3        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 0 | 6 | 12 | 5 |
+| -------- | ----- | ----- | ------- |
+| 0        | 6     | 12    | 5       |
 
 **Patterns:**
 
@@ -1089,8 +1087,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 54 | 54 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 54    | 54    | 0        | 0        |
 
 ---
 
@@ -1099,8 +1097,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 16 | 16 | 0 | 10 |
+| ----- | ----- | -------- | -------- |
+| 16    | 16    | 0        | 10       |
 
 ---
 
@@ -1109,14 +1107,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 2 | 0 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 2     | 0     | 0        | 0        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 0 | 0 | 0 | 0 |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
 
 **Patterns:**
 
@@ -1138,14 +1136,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 0 | 0 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 0 | 0 | 0 | 0 |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
 
 **Patterns:**
 
@@ -1168,14 +1166,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **PR:** #429 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 15 | 12 | 1 | 3 |
+| ----- | ----- | -------- | -------- |
+| 15    | 12    | 1        | 3        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 1 | 5 | 6 | 0 |
+| -------- | ----- | ----- | ------- |
+| 1        | 5     | 6     | 0       |
 
 **Learnings:**
 
@@ -1194,14 +1192,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** manual
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 0 | 0 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 0 | 0 | 0 | 0 |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
 
 **Learnings:**
 
@@ -1217,14 +1215,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-13 | **Source:** manual
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 0 | 0 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-|----------|-------|-------|---------|
-| 0 | 0 | 0 | 0 |
+| -------- | ----- | ----- | ------- |
+| 0        | 0     | 0     | 0       |
 
 **Learnings:**
 
@@ -1239,8 +1237,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-14 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 37 | 37 | 0 | 15 |
+| ----- | ----- | -------- | -------- |
+| 37    | 37    | 0        | 15       |
 
 ---
 
@@ -1249,8 +1247,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-14 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 18 | 11 | 0 | 7 |
+| ----- | ----- | -------- | -------- |
+| 18    | 11    | 0        | 7        |
 
 ---
 
@@ -1259,8 +1257,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-14 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 20 | 14 | 0 | 6 |
+| ----- | ----- | -------- | -------- |
+| 20    | 14    | 0        | 6        |
 
 ---
 
@@ -1269,8 +1267,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-14 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 17 | 6 | 0 | 11 |
+| ----- | ----- | -------- | -------- |
+| 17    | 6     | 0        | 11       |
 
 ---
 
@@ -1279,8 +1277,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-15 | **PR:** #436 | **Source:** qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
-|-------|-------|----------|----------|
-| 7 | 0 | 0 | 0 |
+| ----- | ----- | -------- | -------- |
+| 7     | 0     | 0        | 0        |
 
 ## Key Patterns
 
@@ -2044,9 +2042,9 @@ total (Critical: 0, Major: 2, Minor: 9, Trivial: 7)
 **Items:** 11 fixed, 0 deferred, 7 rejected (repeat R1-R4)
 
 **Fixes:** ESLint ignore for `scripts/tests/` (CI compiled output), coerceInt
-helper for disposition validation, bidirectional cross-db check,
-safeAppend TOCTOU fix, buildExistingIndex missing-timestamp handling,
-sanitizeError fallback robustness, buildLatestMetricsMap tiebreaker.
+helper for disposition validation, bidirectional cross-db check, safeAppend
+TOCTOU fix, buildExistingIndex missing-timestamp handling, sanitizeError
+fallback robustness, buildLatestMetricsMap tiebreaker.
 
 **Rejections (7):** retro-config "should be Set" (repeat R1-R4).
 
@@ -2082,7 +2080,8 @@ sanitizeError fallback robustness, buildLatestMetricsMap tiebreaker.
 - **CC extraction** (SonarCloud): buildExistingIndex from appendMetrics.
 - **Misc** (TRIVIAL): DOMPurify String()+RETURN_DOM, replaceAll propagation.
 
-**Rejections (7):** retro-config "should be Set" (repeat R1-R3 — string.includes).
+**Rejections (7):** retro-config "should be Set" (repeat R1-R3 —
+string.includes).
 
 **Key Learnings:**
 
@@ -2122,8 +2121,8 @@ SonarCloud)
   patterns to sanitizeError in check-propagation-staged.
 - **Misc** (TRIVIAL): yamlHasKey null guard, wave4 regex→string literal.
 
-**Rejections (8):** 7× retro-config "should be Set" (string.includes, not
-array — repeat from R1+R2), 1× Audit Trails (repeat — local CLI scripts).
+**Rejections (8):** 7× retro-config "should be Set" (string.includes, not array
+— repeat from R1+R2), 1× Audit Trails (repeat — local CLI scripts).
 
 **Key Learnings:**
 
@@ -2148,20 +2147,20 @@ repeat-rejected from R1)
 
 **Fixes Applied:**
 
-- **ESLint __dirname no-undef** (CI, MAJOR): CJS files under `scripts/` were
+- **ESLint \_\_dirname no-undef** (CI, MAJOR): CJS files under `scripts/` were
   configured as ESM in eslint.config.mjs, excluding `__dirname` from globals.
   Added CJS override for `scripts/**/__tests__/**/*.js` and
   `migrate-ecosystem-v2.js`.
 - **ESLint no-control-regex** (CI, MAJOR): `eslint-disable-next-line` doesn't
   span multi-line chained calls. Changed to block disable/enable.
-- **CLI path traversal** (Qodo compliance, MINOR): Added path containment
-  filter on `--staged-files` CLI override.
+- **CLI path traversal** (Qodo compliance, MINOR): Added path containment filter
+  on `--staged-files` CLI override.
 - **source_pr NaN guard** (Qodo compliance, MINOR): Added `Number.isFinite` +
   `Number.isInteger` + positive check.
 - **Promise.allSettled** (Qodo suggestion, MINOR): Prevents single file error
   from aborting entire cleanup batch.
 - **Quadratic dedup** (Qodo suggestion, MINOR): Pre-built Map index for O(N)
-  dedup instead of O(N*M) findIndex.
+  dedup instead of O(N\*M) findIndex.
 - **NaN → Number.NaN** (SonarCloud, TRIVIAL): 7 instances across 4 files.
 - **CC reductions** (SonarCloud, MINOR): check-docs-light, review-lifecycle,
   migrate-ecosystem-v2 — extracted helpers.
@@ -2178,8 +2177,8 @@ repeat-rejected from R1)
 
 **Key Learnings:**
 
-- `eslint-disable-next-line` only suppresses the immediately following line.
-  For multi-line chained expressions, use block `eslint-disable`/`eslint-enable`.
+- `eslint-disable-next-line` only suppresses the immediately following line. For
+  multi-line chained expressions, use block `eslint-disable`/`eslint-enable`.
 - ESLint CJS vs ESM sourceType must match the actual module format. Files using
   `require()` and `__dirname` need `sourceType: "commonjs"` regardless of their
   directory.
@@ -2190,8 +2189,8 @@ repeat-rejected from R1)
 
 ### Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)
 
-**PR:** #448 | **Round:** R1 | **Source:** Mixed (Qodo 22, Gemini 4, SonarCloud
-33)
+**PR:** #448 | **Round:** R1 | **Source:** Mixed (Qodo 22, Gemini 4,
+SonarCloud 33)
 
 **Items:** 49 total (47 fixed, 0 deferred, 2 rejected)
 
@@ -2206,16 +2205,16 @@ repeat-rejected from R1)
   read non-existent files, `readJsonl()` returned `[]` silently. Added
   `findSourceFile()` fallback to `.archived-*` variants + exit non-zero if
   neither exists.
-- **review_rounds never updated** (Qodo suggestion, MAJOR): `dedupMetrics()`
-  set `jsonl_review_records` but never actually wrote to `review_rounds`. Added
+- **review_rounds never updated** (Qodo suggestion, MAJOR): `dedupMetrics()` set
+  `jsonl_review_records` but never actually wrote to `review_rounds`. Added
   missing assignment.
 - **Timestamp string comparison** (Qodo suggestion, MAJOR): 4 files used
   `entry.timestamp > existing.timestamp` (string comparison). Replaced with
   `Date.parse()` numeric comparison in `dedup-review-metrics.js`,
   `review-churn-tracker.js`, `review-lifecycle.js`, `cross-db-validation.test`.
 - **Semgrep over-suppression** (Qodo, MAJOR): `no-unchecked-array-access` rule
-  suppressed `$ARR[0]` inside any `.map/.filter/.forEach` callback regardless
-  of whether `$ARR` was the iterated element. Removed 10 broad suppressions.
+  suppressed `$ARR[0]` inside any `.map/.filter/.forEach` callback regardless of
+  whether `$ARR` was the iterated element. Removed 10 broad suppressions.
 - **Disposition validation order** (Qodo suggestion, MAJOR): Moved
   `validateDispositionIntegrity` after `ReviewRecord.parse()` to validate on
   canonical typed data, preventing string-bypass.
@@ -2259,4 +2258,3 @@ repeat-rejected from R1)
   `is_skipped eslint` for this scenario.
 
 ---
-

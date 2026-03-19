@@ -49,7 +49,9 @@ try {
     let code = null;
     try {
       code = err && typeof err === "object" && "code" in err ? String(err.code) : null;
-    } catch { code = null; }
+    } catch {
+      code = null;
+    }
     return code ? `${name} (${code})` : name;
   };
 }
@@ -143,7 +145,7 @@ function getStagedFiles() {
       .filter((f) => {
         // Block path traversal in CLI-provided paths
         const rel = path.relative(".", f);
-        return !(/^\.\.(?:[\\/]|$)/.test(rel)) && !path.isAbsolute(f);
+        return !/^\.\.(?:[\\/]|$)/.test(rel) && !path.isAbsolute(f);
       });
   }
 
@@ -279,7 +281,9 @@ function runCheck(options = {}) {
       baseDir = process.cwd();
     }
   }
-  const stagedFilesRaw = Array.isArray(options.stagedFiles) ? options.stagedFiles : getStagedFiles();
+  const stagedFilesRaw = Array.isArray(options.stagedFiles)
+    ? options.stagedFiles
+    : getStagedFiles();
   const stagedFiles = stagedFilesRaw
     .map((f) => String(f).replaceAll("\\", "/"))
     .filter((f) => {
@@ -329,7 +333,9 @@ function main() {
     }
 
     if (warnings.length === 0) {
-      console.log(`[propagation-staged] Checked ${stagedCount} staged file(s) — no propagation misses.`);
+      console.log(
+        `[propagation-staged] Checked ${stagedCount} staged file(s) — no propagation misses.`
+      );
       process.exit(0);
     }
 
@@ -349,13 +355,17 @@ function main() {
       console.log(`  Pattern: ${group.pattern}`);
       console.log(`  Staged:  ${group.stagedFile}`);
       for (const sib of group.siblings) {
-        console.log(`  Propagation miss: ${group.pattern} found in ${group.stagedFile} but sibling ${sib} also has it and isn't staged`);
+        console.log(
+          `  Propagation miss: ${group.pattern} found in ${group.stagedFile} but sibling ${sib} also has it and isn't staged`
+        );
       }
       console.log();
     }
 
     if (BLOCKING) {
-      console.log("[propagation-staged] BLOCKING: Stage sibling files or review them before committing.");
+      console.log(
+        "[propagation-staged] BLOCKING: Stage sibling files or review them before committing."
+      );
       process.exit(1);
     } else {
       console.log("[propagation-staged] WARNING: Review sibling files for the same pattern.");

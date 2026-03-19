@@ -58,12 +58,12 @@ describe("Item #7: High-Churn Watchlist", () => {
     assert.ok(watchlist.threshold_prs > 0, "threshold_prs must be positive");
 
     assert.ok(typeof watchlist.last_updated === "string", "last_updated must be a string");
-    assert.ok(/^\d{4}-\d{2}-\d{2}$/.test(watchlist.last_updated), "last_updated must be YYYY-MM-DD");
-
     assert.ok(
-      Array.isArray(watchlist.refactor_candidates),
-      "refactor_candidates must be an array"
+      /^\d{4}-\d{2}-\d{2}$/.test(watchlist.last_updated),
+      "last_updated must be YYYY-MM-DD"
     );
+
+    assert.ok(Array.isArray(watchlist.refactor_candidates), "refactor_candidates must be an array");
     assert.ok(
       watchlist.refactor_candidates.length >= 3,
       "refactor_candidates must have at least 3 entries"
@@ -157,10 +157,7 @@ describe("Item #13: TDMS source_pr field", () => {
     assert.ok(newItemStart >= 0, "newItem construction must exist");
     const newItemEnd = content.indexOf("};", newItemStart);
     const newItemBlock = content.substring(newItemStart, newItemEnd);
-    assert.ok(
-      newItemBlock.includes("source_pr:"),
-      "newItem must include source_pr field"
-    );
+    assert.ok(newItemBlock.includes("source_pr:"), "newItem must include source_pr field");
     assert.ok(
       newItemBlock.includes("Number.parseInt(parsed.pr"),
       "source_pr must be derived from parsed.pr via Number.parseInt"
@@ -202,15 +199,9 @@ describe("Item #13: TDMS source_pr field", () => {
     assert.ok(normStart >= 0, "normalized object construction must exist");
     const normEnd = content.indexOf("};", normStart);
     const normBlock = content.substring(normStart, normEnd);
-    assert.ok(
-      normBlock.includes("source_pr:"),
-      "normalized item must include source_pr field"
-    );
+    assert.ok(normBlock.includes("source_pr:"), "normalized item must include source_pr field");
     // Verify it handles null gracefully
-    assert.ok(
-      normBlock.includes("!= null"),
-      "source_pr must handle null/undefined input safely"
-    );
+    assert.ok(normBlock.includes("!= null"), "source_pr must handle null/undefined input safely");
   });
 
   it("validate-schema.js accepts source_pr as valid optional field", () => {
@@ -223,10 +214,7 @@ describe("Item #13: TDMS source_pr field", () => {
     }
 
     // Verify the validator has source_pr validation logic
-    assert.ok(
-      content.includes("source_pr"),
-      "validate-schema.js must reference source_pr"
-    );
+    assert.ok(content.includes("source_pr"), "validate-schema.js must reference source_pr");
     // Verify it allows null
     assert.ok(
       content.includes("item.source_pr !== null"),
@@ -276,10 +264,7 @@ describe("Item #13: TDMS source_pr field", () => {
       fieldsSection.includes("source_pr"),
       "source_pr must be documented in Common Fields table"
     );
-    assert.ok(
-      fieldsSection.includes("No"),
-      "source_pr must be marked as not required (No)"
-    );
+    assert.ok(fieldsSection.includes("No"), "source_pr must be marked as not required (No)");
   });
 });
 
@@ -370,10 +355,7 @@ describe("pr-retro: Functional verify command requirement", () => {
     const versionContent = content.substring(versionStart);
 
     // Verify v4.8 entry exists
-    assert.ok(
-      versionContent.includes("4.8"),
-      "Version 4.8 must be in Version History"
-    );
+    assert.ok(versionContent.includes("4.8"), "Version 4.8 must be in Version History");
     assert.ok(
       versionContent.includes("functional verify commands") ||
         versionContent.includes("Require functional verify"),
@@ -394,9 +376,6 @@ describe("pr-retro: Functional verify command requirement", () => {
     assert.ok(versionStart >= 0, "Version History section must exist");
     const versionContent = content.substring(versionStart);
 
-    assert.ok(
-      versionContent.includes("1.4"),
-      "Version 1.4 must be in Version History"
-    );
+    assert.ok(versionContent.includes("1.4"), "Version 1.4 must be in Version History");
   });
 });

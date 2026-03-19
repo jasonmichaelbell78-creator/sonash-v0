@@ -82,7 +82,7 @@ function sanitizeForSearch(text: string): string {
       FORBID_CONTENTS: ["script", "style"],
       RETURN_DOM: false,
       RETURN_DOM_FRAGMENT: false,
-    }),
+    })
   );
   // Normalize whitespace after sanitization
   return clean.replaceAll(/\s+/g, " ").trim();

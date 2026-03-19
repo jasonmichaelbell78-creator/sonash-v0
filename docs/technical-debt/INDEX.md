@@ -13,31 +13,31 @@
 
 ## Quick Stats
 
-| Severity | Count |
-|----------|-------|
-| S0 (Critical) | 32 |
-| S1 (High) | 1355 |
-| S2 (Medium) | 3433 |
-| S3 (Low) | 3639 |
+| Severity      | Count |
+| ------------- | ----- |
+| S0 (Critical) | 32    |
+| S1 (High)     | 1355  |
+| S2 (Medium)   | 3433  |
+| S3 (Low)      | 3639  |
 
-| Category | Count |
-|----------|-------|
-| code-quality | 4710 |
-| documentation | 982 |
-| security | 722 |
-| process | 722 |
-| refactoring | 668 |
-| ai-optimization | 254 |
-| performance | 179 |
-| enhancements | 154 |
-| engineering-productivity | 68 |
+| Category                 | Count |
+| ------------------------ | ----- |
+| code-quality             | 4710  |
+| documentation            | 982   |
+| security                 | 722   |
+| process                  | 722   |
+| refactoring              | 668   |
+| ai-optimization          | 254   |
+| performance              | 179   |
+| enhancements             | 154   |
+| engineering-productivity | 68    |
 
-| Status | Count |
-|--------|-------|
-| VERIFIED | 5340 |
-| RESOLVED | 483 |
-| FALSE_POSITIVE | 498 |
-| NEW | 2138 |
+| Status         | Count |
+| -------------- | ----- |
+| VERIFIED       | 5340  |
+| RESOLVED       | 483   |
+| FALSE_POSITIVE | 498   |
+| NEW            | 2138  |
 
 ## Views
 
@@ -48,61 +48,110 @@
 
 ## Critical Items (S0)
 
-- **DEBT-0849**: Legacy journalEntries collection allows direct client writes (bypasses Functi... (firestore.rules:0)
-- **DEBT-0853**: App Check disabled on all production Cloud Functions (functions/src/index.ts:0)
-- **DEBT-0854**: Legacy journalEntries collection allows direct client writes (bypasses functi... (firestore.rules:0)
-- **DEBT-0855**: App Check disabled on all Cloud Functions and client init disabled (functions/src/index.ts:0)
-- **DEBT-0856**: Legacy journalEntries collection allows direct client writes bypassing valida... (firestore.rules:0)
+- **DEBT-0849**: Legacy journalEntries collection allows direct client writes
+  (bypasses Functi... (firestore.rules:0)
+- **DEBT-0853**: App Check disabled on all production Cloud Functions
+  (functions/src/index.ts:0)
+- **DEBT-0854**: Legacy journalEntries collection allows direct client writes
+  (bypasses functi... (firestore.rules:0)
+- **DEBT-0855**: App Check disabled on all Cloud Functions and client init
+  disabled (functions/src/index.ts:0)
+- **DEBT-0856**: Legacy journalEntries collection allows direct client writes
+  bypassing valida... (firestore.rules:0)
 - **DEBT-0859**: Re-enable App Check on Cloud Functions (N/A:0)
 - **DEBT-0860**: Close legacy journalEntries write path (N/A:0)
 - **DEBT-0864**: Re-enable App Check on Cloud Functions (lib/firebase.ts:45)
-- **DEBT-0865**: Close legacy journalEntries write path (lib/firestore-service.ts:156)
-- **DEBT-1293**: Security risk: Client-side filtering of sensitive data (hooks/use-journal.ts:174)
-- **DEBT-1878**: CI gap: pull_request_target security vulnerability allows untrusted code exec... (.github/workflows/deploy-firebase.yml:7)
-- **DEBT-2121**: Security: Potential command injection in resolve-item.js execSync (scripts/debt/resolve-item.js:21)
-- **DEBT-4399**: Review this potentially hard-coded password. (lib/utils/errors.ts:69)
-- **DEBT-4400**: Review this potentially hard-coded password. (lib/utils/errors.ts:71)
-- **DEBT-4401**: Review this potentially hard-coded password. (tests/utils/logger.test.ts:96)
-- **DEBT-4402**: Review this potentially hard-coded password. (tests/utils/logger.test.ts:130)
-- **DEBT-4403**: Make sure that executing this OS command is safe here. (scripts/check-review-needed.js:214)
-- **DEBT-7544**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via firebase-admin) (package-lock.json:0)
-- **DEBT-9286**: Legacy journalEntries collection allows direct client writes (bypasses Functi... (firestore.rules:0)
-- **DEBT-9290**: App Check disabled on all production Cloud Functions (functions/src/index.ts:0)
-- **DEBT-9291**: Legacy journalEntries collection allows direct client writes (bypasses functi... (firestore.rules:0)
-- **DEBT-9292**: App Check disabled on all Cloud Functions and client init disabled (functions/src/index.ts:0)
-- **DEBT-9293**: Legacy journalEntries collection allows direct client writes bypassing valida... (firestore.rules:0)
-- **DEBT-9295**: CI quality gates non-blocking allowing regressions (.github/workflows/ci.yml:0)
+- **DEBT-0865**: Close legacy journalEntries write path
+  (lib/firestore-service.ts:156)
+- **DEBT-1293**: Security risk: Client-side filtering of sensitive data
+  (hooks/use-journal.ts:174)
+- **DEBT-1878**: CI gap: pull_request_target security vulnerability allows
+  untrusted code exec... (.github/workflows/deploy-firebase.yml:7)
+- **DEBT-2121**: Security: Potential command injection in resolve-item.js
+  execSync (scripts/debt/resolve-item.js:21)
+- **DEBT-4399**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:69)
+- **DEBT-4400**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:71)
+- **DEBT-4401**: Review this potentially hard-coded password.
+  (tests/utils/logger.test.ts:96)
+- **DEBT-4402**: Review this potentially hard-coded password.
+  (tests/utils/logger.test.ts:130)
+- **DEBT-4403**: Make sure that executing this OS command is safe here.
+  (scripts/check-review-needed.js:214)
+- **DEBT-7544**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
+  firebase-admin) (package-lock.json:0)
+- **DEBT-9286**: Legacy journalEntries collection allows direct client writes
+  (bypasses Functi... (firestore.rules:0)
+- **DEBT-9290**: App Check disabled on all production Cloud Functions
+  (functions/src/index.ts:0)
+- **DEBT-9291**: Legacy journalEntries collection allows direct client writes
+  (bypasses functi... (firestore.rules:0)
+- **DEBT-9292**: App Check disabled on all Cloud Functions and client init
+  disabled (functions/src/index.ts:0)
+- **DEBT-9293**: Legacy journalEntries collection allows direct client writes
+  bypassing valida... (firestore.rules:0)
+- **DEBT-9295**: CI quality gates non-blocking allowing regressions
+  (.github/workflows/ci.yml:0)
 - **DEBT-9296**: Re-enable App Check on Cloud Functions (N/A:0)
 - **DEBT-9297**: Close legacy journalEntries write path (N/A:0)
 - **DEBT-9301**: Re-enable App Check on Cloud Functions (lib/firebase.ts:45)
-- **DEBT-9302**: Close legacy journalEntries write path (lib/firestore-service.ts:156)
-- **DEBT-11124**: Review this potentially hard-coded password. (lib/utils/errors.ts:69)
-- **DEBT-11125**: Review this potentially hard-coded password. (tests/utils/logger.test.ts:96)
-- **DEBT-11126**: Make sure that executing this OS command is safe here. (scripts/check-review-needed.js:214)
-- **DEBT-11283**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via firebase-admin) (package-lock.json:0)
+- **DEBT-9302**: Close legacy journalEntries write path
+  (lib/firestore-service.ts:156)
+- **DEBT-11124**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:69)
+- **DEBT-11125**: Review this potentially hard-coded password.
+  (tests/utils/logger.test.ts:96)
+- **DEBT-11126**: Make sure that executing this OS command is safe here.
+  (scripts/check-review-needed.js:214)
+- **DEBT-11283**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
+  firebase-admin) (package-lock.json:0)
 
 ## High Priority Items (S1)
 
-- **DEBT-0002**: Provide a compare function to avoid sorting elements alphabetically. (app/meetings/all/page.tsx:164)
-- **DEBT-0003**: Provide a compare function to avoid sorting elements alphabetically. (components/notebook/pages/resources-page.tsx:306)
-- **DEBT-0004**: Use '[[' instead of '[' for conditional tests. The '[[' construct is safer an... (.claude/hooks/session-start.sh:264)
-- **DEBT-0005**: Use '[[' instead of '[' for conditional tests. The '[[' construct is safer an... (.claude/hooks/pattern-check.sh:89)
-- **DEBT-0006**: Use '[[' instead of '[' for conditional tests. The '[[' construct is safer an... (scripts/check-review-triggers.sh:44)
-- **DEBT-0007**: Use '[[' instead of '[' for conditional tests. The '[[' construct is safer an... (.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:7)
-- **DEBT-0008**: Use '[[' instead of '[' for conditional tests. The '[[' construct is safer an... (.claude/skills/artifacts-builder/scripts/init-artifact.sh:11)
-- **DEBT-0009**: Use '[[' instead of '[' for conditional tests. The '[[' construct is safer an... (.claude/skills/systematic-debugging/find-polluter.sh:8)
-- **DEBT-0010**: Exporting mutable 'let' binding, use 'const' instead. (lib/firebase.ts:137)
-- **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity from 20 to the 15 a... (lib/db/meetings.ts:21)
-- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity from 16 to the 15 a... (components/admin/admin-crud-table.tsx:83)
-- **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity from 22 to the 15 a... (functions/src/admin.ts:576)
-- **DEBT-0014**: Refactor this function to reduce its Cognitive Complexity from 18 to the 15 a... (functions/src/index.ts:486)
-- **DEBT-0015**: Refactor this code to not nest functions more than 4 levels deep. (hooks/use-daily-quote.ts:159)
-- **DEBT-0016**: Refactor this function to reduce its Cognitive Complexity from 29 to the 15 a... (scripts/validate-canon-schema.js:235)
-- **DEBT-0017**: Refactor this function to reduce its Cognitive Complexity from 21 to the 15 a... (scripts/normalize-canon-ids.js:188)
-- **DEBT-0018**: Refactor this function to reduce its Cognitive Complexity from 16 to the 15 a... (scripts/check-review-needed.js:254)
-- **DEBT-0019**: Refactor this function to reduce its Cognitive Complexity from 29 to the 15 a... (scripts/generate-documentation-index.js:141)
-- **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity from 34 to the 15 a... (scripts/validate-audit.js:211)
-- **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from 16 to the 15 a... (scripts/add-false-positive.js:139)
+- **DEBT-0002**: Provide a compare function to avoid sorting elements
+  alphabetically. (app/meetings/all/page.tsx:164)
+- **DEBT-0003**: Provide a compare function to avoid sorting elements
+  alphabetically. (components/notebook/pages/resources-page.tsx:306)
+- **DEBT-0004**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an... (.claude/hooks/session-start.sh:264)
+- **DEBT-0005**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an... (.claude/hooks/pattern-check.sh:89)
+- **DEBT-0006**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an... (scripts/check-review-triggers.sh:44)
+- **DEBT-0007**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an...
+  (.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:7)
+- **DEBT-0008**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an...
+  (.claude/skills/artifacts-builder/scripts/init-artifact.sh:11)
+- **DEBT-0009**: Use '[[' instead of '[' for conditional tests. The '[['
+  construct is safer an...
+  (.claude/skills/systematic-debugging/find-polluter.sh:8)
+- **DEBT-0010**: Exporting mutable 'let' binding, use 'const' instead.
+  (lib/firebase.ts:137)
+- **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity from
+  20 to the 15 a... (lib/db/meetings.ts:21)
+- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (components/admin/admin-crud-table.tsx:83)
+- **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity from
+  22 to the 15 a... (functions/src/admin.ts:576)
+- **DEBT-0014**: Refactor this function to reduce its Cognitive Complexity from
+  18 to the 15 a... (functions/src/index.ts:486)
+- **DEBT-0015**: Refactor this code to not nest functions more than 4 levels
+  deep. (hooks/use-daily-quote.ts:159)
+- **DEBT-0016**: Refactor this function to reduce its Cognitive Complexity from
+  29 to the 15 a... (scripts/validate-canon-schema.js:235)
+- **DEBT-0017**: Refactor this function to reduce its Cognitive Complexity from
+  21 to the 15 a... (scripts/normalize-canon-ids.js:188)
+- **DEBT-0018**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (scripts/check-review-needed.js:254)
+- **DEBT-0019**: Refactor this function to reduce its Cognitive Complexity from
+  29 to the 15 a... (scripts/generate-documentation-index.js:141)
+- **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity from
+  34 to the 15 a... (scripts/validate-audit.js:211)
+- **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from
+  16 to the 15 a... (scripts/add-false-positive.js:139)
 
 _...and 1335 more. See [by-severity.md](./views/by-severity.md)_
 
@@ -110,4 +159,5 @@ _...and 1335 more. See [by-severity.md](./views/by-severity.md)_
 
 **Canonical Source:** `MASTER_DEBT.jsonl`
 
-**Legacy ID Mapping:** See `LEGACY_ID_MAPPING.json` for CANON-*, DEDUP-*, MASTER-* → DEBT-XXXX mapping.
+**Legacy ID Mapping:** See `LEGACY_ID_MAPPING.json` for CANON-_, DEDUP-_,
+MASTER-\* → DEBT-XXXX mapping.

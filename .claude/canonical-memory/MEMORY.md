@@ -55,8 +55,8 @@
   decision recall.
 - [T3 convergence loops](t3_convergence_loops.md) — Dual-form: CANON tenet
   (when/why) + /convergence-loop skill (how). Must exist before CANON phase.
-- [Agent env analysis](project_agent_env_analysis.md) — Phases 1-3 done, Phase
-  4 improvements next. All 5 phases must complete before SWS Phase 1.
+- [Agent env analysis](project_agent_env_analysis.md) — Phases 1-3 done, Phase 4
+  improvements next. All 5 phases must complete before SWS Phase 1.
 
 ## Reference
 

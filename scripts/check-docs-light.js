@@ -409,7 +409,11 @@ function resolveLinkPath(link, docDir) {
   if (!filePath) return null;
 
   let decodedPath;
-  try { decodedPath = decodeURIComponent(filePath); } catch { decodedPath = filePath; }
+  try {
+    decodedPath = decodeURIComponent(filePath);
+  } catch {
+    decodedPath = filePath;
+  }
   if (isAbsolute(decodedPath)) return null;
 
   // Prevent path traversal outside docDir
@@ -418,7 +422,11 @@ function resolveLinkPath(link, docDir) {
   if (/^\.\.(?:[\\/]|$)/.test(rel)) return null;
 
   let targetExists = false;
-  try { targetExists = existsSync(resolvedTarget); } catch { /* race */ }
+  try {
+    targetExists = existsSync(resolvedTarget);
+  } catch {
+    /* race */
+  }
   return targetExists ? decodedPath : null;
 }
 
@@ -436,9 +444,7 @@ function checkLinkCasing(link, docDir, getActualEntries) {
     const entries = getActualEntries(currentDir);
     if (!entries) break;
 
-    const actualEntry = entries.find(
-      (e) => e.toLowerCase() === segment.toLowerCase()
-    );
+    const actualEntry = entries.find((e) => e.toLowerCase() === segment.toLowerCase());
 
     if (actualEntry && actualEntry !== segment) {
       return (

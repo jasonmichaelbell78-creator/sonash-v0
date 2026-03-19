@@ -47,16 +47,16 @@ This skill automatically selects the appropriate workflow:
 
 ## Common Fields
 
-| Field         | Required | Description                                     | Example                     |
-| ------------- | -------- | ----------------------------------------------- | --------------------------- |
-| `file`        | Yes      | File path (relative to repo root)               | `components/auth/login.tsx` |
-| `line`        | Yes      | Line number                                     | `145`                       |
-| `title`       | Yes      | Short description (< 80 chars)                  | `Missing error boundary`    |
-| `severity`    | Yes      | S0 (Critical), S1 (High), S2 (Medium), S3 (Low) | `S2`                        |
-| `category`    | Yes      | security, performance, code-quality, docs, etc. | `code-quality`              |
-| `effort`      | No       | E0 (<30m), E1 (<2h), E2 (<8h), E3 (>8h)         | `E1`                        |
-| `description` | No       | Detailed description                            | `Component lacks error...`  |
-| `source_pr`   | No       | Originating PR number (auto-set for deferred items, null for manual/audit) | `325`     |
+| Field         | Required | Description                                                                | Example                     |
+| ------------- | -------- | -------------------------------------------------------------------------- | --------------------------- |
+| `file`        | Yes      | File path (relative to repo root)                                          | `components/auth/login.tsx` |
+| `line`        | Yes      | Line number                                                                | `145`                       |
+| `title`       | Yes      | Short description (< 80 chars)                                             | `Missing error boundary`    |
+| `severity`    | Yes      | S0 (Critical), S1 (High), S2 (Medium), S3 (Low)                            | `S2`                        |
+| `category`    | Yes      | security, performance, code-quality, docs, etc.                            | `code-quality`              |
+| `effort`      | No       | E0 (<30m), E1 (<2h), E2 (<8h), E3 (>8h)                                    | `E1`                        |
+| `description` | No       | Detailed description                                                       | `Component lacks error...`  |
+| `source_pr`   | No       | Originating PR number (auto-set for deferred items, null for manual/audit) | `325`                       |
 
 ### Deferred-Only Fields (when PR number is provided)
 
@@ -313,7 +313,7 @@ If ANY items are deferred during review:
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
+| Version | Date       | Description                                                            |
+| ------- | ---------- | ---------------------------------------------------------------------- |
 | 1.1     | 2026-03-18 | Add optional `source_pr` field to all intake paths for PR traceability |
-| 1.0     | 2026-02-13 | Initial implementation |
+| 1.0     | 2026-02-13 | Initial implementation                                                 |

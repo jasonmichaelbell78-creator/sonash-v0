@@ -24,9 +24,9 @@ walkthrough.
 `/pr-review` | "Process health" -- `/pr-ecosystem-audit` | "What went
 well/wrong" -- `/pr-retro`
 
-**When to use:** User invokes `/pr-retro` AND PR is merged.
-**When NOT:** Active review -- `/pr-review` | Code quality -- `/code-reviewer` |
-Ecosystem audit -- `/pr-ecosystem-audit`
+**When to use:** User invokes `/pr-retro` AND PR is merged. **When NOT:** Active
+review -- `/pr-review` | Code quality -- `/code-reviewer` | Ecosystem audit --
+`/pr-ecosystem-audit`
 
 ---
 
@@ -41,8 +41,8 @@ Ecosystem audit -- `/pr-ecosystem-audit`
 7. Every observation MUST have a recommended action with estimated effort.
 8. Cross-PR systemic analysis is MUST for every retro.
 9. Follow CLAUDE.md Section 5 anti-patterns and Section 6 coding standards.
-10. **MUST implement accepted action items** -- retro is blocked until every item
-    is done or user explicitly says "defer" or "create DEBT". No implicit
+10. **MUST implement accepted action items** -- retro is blocked until every
+    item is done or user explicitly says "defer" or "create DEBT". No implicit
     deferral.
 
 ---
@@ -59,18 +59,18 @@ Ecosystem audit -- `/pr-ecosystem-audit`
 ## DASHBOARD MODE: Missing Retros
 
 **D1.** Get merged PRs:
+
 ```bash
 gh pr list --state merged --limit 100 --json number,title,mergedAt,author
 ```
+
 **D2.** Search `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`,
-`.claude/state/retros.jsonl` for existing retros.
-**D3.** Skip: PR# < 395, zero review entries, bot PRs (`[bot]`, `chore(deps)`,
-`build(deps)`, `Bump `).
-**D4.** Count review rounds per missing PR.
-**D5.** Display table: PR# | Title | Merged | Author | Rounds. Include action
-item summary from retros.jsonl.
-**D6.** "Which PRs to retro? [numbers / all / none]" If multiple, see
-REFERENCE.md: Batch Retro Scope.
+`.claude/state/retros.jsonl` for existing retros. **D3.** Skip: PR# < 395, zero
+review entries, bot PRs (`[bot]`, `chore(deps)`, `build(deps)`, `Bump `).
+**D4.** Count review rounds per missing PR. **D5.** Display table: PR# | Title |
+Merged | Author | Rounds. Include action item summary from retros.jsonl. **D6.**
+"Which PRs to retro? [numbers / all / none]" If multiple, see REFERENCE.md:
+Batch Retro Scope.
 
 For each selected PR, proceed to Step 1 (deliverable verification), then Step 2.
 **Dashboard ends here -- do NOT continue without selection.**
@@ -84,8 +84,8 @@ For each selected PR, proceed to Step 1 (deliverable verification), then Step 2.
 
 **Skip:** <3 commits AND <3 files changed -- note skip, proceed to Step 2.
 **Batch warning:** >3 PRs selected: warn about sequential CL cost. User decides:
-[continue / skip verification / select fewer].
-**Claim warning:** >10 claims: warn about token cost. [all / trim to 10 / skip].
+[continue / skip verification / select fewer]. **Claim warning:** >10 claims:
+warn about token cost. [all / trim to 10 / skip].
 
 ### 1.1 Extract Claims (MUST)
 
@@ -135,6 +135,7 @@ Save state. Warn if unverified > 0.
 rejected, pattern categories, files modified, new issues from prior fixes.
 
 **2.3** (SHOULD) Git history + TDMS:
+
 ```bash
 git log --oneline --grep="PR #${PR_NUM}" --grep="R[0-9]" --all-match
 grep "pr-review" docs/technical-debt/MASTER_DEBT.jsonl | grep "${PR_NUM}"
@@ -144,6 +145,7 @@ grep "pr-review" docs/technical-debt/MASTER_DEBT.jsonl | grep "${PR_NUM}"
 REFERENCE.md Section: Data Enrichment).
 
 **2.5** (MUST) Previous retros + pattern recurrence map from `retros.jsonl`:
+
 - Run stored `verify_cmd` on last 3-5 retros' action items. Flag unimplemented.
 - If `retros.jsonl` doesn't exist, skip and note "No prior retro data."
 - Build recurrence map from ALL retros. Recurrence >= 3: run quick CL (2-pass)
@@ -261,10 +263,11 @@ GOOD: node -e "const w=JSON.parse(require('fs').readFileSync(
 
 > See REFERENCE.md Section: Verification Stage Criteria.
 
-1. **Process compliance** -- interactive presentation, state logging, real verify
-   commands?
+1. **Process compliance** -- interactive presentation, state logging, real
+   verify commands?
 2. **Section completeness** -- all 9 mandatory sections?
-3. **Action items** -- run verify commands. `[NOT IMPLEMENTED]` -- return Step 6.
+3. **Action items** -- run verify commands. `[NOT IMPLEMENTED]` -- return
+   Step 6.
 4. **Data integrity** -- JSONL parseable, markdown appended, sync OK?
 5. **Cross-PR** (batch) -- individual records, no duplicates?
 
@@ -277,11 +280,10 @@ Present report. Resolve failures interactively.
 ## STEP 8: SAVE TO LOG (MUST)
 
 **8.1** Build: `cd scripts/reviews && npx tsc 2>&1 | tail -5` (fail -- manual
-JSONL fallback).
-**8.2** Write JSONL (source of truth). See REFERENCE.md: JSONL Record Schemas.
-Include `process_feedback` from Step 9.
-**8.3** Append markdown to `docs/AI_REVIEW_LEARNINGS_LOG.md`.
-**8.4** Sync:
+JSONL fallback). **8.2** Write JSONL (source of truth). See REFERENCE.md: JSONL
+Record Schemas. Include `process_feedback` from Step 9. **8.3** Append markdown
+to `docs/AI_REVIEW_LEARNINGS_LOG.md`. **8.4** Sync:
+
 ```bash
 npm run reviews:sync -- --apply
 node dist/write-invocation.js --data '...'
@@ -294,8 +296,8 @@ node dist/write-invocation.js --data '...'
 ## STEP 9: SUPPRESSIONS + LEARNING + CLOSURE (MUST)
 
 **Suppressions** (SHOULD): Items rejected 2+ times -- add to
-`.gemini/styleguide.md` "Do NOT Flag" + mirror `.qodo/pr-agent.toml`. Skip if
-no rejections.
+`.gemini/styleguide.md` "Do NOT Flag" + mirror `.qodo/pr-agent.toml`. Skip if no
+rejections.
 
 **Learning:** Auto-generate 2-3 insights, save to `learnings` JSONL. Ask "Any
 observations?" Save to `process_feedback`. On next startup: surface prior
@@ -336,15 +338,15 @@ Next: /pr-retro for more missing retros
 
 ## Version History
 
-| Version | Date       | Description                                                    |
-| ------- | ---------- | -------------------------------------------------------------- |
+| Version | Date       | Description                                                                                        |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------- |
 | 4.8     | 2026-03-18 | Step 6: Require functional verify commands, not grep-based string checks. Good/bad examples added. |
-| 4.7     | 2026-03-18 | Audit v2: 33 decisions. Renumber, reorder save-after-impl, extract to REF. |
-| 4.6     | 2026-03-18 | Deliverable verification via convergence-loop.                 |
-| 4.5     | 2026-03-18 | Hook health enrichment.                                        |
-| 4.4     | 2026-03-13 | Review-metrics enrichment.                                     |
-| 4.3     | 2026-03-13 | Pattern recurrence auto-escalation.                            |
-| 4.2     | 2026-03-11 | Implementation hard gate.                                      |
-| 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch, verification.   |
+| 4.7     | 2026-03-18 | Audit v2: 33 decisions. Renumber, reorder save-after-impl, extract to REF.                         |
+| 4.6     | 2026-03-18 | Deliverable verification via convergence-loop.                                                     |
+| 4.5     | 2026-03-18 | Hook health enrichment.                                                                            |
+| 4.4     | 2026-03-13 | Review-metrics enrichment.                                                                         |
+| 4.3     | 2026-03-13 | Pattern recurrence auto-escalation.                                                                |
+| 4.2     | 2026-03-11 | Implementation hard gate.                                                                          |
+| 4.0     | 2026-03-06 | Major rewrite: interactive walkthrough, batch, verification.                                       |
 
 > Older history in [ARCHIVE.md](ARCHIVE.md).

@@ -215,11 +215,7 @@ describe("Item #5: Security Threat Model checklist in /pr-review Step 0", () => 
   it("all 6 threat model categories are present", () => {
     if (!skillContent) skillContent = readFileContent(".claude/skills/pr-review/SKILL.md");
     const missing = THREAT_MODEL_CATEGORIES.filter((cat) => !skillContent.includes(cat));
-    assert.strictEqual(
-      missing.length,
-      0,
-      `Missing threat model categories: ${missing.join(", ")}`
-    );
+    assert.strictEqual(missing.length, 0, `Missing threat model categories: ${missing.join(", ")}`);
   });
 
   it("threat model is conditional on scripts/hooks/security files", () => {
@@ -299,10 +295,7 @@ describe("Item #6: Large PR Advisory at >40 files in /pr-review Step 0", () => {
     const contextEnd = Math.min(skillContent.length, advisoryIndex + 800);
     const context = skillContent.slice(advisoryIndex, contextEnd);
 
-    assert.ok(
-      context.includes("40"),
-      "Large PR Advisory must specify the 40-file threshold"
-    );
+    assert.ok(context.includes("40"), "Large PR Advisory must specify the 40-file threshold");
     assert.ok(
       context.includes(">40") || context.includes("> 40") || context.includes(">40 files"),
       "Large PR Advisory must specify >40 as the trigger condition"

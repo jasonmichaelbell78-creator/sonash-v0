@@ -8,8 +8,8 @@
 
 ## Purpose
 
-Security policy for SoNash — vulnerability reporting, supported versions,
-and security measures implemented in the application.
+Security policy for SoNash — vulnerability reporting, supported versions, and
+security measures implemented in the application.
 
 ## Supported Versions
 
@@ -58,6 +58,6 @@ This application implements the following security measures:
 
 ## Version History
 
-| Version | Date       | Changes                  |
-| ------- | ---------- | ------------------------ |
-| 1.0     | 2026-03-17 | Initial security policy  |
+| Version | Date       | Changes                 |
+| ------- | ---------- | ----------------------- |
+| 1.0     | 2026-03-17 | Initial security policy |

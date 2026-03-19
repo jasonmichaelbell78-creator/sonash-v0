@@ -30,7 +30,8 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-03-18 **Branch**: `plan-implementation` **Working
-On**: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves 3-4
+On**: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves
+3-4
 
 **Uncommitted Work**: Session-end in progress
 
@@ -52,14 +53,15 @@ On**: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves 
 
 - **Branch**: `plan-implementation`
 - **Review pipeline split-brain discovered + fixed**: `write-review-record.ts`
-  wrote to `data/ecosystem-v2/` but all readers read `.claude/state/`. Incomplete
-  RC-7 refactoring on Mar 15. Fixed write paths, recovered 222 orphaned review
-  records across 73 PRs, 47 retro records. 7 pipeline consistency tests added.
-- **Bulk PR retro (17 PRs)**: 8 research agents + 4 CL verification agents.
-  42 review rounds, ~395 items analyzed. 17 findings, 13 action items
-  implemented with 130 functional tests (not grep). Key findings: Pattern 13
-  propagation miss (6 retros, unimplemented), Qodo 35.7% FP rate, 94% data
-  quality issue rate across sources.
+  wrote to `data/ecosystem-v2/` but all readers read `.claude/state/`.
+  Incomplete RC-7 refactoring on Mar 15. Fixed write paths, recovered 222
+  orphaned review records across 73 PRs, 47 retro records. 7 pipeline
+  consistency tests added.
+- **Bulk PR retro (17 PRs)**: 8 research agents + 4 CL verification agents. 42
+  review rounds, ~395 items analyzed. 17 findings, 13 action items implemented
+  with 130 functional tests (not grep). Key findings: Pattern 13 propagation
+  miss (6 retros, unimplemented), Qodo 35.7% FP rate, 94% data quality issue
+  rate across sources.
 - **Retro action items**: Propagation-audit pre-commit, CC pre-push verified,
   Qodo/Gemini suppression update, Security Threat Model Checklist, SonarCloud
   first-scan advisory, high-churn watchlist, cross-DB validation, metrics dedup
@@ -68,11 +70,12 @@ On**: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves 
 - **GitHub Waves 3-4**: Code scanning 282->~40 alerts (Semgrep rule tuning,
   DOMPurify migration, error sanitization, 7 FP dismissals). Ecosystem: LICENSE,
   CONTRIBUTING, CODE_OF_CONDUCT, CODEOWNERS, issue templates, Copilot
-  instructions, Codecov, OpenSSF Scorecard, Release Please, GitHub Guide.
-  157 wave tests.
-- **Memory system audit (work locale)**: 24 files verified, 3 stale deleted,
-  2 new added, recall 8/8, MEMORY.md rewritten as index-only.
-- **settings.local.json cleanup**: 77->42 permissions (35 stale SKIP_* removed).
+  instructions, Codecov, OpenSSF Scorecard, Release Please, GitHub Guide. 157
+  wave tests.
+- **Memory system audit (work locale)**: 24 files verified, 3 stale deleted, 2
+  new added, recall 8/8, MEMORY.md rewritten as index-only.
+- **settings.local.json cleanup**: 77->42 permissions (35 stale SKIP\_\*
+  removed).
 - **Secret scanning + push protection enabled** (manual GitHub Settings).
 - **Audit checkpoint**: 2 CRITICAL (jobs.ts error sanitization), 5 HIGH — all
   fixed.
@@ -224,12 +227,11 @@ On**: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves 
 | **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                  |
 | **Pre-Commit/Push Overhaul**      | COMPLETE | 10 waves, 44 decisions, 14 SWS tenets addressed      |
 
-| **GitHub Optimization Plan** | COMPLETE | All 5 waves done, audit passed |
-| **Review Pipeline**          | FIXED    | Split-brain resolved, 222 records recovered |
-| **Bulk PR Retro**            | COMPLETE | 17 PRs, 13 action items, 130 tests |
-| Track B: Dev Dashboard MVP   | Paused   | ~10% |
-| M1.5 - Quick Wins            | Paused   | ~20% |
-| M1.6 - Admin Panel + UX      | Paused   | ~75% |
+| **GitHub Optimization Plan** | COMPLETE | All 5 waves done, audit passed | |
+**Review Pipeline** | FIXED | Split-brain resolved, 222 records recovered | |
+**Bulk PR Retro** | COMPLETE | 17 PRs, 13 action items, 130 tests | | Track B:
+Dev Dashboard MVP | Paused | ~10% | | M1.5 - Quick Wins | Paused | ~20% | |
+M1.6 - Admin Panel + UX | Paused | ~75% |
 
 **Current Branch**: `plan-implementation`
 
@@ -334,13 +336,13 @@ npm run docs:check   # Documentation linting
 | Version | Date | Changes |
 | ------- | ---- | ------- |
 
-| 8.5 | 2026-03-18 | Session #227 — Pipeline fix, bulk retro, GitHub Waves 3-4, memory audit |
-| 8.4 | 2026-03-18 | Session #226 — GitHub optimization Waves 0-2,
-commit-tracker fix | | 8.3 | 2026-03-16 | Session #224 — Pre-commit/pre-push
-hook system overhaul (10 waves) | | 8.2 | 2026-03-16 | Session #223 —
-skill-audit create-audit, agent environment deep-plan | | 8.1 | 2026-03-15 |
-Session #222 — CL integration, debt-runner skill, 3 skill audits | | 8.0 |
-2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop skill, 7
-commits |
+| 8.5 | 2026-03-18 | Session #227 — Pipeline fix, bulk retro, GitHub Waves 3-4,
+memory audit | | 8.4 | 2026-03-18 | Session #226 — GitHub optimization Waves
+0-2, commit-tracker fix | | 8.3 | 2026-03-16 | Session #224 —
+Pre-commit/pre-push hook system overhaul (10 waves) | | 8.2 | 2026-03-16 |
+Session #223 — skill-audit create-audit, agent environment deep-plan | | 8.1 |
+2026-03-15 | Session #222 — CL integration, debt-runner skill, 3 skill audits |
+| 8.0 | 2026-03-15 | Session #221 — SWS Phase 0 complete, convergence-loop
+skill, 7 commits |
 
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)
