@@ -285,6 +285,48 @@ function runMidSessionAlerts() {
 }
 
 /**
+ * Capture commit metadata from git log and diff-tree.
+ * Returns a structured entry for the commit log.
+ */
+function captureCommitMetadata(currentHead) {
+  // Call 1: log with %D decoration to get hash, short hash, message, author, date, AND branch ref
+  // Use NUL delimiter (%x00) to avoid corruption from special chars in commit messages
+  const commitLine = gitExec([
+    "log",
+    "--format=%H%x00%h%x00%s%x00%an%x00%ad%x00%D",
+    "--date=iso-strict",
+    "-1",
+  ]);
+  const parts = commitLine.split("\0");
+
+  // Parse branch from %D decoration (e.g. "HEAD -> branch-name, origin/branch-name")
+  const decoration = (parts.length >= 6 ? parts[5] : "") || "";
+  const branchMatch = decoration.match(/HEAD -> ([^,]+)/);
+  // Fall back to rev-parse only in detached HEAD (no "HEAD -> ..." in decoration)
+  const branch = branchMatch
+    ? branchMatch[1].trim()
+    : gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
+
+  // Call 2: files changed in the commit
+  const filesChanged = gitExec(["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"])
+    .split("\n")
+    .filter((f) => f.length > 0);
+
+  return {
+    timestamp: new Date().toISOString(),
+    hash: parts[0] || currentHead,
+    shortHash: parts[1] || currentHead.slice(0, 7),
+    message: parts[2] || "",
+    author: parts[3] || "",
+    authorDate: parts[4] || "",
+    branch: branch,
+    filesChanged: filesChanged.length,
+    filesList: filesChanged.slice(0, 30), // Cap at 30 files
+    session: getSessionCounter(),
+  };
+}
+
+/**
  * Main
  */
 function main() {
@@ -316,43 +358,8 @@ function main() {
     process.exit(0);
   }
 
-  // NEW COMMIT DETECTED — capture metadata (2 git calls instead of 3)
-  // Call 1: log with %D decoration to get hash, short hash, message, author, date, AND branch ref
-  // Use NUL delimiter (%x00) to avoid corruption from special chars in commit messages
-  const commitLine = gitExec([
-    "log",
-    "--format=%H%x00%h%x00%s%x00%an%x00%ad%x00%D",
-    "--date=iso-strict",
-    "-1",
-  ]);
-  const parts = commitLine.split("\0");
-
-  // Parse branch from %D decoration (e.g. "HEAD -> branch-name, origin/branch-name")
-  const decoration = (parts.length >= 6 ? parts[5] : "") || "";
-  const branchMatch = decoration.match(/HEAD -> ([^,]+)/);
-  // Fall back to rev-parse only in detached HEAD (no "HEAD -> ..." in decoration)
-  const branch = branchMatch
-    ? branchMatch[1].trim()
-    : gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
-
-  // Call 2: files changed in the commit
-  const filesChanged = gitExec(["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"])
-    .split("\n")
-    .filter((f) => f.length > 0);
-  const sessionCounter = getSessionCounter();
-
-  const entry = {
-    timestamp: new Date().toISOString(),
-    hash: parts[0] || currentHead,
-    shortHash: parts[1] || currentHead.slice(0, 7),
-    message: parts[2] || "",
-    author: parts[3] || "",
-    authorDate: parts[4] || "",
-    branch: branch,
-    filesChanged: filesChanged.length,
-    filesList: filesChanged.slice(0, 30), // Cap at 30 files
-    session: sessionCounter,
-  };
+  // NEW COMMIT DETECTED — capture metadata
+  const entry = captureCommitMetadata(currentHead);
 
   if (appendCommitLog(entry)) {
     saveLastHead(currentHead);
@@ -391,6 +398,66 @@ function main() {
 }
 
 /**
+ * Resolve the .git directory, handling worktrees and GIT_DIR env var.
+ */
+function resolveGitDir() {
+  const envGitDir = process.env.GIT_DIR;
+  if (typeof envGitDir === "string" && envGitDir.length > 0) {
+    return path.isAbsolute(envGitDir) ? envGitDir : path.resolve(process.cwd(), envGitDir);
+  }
+  const dotGitPath = path.join(process.cwd(), ".git");
+  try {
+    if (fs.lstatSync(dotGitPath).isSymbolicLink()) return dotGitPath;
+    const st = fs.statSync(dotGitPath);
+    if (st.isFile()) {
+      const txt = fs.readFileSync(dotGitPath, "utf8").trim();
+      const m = txt.match(/^gitdir:\s*(.+)\s*$/i);
+      if (m && m[1]) {
+        const resolved = m[1].trim();
+        return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
+      }
+    }
+  } catch {
+    // best-effort — fall through to default
+  }
+  return dotGitPath;
+}
+
+/**
+ * Redact sensitive values from a single line of hook output.
+ */
+function redactSensitiveLine(line) {
+  let result = line;
+  for (const keyword of ["token", "key", "secret", "password", "credential"]) {
+    for (const sep of ["=", ":"]) {
+      const idx = result.toLowerCase().indexOf(keyword + sep);
+      if (idx === -1) continue;
+      const afterSep = idx + keyword.length + sep.length;
+      let valueStart = afterSep;
+      while (valueStart < result.length && result[valueStart] === " ") valueStart++;
+      if (valueStart >= result.length) continue;
+      let valueEnd;
+      const quote = result[valueStart];
+      if (quote === '"' || quote === "'") {
+        const endQuote = result.indexOf(quote, valueStart + 1);
+        valueEnd = endQuote === -1 ? result.length : endQuote + 1;
+      } else {
+        valueEnd = valueStart;
+        while (valueEnd < result.length && result[valueEnd] !== " ") valueEnd++;
+      }
+      if (valueEnd > valueStart) {
+        result = result.slice(0, valueStart) + "[REDACTED]" + result.slice(valueEnd);
+      }
+    }
+  }
+  result = result.replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***");
+  result = result.replaceAll(/ghs_[A-Za-z0-9_]{36,}/g, "ghs_***REDACTED***");
+  result = result.replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, "sk-***REDACTED***");
+  result = result.replaceAll(/AKIA[A-Z0-9]{12,}/g, "AKIA***REDACTED***");
+  return result;
+}
+
+/**
  * Report commit failures by reading .git/hook-output.log.
  * Surfaces pre-commit hook output that would otherwise be invisible.
  * Merged from commit-failure-reporter.js to eliminate redundant process spawn.
@@ -411,28 +478,7 @@ function reportCommitFailure() {
       return;
     }
 
-    const gitDir = (() => {
-      const envGitDir = process.env.GIT_DIR;
-      if (typeof envGitDir === "string" && envGitDir.length > 0) {
-        return path.isAbsolute(envGitDir) ? envGitDir : path.resolve(process.cwd(), envGitDir);
-      }
-      const dotGitPath = path.join(process.cwd(), ".git");
-      try {
-        if (fs.lstatSync(dotGitPath).isSymbolicLink()) return dotGitPath;
-        const st = fs.statSync(dotGitPath);
-        if (st.isFile()) {
-          const txt = fs.readFileSync(dotGitPath, "utf8").trim();
-          const m = txt.match(/^gitdir:\s*(.+)\s*$/i);
-          if (m && m[1]) {
-            const resolved = m[1].trim();
-            return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
-          }
-        }
-      } catch {
-        // best-effort — fall through to default
-      }
-      return dotGitPath;
-    })();
+    const gitDir = resolveGitDir();
     const logFile = path.join(gitDir, "hook-output.log");
 
     // Read hook output log if it exists and is fresh (<60s old)
@@ -453,39 +499,7 @@ function reportCommitFailure() {
     if (exitCode === 0 && !content.includes("\u274C")) return;
 
     // Sanitize and output hook failure
-    const sanitized = content
-      .split("\n")
-      .map((line) => {
-        let result = line;
-        for (const keyword of ["token", "key", "secret", "password", "credential"]) {
-          for (const sep of ["=", ":"]) {
-            const idx = result.toLowerCase().indexOf(keyword + sep);
-            if (idx === -1) continue;
-            const afterSep = idx + keyword.length + sep.length;
-            let valueStart = afterSep;
-            while (valueStart < result.length && result[valueStart] === " ") valueStart++;
-            if (valueStart >= result.length) continue;
-            let valueEnd;
-            const quote = result[valueStart];
-            if (quote === '"' || quote === "'") {
-              const endQuote = result.indexOf(quote, valueStart + 1);
-              valueEnd = endQuote === -1 ? result.length : endQuote + 1;
-            } else {
-              valueEnd = valueStart;
-              while (valueEnd < result.length && result[valueEnd] !== " ") valueEnd++;
-            }
-            if (valueEnd > valueStart) {
-              result = result.slice(0, valueStart) + "[REDACTED]" + result.slice(valueEnd);
-            }
-          }
-        }
-        result = result.replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***");
-        result = result.replaceAll(/ghs_[A-Za-z0-9_]{36,}/g, "ghs_***REDACTED***");
-        result = result.replaceAll(/sk-[A-Za-z0-9_-]{20,}/g, "sk-***REDACTED***");
-        result = result.replaceAll(/AKIA[A-Z0-9]{12,}/g, "AKIA***REDACTED***");
-        return result;
-      })
-      .join("\n");
+    const sanitized = content.split("\n").map(redactSensitiveLine).join("\n");
 
     console.error("Pre-commit hook failed. Output from .git/hook-output.log:");
     console.error("---");

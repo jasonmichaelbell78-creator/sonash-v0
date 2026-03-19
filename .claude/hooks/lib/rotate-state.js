@@ -18,27 +18,29 @@ try {
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
   process.stderr.write(`[rotate-state] symlink-guard unavailable: ${msg}\n`);
+  /**
+   * Check if a single path component is a symlink.
+   * Returns false if it's a symlink, true if safe, false on unexpected errors.
+   */
+  const isPathComponentSafe = (targetPath) => {
+    try {
+      if (fs.lstatSync(targetPath).isSymbolicLink()) return false;
+    } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? String(err.code) : "";
+      if (code !== "ENOENT") return false;
+    }
+    return true;
+  };
+
   isSafeToWrite = (filePath) => {
     try {
       // Check leaf path
-      try {
-        if (fs.lstatSync(filePath).isSymbolicLink()) return false;
-      } catch (leafErr) {
-        const code =
-          leafErr && typeof leafErr === "object" && "code" in leafErr ? String(leafErr.code) : "";
-        if (code !== "ENOENT") return false;
-      }
+      if (!isPathComponentSafe(filePath)) return false;
 
       // Reject any symlinked parent directory
       let dir = path.resolve(path.dirname(filePath));
       for (;;) {
-        try {
-          if (fs.lstatSync(dir).isSymbolicLink()) return false;
-        } catch (dirErr) {
-          const code =
-            dirErr && typeof dirErr === "object" && "code" in dirErr ? String(dirErr.code) : "";
-          if (code !== "ENOENT") return false;
-        }
+        if (!isPathComponentSafe(dir)) return false;
         const parent = path.dirname(dir);
         if (parent === dir) break;
         dir = parent;

@@ -127,6 +127,28 @@ function formatRecentCommits(commits) {
 }
 
 /**
+ * Format git status section for recovery output.
+ */
+function formatGitStatus(git) {
+  return [
+    "GIT STATUS:",
+    `  Last commit: ${git?.lastCommit || "?"}`,
+    `  Uncommitted: ${(git?.uncommittedFiles || []).length} files`,
+    `  Staged: ${(git?.stagedFiles || []).length} files`,
+    `  Untracked: ${(git?.untrackedFiles || []).length} files`,
+  ];
+}
+
+/**
+ * Format agents-used section for recovery output.
+ */
+function formatAgentsUsed(agentsUsed) {
+  const entries = Object.entries(agentsUsed || {});
+  if (entries.length === 0) return "  (none)";
+  return entries.map(([agent, info]) => `  ${agent}: ${info.count}x`).join("\n");
+}
+
+/**
  * Build the core recovery text sections.
  */
 function buildRecoveryHeader(handoff, age) {
@@ -144,18 +166,10 @@ function buildRecoveryHeader(handoff, age) {
     "RECENT COMMITS:",
     formatRecentCommits(handoff.commitLog || []),
     "",
-    "GIT STATUS:",
-    `  Last commit: ${handoff.git?.lastCommit || "?"}`,
-    `  Uncommitted: ${(handoff.git?.uncommittedFiles || []).length} files`,
-    `  Staged: ${(handoff.git?.stagedFiles || []).length} files`,
-    `  Untracked: ${(handoff.git?.untrackedFiles || []).length} files`,
+    ...formatGitStatus(handoff.git),
     "",
     "AGENTS USED THIS SESSION:",
-    Object.entries(handoff.agentsUsed || {}).length > 0
-      ? Object.entries(handoff.agentsUsed)
-          .map(([agent, info]) => `  ${agent}: ${info.count}x`)
-          .join("\n")
-      : "  (none)",
+    formatAgentsUsed(handoff.agentsUsed),
     "",
   ];
 }
