@@ -13,7 +13,7 @@
  * Thresholds (configurable via env vars):
  *   BACKLOG_S1_MAX_DAYS=7      - S1 findings older than this trigger warning
  *   BACKLOG_S2_MAX_DAYS=14     - S2 findings older than this trigger warning
- *   BACKLOG_MAX_ITEMS=25       - Total active items exceeding this trigger warning
+ *   BACKLOG_MAX_ITEMS=10000    - Total active items exceeding this trigger warning
  *   BACKLOG_BLOCK_S1_DAYS=14   - S1 findings older than this block push (pre-push)
  */
 
@@ -28,7 +28,7 @@ const __dirname = dirname(__filename);
 const CONFIG = {
   S1_MAX_DAYS: Number.parseInt(process.env.BACKLOG_S1_MAX_DAYS, 10) || 7,
   S2_MAX_DAYS: Number.parseInt(process.env.BACKLOG_S2_MAX_DAYS, 10) || 14,
-  MAX_ITEMS: Number.parseInt(process.env.BACKLOG_MAX_ITEMS, 10) || 25,
+  MAX_ITEMS: Number.parseInt(process.env.BACKLOG_MAX_ITEMS, 10) || 10000,
   BLOCK_S1_DAYS: Number.parseInt(process.env.BACKLOG_BLOCK_S1_DAYS, 10) || 14,
 };
 

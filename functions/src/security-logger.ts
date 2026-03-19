@@ -382,7 +382,6 @@ const SEVERITY_MAP: Record<SecurityEventType, Severity> = {
 };
 
 function getSeverityForType(type: SecurityEventType): Severity {
-  // eslint-disable-next-line security/detect-object-injection -- type is typed SecurityEventType enum
   return SEVERITY_MAP[type] ?? "INFO";
 }
 

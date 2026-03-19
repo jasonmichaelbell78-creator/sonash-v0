@@ -1022,7 +1022,6 @@ export async function healthCheckNotifications(): Promise<{
     "healthCheckNotifications",
     `Health check completed: ${overallStatus}`,
     {
-      // eslint-disable-next-line security/detect-object-injection -- overallStatus is typed "healthy"|"warning"|"critical"
       severity: severityMap[overallStatus],
       metadata: { status: overallStatus, checks },
       captureToSentry: overallStatus === "critical",

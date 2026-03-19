@@ -549,11 +549,8 @@ async function findOrphanedStorageFiles(
 
     userDocs.forEach((doc, idx) => {
       if (!doc.exists) {
-        // eslint-disable-next-line security/detect-object-injection -- idx is numeric index from forEach
         const userId = batch[idx];
-        // eslint-disable-next-line security/detect-object-injection -- userId from batch array, userFiles keyed by UID
         orphanedCount += userFiles[userId].count;
-        // eslint-disable-next-line security/detect-object-injection -- userId from batch array, userFiles keyed by UID
         orphanedSize += userFiles[userId].size;
       }
     });
@@ -579,7 +576,6 @@ async function estimateUserSubcollections(
   const subcollectionCounts: Record<string, number[]> = {};
 
   for (const name of subcollectionNames) {
-    // eslint-disable-next-line security/detect-object-injection -- name from local subcollectionNames constant
     subcollectionCounts[name] = [];
   }
 
@@ -588,7 +584,6 @@ async function estimateUserSubcollections(
     for (const subColName of subcollectionNames) {
       try {
         const subCount = await db.collection(`users/${userDoc.id}/${subColName}`).count().get();
-        // eslint-disable-next-line security/detect-object-injection -- subColName from local subcollectionNames constant
         subcollectionCounts[subColName].push(subCount.data().count);
       } catch {
         // Subcollection might not exist for this user
@@ -600,7 +595,6 @@ async function estimateUserSubcollections(
   const estimates = Object.values(subcollectionCounts)
     .filter((counts) => counts.length > 0)
     .map((counts) => {
-      // eslint-disable-next-line sonash/no-unsafe-division -- guarded by .filter(counts => counts.length > 0) above
       const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
       return Math.round(avg * userCount);
     });
@@ -700,7 +694,6 @@ function sanitizeSentryTitle(title: string) {
     "[redacted-email]"
   );
   const redactedPhone = redactedEmail.replace(
-    // eslint-disable-next-line security/detect-unsafe-regex -- bounded alternation with no overlapping quantifiers, runs on short Sentry titles
     /\b(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
     "[redacted-phone]"
   );
@@ -1855,7 +1848,6 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
       },
     };
 
-    // eslint-disable-next-line security/detect-object-injection -- jobId validated against Zod enum of known job IDs
     const job = jobMap[jobId];
     if (!job) {
       throw new HttpsError("not-found", `Job not found: ${jobId}`);
@@ -2172,6 +2164,7 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
 
     // Remove internal sorting field before returning
     const limitedResults: JobRunHistoryResponse[] = results.slice(0, safeLimit).map((r) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured to strip internal field before returning
       const { _startTimeMillis, ...rest } = r;
       return rest;
     });
@@ -3036,7 +3029,6 @@ export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (re
       // Find and update existing type or add new one
       const existingIndex = types.findIndex((t) => t.id === validatedType.id);
       if (existingIndex >= 0) {
-        // eslint-disable-next-line security/detect-object-injection -- existingIndex from findIndex (numeric)
         types[existingIndex] = validatedType;
       } else {
         types.push(validatedType);
@@ -3293,7 +3285,6 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
       const cursorDoc = await db.collection("users").doc(startAfterUid).get();
       if (cursorDoc.exists) {
         const cursorData = cursorDoc.data() as Record<string, unknown> | undefined;
-        // eslint-disable-next-line security/detect-object-injection -- safeSortBy validated by allowedSortFields whitelist
         const sortValue = buildCursorValue(cursorData?.[safeSortBy], safeSortBy, safeSortOrder);
         query = query.startAfter(sortValue, cursorDoc.id);
       }
@@ -3522,24 +3513,20 @@ export const adminGetStorageStats = onCall(async (request) => {
       // Extract user ID from path using helper
       const userId = extractUserIdFromPath(file.name);
       if (userId) {
-        /* eslint-disable security/detect-object-injection -- userId from extractUserIdFromPath helper */
         if (!userFiles[userId]) {
           userFiles[userId] = { count: 0, size: 0 };
         }
         userFiles[userId].count++;
         userFiles[userId].size += size;
-        /* eslint-enable security/detect-object-injection */
       }
 
       // Track file types using helper
       const ext = extractFileExtension(file.name);
-      /* eslint-disable security/detect-object-injection -- ext from extractFileExtension helper */
       if (!fileTypes[ext]) {
         fileTypes[ext] = { count: 0, size: 0 };
       }
       fileTypes[ext].count++;
       fileTypes[ext].size += size;
-      /* eslint-enable security/detect-object-injection */
     }
 
     // Find orphaned files using helper
@@ -3586,7 +3573,6 @@ function formatBytes(bytes: number): string {
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  // eslint-disable-next-line security/detect-object-injection -- i from Math.floor, indexes local constant array
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 

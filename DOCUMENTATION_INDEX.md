@@ -169,7 +169,7 @@ _AI agent reference docs_
 | [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)                | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-28    |
 | [Positive Pattern Templates](docs/agent_docs/POSITIVE_PATTERNS.md)                           | The RIGHT way to do things. Reference this BEFORE writing co... | ↓0 ↑0      | 2026-03-19    |
 | [Pre-Generation Behavioral Checklist](docs/agent_docs/PRE_GENERATION_CHECKLIST.md)           | Behavioral guardrails for patterns that cannot be fully auto... | ↓1 ↑0      | 2026-03-14    |
-| [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)                      | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-03-13    |
+| [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)                      | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-03-19    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)                        | This document defines the policy for creating, using, and ov... | ↓2 ↑4      | 2026-02-24    |
 | [Skill Ecosystem Audit — Conversation Notes](docs/agent_docs/SKILL_ECOSYSTEM_AUDIT_IDEAS.md) | Brainstorming notes on what a skill-ecosystem-audit would co... | ↓0 ↑0      | 2026-03-19    |
 | [Testing System](docs/agent_docs/TESTING_SYSTEM.md)                                          | Comprehensive reference for SoNash's testing infrastructure.... | ↓0 ↑0      | 2026-03-10    |
@@ -252,7 +252,7 @@ _Multi-AI audit orchestration and coordination_
 | ------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Multi-AI Audit Summary](docs/audits/multi-ai/maa-2026-02-17-182d43/final/SUMMARY.md) | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-17    |
 | [Multi-AI Audit System](docs/audits/multi-ai/README.md)                               | Templates and processes for running audits across multiple A... | ↓3 ↑15     | 2026-02-23    |
-| [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                    | Master index and                                                | ↓13 ↑18    | 2026-02-23    |
+| [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                    | Master index and                                                | ↓13 ↑18    | 2026-03-19    |
 
 ### Plans (Tier 3)
 
@@ -423,7 +423,7 @@ _Document and audit templates_
 | [[Document Title]](docs/templates/FOUNDATION_DOC_TEMPLATE.md)                    | -                                                               | ↓0 ↑4      | 2026-03-19    |
 | [[Feature/Initiative Name] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)        | -                                                               | ↓0 ↑4      | 2026-02-03    |
 | [[Workflow/Reference Name]](docs/templates/REFERENCE_DOC_TEMPLATE.md)            | -                                                               | ↓0 ↑0      | 2026-03-19    |
-| [ADR-NNN: [Short Title]](docs/templates/TEMPLATE.md)                             | [Briefly describe the purpose of this ADR - what decision do... | ↓0 ↑0      | 2026-03-19    |
+| [ADR-NNN: [Short Title]](docs/templates/TEMPLATE.md)                             | [Briefly describe the purpose of this ADR - what decision do... | ↓1 ↑0      | 2026-03-19    |
 | [CANON Quick Reference Card](docs/templates/CANON_QUICK_REFERENCE.md)            | One-page quick reference for Multi-AI audits. Distilled from... | ↓0 ↑0      | 2026-02-23    |
 | [How to [Accomplish Task]](docs/templates/GUIDE_DOC_TEMPLATE.md)                 | -                                                               | ↓0 ↑2      | 2026-03-19    |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓7 ↑8      | 2026-02-23    |
@@ -545,8 +545,7 @@ _Uncategorized_
 | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Hook Systems Audit — Implementation Plan](.claude/plans/hook-systems-audit-implementation.md)            | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-13    |
 | [Implementation Plan: PR Ecosystem Audit Skill](.claude/plans/pr-ecosystem-audit-plan.md)                 | Build a comprehensive, reusable `/pr-ecosystem-audit` skill ... | ↓0 ↑0      | 2026-02-23    |
-| [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md) | Create a comprehensive tool that:                               |
-| ↓0 ↑0                                                                                                     | 2026-01-24                                                      |
+| [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md) | Create a comprehensive tool that:                               | ↓0 ↑0      | 2026-01-24    |
 
 ### .claude > plans > archive (Tier 4)
 
@@ -989,7 +988,7 @@ _Architecture decision records_
 
 | Document                                                         | Description                                                     | References | Last Modified |
 | ---------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Architecture Decision Records (ADRs)](docs/decisions/README.md) | This directory contains Architecture Decision Records (ADRs)... | ↓1 ↑0      | 2026-02-23    |
+| [Architecture Decision Records (ADRs)](docs/decisions/README.md) | This directory contains Architecture Decision Records (ADRs)... | ↓1 ↑1      | 2026-02-23    |
 
 ### Patterns (Tier 4)
 
@@ -1100,7 +1099,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**360 orphaned documents:**
+**359 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
@@ -1459,7 +1458,6 @@ Documents with no inbound links (not referenced by any other document):
 - [How to \[Accomplish Task\]](docs/templates/GUIDE_DOC_TEMPLATE.md)
 - [\[Feature/Initiative Name\] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)
 - [\[Workflow/Reference Name\]](docs/templates/REFERENCE_DOC_TEMPLATE.md)
-- [ADR-NNN: \[Short Title\]](docs/templates/TEMPLATE.md)
 - [Scripts Reference](scripts/README.md)
 - [scripts/archive/](scripts/archive/README.md)
 
