@@ -54,6 +54,23 @@ For **active work**, see [ROADMAP.md](./ROADMAP.md).
 
 ## 📋 Recent Completions
 
+### Housecleaning - Archived 4 Completed Roadmap Items
+
+**Track B — Dev Dashboard (Expanded) - Session #116 Documentation Priority
+Items:**
+
+- [x] **DEBT-0075:** 16 broken anchor links `SESSION_CONTEXT.md:47` [E1] - S1 --
+      Resolved: Wave 6 docs:accuracy (666 findings -> 0)
+- [x] **DEBT-0386:** Broken relative links in review docs
+      `CODE_REVIEW_2026_Q1.md` [E1] - S1 -- Resolved: Wave 6 docs:accuracy (666
+      findings -> 0)
+- [x] **DEBT-0077:** 99 files fail docs:check (313 errors) `README.md` [E1] - S2
+      -- Resolved: Wave 6 docs:accuracy (666 findings -> 0)
+- [x] **CANON-0148:** Fix broken relative links [E1] - S1 -- Resolved: Wave 6
+      docs:accuracy (666 findings -> 0)
+
+---
+
 ### Session #174 - Archived 12 Completed Roadmap Items
 
 **Track B — Dev Dashboard (Core Setup):**

@@ -34,10 +34,10 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 5322  |
-| RESOLVED       | 521   |
-| FALSE_POSITIVE | 498   |
-| NEW            | 2120  |
+| VERIFIED       | 5158  |
+| RESOLVED       | 1113  |
+| FALSE_POSITIVE | 74    |
+| NEW            | 2116  |
 
 ## Views
 

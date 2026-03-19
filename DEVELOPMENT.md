@@ -1158,7 +1158,7 @@ Closes #123
 ### Development Dashboard (Planned - Near-term)
 
 **Status:** Planned **Priority:** P1 (Development Tooling) **Added:** Session
-#64
+\#64
 
 **Purpose:** Unified dev dashboard for monitoring session activity, error
 tracing, and development metrics. Not for production - strictly development
