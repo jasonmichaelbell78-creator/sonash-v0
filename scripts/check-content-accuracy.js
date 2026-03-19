@@ -412,6 +412,26 @@ function buildNpmFinding(relPath, lineNum, scriptName, lineText) {
 }
 
 /**
+ * Collect unknown npm script names from a single line.
+ * @param {string} line - The line to scan
+ * @returns {Array<{scriptName: string}>} Matched unknown scripts
+ */
+function collectUnknownScripts(line) {
+  const unknowns = [];
+  for (const pattern of npmPatterns) {
+    pattern.lastIndex = 0;
+    let match;
+    while ((match = pattern.exec(line)) !== null) {
+      const scriptName = match[1];
+      if (!shouldSkipScriptName(scriptName) && !npmScripts[scriptName]) {
+        unknowns.push({ scriptName });
+      }
+    }
+  }
+  return unknowns;
+}
+
+/**
  * Check npm script references
  * Looks for `npm run <script>` or `npm <script>` patterns
  */
@@ -432,17 +452,8 @@ function checkNpmScriptReferences(content, filePath) {
     if (inCodeBlock) continue;
     if (shouldSkipNpmLine(line)) continue;
 
-    for (const pattern of npmPatterns) {
-      pattern.lastIndex = 0;
-      let match;
-
-      while ((match = pattern.exec(line)) !== null) {
-        const scriptName = match[1];
-        if (shouldSkipScriptName(scriptName)) continue;
-        if (!npmScripts[scriptName]) {
-          findings.push(buildNpmFinding(relPath, i + 1, scriptName, line));
-        }
-      }
+    for (const { scriptName } of collectUnknownScripts(line)) {
+      findings.push(buildNpmFinding(relPath, i + 1, scriptName, line));
     }
   }
 

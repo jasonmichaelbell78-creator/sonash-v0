@@ -349,7 +349,16 @@ function checkDependencies() {
     // excludePattern comes from trusted config (doc-dependencies.json), not user input
     let effectiveStagedFiles = stagedFiles;
     if (rule.excludePattern) {
-      const excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
+      let excludeRe;
+      try {
+        excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
+      } catch (regexErr) {
+        log(
+          `  ⚠ Invalid excludePattern "${rule.excludePattern}": ${regexErr.message}`,
+          colors.yellow
+        );
+        continue;
+      }
       effectiveStagedFiles = stagedFiles.filter((f) => !excludeRe.test(f.replaceAll("\\", "/")));
     }
 
@@ -367,7 +376,16 @@ function checkDependencies() {
       let filteredFiles = getStagedFilesFiltered(rule.gitFilter);
       // Apply excludePattern to filtered files as well
       if (rule.excludePattern) {
-        const excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
+        let excludeRe;
+        try {
+          excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
+        } catch (regexErr) {
+          log(
+            `  ⚠ Invalid excludePattern "${rule.excludePattern}": ${regexErr.message}`,
+            colors.yellow
+          );
+          continue;
+        }
         filteredFiles = filteredFiles.filter((f) => !excludeRe.test(f.replaceAll("\\", "/")));
       }
       // If rule has filePattern, further filter to only matching file names

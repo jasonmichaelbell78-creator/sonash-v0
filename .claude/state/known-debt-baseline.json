@@ -37,7 +37,7 @@
       ".claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js": 27,
       "scripts/check-backlog-health.js": 18,
       "scripts/check-content-accuracy.js": 37,
-      "scripts/check-cross-doc-deps.js": 49,
+      "scripts/check-cross-doc-deps.js": 56,
       "scripts/check-cyclomatic-cc.js": 26,
       "scripts/check-pattern-compliance.js": 33,
       "scripts/check-review-archive.js": 189,
@@ -56,7 +56,7 @@
       ".claude/skills/tdms-ecosystem-audit/scripts/checkers/data-quality-dedup.js": 47,
       ".claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js": 34,
       ".claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js": 16,
-      "scripts/check-cross-doc-deps.js": 26,
+      "scripts/check-cross-doc-deps.js": 28,
       "scripts/check-pattern-compliance.js": 22,
       "scripts/check-review-archive.js": 102,
       "scripts/check-skill-audit-status.js": 19

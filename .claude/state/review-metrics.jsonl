@@ -272,3 +272,8 @@
 {"pr":450,"title":"chore(ci): bump tj-actions/changed-files from 47.0.0 to 47.0.5 in the actions-minor-patch group","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-19T18:13:14.443Z"}
 {"pr":449,"title":"chore(deps): bump the minor-and-patch group in /functions with 4 updates","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-19T18:13:15.646Z"}
 {"pr":448,"title":"feat: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves 3-4, memory audit","total_commits":14,"fix_commits":13,"fix_ratio":0.93,"review_rounds":1,"timestamp":"2026-03-19T18:13:17.002Z"}
+{"pr":452,"title":"fix: narrow CJS ESLint override to prevent no-redeclare CI failures","total_commits":6,"fix_commits":3,"fix_ratio":0.5,"review_rounds":1,"timestamp":"2026-03-19T19:51:07.718Z"}
+{"pr":451,"title":"chore(ci): bump actions/setup-python from 5.6.0 to 6.2.0","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-19T19:51:08.957Z"}
+{"pr":450,"title":"chore(ci): bump tj-actions/changed-files from 47.0.0 to 47.0.5 in the actions-minor-patch group","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-19T19:51:10.286Z"}
+{"pr":449,"title":"chore(deps): bump the minor-and-patch group in /functions with 4 updates","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-19T19:51:11.351Z"}
+{"pr":448,"title":"feat: Session #227 — Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves 3-4, memory audit","total_commits":14,"fix_commits":13,"fix_ratio":0.93,"review_rounds":1,"timestamp":"2026-03-19T19:51:12.625Z"}

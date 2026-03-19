@@ -41,7 +41,12 @@ let sanitizeError;
 try {
   ({ sanitizeError } = require("./lib/sanitize-error"));
 } catch {
-  sanitizeError = (err) => String(err);
+  /* eslint-disable no-control-regex -- intentional: strip control chars in fallback */
+  sanitizeError = (err) =>
+    String(err ?? "")
+      .replace(/[\x00-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
 }
 
 // ---------------------------------------------------------------------------
@@ -243,8 +248,14 @@ function runEslintBatch(filePaths) {
   ];
 
   // Resolve the ESLint binary directly (avoids npx shell wrapper + Windows .cmd issues).
-  const eslintPkgDir = join(require.resolve("eslint", { paths: [ROOT] }), "..", "..");
-  const eslintBin = join(eslintPkgDir, "bin", "eslint.js");
+  let eslintBin;
+  try {
+    const eslintPkgDir = join(require.resolve("eslint", { paths: [ROOT] }), "..", "..");
+    eslintBin = join(eslintPkgDir, "bin", "eslint.js");
+  } catch (resolveErr) {
+    console.error("[check-cyc-cc] ESLint not found:", sanitizeError(resolveErr));
+    return { violations: null, error: "ESLint package not installed" };
+  }
 
   let output = "";
   try {

@@ -551,7 +551,10 @@ function saveBaseline() {
       fs.mkdirSync(stateDir, { recursive: true });
     }
     const tmpPath = `${BASELINE_PATH}.tmp`;
-    if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) return;
+    if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) {
+      console.error("  [warn] isSafeToWrite blocked baseline write");
+      return;
+    }
     const data = JSON.stringify(baseline, null, 2);
     fs.writeFileSync(tmpPath, data, "utf-8"); // atomic: write .tmp then renameSync below
     let wrote = false;
@@ -4252,7 +4255,10 @@ function filterSuppressedAlerts() {
  */
 function appendHealthScoreLog() {
   const logPath = path.join(ROOT_DIR, ".claude", "state", "health-score-log.jsonl");
-  if (!isSafeToWrite(logPath)) return;
+  if (!isSafeToWrite(logPath)) {
+    console.error("  [warn] isSafeToWrite blocked health-score-log write (initial check)");
+    return;
+  }
   try {
     const stateDir = path.dirname(logPath);
     if (!fs.existsSync(stateDir)) {
@@ -4274,27 +4280,36 @@ function appendHealthScoreLog() {
       summary: results.summary,
       categoryScores,
     });
-    if (!isSafeToWrite(logPath)) return;
+    if (!isSafeToWrite(logPath)) {
+      console.error("  [warn] isSafeToWrite blocked health-score-log write (pre-write check)");
+      return;
+    }
     const tmpPath = `${logPath}.${process.pid}.tmp`;
     try {
       let existing = "";
       if (fs.existsSync(logPath)) {
         existing = fs.readFileSync(logPath, "utf8");
       }
-      if (!isSafeToWrite(tmpPath)) return;
+      if (!isSafeToWrite(tmpPath)) {
+        console.error("  [warn] isSafeToWrite blocked health-score-log tmp write");
+        return;
+      }
       fs.writeFileSync(tmpPath, existing + entry + "\n");
       fs.renameSync(tmpPath, logPath);
     } catch (renameErr) {
       try {
-        if (!isSafeToWrite(logPath)) return;
+        if (!isSafeToWrite(logPath)) {
+          console.error("  [warn] isSafeToWrite blocked health-score-log copy fallback");
+          return;
+        }
         fs.copyFileSync(tmpPath, logPath);
         try {
           fs.unlinkSync(tmpPath);
         } catch {
           /* ignore */
         }
-      } catch {
-        /* ignore — original appendFileSync was best-effort too */
+      } catch (writeErr) {
+        console.error(`  [warn] Health score log write failed: ${sanitizeError(writeErr)}`);
       }
     }
   } catch (err) {

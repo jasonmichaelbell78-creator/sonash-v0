@@ -241,6 +241,7 @@ function findDuplicateIds(checks) {
   const seen = new Set();
   const duplicates = [];
   for (const check of checks) {
+    if (!check || !check.id) continue;
     if (seen.has(check.id)) duplicates.push(check.id);
     seen.add(check.id);
   }

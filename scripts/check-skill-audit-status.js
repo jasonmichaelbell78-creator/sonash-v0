@@ -140,7 +140,9 @@ function checkVersionHistory(skillName) {
     const vhMatch = content.match(/## Version History[\s\S]*?\|[\s\S]*?\|/);
     if (!vhMatch) return NO_HISTORY_RESULT;
 
-    const vhSection = content.slice(content.indexOf("## Version History"));
+    const vhStart = content.indexOf("## Version History");
+    const afterVh = content.indexOf("\n## ", vhStart + 1);
+    const vhSection = afterVh !== -1 ? content.slice(vhStart, afterVh) : content.slice(vhStart);
 
     // SonarCloud S5852: bounded input from markdown table rows (<500 chars), no ReDoS risk
     const auditPattern =

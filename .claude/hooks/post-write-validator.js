@@ -25,6 +25,9 @@ let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
 } catch {
+  console.error(
+    "[post-write-validator] symlink-guard unavailable; isSafeToWrite defaults to false"
+  );
   isSafeToWrite = () => false;
 }
 let sanitizeInput;

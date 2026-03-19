@@ -111,11 +111,11 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓3 ↑9      | 2026-03-19    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓4 ↑9      | 2026-03-19    |
 | [Code of Conduct](CODE_OF_CONDUCT.md)                   | This document establishes the standards of behavior expected...  | ↓1 ↑0      | 2026-03-19    |
 | [Contributing to SoNash](CONTRIBUTING.md)               | Guidelines for contributing to SoNash. We welcome bug report...  | ↓0 ↑8      | 2026-03-18    |
 | [Security Policy](SECURITY.md)                          | Security policy for SoNash — vulnerability reporting, suppor...  | ↓1 ↑0      | 2026-03-18    |
-| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-03-16    |
+| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15     | 2026-03-16    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-03-19    |
 | [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓19 ↑17    | 2026-03-19    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-03-19    |
@@ -411,7 +411,7 @@ _TDMS tracking and management_
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-19    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-18    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-19    |
 
 ### Templates (Tier 3)
 
@@ -1077,8 +1077,8 @@ Documents that link to other documents most frequently:
 | [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                        | 18             |
 | [SoNash Product Roadmap](ROADMAP.md)                                                                      | 17             |
 | [AI Workflow Guide](AI_WORKFLOW.md)                                                                       | 16             |
+| [SoNash - Sober Nashville Recovery Notebook](README.md)                                                   | 15             |
 | [Multi-AI Audit System](docs/audits/multi-ai/README.md)                                                   | 15             |
-| [SoNash - Sober Nashville Recovery Notebook](README.md)                                                   | 14             |
 | [Development Guide](DEVELOPMENT.md)                                                                       | 11             |
 | [Documentation Inventory](docs/README.md)                                                                 | 11             |
 | [AI Context &amp; Rules for SoNash](CLAUDE.md)                                                            | 9              |
