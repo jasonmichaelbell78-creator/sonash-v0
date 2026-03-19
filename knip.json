@@ -2,14 +2,7 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts"],
   "project": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts"],
-  "ignore": [
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "tests/**",
-    "dist-tests/**",
-    "scripts/**",
-    ".next/**"
-  ],
+  "ignore": ["**/*.test.ts", "**/*.test.tsx", "tests/**", "scripts/**"],
   "ignoreDependencies": [
     "@fontsource/*",
     "tailwindcss-animate",
@@ -28,12 +21,11 @@
     "react-resizable-panels",
     "recharts",
     "vaul",
-    "lint-staged",
     "@firebase/rules-unit-testing",
     "msw",
     "@modelcontextprotocol/server-memory"
   ],
-  "ignoreBinaries": ["printf", "report", "vitest", "oxlint", "gitleaks"],
+  "ignoreBinaries": ["report", "vitest", "gitleaks"],
   "next": {
     "entry": [
       "app/**/{page,layout,loading,error,not-found,template,default,route}.tsx",
