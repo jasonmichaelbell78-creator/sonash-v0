@@ -355,7 +355,7 @@ All 96 npm scripts organized by domain. Run with `npm run <script>`.
 
 All skills reside in `.claude/skills/<skill-name>/SKILL.md`:
 
-```
+```text
 .claude/skills/
   _shared/                   # Shared templates and standards
     SKILL_STANDARDS.md       # Canonical structural standards

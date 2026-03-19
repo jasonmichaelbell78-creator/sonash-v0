@@ -35,7 +35,7 @@ When using visual guides:
 
 ## Review Tier Pyramid
 
-```
+```text
                     Tier 4: CRITICAL
                   (RFC + All Owners)
                 Infrastructure, Schema
@@ -63,7 +63,7 @@ When using visual guides:
 
 ## PR Lifecycle Flow
 
-```
+```text
 ┌─────────────────┐
 │ Developer       │
 │ Creates PR      │
@@ -131,7 +131,7 @@ When using visual guides:
 
 ## Fast-Path Decision Tree
 
-```
+```text
                     ┌─────────────────┐
                     │  PR Submitted   │
                     └────────┬────────┘
@@ -186,7 +186,7 @@ When using visual guides:
 
 ## Escalation Flow
 
-```
+```text
 Initial Tier Assignment (by file path)
             │
             ▼
@@ -234,7 +234,7 @@ Initial Tier Assignment (by file path)
 
 ## Approval Matrix
 
-```
+```text
 ┌────────┬──────────┬──────────────┬────────────────┬──────────────┐
 │ Tier   │ AI       │ Human        │ Checklist      │ Time to      │
 │        │ Review   │ Approvals    │ Required       │ Merge        │
@@ -266,7 +266,7 @@ Initial Tier Assignment (by file path)
 
 ### Before Batching
 
-```
+```text
 PR #1: docs update → Review → Merge → 2 hours
 PR #2: docs update → Review → Merge → 2 hours
 PR #3: docs update → Review → Merge → 2 hours
@@ -278,7 +278,7 @@ Total: 10 hours
 
 ### After Batching
 
-```
+```text
 Branch: batch/docs-2026-01-04
   ├─ Commit 1: docs update
   ├─ Commit 2: docs update
@@ -296,7 +296,7 @@ Total: 2 hours (80% time saved)
 
 ## Progressive Trust Model
 
-```
+```text
 Developer Journey
 ─────────────────
 
@@ -335,7 +335,7 @@ Continuous:
 
 ## Time-Based Audit Schedule
 
-```
+```text
 Weekly:
 ├─ Dependency Audit (Automated - Dependabot)
 └─ Fast-path merge audit (spot check)
@@ -360,7 +360,7 @@ Quarterly:
 
 ## Incident-Triggered Review Flow
 
-```
+```text
                 ┌──────────────────┐
                 │ Production       │
                 │ Incident Occurs  │
@@ -399,7 +399,7 @@ Quarterly:
 
 ## Review Metrics Dashboard (Conceptual)
 
-```
+```text
 ┌────────────────────────────────────────────────────┐
 │ Review Quality Metrics                             │
 ├────────────────────────────────────────────────────┤
@@ -434,7 +434,7 @@ Quarterly:
 
 ### Scenario 1: "I fixed a typo in README"
 
-```
+```text
 ┌────────────┐
 │ Fix typo   │
 │ in README  │
@@ -462,7 +462,7 @@ Time: 4 hours total
 
 ### Scenario 2: "I added a new feature component"
 
-```
+```text
 ┌────────────┐
 │ New React  │
 │ component  │
@@ -502,7 +502,7 @@ Time: 1-2 days
 
 ### Scenario 3: "I changed authentication flow"
 
-```
+```text
 ┌────────────┐
 │ Modify     │
 │ auth code  │

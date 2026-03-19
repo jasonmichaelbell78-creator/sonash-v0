@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary
 
-SoNash is a Next.js 16.1.1 / React 19.2.3 / Firebase 12.6.0 application with an
+SoNash is a Next.js 16.2.0 / React 19.2.4 / Firebase 12.10.0 application with an
 unusually sophisticated AI-assisted development tooling layer. The core
 application code (app/, components/, lib/) is well-structured and uses modern
 patterns. However, the project has accumulated a meta-tooling ecosystem of
@@ -105,7 +105,7 @@ enforcement add bureaucratic overhead to the git workflow.
 
 The `npm test` command requires:
 
-```
+```bash
 npm run test:build   # tsc -p tsconfig.test.json
                      # tsc-alias -p tsconfig.test.json  (path alias resolution)
                      # node --test dist-tests/**/*.test.js

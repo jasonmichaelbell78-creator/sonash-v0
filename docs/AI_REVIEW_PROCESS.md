@@ -32,7 +32,7 @@ tool-agnostic and applies to all AI review systems.
 
 ## 🎯 Process Overview
 
-```
+```text
 AI Review Received
     ↓
 Categorize Suggestions
@@ -420,7 +420,7 @@ are done, the AI has moved on mentally.
 
 **Solution - LEARNING ENTRY FIRST (Enforced via TodoWrite):**
 
-```
+```text
 ⚠️ CRITICAL WORKFLOW CHANGE - EFFECTIVE IMMEDIATELY ⚠️
 
 When AI review feedback arrives (CodeRabbit, Qodo, etc.):
@@ -437,7 +437,7 @@ This ensures it's not forgotten in the flow of fixing issues.
 
 **TodoWrite Template for AI Reviews:**
 
-```
+```text
 todos:
 - content: "Add Review #N to Lessons Learned Log"
   status: "in_progress"  # START with this
@@ -527,7 +527,7 @@ Configuration file: `.pr_agent.toml`
 - Custom prompts with project context and known false positives
 - File ignore patterns (docs, tests, Claude config)
 - Focus on real security issues, logic errors, React/Next.js patterns
-- References `docs/audits/FALSE_POSITIVES.jsonl` patterns
+- References false positive patterns from audit configuration
 
 ### SonarCloud Configuration
 
@@ -545,7 +545,7 @@ critical/blocker issues
 
 ### False Positives Database
 
-File: `docs/audits/FALSE_POSITIVES.jsonl` (20+ patterns)
+File: [planned] `docs/audits/FALSE_POSITIVES.jsonl` (20+ patterns)
 
 Add new patterns:
 

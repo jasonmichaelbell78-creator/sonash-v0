@@ -158,7 +158,7 @@ These can be run using the Playwright MCP server for browser automation.
 
 **Playwright MCP Commands:**
 
-```
+```text
 1. browser_navigate to /admin
 2. browser_click on "Analytics" tab
 3. browser_snapshot to verify metrics
@@ -178,7 +178,7 @@ These can be run using the Playwright MCP server for browser automation.
 
 **Playwright MCP Commands:**
 
-```
+```text
 1. browser_navigate to /admin
 2. browser_click on "Jobs" tab
 3. browser_snapshot to see job cards
@@ -200,7 +200,7 @@ These can be run using the Playwright MCP server for browser automation.
 
 **Playwright MCP Commands:**
 
-```
+```text
 1. browser_navigate to /admin
 2. browser_click on "Errors" tab
 3. browser_snapshot for User Correlation section
@@ -221,7 +221,7 @@ These can be run using the Playwright MCP server for browser automation.
 
 **Playwright MCP Commands:**
 
-```
+```text
 1. browser_navigate to /admin
 2. browser_click on "Logs" tab
 3. browser_type in search box

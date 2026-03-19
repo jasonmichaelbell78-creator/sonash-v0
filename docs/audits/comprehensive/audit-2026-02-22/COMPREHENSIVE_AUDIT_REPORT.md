@@ -411,7 +411,7 @@ Findings fixable in under 15 minutes each:
 
 ### Baseline Metrics (from `baseline.txt`)
 
-```
+```text
 Tests: 294 total, 293 pass, 0 fail, 1 skipped
 ESLint: 0 errors, 1,690 warnings (security/detect-non-literal-fs-filename)
 Patterns: 1 medium warning (pre-commit trap cleanup)
@@ -442,7 +442,7 @@ The following raw findings were merged into single comprehensive entries:
 
 ### Severity Distribution of Final 115 Unique Findings
 
-```
+```text
 S0 Critical:  1  ( 1%)  — re-enable App Check
 S1 High:     28  (24%)  — immediate action required
 S2 Medium:   51  (44%)  — this sprint priority

@@ -64,7 +64,7 @@ baseline metrics, and prioritized recommendations ingested to TDMS.
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -73,7 +73,7 @@ Last Engineering Productivity Audit: [YYYY-MM-DD or "Never"]
 
 ### Tech Stack Considerations
 
-```
+```text
 - Framework: [e.g., Next.js 16.1] - Build tooling, dev server
 - Monorepo: [Yes/No] - Multiple packages, shared dependencies
 - CI/CD: [e.g., GitHub Actions] - Workflow count, average runtime
@@ -83,7 +83,7 @@ Last Engineering Productivity Audit: [YYYY-MM-DD or "Never"]
 
 ### Scope
 
-```
+```text
 Include:
 - package.json scripts analysis
 - scripts/ directory

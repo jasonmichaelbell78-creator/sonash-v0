@@ -134,7 +134,7 @@ undermine the entire feedback loop:
 
 ### 1.2 Data Flow Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                          CAPTURE LAYER                                       │
 │  Qodo ──┐  Gemini ──┐  SonarCloud ──┐  code-reviewer ──┐  manual ──┐       │
@@ -366,7 +366,7 @@ Cross-document sync gaps:
 
 ### 3.5 Pipeline Throughput Metrics
 
-```
+```text
 Discovery (406 reviews)
     │
     ├─ ~275 patterns documented ───► Discovery Rate: 6.8 per 10 reviews (GOOD)
@@ -925,7 +925,7 @@ retros, Step 5.2: flag repeat offenders). Evidence of it working:
 
 ### Dependency Chains
 
-```
+```text
 Phase 1.1 (rebuild sync) ──► Phase 1.2 (backfill) ──► Phase 2.1 (pattern IDs)
                                                          │
 Phase 1.3 (itemize deferred) ──► Phase 3.7 (auto-escalation)

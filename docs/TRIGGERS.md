@@ -109,7 +109,7 @@ commits. Blocks on critical failures, warns on advisory issues.
 
 ### Function
 
-```
+```text
 TRIGGER: git commit
   → CHECK 1: npm run lint (BLOCKING)
   → CHECK 1b: CC gate on staged .js (BLOCKING - PR #371 retro)
@@ -232,7 +232,7 @@ quality, runs tests, builds the project.
 
 ### Function
 
-```
+```text
 TRIGGER: push to main OR pull_request to main
   → CHECKOUT: Repository code
   → SETUP: Node.js 20.x
@@ -247,7 +247,7 @@ TRIGGER: push to main OR pull_request to main
 
 ### Process Map
 
-```
+```text
 Push/PR to main
       ↓
 [GitHub Actions triggers]
@@ -295,7 +295,7 @@ security anti-patterns in JavaScript/TypeScript.
 
 ### Function
 
-```
+```text
 TRIGGER: push to main OR PR to main OR schedule (Monday 0:00 UTC)
   → CHECKOUT: Repository
   → INITIALIZE: CodeQL with javascript/typescript
@@ -307,7 +307,7 @@ TRIGGER: push to main OR PR to main OR schedule (Monday 0:00 UTC)
 
 ### Process Map
 
-```
+```text
 Trigger (push/PR/schedule)
          ↓
    [CodeQL initializes]
@@ -352,7 +352,7 @@ introduce vulnerable dependencies.
 
 ### Function
 
-```
+```text
 TRIGGER: pull_request
   → CHECKOUT: Repository
   → SCAN: Compare dependency changes
@@ -363,7 +363,7 @@ TRIGGER: pull_request
 
 ### Process Map
 
-```
+```text
 PR opened/updated
        ↓
 [Checkout code]
@@ -397,7 +397,7 @@ gh pr checks <PR_NUMBER>
 | Attribute     | Value                                   |
 | ------------- | --------------------------------------- |
 | **Name**      | Firebase Deploy                         |
-| **Location**  | `.github/workflows/firebase-deploy.yml` |
+| **Location**  | `.github/workflows/deploy-firebase.yml` |
 | **Trigger**   | Push to `main` (after CI passes)        |
 | **Execution** | Automatic                               |
 
@@ -407,7 +407,7 @@ Deploys application to Firebase Hosting after successful CI on main branch.
 
 ### Function
 
-```
+```text
 TRIGGER: push to main (needs: ci to pass)
   → CHECKOUT: Repository
   → SETUP: Node.js
@@ -419,7 +419,7 @@ TRIGGER: push to main (needs: ci to pass)
 
 ### Process Map
 
-```
+```text
 Push to main
      ↓
 [CI workflow runs]
@@ -451,12 +451,12 @@ gh run list --workflow=firebase-deploy.yml
 
 ## 2.5 Stale Issues/PRs
 
-| Attribute     | Value                         |
-| ------------- | ----------------------------- |
-| **Name**      | Stale Issue Handler           |
-| **Location**  | `.github/workflows/stale.yml` |
-| **Trigger**   | Daily schedule                |
-| **Execution** | Automatic                     |
+| Attribute     | Value                                    |
+| ------------- | ---------------------------------------- |
+| **Name**      | Stale Issue Handler                      |
+| **Location**  | [archived] `.github/workflows/stale.yml` |
+| **Trigger**   | Daily schedule                           |
+| **Execution** | Automatic                                |
 
 ### Description
 
@@ -464,7 +464,7 @@ Automatically labels and closes stale issues/PRs that have had no activity.
 
 ### Function
 
-```
+```text
 TRIGGER: schedule (daily)
   → SCAN: All open issues and PRs
   → IF no activity for 60 days: Label as "stale"
@@ -492,7 +492,7 @@ Installs dependencies, builds functions, runs tests.
 
 ### Function
 
-```
+```text
 TRIGGER: Claude Code session starts
   → CHECK: If node_modules exists
     → IF missing: npm ci --legacy-peer-deps
@@ -504,7 +504,7 @@ TRIGGER: Claude Code session starts
 
 ### Process Map
 
-```
+```text
 Claude session starts
         ↓
 [Check node_modules]
@@ -564,7 +564,7 @@ session starting from main doesn't see them.
 
 ### Function
 
-```
+```text
 TRIGGER: Claude Code session starts
   → FETCH: git fetch --quiet origin
   → LIST: Remote claude/* branches from last 7 days
@@ -676,12 +676,12 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 
 ## 3.5 Serena Dashboard Termination Hook (Session #90)
 
-| Attribute     | Value                                        |
-| ------------- | -------------------------------------------- |
-| **Name**      | Serena Dashboard Safe Termination            |
-| **Location**  | `.claude/hooks/stop-serena-dashboard.js`     |
-| **Trigger**   | Every new Claude Code session (SessionStart) |
-| **Execution** | Automatic (async, non-blocking)              |
+| Attribute     | Value                                               |
+| ------------- | --------------------------------------------------- |
+| **Name**      | Serena Dashboard Safe Termination                   |
+| **Location**  | [archived] `.claude/hooks/stop-serena-dashboard.js` |
+| **Trigger**   | Every new Claude Code session (SessionStart)        |
+| **Execution** | Automatic (async, non-blocking)                     |
 
 ### Description
 
@@ -691,7 +691,7 @@ prevent accidental termination of unrelated processes.
 
 ### Function
 
-```
+```text
 TRIGGER: Claude Code session starts
   → FIND: Process listening on port 24282
     → IF none found: Exit (nothing to do)
@@ -738,7 +738,7 @@ TRIGGER: Claude Code session starts
 
 ### Process Map
 
-```
+```text
 SessionStart
      ↓
 [Find listener on 24282]
@@ -808,12 +808,12 @@ cat .claude/hooks/.serena-termination.log
 
 ## 4.1 Pattern Compliance Check
 
-| Attribute    | Value                              |
-| ------------ | ---------------------------------- |
-| **Name**     | Pattern Compliance Check           |
-| **Command**  | `npm run patterns:check`           |
-| **Location** | `scripts/check-patterns.js`        |
-| **Trigger**  | Manual (should run before commits) |
+| Attribute    | Value                                 |
+| ------------ | ------------------------------------- |
+| **Name**     | Pattern Compliance Check              |
+| **Command**  | `npm run patterns:check`              |
+| **Location** | `scripts/check-pattern-compliance.js` |
+| **Trigger**  | Manual (should run before commits)    |
 
 ### Description
 
@@ -822,7 +822,7 @@ violations of project standards.
 
 ### Function
 
-```
+```text
 TRIGGER: npm run patterns:check
   → SCAN: All .ts, .tsx, .js files
   → CHECK: 35+ anti-patterns:
@@ -881,7 +881,7 @@ stays current.
 
 ### Function
 
-```
+```text
 TRIGGER: npm run docs:update-readme
   → READ: ROADMAP.md milestone data
   → PARSE: Status, progress percentages
@@ -892,7 +892,7 @@ TRIGGER: npm run docs:update-readme
 
 ### Process Map
 
-```
+```text
 Developer updates ROADMAP.md
           ↓
 [Run npm run docs:update-readme]
@@ -952,7 +952,7 @@ compliance** by developers and AI assistants.
 
 ### Process Map
 
-```
+```text
 AI Session Starts
        ↓
 [Read AI_WORKFLOW.md]
@@ -1052,11 +1052,11 @@ AI Session Starts
 
 ## 5.6 Phase Completion Audit
 
-| Attribute    | Value                                        |
-| ------------ | -------------------------------------------- |
-| **Name**     | Phase Completion Audits                      |
-| **Location** | `docs/DOCUMENTATION_STANDARDIZATION_PLAN.md` |
-| **Trigger**  | Completing any phase                         |
+| Attribute    | Value                                                                |
+| ------------ | -------------------------------------------------------------------- |
+| **Name**     | Phase Completion Audits                                              |
+| **Location** | `docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md` |
+| **Trigger**  | Completing any phase                                                 |
 
 ### Directives
 
@@ -1073,11 +1073,11 @@ AI Session Starts
 
 ## 6.1 Check Patterns Script
 
-| Attribute    | Value                       |
-| ------------ | --------------------------- |
-| **Name**     | check-patterns.js           |
-| **Location** | `scripts/check-patterns.js` |
-| **Run via**  | `npm run patterns:check`    |
+| Attribute    | Value                                 |
+| ------------ | ------------------------------------- |
+| **Name**     | check-pattern-compliance.js           |
+| **Location** | `scripts/check-pattern-compliance.js` |
+| **Run via**  | `npm run patterns:check`              |
 
 ### Conditional Logic
 

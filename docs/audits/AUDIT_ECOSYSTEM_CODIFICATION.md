@@ -185,10 +185,11 @@ Fix inconsistent output locations across all audit skills.
 
 ### 3a. Fix FALSE_POSITIVES.jsonl Path (8 skills)
 
-All 8 domain audit skills reference `docs/audits/FALSE_POSITIVES.jsonl` but the
-actual file is `docs/technical-debt/FALSE_POSITIVES.jsonl`. Update all to:
+All 8 domain audit skills reference a FALSE_POSITIVES.jsonl file but it has not
+been created yet. When created, place at `docs/audits/FALSE_POSITIVES.jsonl` and
+update all skills to:
 
-```
+```text
 docs/technical-debt/FALSE_POSITIVES.jsonl
 ```
 
@@ -296,7 +297,7 @@ become the first entry in the new standard path.
 
 1. **Add Stage 2.5** between current Stage 2 and Stage 3:
 
-```
+```text
 Stage 2.5: Meta & Enhancement (2 agents, parallel)
   ├─ audit-enhancements
   └─ audit-ai-optimization
@@ -396,7 +397,7 @@ After all changes, perform a comprehensive dependency check:
 
 ## Execution Strategy
 
-```
+```text
 Wave 1 (parallel):
   [Step 1: AUDIT_STANDARDS.md]
   [Step 2: README.md hub]

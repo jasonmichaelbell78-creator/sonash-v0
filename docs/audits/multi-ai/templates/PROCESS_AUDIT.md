@@ -108,7 +108,7 @@ priority action plan, and automation improvements.
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -117,7 +117,7 @@ Last Process Audit: [YYYY-MM-DD or "Never"]
 
 ### Process & Automation Inventory (16 Types)
 
-```
+```text
 Claude Code:
 - Hooks: [.claude/hooks/ - list hooks]
 - Skills: [.claude/skills/ - count and key skills]
@@ -149,7 +149,7 @@ MCP:
 
 ### Scope
 
-```
+```text
 Include:
 - .claude/hooks/
 - .claude/skills/
@@ -676,7 +676,7 @@ Run each stage as a separate prompt, collecting outputs before proceeding:
 
 **Prompt 1: Inventory (Stage 1)**
 
-```
+````
 Using the context above, complete Stage 1 only:
 - Create inventory of all 16 automation types
 - Count items in each category
@@ -684,70 +684,88 @@ Using the context above, complete Stage 1 only:
 - Output: INVENTORY_JSON
 
 Stop after completing inventory. Do not proceed to analysis.
-```
+```text
 
 **Prompt 2: Redundancy & Dead Code (Stage 2)**
 
-```
+````
+
 Using the inventory from Stage 1, complete Stage 2:
+
 - Find duplicated functionality
 - Find dead/orphaned code
 - Cross-reference what calls what
 - Output: STAGE2_FINDINGS.jsonl (TDMS format)
 
 Stop after Stage 2 findings.
-```
+
+```text
 
 **Prompt 3: Effectiveness (Stage 3)**
 
 ```
+
 Complete Stage 3 effectiveness analysis:
+
 - Assess hook effectiveness
 - Assess script effectiveness
 - Assess CI/CD effectiveness
 - Assess Firebase effectiveness
 - Output: STAGE3_FINDINGS.jsonl (TDMS format)
-```
+
+```text
 
 **Prompt 4: Performance (Stage 4)**
 
 ```
+
 Complete Stage 4 performance analysis:
+
 - Analyze execution times
 - Detect bloat
 - Assess resource usage
 - Output: STAGE4_FINDINGS.jsonl (TDMS format)
-```
+
+```text
 
 **Prompt 5: Quality (Stage 5)**
 
 ```
+
 Complete Stage 5 quality analysis:
+
 - Review error handling
 - Check consistency
 - Assess maintainability
 - Output: STAGE5_FINDINGS.jsonl (TDMS format)
-```
+
+```text
 
 **Prompt 6: Coverage (Stage 6)**
 
 ```
+
 Complete Stage 6 coverage analysis:
+
 - Identify coverage gaps
 - Find improvement opportunities
 - Assess Golden Path
 - Output: STAGE6_FINDINGS.jsonl (TDMS format)
-```
+
+```text
 
 **Prompt 7: Synthesis (Stage 7)**
 
 ```
+
 Using all findings from Stages 2-6, complete synthesis:
+
 - Deduplicate findings
 - Assign priorities (P1-P4)
 - Create implementation order
 - Output: PRIORITY_ACTION_PLAN, HUMAN_SUMMARY
-```
+
+````text
 
 ### Sequential Output Collection
 
@@ -778,7 +796,7 @@ node scripts/debt/intake-audit.js \
   --batch-id "proc-audit-YYYYMMDD"
 
 # Repeat for Stages 3-6
-```
+````
 
 ### Required TDMS Fields
 

@@ -87,7 +87,7 @@ Personal but less critical:
 
 ### Layer 3: Authorization (Firestore Rules)
 
-```
+```text
 users/{uid}/                    → Owner-only access
   ├── daily_logs/{logId}        → Owner-only, date validated
   ├── inventoryEntries/{id}     → Owner-only, type validated
@@ -601,7 +601,7 @@ Export formats:
 
 Never commit these to git:
 
-```
+```text
 NEXT_PUBLIC_FIREBASE_API_KEY      # Public, but keep in env
 FIREBASE_ADMIN_PRIVATE_KEY        # NEVER commit - server only
 FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only

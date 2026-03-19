@@ -270,7 +270,7 @@ Each protocol is a JSON file with this structure:
 
 Use `data-testid` attributes for stable selectors:
 
-```
+```text
 data-testid="{feature}-{element}"
 ```
 
@@ -286,7 +286,7 @@ Fall back to `text=Label` selectors for buttons and links.
 
 ## Architecture
 
-```
+```text
 .claude/
   test-protocols/           # Committed — part of feature spec
     _base.protocol.json     # Common assertions for all protocols

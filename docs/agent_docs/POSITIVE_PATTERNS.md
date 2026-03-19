@@ -635,7 +635,7 @@ export type MyRecord = z.infer<typeof MyRecord>;
 - Use `.passthrough()` for forward-compatibility (D22)
 - Zod 4 requires `z.record(z.string(), z.unknown())` -- explicit key type
 - Export both schema and inferred type
-- Register in `SCHEMA_MAP` in `schemas/index.ts`
+- Register in `SCHEMA_MAP` in `scripts/reviews/lib/schemas/index.ts`
 
 ---
 

@@ -7,8 +7,8 @@
 # Code Quality Audit Report — sonash-v0
 
 **Date:** 2026-02-22 **Auditor:** code-auditor agent (claude-sonnet-4-6)
-**Scope:** `app/`, `components/`, `lib/`, `types/` **Stack:** Next.js 16.1.1,
-React 19.2.3, Firebase 12.6.0, TypeScript strict, Tailwind 4.1.9
+**Scope:** `app/`, `components/`, `lib/`, `types/` **Stack:** Next.js 16.2.0,
+React 19.2.4, Firebase 12.10.0, TypeScript strict, Tailwind 4.2.2
 
 ---
 

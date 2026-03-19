@@ -138,7 +138,7 @@ Before submitting a PR that modifies `firestore.rules`:
 - [ ] **Documentation Updated**
   - Document why the rule change is needed
   - Explain the security model for new collections
-  - Update `docs/FIREBASE_ARCHITECTURE.md` if collection structure changes
+  - Update Firebase architecture documentation if collection structure changes
 
 - [ ] **Test Coverage**
   - Unit tests added/updated for affected rules
@@ -444,7 +444,7 @@ change]
 
 [Paste test output or link to test run]
 
-```
+```text
 
 ### Cloud Functions Testing
 - [ ] Unit tests pass
@@ -457,7 +457,7 @@ change]
 
 [Paste test output]
 
-```
+```text
 
 ---
 

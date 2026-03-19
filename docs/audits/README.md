@@ -38,7 +38,7 @@ graph TD
 
 ## Decision Tree
 
-```
+```text
 When should I audit?
 ├─ Threshold triggered (see AUDIT_TRACKER.md)?
 │   └─ Run /audit-<category> for that domain
@@ -106,7 +106,7 @@ Templates for running audits across multiple AI systems (Claude, GPT, Gemini).
 
 ## Results Directory Structure
 
-```
+```text
 docs/audits/
 ├── AUDIT_STANDARDS.md          ← Standards reference (you are here)
 ├── README.md                   ← This hub

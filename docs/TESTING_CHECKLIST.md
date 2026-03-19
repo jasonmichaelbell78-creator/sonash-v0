@@ -216,7 +216,7 @@ backdoor, restored proper admin claim verification.
 
 **Test Case: Unauthorized Access Prevention**
 
-```
+```text
 Manual Test:
 1. Clear browser cache/cookies
 2. Navigate to /admin
@@ -233,7 +233,7 @@ Failure Case:
 
 **Test Case: Admin Claim Verification**
 
-```
+```text
 Manual Test (Firebase Emulator):
 1. Open Firebase Emulator UI → Authentication
 2. Create test user: test@example.com
@@ -269,7 +269,7 @@ and API routes.
 
 **Test Case: Server-Side Rendering**
 
-```
+```text
 Manual Test:
 1. npm run build
 2. npm start (production build)
@@ -293,7 +293,7 @@ proper `| undefined` types.
 
 **Test Case: Server-Side Safety**
 
-```
+```text
 Manual Test:
 1. Trigger a server-side render (SSR) that uses Firebase
    - Visit any page that calls Firestore in getServerSideProps
@@ -405,7 +405,7 @@ address: "123 St", neighborhood: "Area" })).not.toThrow() })
 
 **Test Case: Pagination with 50-Item Pages**
 
-```
+```text
 
 Manual Test (Requires 100+ meetings):
 
@@ -431,7 +431,7 @@ hasMore flag broken
 
 **Test Case: Cursor Persistence**
 
-```
+```text
 
 Manual Test:
 
@@ -580,7 +580,7 @@ hash to SHA-256 for GDPR/HIPAA compliance.
 
 **Test Case: Hash Irreversibility**
 
-```
+```text
 
 Manual Test:
 
@@ -611,7 +611,7 @@ expect(hashUserId('user456')).not.toBe(hash1) })
 
 **Test Case: Collision Resistance**
 
-```
+```text
 
 Automated Test: // tests/hash-collisions.test.ts import { hashUserId } from
 '@/functions/src/security-logger'
@@ -633,7 +633,7 @@ empty arrays to throwing errors with user-friendly messages.
 
 **Test Case: Network Failure Handling**
 
-```
+```text
 
 Manual Test (Offline Mode):
 
@@ -694,7 +694,7 @@ await expect(MeetingsService.getMeetingsByDay('Monday'))
 
 **Test Case: Timezone Consistency**
 
-```
+```text
 
 Manual Test (Multiple Timezones):
 
@@ -744,7 +744,7 @@ setup instructions.
 
 **Test Case: New Developer Onboarding**
 
-```
+```text
 
 Manual Test (Fresh Setup):
 
@@ -770,7 +770,7 @@ Feedback Loop:
 
 **Test Case: Git Status Clean**
 
-```
+```text
 
 Manual Test:
 
@@ -793,7 +793,7 @@ Verification: git status --ignored
 
 ### End-to-End Admin Workflow
 
-```
+```text
 
 1. Admin Login □ Log in to /admin with admin claim □ Verify all tabs load:
    Meetings, Sober Living, Quotes, Users
@@ -811,7 +811,7 @@ Verification: git status --ignored
 
 ### End-to-End User Workflow
 
-```
+```text
 
 1. Anonymous Authentication □ Open app as new user □ Verify anonymous auth
    succeeds □ Check Firestore → users collection for new user
@@ -830,7 +830,7 @@ Verification: git status --ignored
 
 ### Meeting Finder Load Time
 
-```
+```text
 
 Test Setup:
 

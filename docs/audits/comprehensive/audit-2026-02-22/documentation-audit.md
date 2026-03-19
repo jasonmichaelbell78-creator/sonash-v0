@@ -8,8 +8,8 @@
 
 **Audit Date:** 2026-02-22 **Auditor:** docs-auditor agent **Scope:** docs/,
 .claude/, README.md, CLAUDE.md, SESSION_CONTEXT.md, ROADMAP.md,
-docs/agent_docs/, docs/technical-debt/ **Project Stack:** Next.js 16.1.1, React
-19.2.3, Firebase 12.6.0, Tailwind CSS 4.1.9, Zod 4.2.1
+docs/agent_docs/, docs/technical-debt/ **Project Stack:** Next.js 16.2.0, React
+19.2.4, Firebase 12.10.0, Tailwind CSS 4.2.2, Zod 4.3.6
 
 ---
 
@@ -127,7 +127,7 @@ file.
 
 **Description:** `ARCHITECTURE.md` shows this Cloud Functions structure:
 
-```
+```text
 functions/
 ├── src/
 │   ├── index.ts
@@ -142,7 +142,7 @@ functions/
 
 The **actual** `functions/src/` directory contains:
 
-```
+```text
 functions/src/
 ├── index.ts
 ├── admin.ts              (not admin/setAdminClaim.ts)
@@ -286,7 +286,7 @@ implementation. Remove the feature flag entry if the flag is no longer used.
 **Description:** `DEVELOPMENT.md` documents the `lib/` directory as containing
 only:
 
-```
+```text
 lib/
 ├── firebase.ts
 ├── firestore-service.ts
@@ -299,7 +299,7 @@ lib/
 
 The actual `lib/` directory contains 8 subdirectories:
 
-```
+```text
 lib/
 ├── auth/
 ├── contexts/     ← MISSING from docs

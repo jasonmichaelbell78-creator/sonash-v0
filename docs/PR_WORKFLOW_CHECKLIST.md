@@ -35,7 +35,7 @@ leads to incomplete work, regressions, and scope creep.
 
 ## 📋 The Complete PR Workflow
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  PHASE WORKFLOW (Do this for EVERY PR)                     │
 ├─────────────────────────────────────────────────────────────┤
@@ -77,7 +77,7 @@ leads to incomplete work, regressions, and scope creep.
 
 ### Required First Line
 
-```
+```text
 IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", limitations="None"
 ```
 

@@ -121,7 +121,7 @@ All audit outputs follow this order:
 
 ## Anti-Hallucination Rules
 
-```
+```text
 NON-NEGOTIABLE EVIDENCE RULE (ANTI-HALLUCINATION)
 
 A finding is CONFIRMED only if it includes:
@@ -139,7 +139,7 @@ If you cannot provide both, put it in SUSPECTED_FINDINGS with confidence <= 40.
 All templates include a PRE-REVIEW CONTEXT section that references
 project-specific resources. This section MUST include the following note:
 
-```
+```text
 > NOTE: The references below require repository access. If your AI model cannot
 > browse files or run commands, skip to the audit prompt section below.
 ```
@@ -182,7 +182,7 @@ Every confirmed finding MUST include:
 
 **Example of sufficient evidence:**
 
-```
+```text
 files: ["lib/auth/session.ts:45-52"]
 evidence: [
   "No try/catch around Firebase auth call",
@@ -192,7 +192,7 @@ evidence: [
 
 **Insufficient evidence:**
 
-```
+```text
 files: ["lib/auth/"]
 evidence: ["Auth code needs improvement"]
 ```

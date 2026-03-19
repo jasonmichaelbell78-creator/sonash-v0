@@ -103,7 +103,7 @@ All artifacts are classified into **5 review tiers** based on:
 
 **Review Process:**
 
-```
+```text
 Developer commits → Pre-commit hooks pass → Auto-merge to main
 ```
 
@@ -147,7 +147,7 @@ Developer commits → Pre-commit hooks pass → Auto-merge to main
 
 **Review Process:**
 
-```
+```text
 Developer commits → Pre-commit hooks → CI checks → AI review → Merge
 ```
 
@@ -199,7 +199,7 @@ Developer commits → Pre-commit hooks → CI checks → AI review → Merge
 
 **Review Process:**
 
-```
+```text
 Developer commits → Pre-commit → CI → AI deep review → Human spot check → Merge
 ```
 
@@ -259,7 +259,7 @@ Developer commits → Pre-commit → CI → AI deep review → Human spot check 
 
 **Review Process:**
 
-```
+```text
 Developer commits → Pre-commit → CI → AI exhaustive review →
 Multi-human review → Security checklist → Merge
 ```
@@ -329,7 +329,7 @@ Multi-human review → Security checklist → Merge
 
 **Review Process:**
 
-```
+```text
 Developer creates proposal → RFC review → Implementation →
 Pre-commit → CI → Multi-AI exhaustive review →
 Multi-human review → Staging deployment →
@@ -459,7 +459,7 @@ clarity |
 
 **Process:**
 
-```
+```text
 1. Developer submits PR
 2. AI reviews within 5 minutes
 3. Developer addresses Critical + Major issues
@@ -501,7 +501,7 @@ domain knowledge | | **Risk assessment** | Blast radius, rollback complexity | |
 
 **Approval Workflow:**
 
-```
+```text
 Tier 3: AI + 2 humans (1 must be codebase owner)
 Tier 4: AI + all codebase owners (3+)
 ```
@@ -621,7 +621,7 @@ tier_4:
 
 **Monthly Security Audit Process:**
 
-```
+```text
 1. AI generates security report (uses MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)
 2. Report highlights:
    - New Tier 3+ code added since last audit
@@ -663,7 +663,7 @@ node scripts/audit-docs-drift.js  # Phase 3 deliverable (planned)
 **Milestone Completion Audit (Existing):** Already defined in
 DOCUMENTATION_STANDARDS.md:
 
-```
+```text
 Before marking ANY phase/milestone complete:
 1. Review original scope
 2. Verify each deliverable
@@ -675,7 +675,7 @@ Before marking ANY phase/milestone complete:
 
 **Incident-Triggered Review:**
 
-```
+```text
 When production incident occurs:
 1. Immediate fix (Tier 3 fast-track review)
 2. Post-mortem within 24 hours
@@ -687,7 +687,7 @@ When production incident occurs:
 
 **Security Disclosure Response:**
 
-```
+```text
 When external security issue reported:
 1. Verify vulnerability (within 4 hours)
 2. Assess severity and blast radius
@@ -766,7 +766,7 @@ const fastPathFiles = [
 
 **Batching Process:**
 
-```
+```text
 1. Developer creates feature branch: `batch/docs-updates-2026-01-04`
 2. Makes multiple related commits
 3. Creates single PR with all changes
@@ -835,7 +835,7 @@ git push origin batch/test-additions-jan
 
 **Example Good Faith Flow:**
 
-```
+```text
 Developer (20+ PRs):
 1. Makes Tier 1 doc change
 2. AI reviews (suggests 2 minor improvements)
@@ -858,7 +858,7 @@ Developer (20+ PRs):
 
 **Escalation Ladder:**
 
-```
+```text
 Tier 0 → Tier 1 → Tier 2 → Tier 3 → Tier 4
   ↓         ↓         ↓         ↓         ↓
 Auto    AI only   AI+Human  Multi-Human  All-Hands
@@ -876,7 +876,7 @@ Auto    AI only   AI+Human  Multi-Human  All-Hands
 
 **Escalation Process:**
 
-```
+```text
 1. PR starts at automatic tier (file-based)
 2. AI review runs
 3. If escalation triggered:
@@ -899,7 +899,7 @@ fixtures, not production auth code **Reviewer Approval:** @codeowner
 
 **Example Escalation:**
 
-```
+```text
 PR: "docs: Update API documentation"
 Initial Tier: 1 (docs change)
 AI Review: "Found 5 endpoints in docs that don't exist in code"
@@ -1013,7 +1013,7 @@ Result: Human reviewer discovers endpoints were removed without docs update
 
 **Continuous Improvement Process:**
 
-```
+```text
 Monthly Metrics → Retrospective → Action Items →
 Implementation → Next Month Metrics → Verify Improvement
 ```
@@ -1029,7 +1029,7 @@ Implementation → Next Month Metrics → Verify Improvement
 
 **Survey Questions:**
 
-```
+```text
 1. Review Quality (1-5): Are reviews thorough and helpful?
 2. Review Speed (1-5): Are reviews timely?
 3. Review Burden (1-5): Is the review process reasonable?
@@ -1040,7 +1040,7 @@ Implementation → Next Month Metrics → Verify Improvement
 
 **Process Evolution:**
 
-```
+```text
 If survey scores drop below 4/5 for 2 consecutive months:
 → Emergency retrospective
 → Identify root cause
@@ -1315,7 +1315,7 @@ This policy integrates with:
 
 **When implementing review automation:**
 
-1. Use existing scripts as reference (`scripts/check-patterns.js`)
+1. Use existing scripts as reference (`scripts/check-pattern-compliance.js`)
 2. Follow pattern: Read files → Analyze → Output JSON → Exit code
 3. Add tests for all automation scripts
 4. Document in TRIGGERS.md
@@ -1342,7 +1342,7 @@ This policy integrates with:
 
 ### Tier Decision Tree
 
-```
+```text
 Is this change?
 ├─ Just typos/comments/logs? → Tier 0 (Auto-merge)
 ├─ Docs/tests/UI text only? → Tier 1 (AI review)

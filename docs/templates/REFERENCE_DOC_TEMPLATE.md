@@ -33,7 +33,7 @@ instructions] for [specific activity/process].
 
 **Process Flow**:
 
-```
+```text
 [Step 1] → [Step 2] → [Step 3] → [Step 4] → [Complete]
 ```
 
@@ -261,7 +261,7 @@ Example:
 
 **Input**:
 
-```
+```text
 [Example input]
 ```
 
@@ -273,7 +273,7 @@ Example:
 
 **Output**:
 
-```
+```text
 [Example output]
 ```
 

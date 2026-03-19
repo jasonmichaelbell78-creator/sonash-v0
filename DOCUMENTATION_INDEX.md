@@ -988,7 +988,7 @@ _Architecture decision records_
 
 | Document                                                         | Description                                                     | References | Last Modified |
 | ---------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Architecture Decision Records (ADRs)](docs/decisions/README.md) | This directory contains Architecture Decision Records (ADRs)... | ↓1 ↑1      | 2026-02-23    |
+| [Architecture Decision Records (ADRs)](docs/decisions/README.md) | This directory contains Architecture Decision Records (ADRs)... | ↓1 ↑1      | 2026-03-19    |
 
 ### Patterns (Tier 4)
 

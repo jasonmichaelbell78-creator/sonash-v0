@@ -279,7 +279,7 @@ After collecting responses from all AI models:
 
 Place each model's JSONL output in:
 
-```
+```text
 docs/audits/multi-ai/<session-id>/raw/<model-name>.jsonl
 ```
 

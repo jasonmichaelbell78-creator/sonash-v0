@@ -117,7 +117,7 @@ across all 17 phases. The system is now fully operational with:
 
 ## Metrics Summary
 
-```
+```text
 Generated: 2026-02-01
 Total Items: 868
 Open Items: 868

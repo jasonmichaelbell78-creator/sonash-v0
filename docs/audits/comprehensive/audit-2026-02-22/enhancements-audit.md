@@ -9,7 +9,7 @@
 **Date:** 2026-02-22 **Auditor:** enhancements-auditor agent **Scope:** UX
 improvements, accessibility, mobile responsiveness, feature gaps, progressive
 enhancement, onboarding, error states, data portability, localization readiness
-**Stack:** Next.js 16.1.1, React 19.2.3, Firebase 12.6.0, Tailwind CSS 4.1.9
+**Stack:** Next.js 16.2.0, React 19.2.4, Firebase 12.10.0, Tailwind CSS 4.2.2
 
 ---
 

@@ -85,7 +85,7 @@ perspectives:
 
 ### Prompt 1: Monetization Models
 
-```
+```text
 I'm building a 12-step recovery companion app (AA/NA focused) with features like:
 - Daily journaling and mood tracking
 - Step 4 inventory tools
@@ -101,7 +101,7 @@ For each model, explain pros, cons, and examples of apps using it successfully.
 
 ### Prompt 2: Ethics and Recovery Culture
 
-```
+```text
 For a 12-step recovery app, what are the ethical considerations for monetization?
 - What features should always remain free?
 - How does AA/NA tradition of "self-supporting" apply to an app?
@@ -112,7 +112,7 @@ For a 12-step recovery app, what are the ethical considerations for monetization
 
 ### Prompt 3: Legal and Compliance
 
-```
+```text
 What legal considerations apply to monetizing a recovery/wellness app?
 Cover:
 - HIPAA and health data (does journaling about recovery count?)
@@ -126,7 +126,7 @@ Cover:
 
 ### Prompt 4: Market Research
 
-```
+```text
 Research the recovery app market:
 - What do competing recovery apps charge? (I Am Sober, Nomo, Loosid, Sober Grid, etc.)
 - What's the typical price range for wellness/mental health app subscriptions?
@@ -138,7 +138,7 @@ Research the recovery app market:
 
 ### Prompt 5: Cost Analysis Framework
 
-```
+```text
 Help me build a cost analysis for a recovery app:
 - Firebase costs at different user scales (100, 1K, 10K, 100K users)
 - Audio streaming costs (speaker tapes feature)
@@ -150,7 +150,7 @@ Help me build a cost analysis for a recovery app:
 
 ### Prompt 6: Technical Implementation
 
-```
+```text
 What's the technical implementation for each monetization model in a Next.js + Firebase app?
 - RevenueCat vs native StoreKit/Google Play Billing
 - Firebase Extensions for payments

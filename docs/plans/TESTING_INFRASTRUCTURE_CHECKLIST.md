@@ -74,7 +74,7 @@ This document outlines a comprehensive testing infrastructure for SoNash that:
 
 ### Test Pyramid Strategy
 
-```
+```text
                     ┌─────────────────┐
                     │   E2E Tests     │  ← 10-15 critical journeys
                     │   (Playwright)  │     User-facing flows
@@ -128,7 +128,7 @@ This document outlines a comprehensive testing infrastructure for SoNash that:
 
 **Test File Structure:**
 
-```
+```text
 tests/e2e/
 ├── fixtures/
 │   ├── auth.fixture.ts       # Auth helpers
@@ -317,7 +317,7 @@ export default defineConfig({
 
 ### Test Management Tab (proposed for Dev Dashboard)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  Test Suite Health                               [Run All]  │
 ├─────────────────────────────────────────────────────────────┤

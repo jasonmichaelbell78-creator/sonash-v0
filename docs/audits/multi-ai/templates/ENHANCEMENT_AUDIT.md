@@ -83,7 +83,7 @@ roadmap ingested to TDMS.
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -92,7 +92,7 @@ Last Enhancement Audit: [YYYY-MM-DD or "Never"]
 
 ### Tech Stack
 
-```
+```text
 - Framework: [e.g., Next.js 16.1 (App Router)]
 - UI Library: [e.g., React 19.2.3]
 - Language: [e.g., TypeScript 5.x]
@@ -105,7 +105,7 @@ Last Enhancement Audit: [YYYY-MM-DD or "Never"]
 
 ### Scope
 
-```
+```text
 Include: [directories, e.g., app/, components/, hooks/, lib/, functions/, tests/, types/, scripts/]
 Secondary: [optional, e.g., docs/, .github/]
 Exclude: [directories, e.g., node_modules/, .next/, dist/]

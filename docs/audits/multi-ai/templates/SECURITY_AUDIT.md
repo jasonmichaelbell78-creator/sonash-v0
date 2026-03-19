@@ -74,7 +74,7 @@ for each mandatory standard, ingested to TDMS for tracking.
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -83,7 +83,7 @@ Last Security Audit: [YYYY-MM-DD or "Never"]
 
 ### Tech Stack Security Considerations
 
-```
+```text
 - Framework: [e.g., Next.js 16.1] - SSR/CSR boundaries, API routes
 - Authentication: [e.g., Firebase Auth] - Session management, token handling
 - Database: [e.g., Firestore] - Rules, access patterns
@@ -93,7 +93,7 @@ Last Security Audit: [YYYY-MM-DD or "Never"]
 
 ### Scope
 
-```
+```text
 Security-Critical Paths:
 - Authentication flows: [list files/endpoints]
 - Data write operations: [list files/endpoints]

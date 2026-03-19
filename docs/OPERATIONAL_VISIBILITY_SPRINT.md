@@ -69,7 +69,7 @@ When working on operational visibility:
 
 **Goal:** Production error and log visibility **Status:** 🔄 In Progress
 
-```
+```text
 Week 1:
 ┌─────────────────────────────────────────────────────────────┐
 │  A1: Wire Sentry Client (1hr)                               │
@@ -104,7 +104,7 @@ Week 2:
 **Goal:** Developer visibility into performance, sessions, system health, and
 warnings **Status:** 🔄 In Progress (B1-B2 done)
 
-```
+```text
 Week 1 (DONE):
 ┌─────────────────────────────────────────────────────────────┐
 │  B1: Create /dev Route Structure (2hr) ✅ DONE              │
@@ -163,7 +163,7 @@ Week 4 (NEW - Process Audit Integration):
 **Status:** 📋 Planned **Source:** Process Audit CANON-0105-0118 + Comprehensive
 Audit 2026-01-24
 
-```
+```text
 Phase 1 - Quick Wins (E0-E1):
 ┌─────────────────────────────────────────────────────────────┐
 │  D1: Pin Firebase CLI Version (30min) [CANON-0112]          │
@@ -249,7 +249,7 @@ Phase 4 - Ongoing (Multi-Session):
 Code **Status:** 📋 Planned **Rationale:** Everything must be automated - no
 manual script running or debugging
 
-```
+```text
 Foundation:
 ┌─────────────────────────────────────────────────────────────┐
 │  E1: Warning Collector Hook (2hr)                           │
@@ -364,7 +364,7 @@ Runbooks & Documentation:
 > **IMPORTANT:** These tasks cannot be automated by Claude. They require you to
 > log into external services and configure settings manually.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  O1: Firebase Budget Alert (~2 min)                         │
 │                                                             │
@@ -461,7 +461,7 @@ Currently hooks emit warnings but:
 
 ### The Solution
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  Hook Execution                                              │
 │       │                                                      │
@@ -558,21 +558,21 @@ flowchart TD
 
 ### Track B (New Files)
 
-```
+```text
 components/dev/health-tab.tsx          # NEW - System health dashboard
 components/dev/warnings-tab.tsx        # NEW - Warning resolution
 ```
 
 ### Track D (New Files)
 
-```
+```text
 .github/dependabot.yml                 # NEW - Dependency updates
 .github/workflows/security.yml         # NEW - npm audit workflow (optional)
 ```
 
 ### Track E (New Files)
 
-```
+```text
 .claude/hooks/warning-collector.js     # NEW - Intercept warnings
 .claude/hooks/.warnings.json           # NEW - Warning cache
 scripts/sync-warnings-to-firestore.js  # NEW - Batch sync
@@ -580,7 +580,7 @@ scripts/sync-warnings-to-firestore.js  # NEW - Batch sync
 
 ### Files to Modify
 
-```
+```text
 .github/workflows/deploy-firebase.yml  # Add health checks, approval
 .github/workflows/ci.yml               # Add security scanning, diff-based checks
 .husky/pre-commit                      # Optimize (remove test duplication)

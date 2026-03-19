@@ -223,7 +223,7 @@ requires:
 
 ### 5.2 Data Flow: SonarCloud -> Review Pipeline
 
-```
+```text
 SonarCloud API
   |
   v

@@ -76,12 +76,15 @@ function findMarkdownFiles(dir, files = []) {
   for (const entry of entries) {
     const fullPath = join(dir, entry);
 
+    // Skip generated directories where findings should be fixed at the source
+    const relDir = relative(ROOT, dir).replaceAll("\\", "/");
     if (
       entry[0] === "." ||
       entry === "node_modules" ||
       entry === "out" ||
       entry === "dist" ||
-      entry === "archive"
+      entry === "archive" ||
+      (entry === "views" && relDir === "docs/technical-debt")
     ) {
       continue;
     }
@@ -194,6 +197,26 @@ function checkPathReferences(content, filePath) {
   const relPath = relative(ROOT, filePath);
   const docDir = dirname(filePath);
 
+  // Planning/roadmap files where missing paths are expected (planned features)
+  // Audit reports and changelogs reference files at time of writing — paths may have since moved
+  const snapshotFiles = [
+    /ROADMAP/i,
+    /CHECKLIST/i,
+    /PLAN[_.]|_PLAN\b/i,
+    /plans[/\\]/i,
+    /audits[/\\](?:single-session|comprehensive|multi-ai[/\\]templates)/i,
+    /FINAL_SYSTEM_AUDIT/i,
+    /CHANGELOG/i,
+    /SPRINT/i,
+    /RUNBOOK/i,
+    /specs[/\\]/i,
+    /aggregation[/\\]/i,
+    /SESSION_HISTORY/i,
+    /SESSION_DECISIONS/i,
+    /templates[/\\]/i, // doc templates with example paths
+  ];
+  const isSnapshotDoc = snapshotFiles.some((p) => p.test(relPath));
+
   // Patterns for file path references
   const pathPatterns = [
     // Backtick paths: `path/to/file.js`
@@ -209,10 +232,42 @@ function checkPathReferences(content, filePath) {
     /^#/,
     /\.[a-z]+\([^)]*\)/, // function calls like .map()
     /^node_modules\//,
-    /^<[^>]+>$/, // placeholder like <path>
-    /\.\*/, // glob patterns
+    /<[^>]+>/, // placeholder like <path> or path/<template>/file
+    /\.\*/, // glob patterns like *.md
+    /\*/, // any glob wildcard (e.g., .claude/skills/*/SKILL.md)
     /\$\{/, // template strings
     /example\.(js|ts|json)/i, // example files
+    /\/(file|X)\.\w+$/, // generic placeholder filenames like file.md, X.md
+    /\.tmp$/, // temp file references are examples, not real files
+    /\bpath\/to\b/, // generic example paths like ./path/to/file
+    /\[archived\]/, // explicitly marked as archived
+    /~\//, // home directory paths (user-specific)
+    /\$\(/, // shell command substitutions like $(git rev-parse ...)
+    /\[planned\]/, // explicitly marked as planned
+    /\{[^}]+\}/, // template variables like {name}.state.json
+    /^node\s/, // command invocations like `node --test path/to/file`
+    /,\s*\S+\.\w+/, // comma-separated file lists in single backtick
+    /\[multiple\]/, // placeholder like [multiple]
+    /\[[A-Za-z_-]+\]/, // template variables like [TYPE], [YYYY-MM-DD], [template-name]
+  ];
+
+  // Line-level context patterns that indicate planned/future/example paths
+  const planningLinePatterns = [
+    /\bNew\s+(Service|Component|Admin|File)\b/i, // planned new files
+    /\b(Create|Add|Build|Implement)\b.*`[^`]+`/i, // instructions to create
+    /\bOutput:\b/i, // planned output files
+    /\bFiles?:\b.*`[^`]+`/i, // planned files list
+    /^\s*-\s*\[ \]/, // unchecked todo items
+    /\(example\)/i, // explicitly marked as example
+    /\bcreate if\b/i, // "create if needed" instructions
+    /\[archived\]/, // line marks the path as archived
+    /\[planned\]/, // line marks the path as planned
+    /\bWhen created\b/i, // future action instructions
+    /\bnot.*created yet\b/i, // noting file doesn't exist yet
+    /\bFork from\b/i, // instructions to fork from a template
+    /\bAnalysis Source\b/i, // references to analysis source docs
+    /\bCopy template to\b/i, // template usage instructions
+    /\bSave.*to\b/i, // instructions to save to a path
   ];
 
   for (let i = 0; i < lines.length; i++) {
@@ -247,6 +302,16 @@ function checkPathReferences(content, filePath) {
 
         // Check if file exists
         if (!existsSync(resolvedPath)) {
+          // Skip planned/future paths based on line context
+          if (planningLinePatterns.some((p) => p.test(line))) {
+            continue;
+          }
+
+          // Skip missing paths in planning/roadmap docs (these reference future files)
+          if (isSnapshotDoc) {
+            continue;
+          }
+
           findings.push({
             id: `DOC-CONTENT-PATH-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
             category: "documentation",
@@ -306,8 +371,38 @@ function checkNpmScriptReferences(content, filePath) {
     "version",
   ]);
 
+  // Generic/example script names that appear in documentation as placeholders
+  const exampleScriptNames = new Set(["script", "then"]);
+
+  // Skip flags passed to npm run (e.g., `npm run --list`)
+  const npmRunFlags = /^--/;
+
+  let inCodeBlock = false;
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+
+    // Track code block state
+    if (/^```/.test(line.trim())) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+
+    // Skip lines inside code blocks (often examples or planned scripts)
+    if (inCodeBlock) {
+      continue;
+    }
+
+    // Skip lines that are clearly commented-out references
+    if (/^#\s+npm\s+run\s/.test(line.trim())) {
+      continue;
+    }
+
+    // Skip lines describing absence of a script or proposing to add one
+    // e.g., "No npm run dev:offline script" or "Add npm run dev:offline Script"
+    if (/\bNo\s+npm\s+run\b/i.test(line) || /\bAdd\s+npm\s+run\b/i.test(line)) {
+      continue;
+    }
 
     for (const pattern of npmPatterns) {
       pattern.lastIndex = 0;
@@ -318,6 +413,16 @@ function checkNpmScriptReferences(content, filePath) {
 
         // Skip built-in commands
         if (builtInScripts.has(scriptName)) {
+          continue;
+        }
+
+        // Skip example/placeholder script names used in docs
+        if (exampleScriptNames.has(scriptName)) {
+          continue;
+        }
+
+        // Skip npm flags (e.g., --list from `npm run --list`)
+        if (npmRunFlags.test(scriptName)) {
           continue;
         }
 

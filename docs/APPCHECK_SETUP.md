@@ -50,7 +50,7 @@ blocking legitimate users or when starting from a clean slate.
 
 If App Check is not configured, you'll see these errors in production:
 
-```
+```text
 POST /saveDailyLog 400 (Bad Request)
 POST /saveJournalEntry 400 (Bad Request)
 POST /saveInventoryEntry 400 (Bad Request)

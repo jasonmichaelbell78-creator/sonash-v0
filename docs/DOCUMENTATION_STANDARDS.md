@@ -42,7 +42,7 @@ Non-compliant docs will be flagged during reviews.
 
 **Data Flow:**
 
-```
+```text
 Audit Skill → JSONL Output → intake-audit.js → MASTER_DEBT.jsonl
 (Doc Standards)              (Mapping)         (TDMS Authority)
 ```
@@ -729,7 +729,7 @@ work packages throughout the entire project.
 
 **For documentation updates**:
 
-```
+```text
 docs: Update [document-name] - [brief description]
 
 [Optional longer description of what changed and why]
@@ -737,7 +737,7 @@ docs: Update [document-name] - [brief description]
 
 **Examples**:
 
-```
+```text
 docs: Update ARCHITECTURE.md - add Firebase Collections section
 docs: Update ROADMAP.md - mark M1.5 tasks complete
 docs: Update SESSION_CONTEXT.md - add Dec 31 session work

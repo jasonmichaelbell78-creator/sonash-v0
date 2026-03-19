@@ -64,7 +64,7 @@ metrics, and improvement targets.
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -73,7 +73,7 @@ Last Performance Audit: [YYYY-MM-DD or "Never"]
 
 ### Tech Stack Performance Considerations
 
-```
+```text
 - Framework: [e.g., Next.js 16.1] - SSR/CSR/ISR strategies
 - UI Library: [e.g., React 19.2.3] - Rendering patterns
 - Styling: [e.g., Tailwind CSS v4] - CSS bundle size
@@ -84,7 +84,7 @@ Last Performance Audit: [YYYY-MM-DD or "Never"]
 
 ### Baseline Metrics (Fill Before Audit)
 
-```
+```text
 Bundle Size:
 - Total JS: [X] KB (gzipped)
 - Largest chunk: [X] KB
@@ -103,7 +103,7 @@ Build Times:
 
 ### Scope
 
-```
+```text
 Performance-Critical Paths:
 - Initial page load: [list routes]
 - High-traffic pages: [list routes]

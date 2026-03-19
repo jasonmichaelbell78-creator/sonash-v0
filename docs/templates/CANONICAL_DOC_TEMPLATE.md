@@ -40,7 +40,7 @@ purpose]. This document serves as:
 
 **Step-by-step workflow:**
 
-```
+```text
 1️⃣ [Initial condition/prerequisite] → 2️⃣ [Decision point/action trigger] → 3️⃣ [Primary action] → 4️⃣ [Expected outcome/next state]
 ```
 
@@ -158,7 +158,7 @@ items]
 
 ### Dependency Graph
 
-```
+```text
 [Item 1] ──┬──> [Item 2] ──┬──> [Item 5]
            │                │
            ├──> [Item 3]    └──> [Item 6]

@@ -67,7 +67,7 @@ plan, ingested to TDMS for tracking.
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -76,7 +76,7 @@ Last Review Date: [YYYY-MM-DD or "Never"]
 
 ### Tech Stack (Update for your project)
 
-```
+```text
 - [Framework]: [Version] (e.g., Next.js 16.1)
 - [UI Library]: [Version] (e.g., React 19.2.3)
 - [Language]: [Version] (e.g., TypeScript 5.x)
@@ -87,7 +87,7 @@ Last Review Date: [YYYY-MM-DD or "Never"]
 
 ### Scope
 
-```
+```text
 Include: [directories to review, e.g., app/, components/, hooks/, lib/, functions/, tests/, types/]
 Secondary: [optional directories, e.g., scripts/, styles/, data/]
 Exclude: [directories to skip, e.g., docs/, public/, node_modules/]

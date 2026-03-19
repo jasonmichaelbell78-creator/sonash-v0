@@ -48,7 +48,7 @@ Starting any review process, checking if review is needed
 
 ### Template Selection Decision Tree
 
-```
+```text
 START
   │
   ├─ Is this a security concern or auth-related change?

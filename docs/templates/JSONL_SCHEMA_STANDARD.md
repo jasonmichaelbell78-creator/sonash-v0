@@ -101,8 +101,10 @@ producing standard output is strongly preferred.
 
 The `fingerprint` field uniquely identifies a finding for deduplication. Format:
 
-```
-<domain>::<file_or_scope>::<issue_slug>
+```html
+<domain
+  >::<file_or_scope>::<issue_slug></issue_slug></file_or_scope
+></domain>
 ```
 
 **Examples by domain:**

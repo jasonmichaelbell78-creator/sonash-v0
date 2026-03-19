@@ -211,7 +211,7 @@ node scripts/verify-sonar-phase.js --phase=1
 
 Output:
 
-```
+```text
 🔍 SonarCloud Phase 1 Verification
    Phase: Mechanical Fixes
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
