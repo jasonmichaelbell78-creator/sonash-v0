@@ -1,7 +1,7 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.27
+**Document Version:** 3.28
 **Last Updated:** 2026-03-19
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
@@ -390,15 +390,19 @@ demoted to S1 in Session #179 — they are code quality, not critical.
 
 #### Session #116 Documentation Priority Items (S1/S2)
 
-- [ ] **DEBT-0075:** 16 broken anchor links `SESSION_CONTEXT.md:47` [E1] - S1
+- [x] **DEBT-0075:** 16 broken anchor links `SESSION_CONTEXT.md:47` [E1] - S1 --
+      Resolved: Wave 6 docs:accuracy (666 findings -> 0)
 - [ ] **DEBT-0076:** 20 placeholder issues in templates
       `PERFORMANCE_AUDIT_PLAN_2026_Q1.md` [E1] - S1
-- [ ] **DEBT-0386:** Broken relative links in review docs
-      `CODE_REVIEW_2026_Q1.md` [E1] - S1
+- [x] **DEBT-0386:** Broken relative links in review docs
+      `CODE_REVIEW_2026_Q1.md` [E1] - S1 -- Resolved: Wave 6 docs:accuracy (666
+      findings -> 0)
 - [ ] **DEBT-0387:** [X] placeholders in 2026-Q1 plans
       `CODE_REVIEW_PLAN_2026_Q1.md` [E1] - S1
-- [ ] **DEBT-0077:** 99 files fail docs:check (313 errors) `README.md` [E1] - S2
-- [ ] **CANON-0148:** Fix broken relative links [E1] - S1
+- [x] **DEBT-0077:** 99 files fail docs:check (313 errors) `README.md` [E1] - S2
+      -- Resolved: Wave 6 docs:accuracy (666 findings -> 0)
+- [x] **CANON-0148:** Fix broken relative links [E1] - S1 -- Resolved: Wave 6
+      docs:accuracy (666 findings -> 0)
 - [ ] **CANON-0149:** Replace [X] placeholders [E1] - S1
 
 #### Core Setup ✅ PARTIAL
@@ -1204,7 +1208,8 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
     - **Verification:** CI fails if coverage drops >5%
 
 16. **AUTO-005: Remove CI continue-on-error Flags** (S effort, Medium ROI)
-    - [ ] Fix Prettier baseline (run `npm run format`)
+    - [x] Fix Prettier baseline (run `npm run format`) -- Resolved: Wave 6 (1496
+          files formatted)
     - [x] Fix knip baseline (7 unused deps) - ✅ Zero unused deps (housecleaning
           Wave 1)
     - [ ] Remove all `continue-on-error: true` flags
@@ -3159,6 +3164,7 @@ trigger matrix and cross-document update rules, see
 
 | Version | Session | Changes                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 3.28    | #230    | Wave 6 DEBT cleanup: resolved 592 DEBT items (574 broken links, 10 markdown lint, 4 Prettier baseline, 2 markdownlint+Prettier, 2 functions ESLint); marked docs:accuracy, docs:lint, Prettier baseline ROADMAP items complete                                                                                                                                                 |
 | 3.27    | #229    | Housecleaning Wave 4-5: marked knip baseline clean, pattern compliance resolved (79→0), updated stale baselines (93 violations→0, knip 7→0), moved 3 misplaced docs, updated Lighthouse plan path reference                                                                                                                                                                    |
 | 3.22    | #142    | Moved Agile Process, Process & Tooling Improvements to DEVELOPMENT.md; trimmed Update Triggers and AI Instructions sections to summaries with links                                                                                                                                                                                                                            |
 | 3.21    | #141    | Track T Phase 1 COMPLETE: `/test-suite` skill with 27 feature protocols, 5-phase pipeline (smoke/feature/security/performance/report), Firebase Preview Channels, dual browser support (Playwright MCP + Chrome Extension); added TESTING_USER_MANUAL.md references to all core docs; updated cross-document sync triggers for test protocols                                  |

@@ -33,22 +33,22 @@ reviews, TDMS, ESLint, Prettier, etc.)
 
 ### Tier 3: NON-BLOCKING WARNINGS (noisy, cause overrides)
 
-| #   | Surface                   | Issue                                       | Count                       |
-| --- | ------------------------- | ------------------------------------------- | --------------------------- |
-| N1  | Pre-commit cross-doc-deps | False positives on internal changes         | 14 overrides                |
-| N2  | Pre-commit doc-headers    | Fires on internal docs                      | 5 overrides                 |
-| N3  | Pre-push patterns         | 2 medium warnings in .husky/pre-commit      | trap cleanup + xargs -r     |
-| N4  | CI oxlint                 | Annotation warnings in .claude/hooks/       | 11 warnings                 |
-| N5  | ESLint security           | Security plugin in test files               | 1541 warnings               |
-| N6  | Prettier                  | Never bulk-formatted                        | 1577 files                  |
-| N7  | docs:check                | CODE_OF_CONDUCT.md errors + 100 warnings    | 1 error file                |
-| N8  | docs:accuracy             | Stale versions + broken paths in audit docs | 6 S1 + 100+ S2              |
-| N9  | docs:lint                 | Markdownlint errors                         | ~50 errors                  |
-| N10 | reviews:check-archive     | Missing JSONL records                       | 92 missing IDs              |
-| N11 | reviews:validate          | Disposition integrity violations            | 8 violations + 3 mismatches |
-| N12 | Orphaned test files       | Stale compiled .js in dist-tests/           | 12 orphans                  |
-| N13 | ESM warnings              | MODULE_TYPELESS_PACKAGE_JSON                | 8 scripts                   |
-| N14 | Pattern full scan         | Historical code never passed                | 73 blocking + 408 warnings  |
+| #   | Surface                   | Issue                                       | Count                                                                   |
+| --- | ------------------------- | ------------------------------------------- | ----------------------------------------------------------------------- |
+| N1  | Pre-commit cross-doc-deps | False positives on internal changes         | 14 overrides                                                            |
+| N2  | Pre-commit doc-headers    | Fires on internal docs                      | 5 overrides                                                             |
+| N3  | Pre-push patterns         | 2 medium warnings in .husky/pre-commit      | trap cleanup + xargs -r                                                 |
+| N4  | CI oxlint                 | Annotation warnings in .claude/hooks/       | 11 warnings                                                             |
+| N5  | ESLint security           | Security plugin in test files               | 1541 warnings                                                           |
+| N6  | Prettier                  | Never bulk-formatted                        | ~~1577 files~~ FIXED Wave 6 (1496 formatted)                            |
+| N7  | docs:check                | CODE_OF_CONDUCT.md errors + 100 warnings    | 1 error file                                                            |
+| N8  | docs:accuracy             | Stale versions + broken paths in audit docs | ~~6 S1 + 100+ S2~~ FIXED Wave 6 (666→0)                                 |
+| N9  | docs:lint                 | Markdownlint errors                         | ~~\~50 errors~~ FIXED Wave 6 (hang fixed + .markdownlintignore)         |
+| N10 | reviews:check-archive     | Missing JSONL records                       | 92 missing IDs                                                          |
+| N11 | reviews:validate          | Disposition integrity violations            | ~~8 violations + 3 mismatches~~ PARTIAL Wave 6 (PR #448 mismatch fixed) |
+| N12 | Orphaned test files       | Stale compiled .js in dist-tests/           | 12 orphans                                                              |
+| N13 | ESM warnings              | MODULE_TYPELESS_PACKAGE_JSON                | 8 scripts                                                               |
+| N14 | Pattern full scan         | Historical code never passed                | 73 blocking + 408 warnings                                              |
 
 ### Tier 4: COSMETIC (informational, low noise)
 

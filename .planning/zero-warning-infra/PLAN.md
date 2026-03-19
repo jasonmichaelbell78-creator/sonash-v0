@@ -194,22 +194,26 @@ tests pass.
 
 **Done when:** `npm run patterns:check-all` reports 0 critical/high violations.
 
-### Step 13: Fix Documentation Issues (N7, N8, N9)
+### Step 13: Fix Documentation Issues (N7, N8, N9) -- DONE (Wave 6)
 
 **Per Decision D7**
 
-1. `CODE_OF_CONDUCT.md` — add Purpose/Overview, Version History, Last Updated
-2. Fix version references: Next.js 16.1.1→16.2.0, Firebase 12.6.0→12.10.0,
-   Tailwind 4.1.9→4.2.2, Zod 4.2.1→4.3.6
-3. Fix ~50 markdownlint errors (MD037, MD049, MD053, MD051, MD028)
-4. Fix docs:accuracy S1 items (6 unknown npm script references)
-5. Fix docs:accuracy S2 items (broken file paths in audit docs)
-6. Verify: `npm run docs:check`, `npm run docs:lint`, `npm run docs:accuracy` —
-   all pass
+1. ~~`CODE_OF_CONDUCT.md` — add Purpose/Overview, Version History, Last
+   Updated~~
+2. ~~Fix version references: Next.js 16.1.1→16.2.0, Firebase 12.6.0→12.10.0,
+   Tailwind 4.1.9→4.2.2, Zod 4.2.1→4.3.6~~ -- Wave 6 docs:accuracy
+3. ~~Fix ~50 markdownlint errors (MD037, MD049, MD053, MD051, MD028)~~ -- Wave 6
+   docs:lint
+4. ~~Fix docs:accuracy S1 items (6 unknown npm script references)~~ -- Wave 6
+   docs:accuracy
+5. ~~Fix docs:accuracy S2 items (broken file paths in audit docs)~~ -- Wave 6
+   docs:accuracy (666→0)
+6. ~~Verify: `npm run docs:check`, `npm run docs:lint`, `npm run docs:accuracy`
+   — all pass~~ -- Wave 6 verified
 
-**Done when:** All 3 doc check commands pass clean.
+**Done when:** All 3 doc check commands pass clean. -- ACHIEVED Wave 6
 
-### Step 14: Fix Review System Integrity (N10, N11)
+### Step 14: Fix Review System Integrity (N10, N11) -- PARTIAL (Wave 6)
 
 **Per Decision D8**
 
@@ -217,7 +221,8 @@ tests pass.
 2. Fix 8 disposition integrity violations (totals don't match sums)
 3. Fix 3 cross-database mismatches (round counts)
 4. Verify: `npm run reviews:check-archive` — 0 findings
-5. Verify: `npm run reviews:validate` — 0 violations
+5. ~~Verify: `npm run reviews:validate` — 0 violations~~ -- Wave 6
+   reviews:validate PR #448 mismatch fixed
 
 **Done when:** Both review check commands pass clean.
 
