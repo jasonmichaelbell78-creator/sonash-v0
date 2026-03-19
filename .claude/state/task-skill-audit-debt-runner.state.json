@@ -1,0 +1,18 @@
+{
+  "task": "Skill Audit: debt-runner",
+  "target_skill": "debt-runner",
+  "status": "completed",
+  "total_decisions": null,
+  "accepted_decisions": null,
+  "rejected_decisions": null,
+  "overall_score": null,
+  "estimated_post_fix_score": null,
+  "skill_version_after_audit": "1.1",
+  "audit_date": "2026-03-15",
+  "process_compliance_notes": ["Backfilled from SKILL.md version history"],
+  "learnings": [],
+  "process_feedback": null,
+  "files_modified": [".claude/skills/debt-runner/SKILL.md"],
+  "updated": "2026-03-19T00:00:00Z",
+  "backfill_note": "Reconstructed from version history entry: v1.1 2026-03-15 — Skill-audit: warm-up, resume, delegation, empty-result, staging cleanup, retro, progress. Decision count not recorded in version history."
+}

@@ -126,26 +126,26 @@ _Foundation technical reference_
 
 | Document                                                                                                   | Description                                                     | References | Last Modified |
 | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                            | This guide covers Firebase App Check configuration for the S... | ↓2 ↑1      | 2026-02-13    |
-| [Automation Gap Closure — Design Spec](docs/superpowers/specs/2026-03-14-automation-gap-closure-design.md) | Design specification for closing automation gaps identified ... | ↓0 ↑0      | 2026-03-14    |
+| [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                            | This guide covers Firebase App Check configuration for the S... | ↓2 ↑1      | 2026-03-19    |
+| [Automation Gap Closure — Design Spec](docs/superpowers/specs/2026-03-14-automation-gap-closure-design.md) | Design specification for closing automation gaps identified ... | ↓0 ↑0      | 2026-03-19    |
 | [Automation Gap Closure Implementation Plan](docs/superpowers/plans/2026-03-14-automation-gap-closure.md)  | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-19    |
 | [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                   | This document defines the mandatory security review process ... | ↓2 ↑6      | 2026-03-19    |
 | [GitHub Repository Guide](docs/GITHUB_GUIDE.md)                                                            | Comprehensive guide to GitHub features, integrations, and wo... | ↓0 ↑0      | 2026-03-18    |
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                             | This document defines **mandatory security standards** that ... | ↓10 ↑0     | 2026-03-19    |
 | [Master Issue List](docs/aggregation/MASTER_ISSUE_LIST.md)                                                 | Aggregated and deduplicated findings from cross-session audi... | ↓0 ↑0      | 2026-02-28    |
 | [MCP Server Setup Guide](docs/MCP_SETUP.md)                                                                | This guide explains how to configure MCP (Model Context Prot... | ↓0 ↑0      | 2026-02-23    |
-| [Mining Agent 2: Pipeline Flow & Promotion Analysis](docs/aggregation/mining-agent2-pipeline-flow.md)      | Analysis of the consolidation-promotion-enforcement pipeline... | ↓0 ↑0      | 2026-02-28    |
+| [Mining Agent 2: Pipeline Flow & Promotion Analysis](docs/aggregation/mining-agent2-pipeline-flow.md)      | Analysis of the consolidation-promotion-enforcement pipeline... | ↓0 ↑0      | 2026-03-19    |
 | [Mining Agent 3: Retro & Action Item Analysis](docs/aggregation/mining-agent3-retro-actions.md)            | Analysis of PR retrospective coverage, action item implement... | ↓0 ↑0      | 2026-03-19    |
-| [Mining Agent 4: Integration & Automation](docs/aggregation/mining-agent4-integration.md)                  | Analysis of hooks, gates, overrides, agent tracking, SonarCl... | ↓0 ↑0      | 2026-03-05    |
+| [Mining Agent 4: Integration & Automation](docs/aggregation/mining-agent4-integration.md)                  | Analysis of hooks, gates, overrides, agent tracking, SonarCl... | ↓0 ↑0      | 2026-03-19    |
 | [Mining Report: Review Data Quality](docs/aggregation/mining-agent1-data-quality.md)                       | Data quality analysis of review JSONL vs markdown sources, i... | ↓0 ↑0      | 2026-02-28    |
-| [PR Review Ecosystem Diagnosis](docs/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md)                                | Comprehensive diagnosis of the PR review ecosystem across 7 ... | ↓0 ↑0      | 2026-02-28    |
+| [PR Review Ecosystem Diagnosis](docs/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md)                                | Comprehensive diagnosis of the PR review ecosystem across 7 ... | ↓0 ↑0      | 2026-03-19    |
 | [PR Review Ecosystem v2 — Comprehensive Changelog](docs/PR_ECOSYSTEM_V2_CHANGELOG.md)                      | A detailed breakdown of every aspect of the PR review ecosys... | ↓0 ↑0      | 2026-03-06    |
 | [reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide](docs/RECAPTCHA_REMOVAL_GUIDE.md)          | Complete removal and fresh implementation guide for Firebase... | ↓1 ↑2      | 2026-02-14    |
 | [Security & Privacy Guide](docs/SECURITY.md)                                                               | -                                                               | ↓12 ↑4     | 2026-03-19    |
-| [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)                        | Step-by-step guide to integrate Sentry error tracking into t... | ↓1 ↑0      | 2026-02-23    |
+| [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)                        | Step-by-step guide to integrate Sentry error tracking into t... | ↓1 ↑0      | 2026-03-19    |
 | [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                                  | Verify requests come from your legitimate app, not bots or s... | ↓5 ↑2      | 2026-01-15    |
-| [SonarCloud Cleanup Sprint Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                                    | This runbook provides a repeatable process for SonarCloud an... | ↓1 ↑0      | 2026-02-23    |
-| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                          | -                                                               | ↓7 ↑4      | 2026-02-11    |
+| [SonarCloud Cleanup Sprint Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                                    | This runbook provides a repeatable process for SonarCloud an... | ↓1 ↑0      | 2026-03-19    |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                          | -                                                               | ↓7 ↑4      | 2026-03-19    |
 | [SWS Re-Evaluation Conversation Transcript](docs/superpowers/specs/sws%20reevaluation%20conversation.md)   | Raw conversation transcript from the SWS re-evaluation deep-... | ↓0 ↑0      | 2026-03-15    |
 
 ### Root Documents (Tier 2)
@@ -166,13 +166,13 @@ _AI agent reference docs_
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)                      | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-02-23    |
 | [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓7 ↑2      | 2026-03-19    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md)          | Detailed guidance for preventing loss of important decisions... | ↓2 ↑0      | 2026-02-23    |
-| [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)                | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-28    |
+| [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)                | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-03-19    |
 | [Positive Pattern Templates](docs/agent_docs/POSITIVE_PATTERNS.md)                           | The RIGHT way to do things. Reference this BEFORE writing co... | ↓0 ↑0      | 2026-03-19    |
 | [Pre-Generation Behavioral Checklist](docs/agent_docs/PRE_GENERATION_CHECKLIST.md)           | Behavioral guardrails for patterns that cannot be fully auto... | ↓1 ↑0      | 2026-03-14    |
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)                      | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-03-19    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)                        | This document defines the policy for creating, using, and ov... | ↓2 ↑4      | 2026-02-24    |
 | [Skill Ecosystem Audit — Conversation Notes](docs/agent_docs/SKILL_ECOSYSTEM_AUDIT_IDEAS.md) | Brainstorming notes on what a skill-ecosystem-audit would co... | ↓0 ↑0      | 2026-03-19    |
-| [Testing System](docs/agent_docs/TESTING_SYSTEM.md)                                          | Comprehensive reference for SoNash's testing infrastructure.... | ↓0 ↑0      | 2026-03-10    |
+| [Testing System](docs/agent_docs/TESTING_SYSTEM.md)                                          | Comprehensive reference for SoNash's testing infrastructure.... | ↓0 ↑0      | 2026-03-19    |
 
 ### AI Optimization Audit (Tier 3)
 
@@ -193,25 +193,25 @@ _Single-session and multi-AI audit outputs_
 | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Agent Quality Audit Report](docs/audits/single-session/agent-quality/audit-2026-03-17/AGENT_QUALITY_REPORT.md)        | -                                                               | ↓0 ↑0      | 2026-03-17    |
 | [AI Optimization Audit — sonash-v0](docs/audits/comprehensive/audit-2026-02-22/ai-optimization-audit.md)               | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-19    |
-| [Audit Ecosystem](docs/audits/README.md)                                                                               | <!-- prettier-ignore-start -->                                  | ↓1 ↑18     | 2026-02-16    |
+| [Audit Ecosystem](docs/audits/README.md)                                                                               | <!-- prettier-ignore-start -->                                  | ↓1 ↑18     | 2026-03-19    |
 | [Audit Results Index](docs/audits/RESULTS_INDEX.md)                                                                    | Provides a comprehensive index of all audit results in this ... | ↓1 ↑0      | 2026-02-23    |
 | [Audit Review Decisions — 2026-02-22](docs/audits/comprehensive/audit-2026-02-22/REVIEW_DECISIONS.md)                  | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-22    |
-| [Audit Standards](docs/audits/AUDIT_STANDARDS.md)                                                                      | <When to use this template>                                     | ↓2 ↑4      | 2026-02-24    |
+| [Audit Standards](docs/audits/AUDIT_STANDARDS.md)                                                                      | <When to use this template>                                     | ↓2 ↑4      | 2026-03-19    |
 | [Audit Tracker](docs/audits/AUDIT_TRACKER.md)                                                                          | Track single-session and multi-AI audit completions for thre... | ↓3 ↑3      | 2026-03-17    |
 | [Audit vs MASTER_DEBT Deduplication Report](docs/audits/comprehensive/audit-2026-02-22/DEDUP_VS_MASTER_DEBT.md)        | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-22    |
 | [Automation Audit Report — 2026-02-09](docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md) | - **Total findings:** 258                                       | ↓1 ↑0      | 2026-02-09    |
-| [Code Quality Audit Report — sonash-v0](docs/audits/comprehensive/audit-2026-02-22/code-audit.md)                      | -                                                               | ↓0 ↑0      | 2026-02-22    |
+| [Code Quality Audit Report — sonash-v0](docs/audits/comprehensive/audit-2026-02-22/code-audit.md)                      | -                                                               | ↓0 ↑0      | 2026-03-19    |
 | [Comprehensive Audit Report — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/COMPREHENSIVE_AUDIT_REPORT.md)     | <!-- prettier-ignore-start -->                                  | ↓1 ↑0      | 2026-03-19    |
-| [Documentation Audit Report — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/documentation-audit.md)            | -                                                               | ↓0 ↑0      | 2026-03-12    |
+| [Documentation Audit Report — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/documentation-audit.md)            | -                                                               | ↓0 ↑0      | 2026-03-19    |
 | [Engineering Productivity Audit](docs/audits/comprehensive/audit-2026-02-22/engineering-productivity-audit.md)         | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-19    |
 | [Implementation Plan: Audit Ecosystem Codification](docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md)                       | Captures the original design decisions and implementation pl... | ↓1 ↑3      | 2026-03-19    |
 | [MASTER_DEBT Internal Deduplication Report](docs/audits/comprehensive/audit-2026-02-22/MASTER_DEBT_DEDUP_REPORT.md)    | -                                                               | ↓0 ↑0      | 2026-02-22    |
-| [Performance Audit — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/performance-audit.md)                       | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-22    |
+| [Performance Audit — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/performance-audit.md)                       | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-19    |
 | [Process & Automation Audit — sonash-v0](docs/audits/comprehensive/audit-2026-02-22/process-audit.md)                  | -                                                               | ↓0 ↑0      | 2026-02-22    |
 | [Refactoring Audit — sonash-v0](docs/audits/comprehensive/audit-2026-02-22/refactoring-audit.md)                       | -                                                               | ↓0 ↑0      | 2026-02-22    |
 | [Review Decisions — System Test 2026-02-19](docs/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md)              | Decision log for each finding from the 2026-02-19 system tes... | ↓0 ↑0      | 2026-02-21    |
-| [Security Audit Report — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/security-audit.md)                      | -                                                               | ↓0 ↑0      | 2026-02-22    |
-| [SoNash Enhancements Audit](docs/audits/comprehensive/audit-2026-02-22/enhancements-audit.md)                          | -                                                               | ↓0 ↑0      | 2026-02-22    |
+| [Security Audit Report — SoNash v0](docs/audits/comprehensive/audit-2026-02-22/security-audit.md)                      | -                                                               | ↓0 ↑0      | 2026-03-19    |
+| [SoNash Enhancements Audit](docs/audits/comprehensive/audit-2026-02-22/enhancements-audit.md)                          | -                                                               | ↓0 ↑0      | 2026-03-19    |
 | [System Test Plan Index — audit-2026-02-19](docs/audits/system-test/audit-2026-02-19/PLAN_INDEX.md)                    | Index of all domains, sessions, and findings for the 2026-02... | ↓0 ↑0      | 2026-02-21    |
 
 ### Audit Templates (Tier 3)
@@ -220,15 +220,15 @@ _Multi-AI audit execution templates_
 
 | Document                                                                                                                        | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [[Project Name] Multi-AI AI Optimization Audit Plan](docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md)                   | This document serves as the **execution plan** for running a... | ↓3 ↑1      | 2026-02-16    |
+| [[Project Name] Multi-AI AI Optimization Audit Plan](docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md)                   | This document serves as the **execution plan** for running a... | ↓3 ↑1      | 2026-03-19    |
 | [[Project Name] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)                                 | -                                                               | ↓7 ↑5      | 2026-03-19    |
-| [[Project Name] Multi-AI Documentation Audit Plan](docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md)                       | This document serves as the **execution plan** for running a... | ↓4 ↑2      | 2026-02-16    |
-| [[Project Name] Multi-AI Engineering Productivity Audit Plan](docs/audits/multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | This document serves as the **execution plan** for running a... | ↓4 ↑3      | 2026-02-16    |
+| [[Project Name] Multi-AI Documentation Audit Plan](docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md)                       | This document serves as the **execution plan** for running a... | ↓4 ↑2      | 2026-03-19    |
+| [[Project Name] Multi-AI Engineering Productivity Audit Plan](docs/audits/multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | This document serves as the **execution plan** for running a... | ↓4 ↑3      | 2026-03-19    |
 | [[Project Name] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md)                           | This document serves as the **execution plan** for running a... | ↓7 ↑4      | 2026-03-19    |
 | [[Project Name] Multi-AI Process & Automation Audit Plan](docs/audits/multi-ai/templates/PROCESS_AUDIT.md)                      | -                                                               | ↓5 ↑2      | 2026-03-19    |
 | [[Project Name] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)                                | This document serves as the **execution plan** for running a... | ↓7 ↑5      | 2026-03-19    |
 | [[Project Name] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)                                 | -                                                               | ↓7 ↑3      | 2026-03-19    |
-| [Enhancement Audit Template (Multi-AI Injectable)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md)                         | -                                                               | ↓3 ↑8      | 2026-02-16    |
+| [Enhancement Audit Template (Multi-AI Injectable)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md)                         | -                                                               | ↓3 ↑8      | 2026-03-19    |
 | [Multi-AI Audit Aggregator Template](docs/audits/multi-ai/templates/AGGREGATOR.md)                                              | Deduplicate and verify findings within ONE audit category be... | ↓5 ↑0      | 2026-03-19    |
 | [Multi-AI Audit Shared Template Base](docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md)                                   | Shared boilerplate for                                          | ↓13 ↑2     | 2026-03-19    |
 
@@ -238,10 +238,10 @@ _Planning & Active_
 
 | Document                                                                                               | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
-| [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-02-08    |
+| [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-03-19    |
 | [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-03-13    |
-| [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-02-23    |
-| [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                 | -                                                               | ↓1 ↑2      | 2026-02-23    |
+| [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-03-19    |
+| [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                 | -                                                               | ↓1 ↑2      | 2026-03-19    |
 | [Testing Plan](docs/TESTING_CHECKLIST.md)                                                              | Comprehensive testing guidance for the SoNash application, i... | ↓5 ↑1      | 2026-03-19    |
 
 ### Multi-AI Audit System (Tier 3)
@@ -262,9 +262,9 @@ _Active implementation plans_
 | ----------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Implementation Plan](docs/plans/IMPLEMENTATION_PLAN.md)                      | -                                                               | ↓0 ↑0      | 2026-03-19    |
 | [Lighthouse Integration Plan](docs/plans/LIGHTHOUSE_INTEGRATION_PLAN.md)      | -                                                               | ↓1 ↑0      | 2026-03-19    |
-| [SoNash Testing User Manual](docs/plans/TESTING_USER_MANUAL.md)               | <!-- prettier-ignore-start -->                                  | ↓5 ↑0      | 2026-02-07    |
+| [SoNash Testing User Manual](docs/plans/TESTING_USER_MANUAL.md)               | <!-- prettier-ignore-start -->                                  | ↓5 ↑0      | 2026-03-19    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_CHECKLIST.md) | This document outlines a comprehensive testing infrastructur... | ↓1 ↑2      | 2026-03-19    |
-| [Track A Admin Panel Testing Plan](docs/plans/TRACK_A_TESTING_CHECKLIST.md)   | Comprehensive testing plan for Track A Admin Panel features ... | ↓1 ↑0      | 2026-03-12    |
+| [Track A Admin Panel Testing Plan](docs/plans/TRACK_A_TESTING_CHECKLIST.md)   | Comprehensive testing plan for Track A Admin Panel features ... | ↓1 ↑0      | 2026-03-19    |
 
 ### Skills (Tier 3)
 
@@ -408,9 +408,9 @@ _TDMS tracking and management_
 
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-23    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-18    |
-| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-12    |
+| [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-19    |
+| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
 | [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-18    |
 
 ### Templates (Tier 3)
@@ -421,12 +421,12 @@ _Document and audit templates_
 | -------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [[Document Title]](docs/templates/CANONICAL_DOC_TEMPLATE.md)                     | -                                                               | ↓0 ↑0      | 2026-03-19    |
 | [[Document Title]](docs/templates/FOUNDATION_DOC_TEMPLATE.md)                    | -                                                               | ↓0 ↑4      | 2026-03-19    |
-| [[Feature/Initiative Name] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)        | -                                                               | ↓0 ↑4      | 2026-02-03    |
+| [[Feature/Initiative Name] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)        | -                                                               | ↓0 ↑4      | 2026-03-19    |
 | [[Workflow/Reference Name]](docs/templates/REFERENCE_DOC_TEMPLATE.md)            | -                                                               | ↓0 ↑0      | 2026-03-19    |
 | [ADR-NNN: [Short Title]](docs/templates/TEMPLATE.md)                             | [Briefly describe the purpose of this ADR - what decision do... | ↓1 ↑0      | 2026-03-19    |
 | [CANON Quick Reference Card](docs/templates/CANON_QUICK_REFERENCE.md)            | One-page quick reference for Multi-AI audits. Distilled from... | ↓0 ↑0      | 2026-02-23    |
 | [How to [Accomplish Task]](docs/templates/GUIDE_DOC_TEMPLATE.md)                 | -                                                               | ↓0 ↑2      | 2026-03-19    |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓7 ↑8      | 2026-02-23    |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓7 ↑8      | 2026-03-19    |
 
 ### .agent > workflows (Tier 4)
 
@@ -967,19 +967,19 @@ _Reference_
 
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-23    |
+| [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-03-19    |
 | [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-19    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓3 ↑1      | 2026-03-12    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-23    |
-| [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-07    |
+| [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-03-19    |
 | [PR Workflow Checklist - MANDATORY FOR ALL PHASES](docs/PR_WORKFLOW_CHECKLIST.md) | -                                                                 | ↓4 ↑3      | 2026-03-19    |
 | [Review Policy Architecture](docs/REVIEW_POLICY_ARCHITECTURE.md)                  | This document defines a \*\*lightweight, AI-first review polic... | ↓3 ↑3      | 2026-03-19    |
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                | Central directory for all review policy documentation \*\*Last... | ↓1 ↑9      | 2026-02-23    |
-| [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                  | This is a **one-page quick reference** for the SoNash review...   | ↓3 ↑4      | 2026-01-15    |
-| [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                  | This document provides **visual diagrams and flowcharts** fo...   | ↓2 ↑3      | 2026-01-15    |
+| [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                  | This is a **one-page quick reference** for the SoNash review...   | ↓3 ↑4      | 2026-03-19    |
+| [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                  | This document provides **visual diagrams and flowcharts** fo...   | ↓2 ↑3      | 2026-03-19    |
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-01-24    |
 | [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-03-16    |
-| [Slash Commands & Skills Reference](docs/SLASH_COMMANDS_REFERENCE.md)             | Comprehensive reference for all slash commands and skills av...   | ↓1 ↑2      | 2026-03-12    |
+| [Slash Commands & Skills Reference](docs/SLASH_COMMANDS_REFERENCE.md)             | Comprehensive reference for all slash commands and skills av...   | ↓1 ↑2      | 2026-03-19    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-03-19    |
 
 ### Decisions (Tier 4)

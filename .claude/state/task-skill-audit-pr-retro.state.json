@@ -1,0 +1,52 @@
+{
+  "task": "Skill Audit: pr-retro",
+  "target_skill": "pr-retro",
+  "status": "phase2_complete_transition",
+  "current_category": 11,
+  "decisions": {
+    "cat1_intent_fidelity": "1 decision: A-accepted (update description to reflect Step 0.5 deliverable verification)",
+    "cat2_workflow_sequencing": "3 decisions: A-accepted (renumber steps to sequential integers), B-accepted (clarify Dashboard → Step 0.5 routing), C-accepted (move save-to-log after implementation)",
+    "cat3_input_output_quality": "3 decisions: A-accepted (add deliverable_verification field to JSONL schema in REFERENCE.md), B-accepted (add hook_health field to JSONL schema in REFERENCE.md), C-accepted (add Done when to Step 0.5)",
+    "cat4_decision_points": "3 decisions: A-accepted (add delegation protocol to Step 3 for Low findings), B-accepted (add user override for Step 0.5 auto-findings before injection), C-accepted (add anything-missed prompt to Step 0.5)",
+    "cat5_integration_surface": "2 decisions: A-accepted (add explicit downstream handoffs to Step 8 closure), B-accepted [defer] (skip /alerts integration — data already flows via hook-warnings-log.jsonl)",
+    "cat6_guard_rails": "3 decisions: A-accepted [revised] (add claim count WARNING not cap to Step 0.5 — user decides whether to eat cost), B-accepted (add batch retro warning when >3 PRs with Step 0.5), C-accepted (add contradiction protocol between Step 0.5 CL and Step 3 review data)",
+    "cat7_prompt_engineering": "5 decisions: A-accepted (extract Step 0.5 detail to REFERENCE.md ~15 lines in SKILL.md), B-accepted (extract Steps 1.3b/1.3c to REFERENCE.md), C-accepted (extract Step 6 implementation detail to REFERENCE.md), D-accepted (move cross-skill integration table to REFERENCE.md), E-accepted (reinforce critical rules at point-of-use in Steps 3 and 6)",
+    "cat8_scope_boundaries": "1 decision: A-accepted [revised] (scope CL agents to PR context/intent graph not just PR files — follow references outward to catch missing files)",
+    "cat9_institutional_memory": "1 decision: A-accepted (add CLAUDE.md convention check to Step 1)",
+    "cat10_user_experience": "3 decisions: A-accepted (add effort estimate to Step 1.5 warm-up), B-accepted (add brief user-facing explanation at Step 0.5 start), C-accepted (add phase transition marker between Step 0.5 and Step 1)",
+    "cat11_convergence_loop": "3 decisions: A-accepted (add quick CL for pattern recurrence claims >= 3 in Step 1.4), B-accepted [revised] (add quick CL to Step 2 churn analysis — verify top findings before walkthrough), C-accepted (surface T20 tally from Step 0.5 CL in verification summary)"
+  },
+  "scores": {
+    "cat1": 8,
+    "cat2": 7,
+    "cat3": 7,
+    "cat4": 8,
+    "cat5": 8,
+    "cat6": 7,
+    "cat7": 5,
+    "cat8": 9,
+    "cat9": 9,
+    "cat10": 8,
+    "cat11": 7
+  },
+  "total_decisions": 30,
+  "accepted_decisions": 30,
+  "rejected_decisions": 0,
+  "overall_score": 83,
+  "estimated_post_fix_score": 95,
+  "cross_cutting_principles": [
+    "USER-REQ-1: Err on side of more CLs — token cost acceptable for accuracy",
+    "USER-REQ-2: Warnings not caps — user decides cost tradeoffs",
+    "USER-REQ-3: Step 0.5 CL agents should follow intent graph not just file list"
+  ],
+  "process_compliance_notes": [
+    "Cat8-A revised after user correction — CL scope should follow references outward not just PR files",
+    "Cat6-A revised after user feedback — warning not cap on claim count",
+    "Cat11-B revised after user feedback — add CL to Step 2, don't skip it"
+  ],
+  "process_feedback": null,
+  "files_modified": [],
+  "skill_creator_gaps": null,
+  "skill_creator_gap_details": [],
+  "updated": "2026-03-18T08:15:00Z"
+}

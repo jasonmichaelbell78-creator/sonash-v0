@@ -1,0 +1,65 @@
+{
+  "task": "Skill Audit: create-audit",
+  "target_skill": "create-audit",
+  "status": "complete",
+  "current_category": 11,
+  "decisions": {
+    "cat1_intent_fidelity": "3 decisions: A-accepted (add Type 3/4 templates to REFERENCE.md), B-accepted (clarify TDMS language to 'TDMS-ready output'), C-accepted (define functional validation as concrete checklist in Phase 5)",
+    "cat2_workflow_sequencing": "5 decisions: A-accepted (add sub-step tracking to Phase 4 state persistence), B-accepted (grep-based evidence checklist for Phase 6 self-audit), C-accepted (move name validation to Phase 1), D-rejected (Phase 3 decision record already serves as synthesis), E-accepted (add Done when to Phase 7)",
+    "cat3_input_output_quality": "4 decisions: A-accepted (add input constraints to Warm-Up/Input section), B-accepted (add complete output manifest table), C-accepted (document template variables in REFERENCE.md), D-rejected (warm-up is pre-discovery; Phase 3 is right place for artifact preview)",
+    "cat4_decision_points": "4 decisions: A-accepted (add cross-batch revision mechanism), B-accepted (promote Batch 5 from MAY to SHOULD), C-accepted (add post-discovery 'anything else?' prompt), D-rejected (outbound inference pattern is sufficient)",
+    "cat5_integration_surface": "4 decisions: A-accepted (add session-end interaction guidance), B-accepted (strengthen skill-audit handoff to Phase 5 gate), C-accepted (promote audit-comprehensive update to SHOULD), D-rejected (downstream impacts are generic)",
+    "cat6_guard_rails": "4 decisions: A-accepted (add Phase 4 error recovery guidance), B-rejected (two examples sufficient for contradiction detection), C-accepted (add inline quality checks during Phase 4 generation), D-accepted (add abort option to Phase 3 approval gate)",
+    "cat7_prompt_engineering": "5 decisions: A-accepted (extract Guard Rails, Anti-Patterns, Integration to REFERENCE.md), B-rejected (extraction handles this), C-accepted (repeat key critical rules at point-of-use), D-accepted (add MUST/SHOULD/MAY to Phase 4 sub-steps), E-rejected (ASCII flow is more scannable)",
+    "cat8_scope_boundaries": "3 decisions: A-accepted (add GSD routing guidance row), B-accepted (clarify Type 3 boundary with skill-creator), C-rejected (Phase 1 already scans for overlap)",
+    "cat9_institutional_memory": "4 decisions: A-accepted (add project-specific TDMS pipeline anchor), B-rejected (surfacing sufficient; adaptive defaults add complexity), C-accepted (add rationale capture to discovery rules), D-accepted (promote CLAUDE.md Section 5 to Critical Rules for generated scripts)",
+    "cat10_user_experience": "4 decisions: A-accepted (add progress indicators to Phase 4 sub-steps), B-rejected (approve with changes covers partial approval), C-rejected (per-phase estimates false precision), D-rejected (SKILL_STANDARDS.md covers visual structure)",
+    "cat11_convergence_loop": "3 decisions: A-accepted as MUST (user override — convergence loops on discovery phases are core T25 use case), B-accepted (add T20 tally to Phase 6 self-audit), C-accepted (add user gate before convergence declaration in Phase 2)",
+    "od_operational_deps": "1 decision: OD-1-accepted (add full paths to Phase 4.5 supporting file references)"
+  },
+  "scores": {
+    "cat1": 7,
+    "cat2": 7,
+    "cat3": 7,
+    "cat4": 8,
+    "cat5": 7,
+    "cat6": 7,
+    "cat7": 6,
+    "cat8": 8,
+    "cat9": 7,
+    "cat10": 7,
+    "cat11": 4
+  },
+  "total_decisions": 44,
+  "accepted_decisions": 32,
+  "rejected_decisions": 12,
+  "overall_score": 75,
+  "estimated_post_fix_score": 88,
+  "cross_cutting_principles": [
+    "USER-REQ-1: skill-audit validation should be a Phase 5 gate, not just a Phase 7 suggestion",
+    "USER-REQ-2: SKILL_STANDARDS.md needs a standardized self-audit section — most/all skills should have skill-audit-style validation at completion, canonical pattern derived from skill-audit Phase 5",
+    "USER-REQ-3: Create-audit should add generated audit to audit-comprehensive's skill list as part of Phase 4 (Build), not just suggest in Phase 7",
+    "USER-REQ-4: Discovery phases everywhere should use convergence loops as MUST, not SHOULD — primary reason convergence loops exist"
+  ],
+  "process_compliance_notes": [],
+  "process_feedback": null,
+  "files_modified": [
+    ".claude/skills/create-audit/SKILL.md (full rewrite v3.0)",
+    ".claude/skills/create-audit/REFERENCE.md (added Type 3/4 templates, template variables, guard rails, output manifest)",
+    ".claude/skills/skill-creator/SKILL.md (SC-1: cross-batch revision, SC-2: post-discovery prompt, SC-3: evidence self-check)",
+    ".claude/skills/_shared/SKILL_STANDARDS.md (USER-REQ-2: standardized self-audit section)",
+    ".claude/skills/convergence-loop/SKILL.md (USER-REQ-4: SHOULD -> MUST for discovery phases)"
+  ],
+  "skill_creator_gaps": 3,
+  "skill_creator_gap_details": [
+    "SC-1: cross-batch revision mechanism — FIXED",
+    "SC-2: post-discovery 'anything else?' prompt — FIXED",
+    "SC-3: evidence-based self-check before skill-audit — FIXED"
+  ],
+  "learnings": [
+    "T25 convergence loop integration is the most common gap across skills — discovery phases without CL are the default failure mode",
+    "Consistent 7/10 pattern suggests competent-but-not-polished skills — structure is covered but behavioral depth is missing",
+    "Cross-skill gaps compound — SKILL_STANDARDS.md is the right place to codify universal patterns like self-audit at completion"
+  ],
+  "updated": "2026-03-16T00:20:00Z"
+}

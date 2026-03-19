@@ -1,0 +1,18 @@
+{
+  "task": "Skill Audit: session-end",
+  "target_skill": "session-end",
+  "status": "completed",
+  "total_decisions": 32,
+  "accepted_decisions": null,
+  "rejected_decisions": null,
+  "overall_score": null,
+  "estimated_post_fix_score": null,
+  "skill_version_after_audit": "2.0",
+  "audit_date": "2026-03-07",
+  "process_compliance_notes": ["Backfilled from SKILL.md version history"],
+  "learnings": [],
+  "process_feedback": null,
+  "files_modified": [".claude/skills/session-end/SKILL.md"],
+  "updated": "2026-03-19T00:00:00Z",
+  "backfill_note": "Reconstructed from version history entry: v2.0 2026-03-07 — Full rewrite from skill-audit: 32 decisions applied"
+}
