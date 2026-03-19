@@ -97,10 +97,11 @@ export default [
       "@typescript-eslint/no-require-imports": "off",
     },
   },
-  // CJS scripts under scripts/ that use require() and __dirname
+  // CJS scripts that use require() and __dirname natively (not via /* global */)
   {
     files: [
-      "scripts/**/__tests__/**/*.js",
+      "scripts/reviews/__tests__/**/*.js",
+      "scripts/metrics/__tests__/**/*.js",
       "scripts/reviews/migrate-ecosystem-v2.js",
     ],
     languageOptions: {
