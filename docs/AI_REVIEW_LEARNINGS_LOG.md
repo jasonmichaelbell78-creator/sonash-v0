@@ -1,5 +1,7 @@
 # AI Review Learnings Log
 
+<!-- markdownlint-disable MD038 -->
+
 **Document Version:** 17.104 **Created:** 2026-01-02 **Last Updated:**
 2026-03-18
 
@@ -767,7 +769,7 @@ accumulate.
 | Metric         | Value          | Threshold | Action if Exceeded                       |
 | -------------- | -------------- | --------- | ---------------------------------------- |
 | Main log lines | ~2048          | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 20 (#441-#479) | 20        | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 24 (#353-#490) | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -910,7 +912,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 16    | 16    | 0        | 10       |
+| 26    | 16    | 0        | 10       |
 
 **Severity Breakdown:**
 
@@ -941,7 +943,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 15    | 12    | 1        | 3        |
+| 15    | 12    | 1        | 2        |
 
 **Severity Breakdown:**
 
@@ -1012,7 +1014,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 37    | 37    | 0        | 15       |
+| 52    | 37    | 0        | 15       |
 
 **Severity Breakdown:**
 
@@ -1040,7 +1042,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 11    | 0        | 7        |
+| 18    | 11    | 0        | 7        |
 
 **Severity Breakdown:**
 
@@ -1065,7 +1067,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 14    | 14    | 0        | 6        |
+| 20    | 14    | 0        | 6        |
 
 **Severity Breakdown:**
 
@@ -1115,7 +1117,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
+| 7     | 2     | 0        | 5        |
 
 ---
 
@@ -1125,7 +1127,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 49    | 0     | 0        | 0        |
+| 49    | 47    | 0        | 2        |
 
 ---
 
@@ -1290,6 +1292,46 @@ deduplicated, non-overlapping ranges):
 
 - CI compiled output needs ESLint ignores
 - non-numeric coercion to 0 hides violations
+
+---
+
+### Review 354: PR #427 R4 — TOCTOU Hardening, Sanitize Fallbacks, Semgrep Rule ID Fix (2026-03-12)
+
+**Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 25    | 20    | 0        | 5        |
+
+---
+
+### Review 353: PR #427 R2 — Security Fail-Closed, Error Safety Codemod, Bulk Lint (2026-03-12)
+
+**Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 21    | 18    | 0        | 3        |
+
+---
+
+### Review 480: PR #427 R3 — Mixed (CI + CodeQL + Semgrep + Qodo + SonarCloud) (2026-03-12)
+
+**Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 45    | 45    | 0        | 0        |
+
+---
+
+### Review 481: PR #427 R5 — Qodo + Semgrep + SonarCloud (2026-03-12)
+
+**Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 23    | 20    | 0        | 3        |
 
 ## Key Patterns
 

@@ -413,7 +413,7 @@ jobs:
           # ... other env vars
 
       - name: Run Lighthouse audit
-        run: npm run lighthouse:ci
+        run: npx lhci autorun # planned lighthouse:ci script
         env:
           LIGHTHOUSE_BASE_URL: http://localhost:3000
 

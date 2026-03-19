@@ -10,6 +10,8 @@
 > **v1.3 UPDATE:** Aligned with ROADMAP.md v3.17 timing system. Uses Phase +
 > Priority instead of target dates.
 
+<!-- -->
+
 > **Purpose:** Detailed specifications for future milestones (M2-M10). For
 > active sprint work and current priorities, see [ROADMAP.md](./ROADMAP.md).
 

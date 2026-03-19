@@ -99,6 +99,8 @@ messages.
 
 Specific implementation commits by PR retro:
 
+<!-- markdownlint-disable MD038 -->
+
 | Source Retro | Implementation Commit  | What was done                                         |
 | ------------ | ---------------------- | ----------------------------------------------------- | --- | ------- |
 | PR #370      | `0eec075c`             | Template 36, Pattern 9, skill updates                 |

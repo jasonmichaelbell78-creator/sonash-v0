@@ -173,7 +173,7 @@ All PRs modifying `firestore.rules` **MUST** include:
    ```
 
 2. **Test Evidence**
-   - Console output showing `npm run test:rules` passing
+   - Console output showing `npm test` passing
    - Screenshot or log excerpt showing negative test cases
 
 3. **Deployment Plan**
@@ -435,7 +435,7 @@ change]
 
 ### Firestore Rules Testing
 
-- [ ] Emulator tests pass (`npm run test:rules`)
+- [ ] Emulator tests pass (`npm test`)
 - [ ] Negative tests added (unauthorized access blocked)
 - [ ] Manual verification completed
 

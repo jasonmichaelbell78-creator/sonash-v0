@@ -111,9 +111,9 @@ Example:
 
 **Technology Stack**:
 
-- [Tech 1]: [Purpose]
-- [Tech 2]: [Purpose]
-- [Tech 3]: [Purpose]
+- \[Tech 1\]: \[Purpose\]
+- \[Tech 2\]: \[Purpose\]
+- \[Tech 3\]: \[Purpose\]
 
 **Key Files/Directories**:
 

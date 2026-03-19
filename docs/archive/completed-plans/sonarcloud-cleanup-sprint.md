@@ -120,7 +120,7 @@ files**.
 ### PR 2: Critical Issues (~107 issues) ✅ COMPLETED
 
 **Branch**: `claude/enhance-sonarcloud-report-3lp4i` **Status**: COMPLETED
-**Tracking**: [PR2 Checklist](#pr-2-checklist)
+**Tracking**: [PR2 Checklist](#pr-2-checklist--completed)
 
 > 📖 **Code Context**:
 > [sonarcloud-issues-detailed.md](../../docs/audits/sonarcloud-issues-detailed.md)

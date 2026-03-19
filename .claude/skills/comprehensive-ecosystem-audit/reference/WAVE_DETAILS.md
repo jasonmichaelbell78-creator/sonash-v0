@@ -18,7 +18,7 @@ agent launch commands, checkpoint verification, and error handling.
 - [Stage 1: Foundation Audits](#stage-1-foundation-audits)
 - [Stage 2: Extended Audits](#stage-2-extended-audits)
 - [Stage 3: Aggregation](#stage-3-aggregation)
-- [Checkpoint Verification](#checkpoint-verification)
+- [Stage 1 Checkpoint Verification](#stage-1-checkpoint-verification)
 - [Error Handling](#error-handling)
 
 ---

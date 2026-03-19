@@ -82,8 +82,7 @@ trust.
 5. Add c8 coverage thresholds to block zero-coverage regressions — 6-line config
 6. Pin `tj-actions/changed-files` in `docs-lint.yml` to SHA (CVE-2025-30066
    vector) — 1-line change
-7. Add `npm run compact-meeting-countdown.tsx` polling from 30s → 60s — 1-number
-   change
+7. Fix `compact-meeting-countdown.tsx` polling from 30s to 60s — 1-number change
 8. Fix Share meeting button to actually call `navigator.clipboard.writeText()` —
    2-line fix
 9. Add `"type-check": "tsc --noEmit"` to package.json scripts

@@ -205,6 +205,8 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ## Security
 
+<!-- markdownlint-disable MD038 -->
+
 | Priority | Pattern                      | Rule                                                                                                         | Why                                                                                                    |
 | -------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------- | ------------------------------------------------------ |
 | 🔴       | File path validation         | Validate within repo root before operations                                                                  | Prevent traversal                                                                                      |

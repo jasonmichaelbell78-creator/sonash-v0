@@ -6,6 +6,8 @@
 > Every anti-pattern in CODE_PATTERNS.md has a positive equivalent here. When in
 > doubt, copy-paste from this file.
 
+<!-- -->
+
 > Each section ID (S1, S2, ...) is stable and referenced by code-reviewer
 > anti-pattern checks. Do not renumber.
 

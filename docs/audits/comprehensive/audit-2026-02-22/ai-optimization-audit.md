@@ -189,8 +189,7 @@ with Claude until the hook finishes.
 2. Keep only essential checks (pattern compliance, session state) in the
    synchronous hook
 3. Display a "background: dependencies updating" message rather than blocking
-4. Consider a dedicated `npm run session:start` alias that the user runs
-   manually
+4. Consider a dedicated `session:start` npm alias that the user runs manually
 
 ---
 

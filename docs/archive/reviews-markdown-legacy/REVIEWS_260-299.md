@@ -123,9 +123,8 @@ claude/cherry-pick-commits-yLnZV (PR #346) **Suggestions:** 3 total (Critical:
 
 **Patterns Identified:**
 
-1. [Multi-word category capitalization]: `category.charAt(0).toUpperCase()`
-   only capitalizes first word — must
-   `.split("-").map(w => capitalize).join("-")`
+1. Multi-word category capitalization: `category.charAt(0).toUpperCase()` only
+   capitalizes first word — must `.split("-").map(w => capitalize).join("-")`
    - Root cause: Same bug as `reset-audit-triggers.js` but in different function
    - Prevention: Extract shared `toDisplayName()` helper for category names
 2. [Windows atomic rename]: `fs.renameSync()` fails on Windows when dest exists

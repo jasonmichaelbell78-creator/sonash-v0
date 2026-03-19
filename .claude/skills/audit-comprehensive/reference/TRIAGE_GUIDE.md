@@ -507,7 +507,7 @@ Action:
 Severity: S2 | Effort: E3 | Confidence: 85%
 
 Current: tsconfig.json has "strict": false Suggested Fix: Enable strict mode,
-fix ~200 type errors Acceptance Tests: npm run typecheck passes with strict:
+fix ~200 type errors Acceptance Tests: npm run type-check passes with strict:
 true
 
 Counter-argument:

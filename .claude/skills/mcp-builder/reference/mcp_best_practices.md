@@ -535,6 +535,7 @@ Each tool is defined with the following structure:
 
 Here's an example of implementing a basic tool in an MCP server:
 
+<!-- markdownlint-disable MD046 -->
 <Tabs>
   <Tab title="TypeScript">
     ```typescript

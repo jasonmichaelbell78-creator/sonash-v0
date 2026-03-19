@@ -10,6 +10,8 @@
 > **v3.17 UPDATE:** Removed all date-based scheduling. Now uses Priority + Phase
 > Buckets + Relative Ordering system. See Timing System section below.
 
+<!-- -->
+
 > **v3.16 UPDATE:** Created canonical audit findings location (Session #116).
 > 172 NET NEW findings consolidated to
 > [docs/technical-debt/](./docs/technical-debt/). Added audit findings procedure
@@ -287,6 +289,8 @@ Planned | 🟣 Research
 > dev **Status:** 🔄 ACTIVE | **Started:** Session #64 | **Updated:** Session
 > #98
 
+<!-- -->
+
 > **✅ SonarCloud Sprint Partially Complete (Session #85)**
 >
 > PR 1 (Mechanical Fixes) and PR 2 (Critical Issues) completed. Remaining work
@@ -298,11 +302,15 @@ Planned | 🟣 Research
 > - **Completed:** ~300 issues fixed (mechanical + critical)
 > - **Deferred:** ~1,400 issues to M2 (major, minor, security hotspots)
 
+<!-- -->
+
 > **📋 Process Audit Integration (Session #101)**
 >
 > This sprint now includes CI/CD reliability and solo developer automation work
 > from Process Audit DEBT-0851-0118 and Comprehensive Audit (Session #98). Total
 > sprint effort: ~65 hours across 5 tracks.
+
+<!-- -->
 
 > **📋 SWS Phase 3 Extraction (Session #219)**
 >
@@ -1145,19 +1153,19 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 > **Source:** Engineering Productivity Audit (Session #64, report archived)
 
-9. **EFF-001: Add `npm run dev:offline` Script** (S effort, High ROI)
+9. **EFF-001: Add `dev:offline` Script** (S effort, High ROI)
    - [ ] Install `concurrently` as dev dependency
    - [ ] Add
          `"dev:offline": "concurrently \"firebase emulators:start\" \"npm run dev\""`
    - [ ] Enables single-command offline development
-   - **Verification:** `npm run dev:offline` starts both emulators and Next.js
+   - **Verification:** `dev:offline` script starts both emulators and Next.js
 
 10. **EFF-003: Add `scripts/doctor.js` Environment Validator** (S effort, High
     ROI)
     - [ ] Create script to check Node version, npm, Firebase CLI, `.env.local`
-    - [ ] Add `npm run doctor` to package.json
+    - [ ] Add `doctor` script to package.json
     - [ ] Include helpful fix hints in error messages
-    - **Verification:** `npm run doctor` passes on working setup, fails clearly
+    - **Verification:** `doctor` script passes on working setup, fails clearly
       on broken
 
 11. **EFF-005: Cache npm ci in CI Workflow** (S effort, Medium ROI)
@@ -1908,7 +1916,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 These pre-existing issues were identified during PR review CI:
 
-- ⏳ **Prettier Formatting (518 files)** - Run `npm run format:write` to fix
+- ⏳ **Prettier Formatting (518 files)** - Run `npx prettier --write .` to fix
   - **Priority:** P2 - Code style consistency
   - **Effort:** 5 minutes (automated fix)
 - ⏳ **Unused devDependencies** - Remove `@modelcontextprotocol/sdk`, `undici`
@@ -1961,9 +1969,9 @@ Performance monitoring, incident response, and dashboard enhancements.
   - **Verification:** Go offline, trigger error, see `isOnline: false` in Sentry
 
 - ⏳ **EFF-008: Create Smoke Test Script** (M effort)
-  - Create `npm run smoke` that hits homepage, auth endpoint, Cloud Function
+  - Create `smoke` script that hits homepage, auth endpoint, Cloud Function
   - Quick deployment verification (~30s)
-  - **Verification:** `npm run smoke` passes on healthy deployment
+  - **Verification:** `smoke` script passes on healthy deployment
 
 - ⏳ **EFF-009: Add Bug Report GitHub Template** (M effort)
   - Create `.github/ISSUE_TEMPLATE/bug_report.md`

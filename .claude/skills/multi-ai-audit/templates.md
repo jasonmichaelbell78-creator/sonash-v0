@@ -47,7 +47,7 @@ All templates use the standardized header pattern:
 ## [Category] Audit Prompt (Copy for Each AI Model)
 ```
 
-Extract the section between this header and the next `## ` heading. Use this
+Extract the section between this header and the next `##` heading. Use this
 regex to find it: `/^## .+ Audit Prompt \(Copy for Each AI Model\)/`. This is
 the part users paste into external AIs.
 
@@ -735,6 +735,8 @@ completeSession(sessionId, {
 ## Input Format Support
 
 The skill accepts **any format** from external AIs:
+
+<!-- markdownlint-disable MD038 -->
 
 | Format          | Detection             | Example                           |
 | --------------- | --------------------- | --------------------------------- | --- | ----- | -------- | --- |

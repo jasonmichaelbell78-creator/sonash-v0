@@ -305,7 +305,7 @@ unblocked.
 
 ### Stack
 
-- Next.js 16.1.7, React 19.2.3, TypeScript 5.x
+- Next.js 16.2.0, React 19.2.4, TypeScript 5.x
 - Tailwind CSS v4, Framer Motion 12
 - Firebase (Auth, Firestore, Functions, App Check)
 

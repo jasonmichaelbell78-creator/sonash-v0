@@ -325,8 +325,8 @@ Upon completion:
 
 **Design Choices**:
 
-- [Choice 1]: [Reasoning]
-- [Choice 2]: [Reasoning]
+- \[Choice 1\]: \[Reasoning\]
+- \[Choice 2\]: \[Reasoning\]
 
 ---
 

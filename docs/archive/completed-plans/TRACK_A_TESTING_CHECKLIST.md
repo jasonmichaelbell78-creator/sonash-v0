@@ -459,6 +459,8 @@ actual bucket is `sonash-app.firebasestorage.app`.
 > **Note:** Password reset email may go to spam folder. Consider SPF/DKIM
 > configuration for better deliverability.
 
+<!-- -->
+
 > **Session #75 Fix:** Original implementation used
 > `admin.auth().generatePasswordResetLink()` which only generates a link but
 > doesn't send an email. Fixed to use Firebase Auth REST API

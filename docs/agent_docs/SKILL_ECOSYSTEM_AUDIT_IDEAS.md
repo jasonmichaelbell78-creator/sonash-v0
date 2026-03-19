@@ -121,7 +121,7 @@ each with a trigger condition, evidence block, search patterns, and a table. A
 human reviewer would never run all 10 before every push. The pre-checks have
 become a reference manual, not an actionable checklist.
 
-- **Detection:** Count `### ` subsections within Step 0.5
+- **Detection:** Count `###` subsections within Step 0.5
 - **Signal:** More than 5-6 pre-checks means most are being skipped
 
 **2. Evidence Citation Inflation** Every pattern/template includes "Evidence: PR

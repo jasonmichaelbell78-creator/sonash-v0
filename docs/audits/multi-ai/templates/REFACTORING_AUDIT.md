@@ -196,8 +196,8 @@ Before beginning refactoring analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis (PRIMARY INPUT)**: SonarCloud integration available via
-   `npm run sonar:report` (see SonarCloud dashboard)
+5. **Static Analysis (PRIMARY INPUT)**: SonarCloud integration available via MCP
+   server or SonarCloud dashboard
    - **NOTE:** Run fresh SonarCloud scan or verify metrics are current before
      each audit—numbers become stale as issues are fixed.
    - CRITICAL cognitive complexity violations (functions exceeding 15-point

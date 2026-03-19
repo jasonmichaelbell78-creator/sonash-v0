@@ -435,8 +435,8 @@ firebase deploy
 
 ### Core Stack
 
-- **Next.js** 16.1.0 - React framework with App Router
-- **React** 19.2.3 - UI library
+- **Next.js** 16.2.0 - React framework with App Router
+- **React** 19.2.4 - UI library
 - **TypeScript** 5.x - Type safety
 - **Tailwind CSS** 4.x - Styling
 - **Framer Motion** 12.x - Animations

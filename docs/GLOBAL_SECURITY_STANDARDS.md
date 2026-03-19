@@ -371,7 +371,7 @@ if grep -rn "sk_live\|sk_test\|api_key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --
   exit 1
 fi
 
-npm run lint-staged
+npx lint-staged
 ```
 
 ---

@@ -224,7 +224,7 @@ Goal: do not install heavy tools unless already present.
 **Quality gates:**
 
 - npm run lint (or closest lint script)
-- npm run typecheck (or `tsc --noEmit`)
+- npm run type-check (or `tsc --noEmit`)
 - npm test (or closest test script)
 
 **Project-specific:**
@@ -491,7 +491,7 @@ Goal: small, reviewable PRs.
       "risk_level": "low|medium|high",
       "estimated_effort": "E0|E1|E2|E3",
       "prerequisites": ["PR0"],
-      "acceptance_tests": ["npm run lint", "npm run typecheck", "npm test"],
+      "acceptance_tests": ["npm run lint", "npm run type-check", "npm test"],
       "notes": "review guidance + pitfalls"
     }
   ],

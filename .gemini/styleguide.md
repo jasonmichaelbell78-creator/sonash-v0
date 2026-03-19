@@ -13,11 +13,11 @@ project — a privacy-first ADHD management app built with Next.js and Firebase.
 
 These are intentionally bleeding-edge and newer than your training data:
 
-- Next.js 16.1.6 (App Router)
-- React 19.2.3
-- Firebase 12.8.0 (Modular SDK)
-- Tailwind CSS 4.1.18
-- Zod 4.3.5
+- Next.js 16.2.0 (App Router)
+- React 19.2.4
+- Firebase 12.10.0 (Modular SDK)
+- Tailwind CSS 4.2.2
+- Zod 4.3.6
 - TypeScript strict mode
 
 ## Architecture Rules

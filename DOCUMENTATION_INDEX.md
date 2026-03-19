@@ -112,7 +112,7 @@ _Essential project-level documentation_
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓3 ↑9      | 2026-03-19    |
-| [Code of Conduct](CODE_OF_CONDUCT.md)                   | We as members, contributors, and leaders pledge to make part...  | ↓1 ↑0      | 2026-03-18    |
+| [Code of Conduct](CODE_OF_CONDUCT.md)                   | This document establishes the standards of behavior expected...  | ↓1 ↑0      | 2026-03-18    |
 | [Contributing to SoNash](CONTRIBUTING.md)               | Guidelines for contributing to SoNash. We welcome bug report...  | ↓0 ↑8      | 2026-03-18    |
 | [Security Policy](SECURITY.md)                          | Security policy for SoNash — vulnerability reporting, suppor...  | ↓1 ↑0      | 2026-03-18    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-03-16    |

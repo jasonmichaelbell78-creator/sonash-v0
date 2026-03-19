@@ -50,10 +50,10 @@ repository. This document serves as:
 
 ### For Compliance Verification
 
-1. Use [Verification Commands](#verification-commands) section for each trigger
-   type
-2. Check [Compliance Gaps](#compliance-gaps--recommendations) for known issues
-3. Review [Compliance Matrix](#compliance-matrix) for overall status
+1. Use [Quick Verification Suite](#quick-verification-suite) section for each
+   trigger type
+2. Check [Current Gaps](#current-gaps) for known issues
+3. Review [Recommended Additions](#recommended-additions) for improvement areas
 
 ---
 
@@ -135,12 +135,12 @@ are not staged together. Override with `SKIP_CROSS_DOC_CHECK=1 git commit ...`
 
 Blocks when you modify documents that have known dependencies:
 
-| Modified File                          | Check These                      |
-| -------------------------------------- | -------------------------------- |
-| ROADMAP.md                             | SESSION_CONTEXT.md               |
-| package.json (scripts section changed) | DEVELOPMENT.md                   |
-| .husky/_ or .claude/hooks/_            | docs/TRIGGERS.md, DEVELOPMENT.md |
-| .claude/commands/_ or .claude/skills/_ | COMMAND_REFERENCE.md             |
+| Modified File                              | Check These                      |
+| ------------------------------------------ | -------------------------------- |
+| ROADMAP.md                                 | SESSION_CONTEXT.md               |
+| package.json (scripts section changed)     | DEVELOPMENT.md                   |
+| `.husky/*` or `.claude/hooks/*`            | docs/TRIGGERS.md, DEVELOPMENT.md |
+| `.claude/commands/*` or `.claude/skills/*` | COMMAND_REFERENCE.md             |
 
 > **Note:** SESSION_CONTEXT ↔ INTEGRATED_IMPROVEMENT_PLAN checks removed (plan
 > archived 2026-01-14). See Review #144.

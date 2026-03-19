@@ -287,7 +287,8 @@ audit-engineering-productivity) cause confusion about which to invoke.
 - Consolidate similar audit skills into a single parametric audit skill
 - Add brief (1-2 line) descriptions to SKILL_INDEX.md entries
 - Consider skill deprecation/archiving for rarely-used skills
-- Add `npm run skills:usage` to surface which skills are most frequently invoked
+- Add a `skills:usage` script to surface which skills are most frequently
+  invoked
 
 ---
 

@@ -259,7 +259,7 @@ be rotated regularly.
 
    # If web app references server-side APIs affected by the change, redeploy
    # NOTE: Service account credentials must NEVER be used in client-side code
-   npm run deploy
+   firebase deploy
    ```
 
 4. **Verify New Keys Working**

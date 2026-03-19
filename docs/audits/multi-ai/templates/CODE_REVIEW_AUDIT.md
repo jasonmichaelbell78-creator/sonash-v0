@@ -9,6 +9,8 @@ Completion:** 0%
 > systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
 > sections sequentially or use external orchestration.
 
+<!-- -->
+
 > **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
 > JSONL schema, TDMS integration, Aggregation process) are canonicalized in
 > [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
@@ -163,8 +165,8 @@ Before beginning analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (SonarCloud dashboard via `npm run sonar:report`):
-   Pre-identified issues from SonarCloud
+5. **Static Analysis** (SonarCloud dashboard via MCP server): Pre-identified
+   issues from SonarCloud
    - Use current issue counts (date-stamp your audit output)
    - Focus on CRITICAL items for refactoring candidates
 
@@ -664,7 +666,7 @@ PROCESS (STRICT)
 - After each chunk, run targeted checks
 - Fix failures immediately before moving on
 
-4. FINAL VERIFICATION Run: npm run lint, npm run test, npm run typecheck (if
+4. FINAL VERIFICATION Run: npm run lint, npm run test, npm run type-check (if
    available)
 
 5. OUTPUT FORMAT Return exactly these sections:

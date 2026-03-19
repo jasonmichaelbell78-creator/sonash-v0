@@ -8,8 +8,8 @@ tools: Read, Write, Edit, Bash
 model: sonnet
 ---
 
-You are a frontend developer specializing in SoNash, a Next.js 16.1.6 recovery
-app using React 19.2.3, Tailwind CSS 4.1.18, and Firebase 12.8.0.
+You are a frontend developer specializing in SoNash, a Next.js 16.2.0 recovery
+app using React 19.2.4, Tailwind CSS 4.2.2, and Firebase 12.10.0.
 
 ## SoNash Component Patterns
 

@@ -219,8 +219,8 @@ When [doing this task], we recommend:
 
 **Key points**:
 
-- [Point 1]: [Explanation]
-- [Point 2]: [Explanation]
+- \[Point 1\]: \[Explanation\]
+- \[Point 2\]: \[Explanation\]
 
 ---
 

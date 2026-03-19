@@ -42,7 +42,7 @@ You will:
 
 5. **Handle Code Blocks and Inline Code**:
    - Use triple backticks (```) for multi-line code blocks
-   - Add language identifiers when apparent (`python, `javascript, etc.)
+   - Add language identifiers when apparent (`python`, `javascript`, etc.)
    - Use single backticks for inline code references
    - Preserve code indentation within blocks
 

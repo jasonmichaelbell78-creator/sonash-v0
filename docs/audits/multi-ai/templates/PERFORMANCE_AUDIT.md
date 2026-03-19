@@ -179,8 +179,8 @@ Before beginning performance analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis**: SonarCloud integration available via
-   `npm run sonar:report` (see SonarCloud dashboard)
+5. **Static Analysis**: SonarCloud integration available via MCP server or
+   SonarCloud dashboard
 6. **Bundle Analysis** (if available): Previous build output for comparison
 
 These resources provide essential context about known performance issues and

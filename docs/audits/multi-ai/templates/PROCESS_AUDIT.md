@@ -269,8 +269,8 @@ Before beginning process analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis**: SonarCloud integration available via
-   `npm run sonar:report` (see SonarCloud dashboard)
+5. **Static Analysis**: SonarCloud integration available via MCP server or
+   SonarCloud dashboard
 6. **Workflow Documentation** (if available): CI/CD process docs, hook
    documentation
 7. **TDMS**: docs/technical-debt/MASTER_DEBT.jsonl for existing tracked debt

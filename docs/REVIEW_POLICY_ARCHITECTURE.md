@@ -637,7 +637,7 @@ tier_4:
 
 ```bash
 # Bi-weekly automated check (not yet implemented)
-npm run audit:docs-drift  # Phase 3 deliverable
+node scripts/audit-docs-drift.js  # Phase 3 deliverable (planned)
 # Compares:
 # - README.md feature list vs actual app features
 # - API docs vs actual API endpoints

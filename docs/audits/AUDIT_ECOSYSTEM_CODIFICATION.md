@@ -18,6 +18,8 @@ conventions across all audit types.
 > `type: "enhancement"` in `MASTER_DEBT.jsonl`. See
 > [AUDIT_TRACKER.md](./AUDIT_TRACKER.md) for current tracking.
 
+<!-- -->
+
 > **Note:** This document captures the original design decisions and
 > implementation plan for the audit ecosystem codification. For current
 > standards see [AUDIT_STANDARDS.md](./AUDIT_STANDARDS.md). For current

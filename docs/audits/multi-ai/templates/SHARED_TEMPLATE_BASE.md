@@ -152,7 +152,7 @@ project-specific resources. This section MUST include the following note:
 3. **Current Compliance** (`npm run patterns:check`): Known anti-pattern
    violations
 4. **Dependency Health**: `npm run deps:circular`, `npm run deps:unused`
-5. **Static Analysis**: SonarCloud integration via `npm run sonar:report`
+5. **Static Analysis**: SonarCloud integration (via MCP server or dashboard)
 
 ---
 

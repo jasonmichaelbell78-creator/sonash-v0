@@ -271,9 +271,9 @@ manually.
 - **Current State:** Fully functional settings sync tool with path containment
   validation (Review #224) and selective key exclusion. Documented in
   DEVELOPMENT.md but not in npm scripts.
-- **Recommendation:** Add npm script entry 'npm run settings:sync' with sensible
-  default (--diff or --import). Or remove from codebase if manual invocation via
-  'node scripts/...' is sufficient. Currently confusing: documented but not in
+- **Recommendation:** Add npm script entry `settings:sync` with sensible default
+  (--diff or --import). Or remove from codebase if manual invocation via 'node
+  scripts/...' is sufficient. Currently confusing: documented but not in
   package.json scripts.
 - **Impact:** accuracy
 
@@ -604,12 +604,12 @@ changes.
 
 **Category:** Fragile Parsing | **Effort:** E1
 
-check-session-gaps.js (line 59) extracts documented sessions using /\*\*Session
-#(\d+) Summary\*\*/g and current counter using /\*\*Current Session
-Count\*\*:\s\*(\d+)/ (line 77). The pattern is hardcoded to expect exact bold
-formatting. If SESSION_CONTEXT.md switches to different header style (# Session
-N Summary, or [Session N]), gap detection fails, missing undocumented sessions
-and potentially allowing orphaned commits.
+check-session-gaps.js (line 59) extracts documented sessions using
+`/\*\*Session #(\d+) Summary\*\*/g` and current counter using /\*\*Current
+Session Count\*\*:\s\*(\d+)/ (line 77). The pattern is hardcoded to expect exact
+bold formatting. If SESSION_CONTEXT.md switches to different header style (#
+Session N Summary, or [Session N]), gap detection fails, missing undocumented
+sessions and potentially allowing orphaned commits.
 
 - **File:** `/home/user/sonash-v0/scripts/check-session-gaps.js`
 - **Current State:** Hardcoded regex: /\*\*Session #(\d+) Summary\*\*/ expects
@@ -901,7 +901,7 @@ ROADMAP_INTEGRATION logic. 340 lines with clear purpose but never executed.
 - **Current State:** Complete implementation that reads net-new aggregated
   findings and writes to MASTER_FINDINGS.jsonl
 - **Recommendation:** Add to package.json scripts if part of audit pipeline
-  (e.g., 'npm run canon:create'), or consolidate into
+  (e.g., a `canon:create` script), or consolidate into
   aggregate-audit-findings.js workflow. Currently blocks on file that depends on
   aggregate-audit-findings.js output.
 - **Impact:** tokens
@@ -964,7 +964,7 @@ Related to Session #116 canonicalization but never invoked in workflows.
 - **File:** `/home/user/sonash-v0/scripts/regenerate-findings-index.js`
 - **Current State:** Functional index generator that groups findings by severity
   and category with ROADMAP placement metadata
-- **Recommendation:** Add to npm scripts (e.g., 'npm run canon:index') or
+- **Recommendation:** Add to npm scripts (e.g., a `canon:index` script) or
   consolidate into debt management workflow. If MASTER_FINDINGS.jsonl is
   auto-updated, add regenerate-findings-index to post-intake hooks.
 - **Impact:** tokens
@@ -1440,8 +1440,8 @@ audit input format; parsing failures cascade to all downstream processing.
   row with no gaps. Pipe-splitting (lines 485, 507) naive: split('|') assumes
   pipes only delimit columns.
 - **Recommendation:** Add flexible whitespace:
-  /\|[^\n]_\|\s_\n\s*\|\s*[-:\s|]+\s*\|/. Detect separator row by content: all
-  cells match /^\s*[-:]+\s\*$/. Parse cells aware of escaped pipes: split by
+  `/\|[^\n]*\|\s*\n\s*\|\s*[-:\s|]+\s*\|/`. Detect separator row by content: all
+  cells match /^\s\*[-:]+\s\*$/. Parse cells aware of escaped pipes: split by
   unescaped pipes only. Test with real audit markdown examples.
 - **Impact:** accuracy|tokens
 

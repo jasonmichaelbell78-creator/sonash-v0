@@ -1,5 +1,13 @@
 # Code of Conduct
 
+**Last Updated:** 2026-03-19
+
+## Purpose
+
+This document establishes the standards of behavior expected from all
+participants in the SoNash project community. It aims to foster an open,
+welcoming, and respectful environment for contributors and users.
+
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our
@@ -36,3 +44,9 @@ and investigated promptly and fairly.
 
 This Code of Conduct is adapted from the
 [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1.
+
+## Version History
+
+| Version | Date       | Changes         |
+| ------- | ---------- | --------------- |
+| 1.0     | 2026-03-19 | Initial release |

@@ -58,13 +58,13 @@ instructions] for [specific activity/process].
 
 **Inputs**:
 
-- [Input 1]: [Description]
-- [Input 2]: [Description]
+- \[Input 1\]: \[Description\]
+- \[Input 2\]: \[Description\]
 
 **Outputs**:
 
-- [Output 1]: [Description]
-- [Output 2]: [Description]
+- \[Output 1\]: \[Description\]
+- \[Output 2\]: \[Description\]
 
 ### Step-by-Step Process
 
