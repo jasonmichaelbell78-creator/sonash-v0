@@ -33,13 +33,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-typecheck-test:
-    name: Lint, Type Check & Test
+  # ── Job 1: Lint & Format (fast feedback) ─────────────────────────
+  lint:
+    name: Lint & Format
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     permissions:
       contents: read
-      checks: write
 
     steps:
       - name: Checkout code
@@ -61,8 +61,35 @@ jobs:
         run: npm run lint
 
       - name: Check code formatting (Prettier)
-        # Now blocking - initial format applied 2026-01-13
         run: npm run format:check
+
+      - name: Check for circular dependencies
+        run: npm run deps:circular
+
+      - name: Check for unused dependencies/exports
+        run: npm run deps:unused
+
+  # ── Job 2: Type Check & Test (parallel with lint) ────────────────
+  test:
+    name: Type Check & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Type check
         run: npx tsc --noEmit
@@ -91,6 +118,12 @@ jobs:
         # Known gaps in baseline are allowed; only new gaps fail CI
         run: node scripts/generate-test-registry.js --check-coverage
 
+      - name: Pattern test suite
+        run: npx vitest run tests/pattern-compliance.test.js
+
+      - name: GitHub optimization wave tests
+        run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
+
       - name: Upload coverage to Codecov
         if: success()
         uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.4.2
@@ -107,12 +140,28 @@ jobs:
           path: coverage/
           retention-days: 14
 
-      - name: Check for circular dependencies
-        run: npm run deps:circular
+  # ── Job 3: Validate (parallel with lint & test) ──────────────────
+  validate:
+    name: Validate & Compliance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
 
-      - name: Check for unused dependencies/exports
-        # Now blocking - knip passes clean (2026-02-02)
-        run: npm run deps:unused
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 25
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Get changed files for pattern check
         if: ${{ github.event_name == 'pull_request' }}
@@ -146,12 +195,6 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: npm run patterns:check-all
 
-      - name: Pattern test suite
-        run: npx vitest run tests/pattern-compliance.test.js
-
-      - name: GitHub optimization wave tests
-        run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
-
       - name: Security pattern check
         if: ${{ github.event_name == 'pull_request' }}
         run: node scripts/security-check.js --ci
@@ -168,7 +211,6 @@ jobs:
 
       - name: Validate audit files
         # Validates audit JSONL files have required fields
-        # Review #207: Use -- to pass args through npm to the script
         continue-on-error: true
         run: npm run audit:validate -- --all
 
@@ -179,7 +221,6 @@ jobs:
 
       - name: Check ROADMAP debt references
         # TDMS Phase 8: Validates DEBT-XXXX references exist in canonical source
-        # Now blocking - prevents orphaned DEBT-XXXX references (2026-02-02)
         if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
         run: node scripts/debt/sync-roadmap-refs.js --check-only
 
@@ -191,11 +232,12 @@ jobs:
           node scripts/debt/generate-views.js
           git diff --exit-code docs/technical-debt/views/ || echo "⚠️ Views are stale - run: node scripts/debt/generate-views.js"
 
+  # ── Job 4: Build (depends on lint + test passing) ────────────────
   build:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: lint-typecheck-test
+    needs: [lint, test]
     permissions:
       contents: read
 
