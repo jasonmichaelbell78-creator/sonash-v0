@@ -2380,5 +2380,38 @@ SonarCloud 33)
 - When multiple npm dependencies are broken (hermes-parser, oxlint), the
   pre-commit hook blocks all commits. The ESLint check now supports
   `is_skipped eslint` for this scenario.
+- When bumping a runtime version (e.g. Node), grep for all version pins (.nvmrc,
+  engines, tsconfig target) and update them atomically. Partial bumps cause
+  local/CI/deploy divergence.
+
+---
+
+### Review #491: PR #456 R1 — Mixed (Qodo + Gemini + CI) (2026-03-20)
+
+**Date:** 2026-03-20 | **PR:** #456 | **Source:** qodo+gemini+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 3     | 0        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 3     | 0       |
+
+**Patterns:**
+
+- Runtime version bumps need atomic propagation across all pins (.nvmrc,
+  engines, tsconfig)
+- Cherry-picked release-please files need Prettier formatting
+
+**Learnings:**
+
+- Always propagate runtime version changes to all config files atomically
+- Qodo suggestion to revert nodejs22→20 was incorrect (all other configs already
+  target 22)
+- Qodo suggestion to downgrade codeql-action was incorrect (only one step,
+  already consistent at v4)
 
 ---
