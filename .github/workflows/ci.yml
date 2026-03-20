@@ -130,7 +130,7 @@ jobs:
         run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
 
       - name: Upload coverage to Codecov
-        if: ${{ success() && secrets.CODECOV_TOKEN != '' }}
+        if: success()
         uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.4.2
         with:
           directory: coverage/
