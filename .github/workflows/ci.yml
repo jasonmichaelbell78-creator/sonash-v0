@@ -4,23 +4,27 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - "LICENSE"
+      - "README.md"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
       - "SECURITY.md"
+      - "LICENSE"
+      - "release-notes.md"
+      - "docs/archive/**"
+      - "docs/SESSION_HISTORY.md"
+      - ".github/ISSUE_TEMPLATE/**"
   pull_request:
     branches: [main]
     paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - "LICENSE"
+      - "README.md"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
       - "SECURITY.md"
+      - "LICENSE"
+      - "release-notes.md"
+      - "docs/archive/**"
+      - "docs/SESSION_HISTORY.md"
+      - ".github/ISSUE_TEMPLATE/**"
 
 permissions: {}
 
@@ -29,13 +33,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-typecheck-test:
-    name: Lint, Type Check & Test
+  # ── Job 1: Lint & Format (fast feedback) ─────────────────────────
+  lint:
+    name: Lint & Format
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     permissions:
       contents: read
-      checks: write
 
     steps:
       - name: Checkout code
@@ -57,15 +61,115 @@ jobs:
         run: npm run lint
 
       - name: Check code formatting (Prettier)
-        # Now blocking - initial format applied 2026-01-13
         run: npm run format:check
 
       - name: Check for circular dependencies
         run: npm run deps:circular
 
       - name: Check for unused dependencies/exports
-        # Now blocking - knip passes clean (2026-02-02)
         run: npm run deps:unused
+
+  # ── Job 2: Type Check & Test (parallel with lint) ────────────────
+  test:
+    name: Type Check & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build review scripts
+        # Tests import from scripts/reviews/dist/ which is gitignored
+        working-directory: scripts/reviews
+        run: |
+          npx tsc -p ./tsconfig.json
+          test -d dist || { echo "::error::Expected scripts/reviews/dist to exist after build"; exit 1; }
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+          GH_TOKEN: ${{ github.token }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: test
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: test
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: test
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: test
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: test
+          NEXT_PUBLIC_FIREBASE_APP_ID: test
+
+      - name: Enforce coverage thresholds
+        run: |
+          echo "Checking overall coverage threshold (65% line coverage)..."
+          npx c8 check-coverage --lines 65 || {
+            echo "::error::Overall line coverage below 65% threshold"
+            exit 1
+          }
+
+      - name: Check test coverage completeness
+        # Blocks if NEW untested scripts found (not in .test-baseline.json)
+        # Known gaps in baseline are allowed; only new gaps fail CI
+        run: node scripts/generate-test-registry.js --check-coverage
+
+      - name: Pattern test suite
+        run: npx vitest run tests/pattern-compliance.test.js
+
+      - name: GitHub optimization wave tests
+        run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
+
+      - name: Upload coverage to Codecov
+        if: ${{ success() && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.4.2
+        with:
+          directory: coverage/
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage report
+        if: success()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+  # ── Job 3: Validate (parallel with lint & test) ──────────────────
+  validate:
+    name: Validate & Compliance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Get changed files for pattern check
         if: ${{ github.event_name == 'pull_request' }}
@@ -97,16 +201,13 @@ jobs:
 
       - name: Pattern compliance check (push to main)
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        # For push to main, run full check but don't block (baseline exists)
-        # This provides visibility without blocking merges
-        continue-on-error: true
+        # Blocking: baseline verified clean before enabling (PR #457)
         run: npm run patterns:check-all
 
-      - name: Pattern test suite
-        run: npx vitest run tests/pattern-compliance.test.js
-
-      - name: GitHub optimization wave tests
-        run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
+      - name: Security pattern check
+        run: node scripts/security-check.js --all
+        # TODO: Remove continue-on-error once validated against full codebase (PR #457)
+        continue-on-error: true
 
       - name: Documentation check
         # Non-blocking: templates/stubs have expected issues, active docs are clean
@@ -119,7 +220,6 @@ jobs:
 
       - name: Validate audit files
         # Validates audit JSONL files have required fields
-        # Review #207: Use -- to pass args through npm to the script
         continue-on-error: true
         run: npm run audit:validate -- --all
 
@@ -130,7 +230,6 @@ jobs:
 
       - name: Check ROADMAP debt references
         # TDMS Phase 8: Validates DEBT-XXXX references exist in canonical source
-        # Now blocking - prevents orphaned DEBT-XXXX references (2026-02-02)
         if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
         run: node scripts/debt/sync-roadmap-refs.js --check-only
 
@@ -142,54 +241,12 @@ jobs:
           node scripts/debt/generate-views.js
           git diff --exit-code docs/technical-debt/views/ || echo "⚠️ Views are stale - run: node scripts/debt/generate-views.js"
 
-      - name: Type check
-        run: npx tsc --noEmit
-
-      - name: Run tests with coverage
-        run: npm run test:coverage
-        env:
-          NODE_ENV: test
-          NEXT_PUBLIC_FIREBASE_API_KEY: test
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: test
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: test
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: test
-          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: test
-          NEXT_PUBLIC_FIREBASE_APP_ID: test
-
-      - name: Enforce coverage thresholds
-        run: |
-          echo "Checking overall coverage threshold (65% line coverage)..."
-          npx c8 check-coverage --lines 65 || {
-            echo "::error::Overall line coverage below 65% threshold"
-            exit 1
-          }
-
-      - name: Check test coverage completeness
-        # Blocks if NEW untested scripts found (not in .test-baseline.json)
-        # Known gaps in baseline are allowed; only new gaps fail CI
-        run: node scripts/generate-test-registry.js --check-coverage
-
-      - name: Upload coverage to Codecov
-        if: success()
-        uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.4.2
-        with:
-          directory: coverage/
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Upload coverage report
-        if: success()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-        with:
-          name: coverage-report
-          path: coverage/
-          retention-days: 14
-
+  # ── Job 4: Build (depends on lint + test passing) ────────────────
   build:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: lint-typecheck-test
+    needs: [lint, test, validate]
     permissions:
       contents: read
 

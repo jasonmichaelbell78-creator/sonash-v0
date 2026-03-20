@@ -105,7 +105,7 @@ export function createWarning({ category, message, severity, source_script, rela
   const filePath = resolveWarningsPath(opts);
 
   const record = {
-    id: `warn-${Date.now()}`,
+    id: `warn-${crypto.randomUUID()}`,
     date: today(),
     schema_version: 1,
     completeness: "full",

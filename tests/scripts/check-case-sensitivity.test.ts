@@ -12,6 +12,28 @@ const PROJECT_ROOT = fs.existsSync(path.resolve(__dirname, "../../package.json")
 const SCRIPT_PATH = path.resolve(PROJECT_ROOT, "scripts/check-docs-light.js");
 
 /**
+ * Detect if filesystem is case-sensitive (Linux) vs case-insensitive (Windows/macOS).
+ * Case mismatch detection only works on case-insensitive filesystems.
+ */
+function isCaseSensitiveFS(): boolean {
+  const testDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-case-detect-"));
+  try {
+    const upper = path.join(testDir, "TEST.txt");
+    fs.writeFileSync(upper, "test");
+    const lower = path.join(testDir, "test.txt");
+    // On case-insensitive FS, this returns true (same file); on case-sensitive, false
+    return !fs.existsSync(lower);
+  } finally {
+    try {
+      fs.rmSync(testDir, { recursive: true, force: true });
+    } catch {
+      /* cleanup best-effort */
+    }
+  }
+}
+const caseSensitive = isCaseSensitiveFS();
+
+/**
  * Helper to run the doc-lint script and capture output
  */
 function runScript(
@@ -61,12 +83,19 @@ describe("check-docs-light.js case-sensitivity check", () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
-  it("flags case mismatch in internal link reference", () => {
-    // Create a file with a specific casing
-    const targetFile = path.join(tempDir, "CLAUDE.md");
-    fs.writeFileSync(
-      targetFile,
-      `# CLAUDE
+  it(
+    "flags case mismatch in internal link reference",
+    {
+      skip: caseSensitive
+        ? "case-sensitive filesystem (Linux) — mismatch detection requires case-insensitive FS"
+        : false,
+    },
+    () => {
+      // Create a file with a specific casing
+      const targetFile = path.join(tempDir, "CLAUDE.md");
+      fs.writeFileSync(
+        targetFile,
+        `# CLAUDE
 
 ## Purpose
 
@@ -78,13 +107,13 @@ Configuration file.
 |---------|------|---------|
 | 1.0 | 2026-01-01 | Initial |
 `
-    );
+      );
 
-    // Create a markdown file that references it with wrong casing
-    const sourceFile = path.join(tempDir, "TEST_DOC.md");
-    fs.writeFileSync(
-      sourceFile,
-      `# Test Document
+      // Create a markdown file that references it with wrong casing
+      const sourceFile = path.join(tempDir, "TEST_DOC.md");
+      fs.writeFileSync(
+        sourceFile,
+        `# Test Document
 
 ## Purpose
 
@@ -96,42 +125,43 @@ See [CLAUDE](claude.md) for details.
 |---------|------|---------|
 | 1.0 | 2026-01-01 | Initial |
 `
-    );
+      );
 
-    const result = runScript([sourceFile, "--json"]);
-    const parsed = extractJSON(result.stdout);
+      const result = runScript([sourceFile, "--json"]);
+      const parsed = extractJSON(result.stdout);
 
-    // The case mismatch should appear as a warning
-    const results = parsed.results as Array<{
-      file: string;
-      warnings: string[];
-      errors: string[];
-    }>;
-    assert.ok(results && results.length > 0, "Should have results");
+      // The case mismatch should appear as a warning
+      const results = parsed.results as Array<{
+        file: string;
+        warnings: string[];
+        errors: string[];
+      }>;
+      assert.ok(results && results.length > 0, "Should have results");
 
-    const docResult = results[0];
+      const docResult = results[0];
 
-    // Check if any warning mentions case mismatch
-    const caseWarnings = docResult.warnings.filter(
-      (w: string) => w.includes("Case mismatch") || w.includes("case mismatch")
-    );
+      // Check if any warning mentions case mismatch
+      const caseWarnings = docResult.warnings.filter(
+        (w: string) => w.includes("Case mismatch") || w.includes("case mismatch")
+      );
 
-    assert.ok(
-      caseWarnings.length > 0,
-      `Expected case mismatch warning, got warnings: ${JSON.stringify(docResult.warnings)}`
-    );
+      assert.ok(
+        caseWarnings.length > 0,
+        `Expected case mismatch warning, got warnings: ${JSON.stringify(docResult.warnings)}`
+      );
 
-    // The warning should mention both the referenced name and the actual name
-    const warning = caseWarnings[0];
-    assert.ok(
-      warning.includes("claude.md"),
-      `Warning should mention referenced name "claude.md", got: ${warning}`
-    );
-    assert.ok(
-      warning.includes("CLAUDE.md"),
-      `Warning should mention actual name "CLAUDE.md", got: ${warning}`
-    );
-  });
+      // The warning should mention both the referenced name and the actual name
+      const warning = caseWarnings[0];
+      assert.ok(
+        warning.includes("claude.md"),
+        `Warning should mention referenced name "claude.md", got: ${warning}`
+      );
+      assert.ok(
+        warning.includes("CLAUDE.md"),
+        `Warning should mention actual name "CLAUDE.md", got: ${warning}`
+      );
+    }
+  );
 
   it("does not flag when casing matches exactly", () => {
     const targetFile = path.join(tempDir, "README.md");
