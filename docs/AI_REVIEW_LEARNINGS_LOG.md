@@ -2386,7 +2386,7 @@ SonarCloud 33)
 
 ---
 
-### Review #491: PR #456 R1 — Mixed (Qodo + Gemini + CI) (2026-03-20)
+### Review #493: PR #456 R1 — Mixed (Qodo + Gemini + CI) (2026-03-20)
 
 **Date:** 2026-03-20 | **PR:** #456 | **Source:** qodo+gemini+ci
 
@@ -2413,5 +2413,34 @@ SonarCloud 33)
   target 22)
 - Qodo suggestion to downgrade codeql-action was incorrect (only one step,
   already consistent at v4)
+
+---
+
+### Review #494: PR #456 R2 — Mixed (CI + Qodo) (2026-03-20)
+
+**Date:** 2026-03-20 | **PR:** #456 | **Source:** ci+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 3     | 0        | 1        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 1     | 3     | 0       |
+
+**Patterns:**
+
+- Auto-generated files (release-please) need docs linter exclusion, not header
+  injection
+- Review record IDs must be numeric and sequential, not string-based
+
+**Learnings:**
+
+- Exclude auto-generated files (CHANGELOG.md, release-notes.md) from docs linter
+- Review numbering must check max(existing IDs) + 1, not count entries
+- Pinning exact Node patch in .nvmrc diverges from project convention
+  (major-only)
 
 ---
